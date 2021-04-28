@@ -1,5 +1,8 @@
 package com.jayud.storage.model.vo;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
@@ -13,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +29,10 @@ public class StorageInProcessOptFormVO {
 
     @NotNull(message = "主订单id不能为空")
     @ApiModelProperty(value = "主订单id", required = true)
-    private Long mainOrderId;
+    private String mainOrderId;
+
+    @ApiModelProperty(value = "主订单号", required = true)
+    private String mainOrderNo;
 
     @ApiModelProperty(value = "入库订单号", required = true)
     private String orderNo;
@@ -61,8 +68,25 @@ public class StorageInProcessOptFormVO {
     @ApiModelProperty(value = "附件名称,前台不用传")
     private String statusPicName;
 
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
+
+    @ApiModelProperty(value = "客户代码")
+    private String customerCode;
+
+    @ApiModelProperty(value = "车牌号")
+    private String plateNumber;
+
+    @ApiModelProperty(value = "入仓号")
+    private String warehouseNumber;
+
+    @ApiModelProperty(value = "创建时间")
+    private LocalDateTime createTime;
+
 
     //入仓信息
+    @ApiModelProperty(value = "订单详情主键id")
+    private Long id;
 
     @ApiModelProperty(value = "仓库id")
     private String warehouseId;
@@ -162,12 +186,30 @@ public class StorageInProcessOptFormVO {
     @ApiModelProperty(value = "商品入库")
     private List<WarehouseGoodsVO> warehouseGoodsForms;
 
-    @ApiModelProperty(value = "商品实际入库")
-    private List<InGoodsOperationRecord> inGoodsOperationRecords;
 
     public void setStatus(String status) {
         this.status = status;
         this.statusName = OrderStatusEnum.getDesc(status);
+    }
+
+    /**
+     * @param mainOrderObjs 远程客户对象集合
+     */
+    public void assemblyMainOrderData(Object mainOrderObjs) {
+        if (mainOrderObjs == null) {
+            return;
+        }
+        JSONArray mainOrders = new JSONArray(JSON.toJSONString(mainOrderObjs));
+        for (int i = 0; i < mainOrders.size(); i++) {
+            JSONObject json = mainOrders.getJSONObject(i);
+            if (this.mainOrderNo.equals(json.getStr("orderNo"))) { //主订单配对
+                this.customerName = json.getStr("customerName");
+                this.customerCode = json.getStr("customerCode");
+                this.mainOrderId = json.getStr("id");
+                break;
+            }
+        }
+
     }
 
 }

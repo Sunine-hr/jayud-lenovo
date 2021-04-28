@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.storage.mapper.WarehouseAreaShelvesLocationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.storage.model.po.WarehouseAreaShelvesLocation">
+        <id column="id" property="id" />
+        <result column="shelves_id" property="shelvesId" />
+        <result column="shelves_line" property="shelvesLine" />
+        <result column="shelves_column" property="shelvesColumn" />
+        <result column="shelves_type" property="shelvesType" />
+        <result column="length" property="length" />
+        <result column="width" property="width" />
+        <result column="height" property="height" />
+        <result column="maximum_weight" property="maximumWeight" />
+        <result column="category_upper_limit" property="categoryUpperLimit" />
+        <result column="is_good" property="isGood" />
+        <result column="status" property="status" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="remarks" property="remarks" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, shelves_id, shelves_line, shelves_column, shelves_type, length, width, height, maximum_weight, category_upper_limit, is_good, status, create_user, create_time, remarks
+    </sql>
+
+</mapper>

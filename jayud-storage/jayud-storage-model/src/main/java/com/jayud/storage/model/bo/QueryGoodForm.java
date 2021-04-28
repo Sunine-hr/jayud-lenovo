@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class QueryGoodForm {
+public class QueryGoodForm extends BasePageForm{
 
     @ApiModelProperty(value = "商品名称")
     private String name;

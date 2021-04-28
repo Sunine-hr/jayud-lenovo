@@ -1,6 +1,8 @@
 package com.jayud.storage.model.bo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
@@ -63,8 +65,13 @@ public class StorageInProcessOptForm {
     @ApiModelProperty(value = "操作情况 submit 提交  end 完结")
     private String cmd;
 
+    @ApiModelProperty(value = "入库批次号")
+    private String warehousingBatchNo;
 
     //入仓信息
+
+    @ApiModelProperty(value = "订单详情主键id")
+    private Long id;
 
     @ApiModelProperty(value = "仓库id")
     private String warehouseId;
@@ -163,9 +170,6 @@ public class StorageInProcessOptForm {
 
     @ApiModelProperty(value = "商品入库")
     private List<WarehouseGoodsForm> warehouseGoodsForms;
-
-    @ApiModelProperty(value = "司机")
-    private List<InGoodsOperationRecord> inGoodsOperationRecords;
 
 
     public void setStatus(String status) {

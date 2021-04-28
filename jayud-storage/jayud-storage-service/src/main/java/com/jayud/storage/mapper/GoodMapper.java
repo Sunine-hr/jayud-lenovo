@@ -1,6 +1,7 @@
 package com.jayud.storage.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.storage.model.bo.QueryGoodForm;
 import com.jayud.storage.model.po.Good;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -20,5 +21,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Mapper
 public interface GoodMapper extends BaseMapper<Good> {
 
-    IPage<GoodVO> findGoodsByPage(@Param("form") QueryGoodForm form);
+    IPage<GoodVO> findGoodsByPage(@Param("page")Page<GoodVO> page, @Param("form") QueryGoodForm form);
 }

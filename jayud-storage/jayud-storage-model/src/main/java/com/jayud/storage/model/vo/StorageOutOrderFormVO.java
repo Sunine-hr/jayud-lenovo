@@ -170,23 +170,6 @@ public class StorageOutOrderFormVO {
 
     }
 
-
-    /**
-     * 组装供应商数据
-     */
-//    public void assemblySupplierInfo(JSONArray supplierInfo) {
-//        if (supplierInfo == null) {
-//            return;
-//        }
-//        for (int i = 0; i < supplierInfo.size(); i++) {
-//            JSONObject json = supplierInfo.getJSONObject(i);
-//            if (this.trailerDispatchVO.getSupplierId() != null && this.trailerDispatchVO.getSupplierId().equals(json.getLong("id"))) { //供应商配对
-//                this.defaultSupplierCode = json.getStr("supplierCode");
-//                break;
-//            }
-//        }
-//    }
-
     /**
      * 组装结算单位数据
      */

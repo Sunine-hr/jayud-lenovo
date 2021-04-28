@@ -5,6 +5,7 @@ import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.metadata.Sheet;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
@@ -127,6 +128,16 @@ public class CommonController {
         hashMap.put("cardType",data1);
         hashMap.put("warehouseInfo",data2);
         return CommonResult.success(hashMap);
+    }
+
+    @ApiOperation(value = "获取商品下拉列表框")
+    @PostMapping(value = "/commonComBox")
+    public CommonResult goodsComBox(@RequestBody Map<String,Object> map){
+        Long customerId = MapUtil.getLong(map,"customerId");
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("customerId",customerId);
+        List list = goodService.list(queryWrapper);
+        return CommonResult.success(list);
     }
 
 }

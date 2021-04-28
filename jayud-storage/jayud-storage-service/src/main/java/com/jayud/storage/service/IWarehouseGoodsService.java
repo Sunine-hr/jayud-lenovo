@@ -17,4 +17,12 @@ import java.util.List;
 public interface IWarehouseGoodsService extends IService<WarehouseGoods> {
 
     List<WarehouseGoodsVO> getList(Long id, String orderNo);
+
+    /**
+     * 删除商品信息
+     * @param orderId
+     * @param orderNo
+     * @return
+     */
+    void deleteWarehouseGoodsFormsByOrder(Long orderId, String orderNo);
 }

@@ -31,4 +31,12 @@ public class WarehouseGoodsServiceImpl extends ServiceImpl<WarehouseGoodsMapper,
         List list1 = ConvertUtil.convertList(list, WarehouseGoodsVO.class);
         return list1;
     }
+
+    @Override
+    public void deleteWarehouseGoodsFormsByOrder(Long orderId, String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_id",orderId);
+        queryWrapper.eq("order_no",orderNo);
+        this.baseMapper.delete(queryWrapper);
+    }
 }

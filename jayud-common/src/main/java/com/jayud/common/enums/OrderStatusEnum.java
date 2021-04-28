@@ -427,6 +427,38 @@ public enum OrderStatusEnum {
         return statusEnums;
     }
 
+    /**
+     * 获取入库下个节点
+     * 如果是驳回状态就是当前状态
+     */
+    public static OrderStatusEnum getStorageInOrderNextStatus(String currentStatus) {
+
+        List<OrderStatusEnum> statusEnums = getInStorageOrderProcess();
+        for (OrderStatusEnum statusEnum : statusEnums) {
+            if (statusEnum.getCode().equals(currentStatus)) {
+                return statusEnum;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 获取出库下个节点
+     * 如果是驳回状态就是当前状态
+     */
+    public static OrderStatusEnum getStorageOutOrderNextStatus(String currentStatus) {
+
+        List<OrderStatusEnum> statusEnums = getOutStorageOrderProcess();
+        for (OrderStatusEnum statusEnum : statusEnums) {
+            if (statusEnum.getCode().equals(currentStatus)) {
+                return statusEnum;
+            }
+        }
+
+        return null;
+    }
+
 
     public static List<OrderStatusEnum> getInStorageOrderProcess() {
         List<OrderStatusEnum> statusEnums = new ArrayList<>();

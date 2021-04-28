@@ -103,23 +103,23 @@ public class StorageInputOrderVO extends Model<StorageInputOrderVO> {
     /**
      * 校验创建出库子订单参数
      */
-    public String checkCreateOrder() {
-        //拖车
-        if (this.legalEntityId == null ){
-            return "操作主体不为空";
-        }
-        if (StringUtils.isEmpty(this.unitCode)) {
-            return "结算单位不为空";
-        }
-        if(this.departmentId == null){
-            return "操作部门不为空";
-        }
-        if(StringUtils.isEmpty(this.warehouseNumber)){
-            return "入仓号不为空";
-        }
-
-        return "pass";
-    }
+//    public String checkCreateOrder() {
+//        //拖车
+//        if (this.legalEntityId == null ){
+//            return "操作主体不为空";
+//        }
+//        if (StringUtils.isEmpty(this.unitCode)) {
+//            return "结算单位不为空";
+//        }
+//        if(this.departmentId == null){
+//            return "操作部门不为空";
+//        }
+//        if(StringUtils.isEmpty(this.warehouseNumber)){
+//            return "入仓号不为空";
+//        }
+//
+//        return "pass";
+//    }
 
     public void setUnitCodeName(String unitCodeName) {
         this.unitCodeName=unitCodeName;

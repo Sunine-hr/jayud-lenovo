@@ -194,9 +194,9 @@ public class StorageInputOrderController {
         }
         String orderProcessNode = (String) omsClient.getOrderProcessNode(storageInputOrder.getMainOrderNo(), storageInputOrder.getOrderNo(), storageInputOrder.getStatus()).getData();
 
-        OrderStatusEnum statusEnum = OrderStatusEnum.getTrailerOrderNextStatus(orderProcessNode);
+        OrderStatusEnum statusEnum = OrderStatusEnum.getStorageInOrderNextStatus(orderProcessNode);
         if (statusEnum == null) {
-            log.error("执行拖车流程操作失败,超出流程之外 data={}", storageInputOrder);
+            log.error("执行入库流程操作失败,超出流程之外 data={}", storageInputOrder);
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
 
@@ -210,7 +210,10 @@ public class StorageInputOrderController {
                 storageInputOrderService.warehouseReceipt(form);
                 break;
             case CCI_2: //确认入仓
-                storageInputOrderService.confirmEntry(form);
+                boolean b = storageInputOrderService.confirmEntry(form);
+                if(!b){
+                    CommonResult.error(444,"确认入仓失败");
+                }
                 break;
             case CCI_3: //仓储入库
                 break;
@@ -254,6 +257,14 @@ public class StorageInputOrderController {
             warehouseGoodsVO.setWarehousingInformation(stringBuffer.toString());
         }
         storageInProcessOptFormVO.setWarehouseGoodsForms(list);
+        ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageInProcessOptFormVO.getOrderNo()));
+        storageInProcessOptFormVO.assemblyMainOrderData(result);
+        storageInProcessOptFormVO.setMainOrderNo(storageInputOrder.getMainOrderNo());
+        storageInProcessOptFormVO.setOrderId(storageInputOrder.getId());
+        storageInProcessOptFormVO.setOrderNo(storageInputOrder.getOrderNo());
+        storageInProcessOptFormVO.setPlateNumber(storageInputOrder.getPlateNumber());
+        storageInProcessOptFormVO.setWarehouseNumber(storageInputOrder.getWarehouseNumber());
+        storageInProcessOptFormVO.setCreateTime(storageInputOrder.getCreateTime());
 
         return CommonResult.success(storageInProcessOptFormVO);
     }
@@ -263,6 +274,8 @@ public class StorageInputOrderController {
      * @param map
      * @return
      */
+    @ApiOperation(value = "获取入库批次号")
+    @PostMapping(value = "/getWarehousingBatchNumber")
     public CommonResult getWarehousingBatchNumber(@RequestBody Map<String,Object> map){
         String orderNo = MapUtil.getStr(map, "orderNo");
         //从redis中获取数据，没有在生成
@@ -275,6 +288,18 @@ public class StorageInputOrderController {
         redisUtils.set(orderNo,batchNumber);
         return CommonResult.success(batchNumber);
     }
+
+    @ApiOperation(value = "判断商品信息是否能编辑和删除")
+    @PostMapping(value = "/isSubmit")
+    public CommonResult isSubmit(@RequestBody Map<String,Object> map) {
+        String orderId = MapUtil.getStr(map, "orderId");
+        StorageInputOrder storageInputOrder = this.storageInputOrderService.getById(orderId);
+        if(storageInputOrder.getIsSubmit().equals(1)){
+            return CommonResult.success(false);
+        }
+        return CommonResult.success(true);
+    }
+
 
 }
 

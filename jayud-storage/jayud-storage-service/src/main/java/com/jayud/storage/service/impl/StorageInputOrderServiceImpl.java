@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
+import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
+import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
@@ -16,13 +18,13 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.storage.feign.OauthClient;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.*;
-import com.jayud.storage.model.po.StorageInputOrder;
+import com.jayud.storage.model.po.*;
 import com.jayud.storage.mapper.StorageInputOrderMapper;
-import com.jayud.storage.model.po.StorageOutOrder;
-import com.jayud.storage.model.po.WarehouseGoods;
 import com.jayud.storage.model.vo.StorageInputOrderFormVO;
 import com.jayud.storage.model.vo.StorageInputOrderVO;
 import com.jayud.storage.model.vo.WarehouseGoodsVO;
+import com.jayud.storage.service.IInGoodsOperationRecordService;
+import com.jayud.storage.service.IStorageInputOrderDetailsService;
 import com.jayud.storage.service.IStorageInputOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.storage.service.IWarehouseGoodsService;
@@ -55,6 +57,15 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
 
     @Autowired
     private OmsClient omsClient;
+
+    @Autowired
+    private IStorageInputOrderDetailsService storageInputOrderDetailsService;
+
+    @Autowired
+    private IInGoodsOperationRecordService inGoodsOperationRecordService;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     @Override
     public String createOrder(StorageInputOrderForm storageInputOrderForm) {
@@ -129,6 +140,8 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
 
     @Override
     public void warehouseReceipt(StorageInProcessOptForm form) {
+        form.setOperatorUser(form.getOperatorUser());
+        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageInputOrder storageInputOrder = new StorageInputOrder();
         storageInputOrder.setOrderTaker(form.getOperatorUser());
         storageInputOrder.setReceivingOrdersDate(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
@@ -177,8 +190,64 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
     }
 
     @Override
-    public void confirmEntry(StorageInProcessOptForm form) {
+    public boolean confirmEntry(StorageInProcessOptForm form) {
+        redisUtils.delete(form.getOrderNo());
+        form.setOperatorUser(form.getOperatorUser());
+        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
+        StorageInputOrderDetails storageInputOrderDetails = ConvertUtil.convert(form, StorageInputOrderDetails.class);
+        boolean insert = storageInputOrderDetailsService.saveOrUpdate(storageInputOrderDetails);
+        if(!insert){
+            return false;
+        }
+        List<WarehouseGoodsForm> warehouseGoodsForms = form.getWarehouseGoodsForms();
+        //在添加商品前，先删除原来的商品信息
+        warehouseGoodsService.deleteWarehouseGoodsFormsByOrder(form.getOrderId(),form.getOrderNo());
 
+        for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
+            WarehouseGoods warehouseGoods = ConvertUtil.convert(warehouseGoodsForm, WarehouseGoods.class);
+            boolean b = warehouseGoodsService.saveOrUpdate(warehouseGoods);
+            if(!b){
+                return false;
+            }
+            InGoodsOperationRecord inGoodsOperationRecord = new InGoodsOperationRecord();
+            inGoodsOperationRecord.setOrderId(warehouseGoodsForm.getOrderId());
+            inGoodsOperationRecord.setOrderNo(warehouseGoodsForm.getOrderNo());
+            inGoodsOperationRecord.setWarehousingBatchNo(form.getWarehousingBatchNo());
+            inGoodsOperationRecord.setName(warehouseGoodsForm.getName());
+            inGoodsOperationRecord.setSku(warehouseGoodsForm.getSku());
+            inGoodsOperationRecord.setSpecificationModel(warehouseGoodsForm.getSpecificationModel());
+            inGoodsOperationRecord.setBoardNumber(warehouseGoodsForm.getSjBoardNumber());
+            inGoodsOperationRecord.setNumber(warehouseGoodsForm.getSjNumber());
+            inGoodsOperationRecord.setPcs(warehouseGoodsForm.getSjPcs());
+            inGoodsOperationRecord.setWeight(warehouseGoodsForm.getSjWeight());
+            inGoodsOperationRecord.setVolume(warehouseGoodsForm.getSjVolume());
+            boolean save = inGoodsOperationRecordService.save(inGoodsOperationRecord);
+            if(!save){
+                return false;
+            }
+        }
+        if(form.getCmd().equals("submit")){
+
+            //订单状况变为确认入仓已提交
+            StorageInputOrder storageInputOrder = new StorageInputOrder();
+            storageInputOrder.setId(form.getOrderId());
+            storageInputOrder.setIsSubmit(1);
+            form.setStatusName("确认入仓提交");
+            form.setStatus("CCI_1");
+            this.baseMapper.updateById(storageInputOrder);
+            this.storageProcessOptRecord(form);
+            return true;
+        }
+        if(form.getCmd().equals("end")){
+            StorageInputOrder storageInputOrder = new StorageInputOrder();
+            storageInputOrder.setId(form.getOrderId());
+            storageInputOrder.setIsSubmit(1);
+            storageInputOrder.setStatus(form.getStatus());
+            this.baseMapper.updateById(storageInputOrder);
+            this.storageProcessOptRecord(form);
+            return true;
+        }
+        return false;
     }
 
     //判断订单完成状态

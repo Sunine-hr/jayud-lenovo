@@ -63,5 +63,5 @@ public interface IStorageInputOrderService extends IService<StorageInputOrder> {
      * 确认入仓
      * @param form
      */
-    void confirmEntry(StorageInProcessOptForm form);
+    boolean confirmEntry(StorageInProcessOptForm form);
 }

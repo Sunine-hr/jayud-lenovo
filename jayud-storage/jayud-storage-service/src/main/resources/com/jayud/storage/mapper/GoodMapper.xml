@@ -32,7 +32,7 @@
         select id, name, sku, customer_id customerId, specification_model specificationModel, status, create_user createUser, create_time createTime,
          remarks, customer_code customerCode, good_length goodLength, good_width goodWidth,
          good_height goodHeight, commodity_value commodityValue, date_of_manufacture dateOfManufacture, expiration_date expirationDate,customer_name customerName
-         from good where 1=1
+         from good where status = 1
          <if test="form.name!=null || form.name!=''">
           and good.name like concat('%',#{form.name},'%')
          </if>

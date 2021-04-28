@@ -83,6 +83,9 @@ public class StorageInputOrder extends Model<StorageInputOrder> {
     @ApiModelProperty(value = "接单日期")
     private String receivingOrdersDate;
 
+    @ApiModelProperty(value = "确认入仓是否提交（0未提交，1已提交）")
+    private Integer isSubmit;
+
 
     @Override
     protected Serializable pkVal() {

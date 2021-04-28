@@ -68,6 +68,8 @@ public class SystemUserController {
     private OceanShipClient oceanShipClient;
     @Autowired
     private InlandTpClient inlandTpClient;
+    @Autowired
+    private TrailerClient trailerClient;
 
     /**
      * 登录接口
@@ -676,6 +678,9 @@ public class SystemUserController {
         }
         if (SubOrderSignEnum.NL.getSignOne().equals(type)) { //TODO 待开发
             result.put(SubOrderSignEnum.NL.getSignOne(), this.inlandTpClient.getMenuPendingNum(systemMenus).getData());
+        }
+        if (SubOrderSignEnum.TC.getSignOne().equals(type)) { //TODO 待开发
+            result.put(SubOrderSignEnum.TC.getSignOne(), this.trailerClient.getMenuPendingNum(systemMenus).getData());
         }
         return CommonResult.success(result);
     }

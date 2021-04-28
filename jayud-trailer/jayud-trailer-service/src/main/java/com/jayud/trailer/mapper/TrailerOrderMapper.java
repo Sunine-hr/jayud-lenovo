@@ -38,4 +38,6 @@ public interface TrailerOrderMapper extends BaseMapper<TrailerOrder> {
      * @return
      */
     IPage<TrailerOrderFormVO> findByPage(@Param("page") Page<TrailerOrderFormVO> page, @Param("form")QueryTrailerOrderForm form,@Param("legalIds") List<Long> legalIds);
+
+    Integer getNumByStatus(@Param("status")String status, @Param("legalIds")List<Long> legalIds);
 }

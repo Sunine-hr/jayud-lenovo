@@ -95,4 +95,6 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
      * @return
      */
     TrailerOrder getByOrderNO(String orderNo);
+
+    Integer getNumByStatus(String status, List<Long> legalIds);
 }

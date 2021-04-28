@@ -3,9 +3,7 @@ package com.jayud.mall.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.BillCostInfoForm;
-import com.jayud.mall.model.bo.OceanBillForm;
-import com.jayud.mall.model.bo.QueryOceanBillForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.OceanBill;
 import com.jayud.mall.model.vo.*;
 
@@ -120,4 +118,43 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @return
      */
     List<OceanCounterVO> findOceanCounterByObId(Long obId);
+
+    /**
+     * 添加修改-提单清关信息
+     * @param form
+     * @return
+     */
+    BillClearanceInfoVO saveBillClearanceInfo(BillClearanceInfoForm form);
+
+    /**
+     * 添加修改-提单报关信息
+     * @param form
+     * @return
+     */
+    BillCustomsInfoVO saveBillCustomsInfo(BillCustomsInfoForm form);
+
+    /**
+     * 添加修改-提单柜子信息
+     * @param form
+     * @return
+     */
+    OceanCounterVO saveOceanCounter(OceanCounterForm form);
+
+    /**
+     * 删除-提单清关信息
+     * @param form
+     */
+    void delBillClearanceInfo(BillClearanceInfoIdForm form);
+
+    /**
+     * 删除-提单报关信息
+     * @param form
+     */
+    void delBillCustomsInfo(BillCustomsInfoIdForm form);
+
+    /**
+     * 删除-提单柜子信息
+     * @param form
+     */
+    void delOceanCounter(OceanCounterIdForm form);
 }

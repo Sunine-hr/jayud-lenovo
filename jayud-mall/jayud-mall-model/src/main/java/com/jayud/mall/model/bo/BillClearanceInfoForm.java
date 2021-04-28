@@ -1,13 +1,13 @@
 package com.jayud.mall.model.bo;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * larry 20210427
@@ -20,6 +20,7 @@ public class BillClearanceInfoForm extends BasePageForm{
     private Long id;
 
     @ApiModelProperty(value = "提单id(ocean_bill id)")
+    @NotNull(message = "提单id不能为空")
     private Integer billId;
 
     @ApiModelProperty(value = "提单号(ocean_bill order_id)")
@@ -48,5 +49,8 @@ public class BillClearanceInfoForm extends BasePageForm{
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "提单对应清关箱号信息list")
+    private List<ClearanceInfoCaseForm> clearanceInfoCaseForms;
 
 }

@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.*;
@@ -83,6 +85,17 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
 
     @Autowired
     BaseService baseService;
+
+    @Autowired
+    IBillClearanceInfoService billClearanceInfoService;
+    @Autowired
+    IClearanceInfoCaseService clearanceInfoCaseService;
+    @Autowired
+    IBillCustomsInfoService billCustomsInfoService;
+    @Autowired
+    ICustomsInfoCaseService customsInfoCaseService;
+
+
 
     @Override
     public IPage<OceanBillVO> findOceanBillByPage(QueryOceanBillForm form) {
@@ -496,5 +509,109 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     public List<OceanCounterVO> findOceanCounterByObId(Long obId) {
         List<OceanCounterVO> oceanCounterVOS = oceanBillMapper.findOceanCounterByObId(obId);
         return oceanCounterVOS;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public BillClearanceInfoVO saveBillClearanceInfo(BillClearanceInfoForm form) {
+        BillClearanceInfo billClearanceInfo = ConvertUtil.convert(form, BillClearanceInfo.class);
+        Integer billId = billClearanceInfo.getBillId();
+        if(ObjectUtil.isEmpty(billId)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "提单id不能为空");
+        }
+        //1.保存-(提单)清关信息表
+        billClearanceInfoService.saveOrUpdate(billClearanceInfo);
+        Long b_id = billClearanceInfo.getId();//提单对应清关信息id(bill_clearance_info id)
+
+        //2.保存-提单对应清关箱号信息
+        List<ClearanceInfoCaseForm> clearanceInfoCaseForms = form.getClearanceInfoCaseForms();
+        List<ClearanceInfoCase> clearanceInfoCases = ConvertUtil.convertList(clearanceInfoCaseForms, ClearanceInfoCase.class);
+        QueryWrapper<ClearanceInfoCase> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("b_id", b_id);
+        clearanceInfoCaseService.remove(queryWrapper);
+        if(CollUtil.isNotEmpty(clearanceInfoCases)){
+            clearanceInfoCases.forEach(clearanceInfoCase -> {
+                clearanceInfoCase.setBId(b_id);//提单对应清关信息id(bill_clearance_info id)
+            });
+            clearanceInfoCaseService.saveOrUpdateBatch(clearanceInfoCases);
+        }
+        BillClearanceInfoVO billClearanceInfoVO = ConvertUtil.convert(billClearanceInfo, BillClearanceInfoVO.class);
+        return billClearanceInfoVO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public BillCustomsInfoVO saveBillCustomsInfo(BillCustomsInfoForm form) {
+        BillCustomsInfo billCustomsInfo = ConvertUtil.convert(form, BillCustomsInfo.class);
+        Integer billId = billCustomsInfo.getBillId();//提单id(ocean_bill id)
+        if(ObjectUtil.isEmpty(billId)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "提单id不能为空");
+        }
+        //1.保存-(提单)报关信息表
+        billCustomsInfoService.saveOrUpdate(billCustomsInfo);
+        Long b_id = billCustomsInfo.getId();//提单对应报关信息id(bill_customs_info id)
+
+        //2.保存-提单对应报关箱号信息
+        QueryWrapper<CustomsInfoCase> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("b_id", b_id);
+        customsInfoCaseService.remove(queryWrapper);
+        List<CustomsInfoCaseForm> customsInfoCaseForms = form.getCustomsInfoCaseForms();
+        if(CollUtil.isNotEmpty(customsInfoCaseForms)){
+            List<CustomsInfoCase> customsInfoCases = ConvertUtil.convertList(customsInfoCaseForms, CustomsInfoCase.class);
+            customsInfoCases.forEach(customsInfoCase -> {
+                customsInfoCase.setBId(b_id);//提单对应报关信息id(bill_customs_info id)
+            });
+            customsInfoCaseService.saveOrUpdateBatch(customsInfoCases);
+        }
+
+
+        return null;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public OceanCounterVO saveOceanCounter(OceanCounterForm form) {
+        Long obId = form.getObId();//提单id(ocean_bill id)
+        if(ObjectUtil.isEmpty(obId)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "提单id不能为空");
+        }
+        OceanCounter oceanCounter = ConvertUtil.convert(form, OceanCounter.class);
+        oceanCounterService.saveOrUpdate(oceanCounter);
+        OceanCounterVO oceanCounterVO = ConvertUtil.convert(oceanCounter, OceanCounterVO.class);
+        return oceanCounterVO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void delBillClearanceInfo(BillClearanceInfoIdForm form) {
+        Long id = form.getId();
+        //1.删除-(提单)清关信息表
+        billClearanceInfoService.removeById(id);
+        //2.删除-提单对应清关箱号信息
+        QueryWrapper<ClearanceInfoCase> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("b_id", id);
+        clearanceInfoCaseService.remove(queryWrapper);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void delBillCustomsInfo(BillCustomsInfoIdForm form) {
+        Long id = form.getId();
+        //1.删除-(提单)报关信息表
+        billCustomsInfoService.removeById(id);
+        //2.删除-提单对应报关箱号信息
+        QueryWrapper<CustomsInfoCase> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("b_id", id);
+        customsInfoCaseService.remove(queryWrapper);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void delOceanCounter(OceanCounterIdForm form) {
+        Long id = form.getId();
+        //1.删除-柜子
+        oceanCounterService.removeById(id);
+        //2.删除-柜子的文件 TODO
+        //3.删除-柜子文件里面的箱子 TODO
     }
 }

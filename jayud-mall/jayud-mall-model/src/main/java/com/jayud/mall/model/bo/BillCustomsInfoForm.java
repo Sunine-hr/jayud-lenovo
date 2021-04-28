@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * larry 20210427
@@ -49,4 +49,7 @@ public class BillCustomsInfoForm extends BasePageForm{
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "提单对应报关箱号信息list")
+    private List<CustomsInfoCaseForm> customsInfoCaseForms;
 }

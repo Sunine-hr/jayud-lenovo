@@ -115,6 +115,7 @@ public class OceanBillController {
         return oceanBillService.saveOceanBillByConf(form);
     }
 
+    // 查询
     @ApiOperation(value = "配载，提单（4个窗口），查看-清关")
     @PostMapping("/findBillClearanceInfoByBillId")
     @ApiOperationSupport(order = 11)
@@ -150,13 +151,57 @@ public class OceanBillController {
         return oceanBillService.findOceanBillById(id);
     }
 
-    //添加修改-提单清关信息
+    //添加修改
 
-    //添加修改-提单报关信息
+    @ApiOperation(value = "添加修改-提单清关信息")
+    @PostMapping("/saveBillClearanceInfo")
+    @ApiOperationSupport(order = 15)
+    public CommonResult<BillClearanceInfoVO> saveBillClearanceInfo(@Valid @RequestBody BillClearanceInfoForm form){
+        BillClearanceInfoVO billClearanceInfoVO = oceanBillService.saveBillClearanceInfo(form);
+        return CommonResult.success(billClearanceInfoVO);
+    }
 
-    //添加修改-提单柜子信息
+    @ApiOperation(value = "添加修改-提单报关信息")
+    @PostMapping("/saveBillCustomsInfo")
+    @ApiOperationSupport(order = 16)
+    public CommonResult<BillCustomsInfoVO> saveBillCustomsInfo(@Valid @RequestBody BillCustomsInfoForm form){
+        BillCustomsInfoVO billCustomsInfoVO = oceanBillService.saveBillCustomsInfo(form);
+        return CommonResult.success(billCustomsInfoVO);
+    }
 
+    @ApiOperation(value = "添加修改-提单柜子信息")
+    @PostMapping("/saveOceanCounter")
+    @ApiOperationSupport(order = 17)
+    public CommonResult<OceanCounterVO> saveOceanCounter(@Valid @RequestBody OceanCounterForm form){
+        OceanCounterVO oceanCounterVO = oceanBillService.saveOceanCounter(form);
+        return CommonResult.success(oceanCounterVO);
+    }
 
+    //删除
+
+    @ApiOperation(value = "删除-提单清关信息")
+    @PostMapping("/delBillClearanceInfo")
+    @ApiOperationSupport(order = 18)
+    public CommonResult delBillClearanceInfo(@Valid @RequestBody BillClearanceInfoIdForm form){
+        oceanBillService.delBillClearanceInfo(form);
+        return CommonResult.success("删除成功");
+    }
+
+    @ApiOperation(value = "删除-提单报关信息")
+    @PostMapping("/delBillCustomsInfo")
+    @ApiOperationSupport(order = 19)
+    public CommonResult delBillCustomsInfo(@Valid @RequestBody BillCustomsInfoIdForm form){
+        oceanBillService.delBillCustomsInfo(form);
+        return CommonResult.success("删除成功");
+    }
+
+    @ApiOperation(value = "删除-提单柜子信息")
+    @PostMapping("/delOceanCounter")
+    @ApiOperationSupport(order = 20)
+    public CommonResult delOceanCounter(@Valid @RequestBody OceanCounterIdForm form){
+        oceanBillService.delOceanCounter(form);
+        return CommonResult.success("删除成功");
+    }
 
 
 }

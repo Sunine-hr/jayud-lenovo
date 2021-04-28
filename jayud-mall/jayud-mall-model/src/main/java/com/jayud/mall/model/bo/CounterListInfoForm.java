@@ -1,5 +1,6 @@
 package com.jayud.mall.model.bo;
 
+import com.jayud.mall.model.vo.TemplateUrlVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -23,6 +24,9 @@ public class CounterListInfoForm {
 
     @ApiModelProperty(value = "模版文件地址(附件)")
     private String templateUrl;
+
+    @ApiModelProperty(value = "模版文件地址(附件)文件上传")
+    private List<TemplateUrlVO> templateUrls;
 
     @ApiModelProperty(value = "说明")
     private String describes;

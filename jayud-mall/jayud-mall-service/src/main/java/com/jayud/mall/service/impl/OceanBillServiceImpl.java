@@ -2,6 +2,10 @@ package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -525,6 +529,10 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         if(ObjectUtil.isEmpty(billId)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "提单id不能为空");
         }
+
+        List<TemplateUrlVO> templateUrls = form.getTemplateUrls();
+        String s = JSONUtil.toJsonStr(templateUrls);
+        billClearanceInfo.setTemplateUrl(s);
         //1.保存-(提单)清关信息表
         billClearanceInfoService.saveOrUpdate(billClearanceInfo);
         Long b_id = billClearanceInfo.getId();//提单对应清关信息id(bill_clearance_info id)
@@ -553,6 +561,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         if(ObjectUtil.isEmpty(billId)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "提单id不能为空");
         }
+        List<TemplateUrlVO> templateUrls = form.getTemplateUrls();
+        String s = JSONUtil.toJsonStr(templateUrls);
+        billCustomsInfo.setTemplateUrl(s);
         //1.保存-(提单)报关信息表
         billCustomsInfoService.saveOrUpdate(billCustomsInfo);
         Long b_id = billCustomsInfo.getId();//提单对应报关信息id(bill_customs_info id)
@@ -638,6 +649,17 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     public BillClearanceInfoVO findBillClearanceInfoById(Long id) {
         //1.(提单)清关信息表
         BillClearanceInfoVO billClearanceInfoVO = billClearanceInfoService.findBillClearanceInfoById(id);
+        String templateUrl = billClearanceInfoVO.getTemplateUrl();
+        if(StrUtil.isNotEmpty(templateUrl)){
+            try {
+                List<TemplateUrlVO> templateUrls = JSON.parseObject(templateUrl, new TypeReference<List<TemplateUrlVO>>() {});
+                billClearanceInfoVO.setTemplateUrls(templateUrls);
+            } catch (Exception e) {
+                billClearanceInfoVO.setTemplateUrls(new ArrayList<>());
+            }
+        }else{
+            billClearanceInfoVO.setTemplateUrls(new ArrayList<>());
+        }
         Long b_id = billClearanceInfoVO.getId();//提单对应清关信息id(bill_clearance_info id)
         //2.提单对应清关箱号信息
         List<ClearanceInfoCaseVO> clearanceInfoCaseVOS =  billClearanceInfoService.findClearanceInfoCase(b_id);
@@ -649,6 +671,17 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     public BillCustomsInfoVO findBillCustomsInfoById(Long id) {
         //1.(提单)报关信息表
         BillCustomsInfoVO billCustomsInfoVO = billCustomsInfoService.findBillCustomsInfoById(id);
+        String templateUrl = billCustomsInfoVO.getTemplateUrl();
+        if(StrUtil.isNotEmpty(templateUrl)){
+            try {
+                List<TemplateUrlVO> templateUrls = JSON.parseObject(templateUrl, new TypeReference<List<TemplateUrlVO>>() {});
+                billCustomsInfoVO.setTemplateUrls(templateUrls);
+            } catch (Exception e) {
+                billCustomsInfoVO.setTemplateUrls(new ArrayList<>());
+            }
+        }else{
+            billCustomsInfoVO.setTemplateUrls(new ArrayList<>());
+        }
         Long b_id = billCustomsInfoVO.getId();
         //2.提单对应报关箱号信息
         List<CustomsInfoCaseVO> customsInfoCaseVOS = billCustomsInfoService.findCustomsInfoCase(b_id);
@@ -664,6 +697,10 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         if(ObjectUtil.isEmpty(counterId)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "柜子id不能为空");
         }
+        List<TemplateUrlVO> templateUrls = form.getTemplateUrls();
+        String s = JSONUtil.toJsonStr(templateUrls);
+        counterListInfo.setTemplateUrl(s);
+
         //1.保存-柜子清单信息表
         counterListInfoService.saveOrUpdate(counterListInfo);
         Long b_id = counterListInfo.getId();//柜子清单信息表(counter_list_info id)
@@ -704,6 +741,18 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         if(ObjectUtil.isEmpty(counterListInfoVO)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "柜子清单不存在");
         }
+        String templateUrl = counterListInfoVO.getTemplateUrl();
+        if(StrUtil.isNotEmpty(templateUrl)){
+            try {
+                List<TemplateUrlVO> templateUrls = JSON.parseObject(templateUrl, new TypeReference<List<TemplateUrlVO>>() {});
+                counterListInfoVO.setTemplateUrls(templateUrls);
+            } catch (Exception e) {
+                counterListInfoVO.setTemplateUrls(new ArrayList<>());
+            }
+        }else{
+            counterListInfoVO.setTemplateUrls(new ArrayList<>());
+        }
+
         Long b_id = counterListInfoVO.getId();//柜子清单信息表(counter_list_info id)
         //2.柜子箱号信息
         List<CounterCaseInfoVO> counterCaseInfoVOS = counterListInfoService.findCounterCaseInfo(b_id);

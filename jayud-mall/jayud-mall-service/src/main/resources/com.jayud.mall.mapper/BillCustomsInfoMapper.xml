@@ -36,5 +36,9 @@
         where t.id = #{id}
     </select>
 
+    <select id="findCustomsInfoCaseTotalBybid" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select count(*) total from customs_info_case where b_id = #{b_id}
+    </select>
+
 
 </mapper>

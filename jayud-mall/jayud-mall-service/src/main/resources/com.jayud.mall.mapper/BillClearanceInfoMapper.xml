@@ -61,5 +61,9 @@
         from bill_clearance_info t
         where t.id = #{id}
     </select>
-    
+
+    <select id="findClearanceInfoCaseTotalBybid" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select count(*) total from clearance_info_case where b_id = #{b_id}
+    </select>
+
 </mapper>

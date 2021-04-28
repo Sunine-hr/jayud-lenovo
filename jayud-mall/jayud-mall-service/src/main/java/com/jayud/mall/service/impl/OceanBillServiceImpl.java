@@ -70,7 +70,12 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     OrderConfMapper orderConfMapper;
 
     @Autowired
+    BillClearanceInfoMapper billClearanceInfoMapper;
+    @Autowired
+    BillCustomsInfoMapper billCustomsInfoMapper;
+    @Autowired
     CounterListInfoMapper counterListInfoMapper;
+
 
     @Autowired
     IOceanCounterService oceanCounterService;
@@ -506,12 +511,22 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     @Override
     public List<BillClearanceInfoVO> findBillClearanceInfoByBillId(Long billId) {
         List<BillClearanceInfoVO> billClearanceInfoVOS = oceanBillMapper.findBillClearanceInfoByBillId(billId);
+        billClearanceInfoVOS.forEach(billClearanceInfoVO -> {
+            Long b_id = billClearanceInfoVO.getId();
+            Integer total = billClearanceInfoMapper.findClearanceInfoCaseTotalBybid(b_id);
+            billClearanceInfoVO.setCartons(total);
+        });
         return billClearanceInfoVOS;
     }
 
     @Override
     public List<BillCustomsInfoVO> findBillCustomsInfoByBillId(Long billId) {
         List<BillCustomsInfoVO> billCustomsInfoVOS = oceanBillMapper.findBillCustomsInfoByBillId(billId);
+        billCustomsInfoVOS.forEach(billCustomsInfoVO -> {
+            Long b_id = billCustomsInfoVO.getId();
+            Integer total = billCustomsInfoMapper.findCustomsInfoCaseTotalBybid(b_id);
+            billCustomsInfoVO.setCartons(total);
+        });
         return billCustomsInfoVOS;
     }
 

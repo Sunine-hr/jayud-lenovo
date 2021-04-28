@@ -62,4 +62,11 @@ public interface BillClearanceInfoMapper extends BaseMapper<BillClearanceInfo> {
      * @return
      */
     BillClearanceInfoVO findBillClearanceInfoById(@Param("id") Long id);
+
+    /**
+     * 统计箱数
+     * @param b_id
+     * @return
+     */
+    Integer findClearanceInfoCaseTotalBybid(@Param("b_id") Long b_id);
 }

@@ -33,4 +33,11 @@ public interface BillCustomsInfoMapper extends BaseMapper<BillCustomsInfo> {
      * @return
      */
     BillCustomsInfoVO findBillCustomsInfoById(@Param("id") Long id);
+
+    /**
+     * 统计箱号
+     * @param b_id
+     * @return
+     */
+    Integer findCustomsInfoCaseTotalBybid(@Param("b_id") Long b_id);
 }

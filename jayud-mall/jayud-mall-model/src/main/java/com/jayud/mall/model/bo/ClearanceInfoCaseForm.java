@@ -38,4 +38,7 @@ public class ClearanceInfoCaseForm extends BasePageForm{
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "订单号(order_info order_no)")
+    private String orderNo;
+
 }

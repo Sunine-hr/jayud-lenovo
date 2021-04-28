@@ -1,7 +1,5 @@
 package com.jayud.mall.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -17,14 +15,13 @@ public class CustomsInfoCaseVO {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "自增id")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "提单对应报关信息id(bill_clearance_info id)")
-    private Long fileId;
+    @ApiModelProperty(value = "提单对应报关信息id(bill_customs_info id)")
+    private Long bId;
 
-    @ApiModelProperty(value = "提单对应报关信息id(bill_clearance_info file_name)")
-    private String fileName;
+    @ApiModelProperty(value = "提单对应报关信息id(bill_customs_info file_name)")
+    private String bName;
 
     @ApiModelProperty(value = "提单id(ocean_bill id)")
     private Integer billId;

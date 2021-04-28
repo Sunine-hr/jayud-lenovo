@@ -544,10 +544,16 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         if(ObjectUtil.isEmpty(billId)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "提单id不能为空");
         }
+        OceanBillVO oceanBillVO = oceanBillMapper.findOceanBillById(Long.valueOf(billId));
+        if(ObjectUtil.isEmpty(oceanBillVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "提单不存在");
+        }
+        String billNo = oceanBillVO.getOrderId();//提单号(ocean_bill order_id)
 
         List<TemplateUrlVO> templateUrls = form.getTemplateUrls();
         String s = JSONUtil.toJsonStr(templateUrls);
         billClearanceInfo.setTemplateUrl(s);
+        billClearanceInfo.setBillNo(billNo);
         //1.保存-(提单)清关信息表
         billClearanceInfoService.saveOrUpdate(billClearanceInfo);
         Long b_id = billClearanceInfo.getId();//提单对应清关信息id(bill_clearance_info id)
@@ -561,6 +567,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         if(CollUtil.isNotEmpty(clearanceInfoCases)){
             clearanceInfoCases.forEach(clearanceInfoCase -> {
                 clearanceInfoCase.setBId(b_id);//提单对应清关信息id(bill_clearance_info id)
+                clearanceInfoCase.setBName(billClearanceInfo.getFileName());
+                clearanceInfoCase.setBillId(billId);
+                clearanceInfoCase.setBillNo(billNo);
             });
             clearanceInfoCaseService.saveOrUpdateBatch(clearanceInfoCases);
         }
@@ -576,9 +585,16 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         if(ObjectUtil.isEmpty(billId)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "提单id不能为空");
         }
+        OceanBillVO oceanBillVO = oceanBillMapper.findOceanBillById(Long.valueOf(billId));
+        if(ObjectUtil.isEmpty(oceanBillVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "提单不存在");
+        }
+        String billNo = oceanBillVO.getOrderId();//提单号(ocean_bill order_id)
+
         List<TemplateUrlVO> templateUrls = form.getTemplateUrls();
         String s = JSONUtil.toJsonStr(templateUrls);
         billCustomsInfo.setTemplateUrl(s);
+        billCustomsInfo.setBillNo(billNo);
         //1.保存-(提单)报关信息表
         billCustomsInfoService.saveOrUpdate(billCustomsInfo);
         Long b_id = billCustomsInfo.getId();//提单对应报关信息id(bill_customs_info id)
@@ -592,6 +608,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             List<CustomsInfoCase> customsInfoCases = ConvertUtil.convertList(customsInfoCaseForms, CustomsInfoCase.class);
             customsInfoCases.forEach(customsInfoCase -> {
                 customsInfoCase.setBId(b_id);//提单对应报关信息id(bill_customs_info id)
+                customsInfoCase.setBName(billCustomsInfo.getFileName());
+                customsInfoCase.setBillId(billId);
+                customsInfoCase.setBillNo(billNo);
             });
             customsInfoCaseService.saveOrUpdateBatch(customsInfoCases);
         }
@@ -725,10 +744,22 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         if(ObjectUtil.isEmpty(counterId)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "柜子id不能为空");
         }
+        OceanCounter oceanCounter = oceanCounterService.getById(counterId);
+        if(ObjectUtil.isEmpty(oceanCounter)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "柜子不存在");
+        }
+        Long billId = oceanCounter.getObId();//提单id
+        String cntrNo = oceanCounter.getCntrNo();//柜号(ocean_counter cntr_no)
+        OceanBillVO oceanBillVO = oceanBillMapper.findOceanBillById(Long.valueOf(billId));
+        if(ObjectUtil.isEmpty(oceanBillVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "提单不存在");
+        }
+        String billNo = oceanBillVO.getOrderId();//提单号(ocean_bill order_id)
+
         List<TemplateUrlVO> templateUrls = form.getTemplateUrls();
         String s = JSONUtil.toJsonStr(templateUrls);
         counterListInfo.setTemplateUrl(s);
-
+        counterListInfo.setCntrNo(cntrNo);
         //1.保存-柜子清单信息表
         counterListInfoService.saveOrUpdate(counterListInfo);
         Long b_id = counterListInfo.getId();//柜子清单信息表(counter_list_info id)
@@ -742,6 +773,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         if(CollUtil.isNotEmpty(counterCaseInfos)){
             counterCaseInfos.forEach(counterCaseInfo -> {
                 counterCaseInfo.setBId(b_id);//提单对应清关信息id(bill_clearance_info id)
+                counterCaseInfo.setBName(counterListInfo.getFileName());
+                counterCaseInfo.setBillId(billId.intValue());
+                counterCaseInfo.setBillNo(billNo);
             });
             counterCaseInfoService.saveOrUpdateBatch(counterCaseInfos);
         }

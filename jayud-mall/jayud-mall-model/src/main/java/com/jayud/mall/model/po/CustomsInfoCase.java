@@ -34,7 +34,7 @@ public class CustomsInfoCase extends Model<CustomsInfoCase> {
     private Long bId;
 
     @ApiModelProperty(value = "提单对应报关信息id(bill_customs_info file_name)")
-    private String fileName;
+    private String bName;
 
     @ApiModelProperty(value = "提单id(ocean_bill id)")
     private Integer billId;

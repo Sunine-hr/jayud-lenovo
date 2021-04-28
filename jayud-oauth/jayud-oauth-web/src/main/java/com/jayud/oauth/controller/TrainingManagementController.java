@@ -53,6 +53,12 @@ public class TrainingManagementController {
     @PostMapping(value = "/findByPage")
     public CommonResult<CommonPageResult<TrainingManagementVO>> findByPage(@RequestBody QueryTrainingManagementFrom form) {
         IPage<TrainingManagementVO> list = this.trainingManagementService.findByPage(form);
+        Object url = fileClient.getBaseUrl().getData();
+        for (TrainingManagementVO record : list.getRecords()) {
+            record.setFileViewList(StringUtils.getFileViews(record.getFilePath(),
+                    record.getFileName(), url.toString()));
+        }
+
         return CommonResult.success(new CommonPageResult<>(list));
     }
 
@@ -65,9 +71,11 @@ public class TrainingManagementController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         TrainingManagement trainingManagement = this.trainingManagementService.getById(id);
+
         TrainingManagementVO trainingManagementVO = ConvertUtil.convert(trainingManagement, TrainingManagementVO.class);
+
         Object url = fileClient.getBaseUrl().getData();
-        trainingManagementVO.setFileViewList(StringUtils.getFileViews(trainingManagement.getFilePath(),
+        trainingManagementVO.assembleTrainees(trainingManagement.getTrainees()).setFileViewList(StringUtils.getFileViews(trainingManagement.getFilePath(),
                 trainingManagement.getFileName(), url.toString()));
 
         return CommonResult.success(trainingManagementVO);

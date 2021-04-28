@@ -73,8 +73,4 @@ public class TrainingManagement extends Model<TrainingManagement> {
         return this.id;
     }
 
-    public static void main(String[] args) {
-        System.out.println(Utilities.printFieldsInfo(TrainingManagement.class));
-    }
-
 }

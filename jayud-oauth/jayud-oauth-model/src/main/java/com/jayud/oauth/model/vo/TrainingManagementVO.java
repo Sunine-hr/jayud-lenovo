@@ -2,6 +2,7 @@ package com.jayud.oauth.model.vo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.Utilities;
 import io.swagger.annotations.ApiModel;
@@ -39,11 +40,11 @@ public class TrainingManagementVO extends Model<TrainingManagementVO> {
     private String subject;
 
     @ApiModelProperty(value = "培训开始时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime trainingStartTime;
 
     @ApiModelProperty(value = "培训结束时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime trainingEndTime;
 
     @ApiModelProperty(value = "培训地点")
@@ -53,13 +54,15 @@ public class TrainingManagementVO extends Model<TrainingManagementVO> {
     private String content;
 
     @ApiModelProperty(value = "培训对象(多个对象隔开)")
-    private List<String> trainees;
+    private List<Integer> trainees;
 
-//    @ApiModelProperty(value = "附件路径(多个逗号隔开)")
-//    private String filePath;
-//
-//    @ApiModelProperty(value = "附件名字(多个逗号隔开)")
-//    private String fileName;
+    @ApiModelProperty(value = "附件路径(多个逗号隔开)")
+    @JsonIgnore
+    private String filePath;
+
+    @ApiModelProperty(value = "附件名字(多个逗号隔开)")
+    @JsonIgnore
+    private String fileName;
 
     @ApiModelProperty(value = "附件")
     private List<FileView> fileViewList;
@@ -68,14 +71,14 @@ public class TrainingManagementVO extends Model<TrainingManagementVO> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime updateTime;
 
 
@@ -84,10 +87,14 @@ public class TrainingManagementVO extends Model<TrainingManagementVO> {
         return this.id;
     }
 
-
-    public void setTrainees(String trainees) {
+    public TrainingManagementVO assembleTrainees(String trainees) {
         String[] split = trainees.split(",");
-        this.trainees = Arrays.asList(split);
+        List<Integer> list = new ArrayList<>(split.length);
+        for (String str : split) {
+            list.add(Integer.valueOf(str));
+        }
+        this.trainees = list;
+        return this;
     }
 
 

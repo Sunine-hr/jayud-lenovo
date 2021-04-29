@@ -311,10 +311,10 @@ public class OrderInfoVO {
             this.billingState = 2;
         }
         if (receivableCost.compareTo(paymentCost) > 0) {
-            this.billingState = 3;
+            this.billingState = 1;
         }
         if (receivableCost.compareTo(paymentCost) < 0) {
-            this.billingState = 1;
+            this.billingState = 3;
         }
     }
 }

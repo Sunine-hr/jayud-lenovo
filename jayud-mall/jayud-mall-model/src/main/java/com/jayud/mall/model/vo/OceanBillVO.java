@@ -75,6 +75,12 @@ public class OceanBillVO {
     @JSONField(ordinal = 14)
     private String userName;
 
+    @ApiModelProperty(value = "提单名称")
+    private String billName;
+
+    @ApiModelProperty(value = "提单备注")
+    private String billRemark;
+
     /*关联信息*/
     @ApiModelProperty(value = "运输方式名称", position = 15)
     private String tname;

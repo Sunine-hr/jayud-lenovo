@@ -88,6 +88,12 @@ public class OceanBillForm {
     @JSONField(ordinal = 14)
     private String userName;
 
+    @ApiModelProperty(value = "提单名称")
+    private String billName;
+
+    @ApiModelProperty(value = "提单备注")
+    private String billRemark;
+
     //1提单对应1货柜，(PS:之前是1提单对应N货柜，现在还是用list，不改了，限制list的大小为1)
     @ApiModelProperty(value = "提单对应货柜信息list(PS:之前是1提单对应N货柜，现在还是用list，不改了，限制list的大小为1)", position = 15, required = true)
     @JSONField(ordinal = 15)

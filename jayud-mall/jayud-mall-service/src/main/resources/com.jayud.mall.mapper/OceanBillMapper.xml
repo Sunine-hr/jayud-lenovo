@@ -24,7 +24,7 @@
     <select id="findOceanBillByPage" parameterType="com.jayud.mall.model.bo.QueryOceanBillForm"
             resultType="com.jayud.mall.model.vo.OceanBillVO" >
         select
-        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,
+        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,t.bill_name,t.bill_remark,
         t1.code_name tname,
         t2.company_name supplierName,
         t3.code_name startName,
@@ -65,7 +65,7 @@
 
     <select id="billLadingCost" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OceanBillVO">
         select
-            t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,
+            t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,t.bill_name,t.bill_remark,
             t1.code_name tname,
             t2.company_name supplierName,
             t3.code_name startName,
@@ -110,7 +110,7 @@
 
     <select id="findOceanBillById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OceanBillVO">
         select
-        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,
+        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,t.bill_name,t.bill_remark,
         t1.code_name tname,
         t2.company_name supplierName,
         t3.code_name startName,
@@ -231,7 +231,7 @@
     </select>
 
     <select id="findOrderConfByBillId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderConfVO">
-        select t.id,t.order_no,t.tid,t.destination_country_code,t.status,t.user_id,t.user_name,t.create_time
+        select t.id,t.order_no,t.tid,t.destination_country_code,t.status,t.user_id,t.user_name,t.create_time,t.conf_name,t.remark
         from order_conf t
         join ocean_conf_detail t1 on t1.order_id = t.id and t1.types = 2
         where t1.id_code = #{billId}

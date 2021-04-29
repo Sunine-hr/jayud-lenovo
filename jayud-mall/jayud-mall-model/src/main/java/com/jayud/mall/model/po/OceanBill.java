@@ -89,6 +89,12 @@ public class OceanBill extends Model<OceanBill> {
     @JSONField(ordinal = 14)
     private String userName;
 
+    @ApiModelProperty(value = "提单名称")
+    private String billName;
+
+    @ApiModelProperty(value = "提单备注")
+    private String billRemark;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

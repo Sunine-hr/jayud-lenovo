@@ -30,6 +30,7 @@ public interface IOceanBillService extends IService<OceanBill> {
      * 保存提单信息
      * @param form
      */
+    @Deprecated
     CommonResult<OceanBillVO> saveOceanBill(OceanBillForm form);
 
     /**

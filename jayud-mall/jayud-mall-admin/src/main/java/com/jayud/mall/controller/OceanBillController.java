@@ -40,6 +40,7 @@ public class OceanBillController {
     @ApiOperation(value = "保存提单信息")
     @PostMapping("/saveOceanBill")
     @ApiOperationSupport(order = 2)
+    @Deprecated //新街口 -> saveOceanBillByConf
     public CommonResult<OceanBillVO> saveOceanBill(@Valid @RequestBody OceanBillForm form){
         return oceanBillService.saveOceanBill(form);
     }
@@ -265,6 +266,14 @@ public class OceanBillController {
         Long id = form.getId();
         List<CounterListInfoVO> counterListInfoVOS = oceanBillService.findCounterListInfoByCounterId(id);
         return CommonResult.success(counterListInfoVOS);
+    }
+
+    @ApiOperation(value = "创建虚拟提单号")
+    @PostMapping("/createVirtualOrderId")
+    @ApiOperationSupport(order = 28)
+    public CommonResult<String> createVirtualOrderId(){
+        String orderId = String.valueOf(System.currentTimeMillis());
+        return CommonResult.success(orderId);
     }
 
 

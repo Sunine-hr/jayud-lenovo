@@ -142,6 +142,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @Deprecated
     public CommonResult<OceanBillVO> saveOceanBill(OceanBillForm form) {
         //1.保存提单
         OceanBill oceanBill = ConvertUtil.convert(form, OceanBill.class);
@@ -152,7 +153,6 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             oceanBill.setUserName(user.getName());
             oceanBill.setCreateTime(LocalDateTime.now());
         }
-
         this.saveOrUpdate(oceanBill);
         Long obId = oceanBill.getId();//提单id
         List<OceanCounterForm> oceanCounterForms = form.getOceanCounterForms();
@@ -454,10 +454,27 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         OceanBill oceanBill = ConvertUtil.convert(form, OceanBill.class);
         Long id = oceanBill.getId();
         if (ObjectUtil.isEmpty(id)){
+            //新增
+            QueryWrapper<OceanBill> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("order_id", oceanBill.getOrderId());
+            List<OceanBill> list = this.list(queryWrapper);
+            if(CollUtil.isNotEmpty(list)){
+                return CommonResult.error(-1, "提单号重复");
+            }
+
             AuthUser user = baseService.getUser();
             oceanBill.setUserId(user.getId().intValue());
             oceanBill.setUserName(user.getName());
             oceanBill.setCreateTime(LocalDateTime.now());
+        }else{
+            //修改
+            QueryWrapper<OceanBill> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("order_id", oceanBill.getOrderId());
+            queryWrapper.ne("id", id);
+            List<OceanBill> list = this.list(queryWrapper);
+            if(CollUtil.isNotEmpty(list)){
+                return CommonResult.error(-1, "提单号重复");
+            }
         }
 
         this.saveOrUpdate(oceanBill);

@@ -1,22 +1,33 @@
 package com.jayud.mall.controller;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.*;
+import com.jayud.mall.service.IBillClearanceInfoService;
+import com.jayud.mall.service.IBillCustomsInfoService;
+import com.jayud.mall.service.ICounterListInfoService;
 import com.jayud.mall.service.IOceanBillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSupport;
 import io.swagger.annotations.ApiSort;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.List;
 
 @RestController
@@ -27,6 +38,12 @@ public class OceanBillController {
 
     @Autowired
     IOceanBillService oceanBillService;
+    @Autowired
+    IBillClearanceInfoService billClearanceInfoService;
+    @Autowired
+    IBillCustomsInfoService billCustomsInfoService;
+    @Autowired
+    ICounterListInfoService counterListInfoService;
 
     @ApiOperation(value = "分页查询提单信息")
     @PostMapping("/findOceanBillByPage")
@@ -274,6 +291,133 @@ public class OceanBillController {
     public CommonResult<String> createVirtualOrderId(){
         String orderId = String.valueOf(System.currentTimeMillis());
         return CommonResult.success(orderId);
+    }
+
+    //导出清单
+
+    //导出清单-清关箱子
+    //exportClearanceInfoCase
+    @ApiOperation(value = "导出清单-清关箱子")
+    @ApiOperationSupport(order = 29)
+    @RequestMapping(value = "/exportClearanceInfoCase", method = RequestMethod.GET)
+    @ResponseBody
+    public void exportClearanceInfoCase(HttpServletResponse response, @Valid @RequestBody BillCustomsInfoIdForm form) throws IOException {
+        Long b_id = form.getId();//b_id 提单对应报关信息id(bill_customs_info id)
+        List<ClearanceInfoCaseExcelVO> rows = billClearanceInfoService.findClearanceInfoCaseBybid(b_id);
+        if(CollUtil.isNotEmpty(rows)){
+            ExcelWriter writer = ExcelUtil.getWriter(true);
+            writer.getStyleSet().setAlign(HorizontalAlignment.LEFT, VerticalAlignment.CENTER); //水平左对齐，垂直中间对齐
+            writer.setColumnWidth(0, 40); //第1列40px宽
+            writer.setColumnWidth(1, 15); //第2列15px 宽
+            writer.setColumnWidth(2, 30); //第3列15px 宽
+            writer.setColumnWidth(3, 30); //第4列15px 宽
+
+            //自定义标题别名
+            writer.addHeaderAlias("bName", "文件名称");
+            writer.addHeaderAlias("billNo", "提单号");
+            writer.addHeaderAlias("cartonNo", "箱号");
+            writer.addHeaderAlias("orderNo", "订单号");
+            Field[] s = ClearanceInfoCaseExcelVO.class.getDeclaredFields();
+            int lastColumn = s.length-1;
+            // 合并单元格后的标题行，使用默认标题样式
+            writer.merge(lastColumn, "导出清单-清关箱子");
+            // 一次性写出内容，使用默认样式，强制输出标题
+            writer.write(rows, true);
+            //out为OutputStream，需要写出到的目标流
+
+            ServletOutputStream out=response.getOutputStream();
+            String name = StringUtils.toUtf8String("导出清单-清关箱子");
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+            response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+            writer.flush(out);
+            writer.close();
+            IoUtil.close(out);
+        }
+
+    }
+
+
+    //导出清单-报关箱子
+    //exportCustomsInfoCase
+    @ApiOperation(value = "导出清单-报关箱子")
+    @ApiOperationSupport(order = 30)
+    @RequestMapping(value = "/exportCustomsInfoCase", method = RequestMethod.GET)
+    @ResponseBody
+    public void exportCustomsInfoCase(HttpServletResponse response, @Valid @RequestBody BillCustomsInfoIdForm form) throws IOException {
+        Long b_id = form.getId();//b_id 提单对应报关信息id(bill_customs_info id)
+        List<CustomsInfoCaseExcelVO> rows = billCustomsInfoService.findCustomsInfoCaseBybid(b_id);
+        if(CollUtil.isNotEmpty(rows)){
+            ExcelWriter writer = ExcelUtil.getWriter(true);
+            writer.getStyleSet().setAlign(HorizontalAlignment.LEFT, VerticalAlignment.CENTER); //水平左对齐，垂直中间对齐
+            writer.setColumnWidth(0, 40); //第1列40px宽
+            writer.setColumnWidth(1, 15); //第2列15px 宽
+            writer.setColumnWidth(2, 30); //第3列15px 宽
+            writer.setColumnWidth(3, 30); //第4列15px 宽
+
+            //自定义标题别名
+            writer.addHeaderAlias("bName", "文件名称");
+            writer.addHeaderAlias("billNo", "提单号");
+            writer.addHeaderAlias("cartonNo", "箱号");
+            writer.addHeaderAlias("orderNo", "订单号");
+            Field[] s = ClearanceInfoCaseExcelVO.class.getDeclaredFields();
+            int lastColumn = s.length-1;
+            // 合并单元格后的标题行，使用默认标题样式
+            writer.merge(lastColumn, "导出清单-报关箱子");
+            // 一次性写出内容，使用默认样式，强制输出标题
+            writer.write(rows, true);
+            //out为OutputStream，需要写出到的目标流
+
+            ServletOutputStream out=response.getOutputStream();
+            String name = StringUtils.toUtf8String("导出清单-报关箱子");
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+            response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+            writer.flush(out);
+            writer.close();
+            IoUtil.close(out);
+        }
+
+    }
+
+
+    //导出清单-柜子清单箱子
+    //exportCounterCaseInfo
+    @ApiOperation(value = "导出清单-柜子清单箱子")
+    @ApiOperationSupport(order = 30)
+    @RequestMapping(value = "/exportCounterCaseInfo", method = RequestMethod.GET)
+    @ResponseBody
+    public void exportCounterCaseInfo(HttpServletResponse response, @Valid @RequestBody CounterListInfoIdForm form) throws IOException {
+        Long b_id = form.getId();//b_id 柜子清单信息表(counter_list_info id)
+        List<CounterCaseInfoExcelVO> rows = counterListInfoService.findCounterCaseInfoBybid(b_id);
+        if(CollUtil.isNotEmpty(rows)){
+            ExcelWriter writer = ExcelUtil.getWriter(true);
+            writer.getStyleSet().setAlign(HorizontalAlignment.LEFT, VerticalAlignment.CENTER); //水平左对齐，垂直中间对齐
+            writer.setColumnWidth(0, 40); //第1列40px宽
+            writer.setColumnWidth(1, 15); //第2列15px 宽
+            writer.setColumnWidth(2, 30); //第3列15px 宽
+            writer.setColumnWidth(3, 30); //第4列15px 宽
+
+            //自定义标题别名
+            writer.addHeaderAlias("bName", "文件名称");
+            writer.addHeaderAlias("billNo", "提单号");
+            writer.addHeaderAlias("cartonNo", "箱号");
+            writer.addHeaderAlias("orderNo", "订单号");
+            Field[] s = ClearanceInfoCaseExcelVO.class.getDeclaredFields();
+            int lastColumn = s.length-1;
+            // 合并单元格后的标题行，使用默认标题样式
+            writer.merge(lastColumn, "导出清单-柜子清单箱子");
+            // 一次性写出内容，使用默认样式，强制输出标题
+            writer.write(rows, true);
+            //out为OutputStream，需要写出到的目标流
+
+            ServletOutputStream out=response.getOutputStream();
+            String name = StringUtils.toUtf8String("导出清单-柜子清单箱子");
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+            response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
+            writer.flush(out);
+            writer.close();
+            IoUtil.close(out);
+        }
+
     }
 
 

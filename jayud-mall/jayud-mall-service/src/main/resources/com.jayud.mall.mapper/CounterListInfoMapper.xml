@@ -48,4 +48,11 @@
         select count(*) total from counter_case_info where b_id=#{b_id}
     </select>
 
+    <select id="findCounterCaseInfoBybid" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterCaseInfoExcelVO">
+        select
+            t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.case_id,t.carton_no,t.create_time,t.order_no
+        from counter_case_info t
+        where t.b_id = #{b_id}
+    </select>
+
 </mapper>

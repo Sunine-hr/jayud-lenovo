@@ -2,6 +2,7 @@ package com.jayud.mall.mapper;
 
 import com.jayud.mall.model.po.CounterListInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.vo.CounterCaseInfoExcelVO;
 import com.jayud.mall.model.vo.CounterCaseInfoVO;
 import com.jayud.mall.model.vo.CounterListInfoVO;
 import org.apache.ibatis.annotations.Param;
@@ -47,4 +48,11 @@ public interface CounterListInfoMapper extends BaseMapper<CounterListInfo> {
      * @return
      */
     Integer findCounterCaseInfoTotalBybid(@Param("b_id") Long b_id);
+
+    /**
+     * 导出清单-柜子清单箱子
+     * @param b_id
+     * @return
+     */
+    List<CounterCaseInfoExcelVO> findCounterCaseInfoBybid(@Param("b_id") Long b_id);
 }

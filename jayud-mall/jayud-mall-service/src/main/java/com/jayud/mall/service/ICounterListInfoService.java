@@ -2,6 +2,7 @@ package com.jayud.mall.service;
 
 import com.jayud.mall.model.po.CounterListInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.CounterCaseInfoExcelVO;
 import com.jayud.mall.model.vo.CounterCaseInfoVO;
 import com.jayud.mall.model.vo.CounterListInfoVO;
 
@@ -30,4 +31,11 @@ public interface ICounterListInfoService extends IService<CounterListInfo> {
      * @return
      */
     List<CounterCaseInfoVO> findCounterCaseInfo(Long b_id);
+
+    /**
+     * 导出清单-柜子清单箱子
+     * @param b_id
+     * @return
+     */
+    List<CounterCaseInfoExcelVO> findCounterCaseInfoBybid(Long b_id);
 }

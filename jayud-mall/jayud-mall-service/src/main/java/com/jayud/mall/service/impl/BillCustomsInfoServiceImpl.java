@@ -3,6 +3,7 @@ package com.jayud.mall.service.impl;
 import com.jayud.mall.model.po.BillCustomsInfo;
 import com.jayud.mall.mapper.BillCustomsInfoMapper;
 import com.jayud.mall.model.vo.BillCustomsInfoVO;
+import com.jayud.mall.model.vo.CustomsInfoCaseExcelVO;
 import com.jayud.mall.model.vo.CustomsInfoCaseVO;
 import com.jayud.mall.service.IBillCustomsInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -34,4 +35,11 @@ public class BillCustomsInfoServiceImpl extends ServiceImpl<BillCustomsInfoMappe
     public BillCustomsInfoVO findBillCustomsInfoById(Long id) {
         return billCustomsInfoMapper.findBillCustomsInfoById(id);
     }
+
+    @Override
+    public List<CustomsInfoCaseExcelVO> findCustomsInfoCaseBybid(Long b_id) {
+        List<CustomsInfoCaseExcelVO> customsInfoCaseExcelVOS = billCustomsInfoMapper.findCustomsInfoCaseBybid(b_id);
+        return customsInfoCaseExcelVOS;
+    }
+
 }

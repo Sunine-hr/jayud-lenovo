@@ -40,5 +40,13 @@
         select count(*) total from customs_info_case where b_id = #{b_id}
     </select>
 
+    <select id="findCustomsInfoCaseBybid" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CustomsInfoCaseExcelVO">
+        select
+            t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.case_id,t.carton_no,t.create_time,t.order_no
+        from customs_info_case t
+        where t.b_id = #{b_id}
+
+    </select>
+
 
 </mapper>

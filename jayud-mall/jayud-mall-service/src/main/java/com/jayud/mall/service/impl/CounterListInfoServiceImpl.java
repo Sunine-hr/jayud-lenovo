@@ -2,6 +2,7 @@ package com.jayud.mall.service.impl;
 
 import com.jayud.mall.model.po.CounterListInfo;
 import com.jayud.mall.mapper.CounterListInfoMapper;
+import com.jayud.mall.model.vo.CounterCaseInfoExcelVO;
 import com.jayud.mall.model.vo.CounterCaseInfoVO;
 import com.jayud.mall.model.vo.CounterListInfoVO;
 import com.jayud.mall.service.ICounterListInfoService;
@@ -33,5 +34,11 @@ public class CounterListInfoServiceImpl extends ServiceImpl<CounterListInfoMappe
     @Override
     public List<CounterCaseInfoVO> findCounterCaseInfo(Long b_id) {
         return counterListInfoMapper.findCounterCaseInfo(b_id);
+    }
+
+    @Override
+    public List<CounterCaseInfoExcelVO> findCounterCaseInfoBybid(Long b_id) {
+        List<CounterCaseInfoExcelVO> counterCaseInfoExcelVOS = counterListInfoMapper.findCounterCaseInfoBybid(b_id);
+        return counterCaseInfoExcelVOS;
     }
 }

@@ -591,7 +591,7 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                     customerGoods.setIsSensitive("0");//是否敏感货物，1是0否，默认为0
                     customerGoods.setTypes(1);//商品类型(1普货 2特货)
                     customerGoods.setStatus(0);//审核状态代码：1-审核通过，0-等待审核，-1-审核不通过
-                    customerGoods.setRemark("新智慧同步商品");//备注
+                    customerGoods.setRemark("原系统同步商品");//备注
                     customerGoodsService.saveOrUpdate(customerGoods);
                     Integer goodId = customerGoods.getId();
                     OrderShop orderShop = new OrderShop();

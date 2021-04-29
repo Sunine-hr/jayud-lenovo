@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.BillClearanceInfoForm;
 import com.jayud.mall.model.po.BillClearanceInfo;
 import com.jayud.mall.model.vo.BillClearanceInfoVO;
+import com.jayud.mall.model.vo.ClearanceInfoCaseExcelVO;
 import com.jayud.mall.model.vo.ClearanceInfoCaseVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -69,4 +70,11 @@ public interface BillClearanceInfoMapper extends BaseMapper<BillClearanceInfo> {
      * @return
      */
     Integer findClearanceInfoCaseTotalBybid(@Param("b_id") Long b_id);
+
+    /**
+     * 导出清单-清关箱子
+     * @param b_id
+     * @return
+     */
+    List<ClearanceInfoCaseExcelVO> findClearanceInfoCaseBybid(@Param("b_id") Long b_id);
 }

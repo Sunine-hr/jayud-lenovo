@@ -167,7 +167,7 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
                 String status = String.valueOf(orderReceivableCost.getStatus());
                 if (OrderStatusEnum.COST_0.getCode().equals(status) ||
                         OrderStatusEnum.COST_1.getCode().equals(status)) {
-                    str = "已录单-" + approvedAmount;
+                    str = "已录入-" + approvedAmount;
                 }
                 if (OrderStatusEnum.COST_2.getCode().equals(status)) {
                     ++submited;
@@ -183,7 +183,7 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
             } else if (audited > 0 && str.length() == 0) {
                 map.put(k, "已审核-" + approvedAmount);
             } else if (str.length() == 0) {
-                map.put(k, "未录单-" + approvedAmount);
+                map.put(k, "未录入-" + approvedAmount);
             } else {
                 map.put(k, str);
             }

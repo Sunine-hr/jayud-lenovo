@@ -1243,7 +1243,7 @@ public class ExternalApiController {
     @ApiOperation("根据订单号删除订单地址")
     @RequestMapping(value = "/api/deleteOrderAddressByBusOrders")
     public ApiResult deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
-                                                                       @RequestParam("businessType") Integer businessType) {
+                                                   @RequestParam("businessType") Integer businessType) {
         //查询订单地址信息
         this.orderAddressService.deleteOrderAddressByBusOrders(orderNo, businessType);
         return ApiResult.ok();
@@ -1253,7 +1253,7 @@ public class ExternalApiController {
     @ApiOperation("根据订单号删除商品信息")
     @RequestMapping(value = "/api/deleteGoodsByBusOrders")
     public ApiResult deleteGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
-                                                         @RequestParam("businessType") Integer businessType) {
+                                            @RequestParam("businessType") Integer businessType) {
         //查询商品信息
         this.goodsService.deleteGoodsByBusOrders(orderNo, businessType);
         return ApiResult.ok();
@@ -1308,6 +1308,20 @@ public class ExternalApiController {
 
         return ApiResult.ok(map);
     }
+
+
+    /**
+     * 应收/应付费用状态
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostStatus")
+    public ApiResult<Map<String, Object>> getCostStatus(@RequestParam(value = "mainOrderNos", required = false) List<String> mainOrderNos,
+                                                        @RequestParam(value = "orderNos", required = false) List<String> orderNos) {
+        Map<String, Object> costStatus = this.orderInfoService.getCostStatus(mainOrderNos, orderNos);
+        return ApiResult.ok(costStatus);
+    }
+
 }
 
 

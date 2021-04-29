@@ -38,11 +38,11 @@ public class QueryTrainingManagementFrom extends BasePageForm{
     private String subject;
 
     @ApiModelProperty(value = "培训开始时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime trainingStartTime;
 
     @ApiModelProperty(value = "培训结束时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime trainingEndTime;
 
 

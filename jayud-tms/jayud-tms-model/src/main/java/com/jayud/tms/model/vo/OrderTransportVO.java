@@ -1,6 +1,7 @@
 package com.jayud.tms.model.vo;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.MapUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.FileView;
@@ -11,6 +12,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class OrderTransportVO {
@@ -195,6 +197,12 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "主订单备注")
     private String mainOrderRemarks;
 
+    @ApiModelProperty(value = "应收费用状态")
+    private String receivableCostStatus;
+
+    @ApiModelProperty(value = "应付费用状态")
+    private String paymentCostStatus;
+
 //    public String getEntireAddress1() {
 ////        String stateName1 = this.stateName1;
 ////        String cityName1 = this.cityName1;
@@ -343,5 +351,29 @@ public class OrderTransportVO {
         this.entireAddress1 = pickUpAddr.toString();
         this.entireAddress2 = deliveryAddr.toString();
         this.takeTimeStr = takeTimeStr.toString();
+    }
+
+    public void assemblyCostStatus(Map<String, Object> costStatus) {
+        if (CollectionUtil.isEmpty(costStatus)) return;
+
+        Map<String, Object> receivableCostStatus = (Map<String, Object>) costStatus.get("receivableCostStatus");
+        Map<String, Object> paymentCostStatus = (Map<String, Object>) costStatus.get("paymentCostStatus");
+
+        String receivableStatusDesc = MapUtil.getStr(receivableCostStatus, orderNo);
+        String paymentStatusDesc = MapUtil.getStr(paymentCostStatus, orderNo);
+
+        if (!StringUtils.isEmpty(receivableStatusDesc)) {
+            String[] split = receivableStatusDesc.split("-");
+            this.receivableCostStatus = split[0];
+        } else {
+            this.receivableCostStatus = "未录入";
+        }
+
+        if (!StringUtils.isEmpty(paymentStatusDesc)) {
+            String[] split = paymentStatusDesc.split("-");
+            this.paymentCostStatus = split[0];
+        } else {
+            this.paymentCostStatus = "未录入";
+        }
     }
 }

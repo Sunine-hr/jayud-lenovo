@@ -208,9 +208,9 @@ public class AddBusinessDevEvaluationForm extends Model<AddBusinessDevEvaluation
         if (StringUtils.isEmpty(legal)) {
             throw new JayudBizException(400, "法人代表不能为空");
         }
-//        if (setYear == null) {
-//            throw new JayudBizException(400, "成立年份不能为空");
-//        }
+        if (setYear == null) {
+            throw new JayudBizException(400, "成立年份不能为空");
+        }
         if (StringUtils.isEmpty(creditCode)) {
             throw new JayudBizException(400, "社会信用代码不能为空");
         }
@@ -220,9 +220,9 @@ public class AddBusinessDevEvaluationForm extends Model<AddBusinessDevEvaluation
         if (registeredCapital == null) {
             throw new JayudBizException(400, "注册资金不能为空");
         }
-        if (StringUtils.isEmpty(authentication)) {
-            throw new JayudBizException(400, "通过何种认证不能为空");
-        }
+//        if (StringUtils.isEmpty(authentication)) {
+//            throw new JayudBizException(400, "通过何种认证不能为空");
+//        }
         if (StringUtils.isEmpty(registeredAddress)) {
             throw new JayudBizException(400, "注册地址不能为空");
         }
@@ -235,18 +235,18 @@ public class AddBusinessDevEvaluationForm extends Model<AddBusinessDevEvaluation
         if (StringUtils.isEmpty(source)) {
             throw new JayudBizException(400, "商业伙伴来源不能为空");
         }
-        if (number == null) {
-            throw new JayudBizException(400, "年报关量不能为空");
-        }
+//        if (number == null) {
+//            throw new JayudBizException(400, "年报关量不能为空");
+//        }
         if (level == null) {
             throw new JayudBizException(400, "海关信用等级不能为空");
         }
         if (StringUtils.isEmpty(customsCode)) {
             throw new JayudBizException(400, "海关编码不能为空");
         }
-        if (StringUtils.isEmpty(port)) {
-            throw new JayudBizException(400, "进出口口岸不能为空");
-        }
+//        if (StringUtils.isEmpty(port)) {
+//            throw new JayudBizException(400, "进出口口岸不能为空");
+//        }
         if (StringUtils.isEmpty(principal)) {
             throw new JayudBizException(400, "关务负责人不能为空");
         }
@@ -256,9 +256,9 @@ public class AddBusinessDevEvaluationForm extends Model<AddBusinessDevEvaluation
 //        if (StringUtils.isEmpty(email)) {
 //            throw new JayudBizException(400, "联系邮箱不能为空");
 //        }
-        if (StringUtils.isEmpty(discussPeople)) {
-            throw new JayudBizException(400, "我司洽谈人不能为空");
-        }
+//        if (StringUtils.isEmpty(discussPeople)) {
+//            throw new JayudBizException(400, "我司洽谈人不能为空");
+//        }
 //        if (discussDate == null) {
 //            throw new JayudBizException(400, "洽谈日期不能为空");
 //        }
@@ -271,12 +271,12 @@ public class AddBusinessDevEvaluationForm extends Model<AddBusinessDevEvaluation
         if (customsCredit == null) {
             throw new JayudBizException(400, "海关征信不能为空");
         }
-        if (payment == null) {
-            throw new JayudBizException(400, "承诺付款账期(单位:天)不能为空");
-        }
-        if (StringUtils.isEmpty(isListed)) {
-            throw new JayudBizException(400, "是否为上市公司不能为空");
-        }
+//        if (payment == null) {
+//            throw new JayudBizException(400, "承诺付款账期(单位:天)不能为空");
+//        }
+//        if (StringUtils.isEmpty(isListed)) {
+//            throw new JayudBizException(400, "是否为上市公司不能为空");
+//        }
         if (StringUtils.isEmpty(faith)) {
             throw new JayudBizException(400, "法人是否被列为失信被执行人或限制消费人员不能为空");
         }

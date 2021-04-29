@@ -28,6 +28,7 @@ import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.service.*;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.httpclient.HttpStatus;
@@ -154,12 +155,15 @@ public class CustomerInfoController {
         //返回成功数据
         Map<String, Object> map = new HashMap<>();
         //开发评估报告需要参数
-        map.put("isJump", isJump);
-        map.put("customerName", form.getName());
-        map.put("enterpriseType", form.getTypes());
-        map.put("correspondenceAddress",form.getAddress());
-        map.put("level",form.getCustomsCreditRating());
-        map.put("creditCode",form.getTfn());
+        if (isMatching) {
+            map.put("isJump", isJump);
+            map.put("customerName", form.getName());
+            map.put("enterpriseType", form.getTypes());
+            map.put("correspondenceAddress", form.getAddress());
+            map.put("level", form.getCustomsCreditRating());
+            map.put("stateCredit", form.getNationalCredit());
+            map.put("customsCredit", form.getCustomsCredit());
+        }
 
         return CommonResult.success(map);
     }

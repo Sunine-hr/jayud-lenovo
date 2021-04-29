@@ -70,5 +70,5 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
      */
     List<OrderPaymentCost> getByType(List<String> orderNos, String subType);
 
-    public Map<String, Object> getOrderCostStatus(List<String> mainOrderNos, List<String> subOrderNos);
+    public Map<String, Object> getOrderCostStatus(List<String> mainOrderNos, List<String> subOrderNos, Map<String, Object> callbackParam);
 }

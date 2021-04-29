@@ -23,4 +23,8 @@ public class OrderInfoTemplate {
 
     @ApiModelProperty("海运订单信息")
     private Template<TrailerOrderTemplate> trailerOrderTemplates;
+
+
+
+
 }

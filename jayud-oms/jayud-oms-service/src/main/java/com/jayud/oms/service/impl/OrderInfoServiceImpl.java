@@ -297,11 +297,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
             List<String> mainOrderNos = orderInfoVOs.stream().map(OrderInfoVO::getOrderNo).collect(Collectors.toList());
             //费用状态
-            Map<String, Object> receivableCostStatus = this.orderReceivableCostService.getOrderCostStatus(mainOrderNos, null);
-            Map<String, Object> paymentCostStatus = this.orderPaymentCostService.getOrderCostStatus(mainOrderNos, null);
+//            Map<String, Object> receivableCostStatus = this.orderReceivableCostService.getOrderCostStatus(mainOrderNos, null);
+//            Map<String, Object> paymentCostStatus = this.orderPaymentCostService.getOrderCostStatus(mainOrderNos, null);
+            Map<String, Object> costStatus = this.getCostStatus(mainOrderNos, null);
             for (OrderInfoVO orderInfoVO : orderInfoVOs) {
                 //重组费用状态
-                orderInfoVO.assembleCostStatus(receivableCostStatus, paymentCostStatus);
+                orderInfoVO.assembleCostStatus(costStatus);
             }
 
 //            List<String> mainOrderNoList = orderInfoVOs.stream().map(OrderInfoVO::getOrderNo).collect(Collectors.toList());
@@ -1231,12 +1232,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             boolean flag = false;
             for (String string : strings) {
                 for (InputTrailerOrderFrom trailerOrderFrom : trailerOrderFroms) {
-                    if(trailerOrderFrom.getStatus()!=null && string.equals(trailerOrderFrom.getStatus())){
+                    if (trailerOrderFrom.getStatus() != null && string.equals(trailerOrderFrom.getStatus())) {
                         flag = true;
                     }
                 }
             }
-            if(flag){
+            if (flag) {
                 for (InputTrailerOrderFrom trailerOrderFrom : trailerOrderFroms) {
 
                     if (this.queryEditOrderCondition(trailerOrderFrom.getStatus(),
@@ -1253,28 +1254,28 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                                 form, trailerOrderFrom.getId(), OrderStatusEnum.getTrailerOrderProcess());
                     }
                 }
-            }else{
+            } else {
                 if (this.queryEditOrderCondition(trailerOrderFroms.get(0).getStatus(),
                         inputMainOrderForm.getStatus(), SubOrderSignEnum.TC.getSignOne(), form)) {
-                    if( trailerOrderFroms.get(0).getMainOrderNo()!=null){
+                    if (trailerOrderFroms.get(0).getMainOrderNo() != null) {
                         List<String> data = trailerClient.getOrderNosByMainOrderNo(trailerOrderFroms.get(0).getMainOrderNo()).getData();
-                        if(data!=null && data.size()>0){
-                            goodsService.deleteGoodsByBusOrders(data,BusinessTypeEnum.TC.getCode());
-                            orderAddressService.deleteOrderAddressByBusOrders(data,BusinessTypeEnum.TC.getCode());
+                        if (data != null && data.size() > 0) {
+                            goodsService.deleteGoodsByBusOrders(data, BusinessTypeEnum.TC.getCode());
+                            orderAddressService.deleteOrderAddressByBusOrders(data, BusinessTypeEnum.TC.getCode());
                             log.warn("删除商品和地址信息成功");
                         }
                     }
 
-                    if(form.getCmd().equals("preSubmit") && trailerOrderFroms.get(0).getMainOrderNo()!=null){
+                    if (form.getCmd().equals("preSubmit") && trailerOrderFroms.get(0).getMainOrderNo() != null) {
                         ApiResult result = trailerClient.deleteOrderByMainOrderNo(trailerOrderFroms.get(0).getMainOrderNo());
-                        if(result.getCode() != HttpStatus.SC_OK){
+                        if (result.getCode() != HttpStatus.SC_OK) {
                             log.warn("删除订单信息失败");
                         }
                     }
 
                     if (form.getCmd().equals("submit") && trailerOrderFroms.get(0).getStatus() != null && trailerOrderFroms.get(0).getStatus().equals("TT_0")) {
                         ApiResult result = trailerClient.deleteOrderByMainOrderNo(trailerOrderFroms.get(0).getMainOrderNo());
-                        if(result.getCode() != HttpStatus.SC_OK){
+                        if (result.getCode() != HttpStatus.SC_OK) {
                             log.warn("删除订单信息失败");
                         }
                     }
@@ -1297,7 +1298,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         //暂存，随机生成订单号
                         if (form.getCmd().equals("preSubmit")) {
 
-                            if( trailerOrderFrom.getId() == null){
+                            if (trailerOrderFrom.getId() == null) {
                                 //生成拖车订单号
                                 String orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
                                 while (true) {
@@ -1327,8 +1328,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         }
                     }
                 }
-
-
 
 
             }
@@ -1647,6 +1646,22 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         condition.lambda().in(OrderInfo::getOrderNo, orderNo)
                 .eq(OrderInfo::getStatus, status);
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 获取费用状态
+     */
+    @Override
+    public Map<String, Object> getCostStatus(List<String> mainOrderNo, List<String> subOrderNo) {
+        Map<String,Object> receivableCallbackParam=new HashMap<>();
+        Map<String,Object> paymentCallbackParam=new HashMap<>();
+
+        Map<String, Object> receivableCostStatus = this.orderReceivableCostService.getOrderCostStatus(mainOrderNo, subOrderNo, receivableCallbackParam);
+        Map<String, Object> paymentCostStatus = this.orderPaymentCostService.getOrderCostStatus(mainOrderNo, subOrderNo,paymentCallbackParam);
+        Map<String, Object> map = new HashMap<>();
+        map.put("receivableCostStatus", receivableCostStatus);
+        map.put("paymentCostStatus", paymentCostStatus);
+        return map;
     }
 
     /**

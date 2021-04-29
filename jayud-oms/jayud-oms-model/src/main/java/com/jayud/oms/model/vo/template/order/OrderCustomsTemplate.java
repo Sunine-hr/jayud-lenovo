@@ -18,7 +18,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class OrderCustomsTemplate {
+public class OrderCustomsTemplate extends BaseOrderTemplate {
 
     @ApiModelProperty(value = "报关订单id")
     private Long id;

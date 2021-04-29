@@ -14,10 +14,8 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class Utilities {
@@ -25,10 +23,15 @@ public class Utilities {
     /**
      * 组装头部信息
      */
-    public static List<Map<String, Object>> assembleEntityHead(Class clazz) {
+    public static List<Map<String, Object>> assembleEntityHead(Class clazz,Boolean isParentFields) {
         Field[] fields = clazz.getDeclaredFields();
+        ArrayList<Field> tmp = new ArrayList<Field>(Arrays.asList(fields)) ;
+        if (isParentFields){
+            Field[] parenFields = clazz.getSuperclass().getDeclaredFields();
+            tmp.addAll(Arrays.asList(parenFields));
+        }
         List<Map<String, Object>> heads = new ArrayList<>();
-        for (Field field : fields) {
+        for (Field field : tmp) {
             if (field.isAnnotationPresent(ApiModelProperty.class)) {
                 Map<String, Object> head = new HashMap<>(3);
                 ApiModelProperty annotation = field.getAnnotation(ApiModelProperty.class);

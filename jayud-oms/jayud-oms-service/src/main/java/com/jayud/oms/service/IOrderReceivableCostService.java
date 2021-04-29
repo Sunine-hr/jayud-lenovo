@@ -66,7 +66,7 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
     /**
      * 订单费用状态
      */
-    public Map<String,Object> getOrderCostStatus(List<String> mainOrderNo,List<String> subOrderNo);
+    public Map<String,Object> getOrderCostStatus(List<String> mainOrderNo,List<String> subOrderNo,Map<String,Object> callbackParam);
 
     List<OrderReceivableCost> getByType(List<String> orderNos, String subType);
 }

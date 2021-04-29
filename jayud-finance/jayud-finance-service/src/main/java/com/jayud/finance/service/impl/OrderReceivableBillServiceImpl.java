@@ -92,7 +92,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             for (OrderReceiveBillVO record : pageInfo.getRecords()) {
                 List<Map<String, Object>> maps = baseMapper.statisticsNotPaidBillInfo(true, record.getUnitCode(),
                         null, record.getLegalName(), new HashMap<>());
-                record.statisticsNotPaidBillInfo(maps,true);
+                record.statisticsNotPaidBillInfo(maps, true);
             }
         } else {
             //动态sql参数
@@ -569,7 +569,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         try {
             Class template = BillTemplateEnum.getTemplate(cmd);
             if (template != null) {
-                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template);
+                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template, false);
                 fixHeadList = Utilities.obj2List(maps, SheetHeadVO.class);
             } else {//TODO 增强不影响原有系统,除非更替完成
                 ViewBilToOrderHeadVO viewBilToOrderVO = new ViewBilToOrderHeadVO();

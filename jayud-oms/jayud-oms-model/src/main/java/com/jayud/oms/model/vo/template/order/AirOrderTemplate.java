@@ -25,7 +25,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class AirOrderTemplate {
+public class AirOrderTemplate extends BaseOrderTemplate {
 
     @ApiModelProperty(value = "空运订单主键")
     private Long id;
@@ -81,8 +81,8 @@ public class AirOrderTemplate {
     @ApiModelProperty(value = "提单号", required = true)
     private String mainNo;
 
-    @ApiModelProperty(value = "费用状态", required = true)
-    private String costDesc;
+//    @ApiModelProperty(value = "费用状态", required = true)
+//    private String costDesc;
 
     @ApiModelProperty(value = "费用状态")
     private Boolean cost;
@@ -177,12 +177,12 @@ public class AirOrderTemplate {
         this.statusDesc = OrderStatusEnum.getDesc(status);
     }
 
-    public void setCost(Boolean cost) {
-        this.cost = cost;
-        if (cost){
-            this.costDesc="是";
-        }else {
-            this.costDesc="否";
-        }
-    }
+//    public void setCost(Boolean cost) {
+//        this.cost = cost;
+//        if (cost){
+//            this.costDesc="是";
+//        }else {
+//            this.costDesc="否";
+//        }
+//    }
 }

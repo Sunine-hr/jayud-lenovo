@@ -25,7 +25,7 @@ public class Template<T> {
         Class clazz = this.getClass();
         ParameterizedType pt = (ParameterizedType) clazz.getGenericSuperclass();
         clazz = (Class) pt.getActualTypeArguments()[0];
-        this.head = Utilities.assembleEntityHead(clazz);
+        this.head = Utilities.assembleEntityHead(clazz, true);
     }
 
     public static void main(String[] args) {

@@ -29,7 +29,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class SeaOrderTemplate {
+public class SeaOrderTemplate extends BaseOrderTemplate {
 
     @ApiModelProperty(value = "海运订单主键")
     private Long orderId;
@@ -81,8 +81,8 @@ public class SeaOrderTemplate {
     @ApiModelProperty(value = "提单号",required = true)
     private String mainNo;
 
-    @ApiModelProperty(value = "费用状态", required = true)
-    private String costDesc;
+//    @ApiModelProperty(value = "费用状态", required = true)
+//    private String costDesc;
 
     @ApiModelProperty(value = "费用状态")
     private Boolean cost;
@@ -215,12 +215,12 @@ public class SeaOrderTemplate {
 
     }
 
-    public void setCost(Boolean cost) {
-        this.cost = cost;
-        if (cost){
-            this.costDesc="是";
-        }else {
-            this.costDesc="否";
-        }
-    }
+//    public void setCost(Boolean cost) {
+//        this.cost = cost;
+//        if (cost){
+//            this.costDesc="是";
+//        }else {
+//            this.costDesc="否";
+//        }
+//    }
 }

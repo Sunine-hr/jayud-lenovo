@@ -14,6 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +92,7 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
         if (SubOrderSignEnum.MAIN.getSignOne().equals(subType)) {
             condition.lambda().in(OrderPaymentCost::getMainOrderNo, orderNos)
                     .eq(OrderPaymentCost::getSubType, subType);
-        }else {
+        } else {
             condition.lambda().in(OrderPaymentCost::getOrderNo, orderNos)
                     .eq(OrderPaymentCost::getSubType, subType);
         }
@@ -102,7 +103,8 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
 
 
     @Override
-    public Map<String, Object> getOrderCostStatus(List<String> mainOrderNos, List<String> subOrderNos) {
+    public Map<String, Object> getOrderCostStatus(List<String> mainOrderNos, List<String> subOrderNos,
+                                                  Map<String, Object> callbackParam) {
 
         /**
          * 已录单:当数据库存在费用,并且金额不为0状态,就为已录单状态
@@ -117,6 +119,7 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
         //根据子订单查询费用
         List<OrderPaymentCost> paymentCosts = null;
         Map<String, List<OrderPaymentCost>> group = null;
+
         if (org.apache.commons.collections.CollectionUtils.isNotEmpty(mainOrderNos)) {
             QueryWrapper<OrderPaymentCost> condition = new QueryWrapper<>();
             condition.lambda().in(OrderPaymentCost::getMainOrderNo, mainOrderNos)
@@ -151,30 +154,32 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
             int submited = 0;
             int audited = 0;
             String str = "";
+            BigDecimal approvedAmount = new BigDecimal(0);
             for (OrderPaymentCost paymentCost : v) {
                 String status = String.valueOf(paymentCost.getStatus());
                 if (OrderStatusEnum.COST_0.getCode().equals(status) ||
                         OrderStatusEnum.COST_1.getCode().equals(status)) {
-                    str = "已录单";
-                    break;
+                    str = "已录单-" + approvedAmount;
                 }
                 if (OrderStatusEnum.COST_2.getCode().equals(status)) {
                     ++submited;
                 }
                 if (OrderStatusEnum.COST_3.getCode().equals(status)) {
                     ++audited;
+                    approvedAmount = approvedAmount.add(paymentCost.getChangeAmount());
                 }
             }
             if (submited > 0 && str.length() == 0) {
-                map.put(k, "已提交");
+                map.put(k, "已提交-" + approvedAmount);
             } else if (audited > 0 && str.length() == 0) {
-                map.put(k, "已审核");
+                map.put(k, "已审核-" + approvedAmount);
             } else if (str.length() == 0) {
-                map.put(k, "未录单");
+                map.put(k, "未录单-" + approvedAmount);
             } else {
                 map.put(k, str);
             }
-
+            //回滚参数
+            callbackParam.put(k,v);
         });
         return map;
     }

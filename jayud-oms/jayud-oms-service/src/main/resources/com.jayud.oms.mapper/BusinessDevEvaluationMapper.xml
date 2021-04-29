@@ -86,7 +86,7 @@
             </if>
             <if test="form.orderStatus != null">
                 <if test="form.orderStatus == 2">
-                    and create_time <![CDATA[>=]]> date_add(evaluation_date, interval 11 month)
+                    and create_time <![CDATA[>=]]> date_add(create_time, interval 11 month)
                     and create_time <![CDATA[<]]> expires_time
                 </if>
                 <if test="form.orderStatus == 3">

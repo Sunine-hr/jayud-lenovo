@@ -530,9 +530,40 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         List<BillClearanceInfoVO> billClearanceInfoVOS = oceanBillMapper.findBillClearanceInfoByBillId(billId);
         billClearanceInfoVOS.forEach(billClearanceInfoVO -> {
             Long b_id = billClearanceInfoVO.getId();
+            //统计箱数
             Integer total = billClearanceInfoMapper.findClearanceInfoCaseTotalBybid(b_id);
             billClearanceInfoVO.setCartons(total);
+            //文件展示
+            String templateUrl = billClearanceInfoVO.getTemplateUrl();
+            if(StrUtil.isNotEmpty(templateUrl)){
+                try {
+                    List<TemplateUrlVO> templateUrls = JSON.parseObject(templateUrl, new TypeReference<List<TemplateUrlVO>>() {});
+                    billClearanceInfoVO.setTemplateUrls(templateUrls);
+
+                    String showTemplateUrl = "";
+                    for (int i=0; i<templateUrls.size(); i++){
+                        TemplateUrlVO templateUrlVO = templateUrls.get(i);
+                        String fileName = templateUrlVO.getFileName();
+                        if(i==0){
+                            showTemplateUrl = fileName;
+                        }else{
+                            showTemplateUrl += "," + fileName;
+                        }
+                    }
+                    billClearanceInfoVO.setTemplateUrl(showTemplateUrl);
+
+                } catch (Exception e) {
+                    billClearanceInfoVO.setTemplateUrls(new ArrayList<>());
+                }
+            }else{
+                billClearanceInfoVO.setTemplateUrls(new ArrayList<>());
+            }
+
         });
+
+
+
+
         return billClearanceInfoVOS;
     }
 
@@ -541,8 +572,35 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         List<BillCustomsInfoVO> billCustomsInfoVOS = oceanBillMapper.findBillCustomsInfoByBillId(billId);
         billCustomsInfoVOS.forEach(billCustomsInfoVO -> {
             Long b_id = billCustomsInfoVO.getId();
+            //统计箱数
             Integer total = billCustomsInfoMapper.findCustomsInfoCaseTotalBybid(b_id);
             billCustomsInfoVO.setCartons(total);
+            //文件展示
+            String templateUrl = billCustomsInfoVO.getTemplateUrl();
+            if(StrUtil.isNotEmpty(templateUrl)){
+                try {
+                    List<TemplateUrlVO> templateUrls = JSON.parseObject(templateUrl, new TypeReference<List<TemplateUrlVO>>() {});
+                    billCustomsInfoVO.setTemplateUrls(templateUrls);
+
+                    String showTemplateUrl = "";
+                    for (int i=0; i<templateUrls.size(); i++){
+                        TemplateUrlVO templateUrlVO = templateUrls.get(i);
+                        String fileName = templateUrlVO.getFileName();
+                        if(i==0){
+                            showTemplateUrl = fileName;
+                        }else{
+                            showTemplateUrl += "," + fileName;
+                        }
+                    }
+                    billCustomsInfoVO.setTemplateUrl(showTemplateUrl);
+
+                } catch (Exception e) {
+                    billCustomsInfoVO.setTemplateUrls(new ArrayList<>());
+                }
+            }else{
+                billCustomsInfoVO.setTemplateUrls(new ArrayList<>());
+            }
+
         });
         return billCustomsInfoVOS;
     }
@@ -844,8 +902,34 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         List<CounterListInfoVO> counterListInfoVOS = counterListInfoMapper.findCounterListInfoByCounterId(counterId);
         counterListInfoVOS.forEach(counterListInfoVO -> {
             Long b_id = counterListInfoVO.getId();//b_id 柜子清单信息表(counter_list_info id)
+            //统计箱数
             Integer total = counterListInfoMapper.findCounterCaseInfoTotalBybid(b_id);
             counterListInfoVO.setCartons(total);
+            //文件展示
+            String templateUrl = counterListInfoVO.getTemplateUrl();
+            if(StrUtil.isNotEmpty(templateUrl)){
+                try {
+                    List<TemplateUrlVO> templateUrls = JSON.parseObject(templateUrl, new TypeReference<List<TemplateUrlVO>>() {});
+                    counterListInfoVO.setTemplateUrls(templateUrls);
+
+                    String showTemplateUrl = "";
+                    for (int i=0; i<templateUrls.size(); i++){
+                        TemplateUrlVO templateUrlVO = templateUrls.get(i);
+                        String fileName = templateUrlVO.getFileName();
+                        if(i==0){
+                            showTemplateUrl = fileName;
+                        }else{
+                            showTemplateUrl += "," + fileName;
+                        }
+                    }
+                    counterListInfoVO.setTemplateUrl(showTemplateUrl);
+
+                } catch (Exception e) {
+                    counterListInfoVO.setTemplateUrls(new ArrayList<>());
+                }
+            }else{
+                counterListInfoVO.setTemplateUrls(new ArrayList<>());
+            }
         });
         return counterListInfoVOS;
     }

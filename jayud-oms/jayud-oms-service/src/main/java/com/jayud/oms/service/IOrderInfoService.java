@@ -204,4 +204,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     public List<OrderInfo> getOrderByStatus(List<String> orderNo, Integer status);
+
+    /**
+     * 获取费用状态
+     */
+    public Map<String,Object> getCostStatus(List<String> mainOrderNo,List<String> subOrderNo);
+
 }

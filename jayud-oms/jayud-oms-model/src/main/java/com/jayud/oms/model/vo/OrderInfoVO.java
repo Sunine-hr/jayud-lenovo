@@ -6,6 +6,8 @@ import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -136,6 +138,12 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "应收费用状态")
     private String receivableCostStatus;
 
+    @ApiModelProperty(value = "应付费用状态")
+    private String paymentCostStatus;
+
+    @ApiModelProperty(value = "利润状态(1:盈利,2:收支平衡,3:盈亏)")
+    private Integer billingState;
+
 //    @ApiModelProperty(value = "子订单状态描述")
 //    private String subOrderStatusDesc;
 //
@@ -224,15 +232,89 @@ public class OrderInfoVO {
 //        return sb.length() == 0 ? "" : sb.substring(0, sb.length() - 1);
 //    }
 
-
-    public void assembleCostStatus(Map<String, Object> orderCostStatus) {
-        String statusDesc = MapUtil.getStr(orderCostStatus, this.orderNo);
-        this.receivableCostStatus = StringUtils.isEmpty(statusDesc) ? "未录入" : statusDesc;
-    }
+//    /**
+//     * 重组费用状态
+//     *
+//     * @param receivableCostStatus
+//     * @param paymentCostStatus
+//     */
+//    public void assembleCostStatus(Map<String, Object> receivableCostStatus, Map<String, Object> paymentCostStatus) {
+//        Map<String, Object> costStatus =
+//
+//                String receivableStatusDesc = MapUtil.getStr(receivableCostStatus, this.orderNo);
+//        String paymentStatusDesc = MapUtil.getStr(paymentCostStatus, this.orderNo);
+//
+//        BigDecimal receivableCost = new BigDecimal(0);
+//        BigDecimal paymentCost = new BigDecimal(0);
+//
+//        if (!StringUtils.isEmpty(receivableStatusDesc)) {
+//            String[] split = receivableStatusDesc.split("-");
+//            this.receivableCostStatus = split[0];
+//            receivableCost = new BigDecimal(split[1]);
+//        } else {
+//            this.receivableCostStatus = "未录入";
+//        }
+//
+//        if (!StringUtils.isEmpty(paymentStatusDesc)) {
+//            String[] split = paymentStatusDesc.split("-");
+//            this.paymentCostStatus = split[0];
+//            paymentCost = new BigDecimal(split[1]);
+//        } else {
+//            this.paymentCostStatus = "未录入";
+//        }
+//        //利润状态
+//        if (receivableCost.compareTo(paymentCost) == 0) {
+//            this.billingState = 2;
+//        }
+//        if (receivableCost.compareTo(paymentCost) > 0) {
+//            this.billingState = 3;
+//        }
+//        if (receivableCost.compareTo(paymentCost) < 0) {
+//            this.billingState = 1;
+//        }
+//
+//    }
 
 
     public void setUnitCode(String unitCode) {
         this.unitCode = unitCode;
         this.defaultUnitCode = unitCode;
+    }
+
+    public void assembleCostStatus(Map<String, Object> costStatus) {
+        Map<String, Object> receivableCostStatus = (Map<String, Object>) costStatus.get("receivableCostStatus");
+        Map<String, Object> paymentCostStatus = (Map<String, Object>) costStatus.get("paymentCostStatus");
+
+        String receivableStatusDesc = MapUtil.getStr(receivableCostStatus, this.orderNo);
+        String paymentStatusDesc = MapUtil.getStr(paymentCostStatus, this.orderNo);
+
+        BigDecimal receivableCost = new BigDecimal(0);
+        BigDecimal paymentCost = new BigDecimal(0);
+
+        if (!StringUtils.isEmpty(receivableStatusDesc)) {
+            String[] split = receivableStatusDesc.split("-");
+            this.receivableCostStatus = split[0];
+            receivableCost = new BigDecimal(split[1]);
+        } else {
+            this.receivableCostStatus = "未录入";
+        }
+
+        if (!StringUtils.isEmpty(paymentStatusDesc)) {
+            String[] split = paymentStatusDesc.split("-");
+            this.paymentCostStatus = split[0];
+            paymentCost = new BigDecimal(split[1]);
+        } else {
+            this.paymentCostStatus = "未录入";
+        }
+        //利润状态
+        if (receivableCost.compareTo(paymentCost) == 0) {
+            this.billingState = 2;
+        }
+        if (receivableCost.compareTo(paymentCost) > 0) {
+            this.billingState = 1;
+        }
+        if (receivableCost.compareTo(paymentCost) < 0) {
+            this.billingState = 3;
+        }
     }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class TmsOrderTemplate {
+public class TmsOrderTemplate extends BaseOrderTemplate {
 
     @ApiModelProperty(value = "中港订单ID")
     private Long id;
@@ -57,8 +57,14 @@ public class TmsOrderTemplate {
     @ApiModelProperty(value = "送货地址", required = true)
     private String deliveryAddr;
 
-    @ApiModelProperty(value = "费用状态", required = true)
-    private String costDesc;
+//    @ApiModelProperty(value = "费用状态", required = true)
+//    private String costDesc;
+
+//    @ApiModelProperty(value = "应收费用状态", required = true)
+//    private String receivableCostStatus;
+//
+//    @ApiModelProperty(value = "应付费用状态", required = true)
+//    private String paymentCostStatus;
 
     @ApiModelProperty("通关口岸CODE")
     private String portCode;
@@ -249,14 +255,14 @@ public class TmsOrderTemplate {
         this.statusDesc = OrderStatusEnum.getDesc(status);
     }
 
-    public void setCost(Boolean cost) {
-        this.cost = cost;
-        if (cost) {
-            this.costDesc = "是";
-        } else {
-            this.costDesc = "否";
-        }
-    }
+//    public void setCost(Boolean cost) {
+//        this.cost = cost;
+//        if (cost) {
+//            this.costDesc = "是";
+//        } else {
+//            this.costDesc = "否";
+//        }
+//    }
 
 
     public void isRejected() {

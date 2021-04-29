@@ -215,7 +215,7 @@ public class FinanceController {
             String cmd = list.get(0).getSubType();
             List<String> mainOrderNos = list.stream().map(PaymentNotPaidBillVO::getOrderNo).collect(Collectors.toList());
             datas = this.commonService.templateDataProcessing(cmd, datas, mainOrderNos, 1);
-            List<Map<String, Object>> maps = Utilities.assembleEntityHead(BillTemplateEnum.getTemplate(cmd));
+            List<Map<String, Object>> maps = Utilities.assembleEntityHead(BillTemplateEnum.getTemplate(cmd), false);
             for (Map<String, Object> map : maps) {
                 headMap.put(String.valueOf(map.get("name")), String.valueOf(map.get("viewName")));
             }
@@ -310,7 +310,7 @@ public class FinanceController {
             String cmd = list.get(0).getSubType();
             List<String> mainOrderNos = list.stream().map(PaymentNotPaidBillVO::getOrderNo).collect(Collectors.toList());
             datas = this.commonService.templateDataProcessing(cmd, datas, mainOrderNos, 0);
-            List<Map<String, Object>> maps = Utilities.assembleEntityHead(BillTemplateEnum.getTemplate(cmd));
+            List<Map<String, Object>> maps = Utilities.assembleEntityHead(BillTemplateEnum.getTemplate(cmd), false);
             for (Map<String, Object> map : maps) {
                 headMap.put(String.valueOf(map.get("name")), String.valueOf(map.get("viewName")));
             }

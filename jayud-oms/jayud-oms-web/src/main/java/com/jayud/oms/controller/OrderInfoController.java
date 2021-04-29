@@ -230,8 +230,8 @@ public class OrderInfoController {
             }
             //拖车校验参数
             if (OrderStatusEnum.TC.getCode().equals(inputMainOrderForm.getClassCode())
-                    || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.TCEDD.getCode())
-                    || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.TCIDD.getCode())) {
+                    || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.TCEDD.getCode())
+                    || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.TCIDD.getCode())) {
                 List<InputTrailerOrderFrom> trailerOrderFrom = form.getTrailerOrderFrom();
                 for (InputTrailerOrderFrom inputTrailerOrderFrom : trailerOrderFrom) {
                     if (!inputTrailerOrderFrom.checkCreateOrder()) {
@@ -239,18 +239,18 @@ public class OrderInfoController {
                     }
                 }
             }
-            //拖车校验参数
-            if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())){
-                if(inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode())){
+            //仓储校验参数
+            if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())) {
+                if (inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode())) {
                     InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
-                    if(!storageOutOrderForm.checkCreateOrder().equals("pass")){
-                        return CommonResult.error(1,storageOutOrderForm.checkCreateOrder());
+                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
+                        return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
                     }
                 }
-                if(inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())){
+                if (inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())) {
                     InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
-                    if(!storageInputOrderForm.checkCreateOrder().equals("pass")){
-                        return CommonResult.error(1,storageInputOrderForm.checkCreateOrder());
+                    if (!storageInputOrderForm.checkCreateOrder().equals("pass")) {
+                        return CommonResult.error(1, storageInputOrderForm.checkCreateOrder());
                     }
                 }
             }
@@ -398,11 +398,15 @@ public class OrderInfoController {
         InputOrderTransportVO orderTransportForm = inputOrderVO.getOrderTransportForm();
         if (orderTransportForm != null) {
             TmsOrderTemplate tmsOrderTemplate = ConvertUtil.convert(orderTransportForm, TmsOrderTemplate.class);
-            tmsOrderTemplate.setCost(this.orderInfoService.isCost(tmsOrderTemplate.getOrderNo(), 1));
+//            tmsOrderTemplate.setCost(this.orderInfoService.isCost(tmsOrderTemplate.getOrderNo(), 1));
             tmsOrderTemplate.setMainOrderId(form.getMainOrderId());
             tmsOrderTemplate.setClassCode(form.getClassCode());
             tmsOrderTemplate.isRejected();
             tmsOrderTemplate.setMainOrderStatus(inputOrderVO.getOrderForm().getStatus());
+            //费用状态
+            tmsOrderTemplate.assembleCostStatus(tmsOrderTemplate.getOrderNo(),
+                    this.orderInfoService.getCostStatus(null, Collections.singletonList(tmsOrderTemplate.getOrderNo())));
+
             Template<TmsOrderTemplate> template = new Template<TmsOrderTemplate>() {
             }.setList(Collections.singletonList(tmsOrderTemplate));
             orderInfoTemplate.setTmsOrderTemplates(template);
@@ -411,7 +415,11 @@ public class OrderInfoController {
         InputOrderInlandTPVO inlandTransportForm = inputOrderVO.getOrderInlandTransportForm();
         if (inlandTransportForm != null) {
             InlandTPTemplate inlandTPTemplate = ConvertUtil.convert(inlandTransportForm, InlandTPTemplate.class);
-            inlandTPTemplate.setCost(this.orderInfoService.isCost(inlandTPTemplate.getOrderNo(), 1));
+//            inlandTPTemplate.setCost(this.orderInfoService.isCost(inlandTPTemplate.getOrderNo(), 1));
+            //费用状态
+            inlandTPTemplate.assembleCostStatus(inlandTPTemplate.getOrderNo(),
+                    this.orderInfoService.getCostStatus(null, Collections.singletonList(inlandTPTemplate.getOrderNo())));
+
             Template<InlandTPTemplate> template = new Template<InlandTPTemplate>() {
             }.setList(Collections.singletonList(inlandTPTemplate));
             orderInfoTemplate.setInlandTPTemplates(template);
@@ -422,13 +430,21 @@ public class OrderInfoController {
         if (orderCustomsForm != null) {
             if (CollectionUtils.isNotEmpty(orderCustomsForm.getSubOrders())) {
                 List<OrderCustomsTemplate> list = new ArrayList<>();
+                List<String> subOrderNos = new ArrayList<>();
                 for (InputSubOrderCustomsVO subOrder : orderCustomsForm.getSubOrders()) {
                     OrderCustomsTemplate customsTemplate = ConvertUtil.convert(subOrder, OrderCustomsTemplate.class);
                     customsTemplate.assemblyData(orderCustomsForm);
                     customsTemplate.setId(subOrder.getSubOrderId());
-                    customsTemplate.setCost(this.orderInfoService.isCost(customsTemplate.getOrderNo(), 1));
+//                    customsTemplate.setCost(this.orderInfoService.isCost(customsTemplate.getOrderNo(), 1));
+                    subOrderNos.add(subOrder.getOrderNo());
                     list.add(customsTemplate);
                 }
+
+                Map<String, Object> costStatus = this.orderInfoService.getCostStatus(null, subOrderNos);
+                for (OrderCustomsTemplate template : list) {
+                    template.assembleCostStatus(template.getOrderNo(), costStatus);
+                }
+
                 Template<OrderCustomsTemplate> template = new Template<OrderCustomsTemplate>() {
                 }.setList(list);
                 orderInfoTemplate.setOrderCustomsTemplates(template);
@@ -439,10 +455,12 @@ public class OrderInfoController {
         InputAirOrderVO airOrderForm = inputOrderVO.getAirOrderForm();
         if (airOrderForm != null) {
             AirOrderTemplate airOrderTemplate = ConvertUtil.convert(airOrderForm, AirOrderTemplate.class);
-            airOrderTemplate.setCost(this.orderInfoService.isCost(airOrderTemplate.getOrderNo(), 1));
+//            airOrderTemplate.setCost(this.orderInfoService.isCost(airOrderTemplate.getOrderNo(), 1));
             Template<AirOrderTemplate> template = new Template<AirOrderTemplate>() {
             }.setList(Collections.singletonList(airOrderTemplate));
             airOrderTemplate.assemblyData(airOrderForm);
+            airOrderTemplate.assembleCostStatus(airOrderTemplate.getOrderNo(),
+                    this.orderInfoService.getCostStatus(null, Collections.singletonList(airOrderTemplate.getOrderNo())));
             orderInfoTemplate.setAirOrderTemplates(template);
         }
 
@@ -450,23 +468,32 @@ public class OrderInfoController {
         InputSeaOrderVO seaOrderForm = inputOrderVO.getSeaOrderForm();
         if (seaOrderForm != null) {
             SeaOrderTemplate seaOrderTemplate = ConvertUtil.convert(seaOrderForm, SeaOrderTemplate.class);
-            seaOrderTemplate.setCost(this.orderInfoService.isCost(seaOrderTemplate.getOrderNo(), 1));
+//            seaOrderTemplate.setCost(this.orderInfoService.isCost(seaOrderTemplate.getOrderNo(), 1));
+            seaOrderTemplate.assembleCostStatus(seaOrderTemplate.getOrderNo(),
+                    this.orderInfoService.getCostStatus(null, Collections.singletonList(seaOrderTemplate.getOrderNo())));
+
             Template<SeaOrderTemplate> template = new Template<SeaOrderTemplate>() {
             }.setList(Collections.singletonList(seaOrderTemplate));
+
             orderInfoTemplate.setSeaOrderTemplates(template);
         }
 
         //拖车模板
         List<InputTrailerOrderVO> trailerOrderForms = inputOrderVO.getTrailerOrderForm();
-        if (CollectionUtils.isNotEmpty(trailerOrderForms)){
+        if (CollectionUtils.isNotEmpty(trailerOrderForms)) {
             List<TrailerOrderTemplate> templates = new ArrayList<>();
+            List<String> subOrderNos = new ArrayList<>();
             for (InputTrailerOrderVO trailerOrderForm : trailerOrderForms) {
                 if (trailerOrderForm != null) {
                     TrailerOrderTemplate trailerOrderTemplate = ConvertUtil.convert(trailerOrderForm, TrailerOrderTemplate.class);
-                    trailerOrderTemplate.setCost(this.orderInfoService.isCost(trailerOrderTemplate.getOrderNo(), 1));
+//                    trailerOrderTemplate.setCost(this.orderInfoService.isCost(trailerOrderTemplate.getOrderNo(), 1));
                     templates.add(trailerOrderTemplate);
+                    subOrderNos.add(trailerOrderForm.getOrderNo());
                 }
             }
+            Map<String, Object> costStatus = this.orderInfoService.getCostStatus(null, subOrderNos);
+            templates.forEach(e->e.assembleCostStatus(e.getOrderNo(),costStatus));
+
             Template<TrailerOrderTemplate> template = new Template<TrailerOrderTemplate>() {
             }.setList(templates);
             orderInfoTemplate.setTrailerOrderTemplates(template);
@@ -528,6 +555,15 @@ public class OrderInfoController {
         return CommonResult.success(inputOrderVO);
     }
 
+
+    public static void main(String[] args) {
+        List<Object> list = new ArrayList<>();
+        list.add(new TmsOrderTemplate());
+        list.add(new AirOrderTemplate());
+        for (Object o : list) {
+            System.out.println(o);
+        }
+    }
 
 }
 

@@ -142,4 +142,45 @@
 
 
 
+    <select id="findCustomerGoodsByNewWisdomParam" parameterType="java.util.Map" resultType="com.jayud.mall.model.vo.CustomerGoodsVO">
+        select t.id,
+               t.customer_id,
+               t.sku,
+               t.name_cn,
+               t.name_en,
+               t.image_url,
+               t.barcode,
+               t.weight,
+               t.length,
+               t.width,
+               t.height,
+               t.is_sensitive,
+               t.types,
+               t.declared_value,
+               t.declared_currency,
+               t.material_quality,
+               t.purpose,
+               t.declare_elements,
+               t.hs_code,
+               t.data_code,
+               t.clearance_code,
+               t.sales_link,
+               t.sales_price,
+               t.sales_price_currency,
+               t.description,
+               t.status,
+               t.status_name,
+               t.remark
+        from customer_goods t
+        where 1=1
+        and t.customer_id = #{newWisdomParam.customerId}
+        and t.name_cn = #{newWisdomParam.nameCn}
+        and t.name_en = #{newWisdomParam.nameEn}
+        and t.material_quality = #{newWisdomParam.materialQuality}
+        and t.hs_code = #{newWisdomParam.hscode}
+        and t.purpose = #{newWisdomParam.purpose}
+    </select>
+
+
+
 </mapper>

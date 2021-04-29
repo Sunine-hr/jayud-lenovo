@@ -235,11 +235,13 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 //        List<OrderTakeAdr> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrByOrderNos(orderNo, null);
         List<OrderTakeAdrInfoVO> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrInfos(subOrderNos, null);
         Map<String, Object> data = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.ZGYS.getSignOne()).getData();
+        Map<String, Object> costStatus = omsClient.getCostStatus(null, subOrderNos).getData();
         for (OrderTransportVO orderTransportVO : pageList) {
 //            orderTransportVO.assemblyGoodsInfo(orderTakeAdrs);
 //            orderTransportVO.assemblyTakeFiles(takeAdrsList, prePath);
             orderTransportVO.setCost(MapUtil.getBool(data, orderTransportVO.getOrderNo()));
             orderTransportVO.assemblyTakeAdrInfos(takeAdrsList, prePath);
+            orderTransportVO.assemblyCostStatus(costStatus);
         }
 
         return pageInfo;

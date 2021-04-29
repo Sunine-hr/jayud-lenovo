@@ -4,6 +4,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
@@ -69,15 +70,9 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     @Override
     public String createOrder(AddTrailerOrderFrom addTrailerOrderFrom) {
 
-        if(addTrailerOrderFrom.getOldMainOrderNo()!=null){
-            QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("main_order_no",addTrailerOrderFrom.getOldMainOrderNo());
-            this.remove(queryWrapper);
-        }
-
+        TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);
         LocalDateTime now = LocalDateTime.now();
         addTrailerOrderFrom.getPathAndName();
-        TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);
 //        System.out.println("trailerOrder===================================="+trailerOrder);
         //创建拖车单
         if (addTrailerOrderFrom.getId() == null) {
@@ -95,8 +90,10 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             trailerOrder.setStatus(OrderStatusEnum.TT_0.getCode());
             trailerOrder.setUpdateTime(now);
             trailerOrder.setUpdateUser(UserOperator.getToken());
-            this.updateById(trailerOrder);
+            this.saveOrUpdate(trailerOrder);
         }
+        omsClient.deleteGoodsByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()),BusinessTypeEnum.TC.getCode());
+        omsClient.deleteOrderAddressByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()),BusinessTypeEnum.TC.getCode());
         if(addTrailerOrderFrom.getOrderAddressForms()!=null&&addTrailerOrderFrom.getOrderAddressForms().size()>0){
             //获取用户地址
             List<AddTrailerOrderAddressForm> orderAddressForms = addTrailerOrderFrom.getOrderAddressForms();

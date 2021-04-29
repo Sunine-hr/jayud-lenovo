@@ -30,4 +30,14 @@ public class QueryOfferInfoForm extends BasePageForm{
     @JSONField(ordinal = 4)
     private String countryCode;
 
+    @ApiModelProperty(value = "状态(0无效 1有效)", position = 5)
+    @JSONField(ordinal = 5)
+    private String status;
+
+    //目的仓库
+    @ApiModelProperty(value = "目的仓库id(fab_warehouse id)", position = 6)
+    @JSONField(ordinal = 6)
+    private Integer arriveWarehouseId;
+
+
 }

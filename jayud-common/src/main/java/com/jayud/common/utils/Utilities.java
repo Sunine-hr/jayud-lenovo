@@ -8,12 +8,14 @@ import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class Utilities {
@@ -21,10 +23,15 @@ public class Utilities {
     /**
      * 组装头部信息
      */
-    public static List<Map<String, Object>> assembleEntityHead(Class clazz) {
+    public static List<Map<String, Object>> assembleEntityHead(Class clazz,Boolean isParentFields) {
         Field[] fields = clazz.getDeclaredFields();
+        ArrayList<Field> tmp = new ArrayList<Field>(Arrays.asList(fields)) ;
+        if (isParentFields){
+            Field[] parenFields = clazz.getSuperclass().getDeclaredFields();
+            tmp.addAll(Arrays.asList(parenFields));
+        }
         List<Map<String, Object>> heads = new ArrayList<>();
-        for (Field field : fields) {
+        for (Field field : tmp) {
             if (field.isAnnotationPresent(ApiModelProperty.class)) {
                 Map<String, Object> head = new HashMap<>(3);
                 ApiModelProperty annotation = field.getAnnotation(ApiModelProperty.class);
@@ -66,6 +73,8 @@ public class Utilities {
                         .append("\n");
             }
         }
+        System.out.println(sb.toString());
+        setClipboardString(sb.toString());
         return sb.toString();
     }
 
@@ -83,7 +92,21 @@ public class Utilities {
                     .append("\n");
 
         }
+        System.out.println(sb.toString());
+        setClipboardString(sb.toString());
         return sb.toString();
     }
 
+
+    /**
+     * 把文本设置到剪贴板（复制）
+     */
+    public static void setClipboardString(String text) {
+        // 获取系统剪贴板
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        // 封装文本内容
+        Transferable trans = new StringSelection(text);
+        // 把文本内容设置到系统剪贴板
+        clipboard.setContents(trans, null);
+    }
 }

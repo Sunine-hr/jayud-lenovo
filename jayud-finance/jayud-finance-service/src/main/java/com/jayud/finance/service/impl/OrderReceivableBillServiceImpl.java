@@ -554,7 +554,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         try {
             Class template = BillTemplateEnum.getTemplate(cmd);
             if (template != null) {
-                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template);
+                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template, false);
                 fixHeadList = Utilities.obj2List(maps, SheetHeadVO.class);
             } else {//TODO 增强不影响原有系统,除非更替完成
                 ViewBilToOrderHeadVO viewBilToOrderVO = new ViewBilToOrderHeadVO();

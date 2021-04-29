@@ -36,4 +36,21 @@ public class QrCodeTest {
 
     }
 
+    @Test
+    public void test3(){
+        String originalFilename = "运单 10001923.xls";
+        String substring = originalFilename.substring("运单 ".length(), originalFilename.length() - ".xls".length());
+        System.out.println(substring);
+    }
+
+    /**
+     * 数字转字符串前面自动补0的实现
+     */
+    @Test
+    public void test4(){
+        int youNumber = 99;
+        String str = String.format("%04d", youNumber);
+        System.out.println(str); // 0001
+    }
+
 }

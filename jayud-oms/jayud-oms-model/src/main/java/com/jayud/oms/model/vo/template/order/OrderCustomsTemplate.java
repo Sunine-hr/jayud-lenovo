@@ -18,7 +18,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class OrderCustomsTemplate {
+public class OrderCustomsTemplate extends BaseOrderTemplate {
 
     @ApiModelProperty(value = "报关订单id")
     private Long id;
@@ -47,8 +47,8 @@ public class OrderCustomsTemplate {
     @ApiModelProperty(value = "报关单号", required = true)
     private String yunCustomsNo;
 
-    @ApiModelProperty(value = "费用状态", required = true)
-    private String costDesc;
+//    @ApiModelProperty(value = "费用状态", required = true)
+//    private String costDesc;
 
     @ApiModelProperty(value = "费用状态")
     private Boolean cost;
@@ -133,13 +133,13 @@ public class OrderCustomsTemplate {
         this.setLegalName(orderCustomsForm.getLegalName());
     }
 
-    public void setCost(Boolean cost) {
-        this.cost = cost;
-        if (cost){
-            this.costDesc="是";
-        }else {
-            this.costDesc="否";
-        }
-    }
+//    public void setCost(Boolean cost) {
+//        this.cost = cost;
+//        if (cost){
+//            this.costDesc="是";
+//        }else {
+//            this.costDesc="否";
+//        }
+//    }
 
 }

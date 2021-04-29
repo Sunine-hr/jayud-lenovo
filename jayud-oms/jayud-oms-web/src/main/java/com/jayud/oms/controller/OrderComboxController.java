@@ -2,6 +2,12 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONConfig;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
@@ -548,6 +554,20 @@ public class OrderComboxController {
     @PostMapping(value = "/initCustomsQuestionnaireStatus")
     public CommonResult<List<com.jayud.common.entity.InitComboxVO>> initCustomsQuestionnaireStatus() {
         return CommonResult.success(CustomsQuestionnaireStatusEnum.getDropDownList());
+    }
+
+
+    @ApiOperation(value = "搜索客户信息-下拉框")
+    @PostMapping(value = "/searchCustomersInfo")
+    public CommonResult<com.alibaba.fastjson.JSONArray> searchCustomersInfo() {
+        List<CustomerInfo> list = this.customerInfoService.list();
+
+        com.alibaba.fastjson.JSONArray array = JSON.parseArray(JSON.toJSONString(list, SerializerFeature.WriteMapNullValue));
+        for (int i = 0; i < array.size(); i++) {
+            JSONObject jsonObject = array.getJSONObject(i);
+            jsonObject.put("value", jsonObject.get("name"));
+        }
+        return CommonResult.success(array);
     }
 
 }

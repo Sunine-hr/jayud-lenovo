@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 /**
  * <p>
  * 客户商品表 Mapper 接口
@@ -44,4 +46,11 @@ public interface CustomerGoodsMapper extends BaseMapper<CustomerGoods> {
      * @return
      */
     CustomerGoodsVO findCustomerGoodsByCustomerIdAndsku(@Param("customerId") Integer customerId, @Param("sku") String sku);
+
+    /**
+     * 查询新智慧客户商品
+     * @param newWisdomParam
+     * @return
+     */
+    CustomerGoodsVO findCustomerGoodsByNewWisdomParam(@Param("newWisdomParam") Map<String, Object> newWisdomParam);
 }

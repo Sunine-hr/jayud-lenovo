@@ -37,4 +37,20 @@ public interface TrailerClient {
      */
     @RequestMapping(value = "/api/trailer/getTrailerOrderByMainOrderNos")
     ApiResult getTrailerOrderByMainOrderNos(@RequestBody List<String> mainOrderNoList);
+
+    /**
+     * 删除订单信息
+     * @param mainOrderNo
+     * @return
+     */
+    @RequestMapping(value = "/api/trailer/deleteOrderByMainOrderNo")
+    ApiResult deleteOrderByMainOrderNo(@RequestParam("mainOrderNo")String mainOrderNo);
+
+    /**
+     * 删除该主订单对应的商品和地址信息
+     * @param mainOrderNo
+     * @return
+     */
+    @RequestMapping(value = "/api/trailer/getOrderNosByMainOrderNo")
+    ApiResult<List<String>> getOrderNosByMainOrderNo(@RequestParam("mainOrderNo") String mainOrderNo);
 }

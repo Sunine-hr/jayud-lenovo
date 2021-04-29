@@ -155,6 +155,7 @@ public class OrderCostTemplateController {
                 .map(e -> {
                     CurrencyInfoVO currencyInfoVO = tmp.get(e.getCurrencyCode());
                     e.setCurrencyCode(currencyInfoVO == null ? null : currencyInfoVO.getCurrencyCode());
+                    e.setId(null);
                     return e.setCurrency(currencyInfoVO == null ? null : currencyInfoVO.getCurrencyName());
                 }).collect(Collectors.toList());
 

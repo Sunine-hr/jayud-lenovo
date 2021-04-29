@@ -32,10 +32,13 @@ public class InputTrailerOrderFrom {
     @ApiModelProperty(value = "拖车订单编号")
     private String orderNo;
 
+    @ApiModelProperty(value = "旧拖车订单编号")
+    private String oldOrderNo;
+
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 
-    @ApiModelProperty(value = "主订单编号")
+    @ApiModelProperty(value = "旧主订单编号")
     private String oldMainOrderNo;
 
     @ApiModelProperty(value = "状态(TT_0待接单,TT_1拖车接单,TT_2拖车派车,TT_3拖车提柜,TT_4拖车到仓,TT_5拖车离仓,TT_6拖车过磅,TT_7确认还柜)")

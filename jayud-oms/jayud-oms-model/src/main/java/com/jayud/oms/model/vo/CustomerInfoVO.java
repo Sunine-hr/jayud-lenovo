@@ -2,6 +2,7 @@ package com.jayud.oms.model.vo;
 
 import com.jayud.common.enums.CreditStatusEnum;
 import com.jayud.common.enums.CustomsCreditRatingEnum;
+import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -156,7 +157,10 @@ public class CustomerInfoVO {
         this.customsCreditRatingDesc = CustomsCreditRatingEnum.getDesc(customsCreditRating);
     }
 
-
+    public void setAuditStatus(Integer auditStatus) {
+        this.auditStatus = auditStatus;
+        this.auditStatusDesc = CustomerInfoStatusEnum.getDesc(auditStatus.toString());
+    }
 
     public Boolean getStatusDesc() {
         if ("1".equals(this.status)) {

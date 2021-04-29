@@ -21,7 +21,7 @@
     <select id="findOrderConfByPage" parameterType="com.jayud.mall.model.bo.QueryOrderConfForm"
             resultType="com.jayud.mall.model.vo.OrderConfVO" >
         select
-        t.id,t.order_no,t.tid,t.destination_country_code,t.status,t.user_id,t.user_name,t.create_time,
+        t.id,t.order_no,t.tid,t.destination_country_code,t.status,t.user_id,t.user_name,t.create_time,t.conf_name,t.remark,
         t1.code_name tname,
         t2.name destinationCountryName
         from order_conf t
@@ -39,7 +39,7 @@
     <select id="findOrderConfById" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OrderConfVO" >
         select
-        t.id,t.order_no,t.tid,t.destination_country_code,t.status,t.user_id,t.user_name,t.create_time,
+        t.id,t.order_no,t.tid,t.destination_country_code,t.status,t.user_id,t.user_name,t.create_time,t.conf_name,t.remark,
         t1.code_name tname,
         t2.name destinationCountryName
         from order_conf t

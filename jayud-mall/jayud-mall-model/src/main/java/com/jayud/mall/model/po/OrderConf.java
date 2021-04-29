@@ -66,6 +66,12 @@ public class OrderConf extends Model<OrderConf> {
     @JSONField(ordinal = 8, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "配载名称")
+    private String confName;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
+
 
     @Override
     protected Serializable pkVal() {

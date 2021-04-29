@@ -49,6 +49,13 @@ public class OrderConfForm {
     @JSONField(ordinal = 8, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "配载名称")
+    private String confName;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
+
+
     /*(配载单)配置对应的报价与提单*/
     @ApiModelProperty(value = "(配载单)配置对应的报价与提单-报价", position = 9)
     @JSONField(ordinal = 9)

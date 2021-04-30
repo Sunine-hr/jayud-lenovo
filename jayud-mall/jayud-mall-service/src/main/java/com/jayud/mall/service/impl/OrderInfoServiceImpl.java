@@ -515,33 +515,33 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderCaseService.remove(orderCaseQueryWrapper);
         orderCaseService.saveOrUpdateBatch(orderCaseList);
 
-        //TODO 保存，订单箱号 默认关联的配载柜号信息
-        List<OrderCase> orderCaseList1 = orderCaseService.list(orderCaseQueryWrapper);//查询订单箱号
-        //查询柜号信息-->根据报价查询配载id，配载查询提单id，提单查询柜号id，最终获取柜号信息
-        List<OceanCounter> oceanCounterList = orderConfMapper.findOceanCounterByOfferInfoId(offerInfoId);
-        //默认取第一个柜子
-
-        if(CollUtil.isNotEmpty(oceanCounterList)){
-            OceanCounter oceanCounter = oceanCounterList.get(0);
-            Long hgId = oceanCounter.getId();//货柜id
-            //货柜对应运单箱号信息
-            List<CounterCase> counterCases = new ArrayList<>();
-            //箱号
-            List<Long> xhIds = new ArrayList<>();
-            orderCaseList1.forEach(orderCase -> {
-                Long xhId = orderCase.getId();
-                xhIds.add(xhId);//箱号
-                CounterCase counterCase = new CounterCase();
-                counterCase.setOceanCounterId(hgId);//提单柜号id(ocean_counter id)
-                counterCase.setOrderCaseId(xhId);//运单箱号id[订单箱号id](order_case id)
-                counterCases.add(counterCase);//货柜对应运单箱号信息
-            });
-
-            QueryWrapper<CounterCase> counterCaseQueryWrapper = new QueryWrapper<>();
-            counterCaseQueryWrapper.in("order_case_id", xhIds);//运单箱号id[订单箱号id](order_case id)
-            counterCaseService.remove(counterCaseQueryWrapper);//先删除
-            counterCaseService.saveOrUpdateBatch(counterCases);//在保存 货柜对应运单箱号信息
-        }
+//        //TODO 保存，订单箱号 默认关联的配载柜号信息
+//        List<OrderCase> orderCaseList1 = orderCaseService.list(orderCaseQueryWrapper);//查询订单箱号
+//        //查询柜号信息-->根据报价查询配载id，配载查询提单id，提单查询柜号id，最终获取柜号信息
+//        List<OceanCounter> oceanCounterList = orderConfMapper.findOceanCounterByOfferInfoId(offerInfoId);
+//        //默认取第一个柜子
+//
+//        if(CollUtil.isNotEmpty(oceanCounterList)){
+//            OceanCounter oceanCounter = oceanCounterList.get(0);
+//            Long hgId = oceanCounter.getId();//货柜id
+//            //货柜对应运单箱号信息
+//            List<CounterCase> counterCases = new ArrayList<>();
+//            //箱号
+//            List<Long> xhIds = new ArrayList<>();
+//            orderCaseList1.forEach(orderCase -> {
+//                Long xhId = orderCase.getId();
+//                xhIds.add(xhId);//箱号
+//                CounterCase counterCase = new CounterCase();
+//                counterCase.setOceanCounterId(hgId);//提单柜号id(ocean_counter id)
+//                counterCase.setOrderCaseId(xhId);//运单箱号id[订单箱号id](order_case id)
+//                counterCases.add(counterCase);//货柜对应运单箱号信息
+//            });
+//
+//            QueryWrapper<CounterCase> counterCaseQueryWrapper = new QueryWrapper<>();
+//            counterCaseQueryWrapper.in("order_case_id", xhIds);//运单箱号id[订单箱号id](order_case id)
+//            counterCaseService.remove(counterCaseQueryWrapper);//先删除
+//            counterCaseService.saveOrUpdateBatch(counterCases);//在保存 货柜对应运单箱号信息
+//        }
 
         //保存-订单对应商品：order_shop
         List<OrderShopVO> orderShopVOList = form.getOrderShopVOList();
@@ -829,32 +829,32 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderCaseService.remove(orderCaseQueryWrapper);
         orderCaseService.saveOrUpdateBatch(orderCaseList);
 
-        //TODO 保存，订单箱号 默认关联的配载柜号信息
-        List<OrderCase> orderCaseList1 = orderCaseService.list(orderCaseQueryWrapper);//查询订单箱号
-        //查询柜号信息-->根据报价查询配载id，配载查询提单id，提单查询柜号id，最终获取柜号信息
-        List<OceanCounter> oceanCounterList = orderConfMapper.findOceanCounterByOfferInfoId(offerInfoId);
-        //默认取第一个柜子
-        if(CollUtil.isNotEmpty(oceanCounterList)){
-            OceanCounter oceanCounter = oceanCounterList.get(0);
-            Long hgId = oceanCounter.getId();//货柜id
-            //货柜对应运单箱号信息
-            List<CounterCase> counterCases = new ArrayList<>();
-            //箱号
-            List<Long> xhIds = new ArrayList<>();
-            orderCaseList1.forEach(orderCase -> {
-                Long xhId = orderCase.getId();
-                xhIds.add(xhId);//箱号
-                CounterCase counterCase = new CounterCase();
-                counterCase.setOceanCounterId(hgId);//提单柜号id(ocean_counter id)
-                counterCase.setOrderCaseId(xhId);//运单箱号id[订单箱号id](order_case id)
-                counterCases.add(counterCase);//货柜对应运单箱号信息
-            });
-
-            QueryWrapper<CounterCase> counterCaseQueryWrapper = new QueryWrapper<>();
-            counterCaseQueryWrapper.in("order_case_id", xhIds);//运单箱号id[订单箱号id](order_case id)
-            counterCaseService.remove(counterCaseQueryWrapper);//先删除
-            counterCaseService.saveOrUpdateBatch(counterCases);//在保存 货柜对应运单箱号信息
-        }
+//        //TODO 保存，订单箱号 默认关联的配载柜号信息
+//        List<OrderCase> orderCaseList1 = orderCaseService.list(orderCaseQueryWrapper);//查询订单箱号
+//        //查询柜号信息-->根据报价查询配载id，配载查询提单id，提单查询柜号id，最终获取柜号信息
+//        List<OceanCounter> oceanCounterList = orderConfMapper.findOceanCounterByOfferInfoId(offerInfoId);
+//        //默认取第一个柜子
+//        if(CollUtil.isNotEmpty(oceanCounterList)){
+//            OceanCounter oceanCounter = oceanCounterList.get(0);
+//            Long hgId = oceanCounter.getId();//货柜id
+//            //货柜对应运单箱号信息
+//            List<CounterCase> counterCases = new ArrayList<>();
+//            //箱号
+//            List<Long> xhIds = new ArrayList<>();
+//            orderCaseList1.forEach(orderCase -> {
+//                Long xhId = orderCase.getId();
+//                xhIds.add(xhId);//箱号
+//                CounterCase counterCase = new CounterCase();
+//                counterCase.setOceanCounterId(hgId);//提单柜号id(ocean_counter id)
+//                counterCase.setOrderCaseId(xhId);//运单箱号id[订单箱号id](order_case id)
+//                counterCases.add(counterCase);//货柜对应运单箱号信息
+//            });
+//
+//            QueryWrapper<CounterCase> counterCaseQueryWrapper = new QueryWrapper<>();
+//            counterCaseQueryWrapper.in("order_case_id", xhIds);//运单箱号id[订单箱号id](order_case id)
+//            counterCaseService.remove(counterCaseQueryWrapper);//先删除
+//            counterCaseService.saveOrUpdateBatch(counterCases);//在保存 货柜对应运单箱号信息
+//        }
 
 
         //保存-订单对应商品：order_shop
@@ -1299,32 +1299,32 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderCaseService.remove(orderCaseQueryWrapper);
         orderCaseService.saveOrUpdateBatch(orderCaseList);
 
-        //TODO 保存，订单箱号 默认关联的配载柜号信息
-        List<OrderCase> orderCaseList1 = orderCaseService.list(orderCaseQueryWrapper);//查询订单箱号
-        //查询柜号信息-->根据报价查询配载id，配载查询提单id，提单查询柜号id，最终获取柜号信息
-        List<OceanCounter> oceanCounterList = orderConfMapper.findOceanCounterByOfferInfoId(offerInfoId);
-        //默认取第一个柜子
-        if(oceanCounterList.size() > 0){
-            OceanCounter oceanCounter = oceanCounterList.get(0);
-            Long hgId = oceanCounter.getId();//货柜id
-            //货柜对应运单箱号信息
-            List<CounterCase> counterCases = new ArrayList<>();
-            //箱号
-            List<Long> xhIds = new ArrayList<>();
-            orderCaseList1.forEach(orderCase -> {
-                Long xhId = orderCase.getId();
-                xhIds.add(xhId);//箱号
-                CounterCase counterCase = new CounterCase();
-                counterCase.setOceanCounterId(hgId);//提单柜号id(ocean_counter id)
-                counterCase.setOrderCaseId(xhId);//运单箱号id[订单箱号id](order_case id)
-                counterCases.add(counterCase);//货柜对应运单箱号信息
-            });
-
-            QueryWrapper<CounterCase> counterCaseQueryWrapper = new QueryWrapper<>();
-            counterCaseQueryWrapper.in("order_case_id", xhIds);//运单箱号id[订单箱号id](order_case id)
-            counterCaseService.remove(counterCaseQueryWrapper);//先删除
-            counterCaseService.saveOrUpdateBatch(counterCases);//在保存 货柜对应运单箱号信息
-        }
+//        //TODO 保存，订单箱号 默认关联的配载柜号信息
+//        List<OrderCase> orderCaseList1 = orderCaseService.list(orderCaseQueryWrapper);//查询订单箱号
+//        //查询柜号信息-->根据报价查询配载id，配载查询提单id，提单查询柜号id，最终获取柜号信息
+//        List<OceanCounter> oceanCounterList = orderConfMapper.findOceanCounterByOfferInfoId(offerInfoId);
+//        //默认取第一个柜子
+//        if(oceanCounterList.size() > 0){
+//            OceanCounter oceanCounter = oceanCounterList.get(0);
+//            Long hgId = oceanCounter.getId();//货柜id
+//            //货柜对应运单箱号信息
+//            List<CounterCase> counterCases = new ArrayList<>();
+//            //箱号
+//            List<Long> xhIds = new ArrayList<>();
+//            orderCaseList1.forEach(orderCase -> {
+//                Long xhId = orderCase.getId();
+//                xhIds.add(xhId);//箱号
+//                CounterCase counterCase = new CounterCase();
+//                counterCase.setOceanCounterId(hgId);//提单柜号id(ocean_counter id)
+//                counterCase.setOrderCaseId(xhId);//运单箱号id[订单箱号id](order_case id)
+//                counterCases.add(counterCase);//货柜对应运单箱号信息
+//            });
+//
+//            QueryWrapper<CounterCase> counterCaseQueryWrapper = new QueryWrapper<>();
+//            counterCaseQueryWrapper.in("order_case_id", xhIds);//运单箱号id[订单箱号id](order_case id)
+//            counterCaseService.remove(counterCaseQueryWrapper);//先删除
+//            counterCaseService.saveOrUpdateBatch(counterCases);//在保存 货柜对应运单箱号信息
+//        }
 
 
         //2.编辑保存-订单商品

@@ -28,22 +28,22 @@ public class OfferInfoVO {
     private String names;
 
     @ApiModelProperty(value = "报价-开船日期", position = 4)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     @JSONField(ordinal = 4)
     private LocalDateTime sailTime;
 
     @ApiModelProperty(value = "报价-截单日期", position = 5)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     @JSONField(ordinal = 5)
     private LocalDateTime cutOffTime;
 
     @ApiModelProperty(value = "报价-截仓日期", position = 6)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     @JSONField(ordinal = 6)
     private LocalDateTime jcTime;
 
     @ApiModelProperty(value = "报价-截亏仓日期", position = 7)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     @JSONField(ordinal = 7)
     private LocalDateTime jkcTime;
 
@@ -64,12 +64,12 @@ public class OfferInfoVO {
     private String userName;
 
     @ApiModelProperty(value = "报价-创建时间", position = 12)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     @JSONField(ordinal = 12)
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "预计到达时间", position = 13)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     @JSONField(ordinal = 13)
     private LocalDateTime estimatedTime;
 

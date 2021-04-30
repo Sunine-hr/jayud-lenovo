@@ -299,11 +299,11 @@ public class OceanBillController {
     //exportClearanceInfoCase
     @ApiOperation(value = "导出清单-清关箱子")
     @ApiOperationSupport(order = 29)
-    @RequestMapping(value = "/exportClearanceInfoCase", method = RequestMethod.GET)
-    @ResponseBody
-    public void exportClearanceInfoCase(HttpServletResponse response, @Valid @RequestBody BillCustomsInfoIdForm form) throws IOException {
-        Long b_id = form.getId();//b_id 提单对应报关信息id(bill_customs_info id)
-        List<ClearanceInfoCaseExcelVO> rows = billClearanceInfoService.findClearanceInfoCaseBybid(b_id);
+    @GetMapping(value = "/exportClearanceInfoCase")
+    public void exportClearanceInfoCase(
+            HttpServletResponse response,
+            @RequestParam(value = "id",required=false) Long id) throws IOException {
+        List<ClearanceInfoCaseExcelVO> rows = billClearanceInfoService.findClearanceInfoCaseBybid(id);
         if(CollUtil.isNotEmpty(rows)){
             ExcelWriter writer = ExcelUtil.getWriter(true);
             writer.getStyleSet().setAlign(HorizontalAlignment.LEFT, VerticalAlignment.CENTER); //水平左对齐，垂直中间对齐
@@ -341,11 +341,9 @@ public class OceanBillController {
     //exportCustomsInfoCase
     @ApiOperation(value = "导出清单-报关箱子")
     @ApiOperationSupport(order = 30)
-    @RequestMapping(value = "/exportCustomsInfoCase", method = RequestMethod.GET)
-    @ResponseBody
-    public void exportCustomsInfoCase(HttpServletResponse response, @Valid @RequestBody BillCustomsInfoIdForm form) throws IOException {
-        Long b_id = form.getId();//b_id 提单对应报关信息id(bill_customs_info id)
-        List<CustomsInfoCaseExcelVO> rows = billCustomsInfoService.findCustomsInfoCaseBybid(b_id);
+    @GetMapping(value = "/exportCustomsInfoCase")
+    public void exportCustomsInfoCase(HttpServletResponse response, @RequestParam(value = "id",required=false) Long id) throws IOException {
+        List<CustomsInfoCaseExcelVO> rows = billCustomsInfoService.findCustomsInfoCaseBybid(id);
         if(CollUtil.isNotEmpty(rows)){
             ExcelWriter writer = ExcelUtil.getWriter(true);
             writer.getStyleSet().setAlign(HorizontalAlignment.LEFT, VerticalAlignment.CENTER); //水平左对齐，垂直中间对齐
@@ -383,11 +381,9 @@ public class OceanBillController {
     //exportCounterCaseInfo
     @ApiOperation(value = "导出清单-柜子清单箱子")
     @ApiOperationSupport(order = 30)
-    @RequestMapping(value = "/exportCounterCaseInfo", method = RequestMethod.GET)
-    @ResponseBody
-    public void exportCounterCaseInfo(HttpServletResponse response, @Valid @RequestBody CounterListInfoIdForm form) throws IOException {
-        Long b_id = form.getId();//b_id 柜子清单信息表(counter_list_info id)
-        List<CounterCaseInfoExcelVO> rows = counterListInfoService.findCounterCaseInfoBybid(b_id);
+    @GetMapping(value = "/exportCounterCaseInfo")
+    public void exportCounterCaseInfo(HttpServletResponse response, @RequestParam(value = "id",required=false) Long id) throws IOException {
+        List<CounterCaseInfoExcelVO> rows = counterListInfoService.findCounterCaseInfoBybid(id);
         if(CollUtil.isNotEmpty(rows)){
             ExcelWriter writer = ExcelUtil.getWriter(true);
             writer.getStyleSet().setAlign(HorizontalAlignment.LEFT, VerticalAlignment.CENTER); //水平左对齐，垂直中间对齐

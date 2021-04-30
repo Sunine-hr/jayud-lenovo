@@ -155,6 +155,9 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
     @JSONField(ordinal = 29, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
+    @ApiModelProperty(value = "计费重单位(1柜 2KG 3CBM 4车)")
+    private Integer billingWeightUnit;
+
     @ApiModelProperty(value = "整体时效")
     private String wholeTime;
 

@@ -141,6 +141,8 @@ public class QuotationTemplateVO {
     @JSONField(ordinal = 29, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
+    @ApiModelProperty(value = "计费重单位(1柜 2KG 3CBM 4车)")
+    private Integer billingWeightUnit;
 
     @ApiModelProperty(value = "整体时效")
     private String wholeTime;
@@ -149,7 +151,6 @@ public class QuotationTemplateVO {
             "1材积->重量：长*高*宽/计泡系数(单位KG)\n" +
             "2重量->材积：实重/计泡系数(单位CBM)")
     private Integer designFormulas;
-
 
     /*报价服务组:service_group*/
     @ApiModelProperty(value = "服务名称service_group.code_name", position = 30)

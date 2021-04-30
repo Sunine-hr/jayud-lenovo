@@ -1,13 +1,14 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.OrderInfo;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -167,7 +168,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param form
      * @return
      */
-    Long findOrderInfoDraftCount(QueryOrderInfoForm form);
+    Map<String,Long> findOrderInfoDraftCount(QueryOrderInfoForm form);
 
     /**
      * 订单详情-打印唛头（打印订单箱号）
@@ -249,4 +250,5 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<OrderInfoVO> newEditOrderInfo(OrderInfoNewForm form);
+
 }

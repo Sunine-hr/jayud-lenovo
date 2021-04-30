@@ -179,7 +179,7 @@
         <if test="form.customerId != null">
             and t.customer_id = #{form.customerId}
         </if>
-        and t.status = 0
+        and t.status = #{form.status}
     </select>
 
     <select id="findOrderConfInfoByOrderId" parameterType="java.lang.Long" resultType="java.lang.String">

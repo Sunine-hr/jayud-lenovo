@@ -1224,13 +1224,33 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public Long findOrderInfoDraftCount(QueryOrderInfoForm form) {
+    public Map<String,Long> findOrderInfoDraftCount(QueryOrderInfoForm form) {
         CustomerUser customerUser = baseService.getCustomerUser();
         form.setCustomerId(customerUser.getId().intValue());
-        Long draftNum = orderInfoMapper.findOrderInfoDraftCount(form);
-        return draftNum;
-    }
 
+        form.setStatus(0);//0 草稿
+        Long draftNum = orderInfoMapper.findOrderInfoDraftCount(form);
+        form.setStatus(10);//10 已下单
+        Long orderedNum = orderInfoMapper.findOrderInfoDraftCount(form);
+        form.setStatus(20);//20 已收货
+        Long receivedNum = orderInfoMapper.findOrderInfoDraftCount(form);
+        form.setStatus(30);//30 订单确认
+        Long affirNum = orderInfoMapper.findOrderInfoDraftCount(form);
+        form.setStatus(40);//40 转运中
+        Long transitNum = orderInfoMapper.findOrderInfoDraftCount(form);
+        form.setStatus(50);//50 已签收
+        Long signedNum = orderInfoMapper.findOrderInfoDraftCount(form);
+
+        Map<String,Long> totalMap = new HashMap<>();
+        totalMap.put("draftNum", draftNum);//草稿数量
+        totalMap.put("orderedNum", orderedNum);//已下单数量
+        totalMap.put("receivedNum", receivedNum);//已收货数量
+        totalMap.put("affirNum", affirNum);//订单确认数量
+        totalMap.put("transitNum", transitNum);//转运中数量
+        totalMap.put("signedNum", signedNum);//已签收数量
+
+        return totalMap;
+    }
 
     @Override
     public CommonResult<List<String>> printOrderMark(Long orderId) {

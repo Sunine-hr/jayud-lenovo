@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/orderinfo")
@@ -61,8 +62,10 @@ public class OrderInfoController {
         CustomerUser customerUser = baseService.getCustomerUser();
         form.setCustomerId(customerUser.getId());//当前登录客户
         IPage<OrderInfoVO> pageList = orderInfoService.findWebOrderInfoByPage(form);
-        Long draftNum = orderInfoService.findOrderInfoDraftCount(form);
-        CommonPageDraftResult<OrderInfoVO> draftResult = new CommonPageDraftResult(pageList, draftNum);
+
+        Map<String,Long> totalMap = orderInfoService.findOrderInfoDraftCount(form);
+
+        CommonPageDraftResult<OrderInfoVO> draftResult = new CommonPageDraftResult(pageList, totalMap);
 
         return CommonResult.success(draftResult);
     }

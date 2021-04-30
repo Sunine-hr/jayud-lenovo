@@ -148,6 +148,9 @@ public class OrderInfo extends Model<OrderInfo> {
     @JSONField(ordinal = 26)
     private String extensionNumber;
 
+    @ApiModelProperty(value = "销售提成")
+    private BigDecimal salesCommission;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

@@ -134,6 +134,9 @@ public class OrderInfoForm {
     @JSONField(ordinal = 24)
     private String extensionNumber;
 
+    @ApiModelProperty(value = "销售提成")
+    private BigDecimal salesCommission;
+
     /*订单对应箱号信息:order_case*/
     @ApiModelProperty(value = "订单对应箱号信息list", position = 25)
     @JSONField(ordinal = 25)

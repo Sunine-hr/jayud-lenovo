@@ -134,6 +134,9 @@ public class OrderInfoVO {
     @JSONField(ordinal = 24)
     private String extensionNumber;
 
+    @ApiModelProperty(value = "销售提成")
+    private BigDecimal salesCommission;
+
     /*订单对应报关文件：order_customs_file*/
     @ApiModelProperty(value = "订单对应报关文件list", position = 25)
     @JSONField(ordinal = 25)

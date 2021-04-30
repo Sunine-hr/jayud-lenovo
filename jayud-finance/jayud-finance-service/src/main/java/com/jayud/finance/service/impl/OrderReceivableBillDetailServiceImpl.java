@@ -835,6 +835,15 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             return pageMap;
         }
 
+
+        //获取所有币种
+        Map<String, String> currencyMap = this.omsClient.initCurrencyInfo().getData()
+                .stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
+        //获取所有费用id
+        List<Long> costIds = pageInfo.getRecords().stream().map(PaymentNotPaidBillVO::getCostId).collect(toList());
+        //查询所有费用本币金额
+        Object costInfo = this.omsClient.getCostInfo(costIds, 0).getData();
+
         //所有的费用类型
         List<InitComboxVO> initComboxVOS = omsClient.findEnableCostGenre().getData();
         List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
@@ -860,6 +869,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 }
             }
             mainOrderNos.add(paymentNotPaidBill.getOrderNo());
+            paymentNotPaidBill.assemblyCostInfo(costInfo,currencyMap);
         }
         JSONArray array = new JSONArray(pageList);
         array = this.commonService.templateDataProcessing(pageList.get(0).getSubType(), array, mainOrderNos, 0);

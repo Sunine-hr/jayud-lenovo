@@ -1,5 +1,7 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -12,10 +14,12 @@ import com.jayud.mall.model.bo.CustomsDataForm;
 import com.jayud.mall.model.bo.QueryCustomsDataForm;
 import com.jayud.mall.model.po.CustomsData;
 import com.jayud.mall.model.vo.CustomsDataVO;
+import com.jayud.mall.model.vo.TemplateUrlVO;
 import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.ICustomsDataService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +37,10 @@ import java.util.List;
 @Service
 public class CustomsDataServiceImpl extends ServiceImpl<CustomsDataMapper, CustomsData> implements ICustomsDataService {
 
+    //文件服务访问前缀
+    @Value("${file.absolute.path:}")
+    private String fileAbsolutePath;
+
     @Autowired
     CustomsDataMapper customsDataMapper;
 
@@ -46,6 +54,13 @@ public class CustomsDataServiceImpl extends ServiceImpl<CustomsDataMapper, Custo
         //定义排序规则
         page.addOrder(OrderItem.desc("t.id"));
         IPage<CustomsDataVO> pageInfo = customsDataMapper.findCustomsDataByPage(page, form);
+        List<CustomsDataVO> records = pageInfo.getRecords();
+        records.forEach(customsDataVO -> {
+            String picUrl = customsDataVO.getPicUrl();
+            if(StrUtil.isNotEmpty(picUrl)){
+                customsDataVO.setPicUrl(fileAbsolutePath+picUrl);
+            }
+        });
         return pageInfo;
     }
 
@@ -63,6 +78,8 @@ public class CustomsDataServiceImpl extends ServiceImpl<CustomsDataMapper, Custo
             if(count > 0){
                 return CommonResult.error( -1, "idCode,已存在。");
             }
+            customsData.setSuttleUnit("KG");
+            customsData.setGrossUnit("KG");
             AuthUser user = baseService.getUser();
             customsData.setStatus("1");
             customsData.setUserId(user.getId().intValue());
@@ -78,6 +95,12 @@ public class CustomsDataServiceImpl extends ServiceImpl<CustomsDataMapper, Custo
             if(count > 0){
                 return CommonResult.error( -1, "idCode,已存在。");
             }
+        }
+
+        TemplateUrlVO picUrls = form.getPicUrls();
+        if(ObjectUtil.isNotEmpty(picUrls)){
+            String relativePath = picUrls.getRelativePath();//相对路径
+            customsData.setPicUrl(relativePath);
         }
         this.saveOrUpdate(customsData);
         return CommonResult.success("保存报关资料，成功!");

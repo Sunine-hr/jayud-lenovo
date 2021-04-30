@@ -60,7 +60,9 @@
         t.create_time,
         t.additional_duty,
         t.sales_tax,
-        t.sundry_tax
+        t.sundry_tax,
+        t.brand,
+        t.specification
         from customs_data t
         WHERE
         1 = 1

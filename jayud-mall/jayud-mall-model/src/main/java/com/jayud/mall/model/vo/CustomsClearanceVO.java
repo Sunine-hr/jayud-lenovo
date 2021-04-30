@@ -134,5 +134,11 @@ public class CustomsClearanceVO {
     @JSONField(ordinal = 30)
     private BigDecimal sundryTax;
 
+    @ApiModelProperty(value = "品牌")
+    private String brand;
+
+    @ApiModelProperty(value = "规格型号")
+    private String specification;
+
 
 }

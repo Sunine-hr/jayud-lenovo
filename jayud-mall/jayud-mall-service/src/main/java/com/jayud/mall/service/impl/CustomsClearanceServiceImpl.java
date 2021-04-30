@@ -1,5 +1,7 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -12,10 +14,12 @@ import com.jayud.mall.model.bo.CustomsClearanceForm;
 import com.jayud.mall.model.bo.QueryCustomsClearanceForm;
 import com.jayud.mall.model.po.CustomsClearance;
 import com.jayud.mall.model.vo.CustomsClearanceVO;
+import com.jayud.mall.model.vo.TemplateUrlVO;
 import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.ICustomsClearanceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +37,10 @@ import java.util.List;
 @Service
 public class CustomsClearanceServiceImpl extends ServiceImpl<CustomsClearanceMapper, CustomsClearance> implements ICustomsClearanceService {
 
+    //文件服务访问前缀
+    @Value("${file.absolute.path:}")
+    private String fileAbsolutePath;
+
     @Autowired
     CustomsClearanceMapper customsClearanceMapper;
     @Autowired
@@ -45,6 +53,13 @@ public class CustomsClearanceServiceImpl extends ServiceImpl<CustomsClearanceMap
         //定义排序规则
         page.addOrder(OrderItem.desc("t.id"));
         IPage<CustomsClearanceVO> pageInfo = customsClearanceMapper.findCustomsClearanceByPage(page, form);
+        List<CustomsClearanceVO> records = pageInfo.getRecords();
+        records.forEach(customsClearanceVO -> {
+            String picUrl = customsClearanceVO.getPicUrl();
+            if(StrUtil.isNotEmpty(picUrl)){
+                customsClearanceVO.setPicUrl(fileAbsolutePath+picUrl);
+            }
+        });
         return pageInfo;
     }
 
@@ -63,6 +78,8 @@ public class CustomsClearanceServiceImpl extends ServiceImpl<CustomsClearanceMap
                 return CommonResult.error(-1, "idCode,已存在");
             }
             AuthUser user = baseService.getUser();
+            customsClearance.setSuttleUnit("KG");
+            customsClearance.setGrossUnit("KG");
             customsClearance.setStatus("1");
             customsClearance.setUserId(user.getId().intValue());
             customsClearance.setUserName(user.getName());
@@ -77,6 +94,13 @@ public class CustomsClearanceServiceImpl extends ServiceImpl<CustomsClearanceMap
                 return CommonResult.error(-1, "idCode,已存在");
             }
         }
+
+        TemplateUrlVO picUrls = form.getPicUrls();
+        if(ObjectUtil.isNotEmpty(picUrls)){
+            String relativePath = picUrls.getRelativePath();
+            customsClearance.setPicUrl(relativePath);
+        }
+
         this.saveOrUpdate(customsClearance);
         return CommonResult.success("保存清关，成功！");
     }

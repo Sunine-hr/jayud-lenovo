@@ -2,6 +2,7 @@ package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.jayud.mall.model.vo.TemplateUrlVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -104,6 +105,9 @@ public class CustomsClearanceForm {
     @JSONField(ordinal = 23)
     private String picUrl;
 
+    @ApiModelProperty(value = "图片文件上传")
+    private TemplateUrlVO picUrls;
+
     @ApiModelProperty(value = "状态(0无效 1有效)", position = 24)
     @JSONField(ordinal = 24)
     @TableField(value = "`status`")
@@ -120,5 +124,12 @@ public class CustomsClearanceForm {
     @ApiModelProperty(value = "杂税", position = 30)
     @JSONField(ordinal = 30)
     private BigDecimal sundryTax;
+
+    @ApiModelProperty(value = "品牌")
+    private String brand;
+
+    @ApiModelProperty(value = "规格型号")
+    private String specification;
+
 
 }

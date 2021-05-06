@@ -9,10 +9,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.constant.SqlConstant;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.OrderOprCmdEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.FileClient;
@@ -240,11 +237,20 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
      */
     @Override
     public Integer getNumByStatus(String status, List<Long> legalIds) {
-        List<String> mainOrderNos = this.baseMapper.getMainOrderNoByStatus(status, legalIds);
-        if (CollectionUtils.isEmpty(mainOrderNos)) {
-            return 0;
+        Integer num = 0;
+        switch (status) {
+            case "portFeeCheck":
+                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.BG.getSignOne(), legalIds).getData();
+                break;
+            default:
+                List<String> mainOrderNos = this.baseMapper.getMainOrderNoByStatus(status, legalIds);
+                if (CollectionUtils.isEmpty(mainOrderNos)) {
+                    return 0;
+                }
+                num=this.omsClient.getFilterOrderStatus(mainOrderNos, 1).getData();
         }
-        return this.omsClient.getFilterOrderStatus(mainOrderNos, 1).getData();
+
+        return num == null ? 0 : num;
     }
 
     @Override

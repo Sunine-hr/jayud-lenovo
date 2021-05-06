@@ -3,8 +3,10 @@ package com.jayud.oceanship.controller;
 import cn.hutool.core.collection.CollectionUtil;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oceanship.bo.AddSeaOrderForm;
 import com.jayud.oceanship.feign.OauthClient;
+import com.jayud.oceanship.feign.OmsClient;
 import com.jayud.oceanship.po.SeaOrder;
 import com.jayud.oceanship.service.ICabinetSizeNumberService;
 import com.jayud.oceanship.service.ISeaOrderService;
@@ -43,12 +45,12 @@ public class ExternalApiController {
 
     @Autowired
     private ICabinetSizeNumberService cabinetSizeNumberService;
-
     @Autowired
     private OauthClient oauthClient;
-
     @Autowired
     private ISeaReplenishmentService seaReplenishmentService;
+    @Autowired
+    private OmsClient omsClient;
 
     /**
      * 创建海运单
@@ -112,10 +114,11 @@ public class ExternalApiController {
         tmp.put("确认到港", "S_8");
         tmp.put("海外代理", "S_9");
         tmp.put("订单签收", "S_10");
+        tmp.put("费用审核", "seaCostAudit");
         List<Map<String, Object>> result = new ArrayList<>();
 
-        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
-        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = legalEntityByLegalName.getData();
 
         for (Map<String, Object> menus : menusList) {
 
@@ -126,6 +129,8 @@ public class ExternalApiController {
             if(status != null) {
                 if(status.equals("S_4") || status.equals("S_5") || status.equals("S_7")){
                     num = this.seaReplenishmentService.getNumByStatus(status, legalIds);
+                }else if ("seaCostAudit".equals(status)) { //费用审核
+                    num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.HY.getSignOne(), legalIds).getData();
                 }else{
                     num = this.seaOrderService.getNumByStatus(status, legalIds);
                 }

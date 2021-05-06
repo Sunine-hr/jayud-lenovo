@@ -20,7 +20,7 @@
     <select id="findOrderCopeWithByOrderId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OrderCopeWithVO">
         select
-            t.id,t.order_id,t.cost_code,t.cost_name,t.supplier_id,t.count,t.unit_price,t.amount,t.cid,t.remarks,t.bill_id,t.status,
+            t.id,t.order_id,t.cost_code,t.cost_name,t.supplier_id,t.calculate_way,t.count,t.unit_price,t.amount,t.cid,t.remarks,t.bill_id,t.status,
         t1.company_name supplierName,
         t2.currency_code,t2.currency_name
         from order_cope_with t
@@ -32,7 +32,7 @@
 
     <select id="findOrderCopeWithByOrderIdAndBillId" resultType="com.jayud.mall.model.vo.OrderCopeWithVO">
         select
-            t.id,t.order_id,t.cost_code,t.cost_name,t.supplier_id,t.count,t.unit_price,t.amount,t.cid,t.remarks,t.bill_id,t.status,
+            t.id,t.order_id,t.cost_code,t.cost_name,t.supplier_id,t.calculate_way,t.count,t.unit_price,t.amount,t.cid,t.remarks,t.bill_id,t.status,
         t1.company_name supplierName,
         t2.currency_code,t2.currency_name
         from order_cope_with t

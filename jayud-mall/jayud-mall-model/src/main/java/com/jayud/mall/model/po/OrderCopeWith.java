@@ -50,6 +50,9 @@ public class OrderCopeWith extends Model<OrderCopeWith> {
     @JSONField(ordinal = 5)
     private Integer supplierId;
 
+    @ApiModelProperty(value = "计算方式(1自动 2手动)")
+    private Integer calculateWay;
+
     @ApiModelProperty(value = "数量")
     private BigDecimal count;
 

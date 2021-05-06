@@ -55,5 +55,8 @@ public class CreateOrderCaseForm {
     @JSONField(ordinal = 7)
     private String beginNumber;
 
+    @ApiModelProperty(value = "报价id(offer_info id)", position = 8)
+    private Integer offerInfoId;
+
 
 }

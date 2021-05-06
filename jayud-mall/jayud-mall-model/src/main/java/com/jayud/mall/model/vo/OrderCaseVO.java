@@ -43,7 +43,7 @@ public class OrderCaseVO {
     @JSONField(ordinal = 7)
     private BigDecimal asnHeight;
 
-    @ApiModelProperty(value = "客户测量的重量，单位kg", position = 8)
+    @ApiModelProperty(value = "客户测量的重量，单位kg 实际重", position = 8)
     @JSONField(ordinal = 8)
     private BigDecimal asnWeight;
 
@@ -158,5 +158,12 @@ public class OrderCaseVO {
     @JSONField(ordinal = 32)
     private String orderConfNo;
 
+    /*材积重 = (长cm * 宽cm * 高cm) / 计泡系数 */
+    @ApiModelProperty(value = "材积重", position = 33)
+    private BigDecimal volumeWeight;
+
+    /* 收费重 ，比较 实际重 和 材积重 的大小，谁大取谁 */
+    @ApiModelProperty(value = "收费重", position = 20)
+    private BigDecimal chargeWeight;
 
 }

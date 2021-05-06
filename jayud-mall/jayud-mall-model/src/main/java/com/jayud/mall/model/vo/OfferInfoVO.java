@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -148,6 +149,18 @@ public class OfferInfoVO {
     @ApiModelProperty(value = "操作信息", position = 31)
     @JSONField(ordinal = 31)
     private String templateRemarks;
+
+    @ApiModelProperty(value = "计泡系数(默认6000)", position = 23)
+    @JSONField(ordinal = 23)
+    private BigDecimal bubbleCoefficient;
+
+    @ApiModelProperty(value = "计费重单位(1柜 2KG 3CBM 4车)")
+    private Integer billingWeightUnit;
+
+    @ApiModelProperty(value = "计算公式\n" +
+            "1材积->重量：长*高*宽/计泡系数(单位KG)\n" +
+            "2重量->材积：实重/计泡系数(单位CBM)")
+    private Integer designFormulas;
 
     /*报价服务组:service_group*/
     @ApiModelProperty(value = "服务名称service_group.code_name", position = 32)

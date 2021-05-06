@@ -73,18 +73,28 @@ public class OrderCaseController {
         }
 
         CaseVO caseVO = new CaseVO();
-        //(客户预报)总重量
+        //(客户预报)总重量 实际重
         BigDecimal totalAsnWeight = new BigDecimal("0");
+        //客户预报总的材积重 材积重
+        BigDecimal totalVolumeWeight = new BigDecimal("0");
+        //客户预报总的收费重 收费重
+        BigDecimal totalChargeWeight = new BigDecimal("0");
         //(客户预报)总体积
         BigDecimal totalAsnVolume = new BigDecimal("0");
 
         for (int i = 0; i<orderCaseVOList.size(); i++){
             BigDecimal asnWeight = orderCaseVOList.get(i).getAsnWeight();
+            BigDecimal volumeWeight = orderCaseVOList.get(i).getVolumeWeight();
+            BigDecimal chargeWeight = orderCaseVOList.get(i).getChargeWeight();
             BigDecimal asnVolume = orderCaseVOList.get(i).getAsnVolume();
             totalAsnWeight = totalAsnWeight.add(asnWeight);
+            totalVolumeWeight = totalVolumeWeight.add(volumeWeight);
+            totalChargeWeight = totalChargeWeight.add(chargeWeight);
             totalAsnVolume = totalAsnVolume.add(asnVolume);
         }
         caseVO.setTotalAsnWeight(totalAsnWeight);
+        caseVO.setTotalVolumeWeight(totalVolumeWeight);
+        caseVO.setTotalChargeWeight(totalChargeWeight);
         caseVO.setTotalAsnVolume(totalAsnVolume);
         caseVO.setTotalCase(orderCaseVOList.size());
         caseVO.setOrderCaseVOList(orderCaseVOList);

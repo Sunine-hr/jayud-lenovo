@@ -17,6 +17,15 @@ ALTER TABLE `order_cope_with`
 ADD COLUMN `count` decimal(10, 4) NULL COMMENT '数量' AFTER `supplier_id`,
 ADD COLUMN `unit_price` decimal(20, 2) NULL COMMENT '单价' AFTER `count`;
 
-ALTER TABLE `jayud_shop`.`order_cope_receivable`
+ALTER TABLE `order_cope_receivable`
 ADD COLUMN `count` decimal(20, 4) NULL COMMENT '数量' AFTER `cost_name`,
 ADD COLUMN `unit_price` decimal(20, 2) NULL COMMENT '单价' AFTER `count`;
+
+ALTER TABLE `order_cope_with`
+ADD COLUMN `calculate_way` int(10) NULL DEFAULT 1 COMMENT '计算方式(1自动 2手动)' AFTER `supplier_id`;
+
+ALTER TABLE `order_cope_receivable`
+ADD COLUMN `calculate_way` int(10) NULL DEFAULT 1 COMMENT '计算方式(1自动 2手动)' AFTER `cost_name`;
+
+
+

@@ -46,6 +46,12 @@ public class OrderCopeReceivable extends Model<OrderCopeReceivable> {
     @JSONField(ordinal = 4)
     private String costName;
 
+    @ApiModelProperty(value = "数量")
+    private BigDecimal count;
+
+    @ApiModelProperty(value = "单价")
+    private BigDecimal unitPrice;
+
     @ApiModelProperty(value = "金额", position = 5)
     @JSONField(ordinal = 5)
     private BigDecimal amount;

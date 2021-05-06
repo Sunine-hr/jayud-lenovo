@@ -50,6 +50,12 @@ public class OrderCopeWith extends Model<OrderCopeWith> {
     @JSONField(ordinal = 5)
     private Integer supplierId;
 
+    @ApiModelProperty(value = "数量")
+    private BigDecimal count;
+
+    @ApiModelProperty(value = "单价")
+    private BigDecimal unitPrice;
+
     @ApiModelProperty(value = "金额", position = 6)
     @JSONField(ordinal = 6)
     private BigDecimal amount;

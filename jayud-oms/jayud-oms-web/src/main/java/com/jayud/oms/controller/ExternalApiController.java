@@ -98,6 +98,8 @@ public class ExternalApiController {
     private IOrderTypeNumberService orderTypeNumberService;
     @Autowired
     private IOrderFlowSheetService orderFlowSheetService;
+    @Autowired
+    private ICostCommonService costCommonService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -1112,6 +1114,7 @@ public class ExternalApiController {
         Map<String, String> tmp = new HashMap<>();
         tmp.put("外部报关放行", "outPortPass");
         tmp.put("通关前审核", "portPassCheck");
+        tmp.put("费用审核", "feeCheck");
 
         List<Map<String, Object>> result = new ArrayList<>();
 
@@ -1131,6 +1134,9 @@ public class ExternalApiController {
                         break;
                     case "portPassCheck":
                         num = this.orderInfoService.pendingGoCustomsAuditNum(legalIds);
+                        break;
+                    case "feeCheck":
+                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds);
                         break;
                 }
 
@@ -1322,6 +1328,17 @@ public class ExternalApiController {
         return ApiResult.ok(costStatus);
     }
 
+    /**
+     * 查询待审核费用订单数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/auditPendingExpenses")
+    public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
+                                                   @RequestParam("legalIds") List<Long> legalIds) {
+        Integer num = this.costCommonService.auditPendingExpenses(subType, legalIds);
+        return ApiResult.ok(num);
+    }
 }
 
 

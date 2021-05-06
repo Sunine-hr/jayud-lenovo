@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -26,4 +27,10 @@ public interface OrderPaymentCostMapper extends BaseMapper<OrderPaymentCost> {
     List<DriverOrderPaymentCostVO> getDriverOrderPaymentCost(@Param("orderNo") String orderNo);
 
     InputPaymentCostVO getWriteBackFCostData(@Param("costId") Long costId);
+
+    /**
+     * 查询待处理费用审核
+     */
+    List<Map<String, Object>> getPendingExpenseApproval(@Param("subType") String subType,
+                                                        @Param("orderNos") List<String> orderNos, List<Long> legalIds);
 }

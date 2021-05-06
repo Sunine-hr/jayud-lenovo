@@ -104,7 +104,7 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
 
     @Override
     public Map<String, Object> getOrderCostStatus(List<String> mainOrderNos, List<String> subOrderNos,
-                                                  Map<String,Object> callbackParam) {
+                                                  Map<String, Object> callbackParam) {
 
         /**
          * 已录单:当数据库存在费用,并且金额不为0状态,就为已录单状态
@@ -188,7 +188,7 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
                 map.put(k, str);
             }
             //回滚参数
-            callbackParam.put(k,v);
+            callbackParam.put(k, v);
         });
         return map;
     }
@@ -205,5 +205,13 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
         }
 
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 查询待处理费用审核
+     */
+    @Override
+    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds) {
+        return this.baseMapper.getPendingExpenseApproval(subType, orderNos,legalIds);
     }
 }

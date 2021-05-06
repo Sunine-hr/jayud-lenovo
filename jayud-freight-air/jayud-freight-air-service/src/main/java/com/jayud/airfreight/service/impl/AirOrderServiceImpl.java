@@ -563,7 +563,15 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
      */
     @Override
     public Integer getNumByStatus(String status, List<Long> legalIds) {
-        Integer num = this.baseMapper.getNumByStatus(status, legalIds);
+        Integer num = 0;
+        switch (status) {
+            case "airFeeCheck":
+                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.KY.getSignOne(), legalIds).getData();
+                break;
+            default:
+                num = this.baseMapper.getNumByStatus(status, legalIds);
+        }
+
         return num == null ? 0 : num;
     }
 

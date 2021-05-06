@@ -74,9 +74,9 @@ public class OrderCaseServiceImpl extends ServiceImpl<OrderCaseMapper, OrderCase
 
 
         //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
-        BigDecimal volume = length.multiply(width).multiply(height).divide(new BigDecimal("1000000"));
+        BigDecimal volume = length.multiply(width).multiply(height).divide(new BigDecimal("1000000"),2, BigDecimal.ROUND_HALF_UP);
         //材积重(CBM) = (长cm * 宽cm * 高cm) / 计泡系数
-        BigDecimal volumeWeight = length.multiply(width).multiply(height).divide(bubbleCoefficient);
+        BigDecimal volumeWeight = length.multiply(width).multiply(height).divide(bubbleCoefficient,2, BigDecimal.ROUND_HALF_UP);
         //收费重 ，比较实际重和材积重的大小，谁大取谁 chargeWeight
         BigDecimal chargeWeight = new BigDecimal("0");
         if(weight.compareTo(volumeWeight) == 1){

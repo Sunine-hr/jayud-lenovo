@@ -16,6 +16,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.OrderEnum;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.*;
@@ -567,18 +569,30 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderCopeReceivable> orderCopeReceivables = new ArrayList<>();
         //(1)订柜尺寸 对应 应收`海运费`
         String reserveSize = form.getReserveSize();
+        //订单对应箱号信息:order_case
+        List<OrderCaseVO> orderCaseVOList2 = form.getOrderCaseVOList();
+        CaseVO caseVO = structuralOrderCase(orderCaseVOList2, offerInfoId);
+        //客户预报的总收费重 收费重
+        BigDecimal totalChargeWeight = caseVO.getTotalChargeWeight();
+
         /*订柜尺寸：海运费规格*/
         List<TemplateCopeReceivableVO> oceanFeeList =
                 templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
         for (int i = 0; i<oceanFeeList.size(); i++){
             TemplateCopeReceivableVO templateCopeReceivableVO = oceanFeeList.get(i);
             String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+            //查看订舱区间，判断费用代码是否相等，相等则列入海运费 费用明细
             if(specificationCode.equals(reserveSize)){
                 OrderCopeReceivable orderCopeReceivable = new OrderCopeReceivable();
                 orderCopeReceivable.setOrderId(orderId);//订单ID(order_info id)
                 orderCopeReceivable.setCostCode(templateCopeReceivableVO.getCostCode());//费用代码(cost_item cost_code)
                 orderCopeReceivable.setCostName(templateCopeReceivableVO.getCostName());//费用名称(cost_item cost_name)
-                orderCopeReceivable.setAmount(templateCopeReceivableVO.getAmount());//金额
+
+                orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
+                orderCopeReceivable.setCount(totalChargeWeight);//数量 --> 海运费数量，取订单箱号的 收费重
+                orderCopeReceivable.setUnitPrice(templateCopeReceivableVO.getUnitPrice());//单价
+                orderCopeReceivable.setAmount(totalChargeWeight.multiply(templateCopeReceivableVO.getUnitPrice()).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+
                 orderCopeReceivable.setCid(templateCopeReceivableVO.getCid());//币种(currency_info id)
                 orderCopeReceivable.setRemarks(templateCopeReceivableVO.getRemarks());//描述
                 //应收 海运费
@@ -594,12 +608,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         for (int i=0; i<inlandFeeList.size(); i++){
             TemplateCopeReceivableVO templateCopeReceivableVO = inlandFeeList.get(i);
             String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+            //查看集货仓库，判断费用代码是否相等，相等则列入陆运费 费用明细
             if(specificationCode.equals(storeGoodsWarehouseCode)){
                 OrderCopeReceivable orderCopeReceivable = new OrderCopeReceivable();
                 orderCopeReceivable.setOrderId(orderId);//订单ID(order_info id)
                 orderCopeReceivable.setCostCode(templateCopeReceivableVO.getCostCode());//费用代码(cost_item cost_code)
                 orderCopeReceivable.setCostName(templateCopeReceivableVO.getCostName());//费用名称(cost_item cost_name)
+
+                orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
+                orderCopeReceivable.setCount(new BigDecimal(templateCopeReceivableVO.getCount().toString()));//数量
+                orderCopeReceivable.setUnitPrice(templateCopeReceivableVO.getUnitPrice());//单价
                 orderCopeReceivable.setAmount(templateCopeReceivableVO.getAmount());//金额
+
                 orderCopeReceivable.setCid(templateCopeReceivableVO.getCid());//币种(currency_info id)
                 orderCopeReceivable.setRemarks(templateCopeReceivableVO.getRemarks());//描述
                 //应收 内陆费
@@ -622,6 +642,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderCopeReceivable.setOrderId(orderId);//订单ID(order_info id)
             orderCopeReceivable.setCostCode(templateCopeReceivableVO.getCostCode());//费用代码(cost_item cost_code)
             orderCopeReceivable.setCostName(templateCopeReceivableVO.getCostName());//费用名称(cost_item cost_name)
+            orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
+            orderCopeReceivable.setCount(new BigDecimal(templateCopeReceivableVO.getCount().toString()));//数量
+            orderCopeReceivable.setUnitPrice(templateCopeReceivableVO.getUnitPrice());//单价
             orderCopeReceivable.setAmount(templateCopeReceivableVO.getAmount());//金额
             orderCopeReceivable.setCid(templateCopeReceivableVO.getCid());//币种(currency_info id)
             orderCopeReceivable.setRemarks(templateCopeReceivableVO.getRemarks());//描述
@@ -652,6 +675,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderCopeWith.setCostCode(templateCopeWithVO.getCostCode());//费用代码(cost_item cost_code)
             orderCopeWith.setCostName(templateCopeWithVO.getCostName());//费用名称(cost_item cost_name)
             orderCopeWith.setSupplierId(templateCopeWithVO.getSupplierId());//供应商id(supplier_info id)
+            orderCopeWith.setCalculateWay(templateCopeWithVO.getCalculateWay());//计算方式(1自动 2手动)
+            orderCopeWith.setCount(new BigDecimal(templateCopeWithVO.getCount().toString()));//数量
+            orderCopeWith.setUnitPrice(templateCopeWithVO.getUnitPrice());//单价
             orderCopeWith.setAmount(templateCopeWithVO.getAmount());//金额
             orderCopeWith.setCid(templateCopeWithVO.getCid());//币种(currency_info id)
             orderCopeWith.setRemarks(templateCopeWithVO.getRemarks());//描述
@@ -667,6 +693,68 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
 
         return CommonResult.success(ConvertUtil.convert(orderInfo, OrderInfoVO.class));
+    }
+
+    private CaseVO structuralOrderCase(List<OrderCaseVO> orderCaseVOList, Integer offerInfoId) {
+        OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(Long.valueOf(offerInfoId));
+        if(ObjectUtil.isEmpty(offerInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "报价不存在");
+        }
+        //计泡系数(默认6000)
+        BigDecimal bubbleCoefficient = (offerInfoVO.getBubbleCoefficient() == null) ? new BigDecimal("6000") : offerInfoVO.getBubbleCoefficient();
+
+
+        for (int i=0; i < orderCaseVOList.size(); i++){
+            OrderCaseVO orderCaseVO = orderCaseVOList.get(i);
+            BigDecimal length = orderCaseVO.getAsnLength();//长
+            BigDecimal width = orderCaseVO.getAsnWidth();//宽
+            BigDecimal height = orderCaseVO.getAsnHeight();//高
+            BigDecimal weight = orderCaseVO.getAsnWeight();//重
+
+            //材积重(CBM) = (长cm * 宽cm * 高cm) / 计泡系数
+            BigDecimal volumeWeight = length.multiply(width).multiply(height).divide(bubbleCoefficient,2, BigDecimal.ROUND_HALF_UP);
+            //收费重 ，比较实际重和材积重的大小，谁大取谁 chargeWeight
+            BigDecimal chargeWeight = new BigDecimal("0");
+            if(weight.compareTo(volumeWeight) == 1){
+                //weight > volumeWeight
+                chargeWeight = weight;
+            }else{
+                chargeWeight = volumeWeight;
+            }
+
+            orderCaseVO.setVolumeWeight(volumeWeight);//材积重
+            orderCaseVO.setChargeWeight(chargeWeight);//收费重
+
+        }
+
+        CaseVO caseVO = new CaseVO();
+        //(客户预报)总重量 实际重
+        BigDecimal totalAsnWeight = new BigDecimal("0");
+        //客户预报总的材积重 材积重
+        BigDecimal totalVolumeWeight = new BigDecimal("0");
+        //客户预报总的收费重 收费重
+        BigDecimal totalChargeWeight = new BigDecimal("0");
+        //(客户预报)总体积
+        BigDecimal totalAsnVolume = new BigDecimal("0");
+
+        for (int i = 0; i<orderCaseVOList.size(); i++){
+            BigDecimal asnWeight = orderCaseVOList.get(i).getAsnWeight();
+            BigDecimal volumeWeight = orderCaseVOList.get(i).getVolumeWeight();
+            BigDecimal chargeWeight = orderCaseVOList.get(i).getChargeWeight();
+            BigDecimal asnVolume = orderCaseVOList.get(i).getAsnVolume();
+            totalAsnWeight = totalAsnWeight.add(asnWeight);
+            totalVolumeWeight = totalVolumeWeight.add(volumeWeight);
+            totalChargeWeight = totalChargeWeight.add(chargeWeight);
+            totalAsnVolume = totalAsnVolume.add(asnVolume);
+        }
+        caseVO.setTotalAsnWeight(totalAsnWeight);
+        caseVO.setTotalVolumeWeight(totalVolumeWeight);
+        caseVO.setTotalChargeWeight(totalChargeWeight);
+        caseVO.setTotalAsnVolume(totalAsnVolume);
+        caseVO.setTotalCase(orderCaseVOList.size());
+        caseVO.setOrderCaseVOList(orderCaseVOList);
+
+        return caseVO;
     }
 
     /**

@@ -61,6 +61,9 @@ public class TemplateCopeWithVO {
     @JSONField(ordinal = 12)
     private String remarks;
 
+    @ApiModelProperty(value = "最小数量")
+    private BigDecimal minimumQuantity;
+
     //供应商代码
     @ApiModelProperty(value = "供应商代码", position = 13)
     @JSONField(ordinal = 13)

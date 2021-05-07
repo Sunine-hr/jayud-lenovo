@@ -97,6 +97,16 @@
 
     </select>
 
+    <select id="findTemplateCopeReceivableByQieAndSpecificationCode" resultType="com.jayud.mall.model.vo.TemplateCopeReceivableVO">
+        select
+            t.id,t.qie,t.cost_code,t.cost_name,t.specification_code,t.specification_name,t.calculate_way,t.count,t.unit,t.source,t.unit_price,t.cid,t.amount,t.remarks,t.minimum_quantity
+        from template_cope_receivable t
+        where 1=1
+        and t.qie=#{qie, jdbcType=INTEGER}
+        and t.specification_code = #{specification_code, jdbcType=VARCHAR}
+
+    </select>
+
 
 
 </mapper>

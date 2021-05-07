@@ -507,7 +507,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
-        CaseVO caseVO = structuralOrderCase(orderCaseVOList, offerInfoId);
+        //(1)订柜尺寸 对应 应收`海运费`  template_cope_receivable specification_code
+        String specification_code = form.getReserveSize();
+        CaseVO caseVO = structuralOrderCase(orderCaseVOList, offerInfoId, specification_code);
         BigDecimal totalChargeWeight = caseVO.getTotalChargeWeight();//客户预报的总收费重 收费重
         BigDecimal totalVolumeWeight = caseVO.getTotalVolumeWeight();//材积重
         BigDecimal totalAsnWeight = caseVO.getTotalAsnWeight();//实际重
@@ -709,14 +711,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return CommonResult.success(ConvertUtil.convert(orderInfo, OrderInfoVO.class));
     }
 
-    private CaseVO structuralOrderCase(List<OrderCaseVO> orderCaseVOList, Integer offerInfoId) {
+    private CaseVO structuralOrderCase(List<OrderCaseVO> orderCaseVOList, Integer offerInfoId, String specification_code) {
         OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(Long.valueOf(offerInfoId));
         if(ObjectUtil.isEmpty(offerInfoVO)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "报价不存在");
         }
+
+        Integer qie = offerInfoId;
+        TemplateCopeReceivableVO templateCopeReceivableVO = templateCopeReceivableMapper.findTemplateCopeReceivableByQieAndSpecificationCode(qie, specification_code);
+        if(ObjectUtil.isEmpty(templateCopeReceivableVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "费用不存在");
+        }
         //计泡系数(默认6000)
         BigDecimal bubbleCoefficient = (offerInfoVO.getBubbleCoefficient() == null) ? new BigDecimal("6000") : offerInfoVO.getBubbleCoefficient();
-
+        //最小数量(默认12) 即 最小 收费重
+        BigDecimal minimumQuantity = (templateCopeReceivableVO.getMinimumQuantity() == null) ? new BigDecimal("12") : templateCopeReceivableVO.getMinimumQuantity();
 
         for (int i=0; i < orderCaseVOList.size(); i++){
             OrderCaseVO orderCaseVO = orderCaseVOList.get(i);
@@ -735,7 +744,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }else{
                 chargeWeight = volumeWeight;
             }
-
+            if(chargeWeight.compareTo(minimumQuantity) < 0){
+                // chargeWeight  < minimumQuantity   收费重  < 最小收费重
+                chargeWeight = minimumQuantity;
+            }
             orderCaseVO.setVolumeWeight(volumeWeight);//材积重
             orderCaseVO.setChargeWeight(chargeWeight);//收费重
 
@@ -893,7 +905,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
-        CaseVO caseVO = structuralOrderCase(orderCaseVOList, offerInfoId);
+        //(1)订柜尺寸 对应 应收`海运费`  template_cope_receivable specification_code
+        String specification_code = form.getReserveSize();
+        CaseVO caseVO = structuralOrderCase(orderCaseVOList, offerInfoId, specification_code);
+
         BigDecimal totalChargeWeight = caseVO.getTotalChargeWeight();//客户预报的总收费重 收费重
         BigDecimal totalVolumeWeight = caseVO.getTotalVolumeWeight();//材积重
         BigDecimal totalAsnWeight = caseVO.getTotalAsnWeight();//实际重

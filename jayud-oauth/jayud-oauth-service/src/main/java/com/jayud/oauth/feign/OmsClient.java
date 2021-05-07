@@ -33,4 +33,13 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getCustomerMenuPendingNum")
     public ApiResult getCustomerMenuPendingNum(@RequestBody List<SystemMenu> menusList);
 
+    /**
+     * 供应商管理菜单待处理数量
+     *
+     * @param menusList
+     * @return
+     */
+    @RequestMapping(value = "/api/getSupplierMenuPendingNum")
+    public ApiResult getSupplierMenuPendingNum(@RequestBody List<SystemMenu> menusList);
+
 }

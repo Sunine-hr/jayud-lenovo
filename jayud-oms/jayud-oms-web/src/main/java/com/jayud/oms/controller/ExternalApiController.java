@@ -1377,6 +1377,42 @@ public class ExternalApiController {
         }
         return ApiResult.ok(result);
     }
+
+
+    /**
+     * 供应商管理菜单待处理数量
+     * @param menusList
+     * @return
+     */
+    @RequestMapping(value = "/api/getSupplierMenuPendingNum")
+    public ApiResult<Map<String, String>> getSupplierMenuPendingNum(@RequestBody List<Map<String, Object>> menusList) {
+        if (CollectionUtil.isEmpty(menusList)) {
+            return ApiResult.ok();
+        }
+        Map<String, String> tmp = new HashMap<>();
+        tmp.put("财务审核", "financialCheck");
+        tmp.put("总经办审核", "managerCheck");
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        ApiResult<List<Long>> legalEntityByLegalName = this.oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = legalEntityByLegalName.getData();
+
+        for (Map<String, Object> menus : menusList) {
+
+            Map<String, Object> map = new HashMap<>();
+            Object title = menus.get("title");
+            String status = tmp.get(title);
+            Integer num = 0;
+            if (status != null) {
+                num = this.customerInfoService.getNumByStatus(status, legalIds);
+            }
+            map.put("menusName", title);
+            map.put("num", num);
+            result.add(map);
+        }
+        return ApiResult.ok(result);
+    }
 }
 
 

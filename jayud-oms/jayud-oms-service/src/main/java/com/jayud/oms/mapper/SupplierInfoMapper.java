@@ -33,4 +33,12 @@ public interface SupplierInfoMapper extends BaseMapper<SupplierInfo> {
                                            @Param("auditStatus") String auditStatus,
                                            @Param("tablesDesc") String tablesDesc,
                                            @Param("supplierIds") List<Long> supplierIds);
+
+    /**
+     * 根据状态待处理数量
+     * @param status
+     * @param legalIds
+     * @return
+     */
+    Integer getNumByStatus(@Param("status") String status, @Param("legalIds")List<Long> legalIds);
 }

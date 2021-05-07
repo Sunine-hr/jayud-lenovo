@@ -104,7 +104,7 @@
                 and oi.`status` = 7
             </if>
             <if test="form.orderNo != null and form.orderNo != ''">
-                and oi.order_no = #{form.orderNo}
+                and oi.order_no like concat('%',#{form.orderNo},'%')
             </if>
             <!--        <if test="form.portCode != null and form.portCode != ''">-->
             <!--            and oi.portCode = #{form.portCode}-->

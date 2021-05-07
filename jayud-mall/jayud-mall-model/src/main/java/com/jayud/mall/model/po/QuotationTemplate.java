@@ -166,6 +166,12 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
             "2重量->材积：实重/计泡系数(单位CBM)")
     private Integer designFormulas;
 
+    @ApiModelProperty(value = "容量(数值)")
+    private BigDecimal volume;
+
+    @ApiModelProperty(value = "容量单位(1KG 2CBM)")
+    private Integer volumeUnit;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

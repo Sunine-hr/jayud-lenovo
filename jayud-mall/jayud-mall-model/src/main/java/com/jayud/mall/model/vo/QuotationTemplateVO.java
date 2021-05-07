@@ -152,6 +152,13 @@ public class QuotationTemplateVO {
             "2重量->材积：实重/计泡系数(单位CBM)")
     private Integer designFormulas;
 
+    @ApiModelProperty(value = "容量(数值)")
+    private BigDecimal volume;
+
+    @ApiModelProperty(value = "容量单位(1KG 2CBM)")
+    private Integer volumeUnit;
+
+
     /*报价服务组:service_group*/
     @ApiModelProperty(value = "服务名称service_group.code_name", position = 30)
     @JSONField(ordinal = 30)

@@ -143,10 +143,13 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             StringBuffer picUrl = new StringBuffer();
             for(int i=0; i<picUrlarr.size(); i++) {
                 PicUrlArrForm picUrlArrForm = picUrlarr.get(i);
-                if(i==0){
-                    picUrl.append(picUrlArrForm.getFilePath());
-                }else{
-                    picUrl.append(",").append(picUrlArrForm.getFilePath());
+                //解决磁盘满了，上传文件为空
+                if(ObjectUtil.isNotEmpty(picUrlArrForm)){
+                    if(i==0){
+                        picUrl.append(picUrlArrForm.getFilePath());
+                    }else{
+                        picUrl.append(",").append(picUrlArrForm.getFilePath());
+                    }
                 }
             }
             quotationTemplate.setPicUrl(picUrl.toString());

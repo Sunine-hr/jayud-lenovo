@@ -20,11 +20,11 @@ public class CaseVO {
     private BigDecimal totalChargeWeight;
 
     //(客户预报)总体积
-    @ApiModelProperty(value = "(客户预报)总体积")
+    @ApiModelProperty(value = "(客户预报)总体积 实际体积")
     private BigDecimal totalAsnVolume;
 
     //(客户预报)总箱数
-    @ApiModelProperty(value = "(客户预报)总箱数")
+    @ApiModelProperty(value = "(客户预报)总箱数 总箱数")
     private Integer totalCase;
 
     //箱号列表list

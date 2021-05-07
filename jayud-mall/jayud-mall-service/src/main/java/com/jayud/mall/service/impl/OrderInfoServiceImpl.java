@@ -504,10 +504,26 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         orderInfo.setStatus(OrderEnum.DRAFT.getCode());//订单状态
         orderInfo.setStatusName(OrderEnum.DRAFT.getName());//订单名称
+
+        //订单对应箱号信息:order_case
+        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+        CaseVO caseVO = structuralOrderCase(orderCaseVOList, offerInfoId);
+        BigDecimal totalChargeWeight = caseVO.getTotalChargeWeight();//客户预报的总收费重 收费重
+        BigDecimal totalVolumeWeight = caseVO.getTotalVolumeWeight();//材积重
+        BigDecimal totalAsnWeight = caseVO.getTotalAsnWeight();//实际重
+        BigDecimal totalAsnVolume = caseVO.getTotalAsnVolume();//实际体积
+        Integer totalCase = caseVO.getTotalCase();//总箱数
+
+        orderInfo.setChargeWeight(totalChargeWeight);
+        orderInfo.setVolumeWeight(totalVolumeWeight);
+        orderInfo.setActualWeight(totalAsnWeight);
+        orderInfo.setActualVolume(totalAsnVolume);
+        orderInfo.setTotalCartons(totalCase);
+
         this.saveOrUpdate(orderInfo);
 
         //保存-订单对应箱号信息:order_case
-        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+//        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
         List<OrderCase> orderCaseList = ConvertUtil.convertList(orderCaseVOList, OrderCase.class);
         orderCaseList.forEach(orderCase -> {
             orderCase.setOrderId(orderInfo.getId().intValue());
@@ -569,12 +585,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderCopeReceivable> orderCopeReceivables = new ArrayList<>();
         //(1)订柜尺寸 对应 应收`海运费`
         String reserveSize = form.getReserveSize();
-        //订单对应箱号信息:order_case
-        List<OrderCaseVO> orderCaseVOList2 = form.getOrderCaseVOList();
-        CaseVO caseVO = structuralOrderCase(orderCaseVOList2, offerInfoId);
-        //客户预报的总收费重 收费重
-        BigDecimal totalChargeWeight = caseVO.getTotalChargeWeight();
-
         /*订柜尺寸：海运费规格*/
         List<TemplateCopeReceivableVO> oceanFeeList =
                 templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
@@ -616,9 +626,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderCopeReceivable.setCostName(templateCopeReceivableVO.getCostName());//费用名称(cost_item cost_name)
 
                 orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
-                orderCopeReceivable.setCount(new BigDecimal(templateCopeReceivableVO.getCount().toString()));//数量
+                orderCopeReceivable.setCount(totalChargeWeight);//数量 --> 数量，取订单箱号的 收费重
                 orderCopeReceivable.setUnitPrice(templateCopeReceivableVO.getUnitPrice());//单价
-                orderCopeReceivable.setAmount(templateCopeReceivableVO.getAmount());//金额
+                orderCopeReceivable.setAmount(totalChargeWeight.multiply(templateCopeReceivableVO.getUnitPrice()).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
 
                 orderCopeReceivable.setCid(templateCopeReceivableVO.getCid());//币种(currency_info id)
                 orderCopeReceivable.setRemarks(templateCopeReceivableVO.getRemarks());//描述
@@ -642,10 +652,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderCopeReceivable.setOrderId(orderId);//订单ID(order_info id)
             orderCopeReceivable.setCostCode(templateCopeReceivableVO.getCostCode());//费用代码(cost_item cost_code)
             orderCopeReceivable.setCostName(templateCopeReceivableVO.getCostName());//费用名称(cost_item cost_name)
+
             orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
-            orderCopeReceivable.setCount(new BigDecimal(templateCopeReceivableVO.getCount().toString()));//数量
+            orderCopeReceivable.setCount(totalChargeWeight);//数量 --> 数量，取订单箱号的 收费重
             orderCopeReceivable.setUnitPrice(templateCopeReceivableVO.getUnitPrice());//单价
-            orderCopeReceivable.setAmount(templateCopeReceivableVO.getAmount());//金额
+            orderCopeReceivable.setAmount(totalChargeWeight.multiply(templateCopeReceivableVO.getUnitPrice()).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+
             orderCopeReceivable.setCid(templateCopeReceivableVO.getCid());//币种(currency_info id)
             orderCopeReceivable.setRemarks(templateCopeReceivableVO.getRemarks());//描述
             //应收 其他费用
@@ -675,10 +687,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderCopeWith.setCostCode(templateCopeWithVO.getCostCode());//费用代码(cost_item cost_code)
             orderCopeWith.setCostName(templateCopeWithVO.getCostName());//费用名称(cost_item cost_name)
             orderCopeWith.setSupplierId(templateCopeWithVO.getSupplierId());//供应商id(supplier_info id)
+
             orderCopeWith.setCalculateWay(templateCopeWithVO.getCalculateWay());//计算方式(1自动 2手动)
-            orderCopeWith.setCount(new BigDecimal(templateCopeWithVO.getCount().toString()));//数量
+            orderCopeWith.setCount(totalChargeWeight);//数量 --> 海运费数量，取订单箱号的 收费重
             orderCopeWith.setUnitPrice(templateCopeWithVO.getUnitPrice());//单价
-            orderCopeWith.setAmount(templateCopeWithVO.getAmount());//金额
+            orderCopeWith.setAmount(totalChargeWeight.multiply(templateCopeWithVO.getUnitPrice()).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+
             orderCopeWith.setCid(templateCopeWithVO.getCid());//币种(currency_info id)
             orderCopeWith.setRemarks(templateCopeWithVO.getRemarks());//描述
             //应付 费用
@@ -747,11 +761,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             totalChargeWeight = totalChargeWeight.add(chargeWeight);
             totalAsnVolume = totalAsnVolume.add(asnVolume);
         }
-        caseVO.setTotalAsnWeight(totalAsnWeight);
-        caseVO.setTotalVolumeWeight(totalVolumeWeight);
-        caseVO.setTotalChargeWeight(totalChargeWeight);
-        caseVO.setTotalAsnVolume(totalAsnVolume);
-        caseVO.setTotalCase(orderCaseVOList.size());
+        caseVO.setTotalAsnWeight(totalAsnWeight);//实际重
+        caseVO.setTotalVolumeWeight(totalVolumeWeight);//材积重
+        caseVO.setTotalChargeWeight(totalChargeWeight);//收费重
+        caseVO.setTotalAsnVolume(totalAsnVolume);//实际体积
+        caseVO.setTotalCase(orderCaseVOList.size());//总箱数
         caseVO.setOrderCaseVOList(orderCaseVOList);
 
         return caseVO;
@@ -876,10 +890,26 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //PLACED_AN_ORDER(10, "已下单：编辑、查看订单详情 "),
         orderInfo.setStatus(OrderEnum.PLACED_AN_ORDER.getCode());//订单状态
         orderInfo.setStatusName(OrderEnum.PLACED_AN_ORDER.getName());//订单名称
+
+        //订单对应箱号信息:order_case
+        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+        CaseVO caseVO = structuralOrderCase(orderCaseVOList, offerInfoId);
+        BigDecimal totalChargeWeight = caseVO.getTotalChargeWeight();//客户预报的总收费重 收费重
+        BigDecimal totalVolumeWeight = caseVO.getTotalVolumeWeight();//材积重
+        BigDecimal totalAsnWeight = caseVO.getTotalAsnWeight();//实际重
+        BigDecimal totalAsnVolume = caseVO.getTotalAsnVolume();//实际体积
+        Integer totalCase = caseVO.getTotalCase();//总箱数
+
+        orderInfo.setChargeWeight(totalChargeWeight);
+        orderInfo.setVolumeWeight(totalVolumeWeight);
+        orderInfo.setActualWeight(totalAsnWeight);
+        orderInfo.setActualVolume(totalAsnVolume);
+        orderInfo.setTotalCartons(totalCase);
+
         this.saveOrUpdate(orderInfo);
 
         //保存-订单对应箱号信息:order_case
-        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+//        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
         List<OrderCase> orderCaseList = ConvertUtil.convertList(orderCaseVOList, OrderCase.class);
         orderCaseList.forEach(orderCase -> {
             orderCase.setOrderId(orderInfo.getId().intValue());
@@ -888,34 +918,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderCaseQueryWrapper.eq("order_id", orderInfo.getId());
         orderCaseService.remove(orderCaseQueryWrapper);
         orderCaseService.saveOrUpdateBatch(orderCaseList);
-
-//        //TODO 保存，订单箱号 默认关联的配载柜号信息
-//        List<OrderCase> orderCaseList1 = orderCaseService.list(orderCaseQueryWrapper);//查询订单箱号
-//        //查询柜号信息-->根据报价查询配载id，配载查询提单id，提单查询柜号id，最终获取柜号信息
-//        List<OceanCounter> oceanCounterList = orderConfMapper.findOceanCounterByOfferInfoId(offerInfoId);
-//        //默认取第一个柜子
-//        if(CollUtil.isNotEmpty(oceanCounterList)){
-//            OceanCounter oceanCounter = oceanCounterList.get(0);
-//            Long hgId = oceanCounter.getId();//货柜id
-//            //货柜对应运单箱号信息
-//            List<CounterCase> counterCases = new ArrayList<>();
-//            //箱号
-//            List<Long> xhIds = new ArrayList<>();
-//            orderCaseList1.forEach(orderCase -> {
-//                Long xhId = orderCase.getId();
-//                xhIds.add(xhId);//箱号
-//                CounterCase counterCase = new CounterCase();
-//                counterCase.setOceanCounterId(hgId);//提单柜号id(ocean_counter id)
-//                counterCase.setOrderCaseId(xhId);//运单箱号id[订单箱号id](order_case id)
-//                counterCases.add(counterCase);//货柜对应运单箱号信息
-//            });
-//
-//            QueryWrapper<CounterCase> counterCaseQueryWrapper = new QueryWrapper<>();
-//            counterCaseQueryWrapper.in("order_case_id", xhIds);//运单箱号id[订单箱号id](order_case id)
-//            counterCaseService.remove(counterCaseQueryWrapper);//先删除
-//            counterCaseService.saveOrUpdateBatch(counterCases);//在保存 货柜对应运单箱号信息
-//        }
-
 
         //保存-订单对应商品：order_shop
         List<OrderShopVO> orderShopVOList = form.getOrderShopVOList();
@@ -974,12 +976,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         for (int i = 0; i<oceanFeeList.size(); i++){
             TemplateCopeReceivableVO templateCopeReceivableVO = oceanFeeList.get(i);
             String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+            //查看订舱区间，判断费用代码是否相等，相等则列入海运费 费用明细
             if(specificationCode.equals(reserveSize)){
                 OrderCopeReceivable orderCopeReceivable = new OrderCopeReceivable();
                 orderCopeReceivable.setOrderId(orderId);//订单ID(order_info id)
                 orderCopeReceivable.setCostCode(templateCopeReceivableVO.getCostCode());//费用代码(cost_item cost_code)
                 orderCopeReceivable.setCostName(templateCopeReceivableVO.getCostName());//费用名称(cost_item cost_name)
-                orderCopeReceivable.setAmount(templateCopeReceivableVO.getAmount());//金额
+
+                orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
+                orderCopeReceivable.setCount(totalChargeWeight);//数量 --> 海运费数量，取订单箱号的 收费重
+                orderCopeReceivable.setUnitPrice(templateCopeReceivableVO.getUnitPrice());//单价
+                orderCopeReceivable.setAmount(totalChargeWeight.multiply(templateCopeReceivableVO.getUnitPrice()).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+
                 orderCopeReceivable.setCid(templateCopeReceivableVO.getCid());//币种(currency_info id)
                 orderCopeReceivable.setRemarks(templateCopeReceivableVO.getRemarks());//描述
                 //应收 海运费
@@ -995,12 +1003,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         for (int i=0; i<inlandFeeList.size(); i++){
             TemplateCopeReceivableVO templateCopeReceivableVO = inlandFeeList.get(i);
             String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+            //查看集货仓库，判断费用代码是否相等，相等则列入陆运费 费用明细
             if(specificationCode.equals(storeGoodsWarehouseCode)){
                 OrderCopeReceivable orderCopeReceivable = new OrderCopeReceivable();
                 orderCopeReceivable.setOrderId(orderId);//订单ID(order_info id)
                 orderCopeReceivable.setCostCode(templateCopeReceivableVO.getCostCode());//费用代码(cost_item cost_code)
                 orderCopeReceivable.setCostName(templateCopeReceivableVO.getCostName());//费用名称(cost_item cost_name)
-                orderCopeReceivable.setAmount(templateCopeReceivableVO.getAmount());//金额
+
+                orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
+                orderCopeReceivable.setCount(totalChargeWeight);//数量 --> 数量，取订单箱号的 收费重
+                orderCopeReceivable.setUnitPrice(templateCopeReceivableVO.getUnitPrice());//单价
+                orderCopeReceivable.setAmount(totalChargeWeight.multiply(templateCopeReceivableVO.getUnitPrice()).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+
                 orderCopeReceivable.setCid(templateCopeReceivableVO.getCid());//币种(currency_info id)
                 orderCopeReceivable.setRemarks(templateCopeReceivableVO.getRemarks());//描述
                 //应收 内陆费
@@ -1023,17 +1037,24 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderCopeReceivable.setOrderId(orderId);//订单ID(order_info id)
             orderCopeReceivable.setCostCode(templateCopeReceivableVO.getCostCode());//费用代码(cost_item cost_code)
             orderCopeReceivable.setCostName(templateCopeReceivableVO.getCostName());//费用名称(cost_item cost_name)
-            orderCopeReceivable.setAmount(templateCopeReceivableVO.getAmount());//金额
+
+            orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
+            orderCopeReceivable.setCount(totalChargeWeight);//数量 --> 数量，取订单箱号的 收费重
+            orderCopeReceivable.setUnitPrice(templateCopeReceivableVO.getUnitPrice());//单价
+            orderCopeReceivable.setAmount(totalChargeWeight.multiply(templateCopeReceivableVO.getUnitPrice()).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+
             orderCopeReceivable.setCid(templateCopeReceivableVO.getCid());//币种(currency_info id)
             orderCopeReceivable.setRemarks(templateCopeReceivableVO.getRemarks());//描述
             //应收 其他费用
             orderCopeReceivables.add(orderCopeReceivable);
         }
 
-        QueryWrapper<OrderCopeReceivable> OrderCopeReceivableQueryWrapper = new QueryWrapper<>();
-        OrderCopeReceivableQueryWrapper.eq("order_id", orderInfo.getId());
-        orderCopeReceivableService.remove(OrderCopeReceivableQueryWrapper);//先删除
-        orderCopeReceivableService.saveOrUpdateBatch(orderCopeReceivables);//在保存  订单应收费用
+        if(CollUtil.isNotEmpty(orderCopeReceivables)){
+            QueryWrapper<OrderCopeReceivable> OrderCopeReceivableQueryWrapper = new QueryWrapper<>();
+            OrderCopeReceivableQueryWrapper.eq("order_id", orderInfo.getId());
+            orderCopeReceivableService.remove(OrderCopeReceivableQueryWrapper);//先删除
+            orderCopeReceivableService.saveOrUpdateBatch(orderCopeReceivables);//在保存  订单应收费用
+        }
 
         //订单 应付 费用
         List<OrderCopeWith> orderCopeWiths = new ArrayList<>();
@@ -1051,17 +1072,24 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderCopeWith.setCostCode(templateCopeWithVO.getCostCode());//费用代码(cost_item cost_code)
             orderCopeWith.setCostName(templateCopeWithVO.getCostName());//费用名称(cost_item cost_name)
             orderCopeWith.setSupplierId(templateCopeWithVO.getSupplierId());//供应商id(supplier_info id)
-            orderCopeWith.setAmount(templateCopeWithVO.getAmount());//金额
+
+            orderCopeWith.setCalculateWay(templateCopeWithVO.getCalculateWay());//计算方式(1自动 2手动)
+            orderCopeWith.setCount(totalChargeWeight);//数量 --> 海运费数量，取订单箱号的 收费重
+            orderCopeWith.setUnitPrice(templateCopeWithVO.getUnitPrice());//单价
+            orderCopeWith.setAmount(totalChargeWeight.multiply(templateCopeWithVO.getUnitPrice()).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+
             orderCopeWith.setCid(templateCopeWithVO.getCid());//币种(currency_info id)
             orderCopeWith.setRemarks(templateCopeWithVO.getRemarks());//描述
             //应付 费用
             orderCopeWiths.add(orderCopeWith);
         }
 
-        QueryWrapper<OrderCopeWith> orderCopeWithQueryWrapper = new QueryWrapper<>();
-        orderCopeWithQueryWrapper.eq("order_id", orderInfo.getId());
-        orderCopeWithService.remove(orderCopeWithQueryWrapper);//先删除
-        orderCopeWithService.saveOrUpdateBatch(orderCopeWiths);//在保存  订单应付费用
+        if(CollUtil.isNotEmpty(orderCopeWiths)){
+            QueryWrapper<OrderCopeWith> orderCopeWithQueryWrapper = new QueryWrapper<>();
+            orderCopeWithQueryWrapper.eq("order_id", orderInfo.getId());
+            orderCopeWithService.remove(orderCopeWithQueryWrapper);//先删除
+            orderCopeWithService.saveOrUpdateBatch(orderCopeWiths);//在保存  订单应付费用
+        }
 
         //TODO 提交订单时，创建订单任务
         List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS = waybillTaskRelevanceService.saveWaybillTaskRelevance(orderInfo);

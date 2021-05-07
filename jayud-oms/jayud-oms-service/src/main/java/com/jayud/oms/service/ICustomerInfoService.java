@@ -149,4 +149,11 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      */
     public CustomerInfo getByCode(String code);
 
+    /**
+     * 根据状态查询待处理数
+     * @param status
+     * @param legalIds
+     * @return
+     */
+    Integer getNumByStatus(String status, List<Long> legalIds);
 }

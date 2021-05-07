@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -21,5 +22,15 @@ public interface OmsClient {
     @ApiModelProperty(value = "获取菜单待处理数")
     @RequestMapping(value = "/api/getMenuPendingNum")
     public ApiResult getMenuPendingNum(@RequestBody List<SystemMenu> menusList);
+
+
+    /**
+     * 客户管理菜单待处理数量
+     *
+     * @param menusList
+     * @return
+     */
+    @RequestMapping(value = "/api/getCustomerMenuPendingNum")
+    public ApiResult getCustomerMenuPendingNum(@RequestBody List<SystemMenu> menusList);
 
 }

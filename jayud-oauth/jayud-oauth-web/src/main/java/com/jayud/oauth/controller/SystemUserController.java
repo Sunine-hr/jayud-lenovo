@@ -677,6 +677,9 @@ public class SystemUserController {
         if (SubOrderSignEnum.NL.getSignOne().equals(type)) { //TODO 待开发
             result.put(SubOrderSignEnum.NL.getSignOne(), this.inlandTpClient.getMenuPendingNum(systemMenus).getData());
         }
+        if ("customer".equals(type)) { //客户管理
+            result.put("customer", this.omsClient.getCustomerMenuPendingNum(systemMenus).getData());
+        }
         return CommonResult.success(result);
     }
 

@@ -1,5 +1,6 @@
 package com.jayud.oms.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
@@ -1338,6 +1339,43 @@ public class ExternalApiController {
                                                    @RequestParam("legalIds") List<Long> legalIds) {
         Integer num = this.costCommonService.auditPendingExpenses(subType, legalIds);
         return ApiResult.ok(num);
+    }
+
+
+    /**
+     * 客户管理菜单待处理数量
+     * @param menusList
+     * @return
+     */
+    @RequestMapping(value = "/api/getCustomerMenuPendingNum")
+    public ApiResult<Map<String, String>> getCustomerMenuPendingNum(@RequestBody List<Map<String, Object>> menusList) {
+        if (CollectionUtil.isEmpty(menusList)) {
+            return ApiResult.ok();
+        }
+        Map<String, String> tmp = new HashMap<>();
+        tmp.put("客服审核", "customer_service");
+        tmp.put("财务审核", "Finance");
+        tmp.put("总经办审核", "General_classics");
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        ApiResult<List<Long>> legalEntityByLegalName = this.oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = legalEntityByLegalName.getData();
+
+        for (Map<String, Object> menus : menusList) {
+
+            Map<String, Object> map = new HashMap<>();
+            Object title = menus.get("title");
+            String status = tmp.get(title);
+            Integer num = 0;
+            if (status != null) {
+                num = this.customerInfoService.getNumByStatus(status, legalIds);
+            }
+            map.put("menusName", title);
+            map.put("num", num);
+            result.add(map);
+        }
+        return ApiResult.ok(result);
     }
 }
 

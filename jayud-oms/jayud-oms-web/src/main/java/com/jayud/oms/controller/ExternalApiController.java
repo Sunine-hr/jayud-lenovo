@@ -1409,8 +1409,8 @@ public class ExternalApiController {
 
         List<Map<String, Object>> result = new ArrayList<>();
 
-        ApiResult<List<Long>> legalEntityByLegalName = this.oauthClient.getLegalIdBySystemName(UserOperator.getToken());
-        List<Long> legalIds = legalEntityByLegalName.getData();
+//        ApiResult<List<Long>> legalEntityByLegalName = this.oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+//        List<Long> legalIds = legalEntityByLegalName.getData();
 
         for (Map<String, Object> menus : menusList) {
 
@@ -1419,7 +1419,7 @@ public class ExternalApiController {
             String status = tmp.get(title);
             Integer num = 0;
             if (status != null) {
-                num = this.customerInfoService.getNumByStatus(status, legalIds);
+                num = this.supplierInfoService.getNumByStatus(status, null);
             }
             map.put("menusName", title);
             map.put("num", num);

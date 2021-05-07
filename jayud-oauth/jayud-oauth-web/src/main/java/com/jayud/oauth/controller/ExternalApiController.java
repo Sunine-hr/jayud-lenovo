@@ -327,7 +327,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "根据用户名获取用户所属法人主体")
     @RequestMapping(value = "/api/getLegalIdBySystemName")
-    public ApiResult getLegalIdBySystemName(@RequestParam("loginName") String loginName) {
+    public ApiResult<List<Long>> getLegalIdBySystemName(@RequestParam("loginName") String loginName) {
         SystemUser systemUser = userService.getSystemUserBySystemName(loginName);
         List<Long> legalId = systemUserLegalService.getLegalId(systemUser.getId());
         return ApiResult.ok(legalId);

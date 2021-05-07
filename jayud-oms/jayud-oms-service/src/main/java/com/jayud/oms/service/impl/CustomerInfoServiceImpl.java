@@ -437,4 +437,17 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         return this.baseMapper.selectOne(condition);
     }
 
+    /**
+     * 根据状态查询待处理数
+     *
+     * @param status
+     * @param legalIds
+     * @return
+     */
+    @Override
+    public Integer getNumByStatus(String status, List<Long> legalIds) {
+        Integer num = this.baseMapper.getNumByStatus(status, legalIds);
+        return num == null ? 0 : num;
+    }
+
 }

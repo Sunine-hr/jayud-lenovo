@@ -544,8 +544,14 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
      */
     @Override
     public Integer getNumByStatus(String status, List<Long> legalIds) {
-        //获取当前用户所属法人主体
-        Integer num = this.baseMapper.getNumByStatus(status, legalIds);
+        Integer num = 0;
+        switch (status) {
+            case "CostAudit":
+                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.ZGYS.getSignOne(), legalIds).getData();
+                break;
+            default:
+                num = this.baseMapper.getNumByStatus(status, legalIds);
+        }
         return num == null ? 0 : num;
     }
 

@@ -36,10 +36,10 @@
                 and create_user like concat('%',#{form.createUser},'%')
             </if>
             <if test="form.trainingStartTime != null">
-                and training_start_time <![CDATA[<=]]> #{form.trainingStartTime}
+                and training_start_time <![CDATA[>=]]> #{form.trainingStartTime}
             </if>
             <if test="form.trainingEndTime != null">
-                and training_end_time <![CDATA[>=]]> #{form.trainingEndTime}
+                and training_end_time <![CDATA[<=]]> #{form.trainingEndTime}
             </if>
         </where>
         order by id desc

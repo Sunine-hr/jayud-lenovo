@@ -2,7 +2,6 @@ package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.GetCostDetailForm;
-import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
 
@@ -57,6 +56,7 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
 
     /**
      * 是否录用过费用
+     *
      * @param orderNo
      * @param type    0.主订单,1子订单
      * @return
@@ -66,7 +66,12 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
     /**
      * 订单费用状态
      */
-    public Map<String,Object> getOrderCostStatus(List<String> mainOrderNo,List<String> subOrderNo,Map<String,Object> callbackParam);
+    public Map<String, Object> getOrderCostStatus(List<String> mainOrderNo, List<String> subOrderNo, Map<String, Object> callbackParam);
 
     List<OrderReceivableCost> getByType(List<String> orderNos, String subType);
+
+    /**
+     * 查询待处理费用审核
+     */
+    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds);
 }

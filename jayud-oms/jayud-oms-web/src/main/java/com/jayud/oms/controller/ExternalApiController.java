@@ -1,5 +1,6 @@
 package com.jayud.oms.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
@@ -98,6 +99,8 @@ public class ExternalApiController {
     private IOrderTypeNumberService orderTypeNumberService;
     @Autowired
     private IOrderFlowSheetService orderFlowSheetService;
+    @Autowired
+    private ICostCommonService costCommonService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -1112,6 +1115,7 @@ public class ExternalApiController {
         Map<String, String> tmp = new HashMap<>();
         tmp.put("外部报关放行", "outPortPass");
         tmp.put("通关前审核", "portPassCheck");
+        tmp.put("费用审核", "feeCheck");
 
         List<Map<String, Object>> result = new ArrayList<>();
 
@@ -1131,6 +1135,9 @@ public class ExternalApiController {
                         break;
                     case "portPassCheck":
                         num = this.orderInfoService.pendingGoCustomsAuditNum(legalIds);
+                        break;
+                    case "feeCheck":
+                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds);
                         break;
                 }
 
@@ -1336,6 +1343,90 @@ public class ExternalApiController {
         return ApiResult.ok(costStatus);
     }
 
+    /**
+     * 查询待审核费用订单数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/auditPendingExpenses")
+    public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
+                                                   @RequestParam("legalIds") List<Long> legalIds) {
+        Integer num = this.costCommonService.auditPendingExpenses(subType, legalIds);
+        return ApiResult.ok(num);
+    }
+
+
+    /**
+     * 客户管理菜单待处理数量
+     * @param menusList
+     * @return
+     */
+    @RequestMapping(value = "/api/getCustomerMenuPendingNum")
+    public ApiResult<Map<String, String>> getCustomerMenuPendingNum(@RequestBody List<Map<String, Object>> menusList) {
+        if (CollectionUtil.isEmpty(menusList)) {
+            return ApiResult.ok();
+        }
+        Map<String, String> tmp = new HashMap<>();
+        tmp.put("客服审核", "customer_service");
+        tmp.put("财务审核", "Finance");
+        tmp.put("总经办审核", "General_classics");
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        ApiResult<List<Long>> legalEntityByLegalName = this.oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = legalEntityByLegalName.getData();
+
+        for (Map<String, Object> menus : menusList) {
+
+            Map<String, Object> map = new HashMap<>();
+            Object title = menus.get("title");
+            String status = tmp.get(title);
+            Integer num = 0;
+            if (status != null) {
+                num = this.customerInfoService.getNumByStatus(status, legalIds);
+            }
+            map.put("menusName", title);
+            map.put("num", num);
+            result.add(map);
+        }
+        return ApiResult.ok(result);
+    }
+
+
+    /**
+     * 供应商管理菜单待处理数量
+     * @param menusList
+     * @return
+     */
+    @RequestMapping(value = "/api/getSupplierMenuPendingNum")
+    public ApiResult<Map<String, String>> getSupplierMenuPendingNum(@RequestBody List<Map<String, Object>> menusList) {
+        if (CollectionUtil.isEmpty(menusList)) {
+            return ApiResult.ok();
+        }
+        Map<String, String> tmp = new HashMap<>();
+        tmp.put("财务审核", "financialCheck");
+        tmp.put("总经办审核", "managerCheck");
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        ApiResult<List<Long>> legalEntityByLegalName = this.oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = legalEntityByLegalName.getData();
+
+        for (Map<String, Object> menus : menusList) {
+
+            Map<String, Object> map = new HashMap<>();
+            Object title = menus.get("title");
+            String status = tmp.get(title);
+            Integer num = 0;
+            if (status != null) {
+                num = this.customerInfoService.getNumByStatus(status, legalIds);
+            }
+            map.put("menusName", title);
+            map.put("num", num);
+            result.add(map);
+        }
+        return ApiResult.ok(result);
+    }
 }
 
 

@@ -222,4 +222,13 @@ public interface OmsClient {
     @RequestMapping(value = "/api/deleteOrderAddressByBusOrders")
     public ApiResult deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
                                                                       @RequestParam("businessType") Integer businessType);
+
+    /**
+     * 查询待审核费用订单数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/auditPendingExpenses")
+    ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
+                                            @RequestParam("legalIds") List<Long> legalIds);
 }

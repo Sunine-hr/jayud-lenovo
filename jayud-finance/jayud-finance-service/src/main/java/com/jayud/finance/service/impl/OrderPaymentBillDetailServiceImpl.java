@@ -577,7 +577,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         }
         //模板数据处理
 //        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
-        array = this.commonService.templateDataProcessing(cmd, array, mainOrderNos,1);
+        array = this.commonService.templateDataProcessing(cmd, array, mainOrderNos, 1);
         return array;
     }
 
@@ -640,7 +640,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         try {
             Class template = BillTemplateEnum.getTemplate(cmd);
             if (template != null) {
-                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template,false);
+                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template, false);
                 fixHeadList = Utilities.obj2List(maps, SheetHeadVO.class);
             } else {//TODO 增强不影响原有系统,除非更替完成
                 ViewFBilToOrderHeadVO viewBilToOrderVO = new ViewFBilToOrderHeadVO();
@@ -660,7 +660,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         } catch (Exception e) {
             e.printStackTrace();
         }
-        List<SheetHeadVO> dynamicHeadList =baseMapper.findSheetHead(billNo);
+        List<SheetHeadVO> dynamicHeadList = baseMapper.findSheetHead(billNo);
         for (SheetHeadVO sheetHead : dynamicHeadList) {
             sheetHead.setName(sheetHead.getName().toLowerCase());
         }
@@ -668,7 +668,6 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         allHeadList.addAll(dynamicHeadList);
         return allHeadList;
     }
-
 
 
     @Override
@@ -818,8 +817,16 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.createTimeStr"));
         IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findFBillAuditByPage(page, form);
-
-
+        if (pageInfo.getRecords() == null) {
+            return pageInfo;
+        }
+        //获取所有币种
+        Map<String, String> currencyMap = this.omsClient.initCurrencyInfo().getData()
+                .stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
+        //获取所有费用id
+        List<Long> costIds = pageInfo.getRecords().stream().map(PaymentNotPaidBillVO::getCostId).collect(toList());
+        //查询所有费用本币金额
+        Object costInfo = this.omsClient.getCostInfo(costIds, 1).getData();
 
 
         //所有的费用类型
@@ -845,7 +852,12 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                     paymentNotPaidBill.setEndAddress(receivableBillService.getWarehouseAddress(paymentNotPaidBill.getOrderNo()));
                 }
             }
+
+            paymentNotPaidBill.assemblyCostInfo(costInfo,currencyMap);
         }
+
+
+
         return pageInfo;
     }
 
@@ -1034,7 +1046,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     public int getEditBillNum(String billNo) {
         QueryWrapper<OrderPaymentBillDetail> condition = new QueryWrapper<>();
         condition.lambda().notIn(OrderPaymentBillDetail::getAuditStatus,
-                BillEnum.EDIT_DEL.getCode(),BillEnum.EDIT_NO_COMMIT.getCode())
+                BillEnum.EDIT_DEL.getCode(), BillEnum.EDIT_NO_COMMIT.getCode())
                 .eq(OrderPaymentBillDetail::getBillNo, billNo);
         return this.count(condition);
     }

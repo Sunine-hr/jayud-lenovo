@@ -42,7 +42,8 @@
         SELECT distinct
         opc.`id`,
         opc.`customer_code` customerCode ,
-        (select si.supplier_ch_name from supplier_info si where si.supplier_code = opc.customer_code limit 1)customerName,
+        (select si.supplier_ch_name from supplier_info si where si.supplier_code = opc.customer_code limit
+        1)customerName,
         opc.`cost_type_id` costTypeId,
         (SELECT ct.code_name FROM cost_type ct WHERE ct.id = opc.`cost_type_id` LIMIT 1) costType,
         opc.`cost_genre_id` costGenreId,
@@ -66,7 +67,7 @@
         where opc.`main_order_no` = #{form.mainOrderNo}
         <if test="form.cmd == 'main_cost'">
             and (opc.sub_type = 'main'
-            or (opc.is_sum_to_main = 1  and opc.`status` = '3'))
+            or (opc.is_sum_to_main = 1 and opc.`status` = '3'))
         </if>
         <if test="form.cmd == 'main_cost_audit'">
             and ((opc.`status` in ('2','3') and opc.sub_type = 'main')
@@ -82,31 +83,31 @@
             and opc.order_no = #{form.subOrderNo}
         </if>
 
-<!--        <if test="form.cmd == 'zgys_sub_cost'">-->
-<!--            and opc.sub_type = 'zgys'-->
-<!--            and opc.order_no = #{form.subOrderNo}-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'bg_sub_cost'">-->
-<!--            and opc.sub_type = 'bg'-->
-<!--            and opc.order_no = #{form.subOrderNo}-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky_sub_cost'">-->
-<!--            and opc.sub_type = 'ky'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'zgys_sub_cost_audit'">-->
-<!--            and opc.`status` in ('2','3')-->
-<!--            and opc.sub_type = 'zgys'-->
-<!--            and opc.order_no = #{form.subOrderNo}-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'bg_sub_cost_audit'">-->
-<!--            and opc.`status` in ('2','3')-->
-<!--            and opc.sub_type = 'bg'-->
-<!--            and opc.order_no = #{form.subOrderNo}-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky_sub_cost_audit'">-->
-<!--            and opc.`status` in ('2','3')-->
-<!--            and opc.sub_type = 'ky'-->
-<!--        </if>-->
+        <!--        <if test="form.cmd == 'zgys_sub_cost'">-->
+        <!--            and opc.sub_type = 'zgys'-->
+        <!--            and opc.order_no = #{form.subOrderNo}-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'bg_sub_cost'">-->
+        <!--            and opc.sub_type = 'bg'-->
+        <!--            and opc.order_no = #{form.subOrderNo}-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'ky_sub_cost'">-->
+        <!--            and opc.sub_type = 'ky'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'zgys_sub_cost_audit'">-->
+        <!--            and opc.`status` in ('2','3')-->
+        <!--            and opc.sub_type = 'zgys'-->
+        <!--            and opc.order_no = #{form.subOrderNo}-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'bg_sub_cost_audit'">-->
+        <!--            and opc.`status` in ('2','3')-->
+        <!--            and opc.sub_type = 'bg'-->
+        <!--            and opc.order_no = #{form.subOrderNo}-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'ky_sub_cost_audit'">-->
+        <!--            and opc.`status` in ('2','3')-->
+        <!--            and opc.sub_type = 'ky'-->
+        <!--        </if>-->
     </select>
 
     <select id="getDriverOrderPaymentCost" parameterType="string"
@@ -127,7 +128,8 @@
             and oc.order_no =#{orderNo}
         </where>
     </select>
-    <select id="getWriteBackFCostData" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputPaymentCostVO" >
+    <select id="getWriteBackFCostData" parameterType="java.lang.Long"
+            resultType="com.jayud.oms.model.vo.InputPaymentCostVO">
     	select temp.id,temp.exchangeRate,temp.amount * temp.exchangeRate changeAmount,temp.oCurrencyName from (
         SELECT
             opc.id,
@@ -139,5 +141,57 @@
         WHERE
             opc.id = #{costId}
         ) temp
+    </select>
+
+    <select id="getPendingExpenseApproval" resultType="java.util.Map">
+        <choose>
+            <when test="subType=='main'">
+                SELECT
+                opc.main_order_no mainOrderNo,
+                count( 1 )
+                FROM
+                `order_payment_cost` opc left join order_info oi on opc.main_order_no=oi.order_no
+                WHERE
+                opc.sub_type = "main"
+                AND opc.`status` = 2
+                AND oi.`status` IN (1,4)
+                <if test="orderNos != null and orderNos.size()>0">
+                    and main_order_no in
+                    <foreach collection="orderNos" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="legalIds != null and legalIds.size>0">
+                    and oi.`legal_entity_id` in
+                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                        #{legalId}
+                    </foreach>
+                </if>
+                GROUP BY opc.main_order_no
+            </when>
+            <otherwise>
+                SELECT
+                opc.order_no orderNo,
+                count( 1 )
+                FROM
+                `order_payment_cost` opc left join order_info oi on opc.main_order_no=oi.order_no
+                WHERE
+                opc.sub_type = #{subType}
+                AND opc.`status` = 2
+                <if test="orderNos != null and orderNos.size()>0">
+                    and opc.order_no in
+                    <foreach collection="orderNos" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="legalIds != null and legalIds.size>0">
+                    and oi.`legal_entity_id` in
+                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                        #{legalId}
+                    </foreach>
+                </if>
+                GROUP BY opc.order_no
+            </otherwise>
+        </choose>
     </select>
 </mapper>

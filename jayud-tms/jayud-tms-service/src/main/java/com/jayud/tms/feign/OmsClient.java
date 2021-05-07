@@ -228,4 +228,14 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getCostStatus")
     public ApiResult<Map<String, Object>> getCostStatus(@RequestParam("mainOrderNos") List<String> mainOrderNos,
                                                         @RequestParam("orderNos") List<String> orderNos);
+
+
+    /**
+     * 查询待审核费用订单数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/auditPendingExpenses")
+    ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
+                                            @RequestParam("legalIds") List<Long> legalIds);
 }

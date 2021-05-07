@@ -159,11 +159,12 @@ public class ExternalApiController {
         tmp.put("放行审核", "C_10");
         tmp.put("驳回列表", "C_5_1");
         tmp.put("通关确认", "C_5");
+        tmp.put("费用审核","portFeeCheck");
 
         List<Map<String, Object>> result = new ArrayList<>();
 
-        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
-        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds =legalEntityByLegalName.getData();
 
         for (Map<String, Object> menus : menusList) {
 

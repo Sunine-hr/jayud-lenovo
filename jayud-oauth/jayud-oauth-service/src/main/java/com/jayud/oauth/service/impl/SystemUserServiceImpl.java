@@ -230,7 +230,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
                     }
                 }
             }
-            systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
+//            systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
             systemUser.setStatus(1);//账户为启用状态
             systemUser.setAuditStatus(1);
             systemUser.setUpdatedUser(UserOperator.getToken());

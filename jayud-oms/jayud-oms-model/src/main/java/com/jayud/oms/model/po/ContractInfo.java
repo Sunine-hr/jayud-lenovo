@@ -69,5 +69,6 @@ public class ContractInfo extends Model<ContractInfo> {
     @ApiModelProperty(value = "合同绑定的业务id")
     private Long bindId;
 
-
+    @ApiModelProperty(value = "备注")
+    private String remarks;
 }

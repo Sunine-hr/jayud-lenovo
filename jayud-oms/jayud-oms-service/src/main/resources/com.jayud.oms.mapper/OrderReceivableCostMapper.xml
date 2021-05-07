@@ -4,28 +4,28 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.OrderReceivableCost">
-        <id column="id" property="id" />
-        <result column="main_order_no" property="mainOrderNo" />
-        <result column="biz_order_no" property="bizOrderNo" />
-        <result column="order_no" property="orderNo" />
-        <result column="customer_code" property="customerCode" />
-        <result column="customer_name" property="customerName" />
-        <result column="cost_type_id" property="costTypeId" />
-        <result column="cost_genre_id" property="costGenreId" />
-        <result column="unit" property="unit" />
-        <result column="cost_code" property="costCode" />
-        <result column="unit_price" property="unitPrice" />
-        <result column="number" property="number" />
-        <result column="currency_code" property="currencyCode" />
-        <result column="amount" property="amount" />
-        <result column="exchange_rate" property="exchangeRate" />
-        <result column="change_amount" property="changeAmount" />
-        <result column="remarks" property="remarks" />
-        <result column="status" property="status" />
-        <result column="opt_name" property="optName" />
-        <result column="opt_time" property="optTime" />
-        <result column="created_time" property="createdTime" />
-        <result column="created_user" property="createdUser" />
+        <id column="id" property="id"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="biz_order_no" property="bizOrderNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="customer_code" property="customerCode"/>
+        <result column="customer_name" property="customerName"/>
+        <result column="cost_type_id" property="costTypeId"/>
+        <result column="cost_genre_id" property="costGenreId"/>
+        <result column="unit" property="unit"/>
+        <result column="cost_code" property="costCode"/>
+        <result column="unit_price" property="unitPrice"/>
+        <result column="number" property="number"/>
+        <result column="currency_code" property="currencyCode"/>
+        <result column="amount" property="amount"/>
+        <result column="exchange_rate" property="exchangeRate"/>
+        <result column="change_amount" property="changeAmount"/>
+        <result column="remarks" property="remarks"/>
+        <result column="status" property="status"/>
+        <result column="opt_name" property="optName"/>
+        <result column="opt_time" property="optTime"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_user" property="createdUser"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -35,7 +35,8 @@
          created_user,cost_genre_id,unit
     </sql>
 
-    <select id="findReceivableCost" parameterType="com.jayud.oms.model.bo.GetCostDetailForm" resultType="com.jayud.oms.model.vo.InputReceivableCostVO" >
+    <select id="findReceivableCost" parameterType="com.jayud.oms.model.bo.GetCostDetailForm"
+            resultType="com.jayud.oms.model.vo.InputReceivableCostVO">
         SELECT distinct
         orc.`id`,
         orc.`customer_code` customerCode,
@@ -50,7 +51,8 @@
         orc.`unit_price` unitPrice,
         orc.`number`,
         orc.`currency_code` currencyCode,
-        (SELECT ci.currency_name FROM currency_info ci WHERE ci.currency_code = orc.`currency_code` LIMIT 1) currencyName,
+        (SELECT ci.currency_name FROM currency_info ci WHERE ci.currency_code = orc.`currency_code` LIMIT 1)
+        currencyName,
         orc.`amount`,
         orc.`change_amount` changeAmount,
         orc.`exchange_rate` exchangeRate,
@@ -63,7 +65,7 @@
         where orc.`main_order_no` = #{form.mainOrderNo}
         <if test="form.cmd == 'main_cost'">
             and (orc.sub_type = 'main'
-            or (orc.is_sum_to_main = 1  and orc.`status` = '3'))
+            or (orc.is_sum_to_main = 1 and orc.`status` = '3'))
         </if>
         <if test="form.cmd == 'main_cost_audit'">
             and ((orc.`status` in ('2','3') and orc.sub_type = 'main')
@@ -78,19 +80,20 @@
             and orc.sub_type = #{form.subType}
             and orc.order_no = #{form.subOrderNo}
         </if>
-<!--        <if test="form.cmd == 'bg_sub_cost_audit'">-->
-<!--            and orc.`status` in ('2','3')-->
-<!--            and orc.sub_type = 'bg'-->
-<!--            and orc.order_no = #{form.subOrderNo}-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky_sub_cost_audit'">-->
-<!--            and orc.`status` in ('2','3')-->
-<!--            and orc.sub_type = 'ky'-->
-<!--            and orc.order_no = #{form.subOrderNo}-->
-<!--        </if>-->
+        <!--        <if test="form.cmd == 'bg_sub_cost_audit'">-->
+        <!--            and orc.`status` in ('2','3')-->
+        <!--            and orc.sub_type = 'bg'-->
+        <!--            and orc.order_no = #{form.subOrderNo}-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'ky_sub_cost_audit'">-->
+        <!--            and orc.`status` in ('2','3')-->
+        <!--            and orc.sub_type = 'ky'-->
+        <!--            and orc.order_no = #{form.subOrderNo}-->
+        <!--        </if>-->
     </select>
 
-    <select id="getWriteBackSCostData" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputReceivableCostVO" >
+    <select id="getWriteBackSCostData" parameterType="java.lang.Long"
+            resultType="com.jayud.oms.model.vo.InputReceivableCostVO">
     select temp.id,temp.exchangeRate,temp.amount * temp.exchangeRate changeAmount,temp.oCurrencyName from (
         SELECT
             orc.id,
@@ -102,5 +105,56 @@
         WHERE
             orc.id = #{costId}
 	) temp
+    </select>
+    <select id="getPendingExpenseApproval" resultType="java.util.Map">
+        <choose>
+            <when test="subType=='main'">
+                SELECT
+                orc.main_order_no mainOrderNo,
+                count( 1 )
+                FROM
+                `order_receivable_cost` orc left join order_info oi on orc.main_order_no=oi.order_no
+                WHERE
+                orc.sub_type = "main"
+                AND orc.`status` = 2
+                AND oi.`status` IN (1,4)
+                <if test="orderNos!=null and orderNos.size()>0">
+                    and orc.main_order_no in
+                    <foreach collection="orderNos" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="legalIds != null and legalIds.size>0">
+                    and oi.`legal_entity_id` in
+                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                        #{legalId}
+                    </foreach>
+                </if>
+                GROUP BY orc.main_order_no
+            </when>
+            <otherwise>
+                SELECT
+                orc.order_no orderNo,
+                count( 1 )
+                FROM
+                `order_receivable_cost` orc left join order_info oi on orc.main_order_no=oi.order_no
+                WHERE
+                orc.sub_type = #{subType}
+                AND orc.`status` = 2
+                <if test="orderNos!=null and orderNos.size()>0">
+                    and orc.order_no in
+                    <foreach collection="orderNos" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="legalIds != null and legalIds.size>0">
+                    and oi.`legal_entity_id` in
+                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                        #{legalId}
+                    </foreach>
+                </if>
+                GROUP BY orc.order_no
+            </otherwise>
+        </choose>
     </select>
 </mapper>

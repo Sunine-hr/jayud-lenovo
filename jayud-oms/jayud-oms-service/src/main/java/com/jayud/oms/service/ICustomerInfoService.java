@@ -149,4 +149,5 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      */
     public CustomerInfo getByCode(String code);
 
+    List<CustomerInfo> getByCustomerName(String customerName);
 }

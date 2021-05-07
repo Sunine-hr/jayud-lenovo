@@ -1,9 +1,33 @@
 package com.jayud.storage.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.storage.model.bo.QueryWarehouseAreaShelves2Form;
+import com.jayud.storage.model.bo.QueryWarehouseAreaShelvesForm;
+import com.jayud.storage.model.bo.QueryWarehouseAreaShelvesLocationForm;
+import com.jayud.storage.model.bo.WarehouseAreaShelvesLocationForm;
+import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
+import com.jayud.storage.model.vo.LocationCodeVO;
+import com.jayud.storage.model.vo.WarehouseAreaShelvesFormVO;
+import com.jayud.storage.model.vo.WarehouseAreaShelvesLocationVO;
+import com.jayud.storage.model.vo.WarehouseAreaShelvesVO;
+import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
+import com.jayud.storage.service.IWarehouseAreaShelvesService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -14,8 +38,107 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2021-04-27
  */
 @RestController
+@Slf4j
+@Api(tags = "仓库区域货架库位管理")
 @RequestMapping("/warehouseAreaShelvesLocation")
 public class WarehouseAreaShelvesLocationController {
+
+    @Autowired
+    private IWarehouseAreaShelvesLocationService warehouseAreaShelvesLocationService;
+
+    @Autowired
+    private IWarehouseAreaShelvesService warehouseAreaShelvesService;
+
+    @ApiOperation(value = "分页查询所有货架")
+    @PostMapping("/findWarehouseAreaShelvesByPage")
+    public CommonResult findWarehouseAreaShelvesByPage(@RequestBody QueryWarehouseAreaShelves2Form form){
+        IPage<WarehouseAreaShelvesFormVO> page = this.warehouseAreaShelvesService.findWarehouseAreaShelvesLocationByPage(form);
+        //获取每个货架的最新库位情况
+        List<WarehouseAreaShelvesLocation> warehouseAreaShelvesLocationList = this.warehouseAreaShelvesLocationService.getUpdateTime();
+        for (WarehouseAreaShelvesLocation warehouseAreaShelvesLocation : warehouseAreaShelvesLocationList) {
+            for (WarehouseAreaShelvesFormVO record : page.getRecords()) {
+                if(record.getId().equals(warehouseAreaShelvesLocation.getShelvesId())){
+                    record.setUpdateTime(warehouseAreaShelvesLocation.getCreateTime().toString());
+                }
+            }
+        }
+        return CommonResult.success(page);
+    }
+
+    @ApiOperation(value = "查询货架下所有库位")
+    @PostMapping("/findWarehouseAreaShelvesLocationByPage")
+    public CommonResult findWarehouseAreaShelvesLocationByPage(@RequestBody QueryWarehouseAreaShelvesLocationForm form){
+        IPage<WarehouseAreaShelvesLocationVO> page = this.warehouseAreaShelvesLocationService.findWarehouseAreaShelvesLocationByPage(form);
+        return CommonResult.success(page);
+    }
+
+    @ApiOperation(value = "增加或修改库位信息")
+    @PostMapping("/saveOrUpdateWarehouseAreaShelvesLocation")
+    public CommonResult saveOrUpdateWarehouseAreaShelvesLocation(@RequestBody List<WarehouseAreaShelvesLocationForm> form){
+        boolean result = this.warehouseAreaShelvesLocationService.saveOrUpdateWarehouseAreaShelvesLocation(form);
+        if(!result){
+            return CommonResult.error(444,"数据插入失败");
+        }
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "查看库位编码")
+    @PostMapping("/viewLocationCode")
+    public CommonResult viewLocationCode(@RequestBody QueryWarehouseAreaShelvesLocationForm form){
+        List<WarehouseAreaShelvesLocationVO> warehouseAreaShelvesLocations = this.warehouseAreaShelvesLocationService.getlistByShelvesId(form);
+        List<LocationCodeVO> locationCodeVOS = new ArrayList<>();
+
+        for (WarehouseAreaShelvesLocationVO warehouseAreaShelvesLocation : warehouseAreaShelvesLocations) {
+            LocationCodeVO locationCodeVO = ConvertUtil.convert(warehouseAreaShelvesLocation, LocationCodeVO.class);
+            if(warehouseAreaShelvesLocation.getShelvesType().equals("A面")){
+                StringBuffer locationCode = new StringBuffer();
+                locationCode.append(warehouseAreaShelvesLocation.getCode()).append("-")
+                        .append(warehouseAreaShelvesLocation.getAreaCode()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesName()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
+                        .append("A").append(warehouseAreaShelvesLocation.getShelvesColumn());
+                locationCodeVO.setLocationCode(locationCode.toString());
+                locationCodeVOS.add(locationCodeVO);
+            }
+            if(warehouseAreaShelvesLocation.getShelvesType().equals("B面")){
+                StringBuffer locationCode = new StringBuffer();
+                locationCode.append(warehouseAreaShelvesLocation.getCode()).append("-")
+                        .append(warehouseAreaShelvesLocation.getAreaCode()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesName()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
+                        .append("B").append(warehouseAreaShelvesLocation.getShelvesColumn());
+                locationCodeVO.setLocationCode(locationCode.toString());
+                locationCodeVOS.add(locationCodeVO);
+            }
+            if(warehouseAreaShelvesLocation.getShelvesType().equals("AB面")){
+                StringBuffer locationCode = new StringBuffer();
+                locationCode.append(warehouseAreaShelvesLocation.getCode()).append("-")
+                        .append(warehouseAreaShelvesLocation.getAreaCode()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesName()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
+                        .append("A").append(warehouseAreaShelvesLocation.getShelvesColumn());
+                locationCodeVO.setLocationCode(locationCode.toString());
+                LocationCodeVO locationCodeVO1 = locationCodeVO;
+
+                StringBuffer locationCode1 = new StringBuffer();
+                locationCode1.append(warehouseAreaShelvesLocation.getCode()).append("-")
+                        .append(warehouseAreaShelvesLocation.getAreaCode()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesName()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
+                        .append("A").append(warehouseAreaShelvesLocation.getShelvesColumn());
+                locationCodeVO1.setLocationCode(locationCode1.toString());
+                locationCodeVOS.add(locationCodeVO);
+                locationCodeVOS.add(locationCodeVO1);
+            }else {
+                log.warn("货架类型不存在，无法生成货架编码");
+            }
+        }
+        return CommonResult.success(locationCodeVOS);
+    }
 
 }
 

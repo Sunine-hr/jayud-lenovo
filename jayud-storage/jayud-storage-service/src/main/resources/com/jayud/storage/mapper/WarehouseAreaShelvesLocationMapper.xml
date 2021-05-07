@@ -26,4 +26,34 @@
         id, shelves_id, shelves_line, shelves_column, shelves_type, length, width, height, maximum_weight, category_upper_limit, is_good, status, create_user, create_time, remarks
     </sql>
 
+    <select id="" resultType="com.jayud.storage.model.po.WarehouseAreaShelvesLocation">
+        select a.id,a.createTime,a.shelvesId from
+        (select id,create_time createTime,shelves_id shelvesId from warehouse_area_shelves_location wasl where status = 1 group by shelvesId) a
+        where not exists (select 1 from (select id,create_time createTime,shelves_id shelvesId from warehouse_area_shelves_location wasl where status = 1 group by shelvesId) b
+        b.shelvesId = a.shelvesId and b.createTime > a.createTime
+        )
+    </select>
+
+    <select id="findWarehouseAreaShelvesLocationByPage" resultType="com.jayud.storage.model.vo.WarehouseAreaShelvesLocationVO">
+        select id, shelves_id shelvesId, shelves_line shelvesLine, shelves_column shelvesColumn, shelves_type shelvesType,
+        length, width, height, maximum_weight maximumWeight, category_upper_limit categoryUpperLimit,w.name,w.code,wa.area_name areaName,wa.area_code areaCode
+        from warehouse_area_shelves_location wasl
+        left join warehouse_area_shelves was on wasl.shelves_id = was.id
+        left join warehouse_area wa on wa.`id` = was.`area_id`
+        left join warehouse w on w.`id` = wa.`warehouse_id`
+        where status = 1 and wasl.shelves_id = #{form.shelvesId}
+        order by create_time desc
+    </select>
+
+    <select id="getlistByShelvesId" resultType="com.jayud.storage.model.vo.WarehouseAreaShelvesLocationVO">
+        select id, shelves_id shelvesId, shelves_line shelvesLine, shelves_column shelvesColumn, shelves_type shelvesType,
+        length, width, height, maximum_weight maximumWeight, category_upper_limit categoryUpperLimit,w.name,w.code,wa.area_name areaName,wa.area_code areaCode
+        from warehouse_area_shelves_location wasl
+        left join warehouse_area_shelves was on wasl.shelves_id = was.id
+        left join warehouse_area wa on wa.`id` = was.`area_id`
+        left join warehouse w on w.`id` = wa.`warehouse_id`
+        where status = 1 and wasl.shelves_id = #{form.shelvesId}
+        order by create_time desc
+    </select>
+
 </mapper>

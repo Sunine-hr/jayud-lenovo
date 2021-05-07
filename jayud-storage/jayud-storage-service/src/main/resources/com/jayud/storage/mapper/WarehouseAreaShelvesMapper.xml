@@ -16,7 +16,36 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, area_name, area_code, shelves_name, status, create_user, create_time, remarks
+        id, area_name, area_code, shelves_name, status, create_user, create_time, remarks,area_id
     </sql>
 
+    <select id="findWarehouseAreaShelvesByPage" resultType="com.jayud.storage.model.vo.WarehouseAreaShelvesVO">
+    select id, area_name areaName, area_code areaCode,shelves_name shelvesName , status, create_user createUser, create_time createTime, remarks,
+    from warehouse_area_shelves was
+    left join warehouse_area wa on wa.`id` = was.`area_id`
+    where status = 1 and wa.`id` = #{form.id} order by createTime desc
+    </select>
+
+    <select id="findWarehouseAreaShelvesLocationByPage" resultType="com.jayud.storage.model.vo.WarehouseAreaShelvesFormVO">
+        select id, area_name areaName, area_code areaCode,shelves_name shelvesName , w.name,w.code
+        from warehouse_area_shelves was
+        left join warehouse_area wa on wa.`id` = was.`area_id`
+        left join warehouse w on w.`id` = wa.`warehouse_id`
+        where status = 1
+        <if test="form.areaName !=null and form.areaName!=''">
+            and wa.areaName = #{form.areaName}
+        </if>
+        <if test="form.areaCode !=null and form.areaCode!=''">
+            and wa.areaCode = #{form.areaCode}
+        </if>
+        <if test="form.name !=null and form.name!=''">
+            and w.name = #{form.name}
+        </if>
+        <if test="form.code !=null and form.code!=''">
+            and w.code = #{form.code}
+        </if>
+        <if test="form.shelvesName !=null and form.shelvesName!=''">
+            and was.code = #{form.shelvesName}
+        </if>
+    </select>
 </mapper>

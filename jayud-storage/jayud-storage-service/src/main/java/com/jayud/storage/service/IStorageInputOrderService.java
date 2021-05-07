@@ -1,13 +1,12 @@
 package com.jayud.storage.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.storage.model.bo.QueryStorageOrderForm;
-import com.jayud.storage.model.bo.StorageInProcessOptForm;
-import com.jayud.storage.model.bo.StorageInputOrderForm;
+import com.jayud.storage.model.bo.*;
 import com.jayud.storage.model.po.StorageInputOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.storage.model.vo.StorageInputOrderFormVO;
 import com.jayud.storage.model.vo.StorageInputOrderVO;
+import com.jayud.storage.model.vo.StorageInputOrderWarehouseingVO;
 
 /**
  * <p>
@@ -64,4 +63,27 @@ public interface IStorageInputOrderService extends IService<StorageInputOrder> {
      * @param form
      */
     boolean confirmEntry(StorageInProcessOptForm form);
+
+    /**
+     * 分页获取仓储入库订单信息
+     * @param form
+     * @return
+     */
+    IPage<StorageInputOrderWarehouseingVO> findWarehousingByPage(QueryStorageOrderForm form);
+
+    /**
+     * 操作仓储入库流程
+     * @param form
+     * @return
+     */
+    boolean warehousingEntry(StorageInProcessOptForm form);
+
+    /**
+     * 驳回操作
+     * @param tmp
+     * @param auditInfoForm
+     * @param storageInCargoRejected
+     */
+    void orderReceiving(StorageInputOrder tmp, AuditInfoForm auditInfoForm, StorageInCargoRejected storageInCargoRejected);
+
 }

@@ -9,6 +9,7 @@ import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
 import com.jayud.storage.model.bo.AuditInfoForm;
 import com.jayud.storage.model.bo.StorageInProcessOptForm;
+import com.jayud.storage.model.bo.StorageOutProcessOptForm;
 import com.jayud.storage.model.vo.InitComboxWarehouseVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -33,6 +34,12 @@ public interface OmsClient {
     @RequestMapping(value = "/api/mainOrder/getByCustomerName")
     ApiResult getByCustomerName(@RequestParam("customerName") String customerName);
 
+    /**
+     * 根据客户名称获取客户信息
+     */
+    @RequestMapping(value = "/api/mainOrder/getCustomerIdByCustomerName")
+    ApiResult getCustomerIdByCustomerName(@RequestParam("customerName") String customerName);
+
 
     /**
      * 根据主订单集合查询主订单信息
@@ -45,6 +52,12 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/saveOprStatus")
     ApiResult saveOprStatus(@RequestBody StorageInProcessOptForm form);
+
+    /**
+     * 只记录成功操作流程状态
+     */
+    @RequestMapping(value = "/api/saveOprStatus")
+    ApiResult saveOprStatus(@RequestBody StorageOutProcessOptForm form);
 
     /**
      * 记录审核信息

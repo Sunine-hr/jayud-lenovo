@@ -36,8 +36,9 @@
         <if test="form.code !=null and form.code!=''">
             and w.code = #{form.code}
         </if>
-        <if test="form.createTime !=null and form.createTime!=''">
-            and wa.createTime = #{form.createTime}
+        <if test="form.createTime != null and form.createTime.size>0">
+            and w.create_time <![CDATA[ >= ]]> concat(date_format(#{form.startTime}, '%Y-%m-%d'), ' 00:00:00')
+            and w.create_time <![CDATA[ <= ]]> concat(date_format(#{form.endTime}, '%Y-%m-%d'), ' 23:59:59');
         </if>
         order by createTime desc
     </select>
@@ -60,8 +61,11 @@
         <if test="form.code !=null and form.code!=''">
             and w.code = #{form.code}
         </if>
-        <if test="form.createTime !=null and form.createTime!=''">
-            and wa.createTime = #{form.createTime}
+        <if test="form.startTime !=null and form.startTime!=''">
+            and w.create_time <![CDATA[>= ]]> #{form.startTime}
+        </if>
+        <if test="form.endTime !=null and form.endTime!=''">
+            and w.create_time <![CDATA[<= ]]> #{form.endTime}
         </if>
         order by createTime desc
     </select>

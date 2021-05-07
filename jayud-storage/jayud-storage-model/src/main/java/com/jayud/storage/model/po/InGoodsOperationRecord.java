@@ -77,6 +77,9 @@ public class InGoodsOperationRecord extends Model<InGoodsOperationRecord> {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
+    @ApiModelProperty(value = "是否已入库（0为未入库，1为已入库）")
+    private Integer isWarehousing;
+
 
     @Override
     protected Serializable pkVal() {

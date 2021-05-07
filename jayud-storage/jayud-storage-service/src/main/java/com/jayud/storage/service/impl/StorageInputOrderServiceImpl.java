@@ -22,12 +22,10 @@ import com.jayud.storage.model.po.*;
 import com.jayud.storage.mapper.StorageInputOrderMapper;
 import com.jayud.storage.model.vo.StorageInputOrderFormVO;
 import com.jayud.storage.model.vo.StorageInputOrderVO;
+import com.jayud.storage.model.vo.StorageInputOrderWarehouseingVO;
 import com.jayud.storage.model.vo.WarehouseGoodsVO;
-import com.jayud.storage.service.IInGoodsOperationRecordService;
-import com.jayud.storage.service.IStorageInputOrderDetailsService;
-import com.jayud.storage.service.IStorageInputOrderService;
+import com.jayud.storage.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.storage.service.IWarehouseGoodsService;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,7 +63,13 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
     private IInGoodsOperationRecordService inGoodsOperationRecordService;
 
     @Autowired
+    private IGoodsLocationRecordService goodsLocationRecordService;
+
+    @Autowired
     private RedisUtils redisUtils;
+
+    @Autowired
+    private IStockService stockService;
 
     @Override
     public String createOrder(StorageInputOrderForm storageInputOrderForm) {
@@ -139,8 +143,110 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
     }
 
     @Override
+    public IPage<StorageInputOrderWarehouseingVO> findWarehousingByPage(QueryStorageOrderForm form) {
+        if(form.getProcessStatus() !=null ){
+            form.setProcessStatusList(Collections.singletonList(form.getProcessStatus()));
+        }else{
+            if (StringUtils.isEmpty(form.getStatus())) { //订单列表
+                form.setProcessStatusList(Arrays.asList(ProcessStatusEnum.PROCESSING.getCode()
+                        , ProcessStatusEnum.COMPLETE.getCode(), ProcessStatusEnum.CLOSE.getCode()));
+            } else {
+                form.setProcessStatusList(Collections.singletonList(ProcessStatusEnum.PROCESSING.getCode()));
+            }
+
+        }
+
+        //获取当前用户所属法人主体
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+
+        Page<StorageInputOrderWarehouseingVO> page = new Page<>(form.getPageNum(), form.getPageSize());
+        return this.baseMapper.findWarehousingByPage(page, form,legalIds);
+    }
+
+    @Override
+    public boolean warehousingEntry(StorageInProcessOptForm form) {
+        List<InGoodsOperationRecordForm> inGoodsOperationRecords = form.getInGoodsOperationRecords();
+        for (InGoodsOperationRecordForm inGoodsOperationRecord : inGoodsOperationRecords) {
+            List<GoodsLocationRecordForm> goodsLocationRecordForms = inGoodsOperationRecord.getGoodsLocationRecordForms();
+            for (GoodsLocationRecordForm goodsLocationRecordForm : goodsLocationRecordForms) {
+                if(goodsLocationRecordForm.getKuId()!=null && goodsLocationRecordForm.getNumber()!=null){
+                    GoodsLocationRecord goodsLocationRecord = ConvertUtil.convert(goodsLocationRecordForm, GoodsLocationRecord.class);
+                    goodsLocationRecord.setIngoodId(inGoodsOperationRecord.getId());
+                    goodsLocationRecord.setCreateUser(UserOperator.getToken());
+                    goodsLocationRecord.setCreateTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
+                    boolean b = goodsLocationRecordService.saveOrUpdate(goodsLocationRecord);
+                    if(!b){
+                        return false;
+                    }
+                    Stock stock = new Stock();
+                    stock.setGoodName(inGoodsOperationRecord.getName());
+                    stock.setSku(inGoodsOperationRecord.getSku());
+                    stock.setSpecificationModel(inGoodsOperationRecord.getSpecificationModel());
+                    stock.setLockStock(goodsLocationRecord.getNumber());
+                    boolean result = stockService.saveStock(stock);
+                    if(!result){
+                        return false;
+                    }
+                }
+
+            }
+            InGoodsOperationRecord inGoodsOperationRecord1 = ConvertUtil.convert(inGoodsOperationRecord, InGoodsOperationRecord.class);
+            inGoodsOperationRecord1.setIsWarehousing(1);
+            boolean b = inGoodsOperationRecordService.saveOrUpdate(inGoodsOperationRecord1);
+            if(!b){
+                return false;
+            }
+        }
+        //获取该订单所有入仓信息
+        boolean flag = true;
+        List<InGoodsOperationRecord> listByOrderId = inGoodsOperationRecordService.getListByOrderId(form.getId(), form.getOrderNo());
+        for (InGoodsOperationRecord inGoodsOperationRecord : listByOrderId) {
+            if(!inGoodsOperationRecord.getIsWarehousing().equals(1)){
+                flag = false;
+            }
+        }
+        if(flag){
+            StorageInputOrder storageInputOrder = new StorageInputOrder();
+            storageInputOrder.setId(form.getId());
+            storageInputOrder.setStatus(form.getStatus());
+            this.baseMapper.updateById(storageInputOrder);
+            this.finishStorageOrderOpt(storageInputOrder);
+            this.storageProcessOptRecord(form);
+            return true;
+        }
+        if(!flag){
+            StorageInputOrder storageInputOrder = new StorageInputOrder();
+            storageInputOrder.setId(form.getId());
+            form.setStatusName("该批次入库成功");
+            form.setStatus("CCI_2");
+            this.baseMapper.updateById(storageInputOrder);
+            this.finishStorageOrderOpt(storageInputOrder);
+            this.storageProcessOptRecord(form);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void orderReceiving(StorageInputOrder storageInputOrder, AuditInfoForm auditInfoForm, StorageInCargoRejected storageInCargoRejected) {
+        StorageInputOrder tmp = new StorageInputOrder();
+        tmp.setId(storageInputOrder.getId());
+        tmp.setUpdateTime(LocalDateTime.now());
+        tmp.setUpdateUser(UserOperator.getToken());
+        tmp.setStatus(auditInfoForm.getAuditStatus());
+
+        omsClient.saveAuditInfo(auditInfoForm);
+        omsClient.doMainOrderRejectionSignOpt(storageInputOrder.getMainOrderNo(),
+                storageInputOrder.getOrderNo() + "-" + auditInfoForm.getAuditComment() + ",");
+
+        omsClient.saveAuditInfo(auditInfoForm);
+        this.updateById(tmp);
+    }
+
+    @Override
     public void warehouseReceipt(StorageInProcessOptForm form) {
-        form.setOperatorUser(form.getOperatorUser());
+        form.setOperatorUser(UserOperator.getToken());
         form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageInputOrder storageInputOrder = new StorageInputOrder();
         storageInputOrder.setOrderTaker(form.getOperatorUser());
@@ -192,7 +298,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
     @Override
     public boolean confirmEntry(StorageInProcessOptForm form) {
         redisUtils.delete(form.getOrderNo());
-        form.setOperatorUser(form.getOperatorUser());
+        form.setOperatorUser(UserOperator.getToken());
         form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageInputOrderDetails storageInputOrderDetails = ConvertUtil.convert(form, StorageInputOrderDetails.class);
         boolean insert = storageInputOrderDetailsService.saveOrUpdate(storageInputOrderDetails);
@@ -235,6 +341,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
             form.setStatusName("确认入仓提交");
             form.setStatus("CCI_1");
             this.baseMapper.updateById(storageInputOrder);
+            this.finishStorageOrderOpt(storageInputOrder);
             this.storageProcessOptRecord(form);
             return true;
         }
@@ -244,16 +351,18 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
             storageInputOrder.setIsSubmit(1);
             storageInputOrder.setStatus(form.getStatus());
             this.baseMapper.updateById(storageInputOrder);
+            this.finishStorageOrderOpt(storageInputOrder);
             this.storageProcessOptRecord(form);
             return true;
         }
         return false;
     }
 
+
     //判断订单完成状态
     private void finishStorageOrderOpt(StorageInputOrder storageInputOrder) {
         if (OrderStatusEnum.CCI_3.getCode().equals(storageInputOrder.getStatus())) {
-            //查询海运订单信息
+            //查询入库订单信息
             StorageInputOrder storageInputOrder1 = new StorageInputOrder();
             storageInputOrder1.setId(storageInputOrder.getId());
             storageInputOrder1.setProcessStatus(1);

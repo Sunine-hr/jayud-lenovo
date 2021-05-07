@@ -28,4 +28,19 @@ public class InGoodsOperationRecordServiceImpl extends ServiceImpl<InGoodsOperat
         queryWrapper.eq("name",name);
         return this.baseMapper.selectList(queryWrapper);
     }
+
+    @Override
+    public List<InGoodsOperationRecord> getListByWarehousingBatchNo(String warehousingBatchNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("warehousing_batch_no",warehousingBatchNo);
+        return this.baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<InGoodsOperationRecord> getListByOrderId(Long id, String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_no",orderNo);
+        queryWrapper.eq("order_id",id);
+        return this.baseMapper.selectList(queryWrapper);
+    }
 }

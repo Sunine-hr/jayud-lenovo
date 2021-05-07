@@ -40,6 +40,7 @@ public class WarehouseController {
     @ApiOperation(value = "1.不分页查询list")
     @PostMapping("/findWarehouse")
     public CommonResult<List<WarehouseVO>> findWarehouse(@RequestBody QueryWarehouseForm form) {
+        form.setStartTime();
         List<WarehouseVO> list = warehouseService.findWarehouse(form);
         return CommonResult.success(list);
     }
@@ -47,6 +48,7 @@ public class WarehouseController {
     @ApiOperation(value = "2.分页查询page")
     @PostMapping("/findWarehouseByPage")
     public CommonResult<CommonPageResult<WarehouseVO>> findWarehouseByPage(@RequestBody QueryWarehouseForm form) {
+        form.setStartTime();
         IPage<WarehouseVO> pageList = warehouseService.findWarehouseByPage(form);
         CommonPageResult<WarehouseVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
@@ -74,8 +76,6 @@ public class WarehouseController {
         WarehouseVO warehouseVO = warehouseService.findWarehouseById(id);
         return CommonResult.success(warehouseVO);
     }
-
-
 
 }
 

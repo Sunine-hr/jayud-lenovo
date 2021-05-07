@@ -44,9 +44,11 @@
         <if test="form.createUser != null and form.createUser != ''">
             and t.create_user like concat('%',#{form.createUser},'%')
         </if>
-        <if test="form.createTime != null">
-            and t.create_time <![CDATA[ >= ]]> concat(date_format(#{form.createTime}, '%Y-%m-%d'), ' 00:00:00')
-            and t.create_time <![CDATA[ <= ]]> concat(date_format(#{form.createTime}, '%Y-%m-%d'), ' 23:59:59');
+        <if test="form.startTime !=null and form.startTime!=''">
+            and t.create_time <![CDATA[>= ]]> #{form.startTime}
+        </if>
+        <if test="form.endTime !=null and form.endTime!=''">
+            and t.create_time <![CDATA[<= ]]> #{form.endTime}
         </if>
     </select>
 
@@ -73,9 +75,11 @@
         <if test="form.createUser != null and form.createUser != ''">
             and t.create_user like concat('%',#{form.createUser},'%')
         </if>
-        <if test="form.createTime != null">
-            and t.create_time <![CDATA[ >= ]]> concat(date_format(#{form.createTime}, '%Y-%m-%d'), ' 00:00:00')
-            and t.create_time <![CDATA[ <= ]]> concat(date_format(#{form.createTime}, '%Y-%m-%d'), ' 23:59:59');
+        <if test="form.startTime !=null and form.startTime!=''">
+            and t.create_time <![CDATA[>= ]]> #{form.startTime}
+        </if>
+        <if test="form.endTime !=null and form.endTime!=''">
+            and t.create_time <![CDATA[<= ]]> #{form.endTime}
         </if>
     </select>
 

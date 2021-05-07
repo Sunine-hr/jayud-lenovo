@@ -16,4 +16,8 @@ import java.util.List;
 public interface IInGoodsOperationRecordService extends IService<InGoodsOperationRecord> {
 
     List<InGoodsOperationRecord> getList(Long id, String orderNo,String name);
+
+    List<InGoodsOperationRecord> getListByWarehousingBatchNo(String warehousingBatchNo);
+
+    List<InGoodsOperationRecord> getListByOrderId(Long id, String orderNo);
 }

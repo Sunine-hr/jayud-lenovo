@@ -623,6 +623,15 @@ public class ExternalApiController {
     }
 
     /**
+     * 根据客户名称获取订单信息
+     */
+    @RequestMapping(value = "/api/mainOrder/getCustomerIdByCustomerName")
+    ApiResult getCustomerIdByCustomerName(@RequestParam("customerName") String customerName){
+        List<CustomerInfo> customerInfos = this.customerInfoService.getByCustomerName(customerName);
+        return ApiResult.ok(customerInfos);
+    }
+
+    /**
      * 根据客户id查询客户信息
      */
     @RequestMapping(value = "/api/getCustomerInfoById")

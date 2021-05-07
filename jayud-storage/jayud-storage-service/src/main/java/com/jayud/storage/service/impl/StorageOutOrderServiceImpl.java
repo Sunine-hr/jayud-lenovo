@@ -6,22 +6,28 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.storage.feign.OauthClient;
-import com.jayud.storage.model.bo.QueryStorageOrderForm;
-import com.jayud.storage.model.bo.StorageOutOrderForm;
-import com.jayud.storage.model.bo.WarehouseGoodsForm;
+import com.jayud.storage.feign.OmsClient;
+import com.jayud.storage.model.bo.*;
+import com.jayud.storage.model.po.StorageInputOrder;
 import com.jayud.storage.model.po.StorageOutOrder;
 import com.jayud.storage.mapper.StorageOutOrderMapper;
 import com.jayud.storage.model.po.WarehouseGoods;
 import com.jayud.storage.model.vo.StorageInputOrderFormVO;
+import com.jayud.storage.model.vo.StorageOutOrderFormVO;
 import com.jayud.storage.model.vo.StorageOutOrderVO;
 import com.jayud.storage.model.vo.WarehouseGoodsVO;
 import com.jayud.storage.service.IStorageOutOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.storage.service.IWarehouseGoodsService;
+import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +53,9 @@ public class StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMappe
 
     @Autowired
     private OauthClient oauthClient;
+
+    @Autowired
+    private OmsClient omsClient;
 
     @Override
     public String createOrder(StorageOutOrderForm storageOutOrderForm) {
@@ -107,7 +116,7 @@ public class StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMappe
     }
 
     @Override
-    public IPage<StorageInputOrderFormVO> findByPage(QueryStorageOrderForm form) {
+    public IPage<StorageOutOrderFormVO> findByPage(QueryStorageOrderForm form) {
         if(form.getProcessStatus() !=null ){
             form.setProcessStatusList(Collections.singletonList(form.getProcessStatus()));
         }else{
@@ -124,7 +133,149 @@ public class StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMappe
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
-        Page<StorageInputOrderFormVO> page = new Page<>(form.getPageNum(), form.getPageSize());
+        Page<StorageOutOrderFormVO> page = new Page<>(form.getPageNum(), form.getPageSize());
         return this.baseMapper.findByPage(page, form,legalIds);
+    }
+
+    @Override
+    public void orderReceiving(StorageOutOrder storageOutOrder, AuditInfoForm auditInfoForm, StorageOutCargoRejected storageOutCargoRejected) {
+        StorageOutOrder tmp = new StorageOutOrder();
+        tmp.setId(storageOutOrder.getId());
+        tmp.setUpdateTime(LocalDateTime.now());
+        tmp.setUpdateUser(UserOperator.getToken());
+        tmp.setStatus(auditInfoForm.getAuditStatus());
+
+        omsClient.saveAuditInfo(auditInfoForm);
+        omsClient.doMainOrderRejectionSignOpt(storageOutOrder.getMainOrderNo(),
+                storageOutOrder.getOrderNo() + "-" + auditInfoForm.getAuditComment() + ",");
+
+        omsClient.saveAuditInfo(auditInfoForm);
+        this.updateById(tmp);
+    }
+
+    @Override
+    public void warehouseReceipt(StorageOutProcessOptForm form) {
+        form.setOperatorUser(UserOperator.getToken());
+        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
+        StorageOutOrder storageOutOrder = new StorageOutOrder();
+        storageOutOrder.setOrderTaker(form.getOperatorUser());
+        storageOutOrder.setReceivingOrdersDate(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
+        storageOutOrder.setId(form.getOrderId());
+        storageOutOrder.setUpdateUser(UserOperator.getToken());
+        storageOutOrder.setUpdateTime(LocalDateTime.now());
+        storageOutOrder.setStatus(form.getStatus());
+
+        boolean b = this.updateById(storageOutOrder);
+        if(!b){
+            log.warn("修改状态失败");
+        }
+        //节点操作记录
+        this.storageProcessOptRecord(form);
+
+        //完成订单状态
+        finishStorageOrderOpt(storageOutOrder);
+    }
+
+    /**
+     * 入库流程操作记录
+     */
+    @Override
+    public void storageProcessOptRecord(StorageOutProcessOptForm form) {
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setExtId(form.getOrderId());
+        auditInfoForm.setExtDesc(SqlConstant.STORAGE_OUT_ORDER);
+        auditInfoForm.setAuditComment(form.getDescription());
+        auditInfoForm.setAuditUser(UserOperator.getToken());
+        auditInfoForm.setFileViews(form.getFileViewList());
+        auditInfoForm.setAuditStatus(form.getStatus());
+        auditInfoForm.setAuditTypeDesc(form.getStatusName());
+
+        //文件拼接
+        form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
+        form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
+        form.setBusinessType(BusinessTypeEnum.TC.getCode());
+
+        if (omsClient.saveOprStatus(form).getCode() != HttpStatus.SC_OK) {
+            log.error("远程调用物流轨迹失败");
+        }
+        if (omsClient.saveAuditInfo(auditInfoForm).getCode() != HttpStatus.SC_OK) {
+            log.error("远程调用审核记录失败");
+        }
+
+    }
+
+    @Override
+    public boolean printPickingList(StorageOutProcessOptForm form) {
+        return false;
+    }
+
+    @Override
+    public boolean warehousePicking(StorageOutProcessOptForm form) {
+        return false;
+    }
+
+    @Override
+    public void abnormalOutOfWarehouse(StorageOutProcessOptForm form) {
+
+        form.setOperatorUser(UserOperator.getToken());
+        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
+        StorageOutOrder storageOutOrder = new StorageOutOrder();
+        storageOutOrder.setId(form.getOrderId());
+        storageOutOrder.setUpdateUser(UserOperator.getToken());
+        storageOutOrder.setUpdateTime(LocalDateTime.now());
+        storageOutOrder.setStatus(OrderStatusEnum.CCE_3.getCode());
+
+        boolean b = this.updateById(storageOutOrder);
+        if(!b){
+            log.warn("修改状态失败");
+        }
+        //节点操作记录
+        this.storageProcessOptRecord(form);
+
+        //完成订单状态
+        finishStorageOrderOpt(storageOutOrder);
+    }
+
+    @Override
+    public void confirmDelivery(StorageOutProcessOptForm form) {
+        form.setOperatorUser(UserOperator.getToken());
+        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
+        StorageOutOrder storageOutOrder = new StorageOutOrder();
+        storageOutOrder.setId(form.getOrderId());
+        storageOutOrder.setUpdateUser(UserOperator.getToken());
+        storageOutOrder.setUpdateTime(LocalDateTime.now());
+        storageOutOrder.setStatus(form.getStatus());
+
+        boolean b = this.updateById(storageOutOrder);
+        if(!b){
+            log.warn("修改状态失败");
+        }
+        if(form.getCmd().equals("success")){
+            //节点操作记录
+            this.storageProcessOptRecord(form);
+
+            //完成订单状态
+            finishStorageOrderOpt(storageOutOrder);
+        }
+        if(form.getCmd().equals("fail")){
+            form.setDescription("确认出库，审核不通过");
+            if(!b){
+                log.warn("修改状态失败");
+            }
+            //节点操作记录
+            this.storageProcessOptRecord(form);
+        }
+    }
+
+    //判断订单完成状态
+    private void finishStorageOrderOpt(StorageOutOrder storageOutOrder) {
+        if (OrderStatusEnum.CCE_4.getCode().equals(storageOutOrder.getStatus())) {
+            //查询入库订单信息
+            StorageOutOrder storageOutOrder1 = new StorageOutOrder();
+            storageOutOrder1.setId(storageOutOrder.getId());
+            storageOutOrder1.setProcessStatus(1);
+            this.updateById(storageOutOrder1);
+        }
+
     }
 }

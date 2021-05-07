@@ -131,7 +131,7 @@ public class CommonController {
     }
 
     @ApiOperation(value = "获取商品下拉列表框")
-    @PostMapping(value = "/commonComBox")
+    @PostMapping(value = "/goodsComBox")
     public CommonResult goodsComBox(@RequestBody Map<String,Object> map){
         Long customerId = MapUtil.getLong(map,"customerId");
         QueryWrapper queryWrapper = new QueryWrapper();

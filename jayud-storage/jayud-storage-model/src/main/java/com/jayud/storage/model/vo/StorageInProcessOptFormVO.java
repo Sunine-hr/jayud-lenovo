@@ -83,6 +83,9 @@ public class StorageInProcessOptFormVO {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "入库批次号")
+    private String warehousingBatchNo;
+
 
     //入仓信息
     @ApiModelProperty(value = "订单详情主键id")
@@ -183,9 +186,11 @@ public class StorageInProcessOptFormVO {
     @ApiModelProperty(value = "司机")
     private String driver;
 
-    @ApiModelProperty(value = "商品入库")
+    @ApiModelProperty(value = "商品入库信息")
     private List<WarehouseGoodsVO> warehouseGoodsForms;
 
+    @ApiModelProperty(value = "商品实际入仓信息")
+    private List<InGoodsOperationRecordVO> inGoodsOperationRecords;
 
     public void setStatus(String status) {
         this.status = status;

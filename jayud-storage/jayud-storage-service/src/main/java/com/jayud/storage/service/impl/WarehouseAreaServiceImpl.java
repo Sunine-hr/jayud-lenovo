@@ -1,20 +1,24 @@
 package com.jayud.storage.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ProcessStatusEnum;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
-import com.jayud.storage.model.bo.AreaForm;
-import com.jayud.storage.model.bo.QueryWarehouseAreaForm;
-import com.jayud.storage.model.bo.WarehouseAreaForm;
+import com.jayud.storage.model.bo.*;
+import com.jayud.storage.model.enums.WarehouseStatusEnum;
+import com.jayud.storage.model.po.Warehouse;
 import com.jayud.storage.model.po.WarehouseArea;
 import com.jayud.storage.mapper.WarehouseAreaMapper;
 import com.jayud.storage.model.vo.GoodVO;
 import com.jayud.storage.model.vo.StorageInputOrderFormVO;
 import com.jayud.storage.model.vo.WarehouseAreaVO;
+import com.jayud.storage.model.vo.WarehouseVO;
 import com.jayud.storage.service.IWarehouseAreaService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -63,4 +67,25 @@ public class WarehouseAreaServiceImpl extends ServiceImpl<WarehouseAreaMapper, W
         IPage<WarehouseAreaVO> pageInfo = this.baseMapper.findWarehouseAreaByPage(page,form);
         return pageInfo;
     }
+
+    @Override
+    public void operationWarehouseArea(OperationForm form) {
+        Long id = form.getId();
+        WarehouseArea warehouseArea = this.baseMapper.selectById(id);
+        if(ObjectUtil.isEmpty(warehouseArea)){
+            Asserts.fail(ResultEnum.OPR_FAIL, "操作失败，没有找到该仓库区域");
+        }
+        Warehouse warehouse = ConvertUtil.convert(warehouseArea, Warehouse.class);
+        Integer status = form.getStatus();
+        if(status.equals(WarehouseStatusEnum.DISABLE.getCode())){
+            warehouse.setStatus(WarehouseStatusEnum.DISABLE.getCode());
+        }else if(status.equals(WarehouseStatusEnum.ENABLE.getCode())){
+            warehouse.setStatus(WarehouseStatusEnum.ENABLE.getCode());
+        }else{
+            Asserts.fail(ResultEnum.OPR_FAIL, "操作失败，输入的状态有误");
+        }
+        this.saveOrUpdate(warehouseArea);
+    }
+
+
 }

@@ -434,4 +434,11 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         return this.baseMapper.selectOne(condition);
     }
 
+    @Override
+    public List<CustomerInfo> getByCustomerName(String customerName) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.like("name",customerName);
+        return this.baseMapper.selectList(queryWrapper);
+    }
+
 }

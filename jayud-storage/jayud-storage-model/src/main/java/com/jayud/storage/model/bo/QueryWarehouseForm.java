@@ -20,5 +20,19 @@ public class QueryWarehouseForm extends BasePageForm {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private String[] createTime;
+
+    @ApiModelProperty(value = "开始时间")
+    private String startTime;
+
+    @ApiModelProperty(value = "结束时间")
+    private String endTime;
+
+    public void setStartTime(){
+        String[] time = this.createTime;
+        if(time != null && time.length>0){
+            this.startTime = time[0];
+            this.endTime = time[1];
+        }
+    }
 }

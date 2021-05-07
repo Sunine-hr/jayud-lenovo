@@ -6,6 +6,7 @@ import com.jayud.storage.model.bo.QueryWarehouseAreaForm;
 import com.jayud.storage.model.po.WarehouseArea;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.storage.model.vo.WarehouseAreaVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
  * @author LLJ
  * @since 2021-04-27
  */
+@Mapper
 public interface WarehouseAreaMapper extends BaseMapper<WarehouseArea> {
 
     List<WarehouseAreaVO> getList(@Param("form") QueryWarehouseAreaForm form);

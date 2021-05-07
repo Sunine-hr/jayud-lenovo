@@ -9,6 +9,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
 import com.jayud.common.utils.FileView;
+import com.jayud.storage.model.po.InGoodsOperationRecord;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -37,7 +38,7 @@ public class StorageInputOrderFormVO {
     @ApiModelProperty(value = "主键id")
     private Long id;
 
-    @ApiModelProperty(value = "入库订单号")
+    @ApiModelProperty(value = "子订单号")
     private String orderNo;
 
     @ApiModelProperty(value = "主订单号")
@@ -91,22 +92,22 @@ public class StorageInputOrderFormVO {
     @ApiModelProperty(value = "入仓号")
     private String warehouseNumber;
 
-    @ApiModelProperty(value = "创建人(登录用户)")
+    @ApiModelProperty(value = "创建人")
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
-    @ApiModelProperty(value = "更新人")
+    //@ApiModelProperty(value = "更新人")
     private String updateUser;
 
-    @ApiModelProperty(value = "更新时间")
+    //@ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "备注")
     private String remarks;
 
-    @ApiModelProperty(value = "入库商品对象集合")
+    //@ApiModelProperty(value = "入库商品对象集合")
     private List<WarehouseGoodsVO> goodsFormList;
 
     @ApiModelProperty(value = "附件集合")
@@ -124,6 +125,12 @@ public class StorageInputOrderFormVO {
     //@ApiModelProperty(value = "主订单id")
     private String mainOrderId;
 
+    @ApiModelProperty(value = "已入仓信息")
+    private String inGoodsInfo;
+
+    @ApiModelProperty(value = "预计到达时间")
+    private String estimatedArrivalTime;
+
     @ApiModelProperty(value = "货物信息")
     private String goodsInfo;
 
@@ -136,10 +143,18 @@ public class StorageInputOrderFormVO {
     /**
      * 组装商品信息
      */
+    /**
+     * 组装商品信息
+     */
     public void assemblyGoodsInfo(List<WarehouseGoodsVO> goodsList) {
         StringBuilder sb = new StringBuilder();
+        StringBuilder sb1 = new StringBuilder();
 
         for (WarehouseGoodsVO goods : goodsList) {
+
+            if(goods.getEstimatedArrivalTime()!=null){
+                sb1.append(goods.getEstimatedArrivalTime()).append(";");
+            }
 
             sb.append(goods.getName())
                     .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
@@ -150,6 +165,23 @@ public class StorageInputOrderFormVO {
         }
 
         this.goodsInfo = sb.toString();
+        this.estimatedArrivalTime = sb1.toString();
+    }
+
+    public void assemblyGoodsInfo1(List<InGoodsOperationRecord> goodsList) {
+        StringBuilder sb = new StringBuilder();
+
+        for (InGoodsOperationRecord goods : goodsList) {
+
+            sb.append(goods.getName())
+                    .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
+                    .append(",").append(goods.getNumber()).append("件")
+                    .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
+                    .append(",").append("重量:").append(goods.getWeight()).append("KG")
+                    .append(";");
+        }
+
+        this.inGoodsInfo = sb.toString();
     }
 
     /**
@@ -176,21 +208,6 @@ public class StorageInputOrderFormVO {
     }
 
 
-    /**
-     * 组装供应商数据
-     */
-//    public void assemblySupplierInfo(JSONArray supplierInfo) {
-//        if (supplierInfo == null) {
-//            return;
-//        }
-//        for (int i = 0; i < supplierInfo.size(); i++) {
-//            JSONObject json = supplierInfo.getJSONObject(i);
-//            if (this.trailerDispatchVO.getSupplierId() != null && this.trailerDispatchVO.getSupplierId().equals(json.getLong("id"))) { //供应商配对
-//                this.defaultSupplierCode = json.getStr("supplierCode");
-//                break;
-//            }
-//        }
-//    }
 
     /**
      * 组装结算单位数据

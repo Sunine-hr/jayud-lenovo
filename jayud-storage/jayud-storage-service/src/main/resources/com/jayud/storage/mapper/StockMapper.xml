@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.storage.mapper.StockMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.storage.model.po.Stock">
+        <id column="id" property="id" />
+        <result column="good_name" property="goodName" />
+        <result column="customer_id" property="customerId" />
+        <result column="sku" property="sku" />
+        <result column="specification_model" property="specificationModel" />
+        <result column="available_stock" property="availableStock" />
+        <result column="lock_stock" property="lockStock" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="remarks" property="remarks" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, good_name, customer_id, sku, specification_model, available_stock, lock_stock, create_user, create_time, remarks
+    </sql>
+
+    <select id="findByPage" resultType="com.jayud.storage.model.vo.StockVO">
+        select
+    </select>
+
+</mapper>

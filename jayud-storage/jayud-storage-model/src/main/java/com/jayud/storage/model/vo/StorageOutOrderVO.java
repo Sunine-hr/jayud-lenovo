@@ -65,7 +65,7 @@ public class StorageOutOrderVO {
     private String plateInformation;
 
     @ApiModelProperty(value = "出仓号")
-    @NotNull(message = "入仓号不为空")
+    @NotNull(message = "出仓号不为空")
     private String warehouseNumber;
 
     @ApiModelProperty(value = "创建人(登录用户)")

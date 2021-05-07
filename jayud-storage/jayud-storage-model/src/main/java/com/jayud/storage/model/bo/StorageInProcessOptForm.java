@@ -8,6 +8,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
 import com.jayud.storage.model.po.InGoodsOperationRecord;
+import com.jayud.storage.model.vo.InGoodsOperationRecordVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -170,6 +171,9 @@ public class StorageInProcessOptForm {
 
     @ApiModelProperty(value = "商品入库")
     private List<WarehouseGoodsForm> warehouseGoodsForms;
+
+    @ApiModelProperty(value = "商品实际入仓信息")
+    private List<InGoodsOperationRecordForm> inGoodsOperationRecords;
 
 
     public void setStatus(String status) {

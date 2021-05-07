@@ -65,6 +65,9 @@ public class TemplateCopeReceivableVO {
     @JSONField(ordinal = 12)
     private String remarks;
 
+    @ApiModelProperty(value = "最小数量")
+    private BigDecimal minimumQuantity;
+
     /*currency_code	*/
     @ApiModelProperty(value = "币种代码", position = 13)
     @JSONField(ordinal = 13)

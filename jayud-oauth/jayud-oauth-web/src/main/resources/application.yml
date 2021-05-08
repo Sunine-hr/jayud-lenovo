@@ -70,6 +70,7 @@ secure:
       - /oss/upload
       - /api/**
       - /jayudAir/**
+      - /websocket/**
 feign:
   httpclient:
     connection-timeout: 5000
@@ -81,8 +82,8 @@ hystrix:
           enabled: true
         isolation:
           thread:
-            timeoutInMilliseconds: 30000
+            timeoutInMilliseconds: 60000
 ribbon:
-  ReadTimeout: 30000
-  ConnectTimeout: 30000
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
 

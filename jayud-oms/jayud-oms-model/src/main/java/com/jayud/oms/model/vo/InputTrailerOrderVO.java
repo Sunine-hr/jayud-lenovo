@@ -222,6 +222,7 @@ public class InputTrailerOrderVO {
                 e.setBusinessId(null);
                 e.setBusinessType(null);
                 e.setTakeFiles(null);
+                e.setDeliveryDate(null);
             });
         }
 

@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -47,5 +48,10 @@ public class TrainingManagementServiceImpl extends ServiceImpl<TrainingManagemen
     public IPage<TrainingManagementVO> findByPage(QueryTrainingManagementFrom form) {
         Page<TrainingManagement> page = new Page<>(form.getPageNum(), form.getPageSize());
         return this.baseMapper.findByPage(page, form);
+    }
+
+    @Override
+    public List<TrainingManagementVO> getInfoLastWeek() {
+        return this.baseMapper.getInfoLastWeek();
     }
 }

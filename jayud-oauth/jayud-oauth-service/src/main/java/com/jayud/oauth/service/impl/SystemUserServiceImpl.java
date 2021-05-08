@@ -19,6 +19,7 @@ import com.jayud.oauth.model.bo.OprSystemUserForm;
 import com.jayud.oauth.model.bo.QueryAccountForm;
 import com.jayud.oauth.model.bo.QuerySystemUserForm;
 import com.jayud.oauth.model.enums.StatusEnum;
+import com.jayud.oauth.model.enums.SystemUserStatusEnum;
 import com.jayud.oauth.model.po.*;
 import com.jayud.oauth.model.vo.*;
 import com.jayud.oauth.service.*;
@@ -38,6 +39,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -383,6 +385,20 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         SystemUser systemUser = baseMapper.selectOne(queryWrapper);
 
         return systemUser;
+    }
+
+    /**
+     * 根据部门id集合查询部门信息
+     *
+     * @param departmentIds
+     * @return
+     */
+    @Override
+    public List<SystemUser> getByDepartmentIds(Set<String> departmentIds) {
+        QueryWrapper<SystemUser> condition = new QueryWrapper<>();
+        condition.lambda().in(SystemUser::getDepartmentId, departmentIds);
+        condition.lambda().eq(SystemUser::getStatus, SystemUserStatusEnum.ON.getCode());
+        return this.baseMapper.selectList(condition);
     }
 
     /**

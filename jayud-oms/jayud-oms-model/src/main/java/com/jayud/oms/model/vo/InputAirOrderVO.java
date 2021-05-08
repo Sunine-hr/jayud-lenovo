@@ -142,12 +142,14 @@ public class InputAirOrderVO {
             shippingAddress.forEach(e -> {
                 e.setId(null);
                 e.setTakeFiles(null);
+                e.setDeliveryDate(null);
             });
         }
         if (CollectionUtils.isNotEmpty(deliveryAddress)) {
             deliveryAddress.forEach(e -> {
                 e.setId(null);
                 e.setTakeFiles(null);
+                e.setDeliveryDate(null);
             });
         }
 
@@ -155,6 +157,7 @@ public class InputAirOrderVO {
             notificationAddress.forEach(e -> {
                 e.setId(null);
                 e.setTakeFiles(null);
+                e.setDeliveryDate(null);
             });
         }
         if (CollectionUtils.isNotEmpty(goodsForms)) {

@@ -1,11 +1,13 @@
 package com.jayud.mall.model.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.jayud.mall.model.po.GoodsServiceCost;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class CustomerGoodsVO {
@@ -133,4 +135,9 @@ public class CustomerGoodsVO {
     @ApiModelProperty(value = "商品类型名称", position = 30)
     @JSONField(ordinal = 30)
     private String typesName;
+
+
+    //商品服务费用
+    @ApiModelProperty(value = "商品服务费用list")
+    private List<GoodsServiceCost> goodsServiceCostList;
 }

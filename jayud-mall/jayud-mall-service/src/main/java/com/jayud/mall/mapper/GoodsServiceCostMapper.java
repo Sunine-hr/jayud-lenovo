@@ -1,7 +1,12 @@
 package com.jayud.mall.mapper;
 
-import com.jayud.mall.model.po.GoodsServiceCost;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.po.GoodsServiceCost;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -11,6 +16,14 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author fachang.mao
  * @since 2021-05-08
  */
+@Mapper
+@Component
 public interface GoodsServiceCostMapper extends BaseMapper<GoodsServiceCost> {
 
+    /**
+     * 根据商品id，查询 商品服务费用
+     * @param goodId
+     * @return
+     */
+    List<GoodsServiceCost> findGoodsServiceCostByGoodId(@Param("goodId") Long goodId);
 }

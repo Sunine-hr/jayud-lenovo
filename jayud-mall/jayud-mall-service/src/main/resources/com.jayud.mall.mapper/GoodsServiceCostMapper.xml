@@ -22,5 +22,12 @@
     <sql id="Base_Column_List">
         id, service_id, good_id, customer_id, name_cn, unit_price, cid, unit, status, remark, service_name, customer_name
     </sql>
+    
+    <select id="findGoodsServiceCostByGoodId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.po.GoodsServiceCost">
+        select
+            t.id,t.service_id,t.good_id,t.customer_id,t.name_cn,t.unit_price,t.cid,t.unit,t.status,t.remark,t.service_name,t.customer_name
+        from goods_service_cost t
+        where good_id = #{goodId}
+    </select>
 
 </mapper>

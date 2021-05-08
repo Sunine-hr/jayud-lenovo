@@ -54,4 +54,11 @@ public interface ICustomerGoodsService extends IService<CustomerGoods> {
      * @return
      */
     CommonResult<CustomerGoodsVO> findCustomerGoodsById(Integer id);
+
+    /**
+     * 根据商品id，查看商品，及其商品服务费用
+     * @param id
+     * @return
+     */
+    CustomerGoodsVO findCustomerGoodsCostById(Integer id);
 }

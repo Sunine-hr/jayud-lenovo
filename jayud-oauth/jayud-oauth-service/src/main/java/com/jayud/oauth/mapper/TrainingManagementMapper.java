@@ -9,6 +9,8 @@ import com.jayud.oauth.model.vo.TrainingManagementVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * <p>
  * 培训管理 Mapper 接口
@@ -20,5 +22,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface TrainingManagementMapper extends BaseMapper<TrainingManagement> {
 
-    IPage<TrainingManagementVO> findByPage(Page<TrainingManagement> page,@Param("form") QueryTrainingManagementFrom form);
+    IPage<TrainingManagementVO> findByPage(Page<TrainingManagement> page, @Param("form") QueryTrainingManagementFrom form);
+
+    public List<TrainingManagementVO> getInfoLastWeek();
 }

@@ -45,4 +45,17 @@
         order by id desc
     </select>
 
+    <select id="getInfoLastWeek" resultType="com.jayud.oauth.model.vo.TrainingManagementVO">
+        select
+        id, subject, training_start_time, training_end_time, training_location, trainees traineesDesc,
+        file_path, file_name, create_user, create_time, update_user, update_time
+        from
+        training_management
+        <where>
+            and now() <![CDATA[>=]]> date_sub(training_start_time, interval 7 DAY)
+            and now() <![CDATA[<=]]> training_start_time
+        </where>
+        order by id desc
+    </select>
+
 </mapper>

@@ -35,7 +35,8 @@ public class UserHeaderFilter implements Filter {
                     "/yunbaoguan/receivable/delete",
                     "/yunbaoguan/payable/delete",
                     "kafka",
-                    "/yunbaoguanKingdeePushLog/saveOrOpdateLog")));
+                    "/yunbaoguanKingdeePushLog/saveOrOpdateLog",
+                    "/websocket/")));
 
 
     @Override

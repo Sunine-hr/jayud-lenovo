@@ -7,6 +7,8 @@ import com.jayud.oauth.model.po.TrainingManagement;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oauth.model.vo.TrainingManagementVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 培训管理 服务类
@@ -20,4 +22,7 @@ public interface ITrainingManagementService extends IService<TrainingManagement>
     void addOrUpdate(AddTrainingManagementForm form);
 
     IPage<TrainingManagementVO> findByPage(QueryTrainingManagementFrom form);
+
+    List<TrainingManagementVO> getInfoLastWeek();
+
 }

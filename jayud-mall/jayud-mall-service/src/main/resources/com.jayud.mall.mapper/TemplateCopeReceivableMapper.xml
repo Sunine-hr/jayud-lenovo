@@ -63,7 +63,7 @@
     <select id="findTemplateCopeReceivableOtherFeeListByQie" parameterType="java.lang.Integer"
             resultType="com.jayud.mall.model.vo.TemplateCopeReceivableVO">
         select
-        t.id,t.qie,t.cost_code,t.cost_name,t.specification_code,t.specification_name,t.calculate_way,t.count,t.unit,t.source,t.unit_price,t.cid,t.amount,t.remarks,t.minimum_quantity,
+        t.id,t.qie,t.cost_code,t.cost_name,t.specification_code,t.specification_name,t.calculate_way,t.count,t.unit,t.source,t.unit_price,t.cid,t.amount,t.remarks,
         t1.currency_code,
         CONCAT(t.amount,' ',t1.currency_code) amountFormat,
         CONCAT(t.unit_price,' ',t1.currency_code) unitPriceFormat
@@ -88,7 +88,6 @@
                t.cid,
                t.amount,
                t.remarks,
-               t.minimum_quantity,
                t1.currency_code,
                t1.currency_name
         from template_cope_receivable t
@@ -99,7 +98,7 @@
 
     <select id="findTemplateCopeReceivableByQieAndSpecificationCode" resultType="com.jayud.mall.model.vo.TemplateCopeReceivableVO">
         select
-            t.id,t.qie,t.cost_code,t.cost_name,t.specification_code,t.specification_name,t.calculate_way,t.count,t.unit,t.source,t.unit_price,t.cid,t.amount,t.remarks,t.minimum_quantity
+            t.id,t.qie,t.cost_code,t.cost_name,t.specification_code,t.specification_name,t.calculate_way,t.count,t.unit,t.source,t.unit_price,t.cid,t.amount,t.remarks
         from template_cope_receivable t
         where 1=1
         and t.qie=#{qie, jdbcType=INTEGER}

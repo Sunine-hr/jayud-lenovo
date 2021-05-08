@@ -24,7 +24,7 @@
 
     <select id="selectListByQie" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.TemplateCopeWithVO">
         select
-        t.id,t.qie,t.cost_code,t.cost_name,t.supplier_id,t.calculate_way,t.count,t.unit,t.source,t.unit_price,t.cid,t.amount,t.remarks,t.minimum_quantity,
+        t.id,t.qie,t.cost_code,t.cost_name,t.supplier_id,t.calculate_way,t.count,t.unit,t.source,t.unit_price,t.cid,t.amount,t.remarks,
         t1.supplier_code supplierCode,
         t1.company_name supplierName
         from template_cope_with t
@@ -48,7 +48,6 @@
                t.cid,
                t.amount,
                t.remarks,
-               t.minimum_quantity,
                t1.supplier_code supplierCode,
                t1.company_name  supplierName,
                t2.currency_code,

@@ -162,6 +162,10 @@ public class OfferInfoVO {
             "2重量->材积：实重/计泡系数(单位CBM)")
     private Integer designFormulas;
 
+    @ApiModelProperty(value = "最低数量")
+    private BigDecimal minimumQuantity;
+
+
     /*报价服务组:service_group*/
     @ApiModelProperty(value = "服务名称service_group.code_name", position = 32)
     @JSONField(ordinal = 32)

@@ -70,8 +70,8 @@ public class OrderCaseServiceImpl extends ServiceImpl<OrderCaseMapper, OrderCase
         }
         //计泡系数(默认6000)
         BigDecimal bubbleCoefficient = (offerInfoVO.getBubbleCoefficient() == null) ? new BigDecimal("6000") : offerInfoVO.getBubbleCoefficient();
-
-
+        //最小重量(默认12) 最小收费重
+        BigDecimal minimumQuantity = (offerInfoVO.getMinimumQuantity() == null) ? new BigDecimal("12") : offerInfoVO.getMinimumQuantity();
 
         //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
         BigDecimal volume = length.multiply(width).multiply(height).divide(new BigDecimal("1000000"),2, BigDecimal.ROUND_HALF_UP);
@@ -84,6 +84,10 @@ public class OrderCaseServiceImpl extends ServiceImpl<OrderCaseMapper, OrderCase
             chargeWeight = weight;
         }else{
             chargeWeight = volumeWeight;
+        }
+        if(chargeWeight.compareTo(minimumQuantity) < 0){
+            // chargeWeight  < minimumQuantity   收费重  < 最小收费重
+            chargeWeight = minimumQuantity;
         }
 
         List<OrderCaseVO> list = new ArrayList<>();

@@ -158,6 +158,8 @@ public class QuotationTemplateVO {
     @ApiModelProperty(value = "容量单位(1KG 2CBM)")
     private Integer volumeUnit;
 
+    @ApiModelProperty(value = "最低数量")
+    private BigDecimal minimumQuantity;
 
     /*报价服务组:service_group*/
     @ApiModelProperty(value = "服务名称service_group.code_name", position = 30)

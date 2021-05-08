@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.QuotationDataTypeEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.*;
@@ -132,7 +133,7 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
 
             //状态(0无效 1有效)
             quotationTemplate.setStatus("1");
-
+            quotationTemplate.setDataType(QuotationDataTypeEnum.TEMPLATE.getCode());
         }
 
         //模板类型

@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.QuotationDataTypeEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.*;
@@ -78,6 +79,9 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
     OrderCaseMapper orderCaseMapper;
 
     @Autowired
+    QuotationTemplateMapper quotationTemplateMapper;
+
+    @Autowired
     BaseService baseService;
 
     @Autowired
@@ -88,6 +92,9 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
 
     @Autowired
     ITemplateFileService templateFileService;
+
+    @Autowired
+    IQuotationTemplateService quotationTemplateService;
 
     @Override
     public IPage<OfferInfoVO> findOfferInfoByPage(QueryOfferInfoForm form) {
@@ -154,8 +161,15 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
 //            }
         }
 
+        // 获得报价模板数据
+        QuotationTemplate quotationTemplate = quotationTemplateMapper.selectById(offerInfo.getQie());
+        quotationTemplate.setId(null);
+        quotationTemplate.setDataType(QuotationDataTypeEnum.MANAGEMENT.getCode());
+        quotationTemplateService.saveOrUpdate(quotationTemplate);
+
         //报价模板id(quotation_template id)
-        Integer qie = offerInfo.getQie();
+        Integer qie = quotationTemplate.getId().intValue();
+        offerInfo.setQie(qie);
         //修改保存报价模板的费用、文件
         List<TemplateCopeReceivableVO> templateCopeReceivableVOList = form.getTemplateCopeReceivableVOList();//报价对应应收费用明细list
         List<TemplateCopeWithVO> templateCopeWithVOList = form.getTemplateCopeWithVOList();//报价对应应付费用明细list
@@ -172,6 +186,7 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             List<TemplateCopeReceivable> list = new ArrayList<>();
             templateCopeReceivableFormList.forEach(templateCopeReceivableForm -> {
                 TemplateCopeReceivable templateCopeReceivable = ConvertUtil.convert(templateCopeReceivableForm, TemplateCopeReceivable.class);
+                templateCopeReceivable.setId(null);
                 templateCopeReceivable.setQie(qie);
                 //计算 总金额=数量 * 单价
                 Integer c = templateCopeReceivable.getCount() == null ? 0 : templateCopeReceivable.getCount();//数量
@@ -195,6 +210,7 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             List<TemplateCopeWith> list = new ArrayList<>();
             templateCopeWithFormList.forEach(templateCopeWithForm -> {
                 TemplateCopeWith templateCopeWith = ConvertUtil.convert(templateCopeWithForm, TemplateCopeWith.class);
+                templateCopeWith.setId(null);
                 templateCopeWith.setQie(qie);
                 //计算 总金额=数量 * 单价
                 Integer c = templateCopeWith.getCount() == null ? 0 : templateCopeWith.getCount();//数量
@@ -218,6 +234,7 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             List<TemplateFile> list = new ArrayList<>();
             templateFileFormList.forEach(templateFileForm -> {
                 TemplateFile templateFile = ConvertUtil.convert(templateFileForm, TemplateFile.class);
+                templateFile.setId(null);
                 templateFile.setQie(qie);
                 list.add(templateFile);
             });

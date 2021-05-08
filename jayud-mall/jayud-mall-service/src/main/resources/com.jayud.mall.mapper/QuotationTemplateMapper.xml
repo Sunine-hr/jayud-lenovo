@@ -58,6 +58,7 @@
         left join country t6 on t6.code = t4.state_code
         WHERE
         1 = 1
+        and t.data_type = 1
         <if test="form.names != null and form.names != ''">
             AND t.`names` LIKE concat('%',#{form.names},'%')
         </if>
@@ -94,7 +95,7 @@
         LEFT JOIN harbour_info t3 on t3.id_code = t.start_shipment
         LEFT JOIN harbour_info t4 on t4.id_code = t.destination_port
         LEFT JOIN task_group t5 on t5.id = t.task_id
-        where t.id = #{id}
+        where t.data_type = 1 and t.id = #{id}
     </select>
 
 

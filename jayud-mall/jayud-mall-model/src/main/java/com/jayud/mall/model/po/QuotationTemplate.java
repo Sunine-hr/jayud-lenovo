@@ -172,6 +172,9 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
     @ApiModelProperty(value = "容量单位(1KG 2CBM)")
     private Integer volumeUnit;
 
+    @ApiModelProperty(value = "数据类型(1报价模板 2报价管理)")
+    private Integer dataType;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

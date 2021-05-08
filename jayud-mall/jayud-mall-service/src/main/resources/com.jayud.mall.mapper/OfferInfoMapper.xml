@@ -206,6 +206,7 @@
         t1.bubble_coefficient,
         t1.billing_weight_unit,
         t1.design_formulas,
+        t1.minimum_quantity,
         t2.code_name sname,
         t3.code_name tname,
         t4.code_name startShipmentName,

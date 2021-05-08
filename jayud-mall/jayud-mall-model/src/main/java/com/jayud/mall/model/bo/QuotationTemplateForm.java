@@ -185,6 +185,9 @@ public class QuotationTemplateForm {
     @ApiModelProperty(value = "容量单位(1KG 2CBM)")
     private Integer volumeUnit;
 
+    @ApiModelProperty(value = "最低数量")
+    private BigDecimal minimumQuantity;
+
     /*应收费用明细List*/
     @ApiModelProperty(value = "应收费用明细List", position = 30)
     @JSONField(ordinal = 30)

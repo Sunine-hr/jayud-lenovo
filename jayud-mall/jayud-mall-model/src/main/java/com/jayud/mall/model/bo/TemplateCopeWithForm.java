@@ -63,7 +63,5 @@ public class TemplateCopeWithForm {
     @JSONField(ordinal = 12)
     private String remarks;
 
-    @ApiModelProperty(value = "最小数量")
-    private BigDecimal minimumQuantity;
 
 }

@@ -135,6 +135,7 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
                 e.setOrderAddressId(null);
                 e.setFileViewList(null);
                 e.setBusinessId(null);
+                e.setDeliveryDate(null);
             });
         }
 
@@ -144,6 +145,7 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
                 e.setOrderAddressId(null);
                 e.setFileViewList(null);
                 e.setBusinessId(null);
+                e.setDeliveryDate(null);
             });
         }
     }

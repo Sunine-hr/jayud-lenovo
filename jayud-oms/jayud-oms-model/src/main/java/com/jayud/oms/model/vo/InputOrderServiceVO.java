@@ -42,6 +42,7 @@ public class InputOrderServiceVO {
                 e.setDeliveryId(null);
                 e.setTakeAdrId(null);
                 e.setTakeFiles(null);
+                e.setTakeTimeStr(null);
             });
         }
         if (CollectionUtils.isNotEmpty(takeAdrForms2)) {
@@ -49,6 +50,7 @@ public class InputOrderServiceVO {
                 e.setDeliveryId(null);
                 e.setTakeAdrId(null);
                 e.setTakeFiles(null);
+                e.setTakeTimeStr(null);
             });
         }
     }

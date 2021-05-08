@@ -521,48 +521,32 @@ public class OrderInfoController {
         if (inlandTransportForm != null) {
             inlandTransportForm.copyOperationInfo();
         }
-
         //报关模板
         InputOrderCustomsVO orderCustomsForm = inputOrderVO.getOrderCustomsForm();
         if (orderCustomsForm != null) {
             orderCustomsForm.copyOperationInfo();
         }
-
         //空运模板
         InputAirOrderVO airOrderForm = inputOrderVO.getAirOrderForm();
         if (airOrderForm != null) {
             airOrderForm.copyOperationInfo();
         }
-
         //海运模板
         InputSeaOrderVO seaOrderForm = inputOrderVO.getSeaOrderForm();
         if (seaOrderForm != null) {
             seaOrderForm.copyOperationInfo();
         }
-
         //拖车模板
         List<InputTrailerOrderVO> trailerOrderForm = inputOrderVO.getTrailerOrderForm();
         if (CollectionUtils.isNotEmpty(trailerOrderForm)) {
             trailerOrderForm.forEach(InputTrailerOrderVO::copyOperationInfo);
         }
-
         //服务模板
         InputOrderServiceVO orderServiceForm = inputOrderVO.getOrderServiceForm();
         if (orderServiceForm != null) {
             orderServiceForm.copyOperationInfo();
         }
-
         return CommonResult.success(inputOrderVO);
-    }
-
-
-    public static void main(String[] args) {
-        List<Object> list = new ArrayList<>();
-        list.add(new TmsOrderTemplate());
-        list.add(new AirOrderTemplate());
-        for (Object o : list) {
-            System.out.println(o);
-        }
     }
 
 }

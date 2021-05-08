@@ -192,12 +192,12 @@
         ai.id = tmp1.id
         ) tmp2
         <where>
-            s.id = tmp2.ext_id and
+            and s.id = tmp2.ext_id
             <if test="status=='financialCheck'">
-                tmp2.audit_status= 1
+               and tmp2.audit_status= 1
             </if>
-            <if test="status=='financialCheck'">
-                tmp2.audit_status= 2
+            <if test="status=='managerCheck'">
+               and tmp2.audit_status= 2
             </if>
 
             <if test="legalIds != null and legalIds.size>0">

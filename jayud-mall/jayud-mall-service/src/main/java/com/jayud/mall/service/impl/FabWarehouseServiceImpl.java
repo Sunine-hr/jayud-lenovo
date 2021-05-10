@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.FabWarehouseMapper;
 import com.jayud.mall.model.bo.FabWarehouseArgsForm;
+import com.jayud.mall.model.bo.FabWarehouseForm;
 import com.jayud.mall.model.bo.QueryFabWarehouseForm;
 import com.jayud.mall.model.po.FabWarehouse;
 import com.jayud.mall.model.vo.FabWarehouseVO;
@@ -54,5 +56,23 @@ public class FabWarehouseServiceImpl extends ServiceImpl<FabWarehouseMapper, Fab
         List<FabWarehouse> list = this.list(queryWrapper);
         List<FabWarehouseVO> fabWarehouseVOS = ConvertUtil.convertList(list, FabWarehouseVO.class);
         return fabWarehouseVOS;
+    }
+
+    @Override
+    public CommonResult saveFabWarehouse(FabWarehouseForm form) {
+        FabWarehouse fabWarehouse = ConvertUtil.convert(form, FabWarehouse.class);
+        this.saveOrUpdate(fabWarehouse);
+        return CommonResult.success("保存成功");
+    }
+
+    @Override
+    public CommonResult deleteFabWarehouse(Integer id) {
+        this.removeById(id);
+        return CommonResult.success("删除成功");
+    }
+
+    @Override
+    public CommonResult auditFabWarehouse(FabWarehouseForm form) {
+        return CommonResult.success("审核成功");
     }
 }

@@ -27,4 +27,50 @@
         id, cost_code, cost_name, from_country, from_province, from_city, from_region, to_country, to_province, to_city, to_region, unit_price, cid, unit, status, remark
     </sql>
 
+    <select id="findInlandFeeCostByPage" parameterType="com.jayud.mall.model.bo.QueryInlandFeeCostForm" resultType="com.jayud.mall.model.vo.InlandFeeCostVO">
+        select
+        t.id,t.cost_code,t.cost_name,t.from_country,t.from_province,t.from_city,t.from_region,t.to_country,t.to_province,t.to_city,t.to_region,t.unit_price,t.cid,t.unit,t.status,t.remark
+        from inland_fee_cost t
+        where 1=1
+        <if test="form.costCode != null and form.costCode != ''">
+            and t.cost_code = #{form.costCode}
+        </if>
+        <if test="form.costName != null and form.costName != ''">
+            and t.cost_name = #{form.costName}
+        </if>
+        <if test="form.fromCountry != null and form.fromCountry != ''">
+            and t.from_country = #{form.fromCountry}
+        </if>
+        <if test="form.fromProvince != null and form.fromProvince != ''">
+            and t.from_province = #{form.fromProvince}
+        </if>
+        <if test="form.fromCity != null and form.fromCity != ''">
+            and t.from_city = #{form.fromCity}
+        </if>
+        <if test="form.fromRegion != null and form.fromRegion != ''">
+            and t.from_region = #{form.fromRegion}
+        </if>
+        <if test="form.toCountry != null and form.toCountry != ''">
+            and t.to_country = #{form.toCountry}
+        </if>
+        <if test="form.toProvince != null and form.toProvince != ''">
+            and t.to_province = #{form.toProvince}
+        </if>
+        <if test="form.toCity != null and form.toCity != ''">
+            and t.to_city = #{form.toCity}
+        </if>
+        <if test="form.toRegion != null and form.toRegion != ''">
+            and t.to_region = #{form.toRegion}
+        </if>
+    </select>
+
+    <select id="findInlandFeeCostById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.InlandFeeCostVO">
+        select
+            t.id,t.cost_code,t.cost_name,t.from_country,t.from_province,t.from_city,t.from_region,t.to_country,t.to_province,t.to_city,t.to_region,t.unit_price,t.cid,t.unit,t.status,t.remark
+        from inland_fee_cost t
+        where 1=1
+          and t.id = #{id}
+    </select>
+
+
 </mapper>

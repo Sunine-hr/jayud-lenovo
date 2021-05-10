@@ -22,3 +22,8 @@ ADD COLUMN `city_code` varchar(255) NULL COMMENT '城市代码' AFTER `state_nam
 ADD COLUMN `city_name` varchar(255) NULL COMMENT '城市名称' AFTER `city_code`,
 ADD COLUMN `region_code` varchar(255) NULL COMMENT '区县代码' AFTER `city_name`,
 ADD COLUMN `region_name` varchar(255) NULL COMMENT '区县名称' AFTER `region_code`;
+
+
+
+ALTER TABLE `jayud_shop`.`goods_service_cost`
+    ADD UNIQUE INDEX `unique_service_id_and_good_id`(`service_id`, `good_id`) USING BTREE COMMENT '服务id和商品id不能重复';

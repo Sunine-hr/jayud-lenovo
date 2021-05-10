@@ -20,13 +20,18 @@
     <select id="findOrderShopByOrderId" parameterType="java.lang.Long"
         resultType="com.jayud.mall.model.vo.OrderShopVO" >
         select
-        t.id,t.order_id,t.good_id,t.quantity,t.create_time,
-        t2.sku,t2.hs_code,t2.name_cn,t2.declared_value,t2.declared_currency
+            t.id,t.order_id,t.good_id,t.quantity,t.create_time,
+            t2.sku,t2.hs_code,t2.name_cn,t2.declared_value,t2.declared_currency,
+            t6.unit_price, t6.cid, t6.unit, t6.status, t6.remark, t6.service_name, t6.customer_name
         from order_shop t
-        LEFT JOIN order_info t1 on t1.id = t.order_id
-        LEFT JOIN customer_goods t2 on t2.id = t.good_id
+                 JOIN order_info t1 on t1.id = t.order_id
+                 JOIN customer_goods t2 on t2.id = t.good_id
+                 join offer_info t3 on t3.id = t1.offer_info_id
+                 join quotation_template t4 on t4.id = t3.qie
+                 join service_group t5 on t5.id = t4.sid
+                 join goods_service_cost t6 on t6.service_id = t5.id and t6.good_id = t.good_id
         WHERE t1.id = #{orderId}
-        ORDER BY t1.id
+        ORDER BY t.id;
     </select>
 
 

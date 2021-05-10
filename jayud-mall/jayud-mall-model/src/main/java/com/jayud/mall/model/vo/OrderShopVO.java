@@ -53,6 +53,26 @@ public class OrderShopVO {
     @JSONField(ordinal = 10)
     private String declaredCurrency;
 
+    /*商品服务费用表*/
+    @ApiModelProperty(value = "单价")
+    private BigDecimal unitPrice;
 
+    @ApiModelProperty(value = "币种(currency_info id)")
+    private Integer cid;
+
+    @ApiModelProperty(value = "单位(1公斤 2方 3票 4柜)")
+    private Integer unit;
+
+    @ApiModelProperty(value = "状态(0无效 1有效)")
+    private String status;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
+
+    @ApiModelProperty(value = "服务名称(service_group code_name)")
+    private String serviceName;
+
+    @ApiModelProperty(value = "客户名称(customer company)")
+    private String customerName;
 
 }

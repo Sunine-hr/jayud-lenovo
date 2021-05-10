@@ -105,6 +105,12 @@ public class OrderPickVO {
     @JSONField(ordinal = 19)
     private String cityName;
 
+    @ApiModelProperty(value = "区县代码")
+    private String regionCode;
+
+    @ApiModelProperty(value = "区县名称")
+    private String regionName;
+
     @ApiModelProperty(value = "地址1", position = 20)
     @JSONField(ordinal = 20)
     private String address;

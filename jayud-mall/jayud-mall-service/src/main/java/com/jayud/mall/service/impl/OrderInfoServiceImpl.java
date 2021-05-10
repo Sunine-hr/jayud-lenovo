@@ -638,6 +638,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
         //(3)其他应收费用，过滤掉 海运费、内陆费
+        //商品的附加费 查询商品，服务费用单价，同一个商品不同的服务，有不同的费用
+        List<OrderShopVO> orderShopVOList1 = orderShopMapper.findOrderShopByOrderId(orderInfo.getId());
+        //单价排序，最大的排第一
+        Collections.sort(orderShopVOList1, new Comparator<OrderShopVO>() {
+            @Override
+            public int compare(OrderShopVO o1, OrderShopVO o2) {
+                return o2.getUnitPrice().compareTo(o1.getUnitPrice());
+            }
+        });
         //报价对应应收费用明细list
         QueryWrapper<TemplateCopeReceivable> query1 = new QueryWrapper<>();
         query1.eq("qie", qie);
@@ -653,10 +662,26 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderCopeReceivable.setCostCode(templateCopeReceivableVO.getCostCode());//费用代码(cost_item cost_code)
             orderCopeReceivable.setCostName(templateCopeReceivableVO.getCostName());//费用名称(cost_item cost_name)
 
-            orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
-            orderCopeReceivable.setCount(totalChargeWeight);//数量 --> 数量，取订单箱号的 收费重
-            orderCopeReceivable.setUnitPrice(templateCopeReceivableVO.getUnitPrice());//单价
-            orderCopeReceivable.setAmount(totalChargeWeight.multiply(templateCopeReceivableVO.getUnitPrice()).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+            //JYD-REC-COS-00004     附加费
+            String costCode = templateCopeReceivableVO.getCostCode();
+            String costName = templateCopeReceivableVO.getCostName();
+            if(costCode.equals("JYD-REC-COS-00004") && costName.equals("附加费")){
+                //附加费
+                BigDecimal unitPrice = orderShopVOList1.get(0).getUnitPrice();//取最大的商品单价
+                unitPrice = (unitPrice == null) ? new BigDecimal("0") : unitPrice;
+
+                orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
+                orderCopeReceivable.setCount(totalChargeWeight);//数量 --> 数量，取订单箱号的 收费重
+                orderCopeReceivable.setUnitPrice(unitPrice);//单价
+                orderCopeReceivable.setAmount(totalChargeWeight.multiply(unitPrice).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+
+            }else{
+                //其他费用
+                orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
+                orderCopeReceivable.setCount(totalChargeWeight);//数量 --> 数量，取订单箱号的 收费重
+                orderCopeReceivable.setUnitPrice(templateCopeReceivableVO.getUnitPrice());//单价
+                orderCopeReceivable.setAmount(totalChargeWeight.multiply(templateCopeReceivableVO.getUnitPrice()).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+            }
 
             orderCopeReceivable.setCid(templateCopeReceivableVO.getCid());//币种(currency_info id)
             orderCopeReceivable.setRemarks(templateCopeReceivableVO.getRemarks());//描述
@@ -1027,6 +1052,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
         //(3)其他应收费用，过滤掉 海运费、内陆费
+        //商品的附加费 查询商品，服务费用单价，同一个商品不同的服务，有不同的费用
+        List<OrderShopVO> orderShopVOList1 = orderShopMapper.findOrderShopByOrderId(orderInfo.getId());
+        //单价排序，最大的排第一
+        Collections.sort(orderShopVOList1, new Comparator<OrderShopVO>() {
+            @Override
+            public int compare(OrderShopVO o1, OrderShopVO o2) {
+                return o2.getUnitPrice().compareTo(o1.getUnitPrice());
+            }
+        });
         //报价对应应收费用明细list
         QueryWrapper<TemplateCopeReceivable> query1 = new QueryWrapper<>();
         query1.eq("qie", qie);
@@ -1042,10 +1076,26 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderCopeReceivable.setCostCode(templateCopeReceivableVO.getCostCode());//费用代码(cost_item cost_code)
             orderCopeReceivable.setCostName(templateCopeReceivableVO.getCostName());//费用名称(cost_item cost_name)
 
-            orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
-            orderCopeReceivable.setCount(totalChargeWeight);//数量 --> 数量，取订单箱号的 收费重
-            orderCopeReceivable.setUnitPrice(templateCopeReceivableVO.getUnitPrice());//单价
-            orderCopeReceivable.setAmount(totalChargeWeight.multiply(templateCopeReceivableVO.getUnitPrice()).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+            //JYD-REC-COS-00004     附加费
+            String costCode = templateCopeReceivableVO.getCostCode();
+            String costName = templateCopeReceivableVO.getCostName();
+            if(costCode.equals("JYD-REC-COS-00004") && costName.equals("附加费")){
+                //附加费
+                BigDecimal unitPrice = orderShopVOList1.get(0).getUnitPrice();//取最大的商品单价
+                unitPrice = (unitPrice == null) ? new BigDecimal("0") : unitPrice;
+
+                orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
+                orderCopeReceivable.setCount(totalChargeWeight);//数量 --> 数量，取订单箱号的 收费重
+                orderCopeReceivable.setUnitPrice(unitPrice);//单价
+                orderCopeReceivable.setAmount(totalChargeWeight.multiply(unitPrice).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+
+            }else{
+                //其他费用
+                orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
+                orderCopeReceivable.setCount(totalChargeWeight);//数量 --> 数量，取订单箱号的 收费重
+                orderCopeReceivable.setUnitPrice(templateCopeReceivableVO.getUnitPrice());//单价
+                orderCopeReceivable.setAmount(totalChargeWeight.multiply(templateCopeReceivableVO.getUnitPrice()).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+            }
 
             orderCopeReceivable.setCid(templateCopeReceivableVO.getCid());//币种(currency_info id)
             orderCopeReceivable.setRemarks(templateCopeReceivableVO.getRemarks());//描述

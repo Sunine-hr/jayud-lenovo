@@ -34,7 +34,7 @@ public class TimeTask {
      */
     @Scheduled(cron = "0/59 * * * * ?")
     public void pushTrainingInfo() {
-        log.info("*********   定时推送培训信息任务执行   **************");
+        log.info("*********   定时推送培训信息任务执行 在线人数("+webSocket.getOnlineCount()+")  **************");
 
         //查询最新一周培训资料
         List<TrainingManagementVO> list = this.trainingManagementService.getInfoLastWeek();
@@ -76,6 +76,6 @@ public class TimeTask {
             }
         }
 
-        log.info("*********   定时推送培训信息任务结束   **************");
+        log.info("*********   定时推送培训信息任务结束 在线人数("+webSocket.getOnlineCount()+")   **************");
     }
 }

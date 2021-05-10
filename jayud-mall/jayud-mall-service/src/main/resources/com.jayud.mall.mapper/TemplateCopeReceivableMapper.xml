@@ -27,7 +27,7 @@
     <select id="findTemplateCopeReceivableOceanFeeByQie" parameterType="java.lang.Integer"
             resultType="com.jayud.mall.model.vo.TemplateCopeReceivableVO">
             select
-            t2.id,t2.qie,t2.cost_code,t2.cost_name,t2.specification_code,t2.specification_name,t2.calculate_way,t2.count,t2.unit,t2.source,t2.unit_price,t2.cid,t2.amount,t2.remarks,t2.minimum_quantity,
+            t2.id,t2.qie,t2.cost_code,t2.cost_name,t2.specification_code,t2.specification_name,t2.calculate_way,t2.count,t2.unit,t2.source,t2.unit_price,t2.cid,t2.amount,t2.remarks,
             t3.currency_code,
             CONCAT(t2.amount,' ',t3.currency_code) amountFormat,
             CONCAT(t2.unit_price,' ',t3.currency_code) unitPriceFormat
@@ -45,7 +45,7 @@
     <select id="findTemplateCopeReceivableInlandFeeListByQie" parameterType="java.lang.Integer"
             resultType="com.jayud.mall.model.vo.TemplateCopeReceivableVO">
         select
-        t2.id,t2.qie,t2.cost_code,t2.cost_name,t2.specification_code,t2.specification_name,t2.calculate_way,t2.count,t2.unit,t2.source,t2.unit_price,t2.cid,t2.amount,t2.remarks,t2.minimum_quantity,
+        t2.id,t2.qie,t2.cost_code,t2.cost_name,t2.specification_code,t2.specification_name,t2.calculate_way,t2.count,t2.unit,t2.source,t2.unit_price,t2.cid,t2.amount,t2.remarks,
         t3.currency_code,
         CONCAT(t2.amount,' ',t3.currency_code) amountFormat,
         CONCAT(t2.unit_price,' ',t3.currency_code) unitPriceFormat

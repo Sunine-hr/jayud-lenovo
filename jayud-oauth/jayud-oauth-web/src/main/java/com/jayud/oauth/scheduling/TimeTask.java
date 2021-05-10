@@ -73,8 +73,9 @@ public class TimeTask {
                 if (redisUtils.hasKey("TrainingMsg:" + user.getId() + "-" + msg.getId())) {
                     continue;
                 }
-                webSocket.AppointSending(user.getName(), JSONObject.toJSONStringWithDateFormat(msg, "yyyy-MM-dd HH:mm"));
-                redisUtils.set("TrainingMsg:" + user.getId() + "-" + msg.getId(), "1", 86400);
+                if (webSocket.AppointSending(user.getName(), JSONObject.toJSONStringWithDateFormat(msg, "yyyy-MM-dd HH:mm"))){
+                    redisUtils.set("TrainingMsg:" + user.getId() + "-" + msg.getId(), "1", 86400);
+                }
             }
         }
 

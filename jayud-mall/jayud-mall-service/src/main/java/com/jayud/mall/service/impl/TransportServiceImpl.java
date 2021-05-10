@@ -116,8 +116,8 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
             String contacts = shippingAreaVO.getContacts();
             //联系手机(shipping_area contact_phone)
             String contactPhone = shippingAreaVO.getContactPhone();
-            //送货地址 pname + cname + address_first
-            String deliveryAddress = shippingAreaVO.getPname() +" "+ shippingAreaVO.getCname() +" "+ shippingAreaVO.getAddressFirst();
+            //送货地址 省 + 市 + 区 + 地址1
+            String deliveryAddress = shippingAreaVO.getStateName() +" "+ shippingAreaVO.getCityName() +" "+ shippingAreaVO.getRegionName() +" "+ shippingAreaVO.getAddressFirst();
 
             DeliverInfoVO deliverInfoVO = new DeliverInfoVO();
             deliverInfoVO.setOrderPickId(orderPickId);

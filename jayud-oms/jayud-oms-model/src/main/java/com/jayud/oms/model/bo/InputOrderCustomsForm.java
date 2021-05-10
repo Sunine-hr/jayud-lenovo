@@ -55,7 +55,7 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "六联单号附件数组集合")
     private List<FileView> encodePics = new ArrayList<>();
 
-    @ApiModelProperty(value = "业务模式(1-陆路运输 2-空运 3-海运 4-快递)", required = true)
+    @ApiModelProperty(value = "业务模式(1-陆路运输 2-空运 3-海运 4-快递 5-内陆运输)", required = true)
     private String bizModel;
 
     @ApiModelProperty(value = "提运单")

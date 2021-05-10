@@ -1,12 +1,9 @@
 package com.jayud.oauth.scheduling;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jayud.common.RedisUtils;
 import com.jayud.oauth.model.po.SystemUser;
-import com.jayud.oauth.model.po.TrainingManagement;
 import com.jayud.oauth.model.vo.TrainingManagementVO;
 import com.jayud.oauth.service.ISystemUserService;
 import com.jayud.oauth.service.ITrainingManagementService;
@@ -35,7 +32,7 @@ public class TimeTask {
     /**
      * 定时推送培训信息
      */
-    @Scheduled(cron = "0/20 * * * * ?")
+    @Scheduled(cron = "0/59 * * * * ?")
     public void pushTrainingInfo() {
         log.info("*********   定时推送培训信息任务执行   **************");
 

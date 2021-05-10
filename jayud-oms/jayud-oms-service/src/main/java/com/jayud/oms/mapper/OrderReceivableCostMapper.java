@@ -29,5 +29,6 @@ public interface OrderReceivableCostMapper extends BaseMapper<OrderReceivableCos
      * 查询待处理费用审核
      */
     List<Map<String, Object>> getPendingExpenseApproval(@Param("subType") String subType,
-                                                        @Param("orderNos") List<String> orderNos, List<Long> legalIds);
+                                                        @Param("orderNos") List<String> orderNos,
+                                                        @Param("legalIds") List<Long> legalIds);
 }

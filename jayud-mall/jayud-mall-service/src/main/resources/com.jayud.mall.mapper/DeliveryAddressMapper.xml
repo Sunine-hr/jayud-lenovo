@@ -31,7 +31,7 @@
     <select id="findDeliveryAddressByPage" parameterType="com.jayud.mall.model.bo.QueryDeliveryAddressForm"
             resultType="com.jayud.mall.model.vo.DeliveryAddressVO">
         SELECT
-        id,t.customer_id,t.types,t.contacts,t.phone,t.country_code,t.country_name,t.state_code,t.state_name,t.city_code,t.city_name,t.address,t.address2,t.address3,t.zip_code,t.warehouse_code,t.warehouse_name,t.`status`
+        id,t.customer_id,t.types,t.contacts,t.phone,t.country_code,t.country_name,t.state_code,t.state_name,t.city_code,t.city_name,t.region_code,t.region_name,t.address,t.address2,t.address3,t.zip_code,t.warehouse_code,t.warehouse_name,t.`status`
         FROM delivery_address t
         WHERE
         1=1

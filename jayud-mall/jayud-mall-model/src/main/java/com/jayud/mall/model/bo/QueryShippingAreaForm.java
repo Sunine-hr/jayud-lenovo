@@ -17,8 +17,4 @@ public class QueryShippingAreaForm extends BasePageForm{
     @JSONField(ordinal = 2)
     private String warehouseName;
 
-    @ApiModelProperty(value = "国家代码", position = 3)
-    @JSONField(ordinal = 3)
-    private String stateCode;
-
 }

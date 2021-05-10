@@ -54,6 +54,12 @@ public class DeliveryAddressVO {
     @JSONField(ordinal = 11)
     private String cityName;
 
+    @ApiModelProperty(value = "区县代码")
+    private String regionCode;
+
+    @ApiModelProperty(value = "区县名称")
+    private String regionName;
+
     @ApiModelProperty(value = "地址1", position = 12)
     @JSONField(ordinal = 12)
     private String address;

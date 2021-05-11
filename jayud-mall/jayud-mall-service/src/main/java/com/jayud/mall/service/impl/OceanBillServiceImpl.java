@@ -172,8 +172,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         OceanBillVO oceanBillVO = ConvertUtil.convert(oceanBill, OceanBillVO.class);
 
         //3.保存提单关联任务
-        List<BillTaskRelevanceVO> billTaskRelevanceVOS =
-                billTaskRelevanceService.savebillTaskRelevance(oceanBill);
+        List<BillTaskRelevanceVO> billTaskRelevanceVOS = billTaskRelevanceService.savebillTaskRelevance(oceanBill);
 
         return CommonResult.success(oceanBillVO);
     }
@@ -499,8 +498,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         OceanBillVO oceanBillVO = ConvertUtil.convert(oceanBill, OceanBillVO.class);
 
         //3.保存提单关联任务
-        List<BillTaskRelevanceVO> billTaskRelevanceVOS =
-                billTaskRelevanceService.savebillTaskRelevance(oceanBill);
+        List<BillTaskRelevanceVO> billTaskRelevanceVOS = billTaskRelevanceService.savebillTaskRelevance(oceanBill);
 
         //4.保存提单到配载 ocean_conf_detail
         OceanConfDetail oceanConfDetail = new OceanConfDetail();

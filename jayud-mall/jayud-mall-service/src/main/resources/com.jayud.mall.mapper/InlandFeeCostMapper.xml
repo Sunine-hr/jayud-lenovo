@@ -72,5 +72,21 @@
           and t.id = #{id}
     </select>
 
+    <select id="findInlandFeeCostByPara" parameterType="java.util.Map" resultType="com.jayud.mall.model.vo.InlandFeeCostVO">
+        select
+            id, cost_code, cost_name, from_country, from_province, from_city, from_region, to_country, to_province, to_city, to_region, unit_price, cid, unit, status, remark
+        from inland_fee_cost
+        where 1=1
+          and from_country = #{paraMap.from_country}
+          and from_province = #{paraMap.from_province}
+          and from_city = #{paraMap.from_city}
+          and from_region = #{paraMap.from_region}
+          and to_country= #{paraMap.to_country}
+          and to_province = #{paraMap.to_province}
+          and to_city = #{paraMap.to_city}
+          and to_region = #{paraMap.to_region}
+          and unit = #{paraMap.unit}
+    </select>
+
 
 </mapper>

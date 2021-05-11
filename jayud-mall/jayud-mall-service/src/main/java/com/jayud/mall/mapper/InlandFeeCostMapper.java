@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 /**
  * <p>
  * 内陆费费用表 Mapper 接口
@@ -36,4 +38,11 @@ public interface InlandFeeCostMapper extends BaseMapper<InlandFeeCost> {
      * @return
      */
     InlandFeeCostVO findInlandFeeCostById(@Param("id") Long id);
+
+    /**
+     * 查询路线的内陆费
+     * @param paraMap
+     * @return
+     */
+    InlandFeeCostVO findInlandFeeCostByPara(@Param("paraMap") Map<String, Object> paraMap);
 }

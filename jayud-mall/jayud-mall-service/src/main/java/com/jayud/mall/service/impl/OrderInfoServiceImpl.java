@@ -139,6 +139,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     CustomerMapper customerMapper;
 
     @Autowired
+    DeliveryAddressMapper deliveryAddressMapper;
+
+    @Autowired
+    InlandFeeCostMapper inlandFeeCostMapper;
+
+    @Autowired
     IOrderCustomsFileService orderCustomsFileService;
 
     @Autowired
@@ -548,9 +554,68 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //保存-订单对应提货信息表：order_pick
         List<OrderPickVO> orderPickVOList = form.getOrderPickVOList();
         if(CollUtil.isNotEmpty(orderPickVOList)){
+            //to 集货仓库
+            String to_country = shippingAreaVO.getCountryName();
+            String to_province = shippingAreaVO.getStateName();
+            String to_city = shippingAreaVO.getCityName();
+            String to_region = shippingAreaVO.getRegionName();
+
             List<OrderPick> orderPickList = ConvertUtil.convertList(orderPickVOList, OrderPick.class);
             orderPickList.forEach(orderPick -> {
+
+
+                //form 提货地址
+                //  `address_id` int(11) DEFAULT NULL COMMENT '提货地址id(delivery_address id)',
+                Integer addressId = orderPick.getAddressId();
+
+                DeliveryAddressVO deliveryAddressVO = deliveryAddressMapper.findDeliveryAddressById(addressId);
+                String from_country = deliveryAddressVO.getCountryName();
+                String from_province = deliveryAddressVO.getStateName();
+                String from_city = deliveryAddressVO.getCityName();
+                String from_region = deliveryAddressVO.getRegionName();
+                Integer unit = orderPick.getUnit();//单位(1公斤 2方 3票 4柜)    前端填写选择参数
+
+                BigDecimal weight = orderPick.getWeight();//重量  重量直接作为 数量，进行计费
+
                 orderPick.setOrderId(orderInfo.getId());
+                orderPick.setFromCountry(from_country);
+                orderPick.setFromProvince(from_province);
+                orderPick.setFromCity(from_city);
+                orderPick.setFromRegion(from_region);
+                orderPick.setToCountry(to_country);
+                orderPick.setToProvince(to_province);
+                orderPick.setToCity(to_city);
+                orderPick.setToRegion(to_region);
+                orderPick.setCount(weight);
+
+                Map<String, Object> paraMap = new HashMap<>();
+                paraMap.put("from_country", from_country);
+                paraMap.put("from_province", from_province);
+                paraMap.put("from_city", from_city);
+                paraMap.put("from_region", from_region);
+                paraMap.put("to_country", to_country);
+                paraMap.put("to_province", to_province);
+                paraMap.put("to_city", to_city);
+                paraMap.put("to_region", to_region);
+                paraMap.put("unit", unit);
+                InlandFeeCostVO inlandFeeCostVO = inlandFeeCostMapper.findInlandFeeCostByPara(paraMap);
+
+                if(ObjectUtil.isNotEmpty(inlandFeeCostVO)){
+                    BigDecimal unitPrice = inlandFeeCostVO.getUnitPrice();
+                    Integer cid = inlandFeeCostVO.getCid();
+                    orderPick.setUnitPrice(unitPrice);
+                    orderPick.setCid(cid);
+                    orderPick.setStatus("1");//1有效 费用有效
+                    orderPick.setFeeRemark("内陆费，路线匹配，正常计算");
+                }else{
+                    orderPick.setUnitPrice(new BigDecimal("0"));
+                    orderPick.setCid(1);
+                    orderPick.setStatus("0");//0无效 费用待定
+                    orderPick.setFeeRemark("内陆费，路线不存在，费用待定");
+                }
+                //金额 = 单价 * 数量
+                BigDecimal amount = orderPick.getUnitPrice().multiply(orderPick.getCount());
+                orderPick.setAmount(amount);
             });
             QueryWrapper<OrderPick> orderPickQueryWrapper = new QueryWrapper<>();
             orderPickQueryWrapper.eq("order_id", orderInfo.getId());
@@ -615,28 +680,51 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         /*集货仓库：陆运费规格*/
         List<TemplateCopeReceivableVO> inlandFeeList =
                 templateCopeReceivableMapper.findTemplateCopeReceivableInlandFeeListByQie(qie);
-        for (int i=0; i<inlandFeeList.size(); i++){
-            TemplateCopeReceivableVO templateCopeReceivableVO = inlandFeeList.get(i);
-            String specificationCode = templateCopeReceivableVO.getSpecificationCode();
-            //查看集货仓库，判断费用代码是否相等，相等则列入陆运费 费用明细
-            if(specificationCode.equals(storeGoodsWarehouseCode)){
-                OrderCopeReceivable orderCopeReceivable = new OrderCopeReceivable();
-                orderCopeReceivable.setOrderId(orderId);//订单ID(order_info id)
-                orderCopeReceivable.setCostCode(templateCopeReceivableVO.getCostCode());//费用代码(cost_item cost_code)
-                orderCopeReceivable.setCostName(templateCopeReceivableVO.getCostName());//费用名称(cost_item cost_name)
 
-                orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
-                orderCopeReceivable.setCount(totalChargeWeight);//数量 --> 数量，取订单箱号的 收费重
-                orderCopeReceivable.setUnitPrice(templateCopeReceivableVO.getUnitPrice());//单价
-                orderCopeReceivable.setAmount(totalChargeWeight.multiply(templateCopeReceivableVO.getUnitPrice()).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
-
-                orderCopeReceivable.setCid(templateCopeReceivableVO.getCid());//币种(currency_info id)
-                orderCopeReceivable.setRemarks(templateCopeReceivableVO.getRemarks());//描述
-                //应收 内陆费
-                orderCopeReceivables.add(orderCopeReceivable);
-                break;
+        //是否上门提货 (0否 1是,order_pick) 为是，才计算内陆费，否则不计算内陆费
+        Integer isPick = orderInfo.getIsPick();
+        if(isPick == 1){
+            //汇总，提货地址，的内陆费   汇总的金额，为单价；数量固定为1   (金额=单价*1)
+            List<OrderPickVO> orderPickList = orderPickMapper.findOrderPickByOrderId(orderInfo.getId());
+            String remarks = "内陆费确认";
+            BigDecimal amount = new BigDecimal("0");
+            for(int i=0; i<orderPickList.size(); i++){
+                OrderPickVO orderPickVO = orderPickList.get(i);
+                String status = orderPickVO.getStatus();
+                if(status.equals("0")){
+                    //内陆费为待定
+                    remarks = "内陆费待定";
+                    break;
+                }
+                amount = amount.add(orderPickVO.getAmount());
             }
+
+            for (int i=0; i<inlandFeeList.size(); i++){
+                TemplateCopeReceivableVO templateCopeReceivableVO = inlandFeeList.get(i);
+                String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+                //查看集货仓库，判断费用代码是否相等，相等则列入陆运费 费用明细
+                if(specificationCode.equals(storeGoodsWarehouseCode)){
+                    OrderCopeReceivable orderCopeReceivable = new OrderCopeReceivable();
+                    orderCopeReceivable.setOrderId(orderId);//订单ID(order_info id)
+                    orderCopeReceivable.setCostCode(templateCopeReceivableVO.getCostCode());//费用代码(cost_item cost_code)
+                    orderCopeReceivable.setCostName(templateCopeReceivableVO.getCostName());//费用名称(cost_item cost_name)
+
+                    orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
+                    orderCopeReceivable.setCount(new BigDecimal("1"));//数量  内陆费，数量固定为1，实际上是提货地址的内陆费
+                    orderCopeReceivable.setUnitPrice(amount.setScale(2,BigDecimal.ROUND_HALF_UP));//单价               金额，直接作为单价
+                    orderCopeReceivable.setAmount(amount.setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+
+                    orderCopeReceivable.setCid(templateCopeReceivableVO.getCid());//币种(currency_info id)
+                    orderCopeReceivable.setRemarks(remarks);//描述
+                    //应收 内陆费
+                    orderCopeReceivables.add(orderCopeReceivable);
+                    break;
+                }
+            }
+
         }
+
+
         //(3)其他应收费用，过滤掉 海运费、内陆费
         //商品的附加费 查询商品，服务费用单价，同一个商品不同的服务，有不同的费用
         List<OrderShopVO> orderShopVOList1 = orderShopMapper.findOrderShopByOrderId(orderInfo.getId());
@@ -963,9 +1051,72 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //保存-订单对应提货信息表：order_pick
         List<OrderPickVO> orderPickVOList = form.getOrderPickVOList();
         if(CollUtil.isNotEmpty(orderPickVOList)){
+
+            //to 集货仓库
+            String to_country = shippingAreaVO.getCountryName();
+            String to_province = shippingAreaVO.getStateName();
+            String to_city = shippingAreaVO.getCityName();
+            String to_region = shippingAreaVO.getRegionName();
+
+
             List<OrderPick> orderPickList = ConvertUtil.convertList(orderPickVOList, OrderPick.class);
             orderPickList.forEach(orderPick -> {
+
+
+                //form 提货地址
+                //  `address_id` int(11) DEFAULT NULL COMMENT '提货地址id(delivery_address id)',
+                Integer addressId = orderPick.getAddressId();
+
+                DeliveryAddressVO deliveryAddressVO = deliveryAddressMapper.findDeliveryAddressById(addressId);
+                String from_country = deliveryAddressVO.getCountryName();
+                String from_province = deliveryAddressVO.getStateName();
+                String from_city = deliveryAddressVO.getCityName();
+                String from_region = deliveryAddressVO.getRegionName();
+                Integer unit = orderPick.getUnit();//单位(1公斤 2方 3票 4柜)    前端填写选择参数
+
+                BigDecimal weight = orderPick.getWeight();//重量  重量直接作为 数量，进行计费
+
                 orderPick.setOrderId(orderInfo.getId());
+                orderPick.setFromCountry(from_country);
+                orderPick.setFromProvince(from_province);
+                orderPick.setFromCity(from_city);
+                orderPick.setFromRegion(from_region);
+                orderPick.setToCountry(to_country);
+                orderPick.setToProvince(to_province);
+                orderPick.setToCity(to_city);
+                orderPick.setToRegion(to_region);
+                orderPick.setCount(weight);
+
+                Map<String, Object> paraMap = new HashMap<>();
+                paraMap.put("from_country", from_country);
+                paraMap.put("from_province", from_province);
+                paraMap.put("from_city", from_city);
+                paraMap.put("from_region", from_region);
+                paraMap.put("to_country", to_country);
+                paraMap.put("to_province", to_province);
+                paraMap.put("to_city", to_city);
+                paraMap.put("to_region", to_region);
+                paraMap.put("unit", unit);
+                InlandFeeCostVO inlandFeeCostVO = inlandFeeCostMapper.findInlandFeeCostByPara(paraMap);
+
+                if(ObjectUtil.isNotEmpty(inlandFeeCostVO)){
+                    BigDecimal unitPrice = inlandFeeCostVO.getUnitPrice();
+                    Integer cid = inlandFeeCostVO.getCid();
+                    orderPick.setUnitPrice(unitPrice);
+                    orderPick.setCid(cid);
+                    orderPick.setStatus("1");//1有效 费用有效
+                    orderPick.setFeeRemark("内陆费，路线匹配，正常计算");
+                }else{
+                    orderPick.setUnitPrice(new BigDecimal("0"));
+                    orderPick.setCid(1);
+                    orderPick.setStatus("0");//0无效 费用待定
+                    orderPick.setFeeRemark("内陆费，路线不存在，费用待定");
+                }
+
+                //金额 = 单价 * 数量
+                BigDecimal amount = orderPick.getUnitPrice().multiply(orderPick.getCount());
+                orderPick.setAmount(amount);
+
             });
             QueryWrapper<OrderPick> orderPickQueryWrapper = new QueryWrapper<>();
             orderPickQueryWrapper.eq("order_id", orderInfo.getId());
@@ -1029,28 +1180,49 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         /*集货仓库：陆运费规格*/
         List<TemplateCopeReceivableVO> inlandFeeList =
                 templateCopeReceivableMapper.findTemplateCopeReceivableInlandFeeListByQie(qie);
-        for (int i=0; i<inlandFeeList.size(); i++){
-            TemplateCopeReceivableVO templateCopeReceivableVO = inlandFeeList.get(i);
-            String specificationCode = templateCopeReceivableVO.getSpecificationCode();
-            //查看集货仓库，判断费用代码是否相等，相等则列入陆运费 费用明细
-            if(specificationCode.equals(storeGoodsWarehouseCode)){
-                OrderCopeReceivable orderCopeReceivable = new OrderCopeReceivable();
-                orderCopeReceivable.setOrderId(orderId);//订单ID(order_info id)
-                orderCopeReceivable.setCostCode(templateCopeReceivableVO.getCostCode());//费用代码(cost_item cost_code)
-                orderCopeReceivable.setCostName(templateCopeReceivableVO.getCostName());//费用名称(cost_item cost_name)
 
-                orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
-                orderCopeReceivable.setCount(totalChargeWeight);//数量 --> 数量，取订单箱号的 收费重
-                orderCopeReceivable.setUnitPrice(templateCopeReceivableVO.getUnitPrice());//单价
-                orderCopeReceivable.setAmount(totalChargeWeight.multiply(templateCopeReceivableVO.getUnitPrice()).setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+        //是否上门提货 (0否 1是,order_pick) 为是，才计算内陆费，否则不计算内陆费
+        Integer isPick = orderInfo.getIsPick();
+        if(isPick == 1){
+            //汇总，提货地址，的内陆费   汇总的金额，为单价；数量固定为1   (金额=单价*1)
+            List<OrderPickVO> orderPickList = orderPickMapper.findOrderPickByOrderId(orderInfo.getId());
+            String remarks = "内陆费确认";
+            BigDecimal amount = new BigDecimal("0");
+            for(int i=0; i<orderPickList.size(); i++){
+                OrderPickVO orderPickVO = orderPickList.get(i);
+                String status = orderPickVO.getStatus();
+                if(status.equals("0")){
+                    //内陆费为待定
+                    remarks = "内陆费待定";
+                    break;
+                }
+                amount = amount.add(orderPickVO.getAmount());
+            }
 
-                orderCopeReceivable.setCid(templateCopeReceivableVO.getCid());//币种(currency_info id)
-                orderCopeReceivable.setRemarks(templateCopeReceivableVO.getRemarks());//描述
-                //应收 内陆费
-                orderCopeReceivables.add(orderCopeReceivable);
-                break;
+            for (int i=0; i<inlandFeeList.size(); i++){
+                TemplateCopeReceivableVO templateCopeReceivableVO = inlandFeeList.get(i);
+                String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+                //查看集货仓库，判断费用代码是否相等，相等则列入陆运费 费用明细
+                if(specificationCode.equals(storeGoodsWarehouseCode)){
+                    OrderCopeReceivable orderCopeReceivable = new OrderCopeReceivable();
+                    orderCopeReceivable.setOrderId(orderId);//订单ID(order_info id)
+                    orderCopeReceivable.setCostCode(templateCopeReceivableVO.getCostCode());//费用代码(cost_item cost_code)
+                    orderCopeReceivable.setCostName(templateCopeReceivableVO.getCostName());//费用名称(cost_item cost_name)
+
+                    orderCopeReceivable.setCalculateWay(templateCopeReceivableVO.getCalculateWay());//计算方式(1自动 2手动)
+                    orderCopeReceivable.setCount(new BigDecimal("1"));//数量  内陆费，数量固定为1，实际上是提货地址的内陆费
+                    orderCopeReceivable.setUnitPrice(amount.setScale(2,BigDecimal.ROUND_HALF_UP));//单价               金额，直接作为单价
+                    orderCopeReceivable.setAmount(amount.setScale(2,BigDecimal.ROUND_HALF_UP));//金额 = 数量 * 单价 (保留两位小数)
+
+                    orderCopeReceivable.setCid(templateCopeReceivableVO.getCid());//币种(currency_info id)
+                    orderCopeReceivable.setRemarks(remarks);//描述
+                    //应收 内陆费
+                    orderCopeReceivables.add(orderCopeReceivable);
+                    break;
+                }
             }
         }
+
         //(3)其他应收费用，过滤掉 海运费、内陆费
         //商品的附加费 查询商品，服务费用单价，同一个商品不同的服务，有不同的费用
         List<OrderShopVO> orderShopVOList1 = orderShopMapper.findOrderShopByOrderId(orderInfo.getId());

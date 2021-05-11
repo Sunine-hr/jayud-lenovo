@@ -184,12 +184,12 @@
                         #{item}
                     </foreach>
                 </if>
-                <if test="legalIds != null and legalIds.size>0">
-                    and oi.`legal_entity_id` in
-                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                        #{legalId}
-                    </foreach>
-                </if>
+<!--                <if test="legalIds != null and legalIds.size>0">-->
+<!--                    and oi.`legal_entity_id` in-->
+<!--                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+<!--                        #{legalId}-->
+<!--                    </foreach>-->
+<!--                </if>-->
                 GROUP BY opc.order_no
             </otherwise>
         </choose>

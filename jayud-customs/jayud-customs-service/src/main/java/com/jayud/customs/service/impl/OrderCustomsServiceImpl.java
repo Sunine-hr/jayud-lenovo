@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -240,7 +241,10 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         Integer num = 0;
         switch (status) {
             case "portFeeCheck":
-                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.BG.getSignOne(), legalIds).getData();
+                List<OrderCustoms> list = this.getByLegalEntityId(legalIds);
+                if (org.apache.commons.collections4.CollectionUtils.isEmpty(list)) return num;
+                List<String> orderNos = list.stream().map(OrderCustoms::getOrderNo).collect(Collectors.toList());
+                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.BG.getSignOne(), legalIds,orderNos).getData();
                 break;
             default:
                 List<String> mainOrderNos = this.baseMapper.getMainOrderNoByStatus(status, legalIds);
@@ -288,5 +292,12 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
         boolean b = this.saveOrUpdate(orderCustoms);
         return b;
+    }
+
+    @Override
+    public List<OrderCustoms> getByLegalEntityId(List<Long> legalIds) {
+        QueryWrapper<OrderCustoms> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderCustoms::getLegalEntityId, legalIds);
+        return this.baseMapper.selectList(condition);
     }
 }

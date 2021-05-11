@@ -15,5 +15,5 @@ public interface ICostCommonService {
     /**
      * 统计应收/应付待处理费用审核
      */
-    public Integer auditPendingExpenses(String subType, List<Long> legalIds);
+    public Integer auditPendingExpenses(String subType, List<Long> legalIds,List<String> orderNos);
 }

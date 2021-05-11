@@ -33,6 +33,7 @@ import com.jayud.common.utils.FileUtil;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -566,13 +568,23 @@ public class AirOrderServiceImpl extends ServiceImpl<AirOrderMapper, AirOrder> i
         Integer num = 0;
         switch (status) {
             case "airFeeCheck":
-                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.KY.getSignOne(), legalIds).getData();
+                List<AirOrder> list = this.getByLegalEntityId(legalIds);
+                if (CollectionUtils.isEmpty(list)) return num;
+                List<String> orderNos = list.stream().map(AirOrder::getOrderNo).collect(Collectors.toList());
+                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.KY.getSignOne(), legalIds, orderNos).getData();
                 break;
             default:
                 num = this.baseMapper.getNumByStatus(status, legalIds);
         }
 
         return num == null ? 0 : num;
+    }
+
+    @Override
+    public List<AirOrder> getByLegalEntityId(List<Long> legalIds) {
+        QueryWrapper<AirOrder> condition = new QueryWrapper<>();
+        condition.lambda().in(AirOrder::getLegalEntityId, legalIds);
+        return this.baseMapper.selectList(condition);
     }
 
 

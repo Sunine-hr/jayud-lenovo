@@ -13,6 +13,7 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oauth.mapper.SystemUserMapper;
 import com.jayud.oauth.model.bo.AuditSystemUserForm;
 import com.jayud.oauth.model.bo.OprSystemUserForm;
@@ -232,7 +233,10 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
                     }
                 }
             }
-//            systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
+            if (StringUtils.isEmpty(systemUser.getPassword())) {
+                systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
+            }
+
             systemUser.setStatus(1);//账户为启用状态
             systemUser.setAuditStatus(1);
             systemUser.setUpdatedUser(UserOperator.getToken());

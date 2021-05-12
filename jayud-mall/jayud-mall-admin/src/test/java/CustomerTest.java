@@ -32,7 +32,7 @@ public class CustomerTest {
         form.setId(3);
         form.setAuditStatus(1);//1审核通过
         form.setSalesmanId(1);
-        form.setOperationTeamId(1L);
+//        form.setOperationTeamId(1L);
         form.setRemark("审核备注A");
         TestUtils.JSONObjectPrint(form);
     }

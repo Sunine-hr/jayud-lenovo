@@ -1,5 +1,6 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -93,6 +94,21 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Transactional(rollbackFor = Exception.class)
     public CommonResult<CustomerVO> auditCustomer(CustomerAuditForm form) {
         Customer customer = ConvertUtil.convert(form, Customer.class);
+
+        List<Long> operationTeamIds = form.getOperationTeamId();
+        String operationTeamId = "";
+        if(CollUtil.isNotEmpty(operationTeamIds)){
+            for(int i=0; i<operationTeamIds.size(); i++){
+                Long id = operationTeamIds.get(i);
+                if(i==0){
+                    operationTeamId = id.toString();
+                }else{
+                    operationTeamId += ","+id.toString();
+                }
+            }
+        }
+        customer.setOperationTeamId(operationTeamId);
+
         AuthUser user = baseService.getUser();
         customer.setAuditUserId(user.getId().intValue());//审核人
         customer.setAuditTime(LocalDateTime.now());//审核时间

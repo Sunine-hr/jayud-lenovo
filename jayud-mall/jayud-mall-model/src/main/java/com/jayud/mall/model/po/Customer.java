@@ -91,9 +91,9 @@ public class Customer extends Model<Customer> {
     @JSONField(ordinal = 14)
     private Integer salesmanId;
 
-    @ApiModelProperty(value = "运营(服务)小组id(operation_team id)", position = 15)
+    @ApiModelProperty(value = "运营(服务)小组id(operation_team id),多个用逗号分隔", position = 15)
     @JSONField(ordinal = 15)
-    private Long operationTeamId;
+    private String operationTeamId;
 
     @ApiModelProperty(value = "默认结算币种，生成对账单默认选中的结算币种(currency_info currency_code)", position = 16)
     @JSONField(ordinal = 16)
@@ -152,10 +152,6 @@ public class Customer extends Model<Customer> {
     @ApiModelProperty(value = "新智慧token", position = 29)
     @JSONField(ordinal = 29)
     private String newWisdomToken;
-
-    @ApiModelProperty(value = "运营(服务)小组2(operation_team id)", position = 30)
-    @JSONField(ordinal = 30)
-    private Long operationTeamTwo;
 
     @Override
     protected Serializable pkVal() {

@@ -1,5 +1,6 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -98,18 +99,21 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
             customerGoodsList.add(customerGoods);
 
             List<GoodsServiceCost> goodsServiceCostList1 = form.getGoodsServiceCostList();
-            goodsServiceCostList1.forEach(goodsServiceCost -> {
-                Long serviceId = goodsServiceCost.getServiceId();
-                ServiceGroupVO serviceGroupVO = serviceGroupMap.get(serviceId);
+            if(CollUtil.isNotEmpty(goodsServiceCostList1)){
+                goodsServiceCostList1.forEach(goodsServiceCost -> {
+                    Long serviceId = goodsServiceCost.getServiceId();
+                    ServiceGroupVO serviceGroupVO = serviceGroupMap.get(serviceId);
 
-                goodsServiceCost.setGoodId(Long.valueOf(id));
-                goodsServiceCost.setCustomerId(Long.valueOf(customerGoodsVO.getCustomerId()));
-                goodsServiceCost.setNameCn(customerGoodsVO.getNameCn());
-                goodsServiceCost.setServiceName(serviceGroupVO.getCodeName());
-                goodsServiceCost.setCustomerName(customerGoodsVO.getCustomerName());
-            });
+                    goodsServiceCost.setGoodId(Long.valueOf(id));
+                    goodsServiceCost.setCustomerId(Long.valueOf(customerGoodsVO.getCustomerId()));
+                    goodsServiceCost.setNameCn(customerGoodsVO.getNameCn());
+                    goodsServiceCost.setServiceName(serviceGroupVO.getCodeName());
+                    goodsServiceCost.setCustomerName(customerGoodsVO.getCustomerName());
+                });
 
-            goodsServiceCostList.addAll(goodsServiceCostList1);
+                goodsServiceCostList.addAll(goodsServiceCostList1);
+            }
+
 
         });
         //1.批量保存，商品
@@ -118,7 +122,9 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
         QueryWrapper<GoodsServiceCost> qw = new QueryWrapper<>();
         qw.in("good_id", ids);
         goodsServiceCostService.remove(qw);
-        goodsServiceCostService.saveOrUpdateBatch(goodsServiceCostList);
+        if(CollUtil.isNotEmpty(goodsServiceCostList)){
+            goodsServiceCostService.saveOrUpdateBatch(goodsServiceCostList);
+        }
         return CommonResult.success("审核成功!");
     }
 

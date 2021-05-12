@@ -72,9 +72,9 @@ public class CustomerUser {
     @JSONField(ordinal = 14)
     private Integer salesmanId;
 
-    @ApiModelProperty(value = "运营(服务)小组id(operation_team id)", position = 15)
+    @ApiModelProperty(value = "运营(服务)小组id(operation_team id),多个用逗号分隔", position = 15)
     @JSONField(ordinal = 15)
-    private Long operationTeamId;
+    private String operationTeamId;
 
     @ApiModelProperty(value = "默认结算币种，生成对账单默认选中的结算币种(currency_info currency_code)", position = 16)
     @JSONField(ordinal = 16)

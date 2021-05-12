@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 public class StorageInCargoRejected {
 
     @ApiModelProperty(value = "拖车订单id")
-    @NotNull(message = "拖车订单id不能为空")
+    @NotNull(message = "入库订单id不能为空")
     private Long storageInOrderId;
 
     @ApiModelProperty(value = "驳回原因")

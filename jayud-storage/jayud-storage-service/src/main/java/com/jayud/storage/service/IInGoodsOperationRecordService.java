@@ -20,4 +20,6 @@ public interface IInGoodsOperationRecordService extends IService<InGoodsOperatio
     List<InGoodsOperationRecord> getListByWarehousingBatchNo(String warehousingBatchNo);
 
     List<InGoodsOperationRecord> getListByOrderId(Long id, String orderNo);
+
+    List<InGoodsOperationRecord> getListByOrderId(Long id);
 }

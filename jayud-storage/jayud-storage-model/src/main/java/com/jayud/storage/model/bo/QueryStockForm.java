@@ -29,6 +29,9 @@ public class QueryStockForm extends BasePageForm {
     @ApiModelProperty(value = "sku")
     private String sku;
 
+    @ApiModelProperty(value = "库位id")
+    private Long kuId;
+
     public void assemblyMainOrderNo(JSONArray mainOrders) {
         customerIds = new ArrayList<>(mainOrders.size());
         for (int i = 0; i < mainOrders.size(); i++) {

@@ -29,6 +29,9 @@ public class WarehouseAreaShelvesLocationVO extends Model<WarehouseAreaShelvesLo
     @ApiModelProperty(value = "仓库代码")
     private String code;
 
+    @ApiModelProperty(value = "货架id")
+    private String shelvesId;
+
     @ApiModelProperty(value = "区域名称")
     private String areaName;
 
@@ -45,7 +48,10 @@ public class WarehouseAreaShelvesLocationVO extends Model<WarehouseAreaShelvesLo
     private Integer shelvesColumn;
 
     @ApiModelProperty(value = "货架类型")
-    private String shelvesType;
+    private Long shelvesType;
+
+    @ApiModelProperty(value = "货架类型名字")
+    private String shelvesTypeName;
 
     @ApiModelProperty(value = "长")
     private Double length;
@@ -65,7 +71,7 @@ public class WarehouseAreaShelvesLocationVO extends Model<WarehouseAreaShelvesLo
     @ApiModelProperty(value = "sku种类上限")
     private Integer categoryUpperLimit;
 
-    public void setMaximumVolume(Double maximumVolume) {
+    public void setMaximumVolume() {
         this.maximumVolume = this.height+"*"+this.length+"*"+this.height;
     }
 }

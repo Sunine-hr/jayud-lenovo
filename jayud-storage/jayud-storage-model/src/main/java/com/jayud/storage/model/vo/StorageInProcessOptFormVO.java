@@ -98,7 +98,7 @@ public class StorageInProcessOptFormVO {
     private List<Long> operationId;
 
     @ApiModelProperty(value = "卡板类型id（可多选，以逗号隔开）")
-    private List<Long> cardtypeId;
+    private List<Long> cardTypeId;
 
     @ApiModelProperty(value = "YES(1为是，2为否)")
     private Integer yes;

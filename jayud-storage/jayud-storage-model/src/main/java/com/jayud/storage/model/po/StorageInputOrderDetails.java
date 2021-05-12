@@ -41,7 +41,7 @@ public class StorageInputOrderDetails extends Model<StorageInputOrderDetails> {
 
     @ApiModelProperty(value = "卡板类型id（可多选，以逗号隔开）")
     @TableField("cardType_id")
-    private String cardtypeId;
+    private String cardTypeId;
 
     @ApiModelProperty(value = "YES(1为是，2为否)")
     @TableField("YES")

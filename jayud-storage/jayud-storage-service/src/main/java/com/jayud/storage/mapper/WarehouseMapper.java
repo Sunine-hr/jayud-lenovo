@@ -22,7 +22,7 @@ import java.util.List;
 @Mapper
 public interface WarehouseMapper extends BaseMapper<Warehouse> {
 
-    List<WarehouseVO> findWarehouse(@Param("form") QueryWarehouseForm form);
+    List<WarehouseVO> findWarehouse();
 
     IPage<WarehouseVO> findWarehouseByPage(Page<WarehouseVO> page, @Param("form") QueryWarehouseForm form);
 

@@ -3,6 +3,9 @@ package com.jayud.storage.mapper;
 import com.jayud.storage.model.po.GoodsLocationRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +18,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface GoodsLocationRecordMapper extends BaseMapper<GoodsLocationRecord> {
 
+    List<GoodsLocationRecord> getListByGoodId(@Param("id") Long id,@Param("orderId") Long orderId,@Param("sku") String sku);
 }

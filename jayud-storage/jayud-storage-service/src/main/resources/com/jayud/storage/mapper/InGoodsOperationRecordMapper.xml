@@ -28,4 +28,11 @@
         id, order_no, order_id, warehousing_batch_no, name, sku, specification_model, board_number, number, pcs, weight, volume, create_user, create_time, update_user, update_time, remarks
     </sql>
 
+    <select id="getListByOrderId" resultType="com.jayud.storage.model.po.InGoodsOperationRecord">
+        select id, order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, name,
+        sku, specification_model specificationModel, board_number boardNumber, number,
+        pcs, weight, volume, create_user createUser, create_time createTime
+        from in_goods_operation_record igor where orderId = #{id} group by sku order by createTime asc
+    </select>
+
 </mapper>

@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -30,24 +31,31 @@ public class WarehouseAreaShelvesLocationForm extends Model<WarehouseAreaShelves
     private Long shelvesId;
 
     @ApiModelProperty(value = "货架层")
+    @NotNull(message = "货架层不为空")
     private Integer shelvesLine;
 
     @ApiModelProperty(value = "货架列数")
+    @NotNull(message = "货架列数不为空")
     private Integer shelvesColumn;
 
     @ApiModelProperty(value = "货架类型")
-    private String shelvesType;
+    @NotNull(message = "货架类型不为空")
+    private Long shelvesType;
 
     @ApiModelProperty(value = "长")
+    @NotNull(message = "长不为空")
     private Double length;
 
     @ApiModelProperty(value = "宽")
+    @NotNull(message = "宽不为空")
     private Double width;
 
     @ApiModelProperty(value = "高")
+    @NotNull(message = "高不为空")
     private Double height;
 
     @ApiModelProperty(value = "最大受重")
+    @NotNull(message = "最大受重不为空")
     private Double maximumWeight;
 
     @ApiModelProperty(value = "sku种类上限")

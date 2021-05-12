@@ -54,7 +54,14 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
     }
 
     @Override
-    public List<WarehouseAreaShelvesLocationVO> getlistByShelvesId(QueryWarehouseAreaShelvesLocationForm form) {
-        return this.baseMapper.getlistByShelvesId(form);
+    public List<WarehouseAreaShelvesLocationVO> getListByShelvesId(QueryWarehouseAreaShelvesLocationForm form) {
+        return this.baseMapper.getListByShelvesId(form);
+    }
+
+    @Override
+    public List<WarehouseAreaShelvesLocation> getList() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status",1);
+        return this.baseMapper.selectList(queryWrapper);
     }
 }

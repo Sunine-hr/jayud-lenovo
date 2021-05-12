@@ -16,6 +16,12 @@ import java.util.List;
  */
 public interface IWarehouseGoodsService extends IService<WarehouseGoods> {
 
+    /**
+     * 入库商品查询
+     * @param id
+     * @param orderNo
+     * @return
+     */
     List<WarehouseGoodsVO> getList(Long id, String orderNo);
 
     /**
@@ -25,4 +31,14 @@ public interface IWarehouseGoodsService extends IService<WarehouseGoods> {
      * @return
      */
     void deleteWarehouseGoodsFormsByOrder(Long orderId, String orderNo);
+
+    void deleteWarehouseGoodsFormsByOrderId(Long id);
+
+    /**
+     * 出库商品查询
+     * @param id
+     * @param orderNo
+     * @return
+     */
+    List<WarehouseGoodsVO> getList1(Long id, String orderNo);
 }

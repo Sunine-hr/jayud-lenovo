@@ -550,5 +550,17 @@ public class OrderComboxController {
         return CommonResult.success(CustomsQuestionnaireStatusEnum.getDropDownList());
     }
 
+    @ApiOperation(value = "仓储订单-下拉框")
+    @PostMapping(value = "/initStorageUnit")
+    public CommonResult initStorageUnit() {
+        //获取操作主体下拉列表
+        List<InitComboxVO> legals = oauthClient.findLegalEntity().getData();
+        List<InitComboxVO> departments= (List<InitComboxVO>)oauthClient.findDepartment().getData();
+        Map map = new HashMap();
+        map.put("legalEntitys", legals);
+        map.put("departments",departments);
+        return CommonResult.success(map);
+    }
+
 }
 

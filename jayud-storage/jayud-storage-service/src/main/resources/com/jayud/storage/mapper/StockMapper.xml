@@ -22,7 +22,9 @@
     </sql>
 
     <select id="findByPage" resultType="com.jayud.storage.model.vo.StockVO">
-        select
+        select id ,good_name goodName, customer_id customerId, sku, specification_model specificationModel,
+         available_stock availableStock, lock_stock lockStock, create_user createUser, create_time createTime, remarks
+         form stock s
     </select>
 
 </mapper>

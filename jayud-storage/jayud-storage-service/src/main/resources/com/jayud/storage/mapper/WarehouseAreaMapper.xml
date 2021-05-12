@@ -20,40 +20,46 @@
     </sql>
 
     <select id="getList" resultType="com.jayud.storage.model.vo.WarehouseAreaVO">
-        select id, area_name areaName, area_code areaCode, warehouse_id warehouseId, status, create_user createUser, create_time createTime, remarks
+        select wa.id, area_name areaName, area_code areaCode, warehouse_id warehouseId, wa.status, wa.create_user createUser, wa.create_time createTime, wa.remarks,
+        w.name name ,w.code code
         from warehouse_area wa
-        left join warehouse w on wa.warehouseId = w.id
-        where status = 1
-        <if test="form.areaName !=null and form.areaName!=''">
-            and wa.areaName = #{form.areaName}
-        </if>
-        <if test="form.areaCode !=null and form.areaCode!=''">
-            and wa.areaCode = #{form.areaCode}
-        </if>
+        left join warehouse w on wa.warehouse_id = w.id
+        where 1=1
+<!--        <if test="form.areaName !=null and form.areaName!=''">-->
+<!--            and wa.areaName = #{form.areaName}-->
+<!--        </if>-->
+<!--        <if test="form.areaCode !=null and form.areaCode!=''">-->
+<!--            and wa.areaCode = #{form.areaCode}-->
+<!--        </if>-->
         <if test="form.name !=null and form.name!=''">
             and w.name = #{form.name}
         </if>
         <if test="form.code !=null and form.code!=''">
             and w.code = #{form.code}
         </if>
-        <if test="form.createTime != null and form.createTime.size>0">
-            and w.create_time <![CDATA[ >= ]]> concat(date_format(#{form.startTime}, '%Y-%m-%d'), ' 00:00:00')
-            and w.create_time <![CDATA[ <= ]]> concat(date_format(#{form.endTime}, '%Y-%m-%d'), ' 23:59:59');
+        <if test="form.startTime !=null and form.startTime!=''">
+            and wa.create_time <![CDATA[>= ]]> #{form.startTime}
         </if>
-        order by createTime desc
+        <if test="form.endTime !=null and form.endTime!=''">
+            and wa.create_time <![CDATA[<= ]]> #{form.endTime}
+        </if>
+        order by create_time desc
     </select>
 
     <select id="findWarehouseAreaByPage" resultType="com.jayud.storage.model.vo.WarehouseAreaVO">
-        select id, area_name areaName, area_code areaCode, warehouse_id warehouseId, status, create_user createUser, create_time createTime, remarks,
+        select wa.id, area_name areaName, area_code areaCode, warehouse_id warehouseId, wa.status, wa.create_user createUser, wa.create_time createTime, wa.remarks,
         w.name name ,w.code code
         from warehouse_area wa
-        left join warehouse w on wa.warehouseId = w.id
-        where status = 1
-        <if test="form.areaName !=null and form.areaName!=''">
-            and wa.areaName = #{form.areaName}
-        </if>
-        <if test="form.areaCode !=null and form.areaCode!=''">
-            and wa.areaCode = #{form.areaCode}
+        left join warehouse w on wa.warehouse_id = w.id
+        where 1=1
+<!--        <if test="form.areaName !=null and form.areaName!=''">-->
+<!--            and wa.areaName = #{form.areaName}-->
+<!--        </if>-->
+<!--        <if test="form.areaCode !=null and form.areaCode!=''">-->
+<!--            and wa.areaCode = #{form.areaCode}-->
+<!--        </if>-->
+        <if test="form.createUser !=null and form.createUser!=''">
+            and wa.create_user = #{form.createUser}
         </if>
         <if test="form.name !=null and form.name!=''">
             and w.name = #{form.name}
@@ -62,12 +68,12 @@
             and w.code = #{form.code}
         </if>
         <if test="form.startTime !=null and form.startTime!=''">
-            and w.create_time <![CDATA[>= ]]> #{form.startTime}
+            and wa.create_time <![CDATA[>= ]]> #{form.startTime}
         </if>
         <if test="form.endTime !=null and form.endTime!=''">
-            and w.create_time <![CDATA[<= ]]> #{form.endTime}
+            and wa.create_time <![CDATA[<= ]]> #{form.endTime}
         </if>
-        order by createTime desc
+        order by wa.create_time desc
     </select>
 
 </mapper>

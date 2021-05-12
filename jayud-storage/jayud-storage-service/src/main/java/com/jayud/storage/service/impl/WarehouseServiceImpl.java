@@ -35,8 +35,8 @@ import java.util.List;
 public class WarehouseServiceImpl extends ServiceImpl<WarehouseMapper, Warehouse> implements IWarehouseService {
 
     @Override
-    public List<WarehouseVO> findWarehouse(QueryWarehouseForm form) {
-        return this.baseMapper.findWarehouse(form);
+    public List<WarehouseVO> findWarehouse() {
+        return this.baseMapper.findWarehouse();
     }
 
     @Override

@@ -39,7 +39,7 @@ public class WarehouseAreaShelvesLocation extends Model<WarehouseAreaShelvesLoca
     private Integer shelvesColumn;
 
     @ApiModelProperty(value = "货架类型")
-    private String shelvesType;
+    private Long shelvesType;
 
     @ApiModelProperty(value = "长")
     private Double length;

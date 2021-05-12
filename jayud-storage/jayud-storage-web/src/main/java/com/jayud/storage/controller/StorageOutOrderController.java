@@ -9,6 +9,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.KafkaMsgEnums;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
@@ -18,13 +19,12 @@ import com.jayud.storage.feign.FileClient;
 import com.jayud.storage.feign.OauthClient;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.*;
-import com.jayud.storage.model.po.StorageInputOrder;
-import com.jayud.storage.model.po.StorageOutOrder;
-import com.jayud.storage.model.vo.StorageInputOrderFormVO;
-import com.jayud.storage.model.vo.StorageOutOrderFormVO;
-import com.jayud.storage.model.vo.StorageOutOrderVO;
-import com.jayud.storage.model.vo.StorageOutPickingListVO;
+import com.jayud.storage.model.po.*;
+import com.jayud.storage.model.vo.*;
+import com.jayud.storage.service.IGoodsLocationRecordService;
+import com.jayud.storage.service.IInGoodsOperationRecordService;
 import com.jayud.storage.service.IStorageOutOrderService;
+import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -68,7 +68,16 @@ public class StorageOutOrderController {
     @Autowired
     private OauthClient oauthClient;
 
-    @ApiOperation("分页查询入库订单列表")
+    @Autowired
+    private IInGoodsOperationRecordService goodsOperationRecordService;
+
+    @Autowired
+    private IGoodsLocationRecordService goodsLocationRecordService;
+
+    @Autowired
+    private IWarehouseAreaShelvesLocationService warehouseAreaShelvesLocationService;
+
+    @ApiOperation("分页查询出库订单列表")
     @PostMapping("/findByPage")
     public CommonResult findByPage(@RequestBody QueryStorageOrderForm form) {
 
@@ -188,6 +197,26 @@ public class StorageOutOrderController {
         form.checkProcessOpt(statusEnum);
         form.setStatus(statusEnum.getCode());
 
+        if(form.getStatus().equals(OrderStatusEnum.CCE_2.getCode())){
+            List<OutWarehouseGoodsForm> outWarehouseGoodsForms = form.getOutWarehouseGoodsForms();
+            for (OutWarehouseGoodsForm outWarehouseGoodsForm : outWarehouseGoodsForms) {
+                List<GoodsLocationRecordFormVO> goodsLocationRecordForms = outWarehouseGoodsForm.getGoodsLocationRecordForms();
+                Integer number = 0;
+                for (GoodsLocationRecordFormVO goodsLocationRecordForm : goodsLocationRecordForms) {
+                    number = number + goodsLocationRecordForm.getNumber();
+                    GoodsLocationRecord goodsLocationRecord = goodsLocationRecordService.getListByGoodIdAndKuId(goodsLocationRecordForm.getIngoodId(),goodsLocationRecordForm.getKuId());
+                    if(goodsLocationRecord.getNumber()<goodsLocationRecordForm.getNumber()){//填的商品超过了该库位的总商品数
+                        //通过库位id获取库位名字
+                        WarehouseAreaShelvesLocation warehouseAreaShelvesLocation = warehouseAreaShelvesLocationService.getById(goodsLocationRecordForm.getKuId());
+                        return CommonResult.error(400, warehouseAreaShelvesLocation+"的该商品最大数量为"+goodsLocationRecord.getNumber());
+                    }
+                }
+                if(outWarehouseGoodsForm.getNumber()!=number){
+                    return CommonResult.error(400, "该商品拣货数量与订单不一致");
+                }
+            }
+        }
+
         //指令操作
         switch (statusEnum) {
             case CCE_1: //出库接单
@@ -256,7 +285,52 @@ public class StorageOutOrderController {
         ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageOutOrderVO.getMainOrderNo()));
         convert.assemblyMainOrderData(result);
         convert.assemblyPickingListData(storageOutOrderVO.getGoodsFormList());
+        List<WarehouseGoodsLocationVO> goodsFormList = new ArrayList<>();
+        for (WarehouseGoodsVO warehouseGoodsVO : storageOutOrderVO.getGoodsFormList()) {
+            WarehouseGoodsLocationVO warehouseGoodsLocationVO = ConvertUtil.convert(warehouseGoodsVO, WarehouseGoodsLocationVO.class);
+            List<GoodsLocationRecord> goodsLocationRecords = goodsLocationRecordService.getListByGoodId(warehouseGoodsVO.getId(),warehouseGoodsVO.getOrderId(),warehouseGoodsVO.getSku());
+            Integer number = warehouseGoodsVO.getNumber();
+            List<GoodsLocationRecordFormVO> goodsLocationRecordFormVOS = new ArrayList<>();
+            //循环
+            for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecords) {
+                //数量小于这个库位的数量，循环结束，
+                if(goodsLocationRecord.getNumber()>=number){
+                    GoodsLocationRecordFormVO goodsLocationRecordFormVO = new GoodsLocationRecordFormVO();
+                    goodsLocationRecordFormVO.setKuId(goodsLocationRecord.getKuId());
+                    goodsLocationRecordFormVO.setIngoodId(goodsLocationRecord.getInGoodId());
+                    goodsLocationRecordFormVO.setNumber(number);
+                    goodsLocationRecordFormVOS.add(goodsLocationRecordFormVO);
+                    break;
+                }else if(goodsLocationRecord.getNumber()<number){
+                    GoodsLocationRecordFormVO goodsLocationRecordFormVO = new GoodsLocationRecordFormVO();
+                    goodsLocationRecordFormVO.setKuId(goodsLocationRecord.getKuId());
+                    goodsLocationRecordFormVO.setIngoodId(goodsLocationRecord.getInGoodId());
+                    goodsLocationRecordFormVO.setNumber(goodsLocationRecord.getNumber());
+                    goodsLocationRecordFormVOS.add(goodsLocationRecordFormVO);
+                }
+                number = number - goodsLocationRecord.getNumber();
+                if(number<=0){
+                    break;
+                }
+            }
+            warehouseGoodsLocationVO.setGoodsLocationRecordForms(goodsLocationRecordFormVOS);
+            goodsFormList.add(warehouseGoodsLocationVO);
+        }
+        convert.setGoodsFormList(goodsFormList);
         return CommonResult.success(convert);
+    }
+
+    @ApiOperation(value = "获取对应商品的库位下拉列表框信息")
+    @PostMapping(value = "/getLocationComboxByOrderId")
+    public CommonResult getLocationComboxByOrderId(@RequestBody Map<String,Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        List<InGoodsOperationRecord> listByOrderId = goodsOperationRecordService.getListByOrderId(id);
+        Map map1 = new HashMap();
+        for (InGoodsOperationRecord inGoodsOperationRecord : listByOrderId) {
+            List<GoodsLocationRecord> goodsLocationRecords = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecord.getId());
+            map1.put(inGoodsOperationRecord.getSku(),goodsLocationRecords);
+        }
+        return CommonResult.success(map1);
     }
 }
 

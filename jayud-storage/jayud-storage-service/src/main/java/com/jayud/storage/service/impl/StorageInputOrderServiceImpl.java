@@ -73,6 +73,12 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
 
     @Override
     public String createOrder(StorageInputOrderForm storageInputOrderForm) {
+
+        //无论驳回还是草稿在提交，都先删除原来的商品信息
+        if(storageInputOrderForm.getId()!=null){
+            warehouseGoodsService.deleteWarehouseGoodsFormsByOrderId(storageInputOrderForm.getId());
+        }
+        //创建
         StorageInputOrder storageInputOrder = ConvertUtil.convert(storageInputOrderForm, StorageInputOrder.class);
         if(storageInputOrder.getId() == null){
             storageInputOrder.setCreateTime(LocalDateTime.now());
@@ -91,12 +97,14 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
             List<WarehouseGoodsForm> goodsFormList = storageInputOrderForm.getGoodsFormList();
             List<WarehouseGoods> warehouseGoods = new ArrayList<>();
             for (WarehouseGoodsForm warehouseGood : goodsFormList) {
-                warehouseGood.setOrderId(storageInputOrder.getId());
-                warehouseGood.setOrderNo(storageInputOrder.getOrderNo());
-                warehouseGood.setCreateTime(LocalDateTime.now());
-                warehouseGood.setFileName(StringUtils.getFileNameStr(warehouseGood.getTakeFiles()));
-                warehouseGood.setFilePath(StringUtils.getFileStr(warehouseGood.getTakeFiles()));
-                warehouseGoods.add(ConvertUtil.convert(warehouseGood,WarehouseGoods.class));
+                WarehouseGoods convert = ConvertUtil.convert(warehouseGood, WarehouseGoods.class);
+                convert.setOrderId(storageInputOrder.getId());
+                convert.setOrderNo(storageInputOrder.getOrderNo());
+                convert.setType(1);
+                convert.setCreateTime(LocalDateTime.now());
+                convert.setFileName(StringUtils.getFileNameStr(warehouseGood.getTakeFiles()));
+                convert.setFilePath(StringUtils.getFileStr(warehouseGood.getTakeFiles()));
+                warehouseGoods.add(convert);
             }
             warehouseGoodsService.saveOrUpdateBatch(warehouseGoods);
         }
@@ -116,6 +124,32 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         StorageInputOrderVO storageInputOrderVO = ConvertUtil.convert(storageInputOrder, StorageInputOrderVO.class);
         //获取商品信息
         List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList(storageInputOrder.getId(),storageInputOrder.getOrderNo());
+        if(CollectionUtils.isEmpty(warehouseGoods)){
+            warehouseGoods.add(new WarehouseGoodsVO());
+            storageInputOrderVO.setTotalNumber("0板0件0pcs");
+            storageInputOrderVO.setTotalWeight("0KG");
+        }else{
+            double totalWeight = 0.0;
+            Integer borderNumber = 0;
+            Integer number = 0;
+            Integer pcs = 0;
+            for (WarehouseGoodsVO warehouseGood : warehouseGoods) {
+                if(warehouseGood.getWeight()!=null){
+                    totalWeight = totalWeight + warehouseGood.getWeight();
+                }
+                if(warehouseGood.getBoardNumber()!=null){
+                    borderNumber = borderNumber + warehouseGood.getBoardNumber();
+                }
+                if(warehouseGood.getNumber()!=null){
+                    number = number + warehouseGood.getNumber();
+                }
+                if(warehouseGood.getPcs()!=null){
+                    pcs = pcs + warehouseGood.getPcs();
+                }
+            }
+            storageInputOrderVO.setTotalNumber(borderNumber+"板"+number+"件"+pcs+"pcs");
+            storageInputOrderVO.setTotalWeight(totalWeight+"KG");
+        }
         storageInputOrderVO.setGoodsFormList(warehouseGoods);
         return storageInputOrderVO;
     }
@@ -172,9 +206,10 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
             for (GoodsLocationRecordForm goodsLocationRecordForm : goodsLocationRecordForms) {
                 if(goodsLocationRecordForm.getKuId()!=null && goodsLocationRecordForm.getNumber()!=null){
                     GoodsLocationRecord goodsLocationRecord = ConvertUtil.convert(goodsLocationRecordForm, GoodsLocationRecord.class);
-                    goodsLocationRecord.setIngoodId(inGoodsOperationRecord.getId());
+                    goodsLocationRecord.setInGoodId(inGoodsOperationRecord.getId());
                     goodsLocationRecord.setCreateUser(UserOperator.getToken());
                     goodsLocationRecord.setCreateTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
+                    goodsLocationRecord.setType(1);
                     boolean b = goodsLocationRecordService.saveOrUpdate(goodsLocationRecord);
                     if(!b){
                         return false;
@@ -250,7 +285,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageInputOrder storageInputOrder = new StorageInputOrder();
         storageInputOrder.setOrderTaker(form.getOperatorUser());
-        storageInputOrder.setReceivingOrdersDate(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
+        storageInputOrder.setReceivingOrdersDate(form.getOperatorTime());
         storageInputOrder.setId(form.getOrderId());
         storageInputOrder.setUpdateUser(UserOperator.getToken());
         storageInputOrder.setUpdateTime(LocalDateTime.now());
@@ -300,7 +335,18 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         redisUtils.delete(form.getOrderNo());
         form.setOperatorUser(UserOperator.getToken());
         form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
+
         StorageInputOrderDetails storageInputOrderDetails = ConvertUtil.convert(form, StorageInputOrderDetails.class);
+        StringBuffer stringBuffer = new StringBuffer();
+        StringBuffer s = new StringBuffer();
+        for (Long aLong : form.getOperationId()) {
+            stringBuffer.append(aLong).append(",");
+        }
+        for (Long aLong : form.getCardtypeId()) {
+            s.append(aLong).append(",");
+        }
+        storageInputOrderDetails.setCardTypeId(s.substring(0,s.length()-1).toString());
+        storageInputOrderDetails.setOperationId(stringBuffer.substring(0,s.length()-1).toString());
         boolean insert = storageInputOrderDetailsService.saveOrUpdate(storageInputOrderDetails);
         if(!insert){
             return false;

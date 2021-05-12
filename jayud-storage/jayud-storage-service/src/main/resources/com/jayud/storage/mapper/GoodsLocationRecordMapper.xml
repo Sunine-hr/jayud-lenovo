@@ -10,11 +10,19 @@
         <result column="number" property="number" />
         <result column="create_user" property="createUser" />
         <result column="create_time" property="createTime" />
+        <result column="type" property="type" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, ku_id, inGood_id, number, create_user, create_time
+        id, ku_id, inGood_id, number, create_user, create_time,type
     </sql>
+
+    <select id="getListByGoodId" resultType="com.jayud.storage.model.po.GoodsLocationRecord">
+        select id, ku_id kuId, inGood_id inGoodId, number, create_user createUser, create_time createTime,type
+        from goods_location_record glr
+        left join warehouse_goods wg on wg.id = glr.inGoodId
+        where wg.id = #{id} and wg.sku = #{sku} and wg.order_id = #{orderId} order by createTime asc
+    </select>
 
 </mapper>

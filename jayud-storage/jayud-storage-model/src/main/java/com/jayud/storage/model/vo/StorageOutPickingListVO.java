@@ -44,7 +44,7 @@ public class StorageOutPickingListVO {
     private String remarks;
 
     @ApiModelProperty(value = "入库商品对象集合")
-    private List<WarehouseGoodsVO> goodsFormList;
+    private List<WarehouseGoodsLocationVO> goodsFormList;
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;
@@ -61,7 +61,8 @@ public class StorageOutPickingListVO {
     @ApiModelProperty(value = "重量")
     private Double totalWeight;
 
-
+    @ApiModelProperty(value = "主订单id")
+    private String mainOrderId;
 
     /**
      * @param mainOrderObjs 远程客户对象集合
@@ -76,6 +77,7 @@ public class StorageOutPickingListVO {
             if (this.mainOrderNo.equals(json.getStr("orderNo"))) { //主订单配对
                 this.customerName = json.getStr("customerName");
                 this.customerCode = json.getStr("customerCode");
+                this.mainOrderId = json.getStr("id");
                 break;
             }
         }

@@ -1,6 +1,7 @@
 package com.jayud.storage.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
@@ -85,6 +86,20 @@ public class WarehouseAreaServiceImpl extends ServiceImpl<WarehouseAreaMapper, W
             Asserts.fail(ResultEnum.OPR_FAIL, "操作失败，输入的状态有误");
         }
         this.saveOrUpdate(warehouseArea);
+    }
+
+    @Override
+    public WarehouseArea getWarehouseAreaByAreaCode(String areaCode) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("area_code",areaCode);
+        return this.baseMapper.selectOne(queryWrapper);
+    }
+
+    @Override
+    public WarehouseArea getWarehouseAreaByAreaName(String areaName) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("area_name",areaName);
+        return this.baseMapper.selectOne(queryWrapper);
     }
 
 

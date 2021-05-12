@@ -62,10 +62,10 @@ public class AddWarehouseGoodsForm extends Model<AddWarehouseGoodsForm> {
     private Double volume;
 
     @ApiModelProperty(value = "预计到达时间")
-    private LocalDateTime estimatedArrivalTime;
+    private String estimatedArrivalTime;
 
     @ApiModelProperty(value = "预计出库时间")
-    private LocalDateTime expectedDeliveryTime;
+    private String expectedDeliveryTime;
 
     @ApiModelProperty(value = "备注")
     private String remarks;
@@ -83,13 +83,13 @@ public class AddWarehouseGoodsForm extends Model<AddWarehouseGoodsForm> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private String createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime updateTime;
+    private String updateTime;
 
     @ApiModelProperty(value = "商品类型 1为入库  2为出库")
     @NotNull(message = "货物类型不能为空")

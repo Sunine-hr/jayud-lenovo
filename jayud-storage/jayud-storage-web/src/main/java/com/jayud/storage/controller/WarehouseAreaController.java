@@ -1,13 +1,16 @@
 package com.jayud.storage.controller;
 
 
+import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.storage.model.bo.*;
-import com.jayud.storage.model.vo.GoodVO;
-import com.jayud.storage.model.vo.StorageInputOrderFormVO;
-import com.jayud.storage.model.vo.WarehouseAreaShelvesVO;
-import com.jayud.storage.model.vo.WarehouseAreaVO;
+import com.jayud.storage.model.po.WarehouseArea;
+import com.jayud.storage.model.po.WarehouseAreaShelves;
+import com.jayud.storage.model.vo.*;
 import com.jayud.storage.service.IWarehouseAreaService;
 import com.jayud.storage.service.IWarehouseAreaShelvesService;
 import io.swagger.annotations.Api;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -50,19 +54,43 @@ public class WarehouseAreaController {
 
     @ApiOperation(value = "区域分页查询list")
     @PostMapping("/findWarehouseAreaByPage")
-    public CommonResult findWarehouseAreaByPage(@RequestBody QueryWarehouseAreaForm form){
+    public CommonResult<CommonPageResult<WarehouseAreaVO>> findWarehouseAreaByPage(@RequestBody QueryWarehouseAreaForm form){
         IPage<WarehouseAreaVO> page = this.warehouseAreaService.findWarehouseAreaByPage(form);
-        return CommonResult.success(page);
+        CommonPageResult<WarehouseAreaVO> pageVO = new CommonPageResult(page);
+        return CommonResult.success(pageVO);
     }
 
     @ApiOperation(value = "新增或修改仓库区域信息")
     @PostMapping("/saveOrUpdateWarehouseArea")
-    public CommonResult saveOrUpdateWarehouseArea(WarehouseAreaForm warehouseAreaForm){
+    public CommonResult saveOrUpdateWarehouseArea(@RequestBody WarehouseAreaForm warehouseAreaForm){
+        List<AreaForm> areaForms = warehouseAreaForm.getAreaForms();
+        for (AreaForm areaForm : areaForms) {
+            if(areaForm.getAreaCode()==null || areaForm.getAreaName()==null){
+                return CommonResult.error(444,"数据不完整");
+            }
+            WarehouseArea warehouseArea = warehouseAreaService.getWarehouseAreaByAreaCode(areaForm.getAreaCode());
+            if(warehouseArea!=null){
+                return CommonResult.error(444,areaForm.getAreaCode()+"该代码已存在");
+            }
+            WarehouseArea warehouseArea1 = warehouseAreaService.getWarehouseAreaByAreaName(areaForm.getAreaName());
+            if(warehouseArea1!=null){
+                return CommonResult.error(444,areaForm.getAreaName()+"该名字已存在");
+            }
+        }
         boolean result = warehouseAreaService.saveOrUpdateWarehouseArea(warehouseAreaForm);
         if(!result){
             return CommonResult.error(444,"数据插入失败");
         }
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "根据id获取仓库区域")
+    @PostMapping("/getWarehouseAreaById")
+    public CommonResult getWarehouseAreaById(@RequestBody Map<String,Object> map){
+        Long id = MapUtil.getLong(map, "id");
+        WarehouseArea warehouseArea = this.warehouseAreaService.getById(id);
+        WarehouseAreaVO convert = ConvertUtil.convert(warehouseArea, WarehouseAreaVO.class);
+        return CommonResult.success(convert);
     }
 
     @ApiOperation(value = "3.区域操作：启用、禁用")
@@ -73,9 +101,15 @@ public class WarehouseAreaController {
     }
 
 
-    @ApiOperation(value = "新增或修改仓库区域信息")
+    @ApiOperation(value = "新增或修改仓库区域货架信息")
     @PostMapping("/saveOrUpdateWarehouseAreaShelves")
-    public CommonResult saveOrUpdateWarehouseAreaShelves(WarehouseAreaShelvesForm form){
+    public CommonResult saveOrUpdateWarehouseAreaShelves(@RequestBody WarehouseAreaShelvesForm form){
+        for (ShelvesForm shelvesForm : form.getShelvesName()) {
+            WarehouseAreaShelves warehouseAreaShelves = warehouseAreaShelvesService.getWarehouseAreaShelvesByShelvesName(shelvesForm.getName());
+            if(warehouseAreaShelves!=null){
+                return CommonResult.error(444,shelvesForm.getName()+"该货架名已存在");
+            }
+        }
         boolean result = warehouseAreaShelvesService.saveOrUpdateWarehouseAreaShelves(form);
         if(!result){
             return CommonResult.error(444,"数据插入失败");
@@ -92,10 +126,13 @@ public class WarehouseAreaController {
 
     @ApiOperation(value = "货架分页查询list")
     @PostMapping("/findWarehouseAreaShelvesByPage")
-    public CommonResult findWarehouseAreaShelvesByPage(@RequestBody QueryWarehouseAreaShelvesForm form){
+    public CommonResult<CommonPageResult<WarehouseAreaShelvesVO>> findWarehouseAreaShelvesByPage(@RequestBody QueryWarehouseAreaShelvesForm form){
         IPage<WarehouseAreaShelvesVO> page = this.warehouseAreaShelvesService.findWarehouseAreaShelvesByPage(form);
-        return CommonResult.success(page);
+        CommonPageResult<WarehouseAreaShelvesVO> pageVO = new CommonPageResult(page);
+        return CommonResult.success(pageVO);
     }
+
+
 
 }
 

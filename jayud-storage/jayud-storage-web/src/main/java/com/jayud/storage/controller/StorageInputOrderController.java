@@ -94,6 +94,10 @@ public class StorageInputOrderController {
     @PostMapping("/findByPage")
     public CommonResult findByPage(@RequestBody QueryStorageOrderForm form) {
 
+//        if(form.getCmd().equals("costAudit")){
+//
+//        }
+
         form.setStartTime();
         //模糊查询客户信息
         if (!StringUtils.isEmpty(form.getCustomerName())) {
@@ -162,6 +166,7 @@ public class StorageInputOrderController {
         //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
         for (StorageInputOrderFormVO record : records) {
+            record.setOrderId(record.getId());
             //拼装主订单信息
             record.assemblyMainOrderData(result.getData());
             //组装法人名称
@@ -251,6 +256,7 @@ public class StorageInputOrderController {
         //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
         for (StorageInputOrderWarehouseingVO record : records) {
+            record.setOrderId(record.getId());
             //拼装主订单信息
             record.assemblyMainOrderData(result.getData());
             //组装法人名称
@@ -296,6 +302,7 @@ public class StorageInputOrderController {
         }
         String orderProcessNode = (String) omsClient.getOrderProcessNode(storageInputOrder.getMainOrderNo(), storageInputOrder.getOrderNo(), storageInputOrder.getStatus()).getData();
 
+
         OrderStatusEnum statusEnum = OrderStatusEnum.getStorageInOrderNextStatus(orderProcessNode);
         if (statusEnum == null) {
             log.error("执行入库流程操作失败,超出流程之外 data={}", storageInputOrder);
@@ -339,6 +346,23 @@ public class StorageInputOrderController {
         }
 
         StorageInProcessOptFormVO storageInProcessOptFormVO = ConvertUtil.convert(storageInputOrderDetails, StorageInProcessOptFormVO.class);
+        List<Long> longs = new ArrayList<>();
+        List<Long> list1 = new ArrayList<>();
+        if(storageInputOrderDetails.getCardTypeId()!=null){
+            String[] split = storageInputOrderDetails.getCardTypeId().split(",");
+            for (String s : split) {
+                longs.add(Long.parseLong(s));
+            }
+        }
+       if(storageInputOrderDetails.getOperationId()!=null){
+           String[] split1 = storageInputOrderDetails.getOperationId().split(",");
+           for (String s : split1) {
+               list1.add(Long.parseLong(s));
+           }
+       }
+
+        storageInProcessOptFormVO.setCardTypeId(longs);
+        storageInProcessOptFormVO.setOperationId(list1);
         List<WarehouseGoodsVO> list = warehouseGoodsService.getList(storageInputOrder.getId(), storageInputOrder.getOrderNo());
         storageInProcessOptFormVO.setWarehouseGoodsForms(list);
 
@@ -364,7 +388,7 @@ public class StorageInputOrderController {
         }
         storageInProcessOptFormVO.setWarehouseGoodsForms(list);
         ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageInProcessOptFormVO.getMainOrderNo()));
-        storageInProcessOptFormVO.assemblyMainOrderData(result);
+        storageInProcessOptFormVO.assemblyMainOrderData(result.getData());
         storageInProcessOptFormVO.setMainOrderNo(storageInputOrder.getMainOrderNo());
         storageInProcessOptFormVO.setOrderId(storageInputOrder.getId());
         storageInProcessOptFormVO.setOrderNo(storageInputOrder.getOrderNo());

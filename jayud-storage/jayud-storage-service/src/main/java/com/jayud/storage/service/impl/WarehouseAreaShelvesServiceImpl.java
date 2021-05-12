@@ -1,16 +1,14 @@
 package com.jayud.storage.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.storage.model.bo.OperationForm;
-import com.jayud.storage.model.bo.QueryWarehouseAreaShelves2Form;
-import com.jayud.storage.model.bo.QueryWarehouseAreaShelvesForm;
-import com.jayud.storage.model.bo.WarehouseAreaShelvesForm;
+import com.jayud.storage.model.bo.*;
 import com.jayud.storage.model.enums.WarehouseStatusEnum;
 import com.jayud.storage.model.po.Warehouse;
 import com.jayud.storage.model.po.WarehouseArea;
@@ -38,14 +36,18 @@ public class WarehouseAreaShelvesServiceImpl extends ServiceImpl<WarehouseAreaSh
 
     @Override
     public boolean saveOrUpdateWarehouseAreaShelves(WarehouseAreaShelvesForm form) {
-        WarehouseAreaShelves warehouseAreaShelves = ConvertUtil.convert(form, WarehouseAreaShelves.class);
-        warehouseAreaShelves.setCreateTime(LocalDateTime.now());
-        warehouseAreaShelves.setCreateUser(UserOperator.getToken());
-        warehouseAreaShelves.setStatus(1);
-        boolean b = this.saveOrUpdate(warehouseAreaShelves);
-        if(!b){
-            return false;
+        for (ShelvesForm shelvesForm : form.getShelvesName()) {
+            WarehouseAreaShelves warehouseAreaShelves = ConvertUtil.convert(form, WarehouseAreaShelves.class);
+            warehouseAreaShelves.setShelvesName(shelvesForm.getName());
+            warehouseAreaShelves.setCreateTime(LocalDateTime.now());
+            warehouseAreaShelves.setCreateUser(UserOperator.getToken());
+            warehouseAreaShelves.setStatus(1);
+            boolean b = this.saveOrUpdate(warehouseAreaShelves);
+            if(!b){
+                return false;
+            }
         }
+
         return true;
     }
 
@@ -79,5 +81,12 @@ public class WarehouseAreaShelvesServiceImpl extends ServiceImpl<WarehouseAreaSh
         Page<WarehouseAreaShelvesFormVO> page = new Page<>(form.getPageNum(), form.getPageSize());
         IPage<WarehouseAreaShelvesFormVO> pageInfo = this.baseMapper.findWarehouseAreaShelvesLocationByPage(page,form);
         return pageInfo;
+    }
+
+    @Override
+    public WarehouseAreaShelves getWarehouseAreaShelvesByShelvesName(String name) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("shelves_name",name);
+        return this.baseMapper.selectOne(queryWrapper);
     }
 }

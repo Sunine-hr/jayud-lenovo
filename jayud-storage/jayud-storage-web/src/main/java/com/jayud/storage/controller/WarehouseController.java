@@ -37,13 +37,13 @@ public class WarehouseController {
     @Autowired
     IWarehouseService warehouseService;
 
-    @ApiOperation(value = "1.不分页查询list")
+    @ApiOperation(value = "查询list")
     @PostMapping("/findWarehouse")
-    public CommonResult<List<WarehouseVO>> findWarehouse(@RequestBody QueryWarehouseForm form) {
-        form.setStartTime();
-        List<WarehouseVO> list = warehouseService.findWarehouse(form);
+    public CommonResult<List<WarehouseVO>> findWarehouse() {
+        List<WarehouseVO> list = warehouseService.findWarehouse();
         return CommonResult.success(list);
     }
+
 
     @ApiOperation(value = "2.分页查询page")
     @PostMapping("/findWarehouseByPage")

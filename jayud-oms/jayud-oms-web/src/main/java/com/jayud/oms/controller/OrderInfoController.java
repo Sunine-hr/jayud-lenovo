@@ -3,6 +3,7 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
@@ -15,6 +16,7 @@ import com.jayud.common.enums.StatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.oms.feign.StorageClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.OrderAttachment;
@@ -52,6 +54,9 @@ public class OrderInfoController {
     IAuditInfoService auditInfoService;
     @Autowired
     private IOrderAttachmentService orderAttachmentService;
+
+    @Autowired
+    private StorageClient storageClient;
 
     //获取订单列表，要判断账号所属法人主体，根据法人主体分页查询订单
 
@@ -242,12 +247,23 @@ public class OrderInfoController {
                     }
                 }
             }
-            //拖车校验参数
+            //仓储校验参数
             if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())) {
                 if (inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode())) {
                     InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
+                    ApiResult stock = storageClient.isStock(storageOutOrderForm.getGoodsFormList());
+                    if(!stock.isOk()){
+                        return CommonResult.error(stock.getCode(),stock.getMsg());
+                    }
                     if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
                         return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
+                    }
+                }
+                if (inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())) {
+                    InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
+                    ApiResult commodity = storageClient.isCommodity(storageInputOrderForm.getGoodsFormList());
+                    if(!commodity.isOk()){
+                        return CommonResult.error(commodity.getCode(),commodity.getMsg());
                     }
                 }
             }

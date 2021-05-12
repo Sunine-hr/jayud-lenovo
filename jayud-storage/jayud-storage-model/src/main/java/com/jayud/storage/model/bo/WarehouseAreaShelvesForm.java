@@ -8,8 +8,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -23,13 +25,16 @@ import java.time.LocalDateTime;
 public class WarehouseAreaShelvesForm extends Model<WarehouseAreaShelvesForm> {
 
     @ApiModelProperty(value = "区域名称")
+    @NotNull(message = "区域名称不为空")
     private String areaName;
 
     @ApiModelProperty(value = "区域代码")
+    @NotNull(message = "区域名称不为空")
     private String areaCode;
 
     @ApiModelProperty(value = "货架名称")
-    private String shelvesName;
+    @NotNull(message = "区域名称不为空")
+    private List<ShelvesForm> shelvesName;
 
     @ApiModelProperty(value = "0为无效，1为有效")
     private Integer status;

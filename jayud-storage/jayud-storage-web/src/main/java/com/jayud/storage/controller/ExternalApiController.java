@@ -2,12 +2,16 @@ package com.jayud.storage.controller;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.storage.model.bo.StorageInputOrderForm;
 import com.jayud.storage.model.bo.StorageOutOrderForm;
+import com.jayud.storage.model.bo.WarehouseGoodsForm;
 import com.jayud.storage.model.po.StorageInputOrder;
 import com.jayud.storage.model.po.StorageOutOrder;
 import com.jayud.storage.model.vo.StorageInputOrderVO;
 import com.jayud.storage.model.vo.StorageOutOrderVO;
+import com.jayud.storage.service.IGoodService;
+import com.jayud.storage.service.IStockService;
 import com.jayud.storage.service.IStorageInputOrderService;
 import com.jayud.storage.service.IStorageOutOrderService;
 import io.swagger.annotations.Api;
@@ -16,10 +20,7 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,6 +41,12 @@ public class ExternalApiController {
 
     @Autowired
     private IStorageOutOrderService storageOutOrderService;
+
+    @Autowired
+    private IGoodService goodService;
+
+    @Autowired
+    private IStockService stockService;
 
     @ApiOperation("创建入库订单")
     @RequestMapping(value = "/api/storage/createInOrder")
@@ -62,8 +69,9 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/storage/getStorageInOrderDetails")
     ApiResult<StorageInputOrderVO> getStorageInOrderDetails(@RequestParam("orderNo") String orderNo){
         StorageInputOrder storageInputOrder = storageInputOrderService.getStorageInOrderByMainOrderNO(orderNo);
+        System.out.println("storageInputOrder=========================================="+storageInputOrder);
         StorageInputOrderVO storageInputOrderVO = storageInputOrderService.getStorageInputOrderVOById(storageInputOrder.getId());
-        return ApiResult.ok(orderNo);
+        return ApiResult.ok(storageInputOrderVO);
     }
 
     /**
@@ -74,7 +82,31 @@ public class ExternalApiController {
     ApiResult<StorageOutOrderVO> getStorageOutOrderDetails(@RequestParam("orderNo") String orderNo){
         StorageOutOrder storageOutOrder = storageOutOrderService.getStorageOutOrderByMainOrderNO(orderNo);
         StorageOutOrderVO storageOutOrderVO = storageOutOrderService.getStorageOutOrderVOById(storageOutOrder.getId());
-        return ApiResult.ok(orderNo);
+        return ApiResult.ok(storageOutOrderVO);
+    }
+
+    @ApiOperation(value = "判断商品是否为商品表维护的数据")
+    @PostMapping(value = "/isCommodity")
+    public ApiResult isCommodity(@RequestBody List<WarehouseGoodsForm> warehouseGoodsForms){
+        for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
+            boolean flag = goodService.isCommodity(warehouseGoodsForm.getSku());
+            if(!flag){
+                return ApiResult.error(444,"商品未建档，请前往建档");
+            }
+        }
+        return ApiResult.ok();
+    }
+
+    @ApiOperation(value = "判断出库商品数量是否小于等于该商品库存")
+    @PostMapping(value = "/isStock")
+    public ApiResult isStock(@RequestBody List<WarehouseGoodsForm> warehouseGoodsForms){
+        for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
+            boolean flag = stockService.getIsStockNumber(warehouseGoodsForm.getSku(),warehouseGoodsForm.getNumber());
+            if(!flag){
+                ApiResult.error(444,warehouseGoodsForm.getName()+"的数量超出了库存");
+            }
+        }
+        return ApiResult.ok();
     }
 
 }

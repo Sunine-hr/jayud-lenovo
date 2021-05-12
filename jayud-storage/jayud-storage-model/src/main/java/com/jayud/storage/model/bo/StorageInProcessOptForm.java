@@ -25,7 +25,6 @@ import java.util.List;
 @Slf4j
 public class StorageInProcessOptForm {
 
-    @NotNull(message = "主订单id不能为空")
     @ApiModelProperty(value = "主订单id", required = true)
     private Long mainOrderId;
 

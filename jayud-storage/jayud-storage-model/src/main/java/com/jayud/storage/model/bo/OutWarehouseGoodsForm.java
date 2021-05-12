@@ -1,15 +1,12 @@
 package com.jayud.storage.model.bo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.utils.FileView;
-import io.swagger.annotations.ApiModel;
+import com.jayud.storage.model.vo.GoodsLocationRecordFormVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,7 +20,7 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class WarehouseGoodsForm extends Model<WarehouseGoodsForm> {
+public class OutWarehouseGoodsForm extends Model<OutWarehouseGoodsForm> {
 
     private static final long serialVersionUID = 1L;
 
@@ -64,10 +61,10 @@ public class WarehouseGoodsForm extends Model<WarehouseGoodsForm> {
     private Double volume;
 
     @ApiModelProperty(value = "预计到达时间")
-    private String estimatedArrivalTime;
+    private LocalDateTime estimatedArrivalTime;
 
     @ApiModelProperty(value = "预计出库时间")
-    private String expectedDeliveryTime;
+    private LocalDateTime expectedDeliveryTime;
 
     @ApiModelProperty(value = "备注")
     private String remarks;
@@ -85,13 +82,13 @@ public class WarehouseGoodsForm extends Model<WarehouseGoodsForm> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private String createTime;
+    private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
-    private String updateTime;
+    private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "商品类型 1为入库  2为出库")
     private Integer type;
@@ -99,19 +96,7 @@ public class WarehouseGoodsForm extends Model<WarehouseGoodsForm> {
     @ApiModelProperty(value = "入库批次号")
     private String warehousingBatchNo;
 
-    //实际信息
-    @ApiModelProperty(value = "板数")
-    private Integer sjBoardNumber;
+    @ApiModelProperty(value = "出库库位以及对应的商品和数量")
+    private List<GoodsLocationRecordFormVO> goodsLocationRecordForms;
 
-    @ApiModelProperty(value = "件数")
-    private Integer sjNumber;
-
-    @ApiModelProperty(value = "pcs")
-    private Integer sjPcs;
-
-    @ApiModelProperty(value = "重量")
-    private Double sjWeight;
-
-    @ApiModelProperty(value = "体积")
-    private Double sjVolume;
 }

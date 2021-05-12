@@ -1,15 +1,10 @@
 package com.jayud.storage.model.bo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -62,13 +57,13 @@ public class StorageOutOrderForm extends Model<StorageOutOrderForm> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private String createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime updateTime;
+    private String updateTime;
 
     @ApiModelProperty(value = "备注")
     private String remarks;

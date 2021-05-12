@@ -984,6 +984,14 @@ public class ExternalApiController {
         return ApiResult.ok(list);
     }
 
+    /**
+     * 根据字典类型下拉选项字典
+     */
+    @RequestMapping(value = "/api/initDictNameByDictTypeCode")
+    public ApiResult<List<com.jayud.common.entity.InitComboxVO>> initDictNameByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode){
+        List<Dict> list = this.dictService.getByDictTypeCode(dictTypeCode);
+        return ApiResult.ok(list);
+    }
 
     /**
      * 根据字典类型下拉选项字典
@@ -1344,8 +1352,17 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/getWarehouseNumber")
     ApiResult getWarehouseNumber(@RequestParam("preOrder") String preOrder) {
         String warehouseNumber = orderTypeNumberService.getWarehouseNumber(preOrder);
+        System.out.println("warehouseNumber============================"+warehouseNumber);
         return ApiResult.ok(warehouseNumber);
     }
+
+    @ApiOperation(value = "查询客户id")
+    @RequestMapping(value = "/getCustomerByCode")
+    public ApiResult<Long> getCustomerByCode(@RequestParam("code")String code){
+        CustomerInfo byCode = customerInfoService.getByCode(code);
+        return ApiResult.ok(byCode.getId());
+    }
+
 }
 
 

@@ -77,13 +77,13 @@ public class InputStorageInputOrderVO extends Model<InputStorageInputOrderVO> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private String createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime updateTime;
+    private String updateTime;
 
     @ApiModelProperty(value = "备注")
     private String remarks;
@@ -99,6 +99,12 @@ public class InputStorageInputOrderVO extends Model<InputStorageInputOrderVO> {
 
     @ApiModelProperty(value = "接单日期")
     private String receivingOrdersDate;
+
+    @ApiModelProperty(value = "总件数")
+    private String totalNumber;
+
+    @ApiModelProperty(value = "总重量")
+    private String totalWeight;
 
     /**
      * 校验创建出库子订单参数

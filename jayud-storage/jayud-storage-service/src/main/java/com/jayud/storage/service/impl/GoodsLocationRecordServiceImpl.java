@@ -1,10 +1,13 @@
 package com.jayud.storage.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.storage.model.po.GoodsLocationRecord;
 import com.jayud.storage.mapper.GoodsLocationRecordMapper;
 import com.jayud.storage.service.IGoodsLocationRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +20,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class GoodsLocationRecordServiceImpl extends ServiceImpl<GoodsLocationRecordMapper, GoodsLocationRecord> implements IGoodsLocationRecordService {
 
+    @Override
+    public List<GoodsLocationRecord> getGoodsLocationRecordByGoodId(Long id) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("inGood_id",id);
+        queryWrapper.orderByAsc("create_time");
+        return this.baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<GoodsLocationRecord> getListByGoodId(Long id, Long orderId, String sku) {
+        return this.baseMapper.getListByGoodId(id, orderId, sku);
+    }
+
+    @Override
+    public GoodsLocationRecord getListByGoodIdAndKuId(Long inGoodId, Long kuId) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("inGood_id",inGoodId);
+        queryWrapper.eq("ku_id",kuId);
+        return this.baseMapper.selectOne(queryWrapper);
+    }
 }

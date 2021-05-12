@@ -38,6 +38,9 @@ public class StorageInputOrderFormVO {
     @ApiModelProperty(value = "主键id")
     private Long id;
 
+    @ApiModelProperty(value = "主键id")
+    private Long orderId;
+
     @ApiModelProperty(value = "子订单号")
     private String orderNo;
 
@@ -140,6 +143,12 @@ public class StorageInputOrderFormVO {
     @ApiModelProperty(value = "接单日期")
     private String receivingOrdersDate;
 
+    @ApiModelProperty(value = "重量")
+    private Double weight = 0.0;
+
+    @ApiModelProperty(value = "体积")
+    private Double volume = 0.0;
+
     /**
      * 组装商品信息
      */
@@ -158,10 +167,15 @@ public class StorageInputOrderFormVO {
 
             sb.append(goods.getName())
                     .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
-                    .append(",").append(goods.getNumber()).append("件")
+                    .append(",").append(goods.getPcs()== null ? 0 : goods.getNumber()).append("件")
                     .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
-                    .append(",").append("重量:").append(goods.getWeight()).append("KG")
-                    .append(";");
+                    .append("/");
+            if(goods.getVolume()!=null){
+                this.volume = this.volume + goods.getVolume();
+            }
+            if(goods.getWeight()!=null){
+                this.weight = this.weight + goods.getWeight();
+            }
         }
 
         this.goodsInfo = sb.toString();

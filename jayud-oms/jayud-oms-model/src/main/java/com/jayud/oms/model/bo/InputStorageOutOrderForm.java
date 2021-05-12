@@ -64,25 +64,25 @@ public class InputStorageOutOrderForm {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private String createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime updateTime;
+    private String updateTime;
 
     @ApiModelProperty(value = "备注")
     private String remarks;
 
-    @ApiModelProperty(value = "入库商品对象集合")
+    @ApiModelProperty(value = "出库商品对象集合")
     private List<AddWarehouseGoodsForm> goodsFormList;
 
     /**
-     * 校验创建入库子订单参数
+     * 校验创建出库子订单参数
      */
     public String checkCreateOrder() {
-        //拖车
+        //出库
         for (AddWarehouseGoodsForm addWarehouseGoodsForm : goodsFormList) {
             if(!addWarehouseGoodsForm.checkCreateOrder().equals("pass")){
                 return addWarehouseGoodsForm.checkCreateOrder();

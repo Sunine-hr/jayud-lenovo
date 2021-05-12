@@ -7,15 +7,15 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
-import com.jayud.common.entity.InitComboxStrVO;
-import com.jayud.common.entity.InitComboxVO;
 import com.jayud.common.utils.excel.ExcelUtils;
 import com.jayud.storage.feign.OmsClient;
-import com.jayud.storage.model.bo.WarehouseGoodsForm;
 import com.jayud.storage.model.bo.WarehouseGoodsInForm;
 import com.jayud.storage.model.bo.WarehouseGoodsOutForm;
+import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
+import com.jayud.storage.model.vo.InitComboxSVO;
 import com.jayud.storage.model.vo.InitComboxWarehouseVO;
 import com.jayud.storage.service.IGoodService;
+import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -44,12 +44,16 @@ public class CommonController {
     @Autowired
     private IGoodService goodService;
 
+    @Autowired
+    private IWarehouseAreaShelvesLocationService warehouseAreaShelvesLocationService;
+
+
     /**
      * 导出入库商品模板
      */
     @ApiOperation(value = "导出入库商品模板")
     @PostMapping(value = "/exportInProductTemplate")
-    public void exportInProductTemplate(HttpServletResponse response){
+    public void exportInProductTemplate(@RequestBody HttpServletResponse response){
         ExcelUtils.exportSinglePageHeadExcel("入库商品模板", WarehouseGoodsInForm.class,response);
     }
 
@@ -58,7 +62,7 @@ public class CommonController {
      */
     @ApiOperation(value = "导出出库商品模板")
     @PostMapping(value = "/exportOutProductTemplate")
-    public void exportOutProductTemplate(HttpServletResponse response){
+    public void exportOutProductTemplate(@RequestBody HttpServletResponse response){
         ExcelUtils.exportSinglePageHeadExcel("出库商品模板", WarehouseGoodsOutForm.class,response);
     }
 
@@ -67,7 +71,7 @@ public class CommonController {
      */
     @ApiOperation(value = "导入入库商品信息")
     @PostMapping(value = "/importInProductInformation")
-    public CommonResult importInProductInformation(MultipartFile file){
+    public CommonResult importInProductInformation(@RequestBody MultipartFile file){
         List<Object> list = null;
         try {
             list = EasyExcelFactory.read(file.getInputStream(), new Sheet(1));
@@ -86,43 +90,34 @@ public class CommonController {
      */
     @ApiOperation(value = "导入出库商品信息")
     @PostMapping(value = "/importOutProductInformation")
-    public CommonResult importOutProductInformation(MultipartFile file){
+    public CommonResult importOutProductInformation(@RequestBody MultipartFile file){
 
         return CommonResult.success();
     }
 
     @ApiOperation(value = "生成入仓号/生成出仓号")
     @PostMapping(value = "/getWarehouseNumber")
-    public CommonResult getWarehouseNumber(Map<String,Object> map){
+    public CommonResult getWarehouseNumber(@RequestBody Map<String,Object> map){
         Long type = MapUtil.getLong(map,"type");
         String warehouseNumber = null;
-        if(type.equals(1)){//生成入仓号
+        if(type == 1){//生成入仓号
             warehouseNumber = (String)omsClient.getWarehouseNumber("JYDRK").getData();
         }
-        if(type.equals(2)){
+        if(type == 2){
             warehouseNumber = (String)omsClient.getWarehouseNumber("JYDCK").getData();
         }
-        return CommonResult.success(warehouseNumber);
-    }
-
-    @ApiOperation(value = "判断商品是否为商品表维护的数据")
-    @PostMapping(value = "/isCommodity")
-    public CommonResult isCommodity(@RequestBody List<WarehouseGoodsForm> warehouseGoodsForms){
-        for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
-            boolean flag = goodService.isCommodity(warehouseGoodsForm.getSku());
-            if(!flag){
-                return CommonResult.error(444,"商品未建档，请前往建档");
-            }
+        if(warehouseNumber==null){
+            return CommonResult.error(444,"获取入仓号失败");
         }
-        return CommonResult.success();
+        return CommonResult.success(warehouseNumber);
     }
 
     @ApiOperation(value = "确认入仓下拉列表框")
     @PostMapping(value = "/commonComBox")
     public CommonResult commonComBox(){
-        List<InitComboxStrVO> data = omsClient.initDictByDictTypeCode("operation").getData();
-        List<InitComboxStrVO> data1 = omsClient.initDictByDictTypeCode("cardType").getData();
-        InitComboxWarehouseVO data2 = omsClient.initComboxWarehouseVO().getData();
+        List<InitComboxSVO> data = omsClient.initDictNameByDictTypeCode("operation").getData();
+        List<InitComboxSVO> data1 = omsClient.initDictNameByDictTypeCode("cardType").getData();
+        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
         HashMap<String,Object> hashMap = new HashMap();
         hashMap.put("operation",data);
         hashMap.put("cardType",data1);
@@ -133,11 +128,27 @@ public class CommonController {
     @ApiOperation(value = "获取商品下拉列表框")
     @PostMapping(value = "/goodsComBox")
     public CommonResult goodsComBox(@RequestBody Map<String,Object> map){
-        Long customerId = MapUtil.getLong(map,"customerId");
+        String code = MapUtil.getStr(map,"code");
+        Long customerId = omsClient.getCustomerByCode(code).getData();
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("customerId",customerId);
+        queryWrapper.eq("customer_id",customerId);
         List list = goodService.list(queryWrapper);
         return CommonResult.success(list);
     }
 
+    @ApiOperation(value = "查询所有库位")
+    @PostMapping(value = "/location1ComBox")
+    public CommonResult location1ComBox(@RequestBody Map<String,Object> map){
+        List<WarehouseAreaShelvesLocation> warehouseAreaShelvesLocations = warehouseAreaShelvesLocationService.getList();
+        return CommonResult.success(warehouseAreaShelvesLocations);
+    }
+
+    @ApiOperation(value = "库位添加下拉列表框")
+    @PostMapping(value = "/locationComBox")
+    public CommonResult locationComBox(){
+        List<InitComboxSVO> data = omsClient.initDictNameByDictTypeCode("shelfType").getData();
+        HashMap<String,Object> hashMap = new HashMap();
+        hashMap.put("shelfType",data);
+        return CommonResult.success(hashMap);
+    }
 }

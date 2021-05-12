@@ -39,6 +39,9 @@ public class StorageInputOrderWarehouseingVO {
     @ApiModelProperty(value = "子订单号")
     private String orderNo;
 
+    @ApiModelProperty(value = "子订单号")
+    private Long orderId;
+
     //@ApiModelProperty(value = "主订单号")
     private String mainOrderNo;
 

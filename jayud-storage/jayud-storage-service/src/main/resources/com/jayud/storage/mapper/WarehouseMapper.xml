@@ -21,8 +21,7 @@
         id, name, code, contacts, phone, address, status, create_user, create_time, remarks
     </sql>
     
-    <select id="findWarehouse" parameterType="com.jayud.storage.model.bo.QueryWarehouseForm"
-            resultType="com.jayud.storage.model.vo.WarehouseVO">
+    <select id="findWarehouse" resultType="com.jayud.storage.model.vo.WarehouseVO">
         select t.id,
         t.name,
         t.code,
@@ -30,26 +29,11 @@
         t.phone,
         t.address,
         t.status,
-        t.create_user,
-        t.create_time,
+        t.create_user createUser,
+        t.create_time createTime,
         t.remarks
         from warehouse t
-        where 1 = 1
-        <if test="form.name != null and form.name != ''">
-            and t.name like concat('%',#{form.name},'%')
-        </if>
-        <if test="form.code != null and form.code != ''">
-            and t.code like concat('%',#{form.code},'%')
-        </if>
-        <if test="form.createUser != null and form.createUser != ''">
-            and t.create_user like concat('%',#{form.createUser},'%')
-        </if>
-        <if test="form.startTime !=null and form.startTime!=''">
-            and t.create_time <![CDATA[>= ]]> #{form.startTime}
-        </if>
-        <if test="form.endTime !=null and form.endTime!=''">
-            and t.create_time <![CDATA[<= ]]> #{form.endTime}
-        </if>
+        where status = 1
     </select>
 
     <select id="findWarehouseByPage" parameterType="com.jayud.storage.model.bo.QueryWarehouseForm"
@@ -61,8 +45,8 @@
         t.phone,
         t.address,
         t.status,
-        t.create_user,
-        t.create_time,
+        t.create_user createUser,
+        t.create_time createTime,
         t.remarks
         from warehouse t
         where 1 = 1

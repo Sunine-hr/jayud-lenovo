@@ -10,6 +10,7 @@ import com.jayud.common.entity.InitComboxVO;
 import com.jayud.storage.model.bo.AuditInfoForm;
 import com.jayud.storage.model.bo.StorageInProcessOptForm;
 import com.jayud.storage.model.bo.StorageOutProcessOptForm;
+import com.jayud.storage.model.vo.InitComboxSVO;
 import com.jayud.storage.model.vo.InitComboxWarehouseVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -171,6 +172,12 @@ public interface OmsClient {
     @RequestMapping(value = "/api/initDictByDictTypeCode")
     public ApiResult<List<InitComboxStrVO>> initDictByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode);
 
+    /**
+     * 根据字典类型下拉选项字典
+     */
+    @RequestMapping(value = "/api/initDictNameByDictTypeCode")
+    public ApiResult<List<InitComboxSVO>> initDictNameByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode);
+
     @ApiOperation(value = "初始化车辆下拉框")
     @RequestMapping(value = "api/initVehicle")
     public ApiResult initVehicle(@RequestParam("type") Integer type);
@@ -191,5 +198,9 @@ public interface OmsClient {
 
     @ApiOperation(value = "中转仓库")
     @RequestMapping(value = "api/initComboxWarehouseVO")
-    public CommonResult<InitComboxWarehouseVO> initComboxWarehouseVO();
+    public CommonResult<List<InitComboxWarehouseVO>> initComboxWarehouseVO();
+
+    @ApiOperation(value = "查询客户id")
+    @RequestMapping(value = "/getCustomerByCode")
+    public ApiResult<Long> getCustomerByCode(@RequestParam("code")String code);
 }

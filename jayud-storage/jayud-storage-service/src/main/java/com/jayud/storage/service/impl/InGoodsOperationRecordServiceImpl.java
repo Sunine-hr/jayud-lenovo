@@ -43,4 +43,9 @@ public class InGoodsOperationRecordServiceImpl extends ServiceImpl<InGoodsOperat
         queryWrapper.eq("order_id",id);
         return this.baseMapper.selectList(queryWrapper);
     }
+
+    @Override
+    public List<InGoodsOperationRecord> getListByOrderId(Long id) {
+        return this.baseMapper.getListByOrderId(id);
+    }
 }

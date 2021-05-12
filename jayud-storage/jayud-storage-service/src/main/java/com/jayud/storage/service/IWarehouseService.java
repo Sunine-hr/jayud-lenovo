@@ -20,7 +20,7 @@ import java.util.List;
  */
 public interface IWarehouseService extends IService<Warehouse> {
 
-    List<WarehouseVO> findWarehouse(QueryWarehouseForm form);
+    List<WarehouseVO> findWarehouse();
 
     IPage<WarehouseVO> findWarehouseByPage(QueryWarehouseForm form);
 

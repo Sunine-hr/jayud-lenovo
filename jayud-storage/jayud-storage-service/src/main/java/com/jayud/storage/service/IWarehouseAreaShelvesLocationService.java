@@ -25,5 +25,8 @@ public interface IWarehouseAreaShelvesLocationService extends IService<Warehouse
 
     boolean saveOrUpdateWarehouseAreaShelvesLocation(List<WarehouseAreaShelvesLocationForm> form);
 
-    List<WarehouseAreaShelvesLocationVO> getlistByShelvesId(QueryWarehouseAreaShelvesLocationForm form);
+    List<WarehouseAreaShelvesLocationVO> getListByShelvesId(QueryWarehouseAreaShelvesLocationForm form);
+
+    List<WarehouseAreaShelvesLocation> getList();
+
 }

@@ -17,6 +17,9 @@ import java.time.LocalDateTime;
 @Data
 public class AreaForm extends Model<AreaForm> {
 
+    @ApiModelProperty(value = "id")
+    private String id;
+
     @ApiModelProperty(value = "区域名称")
     private String areaName;
 

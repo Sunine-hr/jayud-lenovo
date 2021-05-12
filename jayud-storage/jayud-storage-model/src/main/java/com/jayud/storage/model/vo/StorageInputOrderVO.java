@@ -100,6 +100,12 @@ public class StorageInputOrderVO extends Model<StorageInputOrderVO> {
     @ApiModelProperty(value = "接单日期")
     private String receivingOrdersDate;
 
+    @ApiModelProperty(value = "总件数")
+    private String totalNumber;
+
+    @ApiModelProperty(value = "总重量")
+    private String totalWeight;
+
     /**
      * 校验创建出库子订单参数
      */

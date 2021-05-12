@@ -16,14 +16,14 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.storage.feign.OauthClient;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.*;
+import com.jayud.storage.model.po.GoodsLocationRecord;
 import com.jayud.storage.model.po.StorageInputOrder;
 import com.jayud.storage.model.po.StorageOutOrder;
 import com.jayud.storage.mapper.StorageOutOrderMapper;
 import com.jayud.storage.model.po.WarehouseGoods;
-import com.jayud.storage.model.vo.StorageInputOrderFormVO;
-import com.jayud.storage.model.vo.StorageOutOrderFormVO;
-import com.jayud.storage.model.vo.StorageOutOrderVO;
-import com.jayud.storage.model.vo.WarehouseGoodsVO;
+import com.jayud.storage.model.vo.*;
+import com.jayud.storage.service.IGoodsLocationRecordService;
+import com.jayud.storage.service.IStockService;
 import com.jayud.storage.service.IStorageOutOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.storage.service.IWarehouseGoodsService;
@@ -46,7 +46,7 @@ import java.util.List;
  * @since 2021-04-19
  */
 @Service
-public class StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapper, StorageOutOrder> implements IStorageOutOrderService {
+public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapper, StorageOutOrder> implements IStorageOutOrderService {
 
     @Autowired
     private IWarehouseGoodsService warehouseGoodsService;
@@ -57,8 +57,18 @@ public class StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMappe
     @Autowired
     private OmsClient omsClient;
 
+    @Autowired
+    private IGoodsLocationRecordService goodsLocationRecordService;
+
+    @Autowired
+    private IStockService stockService;
+
     @Override
     public String createOrder(StorageOutOrderForm storageOutOrderForm) {
+        //无论驳回还是草稿在提交，都先删除原来的商品信息
+        if(storageOutOrderForm.getId()!=null){
+            warehouseGoodsService.deleteWarehouseGoodsFormsByOrderId(storageOutOrderForm.getId());
+        }
         StorageOutOrder storageOutOrder = ConvertUtil.convert(storageOutOrderForm, StorageOutOrder.class);
         if(storageOutOrder.getId() == null){
             storageOutOrder.setCreateTime(LocalDateTime.now());
@@ -77,12 +87,20 @@ public class StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMappe
             List<WarehouseGoodsForm> goodsFormList = storageOutOrderForm.getGoodsFormList();
             List<WarehouseGoods> warehouseGoods = new ArrayList<>();
             for (WarehouseGoodsForm warehouseGood : goodsFormList) {
-                warehouseGood.setOrderId(storageOutOrder.getId());
-                warehouseGood.setOrderNo(storageOutOrder.getOrderNo());
-                warehouseGood.setCreateTime(LocalDateTime.now());
-                warehouseGood.setFileName(StringUtils.getFileNameStr(warehouseGood.getTakeFiles()));
-                warehouseGood.setFilePath(StringUtils.getFileStr(warehouseGood.getTakeFiles()));
-                warehouseGoods.add(ConvertUtil.convert(warehouseGood,WarehouseGoods.class));
+                WarehouseGoods convert = ConvertUtil.convert(warehouseGood, WarehouseGoods.class);
+                convert.setOrderId(storageOutOrder.getId());
+                convert.setOrderNo(storageOutOrder.getOrderNo());
+                convert.setCreateTime(LocalDateTime.now());
+                convert.setType(2);
+                convert.setFileName(StringUtils.getFileNameStr(warehouseGood.getTakeFiles()));
+                convert.setFilePath(StringUtils.getFileStr(warehouseGood.getTakeFiles()));
+                warehouseGoods.add(convert);
+
+                //出库订单创建成功，锁定库存
+                boolean result = stockService.lockInInventory(convert);
+                if(!result){
+                    log.warn(convert.getName() + "锁定库存失败");
+                }
             }
             warehouseGoodsService.saveOrUpdateBatch(warehouseGoods);
         }
@@ -110,7 +128,33 @@ public class StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMappe
     public StorageOutOrderVO getStorageOutOrderVOById(Long id) {
         StorageOutOrder storageOutOrder = this.baseMapper.selectById(id);
         StorageOutOrderVO storageOutOrderVO = ConvertUtil.convert(storageOutOrder, StorageOutOrderVO.class);
-        List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList(storageOutOrder.getId(),storageOutOrder.getOrderNo());
+        List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList1(storageOutOrder.getId(),storageOutOrder.getOrderNo());
+        if(CollectionUtils.isEmpty(warehouseGoods)){
+            warehouseGoods.add(new WarehouseGoodsVO());
+            storageOutOrderVO.setTotalNumber("0板0件0pcs");
+            storageOutOrderVO.setTotalWeight("0KG");
+        }else{
+            double totalWeight = 0.0;
+            Integer borderNumber = 0;
+            Integer number = 0;
+            Integer pcs = 0;
+            for (WarehouseGoodsVO warehouseGood : warehouseGoods) {
+                if(warehouseGood.getWeight()!=null){
+                    totalWeight = totalWeight + warehouseGood.getWeight();
+                }
+                if(warehouseGood.getBoardNumber()!=null){
+                    borderNumber = borderNumber + warehouseGood.getBoardNumber();
+                }
+                if(warehouseGood.getNumber()!=null){
+                    number = number + warehouseGood.getNumber();
+                }
+                if(warehouseGood.getPcs()!=null){
+                    pcs = pcs + warehouseGood.getPcs();
+                }
+            }
+            storageOutOrderVO.setTotalNumber(borderNumber+"板"+number+"件"+pcs+"pcs");
+            storageOutOrderVO.setTotalWeight(totalWeight+"KG");
+        }
         storageOutOrderVO.setGoodsFormList(warehouseGoods);
         return storageOutOrderVO;
     }
@@ -151,8 +195,14 @@ public class StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMappe
 
         omsClient.saveAuditInfo(auditInfoForm);
         this.updateById(tmp);
+        //订单驳回，释放锁定库存，增加库存信息
+        boolean result = stockService.changeInventory(storageOutOrder.getOrderNo(),storageOutOrder.getId());
+        if(!result){
+            log.warn("库存变更失败");
+        }
     }
 
+    //入库接单
     @Override
     public void warehouseReceipt(StorageOutProcessOptForm form) {
         form.setOperatorUser(UserOperator.getToken());
@@ -204,16 +254,69 @@ public class StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMappe
 
     }
 
+    //打印拣货单
     @Override
     public boolean printPickingList(StorageOutProcessOptForm form) {
-        return false;
+        form.setOperatorUser(UserOperator.getToken());
+        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
+        StorageOutOrder storageOutOrder = new StorageOutOrder();
+        storageOutOrder.setId(form.getOrderId());
+        storageOutOrder.setUpdateUser(UserOperator.getToken());
+        storageOutOrder.setUpdateTime(LocalDateTime.now());
+        storageOutOrder.setStatus(form.getStatus());
+        boolean b = this.updateById(storageOutOrder);
+        if(!b){
+            log.warn("修改状态失败");
+            return false;
+        }
+        //保存出库库位信息
+        List<OutWarehouseGoodsForm> outWarehouseGoodsForms = form.getOutWarehouseGoodsForms();
+        for (OutWarehouseGoodsForm outWarehouseGoodsForm : outWarehouseGoodsForms) {
+            List<GoodsLocationRecordFormVO> goodsLocationRecordForms = outWarehouseGoodsForm.getGoodsLocationRecordForms();
+            for (GoodsLocationRecordFormVO goodsLocationRecordForm : goodsLocationRecordForms) {
+                GoodsLocationRecord goodsLocationRecord = ConvertUtil.convert(goodsLocationRecordForm, GoodsLocationRecord.class);
+                goodsLocationRecord.setCreateTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
+                goodsLocationRecord.setCreateUser(UserOperator.getToken());
+                goodsLocationRecord.setType(2);
+                boolean b1 = goodsLocationRecordService.saveOrUpdate(goodsLocationRecord);
+                if(!b1){
+                    return false;
+                }
+            }
+        }
+
+        //节点操作记录
+        this.storageProcessOptRecord(form);
+
+        //完成订单状态
+        finishStorageOrderOpt(storageOutOrder);
+        return true;
     }
 
+    //仓储拣货
     @Override
     public boolean warehousePicking(StorageOutProcessOptForm form) {
-        return false;
+        form.setOperatorUser(UserOperator.getToken());
+        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
+        StorageOutOrder storageOutOrder = new StorageOutOrder();
+        storageOutOrder.setId(form.getOrderId());
+        storageOutOrder.setUpdateUser(UserOperator.getToken());
+        storageOutOrder.setUpdateTime(LocalDateTime.now());
+        storageOutOrder.setStatus(form.getStatus());
+        boolean b = this.updateById(storageOutOrder);
+        if(!b){
+            log.warn("修改状态失败");
+            return false;
+        }
+        //节点操作记录
+        this.storageProcessOptRecord(form);
+
+        //完成订单状态
+        finishStorageOrderOpt(storageOutOrder);
+        return true;
     }
 
+    //出仓异常
     @Override
     public void abnormalOutOfWarehouse(StorageOutProcessOptForm form) {
 
@@ -236,6 +339,7 @@ public class StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMappe
         finishStorageOrderOpt(storageOutOrder);
     }
 
+    //出仓确认
     @Override
     public void confirmDelivery(StorageOutProcessOptForm form) {
         form.setOperatorUser(UserOperator.getToken());
@@ -251,6 +355,12 @@ public class StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMappe
             log.warn("修改状态失败");
         }
         if(form.getCmd().equals("success")){
+            //出仓成功，释放该商品的锁定库存；
+            boolean b1 = stockService.releaseInventory(form.getOrderId(),form.getOrderNo());
+            if(!b1){
+                log.warn("修改状态失败");
+            }
+
             //节点操作记录
             this.storageProcessOptRecord(form);
 
@@ -259,9 +369,6 @@ public class StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMappe
         }
         if(form.getCmd().equals("fail")){
             form.setDescription("确认出库，审核不通过");
-            if(!b){
-                log.warn("修改状态失败");
-            }
             //节点操作记录
             this.storageProcessOptRecord(form);
         }

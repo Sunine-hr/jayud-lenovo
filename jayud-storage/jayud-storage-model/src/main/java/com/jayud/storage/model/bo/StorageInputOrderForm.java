@@ -66,13 +66,13 @@ public class StorageInputOrderForm extends Model<StorageInputOrderForm> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private String createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime updateTime;
+    private String updateTime;
 
     @ApiModelProperty(value = "备注")
     private String remarks;

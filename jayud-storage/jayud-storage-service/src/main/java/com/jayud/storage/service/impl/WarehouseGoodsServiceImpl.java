@@ -27,6 +27,7 @@ public class WarehouseGoodsServiceImpl extends ServiceImpl<WarehouseGoodsMapper,
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("order_id",id);
         queryWrapper.eq("order_no",orderNo);
+        queryWrapper.eq("type",1);
         List list = this.baseMapper.selectList(queryWrapper);
         List list1 = ConvertUtil.convertList(list, WarehouseGoodsVO.class);
         return list1;
@@ -38,5 +39,23 @@ public class WarehouseGoodsServiceImpl extends ServiceImpl<WarehouseGoodsMapper,
         queryWrapper.eq("order_id",orderId);
         queryWrapper.eq("order_no",orderNo);
         this.baseMapper.delete(queryWrapper);
+    }
+
+    @Override
+    public void deleteWarehouseGoodsFormsByOrderId(Long id) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_id",id);
+        this.baseMapper.delete(queryWrapper);
+    }
+
+    @Override
+    public List<WarehouseGoodsVO> getList1(Long id, String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_id",id);
+        queryWrapper.eq("order_no",orderNo);
+        queryWrapper.eq("type",2);
+        List list = this.baseMapper.selectList(queryWrapper);
+        List list1 = ConvertUtil.convertList(list, WarehouseGoodsVO.class);
+        return list1;
     }
 }

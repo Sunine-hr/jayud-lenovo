@@ -66,7 +66,7 @@ public class StorageOutProcessOptForm {
     private String warehousingBatchNo;
 
     @ApiModelProperty(value = "商品出库")
-    private List<WarehouseGoodsForm> warehouseGoodsForms;
+    private List<OutWarehouseGoodsForm> outWarehouseGoodsForms;
 
 
     public void setStatus(String status) {

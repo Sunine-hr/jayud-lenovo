@@ -1,19 +1,20 @@
 package com.jayud.storage.controller;
 
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.QueryWarehouseAreaShelves2Form;
 import com.jayud.storage.model.bo.QueryWarehouseAreaShelvesForm;
 import com.jayud.storage.model.bo.QueryWarehouseAreaShelvesLocationForm;
 import com.jayud.storage.model.bo.WarehouseAreaShelvesLocationForm;
 import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
-import com.jayud.storage.model.vo.LocationCodeVO;
-import com.jayud.storage.model.vo.WarehouseAreaShelvesFormVO;
-import com.jayud.storage.model.vo.WarehouseAreaShelvesLocationVO;
-import com.jayud.storage.model.vo.WarehouseAreaShelvesVO;
+import com.jayud.storage.model.vo.*;
 import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
 import com.jayud.storage.service.IWarehouseAreaShelvesService;
 import io.swagger.annotations.Api;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -49,27 +51,44 @@ public class WarehouseAreaShelvesLocationController {
     @Autowired
     private IWarehouseAreaShelvesService warehouseAreaShelvesService;
 
+    @Autowired
+    private OmsClient omsClient;
+
     @ApiOperation(value = "分页查询所有货架")
     @PostMapping("/findWarehouseAreaShelvesByPage")
     public CommonResult findWarehouseAreaShelvesByPage(@RequestBody QueryWarehouseAreaShelves2Form form){
         IPage<WarehouseAreaShelvesFormVO> page = this.warehouseAreaShelvesService.findWarehouseAreaShelvesLocationByPage(form);
         //获取每个货架的最新库位情况
         List<WarehouseAreaShelvesLocation> warehouseAreaShelvesLocationList = this.warehouseAreaShelvesLocationService.getUpdateTime();
-        for (WarehouseAreaShelvesLocation warehouseAreaShelvesLocation : warehouseAreaShelvesLocationList) {
-            for (WarehouseAreaShelvesFormVO record : page.getRecords()) {
-                if(record.getId().equals(warehouseAreaShelvesLocation.getShelvesId())){
-                    record.setUpdateTime(warehouseAreaShelvesLocation.getCreateTime().toString());
+        if(CollectionUtils.isNotEmpty(warehouseAreaShelvesLocationList)){
+            for (WarehouseAreaShelvesLocation warehouseAreaShelvesLocation : warehouseAreaShelvesLocationList) {
+                for (WarehouseAreaShelvesFormVO record : page.getRecords()) {
+                    if(record.getId().equals(warehouseAreaShelvesLocation.getShelvesId())){
+                        record.setUpdateTime(warehouseAreaShelvesLocation.getCreateTime().toString());
+                    }
                 }
             }
         }
-        return CommonResult.success(page);
+        CommonPageResult<WarehouseAreaShelvesVO> pageVO = new CommonPageResult(page);
+        return CommonResult.success(pageVO);
     }
 
     @ApiOperation(value = "查询货架下所有库位")
     @PostMapping("/findWarehouseAreaShelvesLocationByPage")
     public CommonResult findWarehouseAreaShelvesLocationByPage(@RequestBody QueryWarehouseAreaShelvesLocationForm form){
         IPage<WarehouseAreaShelvesLocationVO> page = this.warehouseAreaShelvesLocationService.findWarehouseAreaShelvesLocationByPage(form);
-        return CommonResult.success(page);
+        //获取所有货架类型
+        List<InitComboxSVO> data = omsClient.initDictNameByDictTypeCode("shelfType").getData();
+        for (WarehouseAreaShelvesLocationVO record : page.getRecords()) {
+            record.setMaximumVolume();
+            for (InitComboxSVO datum : data) {
+                if (datum.getId().equals(record.getShelvesType())){
+                    record.setShelvesTypeName(datum.getValue());
+                }
+            }
+        }
+        CommonPageResult<WarehouseAreaShelvesVO> pageVO = new CommonPageResult(page);
+        return CommonResult.success(pageVO);
     }
 
     @ApiOperation(value = "增加或修改库位信息")
@@ -82,10 +101,21 @@ public class WarehouseAreaShelvesLocationController {
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "根据id获取库位详情")
+    @PostMapping("/findWarehouseAreaShelvesLocationById")
+    public CommonResult findWarehouseAreaShelvesLocationById(@RequestBody Map<String,Object> map){
+        Long id = MapUtil.getLong(map,"id");
+        WarehouseAreaShelvesLocation byId = this.warehouseAreaShelvesLocationService.getById(id);
+        WarehouseAreaShelvesLocationVO convert = ConvertUtil.convert(byId, WarehouseAreaShelvesLocationVO.class);
+        List<WarehouseAreaShelvesLocationVO> locationVOS = new ArrayList<>();
+        locationVOS.add(convert);
+        return CommonResult.success(locationVOS);
+    }
+
     @ApiOperation(value = "查看库位编码")
     @PostMapping("/viewLocationCode")
     public CommonResult viewLocationCode(@RequestBody QueryWarehouseAreaShelvesLocationForm form){
-        List<WarehouseAreaShelvesLocationVO> warehouseAreaShelvesLocations = this.warehouseAreaShelvesLocationService.getlistByShelvesId(form);
+        List<WarehouseAreaShelvesLocationVO> warehouseAreaShelvesLocations = this.warehouseAreaShelvesLocationService.getListByShelvesId(form);
         List<LocationCodeVO> locationCodeVOS = new ArrayList<>();
 
         for (WarehouseAreaShelvesLocationVO warehouseAreaShelvesLocation : warehouseAreaShelvesLocations) {
@@ -139,6 +169,7 @@ public class WarehouseAreaShelvesLocationController {
         }
         return CommonResult.success(locationCodeVOS);
     }
+
 
 }
 

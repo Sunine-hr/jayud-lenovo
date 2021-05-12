@@ -30,4 +30,7 @@ public interface IWarehouseAreaService extends IService<WarehouseArea> {
 
     void operationWarehouseArea(OperationForm form);
 
+    WarehouseArea getWarehouseAreaByAreaCode(String areaCode);
+
+    WarehouseArea getWarehouseAreaByAreaName(String areaName);
 }

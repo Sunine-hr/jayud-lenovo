@@ -95,6 +95,12 @@ public class InputStorageOutOrderVO {
     @ApiModelProperty(value = "接单日期")
     private String receivingOrdersDate;
 
+    @ApiModelProperty(value = "总件数")
+    private String totalNumber;
+
+    @ApiModelProperty(value = "总重量")
+    private String totalWeight;
+
     public void setUnitCodeName(String unitCodeName) {
         this.unitCodeName=unitCodeName;
     }

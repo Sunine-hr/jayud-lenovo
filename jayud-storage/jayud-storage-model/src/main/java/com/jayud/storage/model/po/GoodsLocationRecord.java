@@ -35,7 +35,7 @@ public class GoodsLocationRecord extends Model<GoodsLocationRecord> {
 
     @ApiModelProperty(value = "入库商品id")
     @TableField("inGood_id")
-    private Long ingoodId;
+    private Long inGoodId;
 
     @ApiModelProperty(value = "入库商品数量")
     private Integer number;
@@ -46,6 +46,8 @@ public class GoodsLocationRecord extends Model<GoodsLocationRecord> {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "存储类型 (1为入库，2为出库)")
+    private Integer type;
 
     @Override
     protected Serializable pkVal() {

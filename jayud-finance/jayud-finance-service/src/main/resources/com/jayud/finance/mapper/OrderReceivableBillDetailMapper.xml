@@ -214,6 +214,8 @@
         left join sea_order so on so.order_no = orc.order_no
         left join order_inland_transport oit on oit.order_no = orc.order_no
         left join trailer_order tor on tor.order_no = orc.order_no
+        left join storage_input_order sio on sio.order_no = opc.order_no
+        left join storage_out_order soo on soo.order_no = opc.order_no
         WHERE
         ( orbd1.bill_no = #{form.billNo} )
         or
@@ -239,6 +241,12 @@
         </if>
         <if test="form.cmd == 'nl'">
             oit.legal_name
+        </if>
+        <if test="form.cmd == 'cci'">
+            sio.legal_name
+        </if>
+        <if test="form.cmd == 'cce'">
+            soo.legal_name
         </if>
         = (select orb1.legal_name from order_receivable_bill orb1 left join order_receivable_bill_detail orbd1 on
         orb1.id = orbd1.bill_id where orbd1.bill_no = #{form.billNo} limit 1)

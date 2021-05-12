@@ -476,6 +476,20 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             }
         }
 
+        List<Integer> operationTeamIds = form.getOperationTeamId();
+        String operationTeamId = "";
+        if(CollUtil.isNotEmpty(operationTeamIds)){
+            for (int i=0; i<operationTeamIds.size(); i++){
+                Integer teamId = operationTeamIds.get(i);
+                if(i == 0){
+                    operationTeamId = teamId.toString();
+                }else{
+                    operationTeamId += ","+teamId.toString();
+                }
+            }
+        }
+        oceanBill.setOperationTeamId(operationTeamId);
+
         this.saveOrUpdate(oceanBill);
         Long obId = oceanBill.getId();//提单id
         List<OceanCounterForm> oceanCounterForms = form.getOceanCounterForms();

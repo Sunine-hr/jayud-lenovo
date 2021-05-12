@@ -75,10 +75,10 @@ public class OceanBillForm {
     @NotNull(message = "任务分组必填")
     private Integer taskId;
 
-    @ApiModelProperty(value = "运营(服务)小组id(operation_team id)", position = 12)
+    @ApiModelProperty(value = "运营(服务)小组id(operation_team id),多个用逗号分隔", position = 12)
     @JSONField(ordinal = 12)
     @NotNull(message = "运营小组必填")
-    private Integer operationTeamId;
+    private List<Integer> operationTeamId;
 
     @ApiModelProperty(value = "创建用户id(system_user id)", position = 13)
     @JSONField(ordinal = 13)

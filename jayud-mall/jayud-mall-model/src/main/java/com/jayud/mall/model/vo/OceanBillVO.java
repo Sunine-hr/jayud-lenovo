@@ -65,7 +65,7 @@ public class OceanBillVO {
 
     @ApiModelProperty(value = "运营(服务)小组id(operation_team id)", position = 12)
     @JSONField(ordinal = 12)
-    private Integer operationTeamId;
+    private String operationTeamId;
 
     @ApiModelProperty(value = "创建用户id(system_user id)", position = 13)
     @JSONField(ordinal = 13)

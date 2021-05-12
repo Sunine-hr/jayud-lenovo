@@ -100,18 +100,25 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
 
             List<GoodsServiceCost> goodsServiceCostList1 = form.getGoodsServiceCostList();
             if(CollUtil.isNotEmpty(goodsServiceCostList1)){
+                List<GoodsServiceCost> goodsServiceCosts = new ArrayList<>();
                 goodsServiceCostList1.forEach(goodsServiceCost -> {
-                    Long serviceId = goodsServiceCost.getServiceId();
-                    ServiceGroupVO serviceGroupVO = serviceGroupMap.get(serviceId);
 
-                    goodsServiceCost.setGoodId(Long.valueOf(id));
-                    goodsServiceCost.setCustomerId(Long.valueOf(customerGoodsVO.getCustomerId()));
-                    goodsServiceCost.setNameCn(customerGoodsVO.getNameCn());
-                    goodsServiceCost.setServiceName(serviceGroupVO.getCodeName());
-                    goodsServiceCost.setCustomerName(customerGoodsVO.getCustomerName());
+                    if(ObjectUtil.isNotEmpty(goodsServiceCost.getServiceId())){
+                        Long serviceId = goodsServiceCost.getServiceId();
+                        ServiceGroupVO serviceGroupVO = serviceGroupMap.get(serviceId);
+
+                        goodsServiceCost.setGoodId(Long.valueOf(id));
+                        goodsServiceCost.setCustomerId(Long.valueOf(customerGoodsVO.getCustomerId()));
+                        goodsServiceCost.setNameCn(customerGoodsVO.getNameCn());
+                        goodsServiceCost.setServiceName(serviceGroupVO.getCodeName());
+                        goodsServiceCost.setCustomerName(customerGoodsVO.getCustomerName());
+
+                        goodsServiceCosts.add(goodsServiceCost);
+                    }
+
                 });
 
-                goodsServiceCostList.addAll(goodsServiceCostList1);
+                goodsServiceCostList.addAll(goodsServiceCosts);
             }
 
 

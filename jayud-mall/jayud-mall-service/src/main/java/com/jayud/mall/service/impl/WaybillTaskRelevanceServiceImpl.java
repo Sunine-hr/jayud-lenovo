@@ -54,6 +54,13 @@ public class WaybillTaskRelevanceServiceImpl extends ServiceImpl<WaybillTaskRele
         //# 2.找订单，订单找报价，报价找报价模板，报价模板找任务组，任务组找任务
         //# 第三步，两个数据的合并
         //# 同一个运营小组，人员设置任务，一个人可以同时有多个任务，但是一个任务不能有多个人
+
+        /**
+         * 运单任务：
+         * 1.报价，没有运营组，只有一个任务组
+         * 2.客户，有多个运营组，不同的运营组负责不同的任务
+         * 3.下单，客户的运营组人员，和任务做匹配，确认运单任务和运单任务的负责人。
+         */
         List<WaybillTaskVO> list = waybillTaskRelevanceMapper.findWaybillTaskByOrderInfoId(orderInfoId);
 
         List<WaybillTaskRelevance> waybillTaskRelevances = ConvertUtil.convertList(list, WaybillTaskRelevance.class);

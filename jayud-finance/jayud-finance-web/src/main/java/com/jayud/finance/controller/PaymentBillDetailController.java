@@ -6,8 +6,6 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.util.TypeUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
@@ -225,10 +223,10 @@ public class PaymentBillDetailController {
     public CommonResult<Map<String, Object>> viewBillDetail(@RequestBody @Valid ViewBillDetailForm form) {
         Map<String, Object> resultMap = new HashMap<>();
 //        List<ViewFBilToOrderVO> list = billDetailService.viewBillDetail(form.getBillNo());
-        JSONArray jsonArray = billDetailService.viewBillDetailInfo(form.getBillNo(), form.getCmd());
+        JSONArray jsonArray = billDetailService.viewBillDetailInfo(form.getBillNo(), form.getCmd(), form.getCmd());
         resultMap.put(CommonConstant.LIST, jsonArray);//分页数据
 //        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSheetHead(form.getBillNo(), new HashMap<>());
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHeadInfo(form.getBillNo(), new HashMap<>(), form.getCmd());
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHeadInfo(form.getBillNo(), new HashMap<>(), form.getCmd(), form.getCmd());
         resultMap.put(CommonConstant.SHEET_HEAD, sheetHeadVOS);//表头
         ViewBillVO viewBillVO = billDetailService.getViewBill(form.getBillNo());
         resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
@@ -241,6 +239,7 @@ public class PaymentBillDetailController {
     @ResponseBody
     public void exportBillDetail(@RequestParam(value = "billNo", required = true) String billNo,
                                  @RequestParam(value = "cmd", required = false) String cmd,
+                                 @RequestParam(value = "templateCmd", required = false) String templateCmd,
                                  HttpServletResponse response) throws IOException {
 
 
@@ -259,13 +258,13 @@ public class PaymentBillDetailController {
 //
 //        JSONArray datas = new JSONArray(list);
 
-        JSONArray datas = this.billDetailService.viewBillDetailInfo(billNo, cmd);
+        JSONArray datas = this.billDetailService.viewBillDetailInfo(billNo, cmd, templateCmd);
 
         ViewBillVO viewBillVO = billDetailService.getViewBill(billNo);
 
         Map<String, Object> callbackArg = new HashMap<>();
         //头部数据重组
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHeadInfo(billNo, callbackArg, cmd);
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHeadInfo(billNo, callbackArg, cmd, templateCmd);
         int index = Integer.parseInt(callbackArg.get("fixHeadIndex").toString()) - 1;
         LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
         LinkedHashMap<String, String> dynamicHead = new LinkedHashMap<>();

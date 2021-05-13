@@ -121,4 +121,13 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      * @return
      */
     public Integer getNumByStatus(String status, List<Long> legalIds);
+
+    /**
+     * 根据主订单号集合查询中港详情信息
+     * @param mainOrderNos
+     * @return
+     */
+    List<OrderTransportInfoVO> getTmsOrderInfoByMainOrderNos(List<String> mainOrderNos);
+
+    List<OrderTransport> getByLegalEntityId(List<Long> legalIds);
 }

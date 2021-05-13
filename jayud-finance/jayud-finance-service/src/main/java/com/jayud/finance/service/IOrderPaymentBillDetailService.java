@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.po.OrderPaymentBillDetail;
-import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.vo.*;
 
 import java.util.List;
@@ -97,11 +96,13 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 对账单详情 TODO 改版
+     *
+     * @param no
      * @param billNo
      * @param cmd
      * @return
      */
-    public JSONArray viewBillDetailInfo(String billNo, String cmd);
+    public JSONArray viewBillDetailInfo(String billNo, String cmd,String templateCmd);
 
     /**
      * 对账单详情表头
@@ -113,7 +114,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     /**
      * 对账单详情表头 TODO 增强版
      */
-    public List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg, String cmd) ;
+    public List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg, String cmd, String templateCmd) ;
 
     /**
      * 对账单详情的全局数据部分

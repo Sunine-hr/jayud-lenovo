@@ -1,7 +1,6 @@
 package com.jayud.tms.service.impl;
 
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -21,7 +20,6 @@ import com.jayud.tms.feign.OauthClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.*;
-import com.jayud.tms.model.enums.OrderTakeAdrTypeEnum;
 import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
@@ -37,9 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -547,12 +542,33 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Integer num = 0;
         switch (status) {
             case "CostAudit":
-                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.ZGYS.getSignOne(), legalIds).getData();
+                List<OrderTransport> list = this.getByLegalEntityId(legalIds);
+                if (CollectionUtils.isEmpty(list)) return num;
+                List<String> orderNos = list.stream().map(OrderTransport::getOrderNo).collect(Collectors.toList());
+                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.ZGYS.getSignOne(), legalIds, orderNos).getData();
                 break;
             default:
                 num = this.baseMapper.getNumByStatus(status, legalIds);
         }
         return num == null ? 0 : num;
+    }
+
+    /**
+     * 根据主订单号集合查询中港详情信息
+     *
+     * @param mainOrderNos
+     * @return
+     */
+    @Override
+    public List<OrderTransportInfoVO> getTmsOrderInfoByMainOrderNos(List<String> mainOrderNos) {
+        return this.baseMapper.getTmsOrderInfoByMainOrderNos(mainOrderNos);
+    }
+
+    @Override
+    public List<OrderTransport> getByLegalEntityId(List<Long> legalIds) {
+        QueryWrapper<OrderTransport> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderTransport::getLegalEntityId, legalIds);
+        return this.baseMapper.selectList(condition);
     }
 
 }

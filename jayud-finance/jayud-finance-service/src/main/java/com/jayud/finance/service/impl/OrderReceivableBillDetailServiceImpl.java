@@ -506,7 +506,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
 
 
     @Override
-    public JSONArray viewSBillDetailInfo(String billNo, String cmd) {
+    public JSONArray viewSBillDetailInfo(String billNo, String cmd, String templateCmd) {
         List<ViewBilToOrderVO> orderList = baseMapper.viewSBillDetail(billNo);
 
         JSONArray array = new JSONArray(orderList);
@@ -555,7 +555,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         }
         //模板数据处理
 //        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
-        array = this.commonService.templateDataProcessing(cmd, array, mainOrderNos, 0);
+        array = this.commonService.templateDataProcessing(cmd, templateCmd, array, mainOrderNos, 0);
         return array;
     }
 
@@ -615,13 +615,13 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
 
 
     @Override
-    public List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg, String cmd) {
+    public List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg, String cmd, String templateCmd) {
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
         try {
-            Class template = BillTemplateEnum.getTemplate(cmd);
+            Class template = BillTemplateEnum.getTemplate(templateCmd);
             if (template != null) {
-                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template,false);
+                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template, false);
                 fixHeadList = Utilities.obj2List(maps, SheetHeadVO.class);
             } else {//TODO 增强不影响原有系统,除非更替完成
                 ViewBilToOrderHeadVO viewBilToOrderVO = new ViewBilToOrderHeadVO();
@@ -869,10 +869,10 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 }
             }
             mainOrderNos.add(paymentNotPaidBill.getOrderNo());
-            paymentNotPaidBill.assemblyCostInfo(costInfo,currencyMap);
+            paymentNotPaidBill.assemblyCostInfo(costInfo, currencyMap);
         }
         JSONArray array = new JSONArray(pageList);
-        array = this.commonService.templateDataProcessing(pageList.get(0).getSubType(), array, mainOrderNos, 0);
+        array = this.commonService.templateDataProcessing(pageList.get(0).getSubType(),pageList.get(0).getSubType(), array, mainOrderNos, 0);
         List<LinkedHashMap> maps = Utilities.obj2List(array, LinkedHashMap.class);
         pageMap.setRecords(maps);
         return pageMap;

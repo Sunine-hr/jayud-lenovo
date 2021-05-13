@@ -84,8 +84,6 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
             JSONObject object = datas.getJSONObject(i);
             QueryWrapper<OrderBillCostTotal> condition = new QueryWrapper<>();
             condition.lambda().eq(OrderBillCostTotal::getBillNo, object.getStr("billNo"))
-                    .eq(OrderBillCostTotal::getOrderNo, object.getStr("subOrderNo") == null
-                            ? object.getStr("orderNo") : object.getStr("subOrderNo"))
                     .eq(OrderBillCostTotal::getMoneyType, moneyType);
             List<OrderBillCostTotal> orderBillCostTotals = this.baseMapper.selectList(condition);
             //合计结算币种

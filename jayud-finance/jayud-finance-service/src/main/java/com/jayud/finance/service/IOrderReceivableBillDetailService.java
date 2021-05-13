@@ -104,7 +104,7 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @param billNo
      * @return
      */
-    public JSONArray viewSBillDetailInfo(String billNo, String cmd);
+    public JSONArray viewSBillDetailInfo(String billNo, String cmd,String templateCmd);
 
 
     /**
@@ -115,7 +115,8 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
     List<SheetHeadVO> findSSheetHead(String billNo, Map<String, Object> callbackArg);
 
 
-    List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg,String cmd);
+    List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg,
+                                         String cmd,String templateCmd);
 
     /**
      * 对账单详情的全局数据部分

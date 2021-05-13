@@ -223,6 +223,7 @@ public interface OmsClient {
 
     /**
      * 应收/应付费用状态
+     *
      * @return
      */
     @RequestMapping(value = "/api/getCostStatus")
@@ -236,6 +237,7 @@ public interface OmsClient {
      * @return
      */
     @RequestMapping(value = "/api/auditPendingExpenses")
-    ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
-                                            @RequestParam("legalIds") List<Long> legalIds);
+    public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
+                                                   @RequestParam("legalIds") List<Long> legalIds,
+                                                   @RequestParam("orderNos") List<String> orderNos);
 }

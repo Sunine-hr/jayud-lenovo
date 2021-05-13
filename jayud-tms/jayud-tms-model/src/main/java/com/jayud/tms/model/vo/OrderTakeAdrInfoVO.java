@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 public class OrderTakeAdrInfoVO {
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "订单号")
     private String orderNo;
 
     @ApiModelProperty(value = "地址信息(delivery_address id)")

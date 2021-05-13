@@ -27,7 +27,6 @@ import com.jayud.finance.po.*;
 import com.jayud.finance.service.*;
 import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
-import com.jayud.finance.vo.template.order.AirOrderTemplate;
 import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -501,7 +500,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     }
 
     @Override
-    public JSONArray viewBillDetailInfo(String billNo, String cmd) {
+    public JSONArray viewBillDetailInfo(String billNo, String cmd,String templateCmd) {
         List<ViewFBilToOrderVO> orderList = baseMapper.viewBillDetail(billNo);
 
         JSONArray array = new JSONArray(orderList);
@@ -550,7 +549,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         }
         //模板数据处理
 //        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
-        array = this.commonService.templateDataProcessing(cmd, array, mainOrderNos, 1);
+        array = this.commonService.templateDataProcessing(cmd, templateCmd, array, mainOrderNos, 1);
         return array;
     }
 
@@ -607,11 +606,11 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     }
 
     @Override
-    public List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg, String cmd) {
+    public List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg, String cmd, String templateCmd) {
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
         try {
-            Class template = BillTemplateEnum.getTemplate(cmd);
+            Class template = BillTemplateEnum.getTemplate(templateCmd);
             if (template != null) {
                 List<Map<String, Object>> maps = Utilities.assembleEntityHead(template, false);
                 fixHeadList = Utilities.obj2List(maps, SheetHeadVO.class);
@@ -826,9 +825,8 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 }
             }
 
-            paymentNotPaidBill.assemblyCostInfo(costInfo,currencyMap);
+            paymentNotPaidBill.assemblyCostInfo(costInfo, currencyMap);
         }
-
 
 
         return pageInfo;

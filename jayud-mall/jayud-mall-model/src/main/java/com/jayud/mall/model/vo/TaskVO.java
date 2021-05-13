@@ -50,4 +50,7 @@ public class TaskVO {
     @JSONField(ordinal = 11)
     private String taskDescribe;
 
+    @ApiModelProperty(value = "类型(1提单任务 2运单任务)")
+    private Integer types;
+
 }

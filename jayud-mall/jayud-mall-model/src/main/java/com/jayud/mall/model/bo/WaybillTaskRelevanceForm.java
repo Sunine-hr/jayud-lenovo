@@ -41,7 +41,7 @@ public class WaybillTaskRelevanceForm {
     @ApiModelProperty(value = "物流轨迹通知描述")
     private String remarks;
 
-    @ApiModelProperty(value = "状态(0未激活 1已激活 2异常 3已完成)")
+    @ApiModelProperty(value = "状态(0未激活 1已激活,未完成 2已完成)")
     private String status;
 
     @ApiModelProperty(value = "延期原因")

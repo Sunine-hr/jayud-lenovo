@@ -57,7 +57,7 @@ public class WaybillTaskRelevanceVO {
     @JSONField(ordinal = 11)
     private String remarks;
 
-    @ApiModelProperty(value = "状态(0未激活 1已激活 2异常 3已完成)", position = 12)
+    @ApiModelProperty(value = "状态(0未激活 1已激活,未完成 2已完成)", position = 12)
     @JSONField(ordinal = 12)
     private String status;
 

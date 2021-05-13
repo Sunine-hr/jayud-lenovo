@@ -38,7 +38,7 @@ public class WaybillTaskRelevanceForm {
     @ApiModelProperty(value = "完成这个任务的考核得分")
     private Integer score;
 
-    @ApiModelProperty(value = "描述")
+    @ApiModelProperty(value = "物流轨迹通知描述")
     private String remarks;
 
     @ApiModelProperty(value = "状态(0未激活 1已激活 2异常 3已完成)")

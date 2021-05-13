@@ -71,7 +71,7 @@ public class BillTaskRelevance extends Model<BillTaskRelevance> {
     @JSONField(ordinal = 10)
     private Integer score;
 
-    @ApiModelProperty(value = "描述", position = 11)
+    @ApiModelProperty(value = "物流轨迹通知描述", position = 11)
     @JSONField(ordinal = 11)
     private String remarks;
 

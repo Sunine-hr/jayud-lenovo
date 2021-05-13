@@ -137,4 +137,5 @@ public interface IAirOrderService extends IService<AirOrder> {
     Integer getNumByStatus(String status, List<Long> legalIds);
 
 
+    List<AirOrder> getByLegalEntityId(List<Long> legalIds);
 }

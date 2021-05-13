@@ -463,7 +463,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
 
         //内陆数据处理
 //        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
-        array = this.commonService.templateDataProcessing(form.getCmd(), array, mainOrderNos, 1);
+        array = this.commonService.templateDataProcessing(form.getCmd(),form.getCmd(), array, mainOrderNos, 1);
         return array;
     }
 

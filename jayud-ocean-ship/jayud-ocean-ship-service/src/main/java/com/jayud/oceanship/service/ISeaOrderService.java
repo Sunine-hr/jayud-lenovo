@@ -149,4 +149,6 @@ public interface ISeaOrderService extends IService<SeaOrder> {
      * @return
      */
     Integer getNumByStatus(String status, List<Long> legalIds);
+
+    List<SeaOrder> getByLegalEntityId(List<Long> legalIds);
 }

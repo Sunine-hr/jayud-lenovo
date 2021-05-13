@@ -2,20 +2,18 @@ package com.jayud.common.utils;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
-import com.jayud.common.exception.JayudBizException;
 import io.swagger.annotations.ApiModelProperty;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Component;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.util.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.*;
 
 @Component
 public class Utilities {
@@ -23,10 +21,10 @@ public class Utilities {
     /**
      * 组装头部信息
      */
-    public static List<Map<String, Object>> assembleEntityHead(Class clazz,Boolean isParentFields) {
+    public static List<Map<String, Object>> assembleEntityHead(Class clazz, Boolean isParentFields) {
         Field[] fields = clazz.getDeclaredFields();
-        ArrayList<Field> tmp = new ArrayList<Field>(Arrays.asList(fields)) ;
-        if (isParentFields){
+        ArrayList<Field> tmp = new ArrayList<Field>(Arrays.asList(fields));
+        if (isParentFields) {
             Field[] parenFields = clazz.getSuperclass().getDeclaredFields();
             tmp.addAll(Arrays.asList(parenFields));
         }
@@ -108,5 +106,36 @@ public class Utilities {
         Transferable trans = new StringSelection(text);
         // 把文本内容设置到系统剪贴板
         clipboard.setContents(trans, null);
+    }
+
+
+    /**
+     * 动态修改注解
+     */
+    public static Class dynamicUpdateAnnotations(Class clazz, List<String> names, Class annotation, Map annotationParam)
+            throws NoSuchFieldException, IllegalAccessException {
+        for (String name : names) {
+            dynamicUpdateAnnotations(clazz, name, annotation, annotationParam);
+        }
+        return clazz;
+    }
+
+    /**
+     * 动态修改注解
+     */
+    public static Class dynamicUpdateAnnotations(Class clazz, String name, Class annotation, Map annotationParam)
+            throws NoSuchFieldException, IllegalAccessException {
+
+        Field hField = clazz.getDeclaredField(name);
+        hField.setAccessible(true);
+        InvocationHandler invocationHandler = Proxy.getInvocationHandler(hField.getAnnotation(annotation));
+        // 获取私有 memberValues 属性
+        Field memberValuesField = invocationHandler.getClass().getDeclaredField("memberValues");
+        memberValuesField.setAccessible(true);
+        // 获取实例的属性map
+        Map<String, Object> memberValuesValue = (Map<String, Object>) memberValuesField.get(invocationHandler);
+        // 修改属性值
+        memberValuesValue.putAll(annotationParam);
+        return clazz;
     }
 }

@@ -972,6 +972,13 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         return num == null ? 0 : num;
     }
 
+    @Override
+    public List<SeaOrder> getByLegalEntityId(List<Long> legalIds) {
+        QueryWrapper<SeaOrder> condition = new QueryWrapper<>();
+        condition.lambda().in(SeaOrder::getLegalEntityId, legalIds);
+        return this.baseMapper.selectList(condition);
+    }
+
 
 //    private void handleLadingBillFile(SeaBookship seaBookship, SeaProcessOptForm form) {
 //        seaBookship.setFilePath(StringUtils.getFileStr(form.getFileViewList()));

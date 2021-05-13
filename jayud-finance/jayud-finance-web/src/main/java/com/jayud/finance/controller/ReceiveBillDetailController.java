@@ -1,5 +1,6 @@
 package com.jayud.finance.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
@@ -19,7 +20,9 @@ import com.jayud.common.utils.excel.EasyExcelEntity;
 import com.jayud.common.utils.excel.EasyExcelUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
+import com.jayud.finance.enums.BillTemplateEnum;
 import com.jayud.finance.feign.OauthClient;
+import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderReceivableBillDetailService;
@@ -38,6 +41,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -51,6 +55,8 @@ public class ReceiveBillDetailController {
     private OauthClient oauthClient;
     @Autowired
     private IOrderBillCostTotalService orderBillCostTotalService;
+    @Autowired
+    private OmsClient omsClient;
 
     @ApiOperation(value = "应收对账单列表,应收对账单审核列表,财务应收对账单列表")
     @PostMapping("/findReceiveBillDetailByPage")
@@ -225,10 +231,10 @@ public class ReceiveBillDetailController {
     public CommonResult<Map<String, Object>> viewSBillDetail(@RequestBody @Valid ViewBillDetailForm form) {
         Map<String, Object> resultMap = new HashMap<>();
 //        List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(form.getBillNo());
-        JSONArray jsonArray = billDetailService.viewSBillDetailInfo(form.getBillNo(), form.getCmd());
+        JSONArray jsonArray = billDetailService.viewSBillDetailInfo(form.getBillNo(), form.getCmd(), form.getCmd());
         resultMap.put(CommonConstant.LIST, jsonArray);//分页数据
 //        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHead(form.getBillNo(), new HashMap<>());
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHeadInfo(form.getBillNo(), new HashMap<>(), form.getCmd());
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHeadInfo(form.getBillNo(), new HashMap<>(), form.getCmd(), form.getCmd());
         resultMap.put(CommonConstant.SHEET_HEAD, sheetHeadVOS);//表头
         ViewBillVO viewBillVO = billDetailService.getViewSBill(form.getBillNo());
         resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
@@ -239,8 +245,9 @@ public class ReceiveBillDetailController {
     @ApiOperation(value = "导出对账单详情 cmd=ky,zgys,nl ..等指令和录用费用类型对应")
     @RequestMapping(value = "/exportSBillDetail", method = RequestMethod.GET)
     @ResponseBody
-    public void exportSBillDetail(@RequestParam(value = "billNo", required = true) String billNo,
+    public void exportSBillDetail(@RequestParam(value = "billNo") String billNo,
                                   @RequestParam(value = "cmd", required = false) String cmd,
+                                  @RequestParam(value = "templateCmd", required = false) String templateCmd,
                                   HttpServletResponse response) throws IOException {
 
 //        List<ViewBilToOrderVO> list = billDetailService.viewSBillDetail(billNo);
@@ -257,12 +264,12 @@ public class ReceiveBillDetailController {
 //        TypeUtils.compatibleWithJavaBean = true;
 //        JSONArray datas = JSONArray.parseArray(JSON.toJSONString(list));
 
-        JSONArray datas = this.billDetailService.viewSBillDetailInfo(billNo, cmd);
+        JSONArray datas = this.billDetailService.viewSBillDetailInfo(billNo, cmd, templateCmd);
         ViewBillVO viewBillVO = billDetailService.getViewSBill(billNo);
 
         Map<String, Object> callbackArg = new HashMap<>();
         //头部数据重组
-        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHeadInfo(billNo, callbackArg, cmd);
+        List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHeadInfo(billNo, callbackArg, cmd, templateCmd);
         int index = Integer.parseInt(callbackArg.get("fixHeadIndex").toString()) - 1;
         LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
         LinkedHashMap<String, String> dynamicHead = new LinkedHashMap<>();
@@ -277,7 +284,7 @@ public class ReceiveBillDetailController {
         //计算结算币种
         this.orderBillCostTotalService.exportSettlementCurrency(headMap, dynamicHead, datas, "2");
 
-        //查询人主体信息
+        //查询法人人主体信息
         cn.hutool.json.JSONArray tmp = new cn.hutool.json.JSONArray(this.oauthClient
                 .getLegalEntityByLegalIds(Collections.singletonList(viewBillVO.getLegalEntityId())).getData());
         cn.hutool.json.JSONObject legalEntityJson = tmp.getJSONObject(0);

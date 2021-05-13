@@ -94,4 +94,6 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
      * @return
      */
     Boolean updateProcessStatus(OrderCustoms orderCustoms);
+
+    List<OrderCustoms> getByLegalEntityId(List<Long> legalIds);
 }

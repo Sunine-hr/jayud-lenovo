@@ -230,5 +230,6 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/auditPendingExpenses")
     ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
-                                            @RequestParam("legalIds") List<Long> legalIds);
+                                            @RequestParam("legalIds") List<Long> legalIds,
+                                            @RequestParam("orderNos")List<String> orderNos);
 }

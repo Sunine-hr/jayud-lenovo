@@ -112,4 +112,10 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
     IPage<BusinessPeople> findStatisticsSalesmanRanking(Page<BusinessPeople> page,
                                                         @Param("legalNames") List<String> legalNames);
 
+    /**
+     * 根据主订单号集合查询中港详情信息
+     * @param mainOrderNos
+     * @return
+     */
+    List<OrderTransportInfoVO> getTmsOrderInfoByMainOrderNos(@Param("mainOrderNos") List<String> mainOrderNos);
 }

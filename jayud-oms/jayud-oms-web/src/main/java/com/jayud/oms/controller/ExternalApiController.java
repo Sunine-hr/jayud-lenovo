@@ -1137,7 +1137,7 @@ public class ExternalApiController {
                         num = this.orderInfoService.pendingGoCustomsAuditNum(legalIds);
                         break;
                     case "feeCheck":
-                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds);
+                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null);
                         break;
                 }
 
@@ -1350,14 +1350,16 @@ public class ExternalApiController {
      */
     @RequestMapping(value = "/api/auditPendingExpenses")
     public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
-                                                   @RequestParam("legalIds") List<Long> legalIds) {
-        Integer num = this.costCommonService.auditPendingExpenses(subType, legalIds);
+                                                   @RequestParam("legalIds") List<Long> legalIds,
+                                                   @RequestParam("orderNos") List<String> orderNos) {
+        Integer num = this.costCommonService.auditPendingExpenses(subType, legalIds, orderNos);
         return ApiResult.ok(num);
     }
 
 
     /**
      * 客户管理菜单待处理数量
+     *
      * @param menusList
      * @return
      */
@@ -1395,6 +1397,7 @@ public class ExternalApiController {
 
     /**
      * 供应商管理菜单待处理数量
+     *
      * @param menusList
      * @return
      */
@@ -1427,6 +1430,7 @@ public class ExternalApiController {
         }
         return ApiResult.ok(result);
     }
+
 }
 
 

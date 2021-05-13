@@ -216,10 +216,6 @@ public class AirOrderTemplate{
 
 //    }
 
-    public void setStatus(String status) {
-        this.status = status;
-//        this.statusDesc = OrderStatusEnum.getDesc(status);
-    }
 
     public void assemblyMainOrderData(Object mainOrderObjs) {
         if (mainOrderObjs == null) {

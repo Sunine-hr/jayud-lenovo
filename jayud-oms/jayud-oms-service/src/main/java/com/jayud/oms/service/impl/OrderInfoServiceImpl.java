@@ -968,7 +968,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
 
             //生成报关订单号
-            if (form.getCmd().equals("submit")) {
+            if (form.getCmd().equals("submit") && CollectionUtil.isNotEmpty(orderCustomsForm.getSubOrders())) {
+
                 for (InputSubOrderCustomsForm subOrder : orderCustomsForm.getSubOrders()) {
 
                     String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), orderCustomsForm.getGoodsType(), OrderStatusEnum.CBG.getCode());
@@ -1653,11 +1654,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      */
     @Override
     public Map<String, Object> getCostStatus(List<String> mainOrderNo, List<String> subOrderNo) {
-        Map<String,Object> receivableCallbackParam=new HashMap<>();
-        Map<String,Object> paymentCallbackParam=new HashMap<>();
+        Map<String, Object> receivableCallbackParam = new HashMap<>();
+        Map<String, Object> paymentCallbackParam = new HashMap<>();
 
         Map<String, Object> receivableCostStatus = this.orderReceivableCostService.getOrderCostStatus(mainOrderNo, subOrderNo, receivableCallbackParam);
-        Map<String, Object> paymentCostStatus = this.orderPaymentCostService.getOrderCostStatus(mainOrderNo, subOrderNo,paymentCallbackParam);
+        Map<String, Object> paymentCostStatus = this.orderPaymentCostService.getOrderCostStatus(mainOrderNo, subOrderNo, paymentCallbackParam);
         Map<String, Object> map = new HashMap<>();
         map.put("receivableCostStatus", receivableCostStatus);
         map.put("paymentCostStatus", paymentCostStatus);

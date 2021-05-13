@@ -26,15 +26,15 @@ public class CostCommonServiceImpl implements ICostCommonService {
      * 统计应收/应付待处理费用审核
      */
     @Override
-    public Integer auditPendingExpenses(String subType, List<Long> legalIds) {
-        Set<String> orderNos = new HashSet<>();
-        String key= SubOrderSignEnum.MAIN.getSignOne().equals(subType)?"mainOrderNo":"orderNo";
+    public Integer auditPendingExpenses(String subType, List<Long> legalIds, List<String> orderNos) {
+        Set<String> orderNosSet = new HashSet<>();
+        String key = SubOrderSignEnum.MAIN.getSignOne().equals(subType) ? "mainOrderNo" : "orderNo";
         //查询应付待费用审核
-        List<Map<String, Object>> paymentCostMap = this.orderPaymentCostService.getPendingExpenseApproval(subType, null, legalIds);
+        List<Map<String, Object>> paymentCostMap = this.orderPaymentCostService.getPendingExpenseApproval(subType, orderNos, legalIds);
         //查询应收待费用审核
-        List<Map<String, Object>> receivableCostMap = this.orderReceivableCostService.getPendingExpenseApproval(subType, null, legalIds);
-        paymentCostMap.stream().filter(e -> e.get(key) != null).forEach(e -> orderNos.add(e.get(key).toString()));
-        receivableCostMap.stream().filter(e -> e.get(key) != null).forEach(e -> orderNos.add(e.get(key).toString()));
-        return orderNos.size();
+        List<Map<String, Object>> receivableCostMap = this.orderReceivableCostService.getPendingExpenseApproval(subType, orderNos, legalIds);
+        paymentCostMap.stream().filter(e -> e.get(key) != null).forEach(e -> orderNosSet.add(e.get(key).toString()));
+        receivableCostMap.stream().filter(e -> e.get(key) != null).forEach(e -> orderNosSet.add(e.get(key).toString()));
+        return orderNosSet.size();
     }
 }

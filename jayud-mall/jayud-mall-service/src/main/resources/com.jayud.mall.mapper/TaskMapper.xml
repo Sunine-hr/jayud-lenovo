@@ -22,7 +22,7 @@
     <select id="findTaskByPage" parameterType="com.jayud.mall.model.bo.QueryTaskForm"
             resultType="com.jayud.mall.model.vo.TaskVO">
         select
-        t.id,t.task_code,t.task_name,t.remarks,t.status,t.user_id,t.user_name,t.create_time
+        t.id,t.task_code,t.task_name,t.remarks,t.status,t.user_id,t.user_name,t.create_time,t.types
         from task t
         where 1=1
         <if test="form.taskName != null and form.taskName != ''">
@@ -33,7 +33,7 @@
 
     <select id="findTaskById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.TaskVO">
         select
-        t.id,t.task_code,t.task_name,t.remarks,t.status,t.user_id,t.user_name,t.create_time
+        t.id,t.task_code,t.task_name,t.remarks,t.status,t.user_id,t.user_name,t.create_time,t.types
         from task t
         where 1=1
         and t.id = #{id}
@@ -42,7 +42,7 @@
 
     <select id="findTaskByTaskCode" parameterType="java.lang.String" resultType="com.jayud.mall.model.vo.TaskVO">
         select
-            t.id,t.task_code,t.task_name,t.remarks,t.status,t.user_id,t.user_name,t.create_time
+            t.id,t.task_code,t.task_name,t.remarks,t.status,t.user_id,t.user_name,t.create_time,t.types
         from task t
         where t.task_code = #{taskCode}
     </select>
@@ -50,7 +50,7 @@
     <select id="findTask" parameterType="com.jayud.mall.model.bo.TaskQueryForm"
             resultType="com.jayud.mall.model.vo.TaskVO">
         select
-            t.id,t.task_code,t.task_name,t.remarks,t.status,t.user_id,t.user_name,t.create_time,
+            t.id,t.task_code,t.task_name,t.remarks,t.status,t.user_id,t.user_name,t.create_time,t.types
             concat(t.task_name,'(',t.remarks,')') taskDescribe
         from task t
         where 1=1

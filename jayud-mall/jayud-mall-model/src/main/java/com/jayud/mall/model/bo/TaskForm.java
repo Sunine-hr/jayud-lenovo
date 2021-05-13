@@ -4,11 +4,13 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.mall.model.po.TaskExecutionRule;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class TaskForm {
@@ -50,5 +52,8 @@ public class TaskForm {
 
     @ApiModelProperty(value = "类型(1提单任务 2运单任务)")
     private Integer types;
+
+    @ApiModelProperty(value = "任务执行规则表(from where to where)list")
+    private List<TaskExecutionRule> taskExecutionRuleList;
 
 }

@@ -31,7 +31,7 @@ public class MysqlGenerator {
                 "jayud-mall\\jayud-mall-service"
         };
         for (String model : models) {
-            shell(model,"inland_fee_cost");
+            shell(model,"task_execution_rule");
         }
     }
 

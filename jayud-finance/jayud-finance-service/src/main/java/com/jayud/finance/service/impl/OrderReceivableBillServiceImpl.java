@@ -601,7 +601,8 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
      * @return
      */
     @Override
-    public BigDecimal getSAlreadyPaidAmountByLegalId(@Param("legalId") Long legalId, @Param("unitCode") String unitCode, @Param("subType") String subType) {
+    public BigDecimal getSAlreadyPaidAmountByLegalId(Long legalId, String unitCode,
+                                                     String subType) {
         return baseMapper.getSAlreadyPaidAmountByLegalId(legalId, unitCode, subType);
     }
 

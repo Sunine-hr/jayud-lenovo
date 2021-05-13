@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author chuanmei
@@ -46,9 +46,9 @@ public class CancelAfterVerificationServiceImpl extends ServiceImpl<CancelAfterV
     @Override
     public List<HeXiaoListVO> heXiaoList(String billNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("bill_no",billNo);
+        queryWrapper.eq("bill_no", billNo);
         List<CancelAfterVerification> heXiaoList = list(queryWrapper);
-        return ConvertUtil.convertList(heXiaoList,HeXiaoListVO.class);
+        return ConvertUtil.convertList(heXiaoList, HeXiaoListVO.class);
     }
 
     @Override
@@ -61,42 +61,52 @@ public class CancelAfterVerificationServiceImpl extends ServiceImpl<CancelAfterV
         BigDecimal nowAddAmount = new BigDecimal("0");//本次添加的金额
         List<HeXiaoConfirmForm> addList = new ArrayList<>();
         for (HeXiaoConfirmForm form : forms.getHeXiaoConfirmForms()) {
-            if(form.getId() == null){
+            if (form.getId() == null) {
                 addList.add(form);//只保存本次添加的数据
                 nowAddAmount = nowAddAmount.add(form.getDiscountMoney());
             }
         }
-        if(costSAmountVO != null) {//说明本次是应收核销
+        if (costSAmountVO != null) {//说明本次是应收核销
             wsAmount = costSAmountVO.getWsAmount();
-            if(nowAddAmount.compareTo(wsAmount) == 1){
-                return CommonResult.error(10001,"本次添加的金额超过未收金额");
+            if (nowAddAmount.compareTo(wsAmount) == 1) {
+                return CommonResult.error(10001, "本次添加的金额超过未收金额");
             }
         }
-        if(costFAmountVO != null) {//说明本次是应付核销
+        if (costFAmountVO != null) {//说明本次是应付核销
             dfAmount = costFAmountVO.getDfAmount();
-            if(nowAddAmount.compareTo(dfAmount) == 1){
-                return CommonResult.error(10001,"本次添加的金额超过待付金额");
+            if (nowAddAmount.compareTo(dfAmount) == 1) {
+                return CommonResult.error(10001, "本次添加的金额超过待付金额");
             }
         }
         List<CancelAfterVerification> list = new ArrayList<>();
         for (HeXiaoConfirmForm heXiaoConfirmForm : addList) {
-            CancelAfterVerification cancelAfterVerification = ConvertUtil.convert(heXiaoConfirmForm,CancelAfterVerification.class);
-            cancelAfterVerification.setRealReceiveTime(DateUtils.str2LocalDateTime(heXiaoConfirmForm.getRealReceiveTimeStr(),DateUtils.DATE_TIME_PATTERN));
+            CancelAfterVerification cancelAfterVerification = ConvertUtil.convert(heXiaoConfirmForm, CancelAfterVerification.class);
+            cancelAfterVerification.setRealReceiveTime(DateUtils.str2LocalDateTime(heXiaoConfirmForm.getRealReceiveTimeStr(), DateUtils.DATE_TIME_PATTERN));
             cancelAfterVerification.setCreatedUser(forms.getLoginUserName());
             //计算本币金额
             String oCode = cancelAfterVerification.getCurrencyCode();//原始币种,即实收金额的币种
-            BigDecimal exchangeRate = currencyRateService.getExchangeRate(oCode,"CNY");
-            if(exchangeRate == null){
-                return CommonResult.error(10001,"请先配置原始货币:"+oCode+"兑换货币：CNY的汇率");
+            BigDecimal exchangeRate = currencyRateService.getExchangeRate(oCode, "CNY");
+            if (exchangeRate == null) {
+                return CommonResult.error(10001, "请先配置原始货币:" + oCode + "兑换货币：CNY的汇率");
             }
             BigDecimal localMoney = cancelAfterVerification.getRealReceiveMoney().multiply(exchangeRate);
             cancelAfterVerification.setLocalMoney(localMoney);
             list.add(cancelAfterVerification);
         }
         Boolean result = saveBatch(list);
-        if(!result){
+        if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         return CommonResult.success();
+    }
+
+    /**
+     * 根据账单查询核销列表
+     */
+    @Override
+    public List<CancelAfterVerification> getByBillNos(List<String> billNos) {
+        QueryWrapper<CancelAfterVerification> condition = new QueryWrapper<>();
+        condition.lambda().in(CancelAfterVerification::getBillNo, billNos);
+        return this.baseMapper.selectList(condition);
     }
 }

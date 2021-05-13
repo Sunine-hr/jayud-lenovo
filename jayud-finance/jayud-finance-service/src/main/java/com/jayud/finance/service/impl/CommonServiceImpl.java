@@ -84,8 +84,8 @@ public class CommonServiceImpl implements CommonService {
                     tmsOrderTemplate.assemblyMainOrderData(result.getData());
                     map.put(cmd.equals("main") ? tmsOrderTemplate.getMainOrderNo() : tmsOrderTemplate.getOrderNo(), tmsOrderTemplate);
                     break;
-                case ZGYS_ONE:
-                    break;
+//                case ZGYS_ONE:
+//                    break;
 
             }
 
@@ -109,15 +109,17 @@ public class CommonServiceImpl implements CommonService {
 
         BillTemplateEnum templateEnum = BillTemplateEnum.getTemplateEnum(cmd);
         if (templateEnum != null) {
-            switch (templateEnum) {
-                case KY: //空运
-                    data = this.getAirOrderTemplate(mainOrderNos, cmd, templateEnum);
-                    break;
-                case ZGYS: //中港
-                case ZGYS_ONE:
-                    data = this.getTmsOrderTemplate(mainOrderNos, cmd, templateEnum);
-                    break;
-
+            //空运
+            if (templateEnum.getCmd().equals(BillTemplateEnum.KY.getCmd())) {
+                data = this.getAirOrderTemplate(mainOrderNos, cmd, templateEnum);
+            }
+            //中港
+            if (templateEnum.getCmd().equals(BillTemplateEnum.ZGYS.getCmd())) {
+                data = this.getTmsOrderTemplate(mainOrderNos, cmd, templateEnum);
+            }
+            //拖车
+            if (templateEnum.getCmd().equals(BillTemplateEnum.TC.getCmd())) {
+                data = this.getTmsOrderTemplate(mainOrderNos, cmd, templateEnum);
             }
         }
 
@@ -176,16 +178,17 @@ public class CommonServiceImpl implements CommonService {
 
         BillTemplateEnum templateEnum = BillTemplateEnum.getTemplateEnum(templateCmd);
         if (templateEnum != null) {
-
-
-            switch (templateEnum) {
-                case KY: //空运
-                    data = this.getAirOrderTemplate(mainOrderNos, cmd, templateEnum);
-                    break;
-                case ZGYS: //中港
-                case ZGYS_ONE:
-                    data = this.getTmsOrderTemplate(mainOrderNos, cmd, templateEnum);
-                    break;
+            //空运
+            if (templateEnum.getCmd().equals(BillTemplateEnum.KY.getCmd())) {
+                data = this.getAirOrderTemplate(mainOrderNos, cmd, templateEnum);
+            }
+            //中港
+            if (templateEnum.getCmd().equals(BillTemplateEnum.ZGYS.getCmd())) {
+                data = this.getTmsOrderTemplate(mainOrderNos, cmd, templateEnum);
+            }
+            //拖车
+            if (templateEnum.getCmd().equals(BillTemplateEnum.TC.getCmd())) {
+                data = this.getTmsOrderTemplate(mainOrderNos, cmd, templateEnum);
             }
         }
 

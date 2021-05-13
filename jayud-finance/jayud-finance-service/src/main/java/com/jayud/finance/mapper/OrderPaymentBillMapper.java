@@ -175,7 +175,9 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
      * @param subType
      * @return
      */
-    BigDecimal getAlreadyPaidAmountByLegalId(Long legalEntityId, String supplierCode, String subType);
+    BigDecimal getAlreadyPaidAmountByLegalId(@Param("legalEntityId")Long legalEntityId,
+                                             @Param("supplierCode")String supplierCode,
+                                             @Param("subType")String subType);
 
 
     /**

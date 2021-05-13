@@ -70,6 +70,10 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     OauthClient oauthClient;
     @Autowired
     private CommonService commonService;
+    @Autowired
+    private IMakeInvoiceService makeInvoiceService;
+    @Autowired
+    private DataProcessingService dataProcessingService;
 
     @Override
     public IPage<OrderPaymentBillDetailVO> findReceiveBillDetailByPage(QueryPaymentBillDetailForm form) {
@@ -88,15 +92,22 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         if (CollectionUtils.isEmpty(records)) {
             return pageInfo;
         }
-        List<String> billNos = records.stream().map(OrderPaymentBillDetailVO::getBillNo).collect(toList());
-        //统计合计币种金额
-        List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(billNos);
-        //审核意见
-        Map<String, Object> auditComment = this.omsClient.getByExtUniqueFlag(billNos).getData();
-        for (OrderPaymentBillDetailVO record : records) {
-            record.totalCurrencyAmount(currencyAmounts);
-            record.setAuditComment(MapUtil.getStr(auditComment, record.getBillNo()));
-        }
+        dataProcessingService.processingPaymentBillDetail(records, 0);
+//        List<String> billNos = records.stream().map(OrderPaymentBillDetailVO::getBillNo).collect(toList());
+//        //统计合计币种金额
+//        List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(billNos);
+//        //审核意见
+//        Map<String, Object> auditComment = this.omsClient.getByExtUniqueFlag(billNos).getData();
+//        //币种
+//        List<InitComboxStrVO> currencyInfo = omsClient.initCurrencyInfo().getData();
+//        Map<String, String> currencyInfoMap = currencyInfo.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+//        //核算
+//        this.makeInvoiceService.calculationAccounting(billNos,2);
+//        for (OrderPaymentBillDetailVO record : records) {
+//            record.totalCurrencyAmount(currencyAmounts);
+//            record.setAuditComment(MapUtil.getStr(auditComment, record.getBillNo()));
+//            record.setSettlementCurrency(currencyInfoMap.get(record.getSettlementCurrency()));
+//        }
         return pageInfo;
     }
 
@@ -894,7 +905,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             paymentNotPaidBill.assemblyCostInfo(costInfo, currencyMap);
         }
         JSONArray array = new JSONArray(pageList);
-        array = this.commonService.templateDataProcessing(pageList.get(0).getSubType(),pageList.get(0).getSubType(), array, mainOrderNos, 0);
+        array = this.commonService.templateDataProcessing(pageList.get(0).getSubType(), pageList.get(0).getSubType(), array, mainOrderNos, 0);
         List<LinkedHashMap> maps = Utilities.obj2List(array, LinkedHashMap.class);
         pageMap.setRecords(maps);
         return pageMap;

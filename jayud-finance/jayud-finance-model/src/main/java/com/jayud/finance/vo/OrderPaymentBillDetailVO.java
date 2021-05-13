@@ -1,19 +1,27 @@
 package com.jayud.finance.vo;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.enums.BillEnum;
+import com.jayud.finance.po.CancelAfterVerification;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 应付/应收一致对账单
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
 public class OrderPaymentBillDetailVO {
 
     @ApiModelProperty(value = "账单编号")
@@ -43,10 +51,10 @@ public class OrderPaymentBillDetailVO {
     @ApiModelProperty(value = "港币")
     private BigDecimal hKDollar;
 
-    @ApiModelProperty(value = "核销金额")
+    @ApiModelProperty(value = "核销金额(已收金额)")
     private BigDecimal heXiaoAmount;
 
-    @ApiModelProperty(value = "未核销金额")
+    @ApiModelProperty(value = "未核销金额(未收金额)")
     private BigDecimal notHeXiaoAmount;
 
     @ApiModelProperty(value = "结算币种")
@@ -85,6 +93,9 @@ public class OrderPaymentBillDetailVO {
     @ApiModelProperty(value = "推金蝶次数")
     private Integer pushKingdeeCount;
 
+    @ApiModelProperty(value = "(应付:付款金额,应收:开票金额)")
+    private BigDecimal paymentAmount = new BigDecimal(0);
+
     public String getAuditStatusDesc() {
         if (!StringUtil.isNullOrEmpty(this.auditStatus)) {
             return BillEnum.getDesc(this.auditStatus);
@@ -100,9 +111,9 @@ public class OrderPaymentBillDetailVO {
     }
 
 
-    public void totalCurrencyAmount(List<Map<String, Object>> currencyAmounts) {
+    public OrderPaymentBillDetailVO totalCurrencyAmount(List<Map<String, Object>> currencyAmounts) {
         for (Map<String, Object> currencyAmount : currencyAmounts) {
-            if (!MapUtil.getStr(currencyAmount,"billNo").equals(this.billNo)) {
+            if (!MapUtil.getStr(currencyAmount, "billNo").equals(this.billNo)) {
                 continue;
             }
             String key = "amount";
@@ -119,5 +130,16 @@ public class OrderPaymentBillDetailVO {
                 this.hKDollar = (BigDecimal) currencyAmount.get(key);
             }
         }
+        return this;
+    }
+
+    public OrderPaymentBillDetailVO assemblyVerificationInfo(Map<String, List<CancelAfterVerification>> verificationMap) {
+        if (CollectionUtil.isEmpty(verificationMap) || CollectionUtil.isEmpty(verificationMap.get(this.billNo))) {
+            return this;
+        }
+        CancelAfterVerification verification = verificationMap.get(this.billNo).get(0);
+        this.heXiaoUser = verification.getCreatedUser();
+        this.heXiaoTimeStr = DateUtils.LocalDateTime2Str(verification.getRealReceiveTime(), DateUtils.DATE_PATTERN);
+        return this;
     }
 }

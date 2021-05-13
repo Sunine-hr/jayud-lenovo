@@ -24,7 +24,9 @@ import com.jayud.finance.enums.OrderBillCostTotalTypeEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.OrderPaymentBillDetailMapper;
-import com.jayud.finance.po.*;
+import com.jayud.finance.po.OrderBillCostTotal;
+import com.jayud.finance.po.OrderPaymentBill;
+import com.jayud.finance.po.OrderPaymentBillDetail;
 import com.jayud.finance.service.*;
 import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
@@ -37,7 +39,6 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -73,6 +74,8 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     OauthClient oauthClient;
     @Autowired
     private CommonService commonService;
+    @Autowired
+    private DataProcessingService dataProcessingService;
 
     @Override
     public IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(QueryPaymentBillDetailForm form) {
@@ -91,16 +94,23 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         if (CollectionUtils.isEmpty(records)) {
             return pageInfo;
         }
+        dataProcessingService.processingPaymentBillDetail(records, 1);
 
-        List<String> billNos = records.stream().map(OrderPaymentBillDetailVO::getBillNo).collect(toList());
-        //统计合计币种金额
-        List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(billNos);
-        //审核意见
-        Map<String, Object> auditComment = this.omsClient.getByExtUniqueFlag(billNos).getData();
-        for (OrderPaymentBillDetailVO record : records) {
-            record.totalCurrencyAmount(currencyAmounts);
-            record.setAuditComment(MapUtil.getStr(auditComment, record.getBillNo()));
-        }
+//        List<String> billNos = records.stream().map(OrderPaymentBillDetailVO::getBillNo).collect(toList());
+//        //统计合计币种金额
+//        List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(billNos);
+//        //审核意见
+//        Map<String, Object> auditComment = this.omsClient.getByExtUniqueFlag(billNos).getData();
+//        //币种
+//        List<InitComboxStrVO> currencyInfo = omsClient.initCurrencyInfo().getData();
+//        Map<String, String> currencyInfoMap = currencyInfo.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+//        //核算
+//        this.makeInvoiceService.calculationAccounting(billNos, 2);
+//        for (OrderPaymentBillDetailVO record : records) {
+//            record.totalCurrencyAmount(currencyAmounts);
+//            record.setAuditComment(MapUtil.getStr(auditComment, record.getBillNo()));
+//            record.setSettlementCurrency(currencyInfoMap.get(record.getSettlementCurrency()));
+//        }
 
         return pageInfo;
     }
@@ -296,7 +306,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
 //                    sb.append("]的汇率");
 //                    return CommonResult.error(10001, sb.toString());
 //                }
-                orderBillCostTotalVOS=this.orderPaymentBillService.configureExchangeRate(costIds, settlementCurrency, form.getAccountTermStr(),
+                orderBillCostTotalVOS = this.orderPaymentBillService.configureExchangeRate(costIds, settlementCurrency, form.getAccountTermStr(),
                         form.getIsCustomExchangeRate(), form.getCustomExchangeRate());
             }
 
@@ -527,7 +537,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     }
 
     @Override
-    public JSONArray viewBillDetailInfo(String billNo, String cmd,String templateCmd) {
+    public JSONArray viewBillDetailInfo(String billNo, String cmd, String templateCmd) {
         List<ViewFBilToOrderVO> orderList = baseMapper.viewBillDetail(billNo);
 
         JSONArray array = new JSONArray(orderList);
@@ -997,7 +1007,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
 
     @Override
     public List<OrderPaymentBillDetail> getNowFOrderExistByLegalId(Long legalEntityId, String supplierCode, String subType, String orderNo) {
-        return baseMapper.getNowFOrderExistByLegalId( legalEntityId,  supplierCode,  subType,  orderNo);
+        return baseMapper.getNowFOrderExistByLegalId(legalEntityId, supplierCode, subType, orderNo);
     }
 
     /**
@@ -1054,7 +1064,6 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         QueryWrapper<OrderPaymentBillDetail> condition = new QueryWrapper<>(orderPaymentBillDetail);
         return this.baseMapper.selectList(condition);
     }
-
 
 
     /**

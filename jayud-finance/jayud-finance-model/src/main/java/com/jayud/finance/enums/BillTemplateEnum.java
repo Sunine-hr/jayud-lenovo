@@ -13,10 +13,12 @@ import java.util.List;
 @Getter
 public enum BillTemplateEnum {
 
-    KY("ky", AirOrderTemplate.class, "空运", true),
+    KY("ky", AirOrderTemplate.class, "空运", false),
     ZGYS("zgys", TmsOrderTemplate.class, "中港", true),
-    NL("nl", AirOrderTemplate.class, "内陆", true),
-    ZGYS_ONE("zgys-one", TmsOrderTemplate.class, "中港-安克", true);
+    TC("tc", TmsOrderTemplate.class, "拖车", true),
+//    NL("nl", AirOrderTemplate.class, "内陆", true),
+//    ZGYS_ONE("zgys-one", TmsOrderTemplate.class, "中港-安克", true)
+    ;
 
     private String cmd;
     private Class clazz;

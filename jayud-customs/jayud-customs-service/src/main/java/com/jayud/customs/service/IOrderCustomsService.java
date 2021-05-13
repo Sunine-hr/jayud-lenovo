@@ -5,12 +5,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.customs.model.bo.InputOrderCustomsForm;
 import com.jayud.customs.model.bo.QueryCustomsOrderInfoForm;
 import com.jayud.customs.model.po.OrderCustoms;
-import com.jayud.customs.model.vo.CustomsOrderInfoVO;
-import com.jayud.customs.model.vo.InputOrderCustomsVO;
-import com.jayud.customs.model.vo.OrderCustomsVO;
-import com.jayud.customs.model.vo.StatisticsDataNumberVO;
+import com.jayud.customs.model.vo.*;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -96,4 +94,18 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
     Boolean updateProcessStatus(OrderCustoms orderCustoms);
 
     List<OrderCustoms> getByLegalEntityId(List<Long> legalIds);
+
+    /**
+     * 获取填写委托号相关流程的报关订单
+     * @return
+     */
+    List<OrderCustoms> getOrderCustomsTaskData();
+
+    /**
+     * 更新流程状态
+     *
+     * @param orderCustoms
+     * @return
+     */
+    Boolean updateProcessStatus(OrderCustoms orderCustoms, String auditUser, LocalDateTime auditTime);
 }

@@ -323,4 +323,12 @@
             </if>
         </where>
     </select>
+
+    <select id="getOrderCustomsTaskData" resultMap="BaseResultMap">
+        select oc.*
+        from order_customs oc
+        join order_info oi on oc.main_order_no = oi.order_no
+        where oi.`status` = 1
+        and oc.`status` in ('C_2','C_3','C_9','C_11','C_4')
+    </select>
 </mapper>

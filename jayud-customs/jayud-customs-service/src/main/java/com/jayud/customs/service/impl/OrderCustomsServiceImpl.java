@@ -300,4 +300,39 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         condition.lambda().in(OrderCustoms::getLegalEntityId, legalIds);
         return this.baseMapper.selectList(condition);
     }
+
+    @Override
+    public List<OrderCustoms> getOrderCustomsTaskData() {
+        return this.baseMapper.getOrderCustomsTaskData();
+    }
+
+    @Override
+    public Boolean updateProcessStatus(OrderCustoms orderCustoms, String auditUser, LocalDateTime auditTime) {
+        OprStatusForm form = new OprStatusForm();
+        //获取主订单id
+        Long mainOrderId = omsClient.getIdByOrderNo(orderCustoms.getMainOrderNo()).getData();
+        //保存操作节点
+        form.setMainOrderId(mainOrderId);
+        form.setOrderId(orderCustoms.getId());
+        form.setStatus(orderCustoms.getStatus());
+        form.setStatusName(OrderStatusEnum.getEnums(orderCustoms.getStatus()).getDesc());
+        form.setBusinessType(BusinessTypeEnum.BG.getCode());
+        form.setOperatorTime(LocalDateTime.now().toString());
+        form.setOperatorUser("system");
+        omsClient.saveOprStatus(form);
+
+        //保存操作记录
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setAuditComment(form.getDescription());
+        auditInfoForm.setAuditStatus(orderCustoms.getStatus());
+        auditInfoForm.setAuditTypeDesc(BGOrderStatusEnum.getDesc(orderCustoms.getStatus()));
+        auditInfoForm.setExtId(form.getOrderId());
+        auditInfoForm.setExtDesc(SqlConstant.ORDER_CUSTOMS);
+        auditInfoForm.setAuditUser(auditUser);
+        auditInfoForm.setAuditTime(auditTime);
+        auditInfoForm.setFileViews(form.getFileViewList());
+        omsClient.saveAuditInfo(auditInfoForm);
+
+        return this.saveOrUpdate(orderCustoms);
+    }
 }

@@ -199,7 +199,7 @@ public class ExternalApiController {
         auditInfo.setAuditUser(form.getAuditUser());
         auditInfo.setStatusFile(StringUtils.getFileStr(form.getFileViews()));
         auditInfo.setStatusFileName(StringUtils.getFileNameStr(form.getFileViews()));
-        auditInfo.setAuditTime(LocalDateTime.now());
+        auditInfo.setAuditTime(form.getAuditTime() == null ? LocalDateTime.now() : form.getAuditTime());
         auditInfo.setCreatedTime(LocalDateTime.now());
         boolean result = auditInfoService.save(auditInfo);
         return ApiResult.ok(result);

@@ -142,6 +142,9 @@ public class CustomerGoods extends Model<CustomerGoods> {
     @JSONField(ordinal = 28)
     private String remark;
 
+    @ApiModelProperty(value = "品牌")
+    private String brand;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

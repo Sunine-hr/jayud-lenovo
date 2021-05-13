@@ -128,6 +128,8 @@ public class CustomerGoodsForm {
     @JSONField(ordinal = 28)
     private String remark;
 
+    @ApiModelProperty(value = "品牌")
+    private String brand;
 
 
 }

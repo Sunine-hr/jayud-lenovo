@@ -126,6 +126,9 @@ public class CustomerGoodsVO {
     @JSONField(ordinal = 28)
     private String remark;
 
+    @ApiModelProperty(value = "品牌")
+    private String brand;
+
     /*客户名称*/
     @ApiModelProperty(value = "客户名称", position = 29)
     @JSONField(ordinal = 29)

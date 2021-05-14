@@ -83,7 +83,8 @@
             oc.legal_entity_id legalEntityId,
             oc.`status` status,
             oc.`entrust_no` entrustNo,
-            oc.`supervision_mode` supervisionMode
+            oc.`supervision_mode` supervisionMode,
+            oc.`yun_customs_no` yunCustomsNo
         FROM
             order_customs oc
         WHERE 1 = 1

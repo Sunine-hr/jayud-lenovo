@@ -69,7 +69,7 @@ public class ScheduledTask {
 
                 LocalDateTime processTime = DateUtils.str2LocalDateTime(declarationOPDetailVO.getProcess_dt(), "");
                 bgOrderStatusEnum.updateProcessStatus(orderCustoms,
-                        e -> orderCustomsService.updateProcessStatus(orderCustoms, declarationOPDetailVO.getP_name(), processTime));
+                        e -> orderCustomsService.updateProcessStatus(orderCustoms, declarationOPDetailVO.getP_name(), declarationOPDetailVO.getProcess_dt()));
             }
         }
         log.info("*********   定时同步云报关报关单进程信息到OMS任务执行结束   **************");

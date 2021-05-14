@@ -107,5 +107,5 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
      * @param orderCustoms
      * @return
      */
-    Boolean updateProcessStatus(OrderCustoms orderCustoms, String auditUser, LocalDateTime auditTime);
+    Boolean updateProcessStatus(OrderCustoms orderCustoms, String auditUser, String auditTime);
 }

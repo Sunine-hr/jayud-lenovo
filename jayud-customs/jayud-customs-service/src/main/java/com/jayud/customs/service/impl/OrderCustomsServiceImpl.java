@@ -11,6 +11,7 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.FileClient;
 import com.jayud.customs.feign.OauthClient;
@@ -189,6 +190,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 orderCustoms.setStatusDesc(orderCustoms.getStatus());
                 subOrderCustomsVO.setStatusDesc(orderCustoms.getStatusDesc());
                 subOrderCustomsVO.setEntrustNo(orderCustoms.getEntrustNo());
+                subOrderCustomsVO.setYunCustomsNo(orderCustoms.getYunCustomsNo());
                 subOrderCustomsVO.setSupervisionMode(orderCustoms.getSupervisionMode());
                 //处理子订单附件信息
                 String fileStr = orderCustoms.getFileStr();
@@ -307,7 +309,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     }
 
     @Override
-    public Boolean updateProcessStatus(OrderCustoms orderCustoms, String auditUser, LocalDateTime auditTime) {
+    public Boolean updateProcessStatus(OrderCustoms orderCustoms, String auditUser, String auditTime) {
         OprStatusForm form = new OprStatusForm();
         //获取主订单id
         Long mainOrderId = omsClient.getIdByOrderNo(orderCustoms.getMainOrderNo()).getData();
@@ -317,8 +319,8 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         form.setStatus(orderCustoms.getStatus());
         form.setStatusName(OrderStatusEnum.getEnums(orderCustoms.getStatus()).getDesc());
         form.setBusinessType(BusinessTypeEnum.BG.getCode());
-        form.setOperatorTime(LocalDateTime.now().toString());
-        form.setOperatorUser("system");
+        form.setOperatorTime(auditTime);
+        form.setOperatorUser(auditUser);
         omsClient.saveOprStatus(form);
 
         //保存操作记录
@@ -329,7 +331,8 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         auditInfoForm.setExtId(form.getOrderId());
         auditInfoForm.setExtDesc(SqlConstant.ORDER_CUSTOMS);
         auditInfoForm.setAuditUser(auditUser);
-        auditInfoForm.setAuditTime(auditTime);
+        LocalDateTime processTime = DateUtils.str2LocalDateTime(auditTime, DateUtils.DATE_TIME_PATTERN);
+        auditInfoForm.setAuditTime(processTime);
         auditInfoForm.setFileViews(form.getFileViewList());
         omsClient.saveAuditInfo(auditInfoForm);
 

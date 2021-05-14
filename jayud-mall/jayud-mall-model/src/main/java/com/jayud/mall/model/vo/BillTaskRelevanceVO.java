@@ -80,6 +80,10 @@ public class BillTaskRelevanceVO {
     @JSONField(ordinal = 17, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "任务最后完成时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime taskLastTime;
+
     //操作说明
     @ApiModelProperty(value = "操作说明", position = 18)
     @JSONField(ordinal = 18)

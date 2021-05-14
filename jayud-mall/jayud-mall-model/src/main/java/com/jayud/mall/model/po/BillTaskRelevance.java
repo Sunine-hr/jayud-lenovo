@@ -101,6 +101,10 @@ public class BillTaskRelevance extends Model<BillTaskRelevance> {
     @JSONField(ordinal = 17, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "任务最后完成时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime taskLastTime;
+
 
     @Override
     protected Serializable pkVal() {

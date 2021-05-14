@@ -1,7 +1,9 @@
 package com.jayud.mall.mapper;
 
+import com.jayud.mall.model.bo.WaybillTaskRelevanceQueryForm;
 import com.jayud.mall.model.po.WaybillTaskRelevance;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.vo.WaybillTaskRelevanceVO;
 import com.jayud.mall.model.vo.WaybillTaskVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -27,4 +29,11 @@ public interface WaybillTaskRelevanceMapper extends BaseMapper<WaybillTaskReleva
      * @return
      */
     List<WaybillTaskVO> findWaybillTaskByOrderInfoId(@Param("orderId") Long orderId);
+
+    /**
+     * 查询，运单任务
+     * @param form
+     * @return
+     */
+    List<WaybillTaskRelevanceVO> findWaybillTaskRelevance(@Param("form") WaybillTaskRelevanceQueryForm form);
 }

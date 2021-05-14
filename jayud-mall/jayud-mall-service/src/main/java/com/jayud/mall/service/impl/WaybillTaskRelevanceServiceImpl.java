@@ -2,17 +2,21 @@ package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.enums.DayFlagEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.mapper.OrderInfoMapper;
 import com.jayud.mall.mapper.WaybillTaskRelevanceMapper;
+import com.jayud.mall.model.bo.WaybillTaskRelevanceQueryForm;
 import com.jayud.mall.model.po.OrderInfo;
 import com.jayud.mall.model.po.WaybillTaskRelevance;
+import com.jayud.mall.model.vo.OrderInfoVO;
 import com.jayud.mall.model.vo.WaybillTaskRelevanceVO;
 import com.jayud.mall.model.vo.WaybillTaskVO;
 import com.jayud.mall.service.IWaybillTaskRelevanceService;
-import com.jayud.mall.service.IWaybillTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,20 +33,16 @@ public class WaybillTaskRelevanceServiceImpl extends ServiceImpl<WaybillTaskRele
 
     @Autowired
     WaybillTaskRelevanceMapper waybillTaskRelevanceMapper;
-
     @Autowired
-    IWaybillTaskService waybillTaskService;
+    OrderInfoMapper orderInfoMapper;
 
     @Override
     public List<WaybillTaskRelevanceVO> saveWaybillTaskRelevance(OrderInfo orderInfo) {
         Long orderInfoId = orderInfo.getId();//订单Id
         Integer offerInfoId = orderInfo.getOfferInfoId();//报价id(服务id)
 
-        //废弃
-        //根据`报价id(服务id)`,查询运单任务列表
-        //List<WaybillTaskVO> list = waybillTaskService.findWaybillTaskByOfferInfoId(offerInfoId);
-        //根据`订单id(order_info id)`,查询运单任务列表 orderInfoId
-        //List<WaybillTaskVO> list = waybillTaskService.findWaybillTaskByOrderInfoId(orderInfoId);
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfo(orderInfoId);
+        LocalDateTime sailTime = orderInfoVO.getSailTime();//开船日期
 
         /*
         根据订单id，找运营组和任务
@@ -74,6 +74,13 @@ public class WaybillTaskRelevanceServiceImpl extends ServiceImpl<WaybillTaskRele
             }else{
                 waybillTaskRelevance.setStatus("0");//状态(0未激活 1已激活,未完成 2已完成)
             }
+            String dayFlag = waybillTaskRelevance.getDayFlag();//天数标识
+            Integer days = waybillTaskRelevance.getDays();//天数
+            if(dayFlag.equals(DayFlagEnum.ETD.getCode())){
+                //ETD("ETD", "开船日期")
+                LocalDateTime taskLastTime = sailTime.plusDays(days);
+                waybillTaskRelevance.setTaskLastTime(taskLastTime);//任务最后完成时间
+            }
             waybillTaskRelevances.add(waybillTaskRelevance);
         });
         //先删除
@@ -85,6 +92,12 @@ public class WaybillTaskRelevanceServiceImpl extends ServiceImpl<WaybillTaskRele
         List<WaybillTaskRelevanceVO> waybillTaskRelevanceVOS = ConvertUtil.convertList(waybillTaskRelevances, WaybillTaskRelevanceVO.class);
 
         return waybillTaskRelevanceVOS;
+    }
+
+    @Override
+    public List<WaybillTaskRelevanceVO> findWaybillTaskRelevance(WaybillTaskRelevanceQueryForm form) {
+        List<WaybillTaskRelevanceVO> list = waybillTaskRelevanceMapper.findWaybillTaskRelevance(form);
+        return list;
     }
 
 }

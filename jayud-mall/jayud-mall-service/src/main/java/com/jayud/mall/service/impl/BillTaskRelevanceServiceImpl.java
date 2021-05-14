@@ -2,6 +2,7 @@ package com.jayud.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.enums.DayFlagEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.BillTaskRelevanceMapper;
 import com.jayud.mall.mapper.OceanBillMapper;
@@ -9,11 +10,13 @@ import com.jayud.mall.model.po.BillTaskRelevance;
 import com.jayud.mall.model.po.OceanBill;
 import com.jayud.mall.model.vo.BillTaskRelevanceVO;
 import com.jayud.mall.model.vo.BillTaskVO;
+import com.jayud.mall.model.vo.OceanBillVO;
 import com.jayud.mall.service.IBillTaskRelevanceService;
 import com.jayud.mall.service.IBillTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,17 +33,17 @@ public class BillTaskRelevanceServiceImpl extends ServiceImpl<BillTaskRelevanceM
 
     @Autowired
     BillTaskRelevanceMapper billTaskRelevanceMapper;
-
-    @Autowired
-    IBillTaskService billTaskService;
-
     @Autowired
     OceanBillMapper oceanBillMapper;
-
+    @Autowired
+    IBillTaskService billTaskService;
 
     @Override
     public List<BillTaskRelevanceVO> savebillTaskRelevance(OceanBill oceanBill) {
         Long obId = oceanBill.getId();//提单id
+
+        OceanBillVO oceanBillVO = oceanBillMapper.findOceanBillById(obId);
+        LocalDateTime sailTime = oceanBillVO.getSailTime();
 
         //根据提单id，找运营组和任务
         List<BillTaskVO> billTaskVOS = billTaskRelevanceMapper.findBillTaskByObId(obId);
@@ -54,6 +57,12 @@ public class BillTaskRelevanceServiceImpl extends ServiceImpl<BillTaskRelevanceM
                 billTaskRelevance.setStatus("1");//状态(0未激活 1已激活,未完成 2已完成)
             }else{
                 billTaskRelevance.setStatus("0");//状态(0未激活 1已激活,未完成 2已完成)
+            }
+            String dayFlag = billTaskRelevance.getDayFlag();
+            Integer days = billTaskRelevance.getDays();
+            if(dayFlag.equals(DayFlagEnum.ETD.getCode())){
+                LocalDateTime taskLastTime = sailTime.plusDays(days);
+                billTaskRelevance.setTaskLastTime(taskLastTime);
             }
             billTaskRelevances.add(billTaskRelevance);
         });

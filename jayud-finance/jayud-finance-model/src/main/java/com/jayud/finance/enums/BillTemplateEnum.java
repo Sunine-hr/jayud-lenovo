@@ -3,6 +3,7 @@ package com.jayud.finance.enums;
 import com.jayud.finance.vo.InitComboxStrVO;
 import com.jayud.finance.vo.template.order.AirOrderTemplate;
 import com.jayud.finance.vo.template.order.TmsOrderTemplate;
+import com.jayud.finance.vo.template.order.TrailerOrderTemplate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,8 +15,12 @@ import java.util.List;
 public enum BillTemplateEnum {
 
     KY("ky", AirOrderTemplate.class, "空运", false),
-    ZGYS("zgys", TmsOrderTemplate.class, "中港", true),
-    TC("tc", TmsOrderTemplate.class, "拖车", true),
+    ZGYS("zgys", TmsOrderTemplate.class, "中港", false),
+    TC("tc", TrailerOrderTemplate.class, "拖车", false),
+    KY_NORM("ky-norm", AirOrderTemplate.class, "空运", false),
+    ZGYS_NORM("zgys-norm", TmsOrderTemplate.class, "中港", true),
+    TC_NORM("tc-norm", TrailerOrderTemplate.class, "拖车", true),
+
 //    NL("nl", AirOrderTemplate.class, "内陆", true),
 //    ZGYS_ONE("zgys-one", TmsOrderTemplate.class, "中港-安克", true)
     ;

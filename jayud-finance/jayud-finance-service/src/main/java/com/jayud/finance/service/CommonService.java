@@ -44,4 +44,7 @@ public interface CommonService {
      * @return
      */
     public JSONArray templateDataProcessing(String cmd, String templateCmd, JSONArray array, List<String> mainOrderNos, Integer type);
+
+
+    Map<String, Object> getTrailerOrderTemplate(List<String> mainOrderNos, String cmd, BillTemplateEnum templateEnum);
 }

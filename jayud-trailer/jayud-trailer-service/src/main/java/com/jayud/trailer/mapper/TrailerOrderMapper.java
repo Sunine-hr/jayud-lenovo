@@ -6,6 +6,7 @@ import com.jayud.trailer.bo.QueryTrailerOrderForm;
 import com.jayud.trailer.po.TrailerOrder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.trailer.vo.TrailerOrderFormVO;
+import com.jayud.trailer.vo.TrailerOrderInfoVO;
 import com.jayud.trailer.vo.TrailerOrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -38,4 +39,11 @@ public interface TrailerOrderMapper extends BaseMapper<TrailerOrder> {
      * @return
      */
     IPage<TrailerOrderFormVO> findByPage(@Param("page") Page<TrailerOrderFormVO> page, @Param("form")QueryTrailerOrderForm form,@Param("legalIds") List<Long> legalIds);
+
+    /**
+     * 根据主订单号查询所有详情
+     * @param mainOrderNos
+     * @return
+     */
+    List<TrailerOrderInfoVO> getTrailerInfoByMainOrderNos(@Param("mainOrderNos") List<String> mainOrderNos);
 }

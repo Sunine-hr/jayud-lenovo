@@ -13,6 +13,7 @@ import com.jayud.mall.service.IWaybillTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,10 +64,17 @@ public class WaybillTaskRelevanceServiceImpl extends ServiceImpl<WaybillTaskRele
          */
         List<WaybillTaskVO> list = waybillTaskRelevanceMapper.findWaybillTaskByOrderInfoId(orderInfoId);
 
-        List<WaybillTaskRelevance> waybillTaskRelevances = ConvertUtil.convertList(list, WaybillTaskRelevance.class);
-        waybillTaskRelevances.forEach(waybillTaskRelevance -> {
+        List<WaybillTaskRelevance> waybillTaskRelevances = new ArrayList<>();
+        list.forEach(waybillTaskVO -> {
+            WaybillTaskRelevance waybillTaskRelevance = ConvertUtil.convert(waybillTaskVO, WaybillTaskRelevance.class);
             waybillTaskRelevance.setOrderInfoId(orderInfoId);
-            waybillTaskRelevance.setStatus("0");//状态(0未激活 1已激活 2异常 3已完成)
+            String activationSwitch = waybillTaskVO.getActivationSwitch();//激活开关(0未激活 1已激活)
+            if(activationSwitch.equals("1")){
+                waybillTaskRelevance.setStatus("1");//状态(0未激活 1已激活,未完成 2已完成)
+            }else{
+                waybillTaskRelevance.setStatus("0");//状态(0未激活 1已激活,未完成 2已完成)
+            }
+            waybillTaskRelevances.add(waybillTaskRelevance);
         });
         //先删除
         QueryWrapper<WaybillTaskRelevance> queryWrapper = new QueryWrapper<>();

@@ -76,4 +76,7 @@ public class TaskItemVO {
     @JSONField(ordinal = 15, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "激活开关(0未激活 1已激活)")
+    private String activationSwitch;
+
 }

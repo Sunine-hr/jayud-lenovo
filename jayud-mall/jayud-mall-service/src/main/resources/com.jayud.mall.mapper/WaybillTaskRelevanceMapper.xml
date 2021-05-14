@@ -32,7 +32,7 @@
     <select id="findWaybillTaskByOrderInfoId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.WaybillTaskVO">
         select
-        t.task_code, t.task_name, t.sort, t.days, t.day_flag, t.minutes, t.score, t.remarks, t.status,
+        t.task_code, t.task_name, t.sort, t.days, t.day_flag, t.minutes, t.score, t.remarks, t.status, t.activation_switch,
         t1.userName operators, t1.member_user_id userId, t1.userName userName
         from (
             select
@@ -40,7 +40,7 @@
             t1.qie,
             t2.task_id,
             t3.group_code,t3.group_name,
-            t4.task_code,t4.task_name,t4.sort,t4.days,t4.day_flag,t4.minutes,t4.score,t4.remarks,t4.status
+            t4.task_code,t4.task_name,t4.sort,t4.days,t4.day_flag,t4.minutes,t4.score,t4.remarks,t4.status,t4.activation_switch
             from (select id,offer_info_id from order_info where id=#{orderId}) t
             left join offer_info t1 on t1.id = t.offer_info_id
             left join quotation_template t2 on t2.id = t1.qie

@@ -71,6 +71,9 @@ public class BillTaskVO {
     @JSONField(ordinal = 15, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "激活开关(0未激活 1已激活)")
+    private String activationSwitch;
+
     /*任务分组:task_group*/
     @ApiModelProperty(value = "分组名称", position = 16)
     @JSONField(ordinal = 16)

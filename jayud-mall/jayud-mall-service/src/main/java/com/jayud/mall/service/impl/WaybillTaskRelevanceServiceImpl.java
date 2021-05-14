@@ -12,6 +12,8 @@ import com.jayud.mall.model.po.WaybillTaskRelevance;
 import com.jayud.mall.model.vo.OrderInfoVO;
 import com.jayud.mall.model.vo.WaybillTaskRelevanceVO;
 import com.jayud.mall.model.vo.WaybillTaskVO;
+import com.jayud.mall.model.vo.domain.AuthUser;
+import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.IWaybillTaskRelevanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,8 @@ public class WaybillTaskRelevanceServiceImpl extends ServiceImpl<WaybillTaskRele
     WaybillTaskRelevanceMapper waybillTaskRelevanceMapper;
     @Autowired
     OrderInfoMapper orderInfoMapper;
+    @Autowired
+    BaseService baseService;
 
     @Override
     public List<WaybillTaskRelevanceVO> saveWaybillTaskRelevance(OrderInfo orderInfo) {
@@ -96,6 +100,14 @@ public class WaybillTaskRelevanceServiceImpl extends ServiceImpl<WaybillTaskRele
 
     @Override
     public List<WaybillTaskRelevanceVO> findWaybillTaskRelevance(WaybillTaskRelevanceQueryForm form) {
+
+        String isPersonal = form.getIsPersonal();
+        if(isPersonal.equals("1")){
+            //是否个人任务(1 仅看自己的任务 2查看所有的任务)
+            AuthUser user = baseService.getUser();
+            Long userId = user.getId();
+            form.setUserId(userId.intValue());
+        }
         List<WaybillTaskRelevanceVO> list = waybillTaskRelevanceMapper.findWaybillTaskRelevance(form);
         return list;
     }

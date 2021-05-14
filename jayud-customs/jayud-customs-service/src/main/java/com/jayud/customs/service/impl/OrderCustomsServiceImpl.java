@@ -246,14 +246,14 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 List<OrderCustoms> list = this.getByLegalEntityId(legalIds);
                 if (org.apache.commons.collections4.CollectionUtils.isEmpty(list)) return num;
                 List<String> orderNos = list.stream().map(OrderCustoms::getOrderNo).collect(Collectors.toList());
-                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.BG.getSignOne(), legalIds,orderNos).getData();
+                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.BG.getSignOne(), legalIds, orderNos).getData();
                 break;
             default:
                 List<String> mainOrderNos = this.baseMapper.getMainOrderNoByStatus(status, legalIds);
                 if (CollectionUtils.isEmpty(mainOrderNos)) {
                     return 0;
                 }
-                num=this.omsClient.getFilterOrderStatus(mainOrderNos, 1).getData();
+                num = this.omsClient.getFilterOrderStatus(mainOrderNos, 1).getData();
         }
 
         return num == null ? 0 : num;
@@ -337,5 +337,36 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         omsClient.saveAuditInfo(auditInfoForm);
 
         return this.saveOrUpdate(orderCustoms);
+    }
+
+    /**
+     * 查询所有通关报关订单
+     *
+     * @param mainOrders
+     * @return
+     */
+    @Override
+    public List<String> getAllPassByMainOrderNos(List<String> mainOrders) {
+        //获取订单信息
+        List<OrderCustoms> list = this.getCustomsOrderByMainOrderNos(mainOrders);
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        //查询批量
+        Map<String, Long> gourp = list.stream().collect(Collectors.groupingBy(OrderCustoms::getMainOrderNo, Collectors.counting()));
+        List<String> passOrders = new ArrayList<>();
+        for (OrderCustoms orderCustoms : list) {
+            if (OrderStatusEnum.CUSTOMS_C_5.getCode().equals(orderCustoms.getStatus())) {
+                Long count = gourp.get(orderCustoms.getMainOrderNo());
+                gourp.put(orderCustoms.getMainOrderNo(), --count);
+                if (count == 0) {
+                    passOrders.add(orderCustoms.getMainOrderNo());
+                    continue;
+                }
+
+            }
+
+        }
+        return passOrders;
     }
 }

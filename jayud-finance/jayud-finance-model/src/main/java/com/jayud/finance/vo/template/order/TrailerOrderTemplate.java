@@ -134,7 +134,11 @@ public class TrailerOrderTemplate {
 //
 
     public void assembleData(JSONObject jsonObject) {
-
+        JSONObject trailerDispatchInfo = jsonObject.getJSONObject("trailerDispatchInfoVO");
+        if (trailerDispatchInfo != null) {
+            this.plateNumber = trailerDispatchInfo.getStr("plateNumber");
+        }
+        this.assemblyAddresses();
     }
 
     public void assemblyMainOrderData(Object mainOrderObjs) {

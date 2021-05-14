@@ -8,6 +8,7 @@ import com.jayud.oms.model.vo.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -201,6 +202,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 根据主订单号码集合和状态查询订单
+     *
      * @return
      */
     public List<OrderInfo> getOrderByStatus(List<String> orderNo, Integer status);
@@ -208,6 +210,16 @@ public interface IOrderInfoService extends IService<OrderInfo> {
     /**
      * 获取费用状态
      */
-    public Map<String,Object> getCostStatus(List<String> mainOrderNo,List<String> subOrderNo);
+    public Map<String, Object> getCostStatus(List<String> mainOrderNo, List<String> subOrderNo);
+
+
+    /**
+     * 过滤关前审核
+     *
+     * @param callbackParam
+     * @param legalIds
+     * @return
+     */
+    public Set<Long> filterGoCustomsAudit(Map<String, Object> callbackParam, List<Long> legalIds);
 
 }

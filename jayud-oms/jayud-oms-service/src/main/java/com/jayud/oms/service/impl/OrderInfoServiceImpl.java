@@ -1,7 +1,6 @@
 package com.jayud.oms.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -29,9 +28,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
-import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -274,7 +271,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public IPage<OrderInfoVO> findOrderInfoByPage(QueryOrderInfoForm form) {
         //定义分页参数
-        Page<OrderInfoVO> page = new Page(form.getPageNum(), form.getPageSize());
+        Page<OrderInfoVO> page = new Page<>(form.getPageNum(), form.getPageSize());
         IPage<OrderInfoVO> pageInfo = null;
 
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
@@ -283,9 +280,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (CommonConstant.GO_CUSTOMS_AUDIT.equals(form.getCmd())) {
             //定义排序规则
             page.addOrder(OrderItem.desc("oi.id"));
-            pageInfo = baseMapper.findGoCustomsAuditByPage(page, form, legalIds);
+            Map<String, Object> callbackParam = new HashMap<>();
+            Set<Long> mainOrderIds = this.filterGoCustomsAudit(callbackParam, legalIds);
+            pageInfo = baseMapper.findGoCustomsAuditByPage(page,
+                    form.setMainOrderIds(new ArrayList<>(mainOrderIds)),
+                    legalIds);
             //补充数据
-            this.supplementaryGoCustomsAuditData(pageInfo);
+            this.supplementaryGoCustomsAuditData(pageInfo, callbackParam);
         } else {
             //定义排序规则
             page.addOrder(OrderItem.desc("id"));
@@ -316,15 +317,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
 
-    private void supplementaryGoCustomsAuditData(IPage<OrderInfoVO> pageInfo) {
+    private void supplementaryGoCustomsAuditData(IPage<OrderInfoVO> pageInfo, Map<String, Object> callbackParam) {
         List<OrderInfoVO> records = pageInfo.getRecords();
         if (CollectionUtil.isEmpty(records)) {
             return;
         }
+        //获取中港信息
+        Object tmsOrders = callbackParam.get("tmsOrders");
+
         Set<String> classCodes = records.stream().map(OrderInfoVO::getClassCode).collect(Collectors.toSet());
         List<ProductClassify> productClassifies = this.productClassifyService.getIdCodes(new ArrayList<>(classCodes));
         Map<String, String> map = productClassifies.stream().collect(Collectors.toMap(ProductClassify::getIdCode, ProductClassify::getName));
-        pageInfo.getRecords().forEach(e -> e.setClassCodeDesc(map.get(e.getClassCode())));
+        pageInfo.getRecords().forEach(e -> {
+            e.setClassCodeDesc(map.get(e.getClassCode()));
+        });
     }
 
 
@@ -1472,6 +1478,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         InitGoCustomsAuditVO initGoCustomsAuditVO = new InitGoCustomsAuditVO();
         //查询主订单信息
         OrderInfo orderInfo = this.getByOrderNos(Collections.singletonList(form.getOrderNo())).get(0);
+        //查询中港信息
+        Object tmsOrderInfos = this.tmsClient.getTmsOrderInfoByMainOrderNos(Collections.singletonList(form.getOrderNo())).getData();
+
 
         String prePath = fileClient.getBaseUrl().getData().toString();
         if (orderInfo.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {//出口报关
@@ -1512,6 +1521,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
             initGoCustomsAuditVO.distributeFiles(orderAttachments, prePath);
         }
+        initGoCustomsAuditVO.assemblyData(tmsOrderInfos);
 //        initGoCustomsAuditVO.setFileViewList(StringUtils.getFileViews(initGoCustomsAuditVO.getFileStr(), initGoCustomsAuditVO.getFileNameStr(), prePath));
         return initGoCustomsAuditVO;
     }
@@ -1663,6 +1673,70 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         map.put("receivableCostStatus", receivableCostStatus);
         map.put("paymentCostStatus", paymentCostStatus);
         return map;
+    }
+
+    /**
+     * 过滤关前审核
+     *
+     * @param callbackParam
+     * @param legalIds
+     * @return
+     */
+    @Override
+    public Set<Long> filterGoCustomsAudit(Map<String, Object> callbackParam, List<Long> legalIds) {
+        //1.完成过磅,2.选择没有过磅情况下完成提货,需要到通关前审核
+        Object tmsOrders = this.tmsClient.preconditionsGoCustomsAudit().getData();
+        if (tmsOrders == null) {
+            return new HashSet<>();
+        }
+        JSONArray tmsJsonArray = new JSONArray(tmsOrders);
+        //获取所有主订单号
+        List<String> mainOrderNos = new ArrayList<>();
+        Map<String, Object> tmsOrderMap = new HashMap<>();
+        for (int i = 0; i < tmsJsonArray.size(); i++) {
+            JSONObject tmsOrder = tmsJsonArray.getJSONObject(i);
+            String mainOrderNo = tmsOrder.getStr("mainOrderNo");
+            mainOrderNos.add(mainOrderNo);
+            tmsOrderMap.put(mainOrderNo, tmsOrder);
+        }
+        if (CollectionUtil.isEmpty(mainOrderNos)) {
+            return new HashSet<>();
+        }
+
+        //批量查询主订单详情
+        QueryWrapper<OrderInfo> condition = new QueryWrapper<>();
+        condition.lambda().select(OrderInfo::getId, OrderInfo::getOrderNo, OrderInfo::getCustomsRelease)
+                .in(OrderInfo::getOrderNo, mainOrderNos);
+        if (CollectionUtil.isNotEmpty(legalIds)) {
+            condition.lambda().in(OrderInfo::getLegalEntityId, legalIds);
+        }
+
+        List<OrderInfo> orderInfos = this.baseMapper.selectList(condition);
+        //分发订单号
+        Set<Long> orderIds = new HashSet<>();
+        Map<String, Long> customsMainOrderMap = new HashMap<>();
+        for (OrderInfo orderInfo : orderInfos) {
+            if (orderInfo.getCustomsRelease()) {
+                //外部报关放行通过
+                orderIds.add(orderInfo.getId());
+            } else {
+                //内部报关过滤条件
+                customsMainOrderMap.put(orderInfo.getOrderNo(), orderInfo.getId());
+            }
+        }
+
+        //查询报关订单,需要全部都放行审核通过
+        if (CollectionUtil.isNotEmpty(customsMainOrderMap)) {
+            List<String> customsMainOrders = this.customsClient.getAllPassByMainOrderNos(new ArrayList<>(customsMainOrderMap.keySet())).getData();
+            if (CollectionUtil.isNotEmpty(customsMainOrders)) {
+                customsMainOrders.forEach(e -> orderIds.add(customsMainOrderMap.get(e)));
+            }
+        }
+        if (CollectionUtil.isNotEmpty(callbackParam)) {
+            callbackParam.put("tmsOrders", tmsOrderMap);
+        }
+
+        return orderIds;
     }
 
     /**

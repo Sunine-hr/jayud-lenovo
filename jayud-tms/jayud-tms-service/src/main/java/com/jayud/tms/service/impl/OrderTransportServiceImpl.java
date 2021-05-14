@@ -571,4 +571,14 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         return this.baseMapper.selectList(condition);
     }
 
+    @Override
+    public List<OrderTransport> preconditionsGoCustomsAudit() {
+        QueryWrapper<OrderTransport> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderTransport::getStatus, OrderStatusEnum.TMS_T_6.getCode());
+        condition.lambda().or(e -> e.eq(OrderTransport::getStatus, OrderStatusEnum.TMS_T_5.getCode())
+                .eq(OrderTransport::getIsVehicleWeigh, 0));
+        return this.baseMapper.selectList(condition);
+    }
+
+
 }

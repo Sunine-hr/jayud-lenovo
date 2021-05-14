@@ -130,4 +130,7 @@ public interface IOrderTransportService extends IService<OrderTransport> {
     List<OrderTransportInfoVO> getTmsOrderInfoByMainOrderNos(List<String> mainOrderNos);
 
     List<OrderTransport> getByLegalEntityId(List<Long> legalIds);
+
+    List<OrderTransport> preconditionsGoCustomsAudit();
+
 }

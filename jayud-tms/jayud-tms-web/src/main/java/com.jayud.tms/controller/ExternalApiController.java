@@ -323,6 +323,15 @@ public class ExternalApiController {
         }
         return ApiResult.ok(list);
     }
+
+    /**
+     * 通关前审核前置条件
+     */
+    @RequestMapping(value = "/api/preconditionsGoCustomsAudit")
+    public ApiResult<List<OrderTransport>> preconditionsGoCustomsAudit() {
+        List<OrderTransport> list = this.orderTransportService.preconditionsGoCustomsAudit();
+        return ApiResult.ok(list);
+    }
 }
 
 

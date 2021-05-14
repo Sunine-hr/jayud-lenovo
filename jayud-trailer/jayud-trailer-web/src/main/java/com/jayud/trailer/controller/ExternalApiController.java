@@ -119,7 +119,7 @@ public class ExternalApiController {
      * @return
      */
     @RequestMapping(value = "/api/trailer/getTrailerInfoByMainOrderNos")
-    public ApiResult<List<TrailerOrderInfoVO>> getTrailerInfoByMainOrderNos(@RequestBody List<String> mainOrderNos) {
+    public ApiResult<List<TrailerOrderInfoVO>> getTrailerInfoByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos) {
         List<TrailerOrderInfoVO> trailerOrders = this.trailerOrderService.getInfo(mainOrderNos);
         return ApiResult.ok(trailerOrders);
     }

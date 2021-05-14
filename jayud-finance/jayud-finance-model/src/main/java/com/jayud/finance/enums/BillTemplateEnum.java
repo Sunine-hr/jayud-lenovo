@@ -17,6 +17,8 @@ public enum BillTemplateEnum {
     KY("ky", AirOrderTemplate.class, "空运", false),
     ZGYS("zgys", TmsOrderTemplate.class, "中港", false),
     TC("tc", TrailerOrderTemplate.class, "拖车", false),
+
+    //导出模板(标准)
     KY_NORM("ky-norm", AirOrderTemplate.class, "空运", false),
     ZGYS_NORM("zgys-norm", TmsOrderTemplate.class, "中港", true),
     TC_NORM("tc-norm", TrailerOrderTemplate.class, "拖车", true),

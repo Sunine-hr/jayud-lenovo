@@ -347,7 +347,6 @@ public class OrderInfoController {
     @PostMapping(value = "/initGoCustomsAudit")
     public CommonResult<InitGoCustomsAuditVO> initGoCustomsAudit(@RequestBody @Valid InitGoCustomsAuditForm form) {
         InitGoCustomsAuditVO initGoCustomsAuditVO = orderInfoService.initGoCustomsAudit(form);
-        initGoCustomsAuditVO.setGoodsInfo(form.getGoodsInfo());
         return CommonResult.success(initGoCustomsAuditVO);
     }
 

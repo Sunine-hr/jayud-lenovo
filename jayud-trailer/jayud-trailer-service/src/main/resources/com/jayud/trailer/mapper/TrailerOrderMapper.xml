@@ -248,7 +248,7 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
         order by tor.id desc
     </select>
 
-    <select id="getTrailerInfoByMainOrderNos" resultType="com.jayud.trailer.vo.TrailerOrderInfoVO">
+    <select id="getTrailerInfoByMainOrderNos" resultMap="info">
         select
         tr.*,td.*
         from trailer_order tr left join trailer_dispatch td on tr.id=td.order_id

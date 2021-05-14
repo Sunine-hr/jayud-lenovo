@@ -291,7 +291,7 @@ public class ReceiveBillDetailController {
 
 
         EasyExcelEntity entity = new EasyExcelEntity();
-        entity.setSheetName("客户应付对账单");
+        entity.setSheetName("客户应收对账单");
         //组装标题
         List<String> titles = new ArrayList<>();
         titles.add(viewBillVO.getLegalName());

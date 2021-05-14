@@ -204,7 +204,7 @@ public class CommonServiceImpl implements CommonService {
             }
             //拖车
             if (templateEnum.getCmd().contains(BillTemplateEnum.TC.getCmd())) {
-                data = this.getTmsOrderTemplate(mainOrderNos, cmd, templateEnum);
+                data = this.getTrailerOrderTemplate(mainOrderNos, cmd, templateEnum);
             }
         }
 

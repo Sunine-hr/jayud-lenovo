@@ -1,6 +1,8 @@
 package com.jayud.oms.model.vo;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModelProperty;
@@ -86,6 +88,7 @@ public class OrderInfoVO {
     private String createdUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private String createdTimeStr;
 
 //    @ApiModelProperty(value = "报关状态,用于标识驳回可编辑")
@@ -316,5 +319,19 @@ public class OrderInfoVO {
         if (receivableCost.compareTo(paymentCost) < 0) {
             this.billingState = 3;
         }
+    }
+
+
+    public void assemblyData(Object tmsOrders) {
+        if (tmsOrders == null) {
+            return;
+        }
+        JSONObject tmsOrderInfo = new JSONObject(tmsOrders);
+        tmsOrderInfo = tmsOrderInfo.getJSONObject(this.orderNo);
+        if (tmsOrderInfo != null) {
+            //组装商品信息
+
+        }
+
     }
 }

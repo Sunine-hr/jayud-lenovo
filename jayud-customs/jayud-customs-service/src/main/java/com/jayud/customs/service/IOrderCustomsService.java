@@ -24,13 +24,15 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
 
     /**
      * 报关子订单是否存在
+     *
      * @param orderNo
      * @return
      */
     public boolean isExistOrder(String orderNo);
 
     /**
-     *暂存/提交纯报关订单
+     * 暂存/提交纯报关订单
+     *
      * @param form
      * @return
      */
@@ -38,13 +40,15 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
 
     /**
      * 获取子订单
+     *
      * @param param
      * @return
      */
-    public List<OrderCustomsVO> findOrderCustomsByCondition(Map<String,Object> param);
+    public List<OrderCustomsVO> findOrderCustomsByCondition(Map<String, Object> param);
 
     /**
      * 分页查询
+     *
      * @param form
      * @return
      */
@@ -52,6 +56,7 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
 
     /**
      * 获取订单详情
+     *
      * @param mainOrderNo
      * @return
      */
@@ -59,6 +64,7 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
 
     /**
      * 报关各个菜单列表数据量统计
+     *
      * @return
      */
     StatisticsDataNumberVO statisticsDataNumber();
@@ -73,6 +79,7 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
 
     /**
      * 查询菜单待处理订单数
+     *
      * @param status
      * @param legalIds
      * @return
@@ -81,6 +88,7 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
 
     /**
      * 根据订单号获取订单信息
+     *
      * @param orderNo
      * @return
      */
@@ -88,6 +96,7 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
 
     /**
      * 更新流程状态
+     *
      * @param orderCustoms
      * @return
      */
@@ -97,15 +106,15 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
 
     /**
      * 获取填写委托号相关流程的报关订单
+     *
      * @return
      */
     List<OrderCustoms> getOrderCustomsTaskData();
 
     /**
-     * 更新流程状态
-     *
-     * @param orderCustoms
-     * @return
+     * @param mainOrders
      */
+    List<String> getAllPassByMainOrderNos(List<String> mainOrders);
+
     Boolean updateProcessStatus(OrderCustoms orderCustoms, String auditUser, String auditTime);
 }

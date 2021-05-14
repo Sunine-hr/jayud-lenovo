@@ -1136,7 +1136,7 @@ public class ExternalApiController {
                         num = this.orderInfoService.pendingExternalCustomsDeclarationNum(legalIds);
                         break;
                     case "portPassCheck":
-                        num = this.orderInfoService.pendingGoCustomsAuditNum(legalIds);
+                        num = this.orderInfoService.filterGoCustomsAudit(null, legalIds).size();
                         break;
                     case "feeCheck":
                         num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null);

@@ -2,6 +2,7 @@ package com.jayud.trailer.service.impl;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -18,6 +19,7 @@ import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.Utilities;
 import com.jayud.trailer.bo.*;
 import com.jayud.trailer.enums.TrailerOrderStatusEnum;
 import com.jayud.trailer.feign.FileClient;
@@ -478,7 +480,8 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         Object vehicleSize = this.omsClient.getVehicleSizeInfo().getData();
         Map<Long, String> vehicleSizeMap = new HashMap<>();
         if (vehicleSize != null) {
-            vehicleSizeMap = ((List<InitComboxVO>) vehicleSize).stream().collect(Collectors.toMap(InitComboxVO::getId, InitComboxVO::getName));
+            List<InitComboxVO> initComboxVOS = Utilities.obj2List(vehicleSize, InitComboxVO.class);
+            vehicleSizeMap = initComboxVOS.stream().collect(Collectors.toMap(InitComboxVO::getId, InitComboxVO::getName));
         }
 
         //查询订单地址

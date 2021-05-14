@@ -124,7 +124,10 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
             Goods goods = tmp.get(e.getBindGoodsId());
             if (goods != null) {
                 OrderDeliveryAddress orderDeliveryAddress = new OrderDeliveryAddress();
-                orderDeliveryAddress.setOrderNo(e.getOrderNo())
+                orderDeliveryAddress
+                        .setBusinessId(e.getBusinessId())
+                        .setBusinessType(e.getBusinessType())
+                        .setOrderNo(e.getOrderNo())
                         .setGoodsId(goods.getId())
                         .setOrderAddressId(e.getId())
                         .setContacts(e.getContacts())

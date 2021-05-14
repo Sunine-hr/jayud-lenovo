@@ -28,14 +28,14 @@
     </sql>
 
     <select id="findByPage" resultType="com.jayud.storage.model.vo.StorageOutOrderFormVO">
-        select soo.id orderId,soo.order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
+        select id orderId,soo.order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
         legal_entity_id legalEntityId,legal_name leaglName,
         unit_code unitCode,department_id departmentId,
         plate_information plateInformation, create_user createUser, create_time createTime, remarks,
---         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = soo.`order_no`) +
---         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = soo.`order_no`)>0 THEN TRUE
---         ELSE FALSE
---         END) cost
+        (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = soo.`order_no`) +
+        (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = soo.`order_no`)>0 THEN TRUE
+        ELSE FALSE
+        END) cost
         from storage_out_order soo
         <where>
             <if test="form.orderNo !=null and form.orderNo!=''">
@@ -68,12 +68,12 @@
             <if test="form.endTime !=null and form.endTime!=''">
                 and soo.create_time <![CDATA[<= ]]> #{form.endTime}
             </if>
-<!--            <if test="form.cmd == 'costAudit'">-->
-<!--                AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = soo.order_no AND opc.`status` =-->
-<!--                '2' and opc.sub_type = 'cc')-->
-<!--                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = soo.order_no AND orc.`status` =-->
-<!--                '2' and orc.sub_type = 'cc'))-->
-<!--            </if>-->
+            <if test="form.cmd == 'costAudit'">
+                AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = soo.order_no AND opc.`status` =
+                '2' and opc.sub_type = 'cce')
+                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = soo.order_no AND orc.`status` =
+                '2' and orc.sub_type = 'cce'))
+            </if>
 
             <if test="legalIds != null and legalIds.size>0">
                 and soo.`legal_entity_id` in
@@ -82,7 +82,7 @@
                 </foreach>
             </if>
         </where>
-        order by soo.id desc
+        order by id desc
     </select>
 
 </mapper>

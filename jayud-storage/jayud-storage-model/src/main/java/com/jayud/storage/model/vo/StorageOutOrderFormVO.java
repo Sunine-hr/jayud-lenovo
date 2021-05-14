@@ -86,6 +86,9 @@ public class StorageOutOrderFormVO {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "创建时间")
+    private String createdTimeStr;
+
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
@@ -127,6 +130,9 @@ public class StorageOutOrderFormVO {
 
     @ApiModelProperty(value = "客户代码")
     private String customerCode;
+
+    @ApiModelProperty(value = "接单法人名称")
+    private String subLegalName;
 
     /**
      * 组装商品信息

@@ -42,7 +42,7 @@ public class StockController {
 
     private IStockService stockService;
 
-    @ApiOperation("分页查询入库订单列表")
+    @ApiOperation("库存查询")
     @PostMapping("/findByPage")
     public CommonResult findByPage(@RequestBody QueryStockForm form) {
 

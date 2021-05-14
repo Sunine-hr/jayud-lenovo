@@ -20,10 +20,7 @@ import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.*;
 import com.jayud.storage.model.po.*;
 import com.jayud.storage.mapper.StorageInputOrderMapper;
-import com.jayud.storage.model.vo.StorageInputOrderFormVO;
-import com.jayud.storage.model.vo.StorageInputOrderVO;
-import com.jayud.storage.model.vo.StorageInputOrderWarehouseingVO;
-import com.jayud.storage.model.vo.WarehouseGoodsVO;
+import com.jayud.storage.model.vo.*;
 import com.jayud.storage.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.httpclient.HttpStatus;
@@ -150,6 +147,13 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
             storageInputOrderVO.setTotalNumber(borderNumber+"板"+number+"件"+pcs+"pcs");
             storageInputOrderVO.setTotalWeight(totalWeight+"KG");
         }
+        List<InGoodsOperationRecord> listByOrderId = inGoodsOperationRecordService.getListByOrderId(storageInputOrder.getId(), storageInputOrder.getOrderNo());
+        List<InGoodsOperationRecordVO> inGoodsOperationRecordVOS = ConvertUtil.convertList(listByOrderId, InGoodsOperationRecordVO.class);
+        if(CollectionUtils.isEmpty(inGoodsOperationRecordVOS)){
+            inGoodsOperationRecordVOS.add(new InGoodsOperationRecordVO());
+        }
+
+        storageInputOrderVO.setInGoodsOperationRecords(inGoodsOperationRecordVOS);
         storageInputOrderVO.setGoodsFormList(warehouseGoods);
         return storageInputOrderVO;
     }

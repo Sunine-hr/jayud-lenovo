@@ -32,7 +32,7 @@
         select sio.id id,sio.order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
         legal_entity_id legalEntityId,legal_name leaglName,
         unit_code unitCode,department_id departmentId,waybill_no waybillNo,
-        plate_number plateNumber,warehouse_number warehouseNumber, create_user createUser, create_time createTime, remarks
+        plate_number plateNumber,warehouse_number warehouseNumber, create_user createUser, create_time createTime, remarks,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = sio.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = sio.`order_no`)>0 THEN TRUE
         ELSE FALSE
@@ -74,9 +74,9 @@
             </if>
             <if test="form.cmd == 'costAudit'">
                 AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = sio.order_no AND opc.`status` =
-                '2' and opc.sub_type = 'cc')
+                '2' and opc.sub_type = 'cci')
                 OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = sio.order_no AND orc.`status` =
-                '2' and orc.sub_type = 'cc'))
+                '2' and orc.sub_type = 'cci'))
             </if>
 
             <if test="legalIds != null and legalIds.size>0">
@@ -94,7 +94,7 @@
         select igor.wbn warehousingBatchNo,sio.id id,sio.order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
         legal_entity_id legalEntityId,legal_name leaglName,
         unit_code unitCode,department_id departmentId,waybill_no waybillNo,
-        plate_number plateNumber,warehouse_number warehouseNumber, create_user createUser, create_time createTime, remarks
+        plate_number plateNumber,warehouse_number warehouseNumber, create_user createUser, create_time createTime, remarks,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = sio.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = sio.`order_no`)>0 THEN TRUE
         ELSE FALSE

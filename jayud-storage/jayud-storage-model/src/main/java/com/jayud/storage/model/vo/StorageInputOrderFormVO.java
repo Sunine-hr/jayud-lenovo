@@ -101,6 +101,9 @@ public class StorageInputOrderFormVO {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "创建时间")
+    private String createdTimeStr;
+
     //@ApiModelProperty(value = "更新人")
     private String updateUser;
 
@@ -148,6 +151,9 @@ public class StorageInputOrderFormVO {
 
     @ApiModelProperty(value = "体积")
     private Double volume = 0.0;
+
+    @ApiModelProperty(value = "接单法人名称")
+    private String subLegalName;
 
     /**
      * 组装商品信息

@@ -106,6 +106,18 @@ public class InputStorageInputOrderVO extends Model<InputStorageInputOrderVO> {
     @ApiModelProperty(value = "总重量")
     private String totalWeight;
 
+    @ApiModelProperty(value = "入库实际商品")
+    private List<InGoodsOperationRecordVO> inGoodsOperationRecords;
+
+    @ApiModelProperty(value = "状态()")
+    private String statusName;
+
+    @ApiModelProperty(value = "费用状态", required = true)
+    private String costDesc;
+
+    @ApiModelProperty(value = "费用状态")
+    private Boolean cost;
+
     /**
      * 校验创建出库子订单参数
      */

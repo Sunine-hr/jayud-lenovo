@@ -12,6 +12,7 @@ import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.WarehouseGoodsInForm;
 import com.jayud.storage.model.bo.WarehouseGoodsOutForm;
 import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
+import com.jayud.storage.model.vo.GoodVO;
 import com.jayud.storage.model.vo.InitComboxSVO;
 import com.jayud.storage.model.vo.InitComboxWarehouseVO;
 import com.jayud.storage.service.IGoodService;
@@ -129,11 +130,18 @@ public class CommonController {
     @PostMapping(value = "/goodsComBox")
     public CommonResult goodsComBox(@RequestBody Map<String,Object> map){
         String code = MapUtil.getStr(map,"code");
+        String type = MapUtil.getStr(map,"type");
         Long customerId = omsClient.getCustomerByCode(code).getData();
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("customer_id",customerId);
-        List list = goodService.list(queryWrapper);
-        return CommonResult.success(list);
+        List<GoodVO> list = goodService.list(queryWrapper);
+        if(type=="1"){
+            return CommonResult.success(list);
+        }
+        if(type=="2"){
+
+        }
+        return CommonResult.error(444,"获取商品失败");
     }
 
     @ApiOperation(value = "查询所有库位")

@@ -251,10 +251,10 @@ public class OrderInfoController {
             if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())) {
                 if (inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode())) {
                     InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
-                    ApiResult stock = storageClient.isStock(storageOutOrderForm.getGoodsFormList());
-                    if(!stock.isOk()){
-                        return CommonResult.error(stock.getCode(),stock.getMsg());
-                    }
+//                    ApiResult stock = storageClient.isStock(storageOutOrderForm.getGoodsFormList());
+//                    if(!stock.isOk()){
+//                        return CommonResult.error(stock.getCode(),stock.getMsg());
+//                    }
                     if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
                         return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
                     }
@@ -482,6 +482,26 @@ public class OrderInfoController {
             Template<TrailerOrderTemplate> template = new Template<TrailerOrderTemplate>() {
             }.setList(templates);
             orderInfoTemplate.setTrailerOrderTemplates(template);
+        }
+
+        //仓储模板
+        //入库
+        InputStorageInputOrderVO storageInputOrderForm = inputOrderVO.getStorageInputOrderForm();
+        if (storageInputOrderForm != null) {
+            StorageInputTemplate storageInputTemplate = ConvertUtil.convert(storageInputOrderForm, StorageInputTemplate.class);
+            storageInputTemplate.setCost(this.orderInfoService.isCost(storageInputTemplate.getOrderNo(), 1));
+            Template<StorageInputTemplate> template = new Template<StorageInputTemplate>() {
+            }.setList(Collections.singletonList(storageInputTemplate));
+            orderInfoTemplate.setStorageInputTemplateTemplate(template);
+        }
+        //出库
+        InputStorageOutOrderVO storageOutOrderForm = inputOrderVO.getStorageOutOrderForm();
+        if (storageOutOrderForm != null) {
+            StorageOutTemplate storageOutTemplate = ConvertUtil.convert(storageOutOrderForm, StorageOutTemplate.class);
+            storageOutTemplate.setCost(this.orderInfoService.isCost(storageOutTemplate.getOrderNo(), 1));
+            Template<StorageOutTemplate> template = new Template<StorageOutTemplate>() {
+            }.setList(Collections.singletonList(storageOutTemplate));
+            orderInfoTemplate.setStorageOutTemplateTemplate(template);
         }
 
 

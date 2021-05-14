@@ -32,6 +32,9 @@ import com.jayud.storage.service.IInGoodsOperationRecordService;
 import com.jayud.storage.service.IStorageInputOrderDetailsService;
 import com.jayud.storage.service.IStorageInputOrderService;
 import com.jayud.storage.service.IWarehouseGoodsService;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.Version;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -174,6 +177,9 @@ public class StorageInputOrderController {
 
             //拼装结算单位
             record.assemblyUnitCodeInfo(unitCodeInfo);
+
+            record.setCreatedTimeStr(record.getCreateTime().toString());
+            record.setSubLegalName(record.getLegalName());
 
             List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(record.getId(), record.getOrderNo());
             record.assemblyGoodsInfo(list1);
@@ -537,44 +543,47 @@ public class StorageInputOrderController {
     public void exportInWarehouseReceipt(@RequestBody Map<String,Object> map, HttpServletResponse response){
         StorageInProcessOptFormVO storageInProcessOptFormVO = (StorageInProcessOptFormVO)this.getDataInConfirmEntry(map).getData();
 
-        File file = new File(path);
-        String name = file.getName();
-
+        Map<String,Object> dataMap = new HashMap<String, Object>();
         try {
-            InputStream inputStream = new FileInputStream(file);
-            Workbook templateWorkbook = null;
-            String fileType = name.substring(name.lastIndexOf("."));
-            if (".xls".equals(fileType)) {
-                templateWorkbook = new HSSFWorkbook(inputStream); // 2003-
-            } else if (".xlsx".equals(fileType)) {
-                templateWorkbook = new XSSFWorkbook(inputStream); // 2007+
-            } else {
+            //编号
+            dataMap.put("customerName", storageInProcessOptFormVO.getCustomerName());
+            dataMap.put("customerName", storageInProcessOptFormVO.getCustomerName());
+            dataMap.put("userList", storageInProcessOptFormVO.getWarehouseGoodsForms());
+            //Configuration 用于读取ftl文件
+            Configuration configuration = new Configuration(new Version("2.3.29"));
+            configuration.setDefaultEncoding("utf-8");
 
-            }
-            //HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
 
-            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-            templateWorkbook.write(outStream);
-            ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
+            configuration.setDirectoryForTemplateLoading(new File(path));//指定ftl所在目录,根据自己的改
+            response.setContentType("application/msword");
+            response.setHeader("Content-Disposition", "attachment;filename=\"" + new String("入仓单.doc".getBytes("GBK"), "iso8859-1") + "\"");
+            response.setCharacterEncoding("utf-8");//此句非常关键,不然word文档全是乱码
+            PrintWriter out = response.getWriter();
+            Template t =  configuration.getTemplate("test.ftl","utf-8");//以utf-8的编码读取ftl文件
+            t.process(dataMap, out);
 
-            String fileName = "入仓单";
 
-            response.setContentType("application/vnd.ms-excel");
-            response.setCharacterEncoding("utf-8");
-            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
-            String filename = URLEncoder.encode(fileName, "utf-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
+//            /**
+//             * 以下是两种指定ftl文件所在目录路径的方式，注意这两种方式都是
+//             * 指定ftl文件所在目录的路径，而不是ftl文件的路径
+//             */
+            //指定路径的第一种方式（根据某个类的相对路径指定）
+//                configuration.setClassForTemplateLoading(this.getClass(), "");
 
-            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+            //指定路径的第二种方式，我的路径是C：/a.ftl
+//            configuration.setDirectoryForTemplateLoading(new File("c:/"));
 
-            WriteSheet writeSheet = EasyExcel.writerSheet().build();
-            excelWriter.finish();
-            outStream.close();
-            inputStream.close();
-
-        } catch (IOException e) {
+            //输出文档路径及名称
+//            File outFile = new File("D:/报销信息导出.doc");
+            //以utf-8的编码读取ftl文件
+//            Template template = configuration.getTemplate("报销信息导出.ftl", "utf-8");
+//            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), "utf-8"), 10240);
+//            template.process(dataMap, out);
+            out.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
 

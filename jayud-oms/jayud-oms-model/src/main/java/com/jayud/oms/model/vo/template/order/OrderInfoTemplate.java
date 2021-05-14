@@ -21,6 +21,12 @@ public class OrderInfoTemplate {
     @ApiModelProperty("海运订单信息")
     private Template<SeaOrderTemplate> seaOrderTemplates;
 
-    @ApiModelProperty("海运订单信息")
+    @ApiModelProperty("拖车订单信息")
     private Template<TrailerOrderTemplate> trailerOrderTemplates;
+
+    @ApiModelProperty("入库订单信息")
+    private Template<StorageInputTemplate> storageInputTemplateTemplate;
+
+    @ApiModelProperty("出库订单信息")
+    private Template<StorageOutTemplate> storageOutTemplateTemplate;
 }

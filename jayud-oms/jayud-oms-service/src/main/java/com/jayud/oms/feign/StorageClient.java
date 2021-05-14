@@ -8,6 +8,8 @@ import com.jayud.oms.model.bo.InputTrailerOrderFrom;
 import com.jayud.oms.model.vo.InputStorageInputOrderVO;
 import com.jayud.oms.model.vo.InputStorageOutOrderVO;
 import com.jayud.oms.model.vo.InputTrailerOrderVO;
+import com.jayud.oms.model.vo.template.order.StorageInputTemplate;
+import com.jayud.oms.model.vo.template.order.StorageOutTemplate;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;

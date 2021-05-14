@@ -101,6 +101,12 @@ public class InputStorageOutOrderVO {
     @ApiModelProperty(value = "总重量")
     private String totalWeight;
 
+    @ApiModelProperty(value = "费用状态", required = true)
+    private String costDesc;
+
+    @ApiModelProperty(value = "费用状态")
+    private Boolean cost;
+
     public void setUnitCodeName(String unitCodeName) {
         this.unitCodeName=unitCodeName;
     }

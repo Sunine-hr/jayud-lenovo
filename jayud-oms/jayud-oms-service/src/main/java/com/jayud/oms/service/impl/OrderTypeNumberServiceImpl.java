@@ -65,7 +65,6 @@ public class OrderTypeNumberServiceImpl extends ServiceImpl<OrderTypeNumberMappe
 
     @Override
     public String getWarehouseNumber(String preOrder) {
-        String orderNo = null;
         OrderTypeNumber orderTypeNumber = this.baseMapper.getMaxNumberData(preOrder, getDateData2(DateUtils.getLocalToStr(LocalDateTime.now()),2,8));
         OrderTypeNumber typeNumber = new OrderTypeNumber();
         String dateData2 = getDateData2(DateUtils.getLocalToStr(LocalDateTime.now()), 2, 8);
@@ -74,23 +73,25 @@ public class OrderTypeNumberServiceImpl extends ServiceImpl<OrderTypeNumberMappe
                 typeNumber.setClassCode(preOrder);
                 typeNumber.setDate(orderTypeNumber.getDate());
                 typeNumber.setNumber(orderTypeNumber.getNumber() + 1);
-                orderNo = preOrder + dateData2 + String.format("%04d", typeNumber.getNumber()+1 );
+                String orderNo = preOrder + dateData2 + String.format("%04d", typeNumber.getNumber()+1 );
                 this.saveOrUpdate(typeNumber);
+                return orderNo;
             } else {//
                 typeNumber.setClassCode(preOrder);
                 typeNumber.setDate(dateData2);
                 typeNumber.setNumber(1);
-                orderNo = preOrder + dateData2 + String.format("%04d", typeNumber.getNumber());
+                String orderNo = preOrder + dateData2 + String.format("%04d", typeNumber.getNumber());
                 this.saveOrUpdate(typeNumber);
+                return orderNo;
             }
         } else {//
             typeNumber.setClassCode(preOrder);
             typeNumber.setDate(dateData2);
             typeNumber.setNumber(1);
-            orderNo = preOrder + dateData2 + String.format("%04d", typeNumber.getNumber());
+            String orderNo = preOrder + dateData2 + String.format("%04d", typeNumber.getNumber());
             this.saveOrUpdate(typeNumber);
+            return orderNo;
         }
-        return orderNo;
     }
 
     //判断是否为本月第一天

@@ -114,13 +114,22 @@ public class WarehouseAreaShelvesLocationController {
 
     @ApiOperation(value = "查看库位编码")
     @PostMapping("/viewLocationCode")
-    public CommonResult viewLocationCode(@RequestBody QueryWarehouseAreaShelvesLocationForm form){
+    public CommonResult<List<LocationCodeVO>> viewLocationCode(@RequestBody QueryWarehouseAreaShelvesLocationForm form){
         List<WarehouseAreaShelvesLocationVO> warehouseAreaShelvesLocations = this.warehouseAreaShelvesLocationService.getListByShelvesId(form);
+
+        List<InitComboxSVO> data = omsClient.initDictNameByDictTypeCode("shelfType").getData();
+
         List<LocationCodeVO> locationCodeVOS = new ArrayList<>();
 
         for (WarehouseAreaShelvesLocationVO warehouseAreaShelvesLocation : warehouseAreaShelvesLocations) {
+            String shelvesTypeName = null;
+            for (InitComboxSVO datum : data) {
+                if (datum.getId().equals(warehouseAreaShelvesLocation.getShelvesType())){
+                    shelvesTypeName = datum.getValue();
+                }
+            }
             LocationCodeVO locationCodeVO = ConvertUtil.convert(warehouseAreaShelvesLocation, LocationCodeVO.class);
-            if(warehouseAreaShelvesLocation.getShelvesType().equals("A面")){
+            if(shelvesTypeName.equals("A面")){
                 StringBuffer locationCode = new StringBuffer();
                 locationCode.append(warehouseAreaShelvesLocation.getCode()).append("-")
                         .append(warehouseAreaShelvesLocation.getAreaCode()).append("-")
@@ -131,7 +140,7 @@ public class WarehouseAreaShelvesLocationController {
                 locationCodeVO.setLocationCode(locationCode.toString());
                 locationCodeVOS.add(locationCodeVO);
             }
-            if(warehouseAreaShelvesLocation.getShelvesType().equals("B面")){
+            if(shelvesTypeName.equals("B面")){
                 StringBuffer locationCode = new StringBuffer();
                 locationCode.append(warehouseAreaShelvesLocation.getCode()).append("-")
                         .append(warehouseAreaShelvesLocation.getAreaCode()).append("-")
@@ -142,7 +151,7 @@ public class WarehouseAreaShelvesLocationController {
                 locationCodeVO.setLocationCode(locationCode.toString());
                 locationCodeVOS.add(locationCodeVO);
             }
-            if(warehouseAreaShelvesLocation.getShelvesType().equals("AB面")){
+            if(shelvesTypeName.equals("AB面")){
                 StringBuffer locationCode = new StringBuffer();
                 locationCode.append(warehouseAreaShelvesLocation.getCode()).append("-")
                         .append(warehouseAreaShelvesLocation.getAreaCode()).append("-")
@@ -159,7 +168,7 @@ public class WarehouseAreaShelvesLocationController {
                         .append(warehouseAreaShelvesLocation.getShelvesName()).append("-")
                         .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
                         .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
-                        .append("A").append(warehouseAreaShelvesLocation.getShelvesColumn());
+                        .append("B").append(warehouseAreaShelvesLocation.getShelvesColumn());
                 locationCodeVO1.setLocationCode(locationCode1.toString());
                 locationCodeVOS.add(locationCodeVO);
                 locationCodeVOS.add(locationCodeVO1);
@@ -169,6 +178,7 @@ public class WarehouseAreaShelvesLocationController {
         }
         return CommonResult.success(locationCodeVOS);
     }
+
 
 
 }

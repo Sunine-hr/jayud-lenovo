@@ -157,6 +157,9 @@ public class StorageOutOrderController {
             //拼装结算单位
             record.assemblyUnitCodeInfo(unitCodeInfo);
 
+            record.setCreatedTimeStr(record.getCreateTime().toString());
+            record.setSubLegalName(record.getLegalName());
+
         }
 
         map1.put("pageInfo", new CommonPageResult(page));

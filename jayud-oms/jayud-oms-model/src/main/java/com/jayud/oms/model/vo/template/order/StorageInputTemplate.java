@@ -1,16 +1,15 @@
-package com.jayud.storage.model.vo;
+package com.jayud.oms.model.vo.template.order;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.utils.FileView;
+import com.jayud.oms.model.vo.InGoodsOperationRecordVO;
+import com.jayud.oms.model.vo.WarehouseGoodsVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang.StringUtils;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -23,7 +22,7 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class StorageInputOrderVO extends Model<StorageInputOrderVO> {
+public class StorageInputTemplate extends Model<StorageInputTemplate> {
 
     private static final long serialVersionUID = 1L;
 
@@ -38,9 +37,6 @@ public class StorageInputOrderVO extends Model<StorageInputOrderVO> {
 
     @ApiModelProperty(value = "状态()")
     private String status;
-
-    @ApiModelProperty(value = "状态()")
-    private String statusName;
 
     @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
     private Integer processStatus;
@@ -82,13 +78,13 @@ public class StorageInputOrderVO extends Model<StorageInputOrderVO> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private String createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
-    private LocalDateTime updateTime;
+    private String updateTime;
 
     @ApiModelProperty(value = "备注")
     private String remarks;
@@ -111,38 +107,37 @@ public class StorageInputOrderVO extends Model<StorageInputOrderVO> {
     @ApiModelProperty(value = "总重量")
     private String totalWeight;
 
-    @ApiModelProperty(value = "实际入库商品信息")
+    @ApiModelProperty(value = "入库实际商品")
     private List<InGoodsOperationRecordVO> inGoodsOperationRecords;
+
+    @ApiModelProperty(value = "状态()")
+    private String statusName;
+
+    @ApiModelProperty(value = "费用状态", required = true)
+    private String costDesc;
+
+    @ApiModelProperty(value = "费用状态")
+    private Boolean cost;
 
     /**
      * 校验创建出库子订单参数
      */
-//    public String checkCreateOrder() {
-//        //拖车
-//        if (this.legalEntityId == null ){
-//            return "操作主体不为空";
-//        }
-//        if (StringUtils.isEmpty(this.unitCode)) {
-//            return "结算单位不为空";
-//        }
-//        if(this.departmentId == null){
-//            return "操作部门不为空";
-//        }
-//        if(StringUtils.isEmpty(this.warehouseNumber)){
-//            return "入仓号不为空";
-//        }
-//
-//        return "pass";
-//    }
+    public String checkCreateOrder() {
+        //拖车
+        if (this.legalEntityId == null ){
+            return "操作主体不为空";
+        }
+        if (StringUtils.isEmpty(this.unitCode)) {
+            return "结算单位不为空";
+        }
+        if(this.departmentId == null){
+            return "操作部门不为空";
+        }
+        if(StringUtils.isEmpty(this.warehouseNumber)){
+            return "入仓号不为空";
+        }
 
-    public void setStatus(String status) {
-        this.status = status;
-        this.statusName = OrderStatusEnum.getDesc(status);
-    }
-
-    public void setProcessStatus(Integer processStatus) {
-        this.processStatus = processStatus;
-        this.processStatusDesc = ProcessStatusEnum.getDesc(processStatus);
+        return "pass";
     }
 
     public void setUnitCodeName(String unitCodeName) {

@@ -30,13 +30,13 @@
     
     <select id="findBillTaskByObId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.BillTaskVO">
         select
-        t.task_code, t.task_name, t.sort, t.days, t.day_flag, t.minutes, t.score, t.remarks, t.status,
+        t.task_code, t.task_name, t.sort, t.days, t.day_flag, t.minutes, t.score, t.remarks, t.status, t.activation_switch,
         t1.userName operators, t1.member_user_id userId, t1.userName userName
         from (
             select
             t.id orderId,t.task_id,
             t3.group_code,t3.group_name,
-            t4.task_code,t4.task_name,t4.sort,t4.days,t4.day_flag,t4.minutes,t4.score,t4.remarks,t4.status
+            t4.task_code,t4.task_name,t4.sort,t4.days,t4.day_flag,t4.minutes,t4.score,t4.remarks,t4.status,t4.activation_switch
             from (select id,task_id from ocean_bill where id=#{obId}) t
             left join task_group t3 on t3.id = t.task_id
             left join bill_task t4 on t4.group_code = t3.group_code

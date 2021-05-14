@@ -1759,7 +1759,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if(!loginUserId.equals(taskUserId)){
             return CommonResult.error(-1, "只有本人才能点击完成");
         }
-        waybillTaskRelevance.setStatus("3");//状态(0未激活 1已激活 2异常 3已完成)
+        waybillTaskRelevance.setStatus("3");//状态(0未激活 1已激活,未完成 2已完成)
         waybillTaskRelevance.setUpTime(LocalDateTime.now());
         waybillTaskRelevanceService.saveOrUpdate(waybillTaskRelevance);
         WaybillTaskRelevanceVO waybillTaskRelevanceVO = ConvertUtil.convert(waybillTaskRelevance, WaybillTaskRelevanceVO.class);

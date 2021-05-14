@@ -424,7 +424,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         if(!loginUserId.equals(taskUserId)){
             return CommonResult.error(-1, "只有本人才能点击完成");
         }
-        billTaskRelevance.setStatus("3");//状态(0未激活 1已激活 2异常 3已完成)
+        billTaskRelevance.setStatus("3");//状态(0未激活 1已激活,未完成 2已完成)
         billTaskRelevance.setUpTime(LocalDateTime.now());
         billTaskRelevanceService.saveOrUpdate(billTaskRelevance);
         BillTaskRelevanceVO billTaskRelevanceVO = ConvertUtil.convert(billTaskRelevance, BillTaskRelevanceVO.class);

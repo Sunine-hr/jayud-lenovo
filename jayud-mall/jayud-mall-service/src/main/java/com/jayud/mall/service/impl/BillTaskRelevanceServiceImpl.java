@@ -14,6 +14,7 @@ import com.jayud.mall.service.IBillTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,10 +45,17 @@ public class BillTaskRelevanceServiceImpl extends ServiceImpl<BillTaskRelevanceM
         //根据提单id，找运营组和任务
         List<BillTaskVO> billTaskVOS = billTaskRelevanceMapper.findBillTaskByObId(obId);
 
-        List<BillTaskRelevance> billTaskRelevances = ConvertUtil.convertList(billTaskVOS, BillTaskRelevance.class);
-        billTaskRelevances.forEach(billTaskRelevance -> {
+        List<BillTaskRelevance> billTaskRelevances  = new ArrayList<>();
+        billTaskVOS.forEach(billTaskVO -> {
+            BillTaskRelevance billTaskRelevance = ConvertUtil.convert(billTaskVO, BillTaskRelevance.class);
             billTaskRelevance.setOceanBillId(obId);
-            billTaskRelevance.setStatus("0");//状态(0未激活 1已激活 2异常 3已完成)
+            String activationSwitch = billTaskVO.getActivationSwitch();//激活开关(0未激活 1已激活)
+            if (activationSwitch.equals("1")){
+                billTaskRelevance.setStatus("1");//状态(0未激活 1已激活,未完成 2已完成)
+            }else{
+                billTaskRelevance.setStatus("0");//状态(0未激活 1已激活,未完成 2已完成)
+            }
+            billTaskRelevances.add(billTaskRelevance);
         });
 
         //先删除

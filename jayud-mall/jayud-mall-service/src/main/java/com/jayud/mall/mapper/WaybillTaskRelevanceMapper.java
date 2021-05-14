@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -36,4 +37,18 @@ public interface WaybillTaskRelevanceMapper extends BaseMapper<WaybillTaskReleva
      * @return
      */
     List<WaybillTaskRelevanceVO> findWaybillTaskRelevance(@Param("form") WaybillTaskRelevanceQueryForm form);
+
+    /**
+     * 根据id，查询任务
+     * @param id
+     * @return
+     */
+    WaybillTaskRelevanceVO findWaybillTaskRelevanceById(@Param("id") Long id);
+
+    /**
+     * 查询，完成任务后，激活 的 其他任务
+     * @param paraMap
+     * @return
+     */
+    List<WaybillTaskRelevance> findWaybillTaskRelevanceByParaMap(@Param("paraMap") Map<String, Object> paraMap);
 }

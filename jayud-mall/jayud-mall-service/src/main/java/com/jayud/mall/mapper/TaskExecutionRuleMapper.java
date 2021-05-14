@@ -26,4 +26,11 @@ public interface TaskExecutionRuleMapper extends BaseMapper<TaskExecutionRule> {
      * @return
      */
     List<TaskExecutionRule> findTaskExecutionRuleByFromTaskId(@Param("fromTaskId") Long fromTaskId);
+
+    /**
+     * 根据fromTaskCode，查询 任务执行规则 list
+     * @param fromTaskCode
+     * @return
+     */
+    List<TaskExecutionRule> findTaskExecutionRuleByFromTaskCode(@Param("fromTaskCode") String fromTaskCode);
 }

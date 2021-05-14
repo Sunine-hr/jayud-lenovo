@@ -29,4 +29,12 @@
             t.from_task_id = #{fromTaskId}
     </select>
 
+    <select id="findTaskExecutionRuleByFromTaskCode" parameterType="java.lang.String" resultType="com.jayud.mall.model.po.TaskExecutionRule">
+        select
+            t.id,t.from_task_type,t.from_task_id,t.from_task_code,t.from_task_name,t.to_task_type,t.to_task_id,t.to_task_code,t.to_task_name,t.status
+        from task_execution_rule t
+        where
+            t.from_task_code = #{fromTaskCode}
+    </select>
+
 </mapper>

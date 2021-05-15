@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author chuanmei
@@ -24,6 +24,7 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
 
     /**
      * 查询应付出账单列表
+     *
      * @param form
      * @return
      */
@@ -31,13 +32,15 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
 
     /**
      * 已生成对账单列表
+     *
      * @param form
      * @return
      */
-    Map<String,Object> findPaymentBillNum(QueryPaymentBillNumForm form);
+    Map<String, Object> findPaymentBillNum(QueryPaymentBillNumForm form);
 
     /**
      * 查询应付未出账单列表
+     *
      * @param form
      * @return
      */
@@ -45,6 +48,7 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
 
     /**
      * 生成应付账单
+     *
      * @param form
      * @return
      */
@@ -70,33 +74,38 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
 
     /**
      * 预览账单表头
+     *
      * @return
      */
     List<SheetHeadVO> findSheetHead(List<Long> costIds);
 
     /**
      * 预览账单表头 TODO 改版,等全部修改完成弃用findSheetHead
+     *
      * @return
      */
-    List<SheetHeadVO> findSheetHeadInfo(List<Long> costIds,String cmd);
+    List<SheetHeadVO> findSheetHeadInfo(List<Long> costIds, String cmd);
 
     /**
      * 预览账单全局数据
+     *
      * @return
      */
-    ViewBillVO getViewBillByCostIds(List<Long> costIds,String cmd);
+    ViewBillVO getViewBillByCostIds(List<Long> costIds, String cmd);
 
     /**
      * 已出账订单数
+     *
      * @param legalName
      * @param supplierChName
      * @param subType
      * @return
      */
-    Integer getBillOrderNum(String legalName,String supplierChName,String subType);
+    Integer getBillOrderNum(String legalName, String supplierChName, String subType);
 
     /**
      * 统计已出账金额alreadyPaidAmount
+     *
      * @param legalName
      * @param supplierChName
      * @param subType
@@ -106,6 +115,7 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
 
     /**
      * 统计账单数billNum
+     *
      * @param legalName
      * @param supplierChName
      * @param subType
@@ -115,6 +125,7 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
 
     /**
      * 账单号是否存在
+     *
      * @param billNo
      * @return
      */
@@ -122,9 +133,39 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
 
     /**
      * 从删除的costIds里面挑出那种保存确定的数据
+     *
      * @param costIds
      * @return
      */
     List<Long> findSaveConfirmData(List<Long> costIds);
 
+    /**
+     * 配置汇率
+     *
+     * @param costIds
+     * @param settlementCurrency
+     * @param accountTermStr
+     * @param isCustomExchangeRate
+     * @param customExchangeRate
+     */
+    List<OrderBillCostTotalVO> configureExchangeRate(List<Long> costIds, String settlementCurrency, String accountTermStr,
+                                                     Boolean isCustomExchangeRate, List<InitComboxStrVO> customExchangeRate);
+
+    /**
+     * 统计账单
+     *
+     * @param orderBillCostTotalVOS
+     * @param orderPaymentBill
+     * @param orderNos
+     * @param subType
+     * @return
+     */
+    OrderPaymentBill statisticsBill(List<OrderBillCostTotalVO> orderBillCostTotalVOS, OrderPaymentBill orderPaymentBill, List<String> orderNos, String subType);
+
+    /**
+     * 根据条件查询账单
+     * @param paymentBill
+     * @return
+     */
+    List<OrderPaymentBill> getByCondition(OrderPaymentBill paymentBill);
 }

@@ -51,4 +51,16 @@ public class LegalEntityServiceImpl extends ServiceImpl<LegalEntityMapper, Legal
     }
 
 
+    /**
+     * 根据法人id集合配对code
+     */
+    @Override
+    public Boolean matchingCodeByLegalIds(List<Long> legalEntityIds, String code) {
+        QueryWrapper<LegalEntity> condition = new QueryWrapper<>();
+        condition.lambda().in(LegalEntity::getId, legalEntityIds)
+                .eq(LegalEntity::getLegalCode, code);
+        return this.count(condition) > 0;
+    }
+
+
 }

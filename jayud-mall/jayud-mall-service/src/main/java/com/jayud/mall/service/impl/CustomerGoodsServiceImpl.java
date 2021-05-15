@@ -63,6 +63,7 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
         ids.forEach(id -> {
             CustomerGoods customerGoods = new CustomerGoods();
             customerGoods.setId(id);
+            customerGoods.setStatus(status);
             customerGoods.setStatusName(statusName);
             customerGoods.setDataCode(dataCode);
             customerGoods.setClearanceCode(clearanceCode);
@@ -75,9 +76,12 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CustomerGoodsVO saveCustomerGoods(CustomerGoodsForm form) {
-        CustomerUser customerUser = baseService.getCustomerUser();
+        Integer customerId = form.getCustomerId();
         CustomerGoods customerGoods = ConvertUtil.convert(form, CustomerGoods.class);
-        customerGoods.setCustomerId(customerUser.getId());
+        if(ObjectUtil.isEmpty(customerId)){
+            CustomerUser customerUser = baseService.getCustomerUser();
+            customerGoods.setCustomerId(customerUser.getId());
+        }
         this.saveOrUpdate(customerGoods);
         CustomerGoodsVO customerGoodsVO = ConvertUtil.convert(customerGoods, CustomerGoodsVO.class);
         return customerGoodsVO;

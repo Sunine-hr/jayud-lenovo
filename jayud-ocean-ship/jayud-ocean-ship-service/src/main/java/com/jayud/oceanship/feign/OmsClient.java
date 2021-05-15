@@ -213,13 +213,23 @@ public interface OmsClient {
      * 根据订单号集合删除商品信息
      */
     @RequestMapping(value = "/api/deleteGoodsByBusOrders")
-    public ApiResult<List<GoodsVO>> deleteGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
+    public ApiResult deleteGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
                                                         @RequestParam("businessType") Integer businessType);
 
     /**
      * 根据业务号集合删除订单地址
      */
     @RequestMapping(value = "/api/deleteOrderAddressByBusOrders")
-    public ApiResult<List<OrderAddressVO>> deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
+    public ApiResult deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
                                                                       @RequestParam("businessType") Integer businessType);
+
+    /**
+     * 查询待审核费用订单数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/auditPendingExpenses")
+    ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
+                                            @RequestParam("legalIds") List<Long> legalIds,
+                                            @RequestParam("orderNos")List<String> orderNos);
 }

@@ -62,4 +62,10 @@ public interface OrderCustomsMapper extends BaseMapper<OrderCustoms> {
     List<OrderCustoms> getOrderCustomsByStatus(List<String> statuses);
 
     List<String> getMainOrderNoByStatus(@Param("status") String status, @Param("legalIds")List<Long> legalIds);
+
+    /**
+     * 获取填写委托号相关流程的报关订单
+     * @return
+     */
+    List<OrderCustoms> getOrderCustomsTaskData();
 }

@@ -72,7 +72,8 @@
         '%Y-%m-%d %H:%i:%S'
         ) createdTimeStr,
         ci.bind_id bindId,
-        ci.type
+        ci.type,
+        remarks
         FROM
         contract_info ci where
         ci.id = #{id}
@@ -93,7 +94,8 @@
         DATE_FORMAT(
         ci.`created_time`,
         '%Y-%m-%d %H:%i:%S'
-        ) createdTimeStr
+        ) createdTimeStr,
+        remarks
         FROM
         contract_info ci where ci.status = 1
         <if test="form.type !=null and form.type !=''">

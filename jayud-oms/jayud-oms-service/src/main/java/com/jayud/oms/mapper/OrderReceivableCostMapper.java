@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -23,4 +24,11 @@ public interface OrderReceivableCostMapper extends BaseMapper<OrderReceivableCos
     List<InputReceivableCostVO> findReceivableCost(@Param("form") GetCostDetailForm form);
 
     InputReceivableCostVO getWriteBackSCostData(@Param("costId") Long costId);
+
+    /**
+     * 查询待处理费用审核
+     */
+    List<Map<String, Object>> getPendingExpenseApproval(@Param("subType") String subType,
+                                                        @Param("orderNos") List<String> orderNos,
+                                                        @Param("legalIds") List<Long> legalIds);
 }

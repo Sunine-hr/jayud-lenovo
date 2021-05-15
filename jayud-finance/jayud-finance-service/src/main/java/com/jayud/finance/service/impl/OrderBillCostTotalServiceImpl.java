@@ -84,8 +84,6 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
             JSONObject object = datas.getJSONObject(i);
             QueryWrapper<OrderBillCostTotal> condition = new QueryWrapper<>();
             condition.lambda().eq(OrderBillCostTotal::getBillNo, object.getStr("billNo"))
-                    .eq(OrderBillCostTotal::getOrderNo, object.getStr("subOrderNo") == null
-                            ? object.getStr("orderNo") : object.getStr("subOrderNo"))
                     .eq(OrderBillCostTotal::getMoneyType, moneyType);
             List<OrderBillCostTotal> orderBillCostTotals = this.baseMapper.selectList(condition);
             //合计结算币种
@@ -171,5 +169,16 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
         editBillDateilVO.assembleCurrencyName(data);
 
         return editBillDateilVO;
+    }
+
+    /**
+     * 合计币种
+     *
+     * @param billNos
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> totalCurrencyAmount(List<String> billNos) {
+        return this.baseMapper.totalCurrencyAmount(billNos);
     }
 }

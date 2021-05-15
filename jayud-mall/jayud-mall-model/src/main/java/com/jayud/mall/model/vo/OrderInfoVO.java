@@ -126,6 +126,13 @@ public class OrderInfoVO {
     @JSONField(ordinal = 24)
     private Integer totalCartons;
 
+    @ApiModelProperty(value = "Amazon Reference ID(亚马逊引用ID)", position = 24)
+    @JSONField(ordinal = 24)
+    private String amazonReferenceId;
+
+    @ApiModelProperty(value = "扩展单号", position = 24)
+    @JSONField(ordinal = 24)
+    private String extensionNumber;
 
     /*订单对应报关文件：order_customs_file*/
     @ApiModelProperty(value = "订单对应报关文件list", position = 25)

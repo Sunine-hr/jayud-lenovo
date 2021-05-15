@@ -2,11 +2,16 @@ package com.jayud.oms.model.bo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @Data
-public class QueryOrderInfoForm extends BasePageForm{
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+public class QueryOrderInfoForm extends BasePageForm {
 
     @ApiModelProperty(value = "订单号")
     private String orderNo;
@@ -33,7 +38,7 @@ public class QueryOrderInfoForm extends BasePageForm{
             "or goCustomsAudit通关前审核 or dataNotAll待补全 or 待取消处理cancelled or 待驳回处理rejected ")
     private String cmd;
 
-    @ApiModelProperty(value = "当前登录用户,前台传",required = true)
+    @ApiModelProperty(value = "当前登录用户,前台传", required = true)
     @NotEmpty(message = "loginUserName is required")
     private String loginUserName;
 
@@ -43,4 +48,7 @@ public class QueryOrderInfoForm extends BasePageForm{
 
     @ApiModelProperty(value = "创建用户")
     private String createdUser;
+
+    @ApiModelProperty(value = "主订单id集合")
+    private List<Long> mainOrderIds;
 }

@@ -4,52 +4,116 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.trailer.po.TrailerOrder">
-        <id column="id" property="id" />
-        <result column="order_no" property="orderNo" />
-        <result column="main_order_no" property="mainOrderNo" />
-        <result column="status" property="status" />
-        <result column="process_status" property="processStatus" />
-        <result column="legal_entity_id" property="legalEntityId" />
-        <result column="legal_name" property="legalName" />
-        <result column="imp_and_exp_type" property="impAndExpType" />
-        <result column="unit_code" property="unitCode" />
-        <result column="unit_code_name" property="unitCodeName" />
-        <result column="port_departure_code" property="portDepartureCode" />
-        <result column="port_destination_code" property="portDestinationCode" />
-        <result column="cabinet_size" property="cabinetSize" />
-        <result column="bill_of_lading" property="billOfLading" />
-        <result column="bol_file_path" property="bolFilePath" />
-        <result column="bol_file_name" property="bolFileName" />
-        <result column="paper_strip_seal" property="paperStripSeal" />
-        <result column="pss_file_path" property="pssFilePath" />
-        <result column="pss_file_name" property="pssFileName" />
-        <result column="cabinet_number" property="cabinetNumber" />
-        <result column="cn_file_path" property="cnFilePath" />
-        <result column="cn_file_name" property="cnFileName" />
-        <result column="so" property="so" />
-        <result column="so_file_path" property="soFilePath" />
-        <result column="so_file_name" property="soFileName" />
-        <result column="arrival_time" property="arrivalTime" />
-        <result column="closing_warehouse_time" property="closingWarehouseTime" />
-        <result column="time_counter_rent" property="timeCounterRent" />
-        <result column="open_time" property="openTime" />
-        <result column="cutting_replenishing_time" property="cuttingReplenishingTime" />
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="status" property="status"/>
+        <result column="process_status" property="processStatus"/>
+        <result column="legal_entity_id" property="legalEntityId"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="imp_and_exp_type" property="impAndExpType"/>
+        <result column="unit_code" property="unitCode"/>
+        <result column="unit_code_name" property="unitCodeName"/>
+        <result column="port_departure_code" property="portDepartureCode"/>
+        <result column="port_destination_code" property="portDestinationCode"/>
+        <result column="cabinet_size" property="cabinetSize"/>
+        <result column="bill_of_lading" property="billOfLading"/>
+        <result column="bol_file_path" property="bolFilePath"/>
+        <result column="bol_file_name" property="bolFileName"/>
+        <result column="paper_strip_seal" property="paperStripSeal"/>
+        <result column="pss_file_path" property="pssFilePath"/>
+        <result column="pss_file_name" property="pssFileName"/>
+        <result column="cabinet_number" property="cabinetNumber"/>
+        <result column="cn_file_path" property="cnFilePath"/>
+        <result column="cn_file_name" property="cnFileName"/>
+        <result column="so" property="so"/>
+        <result column="so_file_path" property="soFilePath"/>
+        <result column="so_file_name" property="soFileName"/>
+        <result column="arrival_time" property="arrivalTime"/>
+        <result column="closing_warehouse_time" property="closingWarehouseTime"/>
+        <result column="time_counter_rent" property="timeCounterRent"/>
+        <result column="open_time" property="openTime"/>
+        <result column="cutting_replenishing_time" property="cuttingReplenishingTime"/>
         <result column="
 closing_time" property="
-closingTime" />
+closingTime"/>
         <result column="
 release_time" property="
-releaseTime" />
-        <result column="is_weighed" property="isWeighed" />
-        <result column="process_description" property="processDescription" />
-        <result column="is_make_up" property="isMakeUp" />
-        <result column="create_user" property="createUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="need_input_cost" property="needInputCost" />
-        <result column="order_taker" property="orderTaker" />
-        <result column="receiving_orders_date" property="receivingOrdersDate" />
+releaseTime"/>
+        <result column="is_weighed" property="isWeighed"/>
+        <result column="process_description" property="processDescription"/>
+        <result column="is_make_up" property="isMakeUp"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="need_input_cost" property="needInputCost"/>
+        <result column="order_taker" property="orderTaker"/>
+        <result column="receiving_orders_date" property="receivingOrdersDate"/>
+    </resultMap>
+
+    <resultMap id="info" type="com.jayud.trailer.vo.TrailerOrderInfoVO">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="status" property="status"/>
+        <result column="process_status" property="processStatus"/>
+        <result column="legal_entity_id" property="legalEntityId"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="imp_and_exp_type" property="impAndExpType"/>
+        <result column="unit_code" property="unitCode"/>
+        <result column="unit_code_name" property="unitCodeName"/>
+        <result column="port_code" property="portCode"/>
+        <result column="cabinet_size" property="cabinetSize"/>
+        <result column="bill_of_lading" property="billOfLading"/>
+        <result column="bol_file_path" property="bolFilePath"/>
+        <result column="bol_file_name" property="bolFileName"/>
+        <result column="paper_strip_seal" property="paperStripSeal"/>
+        <result column="pss_file_path" property="pssFilePath"/>
+        <result column="pss_file_name" property="pssFileName"/>
+        <result column="cabinet_number" property="cabinetNumber"/>
+        <result column="cn_file_path" property="cnFilePath"/>
+        <result column="cn_file_name" property="cnFileName"/>
+        <result column="so" property="so"/>
+        <result column="so_file_path" property="soFilePath"/>
+        <result column="so_file_name" property="soFileName"/>
+        <result column="arrival_time" property="arrivalTime"/>
+        <result column="closing_warehouse_time" property="closingWarehouseTime"/>
+        <result column="time_counter_rent" property="timeCounterRent"/>
+        <result column="open_time" property="openTime"/>
+        <result column="cutting_replenishing_time" property="cuttingReplenishingTime"/>
+        <result column="is_weighed" property="isWeighed"/>
+        <result column="is_make_up" property="isMakeUp"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="need_input_cost" property="needInputCost"/>
+        <result column="order_taker" property="orderTaker"/>
+        <result column="receiving_orders_date" property="receivingOrdersDate"/>
+        <result column="closing_time" property="closingTime"/>
+        <result column="release_time" property="releaseTime"/>
+        <result column="process_description" property="processDescription"/>
+        <result column="is_info_complete" property="isInfoComplete"/>
+        <association property="trailerDispatchInfoVO" javaType="com.jayud.trailer.vo.TrailerDispatchInfoVO">
+            <id column="id" property="id"/>
+            <result column="order_id" property="orderId"/>
+            <result column="trailer_order_no" property="trailerOrderNo"/>
+            <result column="order_no" property="orderNo"/>
+            <result column="plate_number" property="plateNumber"/>
+            <result column="phone" property="phone"/>
+            <result column="supplier_name" property="supplierName"/>
+            <result column="remark" property="remark"/>
+            <result column="create_user" property="createUser"/>
+            <result column="create_time" property="createTime"/>
+            <result column="update_user" property="updateUser"/>
+            <result column="update_time" property="updateTime"/>
+            <result column="status" property="status"/>
+            <result column="weighing" property="weighing"/>
+            <result column="name" property="name"/>
+            <result column="review_comments" property="reviewComments"/>
+            <result column="cabinet_weight" property="cabinetWeight"/>
+        </association>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -168,7 +232,8 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
             <if test="form.cmd == 'costAudit'">
                 AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = tor.order_no AND opc.`status` =
                 '2' and opc.sub_type = 'tc')
-                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = tor.order_no AND orc.`status` =
+                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = tor.order_no AND orc.`status`
+                =
                 '2' and orc.sub_type = 'tc'))
             </if>
 
@@ -181,6 +246,19 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
             and tor.is_info_complete = 1
         </where>
         order by tor.id desc
+    </select>
+
+    <select id="getTrailerInfoByMainOrderNos" resultMap="info">
+        select
+        tr.*,td.*
+        from trailer_order tr left join trailer_dispatch td on tr.id=td.order_id
+        <where>
+            tr.main_order_no in
+            <foreach collection="mainOrderNos" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+
     </select>
 
 </mapper>

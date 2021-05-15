@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * 业务类型(空运,中港运输,纯报关)
+ *
  */
 @Getter
 @AllArgsConstructor

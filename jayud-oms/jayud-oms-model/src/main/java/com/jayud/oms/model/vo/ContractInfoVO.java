@@ -60,6 +60,9 @@ public class ContractInfoVO {
     @ApiModelProperty(value = "合同绑定的业务id")
     private Long bindId;
 
+    @ApiModelProperty(value = "备注")
+    private String remarks;
+
     public void setBusinessTypes(String businessType) {
         if (businessType != null) {
             String[] strList = businessType.split(",");

@@ -1,7 +1,6 @@
 package com.jayud.oms.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -29,7 +28,6 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -109,6 +107,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private IProductClassifyService productClassifyService;
     @Autowired
     private StorageClient storageClient;
+
+    @Autowired
+    private IGoodsService goodsService;
+
+    @Autowired
+    private IOrderAddressService orderAddressService;
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
             SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(),
@@ -242,8 +246,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             OrderInfo oldOrder = baseMapper.selectById(form.getOrderId());
             orderInfo.setId(form.getOrderId());
             orderInfo.setUpTime(LocalDateTime.now());
-            orderInfo.setIsRejected(false);
-            orderInfo.setRejectComment(" ");
+//            orderInfo.setIsRejected(false);
+//            orderInfo.setRejectComment(" ");
             orderInfo.setUpUser(UserOperator.getToken() == null ? loginUserName : UserOperator.getToken());
         } else {//新增
 
@@ -263,6 +267,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return orderInfo.getOrderNo();
     }
 
+
     @Override
     public boolean isExistOrder(String orderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -277,7 +282,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public IPage<OrderInfoVO> findOrderInfoByPage(QueryOrderInfoForm form) {
         //定义分页参数
-        Page<OrderInfoVO> page = new Page(form.getPageNum(), form.getPageSize());
+        Page<OrderInfoVO> page = new Page<>(form.getPageNum(), form.getPageSize());
         IPage<OrderInfoVO> pageInfo = null;
 
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
@@ -286,9 +291,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (CommonConstant.GO_CUSTOMS_AUDIT.equals(form.getCmd())) {
             //定义排序规则
             page.addOrder(OrderItem.desc("oi.id"));
-            pageInfo = baseMapper.findGoCustomsAuditByPage(page, form, legalIds);
+            Map<String, Object> callbackParam = new HashMap<>();
+            Set<Long> mainOrderIds = this.filterGoCustomsAudit(callbackParam, legalIds);
+            pageInfo = baseMapper.findGoCustomsAuditByPage(page,
+                    form.setMainOrderIds(new ArrayList<>(mainOrderIds)),
+                    legalIds);
             //补充数据
-            this.supplementaryGoCustomsAuditData(pageInfo);
+            this.supplementaryGoCustomsAuditData(pageInfo, callbackParam);
         } else {
             //定义排序规则
             page.addOrder(OrderItem.desc("id"));
@@ -300,9 +309,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
             List<String> mainOrderNos = orderInfoVOs.stream().map(OrderInfoVO::getOrderNo).collect(Collectors.toList());
             //费用状态
-            Map<String, Object> orderCostStatus = this.orderReceivableCostService.getOrderCostStatus(mainOrderNos, null);
+//            Map<String, Object> receivableCostStatus = this.orderReceivableCostService.getOrderCostStatus(mainOrderNos, null);
+//            Map<String, Object> paymentCostStatus = this.orderPaymentCostService.getOrderCostStatus(mainOrderNos, null);
+            Map<String, Object> costStatus = this.getCostStatus(mainOrderNos, null);
             for (OrderInfoVO orderInfoVO : orderInfoVOs) {
-                orderInfoVO.assembleCostStatus(orderCostStatus);
+                //重组费用状态
+                orderInfoVO.assembleCostStatus(costStatus);
             }
 
 //            List<String> mainOrderNoList = orderInfoVOs.stream().map(OrderInfoVO::getOrderNo).collect(Collectors.toList());
@@ -316,15 +328,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
 
-    private void supplementaryGoCustomsAuditData(IPage<OrderInfoVO> pageInfo) {
+    private void supplementaryGoCustomsAuditData(IPage<OrderInfoVO> pageInfo, Map<String, Object> callbackParam) {
         List<OrderInfoVO> records = pageInfo.getRecords();
         if (CollectionUtil.isEmpty(records)) {
             return;
         }
+        //获取中港信息
+        Object tmsOrders = callbackParam.get("tmsOrders");
+
         Set<String> classCodes = records.stream().map(OrderInfoVO::getClassCode).collect(Collectors.toSet());
         List<ProductClassify> productClassifies = this.productClassifyService.getIdCodes(new ArrayList<>(classCodes));
         Map<String, String> map = productClassifies.stream().collect(Collectors.toMap(ProductClassify::getIdCode, ProductClassify::getName));
-        pageInfo.getRecords().forEach(e -> e.setClassCodeDesc(map.get(e.getClassCode())));
+        pageInfo.getRecords().forEach(e -> {
+            e.setClassCodeDesc(map.get(e.getClassCode()));
+        });
     }
 
 
@@ -984,6 +1001,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //保存主订单
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
         inputMainOrderForm.setCmd(form.getCmd());
+        //特殊处理
+        this.specialTreatment(form, inputMainOrderForm);
+
         String mainOrderNo = oprMainOrder(inputMainOrderForm, form.getLoginUserName());
         if (StringUtil.isNullOrEmpty(mainOrderNo)) {
             return false;
@@ -998,7 +1018,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
 
             //生成报关订单号
-            if (form.getCmd().equals("submit")) {
+            if (form.getCmd().equals("submit") && CollectionUtil.isNotEmpty(orderCustomsForm.getSubOrders())) {
+
                 for (InputSubOrderCustomsForm subOrder : orderCustomsForm.getSubOrders()) {
 
                     String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), orderCustomsForm.getGoodsType(), OrderStatusEnum.CBG.getCode());
@@ -1254,48 +1275,115 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (OrderStatusEnum.TC.getCode().equals(classCode) || selectedServer.contains(OrderStatusEnum.TCEDD.getCode()) || selectedServer.contains(OrderStatusEnum.TCIDD.getCode())) {
             List<InputTrailerOrderFrom> trailerOrderFroms = form.getTrailerOrderFrom();
 
-            for (InputTrailerOrderFrom trailerOrderFrom : trailerOrderFroms) {
-                //生成拖车订单号
-                if (form.getCmd().equals("submit")) {//提交
-                    if (trailerOrderFrom.getId() == null) {
-                        String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
-                        trailerOrderFrom.setOrderNo(orderNo);
+            List<String> strings = new ArrayList<>();
+            strings.add("TT_1_1");
+            strings.add("TT_2_1");
+            strings.add("TT_3_1");
+            strings.add("TT_4_1");
+            boolean flag = false;
+            for (String string : strings) {
+                for (InputTrailerOrderFrom trailerOrderFrom : trailerOrderFroms) {
+                    if (trailerOrderFrom.getStatus() != null && string.equals(trailerOrderFrom.getStatus())) {
+                        flag = true;
                     }
-                    //草稿编辑提交
-                    if (trailerOrderFrom.getStatus() != null && trailerOrderFrom.getStatus().equals("TT_0")) {
-                        String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
-                        trailerOrderFrom.setOrderNo(orderNo);
-                    }
-
-                }
-                //暂存，随机生成订单号
-                if (form.getCmd().equals("preSubmit") && trailerOrderFrom.getId() == null) {
-                    //生成拖车订单号
-                    String orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
-                    while (true) {
-                        if (!isExistOrder(orderNo)) {//重复
-                            orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
-                        } else {
-                            break;
-                        }
-                    }
-                    trailerOrderFrom.setOrderNo(orderNo);
-                }
-
-                if (this.queryEditOrderCondition(trailerOrderFrom.getStatus(),
-                        inputMainOrderForm.getStatus(), SubOrderSignEnum.TC.getSignOne(), form)) {
-                    trailerOrderFrom.setMainOrderNo(mainOrderNo);
-                    trailerOrderFrom.setCreateUser(UserOperator.getToken());
-                    Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
-                            : ProcessStatusEnum.DRAFT.getCode();
-                    trailerOrderFrom.setProcessStatus(processStatus);
-                    String subOrderNo = this.trailerClient.createOrder(trailerOrderFrom).getData();
-                    trailerOrderFrom.setOrderNo(subOrderNo);
-
-                    this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.TC,
-                            form, trailerOrderFrom.getId(), OrderStatusEnum.getTrailerOrderProcess());
                 }
             }
+            if (flag) {
+                for (InputTrailerOrderFrom trailerOrderFrom : trailerOrderFroms) {
+
+                    if (this.queryEditOrderCondition(trailerOrderFrom.getStatus(),
+                            inputMainOrderForm.getStatus(), SubOrderSignEnum.TC.getSignOne(), form)) {
+                        trailerOrderFrom.setMainOrderNo(mainOrderNo);
+                        trailerOrderFrom.setCreateUser(UserOperator.getToken());
+                        Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                                : ProcessStatusEnum.DRAFT.getCode();
+                        trailerOrderFrom.setProcessStatus(processStatus);
+                        String subOrderNo = this.trailerClient.createOrder(trailerOrderFrom).getData();
+                        trailerOrderFrom.setOrderNo(subOrderNo);
+
+                        this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.TC,
+                                form, trailerOrderFrom.getId(), OrderStatusEnum.getTrailerOrderProcess());
+                    }
+                }
+            } else {
+                if (this.queryEditOrderCondition(trailerOrderFroms.get(0).getStatus(),
+                        inputMainOrderForm.getStatus(), SubOrderSignEnum.TC.getSignOne(), form)) {
+                    if (trailerOrderFroms.get(0).getMainOrderNo() != null) {
+                        List<String> data = trailerClient.getOrderNosByMainOrderNo(trailerOrderFroms.get(0).getMainOrderNo()).getData();
+                        if (data != null && data.size() > 0) {
+                            goodsService.deleteGoodsByBusOrders(data, BusinessTypeEnum.TC.getCode());
+                            orderAddressService.deleteOrderAddressByBusOrders(data, BusinessTypeEnum.TC.getCode());
+                            log.warn("删除商品和地址信息成功");
+                        }
+                    }
+
+                    if (form.getCmd().equals("preSubmit") && trailerOrderFroms.get(0).getMainOrderNo() != null) {
+                        ApiResult result = trailerClient.deleteOrderByMainOrderNo(trailerOrderFroms.get(0).getMainOrderNo());
+                        if (result.getCode() != HttpStatus.SC_OK) {
+                            log.warn("删除订单信息失败");
+                        }
+                    }
+
+                    if (form.getCmd().equals("submit") && trailerOrderFroms.get(0).getStatus() != null && trailerOrderFroms.get(0).getStatus().equals("TT_0")) {
+                        ApiResult result = trailerClient.deleteOrderByMainOrderNo(trailerOrderFroms.get(0).getMainOrderNo());
+                        if (result.getCode() != HttpStatus.SC_OK) {
+                            log.warn("删除订单信息失败");
+                        }
+                    }
+
+                    for (InputTrailerOrderFrom trailerOrderFrom : trailerOrderFroms) {
+
+                        //生成拖车订单号
+                        if (form.getCmd().equals("submit")) {//提交
+                            if (trailerOrderFrom.getId() == null && trailerOrderFrom.getStatus() == null) {
+                                String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
+                                trailerOrderFrom.setOrderNo(orderNo);
+                            }
+                            //草稿编辑提交
+                            if (trailerOrderFrom.getStatus() != null && trailerOrderFrom.getStatus().equals("TT_0")) {
+                                String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
+                                trailerOrderFrom.setOrderNo(orderNo);
+                            }
+
+                        }
+                        //暂存，随机生成订单号
+                        if (form.getCmd().equals("preSubmit")) {
+
+                            if (trailerOrderFrom.getId() == null) {
+                                //生成拖车订单号
+                                String orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
+                                while (true) {
+                                    if (!isExistOrder(orderNo)) {//重复
+                                        orderNo = StringUtils.loadNum(CommonConstant.TC, 12);
+                                    } else {
+                                        break;
+                                    }
+                                }
+                                trailerOrderFrom.setOrderNo(orderNo);
+                            }
+
+                        }
+
+                        if (this.queryEditOrderCondition(trailerOrderFrom.getStatus(),
+                                inputMainOrderForm.getStatus(), SubOrderSignEnum.TC.getSignOne(), form)) {
+                            trailerOrderFrom.setMainOrderNo(mainOrderNo);
+                            trailerOrderFrom.setCreateUser(UserOperator.getToken());
+                            Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                                    : ProcessStatusEnum.DRAFT.getCode();
+                            trailerOrderFrom.setProcessStatus(processStatus);
+                            String subOrderNo = this.trailerClient.createOrder(trailerOrderFrom).getData();
+                            trailerOrderFrom.setOrderNo(subOrderNo);
+
+                            this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.TC,
+                                    form, trailerOrderFrom.getId(), OrderStatusEnum.getTrailerOrderProcess());
+                        }
+                    }
+                }
+
+
+            }
+
+
         }
 
         //仓储
@@ -1510,6 +1598,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         InitGoCustomsAuditVO initGoCustomsAuditVO = new InitGoCustomsAuditVO();
         //查询主订单信息
         OrderInfo orderInfo = this.getByOrderNos(Collections.singletonList(form.getOrderNo())).get(0);
+        //查询中港信息
+        Object tmsOrderInfos = this.tmsClient.getTmsOrderInfoByMainOrderNos(Collections.singletonList(form.getOrderNo())).getData();
+
 
         String prePath = fileClient.getBaseUrl().getData().toString();
         if (orderInfo.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {//出口报关
@@ -1550,6 +1641,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
             initGoCustomsAuditVO.distributeFiles(orderAttachments, prePath);
         }
+        initGoCustomsAuditVO.assemblyData(tmsOrderInfos);
 //        initGoCustomsAuditVO.setFileViewList(StringUtils.getFileViews(initGoCustomsAuditVO.getFileStr(), initGoCustomsAuditVO.getFileNameStr(), prePath));
         return initGoCustomsAuditVO;
     }
@@ -1685,6 +1777,86 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         condition.lambda().in(OrderInfo::getOrderNo, orderNo)
                 .eq(OrderInfo::getStatus, status);
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 获取费用状态
+     */
+    @Override
+    public Map<String, Object> getCostStatus(List<String> mainOrderNo, List<String> subOrderNo) {
+        Map<String, Object> receivableCallbackParam = new HashMap<>();
+        Map<String, Object> paymentCallbackParam = new HashMap<>();
+
+        Map<String, Object> receivableCostStatus = this.orderReceivableCostService.getOrderCostStatus(mainOrderNo, subOrderNo, receivableCallbackParam);
+        Map<String, Object> paymentCostStatus = this.orderPaymentCostService.getOrderCostStatus(mainOrderNo, subOrderNo, paymentCallbackParam);
+        Map<String, Object> map = new HashMap<>();
+        map.put("receivableCostStatus", receivableCostStatus);
+        map.put("paymentCostStatus", paymentCostStatus);
+        return map;
+    }
+
+    /**
+     * 过滤关前审核
+     *
+     * @param callbackParam
+     * @param legalIds
+     * @return
+     */
+    @Override
+    public Set<Long> filterGoCustomsAudit(Map<String, Object> callbackParam, List<Long> legalIds) {
+        //1.完成过磅,2.选择没有过磅情况下完成提货,需要到通关前审核
+        Object tmsOrders = this.tmsClient.preconditionsGoCustomsAudit().getData();
+        if (tmsOrders == null) {
+            return new HashSet<>();
+        }
+        JSONArray tmsJsonArray = new JSONArray(tmsOrders);
+        //获取所有主订单号
+        List<String> mainOrderNos = new ArrayList<>();
+        Map<String, Object> tmsOrderMap = new HashMap<>();
+        for (int i = 0; i < tmsJsonArray.size(); i++) {
+            JSONObject tmsOrder = tmsJsonArray.getJSONObject(i);
+            String mainOrderNo = tmsOrder.getStr("mainOrderNo");
+            mainOrderNos.add(mainOrderNo);
+            tmsOrderMap.put(mainOrderNo, tmsOrder);
+        }
+        if (CollectionUtil.isEmpty(mainOrderNos)) {
+            return new HashSet<>();
+        }
+
+        //批量查询主订单详情
+        QueryWrapper<OrderInfo> condition = new QueryWrapper<>();
+        condition.lambda().select(OrderInfo::getId, OrderInfo::getOrderNo, OrderInfo::getCustomsRelease)
+                .in(OrderInfo::getOrderNo, mainOrderNos);
+        if (CollectionUtil.isNotEmpty(legalIds)) {
+            condition.lambda().in(OrderInfo::getLegalEntityId, legalIds);
+        }
+
+        List<OrderInfo> orderInfos = this.baseMapper.selectList(condition);
+        //分发订单号
+        Set<Long> orderIds = new HashSet<>();
+        Map<String, Long> customsMainOrderMap = new HashMap<>();
+        for (OrderInfo orderInfo : orderInfos) {
+            if (orderInfo.getCustomsRelease()) {
+                //外部报关放行通过
+                orderIds.add(orderInfo.getId());
+            } else {
+                //内部报关过滤条件
+                customsMainOrderMap.put(orderInfo.getOrderNo(), orderInfo.getId());
+            }
+        }
+
+        //查询报关订单,需要全部都放行审核通过
+        if (CollectionUtil.isNotEmpty(customsMainOrderMap)) {
+            List<String> customsMainOrders = this.customsClient.getAllPassByMainOrderNos(new ArrayList<>(customsMainOrderMap.keySet())).getData();
+            if (CollectionUtil.isNotEmpty(customsMainOrders)) {
+                customsMainOrders.forEach(e -> orderIds.add(customsMainOrderMap.get(e)));
+            }
+        }
+        if (CollectionUtil.isNotEmpty(callbackParam)) {
+            callbackParam.put("tmsOrders", tmsOrderMap);
+        }
+
+        return orderIds;
     }
 
     /**
@@ -2042,6 +2214,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
 
         }
+    }
+
+
+    private void specialTreatment(InputOrderForm form, InputMainOrderForm orderInfo) {
+        //中港货物编辑入口时候,不能修改主订单驳回状态
+        InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
+        if (orderTransportForm != null
+                && orderTransportForm.getIsGoodsEdit() != null
+                && orderTransportForm.getIsGoodsEdit()) {
+            return;
+        }
+        orderInfo.setIsRejected(false);
+        orderInfo.setRejectComment(" ");
     }
 
 

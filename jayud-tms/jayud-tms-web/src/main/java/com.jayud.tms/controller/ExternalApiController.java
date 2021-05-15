@@ -11,12 +11,14 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.tms.feign.OauthClient;
+import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
 import com.jayud.tms.model.bo.OprStatusForm;
 import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.tms.model.bo.TmsChangeStatusForm;
 import com.jayud.tms.model.enums.OrderTakeAdrTypeEnum;
 import com.jayud.tms.model.po.OrderSendCars;
+import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.po.TmsExtensionField;
 import com.jayud.tms.model.vo.*;
@@ -55,6 +57,8 @@ public class ExternalApiController {
     private ITmsExtensionFieldService tmsExtensionFieldService;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private OmsClient omsClient;
 
     @ApiOperation(value = "创建中港子订单")
     @RequestMapping(value = "/api/createOrderTransport")
@@ -253,10 +257,11 @@ public class ExternalApiController {
         tmp.put("车辆出仓", "T_10");
         tmp.put("车辆派送", "T_13");
         tmp.put("确认签收", "T_14");
+        tmp.put("费用审核", "CostAudit");
         List<Map<String, Object>> result = new ArrayList<>();
 
-        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
-        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = legalEntityByLegalName.getData();
 
         for (Map<String, Object> menus : menusList) {
 
@@ -287,6 +292,45 @@ public class ExternalApiController {
             initComboxStrVOS.add(initComboxVO);
         }
         return ApiResult.ok(initComboxStrVOS);
+    }
+
+
+    /**
+     * 根据主订单号集合查询中港详情信息
+     */
+    @RequestMapping(value = "/api/getTmsOrderInfoByMainOrderNos")
+    public ApiResult<OrderTransportInfoVO> getTmsOrderInfoByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos) {
+        List<OrderTransportInfoVO> list = this.orderTransportService.getTmsOrderInfoByMainOrderNos(mainOrderNos);
+        List<String> orderNos = new ArrayList<>();
+        List<Long> vehicleIds = new ArrayList<>();
+        for (OrderTransportInfoVO orderTransportInfoVO : list) {
+            orderNos.add(orderTransportInfoVO.getOrderNo());
+            OrderSendCarsInfoVO orderSendCars = orderTransportInfoVO.getOrderSendCars();
+            if (orderSendCars != null) {
+                vehicleIds.add(orderSendCars.getVehicleId());
+            }
+        }
+
+        //查询送货/收货地址信息
+        List<OrderTakeAdrInfoVO> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrInfos(orderNos, null);
+        //查询车辆信息
+        Object vehicleInfos = omsClient.getVehicleInfoByIds(vehicleIds).getData();
+
+        //组装地址
+        for (OrderTransportInfoVO orderTransportInfoVO : list) {
+            orderTransportInfoVO.assemblyAddr(takeAdrsList);
+            orderTransportInfoVO.assemblyVehicleInfos(vehicleInfos);
+        }
+        return ApiResult.ok(list);
+    }
+
+    /**
+     * 通关前审核前置条件
+     */
+    @RequestMapping(value = "/api/preconditionsGoCustomsAudit")
+    public ApiResult<List<OrderTransport>> preconditionsGoCustomsAudit() {
+        List<OrderTransport> list = this.orderTransportService.preconditionsGoCustomsAudit();
+        return ApiResult.ok(list);
     }
 }
 

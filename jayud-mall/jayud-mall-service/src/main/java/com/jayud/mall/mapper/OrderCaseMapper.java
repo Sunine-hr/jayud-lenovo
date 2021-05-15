@@ -53,4 +53,11 @@ public interface OrderCaseMapper extends BaseMapper<OrderCase> {
      * @return
      */
     OrderCaseVO findOrderCaseByCartonNo(@Param("cartonNo") String cartonNo);
+
+    /**
+     * 查询订单箱号
+     * @param fabNo fba箱号
+     * @return
+     */
+    OrderCaseVO findOrderCaseByfabNo(@Param("fabNo") String fabNo);
 }

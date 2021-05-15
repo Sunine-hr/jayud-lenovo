@@ -136,4 +136,17 @@ public interface TmsClient {
     @ApiModelProperty(value = "根据订单号获取送货地址信息(下拉选择)")
     @RequestMapping(value = "/api/initTakeAdrBySubOrderNo")
     public ApiResult initTakeAdrBySubOrderNo(@RequestParam("subOrderNo") String subOrderNo);
+
+    /**
+     * 通关前审核前置条件
+     */
+    @RequestMapping(value = "/api/preconditionsGoCustomsAudit")
+    public ApiResult preconditionsGoCustomsAudit();
+
+
+    /**
+     * 根据主订单号集合查询中港详情信息
+     */
+    @RequestMapping(value = "/api/getTmsOrderInfoByMainOrderNos")
+    public ApiResult getTmsOrderInfoByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos);
 }

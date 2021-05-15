@@ -83,7 +83,8 @@
             oc.legal_entity_id legalEntityId,
             oc.`status` status,
             oc.`entrust_no` entrustNo,
-            oc.`supervision_mode` supervisionMode
+            oc.`supervision_mode` supervisionMode,
+            oc.`yun_customs_no` yunCustomsNo
         FROM
             order_customs oc
         WHERE 1 = 1
@@ -322,5 +323,13 @@
                 </foreach>
             </if>
         </where>
+    </select>
+
+    <select id="getOrderCustomsTaskData" resultMap="BaseResultMap">
+        select oc.*
+        from order_customs oc
+        join order_info oi on oc.main_order_no = oi.order_no
+        where oi.`status` = 1
+        and oc.`status` in ('C_2','C_3','C_9','C_11','C_4')
     </select>
 </mapper>

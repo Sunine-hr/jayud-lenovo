@@ -57,6 +57,34 @@
         </collection>
     </resultMap>
 
+    <resultMap id="ResultOneMap" type="com.jayud.tms.model.vo.OrderTransportInfoVO">
+        <id column="id" property="id"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="status" property="status"/>
+        <association property="orderSendCars" javaType="com.jayud.tms.model.vo.OrderSendCarsInfoVO" >
+            <id column="id" property="id"/>
+            <result column="transport_no" property="transportNo"/>
+            <result column="order_no" property="orderNo"/>
+            <result column="vehicle_type" property="vehicleType"/>
+            <result column="vehicle_size" property="vehicleSize"/>
+            <result column="cntr_no" property="cntrNo"/>
+            <result column="cntr_pic" property="cntrPic"/>
+            <result column="cntr_pic_name" property="cntrPicName"/>
+            <result column="driver_info_info" property="driverInfoId"/>
+            <result column="vehicle_id" property="vehicleId"/>
+            <result column="remarks" property="remarks"/>
+            <result column="describes" property="describes"/>
+            <result column="status" property="status"/>
+            <result column="updated_time" property="updatedTime"/>
+            <result column="created_user" property="createdUser"/>
+            <result column="created_time" property="createdTime"/>
+            <result column="updated_user" property="updatedUser"/>
+            <result column="jockey_id" property="jockeyId"/>
+            <result column="jockey" property="jockey"/>
+        </association>
+    </resultMap>
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, main_order_no, order_no, port_code, goods_type, vehicle_type, vehicle_size, cntr_no, cntr_pic, cntrPicName,
@@ -388,16 +416,20 @@
 --         (SELECT ota.`goods_desc` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
 --         where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
 --         ) goodsDesc,
---         (SELECT ota.`piece_amount` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+--         (SELECT ota.`piece_amount` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
+--         da.`id`
 --         where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
 --         ) pieceAmount,
---         (SELECT ota.`plate_amount` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+--         (SELECT ota.`plate_amount` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
+--         da.`id`
 --         where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
 --         ) plateAmount,
---         (SELECT ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where
+--         (SELECT ota.`weight` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+--         where
 --         ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
 --         ) weight,
---         (SELECT SUM(ota.`weight`) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+--         (SELECT SUM(ota.`weight`) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
+--         da.`id`
 --         where ota.order_no = ot.order_no AND ota.`opr_type` = '1'
 --         ) totalWeight,
 --         (SELECT da.`state_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
@@ -406,7 +438,8 @@
 --         (SELECT da.`city_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
 --         where ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
 --         ) cityName1,
---         (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where
+--         (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+--         where
 --         ota.order_no = ot.order_no AND ota.`opr_type` = '1' limit 1
 --         ) address1,
 --         (SELECT da.`state_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
@@ -415,25 +448,27 @@
 --         (SELECT da.`city_name` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
 --         where ota.order_no = ot.order_no AND ota.`opr_type` = '2' limit 1
 --         ) cityName2,
---         (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id` where
+--         (SELECT da.`address` FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` = da.`id`
+--         where
 --         ota.order_no = ot.order_no AND ota.`opr_type` = '2' limit 1
 --         ) address2,
         ot.`vehicle_type` vehicleType,
         ot.`vehicle_size` vehicleSize,
         ot.`cntr_no` cntrNo,
---         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
---         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
---         ELSE FALSE
---         END) isCost,
+        -- (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
+        -- (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
+        -- ELSE FALSE
+        -- END) isCost,
         oi.`need_input_cost` needInputCost,
         ot.`status` subTmsStatus,
         oi.legal_name legalName,
         oi.unit_code unitCode,
         ot.`legal_name` subLegalName,
         ot.unit_code subUnitCode,
---         (SELECT GROUP_CONCAT(ota.take_time) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
---         da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
---         ) takeTimeStr,
+        -- (SELECT GROUP_CONCAT(ota.take_time) FROM order_take_adr ota LEFT JOIN delivery_address da ON
+        -- ota.`delivery_id` =
+        -- da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no
+        -- ) takeTimeStr,
         -- (SELECT GROUP_CONCAT(ota.file) FROM order_take_adr ota LEFT JOIN delivery_address da ON ota.`delivery_id` =
         -- da.`id` where ota.order_no = ot.order_no AND ota.`opr_type` = '1' group by ot.order_no order by ota.id
         -- ) file1,
@@ -584,13 +619,12 @@
                 </foreach>
             </if>
             and ot.status != 'T_15'
-            and 	DATE_FORMAT( ot.created_time, '%Y%m' ) >= DATE_FORMAT( DATE_SUB( curdate(), INTERVAL 1 MONTH ), '%Y%m' )
-            --      and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT('2021-3-1', '%Y%m')
+            and DATE_FORMAT( ot.created_time, '%Y%m' ) >= DATE_FORMAT( DATE_SUB( curdate(), INTERVAL 1 MONTH ), '%Y%m' )
+            -- and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT('2021-3-1', '%Y%m')
 
         </where>
         order by id desc
     </select>
-
 
 
     <select id="findStatisticsSalesmanRanking"
@@ -607,8 +641,9 @@
                     #{item}
                 </foreach>
             </if>
---             and DATE_FORMAT( ot.created_time, '%Y%m' ) >= DATE_FORMAT( DATE_SUB( curdate(), INTERVAL 1 MONTH ), '%Y%m' )
-               and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT(NOW(), '%Y%m')
+            -- and DATE_FORMAT( ot.created_time, '%Y%m' ) >= DATE_FORMAT( DATE_SUB( curdate(), INTERVAL 1 MONTH ),
+            '%Y%m' )
+            and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT(NOW(), '%Y%m')
         </where>
         GROUP BY ot.created_user
         order by orderNum desc
@@ -696,6 +731,24 @@
                     group by ot.status
                 </when>
             </choose>
+        </where>
+    </select>
+
+    <select id="getTmsOrderInfoByMainOrderNos" resultMap="ResultOneMap">
+        select
+        ot.main_order_no,ot.order_no,ot.port_code,ot.goods_type,ot.vehicle_type,
+        ot.vehicle_size,ot.unit_code,ot.legal_name,ot.legal_entity_id,ot.status,
+        oc.id, oc.transport_no, oc.order_no,oc.vehicle_type, oc.vehicle_size, oc.cntr_no, oc.cntr_pic,
+        oc.cntr_pic_name, oc.driver_info_id,
+        oc.vehicle_id,oc.remarks, oc.describes, oc.status, oc.updated_time, oc.updated_user, oc.created_user,
+        oc.created_time,oc.jockey_id,oc.jockey
+        from
+        order_transport ot left join order_send_cars oc on ot.order_no=oc.order_no
+        <where>
+            and ot.main_order_no in
+            <foreach collection="mainOrderNos" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </where>
     </select>
 </mapper>

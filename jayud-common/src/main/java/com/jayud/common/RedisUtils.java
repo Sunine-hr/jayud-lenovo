@@ -37,7 +37,7 @@ public class RedisUtils {
     /**
      * 云报关token过期时长
      */
-    public final static long EXPIRE_YUNBAOGUAN = 2*3600;
+    public final static long EXPIRE_YUNBAOGUAN = 2 * 3600;
 
     /**
      * 不设置过期时长
@@ -46,7 +46,7 @@ public class RedisUtils {
     private final static Gson gson = new Gson();
 
 
-    public boolean hasKey(String key){
+    public boolean hasKey(String key) {
         return redisTemplate.hasKey(key);
     }
 
@@ -98,6 +98,70 @@ public class RedisUtils {
             return String.valueOf(object);
         }
         return gson.toJson(object);
+    }
+
+
+    /**
+     * 向一张hash表中放入数据,如果不存在将创建
+     *
+     * @param key   键
+     * @param item  项
+     * @param value 值
+     * @param time  时间(秒) 注意:如果已存在的hash表有时间,这里将会替换原有的时间
+     * @return true 成功 false失败
+     */
+    public boolean hset(String key, String item, Object value, long time) {
+        try {
+            redisTemplate.opsForHash().put(key, item, value);
+            if (time > 0) {
+                expire(key, time);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 指定缓存失效时间
+     *
+     * @param key  键
+     * @param time 时间(秒)
+     * @return
+     */
+    public boolean expire(String key, long time) {
+        try {
+            if (time > 0) {
+                redisTemplate.expire(key, time, TimeUnit.SECONDS);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     *
+     * @param key
+     * @param hashKey
+     * @param value
+     */
+    public void hPut(String key, String hashKey, String value) {
+        redisTemplate.opsForHash().put(key, hashKey, value);
+    }
+
+
+    /**
+     * 判断hash表中是否有该项的值
+     *
+     * @param key  键 不能为null
+     * @param item 项 不能为null
+     * @return true 存在 false不存在
+     */
+    public boolean hHasKey(String key, String item) {
+        return redisTemplate.opsForHash().hasKey(key, item);
     }
 
     /**

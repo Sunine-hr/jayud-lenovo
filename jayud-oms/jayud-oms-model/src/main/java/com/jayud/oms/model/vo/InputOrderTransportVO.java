@@ -243,6 +243,7 @@ public class InputOrderTransportVO {
                 e.setTakeAdrId(null);
                 e.setDeliveryId(null);
                 e.setTakeFiles(null);
+                e.setTakeTimeStr(null);
             });
         }
         if (this.orderTakeAdrForms2 != null) {
@@ -250,6 +251,7 @@ public class InputOrderTransportVO {
                 e.setTakeAdrId(null);
                 e.setDeliveryId(null);
                 e.setTakeFiles(null);
+                e.setTakeTimeStr(null);
             });
         }
     }

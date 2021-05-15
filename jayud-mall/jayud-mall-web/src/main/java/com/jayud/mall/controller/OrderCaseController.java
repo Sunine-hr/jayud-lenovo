@@ -2,9 +2,13 @@ package com.jayud.mall.controller;
 
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.CreateOrderCaseForm;
+import com.jayud.mall.model.vo.CaseVO;
 import com.jayud.mall.model.vo.OrderCaseVO;
 import com.jayud.mall.service.IOrderCaseService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,7 +33,7 @@ public class OrderCaseController {
     @ApiOperation(value = "批量添加箱号(根据总箱数添加)")
     @PostMapping("/createOrderCaseList")
     @ApiOperationSupport(order = 1)
-    public CommonResult<List<OrderCaseVO>> createOrderCaseList(@Valid @RequestBody CreateOrderCaseForm form){
+    public CommonResult<CaseVO> createOrderCaseList(@Valid @RequestBody CreateOrderCaseForm form){
         Integer cartons = form.getCartons();// 总箱数
         BigDecimal weight = form.getWeight();// 每箱重量(KG)
         BigDecimal length = form.getLength();// 长(cm)
@@ -52,7 +56,39 @@ public class OrderCaseController {
             return CommonResult.error(-1, "高不能小于或等于零");
         }
         List<OrderCaseVO> orderCaseVOList = orderCaseService.createOrderCaseList(form);
-        return CommonResult.success(orderCaseVOList);
+
+
+        //fba箱号-生成规则
+        String extensionNumber = form.getExtensionNumber();
+        String beginNumber = form.getBeginNumber();
+        Integer bNumber = Integer.valueOf(beginNumber);
+        for (int i = 0; i<orderCaseVOList.size(); i++){
+            OrderCaseVO orderCaseVO = orderCaseVOList.get(i);
+            if(i != 0){
+                bNumber = bNumber + 1;
+            }
+            //数字转字符串,前面自动补0的实现,补4位数的零
+            String fabNo = extensionNumber+"U"+String.format("%0"+beginNumber.length()+"d", bNumber);
+            orderCaseVO.setFabNo(fabNo);
+        }
+
+        CaseVO caseVO = new CaseVO();
+        //(客户预报)总重量
+        BigDecimal totalAsnWeight = new BigDecimal("0");
+        //(客户预报)总体积
+        BigDecimal totalAsnVolume = new BigDecimal("0");
+
+        for (int i = 0; i<orderCaseVOList.size(); i++){
+            BigDecimal asnWeight = orderCaseVOList.get(i).getAsnWeight();
+            BigDecimal asnVolume = orderCaseVOList.get(i).getAsnVolume();
+            totalAsnWeight = totalAsnWeight.add(asnWeight);
+            totalAsnVolume = totalAsnVolume.add(asnVolume);
+        }
+        caseVO.setTotalAsnWeight(totalAsnWeight);
+        caseVO.setTotalAsnVolume(totalAsnVolume);
+        caseVO.setTotalCase(orderCaseVOList.size());
+        caseVO.setOrderCaseVOList(orderCaseVOList);
+        return CommonResult.success(caseVO);
     }
 
 

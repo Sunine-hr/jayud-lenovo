@@ -159,11 +159,12 @@ public class ExternalApiController {
         tmp.put("放行审核", "C_10");
         tmp.put("驳回列表", "C_5_1");
         tmp.put("通关确认", "C_5");
+        tmp.put("费用审核", "portFeeCheck");
 
         List<Map<String, Object>> result = new ArrayList<>();
 
-        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
-        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = legalEntityByLegalName.getData();
 
         for (Map<String, Object> menus : menusList) {
 
@@ -183,7 +184,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "接收云报关改变状态回传的信息")
     @PostMapping("/api/feedback/status/{busNo}")
-    public ApiResult receiveStatus(@RequestBody Map<String, String> param,@PathVariable String busNo) {
+    public ApiResult receiveStatus(@RequestBody Map<String, String> param, @PathVariable String busNo) {
 
         System.out.println("云报关回调方法成功");
         String applyNo = MapUtil.getStr(param, "ApplyNo");
@@ -205,62 +206,62 @@ public class ExternalApiController {
         String code1 = BGOrderStatusEnum.getCode1(stateName);
 //        System.out.println("code1======================"+code1);
 
-        if(code1.equals("C_2")){ //报关打单
+        if (code1.equals("C_2")) { //报关打单
             orderCustoms.setStatus(code1);
             orderCustoms.setEntrustNo(BgId);
             //更新状态
             Boolean result = orderCustomsService.updateProcessStatus(orderCustoms);
-            if(!result){
+            if (!result) {
                 log.warn("更新报关打单状态失败");
                 return ApiResult.error("更新报关打单状态失败");
             }
             return ApiResult.ok();
         }
-        if(code1.equals("C_3")){ //报关复核
+        if (code1.equals("C_3")) { //报关复核
             orderCustoms.setStatus(code1);
             //更新状态
             Boolean result = orderCustomsService.updateProcessStatus(orderCustoms);
-            if(!result){
+            if (!result) {
                 log.warn("更新报关复核状态失败");
                 return ApiResult.error("更新报关复核状态失败");
             }
             return ApiResult.ok();
         }
-        if(code1.equals("C_9")){ //报关二复
+        if (code1.equals("C_9")) { //报关二复
             orderCustoms.setStatus(code1);
             //更新状态
             Boolean result = orderCustomsService.updateProcessStatus(orderCustoms);
-            if(!result){
+            if (!result) {
                 log.warn("更新报关二复状态失败");
                 return ApiResult.error("更新报关二复状态失败");
             }
             return ApiResult.ok();
         }
-        if(code1.equals("C_11")){ //申报舱单
+        if (code1.equals("C_11")) { //申报舱单
             orderCustoms.setStatus(code1);
             //更新状态
             Boolean result = orderCustomsService.updateProcessStatus(orderCustoms);
-            if(!result){
+            if (!result) {
                 log.warn("更新申报舱单状态失败");
                 return ApiResult.error("更新申报舱单状态失败");
             }
             return ApiResult.ok();
         }
-        if(code1.equals("C_4")){ //报关申报
+        if (code1.equals("C_4")) { //报关申报
             orderCustoms.setStatus(code1);
             //更新状态
             Boolean result = orderCustomsService.updateProcessStatus(orderCustoms);
-            if(!result){
+            if (!result) {
                 log.warn("更新报关申报状态失败");
                 return ApiResult.error("更新报关申报状态失败");
             }
             return ApiResult.ok();
         }
-        if(code1.equals("C_10")){ //报关放行
+        if (code1.equals("C_10")) { //报关放行
             orderCustoms.setStatus(code1);
             //更新状态
             Boolean result = orderCustomsService.updateProcessStatus(orderCustoms);
-            if(!result){
+            if (!result) {
                 log.warn("更新报关放行状态失败");
                 return ApiResult.error("更新报关放行状态失败");
             }
@@ -268,6 +269,16 @@ public class ExternalApiController {
         }
         return ApiResult.error("状态不匹配");
 
+    }
+
+
+    @ApiModelProperty(value = "获取所用通过放行审核主订单号")
+    @RequestMapping(value = "/api/getAllPassByMainOrderNos")
+    public ApiResult<List<String>> getAllPassByMainOrderNos(@RequestParam("mainOrders") List<String> mainOrders) {
+        if (CollectionUtil.isEmpty(mainOrders)) {
+            return ApiResult.ok();
+        }
+        return ApiResult.ok(this.orderCustomsService.getAllPassByMainOrderNos(mainOrders));
     }
 }
 

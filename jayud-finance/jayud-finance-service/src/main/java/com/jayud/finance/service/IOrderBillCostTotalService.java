@@ -62,4 +62,11 @@ public interface IOrderBillCostTotalService extends IService<OrderBillCostTotal>
      * @param type   类型(0:应收,1:应付)
      */
     public EditBillDateilVO getEditBillByBillNo(String billNo, Integer type);
+
+    /**
+     * 合计币种
+     * @param billNos
+     * @return
+     */
+    List<Map<String,Object>> totalCurrencyAmount(List<String> billNos);
 }

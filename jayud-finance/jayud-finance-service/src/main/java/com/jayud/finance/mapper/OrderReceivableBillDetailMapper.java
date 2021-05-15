@@ -128,4 +128,13 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
      */
     List<OrderReceivableBillDetail> getNowSOrderExist(@Param("legalName") String legalName, @Param("unitAccount") String unitAccount,
                                                      @Param("subType") String subType,@Param("orderNo") String orderNo);
+
+
+    /**
+     * TODO 根据法人id和结算code
+     * 当前订单是否已经存在当前法人主体，结算单位，订单类型中,若存在则不做数量统计
+     * @return
+     */
+    List<OrderReceivableBillDetail> getNowSOrderExistByLegalId(@Param("legalId") Long legalId, @Param("unitCode") String unitCode,
+                                                      @Param("subType") String subType,@Param("orderNo") String orderNo);
 }

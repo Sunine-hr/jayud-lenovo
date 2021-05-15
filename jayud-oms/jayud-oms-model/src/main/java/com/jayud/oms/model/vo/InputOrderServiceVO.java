@@ -2,6 +2,7 @@ package com.jayud.oms.model.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,4 +32,26 @@ public class InputOrderServiceVO {
 
     @ApiModelProperty(value = "送货地址")
     private List<InputOrderTakeAdrVO> takeAdrForms2 = new ArrayList<>();
+
+    public void copyOperationInfo() {
+        this.id = null;
+        this.orderNo = null;
+        this.mainOrderNo = null;
+        if (CollectionUtils.isNotEmpty(takeAdrForms1)) {
+            takeAdrForms1.forEach(e -> {
+                e.setDeliveryId(null);
+                e.setTakeAdrId(null);
+                e.setTakeFiles(null);
+                e.setTakeTimeStr(null);
+            });
+        }
+        if (CollectionUtils.isNotEmpty(takeAdrForms2)) {
+            takeAdrForms2.forEach(e -> {
+                e.setDeliveryId(null);
+                e.setTakeAdrId(null);
+                e.setTakeFiles(null);
+                e.setTakeTimeStr(null);
+            });
+        }
+    }
 }

@@ -9,6 +9,7 @@ import com.jayud.finance.bo.CustomsFinanceCoRelationForm;
 import com.jayud.finance.bo.CustomsFinanceFeeRelationForm;
 import com.jayud.finance.bo.PayableHeaderForm;
 import com.jayud.finance.bo.ReceivableHeaderForm;
+import com.jayud.finance.enums.BillTemplateEnum;
 import com.jayud.finance.enums.FormIDEnum;
 import com.jayud.finance.po.CustomsFinanceCoRelation;
 import com.jayud.finance.po.CustomsFinanceFeeRelation;
@@ -114,5 +115,30 @@ public class KingdeeController {
         CustomsFinanceCoRelation relation = ConvertUtil.convert(form, CustomsFinanceCoRelation.class);
         Map<String, CustomsFinanceCoRelation> stringCustomsFinanceCoRelationMap = preloadService.addCompanyRelation(relation);
         return CommonResult.success(stringCustomsFinanceCoRelationMap);
+    }
+
+    @ApiOperation(value = "获取导出模板")
+    @PostMapping("/getCostTemplate")
+    public CommonResult getCostTemplate(@RequestBody Map<String, Object> map) {
+//        String billNo = MapUtil.getStr(map, "billNo");
+//        if (com.jayud.common.utils.StringUtils.isEmpty(billNo)) {
+//            return CommonResult.error(ResultEnum.PARAM_ERROR);
+//        }
+//        List<OrderReceivableBillDetail> list = this.billDetailService.getByBillNo(billNo);
+//        if (CollectionUtil.isEmpty(list)) {
+//            return CommonResult.success();
+//        }
+//
+//        List<Long> costIds = list.stream().map(OrderReceivableBillDetail::getCostId).collect(Collectors.toList());
+//
+//        //查询费用信息
+//        Object data = omsClient.getCostInfo(costIds, 0).getData();
+//        JSONArray jsonArray = new JSONArray(data);
+//        for (int i = 0; i < jsonArray.size(); i++) {
+//            JSONObject jsonObject = jsonArray.getJSONObject(i);
+//            jsonObject.getStr("subType");
+//        }
+
+        return CommonResult.success(BillTemplateEnum.initBillTemplate());
     }
 }

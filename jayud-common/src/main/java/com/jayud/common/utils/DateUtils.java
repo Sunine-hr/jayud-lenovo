@@ -69,6 +69,25 @@ public class DateUtils {
     }
 
     /**
+     * 日期格式化 日期格式为：yyyy-MM-dd
+     *
+     * @param date    日期
+     * @param pattern 格式，如：DateUtils.DATE_TIME_PATTERN
+     * @return 返回yyyy-MM-dd格式日期
+     */
+    public static String format(String date, String pattern) {
+        if (date != null) {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime localDateTime = LocalDateTime.parse(date, dateTimeFormatter);
+            DateTimeFormatter dateFormatterNew = DateTimeFormatter.ofPattern(pattern);
+            return dateFormatterNew.format(localDateTime);
+        }
+        return null;
+    }
+
+
+
+    /**
      * 字符串转换成日期
      *
      * @param strDate 日期字符串
@@ -94,8 +113,7 @@ public class DateUtils {
 
 
     public static void main(String[] args) {
-        Date date = new Date("Mar 5, 2014 12:00:00 AM");
-        System.out.println(date);
+        System.out.println( format("2021-04-02 14:06:01","yyyy-MM-dd"));
         //  System.out.println(DateUtil.to("Mar 5, 2014 12:00:00 AM", "yyyy-MM-dd HH:ss:mm"));
     }
 
@@ -288,7 +306,7 @@ public class DateUtils {
 
 
     public static LocalDateTime str2LocalDateTime(String date, String oldSymbol, String replaceSymbol) {
-        if (StringUtils.isEmpty(date)){
+        if (StringUtils.isEmpty(date)) {
             return null;
         }
         date = date.replace(replaceSymbol, oldSymbol);

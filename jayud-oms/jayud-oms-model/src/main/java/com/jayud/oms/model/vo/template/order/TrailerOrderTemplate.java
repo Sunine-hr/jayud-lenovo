@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Data
 @Slf4j
-public class TrailerOrderTemplate {
+public class TrailerOrderTemplate extends BaseOrderTemplate {
 
 
     @ApiModelProperty(value = "主键id")
@@ -63,8 +63,8 @@ public class TrailerOrderTemplate {
     @ApiModelProperty(value = "封条", required = true)
     private String paperStripSeal;
 
-    @ApiModelProperty(value = "费用状态", required = true)
-    private String costDesc;
+//    @ApiModelProperty(value = "费用状态", required = true)
+//    private String costDesc;
 
     @ApiModelProperty(value = "是否待补全")
     private Boolean isInfoComplete;
@@ -181,12 +181,12 @@ public class TrailerOrderTemplate {
         this.statusDesc = OrderStatusEnum.getDesc(status);
     }
 
-    public void setCost(Boolean cost) {
-        this.cost = cost;
-        if (cost){
-            this.costDesc="是";
-        }else {
-            this.costDesc="否";
-        }
-    }
+//    public void setCost(Boolean cost) {
+//        this.cost = cost;
+//        if (cost){
+//            this.costDesc="是";
+//        }else {
+//            this.costDesc="否";
+//        }
+//    }
 }

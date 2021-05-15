@@ -9,11 +9,9 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.constant.SqlConstant;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.OrderOprCmdEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.FileClient;
 import com.jayud.customs.feign.OauthClient;
@@ -24,6 +22,7 @@ import com.jayud.customs.model.enums.BGOrderStatusEnum;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.IOrderCustomsService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -76,7 +76,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 //            queryWrapper.eq("main_order_no", form.getMainOrderNo());
 //            remove(queryWrapper);
             for (InputSubOrderCustomsForm subOrder : form.getSubOrders()) {
-                if(subOrder.getSubOrderId()!=null){
+                if (subOrder.getSubOrderId() != null) {
                     removeById(subOrder.getSubOrderId());
                 }
             }
@@ -190,6 +190,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 orderCustoms.setStatusDesc(orderCustoms.getStatus());
                 subOrderCustomsVO.setStatusDesc(orderCustoms.getStatusDesc());
                 subOrderCustomsVO.setEntrustNo(orderCustoms.getEntrustNo());
+                subOrderCustomsVO.setYunCustomsNo(orderCustoms.getYunCustomsNo());
                 subOrderCustomsVO.setSupervisionMode(orderCustoms.getSupervisionMode());
                 //处理子订单附件信息
                 String fileStr = orderCustoms.getFileStr();
@@ -239,14 +240,29 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
      */
     @Override
     public Integer getNumByStatus(String status, List<Long> legalIds) {
-        List<String> mainOrderNos = this.baseMapper.getMainOrderNoByStatus(status, legalIds);
-        return this.omsClient.getFilterOrderStatus(mainOrderNos, 1).getData();
+        Integer num = 0;
+        switch (status) {
+            case "portFeeCheck":
+                List<OrderCustoms> list = this.getByLegalEntityId(legalIds);
+                if (org.apache.commons.collections4.CollectionUtils.isEmpty(list)) return num;
+                List<String> orderNos = list.stream().map(OrderCustoms::getOrderNo).collect(Collectors.toList());
+                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.BG.getSignOne(), legalIds, orderNos).getData();
+                break;
+            default:
+                List<String> mainOrderNos = this.baseMapper.getMainOrderNoByStatus(status, legalIds);
+                if (CollectionUtils.isEmpty(mainOrderNos)) {
+                    return 0;
+                }
+                num = this.omsClient.getFilterOrderStatus(mainOrderNos, 1).getData();
+        }
+
+        return num == null ? 0 : num;
     }
 
     @Override
     public OrderCustoms getOrderCustomsByOrderNo(String orderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("order_no",orderNo);
+        queryWrapper.eq("order_no", orderNo);
 
         return this.baseMapper.selectOne(queryWrapper);
     }
@@ -278,5 +294,79 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
         boolean b = this.saveOrUpdate(orderCustoms);
         return b;
+    }
+
+    @Override
+    public List<OrderCustoms> getByLegalEntityId(List<Long> legalIds) {
+        QueryWrapper<OrderCustoms> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderCustoms::getLegalEntityId, legalIds);
+        return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public List<OrderCustoms> getOrderCustomsTaskData() {
+        return this.baseMapper.getOrderCustomsTaskData();
+    }
+
+    @Override
+    public Boolean updateProcessStatus(OrderCustoms orderCustoms, String auditUser, String auditTime) {
+        OprStatusForm form = new OprStatusForm();
+        //获取主订单id
+        Long mainOrderId = omsClient.getIdByOrderNo(orderCustoms.getMainOrderNo()).getData();
+        //保存操作节点
+        form.setMainOrderId(mainOrderId);
+        form.setOrderId(orderCustoms.getId());
+        form.setStatus(orderCustoms.getStatus());
+        form.setStatusName(OrderStatusEnum.getEnums(orderCustoms.getStatus()).getDesc());
+        form.setBusinessType(BusinessTypeEnum.BG.getCode());
+        form.setOperatorTime(auditTime);
+        form.setOperatorUser(auditUser);
+        omsClient.saveOprStatus(form);
+
+        //保存操作记录
+        AuditInfoForm auditInfoForm = new AuditInfoForm();
+        auditInfoForm.setAuditComment(form.getDescription());
+        auditInfoForm.setAuditStatus(orderCustoms.getStatus());
+        auditInfoForm.setAuditTypeDesc(BGOrderStatusEnum.getDesc(orderCustoms.getStatus()));
+        auditInfoForm.setExtId(form.getOrderId());
+        auditInfoForm.setExtDesc(SqlConstant.ORDER_CUSTOMS);
+        auditInfoForm.setAuditUser(auditUser);
+        LocalDateTime processTime = DateUtils.str2LocalDateTime(auditTime, DateUtils.DATE_TIME_PATTERN);
+        auditInfoForm.setAuditTime(processTime);
+        auditInfoForm.setFileViews(form.getFileViewList());
+        omsClient.saveAuditInfo(auditInfoForm);
+
+        return this.saveOrUpdate(orderCustoms);
+    }
+
+    /**
+     * 查询所有通关报关订单
+     *
+     * @param mainOrders
+     * @return
+     */
+    @Override
+    public List<String> getAllPassByMainOrderNos(List<String> mainOrders) {
+        //获取订单信息
+        List<OrderCustoms> list = this.getCustomsOrderByMainOrderNos(mainOrders);
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        //查询批量
+        Map<String, Long> gourp = list.stream().collect(Collectors.groupingBy(OrderCustoms::getMainOrderNo, Collectors.counting()));
+        List<String> passOrders = new ArrayList<>();
+        for (OrderCustoms orderCustoms : list) {
+            if (OrderStatusEnum.CUSTOMS_C_5.getCode().equals(orderCustoms.getStatus())) {
+                Long count = gourp.get(orderCustoms.getMainOrderNo());
+                gourp.put(orderCustoms.getMainOrderNo(), --count);
+                if (count == 0) {
+                    passOrders.add(orderCustoms.getMainOrderNo());
+                    continue;
+                }
+
+            }
+
+        }
+        return passOrders;
     }
 }

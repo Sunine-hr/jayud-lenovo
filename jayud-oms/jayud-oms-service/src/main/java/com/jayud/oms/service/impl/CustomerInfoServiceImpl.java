@@ -392,7 +392,10 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
             customerInfo.setCreatedUser(UserOperator.getToken())
                     .setCreatedTime(DateUtils.getNowTime());
         }
-        customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
+        if (StringUtils.isEmpty(customerInfo.getAuditStatus())) {
+            customerInfo.setAuditStatus(CustomerInfoStatusEnum.KF_WAIT_AUDIT.getCode());
+        }
+
         customerInfoService.saveOrUpdate(customerInfo);//保存客户信息
         form.setId(customerInfo.getId());
         //保存客户和法人主体关系
@@ -439,6 +442,19 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("name",customerName);
         return this.baseMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * 根据状态查询待处理数
+     *
+     * @param status
+     * @param legalIds
+     * @return
+     */
+    @Override
+    public Integer getNumByStatus(String status, List<Long> legalIds) {
+        Integer num = this.baseMapper.getNumByStatus(status, legalIds);
+        return num == null ? 0 : num;
     }
 
 }

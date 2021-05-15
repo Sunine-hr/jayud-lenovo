@@ -200,6 +200,7 @@ public class InputSeaOrderVO {
                 e.setId(null);
                 e.setTakeFiles(null);
                 e.setTakeFiles(null);
+                e.setDeliveryDate(null);
             });
         }
         if (org.apache.commons.collections.CollectionUtils.isNotEmpty(deliveryAddress)) {
@@ -207,6 +208,7 @@ public class InputSeaOrderVO {
                 e.setId(null);
                 e.setTakeFiles(null);
                 e.setTakeFiles(null);
+                e.setDeliveryDate(null);
             });
         }
 
@@ -215,6 +217,7 @@ public class InputSeaOrderVO {
                 e.setId(null);
                 e.setTakeFiles(null);
                 e.setTakeFiles(null);
+                e.setDeliveryDate(null);
             });
         }
         if (CollectionUtils.isNotEmpty(goodsForms)) {

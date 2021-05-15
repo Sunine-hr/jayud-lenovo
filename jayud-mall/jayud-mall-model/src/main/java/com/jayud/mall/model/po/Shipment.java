@@ -40,7 +40,7 @@ public class Shipment extends Model<Shipment> {
     private String service;
 
     @ApiModelProperty(value = "件数")
-    private Integer parcel_count;
+    private String parcel_count;
 
     @ApiModelProperty(value = "收费重")
     private String chargeable_weight;
@@ -64,7 +64,7 @@ public class Shipment extends Model<Shipment> {
     private LocalDateTime creat_time;
 
     @ApiModelProperty(value = "创建人")
-    private Long created;
+    private String created;
 
     @ApiModelProperty(value = "shipmentJson")
     @TableField("shipmentJson")

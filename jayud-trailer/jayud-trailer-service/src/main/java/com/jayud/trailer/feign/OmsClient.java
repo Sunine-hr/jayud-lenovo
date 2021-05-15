@@ -7,6 +7,7 @@ import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
+import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.trailer.bo.AddGoodsForm;
 import com.jayud.trailer.bo.AddOrderAddressForm;
 import com.jayud.trailer.bo.AuditInfoForm;
@@ -132,6 +133,7 @@ public interface OmsClient {
 
     /**
      * 根据供应商id集合查询供应商信息
+     *
      * @return
      */
     @RequestMapping(value = "/api/getSupplierInfoByIds")
@@ -151,6 +153,7 @@ public interface OmsClient {
 
     /**
      * 根据客户code集合查询客户信息
+     *
      * @return
      */
     @RequestMapping(value = "/api/getCustomerByUnitCode")
@@ -158,10 +161,11 @@ public interface OmsClient {
 
     /**
      * 获取订单号
+     *
      * @return
      */
     @RequestMapping(value = "/api/getOrderNo")
-    ApiResult getOrderNo(@RequestParam("preOrder") String preOrder , @RequestParam("classCode") String classCode);
+    ApiResult getOrderNo(@RequestParam("preOrder") String preOrder, @RequestParam("classCode") String classCode);
 
     /**
      * 批量新增/修改订单流程
@@ -211,4 +215,36 @@ public interface OmsClient {
     @ApiOperation(value = "查询联系人信息")
     @RequestMapping(value = "/getContactInfoByPhone")
     public CommonResult<List<Map<String, Object>>> getContactInfoByPhone(@RequestParam("businessType") Integer businessType);
+
+    /**
+     * 根据订单号集合删除商品信息
+     */
+    @RequestMapping(value = "/api/deleteGoodsByBusOrders")
+    public ApiResult deleteGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
+                                            @RequestParam("businessType") Integer businessType);
+
+    /**
+     * 根据业务号集合删除订单地址
+     */
+    @RequestMapping(value = "/api/deleteOrderAddressByBusOrders")
+    public ApiResult deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
+                                                   @RequestParam("businessType") Integer businessType);
+
+
+    /**
+     * 获取提货/送货地址信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getDeliveryAddress")
+    public ApiResult<List<OrderDeliveryAddress>> getDeliveryAddress(@RequestParam("orderId") List<Long> orderId,
+                                                                    @RequestParam("businessType") Integer businessType);
+
+    /**
+     * 根据车辆id查询车辆信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getVehicleInfoByIds")
+    public ApiResult getVehicleInfoByIds(@RequestParam("orderIds") List<Long> vehicleIds);
 }

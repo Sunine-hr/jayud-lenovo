@@ -517,4 +517,17 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         return this.count(condition) > 0;
     }
 
+    /**
+     * 根据状态查询待处理数
+     *
+     * @param status
+     * @param legalIds
+     * @return
+     */
+    @Override
+    public Integer getNumByStatus(String status, List<Long> legalIds) {
+        Integer num = this.baseMapper.getNumByStatus(status, legalIds);
+        return num == null ? 0 : num;
+    }
+
 }

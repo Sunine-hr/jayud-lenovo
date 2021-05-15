@@ -5,6 +5,7 @@ import com.jayud.trailer.bo.*;
 import com.jayud.trailer.po.TrailerOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.trailer.vo.TrailerOrderFormVO;
+import com.jayud.trailer.vo.TrailerOrderInfoVO;
 import com.jayud.trailer.vo.TrailerOrderVO;
 
 import java.util.List;
@@ -95,4 +96,13 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
      * @return
      */
     TrailerOrder getByOrderNO(String orderNo);
+
+    /**
+     * 根据主订单号查询所有详情
+     * @param mainOrderNos
+     * @return
+     */
+    List<TrailerOrderInfoVO> getTrailerInfoByMainOrderNos(List<String> mainOrderNos);
+
+    List<TrailerOrderInfoVO> getInfo(List<String> mainOrderNos);
 }

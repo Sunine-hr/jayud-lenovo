@@ -1,5 +1,6 @@
 package com.jayud.oms.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
@@ -98,6 +99,8 @@ public class ExternalApiController {
     private IOrderTypeNumberService orderTypeNumberService;
     @Autowired
     private IOrderFlowSheetService orderFlowSheetService;
+    @Autowired
+    private ICostCommonService costCommonService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -144,7 +147,9 @@ public class ExternalApiController {
         logisticsTrack.setStatus(form.getStatus());
         logisticsTrack.setStatusName(form.getStatusName());
         logisticsTrack.setOperatorUser(form.getOperatorUser());
-        logisticsTrack.setOperatorTime(LocalDateTime.now());
+        LocalDateTime operatorTime = org.apache.commons.lang.StringUtils.isNotEmpty(form.getOperatorTime())
+                ? DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN) : LocalDateTime.now();
+        logisticsTrack.setOperatorTime(operatorTime);
         logisticsTrack.setStatusPic(form.getStatusPic());
         logisticsTrack.setStatusPicName(form.getStatusPicName());
         logisticsTrack.setDescription(form.getDescription());
@@ -196,7 +201,7 @@ public class ExternalApiController {
         auditInfo.setAuditUser(form.getAuditUser());
         auditInfo.setStatusFile(StringUtils.getFileStr(form.getFileViews()));
         auditInfo.setStatusFileName(StringUtils.getFileNameStr(form.getFileViews()));
-        auditInfo.setAuditTime(LocalDateTime.now());
+        auditInfo.setAuditTime(form.getAuditTime() == null ? LocalDateTime.now() : form.getAuditTime());
         auditInfo.setCreatedTime(LocalDateTime.now());
         boolean result = auditInfoService.save(auditInfo);
         return ApiResult.ok(result);
@@ -1147,6 +1152,7 @@ public class ExternalApiController {
         Map<String, String> tmp = new HashMap<>();
         tmp.put("外部报关放行", "outPortPass");
         tmp.put("通关前审核", "portPassCheck");
+        tmp.put("费用审核", "feeCheck");
 
         List<Map<String, Object>> result = new ArrayList<>();
 
@@ -1165,7 +1171,10 @@ public class ExternalApiController {
                         num = this.orderInfoService.pendingExternalCustomsDeclarationNum(legalIds);
                         break;
                     case "portPassCheck":
-                        num = this.orderInfoService.pendingGoCustomsAuditNum(legalIds);
+                        num = this.orderInfoService.filterGoCustomsAudit(null, legalIds).size();
+                        break;
+                    case "feeCheck":
+                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null);
                         break;
                 }
 
@@ -1275,20 +1284,20 @@ public class ExternalApiController {
     }
 
 
-    @ApiOperation("根据业务id集合查询订单地址")
+    @ApiOperation("根据订单号删除订单地址")
     @RequestMapping(value = "/api/deleteOrderAddressByBusOrders")
-    public ApiResult<List<OrderAddress>> deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
-                                                                       @RequestParam("businessType") Integer businessType) {
+    public ApiResult deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
+                                                   @RequestParam("businessType") Integer businessType) {
         //查询订单地址信息
         this.orderAddressService.deleteOrderAddressByBusOrders(orderNo, businessType);
         return ApiResult.ok();
     }
 
 
-    @ApiOperation("根据订单id集合查询商品信息")
+    @ApiOperation("根据订单号删除商品信息")
     @RequestMapping(value = "/api/deleteGoodsByBusOrders")
-    public ApiResult<List<Goods>> deleteGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
-                                                         @RequestParam("businessType") Integer businessType) {
+    public ApiResult deleteGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
+                                            @RequestParam("businessType") Integer businessType) {
         //查询商品信息
         this.goodsService.deleteGoodsByBusOrders(orderNo, businessType);
         return ApiResult.ok();
@@ -1345,7 +1354,7 @@ public class ExternalApiController {
     }
 
     /**
-     * 获取订单号
+     * 获取入仓号
      *
      * @return
      */
@@ -1361,6 +1370,122 @@ public class ExternalApiController {
     public ApiResult<Long> getCustomerByCode(@RequestParam("code")String code){
         CustomerInfo byCode = customerInfoService.getByCode(code);
         return ApiResult.ok(byCode.getId());
+    }
+
+
+
+    /**
+     * 根据审核表唯一标识查询审核描述(对账单)
+     *
+     * @param extUniqueFlags
+     * @return
+     */
+    @RequestMapping(value = "/api/getByExtUniqueFlag")
+    public ApiResult<Map<String, Object>> getByExtUniqueFlag(@RequestBody List<String> extUniqueFlags) {
+        List<Map<String, Object>> list = this.auditInfoService.getByExtUniqueFlag(extUniqueFlags);
+        Map<Object, Object> map = list.stream().collect(Collectors.toMap(e -> e.get("extUniqueFlag"), e -> e.get("auditComment")));
+        return ApiResult.ok(map);
+    }
+
+
+    /**
+     * 应收/应付费用状态
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostStatus")
+    public ApiResult<Map<String, Object>> getCostStatus(@RequestParam(value = "mainOrderNos", required = false) List<String> mainOrderNos,
+                                                        @RequestParam(value = "orderNos", required = false) List<String> orderNos) {
+        Map<String, Object> costStatus = this.orderInfoService.getCostStatus(mainOrderNos, orderNos);
+        return ApiResult.ok(costStatus);
+    }
+
+    /**
+     * 查询待审核费用订单数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/auditPendingExpenses")
+    public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
+                                                   @RequestParam("legalIds") List<Long> legalIds,
+                                                   @RequestParam("orderNos") List<String> orderNos) {
+        Integer num = this.costCommonService.auditPendingExpenses(subType, legalIds, orderNos);
+        return ApiResult.ok(num);
+    }
+
+
+    /**
+     * 客户管理菜单待处理数量
+     *
+     * @param menusList
+     * @return
+     */
+    @RequestMapping(value = "/api/getCustomerMenuPendingNum")
+    public ApiResult<Map<String, String>> getCustomerMenuPendingNum(@RequestBody List<Map<String, Object>> menusList) {
+        if (CollectionUtil.isEmpty(menusList)) {
+            return ApiResult.ok();
+        }
+        Map<String, String> tmp = new HashMap<>();
+        tmp.put("客服审核", "customer_service");
+        tmp.put("财务审核", "Finance");
+        tmp.put("总经办审核", "General_classics");
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        ApiResult<List<Long>> legalEntityByLegalName = this.oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = legalEntityByLegalName.getData();
+
+        for (Map<String, Object> menus : menusList) {
+
+            Map<String, Object> map = new HashMap<>();
+            Object title = menus.get("title");
+            String status = tmp.get(title);
+            Integer num = 0;
+            if (status != null) {
+                num = this.customerInfoService.getNumByStatus(status, legalIds);
+            }
+            map.put("menusName", title);
+            map.put("num", num);
+            result.add(map);
+        }
+        return ApiResult.ok(result);
+    }
+
+
+    /**
+     * 供应商管理菜单待处理数量
+     *
+     * @param menusList
+     * @return
+     */
+    @RequestMapping(value = "/api/getSupplierMenuPendingNum")
+    public ApiResult<Map<String, String>> getSupplierMenuPendingNum(@RequestBody List<Map<String, Object>> menusList) {
+        if (CollectionUtil.isEmpty(menusList)) {
+            return ApiResult.ok();
+        }
+        Map<String, String> tmp = new HashMap<>();
+        tmp.put("财务审核", "financialCheck");
+        tmp.put("总经办审核", "managerCheck");
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+//        ApiResult<List<Long>> legalEntityByLegalName = this.oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+//        List<Long> legalIds = legalEntityByLegalName.getData();
+
+        for (Map<String, Object> menus : menusList) {
+
+            Map<String, Object> map = new HashMap<>();
+            Object title = menus.get("title");
+            String status = tmp.get(title);
+            Integer num = 0;
+            if (status != null) {
+                num = this.supplierInfoService.getNumByStatus(status, null);
+            }
+            map.put("menusName", title);
+            map.put("num", num);
+            result.add(map);
+        }
+        return ApiResult.ok(result);
     }
 
 }

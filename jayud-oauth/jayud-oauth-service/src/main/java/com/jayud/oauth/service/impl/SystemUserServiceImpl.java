@@ -13,12 +13,14 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oauth.mapper.SystemUserMapper;
 import com.jayud.oauth.model.bo.AuditSystemUserForm;
 import com.jayud.oauth.model.bo.OprSystemUserForm;
 import com.jayud.oauth.model.bo.QueryAccountForm;
 import com.jayud.oauth.model.bo.QuerySystemUserForm;
 import com.jayud.oauth.model.enums.StatusEnum;
+import com.jayud.oauth.model.enums.SystemUserStatusEnum;
 import com.jayud.oauth.model.po.*;
 import com.jayud.oauth.model.vo.*;
 import com.jayud.oauth.service.*;
@@ -38,6 +40,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -230,7 +233,10 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
                     }
                 }
             }
-            systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
+            if (StringUtils.isEmpty(systemUser.getPassword())) {
+                systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
+            }
+
             systemUser.setStatus(1);//账户为启用状态
             systemUser.setAuditStatus(1);
             systemUser.setUpdatedUser(UserOperator.getToken());
@@ -383,6 +389,20 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         SystemUser systemUser = baseMapper.selectOne(queryWrapper);
 
         return systemUser;
+    }
+
+    /**
+     * 根据部门id集合查询部门信息
+     *
+     * @param departmentIds
+     * @return
+     */
+    @Override
+    public List<SystemUser> getByDepartmentIds(Set<String> departmentIds) {
+        QueryWrapper<SystemUser> condition = new QueryWrapper<>();
+        condition.lambda().in(SystemUser::getDepartmentId, departmentIds);
+        condition.lambda().eq(SystemUser::getStatus, SystemUserStatusEnum.ON.getCode());
+        return this.baseMapper.selectList(condition);
     }
 
     /**

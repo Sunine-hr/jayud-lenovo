@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @description:
  * @date 2020/10/23 11:29
  */
-@SpringBootApplication(scanBasePackages = "com.jayud.mall")
+@SpringBootApplication(scanBasePackages = {"com.jayud.mall","com.jayud.common.exception"})
 @EnableDiscoveryClient
 @EnableFeignClients
 @EnableScheduling//项目启动类上增加注解@EnableScheduling，表示开启定时任务

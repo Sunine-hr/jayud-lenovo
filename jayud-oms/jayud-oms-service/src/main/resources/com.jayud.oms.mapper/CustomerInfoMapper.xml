@@ -336,8 +336,9 @@
         <result column="createdTimeStr" property="createdTimeStr"/>
         <result column="updated_user" property="updatedUser"/>
         <result column="updated_time" property="updatedTime"/>
-        <collection property="legalEntities" ofType="com.jayud.oms.model.vo.LegalEntityVO" column="id" select="getLegalEntity">
-<!--        <collection property="legalEntities" ofType="com.jayud.oms.model.vo.LegalEntityVO">-->
+        <collection property="legalEntities" ofType="com.jayud.oms.model.vo.LegalEntityVO" column="id"
+                    select="getLegalEntity">
+            <!--        <collection property="legalEntities" ofType="com.jayud.oms.model.vo.LegalEntityVO">-->
             <result column="lid" property="id"></result>
             <result column="legalName" property="legalName"></result>
         </collection>
@@ -355,16 +356,17 @@
         departmentId,d.`name` departmentName,
         ci.`ku_id` kuId,su1.`user_name` kuName,ci.`yw_id` ywId,su2.`user_name` ywName,ci.`audit_status`
         auditStatus,ci.`status`,
-        (CASE ci.`audit_status` WHEN '0' THEN '待客服审核'
-        WHEN '1' THEN '待财务审核'
-        WHEN '2' THEN '待总经办审核'
-        WHEN '10' THEN '审核通过'
-        WHEN '11' THEN '审核拒绝' END) auditStatusDesc,
+        -- (CASE ci.`audit_status` WHEN '0' THEN '待客服审核'
+        -- WHEN '1' THEN '待财务审核'
+        -- WHEN '2' THEN '待总经办审核'
+        -- WHEN '10' THEN '审核通过'
+        -- WHEN '11' THEN '审核拒绝' END) auditStatusDesc,
         ci.`created_user` createdUser,
         DATE_FORMAT(ci.`created_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,
         ci.`updated_user` updatedUser,ci.`audit_comment` auditComment,
         DATE_FORMAT(ci.`updated_time`,'%Y-%m-%d %H:%i:%S') updatedTimeStr,
-        (select GROUP_CONCAT(crl.legal_entity_id) from customer_rela_legal crl where crl.customer_info_id = ci.id group by ci.id) legalEntityIdStr,
+        (select GROUP_CONCAT(crl.legal_entity_id) from customer_rela_legal crl where crl.customer_info_id = ci.id group
+        by ci.id) legalEntityIdStr,
         ci.national_credit nationalCredit,
         ci.customs_credit customsCredit,
         ci.customs_credit_rating customsCreditRating
@@ -408,6 +410,37 @@
                 #{legalId}
             </foreach>
         </if>
+
+    </select>
+
+    <select id="getNumByStatus" resultType="java.lang.Integer">
+        select count(1) from (
+        SELECT
+--         count(1)
+        distinct
+        ci.id,ci.audit_status
+        FROM
+        `customer_info` ci
+        LEFT JOIN `customer_rela_legal` crl ON ci.`id` = crl.`customer_info_id`
+        <where>
+            <if test="status == 'customer_service'">
+                and ci.audit_status = 0
+            </if>
+            <if test="status == 'Finance'">
+                and ci.audit_status = 1
+            </if>
+            <if test="status == 'General_classics'">
+                and ci.audit_status = 2
+            </if>
+            <if test="legalIds != null and legalIds.size>0">
+                and crl.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+        </where>
+        ) tmp
+        group by tmp.audit_status
 
     </select>
 

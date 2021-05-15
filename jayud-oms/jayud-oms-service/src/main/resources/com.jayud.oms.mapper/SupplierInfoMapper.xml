@@ -119,7 +119,8 @@
         s.buyer_id buyerId,s.status,
         s.create_user createUser, s.create_time createTime,
         s.update_time updateTime,s.update_user updateUser,
-        (select GROUP_CONCAT(srl.legal_entity_id) from supplier_rela_legal srl where srl.supplier_info_id = s.id group by s.id) legalEntityIdStr,
+        (select GROUP_CONCAT(srl.legal_entity_id) from supplier_rela_legal srl where srl.supplier_info_id = s.id group
+        by s.id) legalEntityIdStr,
         s.national_credit nationalCredit,
         s.customs_credit customsCredit,
         s.customs_credit_rating customsCreditRating
@@ -175,6 +176,39 @@
             )
         </where>
 
+    </select>
+
+    <select id="getNumByStatus" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        supplier_info s
+        left join
+        (
+        SELECT
+        ext_id,audit_status
+        FROM
+        audit_info ai, ( SELECT max( id ) id FROM `audit_info` WHERE ext_desc = 'supplier_info表' GROUP BY ext_id ) tmp1
+        WHERE
+        ai.id = tmp1.id
+        ) tmp2 on s.id = tmp2.ext_id
+        <if test="legalIds != null and legalIds.size>0">
+            LEFT JOIN `supplier_rela_legal` srl ON s.`id` = srl.`supplier_info_id`
+        </if>
+        <where>
+            <if test="status=='financialCheck'">
+                and  tmp2.audit_status= 1
+            </if>
+            <if test="status=='managerCheck'">
+                and  tmp2.audit_status= 2
+            </if>
+            <if test="legalIds != null and legalIds.size>0">
+                and srl.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+        </where>
     </select>
 
 </mapper>

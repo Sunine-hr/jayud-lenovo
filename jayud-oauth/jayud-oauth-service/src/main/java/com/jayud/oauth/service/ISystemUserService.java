@@ -12,6 +12,7 @@ import com.jayud.oauth.model.vo.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -144,4 +145,5 @@ public interface ISystemUserService extends IService<SystemUser> {
      */
     SystemUser getSystemUserBySystemName(String name);
 
+    List<SystemUser> getByDepartmentIds(Set<String> departmentIds);
 }

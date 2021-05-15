@@ -1,5 +1,6 @@
 package com.jayud.finance.service.impl;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -14,10 +15,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
-import com.jayud.common.utils.BeanUtils;
-import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.DateUtils;
-import com.jayud.common.utils.Utilities;
+import com.jayud.common.utils.*;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.enums.BillTemplateEnum;
@@ -72,6 +70,10 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     OauthClient oauthClient;
     @Autowired
     private CommonService commonService;
+    @Autowired
+    private IMakeInvoiceService makeInvoiceService;
+    @Autowired
+    private DataProcessingService dataProcessingService;
 
     @Override
     public IPage<OrderPaymentBillDetailVO> findReceiveBillDetailByPage(QueryPaymentBillDetailForm form) {
@@ -85,12 +87,40 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         List<String> data = (List<String>) legalNameBySystemName.getData();
 
         IPage<OrderPaymentBillDetailVO> pageInfo = baseMapper.findReceiveBillDetailByPage(page, form, data);
+
+        List<OrderPaymentBillDetailVO> records = pageInfo.getRecords();
+        if (CollectionUtils.isEmpty(records)) {
+            return pageInfo;
+        }
+        dataProcessingService.processingPaymentBillDetail(records, 0);
+//        List<String> billNos = records.stream().map(OrderPaymentBillDetailVO::getBillNo).collect(toList());
+//        //统计合计币种金额
+//        List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(billNos);
+//        //审核意见
+//        Map<String, Object> auditComment = this.omsClient.getByExtUniqueFlag(billNos).getData();
+//        //币种
+//        List<InitComboxStrVO> currencyInfo = omsClient.initCurrencyInfo().getData();
+//        Map<String, String> currencyInfoMap = currencyInfo.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+//        //核算
+//        this.makeInvoiceService.calculationAccounting(billNos,2);
+//        for (OrderPaymentBillDetailVO record : records) {
+//            record.totalCurrencyAmount(currencyAmounts);
+//            record.setAuditComment(MapUtil.getStr(auditComment, record.getBillNo()));
+//            record.setSettlementCurrency(currencyInfoMap.get(record.getSettlementCurrency()));
+//        }
         return pageInfo;
     }
 
     @Override
     public List<OrderPaymentBillDetailVO> findReceiveBillDetail(QueryPaymentBillDetailForm form) {
-        return baseMapper.findReceiveBillDetailByPage(form, null);
+        List<OrderPaymentBillDetailVO> list = baseMapper.findReceiveBillDetailByPage(form, null);
+        List<String> billNos = list.stream().map(OrderPaymentBillDetailVO::getBillNo).collect(toList());
+        //统计合计币种金额
+        List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(billNos);
+        for (OrderPaymentBillDetailVO record : list) {
+            record.totalCurrencyAmount(currencyAmounts);
+        }
+        return list;
     }
 
     @Override
@@ -217,60 +247,63 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 for (OrderReceiveBillDetailForm tempObject : addReceiveBillDetailForms) {
                     costIds.add(tempObject.getCostId());
                 }
-                StringBuilder sb = new StringBuilder();
-                sb.append("请配置[");
-                Boolean flag = true;
-                orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency, form.getAccountTermStr());
-                AtomicBoolean isCheck = new AtomicBoolean(true);
-                //是否自定义汇率
-                if (form.getIsCustomExchangeRate()) {
-                    //组装数据
-                    Map<String, BigDecimal> customExchangeRate = new HashMap<>();
-                    form.getCustomExchangeRate().forEach(e -> customExchangeRate.put(e.getCode(), e.getNote() == null ? new BigDecimal(0) : new BigDecimal(e.getNote())));
-                    orderBillCostTotalVOS.forEach(e -> {
-                        BigDecimal rate = customExchangeRate.get(e.getCurrencyCode());
-                        e.setExchangeRate(rate);
-                        //结算币种是CNY
-                        if ("CNY".equals(settlementCurrency)) {
-                            isCheck.set(false);
-                            e.setLocalMoneyRate(rate);
-                            e.setLocalMoney(e.getMoney().multiply(rate));
-                        }
-                    });
-                }
-                Set<String> msg = new HashSet<>();
-                for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
-                    BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
-                    if ((exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals(settlementCurrency)) {
-                        //根据币种查询币种描述
-                        String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
-                        String dCurrency = currencyRateService.getNameByCode(existObject.getSettlementCurrency());
-//                        sb.append("原始币种:" + oCurrency + ",兑换币种:" + dCurrency + ";");
-                        msg.add("原始币种:" + oCurrency + ",兑换币种:" + dCurrency + ";");
-                        flag = false;
-                    }
-                    if (orderBillCostTotalVO.getCurrencyCode().equals("CNY")) {
-                        orderBillCostTotalVO.setLocalMoney(orderBillCostTotalVO.getOldLocalMoney());
-                    }
-                }
-                if (isCheck.get()) {
-                    List<OrderBillCostTotalVO> tempOrderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, "CNY", form.getAccountTermStr());
-                    for (OrderBillCostTotalVO orderBillCostTotalVO : tempOrderBillCostTotalVOS) {
-                        BigDecimal localMoney = orderBillCostTotalVO.getLocalMoney();//如果本币金额为0，说明汇率为空没配置
-                        if ((localMoney == null || localMoney.compareTo(new BigDecimal("0")) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals("CNY")) {
-                            //根据币种查询币种描述
-                            String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
-//                            sb.append("原始币种:" + oCurrency + ",兑换币种:人民币;");
-                            msg.add("原始币种:" + oCurrency + ",兑换币种:人民币;");
-                            flag = false;
-                        }
-                    }
-                }
-                if (!flag) {
-                    msg.forEach(sb::append);
-                    sb.append("]的汇率");
-                    return CommonResult.error(10001, sb.toString());
-                }
+//                StringBuilder sb = new StringBuilder();
+//                sb.append("请配置[");
+//                Boolean flag = true;
+//                orderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, settlementCurrency, form.getAccountTermStr());
+//                AtomicBoolean isCheck = new AtomicBoolean(true);
+//                //是否自定义汇率
+//                if (form.getIsCustomExchangeRate()) {
+//                    //组装数据
+//                    Map<String, BigDecimal> customExchangeRate = new HashMap<>();
+//                    form.getCustomExchangeRate().forEach(e -> customExchangeRate.put(e.getCode(), e.getNote() == null ? new BigDecimal(0) : new BigDecimal(e.getNote())));
+//                    orderBillCostTotalVOS.forEach(e -> {
+//                        BigDecimal rate = customExchangeRate.get(e.getCurrencyCode());
+//                        e.setExchangeRate(rate);
+//                        //结算币种是CNY
+//                        if ("CNY".equals(settlementCurrency)) {
+//                            isCheck.set(false);
+//                            e.setLocalMoneyRate(rate);
+//                            e.setLocalMoney(e.getMoney().multiply(rate));
+//                        }
+//                    });
+//                }
+//                Set<String> msg = new HashSet<>();
+//                for (OrderBillCostTotalVO orderBillCostTotalVO : orderBillCostTotalVOS) {
+//                    BigDecimal exchangeRate = orderBillCostTotalVO.getExchangeRate();//如果费率为0，则抛异常回滚数据
+//                    if ((exchangeRate == null || exchangeRate.compareTo(new BigDecimal(0)) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals(settlementCurrency)) {
+//                        //根据币种查询币种描述
+//                        String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
+//                        String dCurrency = currencyRateService.getNameByCode(settlementCurrency);
+////                        sb.append("原始币种:" + oCurrency + ",兑换币种:" + dCurrency + ";");
+//                        msg.add("原始币种:" + oCurrency + ",兑换币种:" + dCurrency + ";");
+//                        flag = false;
+//                    }
+//                    if (orderBillCostTotalVO.getCurrencyCode().equals("CNY")) {
+//                        orderBillCostTotalVO.setLocalMoney(orderBillCostTotalVO.getOldLocalMoney());
+//                    }
+//                }
+//                if (isCheck.get()) {
+//                    List<OrderBillCostTotalVO> tempOrderBillCostTotalVOS = costTotalService.findOrderSBillCostTotal(costIds, "CNY", form.getAccountTermStr());
+//                    for (OrderBillCostTotalVO orderBillCostTotalVO : tempOrderBillCostTotalVOS) {
+//                        BigDecimal localMoney = orderBillCostTotalVO.getLocalMoney();//如果本币金额为0，说明汇率为空没配置
+//                        if ((localMoney == null || localMoney.compareTo(new BigDecimal("0")) == 0) && !orderBillCostTotalVO.getCurrencyCode().equals("CNY")) {
+//                            //根据币种查询币种描述
+//                            String oCurrency = currencyRateService.getNameByCode(orderBillCostTotalVO.getCurrencyCode());
+////                            sb.append("原始币种:" + oCurrency + ",兑换币种:人民币;");
+//                            msg.add("原始币种:" + oCurrency + ",兑换币种:人民币;");
+//                            flag = false;
+//                        }
+//                    }
+//                }
+//                if (!flag) {
+//                    msg.forEach(sb::append);
+//                    sb.append("]的汇率");
+//                    return CommonResult.error(10001, sb.toString());
+//                }
+                //配置汇率
+                orderBillCostTotalVOS = this.receivableBillService.configureExchangeRate(costIds, settlementCurrency, form.getAccountTermStr(),
+                        form.getIsCustomExchangeRate(), form.getCustomExchangeRate());
             }
 
             //处理要新增的费用
@@ -506,7 +539,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
 
 
     @Override
-    public JSONArray viewSBillDetailInfo(String billNo, String cmd) {
+    public JSONArray viewSBillDetailInfo(String billNo, String cmd, String templateCmd) {
         List<ViewBilToOrderVO> orderList = baseMapper.viewSBillDetail(billNo);
 
         JSONArray array = new JSONArray(orderList);
@@ -555,7 +588,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         }
         //模板数据处理
 //        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
-        array = this.commonService.templateDataProcessing(cmd, array, mainOrderNos, 0);
+        array = this.commonService.templateDataProcessing(cmd, templateCmd, array, mainOrderNos, 0);
         return array;
     }
 
@@ -615,13 +648,13 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
 
 
     @Override
-    public List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg, String cmd) {
+    public List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg, String cmd, String templateCmd) {
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
         try {
-            Class template = BillTemplateEnum.getTemplate(cmd);
+            Class template = BillTemplateEnum.getTemplate(templateCmd);
             if (template != null) {
-                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template);
+                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template, false);
                 fixHeadList = Utilities.obj2List(maps, SheetHeadVO.class);
             } else {//TODO 增强不影响原有系统,除非更替完成
                 ViewBilToOrderHeadVO viewBilToOrderVO = new ViewBilToOrderHeadVO();
@@ -835,6 +868,15 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             return pageMap;
         }
 
+
+        //获取所有币种
+        Map<String, String> currencyMap = this.omsClient.initCurrencyInfo().getData()
+                .stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
+        //获取所有费用id
+        List<Long> costIds = pageInfo.getRecords().stream().map(PaymentNotPaidBillVO::getCostId).collect(toList());
+        //查询所有费用本币金额
+        Object costInfo = this.omsClient.getCostInfo(costIds, 0).getData();
+
         //所有的费用类型
         List<InitComboxVO> initComboxVOS = omsClient.findEnableCostGenre().getData();
         List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
@@ -860,9 +902,10 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 }
             }
             mainOrderNos.add(paymentNotPaidBill.getOrderNo());
+            paymentNotPaidBill.assemblyCostInfo(costInfo, currencyMap);
         }
         JSONArray array = new JSONArray(pageList);
-        array = this.commonService.templateDataProcessing(pageList.get(0).getSubType(), array, mainOrderNos, 0);
+        array = this.commonService.templateDataProcessing(pageList.get(0).getSubType(), pageList.get(0).getSubType(), array, mainOrderNos, 0);
         List<LinkedHashMap> maps = Utilities.obj2List(array, LinkedHashMap.class);
         pageMap.setRecords(maps);
         return pageMap;
@@ -1003,6 +1046,17 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     @Override
     public List<OrderReceivableBillDetail> getNowSOrderExist(String legalName, String unitAccount, String subType, String orderNo) {
         return baseMapper.getNowSOrderExist(legalName, unitAccount, subType, orderNo);
+    }
+
+    /**
+     * TODO 根据法人id和结算code
+     * 当前订单是否已经存在当前法人主体，结算单位，订单类型中,若存在则不做数量统计
+     *
+     * @return
+     */
+    @Override
+    public List<OrderReceivableBillDetail> getNowSOrderExistByLegalId(Long legalId, String unitCode, String subType, String orderNo) {
+        return baseMapper.getNowSOrderExistByLegalId(legalId, unitCode, subType, orderNo);
     }
 
     /**

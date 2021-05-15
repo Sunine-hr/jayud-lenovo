@@ -108,4 +108,14 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getDictCodeByDictTypeName")
     public ApiResult<String> getDictCodeByDictTypeName(@RequestParam("supervisionMode") String supervisionMode);
+
+    /**
+     * 查询待审核费用订单数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/auditPendingExpenses")
+    ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
+                                            @RequestParam("legalIds") List<Long> legalIds,
+                                            @RequestParam("orderNos")List<String> orderNos);
 }

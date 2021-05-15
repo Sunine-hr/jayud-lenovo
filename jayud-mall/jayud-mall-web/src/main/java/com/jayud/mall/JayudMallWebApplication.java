@@ -11,7 +11,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @description:
  * @date 2020/10/23 11:23
  */
-@SpringBootApplication(scanBasePackages = "com.jayud.mall")
+@SpringBootApplication(scanBasePackages = {"com.jayud.mall","com.jayud.common.exception"})
 @EnableDiscoveryClient
 @EnableFeignClients
 public class JayudMallWebApplication {

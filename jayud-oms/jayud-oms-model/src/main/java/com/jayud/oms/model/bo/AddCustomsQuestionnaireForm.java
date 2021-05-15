@@ -186,10 +186,7 @@ public class AddCustomsQuestionnaireForm extends Model<AddCustomsQuestionnaireFo
 
     }
 
-    public static void main(String[] args) {
-        String str = Utilities.printFieldsInfo(AddCustomsQuestionnaireForm.class);
-        System.out.println(str);
-    }
+
 
 
     @Override

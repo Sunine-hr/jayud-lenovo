@@ -3,6 +3,7 @@ package com.jayud.oms.model.vo.template.order;
 import cn.hutool.core.collection.CollectionUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.model.vo.InputOrderTakeAdrVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +16,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class TmsOrderTemplate {
+public class TmsOrderTemplate extends BaseOrderTemplate {
 
     @ApiModelProperty(value = "中港订单ID")
     private Long id;
@@ -56,8 +57,14 @@ public class TmsOrderTemplate {
     @ApiModelProperty(value = "送货地址", required = true)
     private String deliveryAddr;
 
-    @ApiModelProperty(value = "费用状态", required = true)
-    private String costDesc;
+//    @ApiModelProperty(value = "费用状态", required = true)
+//    private String costDesc;
+
+//    @ApiModelProperty(value = "应收费用状态", required = true)
+//    private String receivableCostStatus;
+//
+//    @ApiModelProperty(value = "应付费用状态", required = true)
+//    private String paymentCostStatus;
 
     @ApiModelProperty("通关口岸CODE")
     private String portCode;
@@ -187,6 +194,9 @@ public class TmsOrderTemplate {
     @ApiModelProperty(value = "主订单状态")
     private Integer mainOrderStatus;
 
+    @ApiModelProperty(value = "是否驳回")
+    private Boolean isRejected;
+
 
     public void setOrderTakeAdrForms1(List<InputOrderTakeAdrVO> orderTakeAdrForms1) {
         this.assemblyPickUpInfo(orderTakeAdrForms1);
@@ -245,14 +255,17 @@ public class TmsOrderTemplate {
         this.statusDesc = OrderStatusEnum.getDesc(status);
     }
 
-    public void setCost(Boolean cost) {
-        this.cost = cost;
-        if (cost) {
-            this.costDesc = "是";
-        } else {
-            this.costDesc = "否";
-        }
+//    public void setCost(Boolean cost) {
+//        this.cost = cost;
+//        if (cost) {
+//            this.costDesc = "是";
+//        } else {
+//            this.costDesc = "否";
+//        }
+//    }
+
+
+    public void isRejected() {
+        this.isRejected = OrderStatusEnum.getRejectionStatus(this.status, SubOrderSignEnum.ZGYS.getSignOne()) != null;
     }
-
-
 }

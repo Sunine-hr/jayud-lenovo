@@ -168,4 +168,28 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
                                                         @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
 
 
+    /**
+     * 统计已出账金额alreadyPaidAmount
+     * @param legalEntityId
+     * @param supplierCode
+     * @param subType
+     * @return
+     */
+    BigDecimal getAlreadyPaidAmountByLegalId(@Param("legalEntityId")Long legalEntityId,
+                                             @Param("supplierCode")String supplierCode,
+                                             @Param("subType")String subType);
+
+
+    /**
+     * 获取已出账订单数
+     *
+     * @return
+     */
+    Integer getBillOrderNumByLegalId(@Param("legalEntityId") Long legalEntityId,
+                                     @Param("supplierCode")String supplierCode,
+                                     @Param("subType")String subType);
+
+    Integer getBillNumByLegalId(@Param("legalEntityId") Long legalEntityId,
+                                @Param("supplierCode")String supplierCode,
+                                @Param("subType")String subType);
 }

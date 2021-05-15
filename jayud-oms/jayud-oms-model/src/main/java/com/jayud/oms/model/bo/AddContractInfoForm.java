@@ -56,4 +56,7 @@ public class AddContractInfoForm  {
     @ApiModelProperty(value = "合同绑定的业务id")
     @NotEmpty(message = "bindId is required")
     private Long bindId;
+
+    @ApiModelProperty(value = "备注")
+    private String remarks;
 }

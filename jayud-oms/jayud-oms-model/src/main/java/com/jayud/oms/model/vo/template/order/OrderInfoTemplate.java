@@ -29,4 +29,8 @@ public class OrderInfoTemplate {
 
     @ApiModelProperty("出库订单信息")
     private Template<StorageOutTemplate> storageOutTemplateTemplate;
+
+
+
+
 }

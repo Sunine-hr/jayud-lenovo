@@ -4,6 +4,7 @@ import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,9 @@ public class AuditInfoForm {
 
     @ApiModelProperty(value = "审核人")
     private String auditUser;
+
+    @ApiModelProperty(value = "审核时间")
+    private LocalDateTime auditTime;
 
     @ApiModelProperty(value = "附件")
     private List<FileView> fileViews = new ArrayList<>();

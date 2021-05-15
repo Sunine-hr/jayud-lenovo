@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -36,4 +37,7 @@ public interface OrderBillCostTotalMapper extends BaseMapper<OrderBillCostTotal>
      */
     List<OrderBillCostTotalVO> findOrderSBillCostTotal(@Param("costIds") List<Long> costIds,@Param("settlementCurrency") String settlementCurrency,
                                                        @Param("accountTermStr") String accountTermStr);
+
+
+    List<Map<String,Object>> totalCurrencyAmount(@Param("billNos")List<String> billNos);
 }

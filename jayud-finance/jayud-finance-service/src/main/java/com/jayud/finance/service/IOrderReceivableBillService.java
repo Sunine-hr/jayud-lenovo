@@ -7,6 +7,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.po.OrderReceivableBill;
 import com.jayud.finance.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -115,6 +116,15 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      */
     BigDecimal getSAlreadyPaidAmount(String legalName, String unitAccount, String subType);
 
+
+    /**
+     * TODO 根据法人id和结算code
+     * 统计已出账金额alreadyPaidAmount
+     *
+     * @return
+     */
+    public BigDecimal getSAlreadyPaidAmountByLegalId(@Param("legalId") Long legalId, @Param("unitCode") String unitCode, @Param("subType") String subType);
+
     /**
      * 统计账单数billNum
      *
@@ -141,4 +151,31 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      */
     String getWarehouseAddress(String orderNo);
 
+
+    /**
+     * 配置汇率
+     *
+     * @return
+     */
+    List<OrderBillCostTotalVO> configureExchangeRate(List<Long> costIds, String settlementCurrency, String accountTermStr,
+                                                     Boolean isCustomExchangeRate, List<InitComboxStrVO> customExchangeRates);
+
+    /**
+     * 统计账单
+     *
+     * @param orderBillCostTotalVOS
+     * @param orderReceivableBill
+     * @param orderNos
+     * @param subType
+     * @return
+     */
+    OrderReceivableBill statisticsBill(List<OrderBillCostTotalVO> orderBillCostTotalVOS, OrderReceivableBill orderReceivableBill, List<String> orderNos, String subType);
+
+
+    /**
+     * 根据条件查询信息
+     * @param orderReceivableBill
+     * @return
+     */
+    List<OrderReceivableBill> getByCondition(OrderReceivableBill orderReceivableBill);
 }

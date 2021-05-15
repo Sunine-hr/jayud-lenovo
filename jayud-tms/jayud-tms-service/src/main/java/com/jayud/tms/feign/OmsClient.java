@@ -214,9 +214,30 @@ public interface OmsClient {
 
     /**
      * 是否录用费用
+     *
      * @return
      */
     @RequestMapping(value = "/api/isCost")
     public ApiResult<Map<String, Object>> isCost(@RequestBody List<String> orderNos,
                                                  @RequestParam("subType") String subType);
+
+    /**
+     * 应收/应付费用状态
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostStatus")
+    public ApiResult<Map<String, Object>> getCostStatus(@RequestParam("mainOrderNos") List<String> mainOrderNos,
+                                                        @RequestParam("orderNos") List<String> orderNos);
+
+
+    /**
+     * 查询待审核费用订单数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/auditPendingExpenses")
+    public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
+                                                   @RequestParam("legalIds") List<Long> legalIds,
+                                                   @RequestParam("orderNos") List<String> orderNos);
 }

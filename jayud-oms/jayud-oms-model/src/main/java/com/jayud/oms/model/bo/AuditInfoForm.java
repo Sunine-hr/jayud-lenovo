@@ -1,9 +1,11 @@
 package com.jayud.oms.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,10 @@ public class AuditInfoForm {
 
     @ApiModelProperty(value = "审核人")
     private String auditUser;
+
+    @ApiModelProperty(value = "审核时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime auditTime;
 
     @ApiModelProperty(value = "附件")
     private List<FileView> fileViews = new ArrayList<>();

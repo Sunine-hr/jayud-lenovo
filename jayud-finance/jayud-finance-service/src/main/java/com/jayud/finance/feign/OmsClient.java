@@ -132,12 +132,11 @@ public interface OmsClient {
 
     /**
      * 根据费用主键集合批量查询费用信息
-     *
      * @param costIds 费用主键
      * @param type    类型(0:应收,1:应付)
      * @return
      */
-    @RequestMapping(value = "/api/getCostCurrencyInfo")
+    @RequestMapping(value = "/api/getCostInfo")
     public ApiResult getCostInfo(@RequestParam("costIds") List<Long> costIds,
                                  @RequestParam("type") Integer type);
 
@@ -152,10 +151,19 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getGoodsByBusIds")
     public ApiResult<List<InputGoodsVO>> getGoodsByBusIds(@RequestParam("orderId") List<Long> orderId,
-                                                     @RequestParam("businessType") Integer businessType);
+                                                          @RequestParam("businessType") Integer businessType);
 
     @ApiOperation("根据业务id集合查询订单地址")
     @RequestMapping(value = "/api/getOrderAddressByBusIds")
     public ApiResult<List<InputOrderAddressVO>> getOrderAddressByBusIds(@RequestParam("orderId") List<Long> orderId,
                                                                         @RequestParam("businessType") Integer businessType);
+
+    /**
+     * 根据审核表唯一标识查询审核描述(对账单)
+     *
+     * @param extUniqueFlags
+     * @return
+     */
+    @RequestMapping(value = "/api/getByExtUniqueFlag")
+    public ApiResult<Map<String, Object>> getByExtUniqueFlag(@RequestBody List<String> extUniqueFlags);
 }

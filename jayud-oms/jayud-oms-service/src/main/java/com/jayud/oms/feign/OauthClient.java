@@ -133,11 +133,19 @@ public interface OauthClient {
      * 根据用户名获取用户所属法人主体
      */
     @RequestMapping(value = "/api/getLegalIdBySystemName")
-    public ApiResult getLegalIdBySystemName(@RequestParam("loginName") String loginName) ;
+    public ApiResult<List<Long>> getLegalIdBySystemName(@RequestParam("loginName") String loginName);
 
     /**
      * 根据用户名获取用户所属法人主体
      */
     @RequestMapping(value = "/api/getLegalEntityCodeByLegalId")
     ApiResult getLegalEntityCodeByLegalId(@RequestParam("legalId") Long legalId);
+
+
+    /**
+     * 根据法人id集合配对code
+     */
+    @RequestMapping(value = "/api/matchingCodeByLegalIds")
+    ApiResult<Boolean> matchingCodeByLegalIds(@RequestParam("legalEntityIds") List<Long> legalEntityIds,
+                                              @RequestParam("code") String code);
 }

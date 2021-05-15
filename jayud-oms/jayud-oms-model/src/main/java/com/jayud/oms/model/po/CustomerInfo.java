@@ -3,6 +3,7 @@ package com.jayud.oms.model.po;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.jayud.common.utils.Utilities;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,7 +17,7 @@ import java.sql.Timestamp;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="CustomerInfo对象", description="客户信息表")
+@ApiModel(value = "CustomerInfo对象", description = "客户信息表")
 public class CustomerInfo extends Model<CustomerInfo> {
 
     private static final long serialVersionUID = 1L;
@@ -109,10 +110,13 @@ public class CustomerInfo extends Model<CustomerInfo> {
     private Boolean isAdvancedCertification;
 
 
-
     @Override
     protected Serializable pkVal() {
         return this.id;
     }
 
+
+    public static void main(String[] args) {
+        System.out.println(Utilities.printFieldsInfo(CustomerInfo.class));
+    }
 }

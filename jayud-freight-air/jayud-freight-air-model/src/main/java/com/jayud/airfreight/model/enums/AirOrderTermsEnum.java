@@ -21,7 +21,8 @@ public enum AirOrderTermsEnum {
     CPT(5, "CPT"),
     CNF(6, "CNF"),
     CIP(7, "CIP"),
-    FCA(8, "FCA"),;
+    FCA(8, "FCA"),
+    EXW(9, "EXW");
 
 
     private Integer code;

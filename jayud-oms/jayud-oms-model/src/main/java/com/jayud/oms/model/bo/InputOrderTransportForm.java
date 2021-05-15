@@ -26,13 +26,13 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "通关口岸code", required = true)
     private String portCode;
 
-    @ApiModelProperty(value = "货物流向",required = true)
+    @ApiModelProperty(value = "货物流向", required = true)
     private Integer goodsType;
 
-    @ApiModelProperty(value = "车型(1吨车 2柜车)",required = true)
+    @ApiModelProperty(value = "车型(1吨车 2柜车)", required = true)
     private Integer vehicleType;
 
-    @ApiModelProperty(value = "车型(3T)",required = true)
+    @ApiModelProperty(value = "车型(3T)", required = true)
     private String vehicleSize;
 
     @ApiModelProperty(value = "柜号")
@@ -47,7 +47,7 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "柜号上传附件地址数组集合")
     private List<FileView> cntrPics = new ArrayList<>();
 
-    @ApiModelProperty(value = "中转仓库ID",required = true)
+    @ApiModelProperty(value = "中转仓库ID", required = true)
     private Long warehouseInfoId;
 
     @ApiModelProperty(value = "1-装货 0-不需要装货")
@@ -56,13 +56,13 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "1-卸货 0-不需要卸货")
     private String isUnloadGoods;
 
-    @ApiModelProperty(value = "接单法人",required = true)
+    @ApiModelProperty(value = "接单法人", required = true)
     private String legalName;
 
-    @ApiModelProperty(value = "接单法人ID",required = true)
+    @ApiModelProperty(value = "接单法人ID", required = true)
     private Long legalEntityId;
 
-    @ApiModelProperty(value = "结算单位",required = true)
+    @ApiModelProperty(value = "结算单位", required = true)
     private String unitCode;
 
     @ApiModelProperty(value = "香港清关结算单位,选择了香港清关必填")

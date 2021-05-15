@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class InlandTPTemplate {
+public class InlandTPTemplate extends BaseOrderTemplate {
 
     @ApiModelProperty(value = "内陆订单主键")
     private Long id;
@@ -48,8 +48,8 @@ public class InlandTPTemplate {
     @ApiModelProperty(value = "送货地址", required = true)
     private String deliveryAddr;
 
-    @ApiModelProperty(value = "费用状态", required = true)
-    private String costDesc;
+//    @ApiModelProperty(value = "费用状态", required = true)
+//    private String costDesc;
 
     @ApiModelProperty(value = "费用状态")
     private Boolean cost;
@@ -145,13 +145,13 @@ public class InlandTPTemplate {
         this.deliveryAddr = orderDeliveryAddressSb.toString();
     }
 
-    public void setCost(Boolean cost) {
-        this.cost = cost;
-        if (cost){
-            this.costDesc="是";
-        }else {
-            this.costDesc="否";
-        }
-    }
+//    public void setCost(Boolean cost) {
+//        this.cost = cost;
+//        if (cost) {
+//            this.costDesc = "是";
+//        } else {
+//            this.costDesc = "否";
+//        }
+//    }
 
 }

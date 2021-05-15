@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.BusinessDevEvaluationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.BusinessDevEvaluation">
+        <id column="id" property="id"/>
+        <result column="customer_code" property="customerCode"/>
+        <result column="customer_name" property="customerName"/>
+        <result column="legal" property="legal"/>
+        <result column="set_year" property="setYear"/>
+        <result column="credit_code" property="creditCode"/>
+        <result column="business" property="business"/>
+        <result column="registered_capital" property="registeredCapital"/>
+        <result column="authentication" property="authentication"/>
+        <result column=" registered_address" property=" registeredAddress"/>
+        <result column="enterprise_type" property="enterpriseType"/>
+        <result column="correspondence_address" property="correspondenceAddress"/>
+        <result column="source" property="source"/>
+        <result column="number" property="number"/>
+        <result column="level" property="level"/>
+        <result column="customs_code" property="customsCode"/>
+        <result column="port" property="port"/>
+        <result column="principal" property="principal"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="discuss_people" property="discussPeople"/>
+        <result column="discuss_date" property="discussDate"/>
+        <result column="information_organizer" property="informationOrganizer"/>
+        <result column="state_credit" property="stateCredit"/>
+        <result column="customs_credit" property="customsCredit"/>
+        <result column="payment" property="payment"/>
+        <result column="is_listed" property="isListed"/>
+        <result column="faith" property="faith"/>
+        <result column="way" property="way"/>
+        <result column="is_garrison" property="isGarrison"/>
+        <result column="is_transfer" property="isTransfer"/>
+        <result column="is_lighting" property="isLighting"/>
+        <result column="is_terms" property="isTerms"/>
+        <result column="is_warning" property="isWarning"/>
+        <result column="is_checkgoods" property="isCheckgoods"/>
+        <result column="is_closetool" property="isClosetool"/>
+        <result column="is_checkbox" property="isCheckbox"/>
+        <result column="is_sensitive" property="isSensitive"/>
+        <result column="is_seal" property="isSeal"/>
+        <result column="is_identify" property="isIdentify"/>
+        <result column="is_checkdriver" property="isCheckdriver"/>
+        <result column="is_inspection" property="isInspection"/>
+        <result column="is_emergency" property="isEmergency"/>
+        <result column="is_checkemployees" property="isCheckemployees"/>
+        <result column="trade_security" property="tradeSecurity"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="expires_time" property="expiresTime"/>
+        <result column="status" property="status"/>
+        <result column="type" property="type"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="audit_opinion" property="auditOpinion"/>
+        <result column="evaluation_opinion" property="evaluationOpinion"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_code, customer_name, legal, set_year, credit_code, business, registered_capital, authentication,  registered_address, enterprise_type, correspondence_address, source, number, level, customs_code, port, principal, phone, email, discuss_people, discuss_date, information_organizer, state_credit, customs_credit, payment, is_listed, faith, way, is_garrison, is_transfer, is_lighting, is_terms, is_warning, is_checkgoods, is_closetool, is_checkbox, is_sensitive, is_seal, is_identify, is_checkdriver, is_inspection, is_emergency, is_checkemployees, trade_security, create_user, create_time, expires_time, status, type, update_user, update_time, audit_opinion, evaluation_opinion
+    </sql>
+    <select id="findByPage" resultType="com.jayud.oms.model.vo.BusinessDevEvaluationVO">
+        select
+        id, order_no,customer_code, customer_name, legal, set_year, credit_code, business, registered_capital, authentication,
+        registered_address, enterprise_type, correspondence_address, source, number, level, customs_code, port,
+        principal, phone, email, discuss_people, discuss_date, information_organizer, state_credit, customs_credit,
+        payment, is_listed, faith, way, is_garrison, is_transfer, is_lighting, is_terms, is_warning, is_checkgoods,
+        is_closetool, is_checkbox, is_sensitive, is_seal, is_identify, is_checkdriver, is_inspection, is_emergency,
+        is_checkemployees, trade_security, create_user, create_time, expires_time, status, type, update_user,
+        update_time, audit_opinion, evaluation_opinion
+        from business_dev_evaluation
+        <where>
+            <if test="form.orderNo != null and form.orderNo != ''">
+                and order_no like concat('%',#{form.orderNo},'%')
+            </if>
+            <if test="form.customerName != null and form.customerName != ''">
+                and customer_name like concat('%',#{form.customerName},'%')
+            </if>
+            <if test="form.createUser != null and form.createUser != ''">
+                and create_user like concat('%',#{form.createUser},'%')
+            </if>
+            <if test="form.orderStatus != null">
+                <if test="form.orderStatus == 2">
+                    and now() <![CDATA[>=]]> date_add(create_time, interval 11 month)
+                    and now() <![CDATA[<]]> expires_time
+                </if>
+                <if test="form.orderStatus == 3">
+                    and create_time <![CDATA[>=]]> expires_time
+                </if>
+            </if>
+            <if test="form.status != null">
+                and status =#{form.status}
+            </if>
+        </where>
+        order by id desc
+
+    </select>
+
+</mapper>

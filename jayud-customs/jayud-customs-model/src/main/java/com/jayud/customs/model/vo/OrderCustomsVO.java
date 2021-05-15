@@ -106,6 +106,9 @@ public class OrderCustomsVO {
     @ApiModelProperty(value = "监管方式")
     private String supervisionMode;
 
+    @ApiModelProperty(value = "报关单号")
+    private String yunCustomsNo;
+
     public void setStatusDesc(String status) {
         this.status = status;
         this.statusDesc = OrderStatusEnum.getDesc(status);

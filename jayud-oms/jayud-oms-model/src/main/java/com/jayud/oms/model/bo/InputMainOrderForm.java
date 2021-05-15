@@ -1,5 +1,6 @@
 package com.jayud.oms.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -71,5 +72,12 @@ public class InputMainOrderForm {
     @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo.... 参照CreateUserTypeEnum)")
     private Integer createUserType;
 
+    @ApiModelProperty(value = "是否驳回操作")
+    @JsonIgnore
+    private Boolean isRejected;
+
+    @ApiModelProperty(value = "驳回描述")
+    @JsonIgnore
+    private String rejectComment;
 
 }

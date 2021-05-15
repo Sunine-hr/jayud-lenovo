@@ -98,4 +98,13 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
 
     //判断代码是否存在
     boolean exitCode(Long id, String supplierCode);
+
+    /**
+     * 根据状态查询待处理数
+     *
+     * @param status
+     * @param legalIds
+     * @return
+     */
+    public Integer getNumByStatus(String status, List<Long> legalIds);
 }

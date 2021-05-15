@@ -27,8 +27,8 @@ public class QueryCustomsQuestionnaireForm extends BasePageForm {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
-    @ApiModelProperty(value = "记录人")
-    private String recorder;
+    @ApiModelProperty(value = "创建人")
+    private String createUser;
 
     @ApiModelProperty(value = "订单状态 (1:正常,2:提醒,3:失效)")
     private Integer orderStatus;

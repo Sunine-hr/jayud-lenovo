@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author chuanmei
@@ -20,6 +20,7 @@ public interface ICancelAfterVerificationService extends IService<CancelAfterVer
 
     /**
      * 核销列表
+     *
      * @param billNo
      * @return
      */
@@ -27,8 +28,14 @@ public interface ICancelAfterVerificationService extends IService<CancelAfterVer
 
     /**
      * 核销确认
+     *
      * @param form
      * @return
      */
     CommonResult heXiaoConfirm(HeXiaoConfirmListForm form);
+
+    /**
+     * 根据账单查询核销列表
+     */
+    List<CancelAfterVerification> getByBillNos(List<String> billNos);
 }

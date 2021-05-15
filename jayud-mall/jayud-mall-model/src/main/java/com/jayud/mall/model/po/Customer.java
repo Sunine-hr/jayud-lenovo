@@ -153,6 +153,10 @@ public class Customer extends Model<Customer> {
     @JSONField(ordinal = 29)
     private String newWisdomToken;
 
+    @ApiModelProperty(value = "运营(服务)小组2(operation_team id)", position = 30)
+    @JSONField(ordinal = 30)
+    private Long operationTeamTwo;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

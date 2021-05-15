@@ -2,19 +2,24 @@ package com.jayud.trailer.service.impl;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.entity.InitComboxVO;
+import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.Utilities;
 import com.jayud.trailer.bo.*;
 import com.jayud.trailer.enums.TrailerOrderStatusEnum;
 import com.jayud.trailer.feign.FileClient;
@@ -36,10 +41,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -68,9 +71,10 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
 
     @Override
     public String createOrder(AddTrailerOrderFrom addTrailerOrderFrom) {
+
+        TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);
         LocalDateTime now = LocalDateTime.now();
         addTrailerOrderFrom.getPathAndName();
-        TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);
 //        System.out.println("trailerOrder===================================="+trailerOrder);
         //创建拖车单
         if (addTrailerOrderFrom.getId() == null) {
@@ -88,9 +92,11 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             trailerOrder.setStatus(OrderStatusEnum.TT_0.getCode());
             trailerOrder.setUpdateTime(now);
             trailerOrder.setUpdateUser(UserOperator.getToken());
-            this.updateById(trailerOrder);
+            this.saveOrUpdate(trailerOrder);
         }
-        if(addTrailerOrderFrom.getOrderAddressForms()!=null&&addTrailerOrderFrom.getOrderAddressForms().size()>0){
+        omsClient.deleteGoodsByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()), BusinessTypeEnum.TC.getCode());
+        omsClient.deleteOrderAddressByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()), BusinessTypeEnum.TC.getCode());
+        if (addTrailerOrderFrom.getOrderAddressForms() != null && addTrailerOrderFrom.getOrderAddressForms().size() > 0) {
             //获取用户地址
             List<AddTrailerOrderAddressForm> orderAddressForms = addTrailerOrderFrom.getOrderAddressForms();
             List<AddOrderAddressForm> orderAddressForms1 = new ArrayList<>();
@@ -149,6 +155,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
 
     /**
      * 根据主订单号获取海运订单详情
+     *
      * @param orderNo
      * @return
      */
@@ -168,9 +175,9 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         trailerOrderVO.getFile(prePath);
 
         //获取港口信息
-        List<InitComboxStrVO> portCodeInfo = (List<InitComboxStrVO>)this.omsClient.initDictByDictTypeCode("Port").getData();
+        List<InitComboxStrVO> portCodeInfo = (List<InitComboxStrVO>) this.omsClient.initDictByDictTypeCode("Port").getData();
         for (InitComboxStrVO initComboxStrVO : portCodeInfo) {
-            if(initComboxStrVO.getCode().equals(trailerOrderVO.getPortCode())){
+            if (initComboxStrVO.getCode().equals(trailerOrderVO.getPortCode())) {
                 trailerOrderVO.setPortCodeName(initComboxStrVO.getName());
             }
         }
@@ -205,34 +212,34 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             convert.setVolume(convert1.getVolume());
             trailerOrderAddressVOS.add(convert);
         }
-        if(goodsVOS.size()>0){
+        if (goodsVOS.size() > 0) {
             trailerOrderVO.assemblyGoodsInfo(goodsVOS);
         }
         trailerOrderVO.setOrderAddressForms(trailerOrderAddressVOS);
         //查询派车信息
         TrailerDispatch trailerDispatch = this.trailerDispatchService.getEnableByTrailerOrderId(trailerOrderVO.getOrderNo());
-        TrailerDispatchVO trailerDispatchVO = ConvertUtil.convert(trailerDispatch,TrailerDispatchVO.class);
-        if(trailerDispatchVO.getPlateNumber()!=null){
+        TrailerDispatchVO trailerDispatchVO = ConvertUtil.convert(trailerDispatch, TrailerDispatchVO.class);
+        if (trailerDispatchVO.getPlateNumber() != null) {
             VehicleInfoLinkVO data = omsClient.initVehicleInfo(trailerDispatchVO.getPlateNumber()).getData();
             trailerDispatchVO.setPlateNumberName(data.getPlateNumber());
             for (DriverInfoVO driverInfo : data.getDriverInfos()) {
-                if(trailerDispatchVO.getName().equals(driverInfo.getId())){
+                if (trailerDispatchVO.getName().equals(driverInfo.getId())) {
                     trailerDispatchVO.setDriverName(driverInfo.getName());
                 }
             }
         }
-        if(trailerOrderVO.getImpAndExpType().equals(2)&&trailerOrderVO.getStatus().equals(OrderStatusEnum.TT_4.getCode())){
-            if(trailerOrderVO.getProcessDescription()!=null){
+        if (trailerOrderVO.getImpAndExpType().equals(2) && trailerOrderVO.getStatus().equals(OrderStatusEnum.TT_4.getCode())) {
+            if (trailerOrderVO.getProcessDescription() != null) {
                 trailerOrderVO.setStatus(trailerOrderVO.getProcessStatusDesc());
             }
         }
-        if(trailerOrderVO.getImpAndExpType().equals(1)&&trailerOrderVO.getStatus().equals(OrderStatusEnum.TT_7.getCode())){
-            if(trailerOrderVO.getProcessDescription()!=null){
+        if (trailerOrderVO.getImpAndExpType().equals(1) && trailerOrderVO.getStatus().equals(OrderStatusEnum.TT_7.getCode())) {
+            if (trailerOrderVO.getProcessDescription() != null) {
                 trailerOrderVO.setStatus(trailerOrderVO.getProcessStatusDesc());
             }
         }
-        if(trailerOrderVO.getImpAndExpType().equals(2)&&trailerOrderVO.getStatus().equals(OrderStatusEnum.TT_7.getCode())&&trailerOrderVO.getIsWeighed()){
-            if(trailerOrderVO.getProcessDescription()!=null){
+        if (trailerOrderVO.getImpAndExpType().equals(2) && trailerOrderVO.getStatus().equals(OrderStatusEnum.TT_7.getCode()) && trailerOrderVO.getIsWeighed()) {
+            if (trailerOrderVO.getProcessDescription() != null) {
                 trailerOrderVO.setStatus(trailerOrderVO.getProcessStatusDesc());
             }
         }
@@ -249,9 +256,9 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
 
     @Override
     public IPage<TrailerOrderFormVO> findByPage(QueryTrailerOrderForm form) {
-        if(form.getProcessStatus() !=null ){
+        if (form.getProcessStatus() != null) {
             form.setProcessStatusList(Collections.singletonList(form.getProcessStatus()));
-        }else{
+        } else {
             if (StringUtils.isEmpty(form.getStatus())) { //订单列表
                 form.setProcessStatusList(Arrays.asList(ProcessStatusEnum.PROCESSING.getCode()
                         , ProcessStatusEnum.COMPLETE.getCode(), ProcessStatusEnum.CLOSE.getCode()));
@@ -266,7 +273,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
         Page<TrailerOrderFormVO> page = new Page<>(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findByPage(page, form,legalIds);
+        return this.baseMapper.findByPage(page, form, legalIds);
     }
 
     /**
@@ -279,16 +286,16 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         trailerOrder.setId(form.getOrderId());
         trailerOrder.setUpdateTime(LocalDateTime.now());
         trailerOrder.setUpdateUser(UserOperator.getToken());
-        if(trailerOrder1.getImpAndExpType().equals(2)&&form.getStatus().equals(OrderStatusEnum.TT_3.getCode())){
+        if (trailerOrder1.getImpAndExpType().equals(2) && form.getStatus().equals(OrderStatusEnum.TT_3.getCode())) {
             trailerOrder.setStatus(OrderStatusEnum.TT_4.getCode());
             trailerOrder.setProcessDescription(OrderStatusEnum.TT_3.getCode());
-        }else if(trailerOrder1.getImpAndExpType().equals(1)&&form.getStatus().equals(OrderStatusEnum.TT_6.getCode())) {
+        } else if (trailerOrder1.getImpAndExpType().equals(1) && form.getStatus().equals(OrderStatusEnum.TT_6.getCode())) {
             trailerOrder.setStatus(OrderStatusEnum.TT_7.getCode());
             trailerOrder.setProcessDescription(OrderStatusEnum.TT_6.getCode());
-        }else if(trailerOrder1.getImpAndExpType().equals(2)&&form.getStatus().equals(OrderStatusEnum.TT_6.getCode())&&!trailerOrder1.getIsWeighed()){
+        } else if (trailerOrder1.getImpAndExpType().equals(2) && form.getStatus().equals(OrderStatusEnum.TT_6.getCode()) && !trailerOrder1.getIsWeighed()) {
             trailerOrder.setStatus(OrderStatusEnum.TT_7.getCode());
             trailerOrder.setProcessDescription(OrderStatusEnum.TT_6.getCode());
-        }else{
+        } else {
             trailerOrder.setStatus(form.getStatus());
         }
 
@@ -362,7 +369,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         trailerDispatchService.saveOrUpdateTrailerDispatch(trailerDispatch);
         //更改流程节点完成状态
         TrailerOrder trailerOrder = new TrailerOrder();
-        if(form.getPaperStripSeal()!=null){
+        if (form.getPaperStripSeal() != null) {
             trailerOrder.setPaperStripSeal(form.getPaperStripSeal());
             trailerOrder.setCabinetNumber(form.getCabinetNumber());
         }
@@ -404,7 +411,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
 //                trailerDispatch.setStatus(TrailerOrderStatusEnum.DELETE.getCode());
 //                this.trailerDispatchService.updateByTrailerOrderId(trailerOrder.getId(), trailerDispatch);
                 QueryWrapper queryWrapper = new QueryWrapper();
-                queryWrapper.eq("order_id",trailerOrder.getId());
+                queryWrapper.eq("order_id", trailerOrder.getId());
                 this.trailerDispatchService.remove(queryWrapper);
                 //执行主订单驳回标识
                 omsClient.doMainOrderRejectionSignOpt(trailerOrder.getMainOrderNo(),
@@ -437,6 +444,62 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         QueryWrapper<TrailerOrder> condition = new QueryWrapper<>();
         condition.lambda().eq(TrailerOrder::getOrderNo, orderNo);
         return this.getOne(condition);
+    }
+
+    /**
+     * 根据主订单号查询所有详情
+     *
+     * @param mainOrderNos
+     * @return
+     */
+    @Override
+    public List<TrailerOrderInfoVO> getTrailerInfoByMainOrderNos(List<String> mainOrderNos) {
+        return this.baseMapper.getTrailerInfoByMainOrderNos(mainOrderNos);
+    }
+
+    @Override
+    public List<TrailerOrderInfoVO> getInfo(List<String> mainOrderNos) {
+        List<TrailerOrderInfoVO> trailerOrders = this.getTrailerInfoByMainOrderNos(mainOrderNos);
+
+        List<Long> orderIds = new ArrayList<>();
+        List<Long> vehicleIds = new ArrayList<>();
+
+        for (TrailerOrderInfoVO trailerOrder : trailerOrders) {
+            orderIds.add(trailerOrder.getId());
+            TrailerDispatchInfoVO dispatchInfoVO = trailerOrder.getTrailerDispatchInfoVO();
+            if (dispatchInfoVO != null) {
+                vehicleIds.add(Long.valueOf(dispatchInfoVO.getPlateNumber()));
+            }
+        }
+
+        //查询起运港/目的港
+        List<InitComboxStrVO> port = omsClient.initDictByDictTypeCode("Port").getData();
+        Map<String, String> portMap = port.stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
+
+        //查询车型尺寸
+        Object vehicleSize = this.omsClient.getVehicleSizeInfo().getData();
+        Map<Long, String> vehicleSizeMap = new HashMap<>();
+        if (vehicleSize != null) {
+            List<InitComboxVO> initComboxVOS = Utilities.obj2List(vehicleSize, InitComboxVO.class);
+            vehicleSizeMap = initComboxVOS.stream().collect(Collectors.toMap(InitComboxVO::getId, InitComboxVO::getName));
+        }
+
+        //查询订单地址
+        List<OrderDeliveryAddress> deliveryAddresses = omsClient.getDeliveryAddress(orderIds, BusinessTypeEnum.TC.getCode()).getData();
+        Map<Long, List<OrderDeliveryAddress>> deliveryAddressMap = deliveryAddresses.stream().collect(Collectors.groupingBy(OrderDeliveryAddress::getBusinessId));
+
+        //查询车辆信息
+        Object vehicleInfos = this.omsClient.getVehicleInfoByIds(vehicleIds).getData();
+
+        for (TrailerOrderInfoVO trailerOrder : trailerOrders) {
+            trailerOrder.setPortName(portMap.get(trailerOrder.getPortCode()))
+                    .setDeliveryAddresses(deliveryAddressMap.get(trailerOrder.getId()))
+                    .setCabinetSize(vehicleSizeMap.get(Long.valueOf(trailerOrder.getCabinetSize())))
+                    .assemblyVehicleInfos(vehicleInfos);
+
+        }
+
+        return trailerOrders;
     }
 
 }

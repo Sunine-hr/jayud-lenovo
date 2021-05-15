@@ -1,8 +1,8 @@
 package com.jayud.mall.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.bo.SupplierCostForm;
 import com.jayud.mall.model.po.SupplierCost;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.SupplierCostVO;
 
 import java.util.List;
@@ -24,4 +24,5 @@ public interface ISupplierCostService extends IService<SupplierCost> {
      * @return
      */
     List<SupplierCostVO> findSupplierCost(SupplierCostForm form);
+
 }

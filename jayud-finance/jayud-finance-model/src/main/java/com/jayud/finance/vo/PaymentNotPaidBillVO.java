@@ -1,5 +1,9 @@
 package com.jayud.finance.vo;
 
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.vo.InlandTP.OrderInlandSendCarsVO;
 import com.jayud.finance.vo.InlandTP.OrderInlandTransportDetails;
@@ -10,6 +14,7 @@ import org.apache.commons.collections.CollectionUtils;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 应收/应付保持一致
@@ -129,6 +134,12 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "出账类型")
     private String subType;
 
+    @ApiModelProperty(value = "原始币种")
+    private String originalCurrency;
+
+    @ApiModelProperty(value = "原始金额")
+    private String originalAmount;
+
     public void setAuditStatus(String auditStatus) {
         this.auditStatus = auditStatus;
         this.isDelete = auditStatus.equals(BillEnum.EDIT_DEL.getCode());
@@ -146,6 +157,17 @@ public class PaymentNotPaidBillVO {
                     this.licensePlate = sendCarsVO.getLicensePlate();
                 }
 
+            }
+        }
+    }
+
+    public void assemblyCostInfo(Object costInfo, Map<String, String> currencyMap) {
+        JSONArray jsonArray = new JSONArray(costInfo);
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject json = jsonArray.getJSONObject(i);
+            if (this.costId.equals(json.getLong("id"))) {
+                this.originalAmount = json.getStr("amount");
+                this.originalCurrency = MapUtil.getStr(currencyMap, json.getStr("currencyCode"));
             }
         }
     }

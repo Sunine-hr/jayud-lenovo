@@ -20,16 +20,15 @@ import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import com.jayud.oms.model.enums.RoleKeyEnum;
 import com.jayud.oms.model.enums.UserTypeEnum;
 import com.jayud.oms.model.po.AuditInfo;
+import com.jayud.oms.model.po.BusinessDevEvaluation;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.vo.CustAccountVO;
 import com.jayud.oms.model.vo.CustomerInfoVO;
 import com.jayud.oms.model.vo.InitComboxVO;
-import com.jayud.oms.service.IAuditInfoService;
-import com.jayud.oms.service.ICustomerInfoService;
-import com.jayud.oms.service.ICustomerRelaLegalService;
-import com.jayud.oms.service.ICustomerRelaUnitService;
+import com.jayud.oms.service.*;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.httpclient.HttpStatus;
@@ -60,16 +59,14 @@ public class CustomerInfoController {
 
     @Autowired
     private OauthClient oauthClient;
-
     @Autowired
     private IAuditInfoService auditInfoService;
-
     @Autowired
     private ICustomerRelaUnitService customerRelaUnitService;
-
     @Autowired
     private ICustomerRelaLegalService customerRelaLegalService;
-
+    @Autowired
+    private IBusinessDevEvaluationService businessDevEvaluationService;
 
     @ApiOperation(value = "查询客户列表")
     @PostMapping(value = "/findCustomerInfoByPage")
@@ -125,7 +122,26 @@ public class CustomerInfoController {
             return CommonResult.error(400, "该客户名称已存在");
         }
 
+
         CustomerInfo customerInfo = ConvertUtil.convert(form, CustomerInfo.class);
+        //根据佳裕达报关客户code判断是否存在(802)
+        Boolean isMatching = oauthClient.matchingCodeByLegalIds(form.getLegalEntityIds(), "802").getData();
+        Boolean isJump = false;
+        //如果选择报关公司,设置草稿状态
+        if (isMatching) {
+            int count = businessDevEvaluationService.countByCondition(new BusinessDevEvaluation().setCustomerName(form.getName()));
+            if (count == 0) {
+                //要查询是否存在开发评估报告,并且返回true给前端,进行跳转
+                customerInfo.setAuditStatus(CustomerInfoStatusEnum.DRAFT.getCode());
+                isJump = true;
+            }
+
+        }
+
+        //存在id,编辑数据,如果选择报关,,存在可以进行正常客户操作,
+        //不存在,设置草稿状态,并且返回true给前端,进行跳转
+
+
 //        //空字符串设置null
 //        form.setIdCode(StringUtils.isEmpty(form.getIdCode()) ? null : form.getIdCode());
 //        if (form.getId() != null) {
@@ -136,7 +152,20 @@ public class CustomerInfoController {
 //        }
         this.customerInfoService.saveOrUpdateCustomerInfo(form, customerInfo);
 
-        return CommonResult.success();
+        //返回成功数据
+        Map<String, Object> map = new HashMap<>();
+        //开发评估报告需要参数
+        if (isMatching) {
+            map.put("isJump", isJump);
+            map.put("customerName", form.getName());
+            map.put("enterpriseType", form.getTypes());
+            map.put("correspondenceAddress", form.getAddress());
+            map.put("level", form.getCustomsCreditRating());
+            map.put("stateCredit", form.getNationalCredit());
+            map.put("customsCredit", form.getCustomsCredit());
+        }
+
+        return CommonResult.success(map);
     }
 
     @ApiOperation(value = "二期优化3:新增和编辑时校验客户名称是否存在,name=客户姓名 id=客户ID")

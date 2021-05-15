@@ -34,6 +34,7 @@
         t.group_name groupName,
         t.file_name fileName,t.`options`,t.`describe` remarks,t.id qfId
         from quoted_file t
+        where status = 1
     </select>
 
 </mapper>

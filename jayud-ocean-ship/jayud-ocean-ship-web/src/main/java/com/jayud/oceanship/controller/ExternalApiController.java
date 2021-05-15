@@ -3,8 +3,10 @@ package com.jayud.oceanship.controller;
 import cn.hutool.core.collection.CollectionUtil;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oceanship.bo.AddSeaOrderForm;
 import com.jayud.oceanship.feign.OauthClient;
+import com.jayud.oceanship.feign.OmsClient;
 import com.jayud.oceanship.po.SeaOrder;
 import com.jayud.oceanship.service.ICabinetSizeNumberService;
 import com.jayud.oceanship.service.ISeaOrderService;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 被外部模块调用的处理接口
@@ -43,15 +46,16 @@ public class ExternalApiController {
 
     @Autowired
     private ICabinetSizeNumberService cabinetSizeNumberService;
-
     @Autowired
     private OauthClient oauthClient;
-
     @Autowired
     private ISeaReplenishmentService seaReplenishmentService;
+    @Autowired
+    private OmsClient omsClient;
 
     /**
      * 创建海运单
+     *
      * @param addSeaOrderForm
      * @return
      */
@@ -66,12 +70,12 @@ public class ExternalApiController {
      * 根据主订单号获取海运单信息
      */
     @RequestMapping(value = "/api/oceanship/getSeaOrderDetails")
-    ApiResult<SeaOrderVO> getSeaOrderDetails(@RequestParam("orderNo")String orderNo){
+    ApiResult<SeaOrderVO> getSeaOrderDetails(@RequestParam("orderNo") String orderNo) {
         SeaOrder seaOrder = seaOrderService.getByMainOrderNO(orderNo);
         SeaOrderVO seaOrderVO = seaOrderService.getSeaOrderByOrderNO(seaOrder.getId());
         //获取柜型数量
 
-        if(CollectionUtils.isEmpty(seaOrderVO.getCabinetSizeNumbers())){
+        if (CollectionUtils.isEmpty(seaOrderVO.getCabinetSizeNumbers())) {
             List<CabinetSizeNumberVO> cabinetSizeNumberVOS = new ArrayList<>();
             cabinetSizeNumberVOS.add(new CabinetSizeNumberVO());
             seaOrderVO.setCabinetSizeNumbers(cabinetSizeNumberVOS);
@@ -83,11 +87,12 @@ public class ExternalApiController {
 
     /**
      * 根据主订单号集合获取海运订单信息
+     *
      * @param mainOrderNoList
      * @return
      */
     @RequestMapping(value = "/api/oceanship/getSeaOrderByMainOrderNos")
-    ApiResult getSeaOrderByMainOrderNos(@RequestBody List<String> mainOrderNoList){
+    ApiResult getSeaOrderByMainOrderNos(@RequestBody List<String> mainOrderNoList) {
         List<SeaOrder> seaOrders = this.seaOrderService.getSeaOrderByOrderNOs(mainOrderNoList);
         return ApiResult.ok(seaOrders);
     }
@@ -112,10 +117,11 @@ public class ExternalApiController {
         tmp.put("确认到港", "S_8");
         tmp.put("海外代理", "S_9");
         tmp.put("订单签收", "S_10");
+        tmp.put("费用审核", "seaCostAudit");
         List<Map<String, Object>> result = new ArrayList<>();
 
-        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
-        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = legalEntityByLegalName.getData();
 
         for (Map<String, Object> menus : menusList) {
 
@@ -123,10 +129,16 @@ public class ExternalApiController {
             Object title = menus.get("title");
             String status = tmp.get(title);
             Integer num = 0;
-            if(status != null) {
-                if(status.equals("S_4") || status.equals("S_5") || status.equals("S_7")){
+            if (status != null) {
+                if (status.equals("S_4") || status.equals("S_5") || status.equals("S_7")) {
                     num = this.seaReplenishmentService.getNumByStatus(status, legalIds);
-                }else{
+                } else if ("seaCostAudit".equals(status)) { //费用审核
+                    List<SeaOrder> list = this.seaOrderService.getByLegalEntityId(legalIds);
+                    if (!CollectionUtils.isEmpty(list)) {
+                        List<String> orderNos = list.stream().map(SeaOrder::getOrderNo).collect(Collectors.toList());
+                        num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.HY.getSignOne(), legalIds, orderNos).getData();
+                    }
+                } else {
                     num = this.seaOrderService.getNumByStatus(status, legalIds);
                 }
             }

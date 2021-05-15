@@ -2,6 +2,7 @@ server:
   port: 8205
   servlet:
     context-path: ${oms.content.path}
+  max-http-header-size: 4048576
 spring:
   servlet:
     multipart:

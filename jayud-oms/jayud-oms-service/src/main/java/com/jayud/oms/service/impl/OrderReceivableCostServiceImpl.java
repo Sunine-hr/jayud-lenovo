@@ -13,6 +13,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +103,8 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
     }
 
     @Override
-    public Map<String, Object> getOrderCostStatus(List<String> mainOrderNos, List<String> subOrderNos) {
+    public Map<String, Object> getOrderCostStatus(List<String> mainOrderNos, List<String> subOrderNos,
+                                                  Map<String, Object> callbackParam) {
 
         /**
          * 已录单:当数据库存在费用,并且金额不为0状态,就为已录单状态
@@ -117,6 +119,7 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
         //根据子订单查询费用
         List<OrderReceivableCost> orderReceivableCosts = null;
         Map<String, List<OrderReceivableCost>> group = null;
+
         if (CollectionUtils.isNotEmpty(mainOrderNos)) {
             QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
             condition.lambda().in(OrderReceivableCost::getMainOrderNo, mainOrderNos)
@@ -159,36 +162,34 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
             int submited = 0;
             int audited = 0;
             String str = "";
+            BigDecimal approvedAmount = new BigDecimal(0);
             for (OrderReceivableCost orderReceivableCost : v) {
                 String status = String.valueOf(orderReceivableCost.getStatus());
                 if (OrderStatusEnum.COST_0.getCode().equals(status) ||
                         OrderStatusEnum.COST_1.getCode().equals(status)) {
-                    str = "已录单";
-                    break;
+                    str = "已录入-" + approvedAmount;
                 }
                 if (OrderStatusEnum.COST_2.getCode().equals(status)) {
                     ++submited;
                 }
                 if (OrderStatusEnum.COST_3.getCode().equals(status)) {
                     ++audited;
+                    approvedAmount = approvedAmount.add(orderReceivableCost.getChangeAmount());
                 }
             }
 
             if (submited > 0 && str.length() == 0) {
-                map.put(k, "已提交");
+                map.put(k, "已提交-" + approvedAmount);
             } else if (audited > 0 && str.length() == 0) {
-                map.put(k, "已审核");
+                map.put(k, "已审核-" + approvedAmount);
             } else if (str.length() == 0) {
-                map.put(k, "未录单");
+                map.put(k, "未录入-" + approvedAmount);
             } else {
                 map.put(k, str);
             }
-
+            //回滚参数
+            callbackParam.put(k, v);
         });
-
-
-
-
         return map;
     }
 
@@ -204,5 +205,13 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
         }
 
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 查询待处理费用审核
+     */
+    @Override
+    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds) {
+        return this.baseMapper.getPendingExpenseApproval(subType, orderNos,legalIds);
     }
 }

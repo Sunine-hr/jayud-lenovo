@@ -69,6 +69,25 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
         Long offerInfoId = ObjectUtil.isEmpty(form.getOfferInfoId()) ? 0 : form.getOfferInfoId();
         form.setOfferInfoId(offerInfoId);
         IPage<CustomerGoodsVO> pageInfo = customerGoodsMapper.findCustomerGoodsByPage(page, form);
+
+        List<CustomerGoodsVO> records = pageInfo.getRecords();
+        records.forEach(customerGoodsVO -> {
+            String isNeedFee = customerGoodsVO.getIsNeedFee();//是否需要附加费(1需要 2不需要)
+            String serviceUnitPrice = customerGoodsVO.getServiceUnitPrice();
+            if(ObjectUtil.isNotEmpty(isNeedFee)){
+                if(isNeedFee.equals("2")){
+                    serviceUnitPrice = "无附加费";
+                }else{
+                    if(ObjectUtil.isEmpty(serviceUnitPrice)){
+                        serviceUnitPrice = "附加费待定";
+                    }
+                }
+            }else{
+                serviceUnitPrice = "附加费待定";
+            }
+            customerGoodsVO.setServiceUnitPrice(serviceUnitPrice);
+        });
+
         return pageInfo;
     }
 

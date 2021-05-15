@@ -149,8 +149,11 @@ public class CustomerGoodsVO {
     @ApiModelProperty(value = "商品服务费用list")
     private List<GoodsServiceCost> goodsServiceCostList;
 
+    @ApiModelProperty(value = "是否需要附加费(1需要 2不需要)")
+    private String isNeedFee;
+
     @ApiModelProperty(value = "商品服务的单价,附加费")
-    private BigDecimal serviceUnitPrice;
+    private String serviceUnitPrice;
 
     @ApiModelProperty(value = "商品服务的币种(currency_info id)")
     private Integer serviceCid;

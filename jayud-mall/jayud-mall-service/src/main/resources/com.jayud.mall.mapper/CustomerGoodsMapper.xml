@@ -45,11 +45,22 @@
         t.declared_value,t.declared_currency,t.material_quality,t.purpose,t.declare_elements,t.hs_code,t.data_code,t.clearance_code,t.sales_link,
         t.sales_price,t.sales_price_currency,t.description,t.`status`,t.status_name,t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,
         t1.company customerName,
+        (
+        select tt3.is_need_fee
+        from offer_info tt1
+        join quotation_template tt2 on tt2.id = tt1.qie
+        join service_group tt3 on tt3.id = tt2.sid
+        where 1=1
+        <if test="form.offerInfoId != null">
+            and tt1.id = #{form.offerInfoId}
+        </if>
+        ) is_need_fee,
         t2.unit_price serviceUnitPrice,t2.cid serviceCid,t2.unit serviceUnit
         from customer_goods t
         left join customer t1 on t1.id = t.customer_id
         left join (
-        select service_id,good_id,unit_price,cid,unit from offer_info tt1
+        select tt4.service_id,tt4.good_id,tt4.unit_price,tt4.cid,tt4.unit
+        from offer_info tt1
         join quotation_template tt2 on tt2.id = tt1.qie
         join service_group tt3 on tt3.id = tt2.sid
         join goods_service_cost tt4 on tt4.service_id = tt3.id

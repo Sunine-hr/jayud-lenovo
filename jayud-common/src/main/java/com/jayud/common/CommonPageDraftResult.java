@@ -11,6 +11,8 @@ import java.util.Map;
 public class CommonPageDraftResult<T> extends CommonPageResult<T>{
 
     //分页时，显示分页信息和统计的草稿数量
+    @ApiModelProperty(value = "已取消数量")
+    private Long canceledNum;
     @ApiModelProperty(value = "草稿数量")
     private Long draftNum;
     @ApiModelProperty(value = "已下单数量")
@@ -26,12 +28,14 @@ public class CommonPageDraftResult<T> extends CommonPageResult<T>{
 
     public CommonPageDraftResult(IPage pageInfo, Map<String, Long> totalMap) {
         super(pageInfo);
+        Long canceledNum = MapUtil.getLong(totalMap, "canceledNum");
         Long draftNum = MapUtil.getLong(totalMap, "draftNum");
         Long orderedNum = MapUtil.getLong(totalMap, "orderedNum");
         Long receivedNum = MapUtil.getLong(totalMap, "receivedNum");
         Long affirNum = MapUtil.getLong(totalMap, "affirNum");
         Long transitNum = MapUtil.getLong(totalMap, "transitNum");
         Long signedNum = MapUtil.getLong(totalMap, "signedNum");
+        this.canceledNum = canceledNum;
         this.draftNum = draftNum;
         this.orderedNum = orderedNum;
         this.receivedNum = receivedNum;

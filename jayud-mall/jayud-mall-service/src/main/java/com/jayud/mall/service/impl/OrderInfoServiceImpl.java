@@ -1547,6 +1547,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         CustomerUser customerUser = baseService.getCustomerUser();
         form.setCustomerId(customerUser.getId().intValue());
 
+        form.setStatus(0);//-1, "已取消"
+        Long canceledNum = orderInfoMapper.findOrderInfoDraftCount(form);
         form.setStatus(0);//0 草稿
         Long draftNum = orderInfoMapper.findOrderInfoDraftCount(form);
         form.setStatus(10);//10 已下单
@@ -1561,6 +1563,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         Long signedNum = orderInfoMapper.findOrderInfoDraftCount(form);
 
         Map<String,Long> totalMap = new HashMap<>();
+        totalMap.put("canceledNum", canceledNum);//已取消数量
         totalMap.put("draftNum", draftNum);//草稿数量
         totalMap.put("orderedNum", orderedNum);//已下单数量
         totalMap.put("receivedNum", receivedNum);//已收货数量

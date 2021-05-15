@@ -165,15 +165,16 @@ public class WaybillTaskRelevanceServiceImpl extends ServiceImpl<WaybillTaskRele
         //1.保存运单任务
         this.saveOrUpdate(waybillTaskRelevance);
         //2.判断是否修改 订单 物流轨迹跟踪表 ,保存订单物流轨迹表
-        String remarks = waybillTaskRelevance.getRemarks();
-        if(StrUtil.isNotEmpty(remarks)){
+        String logisticsTrackDescription = form.getLogisticsTrackDescription();
+        LocalDateTime logisticsTrackCreateTime = ObjectUtil.isEmpty(form.getLogisticsTrackCreateTime()) ? LocalDateTime.now() : form.getLogisticsTrackCreateTime();
+        if(StrUtil.isNotEmpty(logisticsTrackDescription)){
             Long orderId = waybillTaskRelevance.getOrderInfoId();
             LogisticsTrack logisticsTrack = new LogisticsTrack();
             logisticsTrack.setOrderId(orderId.toString());
             logisticsTrack.setStatus(1);
             logisticsTrack.setStatusName("1");
-            logisticsTrack.setDescription(remarks);
-            logisticsTrack.setCreateTime(LocalDateTime.now());
+            logisticsTrack.setDescription(logisticsTrackDescription);
+            logisticsTrack.setCreateTime(logisticsTrackCreateTime);
             logisticsTrack.setOperatorId(waybillTaskRelevance.getUserId());
             logisticsTrack.setOperatorName(waybillTaskRelevance.getUserName());
             logisticsTrackService.saveOrUpdate(logisticsTrack);

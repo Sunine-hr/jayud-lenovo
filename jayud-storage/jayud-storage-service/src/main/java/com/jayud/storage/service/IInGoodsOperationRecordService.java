@@ -22,4 +22,6 @@ public interface IInGoodsOperationRecordService extends IService<InGoodsOperatio
     List<InGoodsOperationRecord> getListByOrderId(Long id, String orderNo);
 
     List<InGoodsOperationRecord> getListByOrderId(Long id);
+
+    List<InGoodsOperationRecord> getListBySku(String sku);
 }

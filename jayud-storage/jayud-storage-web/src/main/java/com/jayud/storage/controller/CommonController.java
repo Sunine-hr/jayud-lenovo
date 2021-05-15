@@ -7,15 +7,19 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.excel.ExcelUtils;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.WarehouseGoodsInForm;
 import com.jayud.storage.model.bo.WarehouseGoodsOutForm;
+import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
+import com.jayud.storage.model.vo.GoodNumberVO;
 import com.jayud.storage.model.vo.GoodVO;
 import com.jayud.storage.model.vo.InitComboxSVO;
 import com.jayud.storage.model.vo.InitComboxWarehouseVO;
 import com.jayud.storage.service.IGoodService;
+import com.jayud.storage.service.IInGoodsOperationRecordService;
 import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +52,9 @@ public class CommonController {
 
     @Autowired
     private IWarehouseAreaShelvesLocationService warehouseAreaShelvesLocationService;
+
+    @Autowired
+    private IInGoodsOperationRecordService inGoodsOperationRecordService;
 
 
     /**
@@ -135,11 +143,21 @@ public class CommonController {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("customer_id",customerId);
         List<GoodVO> list = goodService.list(queryWrapper);
-        if(type=="1"){
+        if(type.equals("1")){
             return CommonResult.success(list);
         }
-        if(type=="2"){
-
+        if(type.equals("2")){
+            List<GoodNumberVO> goodNumberVOS = ConvertUtil.convertList(list, GoodNumberVO.class);
+            for (GoodNumberVO goodNumberVO : goodNumberVOS) {
+                List<String> str = new ArrayList<>();
+                List<InGoodsOperationRecord> list1 = inGoodsOperationRecordService.getListBySku(goodNumberVO.getSku());
+                for (InGoodsOperationRecord inGoodsOperationRecord : list1) {
+                    str.add(inGoodsOperationRecord.getWarehousingBatchNo());
+                }
+                str.add("111111");
+                goodNumberVO.setBatchNumbers(str);
+            }
+            return CommonResult.success(goodNumberVOS);
         }
         return CommonResult.error(444,"获取商品失败");
     }

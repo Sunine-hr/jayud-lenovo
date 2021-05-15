@@ -19,4 +19,6 @@ import java.util.List;
 public interface InGoodsOperationRecordMapper extends BaseMapper<InGoodsOperationRecord> {
 
     List<InGoodsOperationRecord> getListByOrderId(@Param("id") Long id);
+
+    List<InGoodsOperationRecord> getListBySku(@Param("sku")String sku);
 }

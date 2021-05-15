@@ -35,4 +35,10 @@
         from in_goods_operation_record igor where orderId = #{id} group by sku order by createTime asc
     </select>
 
+    <select id="getListBySku" resultType="com.jayud.storage.model.po.InGoodsOperationRecord">
+        select id, order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, name,
+        sku, specification_model specificationModel, board_number boardNumber, number,
+        pcs, weight, volume from in_goods_operation_record igor where sku = #{sku} group by warehousing_batch_no
+    </select>
+
 </mapper>

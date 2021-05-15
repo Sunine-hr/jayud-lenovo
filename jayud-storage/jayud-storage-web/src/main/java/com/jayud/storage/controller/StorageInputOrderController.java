@@ -535,8 +535,8 @@ public class StorageInputOrderController {
     }
 
     //入仓单模板
-    @Value("")
-    private String path;
+    @Value("${address.storageAddr}")
+    private String filepath;
 
     @ApiOperation(value = "导出入仓单")
     @PostMapping(value = "/exportInWarehouseReceipt")
@@ -546,20 +546,63 @@ public class StorageInputOrderController {
         Map<String,Object> dataMap = new HashMap<String, Object>();
         try {
             //编号
+            dataMap.put("poundWeight", "1");
+            dataMap.put("labeling ", "1");
+            dataMap.put("photograph ","1");
+            dataMap.put("measureSize", "1");
+            dataMap.put("numberOfPoints", "1");
+            dataMap.put("selfUnloading", "1");
+            dataMap.put("warehouseUnloading", "1");
+            dataMap.put("compositeBoard", "1");
+            dataMap.put("rubberSheet", "1");
+            dataMap.put("board", "1");
+            dataMap.put("cardboard", "1");
+            dataMap.put("woodenCase", "1");
+            dataMap.put("yes", "1");
+            dataMap.put("no", "1");
+            dataMap.put("isGone", "1");
+            dataMap.put("isInstructions", "1");
+            dataMap.put("num1", "1");
+            dataMap.put("isDoorCollection", "1");
+            dataMap.put("isSelfDelivery", "1");
+            dataMap.put("isGoldLabels", "1");
+            dataMap.put("isImproperPacking", "1");
+            dataMap.put("num2", "1");
+            dataMap.put("isTomOpen", "1");
+            dataMap.put("tomOpenNumber", "1");
+            dataMap.put("isReTaped", "1");
+            dataMap.put("reTapedNumber", "1");
+            dataMap.put("isCrushedCollapsed", "1");
+            dataMap.put("crushedCollapsedNumber", "1");
+            dataMap.put("isWaterGreased", "1");
+            dataMap.put("waterGreasedNumber", "1");
+            dataMap.put("isPuncturedHoles", "1");
+            dataMap.put("puncturedHolesNumber", "1");
+            dataMap.put("isDamagedCtn", "1");
+            dataMap.put("damagedCtnNumber", "1");
+
+
+            dataMap.put("warehouseNumber", storageInProcessOptFormVO.getWarehouseNumber());
+            dataMap.put("createTime", storageInProcessOptFormVO.getCreateTime());
+            dataMap.put("plateNumber", storageInProcessOptFormVO.getPlateNumber());
             dataMap.put("customerName", storageInProcessOptFormVO.getCustomerName());
-            dataMap.put("customerName", storageInProcessOptFormVO.getCustomerName());
-            dataMap.put("userList", storageInProcessOptFormVO.getWarehouseGoodsForms());
+            dataMap.put("num1", storageInProcessOptFormVO.getNum1());
+            dataMap.put("num2", storageInProcessOptFormVO.getNum2());
+            if(CollectionUtils.isNotEmpty(storageInProcessOptFormVO.getWarehouseGoodsForms())){
+                dataMap.put("userList", storageInProcessOptFormVO.getWarehouseGoodsForms());
+            }
+
             //Configuration 用于读取ftl文件
             Configuration configuration = new Configuration(new Version("2.3.29"));
             configuration.setDefaultEncoding("utf-8");
 
 
-            configuration.setDirectoryForTemplateLoading(new File(path));//指定ftl所在目录,根据自己的改
+            configuration.setDirectoryForTemplateLoading(new File(filepath));//指定ftl所在目录,根据自己的改
             response.setContentType("application/msword");
             response.setHeader("Content-Disposition", "attachment;filename=\"" + new String("入仓单.doc".getBytes("GBK"), "iso8859-1") + "\"");
             response.setCharacterEncoding("utf-8");//此句非常关键,不然word文档全是乱码
             PrintWriter out = response.getWriter();
-            Template t =  configuration.getTemplate("test.ftl","utf-8");//以utf-8的编码读取ftl文件
+            Template t =  configuration.getTemplate("storageWarehousing.ftl","utf-8");//以utf-8的编码读取ftl文件
             t.process(dataMap, out);
 
 

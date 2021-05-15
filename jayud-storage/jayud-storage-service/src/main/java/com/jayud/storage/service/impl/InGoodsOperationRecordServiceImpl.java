@@ -48,4 +48,14 @@ public class InGoodsOperationRecordServiceImpl extends ServiceImpl<InGoodsOperat
     public List<InGoodsOperationRecord> getListByOrderId(Long id) {
         return this.baseMapper.getListByOrderId(id);
     }
+
+    /**
+     * 查询该sku商品的所有入库批次
+     * @param sku
+     * @return
+     */
+    @Override
+    public List<InGoodsOperationRecord> getListBySku(String sku) {
+        return this.baseMapper.getListBySku(sku);
+    }
 }

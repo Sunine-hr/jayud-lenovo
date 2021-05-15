@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -33,6 +34,7 @@ public class GoodNumberVO {
     @ApiModelProperty(value = "规格型号")
     private String specificationModel;
 
-
+    @ApiModelProperty(value = "规格型号")
+    private List<String> batchNumbers;
 
 }

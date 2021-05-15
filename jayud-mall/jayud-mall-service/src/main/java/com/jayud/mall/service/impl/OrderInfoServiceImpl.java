@@ -1545,8 +1545,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public Map<String,Long> findOrderInfoDraftCount(QueryOrderInfoForm form) {
         CustomerUser customerUser = baseService.getCustomerUser();
-        form.setCustomerId(customerUser.getId().intValue());
-
+        if(ObjectUtil.isNotEmpty(customerUser)){
+            form.setCustomerId(customerUser.getId().intValue());
+        }
         form.setStatus(0);//-1, "已取消"
         Long canceledNum = orderInfoMapper.findOrderInfoDraftCount(form);
         form.setStatus(0);//0 草稿

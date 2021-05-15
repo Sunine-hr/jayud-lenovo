@@ -3,7 +3,7 @@ package com.jayud.mall.controller;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.common.CommonPageResult;
+import com.jayud.common.CommonPageDraftResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.*;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/orderinfo")
@@ -33,10 +34,11 @@ public class OrderInfoController {
     @ApiOperation(value = "分页查询订单")
     @PostMapping("/findOrderInfoByPage")
     @ApiOperationSupport(order = 1)
-    public CommonResult<CommonPageResult<OrderInfoVO>> findOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
+    public CommonResult<CommonPageDraftResult<OrderInfoVO>> findOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
         IPage<OrderInfoVO> pageList = orderInfoService.findOrderInfoByPage(form);
-        CommonPageResult<OrderInfoVO> pageVO = new CommonPageResult(pageList);
-        return CommonResult.success(pageVO);
+        Map<String,Long> totalMap = orderInfoService.findOrderInfoDraftCount(form);
+        CommonPageDraftResult<OrderInfoVO> draftResult = new CommonPageDraftResult(pageList, totalMap);
+        return CommonResult.success(draftResult);
     }
 
     @ApiOperation(value = "订单管理-查看审核文件")

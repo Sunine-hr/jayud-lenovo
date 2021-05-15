@@ -57,6 +57,9 @@
         <if test="form.keyword != null and form.keyword != ''">
             AND ( t.`name_cn` LIKE concat('%',#{form.keyword},'%') OR t.`company` LIKE concat('%',#{form.keyword},'%') )
         </if>
+        <if test="form.auditStatus != null">
+            and t.audit_status = #{form.auditStatus}
+        </if>
     </select>
 
     <select id="customerLogin" parameterType="com.jayud.mall.model.bo.CustomerLoginForm"

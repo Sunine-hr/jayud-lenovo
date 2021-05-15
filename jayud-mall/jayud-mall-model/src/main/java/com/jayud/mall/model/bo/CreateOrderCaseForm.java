@@ -1,6 +1,7 @@
 package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.jayud.mall.model.vo.OrderCaseVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -9,6 +10,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @ApiModel(value = "创建箱号的参数")
@@ -57,6 +59,10 @@ public class CreateOrderCaseForm {
 
     @ApiModelProperty(value = "报价id(offer_info id)", position = 8)
     private Integer offerInfoId;
+
+    //箱号列表list
+    @ApiModelProperty(value = "箱号列表list")
+    List<OrderCaseVO> orderCaseVOList;
 
 
 }

@@ -1,5 +1,6 @@
 package com.jayud.mall.controller;
 
+import cn.hutool.core.collection.CollUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.CreateOrderCaseForm;
 import com.jayud.mall.model.vo.CaseVO;
@@ -70,6 +71,12 @@ public class OrderCaseController {
             //数字转字符串,前面自动补0的实现,补4位数的零
             String fabNo = extensionNumber+"U"+String.format("%0"+beginNumber.length()+"d", bNumber);
             orderCaseVO.setFabNo(fabNo);
+        }
+
+        //历史添加箱子list
+        List<OrderCaseVO> orderCaseVOList1 = form.getOrderCaseVOList();
+        if(CollUtil.isNotEmpty(orderCaseVOList1)){
+            orderCaseVOList.addAll(orderCaseVOList1);
         }
 
         CaseVO caseVO = new CaseVO();

@@ -129,6 +129,12 @@ public class CustomerGoodsVO {
     @ApiModelProperty(value = "品牌")
     private String brand;
 
+    @ApiModelProperty(value = "丢货赔偿金额")
+    private BigDecimal lossCompensationAmount;
+
+    @ApiModelProperty(value = "丢货赔偿金额币种(currency_info id)")
+    private Integer lcaCid;
+
     /*客户名称*/
     @ApiModelProperty(value = "客户名称", position = 29)
     @JSONField(ordinal = 29)

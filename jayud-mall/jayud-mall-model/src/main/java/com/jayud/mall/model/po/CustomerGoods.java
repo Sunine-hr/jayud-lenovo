@@ -145,6 +145,12 @@ public class CustomerGoods extends Model<CustomerGoods> {
     @ApiModelProperty(value = "品牌")
     private String brand;
 
+    @ApiModelProperty(value = "丢货赔偿金额")
+    private BigDecimal lossCompensationAmount;
+
+    @ApiModelProperty(value = "丢货赔偿金额币种(currency_info id)")
+    private Integer lcaCid;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

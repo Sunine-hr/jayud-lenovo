@@ -210,7 +210,8 @@ public class CommonServiceImpl implements CommonService {
 
 
         //TODO 中港地址截取6个字符
-        if (SubOrderSignEnum.ZGYS.getSignOne().equals(cmd)) {
+        if (SubOrderSignEnum.ZGYS.getSignOne().equals(cmd)
+        || SubOrderSignEnum.MAIN.getSignOne().equals(cmd)) {
             for (int i = 0; i < array.size(); i++) {
                 JSONObject jsonObject = array.getJSONObject(i);
                 String startAddress = jsonObject.getStr("startAddress");

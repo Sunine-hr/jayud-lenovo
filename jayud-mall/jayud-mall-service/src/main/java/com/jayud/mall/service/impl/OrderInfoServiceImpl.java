@@ -1418,7 +1418,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         QuotationType quotationType = quotationTypeMapper.findQuotationTypeByCode(reserveSize);
         orderInfoVO.setReserveSizeName(quotationType.getName());
 
-        //物流轨迹 TODO 待实现，先给测试数据
+        //物流轨迹
         List<LogisticsTrackVO> logisticsTrackVOS = logisticsTrackMapper.findLogisticsTrackByOrderId(orderInfoVO.getId().toString());
         orderInfoVO.setLogisticsTrackVOS(logisticsTrackVOS);
 
@@ -1495,6 +1495,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         String destinationWarehouseCode = orderInfoVO.getDestinationWarehouseCode();
         FabWarehouseVO fabWarehouseVO = fabWarehouseMapper.findFabWarehouseByWarehouseCode(destinationWarehouseCode);
         orderInfoVO.setFabWarehouseVO(fabWarehouseVO);
+
+        //提货地址
+        List<OrderPickVO> orderPickVOList = orderPickMapper.findOrderPickByOrderId(orderId);
+        orderInfoVO.setOrderPickVOList(orderPickVOList);
+
 
         //费用明细(订单应收费用)
         OrderCostDetailVO orderCostDetailVO = getOrderCostDetailVO(orderInfoVO);

@@ -145,8 +145,17 @@ public class CustomerGoodsVO {
     @JSONField(ordinal = 30)
     private String typesName;
 
-
     //商品服务费用
     @ApiModelProperty(value = "商品服务费用list")
     private List<GoodsServiceCost> goodsServiceCostList;
+
+    @ApiModelProperty(value = "商品服务的单价,附加费")
+    private BigDecimal serviceUnitPrice;
+
+    @ApiModelProperty(value = "商品服务的币种(currency_info id)")
+    private Integer serviceCid;
+
+    @ApiModelProperty(value = "商品服务的单位(1公斤 2方 3票 4柜)")
+    private Integer serviceUnit;
+
 }

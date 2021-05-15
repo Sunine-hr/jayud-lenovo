@@ -65,6 +65,9 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
         Page<CustomerGoodsVO> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.asc("t.id"));
+
+        Long offerInfoId = ObjectUtil.isEmpty(form.getOfferInfoId()) ? 0 : form.getOfferInfoId();
+        form.setOfferInfoId(offerInfoId);
         IPage<CustomerGoodsVO> pageInfo = customerGoodsMapper.findCustomerGoodsByPage(page, form);
         return pageInfo;
     }

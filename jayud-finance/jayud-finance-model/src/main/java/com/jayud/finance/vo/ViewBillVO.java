@@ -35,7 +35,7 @@ public class ViewBillVO {
     @ApiModelProperty(value = "制单人")
     private String auditUser;
 
-    @ApiModelProperty(value = "制单时间")
+    @ApiModelProperty(value = "审单时间")
     private String auditTimeStr;
 
     @ApiModelProperty(value = "开户银行")

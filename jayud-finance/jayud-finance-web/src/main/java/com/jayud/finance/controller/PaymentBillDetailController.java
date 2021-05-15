@@ -13,6 +13,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.excel.EasyExcelEntity;
 import com.jayud.common.utils.excel.EasyExcelUtils;
 import com.jayud.finance.bo.*;
@@ -332,7 +333,7 @@ public class PaymentBillDetailController {
         bottomData.add(new StringBuilder()
                 .append("开户银行:").append(legalEntityJson.getStr("bank", ""))
                 .append(EasyExcelUtils.SPLIT_SYMBOL)
-                .append("制单时间:").append(viewBillVO.getMakeTimeStr()).toString());
+                .append("制单时间:").append(DateUtils.format(viewBillVO.getMakeTimeStr(),DateUtils.DATE_PATTERN)).toString());
         bottomData.add(new StringBuilder()
                 .append("开户账号:").append(legalEntityJson.getStr("accountOpen", ""))
                 .append(EasyExcelUtils.SPLIT_SYMBOL)
@@ -340,7 +341,7 @@ public class PaymentBillDetailController {
         bottomData.add(new StringBuilder()
                 .append("纳税人识别号:").append(legalEntityJson.getStr("taxIdentificationNum", ""))
                 .append(EasyExcelUtils.SPLIT_SYMBOL)
-                .append("审单时间:").append(viewBillVO.getMakeTimeStr()).toString());
+                .append("审单时间:").append(DateUtils.format(viewBillVO.getAuditTimeStr(),DateUtils.DATE_PATTERN)).toString());
         bottomData.add(new StringBuilder()
                 .append("公司地址:").append(legalEntityJson.getStr("rigisAddress", ""))
                 .append(EasyExcelUtils.SPLIT_SYMBOL).toString());

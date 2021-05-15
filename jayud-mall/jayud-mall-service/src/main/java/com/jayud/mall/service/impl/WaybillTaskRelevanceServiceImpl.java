@@ -198,7 +198,7 @@ public class WaybillTaskRelevanceServiceImpl extends ServiceImpl<WaybillTaskRele
     /**
      * 延期运单任务
      * 1.不改变任务的状态，但要改变 最后完成时间
-     * 2.不记录物流轨迹
+     * 2.保存订单物流轨迹表
      * 3.需要激活 关联的其他任务
      * @param form
      */
@@ -234,7 +234,22 @@ public class WaybillTaskRelevanceServiceImpl extends ServiceImpl<WaybillTaskRele
         //1.保存运单任务
         this.saveOrUpdate(waybillTaskRelevance);
 
-        //2.不记录物流轨迹
+        //2.判断是否修改 订单 物流轨迹跟踪表 ,保存订单物流轨迹表
+        String logisticsTrackDescription = form.getLogisticsTrackDescription();
+        LocalDateTime logisticsTrackCreateTime = ObjectUtil.isEmpty(form.getLogisticsTrackCreateTime()) ? LocalDateTime.now() : form.getLogisticsTrackCreateTime();
+        if(StrUtil.isNotEmpty(logisticsTrackDescription)){
+            Long orderId = waybillTaskRelevance.getOrderInfoId();
+            LogisticsTrack logisticsTrack = new LogisticsTrack();
+            logisticsTrack.setOrderId(orderId.toString());
+            logisticsTrack.setStatus(1);
+            logisticsTrack.setStatusName("1");
+            logisticsTrack.setDescription(logisticsTrackDescription);
+            logisticsTrack.setCreateTime(logisticsTrackCreateTime);
+            logisticsTrack.setOperatorId(waybillTaskRelevance.getUserId());
+            logisticsTrack.setOperatorName(waybillTaskRelevance.getUserName());
+            logisticsTrackService.saveOrUpdate(logisticsTrack);
+        }
+
 
         //3.判断是否关联了 其他任务，并激活其他任务
         String fromTaskCode = waybillTaskRelevance.getTaskCode();

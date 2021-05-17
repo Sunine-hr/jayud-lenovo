@@ -18,4 +18,12 @@
         id, bill_id, bill_no, order_id, order_no, is_inform, create_time
     </sql>
 
+    <select id="findBillOrderRelevanceByBillId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.po.BillOrderRelevance">
+        select
+            t.id,t.bill_id,t.bill_no,t.order_id,t.order_no,t.is_inform,t.create_time
+        from bill_order_relevance t
+        where t.bill_id = #{billId}
+    </select>
+
 </mapper>

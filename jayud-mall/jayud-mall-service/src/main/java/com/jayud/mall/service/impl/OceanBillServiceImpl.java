@@ -44,60 +44,45 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
 
     @Autowired
     OceanBillMapper oceanBillMapper;
-
     @Autowired
     OceanCounterMapper oceanCounterMapper;
-
     @Autowired
     BillCopePayMapper billCopePayMapper;
-
     @Autowired
     OrderCopeReceivableMapper orderCopeReceivableMapper;
-
     @Autowired
     OrderCopeWithMapper orderCopeWithMapper;
-
     @Autowired
     BillTaskRelevanceMapper billTaskRelevanceMapper;
-
     @Autowired
     CounterCaseMapper counterCaseMapper;
-
     @Autowired
     CostItemMapper costItemMapper;
-
     @Autowired
     OrderConfMapper orderConfMapper;
-
     @Autowired
     BillClearanceInfoMapper billClearanceInfoMapper;
     @Autowired
     BillCustomsInfoMapper billCustomsInfoMapper;
     @Autowired
     CounterListInfoMapper counterListInfoMapper;
-
-
     @Autowired
-    IOceanCounterService oceanCounterService;
-
-    @Autowired
-    IBillTaskRelevanceService billTaskRelevanceService;
-
-    @Autowired
-    IBillCopePayService billCopePayService;
-
-    @Autowired
-    IOrderCopeReceivableService orderCopeReceivableService;
-
-    @Autowired
-    IOrderCopeWithService orderCopeWithService;
-
-    @Autowired
-    IOceanConfDetailService oceanConfDetailService;
+    BillOrderRelevanceMapper billOrderRelevanceMapper;
 
     @Autowired
     BaseService baseService;
-
+    @Autowired
+    IOceanCounterService oceanCounterService;
+    @Autowired
+    IBillTaskRelevanceService billTaskRelevanceService;
+    @Autowired
+    IBillCopePayService billCopePayService;
+    @Autowired
+    IOrderCopeReceivableService orderCopeReceivableService;
+    @Autowired
+    IOrderCopeWithService orderCopeWithService;
+    @Autowired
+    IOceanConfDetailService oceanConfDetailService;
     @Autowired
     IBillClearanceInfoService billClearanceInfoService;
     @Autowired
@@ -110,6 +95,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     ICounterListInfoService counterListInfoService;
     @Autowired
     ICounterCaseInfoService counterCaseInfoService;
+    @Autowired
+    IBillOrderRelevanceService billOrderRelevanceService;
 
 
     @Override
@@ -850,7 +837,6 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         //1.保存-柜子清单信息表
         counterListInfoService.saveOrUpdate(counterListInfo);
         Long b_id = counterListInfo.getId();//柜子清单信息表(counter_list_info id)
-
         //2.保存-柜子箱号信息
         List<CounterCaseInfoForm> counterCaseInfoForms = form.getCounterCaseInfos();
         List<CounterCaseInfo> counterCaseInfos = ConvertUtil.convertList(counterCaseInfoForms, CounterCaseInfo.class);
@@ -866,21 +852,132 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             });
             counterCaseInfoService.saveOrUpdateBatch(counterCaseInfos);
         }
+        //3.保存-提单关联订单(任务通知表)
+        /**
+         * 1).根据关系查询：提单关联运单信息  （这里是最新最全的数据）
+         * 提单 -->  提单的柜子  -->  柜子清单  -->  柜子的箱子  --> 箱子的订单  --> 订单(运单)
+         */
+        List<BillOrderRelevance> billOrderList = oceanBillMapper.findBillOrderByBillId(billId);
+        /**
+         * 2).根据提单id，查询 提单关联订单(任务通知表)  （这里是数据库保存的历史数据）
+         */
+        List<BillOrderRelevance> billOrderRelevanceList = billOrderRelevanceMapper.findBillOrderRelevanceByBillId(billId);
+        /**
+         * 3).billOrderList 和 billOrderRelevanceList 进行合并，找出删除的数据
+         */
+        List<Integer> delIds = new ArrayList<>();//要删除的ids
+        List<Integer> notDelIds = new ArrayList<>();//不删除的ids
+        List<BillOrderRelevance> billOrderRelevances = new ArrayList<>();//要保存的数据
+        if(CollUtil.isNotEmpty(billOrderList)){
+            for (int i=0; i<billOrderList.size(); i++) {
+                BillOrderRelevance billOrder = billOrderList.get(i);
+                Integer new_billId = billOrder.getBillId();
+                Long new_orderId = billOrder.getOrderId();
+                for(int j=0; j<billOrderRelevanceList.size(); j++){
+                    BillOrderRelevance billOrderRelevance = billOrderRelevanceList.get(j);
+                    Integer db_billId = billOrderRelevance.getBillId();
+                    Long db_orderId = billOrderRelevance.getOrderId();
+                    if(new_billId.equals(db_billId) && new_orderId.equals(db_orderId) ){
+                        billOrder.setId(billOrderRelevance.getId());//主键id 更新数据id
+                        billOrder.setIsInform(billOrderRelevance.getIsInform());
+                        billOrder.setCreateTime(billOrderRelevance.getCreateTime());
+                        notDelIds.add(billOrderRelevance.getId());
+                    }
+                }
+                billOrderRelevances.add(billOrder);
+            }
+        }else{
+            billOrderRelevanceList.forEach(billOrderRelevance -> {
+                delIds.add(billOrderRelevance.getId());
+            });
+        }
+        if(CollUtil.isNotEmpty(delIds)){
+            //要删除的ids
+            billOrderRelevanceService.removeByIds(delIds);
+        }
+        if(CollUtil.isNotEmpty(notDelIds)){
+            //删除其他的ids，过滤掉 不删除的ids
+            QueryWrapper<BillOrderRelevance> qw = new QueryWrapper<>();
+            qw.notIn("id", notDelIds);
+            qw.eq("bill_id", billId);
+            billOrderRelevanceService.remove(qw);
+        }
+        if(CollUtil.isNotEmpty(billOrderRelevances)){
+            //保存的数据
+            billOrderRelevanceService.saveOrUpdateBatch(billOrderRelevances);
+        }
         CounterListInfoVO counterListInfoVO = ConvertUtil.convert(counterListInfo, CounterListInfoVO.class);
         return counterListInfoVO;
-
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void delCounterListInfo(CounterListInfoIdForm form) {
         Long id = form.getId();
+        CounterListInfoVO counterListInfoVO = counterListInfoMapper.findCounterListInfoById(id);
+        Long billId = counterListInfoVO.getBillId();
         //1.删除-柜子清单信息表
         counterListInfoService.removeById(id);
         //2.删除-柜子箱号信息
         QueryWrapper<CounterCaseInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("b_id", id);
         counterCaseInfoService.remove(queryWrapper);
+
+        //3.保存-提单关联订单(任务通知表)
+        /**
+         * 1).根据关系查询：提单关联运单信息  （这里是最新最全的数据）
+         * 提单 -->  提单的柜子  -->  柜子清单  -->  柜子的箱子  --> 箱子的订单  --> 订单(运单)
+         */
+        List<BillOrderRelevance> billOrderList = oceanBillMapper.findBillOrderByBillId(billId);
+        /**
+         * 2).根据提单id，查询 提单关联订单(任务通知表)  （这里是数据库保存的历史数据）
+         */
+        List<BillOrderRelevance> billOrderRelevanceList = billOrderRelevanceMapper.findBillOrderRelevanceByBillId(billId);
+        /**
+         * 3).billOrderList 和 billOrderRelevanceList 进行合并，找出删除的数据
+         */
+        List<Integer> delIds = new ArrayList<>();//要删除的ids
+        List<Integer> notDelIds = new ArrayList<>();//不删除的ids
+        List<BillOrderRelevance> billOrderRelevances = new ArrayList<>();//要保存的数据
+        if(CollUtil.isNotEmpty(billOrderList)){
+            for (int i=0; i<billOrderList.size(); i++) {
+                BillOrderRelevance billOrder = billOrderList.get(i);
+                Integer new_billId = billOrder.getBillId();
+                Long new_orderId = billOrder.getOrderId();
+                for(int j=0; j<billOrderRelevanceList.size(); j++){
+                    BillOrderRelevance billOrderRelevance = billOrderRelevanceList.get(j);
+                    Integer db_billId = billOrderRelevance.getBillId();
+                    Long db_orderId = billOrderRelevance.getOrderId();
+                    if(new_billId.equals(db_billId) && new_orderId.equals(db_orderId) ){
+                        billOrder.setId(billOrderRelevance.getId());//主键id 更新数据id
+                        billOrder.setIsInform(billOrderRelevance.getIsInform());
+                        billOrder.setCreateTime(billOrderRelevance.getCreateTime());
+                        notDelIds.add(billOrderRelevance.getId());
+                    }
+                }
+                billOrderRelevances.add(billOrder);
+            }
+        }else{
+            billOrderRelevanceList.forEach(billOrderRelevance -> {
+                delIds.add(billOrderRelevance.getId());
+            });
+        }
+        if(CollUtil.isNotEmpty(delIds)){
+            //要删除的ids
+            billOrderRelevanceService.removeByIds(delIds);
+        }
+        if(CollUtil.isNotEmpty(notDelIds)){
+            //删除其他的ids，过滤掉 不删除的ids
+            QueryWrapper<BillOrderRelevance> qw = new QueryWrapper<>();
+            qw.notIn("id", notDelIds);
+            qw.eq("bill_id", billId);
+            billOrderRelevanceService.remove(qw);
+        }
+        if(CollUtil.isNotEmpty(billOrderRelevances)){
+            //保存的数据
+            billOrderRelevanceService.saveOrUpdateBatch(billOrderRelevances);
+        }
+
     }
 
     @Override

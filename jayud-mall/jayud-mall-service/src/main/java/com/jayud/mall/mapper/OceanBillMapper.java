@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.ConfCaseForm;
 import com.jayud.mall.model.bo.QueryOceanBillForm;
+import com.jayud.mall.model.po.BillOrderRelevance;
 import com.jayud.mall.model.po.OceanBill;
 import com.jayud.mall.model.vo.*;
 import org.apache.ibatis.annotations.Mapper;
@@ -103,4 +104,11 @@ public interface OceanBillMapper extends BaseMapper<OceanBill> {
      * @return
      */
     OrderConfVO findOrderConfByBillId(@Param("billId") Long billId);
+
+    /**
+     * 根据提单id，查询提单管理的订单信息
+     * @param billId
+     * @return
+     */
+    List<BillOrderRelevance> findBillOrderByBillId(@Param("billId") Long billId);
 }

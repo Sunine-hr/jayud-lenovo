@@ -48,4 +48,7 @@ public class CounterListInfoVO {
     @ApiModelProperty(value = "柜子箱号信息list")
     private List<CounterCaseInfoVO> counterCaseInfos;
 
+    @ApiModelProperty(value = "提单id(ocean_bill id)")
+    private Long billId;
+
 }

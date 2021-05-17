@@ -1,12 +1,15 @@
 package com.jayud.mall.model.po;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import java.time.LocalDateTime;
-import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -18,13 +21,14 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="BillOrderRelevance对象", description="提单关联订单(任务通知表)")
+@ApiModel(value = "BillOrderRelevance对象", description = "提单关联订单(任务通知表)")
 public class BillOrderRelevance extends Model<BillOrderRelevance> {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键id")
-      private Integer id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
 
     @ApiModelProperty(value = "提单id(ocean_bill id)")
     private Integer billId;

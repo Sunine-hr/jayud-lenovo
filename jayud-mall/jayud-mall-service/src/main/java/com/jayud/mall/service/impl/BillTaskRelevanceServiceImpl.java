@@ -2,27 +2,22 @@ package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.enums.DayFlagEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.mapper.BillTaskRelevanceMapper;
-import com.jayud.mall.mapper.OceanBillMapper;
-import com.jayud.mall.mapper.TaskExecutionRuleMapper;
+import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.BillTaskRelevanceIdForm;
 import com.jayud.mall.model.bo.BillTaskRelevanceQueryForm;
-import com.jayud.mall.model.po.BillTaskRelevance;
-import com.jayud.mall.model.po.OceanBill;
+import com.jayud.mall.model.po.*;
 import com.jayud.mall.model.vo.BillTaskRelevanceVO;
 import com.jayud.mall.model.vo.BillTaskVO;
 import com.jayud.mall.model.vo.OceanBillVO;
 import com.jayud.mall.model.vo.domain.AuthUser;
-import com.jayud.mall.service.BaseService;
-import com.jayud.mall.service.IBillTaskRelevanceService;
-import com.jayud.mall.service.IBillTaskService;
-import com.jayud.mall.service.ILogisticsTrackService;
+import com.jayud.mall.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +44,10 @@ public class BillTaskRelevanceServiceImpl extends ServiceImpl<BillTaskRelevanceM
     OceanBillMapper oceanBillMapper;
     @Autowired
     TaskExecutionRuleMapper taskExecutionRuleMapper;
+    @Autowired
+    BillOrderRelevanceMapper billOrderRelevanceMapper;
+    @Autowired
+    WaybillTaskRelevanceMapper waybillTaskRelevanceMapper;
 
     @Autowired
     BaseService baseService;
@@ -56,6 +55,8 @@ public class BillTaskRelevanceServiceImpl extends ServiceImpl<BillTaskRelevanceM
     IBillTaskService billTaskService;
     @Autowired
     ILogisticsTrackService logisticsTrackService;
+    @Autowired
+    IWaybillTaskRelevanceService waybillTaskRelevanceService;
 
     @Override
     public List<BillTaskRelevanceVO> savebillTaskRelevance(OceanBill oceanBill) {
@@ -117,6 +118,14 @@ public class BillTaskRelevanceServiceImpl extends ServiceImpl<BillTaskRelevanceM
         return billTaskRelevanceMapper.findBillTaskRelevanceById(id);
     }
 
+    /**
+     * 完成提单任务
+     * 1.保存运单任务
+     * 2.判断是否关联了 其他任务，并激活其他任务 (提单任务  激活  提单任务)
+     * 3.是否通知运单物流轨迹 判断是否修改 订单 物流轨迹跟踪表 ,保存订单物流轨迹表
+     * 4.4.判断是否关联了 其他任务，并激活其他任务 (提单任务  激活  运单任务)
+     * @param form
+     */
     @Override
     public void finishTask(BillTaskRelevanceIdForm form) {
         Long id = form.getId();
@@ -141,38 +150,68 @@ public class BillTaskRelevanceServiceImpl extends ServiceImpl<BillTaskRelevanceM
         //1.保存运单任务
         this.saveOrUpdate(billTaskRelevance);
 
-//        //2.判断是否修改 订单 物流轨迹跟踪表 ,保存订单物流轨迹表
-//        String logisticsTrackDescription = form.getLogisticsTrackDescription();
-//        LocalDateTime logisticsTrackCreateTime = ObjectUtil.isEmpty(form.getLogisticsTrackCreateTime()) ? LocalDateTime.now() : form.getLogisticsTrackCreateTime();
-//        if(StrUtil.isNotEmpty(logisticsTrackDescription)){
-//            Long orderId = waybillTaskRelevance.getOrderInfoId();
-//            LogisticsTrack logisticsTrack = new LogisticsTrack();
-//            logisticsTrack.setOrderId(orderId.toString());
-//            logisticsTrack.setStatus(1);
-//            logisticsTrack.setStatusName("1");
-//            logisticsTrack.setDescription(logisticsTrackDescription);
-//            logisticsTrack.setCreateTime(logisticsTrackCreateTime);
-//            logisticsTrack.setOperatorId(waybillTaskRelevance.getUserId());
-//            logisticsTrack.setOperatorName(waybillTaskRelevance.getUserName());
-//            logisticsTrackService.saveOrUpdate(logisticsTrack);
-//        }
-
-        //3.判断是否关联了 其他任务，并激活其他任务 (提单任务)
+        //2.判断是否关联了 其他任务，并激活其他任务 (提单任务  激活  提单任务)
         String fromTaskCode = billTaskRelevance.getTaskCode();
 
         Map<String, Object> paraMap = new HashMap<>();
         paraMap.put("ocean_bill_id", billTaskRelevance.getOceanBillId());
         paraMap.put("from_task_code", fromTaskCode);
-        List<BillTaskRelevance> waybillTaskRelevances = billTaskRelevanceMapper.findBillTaskRelevanceByParaMap(paraMap);
-        if(CollUtil.isNotEmpty(waybillTaskRelevances)){
-            waybillTaskRelevances.forEach(waybillTaskRelevance1 -> {
-                waybillTaskRelevance1.setStatus("1");//状态(0未激活 1已激活,未完成 2已完成)
+        List<BillTaskRelevance> billTaskRelevances = billTaskRelevanceMapper.findBillTaskRelevanceByParaMap(paraMap);
+        if(CollUtil.isNotEmpty(billTaskRelevances)){
+            billTaskRelevances.forEach(billTaskRelevance1 -> {
+                billTaskRelevance1.setStatus("1");//状态(0未激活 1已激活,未完成 2已完成)
             });
-            this.saveOrUpdateBatch(waybillTaskRelevances);
+            this.saveOrUpdateBatch(billTaskRelevances);
+        }
+
+        //根据提单id，查询 提单关联的订单(运单)
+        Long billId = billTaskRelevanceVO.getOceanBillId();
+        List<BillOrderRelevance> billOrderRelevances = billOrderRelevanceMapper.findBillOrderRelevanceByBillId(billId);
+        for(int i=0; i<billOrderRelevances.size(); i++){
+            BillOrderRelevance billOrderRelevance = billOrderRelevances.get(i);
+            String isInform = billOrderRelevance.getIsInform();//是否通知运单物流轨迹(1通知 2不通知)
+            //3.是否通知运单物流轨迹 判断是否修改 订单 物流轨迹跟踪表 ,保存订单物流轨迹表
+            if(isInform.equals("1")){
+                String logisticsTrackDescription = form.getLogisticsTrackDescription();
+                LocalDateTime logisticsTrackCreateTime = ObjectUtil.isEmpty(form.getLogisticsTrackCreateTime()) ? LocalDateTime.now() : form.getLogisticsTrackCreateTime();
+                if(StrUtil.isNotEmpty(logisticsTrackDescription)){
+                    Long orderId = billOrderRelevance.getOrderId();
+                    LogisticsTrack logisticsTrack = new LogisticsTrack();
+                    logisticsTrack.setOrderId(orderId.toString());
+                    logisticsTrack.setStatus(1);
+                    logisticsTrack.setStatusName("1");
+                    logisticsTrack.setDescription(logisticsTrackDescription);
+                    logisticsTrack.setCreateTime(logisticsTrackCreateTime);
+                    logisticsTrack.setOperatorId(billTaskRelevance.getUserId());
+                    logisticsTrack.setOperatorName(billTaskRelevance.getUserName());
+                    logisticsTrackService.saveOrUpdate(logisticsTrack);
+                }
+            }
+
+            //4.判断是否关联了 其他任务，并激活其他任务 (提单任务  激活  运单任务)
+            Long orderId = billOrderRelevance.getOrderId();
+            Map<String, Object> paraMap2 = new HashMap<>();
+            paraMap.put("order_info_id", orderId);
+            paraMap.put("from_task_code", fromTaskCode);
+            List<WaybillTaskRelevance> waybillTaskRelevances = waybillTaskRelevanceMapper.findWaybillTaskRelevanceByParaMap(paraMap2);
+            if(CollUtil.isNotEmpty(waybillTaskRelevances)){
+                waybillTaskRelevances.forEach(waybillTaskRelevance1 -> {
+                    waybillTaskRelevance1.setStatus("1");//状态(0未激活 1已激活,未完成 2已完成)
+                });
+                waybillTaskRelevanceService.saveOrUpdateBatch(waybillTaskRelevances);
+            }
         }
 
     }
 
+    /**
+     * 延期提单任务
+     * 1.保存提单任务
+     * 2.判断是否关联了 其他任务，并激活其他任务 (提单任务  激活  提单任务)
+     * 3.是否通知运单物流轨迹 判断是否修改 订单 物流轨迹跟踪表 ,保存订单物流轨迹表
+     * 4.判断是否关联了 其他任务，并激活其他任务 (提单任务  激活  运单任务)
+     * @param form
+     */
     @Override
     public void postponeTask(BillTaskRelevanceIdForm form) {
         Long id = form.getId();
@@ -201,38 +240,60 @@ public class BillTaskRelevanceServiceImpl extends ServiceImpl<BillTaskRelevanceM
         postponeDays = ObjectUtil.isEmpty(postponeDays) ? 1 : postponeDays;
         LocalDateTime localDateTime = taskLastTime.plusDays(postponeDays);//最后完成时间，加上延期的时间
         billTaskRelevance.setTaskLastTime(localDateTime);
-        //1.保存运单任务
+        //1.保存提单任务
         this.saveOrUpdate(billTaskRelevance);
 
-//        //2.判断是否修改 订单 物流轨迹跟踪表 ,保存订单物流轨迹表
-//        String logisticsTrackDescription = form.getLogisticsTrackDescription();
-//        LocalDateTime logisticsTrackCreateTime = ObjectUtil.isEmpty(form.getLogisticsTrackCreateTime()) ? LocalDateTime.now() : form.getLogisticsTrackCreateTime();
-//        if(StrUtil.isNotEmpty(logisticsTrackDescription)){
-//            Long orderId = waybillTaskRelevance.getOrderInfoId();
-//            LogisticsTrack logisticsTrack = new LogisticsTrack();
-//            logisticsTrack.setOrderId(orderId.toString());
-//            logisticsTrack.setStatus(1);
-//            logisticsTrack.setStatusName("1");
-//            logisticsTrack.setDescription(logisticsTrackDescription);
-//            logisticsTrack.setCreateTime(logisticsTrackCreateTime);
-//            logisticsTrack.setOperatorId(waybillTaskRelevance.getUserId());
-//            logisticsTrack.setOperatorName(waybillTaskRelevance.getUserName());
-//            logisticsTrackService.saveOrUpdate(logisticsTrack);
-//        }
-
-
-        //3.判断是否关联了 其他任务，并激活其他任务
+        //2.判断是否关联了 其他任务，并激活其他任务 (提单任务  激活  提单任务)
         String fromTaskCode = billTaskRelevance.getTaskCode();
 
         Map<String, Object> paraMap = new HashMap<>();
         paraMap.put("ocean_bill_id", billTaskRelevance.getOceanBillId());
         paraMap.put("from_task_code", fromTaskCode);
-        List<BillTaskRelevance> waybillTaskRelevances = billTaskRelevanceMapper.findBillTaskRelevanceByParaMap(paraMap);
-        if(CollUtil.isNotEmpty(waybillTaskRelevances)){
-            waybillTaskRelevances.forEach(waybillTaskRelevance1 -> {
-                waybillTaskRelevance1.setStatus("1");//状态(0未激活 1已激活,未完成 2已完成)
+        List<BillTaskRelevance> billTaskRelevances = billTaskRelevanceMapper.findBillTaskRelevanceByParaMap(paraMap);
+        if(CollUtil.isNotEmpty(billTaskRelevances)){
+            billTaskRelevances.forEach(billTaskRelevance1 -> {
+                billTaskRelevance1.setStatus("1");//状态(0未激活 1已激活,未完成 2已完成)
             });
-            this.saveOrUpdateBatch(waybillTaskRelevances);
+            this.saveOrUpdateBatch(billTaskRelevances);
+        }
+
+        //根据提单id，查询 提单关联的订单(运单)
+        Long billId = billTaskRelevanceVO.getOceanBillId();
+        List<BillOrderRelevance> billOrderRelevances = billOrderRelevanceMapper.findBillOrderRelevanceByBillId(billId);
+
+        for(int i=0; i<billOrderRelevances.size(); i++){
+            BillOrderRelevance billOrderRelevance = billOrderRelevances.get(i);
+            String isInform = billOrderRelevance.getIsInform();//是否通知运单物流轨迹(1通知 2不通知)
+            //3.是否通知运单物流轨迹 判断是否修改 订单 物流轨迹跟踪表 ,保存订单物流轨迹表
+            if(isInform.equals("1")){
+                String logisticsTrackDescription = form.getLogisticsTrackDescription();
+                LocalDateTime logisticsTrackCreateTime = ObjectUtil.isEmpty(form.getLogisticsTrackCreateTime()) ? LocalDateTime.now() : form.getLogisticsTrackCreateTime();
+                if(StrUtil.isNotEmpty(logisticsTrackDescription)){
+                    Long orderId = billOrderRelevance.getOrderId();
+                    LogisticsTrack logisticsTrack = new LogisticsTrack();
+                    logisticsTrack.setOrderId(orderId.toString());
+                    logisticsTrack.setStatus(1);
+                    logisticsTrack.setStatusName("1");
+                    logisticsTrack.setDescription(logisticsTrackDescription);
+                    logisticsTrack.setCreateTime(logisticsTrackCreateTime);
+                    logisticsTrack.setOperatorId(billTaskRelevance.getUserId());
+                    logisticsTrack.setOperatorName(billTaskRelevance.getUserName());
+                    logisticsTrackService.saveOrUpdate(logisticsTrack);
+                }
+            }
+
+            //4.判断是否关联了 其他任务，并激活其他任务 (提单任务  激活  运单任务)
+            Long orderId = billOrderRelevance.getOrderId();
+            Map<String, Object> paraMap2 = new HashMap<>();
+            paraMap.put("order_info_id", orderId);
+            paraMap.put("from_task_code", fromTaskCode);
+            List<WaybillTaskRelevance> waybillTaskRelevances = waybillTaskRelevanceMapper.findWaybillTaskRelevanceByParaMap(paraMap2);
+            if(CollUtil.isNotEmpty(waybillTaskRelevances)){
+                waybillTaskRelevances.forEach(waybillTaskRelevance1 -> {
+                    waybillTaskRelevance1.setStatus("1");//状态(0未激活 1已激活,未完成 2已完成)
+                });
+                waybillTaskRelevanceService.saveOrUpdateBatch(waybillTaskRelevances);
+            }
         }
 
     }

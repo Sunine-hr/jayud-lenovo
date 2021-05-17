@@ -9,11 +9,9 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.mall.model.bo.*;
+import com.jayud.mall.model.po.BillOrderRelevance;
 import com.jayud.mall.model.vo.*;
-import com.jayud.mall.service.IBillClearanceInfoService;
-import com.jayud.mall.service.IBillCustomsInfoService;
-import com.jayud.mall.service.ICounterListInfoService;
-import com.jayud.mall.service.IOceanBillService;
+import com.jayud.mall.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSupport;
@@ -44,6 +42,8 @@ public class OceanBillController {
     IBillCustomsInfoService billCustomsInfoService;
     @Autowired
     ICounterListInfoService counterListInfoService;
+    @Autowired
+    IBillOrderRelevanceService billOrderRelevanceService;
 
     @ApiOperation(value = "分页查询提单信息")
     @PostMapping("/findOceanBillByPage")
@@ -416,5 +416,23 @@ public class OceanBillController {
 
     }
 
+    //查询-提单关联订单(任务通知表)
+    @ApiOperation(value = "查询-提单关联订单(任务通知表)")
+    @ApiOperationSupport(order = 31)
+    @GetMapping(value = "/findBillOrderRelevanceByBillId")
+    public CommonResult<List<BillOrderRelevance>> findBillOrderRelevanceByBillId(@Valid @RequestBody OceanBillParaForm form){
+        Long billId = form.getId();
+        List<BillOrderRelevance> billOrderRelevances = billOrderRelevanceService.findBillOrderRelevanceByBillId(billId);
+        return CommonResult.success(billOrderRelevances);
+    }
+
+    //修改-提单关联订单(任务通知表)
+    @ApiOperation(value = "修改-提单关联订单(任务通知表)")
+    @ApiOperationSupport(order = 32)
+    @GetMapping(value = "/updateBillOrderRelevance")
+    public CommonResult updateBillOrderRelevance(@Valid @RequestBody List<BillOrderRelevance> form){
+        billOrderRelevanceService.updateBillOrderRelevance(form);
+        return CommonResult.success("修改成功");
+    }
 
 }

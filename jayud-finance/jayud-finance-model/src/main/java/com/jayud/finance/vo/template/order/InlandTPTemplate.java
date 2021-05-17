@@ -27,10 +27,10 @@ public class InlandTPTemplate {
     @ApiModelProperty(value = "提货时间", required = true)
     private String deliveryDate;
 
-    @ApiModelProperty(value = "主订单编号", required = true)
+    @ApiModelProperty(value = "订单号", required = true)
     private String mainOrderNo;
 
-    @ApiModelProperty(value = "空运订单编号", required = true)
+    @ApiModelProperty(value = "子订单号", required = true)
     private String subOrderNo;
 
     @ApiModelProperty(value = "客户", required = true)
@@ -101,6 +101,8 @@ public class InlandTPTemplate {
 //    @ApiModelProperty(value = "司机电话")
 //    private String driverPhone;
 
+    @ApiModelProperty(value = "子订单号")
+    private String orderNo;
 
     @ApiModelProperty("提货地址")
     private List<OrderDeliveryAddress> pickUpAddressList;
@@ -108,10 +110,11 @@ public class InlandTPTemplate {
     @ApiModelProperty("送货地址")
     private List<OrderDeliveryAddress> orderDeliveryAddressList;
 
+
     public void assembleData(JSONObject jsonObject) {
-        JSONObject orderSendCars = jsonObject.getJSONObject("orderSendCars");
+        JSONObject orderSendCars = jsonObject.getJSONObject("orderInlandSendCarsVO");
         if (orderSendCars != null) {
-            this.licensePlate = orderSendCars.getStr("plateNumber");
+            this.licensePlate = orderSendCars.getStr("licensePlate");
         }
         this.assemblyPickUpInfo();
         this.assemblyDeliveryAddrInfo();
@@ -161,11 +164,11 @@ public class InlandTPTemplate {
         this.pickUpAddress = addrs.length() > 6 ? addrs.substring(0, 6) : addrs.toString();
         this.totalNum = totalNum;
         this.totalWeight = totalWeight;
-//        this.goodsInfo = goodsInfo.toString();
         this.deliveryDate = DateUtils.format(
                 Optional.ofNullable(pickUpAddressList.get(0))
                         .map(OrderDeliveryAddress::getDeliveryDate).orElse(""),
                 "yyyy-MM-dd");
+        //        this.goodsInfo = goodsInfo.toString();
     }
 
     public void assemblyDeliveryAddrInfo() {
@@ -176,10 +179,16 @@ public class InlandTPTemplate {
         this.deliveryAddr = addrs.length() > 6 ? addrs.substring(0, 6) : addrs.toString();
     }
 
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+        this.subOrderNo = orderNo;
+    }
+
     public static void main(String[] args) {
         OrderPaymentBill tmp = null;
         Integer num = Optional.ofNullable(tmp).map(e -> e.getBillNum()).orElse(2);
         System.out.println(num);
     }
+
 
 }

@@ -238,6 +238,11 @@ public class AirOrderTemplate{
 
     }
 
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+        this.subOrderNo = orderNo;
+    }
+
 //    public void assemblyOrderAddress(List<InputOrderAddressVO> orderAddressVOS) {
 //        if (CollectionUtils.isEmpty(orderAddressVOS)) {
 //            return;

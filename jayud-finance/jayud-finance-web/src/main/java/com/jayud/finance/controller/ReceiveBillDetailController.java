@@ -340,7 +340,7 @@ public class ReceiveBillDetailController {
                 .append(legalEntityJson.getStr("bank", ""))
                 .append(EasyExcelUtils.SPLIT_SYMBOL)
                 .append("制单时间:")
-                .append("制单时间:").append(DateUtils.format(viewBillVO.getMakeTimeStr(),DateUtils.DATE_PATTERN)).toString());
+                .append(DateUtils.format(viewBillVO.getMakeTimeStr(),DateUtils.DATE_PATTERN)).toString());
 
         bottomData.add(new StringBuilder()
                 .append("开户账号:")

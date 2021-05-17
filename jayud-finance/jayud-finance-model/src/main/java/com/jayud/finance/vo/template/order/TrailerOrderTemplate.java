@@ -200,4 +200,9 @@ public class TrailerOrderTemplate {
         this.totalWeight = totalWeight;
     }
 
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+        this.subOrderNo = orderNo;
+    }
+
 }

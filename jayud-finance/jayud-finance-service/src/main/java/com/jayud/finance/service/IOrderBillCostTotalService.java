@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.finance.po.OrderBillCostTotal;
 import com.jayud.finance.vo.EditBillDateilVO;
 import com.jayud.finance.vo.OrderBillCostTotalVO;
-import com.jayud.finance.vo.ViewBilToOrderVO;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,35 +37,38 @@ public interface IOrderBillCostTotalService extends IService<OrderBillCostTotal>
     /**
      * 导出对账单:计算结算币种
      *
+     * @param cmd
      * @param headMap
      * @param dynamicHead
      * @param datas
      * @param moneyType   1-应付 2-应收
      */
-    public void exportSettlementCurrency(LinkedHashMap<String, String> headMap,
+    public void exportSettlementCurrency(String cmd, LinkedHashMap<String, String> headMap,
                                          LinkedHashMap<String, String> dynamicHead,
                                          JSONArray datas, String moneyType);
 
     /**
      * 计算结算币种
      */
-    public void calculateSettlementCurrency(String key, JSONArray datas, String moneyType);
+    public void calculateSettlementCurrency(String cmd, String key, JSONArray datas, String moneyType);
 
     /**
      * 根据账单编号和类型查询出账单详细信息
      */
-    public List<OrderBillCostTotal> getByBillNo(List<String> billNo,String moneyType);
+    public List<OrderBillCostTotal> getByBillNo(List<String> billNo, String moneyType);
 
     /**
      * 根据账单编号查询编辑对账账单详情
-     * @param type   类型(0:应收,1:应付)
+     *
+     * @param type 类型(0:应收,1:应付)
      */
     public EditBillDateilVO getEditBillByBillNo(String billNo, Integer type);
 
     /**
      * 合计币种
+     *
      * @param billNos
      * @return
      */
-    List<Map<String,Object>> totalCurrencyAmount(List<String> billNos);
+    List<Map<String, Object>> totalCurrencyAmount(List<String> billNos);
 }

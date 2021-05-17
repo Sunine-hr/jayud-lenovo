@@ -278,7 +278,7 @@ public class PaymentBillDetailController {
         }
 
         //计算结算币种
-        this.orderBillCostTotalService.exportSettlementCurrency(headMap, dynamicHead, datas, "1");
+        this.orderBillCostTotalService.exportSettlementCurrency(cmd,headMap, dynamicHead, datas, "1");
 
         //查询人主体信息
         cn.hutool.json.JSONArray tmp = new cn.hutool.json.JSONArray(this.oauthClient

@@ -4,6 +4,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.OrderBillCostTotalMapper;
@@ -55,13 +56,14 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
     /**
      * 导出对账单:计算结算币种
      *
+     * @param cmd
      * @param headMap
      * @param dynamicHead
      * @param datas
      * @param moneyType   1-应付 2-应收
      */
     @Override
-    public void exportSettlementCurrency(LinkedHashMap<String, String> headMap,
+    public void exportSettlementCurrency(String cmd, LinkedHashMap<String, String> headMap,
                                          LinkedHashMap<String, String> dynamicHead,
                                          JSONArray datas,
                                          String moneyType) {
@@ -71,23 +73,33 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
         dynamicHead.put(key, head);
         headMap.put(key, head);
         //计算结算币种
-        this.calculateSettlementCurrency(key, datas, moneyType);
+        this.calculateSettlementCurrency(cmd, key, datas, moneyType);
     }
 
     /**
      * 计算结算币种
      */
     @Override
-    public void calculateSettlementCurrency(String key, JSONArray datas, String moneyType) {
+    public void calculateSettlementCurrency(String cmd, String key, JSONArray datas, String moneyType) {
         //计算结算币种
         for (int i = 0; i < datas.size(); i++) {
             JSONObject object = datas.getJSONObject(i);
-            QueryWrapper<OrderBillCostTotal> condition = new QueryWrapper<>();
-            condition.lambda().eq(OrderBillCostTotal::getBillNo, object.getStr("billNo"))
-                    .eq(OrderBillCostTotal::getMoneyType, moneyType);
-            List<OrderBillCostTotal> orderBillCostTotals = this.baseMapper.selectList(condition);
-            //合计结算币种
-            BigDecimal money = orderBillCostTotals.stream().map(OrderBillCostTotal::getMoney).reduce(BigDecimal.ZERO, BigDecimal::add);
+//            QueryWrapper<OrderBillCostTotal> condition = new QueryWrapper<>();
+//            condition.lambda().eq(OrderBillCostTotal::getBillNo, object.getStr("billNo"))
+//                    .eq(OrderBillCostTotal::getMoneyType, moneyType)
+//                    .eq(OrderBillCostTotal::getOrderNo, object.getStr("mainOrderNo"));
+//            List<OrderBillCostTotal> orderBillCostTotals = this.baseMapper.selectList(condition);
+//            合计结算币种
+//            BigDecimal money = orderBillCostTotals.stream().map(OrderBillCostTotal::getMoney).reduce(BigDecimal.ZERO, BigDecimal::add);
+            String orderNo;
+            if (SubOrderSignEnum.MAIN.getSignOne().equals(cmd)) {
+                orderNo = "1".equals(moneyType) ? object.getStr("orderNo") : object.getStr("mainOrderNo");
+            } else {
+                orderNo = object.getStr("subOrderNo");
+            }
+
+            BigDecimal money = this.baseMapper.calculateSettlementCurrency(object.getStr("billNo"),
+                    moneyType, cmd, orderNo);
             object.put(key, money);
         }
     }

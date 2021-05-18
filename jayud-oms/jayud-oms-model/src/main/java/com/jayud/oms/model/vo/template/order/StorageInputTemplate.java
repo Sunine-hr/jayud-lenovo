@@ -7,6 +7,7 @@ import com.jayud.oms.model.vo.WarehouseGoodsVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang.StringUtils;
 
 import javax.validation.constraints.NotNull;
@@ -22,17 +23,18 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class StorageInputTemplate extends Model<StorageInputTemplate> {
+@Accessors(chain = true)
+public class StorageInputTemplate extends BaseOrderTemplate {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键id")
     private Long id;
 
-    @ApiModelProperty(value = "入库订单号")
+    @ApiModelProperty(value = "入库订单号" , required = true)
     private String orderNo;
 
-    @ApiModelProperty(value = "主订单号")
+    @ApiModelProperty(value = "主订单号" , required = true)
     private String mainOrderNo;
 
     @ApiModelProperty(value = "状态()")
@@ -41,17 +43,17 @@ public class StorageInputTemplate extends Model<StorageInputTemplate> {
     @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
     private Integer processStatus;
 
-    @ApiModelProperty(value = "流程状态名")
+    @ApiModelProperty(value = "流程状态名" , required = true)
     private String processStatusDesc;
 
-    @ApiModelProperty(value = "结算单位姓名")
+    @ApiModelProperty(value = "结算单位姓名" , required = true)
     private String unitCodeName;
 
     @ApiModelProperty(value = "结算单位code")
     @NotNull(message = "结算单位不为空")
     private String unitCode;
 
-    @ApiModelProperty(value = "接单法人名称")
+    @ApiModelProperty(value = "接单法人名称" , required = true)
     private String legalName;
 
     @ApiModelProperty(value = "接单法人id")
@@ -62,16 +64,16 @@ public class StorageInputTemplate extends Model<StorageInputTemplate> {
     @NotNull(message = "操作部门不为空")
     private Long departmentId;
 
-    @ApiModelProperty(value = "操作部门")
+    @ApiModelProperty(value = "操作部门" , required = true)
     private String departmentName;
 
-    @ApiModelProperty(value = "运单号")
+    @ApiModelProperty(value = "运单号" , required = true)
     private String waybillNo;
 
-    @ApiModelProperty(value = "车牌号")
+    @ApiModelProperty(value = "车牌号" , required = true)
     private String plateNumber;
 
-    @ApiModelProperty(value = "入仓号")
+    @ApiModelProperty(value = "入仓号" , required = true)
     private String warehouseNumber;
 
     @ApiModelProperty(value = "创建人(登录用户)")
@@ -110,7 +112,7 @@ public class StorageInputTemplate extends Model<StorageInputTemplate> {
     @ApiModelProperty(value = "入库实际商品")
     private List<InGoodsOperationRecordVO> inGoodsOperationRecords;
 
-    @ApiModelProperty(value = "状态()")
+    @ApiModelProperty(value = "状态", required = true)
     private String statusName;
 
     @ApiModelProperty(value = "费用状态", required = true)
@@ -143,5 +145,6 @@ public class StorageInputTemplate extends Model<StorageInputTemplate> {
     public void setUnitCodeName(String unitCodeName) {
         this.unitCodeName=unitCodeName;
     }
+
 
 }

@@ -193,4 +193,12 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
         return this.baseMapper.getPendingExpenseApproval(subType, orderNos,legalIds);
     }
 
+    @Override
+    public List<OrderPaymentCost> getBySubType(String subType) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status",2);
+        queryWrapper.eq("sub_type",subType);
+        return this.baseMapper.selectList(queryWrapper);
+    }
+
 }

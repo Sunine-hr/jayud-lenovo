@@ -86,7 +86,7 @@ public class StorageInputOrder extends Model<StorageInputOrder> {
     @ApiModelProperty(value = "确认入仓是否提交（0未提交，1已提交）")
     private Integer isSubmit;
 
-    @ApiModelProperty(value = "更新时间")
+    @ApiModelProperty(value = "入库时间")
     private LocalDateTime storageTime;
 
     @Override

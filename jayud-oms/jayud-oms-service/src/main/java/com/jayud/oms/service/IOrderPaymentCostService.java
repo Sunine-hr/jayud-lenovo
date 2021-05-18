@@ -75,4 +75,6 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
      * 查询待处理费用审核
      */
     public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds);
+
+    List<OrderPaymentCost> getBySubType(String subType);
 }

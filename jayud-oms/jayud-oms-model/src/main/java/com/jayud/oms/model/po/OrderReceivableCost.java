@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.models.auth.In;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -110,6 +111,15 @@ public class OrderReceivableCost extends Model<OrderReceivableCost> {
 
     @ApiModelProperty(value = "卸货地址")
     private String unloadingAddress;
+
+    @ApiModelProperty(value = "子订单号")
+    private String subOrderNo;
+
+    @ApiModelProperty(value = "子订单法人主体名字")
+    private String subLegalName;
+
+    @ApiModelProperty(value = "子订单法人主体id")
+    private Integer legalEntityId;
 
     @Override
     protected Serializable pkVal() {

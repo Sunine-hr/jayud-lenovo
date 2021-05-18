@@ -20,16 +20,16 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class StorageOutTemplate {
+public class StorageOutTemplate extends BaseOrderTemplate {
 
 
     @ApiModelProperty(value = "主键id")
     private Long  id;
 
-    @ApiModelProperty(value = "入库订单号")
+    @ApiModelProperty(value = "出库订单号" , required = true)
     private String orderNo;
 
-    @ApiModelProperty(value = "主订单号")
+    @ApiModelProperty(value = "主订单号" , required = true)
     private String mainOrderNo;
 
     @ApiModelProperty(value = "状态()")
@@ -42,13 +42,13 @@ public class StorageOutTemplate {
     @NotNull(message = "结算单位不为空")
     private String unitCode;
 
-    @ApiModelProperty(value = "流程状态名")
+    @ApiModelProperty(value = "流程状态名" , required = true)
     private String processStatusDesc;
 
-    @ApiModelProperty(value = "结算单位姓名")
+    @ApiModelProperty(value = "结算单位姓名" , required = true)
     private String unitCodeName;
 
-    @ApiModelProperty(value = "接单法人名称")
+    @ApiModelProperty(value = "接单法人名称" , required = true)
     private String legalName;
 
     @ApiModelProperty(value = "接单法人id")
@@ -59,20 +59,20 @@ public class StorageOutTemplate {
     @NotNull(message = "操作部门不为空")
     private Long departmentId;
 
-    @ApiModelProperty(value = "操作部门")
+    @ApiModelProperty(value = "操作部门" , required = true)
     private String departmentName;
 
-    @ApiModelProperty(value = "车牌信息")
+    @ApiModelProperty(value = "车牌信息" , required = true)
     private String plateInformation;
 
-    @ApiModelProperty(value = "出仓号")
+    @ApiModelProperty(value = "出仓号" , required = true)
     @NotNull(message = "入仓号不为空")
     private String warehouseNumber;
 
-    @ApiModelProperty(value = "创建人(登录用户)")
+    @ApiModelProperty(value = "创建人" , required = true)
     private String createUser;
 
-    @ApiModelProperty(value = "创建时间")
+    @ApiModelProperty(value = "创建时间" , required = true)
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新人")

@@ -106,7 +106,7 @@ public class AddWarehouseGoodsForm extends Model<AddWarehouseGoodsForm> {
         if(StringUtils.isEmpty(this.warehousingBatchNo)){
             return "入库批次不为空";
         }
-        if(this.number != null){
+        if(this.number == null){
             return "件数不为空";
         }
         return "pass";

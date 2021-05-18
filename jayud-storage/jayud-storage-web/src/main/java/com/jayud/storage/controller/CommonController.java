@@ -25,10 +25,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -61,8 +58,8 @@ public class CommonController {
      * 导出入库商品模板
      */
     @ApiOperation(value = "导出入库商品模板")
-    @PostMapping(value = "/exportInProductTemplate")
-    public void exportInProductTemplate(@RequestBody HttpServletResponse response){
+    @GetMapping(value = "/exportInProductTemplate")
+    public void exportInProductTemplate( HttpServletResponse response){
         ExcelUtils.exportSinglePageHeadExcel("入库商品模板", WarehouseGoodsInForm.class,response);
     }
 
@@ -70,8 +67,8 @@ public class CommonController {
      * 导出出库商品模板
      */
     @ApiOperation(value = "导出出库商品模板")
-    @PostMapping(value = "/exportOutProductTemplate")
-    public void exportOutProductTemplate(@RequestBody HttpServletResponse response){
+    @GetMapping(value = "/exportOutProductTemplate")
+    public void exportOutProductTemplate( HttpServletResponse response){
         ExcelUtils.exportSinglePageHeadExcel("出库商品模板", WarehouseGoodsOutForm.class,response);
     }
 
@@ -90,8 +87,8 @@ public class CommonController {
         String listString = JSONObject.toJSONString(list);
         log.info("list:{}",  listString);
         JSONArray arryList = JSONObject.parseArray(listString);
-
-        return CommonResult.success();
+        arryList.remove(0);
+        return CommonResult.success(arryList);
     }
 
     /**

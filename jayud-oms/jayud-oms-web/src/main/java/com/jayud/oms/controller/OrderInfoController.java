@@ -514,8 +514,10 @@ public class OrderInfoController {
         if (storageInputOrderForm != null) {
             StorageInputTemplate storageInputTemplate = ConvertUtil.convert(storageInputOrderForm, StorageInputTemplate.class);
             storageInputTemplate.setCost(this.orderInfoService.isCost(storageInputTemplate.getOrderNo(), 1));
+
             Template<StorageInputTemplate> template = new Template<StorageInputTemplate>() {
             }.setList(Collections.singletonList(storageInputTemplate));
+
             orderInfoTemplate.setStorageInputTemplateTemplate(template);
         }
         //出库
@@ -523,8 +525,10 @@ public class OrderInfoController {
         if (storageOutOrderForm != null) {
             StorageOutTemplate storageOutTemplate = ConvertUtil.convert(storageOutOrderForm, StorageOutTemplate.class);
             storageOutTemplate.setCost(this.orderInfoService.isCost(storageOutTemplate.getOrderNo(), 1));
+
             Template<StorageOutTemplate> template = new Template<StorageOutTemplate>() {
             }.setList(Collections.singletonList(storageOutTemplate));
+
             orderInfoTemplate.setStorageOutTemplateTemplate(template);
         }
 

@@ -9,10 +9,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.SqlConstant;
-import com.jayud.common.enums.KafkaMsgEnums;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ProcessStatusEnum;
-import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.storage.feign.FileClient;
@@ -81,6 +78,20 @@ public class StorageOutOrderController {
     @PostMapping("/findByPage")
     public CommonResult findByPage(@RequestBody QueryStorageOrderForm form) {
 
+        //费用审核，获取所有在子订单录入费用的仓储入库订单数据
+        if(form.getCmd() != null && form.getCmd().equals("costAudit")){
+            List<String> cci = omsClient.getReceivableCost("cce").getData();
+            List<String> cci1 = omsClient.getPaymentCost("cce").getData();
+            if(CollectionUtils.isEmpty(cci)){
+                cci.add(null);
+            }
+            if(CollectionUtils.isEmpty(cci1)){
+                cci1.add(null);
+            }
+            form.setSubPaymentOrderNos(cci1);
+            form.setSubReceviableOrderNos(cci);
+        }
+
         form.setStartTime();
         //模糊查询客户信息
         if (!StringUtils.isEmpty(form.getCustomerName())) {
@@ -122,16 +133,18 @@ public class StorageOutOrderController {
         String prePath = String.valueOf(fileClient.getBaseUrl().getData());
 
         List<StorageOutOrderFormVO> records = page.getRecords();
-        List<Long> trailerOrderIds = new ArrayList<>();
+        List<Long> storageOutOrderIds = new ArrayList<>();
         List<String> mainOrder = new ArrayList<>();
         List<Long> entityIds = new ArrayList<>();
+        List<String> subOrderNos = new ArrayList<>();
 
         List<String> unitCodes = new ArrayList<>();
         for (StorageOutOrderFormVO record : records) {
-            trailerOrderIds.add(record.getId());
+            storageOutOrderIds.add(record.getId());
             mainOrder.add(record.getMainOrderNo());
             entityIds.add(record.getLegalEntityId());
             unitCodes.add(record.getUnitCode());
+            subOrderNos.add(record.getOrderNo());
         }
 
         //查询法人主体
@@ -146,6 +159,8 @@ public class StorageOutOrderController {
             unitCodeInfo = this.omsClient.getCustomerByUnitCode(unitCodes);
         }
 
+        Map<String, Object> data = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.CCE.getSignOne()).getData();
+
         //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
         for (StorageOutOrderFormVO record : records) {
@@ -157,8 +172,11 @@ public class StorageOutOrderController {
             //拼装结算单位
             record.assemblyUnitCodeInfo(unitCodeInfo);
 
+            record.setCost(MapUtil.getBool(data, record.getOrderNo()));
+
             record.setCreatedTimeStr(record.getCreateTime().toString());
             record.setSubLegalName(record.getLegalName());
+            record.setOrderId(record.getId());
 
         }
 
@@ -190,7 +208,9 @@ public class StorageOutOrderController {
         }
         String orderProcessNode = (String) omsClient.getOrderProcessNode(storageOutOrder.getMainOrderNo(), storageOutOrder.getOrderNo(), storageOutOrder.getStatus()).getData();
 
-        OrderStatusEnum statusEnum = OrderStatusEnum.getStorageInOrderNextStatus(orderProcessNode);
+        System.out.println("orderProcessNode==============="+orderProcessNode);
+
+        OrderStatusEnum statusEnum = OrderStatusEnum.getStorageOutOrderNextStatus(orderProcessNode);
         if (statusEnum == null) {
             log.error("执行出库流程操作失败,超出流程之外 data={}", storageOutOrder);
             return CommonResult.error(ResultEnum.OPR_FAIL);

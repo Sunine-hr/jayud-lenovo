@@ -1366,13 +1366,18 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "查询客户id")
-    @RequestMapping(value = "/getCustomerByCode")
+    @RequestMapping(value = "/api/getCustomerByCode")
     public ApiResult<Long> getCustomerByCode(@RequestParam("code")String code){
         CustomerInfo byCode = customerInfoService.getByCode(code);
         return ApiResult.ok(byCode.getId());
     }
 
-
+    @ApiOperation(value = "查询客户名称")
+    @RequestMapping(value = "/api/getCustomerNameByCode")
+    public ApiResult<String> getCustomerNameByCode(@RequestParam("code")String code){
+        CustomerInfo byCode = customerInfoService.getByCode(code);
+        return ApiResult.ok(byCode.getName());
+    }
 
     /**
      * 根据审核表唯一标识查询审核描述(对账单)
@@ -1488,6 +1493,27 @@ public class ExternalApiController {
         return ApiResult.ok(result);
     }
 
+    @ApiOperation(value = "查询在子订单录入费用的订单号")
+    @RequestMapping(value = "/api/getPaymentCost")
+    ApiResult<List<String>> getPaymentCost(@RequestParam("subType")String subType){
+        List<OrderPaymentCost> orderPaymentCosts = orderPaymentCostService.getBySubType(subType);
+        List<String> list = new ArrayList<>();
+        for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {
+            list.add(orderPaymentCost.getOrderNo());
+        }
+        return ApiResult.ok(list);
+    }
+
+    @ApiOperation(value = "查询在子订单录入费用的订单号")
+    @RequestMapping(value = "/api/getReceivableCost")
+    ApiResult<List<String>> getReceivableCost(@RequestParam("subType")String subType){
+        List<OrderReceivableCost> orderReceivableCosts = orderReceivableCostService.getBySubType(subType);
+        List<String> list = new ArrayList<>();
+        for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {
+            list.add(orderReceivableCost.getOrderNo());
+        }
+        return ApiResult.ok(list);
+    }
 }
 
 

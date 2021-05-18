@@ -155,6 +155,9 @@ public class StorageInputOrderFormVO {
     @ApiModelProperty(value = "接单法人名称")
     private String subLegalName;
 
+    @ApiModelProperty(value = "是否有费用详情")
+    private Boolean cost;
+
     /**
      * 组装商品信息
      */

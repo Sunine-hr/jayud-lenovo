@@ -24,6 +24,7 @@ import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
 import io.netty.util.internal.StringUtil;
+import io.swagger.models.auth.In;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -415,11 +416,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     isSumToMain = false;//0-主，子订单的法人主体和结算单位不一致则不能汇总到主订单
                 }
             }
+
+
             for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用
                 orderPaymentCost.setMainOrderNo(inputOrderVO.getOrderNo());
                 orderPaymentCost.setOrderNo(form.getOrderNo());
                 orderPaymentCost.setIsBill("0");//未出账
                 orderPaymentCost.setSubType(form.getSubType());
+
+                //仓储
+                orderPaymentCost.setSubOrderNo(form.getOrderNo());
+                orderPaymentCost.setSubLegalName(form.getSubLegalName());
+
+                orderPaymentCost.setLegalEntityId((Integer) (oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData()));
+
                 if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
                     orderPaymentCost.setIsSumToMain(isSumToMain);
                     orderPaymentCost.setCreatedTime(LocalDateTime.now());
@@ -436,6 +446,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderReceivableCost.setOrderNo(form.getOrderNo());
                 orderReceivableCost.setIsBill("0");//未出账
                 orderReceivableCost.setSubType(form.getSubType());
+
+                //仓储
+                orderReceivableCost.setSubOrderNo(form.getOrderNo());
+                orderReceivableCost.setSubLegalName(form.getSubLegalName());
+                orderReceivableCost.setLegalEntityId((Integer)oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData());
+
                 if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
                     orderReceivableCost.setIsSumToMain(isSumToMain);
                     orderReceivableCost.setCreatedTime(LocalDateTime.now());
@@ -1469,7 +1485,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     storageOutOrderForm.setOrderNo(subOrderNo);
 
                     this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.CC,
-                            form, storageOutOrderForm.getId(), OrderStatusEnum.getInStorageOrderProcess());
+                            form, storageOutOrderForm.getId(), OrderStatusEnum.getOutStorageOrderProcess());
                 }
             }
         }

@@ -34,6 +34,9 @@ public class StorageOutOrderFormVO {
     @ApiModelProperty(value = "主键id")
     private Long  id;
 
+    @ApiModelProperty(value = "主键id")
+    private Long  orderId;
+
     @ApiModelProperty(value = "入库订单号")
     private String orderNo;
 
@@ -134,13 +137,38 @@ public class StorageOutOrderFormVO {
     @ApiModelProperty(value = "接单法人名称")
     private String subLegalName;
 
+    @ApiModelProperty(value = "是否有费用详情")
+    private Boolean cost;
+
+    @ApiModelProperty(value = "重量")
+    private Double weight = 0.0;
+
+    @ApiModelProperty(value = "体积")
+    private Double volume = 0.0;
+
+    @ApiModelProperty(value = "货物名称")
+    private String name;
+
+    @ApiModelProperty(value = "sku")
+    private String sku;
+
+    @ApiModelProperty(value = "规格型号")
+    private String specificationModel;
+
     /**
      * 组装商品信息
      */
     public void assemblyGoodsInfo(List<WarehouseGoodsVO> goodsList) {
         StringBuilder sb = new StringBuilder();
+        StringBuilder sb1 = new StringBuilder();
+        StringBuilder sb2 = new StringBuilder();
+        StringBuilder sb3 = new StringBuilder();
 
         for (WarehouseGoodsVO goods : goodsList) {
+
+            sb1.append(goods.getName()).append("/");
+            sb2.append(goods.getSku()).append("/");
+            sb3.append(goods.getSpecificationModel()).append("/");
 
             sb.append(goods.getName())
                     .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
@@ -148,9 +176,19 @@ public class StorageOutOrderFormVO {
                     .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
                     .append(",").append("重量:").append(goods.getWeight()).append("KG")
                     .append(";");
+
+            if(goods.getVolume()!=null){
+                this.volume = this.volume + goods.getVolume();
+            }
+            if(goods.getWeight()!=null){
+                this.weight = this.weight + goods.getWeight();
+            }
         }
 
         this.goodsInfo = sb.toString();
+        this.name = sb1.toString();
+        this.sku = sb2.toString();
+        this.specificationModel = sb3.toString();
     }
 
     /**

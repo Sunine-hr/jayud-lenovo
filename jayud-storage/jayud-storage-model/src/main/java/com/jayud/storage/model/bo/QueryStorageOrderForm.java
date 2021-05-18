@@ -58,6 +58,14 @@ public class QueryStorageOrderForm extends BasePageForm {
     @JsonIgnore
     private List<String> mainOrderNos;
 
+    @ApiModelProperty(value = "子订单号")
+    @JsonIgnore
+    private List<String> subPaymentOrderNos;
+
+    @ApiModelProperty(value = "子订单号")
+    @JsonIgnore
+    private List<String> subReceviableOrderNos;
+
     @ApiModelProperty(value = "操作指令,cmd = costAudit 费用审核")
     private String cmd;
 

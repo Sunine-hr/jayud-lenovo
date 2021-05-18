@@ -4,9 +4,11 @@ package com.jayud.storage.controller;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 
+import cn.hutool.json.JSONObject;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.ApiResult;
@@ -17,6 +19,7 @@ import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
@@ -97,9 +100,19 @@ public class StorageInputOrderController {
     @PostMapping("/findByPage")
     public CommonResult findByPage(@RequestBody QueryStorageOrderForm form) {
 
-//        if(form.getCmd().equals("costAudit")){
-//
-//        }
+        //费用审核，获取所有在子订单录入费用的仓储入库订单数据
+        if(form.getCmd() != null && form.getCmd().equals("costAudit")){
+            List<String> cci = omsClient.getReceivableCost("cci").getData();
+            List<String> cci1 = omsClient.getPaymentCost("cci").getData();
+            if(CollectionUtils.isEmpty(cci)){
+                cci.add(null);
+            }
+            if(CollectionUtils.isEmpty(cci1)){
+                cci1.add(null);
+            }
+            form.setSubPaymentOrderNos(cci1);
+            form.setSubReceviableOrderNos(cci);
+        }
 
         form.setStartTime();
         //模糊查询客户信息
@@ -142,16 +155,17 @@ public class StorageInputOrderController {
         String prePath = String.valueOf(fileClient.getBaseUrl().getData());
 
         List<StorageInputOrderFormVO> records = page.getRecords();
-        List<Long> trailerOrderIds = new ArrayList<>();
+        List<Long> storageInputOrderIds = new ArrayList<>();
         List<String> mainOrder = new ArrayList<>();
         List<Long> entityIds = new ArrayList<>();
-
+        List<String> subOrderNos = new ArrayList<>();
         List<String> unitCodes = new ArrayList<>();
         for (StorageInputOrderFormVO record : records) {
-            trailerOrderIds.add(record.getId());
+            storageInputOrderIds.add(record.getId());
             mainOrder.add(record.getMainOrderNo());
             entityIds.add(record.getLegalEntityId());
             unitCodes.add(record.getUnitCode());
+            subOrderNos.add(record.getOrderNo());
         }
 
         //查询法人主体
@@ -166,6 +180,8 @@ public class StorageInputOrderController {
             unitCodeInfo = this.omsClient.getCustomerByUnitCode(unitCodes);
         }
 
+        Map<String, Object> data = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.CCI.getSignOne()).getData();
+
         //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
         for (StorageInputOrderFormVO record : records) {
@@ -177,6 +193,8 @@ public class StorageInputOrderController {
 
             //拼装结算单位
             record.assemblyUnitCodeInfo(unitCodeInfo);
+
+            record.setCost(MapUtil.getBool(data, record.getOrderNo()));
 
             record.setCreatedTimeStr(record.getCreateTime().toString());
             record.setSubLegalName(record.getLegalName());
@@ -286,7 +304,7 @@ public class StorageInputOrderController {
 
     @ApiOperation(value = "执行入库流程操作")
     @PostMapping(value = "/doStorageInProcessOpt")
-    public CommonResult doTrailerProcessOpt(@RequestBody @Valid StorageInProcessOptForm form, BindingResult result) {
+    public CommonResult doStorageInProcessOpt(@RequestBody @Valid StorageInProcessOptForm form, BindingResult result) {
 
         if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {
@@ -523,15 +541,65 @@ public class StorageInputOrderController {
     @PostMapping(value = "/getQRCodeInformation")
     public CommonResult getQRCodeInformation(@RequestBody Map<String,Object> map) {
         String warehousingBatchNo = MapUtil.getStr(map, "warehousingBatchNo");
+        List<InGoodsOperationRecord> listByWarehousingBatchNo = inGoodsOperationRecordService.getListByWarehousingBatchNo(warehousingBatchNo);
+        Integer totalAmount = 0;
+        Integer totalJAmount = 0;
+        Integer totalPCS = 0;
 
-        return CommonResult.success();
+        for (InGoodsOperationRecord inGoodsOperationRecord : listByWarehousingBatchNo) {
+            totalAmount = totalAmount + inGoodsOperationRecord.getNumber();
+            totalJAmount = totalJAmount + inGoodsOperationRecord.getBoardNumber();
+            totalPCS = totalPCS + inGoodsOperationRecord.getPcs();
+        }
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(totalJAmount).append("板").append("/")
+                .append(totalAmount).append("件").append("/")
+                .append(totalPCS).append("PCS").append("/");
+
+        QRCodeInformationVO qrCodeInformationVO = new QRCodeInformationVO();
+        qrCodeInformationVO.setGoodInfo(stringBuffer.toString());
+        qrCodeInformationVO.setWarehousingBatchNo(warehousingBatchNo);
+        StorageInputOrder storageInputOrder = this.storageInputOrderService.getById(listByWarehousingBatchNo.get(0).getOrderId());
+        ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageInputOrder.getMainOrderNo()));
+        JSONArray mainOrders = new JSONArray(JSON.toJSONString(result.getData()));
+        qrCodeInformationVO.setCustomerName(mainOrders.getJSONObject(0).getStr("customerName"));
+        qrCodeInformationVO.setCreateTime(listByWarehousingBatchNo.get(0).getCreateTime().toString());
+        qrCodeInformationVO.setWarehouseNumber(storageInputOrder.getWarehouseNumber());
+        qrCodeInformationVO.setLegalName(storageInputOrder.getLegalName());
+        return CommonResult.success(qrCodeInformationVO);
     }
 
     @ApiOperation(value = "获取版头纸信息")
     @PostMapping(value = "/getHeaderInformation")
     public CommonResult getHeaderInformation(@RequestBody Map<String,Object> map) {
         String warehousingBatchNo = MapUtil.getStr(map, "warehousingBatchNo");
-        return CommonResult.success();
+        List<InGoodsOperationRecord> listByWarehousingBatchNo = inGoodsOperationRecordService.getListByWarehousingBatchNo(warehousingBatchNo);
+        Integer totalAmount = 0;
+        Integer totalJAmount = 0;
+        Integer totalPCS = 0;
+
+        for (InGoodsOperationRecord inGoodsOperationRecord : listByWarehousingBatchNo) {
+            totalAmount = totalAmount + inGoodsOperationRecord.getNumber();
+            totalJAmount = totalJAmount + inGoodsOperationRecord.getBoardNumber();
+            totalPCS = totalPCS + inGoodsOperationRecord.getPcs();
+        }
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(totalJAmount).append("板").append("/")
+                .append(totalAmount).append("件").append("/")
+                .append(totalPCS).append("PCS").append("/");
+
+        QRCodeInformationVO qrCodeInformationVO = new QRCodeInformationVO();
+        qrCodeInformationVO.setGoodInfo(stringBuffer.toString());
+        qrCodeInformationVO.setWarehousingBatchNo(warehousingBatchNo);
+        StorageInputOrder storageInputOrder = this.storageInputOrderService.getById(listByWarehousingBatchNo.get(0).getOrderId());
+        ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageInputOrder.getMainOrderNo()));
+        JSONArray mainOrders = new JSONArray(JSON.toJSONString(result.getData()));
+        qrCodeInformationVO.setCustomerName(mainOrders.getJSONObject(0).getStr("customerName"));
+        qrCodeInformationVO.setCreateTime(listByWarehousingBatchNo.get(0).getCreateTime().toString());
+        qrCodeInformationVO.setWarehouseNumber(storageInputOrder.getWarehouseNumber());
+        qrCodeInformationVO.setLegalName(storageInputOrder.getLegalName());
+        qrCodeInformationVO.setGoodInfos(listByWarehousingBatchNo);
+        return CommonResult.success(qrCodeInformationVO);
     }
 
     //入仓单模板

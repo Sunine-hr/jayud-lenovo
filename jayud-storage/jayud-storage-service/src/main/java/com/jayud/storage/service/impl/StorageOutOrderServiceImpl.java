@@ -73,13 +73,13 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
         if(storageOutOrder.getId() == null){
             storageOutOrder.setCreateTime(LocalDateTime.now());
             storageOutOrder.setCreateUser(UserOperator.getToken());
-            storageOutOrder.setStatus("CCI_0");
+            storageOutOrder.setStatus("CCE_0");
             this.save(storageOutOrder);
         }else{
             storageOutOrder.setId(storageOutOrderForm.getId());
             storageOutOrder.setCreateTime(LocalDateTime.now());
             storageOutOrder.setCreateUser(UserOperator.getToken());
-            storageOutOrder.setStatus("CCI_0");
+            storageOutOrder.setStatus("CCE_0");
             this.updateById(storageOutOrder);
         }
         String orderNo = storageOutOrder.getOrderNo();
@@ -97,10 +97,10 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
                 warehouseGoods.add(convert);
 
                 //出库订单创建成功，锁定库存
-                boolean result = stockService.lockInInventory(convert);
-                if(!result){
-                    log.warn(convert.getName() + "锁定库存失败");
-                }
+//                boolean result = stockService.lockInInventory(convert);
+//                if(!result){
+//                    log.warn(convert.getName() + "锁定库存失败");
+//                }
             }
             warehouseGoodsService.saveOrUpdateBatch(warehouseGoods);
         }
@@ -209,7 +209,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
         form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageOutOrder storageOutOrder = new StorageOutOrder();
         storageOutOrder.setOrderTaker(form.getOperatorUser());
-        storageOutOrder.setReceivingOrdersDate(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
+        storageOutOrder.setReceivingOrdersDate(form.getOperatorTime());
         storageOutOrder.setId(form.getOrderId());
         storageOutOrder.setUpdateUser(UserOperator.getToken());
         storageOutOrder.setUpdateTime(LocalDateTime.now());

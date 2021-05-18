@@ -6,6 +6,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.mapper.OrderReceivableCostMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
+import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
 import com.jayud.oms.service.IOrderReceivableCostService;
@@ -213,5 +214,13 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
     @Override
     public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds) {
         return this.baseMapper.getPendingExpenseApproval(subType, orderNos,legalIds);
+    }
+
+    @Override
+    public List<OrderReceivableCost> getBySubType(String subType) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status",2);
+        queryWrapper.eq("sub_type",subType);
+        return this.baseMapper.selectList(queryWrapper);
     }
 }

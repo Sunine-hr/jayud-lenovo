@@ -193,7 +193,7 @@ public interface OmsClient {
                                                           @RequestParam("rejectionDesc") String rejectionDesc);
 
     @ApiOperation(value = "查询联系人信息")
-    @RequestMapping(value = "/getContactInfoByPhone")
+    @RequestMapping(value = "/api/getContactInfoByPhone")
     public CommonResult<List<Map<String, Object>>> getContactInfoByPhone(@RequestParam("businessType") Integer businessType);
 
     @ApiOperation(value = "中转仓库")
@@ -201,6 +201,27 @@ public interface OmsClient {
     public CommonResult<List<InitComboxWarehouseVO>> initComboxWarehouseVO();
 
     @ApiOperation(value = "查询客户id")
-    @RequestMapping(value = "/getCustomerByCode")
+    @RequestMapping(value = "/api/getCustomerByCode")
     public ApiResult<Long> getCustomerByCode(@RequestParam("code")String code);
+
+    @ApiOperation(value = "查询客户名称")
+    @RequestMapping(value = "/api/getCustomerNameByCode")
+    public ApiResult<String> getCustomerNameByCode(@RequestParam("code")String code);
+
+    @ApiOperation(value = "查询在子订单录入费用的订单号")
+    @RequestMapping(value = "/api/getPaymentCost")
+    ApiResult<List<String>> getPaymentCost(@RequestParam("subType")String subType);
+
+    @ApiOperation(value = "查询在子订单录入费用的订单号")
+    @RequestMapping(value = "/api/getReceivableCost")
+    ApiResult<List<String>> getReceivableCost(@RequestParam("subType")String subType);
+
+    /**
+     * 是否录用费用
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/isCost")
+    public ApiResult<Map<String, Object>> isCost(@RequestBody List<String> orderNos,
+                                                 @RequestParam("subType") String subType);
 }

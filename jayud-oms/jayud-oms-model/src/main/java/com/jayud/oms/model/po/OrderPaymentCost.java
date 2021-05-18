@@ -123,6 +123,15 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
     @ApiModelProperty(value = "卸货地址")
     private String unloadingAddress;
 
+    @ApiModelProperty(value = "子订单号")
+    private String subOrderNo;
+
+    @ApiModelProperty(value = "子订单法人主体名字")
+    private String subLegalName;
+
+    @ApiModelProperty(value = "子订单法人主体id")
+    private Integer legalEntityId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

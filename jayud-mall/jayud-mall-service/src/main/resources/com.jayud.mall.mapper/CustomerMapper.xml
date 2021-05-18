@@ -39,12 +39,17 @@
     <select id="findCustomerByPage" parameterType="com.jayud.mall.model.bo.QueryCustomerForm"
             resultType="com.jayud.mall.model.vo.CustomerVO" >
         select
-        t.id,t.`code`,t.company,t.name_cn,t.name_en,t.contact_number,t.phone,t.user_name,
-        t.passwd,t.audit_status,t.audit_user_id,t.audit_time,t.`status`,t.salesman_id,t.operation_team_id,t.currency,t.address,
-        t.`level`,t.origin,t.create_date,t.pay_type,t.pay_passwd,t.clearing_way,t.clearing_date,t.lock_date,t.real_date,t.business_license_url,t.remark,t.new_wisdom_token
+        t.id,t.code,t.company,t.name_cn,t.name_en,t.contact_number,t.phone,t.user_name,t.passwd,t.audit_status,t.audit_user_id,t.audit_time,t.status,t.salesman_id,t.operation_team_id,t.currency,t.address,t.level,t.origin,t.create_date,t.pay_type,t.pay_passwd,t.clearing_way,t.clearing_date,t.lock_date,t.real_date,t.business_license_url,t.remark,t.new_wisdom_token
         FROM customer t
-        WHERE
-        1 = 1
+        join (
+        select
+        DISTINCT t1.id,substring_index( substring_index(t1.operation_team_id,',',t2.id + 1), ',' ,-1 ) as operation_team_id
+        from (select id,operation_team_id from customer ) t1
+        join help_index t2 on t2.id <![CDATA[ < ]]> (length(t1.operation_team_id) - length(REPLACE(t1.operation_team_id,',','')) + 1 )
+        ) t1 on t1.id = t.id
+        join operation_team_member t2 on t2.operation_team_id = t1.operation_team_id
+        where 1=1
+        and t2.member_user_id = #{form.memberUserId}
         <if test="form.company != null and form.company != ''">
             and t.company LIKE concat('%',#{form.company},'%')
         </if>
@@ -60,6 +65,7 @@
         <if test="form.auditStatus != null">
             and t.audit_status = #{form.auditStatus}
         </if>
+        group by t.id
     </select>
 
     <select id="customerLogin" parameterType="com.jayud.mall.model.bo.CustomerLoginForm"

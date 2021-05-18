@@ -7,6 +7,8 @@ import com.jayud.mall.model.bo.CustomerAuditForm;
 import com.jayud.mall.model.bo.CustomerEditForm;
 import com.jayud.mall.model.bo.QueryCustomerForm;
 import com.jayud.mall.model.vo.CustomerVO;
+import com.jayud.mall.model.vo.domain.AuthUser;
+import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.ICustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,11 +30,15 @@ public class CustomerController {
 
     @Autowired
     ICustomerService customerService;
+    @Autowired
+    BaseService baseService;
 
     @ApiOperation(value = "分页查询-客户列表")
     @PostMapping("/findCustomerByPage")
     @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<CustomerVO>> findCustomerByPage(@RequestBody QueryCustomerForm form) {
+        AuthUser user = baseService.getUser();
+        form.setMemberUserId(user.getId());
         IPage<CustomerVO> pageList = customerService.findCustomerByPage(form);
         CommonPageResult<CustomerVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);

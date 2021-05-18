@@ -72,6 +72,14 @@
         <if test="form.areaGroup != null and form.areaGroup != ''">
             AND t.area_group LIKE concat('%',#{form.areaGroup},'%')
         </if>
+        /*过滤的仓库id*/
+        <if test="form.filterIds != null and form.filterIds.size() > 0">
+            AND t.id not in
+            <foreach collection="form.filterIds"  item="item" open="(" separator="," close=")"  >
+                #{item}
+            </foreach>
+
+        </if>
     </select>
 
     <select id="findFabWarehouseByqie" parameterType="java.lang.Integer"

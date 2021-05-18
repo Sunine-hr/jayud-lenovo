@@ -86,6 +86,16 @@ public class TransportController {
     }
 
 
+    //提货信息，查看运输进度
+    @ApiOperation(value = "提货信息，查看运输进度")
+    @PostMapping("/findTransportById")
+    @ApiOperationSupport(order = 7)
+    public CommonResult<TransportVO> findTransportById(@Valid @RequestBody TransportParaForm form){
+        Long id = form.getId();
+        TransportVO transportVO = transportService.findTransportById(id);
+        return CommonResult.success(transportVO);
+    }
+
 
 
 }

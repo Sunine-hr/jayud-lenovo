@@ -63,4 +63,11 @@ public interface ITransportService extends IService<Transport> {
      * @return
      */
     CommonResult confirmDelivery(TransportParaForm form);
+
+    /**
+     * 根据运输单id，查询运输单信息
+     * @param id
+     * @return
+     */
+    TransportVO findTransportById(Long id);
 }

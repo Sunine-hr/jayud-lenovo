@@ -434,7 +434,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderShopVO> orderShopVOList = orderShopMapper.findOrderShopByOrderId(orderId);
         orderInfoVO.setOrderShopVOList(orderShopVOList);
 
-        /*订单对应箱号信息:order_case*/
+        /**订单对应箱号信息:order_case**/
         List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderCaseByOrderId(orderId);
         orderInfoVO.setOrderCaseVOList(orderCaseVOList);
 

@@ -37,9 +37,18 @@ public class CustomerController {
     @PostMapping("/findCustomerByPage")
     @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<CustomerVO>> findCustomerByPage(@RequestBody QueryCustomerForm form) {
+        IPage<CustomerVO> pageList = customerService.findCustomerByPage(form);
+        CommonPageResult<CustomerVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "权限用户查询-客户列表")
+    @PostMapping("/findAuthCustomerByPage")
+    @ApiOperationSupport(order = 1)
+    public CommonResult<CommonPageResult<CustomerVO>> findAuthCustomerByPage(@RequestBody QueryCustomerForm form) {
         AuthUser user = baseService.getUser();
         form.setMemberUserId(user.getId());
-        IPage<CustomerVO> pageList = customerService.findCustomerByPage(form);
+        IPage<CustomerVO> pageList = customerService.findAuthCustomerByPage(form);
         CommonPageResult<CustomerVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }

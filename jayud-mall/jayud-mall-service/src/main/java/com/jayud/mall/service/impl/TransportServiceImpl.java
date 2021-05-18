@@ -232,4 +232,10 @@ public class TransportServiceImpl extends ServiceImpl<TransportMapper, Transport
         return CommonResult.success("确认送达，成功");
     }
 
+    @Override
+    public TransportVO findTransportById(Long id) {
+        TransportVO transportVO = transportMapper.findTransportById(id);
+        return transportVO;
+    }
+
 }

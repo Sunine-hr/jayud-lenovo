@@ -27,6 +27,13 @@ public interface ICustomerService extends IService<Customer> {
     IPage<CustomerVO> findCustomerByPage(QueryCustomerForm form);
 
     /**
+     * 账户审核查询-客户列表
+     * @param form
+     * @return
+     */
+    IPage<CustomerVO> findAuthCustomerByPage(QueryCustomerForm form);
+
+    /**
      * 保存
      * @param form
      * @return

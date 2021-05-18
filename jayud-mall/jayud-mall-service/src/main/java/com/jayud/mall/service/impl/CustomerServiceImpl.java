@@ -58,6 +58,17 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
+    public IPage<CustomerVO> findAuthCustomerByPage(QueryCustomerForm form) {
+        //定义分页参数
+        Page<CustomerVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.asc("t.id"));
+        IPage<CustomerVO> pageInfo = customerMapper.findAuthCustomerByPage(page, form);
+        return pageInfo;
+
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonResult saveCustomer(CustomerEditForm form) {
         Customer customer = ConvertUtil.convert(form, Customer.class);

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -56,15 +57,22 @@ public class OrderCaseController {
         if(height.compareTo(zore) == -1){
             return CommonResult.error(-1, "高不能小于或等于零");
         }
-        List<OrderCaseVO> orderCaseVOList = orderCaseService.createOrderCaseList(form);
+
+        //历史添加箱子list
+        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+        if(CollUtil.isEmpty(orderCaseVOList)){
+            orderCaseVOList = new ArrayList<>();
+        }
+
+        List<OrderCaseVO> orderCaseVOList1 = orderCaseService.createOrderCaseList(form);
 
 
         //fba箱号-生成规则
         String extensionNumber = form.getExtensionNumber();
         String beginNumber = form.getBeginNumber();
         Integer bNumber = Integer.valueOf(beginNumber);
-        for (int i = 0; i<orderCaseVOList.size(); i++){
-            OrderCaseVO orderCaseVO = orderCaseVOList.get(i);
+        for (int i = 0; i<orderCaseVOList1.size(); i++){
+            OrderCaseVO orderCaseVO = orderCaseVOList1.get(i);
             if(i != 0){
                 bNumber = bNumber + 1;
             }
@@ -73,11 +81,7 @@ public class OrderCaseController {
             orderCaseVO.setFabNo(fabNo);
         }
 
-        //历史添加箱子list
-        List<OrderCaseVO> orderCaseVOList1 = form.getOrderCaseVOList();
-        if(CollUtil.isNotEmpty(orderCaseVOList1)){
-            orderCaseVOList.addAll(orderCaseVOList1);
-        }
+        orderCaseVOList.addAll(orderCaseVOList1);
 
         CaseVO caseVO = new CaseVO();
         //(客户预报)总重量 实际重

@@ -71,8 +71,8 @@ public class AccountReceivableServiceImpl extends ServiceImpl<AccountReceivableM
         page.addOrder(OrderItem.desc("t.id"));
         IPage<AccountReceivableVO> pageInfo = accountReceivableMapper.findAccountReceivableByPage(page, form);
 
-        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
         //将币种信息转换为map，城市cid为键，币种信息为值
+        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
         Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
 
         List<AccountReceivableVO> records = pageInfo.getRecords();

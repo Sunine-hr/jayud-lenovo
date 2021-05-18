@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -83,105 +84,76 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     OrderInfoMapper orderInfoMapper;
-
     @Autowired
     OrderCustomsFileMapper orderCustomsFileMapper;
-
     @Autowired
     OrderClearanceFileMapper orderClearanceFileMapper;
-
     @Autowired
     OrderShopMapper orderShopMapper;
-
     @Autowired
     OrderCaseMapper orderCaseMapper;
-
     @Autowired
     OrderCopeReceivableMapper orderCopeReceivableMapper;
-
     @Autowired
     OrderCopeWithMapper orderCopeWithMapper;
-
     @Autowired
     OrderPickMapper orderPickMapper;
-
     @Autowired
     TemplateCopeReceivableMapper templateCopeReceivableMapper;
-
     @Autowired
     TemplateCopeWithMapper templateCopeWithMapper;
-
     @Autowired
     FabWarehouseMapper fabWarehouseMapper;
-
     @Autowired
     OfferInfoMapper offerInfoMapper;
-
     @Autowired
     OrderConfMapper orderConfMapper;
-
     @Autowired
     QuotationTypeMapper quotationTypeMapper;
-
     @Autowired
     LogisticsTrackMapper logisticsTrackMapper;
-
     @Autowired
     ShippingAreaMapper shippingAreaMapper;
-
     @Autowired
     WaybillTaskRelevanceMapper waybillTaskRelevanceMapper;
-
     @Autowired
     WaybillTaskMapper waybillTaskMapper;
-
     @Autowired
     CustomerMapper customerMapper;
-
     @Autowired
     DeliveryAddressMapper deliveryAddressMapper;
-
     @Autowired
     InlandFeeCostMapper inlandFeeCostMapper;
-
     @Autowired
-    IOrderCustomsFileService orderCustomsFileService;
-
-    @Autowired
-    IOrderClearanceFileService orderClearanceFileService;
-
-    @Autowired
-    IOrderCaseService orderCaseService;
-
-    @Autowired
-    IOrderShopService orderShopService;
-
-    @Autowired
-    IOrderPickService orderPickService;
-
-    @Autowired
-    IOrderCopeReceivableService orderCopeReceivableService;
-
-    @Autowired
-    IOrderCopeWithService orderCopeWithService;
-
-    @Autowired
-    IWaybillTaskRelevanceService waybillTaskRelevanceService;
-
-    @Autowired
-    ITemplateFileService templateFileService;
-
-    @Autowired
-    ICounterCaseService counterCaseService;
-
-    @Autowired
-    IWaybillTaskService waybillTaskService;
-
-    @Autowired
-    IShipmentService shipmentService;
+    CurrencyInfoMapper currencyInfoMapper;
 
     @Autowired
     BaseService baseService;
+    @Autowired
+    IOrderCustomsFileService orderCustomsFileService;
+    @Autowired
+    IOrderClearanceFileService orderClearanceFileService;
+    @Autowired
+    IOrderCaseService orderCaseService;
+    @Autowired
+    IOrderShopService orderShopService;
+    @Autowired
+    IOrderPickService orderPickService;
+    @Autowired
+    IOrderCopeReceivableService orderCopeReceivableService;
+    @Autowired
+    IOrderCopeWithService orderCopeWithService;
+    @Autowired
+    IWaybillTaskRelevanceService waybillTaskRelevanceService;
+    @Autowired
+    ITemplateFileService templateFileService;
+    @Autowired
+    ICounterCaseService counterCaseService;
+    @Autowired
+    IWaybillTaskService waybillTaskService;
+    @Autowired
+    IShipmentService shipmentService;
+
 
 
 
@@ -448,15 +420,63 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfoVO.setOrderCaseConfVOList(orderCaseConfVOList);
 
         /**费用信息**/
+        //将币种信息转换为map，cid为键，币种信息为值
+        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
+        Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
+
         /*订单对应应收费用明细:order_cope_receivable*/
         List<OrderCopeReceivableVO> orderCopeReceivableVOList =
                 orderCopeReceivableMapper.findOrderCopeReceivableByOrderId(orderId);
         orderInfoVO.setOrderCopeReceivableVOList(orderCopeReceivableVOList);
+        /*订单对应应付费用汇总list*/
+        List<AggregateAmountVO> orderCopeWithAggregate = new ArrayList<>();
+        Map<Integer, List<OrderCopeReceivableVO>> stringListMap1 = groupListByCid1(orderCopeReceivableVOList);
+        for (Map.Entry<Integer, List<OrderCopeReceivableVO>> entry : stringListMap1.entrySet()) {
+            Integer cid = entry.getKey();
+            List<OrderCopeReceivableVO> orderCopeReceivableVOS = entry.getValue();
+
+            CurrencyInfoVO currencyInfoVO = cidMap.get(Long.valueOf(cid));
+
+            BigDecimal amountSum = new BigDecimal("0");
+            for (int i=0; i<orderCopeReceivableVOS.size(); i++){
+                OrderCopeReceivableVO orderCopeReceivableVO = orderCopeReceivableVOS.get(i);
+                BigDecimal amount = orderCopeReceivableVO.getAmount();
+                amountSum = amountSum.add(amount);
+            }
+            AggregateAmountVO aggregateAmountVO = new AggregateAmountVO();
+            aggregateAmountVO.setAmount(amountSum);//金额
+            aggregateAmountVO.setCid(cid);
+            aggregateAmountVO.setCurrencyCode(currencyInfoVO.getCurrencyCode());
+            aggregateAmountVO.setCurrencyName(currencyInfoVO.getCurrencyName());
+            orderCopeWithAggregate.add(aggregateAmountVO);
+        }
+        orderInfoVO.setOrderCopeWithAggregate(orderCopeWithAggregate);
 
         /*订单对应应付费用明细:order_cope_with*/
         List<OrderCopeWithVO> orderCopeWithVOList =
                 orderCopeWithMapper.findOrderCopeWithByOrderId(orderId);
         orderInfoVO.setOrderCopeWithVOList(orderCopeWithVOList);
+        /*订单对应应收费用汇总ist*/
+        List<AggregateAmountVO> orderCopeReceivableAggregate = new ArrayList<>();
+        Map<Integer, List<OrderCopeWithVO>> stringListMap2 = groupListByCid2(orderCopeWithVOList);
+        for (Map.Entry<Integer, List<OrderCopeWithVO>> entry : stringListMap2.entrySet()) {
+            Integer cid = entry.getKey();
+            List<OrderCopeWithVO> orderCopeWithVOS = entry.getValue();
+            CurrencyInfoVO currencyInfoVO = cidMap.get(Long.valueOf(cid));
+            BigDecimal amountSum = new BigDecimal("0");
+            for (int i=0; i<orderCopeWithVOS.size(); i++){
+                OrderCopeWithVO orderCopeWithVO = orderCopeWithVOS.get(i);
+                BigDecimal amount = orderCopeWithVO.getAmount();
+                amountSum = amountSum.add(amount);
+            }
+            AggregateAmountVO aggregateAmountVO = new AggregateAmountVO();
+            aggregateAmountVO.setAmount(amountSum);//金额
+            aggregateAmountVO.setCid(cid);
+            aggregateAmountVO.setCurrencyCode(currencyInfoVO.getCurrencyCode());
+            aggregateAmountVO.setCurrencyName(currencyInfoVO.getCurrencyName());
+            orderCopeReceivableAggregate.add(aggregateAmountVO);
+        }
+        orderInfoVO.setOrderCopeReceivableAggregate(orderCopeReceivableAggregate);
 
         /**文件信息**/
         //订单对应报关文件list
@@ -476,6 +496,48 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfoVO.setOrderClearanceFileVOList(orderClearanceFileVOList);
 
         return CommonResult.success(orderInfoVO);
+    }
+
+    /**
+     * 根据币种id，订单应收费用明细 进行分组
+     * @param orderCopeReceivableVOList 订单应收费用明细
+     * @return
+     */
+    public Map<Integer, List<OrderCopeReceivableVO>> groupListByCid1(List<OrderCopeReceivableVO> orderCopeReceivableVOList) {
+        Map<Integer, List<OrderCopeReceivableVO>> map = new HashMap<>();
+        for (OrderCopeReceivableVO orderCopeReceivableVO : orderCopeReceivableVOList) {
+            Integer key = orderCopeReceivableVO.getCid();
+            List<OrderCopeReceivableVO> tmpList = map.get(key);
+            if (CollUtil.isEmpty(tmpList)) {
+                tmpList = new ArrayList<>();
+                tmpList.add(orderCopeReceivableVO);
+                map.put(key, tmpList);
+            } else {
+                tmpList.add(orderCopeReceivableVO);
+            }
+        }
+        return map;
+    }
+
+    /**
+     * 根据币种id，订单应付费用明细 进行分组
+     * @param orderCopeWithVOList 订单应付费用明细
+     * @return
+     */
+    public Map<Integer, List<OrderCopeWithVO>> groupListByCid2(List<OrderCopeWithVO> orderCopeWithVOList) {
+        Map<Integer, List<OrderCopeWithVO>> map = new HashMap<>();
+        for (OrderCopeWithVO orderCopeWithVO : orderCopeWithVOList) {
+            Integer key = orderCopeWithVO.getCid();
+            List<OrderCopeWithVO> tmpList = map.get(key);
+            if (CollUtil.isEmpty(tmpList)) {
+                tmpList = new ArrayList<>();
+                tmpList.add(orderCopeWithVO);
+                map.put(key, tmpList);
+            } else {
+                tmpList.add(orderCopeWithVO);
+            }
+        }
+        return map;
     }
 
     @Override

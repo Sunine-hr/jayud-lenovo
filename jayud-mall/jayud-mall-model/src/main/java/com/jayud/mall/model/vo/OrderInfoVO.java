@@ -167,10 +167,16 @@ public class OrderInfoVO {
     @JSONField(ordinal = 30)
     private List<OrderCopeReceivableVO> orderCopeReceivableVOList;
 
+    @ApiModelProperty(value = "订单对应应收费用汇总ist")
+    private List<AggregateAmountVO> orderCopeReceivableAggregate;
+
     /*订单对应应付费用明细:order_cope_with*/
     @ApiModelProperty(value = "订单对应应付费用明细list", position = 31)
     @JSONField(ordinal = 31)
     private List<OrderCopeWithVO> orderCopeWithVOList;
+
+    @ApiModelProperty(value = "订单对应应付费用汇总list")
+    private List<AggregateAmountVO> orderCopeWithAggregate;
 
     /*订单对应提货信息表：order_pick*/
     @ApiModelProperty(value = "订单对应提货信息表list", position = 32)

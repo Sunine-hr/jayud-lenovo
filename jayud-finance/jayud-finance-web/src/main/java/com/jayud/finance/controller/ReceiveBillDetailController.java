@@ -1,14 +1,11 @@
 package com.jayud.finance.controller;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.util.TypeUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
@@ -16,11 +13,11 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.excel.EasyExcelEntity;
 import com.jayud.common.utils.excel.EasyExcelUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
-import com.jayud.finance.enums.BillTemplateEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.po.OrderReceivableBillDetail;
@@ -41,7 +38,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -282,7 +278,7 @@ public class ReceiveBillDetailController {
         }
 
         //计算结算币种
-        this.orderBillCostTotalService.exportSettlementCurrency(headMap, dynamicHead, datas, "2");
+        this.orderBillCostTotalService.exportSettlementCurrency(cmd, headMap, dynamicHead, datas, "2");
 
         //查询法人人主体信息
         cn.hutool.json.JSONArray tmp = new cn.hutool.json.JSONArray(this.oauthClient
@@ -344,8 +340,8 @@ public class ReceiveBillDetailController {
                 .append(legalEntityJson.getStr("bank", ""))
                 .append(EasyExcelUtils.SPLIT_SYMBOL)
                 .append("制单时间:")
-                .append(viewBillVO.getMakeTimeStr())
-                .toString());
+                .append(DateUtils.format(viewBillVO.getMakeTimeStr(),DateUtils.DATE_PATTERN)).toString());
+
         bottomData.add(new StringBuilder()
                 .append("开户账号:")
                 .append(legalEntityJson.getStr("accountOpen", ""))
@@ -358,8 +354,7 @@ public class ReceiveBillDetailController {
                 .append(legalEntityJson.getStr("taxIdentificationNum", ""))
                 .append(EasyExcelUtils.SPLIT_SYMBOL)
                 .append("审单时间:")
-                .append(viewBillVO.getMakeTimeStr())
-                .toString());
+                .append(DateUtils.format(viewBillVO.getAuditTimeStr(),DateUtils.DATE_PATTERN)).toString());
         bottomData.add(new
                 StringBuilder()
                 .append("公司地址:")

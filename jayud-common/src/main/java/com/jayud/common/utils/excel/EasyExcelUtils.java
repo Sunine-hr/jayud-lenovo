@@ -11,6 +11,7 @@ import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
@@ -68,7 +69,7 @@ public class EasyExcelUtils {
         setColumnWidth(entity, sheet);
 
         // 处理中文不能自动调整列宽的问题
-        setSizeColumn(sheet, entity.getTableHead().size());
+//        setSizeColumn(sheet, entity.getTableHead().size());
 //        workbook.write(out);
 //        workbook.close();
 
@@ -87,8 +88,17 @@ public class EasyExcelUtils {
         for (int i = 1; i <= tableHeads.size(); i++) {
 //            sheet.autoSizeColumn((short) i); //调整第一列宽度
 //            sheet.setColumnWidth((short) i, sheet.getColumnWidth(i) * 17 / 10);
-            sheet.setColumnWidth(i, 5000);
+
+            sheet.setColumnWidth(i, 338 / entity.getTableHead().size() * 100);
         }
+
+        //页边距
+        sheet.setMargin(HSSFSheet.TopMargin, 1.0);// 页边距（上）
+        sheet.setMargin(HSSFSheet.BottomMargin, 1.0);// 页边距（下）
+        sheet.setMargin(HSSFSheet.LeftMargin, 0.5);// 页边距（左）
+        sheet.setMargin(HSSFSheet.RightMargin, 0.5);// 页边距（右)
+        sheet.setMargin(HSSFSheet.HeaderMargin, 0.76);//页脚
+        sheet.setMargin(HSSFSheet.FooterMargin, 0.76);//页脚
 
 
     }
@@ -101,7 +111,7 @@ public class EasyExcelUtils {
         if (CollectionUtils.isNotEmpty(titles)) {
             for (int i = 0; i < titles.size(); i++) {
                 Row row1 = sheet.createRow(i);
-                row1.setHeight((short) 800);
+                row1.setHeight((short) 500);
                 Cell cell0 = row1.createCell(0);
                 cell0.setCellValue(titles.get(i));
                 CellStyle cellStyle = workbook.createCellStyle();
@@ -110,7 +120,7 @@ public class EasyExcelUtils {
                 if (i != 2) {
                     Font font = workbook.createFont();
                     font.setBold(true);
-                    font.setFontHeight((short) 400);
+                    font.setFontHeight((short) 300);
                     cellStyle.setFont(font);
                 }
                 cell0.setCellStyle(cellStyle);
@@ -130,7 +140,8 @@ public class EasyExcelUtils {
                 row.setHeight((short) 500);
                 row.createCell(0).setCellValue(tmps[0]);
                 if (tmps.length > 1) {
-                    row.createCell(entity.getTableHead().size() - 1).setCellValue(tmps[1]);
+                    int index = tmps.length == 3 ? Integer.parseInt(tmps[2]) : 5;
+                    row.createCell(entity.getTableHead().size() - index).setCellValue(tmps[1]);
                 }
                 ++rowNum;
             }
@@ -162,7 +173,7 @@ public class EasyExcelUtils {
 
         AtomicInteger i = new AtomicInteger();
         tableHead.forEach((k, v) -> {
-            row.setHeight((short) 1200);
+//            row.setHeight((short) 1200);
             Cell cell = row.createCell(i.get());
             cell.setCellStyle(cellStyle);
             cell.setCellValue(tableHead.get(k));
@@ -191,6 +202,12 @@ public class EasyExcelUtils {
         cellStyle.setBorderRight(THIN);
         cellStyle.setBorderLeft(THIN);
         cellStyle.setWrapText(true);
+
+        Font font = workbook.createFont();
+        font.setFontName("宋体");
+        font.setFontHeightInPoints((short) 11);
+        cellStyle.setFont(font);
+
 
         JSONArray tableDatas = entity.getTableData();
 
@@ -235,6 +252,7 @@ public class EasyExcelUtils {
         cellStyle.setBorderTop(THIN);
         cellStyle.setBorderRight(THIN);
         cellStyle.setBorderLeft(THIN);
+        cellStyle.setWrapText(true);
 
         CellRangeAddress cellAddresses = new CellRangeAddress(rowNum, rowNum, 0, entity.getTotalIndex());
 
@@ -283,6 +301,7 @@ public class EasyExcelUtils {
         CellStyle cellStyle = workbook.createCellStyle();
         cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         cellStyle.setAlignment(HorizontalAlignment.RIGHT);
+        cellStyle.setWrapText(true);
 
         cell0.setCellStyle(cellStyle);
 
@@ -323,10 +342,10 @@ public class EasyExcelUtils {
                 String bottomData = bottomDatas.get(i);
                 String[] tmps = bottomData.split(SPLIT_SYMBOL);
                 Row row = sheet.createRow(rowNum);
-                row.setHeight((short) 500);
+                row.setHeight((short) 400);
                 row.createCell(0).setCellValue(tmps[0]);
                 if (tmps.length > 1) {
-                    row.createCell(entity.getTableHead().size() - 1).setCellValue(tmps[1]);
+                    row.createCell(entity.getTableHead().size() - 5).setCellValue(tmps[1]);
                 }
                 ++rowNum;
             }
@@ -352,6 +371,7 @@ public class EasyExcelUtils {
     // 自适应宽度(中文支持)
     public static void setSizeColumn(Sheet sheet, int size) {
         for (int columnNum = 1; columnNum <= size; columnNum++) {
+//            int columnWidth = 369 / size;
             int columnWidth = sheet.getColumnWidth(columnNum) / 256;
             for (int rowNum = 1; rowNum <= sheet.getLastRowNum(); rowNum++) {
                 Row currentRow;
@@ -361,7 +381,7 @@ public class EasyExcelUtils {
                 } else {
                     currentRow = sheet.getRow(rowNum);
                 }
-
+                //自动调整宽度
                 if (currentRow.getCell(columnNum) != null) {
                     Cell currentCell = currentRow.getCell(columnNum);
                     if (currentCell.getCellType() == CellType.STRING) {
@@ -372,7 +392,10 @@ public class EasyExcelUtils {
                     }
                 }
             }
-            sheet.setColumnWidth(columnNum, columnWidth * 256);
+
+
+            sheet.setColumnWidth(columnNum, columnWidth * 100);
+
         }
     }
 

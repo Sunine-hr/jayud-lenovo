@@ -328,10 +328,11 @@ public class StringUtils {
 
     /**
      * 解析地址
+     *
      * @param address
      * @return
      */
-    public static List<Map<String,String>> addressResolutionTwo(String address) {
+    public static List<Map<String, String>> addressResolutionTwo(String address) {
         /*
          * java.util.regex是一个用正则表达式所订制的模式来对字符串进行匹配工作的类库包。它包括两个类：Pattern和Matcher Pattern
          *    一个Pattern是一个正则表达式经编译后的表现模式。 Matcher
@@ -361,12 +362,12 @@ public class StringUtils {
     }
 
 
-        /**
-         * 解析地址
-         *
-         * @param address
-         * @return
-         */
+    /**
+     * 解析地址
+     *
+     * @param address
+     * @return
+     */
     public static List<Map<String, String>> addressResolutionThree(String address) {
 //        String regex = "((?<province>[^省]+省|.+自治区)|上海|北京|天津|重庆)|(?<city>[^市]+市|.+自治州)|(?<county>[^县]+县|.+区|.+镇|.+局)?(?<town>[^区]+区|.+镇)?(?<village>.*)";
         String regex = "(?<province>[^省]+自治区|.*?省|.*?行政区|.*?市)(?<city>[^市]+自治州|.*?地区|.*?行政单位|.+盟|市辖区|.*?市|.*?县)(?<county>[^县]+县|.+区|.+市|.+旗|.+海域|.+岛)?(?<town>[^区]+区|.+镇)?(?<village>.*)";
@@ -376,20 +377,20 @@ public class StringUtils {
         Map<String, String> row = new LinkedHashMap<String, String>();
         while (m.find()) {
 //            row=new LinkedHashMap<String,String>();
-            String provinceGroup = m.group("province")==null?"":m.group("province");
+            String provinceGroup = m.group("province") == null ? "" : m.group("province");
             province = province.length() > 0 ? province : provinceGroup.trim();
 
-            String cityGroup = m.group("city")==null?"":m.group("city");
+            String cityGroup = m.group("city") == null ? "" : m.group("city");
             city = city.length() > 0 ? city : cityGroup.trim();
 
-            String countyGroup = m.group("county")==null?"":m.group("county");
+            String countyGroup = m.group("county") == null ? "" : m.group("county");
             county = county.length() > 0 ? county : countyGroup.trim();
 
-            String townGroup = m.group("town")==null?"":m.group("town");
-            town = town.length()>0 ? town : townGroup.trim();
+            String townGroup = m.group("town") == null ? "" : m.group("town");
+            town = town.length() > 0 ? town : townGroup.trim();
 
-            String villageGroup = m.group("village")==null?"":m.group("village");
-            village = village.length()>0 ? village : villageGroup.trim();
+            String villageGroup = m.group("village") == null ? "" : m.group("village");
+            village = village.length() > 0 ? village : villageGroup.trim();
 //            table.add(row);
         }
         row.put("province", province);
@@ -421,7 +422,25 @@ public class StringUtils {
     }
 
     public static String supplyZero(int count, int zeroNum) {
-        DecimalFormat df=new DecimalFormat("0000");
+        DecimalFormat df = new DecimalFormat("0000");
         return df.format(count);
+    }
+
+    /**
+     * 分解
+     *
+     * @param sourceNo
+     * @param split
+     * @return
+     */
+    public static String subStringVals(String sourceNo, String split) {
+        //寻找第一个破折号出现的位置
+        final Matcher matcher = Pattern.compile(split).matcher(sourceNo);
+        if (!matcher.find()) {
+            return "";
+        }
+        final Integer index = matcher.start();
+        final String operationType = sourceNo.substring(0, index);
+        return operationType;
     }
 }

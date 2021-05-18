@@ -14,10 +14,10 @@ import java.util.Map;
 @Data
 public class EasyExcelEntity {
 
-    //主标题(多个就是多行标题)
+    //主标题(多个就是多行标题 标题~高度~宽度)
     private List<String> title;
 
-    //台头(同行根据'-'分左右台头)
+    //台头(同行根据'~'分左右台头,例如 右抬头~左抬头~左抬头尺寸)
     private List<String> stageHead;
 
     //表头

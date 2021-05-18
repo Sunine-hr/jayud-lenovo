@@ -7,14 +7,13 @@ import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.finance.enums.BillTemplateEnum;
-import com.jayud.finance.feign.FreightAirClient;
-import com.jayud.finance.feign.OmsClient;
-import com.jayud.finance.feign.TmsClient;
-import com.jayud.finance.feign.TrailerClient;
+import com.jayud.finance.feign.*;
 import com.jayud.finance.service.CommonService;
 import com.jayud.finance.vo.InputGoodsVO;
 import com.jayud.finance.vo.template.order.AirOrderTemplate;
+import com.jayud.finance.vo.template.order.InlandTPTemplate;
 import com.jayud.finance.vo.template.order.TmsOrderTemplate;
 import com.jayud.finance.vo.template.order.TrailerOrderTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,8 @@ public class CommonServiceImpl implements CommonService {
     private OmsClient omsClient;
     @Autowired
     private TrailerClient trailerClient;
+    @Autowired
+    private InlandTpClient inlandTpClient;
 
     /**
      * 获取空运明细
@@ -110,6 +111,33 @@ public class CommonServiceImpl implements CommonService {
         return map;
     }
 
+
+    /**
+     * 获取内陆明细
+     */
+    public Map<String, Object> getInlandOrderTemplate(List<String> mainOrderNos, String cmd, BillTemplateEnum templateEnum) {
+        Object data = this.inlandTpClient.getInlandOrderInfoByMainOrderNos(mainOrderNos).getData();
+        JSONArray array = new JSONArray(data);
+        Map<String, Object> map = new HashMap<>();
+        //查询主订单信息
+        ApiResult result = omsClient.getMainOrderByOrderNos(mainOrderNos);
+        for (int i = 0; i < array.size(); i++) {
+            JSONObject jsonObject = array.getJSONObject(i);
+            switch (templateEnum) {
+                case NL_NORM:
+                    InlandTPTemplate template = ConvertUtil.convert(jsonObject, InlandTPTemplate.class);
+                    template.assembleData(jsonObject);
+                    //组装主订单信息
+                    template.assemblyMainOrderData(result.getData());
+                    map.put(cmd.equals("main") ? template.getMainOrderNo() : template.getSubOrderNo(), template);
+                    break;
+            }
+
+        }
+
+        return map;
+    }
+
     /**
      * 处理模板数据
      *
@@ -135,6 +163,10 @@ public class CommonServiceImpl implements CommonService {
             }
             //拖车
             if (templateEnum.getCmd().equals(BillTemplateEnum.TC.getCmd())) {
+                data = this.getTrailerOrderTemplate(mainOrderNos, cmd, templateEnum);
+            }
+            //拖车
+            if (templateEnum.getCmd().equals(BillTemplateEnum.NL.getCmd())) {
                 data = this.getTrailerOrderTemplate(mainOrderNos, cmd, templateEnum);
             }
         }
@@ -194,23 +226,28 @@ public class CommonServiceImpl implements CommonService {
 
         BillTemplateEnum templateEnum = BillTemplateEnum.getTemplateEnum(templateCmd);
         if (templateEnum != null) {
+            String tmp = StringUtils.subStringVals(templateEnum.getCmd(), "-");
             //空运
-            if (templateEnum.getCmd().contains(BillTemplateEnum.KY.getCmd())) {
+            if (tmp.equals(BillTemplateEnum.KY.getCmd())) {
                 data = this.getAirOrderTemplate(mainOrderNos, cmd, templateEnum);
             }
             //中港
-            if (templateEnum.getCmd().contains(BillTemplateEnum.ZGYS.getCmd())) {
+            if (tmp.equals(BillTemplateEnum.ZGYS.getCmd())) {
                 data = this.getTmsOrderTemplate(mainOrderNos, cmd, templateEnum);
             }
             //拖车
-            if (templateEnum.getCmd().contains(BillTemplateEnum.TC.getCmd())) {
+            if (tmp.equals(BillTemplateEnum.TC.getCmd())) {
                 data = this.getTrailerOrderTemplate(mainOrderNos, cmd, templateEnum);
+            }
+            //内陆
+            if (tmp.equals(BillTemplateEnum.NL.getCmd())) {
+                data = this.getInlandOrderTemplate(mainOrderNos, cmd, templateEnum);
             }
         }
 
-
         //TODO 中港地址截取6个字符
-        if (SubOrderSignEnum.ZGYS.getSignOne().equals(cmd)) {
+        if (SubOrderSignEnum.ZGYS.getSignOne().equals(cmd)
+                || SubOrderSignEnum.MAIN.getSignOne().equals(cmd)) {
             for (int i = 0; i < array.size(); i++) {
                 JSONObject jsonObject = array.getJSONObject(i);
                 String startAddress = jsonObject.getStr("startAddress");
@@ -245,6 +282,11 @@ public class CommonServiceImpl implements CommonService {
             jsonArray.add(jsonObject);
         }
         return jsonArray.size() == 0 ? array : jsonArray;
+    }
+
+    public static void main(String[] args) {
+        String nl = "nl";
+        System.out.println("n2ln-2".contains(nl));
     }
 
     /**

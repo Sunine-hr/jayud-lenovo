@@ -96,4 +96,31 @@
 
     </select>
 
+    <select id="calculateSettlementCurrency" resultType="java.math.BigDecimal">
+        select sum(money)
+        from order_bill_cost_total obct
+        <choose>
+            <when test="moneyType==1">
+                left join order_payment_cost oc on obct.cost_id=oc.id
+            </when>
+            <otherwise>
+                left join order_receivable_cost oc on obct.cost_id=oc.id
+            </otherwise>
+        </choose>
+        <where>
+            <choose>
+                <when test="cmd == 'main'">
+                    and oc.main_order_no=#{orderNo}
+                </when>
+                <otherwise>
+                    and oc.order_no=#{orderNo}
+                </otherwise>
+            </choose>
+            and obct.money_type=#{moneyType}
+            and obct.bill_no=#{billNo}
+        </where>
+
+
+    </select>
+
 </mapper>

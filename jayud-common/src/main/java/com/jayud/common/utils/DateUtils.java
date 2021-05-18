@@ -82,7 +82,7 @@ public class DateUtils {
             DateTimeFormatter dateFormatterNew = DateTimeFormatter.ofPattern(pattern);
             return dateFormatterNew.format(localDateTime);
         }
-        return null;
+        return "";
     }
 
 

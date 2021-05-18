@@ -1,12 +1,14 @@
 package com.jayud.oauth.websocket;
 
 import lombok.Data;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import java.net.URLDecoder;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -56,8 +58,10 @@ public class WebSocket {
     private int loseHeartCounter;
 
 
+    @SneakyThrows
     @OnOpen
     public void OnOpen(Session session, @PathParam(value = "name") String name) {
+        name = URLDecoder.decode(name,"UTF-8");
         this.session = session;
         this.name = name;
         // name是用来表示唯一客户端，如果需要指定发送，需要指定发送通过name来区分

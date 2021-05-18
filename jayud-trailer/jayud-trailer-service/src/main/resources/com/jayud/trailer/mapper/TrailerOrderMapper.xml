@@ -262,26 +262,26 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
     </select>
 
     <select id="getNumByStatus" resultType="java.lang.Integer">
-        select count(*) from trailer_order to
+        select count(*) from trailer_order tor
         LEFT JOIN order_info oi
-        ON to.`main_order_no` = oi.`order_no`
+        ON tor.`main_order_no` = oi.`order_no`
         <where>
             <choose>
                 <when test="status=='S_0'">
-                    and to.status=#{status} AND oi.`status` in ('1','4')
+                    and tor.status=#{status} AND oi.`status` in ('1','4')
                 </when>
                 <when test="status=='S_3'">
-                    and to.status=#{status} AND to.`imp_and_exp_type` = 1
+                    and tor.status=#{status} AND tor.`imp_and_exp_type` = 1
                 </when>
                 <when test="status=='S_6'">
-                    and to.status=#{status} AND to.`imp_and_exp_type` = 2 and to.`is_weighed` = 1
+                    and tor.status=#{status} AND tor.`imp_and_exp_type` = 2 and tor.`is_weighed` = 1
                 </when>
                 <otherwise>
-                    and to.status=#{status}
+                    and tor.status=#{status}
                 </otherwise>
             </choose>
             <if test="legalIds != null and legalIds.size>0">
-                and to.`legal_entity_id` in
+                and tor.`legal_entity_id` in
                 <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                     #{legalId}
                 </foreach>

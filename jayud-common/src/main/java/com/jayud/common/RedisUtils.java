@@ -78,7 +78,7 @@ public class RedisUtils {
         if (expire != NOT_EXPIRE) {
             redisTemplate.expire(key, expire, TimeUnit.SECONDS);
         }
-        return value;
+        return value == null ? null : value;
     }
 
     public String get(String key) {

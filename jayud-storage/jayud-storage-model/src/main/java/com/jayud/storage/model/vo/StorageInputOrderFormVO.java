@@ -155,6 +155,9 @@ public class StorageInputOrderFormVO {
     @ApiModelProperty(value = "接单法人名称")
     private String subLegalName;
 
+    @ApiModelProperty(value = "子订单结算单位")
+    private String subUnitCode;
+
     @ApiModelProperty(value = "是否有费用详情")
     private Boolean cost;
 
@@ -178,7 +181,7 @@ public class StorageInputOrderFormVO {
                     .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
                     .append(",").append(goods.getPcs()== null ? 0 : goods.getNumber()).append("件")
                     .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
-                    .append("/");
+                    .append(";");
             if(goods.getVolume()!=null){
                 this.volume = this.volume + goods.getVolume();
             }

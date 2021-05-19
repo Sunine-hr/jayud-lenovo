@@ -576,13 +576,13 @@
     <select id="getViewBillByCostIds" parameterType="java.util.Map" resultType="com.jayud.finance.vo.ViewBillVO">
 
         <choose>
-            <when test="cmd == cci or cmd == cce ">
+            <when test="cmd == 'cci' or cmd == 'cce' ">
                 SELECT DISTINCT
                 <if test="cmd == 'main'">
                     oi.legal_name legalName,
                 </if>
                 <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
-                    sub.legal_name legalName,
+                    sub.sub_legal_name legalName,
                 </if>
                 <!--        <if test="cmd == 'bg'">-->
                 <!--            oc.legal_name legalName,-->

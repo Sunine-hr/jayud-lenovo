@@ -949,43 +949,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return caseVO;
     }
 
-    /**
-     * 获取-订单对应清关文件-s
-     * @param orderInfo
-     * @param offerInfoId
-     * @return
-     */
-    private List<OrderClearanceFile> getOrderClearanceFiles(OrderInfo orderInfo, Integer offerInfoId) {
-        Integer needClearance = orderInfo.getNeedClearance();
-        List<OrderClearanceFile> orderClearanceFileList = new ArrayList<>();
-        List<TemplateFileVO> templateFileByOrder = new ArrayList<>();
-        if(needClearance == 0){
-            TemplateFileOrderForm fileOrderForm = new TemplateFileOrderForm();
-            fileOrderForm.setOfferInfoId(offerInfoId);
-            fileOrderForm.setGroupCode("C");
-            templateFileByOrder = templateFileService.findTemplateFileByOrder(fileOrderForm);
-        }else if(needClearance == 1){
-            TemplateFileOrderForm fileOrderForm = new TemplateFileOrderForm();
-            fileOrderForm.setOfferInfoId(offerInfoId);
-            fileOrderForm.setGroupCode("D");
-            templateFileByOrder = templateFileService.findTemplateFileByOrder(fileOrderForm);
-        }
-        if(templateFileByOrder.size() > 0){
-            templateFileByOrder.forEach(templateFileVO -> {
-                OrderClearanceFile orderClearanceFile = new OrderClearanceFile();
-                orderClearanceFile.setOrderId(orderInfo.getId().intValue());
-                orderClearanceFile.setIdCode(templateFileVO.getFileCode());
-                orderClearanceFile.setFileName(templateFileVO.getFileName());
-                orderClearanceFile.setOptions(templateFileVO.getOptions());
-                orderClearanceFile.setIsCheck(templateFileVO.getIsCheck());
-                orderClearanceFile.setTemplateUrl(templateFileVO.getTemplateUrl());
-                orderClearanceFile.setDescribe(templateFileVO.getRemarks());
-                orderClearanceFile.setAuditStatus(0);//审核状态(0审核不通过  1审核通过)
-                orderClearanceFileList.add(orderClearanceFile);
-            });
-        }
-        return orderClearanceFileList;
-    }
+
 
     /**
      * 获取-订单对应报关文件-s
@@ -1010,12 +974,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if(needDeclare == 0){
             TemplateFileOrderForm fileOrderForm = new TemplateFileOrderForm();
             fileOrderForm.setOfferInfoId(offerInfoId);
-            fileOrderForm.setGroupCode("A");
+            fileOrderForm.setTypes("1");//类型(1报关服务 2清关服务)
+            fileOrderForm.setGroupCode("1");//文件分组代码(1买单 2独立)
+
             templateFileByOrder = templateFileService.findTemplateFileByOrder(fileOrderForm);
         }else if(needDeclare == 1){
             TemplateFileOrderForm fileOrderForm = new TemplateFileOrderForm();
             fileOrderForm.setOfferInfoId(offerInfoId);
-            fileOrderForm.setGroupCode("B");
+            fileOrderForm.setTypes("1");//类型(1报关服务 2清关服务)
+            fileOrderForm.setGroupCode("2");//文件分组代码(1买单 2独立)
             templateFileByOrder = templateFileService.findTemplateFileByOrder(fileOrderForm);
         }
         if(templateFileByOrder.size() > 0){
@@ -1033,6 +1000,57 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             });
         }
         return orderCustomsFileList;
+    }
+
+    /**
+     * 获取-订单对应清关文件-s
+     * @param orderInfo
+     * @param offerInfoId
+     * @return
+     */
+    private List<OrderClearanceFile> getOrderClearanceFiles(OrderInfo orderInfo, Integer offerInfoId) {
+        /*
+        0 否 对应 买关，
+        1 是 对应 独立。
+
+        @ApiModelProperty(value = "文件分组代码" +
+        "A,报关服务-买单报关" +
+        "B,报关服务-独立报关" +
+        "C,清关服务-买单报关" +
+        "D,清关服务-独立报关", position = 2)
+        */
+        Integer needClearance = orderInfo.getNeedClearance();
+        List<OrderClearanceFile> orderClearanceFileList = new ArrayList<>();
+        List<TemplateFileVO> templateFileByOrder = new ArrayList<>();
+        if(needClearance == 0){
+            TemplateFileOrderForm fileOrderForm = new TemplateFileOrderForm();
+            fileOrderForm.setOfferInfoId(offerInfoId);
+            fileOrderForm.setTypes("2");//类型(1报关服务 2清关服务)
+            fileOrderForm.setGroupCode("1");//文件分组代码(1买单 2独立)
+
+            templateFileByOrder = templateFileService.findTemplateFileByOrder(fileOrderForm);
+        }else if(needClearance == 1){
+            TemplateFileOrderForm fileOrderForm = new TemplateFileOrderForm();
+            fileOrderForm.setOfferInfoId(offerInfoId);
+            fileOrderForm.setTypes("2");//类型(1报关服务 2清关服务)
+            fileOrderForm.setGroupCode("2");//文件分组代码(1买单 2独立)
+            templateFileByOrder = templateFileService.findTemplateFileByOrder(fileOrderForm);
+        }
+        if(templateFileByOrder.size() > 0){
+            templateFileByOrder.forEach(templateFileVO -> {
+                OrderClearanceFile orderClearanceFile = new OrderClearanceFile();
+                orderClearanceFile.setOrderId(orderInfo.getId().intValue());
+                orderClearanceFile.setIdCode(templateFileVO.getFileCode());
+                orderClearanceFile.setFileName(templateFileVO.getFileName());
+                orderClearanceFile.setOptions(templateFileVO.getOptions());
+                orderClearanceFile.setIsCheck(templateFileVO.getIsCheck());
+                orderClearanceFile.setTemplateUrl(templateFileVO.getTemplateUrl());
+                orderClearanceFile.setDescribe(templateFileVO.getRemarks());
+                orderClearanceFile.setAuditStatus(0);//审核状态(0审核不通过  1审核通过)
+                orderClearanceFileList.add(orderClearanceFile);
+            });
+        }
+        return orderClearanceFileList;
     }
 
     @Override

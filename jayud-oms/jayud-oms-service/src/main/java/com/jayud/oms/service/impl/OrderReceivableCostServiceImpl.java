@@ -65,6 +65,20 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
     }
 
     /**
+     * 获取审核通过费用
+     */
+    @Override
+    public List<OrderReceivableCost> getSubOrderApprovalFee(String subOrderNo, List<Long> excludeIds) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderReceivableCost::getOrderNo, subOrderNo);
+        condition.lambda().eq(OrderReceivableCost::getStatus, 3);
+        if (CollectionUtils.isNotEmpty(excludeIds)) {
+            condition.lambda().notIn(OrderReceivableCost::getId, excludeIds);
+        }
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
      * 获取审核通过费用数目
      */
     @Override
@@ -213,14 +227,14 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
      */
     @Override
     public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds) {
-        return this.baseMapper.getPendingExpenseApproval(subType, orderNos,legalIds);
+        return this.baseMapper.getPendingExpenseApproval(subType, orderNos, legalIds);
     }
 
     @Override
     public List<OrderReceivableCost> getBySubType(String subType) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status",2);
-        queryWrapper.eq("sub_type",subType);
+        queryWrapper.eq("status", 2);
+        queryWrapper.eq("sub_type", subType);
         return this.baseMapper.selectList(queryWrapper);
     }
 }

@@ -24,7 +24,6 @@ import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
 import io.netty.util.internal.StringUtil;
-import io.swagger.models.auth.In;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -394,18 +393,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             List<OrderPaymentCost> orderPaymentCosts = ConvertUtil.convertList(newPaymentCostForms, OrderPaymentCost.class);
             List<OrderReceivableCost> orderReceivableCosts = ConvertUtil.convertList(newReceivableCostForms, OrderReceivableCost.class);
             //业务场景:暂存时提交所有未提交审核的信息,为了避免用户删除一条然后又添加的情况，每次暂存前先把原来未提交审核的清空
+            //TODO 根据传入应收/应付订单,对比费用,增删改查
+
             if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
-                QueryWrapper queryWrapper = new QueryWrapper();
-                if ("preSubmit_main".equals(form.getCmd())) {
-                    queryWrapper.eq("main_order_no", inputOrderVO.getOrderNo());
-                    queryWrapper.isNull("order_no");
-                }
-                if ("preSubmit_sub".equals(form.getCmd())) {
-                    queryWrapper.eq("order_no", form.getOrderNo());
-                }
-                queryWrapper.eq("status", OrderStatusEnum.COST_1.getCode());
-                paymentCostService.remove(queryWrapper);
-                receivableCostService.remove(queryWrapper);
+                this.costOperationComparison(form, inputOrderVO);
             }
             //当录入的是子订单费用,且主/子订单的法人主体和结算单位不相等时,不可汇总到主订单
             Boolean isSumToMain = true;//1
@@ -450,7 +441,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 //仓储
                 orderReceivableCost.setSubOrderNo(form.getOrderNo());
                 orderReceivableCost.setSubLegalName(form.getSubLegalName());
-                orderReceivableCost.setLegalId((Integer)oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData());
+                orderReceivableCost.setLegalId((Integer) oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData());
 
                 if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
                     orderReceivableCost.setIsSumToMain(isSumToMain);
@@ -475,6 +466,40 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         return true;
     }
+
+    /**
+     * 删除多余费用
+     *
+     * @param form
+     * @param inputOrderVO
+     */
+    private void costOperationComparison(InputCostForm form, InputMainOrderVO inputOrderVO) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if ("preSubmit_main".equals(form.getCmd())) {
+            queryWrapper.eq("main_order_no", inputOrderVO.getOrderNo());
+            queryWrapper.isNull("order_no");
+        }
+
+        if ("preSubmit_sub".equals(form.getCmd())) {
+            queryWrapper.eq("order_no", form.getOrderNo());
+        }
+        queryWrapper.eq("status", OrderStatusEnum.COST_1.getCode());
+
+        //查询存在费用
+        List<OrderPaymentCost> oldPayList = this.paymentCostService.list(queryWrapper);
+        Map<Long, Long> oldPayMap = oldPayList.stream().collect(Collectors.toMap(OrderPaymentCost::getId, OrderPaymentCost::getId));
+        for (InputPaymentCostForm newPay : form.getPaymentCostList()) {
+            oldPayMap.remove(newPay.getId());
+        }
+        List<OrderReceivableCost> oldReceivableList = this.receivableCostService.list(queryWrapper);
+        Map<Long, Long> oldReceivableMap = oldReceivableList.stream().collect(Collectors.toMap(OrderReceivableCost::getId, OrderReceivableCost::getId));
+        for (InputReceivableCostForm newReceivable : form.getReceivableCostList()) {
+            oldReceivableMap.remove(newReceivable.getId());
+        }
+        paymentCostService.removeByIds(oldPayMap.values());
+        receivableCostService.removeByIds(oldReceivableMap.values());
+    }
+
 
     @Override
     public InputCostVO getCostDetail(GetCostDetailForm form) {
@@ -547,11 +572,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 receivableCost.setStatus(Integer.valueOf(form.getStatus()));
                 receivableCost.setRemarks(form.getRemarks());
             }
+            //费用合并操作
+            this.costMergeOpt(form);
+
             boolean optOne = false;
-            if (orderPaymentCosts != null && orderPaymentCosts.size() > 0) {
+            if (orderPaymentCosts.size() > 0) {
                 paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
             }
-            if (orderReceivableCosts != null && orderReceivableCosts.size() > 0) {
+            if (orderReceivableCosts.size() > 0) {
                 optOne = receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
             }
             //推送应收费用审核消息
@@ -565,6 +593,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         return true;
     }
+
 
     @Override
     public List<OrderStatusVO> handleProcess(QueryOrderStatusForm form) {
@@ -2246,4 +2275,72 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
 
+    private void costMergeOpt(AuditCostForm form) {
+        if (form.getSubUnitCode() == null && form.getReceivableCosts().size() > 0) {
+            return;
+        }
+        List<OrderReceivableCost> orderReceivableCostList = this.orderReceivableCostService.getSubOrderApprovalFee(form.getSubOrderNo(), null);
+        orderReceivableCostList.addAll(form.getReceivableCosts());
+        //过滤相同数据
+        orderReceivableCostList = orderReceivableCostList.stream().collect(Collectors.collectingAndThen(
+                Collectors.toCollection(() ->
+                        new TreeSet<>(Comparator.comparing(OrderReceivableCost::getId))), ArrayList::new));
+
+        //根据结算单位查询客户名称
+        CustomerInfo customerInfo = this.customerInfoService.getByCode(form.getSubUnitCode());
+        //查询主订单操作主体
+        String mainOrderNo;
+        if (CollectionUtil.isNotEmpty(form.getPaymentCosts())) {
+            mainOrderNo = form.getPaymentCosts().get(0).getMainOrderNo();
+        } else {
+            mainOrderNo = form.getReceivableCosts().get(0).getMainOrderNo();
+        }
+        List<OrderInfo> mainOrders = this.getByOrderNos(Collections.singletonList(mainOrderNo));
+        //子订单结算单位和主订单操作主体匹配
+        if (!mainOrders.get(0).getLegalName().equals(customerInfo.getName())) {
+            return;
+        }
+        //根据主订单号查询主订单应付费用并且是绑定应收id
+        List<OrderPaymentCost> paymentCost = this.paymentCostService.getReceivableBinding(new OrderPaymentCost()
+                .setMainOrderNo(mainOrderNo).setIsSumToMain(true));
+        //合拼操作
+        Map<Long, OrderPaymentCost> oldBinds = paymentCost.stream().collect(Collectors.toMap(OrderPaymentCost::getReceivableId, e -> e));
+        //添加/修改
+        List<OrderPaymentCost> addOrUpdate = new ArrayList<>();
+        //应付供应商是子订单操作主体
+        SupplierInfo supplierInfo = this.supplierInfoService.getByName(form.getSubLegalName());
+
+        for (OrderReceivableCost receivableCost : orderReceivableCostList) {
+            OrderPaymentCost bind = oldBinds.remove(receivableCost.getId());
+            OrderPaymentCost convert = ConvertUtil.convert(receivableCost, OrderPaymentCost.class);
+            if (bind != null && bind.getStatus().toString()
+                    .equals(OrderStatusEnum.COST_1.getCode())) {
+                convert.setId(bind.getId()).setReceivableId(receivableCost.getId())
+                        .setCustomerName(supplierInfo.getSupplierChName())
+                        .setCustomerCode(supplierInfo.getSupplierCode());
+            } else {
+                convert.setId(null).setReceivableId(receivableCost.getId())
+                        .setCreatedTime(LocalDateTime.now()).setCreatedUser(UserOperator.getToken());
+            }
+            convert.setOrderNo(null).setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()))
+                    .setIsSumToMain(true).setIsBill("0").setSubType("main");
+            addOrUpdate.add(convert);
+        }
+        //剔除应付费用
+        for (OrderPaymentCost deleteBind : oldBinds.values()) {
+            if (!deleteBind.getStatus().toString()
+                    .equals(OrderStatusEnum.COST_1.getCode())) {
+                oldBinds.remove(deleteBind.getReceivableId());
+            }
+        }
+        this.paymentCostService.removeByIds(oldBinds.keySet());
+        this.paymentCostService.saveOrUpdateBatch(addOrUpdate);
+
+    }
+
+    public static void main(String[] args) {
+        List<OrderPaymentCost> paymentCost = new ArrayList<>();
+        Map<Long, Long> collect = paymentCost.stream().collect(Collectors.toMap(OrderPaymentCost::getReceivableId, e -> e.getId()));
+        System.out.println(collect.get("2321"));
+    }
 }

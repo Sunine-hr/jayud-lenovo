@@ -20,6 +20,15 @@ public class AuditCostForm {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
+    @ApiModelProperty(value = "子订单结算单位")
+    private String subUnitCode;
+
+    @ApiModelProperty(value = "子订单法人名称")
+    private String subLegalName;
+
+    @ApiModelProperty(value = "子订单号")
+    private String subOrderNo;
+
     @ApiModelProperty(value = "审核状态 3-通过 0-驳回", required = true)
     private String status;
 

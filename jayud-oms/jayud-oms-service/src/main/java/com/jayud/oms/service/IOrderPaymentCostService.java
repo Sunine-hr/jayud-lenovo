@@ -71,10 +71,18 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
     List<OrderPaymentCost> getByType(List<String> orderNos, String subType);
 
     public Map<String, Object> getOrderCostStatus(List<String> mainOrderNos, List<String> subOrderNos, Map<String, Object> callbackParam);
+
     /**
      * 查询待处理费用审核
      */
     public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds);
+
+    /**
+     * 根据主订单号获取应收绑定数据
+     * @param paymentCost
+     * @return
+     */
+    List<OrderPaymentCost> getReceivableBinding(OrderPaymentCost paymentCost);
 
     List<OrderPaymentCost> getBySubType(String subType);
 }

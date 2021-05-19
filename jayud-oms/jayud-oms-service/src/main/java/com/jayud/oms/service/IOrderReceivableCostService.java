@@ -45,6 +45,11 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
     List<OrderReceivableCost> getApprovalFee(String mainOrder, List<Long> excludeIds);
 
     /**
+     * 获取审核通过费用
+     */
+    public List<OrderReceivableCost> getSubOrderApprovalFee(String subOrderNo, List<Long> excludeIds);
+
+    /**
      * 获取审核通过费用数目
      */
     public Integer getApprovalFeeCount(String mainOrder);

@@ -179,7 +179,7 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
                 map.put(k, str);
             }
             //回滚参数
-            callbackParam.put(k,v);
+            callbackParam.put(k, v);
         });
         return map;
     }
@@ -190,7 +190,7 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
      */
     @Override
     public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds) {
-        return this.baseMapper.getPendingExpenseApproval(subType, orderNos,legalIds);
+        return this.baseMapper.getPendingExpenseApproval(subType, orderNos, legalIds);
     }
 
     @Override
@@ -199,6 +199,21 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
         queryWrapper.eq("status",2);
         queryWrapper.eq("sub_type",subType);
         return this.baseMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * 根据主订单号获取应收绑定数据
+     *
+     * @param paymentCost
+     * @return
+     */
+    @Override
+    public List<OrderPaymentCost> getReceivableBinding(OrderPaymentCost paymentCost) {
+        QueryWrapper<OrderPaymentCost> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderPaymentCost::getMainOrderNo, paymentCost.getMainOrderNo())
+                .eq(OrderPaymentCost::getIsSumToMain, paymentCost.getIsSumToMain())
+                .isNotNull(OrderPaymentCost::getReceivableId);
+        return this.baseMapper.selectList(condition);
     }
 
 }

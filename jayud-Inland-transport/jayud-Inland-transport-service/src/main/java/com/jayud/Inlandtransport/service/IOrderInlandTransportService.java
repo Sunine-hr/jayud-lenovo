@@ -96,4 +96,6 @@ public interface IOrderInlandTransportService extends IService<OrderInlandTransp
      * @return
      */
     Integer getNumByStatus(String status, List<Long> legalIds);
+
+    List<OrderInlandTransport> getByLegalEntityId(List<Long> legalIds);
 }

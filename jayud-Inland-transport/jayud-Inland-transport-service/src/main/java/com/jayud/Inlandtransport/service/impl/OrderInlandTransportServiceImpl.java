@@ -367,6 +367,17 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
     @Override
     public Integer getNumByStatus(String status, List<Long> legalIds) {
         Integer num = this.baseMapper.getNumByStatus(status, legalIds);
+        switch (status) {
+            case "inlandFeeCheck":
+                List<OrderInlandTransport> list = this.getByLegalEntityId(legalIds);
+                if (org.apache.commons.collections4.CollectionUtils.isEmpty(list)) return num;
+                List<String> orderNos = list.stream().map(OrderInlandTransport::getOrderNo).collect(Collectors.toList());
+                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.NL.getSignOne(), legalIds, orderNos).getData();
+                break;
+            default:
+                num = this.baseMapper.getNumByStatus(status, legalIds);
+        }
+
         return num == null ? 0 : num;
     }
 
@@ -380,5 +391,12 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         }
     }
 
+
+    @Override
+    public List<OrderInlandTransport> getByLegalEntityId(List<Long> legalIds) {
+        QueryWrapper<OrderInlandTransport> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderInlandTransport::getLegalEntityId, legalIds);
+        return this.baseMapper.selectList(condition);
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.jayud.mall.utils;
 
+import com.jayud.common.utils.SpringContextUtil;
 import com.jayud.mall.service.INumberGeneratedService;
 import org.springframework.beans.factory.annotation.Autowired;
 

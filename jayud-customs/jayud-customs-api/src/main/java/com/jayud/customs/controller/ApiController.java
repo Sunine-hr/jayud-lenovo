@@ -162,7 +162,7 @@ public class ApiController {
     @ApiOperation(value = "接收云报关审核成功的信息")
     @PostMapping("/feedback/finance/approved")
     @APILog
-    public CommonResult receiveFinanceFeed(@RequestBody Map<String, String> param) {
+    public String receiveFinanceFeed(@RequestBody Map<String, String> param) {
         String applyNo = MapUtil.getStr(param, "apply_no");
         String uid = MapUtil.getStr(param, "uid");
         log.info(String.format("收到数据：apply_no=%s,uid=%s", applyNo == null ? "" : applyNo, uid == null ? "" : uid));
@@ -171,11 +171,13 @@ public class ApiController {
             getFinanceInfoForm.setApplyNo(applyNo);
             log.info(String.format("开始查找云报关数据..."));
             service.getFinanceInfoAndPush2Kingdee(getFinanceInfoForm);
-            return CommonResult.success(String.format("已经收到回执信息：18位报关单号为：%s", applyNo));
+            //return CommonResult.success(String.format("已经收到回执信息：18位报关单号为：%s", applyNo));
+            return "1";
         } else {
             Asserts.fail("apply_no需要输入18位报关单号");
         }
-        return CommonResult.error(ResultEnum.PARAM_ERROR, "apply_no需要输入18位报关单号");
+        //return CommonResult.error(ResultEnum.PARAM_ERROR, "apply_no需要输入18位报关单号");
+        return "-1";
     }
 
 

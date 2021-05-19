@@ -1,6 +1,3 @@
-server:
-  port: 8091
-
 jayud:
   nacos:
     server-addr: 113.100.140.250:8848

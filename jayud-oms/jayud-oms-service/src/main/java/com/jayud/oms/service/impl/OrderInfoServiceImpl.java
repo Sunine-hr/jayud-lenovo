@@ -2276,7 +2276,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
 
     private void costMergeOpt(AuditCostForm form) {
-        if (form.getSubUnitCode() == null && form.getReceivableCosts().size() == 0) {
+        if (form.getSubUnitCode() == null || form.getReceivableCosts().size() == 0) {
             return;
         }
         List<OrderReceivableCost> orderReceivableCostList = this.orderReceivableCostService.getSubOrderApprovalFee(form.getSubOrderNo(), null);
@@ -2315,15 +2315,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             OrderPaymentCost convert = ConvertUtil.convert(receivableCost, OrderPaymentCost.class);
             if (bind != null && bind.getStatus().toString()
                     .equals(OrderStatusEnum.COST_1.getCode())) {
-                convert.setId(bind.getId()).setReceivableId(receivableCost.getId())
-                        .setCustomerName(supplierInfo.getSupplierChName())
-                        .setCustomerCode(supplierInfo.getSupplierCode());
+                convert.setId(bind.getId()).setReceivableId(receivableCost.getId());
             } else {
                 convert.setId(null).setReceivableId(receivableCost.getId())
                         .setCreatedTime(LocalDateTime.now()).setCreatedUser(UserOperator.getToken());
             }
-            convert.setOrderNo(null).setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()))
+            if (supplierInfo != null) {
+                convert.setCustomerName(supplierInfo.getSupplierChName()).setCustomerCode(supplierInfo.getSupplierCode());
+            }
+            convert.setOrderNo(null)
+                    .setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()))
                     .setIsSumToMain(true).setIsBill("0").setSubType("main");
+
             addOrUpdate.add(convert);
         }
         //剔除应付费用
@@ -2339,8 +2342,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     public static void main(String[] args) {
-        List<OrderPaymentCost> paymentCost = new ArrayList<>();
-        Map<Long, Long> collect = paymentCost.stream().collect(Collectors.toMap(OrderPaymentCost::getReceivableId, e -> e.getId()));
-        System.out.println(collect.get("2321"));
+
+        System.out.println("21321");
     }
 }

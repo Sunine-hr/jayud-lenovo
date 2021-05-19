@@ -19,6 +19,7 @@ import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.enums.BillTemplateEnum;
 import com.jayud.finance.enums.FormIDEnum;
+import com.jayud.finance.po.CurrencyRate;
 import com.jayud.finance.po.OrderPaymentBillDetail;
 import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.*;
@@ -37,6 +38,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,22 +52,20 @@ public class FinanceController {
 
     @Autowired
     IOrderPaymentBillDetailService paymentBillDetailService;
-
     @Autowired
     IOrderReceivableBillDetailService receivableBillDetailService;
-
     @Autowired
     ICancelAfterVerificationService verificationService;//核销
-
     @Autowired
     IMakeInvoiceService makeInvoiceService;//开票
     @Autowired
     private KingdeeService kingdeeService;
     @Autowired
     private CommonService commonService;
-
     @Autowired
     KingdeeService service;
+    @Autowired
+    private ICurrencyRateService currencyRateService;
 
     /**
      * 财务核算
@@ -452,9 +452,14 @@ public class FinanceController {
         queryWrapper.lambda().groupBy(OrderReceivableBillDetail::getBillNo);
         List<OrderReceivableBillDetail> receivableBillDetails = receivableBillDetailService.list(queryWrapper);
         for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
+            //查询结算币种的币种管理汇率(结算币种兑换人民币汇率)
+            Map<String, BigDecimal> exchangeRate = this.currencyRateService.getExchangeRates("CNY", receivableBillDetail.getAccountTerm());
+
             List<ReceivableHeaderForm> reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
             CommonResult result = null;
             for (ReceivableHeaderForm tempReqForm : reqForm) {
+                //设置汇率
+                tempReqForm.setExchangeRate(exchangeRate.get(tempReqForm.getCurrency()));
                 List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
                 tempReqForm.setEntityDetail(entityDetail);
 
@@ -506,15 +511,22 @@ public class FinanceController {
         if (flag) {
             return CommonResult.error(10001, sb.toString());
         }
+
+
         //构建数据，推金蝶
         QueryWrapper<OrderPaymentBillDetail> queryWrapper = new QueryWrapper();
         queryWrapper.in("bill_no", form.getBillNos());
         queryWrapper.lambda().groupBy(OrderPaymentBillDetail::getBillNo);
         List<OrderPaymentBillDetail> paymentBillDetailList = paymentBillDetailService.list(queryWrapper);
         for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
+            //查询结算币种的币种管理汇率
+            Map<String, BigDecimal> exchangeRate = this.currencyRateService.getExchangeRates("CNY", paymentBillDetail.getAccountTerm());
+
             List<PayableHeaderForm> reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
             CommonResult result = null;
             for (PayableHeaderForm tempReqForm : reqForm) {
+                //设置汇率
+                tempReqForm.setExchangeRate(exchangeRate.get(tempReqForm.getCurrency()));
                 List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
                 tempReqForm.setEntityDetail(entityDetail);
                 logger.info("推送金蝶传参:" + reqForm);

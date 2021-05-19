@@ -2276,7 +2276,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
 
     private void costMergeOpt(AuditCostForm form) {
-        if (form.getSubUnitCode() == null && form.getReceivableCosts().size() > 0) {
+        if (form.getSubUnitCode() == null && form.getReceivableCosts().size() == 0) {
             return;
         }
         List<OrderReceivableCost> orderReceivableCostList = this.orderReceivableCostService.getSubOrderApprovalFee(form.getSubOrderNo(), null);

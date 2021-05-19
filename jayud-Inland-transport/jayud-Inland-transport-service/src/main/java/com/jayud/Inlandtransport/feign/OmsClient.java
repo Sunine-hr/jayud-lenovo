@@ -208,4 +208,14 @@ public interface OmsClient {
     @RequestMapping(value = "/api/doMainOrderRejectionSignOpt")
     public ApiResult<Boolean> doMainOrderRejectionSignOpt(@RequestParam("mainOrderNo") String mainOrderNo,
                                                           @RequestParam("rejectionDesc") String rejectionDesc);
+
+    /**
+     * 查询待审核费用订单数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/auditPendingExpenses")
+    public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
+                                                   @RequestParam("legalIds") List<Long> legalIds,
+                                                   @RequestParam("orderNos") List<String> orderNos);
 }

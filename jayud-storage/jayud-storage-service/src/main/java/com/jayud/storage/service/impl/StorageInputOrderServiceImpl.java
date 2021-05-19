@@ -94,6 +94,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
             List<WarehouseGoodsForm> goodsFormList = storageInputOrderForm.getGoodsFormList();
             List<WarehouseGoods> warehouseGoods = new ArrayList<>();
             for (WarehouseGoodsForm warehouseGood : goodsFormList) {
+
                 WarehouseGoods convert = ConvertUtil.convert(warehouseGood, WarehouseGoods.class);
                 convert.setOrderId(storageInputOrder.getId());
                 convert.setOrderNo(storageInputOrder.getOrderNo());
@@ -336,7 +337,6 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
 
     @Override
     public boolean confirmEntry(StorageInProcessOptForm form) {
-        redisUtils.delete(form.getOrderNo());
         form.setOperatorUser(UserOperator.getToken());
         form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
 

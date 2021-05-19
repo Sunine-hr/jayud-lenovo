@@ -454,6 +454,7 @@ public class ExternalApiController {
             InitComboxStrVO initComboxVO = new InitComboxStrVO();
             initComboxVO.setCode(currencyInfo.getCurrencyCode());
             initComboxVO.setName(currencyInfo.getCurrencyName());
+            initComboxVO.setId(currencyInfo.getId());
             initComboxStrVOS.add(initComboxVO);
         }
         return ApiResult.ok(initComboxStrVOS);
@@ -631,7 +632,7 @@ public class ExternalApiController {
      * 根据客户名称获取订单信息
      */
     @RequestMapping(value = "/api/mainOrder/getCustomerIdByCustomerName")
-    ApiResult getCustomerIdByCustomerName(@RequestParam("customerName") String customerName){
+    ApiResult getCustomerIdByCustomerName(@RequestParam("customerName") String customerName) {
         List<CustomerInfo> customerInfos = this.customerInfoService.getByCustomerName(customerName);
         return ApiResult.ok(customerInfos);
     }
@@ -993,7 +994,7 @@ public class ExternalApiController {
      * 根据字典类型下拉选项字典
      */
     @RequestMapping(value = "/api/initDictNameByDictTypeCode")
-    public ApiResult<List<com.jayud.common.entity.InitComboxVO>> initDictNameByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode){
+    public ApiResult<List<com.jayud.common.entity.InitComboxVO>> initDictNameByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode) {
         List<Dict> list = this.dictService.getByDictTypeCode(dictTypeCode);
         return ApiResult.ok(list);
     }
@@ -1361,20 +1362,20 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/getWarehouseNumber")
     ApiResult getWarehouseNumber(@RequestParam("preOrder") String preOrder) {
         String warehouseNumber = orderTypeNumberService.getWarehouseNumber(preOrder);
-        System.out.println("warehouseNumber============================"+warehouseNumber);
+        System.out.println("warehouseNumber============================" + warehouseNumber);
         return ApiResult.ok(warehouseNumber);
     }
 
     @ApiOperation(value = "查询客户id")
     @RequestMapping(value = "/api/getCustomerByCode")
-    public ApiResult<Long> getCustomerByCode(@RequestParam("code")String code){
+    public ApiResult<Long> getCustomerByCode(@RequestParam("code") String code) {
         CustomerInfo byCode = customerInfoService.getByCode(code);
         return ApiResult.ok(byCode.getId());
     }
 
     @ApiOperation(value = "查询客户名称")
     @RequestMapping(value = "/api/getCustomerNameByCode")
-    public ApiResult<String> getCustomerNameByCode(@RequestParam("code")String code){
+    public ApiResult<String> getCustomerNameByCode(@RequestParam("code") String code) {
         CustomerInfo byCode = customerInfoService.getByCode(code);
         return ApiResult.ok(byCode.getName());
     }
@@ -1495,7 +1496,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "查询在子订单录入费用的订单号")
     @RequestMapping(value = "/api/getPaymentCost")
-    ApiResult<List<String>> getPaymentCost(@RequestParam("subType")String subType){
+    ApiResult<List<String>> getPaymentCost(@RequestParam("subType") String subType) {
         List<OrderPaymentCost> orderPaymentCosts = orderPaymentCostService.getBySubType(subType);
         List<String> list = new ArrayList<>();
         for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {
@@ -1506,7 +1507,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "查询在子订单录入费用的订单号")
     @RequestMapping(value = "/api/getReceivableCost")
-    ApiResult<List<String>> getReceivableCost(@RequestParam("subType")String subType){
+    ApiResult<List<String>> getReceivableCost(@RequestParam("subType") String subType) {
         List<OrderReceivableCost> orderReceivableCosts = orderReceivableCostService.getBySubType(subType);
         List<String> list = new ArrayList<>();
         for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {

@@ -12,6 +12,7 @@ import com.jayud.finance.vo.InitComboxStrVO;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -25,6 +26,7 @@ public interface ICurrencyRateService extends IService<CurrencyRate> {
 
     /**
      * 应付对账单分页查询
+     *
      * @param form
      * @return
      */
@@ -33,6 +35,7 @@ public interface ICurrencyRateService extends IService<CurrencyRate> {
 
     /**
      * 新增汇率
+     *
      * @param form
      * @return
      */
@@ -40,6 +43,7 @@ public interface ICurrencyRateService extends IService<CurrencyRate> {
 
     /**
      * 编辑汇率
+     *
      * @param form
      * @return
      */
@@ -47,14 +51,16 @@ public interface ICurrencyRateService extends IService<CurrencyRate> {
 
     /**
      * 根据原始币种和兑换币种获取汇率
+     *
      * @param oCode
      * @param dCode
      * @return
      */
-    BigDecimal getExchangeRate(String oCode,String dCode);
+    BigDecimal getExchangeRate(String oCode, String dCode);
 
     /**
      * 根据币种CODE查名称描述
+     *
      * @param code
      * @return
      */
@@ -62,8 +68,16 @@ public interface ICurrencyRateService extends IService<CurrencyRate> {
 
     /**
      * 核销时初始化下拉币种
+     *
      * @param currencyName
      * @return
      */
     List<InitComboxStrVO> initHeXiaoCurrency(String currencyName);
+
+    /**
+     * 根据原始币种和兑换币种获取汇率
+     *
+     * @return
+     */
+    Map<String, BigDecimal> getExchangeRates(String dcid, String month);
 }

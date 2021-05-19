@@ -152,6 +152,9 @@ public class StorageOutOrderFormVO {
     @ApiModelProperty(value = "sku")
     private String sku;
 
+    @ApiModelProperty(value = "子订单结算单位")
+    private String subUnitCode;
+
     @ApiModelProperty(value = "规格型号")
     private String specificationModel;
 
@@ -166,9 +169,9 @@ public class StorageOutOrderFormVO {
 
         for (WarehouseGoodsVO goods : goodsList) {
 
-            sb1.append(goods.getName()).append("/");
-            sb2.append(goods.getSku()).append("/");
-            sb3.append(goods.getSpecificationModel()).append("/");
+            sb1.append(goods.getName()).append(" ");
+            sb2.append(goods.getSku()).append(" ");
+            sb3.append(goods.getSpecificationModel()).append(" ");
 
             sb.append(goods.getName())
                     .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")

@@ -73,7 +73,7 @@ public class OrderTypeNumberServiceImpl extends ServiceImpl<OrderTypeNumberMappe
                 typeNumber.setClassCode(preOrder);
                 typeNumber.setDate(orderTypeNumber.getDate());
                 typeNumber.setNumber(orderTypeNumber.getNumber() + 1);
-                String orderNo = preOrder + dateData2 + String.format("%04d", typeNumber.getNumber()+1 );
+                String orderNo = preOrder + dateData2 + String.format("%04d", typeNumber.getNumber());
                 this.saveOrUpdate(typeNumber);
                 return orderNo;
             } else {//

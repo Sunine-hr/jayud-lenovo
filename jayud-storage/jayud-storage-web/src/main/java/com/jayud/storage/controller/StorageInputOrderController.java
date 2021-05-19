@@ -198,6 +198,7 @@ public class StorageInputOrderController {
 
             record.setCreatedTimeStr(record.getCreateTime().toString());
             record.setSubLegalName(record.getLegalName());
+            record.setSubUnitCode(record.getUnitCode());
 
             List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(record.getId(), record.getOrderNo());
             record.assemblyGoodsInfo(list1);
@@ -461,14 +462,9 @@ public class StorageInputOrderController {
     @PostMapping(value = "/getWarehousingBatchNumber")
     public CommonResult getWarehousingBatchNumber(@RequestBody Map<String,Object> map){
         String orderNo = MapUtil.getStr(map, "orderNo");
-        //从redis中获取数据，没有在生成
-        String s = redisUtils.get(orderNo);
-        if(s!=null){
-            return CommonResult.success(s);
-        }
+
         //获取入库批次号
         String batchNumber = (String)omsClient.getWarehouseNumber("A").getData();
-        redisUtils.set(orderNo,batchNumber);
         return CommonResult.success(batchNumber);
     }
 

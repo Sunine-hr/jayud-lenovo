@@ -18,10 +18,7 @@ import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.*;
 import com.jayud.storage.model.po.*;
 import com.jayud.storage.model.vo.*;
-import com.jayud.storage.service.IGoodsLocationRecordService;
-import com.jayud.storage.service.IInGoodsOperationRecordService;
-import com.jayud.storage.service.IStorageOutOrderService;
-import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
+import com.jayud.storage.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -74,11 +71,14 @@ public class StorageOutOrderController {
     @Autowired
     private IWarehouseAreaShelvesLocationService warehouseAreaShelvesLocationService;
 
+    @Autowired
+    private IWarehouseGoodsService warehouseGoodsService;
+
     @ApiOperation("分页查询出库订单列表")
     @PostMapping("/findByPage")
     public CommonResult findByPage(@RequestBody QueryStorageOrderForm form) {
 
-        //费用审核，获取所有在子订单录入费用的仓储入库订单数据
+        //费用审核，获取所有在子订单录入费用的仓储出库订单数据
         if(form.getCmd() != null && form.getCmd().equals("costAudit")){
             List<String> cci = omsClient.getReceivableCost("cce").getData();
             List<String> cci1 = omsClient.getPaymentCost("cce").getData();
@@ -169,6 +169,9 @@ public class StorageOutOrderController {
             //组装法人名称
             record.assemblyLegalEntity(legalEntityResult);
 
+            //拼装商品信息
+            record.assemblyGoodsInfo(warehouseGoodsService.getList1(record.getId(),record.getOrderNo()));
+
             //拼装结算单位
             record.assemblyUnitCodeInfo(unitCodeInfo);
 
@@ -177,6 +180,7 @@ public class StorageOutOrderController {
             record.setCreatedTimeStr(record.getCreateTime().toString());
             record.setSubLegalName(record.getLegalName());
             record.setOrderId(record.getId());
+            record.setSubUnitCode(record.getUnitCode());
 
         }
 

@@ -252,9 +252,9 @@ public class OrderInfoController {
 //                    if(!stock.isOk()){
 //                        return CommonResult.error(stock.getCode(),stock.getMsg());
 //                    }
-                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
-                        return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
-                    }
+//                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
+//                        return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
+//                    }
                 }
                 if (inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())) {
                     InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();

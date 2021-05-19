@@ -434,6 +434,9 @@ public class StringUtils {
      * @return
      */
     public static String subStringVals(String sourceNo, String split) {
+        if (!sourceNo.contains(split)){
+            return sourceNo;
+        }
         //寻找第一个破折号出现的位置
         final Matcher matcher = Pattern.compile(split).matcher(sourceNo);
         if (!matcher.find()) {

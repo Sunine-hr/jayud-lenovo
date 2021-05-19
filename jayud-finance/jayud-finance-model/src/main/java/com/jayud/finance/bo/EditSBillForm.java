@@ -52,6 +52,9 @@ public class EditSBillForm {
     @ApiModelProperty(value = "自定义汇率")
     private List<InitComboxStrVO> customExchangeRate;
 
+    @ApiModelProperty(value = "是否出原始币种")
+    private Boolean isOriginalCurrency = false;
+
     /**
      * 校验出账单参数
      */

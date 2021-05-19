@@ -49,6 +49,9 @@ public class CreateReceiveBillForm {
     @ApiModelProperty(value = "是否自定义汇率", required = true)
     private Boolean isCustomExchangeRate = false;
 
+    @ApiModelProperty(value = "是否出原始币种")
+    private Boolean isOriginalCurrency = false;
+
     @ApiModelProperty(value = "自定义汇率")
     private List<InitComboxStrVO> customExchangeRate;
 

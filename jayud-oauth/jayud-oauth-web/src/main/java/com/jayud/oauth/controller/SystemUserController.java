@@ -676,7 +676,7 @@ public class SystemUserController {
         if (SubOrderSignEnum.HY.getSignOne().equals(type)) {
             result.put(SubOrderSignEnum.HY.getSignOne(), this.oceanShipClient.getMenuPendingNum(systemMenus).getData());
         }
-        if (SubOrderSignEnum.NL.getSignOne().equals(type)) { //TODO 待开发
+        if (SubOrderSignEnum.NL.getSignOne().equals(type)) {
             result.put(SubOrderSignEnum.NL.getSignOne(), this.inlandTpClient.getMenuPendingNum(systemMenus).getData());
         }
         if ("customer".equals(type)) { //客户管理

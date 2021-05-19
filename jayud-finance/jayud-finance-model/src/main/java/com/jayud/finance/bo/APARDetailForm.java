@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 
 /**
  * 应收，应付公用此明细表单
+ *
  * @author william
  * @description
  * @Date: 2020-04-28 17:00
@@ -78,5 +79,11 @@ public class APARDetailForm {
                 ", taxPrice=" + taxPrice +
                 ", taxRate=" + taxRate +
                 '}';
+    }
+
+    public void setTaxPrice(BigDecimal taxPrice) {
+        //推送给金蝶 单价*数量,然后数量改为1
+        this.taxPrice = taxPrice.multiply(priceQty);
+        priceQty = new BigDecimal(1);
     }
 }

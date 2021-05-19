@@ -297,25 +297,5 @@ public class Test {
 
     }
 
-    @org.junit.Test
-    public void test15(){
-        String str = " \nBYT01231YYWB-AP";
-        System.out.println(str);
-        String s = str.replaceAll("\\s", "");//  "\\s"包含了回车换行制表符
-        System.out.println(s);
-    }
-
-    @org.junit.Test
-    public void test16(){
-        Date now = new Date(); // 创建一个Date对象，获取当前时间
-        SimpleDateFormat f = new SimpleDateFormat("今天是 " + "yyyy 年 MM 月 dd 日 E HH 点 mm 分 ss 秒");
-        System.out.println(f.format(now)); // 将当前时间袼式化为指定的格式
-
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        System.out.println(sdf.format(now));
-
-    }
-
 
 }

@@ -49,4 +49,12 @@
         </if>
         order by was.create_time desc
     </select>
+
+    <select id="getWarehouseAreaShelvesByShelvesId" resultType="com.jayud.storage.model.vo.WarehouseAreaShelvesFormVO">
+        select was.id, was.area_name areaName, was.area_code areaCode,was.shelves_name shelvesName , w.name,w.code
+        from warehouse_area_shelves was
+        left join warehouse_area wa on wa.`id` = was.`area_id`
+        left join warehouse w on w.`id` = wa.`warehouse_id`
+        where was.status = 1 and was.id = #{shelvesId}
+    </select>
 </mapper>

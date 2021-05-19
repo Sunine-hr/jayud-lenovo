@@ -350,7 +350,7 @@
         LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
         LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
         <choose>
-            <when test="cmd == cci or cmd == cce ">
+            <when test="form.cmd == cci or form.cmd == cce ">
                 <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
                     left join order_payment_cost sub on sub.sub_order_no = opc.order_no
                     <!--            <if test="form.cmd == 'zgys'">-->

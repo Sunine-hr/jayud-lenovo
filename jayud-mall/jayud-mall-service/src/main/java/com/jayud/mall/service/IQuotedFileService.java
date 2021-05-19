@@ -30,4 +30,17 @@ public interface IQuotedFileService extends IService<QuotedFile> {
      * @return
      */
     List<QuotedFileReturnVO> findQuotedFileBy(QuotedFileForm form);
+
+    /**
+     * 保存
+     * @param form
+     */
+    void saveQuotedFile(QuotedFileForm form);
+
+    /**
+     * 根据id，查询
+     * @param id
+     * @return
+     */
+    QuotedFile findQuotedFileById(Long id);
 }

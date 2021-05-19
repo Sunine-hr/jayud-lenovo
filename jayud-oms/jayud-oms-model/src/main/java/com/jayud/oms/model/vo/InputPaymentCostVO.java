@@ -12,6 +12,9 @@ public class InputPaymentCostVO {
     @ApiModelProperty(value = "应付主键ID,修改时传")
     private Long id;
 
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrderNo;
+
     @ApiModelProperty(value = "应付客户CODE")
     private String customerCode;
 

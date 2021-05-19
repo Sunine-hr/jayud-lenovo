@@ -44,6 +44,7 @@
             resultType="com.jayud.oms.model.vo.InputPaymentCostVO">
         SELECT distinct
         opc.`id`,
+        opc.main_order_no,
         opc.`customer_code` customerCode ,
         (select si.supplier_ch_name from supplier_info si where si.supplier_code = opc.customer_code limit
         1)customerName,

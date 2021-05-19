@@ -42,6 +42,7 @@
             resultType="com.jayud.oms.model.vo.InputReceivableCostVO">
         SELECT distinct
         orc.`id`,
+        orc.main_order_no,
         orc.`customer_code` customerCode,
         ci.`name` customerName ,
         orc.`cost_type_id` costTypeId,

@@ -169,6 +169,7 @@ public class ApiController {
         if (StringUtils.isNotBlank(applyNo) && (18 == applyNo.length())) {
             GetFinanceInfoForm getFinanceInfoForm = new GetFinanceInfoForm();
             getFinanceInfoForm.setApplyNo(applyNo);
+            getFinanceInfoForm.setUid(uid);
             log.info(String.format("开始查找云报关数据..."));
             service.getFinanceInfoAndPush2Kingdee(getFinanceInfoForm);
             //return CommonResult.success(String.format("已经收到回执信息：18位报关单号为：%s", applyNo));

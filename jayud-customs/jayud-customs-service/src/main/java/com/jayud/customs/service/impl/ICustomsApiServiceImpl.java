@@ -7,6 +7,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.gson.Gson;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
@@ -18,8 +19,10 @@ import com.jayud.customs.feign.FinanceClient;
 import com.jayud.customs.feign.MsgClient;
 import com.jayud.customs.model.bo.*;
 import com.jayud.customs.model.po.CustomsPayable;
+import com.jayud.customs.model.po.YunbaoguanReceivableCost;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.ICustomsApiService;
+import com.jayud.customs.service.IYunbaoguanReceivableCostService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -32,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -68,6 +72,9 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
 
     @Autowired
     MsgClient msgClient;
+
+    @Autowired
+    IYunbaoguanReceivableCostService yunbaoguanReceivableCostService;
 
 
     @Override
@@ -295,6 +302,24 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
             if (hasReceivable) {
                 //应收单会出现一个报关单号对应多个行的情况，一般是因为柜号不一致，要区分计费
                 sentReceivableStatus = generateKafkaMsg("financeTest", "customs-receivable", receivable);
+
+                // 保存云报关应收费用
+                YunbaoguanReceivableCost receivableCost = yunbaoguanReceivableCostService.getOne(
+                        Wrappers.<YunbaoguanReceivableCost>lambdaQuery()
+                                .eq(YunbaoguanReceivableCost::getApplyNo, form.getApplyNo()));
+                YunbaoguanReceivableCost yunbaoguanReceivableCost = new YunbaoguanReceivableCost();
+                if (Objects.isNull(receivableCost)) {
+                    yunbaoguanReceivableCost.setApplyNo(form.getApplyNo());
+                    yunbaoguanReceivableCost.setUid(form.getUid());
+                    yunbaoguanReceivableCost.setReceivableCostData(receivable);
+                    yunbaoguanReceivableCost.setCreatedTime(LocalDateTime.now());
+                    yunbaoguanReceivableCost.setUpdatedTime(LocalDateTime.now());
+                } else {
+                    receivableCost.setReceivableCostData(receivable);
+                    receivableCost.setUpdatedTime(LocalDateTime.now());
+                    yunbaoguanReceivableCost = receivableCost;
+                }
+                yunbaoguanReceivableCostService.saveOrUpdate(yunbaoguanReceivableCost);
             } else {
                 //如果本次推送没有应收数据，需要查看是否存在本单号的应收，如有，要删去
                 Map<String, String> map = new HashMap<>();

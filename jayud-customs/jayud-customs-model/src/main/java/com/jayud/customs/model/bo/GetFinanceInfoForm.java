@@ -27,4 +27,7 @@ public class GetFinanceInfoForm {
     @ApiModelProperty(value = "统一编号")
     @SerializedName("unify_no")
     private String unifyNo;
+
+    @ApiModelProperty(value = "uid")
+    private String uid;
 }

@@ -231,8 +231,8 @@
         left join sea_order so on so.order_no = opc.order_no
         left join order_inland_transport oit on oit.order_no = opc.order_no
         left join trailer_order tor on tor.order_no = opc.order_no
-        left join storage_input_order sio on sio.order_no = opc.order_no
-        left join storage_out_order soo on soo.order_no = opc.order_no
+--         left join storage_input_order sio on sio.order_no = opc.order_no
+--         left join storage_out_order soo on soo.order_no = opc.order_no
         WHERE
         opc.id NOT IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd )
         and (opc.is_bill != '2' and opc.is_bill != 'save_confirm')
@@ -268,11 +268,11 @@
             and opc.is_sum_to_main = 0 and opc.sub_type = 'tc'
         </if>
         <if test="form.cmd == 'cci'">
-            and sio.legal_name = #{form.legalName}
+            and opc.sub_legal_name = #{form.legalName}
             and opc.is_sum_to_main = 0 and opc.sub_type = 'cci'
         </if>
         <if test="form.cmd == 'cce'">
-            and soo.legal_name = #{form.legalName}
+            and opc.sub_legal_name = #{form.legalName}
             and opc.is_sum_to_main = 0 and opc.sub_type = 'cce'
         </if>
         ) temp where 1 = 1
@@ -349,13 +349,33 @@
         LEFT JOIN cost_genre cg ON opc.cost_genre_id = cg.id
         LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
         LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
-        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
-            left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
-            <!--            <if test="form.cmd == 'zgys'">-->
-            <!--                &#45;&#45; TODO 扩展连接-->
+        <choose>
+            <when test="cmd == cci or cmd == cce ">
+                <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                    left join order_payment_cost sub on sub.sub_order_no = opc.order_no
+                    <!--            <if test="form.cmd == 'zgys'">-->
+                    <!--                &#45;&#45; TODO 扩展连接-->
 
-            <!--            </if>-->
-        </if>
+                    <!--            </if>-->
+                </if>
+            </when>
+            <otherwise>
+                <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                    left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
+                    <!--            <if test="form.cmd == 'zgys'">-->
+                    <!--                &#45;&#45; TODO 扩展连接-->
+
+                    <!--            </if>-->
+                </if>
+            </otherwise>
+        </choose>
+<!--        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">-->
+<!--            left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no-->
+<!--            &lt;!&ndash;            <if test="form.cmd == 'zgys'">&ndash;&gt;-->
+<!--            &lt;!&ndash;                &#45;&#45; TODO 扩展连接&ndash;&gt;-->
+
+<!--            &lt;!&ndash;            </if>&ndash;&gt;-->
+<!--        </if>-->
         WHERE
         opc.id NOT IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd )
         and (opc.is_bill != '2' and opc.is_bill != 'save_confirm')
@@ -551,45 +571,133 @@
         </if>
     </select>
     <select id="getViewBillByCostIds" parameterType="java.util.Map" resultType="com.jayud.finance.vo.ViewBillVO">
-        SELECT DISTINCT
-        <if test="cmd == 'main'">
-            oi.legal_name legalName,
-        </if>
-        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
-            sub.legal_name legalName,
-        </if>
-        <!--        <if test="cmd == 'bg'">-->
-        <!--            oc.legal_name legalName,-->
-        <!--        </if>-->
-        <!--        <if test="cmd == 'zgys'">-->
-        <!--            ot.legal_name legalName,-->
-        <!--        </if>-->
-        <!--        <if test="cmd == 'ky'">-->
-        <!--            ao.legal_name legalName,-->
-        <!--        </if>-->
-        si.supplier_ch_name customerName
-        FROM
-        <if test="cmd == 'main'">
-            order_info oi LEFT JOIN order_payment_cost opc ON oi.order_no = opc.main_order_no
-        </if>
-        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
-            ${dynamicSqlParam.table} sub LEFT JOIN order_payment_cost opc on sub.order_no = opc.order_no
-        </if>
-        <!--        <if test="cmd == 'bg'">-->
-        <!--            order_customs oc LEFT JOIN order_payment_cost opc on oc.order_no = opc.order_no-->
-        <!--        </if>-->
-        <!--        <if test="cmd == 'zgys'">-->
-        <!--            order_transport ot LEFT JOIN order_payment_cost opc on ot.order_no = opc.order_no-->
-        <!--        </if>-->
-        <!--        <if test="cmd == 'ky'">-->
-        <!--            air_order ao LEFT JOIN order_payment_cost opc on ao.order_no = opc.order_no-->
-        <!--        </if>-->
-        left join supplier_info si on si.supplier_code = opc.customer_code
-        WHERE
-        opc.id IN
-        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+
+
+        <choose>
+            <when test="cmd == cci or cmd == cce ">
+                SELECT DISTINCT
+                <if test="cmd == 'main'">
+                    oi.legal_name legalName,
+                </if>
+                <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                    sub.legal_name legalName,
+                </if>
+                <!--        <if test="cmd == 'bg'">-->
+                <!--            oc.legal_name legalName,-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'zgys'">-->
+                <!--            ot.legal_name legalName,-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'ky'">-->
+                <!--            ao.legal_name legalName,-->
+                <!--        </if>-->
+                si.supplier_ch_name customerName
+                FROM
+                <if test="cmd == 'main'">
+                    order_info oi LEFT JOIN order_payment_cost opc ON oi.order_no = opc.main_order_no
+                </if>
+                <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                    order_payment_cost sub LEFT JOIN order_payment_cost opc on sub.sub_order_no = opc.order_no
+                </if>
+                <!--        <if test="cmd == 'bg'">-->
+                <!--            order_customs oc LEFT JOIN order_payment_cost opc on oc.order_no = opc.order_no-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'zgys'">-->
+                <!--            order_transport ot LEFT JOIN order_payment_cost opc on ot.order_no = opc.order_no-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'ky'">-->
+                <!--            air_order ao LEFT JOIN order_payment_cost opc on ao.order_no = opc.order_no-->
+                <!--        </if>-->
+                left join supplier_info si on si.supplier_code = opc.customer_code
+                WHERE
+                opc.id IN
+                <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                SELECT DISTINCT
+                <if test="cmd == 'main'">
+                    oi.legal_name legalName,
+                </if>
+                <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                    sub.legal_name legalName,
+                </if>
+                <!--        <if test="cmd == 'bg'">-->
+                <!--            oc.legal_name legalName,-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'zgys'">-->
+                <!--            ot.legal_name legalName,-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'ky'">-->
+                <!--            ao.legal_name legalName,-->
+                <!--        </if>-->
+                si.supplier_ch_name customerName
+                FROM
+                <if test="cmd == 'main'">
+                    order_info oi LEFT JOIN order_payment_cost opc ON oi.order_no = opc.main_order_no
+                </if>
+                <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                    ${dynamicSqlParam.table} sub LEFT JOIN order_payment_cost opc on sub.order_no = opc.order_no
+                </if>
+                <!--        <if test="cmd == 'bg'">-->
+                <!--            order_customs oc LEFT JOIN order_payment_cost opc on oc.order_no = opc.order_no-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'zgys'">-->
+                <!--            order_transport ot LEFT JOIN order_payment_cost opc on ot.order_no = opc.order_no-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'ky'">-->
+                <!--            air_order ao LEFT JOIN order_payment_cost opc on ao.order_no = opc.order_no-->
+                <!--        </if>-->
+                left join supplier_info si on si.supplier_code = opc.customer_code
+                WHERE
+                opc.id IN
+                <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
+
+
+<!--        SELECT DISTINCT-->
+<!--        <if test="cmd == 'main'">-->
+<!--            oi.legal_name legalName,-->
+<!--        </if>-->
+<!--        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">-->
+<!--            sub.legal_name legalName,-->
+<!--        </if>-->
+<!--        &lt;!&ndash;        <if test="cmd == 'bg'">&ndash;&gt;-->
+<!--        &lt;!&ndash;            oc.legal_name legalName,&ndash;&gt;-->
+<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <if test="cmd == 'zgys'">&ndash;&gt;-->
+<!--        &lt;!&ndash;            ot.legal_name legalName,&ndash;&gt;-->
+<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <if test="cmd == 'ky'">&ndash;&gt;-->
+<!--        &lt;!&ndash;            ao.legal_name legalName,&ndash;&gt;-->
+<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+<!--        si.supplier_ch_name customerName-->
+<!--        FROM-->
+<!--        <if test="cmd == 'main'">-->
+<!--            order_info oi LEFT JOIN order_payment_cost opc ON oi.order_no = opc.main_order_no-->
+<!--        </if>-->
+<!--        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">-->
+<!--            ${dynamicSqlParam.table} sub LEFT JOIN order_payment_cost opc on sub.order_no = opc.order_no-->
+<!--        </if>-->
+<!--        &lt;!&ndash;        <if test="cmd == 'bg'">&ndash;&gt;-->
+<!--        &lt;!&ndash;            order_customs oc LEFT JOIN order_payment_cost opc on oc.order_no = opc.order_no&ndash;&gt;-->
+<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <if test="cmd == 'zgys'">&ndash;&gt;-->
+<!--        &lt;!&ndash;            order_transport ot LEFT JOIN order_payment_cost opc on ot.order_no = opc.order_no&ndash;&gt;-->
+<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <if test="cmd == 'ky'">&ndash;&gt;-->
+<!--        &lt;!&ndash;            air_order ao LEFT JOIN order_payment_cost opc on ao.order_no = opc.order_no&ndash;&gt;-->
+<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+<!--        left join supplier_info si on si.supplier_code = opc.customer_code-->
+<!--        WHERE-->
+<!--        opc.id IN-->
+<!--        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">-->
+<!--            #{item}-->
+<!--        </foreach>-->
     </select>
     <select id="findSaveConfirmData" parameterType="java.util.List" resultType="java.lang.Long">
         SELECT
@@ -693,46 +801,134 @@
         <!--            (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where (t1.is_bill != '2' and t1.is_bill!='save_confirm' )  AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidAmount,-->
         <!--            (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where (t1.is_bill != '2' and t1.is_bill!='save_confirm' )  AND t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type='ky' and t1.customer_code = opc.customer_code and t1.order_no in (select o1.order_no from air_order o1 where o1.legal_entity_id = ao.legal_entity_id)) notPaidOrderNum,-->
         <!--        </if>-->
-        <if test="form.cmd != null and form.cmd != ''">
-            le.legal_name legalName,
-            sub.legal_entity_id legalEntityId,
-            (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND
-            t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =
-            opc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where
-            o1.legal_entity_id = sub.legal_entity_id)) notPaidAmount,
-            (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND
-            t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =
-            opc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where
-            o1.legal_entity_id = sub.legal_entity_id)) notPaidOrderNum,
-        </if>
-        si.supplier_ch_name supplierChName,
-        opc.customer_code supplierCode,
-        ifnull( opb.already_paid_amount, 0 ) alreadyPaidAmount,
-        ifnull( opb.bill_order_num, 0 ) billOrderNum,
-        ifnull( opb.bill_num, 0 ) billNum
-        FROM
-        order_payment_cost opc
-        left join supplier_info si on si.supplier_code = opc.customer_code
-        <if test="form.cmd != null and form.cmd != ''">
-            left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
-            left join legal_entity le on sub.legal_entity_id = le.id
-            left join order_payment_bill opb on opb.legal_entity_id =sub.legal_entity_id
-            and opb.supplier_code = opc.customer_code
-            and opb.sub_type = #{form.cmd}
-            where opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd} and opc.status = '3'
-            <if test="form.supplierChName != null and form.supplierChName != ''">
-                and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')
-            </if>
-            <if test="form.legalName != null and form.legalName != ''">
-                and le.legal_name like concat('%',#{form.legalName},'%')
-            </if>
-            <if test="legalIds != null and legalIds.size>0">
-                and sub.`legal_entity_id` in
-                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                    #{legalId}
-                </foreach>
-            </if>
-        </if>
+
+        <choose>
+            <when test="form.cmd == 'cci' or form.cmd == 'cce'">
+                <if test="form.cmd != null and form.cmd != ''">
+                    le.legal_name legalName,
+                    sub.legal_entity_id legalEntityId,
+                    (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND
+                    t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =
+                    opc.customer_code and t1.order_no in (select o1.sub_order_no from order_payment_cost o1 where
+                    o1.legal_id = sub.legal_id)) notPaidAmount,
+                    (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND
+                    t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =
+                    opc.customer_code and t1.order_no in (select o1.sub_order_no from order_payment_cost o1 where
+                    o1.legal_id = sub.legal_id)) notPaidOrderNum,
+                </if>
+                si.supplier_ch_name supplierChName,
+                opc.customer_code supplierCode,
+                ifnull( opb.already_paid_amount, 0 ) alreadyPaidAmount,
+                ifnull( opb.bill_order_num, 0 ) billOrderNum,
+                ifnull( opb.bill_num, 0 ) billNum
+                FROM
+                order_payment_cost opc
+                left join supplier_info si on si.supplier_code = opc.customer_code
+                <if test="form.cmd != null and form.cmd != ''">
+                    left join order_payment_cost sub on sub.order_no = opc.order_no
+                    left join legal_entity le on sub.legal_id = le.id
+                    left join order_payment_bill opb on opb.legal_id =sub.legal_id
+                    and opb.supplier_code = opc.customer_code
+                    and opb.sub_type = #{form.cmd}
+                    where opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd} and opc.status = '3'
+                    <if test="form.supplierChName != null and form.supplierChName != ''">
+                        and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')
+                    </if>
+                    <if test="form.legalName != null and form.legalName != ''">
+                        and le.legal_name like concat('%',#{form.legalName},'%')
+                    </if>
+                    <if test="legalIds != null and legalIds.size>0">
+                        and sub.`legal_id` in
+                        <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                            #{legalId}
+                        </foreach>
+                    </if>
+                </if>
+            </when>
+            <otherwise>
+                <if test="form.cmd != null and form.cmd != ''">
+                    le.legal_name legalName,
+                    sub.legal_entity_id legalEntityId,
+                    (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND
+                    t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =
+                    opc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where
+                    o1.legal_entity_id = sub.legal_entity_id)) notPaidAmount,
+                    (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND
+                    t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =
+                    opc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where
+                    o1.legal_entity_id = sub.legal_entity_id)) notPaidOrderNum,
+                </if>
+                si.supplier_ch_name supplierChName,
+                opc.customer_code supplierCode,
+                ifnull( opb.already_paid_amount, 0 ) alreadyPaidAmount,
+                ifnull( opb.bill_order_num, 0 ) billOrderNum,
+                ifnull( opb.bill_num, 0 ) billNum
+                FROM
+                order_payment_cost opc
+                left join supplier_info si on si.supplier_code = opc.customer_code
+                <if test="form.cmd != null and form.cmd != ''">
+                    left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
+                    left join legal_entity le on sub.legal_entity_id = le.id
+                    left join order_payment_bill opb on opb.legal_entity_id =sub.legal_entity_id
+                    and opb.supplier_code = opc.customer_code
+                    and opb.sub_type = #{form.cmd}
+                    where opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd} and opc.status = '3'
+                    <if test="form.supplierChName != null and form.supplierChName != ''">
+                        and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')
+                    </if>
+                    <if test="form.legalName != null and form.legalName != ''">
+                        and le.legal_name like concat('%',#{form.legalName},'%')
+                    </if>
+                    <if test="legalIds != null and legalIds.size>0">
+                        and sub.`legal_entity_id` in
+                        <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                            #{legalId}
+                        </foreach>
+                    </if>
+                </if>
+            </otherwise>
+        </choose>
+
+<!--        <if test="form.cmd != null and form.cmd != ''">-->
+<!--            le.legal_name legalName,-->
+<!--            sub.legal_entity_id legalEntityId,-->
+<!--            (select ifnull(sum(t1.change_amount),0) from order_payment_cost t1 where t1.is_bill != '2' AND-->
+<!--            t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =-->
+<!--            opc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where-->
+<!--            o1.legal_entity_id = sub.legal_entity_id)) notPaidAmount,-->
+<!--            (select count(DISTINCT t1.main_order_no) from order_payment_cost t1 where t1.is_bill != '2' AND-->
+<!--            t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =-->
+<!--            opc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where-->
+<!--            o1.legal_entity_id = sub.legal_entity_id)) notPaidOrderNum,-->
+<!--        </if>-->
+<!--        si.supplier_ch_name supplierChName,-->
+<!--        opc.customer_code supplierCode,-->
+<!--        ifnull( opb.already_paid_amount, 0 ) alreadyPaidAmount,-->
+<!--        ifnull( opb.bill_order_num, 0 ) billOrderNum,-->
+<!--        ifnull( opb.bill_num, 0 ) billNum-->
+<!--        FROM-->
+<!--        order_payment_cost opc-->
+<!--        left join supplier_info si on si.supplier_code = opc.customer_code-->
+<!--        <if test="form.cmd != null and form.cmd != ''">-->
+<!--            left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no-->
+<!--            left join legal_entity le on sub.legal_entity_id = le.id-->
+<!--            left join order_payment_bill opb on opb.legal_entity_id =sub.legal_entity_id-->
+<!--            and opb.supplier_code = opc.customer_code-->
+<!--            and opb.sub_type = #{form.cmd}-->
+<!--            where opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd} and opc.status = '3'-->
+<!--            <if test="form.supplierChName != null and form.supplierChName != ''">-->
+<!--                and si.supplier_ch_name like concat('%',#{form.supplierChName},'%')-->
+<!--            </if>-->
+<!--            <if test="form.legalName != null and form.legalName != ''">-->
+<!--                and le.legal_name like concat('%',#{form.legalName},'%')-->
+<!--            </if>-->
+<!--            <if test="legalIds != null and legalIds.size>0">-->
+<!--                and sub.`legal_entity_id` in-->
+<!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+<!--                    #{legalId}-->
+<!--                </foreach>-->
+<!--            </if>-->
+<!--        </if>-->
 
 
         <!--                <if test="form.cmd == 'zgys'">-->
@@ -810,6 +1006,12 @@
                     and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_entity_id =
                     #{legalEntityId})
                 </when>
+
+                <when test="dynamicSqlParam.table == 'storage_input_order' or dynamicSqlParam.table == 'storage_out_order' ">
+                    and t1.order_no in (select o1.sub_order_no from order_payment_cost o1 where o1.legal_id =
+                    #{legalEntityId})
+                </when>
+
                 <otherwise>
                     and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where o1.legal_entity_id =
                     #{legalEntityId})

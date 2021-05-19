@@ -155,8 +155,8 @@
         left join sea_order so on so.order_no = orc.order_no
         left join order_inland_transport oit on oit.order_no = orc.order_no
         left join trailer_order tor on tor.order_no = orc.order_no
-        left join storage_input_order sio on sio.order_no = orc.order_no
-        left join storage_out_order soo on soo.order_no = orc.order_no
+--         left join storage_input_order sio on sio.order_no = orc.order_no
+--         left join storage_out_order soo on soo.order_no = orc.order_no
         WHERE
         orc.id NOT IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd where orbd.audit_status!='edit_del')
         and (orc.is_bill != '2' and orc.is_bill!='save_confirm')
@@ -191,11 +191,11 @@
             and orc.is_sum_to_main = 0 and orc.sub_type = 'nl'
         </if>
         <if test="form.cmd == 'cci'">
-            and sio.legal_name = #{form.legalName}
+            and orc.sub_legal_name = #{form.legalName}
             and orc.is_sum_to_main = 0 and orc.sub_type = 'cci'
         </if>
         <if test="form.cmd == 'cce'">
-            and soo.legal_name = #{form.legalName}
+            and orc.sub_legal_name = #{form.legalName}
             and orc.is_sum_to_main = 0 and orc.sub_type = 'cce'
         </if>
         ) temp where 1 = 1
@@ -275,13 +275,35 @@
         LEFT JOIN cost_genre cg ON orc.cost_genre_id = cg.id
         LEFT JOIN cost_type ct ON orc.cost_type_id = ct.id
         LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code
-        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
-            left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no
-            <!--            <if test="form.cmd == 'zgys'">-->
-            <!--                &#45;&#45; TODO 扩展连接-->
 
-            <!--            </if>-->
-        </if>
+        <choose>
+            <when test="cmd == cci or cmd == cce ">
+                <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                    left join order_payment_cost sub on sub.sub_order_no = opc.order_no
+                    <!--            <if test="form.cmd == 'zgys'">-->
+                    <!--                &#45;&#45; TODO 扩展连接-->
+
+                    <!--            </if>-->
+                </if>
+            </when>
+            <otherwise>
+                <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                    left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
+                    <!--            <if test="form.cmd == 'zgys'">-->
+                    <!--                &#45;&#45; TODO 扩展连接-->
+
+                    <!--            </if>-->
+                </if>
+            </otherwise>
+        </choose>
+
+<!--        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">-->
+<!--            left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no-->
+<!--            &lt;!&ndash;            <if test="form.cmd == 'zgys'">&ndash;&gt;-->
+<!--            &lt;!&ndash;                &#45;&#45; TODO 扩展连接&ndash;&gt;-->
+
+<!--            &lt;!&ndash;            </if>&ndash;&gt;-->
+<!--        </if>-->
 
 
         -- LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
@@ -552,46 +574,134 @@
         </if>
     </select>
     <select id="getViewBillByCostIds" parameterType="java.util.Map" resultType="com.jayud.finance.vo.ViewBillVO">
-        SELECT DISTINCT
-        <if test="cmd == 'main'">
-            oi.legal_name legalName,
-        </if>
-        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
-            sub.legal_name legalName,
-        </if>
-        <!--        <if test="cmd == 'bg'">-->
-        <!--            oc.legal_name legalName,-->
-        <!--        </if>-->
-        <!--        <if test="cmd == 'zgys'">-->
-        <!--            ot.legal_name legalName,-->
-        <!--        </if>-->
-        <!--        <if test="cmd == 'ky'">-->
-        <!--            ao.legal_name legalName,-->
-        <!--        </if>-->
-        ci.`name` customerName
-        FROM
-        <if test="cmd == 'main'">
-            order_info oi LEFT JOIN order_receivable_cost orc ON oi.order_no = orc.main_order_no
-        </if>
-        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
-            ${dynamicSqlParam.table} sub LEFT JOIN order_receivable_cost orc on sub.order_no = orc.order_no
-        </if>
 
-        <!--        <if test="cmd == 'bg'">-->
-        <!--            order_customs oc LEFT JOIN order_receivable_cost orc on oc.order_no = orc.order_no-->
-        <!--        </if>-->
-        <!--        <if test="cmd == 'zgys'">-->
-        <!--            order_transport ot LEFT JOIN order_receivable_cost orc on ot.order_no = orc.order_no-->
-        <!--        </if>-->
-        <!--        <if test="cmd == 'ky'">-->
-        <!--            air_order ao LEFT JOIN order_receivable_cost orc on ao.order_no = orc.order_no-->
-        <!--        </if>-->
-        left join customer_info ci on ci.id_code = orc.customer_code
-        WHERE
-        orc.id IN
-        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        <choose>
+            <when test="cmd == cci or cmd == cce ">
+                SELECT DISTINCT
+                <if test="cmd == 'main'">
+                    oi.legal_name legalName,
+                </if>
+                <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                    sub.legal_name legalName,
+                </if>
+                <!--        <if test="cmd == 'bg'">-->
+                <!--            oc.legal_name legalName,-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'zgys'">-->
+                <!--            ot.legal_name legalName,-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'ky'">-->
+                <!--            ao.legal_name legalName,-->
+                <!--        </if>-->
+                ci.`name` customerName
+                FROM
+                <if test="cmd == 'main'">
+                    order_info oi LEFT JOIN order_receivable_cost orc ON oi.order_no = orc.main_order_no
+                </if>
+                <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                    order_receivable_cost sub LEFT JOIN order_receivable_cost orc on sub.sub_order_no = orc.order_no
+                </if>
+
+                <!--        <if test="cmd == 'bg'">-->
+                <!--            order_customs oc LEFT JOIN order_receivable_cost orc on oc.order_no = orc.order_no-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'zgys'">-->
+                <!--            order_transport ot LEFT JOIN order_receivable_cost orc on ot.order_no = orc.order_no-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'ky'">-->
+                <!--            air_order ao LEFT JOIN order_receivable_cost orc on ao.order_no = orc.order_no-->
+                <!--        </if>-->
+                left join customer_info ci on ci.id_code = orc.customer_code
+                WHERE
+                orc.id IN
+                <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                SELECT DISTINCT
+                <if test="cmd == 'main'">
+                    oi.legal_name legalName,
+                </if>
+                <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                    sub.legal_name legalName,
+                </if>
+                <!--        <if test="cmd == 'bg'">-->
+                <!--            oc.legal_name legalName,-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'zgys'">-->
+                <!--            ot.legal_name legalName,-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'ky'">-->
+                <!--            ao.legal_name legalName,-->
+                <!--        </if>-->
+                ci.`name` customerName
+                FROM
+                <if test="cmd == 'main'">
+                    order_info oi LEFT JOIN order_receivable_cost orc ON oi.order_no = orc.main_order_no
+                </if>
+                <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                    ${dynamicSqlParam.table} sub LEFT JOIN order_receivable_cost orc on sub.order_no = orc.order_no
+                </if>
+
+                <!--        <if test="cmd == 'bg'">-->
+                <!--            order_customs oc LEFT JOIN order_receivable_cost orc on oc.order_no = orc.order_no-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'zgys'">-->
+                <!--            order_transport ot LEFT JOIN order_receivable_cost orc on ot.order_no = orc.order_no-->
+                <!--        </if>-->
+                <!--        <if test="cmd == 'ky'">-->
+                <!--            air_order ao LEFT JOIN order_receivable_cost orc on ao.order_no = orc.order_no-->
+                <!--        </if>-->
+                left join customer_info ci on ci.id_code = orc.customer_code
+                WHERE
+                orc.id IN
+                <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
+
+<!--        SELECT DISTINCT-->
+<!--        <if test="cmd == 'main'">-->
+<!--            oi.legal_name legalName,-->
+<!--        </if>-->
+<!--        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">-->
+<!--            sub.legal_name legalName,-->
+<!--        </if>-->
+<!--        &lt;!&ndash;        <if test="cmd == 'bg'">&ndash;&gt;-->
+<!--        &lt;!&ndash;            oc.legal_name legalName,&ndash;&gt;-->
+<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <if test="cmd == 'zgys'">&ndash;&gt;-->
+<!--        &lt;!&ndash;            ot.legal_name legalName,&ndash;&gt;-->
+<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <if test="cmd == 'ky'">&ndash;&gt;-->
+<!--        &lt;!&ndash;            ao.legal_name legalName,&ndash;&gt;-->
+<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+<!--        ci.`name` customerName-->
+<!--        FROM-->
+<!--        <if test="cmd == 'main'">-->
+<!--            order_info oi LEFT JOIN order_receivable_cost orc ON oi.order_no = orc.main_order_no-->
+<!--        </if>-->
+<!--        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">-->
+<!--            ${dynamicSqlParam.table} sub LEFT JOIN order_receivable_cost orc on sub.order_no = orc.order_no-->
+<!--        </if>-->
+
+<!--        &lt;!&ndash;        <if test="cmd == 'bg'">&ndash;&gt;-->
+<!--        &lt;!&ndash;            order_customs oc LEFT JOIN order_receivable_cost orc on oc.order_no = orc.order_no&ndash;&gt;-->
+<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <if test="cmd == 'zgys'">&ndash;&gt;-->
+<!--        &lt;!&ndash;            order_transport ot LEFT JOIN order_receivable_cost orc on ot.order_no = orc.order_no&ndash;&gt;-->
+<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+<!--        &lt;!&ndash;        <if test="cmd == 'ky'">&ndash;&gt;-->
+<!--        &lt;!&ndash;            air_order ao LEFT JOIN order_receivable_cost orc on ao.order_no = orc.order_no&ndash;&gt;-->
+<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+<!--        left join customer_info ci on ci.id_code = orc.customer_code-->
+<!--        WHERE-->
+<!--        orc.id IN-->
+<!--        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">-->
+<!--            #{item}-->
+<!--        </foreach>-->
     </select>
     <select id="findSaveConfirmData" parameterType="java.util.List" resultType="java.lang.Long">
         SELECT
@@ -965,6 +1075,12 @@
                     and t1.main_order_no in (select o1.order_no from order_info o1 where o1.legal_entity_id =
                     #{legalEntityId})
                 </when>
+
+                <when test="dynamicSqlParam.table == 'storage_input_order' or dynamicSqlParam.table == 'storage_out_order' ">
+                    and t1.order_no in (select o1.sub_order_no from order_receivable_cost o1 where o1.legal_id =
+                    #{legalEntityId})
+                </when>
+
                 <otherwise>
                     and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where o1.legal_entity_id =
                     #{legalEntityId})

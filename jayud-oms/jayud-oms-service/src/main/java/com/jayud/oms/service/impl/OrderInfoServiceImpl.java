@@ -428,7 +428,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderPaymentCost.setSubOrderNo(form.getOrderNo());
                 orderPaymentCost.setSubLegalName(form.getSubLegalName());
 
-                orderPaymentCost.setLegalEntityId((Integer) (oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData()));
+                orderPaymentCost.setLegalId((Integer) (oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData()));
 
                 if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
                     orderPaymentCost.setIsSumToMain(isSumToMain);
@@ -450,7 +450,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 //仓储
                 orderReceivableCost.setSubOrderNo(form.getOrderNo());
                 orderReceivableCost.setSubLegalName(form.getSubLegalName());
-                orderReceivableCost.setLegalEntityId((Integer)oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData());
+                orderReceivableCost.setLegalId((Integer)oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData());
 
                 if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
                     orderReceivableCost.setIsSumToMain(isSumToMain);

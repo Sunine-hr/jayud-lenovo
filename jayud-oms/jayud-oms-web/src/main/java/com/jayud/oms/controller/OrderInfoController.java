@@ -258,10 +258,10 @@ public class OrderInfoController {
                 }
                 if (inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())) {
                     InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
-                    ApiResult commodity = storageClient.isCommodity(storageInputOrderForm.getGoodsFormList());
-                    if(!commodity.isOk()){
-                        return CommonResult.error(commodity.getCode(),commodity.getMsg());
-                    }
+//                    ApiResult commodity = storageClient.isCommodity(storageInputOrderForm.getGoodsFormList());
+//                    if(!commodity.isOk()){
+//                        return CommonResult.error(commodity.getCode(),commodity.getMsg());
+//                    }
                 }
             }
 

@@ -130,7 +130,7 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
     private String subLegalName;
 
     @ApiModelProperty(value = "子订单法人主体id")
-    private Integer legalEntityId;
+    private Integer legalId;
 
     @Override
     protected Serializable pkVal() {

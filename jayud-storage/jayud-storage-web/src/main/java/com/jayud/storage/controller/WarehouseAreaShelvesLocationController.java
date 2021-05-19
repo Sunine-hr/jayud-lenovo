@@ -117,64 +117,11 @@ public class WarehouseAreaShelvesLocationController {
     public CommonResult<List<LocationCodeVO>> viewLocationCode(@RequestBody QueryWarehouseAreaShelvesLocationForm form){
         List<WarehouseAreaShelvesLocationVO> warehouseAreaShelvesLocations = this.warehouseAreaShelvesLocationService.getListByShelvesId(form);
 
-        List<InitComboxSVO> data = omsClient.initDictNameByDictTypeCode("shelfType").getData();
-
         List<LocationCodeVO> locationCodeVOS = new ArrayList<>();
 
         for (WarehouseAreaShelvesLocationVO warehouseAreaShelvesLocation : warehouseAreaShelvesLocations) {
             String shelvesTypeName = null;
-            for (InitComboxSVO datum : data) {
-                if (datum.getId().equals(warehouseAreaShelvesLocation.getShelvesType())){
-                    shelvesTypeName = datum.getValue();
-                }
-            }
-            LocationCodeVO locationCodeVO = ConvertUtil.convert(warehouseAreaShelvesLocation, LocationCodeVO.class);
-            if(shelvesTypeName.equals("A面")){
-                StringBuffer locationCode = new StringBuffer();
-                locationCode.append(warehouseAreaShelvesLocation.getCode()).append("-")
-                        .append(warehouseAreaShelvesLocation.getAreaCode()).append("-")
-                        .append(warehouseAreaShelvesLocation.getShelvesName()).append("-")
-                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
-                        .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
-                        .append("A").append(warehouseAreaShelvesLocation.getShelvesColumn());
-                locationCodeVO.setLocationCode(locationCode.toString());
-                locationCodeVOS.add(locationCodeVO);
-            }
-            if(shelvesTypeName.equals("B面")){
-                StringBuffer locationCode = new StringBuffer();
-                locationCode.append(warehouseAreaShelvesLocation.getCode()).append("-")
-                        .append(warehouseAreaShelvesLocation.getAreaCode()).append("-")
-                        .append(warehouseAreaShelvesLocation.getShelvesName()).append("-")
-                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
-                        .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
-                        .append("B").append(warehouseAreaShelvesLocation.getShelvesColumn());
-                locationCodeVO.setLocationCode(locationCode.toString());
-                locationCodeVOS.add(locationCodeVO);
-            }
-            if(shelvesTypeName.equals("AB面")){
-                StringBuffer locationCode = new StringBuffer();
-                locationCode.append(warehouseAreaShelvesLocation.getCode()).append("-")
-                        .append(warehouseAreaShelvesLocation.getAreaCode()).append("-")
-                        .append(warehouseAreaShelvesLocation.getShelvesName()).append("-")
-                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
-                        .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
-                        .append("A").append(warehouseAreaShelvesLocation.getShelvesColumn());
-                locationCodeVO.setLocationCode(locationCode.toString());
-                LocationCodeVO locationCodeVO1 = locationCodeVO;
 
-                StringBuffer locationCode1 = new StringBuffer();
-                locationCode1.append(warehouseAreaShelvesLocation.getCode()).append("-")
-                        .append(warehouseAreaShelvesLocation.getAreaCode()).append("-")
-                        .append(warehouseAreaShelvesLocation.getShelvesName()).append("-")
-                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
-                        .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
-                        .append("B").append(warehouseAreaShelvesLocation.getShelvesColumn());
-                locationCodeVO1.setLocationCode(locationCode1.toString());
-                locationCodeVOS.add(locationCodeVO);
-                locationCodeVOS.add(locationCodeVO1);
-            }else {
-                log.warn("货架类型不存在，无法生成货架编码");
-            }
         }
         return CommonResult.success(locationCodeVOS);
     }

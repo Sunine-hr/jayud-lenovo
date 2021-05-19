@@ -89,4 +89,9 @@ public class WarehouseAreaShelvesServiceImpl extends ServiceImpl<WarehouseAreaSh
         queryWrapper.eq("shelves_name",name);
         return this.baseMapper.selectOne(queryWrapper);
     }
+
+    @Override
+    public WarehouseAreaShelvesFormVO getWarehouseAreaShelvesByShelvesId(Long shelvesId) {
+        return this.baseMapper.getWarehouseAreaShelvesByShelvesId(shelvesId);
+    }
 }

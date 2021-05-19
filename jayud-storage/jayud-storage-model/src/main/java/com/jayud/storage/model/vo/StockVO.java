@@ -38,19 +38,13 @@ public class StockVO {
     @ApiModelProperty(value = "规格型号")
     private String specificationModel;
 
-    @ApiModelProperty(value = "可用库存")
-    private Integer availableStock;
+    @ApiModelProperty(value = "库存数量（件）")
+    private Integer inventoryQuantityUnit;
 
-    @ApiModelProperty(value = "锁定库存")
-    private Integer lockStock;
+    @ApiModelProperty(value = "锁定库存(pcs)")
+    private Integer inventoryQuantityPcs;
 
-    @ApiModelProperty(value = "创建人(登录用户)")
-    private String createUser;
-
-    @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "备注")
-    private String remarks;
+    @ApiModelProperty(value = "规格型号")
+    private String updateTime;
 
 }

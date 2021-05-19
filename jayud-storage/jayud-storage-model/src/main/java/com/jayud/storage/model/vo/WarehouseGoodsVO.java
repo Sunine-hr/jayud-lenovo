@@ -58,10 +58,10 @@ public class WarehouseGoodsVO {
     private Double volume;
 
     @ApiModelProperty(value = "预计到达时间")
-    private String estimatedArrivalTime;
+    private LocalDateTime estimatedArrivalTime;
 
     @ApiModelProperty(value = "预计出库时间")
-    private String expectedDeliveryTime;
+    private LocalDateTime expectedDeliveryTime;
 
     @ApiModelProperty(value = "备注")
     private String remarks;

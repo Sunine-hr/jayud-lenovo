@@ -387,6 +387,10 @@
                 and oi.legal_name = #{form.legalName}
                 and opc.is_sum_to_main = 1
             </when>
+            <when test="form.cmd == 'cci' or form.cmd == 'cce'">
+                and sub.sub_legal_name = #{form.legalName}
+                and opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd}
+            </when>
             <when test="form !=null and form.cmd !=''">
                 and sub.legal_name = #{form.legalName}
                 and opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd}
@@ -580,7 +584,7 @@
                     oi.legal_name legalName,
                 </if>
                 <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
-                    sub.legal_name legalName,
+                    sub.sub_legal_name legalName,
                 </if>
                 <!--        <if test="cmd == 'bg'">-->
                 <!--            oc.legal_name legalName,-->

@@ -10,37 +10,41 @@ import java.util.Map;
 @Getter
 public class CommonPageDraftResult<T> extends CommonPageResult<T>{
 
-    //分页时，显示分页信息和统计的草稿数量
-    @ApiModelProperty(value = "已取消数量")
-    private Long canceledNum;
-    @ApiModelProperty(value = "草稿数量")
+    //分页时，显示分页信息和统计数量
+    @ApiModelProperty(value = "草稿")
     private Long draftNum;
-    @ApiModelProperty(value = "已下单数量")
-    private Long orderedNum;
-    @ApiModelProperty(value = "已收货数量")
+    @ApiModelProperty(value = "补资料")
+    private Long updateNum;
+    @ApiModelProperty(value = "已下单")
+    private Long placedNum;
+    @ApiModelProperty(value = "已收货")
     private Long receivedNum;
-    @ApiModelProperty(value = "订单确认数量")
-    private Long affirNum;
-    @ApiModelProperty(value = "转运中数量")
+    @ApiModelProperty(value = "转运中")
     private Long transitNum;
-    @ApiModelProperty(value = "已签收数量")
+    @ApiModelProperty(value = "已签收")
     private Long signedNum;
+    @ApiModelProperty(value = "已完成")
+    private Long finishNum;
+    @ApiModelProperty(value = "已取消")
+    private Long cancelNum;
 
     public CommonPageDraftResult(IPage pageInfo, Map<String, Long> totalMap) {
         super(pageInfo);
-        Long canceledNum = MapUtil.getLong(totalMap, "canceledNum");
         Long draftNum = MapUtil.getLong(totalMap, "draftNum");
-        Long orderedNum = MapUtil.getLong(totalMap, "orderedNum");
+        Long updateNum = MapUtil.getLong(totalMap, "updateNum");
+        Long placedNum = MapUtil.getLong(totalMap, "placedNum");
         Long receivedNum = MapUtil.getLong(totalMap, "receivedNum");
-        Long affirNum = MapUtil.getLong(totalMap, "affirNum");
         Long transitNum = MapUtil.getLong(totalMap, "transitNum");
         Long signedNum = MapUtil.getLong(totalMap, "signedNum");
-        this.canceledNum = canceledNum;
+        Long finishNum = MapUtil.getLong(totalMap, "finishNum");
+        Long cancelNum = MapUtil.getLong(totalMap, "cancelNum");
         this.draftNum = draftNum;
-        this.orderedNum = orderedNum;
+        this.updateNum = updateNum;
+        this.placedNum = placedNum;
         this.receivedNum = receivedNum;
-        this.affirNum = affirNum;
         this.transitNum = transitNum;
         this.signedNum = signedNum;
+        this.finishNum = finishNum;
+        this.cancelNum = cancelNum;
     }
 }

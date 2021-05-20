@@ -54,24 +54,6 @@ public class OrderInfoVO {
     @JSONField(ordinal = 9)
     private Integer isPick;
 
-    @ApiModelProperty(value = "状态码" +
-            "n枚举: -1,0,10,20,30,40,50" +
-            "枚举备注: " +
-            "-1 已取消 查看详情 " +
-            "0 草稿-----提交、取消、查看订单详情（后台不记录数据） " +
-            "10 已下单：编辑、查看订单详情 " +
-            "20 已收货：编辑、查看订单详情 " +
-            "30 订单确认：确认计柜重（不可修改订单信息） " +
-            "40 转运中：查看订单详情 " +
-            "50 已签收：账单确认、查看订单详情", position = 10
-    )
-    @JSONField(ordinal = 10)
-    private Integer status;
-
-    @ApiModelProperty(value = "状态名称", position = 11)
-    @JSONField(ordinal = 11)
-    private String statusName;
-
     @ApiModelProperty(value = "创建日期", position = 12)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     @JSONField(ordinal = 12, format="yyyy-MM-dd HH:mm:ss")
@@ -136,6 +118,37 @@ public class OrderInfoVO {
 
     @ApiModelProperty(value = "销售提成")
     private BigDecimal salesCommission;
+
+    @ApiModelProperty(value = "前端状态代码\n" +
+            "    草稿:0\n" +
+            "    补资料:9\n" +
+            "    已下单:10\n" +
+            "    已收货:20\n" +
+            "    转运中:30\n" +
+            "    已签收:40\n" +
+            "    已完成:50\n" +
+            "    已取消:-1")
+    private String frontStatusCode;
+
+    @ApiModelProperty(value = "前端状态名称")
+    private String frontStatusName;
+
+    @ApiModelProperty(value = "后端状态代码\n" +
+            "    草稿:0\n" +
+            "    补资料:9\n" +
+            "    已下单:10\n" +
+            "        -- 内部小状态，这个不是流程状态\n" +
+            "        -- 已审单\n" +
+            "        -- 未审单\n" +
+            "    已收货:20\n" +
+            "    订单确认:30\n" +
+            "    已签收:40\n" +
+            "    已完成:50\n" +
+            "    已取消:-1")
+    private String afterStatusCode;
+
+    @ApiModelProperty(value = "后端状态名称")
+    private String afterStatusName;
 
     /*订单对应报关文件：order_customs_file*/
     @ApiModelProperty(value = "订单对应报关文件list", position = 25)

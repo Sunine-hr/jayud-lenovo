@@ -1639,29 +1639,41 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if(ObjectUtil.isNotEmpty(customerUser)){
             form.setCustomerId(customerUser.getId().intValue());
         }
-        form.setStatus(0);//-1, "已取消"
-        Long canceledNum = orderInfoMapper.findOrderInfoDraftCount(form);
-        form.setStatus(0);//0 草稿
+
+        //FRONT_DRAFT("0", "草稿"),
+        form.setFrontStatusCode(OrderEnum.FRONT_DRAFT.getCode());
         Long draftNum = orderInfoMapper.findOrderInfoDraftCount(form);
-        form.setStatus(10);//10 已下单
-        Long orderedNum = orderInfoMapper.findOrderInfoDraftCount(form);
-        form.setStatus(20);//20 已收货
+        //FRONT_UPDATE("9", "补资料"),
+        form.setFrontStatusCode(OrderEnum.FRONT_UPDATE.getCode());
+        Long updateNum = orderInfoMapper.findOrderInfoDraftCount(form);
+        //FRONT_PLACED("10", "已下单"),
+        form.setFrontStatusCode(OrderEnum.FRONT_PLACED.getCode());
+        Long placedNum = orderInfoMapper.findOrderInfoDraftCount(form);
+        //FRONT_RECEIVED("20", "已收货"),
+        form.setFrontStatusCode(OrderEnum.FRONT_RECEIVED.getCode());
         Long receivedNum = orderInfoMapper.findOrderInfoDraftCount(form);
-        form.setStatus(30);//30 订单确认
-        Long affirNum = orderInfoMapper.findOrderInfoDraftCount(form);
-        form.setStatus(40);//40 转运中
+        //FRONT_TRANSIT("30", "转运中"),
+        form.setFrontStatusCode(OrderEnum.FRONT_TRANSIT.getCode());
         Long transitNum = orderInfoMapper.findOrderInfoDraftCount(form);
-        form.setStatus(50);//50 已签收
+        //FRONT_SIGNED("40", "已签收"),
+        form.setFrontStatusCode(OrderEnum.FRONT_SIGNED.getCode());
         Long signedNum = orderInfoMapper.findOrderInfoDraftCount(form);
+        //FRONT_FINISH("50", "已完成"),
+        form.setFrontStatusCode(OrderEnum.FRONT_FINISH.getCode());
+        Long finishNum = orderInfoMapper.findOrderInfoDraftCount(form);
+        //FRONT_CANCEL("-1", "已取消"),
+        form.setFrontStatusCode(OrderEnum.FRONT_CANCEL.getCode());
+        Long cancelNum = orderInfoMapper.findOrderInfoDraftCount(form);
 
         Map<String,Long> totalMap = new HashMap<>();
-        totalMap.put("canceledNum", canceledNum);//已取消数量
-        totalMap.put("draftNum", draftNum);//草稿数量
-        totalMap.put("orderedNum", orderedNum);//已下单数量
-        totalMap.put("receivedNum", receivedNum);//已收货数量
-        totalMap.put("affirNum", affirNum);//订单确认数量
-        totalMap.put("transitNum", transitNum);//转运中数量
-        totalMap.put("signedNum", signedNum);//已签收数量
+        totalMap.put("draftNum", draftNum);//草稿
+        totalMap.put("updateNum", updateNum);//补资料
+        totalMap.put("placedNum", placedNum);//已下单
+        totalMap.put("receivedNum", receivedNum);//已收货
+        totalMap.put("transitNum", transitNum);//转运中
+        totalMap.put("signedNum", signedNum);//已签收
+        totalMap.put("finishNum", finishNum);//已完成
+        totalMap.put("cancelNum", cancelNum);//已取消
 
         return totalMap;
     }

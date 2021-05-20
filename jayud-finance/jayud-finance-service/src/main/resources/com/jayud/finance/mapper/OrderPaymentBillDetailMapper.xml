@@ -385,9 +385,11 @@
         oi.order_no group by opbd.order_no) payStatus
         FROM
         order_info oi
-        where EXISTS (select opc.main_order_no from order_payment_cost opc where opc.main_order_no = oi.order_no and
+        where
+        EXISTS (select opc.main_order_no from order_payment_cost opc where opc.main_order_no = oi.order_no and
         opc.`status` = '3')
-        or EXISTS (select orc.main_order_no from order_receivable_cost orc where orc.main_order_no = oi.order_no and
+        or
+        EXISTS (select orc.main_order_no from order_receivable_cost orc where orc.main_order_no = oi.order_no and
         orc.`status` = '3')
         ) temp
         where 1 = 1

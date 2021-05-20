@@ -2321,8 +2321,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         for (OrderReceivableCost receivableCost : orderReceivableCostList) {
             OrderPaymentCost bind = oldBinds.remove(receivableCost.getId());
             OrderPaymentCost convert = ConvertUtil.convert(receivableCost, OrderPaymentCost.class);
-            if (bind != null && bind.getStatus().toString()
-                    .equals(OrderStatusEnum.COST_1.getCode())) {
+            if (bind != null) {
+                if (!bind.getStatus().toString().equals(OrderStatusEnum.COST_1.getCode())) {
+                    //只同步草稿状态
+                    continue;
+                }
                 convert.setId(bind.getId()).setReceivableId(receivableCost.getId());
             } else {
                 convert.setId(null).setReceivableId(receivableCost.getId())

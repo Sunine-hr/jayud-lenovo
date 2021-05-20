@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OrderInteriorStatusMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OrderInteriorStatus">
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="order_no" property="orderNo" />
+        <result column="main_status_type" property="mainStatusType" />
+        <result column="main_status_code" property="mainStatusCode" />
+        <result column="main_status_name" property="mainStatusName" />
+        <result column="interior_status_code" property="interiorStatusCode" />
+        <result column="interior_status_name" property="interiorStatusName" />
+        <result column="status_flag" property="statusFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_id, order_no, main_status_type, main_status_code, main_status_name, interior_status_code, interior_status_name, status_flag
+    </sql>
+
+</mapper>

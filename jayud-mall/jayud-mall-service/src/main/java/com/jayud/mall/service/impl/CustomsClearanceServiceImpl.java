@@ -8,8 +8,11 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.CustomsClearanceMapper;
+import com.jayud.mall.model.bo.AuditCustomsClearanceForm;
 import com.jayud.mall.model.bo.CustomsClearanceForm;
 import com.jayud.mall.model.bo.QueryCustomsClearanceForm;
 import com.jayud.mall.model.po.CustomsClearance;
@@ -112,5 +115,22 @@ public class CustomsClearanceServiceImpl extends ServiceImpl<CustomsClearanceMap
         List<CustomsClearance> list = this.list(queryWrapper);
         List<CustomsClearanceVO> customsClearanceVOS = ConvertUtil.convertList(list, CustomsClearanceVO.class);
         return customsClearanceVOS;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void auditCustomsClearance(AuditCustomsClearanceForm form) {
+        AuthUser user = baseService.getUser();
+        Long id = form.getId();
+        CustomsClearanceVO customsClearanceVO = customsClearanceMapper.findCustomsClearanceById(id);
+        if(ObjectUtil.isEmpty(customsClearanceVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "清关商品不存在");
+        }
+        CustomsClearance customsClearance = ConvertUtil.convert(customsClearanceVO, CustomsClearance.class);
+        Integer auditStatus = form.getAuditStatus();//审核状态(0待审核 1已审核 2已取消)
+        customsClearance.setAuditStatus(auditStatus);
+        customsClearance.setAuditUserId(user.getId().intValue());
+        customsClearance.setAuditUserName(user.getName());
+        this.saveOrUpdate(customsClearance);
     }
 }

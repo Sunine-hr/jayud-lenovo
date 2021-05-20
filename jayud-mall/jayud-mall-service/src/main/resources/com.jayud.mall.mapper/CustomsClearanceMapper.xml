@@ -71,7 +71,10 @@
         t.sales_tax,
         t.sundry_tax,
         t.brand,
-        t.specification
+        t.specification,
+        t.audit_status,
+        t.audit_user_id,
+        t.audit_user_name
         from customs_clearance t
         WHERE
         1 = 1
@@ -84,6 +87,53 @@
         <if test="form.hsCode != null and form.hsCode != ''">
             AND t.hs_code LIKE concat('%',#{form.hsCode},'%')
         </if>
+        <if test="form.auditStatus != null">
+            and t.audit_status = #{form.auditStatus}
+        </if>
+
     </select>
+
+    <select id="findCustomsClearanceById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CustomsClearanceVO">
+        select t.id,
+               t.id_code,
+               t.customs_code,
+               t.hs_code,
+               t.ch_name,
+               t.en_name,
+               t.texture,
+               t.uses,
+               t.declare_elements,
+               t.declare_price,
+               t.suggest_price,
+               t.cid,
+               t.suttle,
+               t.suttle_unit,
+               t.gross_weight,
+               t.gross_unit,
+               t.tariff_tax,
+               t.raise_hscode,
+               t.raise_tax,
+               t.weight_tax,
+               t.weight_tariff_unit,
+               t.weight_unit,
+               t.pic_url,
+               t.status,
+               t.user_id,
+               t.user_name,
+               t.create_time,
+               t.additional_duty,
+               t.sales_tax,
+               t.sundry_tax,
+               t.brand,
+               t.specification,
+               t.audit_status,
+               t.audit_user_id,
+               t.audit_user_name
+        from customs_clearance t
+        WHERE
+            1 = 1
+            and t.id = #{id}
+    </select>
+
 
 </mapper>

@@ -570,8 +570,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setCreateUserId(customerUser.getId());
             orderInfo.setCreateUserName(customerUser.getUserName());
         }
-        orderInfo.setStatus(OrderEnum.DRAFT.getCode());//订单状态
-        orderInfo.setStatusName(OrderEnum.DRAFT.getName());//订单名称
+
+        //状态码
+        orderInfo.setFrontStatusCode(OrderEnum.FRONT_DRAFT.getCode());
+        orderInfo.setFrontStatusName(OrderEnum.FRONT_DRAFT.getName());
+        orderInfo.setAfterStatusCode(OrderEnum.AFTER_DRAFT.getCode());
+        orderInfo.setAfterStatusName(OrderEnum.AFTER_DRAFT.getName());
 
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
@@ -1083,9 +1087,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setCreateUserId(customerUser.getId());
             orderInfo.setCreateUserName(customerUser.getUserName());
         }
-        //PLACED_AN_ORDER(10, "已下单：编辑、查看订单详情 "),
-        orderInfo.setStatus(OrderEnum.PLACED_AN_ORDER.getCode());//订单状态
-        orderInfo.setStatusName(OrderEnum.PLACED_AN_ORDER.getName());//订单名称
+
+        //已下单 状态码
+        orderInfo.setFrontStatusCode(OrderEnum.FRONT_PLACED.getCode());
+        orderInfo.setFrontStatusName(OrderEnum.FRONT_PLACED.getName());
+        orderInfo.setAfterStatusCode(OrderEnum.AFTER_PLACED.getCode());
+        orderInfo.setAfterStatusName(OrderEnum.AFTER_PLACED.getName());
 
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
@@ -1408,9 +1415,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public CommonResult<OrderInfoVO> draftCancelOrderInfo(OrderInfoForm form) {
         Long id = form.getId();
         OrderInfo orderInfo = this.getById(id);
-        if(orderInfo.getStatus().equals(OrderEnum.DRAFT.getCode())){
-            orderInfo.setStatus(OrderEnum.CANCELED.getCode());
-            orderInfo.setStatusName(OrderEnum.CANCELED.getName());
+        if(orderInfo.getFrontStatusCode().equals(OrderEnum.FRONT_DRAFT.getCode())){
+            //已取消
+            orderInfo.setFrontStatusCode(OrderEnum.FRONT_CANCEL.getCode());
+            orderInfo.setFrontStatusName(OrderEnum.FRONT_CANCEL.getName());
+            orderInfo.setAfterStatusCode(OrderEnum.AFTER_CANCEL.getCode());
+            orderInfo.setAfterStatusName(OrderEnum.AFTER_CANCEL.getName());
+
             this.saveOrUpdate(orderInfo);
         }else{
             return CommonResult.error(-1, "订单状态不正确，不能取消订单");

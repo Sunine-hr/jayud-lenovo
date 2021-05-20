@@ -580,9 +580,9 @@
             ( SELECT code_name FROM cost_type ct WHERE ct.id = orc.cost_type_id ) expenseCategoryName,
             ( SELECT cg.NAME FROM cost_genre cg WHERE cg.id = orc.cost_genre_id ) expenseTypeName,
             orc.number,
-			ifnull(obct.money,0)/orc.number taxPrice,
-            ifnull(orbd.tax_rate,0) taxRate,
             ifnull(orc.number,0) priceQty,
+			ifnull(obct.money,0) taxPrice,
+            ifnull(orbd.tax_rate,0) taxRate,
             orc.unit costUnit
         FROM
             order_receivable_bill_detail orbd

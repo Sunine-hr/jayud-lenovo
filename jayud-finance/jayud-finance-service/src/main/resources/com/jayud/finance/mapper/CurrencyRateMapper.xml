@@ -51,18 +51,6 @@
 				and cr.`month` = DATE_FORMAT(now() , '%Y-%m' );
     </select>
 
-
-    <select id="getExchangeRates"  resultType="java.math.BigDecimal" >
-        SELECT
-
-            cr.exchange_rate exchangeRate
-        FROM
-        currency_rate cr
-        WHERE cr.dcid = (select ci.id from currency_info ci where ci.currency_code = #{dCode}) and
-        cr.ocid = (select c2.id from currency_info c2 where c2.currency_code = #{oCode})
-				and cr.`month` = DATE_FORMAT(now() , '%Y-%m' );
-    </select>
-
     <select id="getNameByCode"  resultType="java.lang.String" >
         SELECT
             ci.currency_name currencyName

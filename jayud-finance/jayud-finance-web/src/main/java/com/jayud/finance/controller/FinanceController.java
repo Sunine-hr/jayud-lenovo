@@ -436,7 +436,9 @@ public class FinanceController {
             List<OrderReceivableBillDetail> tempObjects = receivableBillDetailService.list(queryWrapper1);
             if (tempObjects != null && tempObjects.size() > 0) {
                 OrderReceivableBillDetail tempObject = tempObjects.get(0);
-                if (StringUtil.isNullOrEmpty(tempObject.getAuditStatus()) || !BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())) {
+                if (StringUtil.isNullOrEmpty(tempObject.getAuditStatus())
+                        || (!BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())
+                        && !BillEnum.B_4.getCode().equals(tempObject.getAuditStatus()))) {
                     flag = true;
                     sb.append(tempObject.getBillNo() + ";");
                 }
@@ -493,6 +495,7 @@ public class FinanceController {
     public CommonResult savePayableBill(@RequestBody ListForm form) {
         //校验是否可推送金蝶
         //1.必须财务已审核通过
+        //TODO 2021-5-19改版 客户审核通过就可以推金蝶
         StringBuilder sb = new StringBuilder("账单编号:");
         Boolean flag = false;
         for (String billNo : form.getBillNos()) {
@@ -501,7 +504,8 @@ public class FinanceController {
             List<OrderPaymentBillDetail> tempObjects = receivableBillDetailService.list(queryWrapper1);
             if (tempObjects != null && tempObjects.size() > 0) {
                 OrderPaymentBillDetail tempObject = tempObjects.get(0);
-                if (StringUtil.isNullOrEmpty(tempObject.getAuditStatus()) || !BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())) {
+                if (StringUtil.isNullOrEmpty(tempObject.getAuditStatus())
+                        || !BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())) {
                     flag = true;
                     sb.append(tempObject.getBillNo() + ";");
                 }
@@ -594,5 +598,42 @@ public class FinanceController {
         return CommonResult.success(costAmountVO);
     }
 
-
+    /**
+     * 是否可以推送金蝶
+     *
+     * @param billNos
+     * @param type
+     */
+//    public void isPushKingdee(List<String> billNos, Integer type) {
+//        //校验是否可推送金蝶
+//        //1.必须财务已审核通过
+//        //TODO 2021-5-19改版 客户审核通过就可以推金蝶
+//        StringBuilder sb = new StringBuilder("账单编号:");
+//        Boolean flag = false;
+//        for (String billNo : billNos) {
+//            QueryWrapper queryWrapper1 = new QueryWrapper();
+//            queryWrapper1.eq("bill_no", billNo);
+//
+//            if (type == 1) {
+//
+//            }else {
+//
+//            }
+//
+//            List<OrderPaymentBillDetail> tempObjects =  receivableBillDetailService.list(queryWrapper1);
+//            if (tempObjects != null && tempObjects.size() > 0) {
+//                OrderPaymentBillDetail tempObject = tempObjects.get(0);
+//                if (StringUtil.isNullOrEmpty(tempObject.getAuditStatus())
+//                        || !BillEnum.B_6.getCode().equals(tempObject.getAuditStatus())
+//                        || !BillEnum.B_2.getCode().equals(tempObject.getAuditStatus())) {//TODO 客户审核通过可以推送
+//                    flag = true;
+//                    sb.append(tempObject.getBillNo() + ";");
+//                }
+//            }
+//        }
+//        sb.append("财务未审核通过,不能推送金蝶");
+//        if (flag) {
+//            return CommonResult.error(10001, sb.toString());
+//        }
+//    }
 }

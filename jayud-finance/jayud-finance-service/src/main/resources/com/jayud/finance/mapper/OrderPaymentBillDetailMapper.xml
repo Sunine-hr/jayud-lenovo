@@ -581,9 +581,9 @@
             ( SELECT code_name FROM cost_type ct WHERE ct.id = opc.cost_type_id ) expenseCategoryName,
             ( SELECT cg.NAME FROM cost_genre cg WHERE cg.id = opc.cost_genre_id ) expenseTypeName,
             opc.number,
-            ifnull(obct.money,0)/opc.number taxPrice,
-            ifnull(opbd.tax_rate,0) taxRate,
             ifnull(opc.number,0) priceQty,
+            ifnull(obct.money,0) taxPrice,
+            ifnull(opbd.tax_rate,0) taxRate,
             opc.unit costUnit
         FROM
             order_payment_bill_detail opbd

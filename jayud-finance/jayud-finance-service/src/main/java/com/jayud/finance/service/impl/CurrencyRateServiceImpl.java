@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -116,17 +117,23 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
      * @return
      */
     @Override
-    public Map<String, BigDecimal> getExchangeRates(String dcid, String month) {
+    public Map<String, BigDecimal> getExchangeRates(String dcCode, String month) {
         List<InitComboxStrVO> currencyInfos = omsClient.initCurrencyInfo().getData();
         if (CollectionUtils.isEmpty(currencyInfos)) {
             return null;
         }
         Map<Long, String> currencyMap = currencyInfos.stream().collect(Collectors.toMap(InitComboxStrVO::getId, InitComboxStrVO::getCode));
+        AtomicReference<Long> dcId = new AtomicReference<>();
+        currencyMap.forEach((k, v) -> {
+            if (v.equals(dcCode)) {
+                dcId.set(k);
+            }
+        });
 
 
         QueryWrapper<CurrencyRate> condition = new QueryWrapper<>();
         condition.lambda().eq(CurrencyRate::getMonth, month)
-                .eq(CurrencyRate::getDcid, dcid)
+                .eq(CurrencyRate::getDcid, dcId.get())
                 .eq(CurrencyRate::getStatus, StatusEnum.ENABLE.getCode());
         List<CurrencyRate> currencyRates = this.baseMapper.selectList(condition);
         Map<String, BigDecimal> exchange = new HashMap<>(currencyRates.size());

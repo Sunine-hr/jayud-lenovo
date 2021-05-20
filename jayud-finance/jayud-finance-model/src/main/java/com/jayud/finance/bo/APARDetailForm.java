@@ -81,9 +81,13 @@ public class APARDetailForm {
                 '}';
     }
 
-    public void setTaxPrice(BigDecimal taxPrice) {
-        //推送给金蝶 单价*数量,然后数量改为1
-        this.taxPrice = taxPrice.multiply(priceQty);
-        priceQty = new BigDecimal(1);
+    public void setPriceQty(BigDecimal priceQty) {
+        this.priceQty = priceQty.compareTo(new BigDecimal(0)) == 0 ? priceQty : new BigDecimal(1);
     }
+
+//    public void setTaxPrice(BigDecimal taxPrice) {
+//        //推送给金蝶 单价*数量,然后数量改为1
+//        this.taxPrice = taxPrice.multiply(priceQty);
+//        priceQty = new BigDecimal(1);
+//    }
 }

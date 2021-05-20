@@ -80,49 +80,49 @@ public class StorageInProcessOptForm {
     private List<Long> operationId;
 
     @ApiModelProperty(value = "卡板类型id（可多选，以逗号隔开）")
-    private List<Long> cardtypeId;
+    private List<Long> cardTypeId;
 
     @ApiModelProperty(value = "YES(1为是，2为否)")
-    private Integer yes;
+    private boolean yes;
 
     @ApiModelProperty(value = "NO(1为是，2为否)")
-    private Integer no;
+    private boolean no;
 
     @ApiModelProperty(value = "已影相(1为是，2为否)")
-    private Integer isGone;
+    private boolean isGone;
 
     @ApiModelProperty(value = "(不可叠放)指示(1为是，2为否)")
-    private Integer isInstructions;
+    private boolean isInstructions;
 
     @ApiModelProperty(value = "数量1")
     private Integer num1;
 
     @ApiModelProperty(value = "上门收件(1为是，2为否)")
-    private Integer isDoorCollection;
+    private boolean isDoorCollection;
 
     @ApiModelProperty(value = "客户自送(1为是，2为否)")
-    private Integer isSelfDelivery;
+    private boolean isSelfDelivery;
 
     @ApiModelProperty(value = "已贴Gold Labels(1为是，2为否)")
-    private Integer isGoldLabels;
+    private boolean isGoldLabels;
 
     @ApiModelProperty(value = "包装不当(1为是，2为否)")
-    private Integer isImproperPacking;
+    private boolean isImproperPacking;
 
     @ApiModelProperty(value = "数量2")
     private Integer num2;
 
     @ApiModelProperty(value = "Tom Open 已开口(1为是，2为否)")
-    private Integer isTomOpen;
+    private boolean isTomOpen;
 
     @ApiModelProperty(value = "Tom Open 已开口的数量")
     private Integer tomOpenNumber;
 
     @ApiModelProperty(value = "Re Taped 重贴胶纸(1为是，2为否)")
-    private Integer isReTaped;
+    private boolean isReTaped;
 
     @ApiModelProperty(value = "Crushed Collapsed 已压破/摺曲(1为是，2为否)")
-    private Integer isCrushedCollapsed;
+    private boolean isCrushedCollapsed;
 
     @ApiModelProperty(value = "Crushed Collapsed 已压破/摺曲的数量")
     private Integer crushedCollapsedNumber;
@@ -131,19 +131,19 @@ public class StorageInProcessOptForm {
     private Integer reTapedNumber;
 
     @ApiModelProperty(value = "Water Greased 有水渍/油渍(1为是，2为否)")
-    private Integer isWaterGreased;
+    private boolean isWaterGreased;
 
     @ApiModelProperty(value = "Water Greased 有水渍/油渍的数量")
     private Integer waterGreasedNumber;
 
     @ApiModelProperty(value = "Punctured/Holes 外箱破损/有洞(1为是，2为否)")
-    private Integer isPuncturedHoles;
+    private boolean isPuncturedHoles;
 
     @ApiModelProperty(value = "Punctured/Holes 外箱破损/有洞的数量")
     private Integer puncturedHolesNumber;
 
     @ApiModelProperty(value = "Damaged Ctn.No.PCS(1为是，2为否)")
-    private Integer isDamagedCtn;
+    private boolean isDamagedCtn;
 
     @ApiModelProperty(value = "Damaged Ctn.No.PCS的数量")
     private Integer damagedCtnNumber;
@@ -184,8 +184,8 @@ public class StorageInProcessOptForm {
         boolean pass = true;
         switch (statusEnum) {
             case CCI_1: //入库接单
-            case CCI_2: //确认入仓
-            case CCI_3: //仓储入库
+//            case CCI_2: //确认入仓
+//            case CCI_3: //仓储入库
                 pass = checkOptInfo();
                 break;
         }

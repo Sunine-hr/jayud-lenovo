@@ -47,6 +47,9 @@ public class StockVO {
     @ApiModelProperty(value = "锁定库存(pcs)")
     private Integer inventoryQuantityPcs;
 
+    @ApiModelProperty(value = "库位编码")
+    private String locationCode;
+
     @ApiModelProperty(value = "更新时间")
     private String updateTime;
 

@@ -1380,6 +1380,13 @@ public class ExternalApiController {
         return ApiResult.ok(byCode.getName());
     }
 
+    @ApiOperation(value = "查询客户名称")
+    @RequestMapping(value = "/api/getCustomerNameById")
+    public ApiResult<String> getCustomerNameById(@RequestParam("id")Long id){
+        CustomerInfo byCode = customerInfoService.getById(id);
+        return ApiResult.ok(byCode.getName());
+    }
+
     /**
      * 根据审核表唯一标识查询审核描述(对账单)
      *

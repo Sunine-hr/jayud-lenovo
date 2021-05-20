@@ -1,6 +1,7 @@
 package com.jayud.storage.controller;
 
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.ApiResult;
@@ -16,6 +17,7 @@ import com.jayud.storage.service.IStockService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -81,10 +83,20 @@ public class StockController {
             return CommonResult.success(map1);
         }
         for (StockVO record : page.getRecords()) {
-
+            record.setCustomerName(omsClient.getCustomerNameById(record.getId()).getData());
         }
         map1.put("pageInfo", new CommonPageResult(page));
         return CommonResult.success(page);
     }
+
+    @ApiOperation("查看库存记录")
+    @PostMapping("/viewInventoryRecords")
+    public CommonResult viewInventoryRecords(@RequestBody Map<String,Object> map) {
+        //获取查询的库位以及该库位的商品
+        String sku = MapUtil.getStr(map, "sku");
+        String locationCode = MapUtil.getStr(map, "locationCode");
+        return CommonResult.success();
+    }
 }
+
 

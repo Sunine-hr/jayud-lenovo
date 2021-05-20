@@ -84,7 +84,7 @@ public class StorageOutOrderVO {
     private String remarks;
 
     @ApiModelProperty(value = "入库商品对象集合")
-    private List<WarehouseGoodsVO> goodsFormList;
+    private List<WarehouseGoodsVO> goodsFormLists;
 
     @ApiModelProperty(value = "附件集合")
     private List<FileView> allPics;
@@ -96,12 +96,9 @@ public class StorageOutOrderVO {
     private String receivingOrdersDate;
 
     @ApiModelProperty(value = "总件数")
-    private String totalNumber;
+    private String totalNumberStr;
 
     @ApiModelProperty(value = "总重量")
-    private String totalWeight;
+    private String totalWeightStr;
 
-    public void setUnitCodeName(String unitCodeName) {
-        this.unitCodeName=unitCodeName;
-    }
 }

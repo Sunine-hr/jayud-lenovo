@@ -93,9 +93,16 @@ public class StorageOutPickingListVO {
         Integer totalNumber = 0;
         Double totalWeight = 0.0;
         for (WarehouseGoodsVO warehouseGoodsVO : goodsFormList) {
-            str.append(warehouseGoodsVO.getEstimatedArrivalTime()).append("  ");
-            totalNumber = totalNumber + warehouseGoodsVO.getNumber();
-            totalWeight = totalWeight + warehouseGoodsVO.getWeight();
+            if(warehouseGoodsVO.getEstimatedArrivalTime() != null){
+                str.append(warehouseGoodsVO.getEstimatedArrivalTime()).append("  ");
+            }
+            if(warehouseGoodsVO.getNumber() != null){
+                totalNumber = totalNumber + warehouseGoodsVO.getNumber();
+            }
+            if(warehouseGoodsVO.getWeight() != null){
+                totalWeight = totalWeight + warehouseGoodsVO.getWeight();
+            }
+
         }
 
         this.totalNumber = totalNumber;

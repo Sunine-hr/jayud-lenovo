@@ -412,11 +412,12 @@ public class StorageInputOrderController {
             warehouseGoodsVO.setWarehousingInformation(stringBuffer.toString());
         }
         storageInProcessOptFormVO.setWarehouseGoodsForms(list);
-        ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageInProcessOptFormVO.getMainOrderNo()));
-        storageInProcessOptFormVO.assemblyMainOrderData(result.getData());
+        ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageInputOrder.getMainOrderNo()));
         storageInProcessOptFormVO.setMainOrderNo(storageInputOrder.getMainOrderNo());
         storageInProcessOptFormVO.setOrderId(storageInputOrder.getId());
         storageInProcessOptFormVO.setOrderNo(storageInputOrder.getOrderNo());
+        storageInProcessOptFormVO.assemblyMainOrderData(result.getData());
+
         storageInProcessOptFormVO.setPlateNumber(storageInputOrder.getPlateNumber());
         storageInProcessOptFormVO.setWarehouseNumber(storageInputOrder.getWarehouseNumber());
         storageInProcessOptFormVO.setCreateTime(storageInputOrder.getCreateTime());

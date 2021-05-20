@@ -131,8 +131,8 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
         List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList1(storageOutOrder.getId(),storageOutOrder.getOrderNo());
         if(CollectionUtils.isEmpty(warehouseGoods)){
             warehouseGoods.add(new WarehouseGoodsVO());
-            storageOutOrderVO.setTotalNumber("0板0件0pcs");
-            storageOutOrderVO.setTotalWeight("0KG");
+            storageOutOrderVO.setTotalNumberStr("0板0件0pcs");
+            storageOutOrderVO.setTotalWeightStr("0KG");
         }else{
             double totalWeight = 0.0;
             Integer borderNumber = 0;
@@ -152,10 +152,10 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
                     pcs = pcs + warehouseGood.getPcs();
                 }
             }
-            storageOutOrderVO.setTotalNumber(borderNumber+"板"+number+"件"+pcs+"pcs");
-            storageOutOrderVO.setTotalWeight(totalWeight+"KG");
+            storageOutOrderVO.setTotalNumberStr(borderNumber+"板"+number+"件"+pcs+"pcs");
+            storageOutOrderVO.setTotalWeightStr(totalWeight+"KG");
         }
-        storageOutOrderVO.setGoodsFormList(warehouseGoods);
+        storageOutOrderVO.setGoodsFormLists(warehouseGoods);
         return storageOutOrderVO;
     }
 

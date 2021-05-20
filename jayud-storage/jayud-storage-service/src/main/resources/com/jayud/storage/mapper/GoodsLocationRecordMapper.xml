@@ -19,9 +19,9 @@
     </sql>
 
     <select id="getListByGoodId" resultType="com.jayud.storage.model.po.GoodsLocationRecord">
-        select id, ku_id kuId, inGood_id inGoodId, number, create_user createUser, create_time createTime,type
+        select glr.id, glr.ku_id kuId, glr.inGood_id inGoodId, glr.number, glr.create_user createUser, glr.create_time createTime,glr.type
         from goods_location_record glr
-        left join warehouse_goods wg on wg.id = glr.inGoodId
+        left join warehouse_goods wg on wg.id = glr.inGood_id
         where wg.id = #{id} and wg.sku = #{sku} and wg.order_id = #{orderId} order by createTime asc
     </select>
 

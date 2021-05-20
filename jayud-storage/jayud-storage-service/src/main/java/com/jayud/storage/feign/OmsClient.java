@@ -208,6 +208,10 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getCustomerNameByCode")
     public ApiResult<String> getCustomerNameByCode(@RequestParam("code")String code);
 
+    @ApiOperation(value = "查询客户名称")
+    @RequestMapping(value = "/api/getCustomerNameById")
+    public ApiResult<String> getCustomerNameById(@RequestParam("id")Long id);
+
     @ApiOperation(value = "查询在子订单录入费用的订单号")
     @RequestMapping(value = "/api/getPaymentCost")
     ApiResult<List<String>> getPaymentCost(@RequestParam("subType")String subType);

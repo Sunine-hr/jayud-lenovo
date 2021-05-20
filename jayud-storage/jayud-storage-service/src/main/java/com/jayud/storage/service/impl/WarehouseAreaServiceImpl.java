@@ -76,12 +76,10 @@ public class WarehouseAreaServiceImpl extends ServiceImpl<WarehouseAreaMapper, W
         if(ObjectUtil.isEmpty(warehouseArea)){
             Asserts.fail(ResultEnum.OPR_FAIL, "操作失败，没有找到该仓库区域");
         }
-        Warehouse warehouse = ConvertUtil.convert(warehouseArea, Warehouse.class);
-        Integer status = form.getStatus();
-        if(status.equals(WarehouseStatusEnum.DISABLE.getCode())){
-            warehouse.setStatus(WarehouseStatusEnum.DISABLE.getCode());
-        }else if(status.equals(WarehouseStatusEnum.ENABLE.getCode())){
-            warehouse.setStatus(WarehouseStatusEnum.ENABLE.getCode());
+        if(warehouseArea.getStatus().equals(WarehouseStatusEnum.DISABLE.getCode())){
+            warehouseArea.setStatus(WarehouseStatusEnum.ENABLE.getCode());
+        }else if(warehouseArea.getStatus().equals(WarehouseStatusEnum.ENABLE.getCode())){
+            warehouseArea.setStatus(WarehouseStatusEnum.DISABLE.getCode());
         }else{
             Asserts.fail(ResultEnum.OPR_FAIL, "操作失败，输入的状态有误");
         }

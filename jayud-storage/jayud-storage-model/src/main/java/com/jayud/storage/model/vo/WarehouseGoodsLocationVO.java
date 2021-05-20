@@ -1,14 +1,9 @@
 package com.jayud.storage.model.vo;
 
-import com.jayud.common.utils.FileView;
-import com.jayud.storage.model.bo.GoodsLocationRecordForm;
-import com.jayud.storage.model.po.GoodsLocationRecord;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**

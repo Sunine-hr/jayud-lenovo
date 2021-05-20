@@ -338,7 +338,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
     @Override
     public boolean confirmEntry(StorageInProcessOptForm form) {
         form.setOperatorUser(UserOperator.getToken());
-        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
+        form.setOperatorTime(LocalDateTime.now().toString());
 
         StorageInputOrderDetails storageInputOrderDetails = ConvertUtil.convert(form, StorageInputOrderDetails.class);
         StringBuffer stringBuffer = new StringBuffer();
@@ -346,7 +346,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         for (Long aLong : form.getOperationId()) {
             stringBuffer.append(aLong).append(",");
         }
-        for (Long aLong : form.getCardtypeId()) {
+        for (Long aLong : form.getCardTypeId()) {
             s.append(aLong).append(",");
         }
         storageInputOrderDetails.setCardTypeId(s.substring(0,s.length()-1).toString());

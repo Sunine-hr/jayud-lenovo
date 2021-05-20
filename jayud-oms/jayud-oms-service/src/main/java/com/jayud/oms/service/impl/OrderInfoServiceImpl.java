@@ -416,10 +416,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderPaymentCost.setSubType(form.getSubType());
 
                 //新增
-                if(isSumToMain){
+                if (isSumToMain) {
                     orderPaymentCost.setLegalName(inputOrderVO.getLegalName());
                     orderPaymentCost.setLegalId((Integer) (oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData()));
-                }else{
+                } else {
                     orderPaymentCost.setLegalName(form.getSubLegalName());
                     orderPaymentCost.setLegalId((Integer) (oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData()));
                 }
@@ -443,10 +443,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderReceivableCost.setSubType(form.getSubType());
 
                 //新增
-                if(isSumToMain){
+                if (isSumToMain) {
                     orderReceivableCost.setLegalName(inputOrderVO.getLegalName());
                     orderReceivableCost.setLegalId((Integer) (oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData()));
-                }else{
+                } else {
                     orderReceivableCost.setLegalName(form.getSubLegalName());
                     orderReceivableCost.setLegalId((Integer) (oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData()));
                 }
@@ -2331,13 +2331,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 convert.setId(null).setReceivableId(receivableCost.getId())
                         .setCreatedTime(LocalDateTime.now()).setCreatedUser(UserOperator.getToken());
             }
+            convert.setOrderNo(null).setLegalName(null).setLegalId(null).setCustomerCode(null).setCustomerName(null)
+                    .setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()))
+                    .setIsSumToMain(true).setIsBill("0").setSubType("main");
             if (supplierInfo != null) {
                 convert.setCustomerName(supplierInfo.getSupplierChName()).setCustomerCode(supplierInfo.getSupplierCode());
             }
-            convert.setOrderNo(null).setLegalName(null).setLegalId(null)
-                    .setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()))
-                    .setIsSumToMain(true).setIsBill("0").setSubType("main");
-
             addOrUpdate.add(convert);
         }
         //剔除应付费用

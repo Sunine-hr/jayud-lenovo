@@ -8,8 +8,11 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.CustomsDataMapper;
+import com.jayud.mall.model.bo.AuditCustomsDataForm;
 import com.jayud.mall.model.bo.CustomsDataForm;
 import com.jayud.mall.model.bo.QueryCustomsDataForm;
 import com.jayud.mall.model.po.CustomsData;
@@ -113,5 +116,23 @@ public class CustomsDataServiceImpl extends ServiceImpl<CustomsDataMapper, Custo
         List<CustomsData> list = this.list(queryWrapper);
         List<CustomsDataVO> customsDataVOS = ConvertUtil.convertList(list, CustomsDataVO.class);
         return customsDataVOS;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void auditCustomsData(AuditCustomsDataForm form) {
+        AuthUser user = baseService.getUser();
+        Long id = form.getId();
+        CustomsDataVO customsDataVO = customsDataMapper.findAuditCustomsDataId(id);
+        if(ObjectUtil.isEmpty(customsDataVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "报关商品不存在");
+        }
+        CustomsData customsData = ConvertUtil.convert(customsDataVO, CustomsData.class);
+        Integer auditStatus = form.getAuditStatus();
+        customsData.setAuditStatus(auditStatus);//审核状态(0待审核 1已审核 2已取消)
+        customsData.setAuditUserId(user.getId().intValue());
+        customsData.setAuditUserName(user.getName());
+        this.saveOrUpdate(customsData);
+
     }
 }

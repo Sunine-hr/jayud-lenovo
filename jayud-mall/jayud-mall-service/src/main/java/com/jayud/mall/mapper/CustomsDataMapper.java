@@ -29,4 +29,11 @@ public interface CustomsDataMapper extends BaseMapper<CustomsData> {
      * @return
      */
     IPage<CustomsDataVO> findCustomsDataByPage(Page<CustomsDataVO> page,@Param("form") QueryCustomsDataForm form);
+
+    /**
+     * 根据id，查询
+     * @param id
+     * @return
+     */
+    CustomsDataVO findAuditCustomsDataId(@Param("id") Long id);
 }

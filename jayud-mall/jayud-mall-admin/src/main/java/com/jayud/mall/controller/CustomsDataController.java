@@ -3,6 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.AuditCustomsDataForm;
 import com.jayud.mall.model.bo.CustomsDataForm;
 import com.jayud.mall.model.bo.QueryCustomsDataForm;
 import com.jayud.mall.model.vo.CustomsDataVO;
@@ -51,6 +52,14 @@ public class CustomsDataController {
     public CommonResult<List<CustomsDataVO>> findCustomsData() {
         List<CustomsDataVO> list = customsDataService.findCustomsData();
         return CommonResult.success(list);
+    }
+
+    @ApiOperation(value = "审核-报关商品资料")
+    @PostMapping("/auditCustomsData")
+    @ApiOperationSupport(order = 4)
+    public CommonResult auditCustomsData(@Valid @RequestBody AuditCustomsDataForm form){
+        customsDataService.auditCustomsData(form);
+        return CommonResult.success("操作成功");
     }
 
 

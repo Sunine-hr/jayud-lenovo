@@ -1,11 +1,14 @@
 package com.jayud.finance.vo;
 
+import cn.hutool.core.map.MapUtil;
 import com.jayud.finance.enums.BillEnum;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 财务核算列表
@@ -95,7 +98,7 @@ public class FinanceAccountVO {
     private String profit;
 
     public String getRecStatusDesc() {
-        if(!StringUtil.isNullOrEmpty(recStatus)){
+        if (!StringUtil.isNullOrEmpty(recStatus)) {
             String desc = "";
             StringBuilder sb = new StringBuilder();
             String[] strs = recStatus.split(",");
@@ -111,7 +114,7 @@ public class FinanceAccountVO {
     }
 
     public String getPayStatusDesc() {
-        if(!StringUtil.isNullOrEmpty(payStatus)){
+        if (!StringUtil.isNullOrEmpty(payStatus)) {
             String desc = "";
             StringBuilder sb = new StringBuilder();
             String[] strs = payStatus.split(",");
@@ -126,7 +129,44 @@ public class FinanceAccountVO {
         return "";
     }
 
-
+    public FinanceAccountVO totalCurrencyAmount(List<Map<String, Object>> currencyAmounts) {
+        for (Map<String, Object> currencyAmount : currencyAmounts) {
+            Object moneyType = currencyAmount.get("moneyType");
+            //1-应付 2-应收
+            String billNo = moneyType.equals(1) ? payBillNo : recBillNo;
+            if (!billNo.contains(MapUtil.getStr(currencyAmount, "billNo"))) {
+                continue;
+            }
+            String key = "amount";
+            BigDecimal rmb = null, dollar = null, euro = null, hKDollar=null;
+            if ("CNY".equals(currencyAmount.get("currencyCode"))) {
+                rmb = (BigDecimal) currencyAmount.get(key);
+            }
+            if ("USD".equals(currencyAmount.get("currencyCode"))) {
+                dollar = (BigDecimal) currencyAmount.get(key);
+            }
+            if ("EUR".equals(currencyAmount.get("currencyCode"))) {
+                euro = (BigDecimal) currencyAmount.get(key);
+            }
+            if ("HKD".equals(currencyAmount.get("currencyCode"))) {
+                hKDollar = (BigDecimal) currencyAmount.get(key);
+            }
+            switch (moneyType.toString()) {
+                case "1":
+                    this.payRmb = rmb;
+                    this.payDollar = dollar;
+                    this.payEuro = euro;
+                    this.payHkDollar = hKDollar;
+                    break;
+                case "2":
+                    this.recRmb = rmb;
+                    this.recDollar = dollar;
+                    this.recEuro = euro;
+                    this.recHkDollar = hKDollar;
+            }
+        }
+        return this;
+    }
 
 
 }

@@ -2323,7 +2323,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if (supplierInfo != null) {
                 convert.setCustomerName(supplierInfo.getSupplierChName()).setCustomerCode(supplierInfo.getSupplierCode());
             }
-            convert.setOrderNo(null)
+            convert.setOrderNo(null).setSubLegalName(null).setSubOrderNo(null).setLegalId(null)
                     .setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()))
                     .setIsSumToMain(true).setIsBill("0").setSubType("main");
 

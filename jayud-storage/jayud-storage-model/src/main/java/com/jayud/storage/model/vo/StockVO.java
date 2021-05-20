@@ -32,6 +32,9 @@ public class StockVO {
     @ApiModelProperty(value = "客户id")
     private Long customerId;
 
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
+
     @ApiModelProperty(value = "sku")
     private String sku;
 
@@ -44,7 +47,7 @@ public class StockVO {
     @ApiModelProperty(value = "锁定库存(pcs)")
     private Integer inventoryQuantityPcs;
 
-    @ApiModelProperty(value = "规格型号")
+    @ApiModelProperty(value = "更新时间")
     private String updateTime;
 
 }

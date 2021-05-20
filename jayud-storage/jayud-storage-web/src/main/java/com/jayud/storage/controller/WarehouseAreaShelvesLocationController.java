@@ -13,8 +13,10 @@ import com.jayud.storage.model.bo.QueryWarehouseAreaShelves2Form;
 import com.jayud.storage.model.bo.QueryWarehouseAreaShelvesForm;
 import com.jayud.storage.model.bo.QueryWarehouseAreaShelvesLocationForm;
 import com.jayud.storage.model.bo.WarehouseAreaShelvesLocationForm;
+import com.jayud.storage.model.po.Location;
 import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
 import com.jayud.storage.model.vo.*;
+import com.jayud.storage.service.ILocationService;
 import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
 import com.jayud.storage.service.IWarehouseAreaShelvesService;
 import io.swagger.annotations.Api;
@@ -50,6 +52,9 @@ public class WarehouseAreaShelvesLocationController {
 
     @Autowired
     private IWarehouseAreaShelvesService warehouseAreaShelvesService;
+
+    @Autowired
+    private ILocationService locationService;
 
     @Autowired
     private OmsClient omsClient;
@@ -120,8 +125,12 @@ public class WarehouseAreaShelvesLocationController {
         List<LocationCodeVO> locationCodeVOS = new ArrayList<>();
 
         for (WarehouseAreaShelvesLocationVO warehouseAreaShelvesLocation : warehouseAreaShelvesLocations) {
-            String shelvesTypeName = null;
-
+            List<Location> locations = locationService.getList(warehouseAreaShelvesLocation.getId());
+            for (Location location : locations) {
+                LocationCodeVO locationCodeVO = ConvertUtil.convert(warehouseAreaShelvesLocation, LocationCodeVO.class);
+                locationCodeVO.setLocationCode(location.getLocationCode());
+                locationCodeVOS.add(locationCodeVO);
+            }
         }
         return CommonResult.success(locationCodeVOS);
     }

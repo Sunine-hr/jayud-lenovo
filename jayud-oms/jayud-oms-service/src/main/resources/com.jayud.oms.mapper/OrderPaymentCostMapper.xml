@@ -28,8 +28,7 @@
         <result column="opt_time" property="optTime"/>
         <result column="created_time" property="createdTime"/>
         <result column="created_user" property="createdUser"/>
-        <result column="sub_order_no" property="subOrderNo"/>
-        <result column="sub_legal_name" property="subLegalName"/>
+        <result column="=legal_name" property="legalName"/>
         <result column="legal_id" property="legalId"/>
     </resultMap>
 
@@ -37,7 +36,7 @@
     <sql id="Base_Column_List">
         id, main_order_no, biz_order_no, order_no, biz_code, biz_name, customer_code, customer_name,cost_type_id, cost_code,
         unit_price, number, currency_code, amount, exchange_rate, change_amount, remarks, status, opt_name, opt_time,
-        created_time, created_user,cost_genre_id,unit,sub_order_no,sub_legal_name,legal_id
+        created_time, created_user,cost_genre_id,unit,legal_name,legal_id
     </sql>
 
     <select id="findPaymentCost" parameterType="com.jayud.oms.model.bo.GetCostDetailForm"

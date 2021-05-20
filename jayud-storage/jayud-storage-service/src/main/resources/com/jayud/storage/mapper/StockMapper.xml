@@ -22,10 +22,33 @@
     </sql>
 
     <select id="findByPage" resultType="com.jayud.storage.model.vo.StockVO">
-        select s.id ,s.good_name goodName, s.customer_id customerId, s.sku, s.specification_model specificationModel,
-        wasl.
-         form warehouse_area_shelves_location wasl
-         left join stock s
+        select igor.id ,s.good_name goodName, s.customer_id customerId, s.sku, s.specification_model specificationModel,
+        location.location_code locationCode,
+        ((select number from goods_location_record g where g.ku_id = glr.ku_id and g.inGood_id = glr.inGood_id and g.type=1) -
+        (select number from goods_location_record g1 where g1.ku_id = glr.ku_id and g1.inGood_id = glr.inGood_id and g1.type=2)) inventoryQuantityUnit,
+        (select a.createTime from
+        (select create_time createTime,ku_id kuId from goods_location_record g where type = 1 group by ku_id) a
+        where not exists (select 1 from (select create_time createTime,ku_id kuId from goods_location_record g where type = 1 group by ku_id) b
+        where b.kuId = a.kuId and b.createTime >= a.createTime
+        )) updateTime
+         from location
+         left join warehouse_area_shelves_location wasl on location.location_id = wasl.id
+         left join goods_location_record glr on wasl.id = glr.ku_id and glr.type = 1
+         left join in_goods_operation_record igor on glr.inGood_id = igor.id
+         left join stock s on igor.sku = s.sku
+         where status = 0
+        <if test="form.kuId !=null and form.kuId!=''">
+            and location.location_id like concat('%',#{form.kuId},'%')
+        </if>
+        <if test="form.sku !=null and form.sku!=''">
+            and s.sku like concat('%',#{form.sku},'%')
+        </if>
+        <if test="form.customerIds != null and form.customerIds.size !=''">
+            and s.`customer_id` in
+            <foreach collection="form.customerIds" item="customerId" open="(" separator="," close=")">
+                #{customerId}
+            </foreach>
+        </if>
     </select>
 
 </mapper>

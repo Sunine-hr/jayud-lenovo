@@ -415,11 +415,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderPaymentCost.setIsBill("0");//未出账
                 orderPaymentCost.setSubType(form.getSubType());
 
-                //仓储
-                orderPaymentCost.setSubOrderNo(form.getOrderNo());
-                orderPaymentCost.setSubLegalName(form.getSubLegalName());
+                //新增
+                if(isSumToMain){
+                    orderPaymentCost.setLegalName(inputOrderVO.getLegalName());
+                    orderPaymentCost.setLegalId((Integer) (oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData()));
+                }else{
+                    orderPaymentCost.setLegalName(form.getSubLegalName());
+                    orderPaymentCost.setLegalId((Integer) (oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData()));
+                }
 
-                orderPaymentCost.setLegalId((Integer) (oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData()));
 
                 if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
                     orderPaymentCost.setIsSumToMain(isSumToMain);
@@ -438,10 +442,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderReceivableCost.setIsBill("0");//未出账
                 orderReceivableCost.setSubType(form.getSubType());
 
-                //仓储
-                orderReceivableCost.setSubOrderNo(form.getOrderNo());
-                orderReceivableCost.setSubLegalName(form.getSubLegalName());
-                orderReceivableCost.setLegalId((Integer) oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData());
+                //新增
+                if(isSumToMain){
+                    orderReceivableCost.setLegalName(inputOrderVO.getLegalName());
+                    orderReceivableCost.setLegalId((Integer) (oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData()));
+                }else{
+                    orderReceivableCost.setLegalName(form.getSubLegalName());
+                    orderReceivableCost.setLegalId((Integer) (oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData()));
+                }
 
                 if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
                     orderReceivableCost.setIsSumToMain(isSumToMain);
@@ -2323,7 +2331,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if (supplierInfo != null) {
                 convert.setCustomerName(supplierInfo.getSupplierChName()).setCustomerCode(supplierInfo.getSupplierCode());
             }
-            convert.setOrderNo(null).setSubLegalName(null).setSubOrderNo(null).setLegalId(null)
+            convert.setOrderNo(null).setLegalName(null).setLegalId(null)
                     .setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()))
                     .setIsSumToMain(true).setIsBill("0").setSubType("main");
 

@@ -80,7 +80,11 @@ public class StockController {
             map1.put("pageInfo", new CommonPageResult(page));
             return CommonResult.success(map1);
         }
-        return CommonResult.success();
+        for (StockVO record : page.getRecords()) {
+
+        }
+        map1.put("pageInfo", new CommonPageResult(page));
+        return CommonResult.success(page);
     }
 }
 

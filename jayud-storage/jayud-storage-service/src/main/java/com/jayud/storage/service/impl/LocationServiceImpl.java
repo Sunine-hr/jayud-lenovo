@@ -1,10 +1,13 @@
 package com.jayud.storage.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.storage.model.po.Location;
 import com.jayud.storage.mapper.LocationMapper;
 import com.jayud.storage.service.ILocationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +20,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class LocationServiceImpl extends ServiceImpl<LocationMapper, Location> implements ILocationService {
 
+    @Override
+    public List<Location> getList(Long id) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("location_id",id);
+        return this.baseMapper.selectList(queryWrapper);
+    }
 }

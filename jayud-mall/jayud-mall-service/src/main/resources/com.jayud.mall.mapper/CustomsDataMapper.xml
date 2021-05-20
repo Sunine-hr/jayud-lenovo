@@ -78,6 +78,9 @@
         <if test="form.hsCode != null and form.hsCode != ''">
             AND t.hs_code LIKE concat('%',#{form.hsCode},'%')
         </if>
+        <if test="form.auditStatus != null">
+            and t.audit_status = #{form.auditStatus}
+        </if>
     </select>
 
     <select id="findAuditCustomsDataId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CustomsDataVO">

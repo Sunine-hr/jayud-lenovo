@@ -1,5 +1,6 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -105,5 +106,62 @@ public class OrderCaseServiceImpl extends ServiceImpl<OrderCaseMapper, OrderCase
             list.add(orderCaseVO);
         }
         return list;
+    }
+
+    /**
+     * 计算箱号汇总数据
+     * @param form
+     * @return
+     */
+    @Override
+    public List<OrderCaseVO> calcOrderCaseList(CreateOrderCaseForm form) {
+        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+        if(CollUtil.isEmpty(orderCaseVOList)){
+            orderCaseVOList = new ArrayList<>();
+        }
+
+        Integer offerInfoId = form.getOfferInfoId();
+        if(ObjectUtil.isEmpty(offerInfoId)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "报价id为空");
+        }
+        OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(Long.valueOf(offerInfoId));
+        if(ObjectUtil.isEmpty(offerInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "报价不存在");
+        }
+        //计泡系数(默认6000)
+        BigDecimal bubbleCoefficient = (offerInfoVO.getBubbleCoefficient() == null) ? new BigDecimal("6000") : offerInfoVO.getBubbleCoefficient();
+        //最小重量(默认12) 最小收费重
+        BigDecimal minimumQuantity = (offerInfoVO.getMinimumQuantity() == null) ? new BigDecimal("12") : offerInfoVO.getMinimumQuantity();
+
+        for (int i=0; i<orderCaseVOList.size(); i++){
+            OrderCaseVO orderCaseVO = orderCaseVOList.get(i);
+            BigDecimal weight = orderCaseVO.getAsnWeight();//重
+            BigDecimal length = orderCaseVO.getAsnLength();//长
+            BigDecimal width = orderCaseVO.getAsnWidth();//宽
+            BigDecimal height = orderCaseVO.getAsnHeight();//高
+
+            //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+            BigDecimal volume = length.multiply(width).multiply(height).divide(new BigDecimal("1000000"),2, BigDecimal.ROUND_HALF_UP);
+            //材积重(CBM) = (长cm * 宽cm * 高cm) / 计泡系数
+            BigDecimal volumeWeight = length.multiply(width).multiply(height).divide(bubbleCoefficient,2, BigDecimal.ROUND_HALF_UP);
+            //收费重 ，比较实际重和材积重的大小，谁大取谁 chargeWeight
+            BigDecimal chargeWeight = new BigDecimal("0");
+            if(weight.compareTo(volumeWeight) == 1){
+                //weight > volumeWeight
+                chargeWeight = weight;
+            }else{
+                chargeWeight = volumeWeight;
+            }
+            if(chargeWeight.compareTo(minimumQuantity) < 0){
+                // chargeWeight  < minimumQuantity   收费重  < 最小收费重
+                chargeWeight = minimumQuantity;
+            }
+
+            orderCaseVO.setAsnVolume(volume);//重量
+            orderCaseVO.setVolumeWeight(volumeWeight);//材积重
+            orderCaseVO.setChargeWeight(chargeWeight);//收费重
+
+        }
+        return orderCaseVOList;
     }
 }

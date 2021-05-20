@@ -1,6 +1,5 @@
 package com.jayud.mall.controller;
 
-import cn.hutool.core.collection.CollUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.CreateOrderCaseForm;
 import com.jayud.mall.model.vo.CaseVO;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -30,8 +28,6 @@ public class OrderCaseController {
     @Autowired
     IOrderCaseService orderCaseService;
 
-
-    //批量添加箱号
     @ApiOperation(value = "批量添加箱号(根据总箱数添加)")
     @PostMapping("/createOrderCaseList")
     @ApiOperationSupport(order = 1)
@@ -59,13 +55,15 @@ public class OrderCaseController {
         }
 
         //历史添加箱子list
-        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
-        if(CollUtil.isEmpty(orderCaseVOList)){
-            orderCaseVOList = new ArrayList<>();
-        }
+//        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+//        if(CollUtil.isEmpty(orderCaseVOList)){
+//            orderCaseVOList = new ArrayList<>();
+//        }
 
+        //历史添加箱子list 参数改动，重新计算。
+        List<OrderCaseVO> orderCaseVOList = orderCaseService.calcOrderCaseList(form);
+        //批量添加箱子
         List<OrderCaseVO> orderCaseVOList1 = orderCaseService.createOrderCaseList(form);
-
 
         //fba箱号-生成规则
         String extensionNumber = form.getExtensionNumber();
@@ -111,6 +109,43 @@ public class OrderCaseController {
         caseVO.setOrderCaseVOList(orderCaseVOList);
         return CommonResult.success(caseVO);
     }
+
+    @ApiOperation(value = "计算订单箱号汇总数据")
+    @PostMapping("/calcOrderCaseList")
+    @ApiOperationSupport(order = 2)
+    public CommonResult<CaseVO> calcOrderCaseList(@RequestBody CreateOrderCaseForm form) {
+        List<OrderCaseVO> orderCaseVOList = orderCaseService.calcOrderCaseList(form);
+
+        CaseVO caseVO = new CaseVO();
+        //(客户预报)总重量 实际重
+        BigDecimal totalAsnWeight = new BigDecimal("0");
+        //客户预报总的材积重 材积重
+        BigDecimal totalVolumeWeight = new BigDecimal("0");
+        //客户预报总的收费重 收费重
+        BigDecimal totalChargeWeight = new BigDecimal("0");
+        //(客户预报)总体积
+        BigDecimal totalAsnVolume = new BigDecimal("0");
+
+        for (int i = 0; i<orderCaseVOList.size(); i++){
+            BigDecimal asnWeight = orderCaseVOList.get(i).getAsnWeight();
+            BigDecimal volumeWeight = orderCaseVOList.get(i).getVolumeWeight();
+            BigDecimal chargeWeight = orderCaseVOList.get(i).getChargeWeight();
+            BigDecimal asnVolume = orderCaseVOList.get(i).getAsnVolume();
+            totalAsnWeight = totalAsnWeight.add(asnWeight);
+            totalVolumeWeight = totalVolumeWeight.add(volumeWeight);
+            totalChargeWeight = totalChargeWeight.add(chargeWeight);
+            totalAsnVolume = totalAsnVolume.add(asnVolume);
+        }
+        caseVO.setTotalAsnWeight(totalAsnWeight);
+        caseVO.setTotalVolumeWeight(totalVolumeWeight);
+        caseVO.setTotalChargeWeight(totalChargeWeight);
+        caseVO.setTotalAsnVolume(totalAsnVolume);
+        caseVO.setTotalCase(orderCaseVOList.size());
+        caseVO.setOrderCaseVOList(orderCaseVOList);
+        return CommonResult.success(caseVO);
+
+    }
+
 
 
 }

@@ -25,4 +25,32 @@
         id, qie, cost_code, cost_name, supplier_id, calculate_way, count, unit, source, unit_price, cid, amount, remarks, business_type
     </sql>
 
+
+    <select id="findFeeCopeWithByQie" resultType="com.jayud.mall.model.vo.FeeCopeWithVO">
+        select t.id,
+        t.qie,
+        t.cost_code,
+        t.cost_name,
+        t.supplier_id,
+        t.calculate_way,
+        t.count,
+        t.unit,
+        t.source,
+        t.unit_price,
+        t.cid,
+        t.amount,
+        t.remarks,
+        t.business_type,
+        t1.supplier_code supplierCode,
+        t1.company_name  supplierName,
+        t2.currency_code,
+        t2.currency_name
+        from fee_cope_with t
+        left join supplier_info t1 on t1.id = t.supplier_id
+        left join currency_info t2 on t2.id = t.cid
+        where 1=1
+        and t.qie = #{qie, jdbcType=INTEGER}
+        and t.business_type = #{businessType, jdbcType=INTEGER}
+    </select>
+
 </mapper>

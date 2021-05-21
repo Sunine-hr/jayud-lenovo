@@ -61,12 +61,11 @@ public class TemplateCopeWithVO {
     @JSONField(ordinal = 12)
     private String remarks;
 
-    //供应商代码
+    //扩展查询//
     @ApiModelProperty(value = "供应商代码", position = 13)
     @JSONField(ordinal = 13)
     private String supplierCode;
 
-    //供应商名称
     @ApiModelProperty(value = "供应商名称", position = 14)
     @JSONField(ordinal = 14)
     private String supplierName;

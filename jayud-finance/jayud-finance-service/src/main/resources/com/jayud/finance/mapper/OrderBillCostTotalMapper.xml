@@ -75,9 +75,8 @@
         </foreach>
     </select>
 
-
     <select id="totalCurrencyAmount" resultType="java.util.Map">
-        select bill_no billNo, currency_code currencyCode,sum(money) amount
+        select bill_no billNo, currency_code currencyCode,money_type moneyType,sum(money) amount
         from order_bill_cost_total
         where
         bill_no in

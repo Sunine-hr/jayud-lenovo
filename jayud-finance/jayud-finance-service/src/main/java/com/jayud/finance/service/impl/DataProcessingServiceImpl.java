@@ -1,21 +1,23 @@
 package com.jayud.finance.service.impl;
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.utils.JDKUtils;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.po.CancelAfterVerification;
-import com.jayud.finance.service.DataProcessingService;
-import com.jayud.finance.service.ICancelAfterVerificationService;
-import com.jayud.finance.service.IMakeInvoiceService;
-import com.jayud.finance.service.IOrderBillCostTotalService;
+import com.jayud.finance.po.OrderPaymentBillDetail;
+import com.jayud.finance.po.OrderReceivableBill;
+import com.jayud.finance.po.OrderReceivableBillDetail;
+import com.jayud.finance.service.*;
+import com.jayud.finance.vo.FinanceAccountVO;
 import com.jayud.finance.vo.InitComboxStrVO;
 import com.jayud.finance.vo.OrderPaymentBillDetailVO;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -34,6 +36,10 @@ public class DataProcessingServiceImpl implements DataProcessingService {
     private IMakeInvoiceService makeInvoiceService;
     @Autowired
     private ICancelAfterVerificationService cancelAfterVerificationService;
+    @Autowired
+    private IOrderPaymentBillDetailService paymentBillDetailService;
+    @Autowired
+    private IOrderReceivableBillDetailService receivableBillDetailService;
 
     /**
      * 应收/应付对账单列表,应收/应付对账单审核列表,应收/应付财务应付对账单列表
@@ -62,6 +68,45 @@ public class DataProcessingServiceImpl implements DataProcessingService {
                     .setSettlementCurrency(currencyInfoMap.get(e.getSettlementCurrency()))
                     .totalCurrencyAmount(currencyAmounts)
                     .assemblyVerificationInfo(verificationMap);
+        });
+    }
+
+
+    /**
+     * 财务核算数据处理
+     */
+    @Override
+    public void processingFinanceAccount(List<FinanceAccountVO> list, Integer type) {
+        List<String> mainOrders = list.stream().map(FinanceAccountVO::getOrderNo).collect(toList());
+
+        Set<String> billNos = new HashSet<>();
+
+        QueryWrapper<OrderPaymentBillDetail> condition = new QueryWrapper<>();
+        condition.lambda().select(OrderPaymentBillDetail::getBillNo)
+                .in(OrderPaymentBillDetail::getOrderNo, mainOrders);
+        List<OrderPaymentBillDetail> payBills = this.paymentBillDetailService.list(condition);
+
+        QueryWrapper<OrderReceivableBillDetail> reCondition = new QueryWrapper<>();
+        reCondition.lambda().select(OrderReceivableBillDetail::getBillNo)
+                .in(OrderReceivableBillDetail::getOrderNo, mainOrders);
+        List<OrderReceivableBillDetail> receivableBills = this.receivableBillDetailService.list(reCondition);
+
+        if (CollectionUtils.isNotEmpty(payBills)) {
+            billNos.addAll(payBills.stream().map(OrderPaymentBillDetail::getBillNo).collect(Collectors.toList()));
+        }
+        if (CollectionUtils.isNotEmpty(receivableBills)) {
+            billNos.addAll(receivableBills.stream().map(OrderReceivableBillDetail::getBillNo).collect(Collectors.toList()));
+        }
+
+        //统计合计币种金额
+        List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(new ArrayList<>(billNos));
+
+        //币种
+//        List<InitComboxStrVO> currencyInfo = omsClient.initCurrencyInfo().getData();
+//        Map<String, String> currencyInfoMap = currencyInfo.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+
+        list.forEach(e -> {
+            e.totalCurrencyAmount(currencyAmounts);
         });
     }
 }

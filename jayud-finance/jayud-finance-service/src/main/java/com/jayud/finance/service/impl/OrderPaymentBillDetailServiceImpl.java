@@ -810,6 +810,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.createTimeStr"));
         IPage<FinanceAccountVO> pageInfo = baseMapper.findFinanceAccountByPage(page, form);
+        this.dataProcessingService.processingFinanceAccount(pageInfo.getRecords(), null);
         return pageInfo;
     }
 

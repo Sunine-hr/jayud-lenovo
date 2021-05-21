@@ -17,10 +17,6 @@ public class QueryFabWarehouseForm extends BasePageForm{
     @JSONField(ordinal = 2)
     private String warehouseName;
 
-    @ApiModelProperty(value = "国家代码", position = 3)
-    @JSONField(ordinal = 3)
-    private String stateCode;
-
     @ApiModelProperty(value = "区域分组", position = 4)
     @JSONField(ordinal = 4)
     private String areaGroup;

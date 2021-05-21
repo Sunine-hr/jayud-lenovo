@@ -4,6 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -26,10 +27,6 @@ public class FabWarehouseForm {
     @ApiModelProperty(value = "仓库名称", position = 3)
     @JSONField(ordinal = 3)
     private String warehouseName;
-
-    @ApiModelProperty(value = "国家代码", position = 4)
-    @JSONField(ordinal = 4)
-    private String stateCode;
 
     @ApiModelProperty(value = "联系人", position = 5)
     @JSONField(ordinal = 5)
@@ -59,22 +56,6 @@ public class FabWarehouseForm {
     @JSONField(ordinal = 11)
     private String addressThirdly;
 
-    @ApiModelProperty(value = "省id", position = 12)
-    @JSONField(ordinal = 12)
-    private Integer pid;
-
-    @ApiModelProperty(value = "省/州名", position = 13)
-    @JSONField(ordinal = 13)
-    private String pname;
-
-    @ApiModelProperty(value = "城市id", position = 14)
-    @JSONField(ordinal = 14)
-    private Integer cid;
-
-    @ApiModelProperty(value = "城市名", position = 15)
-    @JSONField(ordinal = 15)
-    private String cname;
-
     @ApiModelProperty(value = "邮编", position = 16)
     @JSONField(ordinal = 16)
     private String zipCode;
@@ -92,10 +73,37 @@ public class FabWarehouseForm {
     @JSONField(ordinal = 19)
     private String userName;
 
+    @ApiModelProperty(value = "创建时间", position = 20)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JSONField(ordinal = 20, format="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
+
     @ApiModelProperty(value = "区域分组", position = 20)
     @JSONField(ordinal = 20)
     private String areaGroup;
 
-    private LocalDateTime createTime;
+    @ApiModelProperty(value = "国家代码")
+    private String countryCode;
+
+    @ApiModelProperty(value = "国家名称")
+    private String countryName;
+
+    @ApiModelProperty(value = "省/州代码")
+    private String stateCode;
+
+    @ApiModelProperty(value = "省/州名称")
+    private String stateName;
+
+    @ApiModelProperty(value = "城市代码")
+    private String cityCode;
+
+    @ApiModelProperty(value = "城市名称")
+    private String cityName;
+
+    @ApiModelProperty(value = "区县代码")
+    private String regionCode;
+
+    @ApiModelProperty(value = "区县名称")
+    private String regionName;
 
 }

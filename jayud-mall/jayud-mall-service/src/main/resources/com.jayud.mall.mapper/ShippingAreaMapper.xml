@@ -65,6 +65,12 @@
         <if test="form.warehouseName != null and form.warehouseName != ''">
             AND t.warehouse_name LIKE concat('%',#{form.warehouseName},'%')
         </if>
+        <if test="form.filterIds != null and form.filterIds.size() > 0">
+            AND t.id not in
+            <foreach collection="form.filterIds"  item="item" open="(" separator="," close=")"  >
+                #{item}
+            </foreach>
+        </if>
     </select>
 
     <select id="findShippingAreaByWarehouseCode" parameterType="java.lang.String" resultType="com.jayud.mall.model.vo.ShippingAreaVO">

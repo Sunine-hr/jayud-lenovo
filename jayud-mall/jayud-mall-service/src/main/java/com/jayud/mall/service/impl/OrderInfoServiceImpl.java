@@ -1504,10 +1504,28 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return CommonResult.error(-1, "订单不存在");
         }
         Long orderId = orderInfoVO.getId();//订单id
-        //订柜尺寸
+        //订柜尺寸  对应 `海运费`
         String reserveSize = orderInfoVO.getReserveSize();//订柜尺寸
         QuotationType quotationType = quotationTypeMapper.findQuotationTypeByCode(reserveSize);
         orderInfoVO.setReserveSizeName(quotationType.getName());
+
+        //报价模板id
+        Integer qie = orderInfoVO.getQie();
+        List<TemplateCopeReceivableVO> oceanFeeList =
+                templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
+
+        List<TemplateCopeReceivableVO> reserveSizeTemplateCopeReceivables = new ArrayList<>();
+
+        for (int i=0; i<oceanFeeList.size(); i++){
+            TemplateCopeReceivableVO templateCopeReceivableVO = oceanFeeList.get(i);
+            String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+            //查看订舱区间，判断费用代码是否相等，相等则列入海运费 费用明细
+            if(specificationCode.equals(reserveSize)){
+                reserveSizeTemplateCopeReceivables.add(templateCopeReceivableVO);
+                break;
+            }
+        }
+        orderInfoVO.setOceanFeeList(reserveSizeTemplateCopeReceivables);
 
         //物流轨迹
         List<LogisticsTrackVO> logisticsTrackVOS = logisticsTrackMapper.findLogisticsTrackByOrderId(orderInfoVO.getId().toString());

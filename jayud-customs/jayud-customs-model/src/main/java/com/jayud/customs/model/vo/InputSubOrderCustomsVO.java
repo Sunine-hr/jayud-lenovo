@@ -56,4 +56,9 @@ public class InputSubOrderCustomsVO {
     @ApiModelProperty(value = "监管方式")
     private String supervisionMode;
 
+    @ApiModelProperty(value = "主订单编号")
+    private String mainOrderNo;
+
+    @ApiModelProperty(value = "法人名称")
+    private String legalName;
 }

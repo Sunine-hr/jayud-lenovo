@@ -3,6 +3,7 @@ package com.jayud.customs.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
@@ -23,15 +24,13 @@ import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.*;
 import com.jayud.customs.service.IOrderCustomsService;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -368,5 +367,16 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
         }
         return passOrders;
+    }
+
+    @Override
+    public InputSubOrderCustomsVO getOrderCustomsByYunCustomsNo(String yunCustomsNo) {
+        OrderCustoms orderCustoms = getOne(Wrappers.<OrderCustoms>lambdaQuery().eq(OrderCustoms::getYunCustomsNo, yunCustomsNo));
+        if (Objects.isNull(orderCustoms)) {
+            return null;
+        }
+        InputSubOrderCustomsVO inputSubOrderCustomsVO = new InputSubOrderCustomsVO();
+        BeanUtils.copyProperties(orderCustoms,inputSubOrderCustomsVO);
+        return inputSubOrderCustomsVO;
     }
 }

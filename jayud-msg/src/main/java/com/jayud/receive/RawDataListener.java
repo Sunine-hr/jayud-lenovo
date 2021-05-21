@@ -1,11 +1,11 @@
 package com.jayud.receive;
 
 import com.alibaba.fastjson.JSONObject;
-import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.enums.KafkaMsgEnums;
 import com.jayud.feign.AirfreightClient;
+import com.jayud.feign.OmsClient;
 import com.jayud.feign.FinanceClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
@@ -33,6 +33,8 @@ public class RawDataListener {
     AirfreightClient airfreightClient;
     @Autowired
     FinanceClient financeClient;
+    @Autowired
+    OmsClient omsClient;
 
     /**
      * 实时获取kafka数据(生产一条，监听生产topic自动消费一条)
@@ -116,6 +118,12 @@ public class RawDataListener {
             msg.put("msg", value);
             Boolean aBoolean = financeClient.saveReceivableBill(JSONObject.toJSONString(msg));
             System.out.println(aBoolean);
+
+            log.info("写入OMS应收数据...");
+            Boolean saveOmsBoolean = omsClient.saveReceivableBill(JSONObject.toJSONString(msg));
+            if (saveOmsBoolean) {
+                log.info("写入OMS应收数据成功...");
+            }
 //            doLog(commonResult);
         }
         if (match(KafkaMsgEnums.FINANCE_CUSTOMS_PAYABLE, record)) {

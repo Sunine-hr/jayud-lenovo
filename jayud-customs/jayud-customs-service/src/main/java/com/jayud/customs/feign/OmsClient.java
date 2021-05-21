@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -118,4 +119,13 @@ public interface OmsClient {
     ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
                                             @RequestParam("legalIds") List<Long> legalIds,
                                             @RequestParam("orderNos")List<String> orderNos);
+
+    /**
+     * 推送应收单到报关
+     *
+     * @param msg
+     * @return
+     */
+    @RequestMapping(path = "/api/finance/oms/yunbaoguan/receivable/push", method = RequestMethod.POST)
+    Boolean saveReceivableBill(@RequestBody String msg);
 }

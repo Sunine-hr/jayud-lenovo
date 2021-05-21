@@ -20,6 +20,7 @@ import com.jayud.customs.model.enums.BGOrderStatusEnum;
 import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.vo.InitChangeStatusVO;
 import com.jayud.customs.model.vo.InputOrderCustomsVO;
+import com.jayud.customs.model.vo.InputSubOrderCustomsVO;
 import com.jayud.customs.model.vo.OrderCustomsVO;
 import com.jayud.customs.service.IOrderCustomsService;
 import io.swagger.annotations.Api;
@@ -279,6 +280,12 @@ public class ExternalApiController {
             return ApiResult.ok();
         }
         return ApiResult.ok(this.orderCustomsService.getAllPassByMainOrderNos(mainOrders));
+    }
+
+    @ApiModelProperty(value = "根据云报关单号查询订单号")
+    @RequestMapping(value = "/api/getOrderNoByYunCustomsNo")
+    public ApiResult<InputSubOrderCustomsVO> getOrderCustomsByYunCustomsNo(@RequestParam("yunCustomsNo") String yunCustomsNo){
+        return ApiResult.ok(this.orderCustomsService.getOrderCustomsByYunCustomsNo(yunCustomsNo));
     }
 }
 

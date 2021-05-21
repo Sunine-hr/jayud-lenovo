@@ -311,11 +311,11 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
                 if (Objects.isNull(receivableCost)) {
                     yunbaoguanReceivableCost.setApplyNo(form.getApplyNo());
                     yunbaoguanReceivableCost.setUid(form.getUid());
-                    yunbaoguanReceivableCost.setReceivableCostData(receivable);
+                    yunbaoguanReceivableCost.setReceivableCostData(JSONUtil.toJsonStr(receivable));
                     yunbaoguanReceivableCost.setCreatedTime(LocalDateTime.now());
                     yunbaoguanReceivableCost.setUpdatedTime(LocalDateTime.now());
                 } else {
-                    receivableCost.setReceivableCostData(receivable);
+                    receivableCost.setReceivableCostData(JSONUtil.toJsonStr(receivable));
                     receivableCost.setUpdatedTime(LocalDateTime.now());
                     yunbaoguanReceivableCost = receivableCost;
                 }

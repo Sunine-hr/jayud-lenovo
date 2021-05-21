@@ -117,4 +117,11 @@ public interface IOrderCustomsService extends IService<OrderCustoms> {
     List<String> getAllPassByMainOrderNos(List<String> mainOrders);
 
     Boolean updateProcessStatus(OrderCustoms orderCustoms, String auditUser, String auditTime);
+
+    /**
+     * 根据云报关单号查询订单号
+     * @param yunCustomsNo
+     * @return
+     */
+    InputSubOrderCustomsVO getOrderCustomsByYunCustomsNo(String yunCustomsNo);
 }

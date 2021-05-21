@@ -7,6 +7,7 @@ import com.jayud.oms.model.bo.CustomsChangeStatusForm;
 import com.jayud.oms.model.bo.InputOrderCustomsForm;
 import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputOrderCustomsVO;
+import com.jayud.oms.model.vo.InputSubOrderCustomsVO;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -81,4 +82,10 @@ public interface CustomsClient {
     @ApiModelProperty(value = "获取所用通过放行审核主订单号")
     @RequestMapping(value = "/api/getAllPassByMainOrderNos")
     public ApiResult<List<String>> getAllPassByMainOrderNos(@RequestParam("mainOrders") List<String> mainOrders);
+
+    /**
+     * 根据云报关单号查询订单号
+     */
+    @RequestMapping(value = "/api/getOrderNoByYunCustomsNo")
+    public ApiResult<InputSubOrderCustomsVO> getOrderNoByYunCustomsNo(@RequestParam("yunCustomsNo") String yunCustomsNo);
 }

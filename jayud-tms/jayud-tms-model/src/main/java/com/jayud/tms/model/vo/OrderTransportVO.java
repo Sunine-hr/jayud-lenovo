@@ -203,6 +203,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "应付费用状态")
     private String paymentCostStatus;
 
+    @ApiModelProperty(value = "标识")
+    private String mark="zgys";
+
 //    public String getEntireAddress1() {
 ////        String stateName1 = this.stateName1;
 ////        String cityName1 = this.cityName1;

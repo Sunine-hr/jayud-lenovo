@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/quotationtype")
-@Api(tags = "A020-client-报价类型表接口")
+@Api(tags = "C020-client-报价类型表接口")
 @ApiSort(value = 20)
 public class QuotationTypeController {
 

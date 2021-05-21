@@ -130,26 +130,27 @@ public class FinanceAccountVO {
     }
 
     public FinanceAccountVO totalCurrencyAmount(List<Map<String, Object>> currencyAmounts) {
+        BigDecimal rmb = new BigDecimal(0), dollar = new BigDecimal(0), euro = new BigDecimal(0), hKDollar=new BigDecimal(0);
         for (Map<String, Object> currencyAmount : currencyAmounts) {
             Object moneyType = currencyAmount.get("moneyType");
             //1-应付 2-应收
-            String billNo = moneyType.equals(1) ? payBillNo : recBillNo;
+            String billNo = "1".equals(moneyType) ? payBillNo : recBillNo;
             if (!billNo.contains(MapUtil.getStr(currencyAmount, "billNo"))) {
                 continue;
             }
             String key = "amount";
-            BigDecimal rmb = null, dollar = null, euro = null, hKDollar=null;
+
             if ("CNY".equals(currencyAmount.get("currencyCode"))) {
-                rmb = (BigDecimal) currencyAmount.get(key);
+                rmb = rmb.add((BigDecimal) currencyAmount.get(key));
             }
             if ("USD".equals(currencyAmount.get("currencyCode"))) {
-                dollar = (BigDecimal) currencyAmount.get(key);
+                dollar = dollar.add((BigDecimal) currencyAmount.get(key));
             }
             if ("EUR".equals(currencyAmount.get("currencyCode"))) {
-                euro = (BigDecimal) currencyAmount.get(key);
+                euro = euro.add((BigDecimal) currencyAmount.get(key));
             }
             if ("HKD".equals(currencyAmount.get("currencyCode"))) {
-                hKDollar = (BigDecimal) currencyAmount.get(key);
+                hKDollar = hKDollar.add((BigDecimal) currencyAmount.get(key));
             }
             switch (moneyType.toString()) {
                 case "1":

@@ -32,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import static com.jayud.common.enums.CreateUserTypeEnum.*;
@@ -2312,7 +2314,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderPaymentCost> paymentCost = this.paymentCostService.getReceivableBinding(new OrderPaymentCost()
                 .setMainOrderNo(mainOrderNo).setIsSumToMain(true));
         //合拼操作
-        Map<Long, OrderPaymentCost> oldBinds = paymentCost.stream().collect(Collectors.toMap(OrderPaymentCost::getReceivableId, e -> e));
+        ConcurrentMap<Long, OrderPaymentCost> oldBinds = paymentCost.stream().collect(Collectors.toConcurrentMap(OrderPaymentCost::getReceivableId, e -> e));
         //添加/修改
         List<OrderPaymentCost> addOrUpdate = new ArrayList<>();
         //应付供应商是子订单操作主体

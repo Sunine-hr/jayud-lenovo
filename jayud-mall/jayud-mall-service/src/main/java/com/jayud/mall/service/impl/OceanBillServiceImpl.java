@@ -436,7 +436,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             return CommonResult.error(-1, "配载id不存在");
         }
 
-        //1.保存提单
+
         OceanBill oceanBill = ConvertUtil.convert(form, OceanBill.class);
         Long id = oceanBill.getId();
         if (ObjectUtil.isEmpty(id)){
@@ -476,7 +476,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             }
         }
         oceanBill.setOperationTeamId(operationTeamId);
-
+        //1.保存提单
         this.saveOrUpdate(oceanBill);
         Long obId = oceanBill.getId();//提单id
         List<OceanCounterForm> oceanCounterForms = form.getOceanCounterForms();

@@ -680,6 +680,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             Map<String, BigDecimal> exchangeRates = this.currencyRateService.getExchangeRates("CNY", accountTermStr);
             if (exchangeRates.get(settlementCurrency) == null) {
                 msg.add("结算币种:" + currencyRateService.getNameByCode(settlementCurrency) + ",兑换币种:人民币;");
+                flag = false;
             }
         }
         if (!flag) {

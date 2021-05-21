@@ -19,7 +19,7 @@ public class CommonPageDraftResult<T> extends CommonPageResult<T>{
     private Long placedNum;
     @ApiModelProperty(value = "已收货")
     private Long receivedNum;
-    @ApiModelProperty(value = "转运中")
+    @ApiModelProperty(value = "转运中") // * 前端状态
     private Long transitNum;
     @ApiModelProperty(value = "已签收")
     private Long signedNum;
@@ -28,16 +28,21 @@ public class CommonPageDraftResult<T> extends CommonPageResult<T>{
     @ApiModelProperty(value = "已取消")
     private Long cancelNum;
 
+    @ApiModelProperty(value = "订单确认") // * 后端状态
+    private Long affirmNum;
+
     public CommonPageDraftResult(IPage pageInfo, Map<String, Long> totalMap) {
         super(pageInfo);
-        Long draftNum = MapUtil.getLong(totalMap, "draftNum");
-        Long updateNum = MapUtil.getLong(totalMap, "updateNum");
-        Long placedNum = MapUtil.getLong(totalMap, "placedNum");
-        Long receivedNum = MapUtil.getLong(totalMap, "receivedNum");
-        Long transitNum = MapUtil.getLong(totalMap, "transitNum");
-        Long signedNum = MapUtil.getLong(totalMap, "signedNum");
-        Long finishNum = MapUtil.getLong(totalMap, "finishNum");
-        Long cancelNum = MapUtil.getLong(totalMap, "cancelNum");
+        Long draftNum = MapUtil.getLong(totalMap, "draftNum") == null ? 0 : MapUtil.getLong(totalMap, "draftNum");
+        Long updateNum = MapUtil.getLong(totalMap, "updateNum") == null ? 0 : MapUtil.getLong(totalMap, "updateNum");
+        Long placedNum = MapUtil.getLong(totalMap, "placedNum") == null ? 0 : MapUtil.getLong(totalMap, "placedNum");
+        Long receivedNum = MapUtil.getLong(totalMap, "receivedNum") == null ? 0 : MapUtil.getLong(totalMap, "receivedNum");
+        Long transitNum = MapUtil.getLong(totalMap, "transitNum") == null ? 0 : MapUtil.getLong(totalMap, "transitNum");
+        Long signedNum = MapUtil.getLong(totalMap, "signedNum") == null ? 0 : MapUtil.getLong(totalMap, "signedNum");
+        Long finishNum = MapUtil.getLong(totalMap, "finishNum") == null ? 0 : MapUtil.getLong(totalMap, "finishNum");
+        Long cancelNum = MapUtil.getLong(totalMap, "cancelNum") == null ? 0 : MapUtil.getLong(totalMap, "cancelNum");
+        Long affirmNum = MapUtil.getLong(totalMap, "affirmNum") == null ? 0 : MapUtil.getLong(totalMap, "affirmNum");
+
         this.draftNum = draftNum;
         this.updateNum = updateNum;
         this.placedNum = placedNum;
@@ -46,5 +51,6 @@ public class CommonPageDraftResult<T> extends CommonPageResult<T>{
         this.signedNum = signedNum;
         this.finishNum = finishNum;
         this.cancelNum = cancelNum;
+        this.affirmNum = affirmNum;
     }
 }

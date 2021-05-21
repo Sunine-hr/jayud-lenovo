@@ -36,7 +36,7 @@ public class OrderInfoController {
     @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageDraftResult<OrderInfoVO>> findOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
         IPage<OrderInfoVO> pageList = orderInfoService.findOrderInfoByPage(form);
-        Map<String,Long> totalMap = orderInfoService.findOrderInfoDraftCount(form);
+        Map<String,Long> totalMap = orderInfoService.findOrderInfoAfterCount(form);
         CommonPageDraftResult<OrderInfoVO> draftResult = new CommonPageDraftResult(pageList, totalMap);
         return CommonResult.success(draftResult);
     }

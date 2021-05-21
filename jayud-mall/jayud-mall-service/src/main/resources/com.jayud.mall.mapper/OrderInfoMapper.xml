@@ -176,6 +176,16 @@
         and t.front_status_code = #{form.frontStatusCode}
     </select>
 
+    <select id="findOrderInfoAfterCount" parameterType="com.jayud.mall.model.bo.QueryOrderInfoForm" resultType="java.lang.Long">
+        select count(t.id) number from order_info t
+        where 1=1
+        <if test="form.customerId != null">
+            and t.customer_id = #{form.customerId}
+        </if>
+        and t.after_status_code = #{form.afterStatusCode}
+
+    </select>
+
     <select id="findOrderConfInfoByOrderId" parameterType="java.lang.Long" resultType="java.lang.String">
         select
         CONCAT('配载单号:',orderConfNo,CHAR(10),'提单号:',oceanBillNo,CHAR(10),'柜号:',cntr_no,';',CHAR(10)) confinfo

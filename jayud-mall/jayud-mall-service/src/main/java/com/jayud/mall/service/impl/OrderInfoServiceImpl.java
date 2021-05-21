@@ -1679,6 +1679,54 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
+    public Map<String,Long> findOrderInfoAfterCount(QueryOrderInfoForm form) {
+        CustomerUser customerUser = baseService.getCustomerUser();
+        if(ObjectUtil.isNotEmpty(customerUser)){
+            form.setCustomerId(customerUser.getId().intValue());
+        }
+
+        //订单后端主状态
+
+        //AFTER_DRAFT("0", "草稿"),
+        form.setAfterStatusCode(OrderEnum.AFTER_DRAFT.getCode());
+        Long draftNum = orderInfoMapper.findOrderInfoAfterCount(form);
+        //AFTER_UPDATE("9", "补资料"),
+        form.setAfterStatusCode(OrderEnum.AFTER_UPDATE.getCode());
+        Long updateNum = orderInfoMapper.findOrderInfoAfterCount(form);
+        //AFTER_PLACED("10", "已下单"),
+        form.setAfterStatusCode(OrderEnum.AFTER_PLACED.getCode());
+        Long placedNum = orderInfoMapper.findOrderInfoAfterCount(form);
+        //AFTER_RECEIVED("20", "已收货"),
+        form.setAfterStatusCode(OrderEnum.AFTER_RECEIVED.getCode());
+        Long receivedNum = orderInfoMapper.findOrderInfoAfterCount(form);
+        //AFTER_AFFIRM("30", "订单确认"),
+        form.setAfterStatusCode(OrderEnum.AFTER_AFFIRM.getCode());
+        Long affirmNum = orderInfoMapper.findOrderInfoAfterCount(form);
+        //AFTER_SIGNED("40", "已签收"),
+        form.setAfterStatusCode(OrderEnum.AFTER_SIGNED.getCode());
+        Long signedNum = orderInfoMapper.findOrderInfoAfterCount(form);
+        //AFTER_FINISH("50", "已完成"),
+        form.setAfterStatusCode(OrderEnum.AFTER_FINISH.getCode());
+        Long finishNum = orderInfoMapper.findOrderInfoAfterCount(form);
+        //AFTER_CANCEL("-1", "已取消"),
+        form.setAfterStatusCode(OrderEnum.AFTER_CANCEL.getCode());
+        Long cancelNum = orderInfoMapper.findOrderInfoAfterCount(form);
+
+        Map<String,Long> totalMap = new HashMap<>();
+        totalMap.put("draftNum", draftNum);//草稿
+        totalMap.put("updateNum", updateNum);//补资料
+        totalMap.put("placedNum", placedNum);//已下单
+        totalMap.put("receivedNum", receivedNum);//已收货
+        totalMap.put("affirmNum", affirmNum);//订单确认 *后端状态
+        totalMap.put("signedNum", signedNum);//已签收
+        totalMap.put("finishNum", finishNum);//已完成
+        totalMap.put("cancelNum", cancelNum);//已取消
+
+        return totalMap;
+    }
+
+
+    @Override
     public CommonResult<List<String>> printOrderMark(Long orderId) {
         //订单信息
         OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfo(orderId);

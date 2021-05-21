@@ -43,5 +43,7 @@ public class Department extends Model<Department> {
     @ApiModelProperty(value = "主体id")
     private Long legalId;
 
+    @ApiModelProperty(value = "排序")
+    private Integer sort;
 
 }

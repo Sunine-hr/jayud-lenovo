@@ -164,7 +164,13 @@ public class OrderCommonController {
             isTrailer = true;
         }
 
-//
+        //订单列表
+        String mark = MapUtil.getStr(map, "mark");
+        if (SubOrderSignEnum.ZGYS.getSignOne().equals(mark)) {
+            result.put("licensePlate", MapUtil.getStr(map, "plateNumber"));
+            result.put("takeTimeStr", MapUtil.getStr(map, "takeTimeStr"));
+        }
+
         result.put("mainOrderNo", mainOrderNo);
         result.put("subOrderNo", MapUtil.getStr(map, "orderNo"));
         result.put("goodsInfo", MapUtil.getStr(map, "goodsInfo"));
@@ -174,9 +180,9 @@ public class OrderCommonController {
         result.put("isSea", isSea);
         result.put("cabinet", MapUtil.getStr(map, "cabinetTypeName") + "/" + MapUtil.getStr(map, "cabinetSizeName"));
         result.put("isTrailer", isTrailer);
-        result.put("cabinetSizeName",MapUtil.getStr(map,"cabinetSizeName"));
-        result.put("plateNumber",MapUtil.getStr(map,"plateNumber"));
-        result.put("dateStr",MapUtil.getStr(map,"dateStr"));
+        result.put("cabinetSizeName", MapUtil.getStr(map, "cabinetSizeName"));
+
+        result.put("dateStr", MapUtil.getStr(map, "dateStr"));
         return CommonResult.success(result);
     }
 

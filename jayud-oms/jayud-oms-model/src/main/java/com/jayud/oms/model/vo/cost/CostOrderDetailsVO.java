@@ -29,9 +29,10 @@ public class CostOrderDetailsVO {
             InputOrderTransportVO orderTransportForm = orderVO.getOrderTransportForm();
             if (orderTransportForm != null) {
                 CostOrderTransportVO orderTransport = new CostOrderTransportVO();
-                orderTransport.setOrderNo(orderTransportForm.getOrderNo());
-                orderTransport.setVehicleSize(orderTransportForm.getVehicleSize());
-                orderTransport.assemblyTakeAdr(orderTransportForm.getOrderTakeAdrForms1());
+                orderTransport.assemblyData(orderTransportForm);
+//                orderTransport.setOrderNo(orderTransportForm.getOrderNo());
+//                orderTransport.setVehicleSize(orderTransportForm.getVehicleSize());
+//                orderTransport.assemblyTakeAdr(orderTransportForm.getOrderTakeAdrForms1());
                 orderTransportList.add(orderTransport);
             }
         }

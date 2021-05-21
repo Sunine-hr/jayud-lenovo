@@ -288,12 +288,13 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Override
     public List<QueryOrgStructureVO> findOrgStructure() {
         List<QueryOrgStructureVO> queryOrgStructureVOS = new ArrayList<>();
-        List<DepartmentVO> departmentVOS = departmentService.findDepartment(null);
+        List<DepartmentVO> departmentVOS = departmentService.getDepartment(null);
         for (DepartmentVO departmentVO : departmentVOS) {
             QueryOrgStructureVO orgStructureVO = new QueryOrgStructureVO();
             orgStructureVO.setId(departmentVO.getId());
             orgStructureVO.setFId(departmentVO.getFId());
             orgStructureVO.setLabel(departmentVO.getName());
+            orgStructureVO.setSort(departmentVO.getSort());
             queryOrgStructureVOS.add(orgStructureVO);
         }
         return convertDepartTree(queryOrgStructureVOS, 0L);

@@ -27,6 +27,13 @@ public interface ISystemDepartmentService extends IService<Department> {
      */
     List<DepartmentVO> findDepartment(Long id);
 
+    /**
+     * 部门
+     * @param id
+     * @return
+     */
+    public List<DepartmentVO> getDepartment(Long id);
+
 
     /**
      * 根据父级部门查子部门

@@ -36,4 +36,7 @@ public class DepartmentVO {
     @ApiModelProperty(value = "法人主体id")
     private Long legalId;
 
+    @ApiModelProperty(value = "排序")
+    private Integer sort;
+
 }

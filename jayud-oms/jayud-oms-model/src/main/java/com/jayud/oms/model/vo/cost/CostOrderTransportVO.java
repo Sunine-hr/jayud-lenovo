@@ -3,9 +3,11 @@ package com.jayud.oms.model.vo.cost;
 import cn.hutool.core.collection.CollectionUtil;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.vo.InputOrderTakeAdrVO;
+import com.jayud.oms.model.vo.InputOrderTransportVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -38,11 +40,11 @@ public class CostOrderTransportVO {
 //    private String encode;
 
 
-//    @ApiModelProperty(value = "香港车牌")
+    //    @ApiModelProperty(value = "香港车牌")
 //    private String hkLicensePlate;
 //
-//    @ApiModelProperty(value = "大陆车牌")
-//    private String licensePlate;
+    @ApiModelProperty(value = "大陆车牌")
+    private String licensePlate;
 
     @ApiModelProperty(value = "车型(3T)")
     private String vehicleSize;
@@ -134,6 +136,8 @@ public class CostOrderTransportVO {
 
     @ApiModelProperty(value = "卸货地址")
     private String goodsInfo;
+    @ApiModelProperty(value = "提货时间")
+    private String takeTimeStr;
 
 
     public void assemblyTakeAdr(List<InputOrderTakeAdrVO> orderTakeAdrForms2) {
@@ -144,7 +148,7 @@ public class CostOrderTransportVO {
         for (InputOrderTakeAdrVO inputOrderTakeAdrVO : orderTakeAdrForms2) {
             sb.append(inputOrderTakeAdrVO.getGoodsDesc())
                     .append("/")
-                    .append(inputOrderTakeAdrVO.getPlateAmount()==null?0:inputOrderTakeAdrVO.getPlateAmount()).append("板")
+                    .append(inputOrderTakeAdrVO.getPlateAmount() == null ? 0 : inputOrderTakeAdrVO.getPlateAmount()).append("板")
                     .append("/")
                     .append(inputOrderTakeAdrVO.getPieceAmount()).append("件数")
                     .append("/")
@@ -152,6 +156,16 @@ public class CostOrderTransportVO {
                     .append(",");
         }
         goodsInfo = sb.toString();
+        this.takeTimeStr = DateUtils.format(orderTakeAdrForms2.get(0).getTakeTimeStr(), DateUtils.DATE_PATTERN);
+    }
+
+    public void assemblyData(InputOrderTransportVO orderTransportForm) {
+        this.orderNo = orderTransportForm.getOrderNo();
+        this.vehicleSize = orderTransportForm.getVehicleSize();
+        //车牌
+        this.licensePlate = orderTransportForm.getLicensePlate();
+        //提货地址
+        this.assemblyTakeAdr(orderTransportForm.getOrderTakeAdrForms1());
     }
 
 

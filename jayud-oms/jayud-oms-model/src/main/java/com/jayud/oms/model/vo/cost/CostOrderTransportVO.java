@@ -41,8 +41,8 @@ public class CostOrderTransportVO {
 //    @ApiModelProperty(value = "香港车牌")
 //    private String hkLicensePlate;
 //
-//    @ApiModelProperty(value = "大陆车牌")
-//    private String licensePlate;
+    @ApiModelProperty(value = "大陆车牌")
+    private String licensePlate;
 
     @ApiModelProperty(value = "车型(3T)")
     private String vehicleSize;

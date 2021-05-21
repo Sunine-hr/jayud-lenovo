@@ -41,6 +41,11 @@ public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMap
     }
 
     @Override
+    public List<DepartmentVO> getDepartment(Long id) {
+        return this.baseMapper.getDepartment();
+    }
+
+    @Override
     public List<QueryOrgStructureVO> findDepartmentByfId(Long fId) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("f_id", fId);

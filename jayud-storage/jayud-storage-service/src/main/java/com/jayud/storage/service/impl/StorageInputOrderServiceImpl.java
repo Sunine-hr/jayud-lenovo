@@ -209,7 +209,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         for (InGoodsOperationRecordForm inGoodsOperationRecord : inGoodsOperationRecords) {
             List<GoodsLocationRecordForm> goodsLocationRecordForms = inGoodsOperationRecord.getGoodsLocationRecordForms();
             for (GoodsLocationRecordForm goodsLocationRecordForm : goodsLocationRecordForms) {
-                if(goodsLocationRecordForm.getKuId()!=null && goodsLocationRecordForm.getNumber()!=null){
+                if(goodsLocationRecordForm.getKuCode()!=null && goodsLocationRecordForm.getNumber()!=null){
                     GoodsLocationRecord goodsLocationRecord = ConvertUtil.convert(goodsLocationRecordForm, GoodsLocationRecord.class);
                     goodsLocationRecord.setInGoodId(inGoodsOperationRecord.getId());
                     goodsLocationRecord.setCreateUser(UserOperator.getToken());
@@ -366,8 +366,8 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
                 return false;
             }
             InGoodsOperationRecord inGoodsOperationRecord = new InGoodsOperationRecord();
-            inGoodsOperationRecord.setOrderId(warehouseGoodsForm.getOrderId());
-            inGoodsOperationRecord.setOrderNo(warehouseGoodsForm.getOrderNo());
+            inGoodsOperationRecord.setOrderId(form.getOrderId());
+            inGoodsOperationRecord.setOrderNo(form.getOrderNo());
             inGoodsOperationRecord.setWarehousingBatchNo(form.getWarehousingBatchNo());
             inGoodsOperationRecord.setName(warehouseGoodsForm.getName());
             inGoodsOperationRecord.setSku(warehouseGoodsForm.getSku());

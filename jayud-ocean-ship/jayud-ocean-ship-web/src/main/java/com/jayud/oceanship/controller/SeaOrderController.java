@@ -203,6 +203,8 @@ public class SeaOrderController {
             //拼装结算单位
             record.assemblyUnitCodeInfo(unitCodeInfo);
 
+            record.setSubUnitCode(record.getUnitCode());
+
             //处理地址信息
             for (OrderAddressVO address : resultOne.getData()) {
                 address.getFile(prePath);

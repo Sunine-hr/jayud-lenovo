@@ -83,6 +83,8 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     //@ApiModelProperty(value = "结算单位")
     private String unitCode;
 
+    private String subUnitCode;
+
     @ApiModelProperty(value = "结算单位")
     private String unitCodeName;
 

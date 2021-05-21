@@ -93,6 +93,10 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     //@ApiModelProperty(value = "结算单位")
     private String unitCode;
 
+    //@ApiModelProperty(value = "结算单位code")
+    //@ApiModelProperty(value = "结算单位")
+    private String subUnitCode;
+
     @ApiModelProperty(value = "结算单位")
     private String unitCodeName;
 

@@ -144,7 +144,7 @@ public class StorageInputOrderDetails extends Model<StorageInputOrderDetails> {
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "仓库id")
-    private String warehouseId;
+    private Long warehouseId;
 
     @Override
     protected Serializable pkVal() {

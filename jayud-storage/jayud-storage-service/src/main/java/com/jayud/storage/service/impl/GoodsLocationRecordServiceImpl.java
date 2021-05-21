@@ -34,10 +34,11 @@ public class GoodsLocationRecordServiceImpl extends ServiceImpl<GoodsLocationRec
     }
 
     @Override
-    public GoodsLocationRecord getListByGoodIdAndKuId(Long inGoodId, Long kuId) {
+    public GoodsLocationRecord getListByGoodIdAndKuCode(Long inGoodId, String kuCode) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("inGood_id",inGoodId);
-        queryWrapper.eq("ku_id",kuId);
+        queryWrapper.eq("ku_code",kuCode);
         return this.baseMapper.selectOne(queryWrapper);
     }
+
 }

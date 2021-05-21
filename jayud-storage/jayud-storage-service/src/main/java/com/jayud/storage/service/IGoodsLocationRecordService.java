@@ -19,6 +19,5 @@ public interface IGoodsLocationRecordService extends IService<GoodsLocationRecor
 
     List<GoodsLocationRecord> getListByGoodId(Long id, Long orderId, String sku);
 
-    GoodsLocationRecord getListByGoodIdAndKuId(Long inGoodId, Long kuId);
-
+    GoodsLocationRecord getListByGoodIdAndKuCode(Long inGoodId, String kuCode);
 }

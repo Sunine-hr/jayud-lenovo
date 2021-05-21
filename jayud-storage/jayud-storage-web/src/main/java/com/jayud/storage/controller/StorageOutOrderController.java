@@ -231,11 +231,9 @@ public class StorageOutOrderController {
                 Integer number = 0;
                 for (GoodsLocationRecordFormVO goodsLocationRecordForm : goodsLocationRecordForms) {
                     number = number + goodsLocationRecordForm.getNumber();
-                    GoodsLocationRecord goodsLocationRecord = goodsLocationRecordService.getListByGoodIdAndKuId(goodsLocationRecordForm.getIngoodId(),goodsLocationRecordForm.getKuId());
+                    GoodsLocationRecord goodsLocationRecord = goodsLocationRecordService.getListByGoodIdAndKuCode(goodsLocationRecordForm.getInGoodId(),goodsLocationRecordForm.getKuCode());
                     if(goodsLocationRecord.getNumber()<goodsLocationRecordForm.getNumber()){//填的商品超过了该库位的总商品数
-                        //通过库位id获取库位名字
-                        WarehouseAreaShelvesLocation warehouseAreaShelvesLocation = warehouseAreaShelvesLocationService.getById(goodsLocationRecordForm.getKuId());
-                        return CommonResult.error(400, warehouseAreaShelvesLocation+"的该商品最大数量为"+goodsLocationRecord.getNumber());
+                        return CommonResult.error(400, goodsLocationRecordForm.getKuCode()+"的该商品最大数量为"+goodsLocationRecord.getNumber());
                     }
                 }
                 if(outWarehouseGoodsForm.getNumber()!=number){
@@ -325,15 +323,15 @@ public class StorageOutOrderController {
                 //数量小于这个库位的数量，循环结束，
                 if(goodsLocationRecord.getNumber()>=number){
                     GoodsLocationRecordFormVO goodsLocationRecordFormVO = new GoodsLocationRecordFormVO();
-                    goodsLocationRecordFormVO.setKuId(goodsLocationRecord.getKuId());
-                    goodsLocationRecordFormVO.setIngoodId(goodsLocationRecord.getInGoodId());
+                    goodsLocationRecordFormVO.setKuCode(goodsLocationRecord.getKuCode());
+                    goodsLocationRecordFormVO.setInGoodId(goodsLocationRecord.getInGoodId());
                     goodsLocationRecordFormVO.setNumber(number);
                     goodsLocationRecordFormVOS.add(goodsLocationRecordFormVO);
                     break;
                 }else if(goodsLocationRecord.getNumber()<number){
                     GoodsLocationRecordFormVO goodsLocationRecordFormVO = new GoodsLocationRecordFormVO();
-                    goodsLocationRecordFormVO.setKuId(goodsLocationRecord.getKuId());
-                    goodsLocationRecordFormVO.setIngoodId(goodsLocationRecord.getInGoodId());
+                    goodsLocationRecordFormVO.setKuCode(goodsLocationRecord.getKuCode());
+                    goodsLocationRecordFormVO.setInGoodId(goodsLocationRecord.getInGoodId());
                     goodsLocationRecordFormVO.setNumber(goodsLocationRecord.getNumber());
                     goodsLocationRecordFormVOS.add(goodsLocationRecordFormVO);
                 }

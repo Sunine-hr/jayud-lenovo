@@ -18,10 +18,10 @@ import java.time.LocalDateTime;
 public class GoodsLocationRecordFormVO extends Model<GoodsLocationRecordFormVO> {
 
     @ApiModelProperty(value = "库位id")
-    private Long kuId;
+    private String kuCode;
 
     @ApiModelProperty(value = "入库商品id")
-    private Long ingoodId;
+    private Long inGoodId;
 
     @ApiModelProperty(value = "入库商品数量")
     private Integer number;

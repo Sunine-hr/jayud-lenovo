@@ -24,10 +24,10 @@ import java.time.LocalDateTime;
 public class GoodsLocationRecordForm extends Model<GoodsLocationRecordForm> {
 
     @ApiModelProperty(value = "库位id")
-    private Long kuId;
+    private Long kuCode;
 
     @ApiModelProperty(value = "入库商品id")
-    private Long ingoodId;
+    private Long inGoodId;
 
     @ApiModelProperty(value = "入库商品数量")
     private Integer number;

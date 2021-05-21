@@ -60,6 +60,9 @@ public class WarehouseGoodsLocationVO {
     @ApiModelProperty(value = "入库批次号")
     private String warehousingBatchNo;
 
+    @ApiModelProperty(value = "备注")
+    private String remarks;
+
     @ApiModelProperty(value = "出库库位以及对应的商品和数量")
     private List<GoodsLocationRecordFormVO> goodsLocationRecordForms;
 

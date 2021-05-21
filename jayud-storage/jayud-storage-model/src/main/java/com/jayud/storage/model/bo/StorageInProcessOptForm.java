@@ -74,7 +74,7 @@ public class StorageInProcessOptForm {
     private Long id;
 
     @ApiModelProperty(value = "仓库id")
-    private String warehouseId;
+    private Long warehouseId;
 
     @ApiModelProperty(value = "操作id")
     private List<Long> operationId;

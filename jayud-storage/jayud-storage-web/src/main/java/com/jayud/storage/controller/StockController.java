@@ -95,6 +95,7 @@ public class StockController {
         //获取查询的库位以及该库位的商品
         String sku = MapUtil.getStr(map, "sku");
         String locationCode = MapUtil.getStr(map, "locationCode");
+
         return CommonResult.success();
     }
 }

@@ -231,6 +231,8 @@ public class TrailerOrderController {
             //获取车型大小
             record.assemblyCabinetSize(cabinetSizeInfo);
 
+            record.setSubUnitCode(record.getUnitCode());
+
             //处理地址信息
             if (resultOne.getData() != null && resultOne.getData().size() > 0) {
                 List<TrailerOrderAddressVO> trailerOrderAddressVOS = new ArrayList<>();

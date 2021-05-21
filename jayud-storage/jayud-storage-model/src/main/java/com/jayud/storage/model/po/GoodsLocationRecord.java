@@ -30,8 +30,8 @@ public class GoodsLocationRecord extends Model<GoodsLocationRecord> {
       @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "库位id")
-    private Long kuId;
+    @ApiModelProperty(value = "库位code")
+    private String kuCode;
 
     @ApiModelProperty(value = "入库商品id")
     @TableField("inGood_id")

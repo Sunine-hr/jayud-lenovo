@@ -33,3 +33,43 @@ CREATE TABLE `jayud_shop`.`order_interior_status`
 
 SET
 FOREIGN_KEY_CHECKS=1;
+
+
+
+-- fab_warehouse
+SET
+FOREIGN_KEY_CHECKS=0;
+
+ALTER TABLE `jayud_shop`.`fab_warehouse`
+    ADD COLUMN `country_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '国家代码' AFTER `area_group`;
+
+ALTER TABLE `jayud_shop`.`fab_warehouse`
+    ADD COLUMN `country_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '国家名称' AFTER `country_code`;
+
+ALTER TABLE `jayud_shop`.`fab_warehouse`
+    ADD COLUMN `state_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '省/州名称' AFTER `state_code`;
+
+ALTER TABLE `jayud_shop`.`fab_warehouse`
+    ADD COLUMN `city_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '城市代码' AFTER `state_name`;
+
+ALTER TABLE `jayud_shop`.`fab_warehouse`
+    ADD COLUMN `city_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '城市名称' AFTER `city_code`;
+
+ALTER TABLE `jayud_shop`.`fab_warehouse`
+    ADD COLUMN `region_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '区县代码' AFTER `city_name`;
+
+ALTER TABLE `jayud_shop`.`fab_warehouse`
+    ADD COLUMN `region_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '区县名称' AFTER `region_code`;
+
+ALTER TABLE `jayud_shop`.`fab_warehouse` MODIFY COLUMN `state_code` varchar (255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '省/州代码' AFTER `country_name`;
+
+ALTER TABLE `jayud_shop`.`fab_warehouse` DROP COLUMN `pid`;
+
+ALTER TABLE `jayud_shop`.`fab_warehouse` DROP COLUMN `pname`;
+
+ALTER TABLE `jayud_shop`.`fab_warehouse` DROP COLUMN `cid`;
+
+ALTER TABLE `jayud_shop`.`fab_warehouse` DROP COLUMN `cname`;
+
+SET
+FOREIGN_KEY_CHECKS=1;

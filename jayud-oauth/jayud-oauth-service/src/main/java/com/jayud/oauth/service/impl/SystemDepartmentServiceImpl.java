@@ -33,11 +33,11 @@ public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMap
     @Override
     public List<DepartmentVO> findDepartment(Long id) {
         QueryWrapper queryWrapper = null;
-        if(id != null) {
+        if (id != null) {
             queryWrapper = new QueryWrapper();
             queryWrapper.eq("id", id);
         }
-        return ConvertUtil.convertList(baseMapper.selectList(queryWrapper),DepartmentVO.class);
+        return ConvertUtil.convertList(baseMapper.selectList(queryWrapper), DepartmentVO.class);
     }
 
     @Override
@@ -50,39 +50,40 @@ public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMap
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("f_id", fId);
         List<Department> departments = baseMapper.selectList(queryWrapper);
-        return ConvertUtil.convertList(departments,QueryOrgStructureVO.class);
+        return ConvertUtil.convertList(departments, QueryOrgStructureVO.class);
     }
 
     @Override
     public void saveOrUpdateDepartment(AddDepartmentForm form) {
         Department department = new Department();
         String loginUser = userService.getLoginUser().getName();
-        if(form.getId() != null) {
+        if (form.getId() != null) {
             department.setUpdatedUser(loginUser);
             department.setId(form.getId());
             QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("id",form.getId());
+            queryWrapper.eq("id", form.getId());
             Department department2 = baseMapper.selectOne(queryWrapper);
             form.setFId(department2.getFId());
-        }else {
+        } else {
             department.setCreatedUser(loginUser);
-            if(form.getFId() != null && !"".equals(form.getFId())){
+            if (form.getFId() != null && !"".equals(form.getFId())) {
                 department.setFId(form.getFId());
             }
             department.setName(form.getName());
         }
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("id",form.getFId());
+        queryWrapper.eq("id", form.getFId());
         Department department1 = baseMapper.selectOne(queryWrapper);
         department.setName(form.getName());
         department.setLegalId(department1.getLegalId());
+        department.setSort(form.getSort());
         saveOrUpdate(department);
     }
 
     @Override
     public Department getByDeptName(String deptName) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("name",deptName);
+        queryWrapper.eq("name", deptName);
         Department department = baseMapper.selectOne(queryWrapper);
         return department;
     }
@@ -91,10 +92,10 @@ public class SystemDepartmentServiceImpl extends ServiceImpl<SystemDepartmentMap
     public void saveOrUpdateCompany(AddCompanyForm form) {
         Department department = new Department();
         String loginUser = userService.getLoginUser().getName();
-        if(form.getId() != null && form.getId()!=-1l) {
+        if (form.getId() != null && form.getId() != -1l) {
             department.setUpdatedUser(loginUser);
             department.setId(form.getId());
-        }else {
+        } else {
             department.setCreatedUser(loginUser);
             department.setLegalId(form.getLegalId());
             department.setName(form.getName());

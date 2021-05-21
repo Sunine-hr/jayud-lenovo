@@ -294,6 +294,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
             orgStructureVO.setId(departmentVO.getId());
             orgStructureVO.setFId(departmentVO.getFId());
             orgStructureVO.setLabel(departmentVO.getName());
+            orgStructureVO.setSort(departmentVO.getSort());
             queryOrgStructureVOS.add(orgStructureVO);
         }
         return convertDepartTree(queryOrgStructureVOS, 0L);

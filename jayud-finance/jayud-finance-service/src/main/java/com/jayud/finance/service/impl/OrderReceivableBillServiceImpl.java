@@ -676,6 +676,11 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                     flag = false;
                 }
             }
+            //推金蝶,需要配置结算币种本币金额
+            Map<String, BigDecimal> exchangeRates = this.currencyRateService.getExchangeRates("CNY", accountTermStr);
+            if (exchangeRates.get(settlementCurrency) == null) {
+                msg.add("结算币种:" + currencyRateService.getNameByCode(settlementCurrency) + ",兑换币种:人民币;");
+            }
         }
         if (!flag) {
             msg.forEach(sb::append);
@@ -688,6 +693,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
 
     /**
      * 统计账单
+     *
      * @param orderBillCostTotalVOS
      * @param orderReceivableBill
      * @param orderNos

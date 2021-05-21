@@ -79,5 +79,5 @@ public interface ICurrencyRateService extends IService<CurrencyRate> {
      *
      * @return
      */
-    Map<String, BigDecimal> getExchangeRates(String dcid, String month);
+    Map<String, BigDecimal> getExchangeRates(String dcCode, String month);
 }

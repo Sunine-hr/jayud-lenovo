@@ -18,6 +18,9 @@ public class QueryOrgStructureVO {
     @ApiModelProperty(value = "父级部门ID")
     private Long fId;
 
+    @ApiModelProperty(value = "排序")
+    private Integer sort;
+
     private List<QueryOrgStructureVO> children;
 
 }

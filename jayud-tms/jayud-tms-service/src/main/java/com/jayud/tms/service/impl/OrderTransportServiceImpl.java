@@ -220,15 +220,10 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
         List<OrderTransportVO> pageList = pageInfo.getRecords();
         List<String> subOrderNos = pageList.stream().map(OrderTransportVO::getOrderNo).collect(Collectors.toList());
-        //查询提货商品信息
-//        List<OrderTakeAdr> orderTakeAdrs = this.orderTakeAdrService.getOrderTakeAdrByOrderNos(subOrderNos, OrderTakeAdrTypeEnum.ONE.getCode());
-        //是否录用费用
 
 
-//        List<OrderTransportVO> pageList = pageInfo.getRecords();
-//        List<String> orderNo = pageList.stream().map(OrderTransportVO::getOrderNo).collect(Collectors.toList());
-//        List<OrderTakeAdr> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrByOrderNos(orderNo, null);
         List<OrderTakeAdrInfoVO> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrInfos(subOrderNos, null);
+        //是否录用费用
         Map<String, Object> data = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.ZGYS.getSignOne()).getData();
         Map<String, Object> costStatus = omsClient.getCostStatus(null, subOrderNos).getData();
         for (OrderTransportVO orderTransportVO : pageList) {

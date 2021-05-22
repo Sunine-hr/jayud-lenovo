@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class QueryOrderTmsForm extends BasePageForm{
+public class QueryOrderTmsForm extends BasePageForm {
 
     @ApiModelProperty(value = "订单号")
     private String orderNo;
@@ -32,7 +32,10 @@ public class QueryOrderTmsForm extends BasePageForm{
     @ApiModelProperty(value = "当前登录用户,前台传")
     private String loginUserName;
 
-    @ApiModelProperty(value = "操作指令",required = true)
+    @ApiModelProperty(value = "当前用户账户类型(1-用户 2-客户 3-供应商)")
+    private String accountType;
+
+    @ApiModelProperty(value = "操作指令", required = true)
     @NotEmpty(message = "cmd is required")
     private String cmd;
 

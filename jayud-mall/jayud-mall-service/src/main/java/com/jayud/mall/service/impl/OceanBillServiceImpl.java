@@ -97,6 +97,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     ICounterCaseInfoService counterCaseInfoService;
     @Autowired
     IBillOrderRelevanceService billOrderRelevanceService;
+    @Autowired
+    IFeeCopeWithService feeCopeWithService;
 
 
     @Override
@@ -481,21 +483,46 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         Long obId = oceanBill.getId();//提单id
         List<OceanCounterForm> oceanCounterForms = form.getOceanCounterForms();
 
-        if(CollUtil.isNotEmpty(oceanCounterForms)){
-            List<OceanCounter> oceanCounterList = new ArrayList<>();
-            oceanCounterForms.forEach(oceanCounterForm -> {
-                OceanCounter oceanCounter = ConvertUtil.convert(oceanCounterForm, OceanCounter.class);
-                oceanCounter.setObId(obId);
-                oceanCounter.setStatus("1");//状态(0无效 1有效)
-                oceanCounter.setCreateTime(LocalDateTime.now());
-                oceanCounterList.add(oceanCounter);
+        //2.保存提单对应-费用信息
+        List<FeeCopeWithForm> feeCopeWithList = form.getFeeCopeWithList();
+        //先刪除
+        QueryWrapper<FeeCopeWith> qwFeeCopeWith = new QueryWrapper<>();
+        qwFeeCopeWith.eq("qie", obId);
+        qwFeeCopeWith.eq("business_type", 1);//业务类型(1提单费用 2柜子费用)
+        feeCopeWithService.remove(qwFeeCopeWith);
+        if(CollUtil.isNotEmpty(feeCopeWithList)){
+            List<FeeCopeWith> feeCopeWiths = ConvertUtil.convertList(feeCopeWithList, FeeCopeWith.class);
+            feeCopeWiths.forEach(feeCopeWith -> {
+                feeCopeWith.setQie(obId.intValue());//提单id(ocean_bill id)/柜子id(ocean_counter id) 这里是提单id
+                feeCopeWith.setBusinessType(1);//业务类型(1提单费用 2柜子费用)
+                //计算 总金额=数量 * 单价
+                Integer c = feeCopeWith.getCount() == null ? 0 : feeCopeWith.getCount();//数量
+                BigDecimal count = new BigDecimal(c.toString());
+                BigDecimal unitPrice = feeCopeWith.getUnitPrice() == null ? new BigDecimal("0") : feeCopeWith.getUnitPrice();//单价
+                BigDecimal amount = count.multiply(unitPrice);
+                feeCopeWith.setAmount(amount);
             });
-            //2.保存提单对应的柜子
-            QueryWrapper<OceanCounter> oceanCounterQueryWrapper = new QueryWrapper<>();
-            oceanCounterQueryWrapper.eq("ob_id", obId);
-            oceanCounterService.remove(oceanCounterQueryWrapper);
-            oceanCounterService.saveOrUpdateBatch(oceanCounterList);
+            //在保存
+            feeCopeWithService.saveOrUpdateBatch(feeCopeWiths);
         }
+
+        //单独添加保存柜子，不在这里保存柜子了
+//        if(CollUtil.isNotEmpty(oceanCounterForms)){
+//            List<OceanCounter> oceanCounterList = new ArrayList<>();
+//            oceanCounterForms.forEach(oceanCounterForm -> {
+//                OceanCounter oceanCounter = ConvertUtil.convert(oceanCounterForm, OceanCounter.class);
+//                oceanCounter.setObId(obId);
+//                oceanCounter.setStatus("1");//状态(0无效 1有效)
+//                oceanCounter.setCreateTime(LocalDateTime.now());
+//                oceanCounterList.add(oceanCounter);
+//            });
+//            //2.保存提单对应的柜子
+//            QueryWrapper<OceanCounter> oceanCounterQueryWrapper = new QueryWrapper<>();
+//            oceanCounterQueryWrapper.eq("ob_id", obId);
+//            oceanCounterService.remove(oceanCounterQueryWrapper);
+//            oceanCounterService.saveOrUpdateBatch(oceanCounterList);
+//        }
+
         OceanBillVO oceanBillVO = ConvertUtil.convert(oceanBill, OceanBillVO.class);
 
         //3.保存提单关联任务
@@ -700,8 +727,32 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "提单id不能为空");
         }
         OceanCounter oceanCounter = ConvertUtil.convert(form, OceanCounter.class);
+        //1.保存(提单)柜子
         oceanCounterService.saveOrUpdate(oceanCounter);
+        Long counterId = oceanCounter.getId();
         OceanCounterVO oceanCounterVO = ConvertUtil.convert(oceanCounter, OceanCounterVO.class);
+
+        //2.保存(提单)柜子对应-费用信息
+        List<FeeCopeWithForm> feeCopeWithList = form.getFeeCopeWithList();
+        //先刪除
+        QueryWrapper<FeeCopeWith> qwFeeCopeWith = new QueryWrapper<>();
+        qwFeeCopeWith.eq("qie", counterId);
+        qwFeeCopeWith.eq("business_type", 2);//业务类型(1提单费用 2柜子费用)
+        if(CollUtil.isNotEmpty(feeCopeWithList)){
+            List<FeeCopeWith> feeCopeWiths = ConvertUtil.convertList(feeCopeWithList, FeeCopeWith.class);
+            feeCopeWiths.forEach(feeCopeWith -> {
+                feeCopeWith.setQie(counterId.intValue());//提单id(ocean_bill id)/柜子id(ocean_counter id) 这里是柜子id
+                feeCopeWith.setBusinessType(2);//业务类型(1提单费用 2柜子费用)
+                //计算 总金额=数量 * 单价
+                Integer c = feeCopeWith.getCount() == null ? 0 : feeCopeWith.getCount();//数量
+                BigDecimal count = new BigDecimal(c.toString());
+                BigDecimal unitPrice = feeCopeWith.getUnitPrice() == null ? new BigDecimal("0") : feeCopeWith.getUnitPrice();//单价
+                BigDecimal amount = count.multiply(unitPrice);
+                feeCopeWith.setAmount(amount);
+            });
+            //在保存
+            feeCopeWithService.saveOrUpdateBatch(feeCopeWiths);
+        }
         return oceanCounterVO;
     }
 

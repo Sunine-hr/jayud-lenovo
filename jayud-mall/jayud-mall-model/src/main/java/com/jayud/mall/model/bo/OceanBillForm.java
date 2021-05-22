@@ -100,4 +100,8 @@ public class OceanBillForm {
     //@NotEmpty(message = "提单对应货柜信息list必填") 非必填
     private List<OceanCounterForm> oceanCounterForms;
 
+
+    @ApiModelProperty(value = "费用信息")
+    private List<FeeCopeWithForm> feeCopeWithList;
+
 }

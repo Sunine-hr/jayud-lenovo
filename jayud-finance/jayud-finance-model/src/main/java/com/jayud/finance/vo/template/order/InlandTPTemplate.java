@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -143,6 +144,9 @@ public class InlandTPTemplate {
 
 
     public void assemblyPickUpInfo() {
+        if (CollectionUtils.isEmpty(pickUpAddressList)){
+            return;
+        }
         StringBuilder addrs = new StringBuilder();
         StringBuilder goodsInfo = new StringBuilder();
         Integer totalNum = 0;

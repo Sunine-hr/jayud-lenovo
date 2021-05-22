@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.*;
+import com.jayud.mall.model.po.OrderClearanceFile;
+import com.jayud.mall.model.po.OrderCustomsFile;
 import com.jayud.mall.model.po.OrderInfo;
 import com.jayud.mall.model.vo.*;
 
@@ -116,6 +118,22 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<OrderInfoVO> lookOrderInfoDetails(Long id);
+
+    /**
+     * 获取订单报关文件list
+     * @param orderInfo
+     * @param offerInfoId
+     * @return
+     */
+    List<OrderCustomsFile> getOrderCustomsFiles(OrderInfo orderInfo, Integer offerInfoId);
+
+    /**
+     * 获取订单清关文件list
+     * @param orderInfo
+     * @param offerInfoId
+     * @return
+     */
+    List<OrderClearanceFile> getOrderClearanceFiles(OrderInfo orderInfo, Integer offerInfoId);
 
     /**
      * 订单下单-暂存订单

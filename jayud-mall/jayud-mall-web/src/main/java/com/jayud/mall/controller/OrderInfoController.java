@@ -6,9 +6,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageDraftResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.model.bo.OrderInfoCustomerForm;
 import com.jayud.mall.model.bo.OrderInfoForm;
 import com.jayud.mall.model.bo.QueryOrderInfoForm;
+import com.jayud.mall.model.po.OrderClearanceFile;
+import com.jayud.mall.model.po.OrderCustomsFile;
+import com.jayud.mall.model.po.OrderInfo;
 import com.jayud.mall.model.vo.OrderCaseVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
 import com.jayud.mall.model.vo.OrderPickVO;
@@ -237,8 +241,8 @@ public class OrderInfoController {
 
     //查询客户订单
     @ApiOperation(value = "查询客户订单list")
-    @PostMapping("/findOrderInfoByCustomer")
     @ApiOperationSupport(order = 13)
+    @PostMapping("/findOrderInfoByCustomer")
     public CommonResult<List<OrderInfoVO>> findOrderInfoByCustomer(){
         CustomerUser customerUser = baseService.getCustomerUser();
         OrderInfoCustomerForm form = new OrderInfoCustomerForm();
@@ -247,6 +251,26 @@ public class OrderInfoController {
         return CommonResult.success(orderInfoVOS);
     }
 
+    //查询获取-订单报关文件
+    @ApiOperation(value = "查询获取-订单报关文件")
+    @ApiOperationSupport(order = 14)
+    @PostMapping("/getOrderCustomsFiles")
+    public CommonResult<List<OrderCustomsFile>> getOrderCustomsFiles(@Valid @RequestBody OrderInfoForm form){
+        OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
+        Integer offerInfoId = orderInfo.getOfferInfoId();//报价id，运价id
+        List<OrderCustomsFile> orderCustomsFiles = orderInfoService.getOrderCustomsFiles(orderInfo, offerInfoId);
+        return CommonResult.success(orderCustomsFiles);
+    }
 
+    //查询获取-订单清关文件
+    @ApiOperation(value = "查询获取-订单清关文件")
+    @ApiOperationSupport(order = 15)
+    @PostMapping("/getOrderClearanceFiles")
+    public CommonResult<List<OrderClearanceFile>> getOrderClearanceFiles(@Valid @RequestBody OrderInfoForm form){
+        OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
+        Integer offerInfoId = orderInfo.getOfferInfoId();//报价id，运价id
+        List<OrderClearanceFile> orderClearanceFiles = orderInfoService.getOrderClearanceFiles(orderInfo, offerInfoId);
+        return CommonResult.success(orderClearanceFiles);
+    }
 
 }

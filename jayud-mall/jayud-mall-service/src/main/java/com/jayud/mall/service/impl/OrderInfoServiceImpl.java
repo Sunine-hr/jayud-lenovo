@@ -693,6 +693,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //订单对应报关文件 order_customs_file
         //`need_declare` int(11) DEFAULT NULL COMMENT '是否需要报关0-否，1-是 (订单对应报关文件:order_customs_file)',
         List<OrderCustomsFile> orderCustomsFileList = getOrderCustomsFiles(orderInfo, offerInfoId);
+        orderCustomsFileList.forEach(orderCustomsFile -> {
+            orderCustomsFile.setOrderId(orderInfo.getId().intValue());
+        });
         QueryWrapper<OrderCustomsFile> orderCustomsFileQueryWrapper = new QueryWrapper<>();
         orderCustomsFileQueryWrapper.eq("order_id", orderInfo.getId());
         orderCustomsFileService.remove(orderCustomsFileQueryWrapper);
@@ -701,6 +704,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //订单对应清关文件 order_clearance_file
         //`need_clearance` int(11) DEFAULT NULL COMMENT '是否需要清关0-否，1-是 (订单对应清关文件:order_clearance_file)',
         List<OrderClearanceFile> orderClearanceFileList = getOrderClearanceFiles(orderInfo, offerInfoId);
+        orderClearanceFileList.forEach(orderClearanceFile -> {
+            orderClearanceFile.setOrderId(orderInfo.getId().intValue());
+        });
         QueryWrapper<OrderClearanceFile> orderClearanceFileQueryWrapper = new QueryWrapper<>();
         orderClearanceFileQueryWrapper.eq("order_id", orderInfo.getId());
         orderClearanceFileService.remove(orderClearanceFileQueryWrapper);
@@ -961,7 +967,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      * @param offerInfoId
      * @return
      */
-    private List<OrderCustomsFile> getOrderCustomsFiles(OrderInfo orderInfo, Integer offerInfoId) {
+    @Override
+    public List<OrderCustomsFile> getOrderCustomsFiles(OrderInfo orderInfo, Integer offerInfoId) {
         /*
         0 否 对应 买关，
         1 是 对应 独立。
@@ -972,7 +979,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         "C,清关服务-买单报关" +
         "D,清关服务-独立报关", position = 2)
         */
-        Integer needDeclare = orderInfo.getNeedDeclare();
+        Integer needDeclare = orderInfo.getNeedDeclare();//是否需要报关0-否，1-是 (订单对应报关文件:order_customs_file)
         List<OrderCustomsFile> orderCustomsFileList = new ArrayList<>();
         List<TemplateFileVO> templateFileByOrder = new ArrayList<>();
         if(needDeclare == 0){
@@ -1012,7 +1019,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      * @param offerInfoId
      * @return
      */
-    private List<OrderClearanceFile> getOrderClearanceFiles(OrderInfo orderInfo, Integer offerInfoId) {
+    @Override
+    public List<OrderClearanceFile> getOrderClearanceFiles(OrderInfo orderInfo, Integer offerInfoId) {
         /*
         0 否 对应 买关，
         1 是 对应 独立。
@@ -1023,7 +1031,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         "C,清关服务-买单报关" +
         "D,清关服务-独立报关", position = 2)
         */
-        Integer needClearance = orderInfo.getNeedClearance();
+        Integer needClearance = orderInfo.getNeedClearance();//是否需要清关0-否，1-是 (订单对应清关文件:order_clearance_file)
         List<OrderClearanceFile> orderClearanceFileList = new ArrayList<>();
         List<TemplateFileVO> templateFileByOrder = new ArrayList<>();
         if(needClearance == 0){
@@ -1214,6 +1222,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //订单对应报关文件 order_customs_file
         //`need_declare` int(11) DEFAULT NULL COMMENT '是否需要报关0-否，1-是 (订单对应报关文件:order_customs_file)',
         List<OrderCustomsFile> orderCustomsFileList = getOrderCustomsFiles(orderInfo, offerInfoId);
+        orderCustomsFileList.forEach(orderCustomsFile -> {
+            orderCustomsFile.setOrderId(orderInfo.getId().intValue());
+        });
         QueryWrapper<OrderCustomsFile> orderCustomsFileQueryWrapper = new QueryWrapper<>();
         orderCustomsFileQueryWrapper.eq("order_id", orderInfo.getId());
         orderCustomsFileService.remove(orderCustomsFileQueryWrapper);
@@ -1222,6 +1233,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //订单对应清关文件 order_clearance_file
         //`need_clearance` int(11) DEFAULT NULL COMMENT '是否需要清关0-否，1-是 (订单对应清关文件:order_clearance_file)',
         List<OrderClearanceFile> orderClearanceFileList = getOrderClearanceFiles(orderInfo, offerInfoId);
+        orderClearanceFileList.forEach(orderClearanceFile -> {
+            orderClearanceFile.setOrderId(orderInfo.getId().intValue());
+        });
         QueryWrapper<OrderClearanceFile> orderClearanceFileQueryWrapper = new QueryWrapper<>();
         orderClearanceFileQueryWrapper.eq("order_id", orderInfo.getId());
         orderClearanceFileService.remove(orderClearanceFileQueryWrapper);

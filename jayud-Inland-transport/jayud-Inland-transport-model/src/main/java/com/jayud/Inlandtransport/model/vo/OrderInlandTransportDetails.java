@@ -106,15 +106,17 @@ public class OrderInlandTransportDetails extends Model<OrderInlandTransportDetai
             return;
         }
         deliveryAddresses.forEach(e -> {
-            if (OrderAddressEnum.PICK_UP.getCode().equals(e.getAddressType())) {
-                pickUpAddressList.add(e);
-                pickUpFile = new ArrayList<>();
-                pickUpFile.addAll(e.getFileViewList());
-            }
-            if (OrderAddressEnum.DELIVERY.getCode().equals(e.getAddressType())) {
-                orderDeliveryAddressList.add(e);
-                deliveryFile = new ArrayList<>();
-                deliveryFile.addAll(e.getFileViewList());
+            if (this.id.equals(e.getBusinessId())) {
+                if (OrderAddressEnum.PICK_UP.getCode().equals(e.getAddressType())) {
+                    pickUpAddressList.add(e);
+                    pickUpFile = new ArrayList<>();
+                    pickUpFile.addAll(e.getFileViewList());
+                }
+                if (OrderAddressEnum.DELIVERY.getCode().equals(e.getAddressType())) {
+                    orderDeliveryAddressList.add(e);
+                    deliveryFile = new ArrayList<>();
+                    deliveryFile.addAll(e.getFileViewList());
+                }
             }
         });
     }

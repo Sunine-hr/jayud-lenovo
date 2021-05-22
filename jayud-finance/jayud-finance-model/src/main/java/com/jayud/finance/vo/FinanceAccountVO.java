@@ -1,6 +1,7 @@
 package com.jayud.finance.vo;
 
 import cn.hutool.core.map.MapUtil;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.finance.enums.BillEnum;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
@@ -130,12 +131,12 @@ public class FinanceAccountVO {
     }
 
     public FinanceAccountVO totalCurrencyAmount(List<Map<String, Object>> currencyAmounts) {
-        BigDecimal rmb = new BigDecimal(0), dollar = new BigDecimal(0), euro = new BigDecimal(0), hKDollar=new BigDecimal(0);
+        BigDecimal rmb = new BigDecimal(0), dollar = new BigDecimal(0), euro = new BigDecimal(0), hKDollar = new BigDecimal(0);
         for (Map<String, Object> currencyAmount : currencyAmounts) {
             Object moneyType = currencyAmount.get("moneyType");
             //1-应付 2-应收
             String billNo = "1".equals(moneyType) ? payBillNo : recBillNo;
-            if (!billNo.contains(MapUtil.getStr(currencyAmount, "billNo"))) {
+            if (StringUtils.isEmpty(billNo) || !billNo.contains(MapUtil.getStr(currencyAmount, "billNo"))) {
                 continue;
             }
             String key = "amount";

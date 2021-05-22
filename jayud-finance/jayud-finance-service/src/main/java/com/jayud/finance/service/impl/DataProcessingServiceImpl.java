@@ -77,6 +77,9 @@ public class DataProcessingServiceImpl implements DataProcessingService {
      */
     @Override
     public void processingFinanceAccount(List<FinanceAccountVO> list, Integer type) {
+        if (CollectionUtils.isEmpty(list)) {
+            return;
+        }
         List<String> mainOrders = list.stream().map(FinanceAccountVO::getOrderNo).collect(toList());
 
         Set<String> billNos = new HashSet<>();

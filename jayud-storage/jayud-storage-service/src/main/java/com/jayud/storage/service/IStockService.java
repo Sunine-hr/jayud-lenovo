@@ -5,6 +5,7 @@ import com.jayud.storage.model.bo.QueryStockForm;
 import com.jayud.storage.model.po.Stock;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.storage.model.po.WarehouseGoods;
+import com.jayud.storage.model.vo.StockLocationNumberVO;
 import com.jayud.storage.model.vo.StockVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -45,4 +46,6 @@ public interface IStockService extends IService<Stock> {
      * @return
      */
     boolean changeInventory(String orderNo, Long id);
+
+    StockLocationNumberVO getListBySkuAndLocationCode(String sku, String locationCode,Long customerId);
 }

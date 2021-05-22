@@ -11,13 +11,15 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.QueryStockForm;
 import com.jayud.storage.model.bo.QueryStorageOrderForm;
-import com.jayud.storage.model.vo.StockVO;
-import com.jayud.storage.model.vo.StorageInputOrderFormVO;
+import com.jayud.storage.model.vo.*;
+import com.jayud.storage.service.IInGoodsOperationRecordService;
 import com.jayud.storage.service.IStockService;
+import com.jayud.storage.service.IWarehouseGoodsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.MapUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -40,9 +43,17 @@ import java.util.*;
 @RequestMapping("/stock")
 public class StockController {
 
+    @Autowired
     private OmsClient omsClient;
 
+    @Autowired
     private IStockService stockService;
+
+    @Autowired
+    private IInGoodsOperationRecordService inGoodsOperationRecordService;
+
+    @Autowired
+    private IWarehouseGoodsService warehouseGoodsService;
 
     @ApiOperation("库存查询")
     @PostMapping("/findByPage")
@@ -95,8 +106,20 @@ public class StockController {
         //获取查询的库位以及该库位的商品
         String sku = MapUtil.getStr(map, "sku");
         String locationCode = MapUtil.getStr(map, "locationCode");
+        Long customerId = MapUtil.getLong(map, "customer_id");
 
+        //获取该库位该商品的可用库存
+        StockLocationNumberVO stockLocationNumberVO = stockService.getListBySkuAndLocationCode(sku,locationCode,customerId);
+
+        //获取入库操作记录
+        List<InGoodsOperationRecordFormVO> inGoodsOperationRecordFormVOS = inGoodsOperationRecordService.getListBySkuAndLocationCode(sku,locationCode,customerId);
+        List<OutGoodsOperationRecordFormVO> outGoodsOperationRecordFormVOS = warehouseGoodsService.getListBySkuAndLocationCode(sku,locationCode,customerId);
         return CommonResult.success();
+    }
+
+    //获取存仓时长
+    public String getStorageTime(LocalDateTime time){
+        return null;
     }
 }
 

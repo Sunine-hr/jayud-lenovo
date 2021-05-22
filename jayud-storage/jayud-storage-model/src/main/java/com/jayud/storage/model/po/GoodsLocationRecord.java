@@ -40,6 +40,9 @@ public class GoodsLocationRecord extends Model<GoodsLocationRecord> {
     @ApiModelProperty(value = "入库商品数量")
     private Integer number;
 
+    @ApiModelProperty(value = "未出库商品数量")
+    private Integer unDeliveredQuantity;
+
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;
 

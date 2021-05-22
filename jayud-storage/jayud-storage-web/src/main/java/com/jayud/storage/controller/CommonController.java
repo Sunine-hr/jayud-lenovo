@@ -166,7 +166,7 @@ public class CommonController {
         return CommonResult.success(warehouseAreaShelvesLocations);
     }
 
-    @ApiOperation(value = "库位添加下拉列表框")
+    @ApiOperation(value = "货架类型下拉列表框")
     @PostMapping(value = "/locationComBox")
     public CommonResult locationComBox(){
         List<InitComboxSVO> data = omsClient.initDictNameByDictTypeCode("shelfType").getData();

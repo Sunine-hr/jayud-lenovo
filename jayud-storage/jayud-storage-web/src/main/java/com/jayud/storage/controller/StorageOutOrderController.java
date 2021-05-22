@@ -310,10 +310,10 @@ public class StorageOutOrderController {
 
         ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageOutOrderVO.getMainOrderNo()));
         convert.assemblyMainOrderData(result.getData());
-        convert.assemblyPickingListData(storageOutOrderVO.getGoodsFormLists());
+        convert.assemblyPickingListData(storageOutOrderVO.getGoodsFormList());
 
         List<WarehouseGoodsLocationVO> goodsFormList = new ArrayList<>();
-        for (WarehouseGoodsVO warehouseGoodsVO : storageOutOrderVO.getGoodsFormLists()) {
+        for (WarehouseGoodsVO warehouseGoodsVO : storageOutOrderVO.getGoodsFormList()) {
             WarehouseGoodsLocationVO warehouseGoodsLocationVO = ConvertUtil.convert(warehouseGoodsVO, WarehouseGoodsLocationVO.class);
             List<GoodsLocationRecord> goodsLocationRecords = goodsLocationRecordService.getListByGoodId(warehouseGoodsVO.getId(),warehouseGoodsVO.getOrderId(),warehouseGoodsVO.getSku());
             Integer number = warehouseGoodsVO.getNumber();

@@ -3,6 +3,8 @@ package com.jayud.storage.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.jayud.storage.mapper.InGoodsOperationRecordMapper;
+import com.jayud.storage.model.vo.InGoodsOperationRecordFormVO;
+import com.jayud.storage.model.vo.InGoodsOperationRecordNumberVO;
 import com.jayud.storage.service.IInGoodsOperationRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -58,4 +60,19 @@ public class InGoodsOperationRecordServiceImpl extends ServiceImpl<InGoodsOperat
     public List<InGoodsOperationRecord> getListBySku(String sku) {
         return this.baseMapper.getListBySku(sku);
     }
+
+    @Override
+    public InGoodsOperationRecord getListByWarehousingBatchNoAndSku(String warehousingBatchNo, String sku) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("warehousing_batch_no",warehousingBatchNo);
+        queryWrapper.eq("sku",sku);
+        return this.baseMapper.selectOne(queryWrapper);
+    }
+
+    @Override
+    public List<InGoodsOperationRecordFormVO> getListBySkuAndLocationCode(String sku, String locationCode,Long customerId) {
+        return this.baseMapper.getListBySkuAndLocationCode(sku,locationCode,customerId);
+    }
+
+
 }

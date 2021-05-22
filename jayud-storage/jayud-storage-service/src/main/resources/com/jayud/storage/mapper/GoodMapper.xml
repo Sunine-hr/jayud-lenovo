@@ -31,7 +31,7 @@
     <select id="findGoodsByPage" resultType="com.jayud.storage.model.vo.GoodVO">
         select id, name, sku, customer_id customerId, specification_model specificationModel, status, create_user createUser, create_time createTime,
          remarks, customer_code customerCode, good_length goodLength, good_width goodWidth,
-         good_height goodHeight, commodity_value commodityValue, date_of_manufacture dateOfManufacture, expiration_date expirationDate,customer_name customerName
+         good_height goodHeight, commodity_value commodityValue, date_of_manufacture dateOfManufacture, expiration_date expirationDate,customer_name customerName,good_weight goodWeight
          from good where status = 1
          <if test="form.name!=null || form.name!=''">
           and good.name like concat('%',#{form.name},'%')
@@ -40,7 +40,7 @@
             and good.sku like concat('%',#{form.sku},'%')
         </if>
         <if test="form.customerName!=null || form.customerName!=''">
-            and good.customerName like concat('%',#{form.customerName},'%')
+            and good.customer_name like concat('%',#{form.customerName},'%')
         </if>
         order by createTime desc
     </select>

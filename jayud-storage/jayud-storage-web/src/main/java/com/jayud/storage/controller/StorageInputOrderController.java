@@ -371,6 +371,7 @@ public class StorageInputOrderController {
         }
 
         StorageInProcessOptFormVO storageInProcessOptFormVO = ConvertUtil.convert(storageInputOrderDetails, StorageInProcessOptFormVO.class);
+
         List<Long> longs = new ArrayList<>();
         List<Long> list1 = new ArrayList<>();
         if(storageInputOrderDetails.getCardTypeId()!=null){
@@ -392,6 +393,7 @@ public class StorageInputOrderController {
         storageInProcessOptFormVO.setWarehouseGoodsForms(list);
 
         for (WarehouseGoodsVO warehouseGoodsVO : list) {
+            warehouseGoodsVO.setIsSubmit(storageInputOrder.getIsSubmit());
             List<InGoodsOperationRecord> inGoodsOperationRecords = inGoodsOperationRecordService.getList(storageInputOrder.getId(), storageInputOrder.getOrderNo(),warehouseGoodsVO.getName());
             Double totalWeight = 0.0;
             Integer totalAmount = 0;
@@ -399,10 +401,10 @@ public class StorageInputOrderController {
             Integer totalPCS = 0;
 
             for (InGoodsOperationRecord inGoodsOperationRecord : inGoodsOperationRecords) {
-                totalAmount = totalAmount + inGoodsOperationRecord.getNumber();
-                totalJAmount = totalJAmount + inGoodsOperationRecord.getBoardNumber();
-                totalPCS = totalPCS + inGoodsOperationRecord.getPcs();
-                totalWeight = totalWeight + inGoodsOperationRecord.getWeight();
+                totalAmount = totalAmount + (inGoodsOperationRecord.getNumber()==null ? 0 : inGoodsOperationRecord.getNumber());
+                totalJAmount = totalJAmount + (inGoodsOperationRecord.getBoardNumber()==null ? 0 : inGoodsOperationRecord.getBoardNumber());
+                totalPCS = totalPCS + (inGoodsOperationRecord.getPcs()==null ? 0 : inGoodsOperationRecord.getPcs());
+                totalWeight = totalWeight + (inGoodsOperationRecord.getWeight()==null ? 0 : inGoodsOperationRecord.getWeight());
             }
             StringBuffer stringBuffer = new StringBuffer();
             stringBuffer.append(totalJAmount).append("板").append("/")
@@ -436,14 +438,25 @@ public class StorageInputOrderController {
             storageInputOrderDetails = new StorageInputOrderDetails();
         }
 
+
         StorageInProcessOptFormVO storageInProcessOptFormVO = ConvertUtil.convert(storageInputOrderDetails, StorageInProcessOptFormVO.class);
         storageInProcessOptFormVO.setWarehousingBatchNo(warehousingBatchNo);
         List<InGoodsOperationRecord> inGoodsOperationRecords = inGoodsOperationRecordService.getListByWarehousingBatchNo(warehousingBatchNo);
         List<InGoodsOperationRecordVO> inGoodsOperationRecordVOS = ConvertUtil.convertList(inGoodsOperationRecords, InGoodsOperationRecordVO.class);
+        System.out.println("inGoodsOperationRecordVOS============="+inGoodsOperationRecordVOS);
         storageInProcessOptFormVO.setInGoodsOperationRecords(inGoodsOperationRecordVOS);
 
+        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
+        for (InitComboxWarehouseVO initComboxWarehouseVO : data2) {
+            if(initComboxWarehouseVO.getId().equals(storageInputOrderDetails.getWarehouseId())){
+                storageInProcessOptFormVO.setWarehouseName(initComboxWarehouseVO.getName());
+                storageInProcessOptFormVO.setWarehousePhone(initComboxWarehouseVO.getPhone());
+                storageInProcessOptFormVO.setWarehouseAddress(initComboxWarehouseVO.getAddress());
+            }
+        }
+
         ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageInProcessOptFormVO.getMainOrderNo()));
-        storageInProcessOptFormVO.assemblyMainOrderData(result);
+        storageInProcessOptFormVO.assemblyMainOrderData(result.getData());
         storageInProcessOptFormVO.setMainOrderNo(storageInputOrder.getMainOrderNo());
         storageInProcessOptFormVO.setOrderId(storageInputOrder.getId());
         storageInProcessOptFormVO.setOrderNo(storageInputOrder.getOrderNo());

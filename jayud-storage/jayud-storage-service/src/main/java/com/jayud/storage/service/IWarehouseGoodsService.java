@@ -2,6 +2,7 @@ package com.jayud.storage.service;
 
 import com.jayud.storage.model.po.WarehouseGoods;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.storage.model.vo.OutGoodsOperationRecordFormVO;
 import com.jayud.storage.model.vo.WarehouseGoodsVO;
 
 import java.util.List;
@@ -41,4 +42,12 @@ public interface IWarehouseGoodsService extends IService<WarehouseGoods> {
      * @return
      */
     List<WarehouseGoodsVO> getList1(Long id, String orderNo);
+
+    /**
+     * 获取出库操作记录
+     * @param sku
+     * @param locationCode
+     * @return
+     */
+    List<OutGoodsOperationRecordFormVO> getListBySkuAndLocationCode(String sku, String locationCode,Long customerId);
 }

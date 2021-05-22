@@ -11,9 +11,11 @@ import com.jayud.storage.model.po.Good;
 import com.jayud.storage.model.po.Stock;
 import com.jayud.storage.mapper.StockMapper;
 import com.jayud.storage.model.po.WarehouseGoods;
+import com.jayud.storage.model.vo.StockLocationNumberVO;
 import com.jayud.storage.model.vo.StockVO;
 import com.jayud.storage.model.vo.StorageInputOrderFormVO;
 import com.jayud.storage.model.vo.WarehouseGoodsVO;
+import com.jayud.storage.service.IGoodsLocationRecordService;
 import com.jayud.storage.service.IStockService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.storage.service.IWarehouseGoodsService;
@@ -40,6 +42,9 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
     @Autowired
     private IWarehouseGoodsService warehouseGoodsService;
+
+    @Autowired
+    private IGoodsLocationRecordService goodsLocationRecordService;
 
     @Override
     public boolean saveStock(Stock stock) {
@@ -133,5 +138,10 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             return false;
         }
         return true;
+    }
+
+    @Override
+    public StockLocationNumberVO getListBySkuAndLocationCode(String sku, String locationCode,Long customerId) {
+        return goodsLocationRecordService.getListBySkuAndLocationCode(sku, locationCode,customerId);
     }
 }

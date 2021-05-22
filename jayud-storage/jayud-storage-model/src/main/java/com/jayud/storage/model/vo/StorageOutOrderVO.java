@@ -83,8 +83,8 @@ public class StorageOutOrderVO {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
-    @ApiModelProperty(value = "入库商品对象集合")
-    private List<WarehouseGoodsVO> goodsFormLists;
+    @ApiModelProperty(value = "出库商品对象集合")
+    private List<WarehouseGoodsVO> goodsFormList;
 
     @ApiModelProperty(value = "附件集合")
     private List<FileView> allPics;

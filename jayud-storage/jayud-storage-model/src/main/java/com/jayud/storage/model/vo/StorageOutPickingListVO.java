@@ -43,7 +43,7 @@ public class StorageOutPickingListVO {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
-    @ApiModelProperty(value = "入库商品对象集合")
+    @ApiModelProperty(value = "出库商品对象集合")
     private List<WarehouseGoodsLocationVO> goodsFormList;
 
     @ApiModelProperty(value = "客户名称")

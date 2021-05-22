@@ -54,7 +54,7 @@ public class GoodVO {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
-    @ApiModelProperty(value = "公司简称代码")
+    @ApiModelProperty(value = "客户简称代码")
     private String customerCode;
 
     @ApiModelProperty(value = "长")
@@ -66,6 +66,12 @@ public class GoodVO {
     @ApiModelProperty(value = "高")
     private Double goodHeight;
 
+    @ApiModelProperty(value = "商品重量")
+    private Double goodWeight;
+
+    @ApiModelProperty(value = "商品尺寸")
+    private String productSize;
+
     @ApiModelProperty(value = "商品价值")
     private Double commodityValue;
 
@@ -74,6 +80,10 @@ public class GoodVO {
 
     @ApiModelProperty(value = "截止有效期")
     private LocalDateTime expirationDate;
+
+    public void setProductSize(String productSize) {
+        this.productSize = this.goodLength + "*" + this.goodHeight + "*" + this.goodWidth;
+    }
 
 
 }

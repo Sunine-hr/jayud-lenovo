@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.storage.model.po.WarehouseGoods;
 import com.jayud.storage.mapper.WarehouseGoodsMapper;
+import com.jayud.storage.model.vo.OutGoodsOperationRecordFormVO;
 import com.jayud.storage.model.vo.WarehouseGoodsVO;
 import com.jayud.storage.service.IWarehouseGoodsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -57,5 +58,10 @@ public class WarehouseGoodsServiceImpl extends ServiceImpl<WarehouseGoodsMapper,
         List list = this.baseMapper.selectList(queryWrapper);
         List list1 = ConvertUtil.convertList(list, WarehouseGoodsVO.class);
         return list1;
+    }
+
+    @Override
+    public List<OutGoodsOperationRecordFormVO> getListBySkuAndLocationCode(String sku, String locationCode,Long customerId) {
+        return null;
     }
 }

@@ -129,6 +129,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
         StorageOutOrder storageOutOrder = this.baseMapper.selectById(id);
         StorageOutOrderVO storageOutOrderVO = ConvertUtil.convert(storageOutOrder, StorageOutOrderVO.class);
         List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList1(storageOutOrder.getId(),storageOutOrder.getOrderNo());
+        System.out.println("warehouseGoods===================="+warehouseGoods);
         if(CollectionUtils.isEmpty(warehouseGoods)){
             warehouseGoods.add(new WarehouseGoodsVO());
             storageOutOrderVO.setTotalNumberStr("0板0件0pcs");
@@ -155,7 +156,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
             storageOutOrderVO.setTotalNumberStr(borderNumber+"板"+number+"件"+pcs+"pcs");
             storageOutOrderVO.setTotalWeightStr(totalWeight+"KG");
         }
-        storageOutOrderVO.setGoodsFormLists(warehouseGoods);
+        storageOutOrderVO.setGoodsFormList(warehouseGoods);
         return storageOutOrderVO;
     }
 
@@ -280,6 +281,13 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
                 goodsLocationRecord.setType(2);
                 boolean b1 = goodsLocationRecordService.saveOrUpdate(goodsLocationRecord);
                 if(!b1){
+                    return false;
+                }
+                //计算该库位该商品的未出库数量
+                GoodsLocationRecord goodsLocationRecord1 = goodsLocationRecordService.getGoodsLocationRecordBySkuAndKuCode(goodsLocationRecordForm.getKuCode(),outWarehouseGoodsForm.getWarehousingBatchNo(),outWarehouseGoodsForm.getSku());
+                goodsLocationRecord1.setUnDeliveredQuantity(goodsLocationRecord1.getNumber() - goodsLocationRecord.getNumber());
+                boolean b2 = goodsLocationRecordService.saveOrUpdate(goodsLocationRecord1);
+                if(!b2){
                     return false;
                 }
             }

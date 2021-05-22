@@ -79,7 +79,7 @@ public class StorageInputOrderDetails extends Model<StorageInputOrderDetails> {
     private boolean isTomOpen;
 
     @ApiModelProperty(value = "Tom Open 已开口的数量")
-    private boolean tomOpenNumber;
+    private Integer tomOpenNumber;
 
     @ApiModelProperty(value = "Re Taped 重贴胶纸(1为是，2为否)")
     private boolean isReTaped;

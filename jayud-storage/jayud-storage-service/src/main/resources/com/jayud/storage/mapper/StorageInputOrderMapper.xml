@@ -99,10 +99,10 @@
 
 
     <select id="findWarehousingByPage" resultType="com.jayud.storage.model.vo.StorageInputOrderWarehouseingVO">
-        select igor.wbn warehousingBatchNo,sio.id id,sio.order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
+        select distinct igor.wbn warehousingBatchNo,sio.id id,sio.order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
         legal_entity_id legalEntityId,legal_name leaglName,
         unit_code unitCode,department_id departmentId,waybill_no waybillNo,
-        plate_number plateNumber,warehouse_number warehouseNumber, create_user createUser, create_time createTime, remarks,
+        plate_number plateNumber,warehouse_number warehouseNumber, create_user createUser, create_time createTime, remarks
         from storage_input_order sio
         right join (select warehousing_batch_no wbn,order_id,order_no from in_goods_operation_record group by wbn) igor on igor.order_id = sio.id
         <where>

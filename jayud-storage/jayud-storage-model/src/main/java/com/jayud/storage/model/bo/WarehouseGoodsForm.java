@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,12 +38,15 @@ public class WarehouseGoodsForm extends Model<WarehouseGoodsForm> {
     private Long orderId;
 
     @ApiModelProperty(value = "商品名称")
+    @NotNull(message = "商品名称不为空")
     private String name;
 
     @ApiModelProperty(value = "sku")
+    @NotNull(message = "sku不为空")
     private String sku;
 
     @ApiModelProperty(value = "规格型号")
+
     private String specificationModel;
 
     @ApiModelProperty(value = "板数")

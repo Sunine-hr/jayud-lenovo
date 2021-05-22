@@ -41,4 +41,16 @@
         pcs, weight, volume from in_goods_operation_record igor where sku = #{sku} group by warehousing_batch_no
     </select>
 
+    <select id="getListBySkuAndLocationCode" resultType="com.jayud.storage.model.vo.InGoodsOperationRecordFormVO">
+        select sio.warehouse_number warehouseNumber , igor.warehousing_batch_no warehousingBatchNo ,igor.sku sku ,igor.name name
+	igor.number number , igor.pcs ,igor.create_time createTime , glr.un_delivered_quantity nowNumber , s.customer_id customerId
+	igor.pcs nowPcs
+	from
+	(select id,ku_code,inGood_id,number,type, un_delivered_quantity	from goods_location_record group by ku_code) glr
+	left join in_goods_operation_record igor on glr.inGood_id = igor.id
+	left join storage_input_order sio on sio.id = igor.order_id
+	left join stock s on igor.sku = s.sku
+	where igor.sku = #{sku} and glr.ku_code = #{locationCode} and glr.type = 1 and s.customer_id = #{customerId}
+    </select>
+
 </mapper>

@@ -100,6 +100,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
                 convert.setOrderNo(storageInputOrder.getOrderNo());
                 convert.setType(1);
                 convert.setCreateTime(LocalDateTime.now());
+                convert.setCreateUser(UserOperator.getToken());
                 convert.setFileName(StringUtils.getFileNameStr(warehouseGood.getTakeFiles()));
                 convert.setFilePath(StringUtils.getFileStr(warehouseGood.getTakeFiles()));
                 warehouseGoods.add(convert);
@@ -324,7 +325,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         //文件拼接
         form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
         form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
-        form.setBusinessType(BusinessTypeEnum.TC.getCode());
+        form.setBusinessType(BusinessTypeEnum.CK.getCode());
 
         if (omsClient.saveOprStatus(form).getCode() != HttpStatus.SC_OK) {
             log.error("远程调用物流轨迹失败");
@@ -349,8 +350,17 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         for (Long aLong : form.getCardTypeId()) {
             s.append(aLong).append(",");
         }
-        storageInputOrderDetails.setCardTypeId(s.substring(0,s.length()-1).toString());
-        storageInputOrderDetails.setOperationId(stringBuffer.substring(0,s.length()-1).toString());
+        if(stringBuffer.length()>0){
+            storageInputOrderDetails.setOperationId(stringBuffer.substring(0,s.length()-1).toString());
+        }else{
+            storageInputOrderDetails.setOperationId(null);
+        }
+        if(s.length()>0){
+            storageInputOrderDetails.setCardTypeId(s.substring(0,s.length()-1).toString());
+        }else{
+            storageInputOrderDetails.setCardTypeId(null);
+        }
+
         boolean insert = storageInputOrderDetailsService.saveOrUpdate(storageInputOrderDetails);
         if(!insert){
             return false;
@@ -361,6 +371,11 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
 
         for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
             WarehouseGoods warehouseGoods = ConvertUtil.convert(warehouseGoodsForm, WarehouseGoods.class);
+            warehouseGoods.setOrderNo(form.getOrderNo());
+            warehouseGoods.setOrderId(form.getOrderId());
+            warehouseGoods.setType(1);
+            warehouseGoods.setCreateTime(LocalDateTime.now());
+            warehouseGoods.setCreateUser(UserOperator.getToken());
             boolean b = warehouseGoodsService.saveOrUpdate(warehouseGoods);
             if(!b){
                 return false;
@@ -377,6 +392,8 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
             inGoodsOperationRecord.setPcs(warehouseGoodsForm.getSjPcs());
             inGoodsOperationRecord.setWeight(warehouseGoodsForm.getSjWeight());
             inGoodsOperationRecord.setVolume(warehouseGoodsForm.getSjVolume());
+            inGoodsOperationRecord.setCreateTime(LocalDateTime.now());
+            inGoodsOperationRecord.setCreateUser(UserOperator.getToken());
             boolean save = inGoodsOperationRecordService.save(inGoodsOperationRecord);
             if(!save){
                 return false;

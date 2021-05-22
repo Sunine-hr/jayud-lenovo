@@ -68,6 +68,9 @@ public class Good extends Model<Good> {
     @ApiModelProperty(value = "高")
     private Double goodHeight;
 
+    @ApiModelProperty(value = "商品重量")
+    private Double goodWeight;
+
     @ApiModelProperty(value = "商品价值")
     private Double commodityValue;
 

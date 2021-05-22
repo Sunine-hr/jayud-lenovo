@@ -34,7 +34,7 @@ public class GoodNumberVO {
     @ApiModelProperty(value = "规格型号")
     private String specificationModel;
 
-    @ApiModelProperty(value = "规格型号")
+    @ApiModelProperty(value = "入库批次号")
     private List<String> batchNumbers;
 
 }

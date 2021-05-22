@@ -2,6 +2,8 @@ package com.jayud.storage.service;
 
 import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.storage.model.vo.InGoodsOperationRecordFormVO;
+import com.jayud.storage.model.vo.InGoodsOperationRecordNumberVO;
 
 import java.util.List;
 
@@ -24,4 +26,15 @@ public interface IInGoodsOperationRecordService extends IService<InGoodsOperatio
     List<InGoodsOperationRecord> getListByOrderId(Long id);
 
     List<InGoodsOperationRecord> getListBySku(String sku);
+
+    InGoodsOperationRecord getListByWarehousingBatchNoAndSku(String warehousingBatchNo, String sku);
+
+    /**
+     * 入库操作记录表
+     * @param sku
+     * @param locationCode
+     * @return
+     */
+    List<InGoodsOperationRecordFormVO> getListBySkuAndLocationCode(String sku, String locationCode,Long customerId);
+
 }

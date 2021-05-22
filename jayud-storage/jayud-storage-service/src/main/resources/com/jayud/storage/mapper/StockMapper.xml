@@ -24,8 +24,7 @@
     <select id="findByPage" resultType="com.jayud.storage.model.vo.StockVO">
         select igor.id ,s.good_name goodName, s.customer_id customerId, s.sku, s.specification_model specificationModel,
         glr.ku_code locationCode,
-        ((select number from goods_location_record g where g.ku_code = glr.ku_code and g.inGood_id = glr.inGood_id and g.type=1) -
-        (select number from goods_location_record g1 where g1.ku_code = glr.ku_code and g1.inGood_id = glr.inGood_id and g1.type=2)) inventoryQuantityUnit,
+        ((select un_delivered_quantity from goods_location_record g where g.ku_code = glr.ku_code and g.inGood_id = glr.inGood_id and g.type=1)) inventoryQuantityUnit,
         (select a.createTime from
         (select create_time createTime,ku_code kuCode from goods_location_record g where type = 1 group by ku_code) a
         where not exists (select 1 from (select create_time createTime,ku_code kuCode from goods_location_record g where type = 1 group by ku_code) b

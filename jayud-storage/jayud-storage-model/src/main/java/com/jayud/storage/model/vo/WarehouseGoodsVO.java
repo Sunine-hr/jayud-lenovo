@@ -97,4 +97,7 @@ public class WarehouseGoodsVO {
     @ApiModelProperty(value = "已入仓信息")
     private String warehousingInformation;
 
+    @ApiModelProperty(value = "确认入仓是否提交（0未提交，1已提交）")
+    private Integer isSubmit;
+
 }

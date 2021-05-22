@@ -2,6 +2,8 @@ package com.jayud.storage.mapper;
 
 import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.storage.model.vo.InGoodsOperationRecordFormVO;
+import com.jayud.storage.model.vo.InGoodsOperationRecordNumberVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,4 +23,8 @@ public interface InGoodsOperationRecordMapper extends BaseMapper<InGoodsOperatio
     List<InGoodsOperationRecord> getListByOrderId(@Param("id") Long id);
 
     List<InGoodsOperationRecord> getListBySku(@Param("sku")String sku);
+
+    List<InGoodsOperationRecordFormVO> getListBySkuAndLocationCode(@Param("sku")String sku, @Param("locationCode")String locationCode,@Param("customerId")Long customerId);
+
+    InGoodsOperationRecordNumberVO getCountBySkuAndLocationCode(@Param("sku")String sku, @Param("locationCode")String locationCode);
 }

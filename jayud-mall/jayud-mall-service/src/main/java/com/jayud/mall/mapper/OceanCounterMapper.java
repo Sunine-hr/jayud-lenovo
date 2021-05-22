@@ -48,4 +48,11 @@ public interface OceanCounterMapper extends BaseMapper<OceanCounter> {
      * @return
      */
     Long findOceanCounterIdById(@Param("counterId") Long counterId);
+
+    /**
+     * 根据id，查询柜子
+     * @param id
+     * @return
+     */
+    OceanCounterVO findOceanCounterById(@Param("id") Long id);
 }

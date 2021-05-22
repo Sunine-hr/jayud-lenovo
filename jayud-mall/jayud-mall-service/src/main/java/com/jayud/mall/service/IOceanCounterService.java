@@ -2,6 +2,7 @@ package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.po.OceanCounter;
+import com.jayud.mall.model.vo.OceanCounterVO;
 
 /**
  * <p>
@@ -13,4 +14,10 @@ import com.jayud.mall.model.po.OceanCounter;
  */
 public interface IOceanCounterService extends IService<OceanCounter> {
 
+    /**
+     * 根据id查询
+     * @param id
+     * @return
+     */
+    OceanCounterVO findOceanCounterById(Long id);
 }

@@ -97,7 +97,7 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @param id
      * @return
      */
-    CommonResult<OceanBillVO> findOceanBillById(Long id);
+    OceanBillVO findOceanBillById(Long id);
 
     /**
      * 配载，提单（4个窗口），查看-清关

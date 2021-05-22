@@ -44,6 +44,8 @@ public class OceanBillController {
     ICounterListInfoService counterListInfoService;
     @Autowired
     IBillOrderRelevanceService billOrderRelevanceService;
+    @Autowired
+    IOceanCounterService oceanCounterService;
 
     @ApiOperation(value = "分页查询提单信息")
     @PostMapping("/findOceanBillByPage")
@@ -161,12 +163,13 @@ public class OceanBillController {
         return CommonResult.success(oceanCounterVOS);
     }
 
-    @ApiOperation(value = "配载，提单（4个窗口），查看-详情")
+    @ApiOperation(value = "配载，提单（4个窗口），查看-详情(包括费用)")
     @PostMapping("/findOceanBillById")
     @ApiOperationSupport(order = 14)
     public CommonResult<OceanBillVO> findOceanBillById(@Valid @RequestBody OceanBillParaForm form){
         Long id = form.getId();
-        return oceanBillService.findOceanBillById(id);
+        OceanBillVO oceanBillVO = oceanBillService.findOceanBillById(id);
+        return CommonResult.success(oceanBillVO);
     }
 
     //添加修改

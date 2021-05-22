@@ -68,6 +68,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     CounterListInfoMapper counterListInfoMapper;
     @Autowired
     BillOrderRelevanceMapper billOrderRelevanceMapper;
+    @Autowired
+    FeeCopeWithMapper feeCopeWithMapper;
 
     @Autowired
     BaseService baseService;
@@ -546,9 +548,16 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     }
 
     @Override
-    public CommonResult<OceanBillVO> findOceanBillById(Long id) {
+    public OceanBillVO findOceanBillById(Long id) {
         OceanBillVO oceanBillVO = oceanBillMapper.findOceanBillById(id);
-        return CommonResult.success(oceanBillVO);
+        if(ObjectUtil.isEmpty(oceanBillVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "没有找到提单");
+        }
+        Long obId = oceanBillVO.getId();//提单id
+        Integer businessType = 1;//业务类型(1提单费用 2柜子费用)
+        List<FeeCopeWithVO> feeCopeWithList = feeCopeWithMapper.findFeeCopeWithByQie(obId.intValue(), businessType);
+        oceanBillVO.setFeeCopeWithList(feeCopeWithList);
+        return oceanBillVO;
     }
 
     @Override

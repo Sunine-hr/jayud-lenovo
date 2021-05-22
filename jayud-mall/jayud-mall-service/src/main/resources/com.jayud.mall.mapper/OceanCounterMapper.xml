@@ -50,4 +50,12 @@
         select t.id from ocean_counter t where t.id = #{counterId}
     </select>
 
+    <select id="findOceanCounterById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OceanCounterVO">
+        select
+        t.id,t.cntr_no,t.cabinet_code,t.volume,t.cost,t.cid,t.status,t.ob_id,t.create_time
+        from ocean_counter t
+        where 1=1
+        and t.id = #{id}
+    </select>
+
 </mapper>

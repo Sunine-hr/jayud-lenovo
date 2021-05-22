@@ -140,4 +140,7 @@ public class OceanBillVO {
     @JSONField(ordinal = 29)
     private List<BillTaskRelevanceVO> billTaskRelevanceVOS;
 
+    @ApiModelProperty(value = "费用信息")
+    private List<FeeCopeWithVO> feeCopeWithList;
+
 }

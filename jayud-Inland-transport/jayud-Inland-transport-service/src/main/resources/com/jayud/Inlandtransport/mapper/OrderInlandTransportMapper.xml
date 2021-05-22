@@ -149,12 +149,14 @@
         FROM
         order_inland_transport i
         left join order_inland_send_cars ic on i.order_no=ic.order_no
+        <where>
         <if test="mainOrderNos !=null and mainOrderNos.size > 0">
             and i.main_order_no IN
             <foreach collection="mainOrderNos" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
+        </where>
     </select>
 
 

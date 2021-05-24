@@ -54,7 +54,6 @@ public class CustomerGoodsController {
         return CommonResult.success(customerGoodsVO);
     }
 
-    //
     @ApiOperation(value = "根据商品id，查看商品，及其商品服务费用")
     @PostMapping("/findCustomerGoodsCostById")
     @ApiOperationSupport(order = 3)

@@ -2,6 +2,7 @@ package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -10,6 +11,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.CustomerGoodsEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.mall.mapper.BusinessLogMapper;
 import com.jayud.mall.mapper.CustomerGoodsMapper;
 import com.jayud.mall.mapper.GoodsServiceCostMapper;
 import com.jayud.mall.mapper.ServiceGroupMapper;
@@ -17,12 +19,15 @@ import com.jayud.mall.model.bo.CustomerGoodsAuditForm;
 import com.jayud.mall.model.bo.CustomerGoodsForm;
 import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
 import com.jayud.mall.model.bo.ServiceGroupForm;
+import com.jayud.mall.model.po.BusinessLog;
 import com.jayud.mall.model.po.CustomerGoods;
 import com.jayud.mall.model.po.GoodsServiceCost;
 import com.jayud.mall.model.vo.CustomerGoodsVO;
 import com.jayud.mall.model.vo.ServiceGroupVO;
+import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.model.vo.domain.CustomerUser;
 import com.jayud.mall.service.BaseService;
+import com.jayud.mall.service.IBusinessLogService;
 import com.jayud.mall.service.ICustomerGoodsService;
 import com.jayud.mall.service.IGoodsServiceCostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,10 +58,14 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
     @Autowired
     GoodsServiceCostMapper goodsServiceCostMapper;
     @Autowired
-    IGoodsServiceCostService goodsServiceCostService;
+    BusinessLogMapper businessLogMapper;
+
     @Autowired
     BaseService baseService;
-
+    @Autowired
+    IGoodsServiceCostService goodsServiceCostService;
+    @Autowired
+    IBusinessLogService businessLogService;
 
 
     @Override
@@ -94,7 +103,9 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonResult auditCustomerGoods(CustomerGoodsAuditForm form) {
-        //查询商品list  list 转 map
+        //记录审核业务日志，审核操作前的数据 和 审核操作后的数据，作对比，不同则记录日志
+        AuthUser user = baseService.getUser();
+        //查询商品list  list 转 map  审核操作前的数据
         List<CustomerGoodsVO> customerGoodsVOList = customerGoodsMapper.findCustomerGoodsByIds(form.getIds());
         Map<Integer, CustomerGoodsVO> customerGoodsMap = customerGoodsVOList.stream().collect(Collectors.toMap(CustomerGoodsVO::getId, Function.identity()));
         //查询服务list list 转 map
@@ -153,6 +164,31 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
         goodsServiceCostService.remove(qw);
         if(CollUtil.isNotEmpty(goodsServiceCostList)){
             goodsServiceCostService.saveOrUpdateBatch(goodsServiceCostList);
+        }
+
+        //3.保存商品审核，业务操作日志
+        List<BusinessLog> businessLogs1 = new ArrayList<>();
+        customerGoodsVOList.forEach(customerGoodsVO -> {
+            String frontJson = JSONUtil.toJsonStr(customerGoodsVO);
+            Integer id = customerGoodsVO.getId();
+            CustomerGoodsVO customerGoodsById = customerGoodsMapper.findCustomerGoodsById(id);
+            String afterJson = JSONUtil.toJsonStr(customerGoodsById);
+            if(!frontJson.equals(afterJson)){
+                //对象操作前后json不相同，保存日志
+                BusinessLog businessLog = new BusinessLog();
+                businessLog.setUserId(user.getId().intValue());//操作人id(system_user id)
+                businessLog.setUserName(user.getName());//操作人name(system_user name)
+                businessLog.setBusinessTb("customer_goods");//业务表tb
+                businessLog.setBusinessName("客户商品表");//业务表(中文)name
+                businessLog.setBusinessOperation("update");//业务操作(insert update delete)
+                businessLog.setOperationFront(frontJson);//操作前(text)
+                businessLog.setOperationAfter(afterJson);//操作后(text)
+                businessLogs1.add(businessLog);
+            }
+
+        });
+        if(CollUtil.isNotEmpty(businessLogs1)){
+            businessLogService.saveOrUpdateBatch(businessLogs1);
         }
         return CommonResult.success("审核成功!");
     }

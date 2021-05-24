@@ -1,5 +1,7 @@
 package com.jayud.mall.model.po;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -19,13 +21,14 @@ import java.time.LocalDateTime;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="BusinessLog对象", description="业务日志表")
+@ApiModel(value = "BusinessLog对象", description = "业务日志表")
 public class BusinessLog extends Model<BusinessLog> {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键id")
-      private Long id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 
     @ApiModelProperty(value = "操作时间")
     private LocalDateTime operationTime;

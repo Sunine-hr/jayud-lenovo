@@ -234,7 +234,7 @@
                t.description,
                t.status,
                t.status_name,
-               t.remark,
+               t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,
                t1.company customerName
         from customer_goods t
         join customer t1 on t1.id = t.customer_id

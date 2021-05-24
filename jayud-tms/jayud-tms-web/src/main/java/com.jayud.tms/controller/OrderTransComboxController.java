@@ -32,13 +32,20 @@ public class OrderTransComboxController {
 
     @ApiOperation(value = "中转仓库和车辆供应商")
     @PostMapping(value = "/initSendCarCombox")
-    public CommonResult initWarehouseInfo() {
+    public CommonResult initSendCarCombox() {
         Map<String, Object> resultMap = new HashMap<>();
         List<InitComboxVO> supplierInfo = omsClient.initSupplierInfo().getData();
         List<InitComboxVO> warehouseInfo = omsClient.initWarehouseInfo().getData();
         resultMap.put(CommonConstant.SUPPLIERINFO, supplierInfo);
         resultMap.put(CommonConstant.WAREHOUSEINFO, warehouseInfo);
         return CommonResult.success(resultMap);
+    }
+
+    @ApiOperation(value = "审核通过供应商")
+    @PostMapping(value = "/initSupplierInfo")
+    public CommonResult initSupplierInfo() {
+        List<InitComboxVO> supplierInfo = omsClient.initSupplierInfo().getData();
+        return CommonResult.success(supplierInfo);
     }
 
     //TODO 从司机绑定多辆车到一部车绑多个司机

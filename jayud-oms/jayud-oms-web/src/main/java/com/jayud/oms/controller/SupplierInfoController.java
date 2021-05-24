@@ -12,6 +12,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.*;
@@ -332,7 +333,9 @@ public class SupplierInfoController {
     @ApiOperation(value = "供应商账号-所属公司")
     @PostMapping(value = "/initCompany")
     public CommonResult initCompany() {
-        List<SupplierInfo> supplierInfos = supplierInfoService.findSupplierInfoByCondition();
+        List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(
+                BeanUtils.convertToFieldName(true,
+                SupplierInfo::getId, SupplierInfo::getSupplierChName));
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (SupplierInfo supplierInfo : supplierInfos) {
             InitComboxVO initComboxVO = new InitComboxVO();

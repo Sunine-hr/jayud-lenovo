@@ -374,6 +374,7 @@ public class OrderTransportVO {
                 this.customerName = this.subLegalName;
                 this.paymentCostStatus = null;
                 this.subLegalName = null;
+                this.legalName = null;
                 //送货地址处理
                 this.shippingAddressHandle();
                 break;

@@ -140,6 +140,8 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
     private Integer createUserType;
 
+    @ApiModelProperty(value = "指派供应id")
+    private Long supplierId;
 
     @Override
     protected Serializable pkVal() {

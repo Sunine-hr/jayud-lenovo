@@ -99,7 +99,8 @@ public class OrderInTransportController {
         if (CommonConstant.COMFIRM_ORDER.equals(form.getCmd())) {//确认接单
             orderTransport.setStatus(OrderStatusEnum.TMS_T_1.getCode());
             orderTransport.setJiedanTime(LocalDateTime.now());
-            orderTransport.setJiedanUser(form.getOperatorUser());
+            orderTransport.setJiedanUser(form.getOperatorUser())
+                    .setSupplierId(form.getSupplierId());
 
             form.setStatus(OrderStatusEnum.TMS_T_1.getCode());
             form.setStatusName(OrderStatusEnum.TMS_T_1.getDesc());

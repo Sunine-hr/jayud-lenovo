@@ -178,6 +178,19 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
     @ApiModelProperty(value = "数据类型(1报价模板 2报价管理)")
     private Integer dataType;
 
+    //计算天数
+    @ApiModelProperty(value = "截单日期(计算天数)")
+    private Integer cutOffTimeCalc;
+
+    @ApiModelProperty(value = "截仓日期(计算天数)")
+    private Integer jcTimeCalc;
+
+    @ApiModelProperty(value = "截亏仓日期(计算天数)")
+    private Integer jkcTimeCalc;
+
+    @ApiModelProperty(value = "预计到达时间(计算天数)")
+    private Integer estimatedTimeCalc;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

@@ -161,6 +161,19 @@ public class QuotationTemplateVO {
     @ApiModelProperty(value = "最低数量")
     private BigDecimal minimumQuantity;
 
+    //计算天数
+    @ApiModelProperty(value = "截单日期(计算天数)")
+    private Integer cutOffTimeCalc;
+
+    @ApiModelProperty(value = "截仓日期(计算天数)")
+    private Integer jcTimeCalc;
+
+    @ApiModelProperty(value = "截亏仓日期(计算天数)")
+    private Integer jkcTimeCalc;
+
+    @ApiModelProperty(value = "预计到达时间(计算天数)")
+    private Integer estimatedTimeCalc;
+
     /*报价服务组:service_group*/
     @ApiModelProperty(value = "服务名称service_group.code_name", position = 30)
     @JSONField(ordinal = 30)

@@ -188,6 +188,19 @@ public class QuotationTemplateForm {
     @ApiModelProperty(value = "最低数量")
     private BigDecimal minimumQuantity;
 
+    //计算天数
+    @ApiModelProperty(value = "截单日期(计算天数)")
+    private Integer cutOffTimeCalc;
+
+    @ApiModelProperty(value = "截仓日期(计算天数)")
+    private Integer jcTimeCalc;
+
+    @ApiModelProperty(value = "截亏仓日期(计算天数)")
+    private Integer jkcTimeCalc;
+
+    @ApiModelProperty(value = "预计到达时间(计算天数)")
+    private Integer estimatedTimeCalc;
+
     /*应收费用明细List*/
     @ApiModelProperty(value = "应收费用明细List", position = 30)
     @JSONField(ordinal = 30)

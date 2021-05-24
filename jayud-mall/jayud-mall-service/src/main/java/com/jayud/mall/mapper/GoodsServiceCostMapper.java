@@ -2,6 +2,7 @@ package com.jayud.mall.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.po.GoodsServiceCost;
+import com.jayud.mall.model.vo.GoodsServiceCostVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -25,5 +26,5 @@ public interface GoodsServiceCostMapper extends BaseMapper<GoodsServiceCost> {
      * @param goodId
      * @return
      */
-    List<GoodsServiceCost> findGoodsServiceCostByGoodId(@Param("goodId") Long goodId);
+    List<GoodsServiceCostVO> findGoodsServiceCostByGoodId(@Param("goodId") Long goodId);
 }

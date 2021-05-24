@@ -1,7 +1,6 @@
 package com.jayud.mall.model.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.jayud.mall.model.po.GoodsServiceCost;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -147,7 +146,7 @@ public class CustomerGoodsVO {
 
     //商品服务费用
     @ApiModelProperty(value = "商品服务费用list")
-    private List<GoodsServiceCost> goodsServiceCostList;
+    private List<GoodsServiceCostVO> goodsServiceCostList;
 
     @ApiModelProperty(value = "是否需要附加费(1需要 2不需要)")
     private String isNeedFee;

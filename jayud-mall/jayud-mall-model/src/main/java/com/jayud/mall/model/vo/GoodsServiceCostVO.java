@@ -1,30 +1,14 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-/**
- * <p>
- * 商品服务费用表
- * </p>
- *
- * @author fachang.mao
- * @since 2021-05-08
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "GoodsServiceCost对象", description = "商品服务费用表")
-public class GoodsServiceCost extends Model<GoodsServiceCost> {
-
-    private static final long serialVersionUID = 1L;
+public class GoodsServiceCostVO {
 
     @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
@@ -63,10 +47,7 @@ public class GoodsServiceCost extends Model<GoodsServiceCost> {
     @ApiModelProperty(value = "客户名称(customer company)")
     private String customerName;
 
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
+    @ApiModelProperty(value = "是否需要附加费(1需要 2不需要)")
+    private String isNeedFee;
 
 }

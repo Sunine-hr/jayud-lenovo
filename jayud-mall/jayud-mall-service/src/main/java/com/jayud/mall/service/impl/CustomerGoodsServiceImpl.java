@@ -23,6 +23,7 @@ import com.jayud.mall.model.po.BusinessLog;
 import com.jayud.mall.model.po.CustomerGoods;
 import com.jayud.mall.model.po.GoodsServiceCost;
 import com.jayud.mall.model.vo.CustomerGoodsVO;
+import com.jayud.mall.model.vo.GoodsServiceCostVO;
 import com.jayud.mall.model.vo.ServiceGroupVO;
 import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.model.vo.domain.CustomerUser;
@@ -240,7 +241,7 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
     public CustomerGoodsVO findCustomerGoodsCostById(Integer id) {
         CustomerGoodsVO customerGoodsVO = customerGoodsMapper.findCustomerGoodsById(id);
         Long goodId = Long.valueOf(id);
-        List<GoodsServiceCost> goodsServiceCostList = goodsServiceCostMapper.findGoodsServiceCostByGoodId(goodId);
+        List<GoodsServiceCostVO> goodsServiceCostList = goodsServiceCostMapper.findGoodsServiceCostByGoodId(goodId);
         customerGoodsVO.setGoodsServiceCostList(goodsServiceCostList);
         return customerGoodsVO;
     }

@@ -23,10 +23,12 @@
         id, service_id, good_id, customer_id, name_cn, unit_price, cid, unit, status, remark, service_name, customer_name
     </sql>
     
-    <select id="findGoodsServiceCostByGoodId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.po.GoodsServiceCost">
+    <select id="findGoodsServiceCostByGoodId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.GoodsServiceCostVO">
         select
-            t.id,t.service_id,t.good_id,t.customer_id,t.name_cn,t.unit_price,t.cid,t.unit,t.status,t.remark,t.service_name,t.customer_name
+        t.id,t.service_id,t.good_id,t.customer_id,t.name_cn,t.unit_price,t.cid,t.unit,t.status,t.remark,t.service_name,t.customer_name,
+        t1.is_need_fee
         from goods_service_cost t
+        join service_group t1 on t1.id = t.service_id
         where good_id = #{goodId}
     </select>
 

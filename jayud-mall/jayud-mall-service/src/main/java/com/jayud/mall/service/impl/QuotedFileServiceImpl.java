@@ -1,6 +1,7 @@
 package com.jayud.mall.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
@@ -34,6 +35,7 @@ public class QuotedFileServiceImpl extends ServiceImpl<QuotedFileMapper, QuotedF
     @Override
     public List<QuotedFile> findQuotedFile(QuotedFileForm form) {
         Long id = form.getId();
+        String types = form.getTypes();
         String groupCode = form.getGroupCode();
         String idCode = form.getIdCode();
         String fileName = form.getFileName();
@@ -42,6 +44,9 @@ public class QuotedFileServiceImpl extends ServiceImpl<QuotedFileMapper, QuotedF
         String describe = form.getDescribe();
         String status = form.getStatus();
         QueryWrapper<QuotedFile> queryWrapper = new QueryWrapper<>();
+        if(StrUtil.isNotEmpty(types)){
+            queryWrapper.eq("types", types);
+        }
         if(id != null){
             queryWrapper.eq("id", id);
         }

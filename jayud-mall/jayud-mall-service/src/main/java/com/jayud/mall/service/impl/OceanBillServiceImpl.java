@@ -555,8 +555,12 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         }
         Long obId = oceanBillVO.getId();//提单id
         Integer businessType = 1;//业务类型(1提单费用 2柜子费用)
+        //提单-费用信息list
         List<FeeCopeWithVO> feeCopeWithList = feeCopeWithMapper.findFeeCopeWithByQie(obId.intValue(), businessType);
         oceanBillVO.setFeeCopeWithList(feeCopeWithList);
+        //提单-任务信息list
+        List<BillTaskRelevanceVO> billTaskRelevanceList = billTaskRelevanceMapper.findBillTaskRelevanceByobId(obId);
+        oceanBillVO.setBillTaskRelevanceList(billTaskRelevanceList);
         return oceanBillVO;
     }
 

@@ -51,4 +51,11 @@ public interface BillTaskRelevanceMapper extends BaseMapper<BillTaskRelevance> {
      * @return
      */
     List<BillTaskRelevance> findBillTaskRelevanceByParaMap(@Param("paraMap") Map<String, Object> paraMap);
+
+    /**
+     * 根据obid，查询提单任务
+     * @param obId
+     * @return
+     */
+    List<BillTaskRelevanceVO> findBillTaskRelevanceByobId(@Param("obId") Long obId);
 }

@@ -73,7 +73,7 @@ public class BillTaskRelevanceServiceImpl extends ServiceImpl<BillTaskRelevanceM
             BillTaskRelevance billTaskRelevance = ConvertUtil.convert(billTaskVO, BillTaskRelevance.class);
             billTaskRelevance.setOceanBillId(obId);
             String activationSwitch = billTaskVO.getActivationSwitch();//激活开关(0未激活 1已激活)
-            if (activationSwitch.equals("1")){
+            if (ObjectUtil.isNotEmpty(activationSwitch) && activationSwitch.equals("1")){
                 billTaskRelevance.setStatus("1");//状态(0未激活 1已激活,未完成 2已完成)
             }else{
                 billTaskRelevance.setStatus("0");//状态(0未激活 1已激活,未完成 2已完成)

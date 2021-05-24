@@ -174,8 +174,8 @@
         left join sea_order so on so.order_no = opc.order_no
         left join order_inland_transport oit on oit.order_no = opc.order_no
         left join trailer_order tor on tor.order_no = opc.order_no
---         left join storage_input_order sio on sio.order_no = opc.order_no
---         left join storage_out_order soo on soo.order_no = opc.order_no
+        -- left join storage_input_order sio on sio.order_no = opc.order_no
+        -- left join storage_out_order soo on soo.order_no = opc.order_no
         WHERE
         (opbd1.bill_no = #{form.billNo} )
         or
@@ -319,122 +319,122 @@
     </select>
 
     <!--财务管理模块-->
-<!--    <select id="findFinanceAccountByPage" parameterType="com.jayud.finance.bo.QueryFinanceAccountForm"-->
-<!--            resultType="com.jayud.finance.vo.FinanceAccountVO">-->
-<!--        select-->
-<!--        temp.orderNo,temp.createTimeStr,temp.legalName,temp.customerCode,temp.customerName,temp.ywName,temp.recBillNo,temp.recAccountTermStr,temp.recRmb,temp.recDollar,temp.recEuro,temp.recHkDollar,temp.recLocalAmount,temp.recStatus,-->
-<!--        (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.recBillNo)-->
-<!--        when temp.recLocalAmount-->
-<!--        THEN '已核销'-->
-<!--        else '未核销' END)-->
-<!--        recCostStatus,-->
-<!--        temp.payBillNo,temp.payAccountTermStr,temp.payRmb,temp.payDollar,temp.payEuro,temp.payHkDollar,temp.payLocalAmount,temp.payStatus,-->
-<!--        (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.payBillNo)-->
-<!--        when temp.recLocalAmount-->
-<!--        THEN '已核销'-->
-<!--        else '未核销' END)-->
-<!--        payCostStatus, (temp.recLocalAmount - temp.payLocalAmount) profit from (-->
-<!--        SELECT-->
-<!--        oi.order_no orderNo,-->
-<!--        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createTimeStr,-->
-<!--        oi.legal_name legalName,-->
-<!--        oi.customer_code customerCode,-->
-<!--        oi.customer_name customerName,-->
-<!--        oi.biz_uname ywName,-->
-<!--        (select group_concat(distinct orbd.bill_no) from order_receivable_bill_detail orbd where orbd.order_no =-->
-<!--        oi.order_no group by orbd.order_no) recBillNo,-->
-<!--        (select group_concat(distinct orbd.account_term) from order_receivable_bill_detail orbd where orbd.order_no =-->
-<!--        oi.order_no group by orbd.order_no) recAccountTermStr,-->
-<!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
-<!--        order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and-->
-<!--        obct.money_type='2') recRmb,-->
-<!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
-<!--        order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'USD' and-->
-<!--        obct.money_type='2') recDollar,-->
-<!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
-<!--        order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'EUR' and-->
-<!--        obct.money_type='2') recEuro,-->
-<!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
-<!--        order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'HKD' and-->
-<!--        obct.money_type='2') recHkDollar,-->
-<!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
-<!--        order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and-->
-<!--        obct.money_type='2') recLocalAmount,-->
-<!--        (select group_concat(distinct orbd.audit_status) from order_receivable_bill_detail orbd where orbd.order_no =-->
-<!--        oi.order_no group by orbd.order_no) recStatus,-->
-<!--        (select group_concat(distinct opbd.bill_no) from order_payment_bill_detail opbd where opbd.order_no =-->
-<!--        oi.order_no group by opbd.order_no) payBillNo,-->
-<!--        (select group_concat(distinct opbd.account_term) from order_payment_bill_detail opbd where opbd.order_no =-->
-<!--        oi.order_no group by opbd.order_no) payAccountTermStr,-->
-<!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
-<!--        order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and-->
-<!--        obct.money_type='1') payRmb,-->
-<!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
-<!--        order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'USD' and-->
-<!--        obct.money_type='1') payDollar,-->
-<!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
-<!--        order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'EUR' and-->
-<!--        obct.money_type='1') payEuro,-->
-<!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
-<!--        order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'HKD' and-->
-<!--        obct.money_type='1') payHkDollar,-->
-<!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
-<!--        order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and-->
-<!--        obct.money_type='1') payLocalAmount,-->
-<!--        (select group_concat(distinct opbd.audit_status) from order_payment_bill_detail opbd where opbd.order_no =-->
-<!--        oi.order_no group by opbd.order_no) payStatus-->
-<!--        FROM-->
-<!--        order_info oi-->
-<!--        where-->
-<!--        EXISTS (select opc.main_order_no from order_payment_cost opc where opc.main_order_no = oi.order_no and-->
-<!--        opc.`status` = '3')-->
-<!--        or-->
-<!--        EXISTS (select orc.main_order_no from order_receivable_cost orc where orc.main_order_no = oi.order_no and-->
-<!--        orc.`status` = '3')-->
-<!--        ) temp-->
-<!--        where 1 = 1-->
-<!--        <if test="form.orderNo != null and form.orderNo != ''">-->
-<!--            and temp.orderNo = #{form.orderNo}-->
-<!--        </if>-->
-<!--        <if test="form.customerName != null and form.customerName != ''">-->
-<!--            and temp.customerName like concat('%',#{form.customerName},'%')-->
-<!--        </if>-->
-<!--        <if test="form.legalName != null and form.legalName != ''">-->
-<!--            and temp.legalName like concat('%',#{form.legalName},'%')-->
-<!--        </if>-->
-<!--        <if test="form.ywName != null and form.ywName != ''">-->
-<!--            and temp.ywName like concat('%',#{form.ywName},'%')-->
-<!--        </if>-->
-<!--        <if test="form.recStatus != null and form.recStatus !=''">-->
-<!--            and temp.recStatus = #{form.recStatus}-->
-<!--        </if>-->
-<!--        <if test="form.recCostStatus != null and form.recCostStatus !=''">-->
-<!--            and (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no =-->
-<!--            temp.recBillNo)-->
-<!--            when temp.recLocalAmount-->
-<!--            THEN '已核销'-->
-<!--            else '未核销' END) = #{form.recCostStatus}-->
-<!--        </if>-->
-<!--        <if test="form.payCostStatus != null and form.payCostStatus !=''">-->
-<!--            and (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no =-->
-<!--            temp.payBillNo)-->
-<!--            when temp.recLocalAmount-->
-<!--            THEN '已核销'-->
-<!--            else '未核销' END) = #{form.payCostStatus}-->
-<!--        </if>-->
-<!--        <if test="form.payStatus != null and form.payStatus !=''">-->
-<!--            and temp.payStatus = #{form.payStatus}-->
-<!--        </if>-->
-<!--        <if test="form.createTimeStr != null and form.createTimeStr !=''">-->
-<!--            and temp.createTimeStr = #{form.createTimeStr}-->
-<!--        </if>-->
-<!--        <if test="form.recAccountTermStr != null and form.recAccountTermStr !=''">-->
-<!--            and temp.recAccountTermStr = #{form.recAccountTermStr}-->
-<!--        </if>-->
-<!--        <if test="form.payAccountTermStr != null and form.payAccountTermStr !=''">-->
-<!--            and temp.payAccountTermStr = #{form.payAccountTermStr}-->
-<!--        </if>-->
-<!--    </select>-->
+    <!--    <select id="findFinanceAccountByPage" parameterType="com.jayud.finance.bo.QueryFinanceAccountForm"-->
+    <!--            resultType="com.jayud.finance.vo.FinanceAccountVO">-->
+    <!--        select-->
+    <!--        temp.orderNo,temp.createTimeStr,temp.legalName,temp.customerCode,temp.customerName,temp.ywName,temp.recBillNo,temp.recAccountTermStr,temp.recRmb,temp.recDollar,temp.recEuro,temp.recHkDollar,temp.recLocalAmount,temp.recStatus,-->
+    <!--        (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.recBillNo)-->
+    <!--        when temp.recLocalAmount-->
+    <!--        THEN '已核销'-->
+    <!--        else '未核销' END)-->
+    <!--        recCostStatus,-->
+    <!--        temp.payBillNo,temp.payAccountTermStr,temp.payRmb,temp.payDollar,temp.payEuro,temp.payHkDollar,temp.payLocalAmount,temp.payStatus,-->
+    <!--        (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no = temp.payBillNo)-->
+    <!--        when temp.recLocalAmount-->
+    <!--        THEN '已核销'-->
+    <!--        else '未核销' END)-->
+    <!--        payCostStatus, (temp.recLocalAmount - temp.payLocalAmount) profit from (-->
+    <!--        SELECT-->
+    <!--        oi.order_no orderNo,-->
+    <!--        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createTimeStr,-->
+    <!--        oi.legal_name legalName,-->
+    <!--        oi.customer_code customerCode,-->
+    <!--        oi.customer_name customerName,-->
+    <!--        oi.biz_uname ywName,-->
+    <!--        (select group_concat(distinct orbd.bill_no) from order_receivable_bill_detail orbd where orbd.order_no =-->
+    <!--        oi.order_no group by orbd.order_no) recBillNo,-->
+    <!--        (select group_concat(distinct orbd.account_term) from order_receivable_bill_detail orbd where orbd.order_no =-->
+    <!--        oi.order_no group by orbd.order_no) recAccountTermStr,-->
+    <!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
+    <!--        order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and-->
+    <!--        obct.money_type='2') recRmb,-->
+    <!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
+    <!--        order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'USD' and-->
+    <!--        obct.money_type='2') recDollar,-->
+    <!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
+    <!--        order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'EUR' and-->
+    <!--        obct.money_type='2') recEuro,-->
+    <!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
+    <!--        order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'HKD' and-->
+    <!--        obct.money_type='2') recHkDollar,-->
+    <!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
+    <!--        order_receivable_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and-->
+    <!--        obct.money_type='2') recLocalAmount,-->
+    <!--        (select group_concat(distinct orbd.audit_status) from order_receivable_bill_detail orbd where orbd.order_no =-->
+    <!--        oi.order_no group by orbd.order_no) recStatus,-->
+    <!--        (select group_concat(distinct opbd.bill_no) from order_payment_bill_detail opbd where opbd.order_no =-->
+    <!--        oi.order_no group by opbd.order_no) payBillNo,-->
+    <!--        (select group_concat(distinct opbd.account_term) from order_payment_bill_detail opbd where opbd.order_no =-->
+    <!--        oi.order_no group by opbd.order_no) payAccountTermStr,-->
+    <!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
+    <!--        order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and-->
+    <!--        obct.money_type='1') payRmb,-->
+    <!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
+    <!--        order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'USD' and-->
+    <!--        obct.money_type='1') payDollar,-->
+    <!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
+    <!--        order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'EUR' and-->
+    <!--        obct.money_type='1') payEuro,-->
+    <!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
+    <!--        order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'HKD' and-->
+    <!--        obct.money_type='1') payHkDollar,-->
+    <!--        (select SUM(obct.money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from-->
+    <!--        order_payment_bill_detail t where t.order_no = oi.order_no) and obct.currency_code = 'CNY' and-->
+    <!--        obct.money_type='1') payLocalAmount,-->
+    <!--        (select group_concat(distinct opbd.audit_status) from order_payment_bill_detail opbd where opbd.order_no =-->
+    <!--        oi.order_no group by opbd.order_no) payStatus-->
+    <!--        FROM-->
+    <!--        order_info oi-->
+    <!--        where-->
+    <!--        EXISTS (select opc.main_order_no from order_payment_cost opc where opc.main_order_no = oi.order_no and-->
+    <!--        opc.`status` = '3')-->
+    <!--        or-->
+    <!--        EXISTS (select orc.main_order_no from order_receivable_cost orc where orc.main_order_no = oi.order_no and-->
+    <!--        orc.`status` = '3')-->
+    <!--        ) temp-->
+    <!--        where 1 = 1-->
+    <!--        <if test="form.orderNo != null and form.orderNo != ''">-->
+    <!--            and temp.orderNo = #{form.orderNo}-->
+    <!--        </if>-->
+    <!--        <if test="form.customerName != null and form.customerName != ''">-->
+    <!--            and temp.customerName like concat('%',#{form.customerName},'%')-->
+    <!--        </if>-->
+    <!--        <if test="form.legalName != null and form.legalName != ''">-->
+    <!--            and temp.legalName like concat('%',#{form.legalName},'%')-->
+    <!--        </if>-->
+    <!--        <if test="form.ywName != null and form.ywName != ''">-->
+    <!--            and temp.ywName like concat('%',#{form.ywName},'%')-->
+    <!--        </if>-->
+    <!--        <if test="form.recStatus != null and form.recStatus !=''">-->
+    <!--            and temp.recStatus = #{form.recStatus}-->
+    <!--        </if>-->
+    <!--        <if test="form.recCostStatus != null and form.recCostStatus !=''">-->
+    <!--            and (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no =-->
+    <!--            temp.recBillNo)-->
+    <!--            when temp.recLocalAmount-->
+    <!--            THEN '已核销'-->
+    <!--            else '未核销' END) = #{form.recCostStatus}-->
+    <!--        </if>-->
+    <!--        <if test="form.payCostStatus != null and form.payCostStatus !=''">-->
+    <!--            and (case (select sum(cav.local_money) from cancel_after_verification cav where cav.bill_no =-->
+    <!--            temp.payBillNo)-->
+    <!--            when temp.recLocalAmount-->
+    <!--            THEN '已核销'-->
+    <!--            else '未核销' END) = #{form.payCostStatus}-->
+    <!--        </if>-->
+    <!--        <if test="form.payStatus != null and form.payStatus !=''">-->
+    <!--            and temp.payStatus = #{form.payStatus}-->
+    <!--        </if>-->
+    <!--        <if test="form.createTimeStr != null and form.createTimeStr !=''">-->
+    <!--            and temp.createTimeStr = #{form.createTimeStr}-->
+    <!--        </if>-->
+    <!--        <if test="form.recAccountTermStr != null and form.recAccountTermStr !=''">-->
+    <!--            and temp.recAccountTermStr = #{form.recAccountTermStr}-->
+    <!--        </if>-->
+    <!--        <if test="form.payAccountTermStr != null and form.payAccountTermStr !=''">-->
+    <!--            and temp.payAccountTermStr = #{form.payAccountTermStr}-->
+    <!--        </if>-->
+    <!--    </select>-->
 
     <!--TODO 改版财务管理模块-->
     <select id="findFinanceAccountByPage" parameterType="com.jayud.finance.bo.QueryFinanceAccountForm"
@@ -463,7 +463,8 @@
         oi.order_no group by orbd.order_no) recBillNo,
         (select group_concat(distinct orbd.account_term) from order_receivable_bill_detail orbd where orbd.order_no =
         oi.order_no group by orbd.order_no) recAccountTermStr,
-        ifnull((select SUM(obct.local_money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from
+        ifnull((select SUM(obct.local_money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no
+        from
         order_receivable_bill_detail t where t.order_no = oi.order_no) and
         obct.money_type='2'),0) recLocalAmount,
         (select group_concat(distinct orbd.audit_status) from order_receivable_bill_detail orbd where orbd.order_no =
@@ -472,7 +473,8 @@
         oi.order_no group by opbd.order_no) payBillNo,
         (select group_concat(distinct opbd.account_term) from order_payment_bill_detail opbd where opbd.order_no =
         oi.order_no group by opbd.order_no) payAccountTermStr,
-        ifnull ((select SUM(obct.local_money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no from
+        ifnull ((select SUM(obct.local_money) from order_bill_cost_total obct where obct.bill_no in (select t.bill_no
+        from
         order_payment_bill_detail t where t.order_no = oi.order_no) and
         obct.money_type='1'),0) payLocalAmount,
         (select group_concat(distinct opbd.audit_status) from order_payment_bill_detail opbd where opbd.order_no =
@@ -774,7 +776,7 @@
             and opbd.bill_no like concat('%',#{form.billNo},'%')
         </if>
         <if test="form.accountTermStr != null and form.accountTermStr !=''">
-            and opbd.account_term <![CDATA[<=]]> #{form.accountTermStr}
+            and opbd.account_term = #{form.accountTermStr}
         </if>
         <if test="form.currencyCode != null and form.currencyCode !=''">
             and opbd.settlement_currency = #{form.currencyCode}
@@ -796,126 +798,126 @@
     </select>
 
 
-<!--    <select id="findPaymentBillDetailByPage" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO">-->
-<!--        SELECT distinct-->
-<!--        opbd.bill_no billNo,-->
-<!--        opb.legal_name legalName,-->
-<!--        opb.supplier_ch_name supplierChName,-->
-<!--        opbd.account_term accountTermStr,-->
-<!--        opbd.payment_amount,-->
-<!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='CNY') rmb,-->
-<!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='USD')-->
-<!--        &#45;&#45;         dollar,-->
-<!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='EUR')-->
-<!--        &#45;&#45;         euro,-->
-<!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='HKD')-->
-<!--        &#45;&#45;         hKDollar,-->
-<!--        &#45;&#45;         (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = opbd.bill_no and m.`status` =-->
-<!--        &#45;&#45;         '1') heXiaoAmount,-->
-<!--        &#45;&#45;         (opbd.payment_amount - (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no =-->
-<!--        &#45;&#45;         opbd.bill_no and m.`status` = '1')) notHeXiaoAmount,-->
-<!--        &#45;&#45;         (select cur.currency_name from currency_info cur where cur.currency_code = opbd.settlement_currency)-->
-<!--        opbd.settlement_currency settlementCurrency,opbd.audit_status auditStatus,opbd.apply_status applyStatus,-->
-<!--        opbd.make_user makeUser,-->
-<!--        opbd.make_time makeTimeStr,-->
-<!--        opbd.audit_user auditUser,-->
-<!--        opbd.audit_time auditTimeStr,-->
-<!--        &#45;&#45;         (select ai.audit_comment from audit_info ai where ai.ext_unique_flag = opbd.bill_no and ai.audit_status in-->
-<!--        &#45;&#45;         ('B_2_1','B_4_1','B_6_1','B_7','B_8') order by ai.created_time desc limit 1) auditComment,-->
-<!--        (select c.created_user from cancel_after_verification c where c.bill_no = opbd.bill_no order by c.created_time-->
-<!--        desc limit 1) heXiaoUser,-->
-<!--        (select c.real_receive_time from cancel_after_verification c where c.bill_no = opbd.bill_no order by-->
-<!--        c.created_time desc limit 1) heXiaoTimeStr,-->
-<!--        opbd.push_kingdee_count,-->
-<!--        opbd.push_kingdee_count pushKingdeeCount-->
-<!--        FROM-->
-<!--        order_payment_bill_detail opbd-->
-<!--        left join-->
-<!--        (select t.bill_no,max(t.make_time) make_time from order_payment_bill_detail t group by t.bill_no) tt on-->
-<!--        opbd.bill_no = tt.bill_no-->
-<!--        LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id-->
-<!--        where opbd.make_time = tt.make_time-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'main_statement'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and opb.is_main = 1&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'statement_audit'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'cw_statement'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and (opbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or opbd.apply_status='4')&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'zgys_statement'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and opb.is_main = 0 and opb.sub_type = 'zgys'&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'zgys_statement_audit'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and opb.is_main = 0 and opb.sub_type = 'zgys' and opbd.audit_status IN ('B_1','B_2')&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'bg_statement'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and opb.is_main = 0 and opb.sub_type = 'bg'&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'bg_statement_audit'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status IN ('B_1','B_2')&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'ky_statement'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and opb.is_main = 0 and opb.sub_type = 'ky'&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'ky_statement_audit'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and opb.is_main = 0 and opb.sub_type = 'ky' and opbd.audit_status IN ('B_1','B_2')&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--    <select id="findPaymentBillDetailByPage" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO">-->
+    <!--        SELECT distinct-->
+    <!--        opbd.bill_no billNo,-->
+    <!--        opb.legal_name legalName,-->
+    <!--        opb.supplier_ch_name supplierChName,-->
+    <!--        opbd.account_term accountTermStr,-->
+    <!--        opbd.payment_amount,-->
+    <!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='CNY') rmb,-->
+    <!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='USD')-->
+    <!--        &#45;&#45;         dollar,-->
+    <!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='EUR')-->
+    <!--        &#45;&#45;         euro,-->
+    <!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = opbd.bill_no and o.currency_code='HKD')-->
+    <!--        &#45;&#45;         hKDollar,-->
+    <!--        &#45;&#45;         (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = opbd.bill_no and m.`status` =-->
+    <!--        &#45;&#45;         '1') heXiaoAmount,-->
+    <!--        &#45;&#45;         (opbd.payment_amount - (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no =-->
+    <!--        &#45;&#45;         opbd.bill_no and m.`status` = '1')) notHeXiaoAmount,-->
+    <!--        &#45;&#45;         (select cur.currency_name from currency_info cur where cur.currency_code = opbd.settlement_currency)-->
+    <!--        opbd.settlement_currency settlementCurrency,opbd.audit_status auditStatus,opbd.apply_status applyStatus,-->
+    <!--        opbd.make_user makeUser,-->
+    <!--        opbd.make_time makeTimeStr,-->
+    <!--        opbd.audit_user auditUser,-->
+    <!--        opbd.audit_time auditTimeStr,-->
+    <!--        &#45;&#45;         (select ai.audit_comment from audit_info ai where ai.ext_unique_flag = opbd.bill_no and ai.audit_status in-->
+    <!--        &#45;&#45;         ('B_2_1','B_4_1','B_6_1','B_7','B_8') order by ai.created_time desc limit 1) auditComment,-->
+    <!--        (select c.created_user from cancel_after_verification c where c.bill_no = opbd.bill_no order by c.created_time-->
+    <!--        desc limit 1) heXiaoUser,-->
+    <!--        (select c.real_receive_time from cancel_after_verification c where c.bill_no = opbd.bill_no order by-->
+    <!--        c.created_time desc limit 1) heXiaoTimeStr,-->
+    <!--        opbd.push_kingdee_count,-->
+    <!--        opbd.push_kingdee_count pushKingdeeCount-->
+    <!--        FROM-->
+    <!--        order_payment_bill_detail opbd-->
+    <!--        left join-->
+    <!--        (select t.bill_no,max(t.make_time) make_time from order_payment_bill_detail t group by t.bill_no) tt on-->
+    <!--        opbd.bill_no = tt.bill_no-->
+    <!--        LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id-->
+    <!--        where opbd.make_time = tt.make_time-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'main_statement'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and opb.is_main = 1&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'statement_audit'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'cw_statement'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and (opbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or opbd.apply_status='4')&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'zgys_statement'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and opb.is_main = 0 and opb.sub_type = 'zgys'&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'zgys_statement_audit'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and opb.is_main = 0 and opb.sub_type = 'zgys' and opbd.audit_status IN ('B_1','B_2')&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'bg_statement'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and opb.is_main = 0 and opb.sub_type = 'bg'&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'bg_statement_audit'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and opb.is_main = 0 and opb.sub_type = 'bg' and opbd.audit_status IN ('B_1','B_2')&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'ky_statement'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and opb.is_main = 0 and opb.sub_type = 'ky'&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'ky_statement_audit'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and opb.is_main = 0 and opb.sub_type = 'ky' and opbd.audit_status IN ('B_1','B_2')&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
 
-<!--        <choose>-->
-<!--            <when test="form.cmd == 'main_statement'">-->
-<!--                and opb.is_main = 1-->
-<!--            </when>-->
-<!--            <when test="form.cmd == 'statement_audit'">-->
-<!--                and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')-->
-<!--            </when>-->
-<!--            <when test="form.cmd == 'cw_statement'">-->
-<!--                and (opbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or opbd.apply_status='4')-->
-<!--            </when>-->
-<!--            <otherwise>-->
-<!--                <choose>-->
-<!--                    <when test="form.cmd != null and form.cmd != '' and form.cmd.contains('statement_audit')">-->
-<!--                        and opb.is_main = 0 and opb.sub_type = #{form.subType} and opbd.audit_status IN ('B_1','B_2')-->
-<!--                    </when>-->
-<!--                    <when test="form.cmd !=null and form.cmd !=''">-->
-<!--                        and opb.is_main = 0 and opb.sub_type = #{form.subType}-->
-<!--                    </when>-->
-<!--                </choose>-->
-<!--            </otherwise>-->
-<!--        </choose>-->
+    <!--        <choose>-->
+    <!--            <when test="form.cmd == 'main_statement'">-->
+    <!--                and opb.is_main = 1-->
+    <!--            </when>-->
+    <!--            <when test="form.cmd == 'statement_audit'">-->
+    <!--                and opb.is_main = 1 and opbd.audit_status in ('B_1','B_2')-->
+    <!--            </when>-->
+    <!--            <when test="form.cmd == 'cw_statement'">-->
+    <!--                and (opbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or opbd.apply_status='4')-->
+    <!--            </when>-->
+    <!--            <otherwise>-->
+    <!--                <choose>-->
+    <!--                    <when test="form.cmd != null and form.cmd != '' and form.cmd.contains('statement_audit')">-->
+    <!--                        and opb.is_main = 0 and opb.sub_type = #{form.subType} and opbd.audit_status IN ('B_1','B_2')-->
+    <!--                    </when>-->
+    <!--                    <when test="form.cmd !=null and form.cmd !=''">-->
+    <!--                        and opb.is_main = 0 and opb.sub_type = #{form.subType}-->
+    <!--                    </when>-->
+    <!--                </choose>-->
+    <!--            </otherwise>-->
+    <!--        </choose>-->
 
 
-<!--        <if test="form.supplierChName != null and form.supplierChName != ''">-->
-<!--            and opb.supplier_ch_name like concat('%',#{form.supplierChName},'%')-->
-<!--        </if>-->
-<!--        <if test="form.legalName != null and form.legalName != ''">-->
-<!--            and opb.legal_name like concat('%',#{form.legalName},'%')-->
-<!--        </if>-->
-<!--        <if test="form.billNo != null and form.billNo != ''">-->
-<!--            and opbd.bill_no like concat('%',#{form.billNo},'%')-->
-<!--        </if>-->
-<!--        <if test="form.accountTermStr != null and form.accountTermStr !=''">-->
-<!--            and opbd.account_term <![CDATA[<=]]> #{form.accountTermStr}-->
-<!--        </if>-->
-<!--        <if test="form.currencyCode != null and form.currencyCode !=''">-->
-<!--            and opbd.settlement_currency = #{form.currencyCode}-->
-<!--        </if>-->
-<!--        <if test="form.auditStatus != null and form.auditStatus !=''">-->
-<!--            and opbd.audit_status = #{form.auditStatus}-->
-<!--        </if>-->
-<!--        <if test="form.applyStatus != null and form.applyStatus !=''">-->
-<!--            and opbd.apply_status = #{form.applyStatus}-->
-<!--        </if>-->
+    <!--        <if test="form.supplierChName != null and form.supplierChName != ''">-->
+    <!--            and opb.supplier_ch_name like concat('%',#{form.supplierChName},'%')-->
+    <!--        </if>-->
+    <!--        <if test="form.legalName != null and form.legalName != ''">-->
+    <!--            and opb.legal_name like concat('%',#{form.legalName},'%')-->
+    <!--        </if>-->
+    <!--        <if test="form.billNo != null and form.billNo != ''">-->
+    <!--            and opbd.bill_no like concat('%',#{form.billNo},'%')-->
+    <!--        </if>-->
+    <!--        <if test="form.accountTermStr != null and form.accountTermStr !=''">-->
+    <!--            and opbd.account_term <![CDATA[<=]]> #{form.accountTermStr}-->
+    <!--        </if>-->
+    <!--        <if test="form.currencyCode != null and form.currencyCode !=''">-->
+    <!--            and opbd.settlement_currency = #{form.currencyCode}-->
+    <!--        </if>-->
+    <!--        <if test="form.auditStatus != null and form.auditStatus !=''">-->
+    <!--            and opbd.audit_status = #{form.auditStatus}-->
+    <!--        </if>-->
+    <!--        <if test="form.applyStatus != null and form.applyStatus !=''">-->
+    <!--            and opbd.apply_status = #{form.applyStatus}-->
+    <!--        </if>-->
 
-<!--        <if test="data != null and data.size>0">-->
-<!--            and opb.legal_name in-->
-<!--            <foreach collection="data" item="legalName" open="(" separator="," close=")">-->
-<!--                #{legalName}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        group by opbd.bill_no-->
-<!--    </select>-->
+    <!--        <if test="data != null and data.size>0">-->
+    <!--            and opb.legal_name in-->
+    <!--            <foreach collection="data" item="legalName" open="(" separator="," close=")">-->
+    <!--                #{legalName}-->
+    <!--            </foreach>-->
+    <!--        </if>-->
+    <!--        group by opbd.bill_no-->
+    <!--    </select>-->
 
 
     <select id="getNowFOrderExistByLegalId" resultType="com.jayud.finance.po.OrderPaymentBillDetail">

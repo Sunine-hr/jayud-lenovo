@@ -75,6 +75,12 @@
         <if test="form.destinationWarehouseCode != null and form.destinationWarehouseCode != ''">
             and t.destination_warehouse_code = #{form.destinationWarehouseCode}
         </if>
+        <if test="form.frontStatusCode != null and form.frontStatusCode != ''">
+            and t.front_status_code = #{form.frontStatusCode}
+        </if>
+        <if test="form.afterStatusCode != null and form.afterStatusCode != ''">
+            and t.after_status_code = #{form.afterStatusCode}
+        </if>
     </select>
 
     <select id="lookOrderInfoById" parameterType="java.lang.Long"

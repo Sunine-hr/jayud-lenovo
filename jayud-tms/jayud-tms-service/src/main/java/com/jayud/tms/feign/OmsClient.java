@@ -240,4 +240,10 @@ public interface OmsClient {
     public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
                                                    @RequestParam("legalIds") List<Long> legalIds,
                                                    @RequestParam("orderNos") List<String> orderNos);
+
+    /**
+     * 根据id集合获取中转仓库
+     */
+    @RequestMapping(value = "api/getWarehouseMapByIds")
+    public ApiResult<Map<Long, Object>> getWarehouseMapByIds(@RequestParam("warehouseIds") List<Long> warehouseIds);
 }

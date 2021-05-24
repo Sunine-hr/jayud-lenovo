@@ -62,7 +62,7 @@
         <result column="main_order_no" property="mainOrderNo"/>
         <result column="order_no" property="orderNo"/>
         <result column="status" property="status"/>
-        <association property="orderSendCars" javaType="com.jayud.tms.model.vo.OrderSendCarsInfoVO" >
+        <association property="orderSendCars" javaType="com.jayud.tms.model.vo.OrderSendCarsInfoVO">
             <id column="id" property="id"/>
             <result column="transport_no" property="transportNo"/>
             <result column="order_no" property="orderNo"/>
@@ -411,6 +411,7 @@
         oi.`customer_code` customerCode,
         oi.`remarks` mainOrderRemarks,
         ot.`created_user` createdUser,
+        ot.warehouse_info_id warehouseInfoId,
         wi.warehouse_name warehouseName,
         ot.`created_time` createdTimeStr,
         ot.`vehicle_type` vehicleType,
@@ -530,10 +531,17 @@
             = '2' and orc.sub_type = 'zgys'))
         </if>
 
-        <if test="legalIds != null and legalIds.size>0">
-            and ot.`legal_entity_id` in
-            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                #{legalId}
+        <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
+            <choose>
+                <when test="dataControl.accountType!=null and dataControl.accountType==3">
+                    and ot.`supplier_id` in
+                </when>
+                <otherwise>
+                    and ot.`legal_entity_id` in
+                </otherwise>
+            </choose>
+            <foreach collection="dataControl.companyIds" item="companyId" open="(" separator="," close=")">
+                #{companyId}
             </foreach>
         </if>
 

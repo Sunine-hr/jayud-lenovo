@@ -4,11 +4,13 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.xmlbeans.UserType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -173,6 +175,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "商品信息")
     private String goodsInfo;
 
+    @ApiModelProperty(value = "中转仓库id")
+    private Long warehouseInfoId;
+
     @ApiModelProperty(value = "中转仓库")
     private String warehouseName;
 
@@ -204,7 +209,7 @@ public class OrderTransportVO {
     private String paymentCostStatus;
 
     @ApiModelProperty(value = "标识")
-    private String mark="zgys";
+    private String mark = "zgys";
 
 //    public String getEntireAddress1() {
 ////        String stateName1 = this.stateName1;
@@ -377,6 +382,35 @@ public class OrderTransportVO {
             this.paymentCostStatus = split[0];
         } else {
             this.paymentCostStatus = "未录入";
+        }
+    }
+
+    public void doFilterData(String accountType) {
+        switch (UserTypeEnum.getEnum(accountType)) {
+            case EMPLOYEE_TYPE:
+                break;
+            case CUSTOMER_TYPE:
+                break;
+            case SUPPLIER_TYPE:
+                this.customerName = this.subLegalName;
+                this.paymentCostStatus = null;
+                this.subLegalName = null;
+                break;
+        }
+    }
+
+    /**
+     * 组装中转仓库地址
+     *
+     * @param warehouseMap
+     */
+    public void assemblyWarehouse(Map<Long, Object> warehouseMap) {
+        if (CollectionUtil.isEmpty(warehouseMap)) {
+            return;
+        }
+        Object tmp = warehouseMap.get(this.warehouseInfoId);
+        if (tmp == null) {
+
         }
     }
 }

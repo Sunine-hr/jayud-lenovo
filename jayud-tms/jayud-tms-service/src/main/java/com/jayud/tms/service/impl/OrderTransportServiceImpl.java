@@ -10,6 +10,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.entity.DataControl;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
@@ -208,30 +209,38 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         page.addOrder(OrderItem.desc("ot.id"));
 
         //获取当前用户所属法人主体
-        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
-        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
-
-        IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form, legalIds);
+//        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+//        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken()).getData();
+        IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form, dataControl);
         if (pageInfo.getRecords().size() == 0) {
             return pageInfo;
         }
 
         String prePath = fileClient.getBaseUrl().getData().toString();
 
-        List<OrderTransportVO> pageList = pageInfo.getRecords();
-        List<String> subOrderNos = pageList.stream().map(OrderTransportVO::getOrderNo).collect(Collectors.toList());
-
+        List<String> subOrderNos=new ArrayList<>();
+        List<Long> warehouseIds=new ArrayList<>();
+        for (OrderTransportVO record : pageInfo.getRecords()) {
+            subOrderNos.add(record.getOrderNo());
+            warehouseIds.add(record.getWarehouseInfoId());
+        }
 
         List<OrderTakeAdrInfoVO> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrInfos(subOrderNos, null);
         //是否录用费用
         Map<String, Object> data = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.ZGYS.getSignOne()).getData();
         Map<String, Object> costStatus = omsClient.getCostStatus(null, subOrderNos).getData();
-        for (OrderTransportVO orderTransportVO : pageList) {
+        //批量查询中转仓库
+        Map<Long, Object> warehouseMap = this.omsClient.getWarehouseMapByIds(warehouseIds).getData();
+
+        for (OrderTransportVO orderTransportVO : pageInfo.getRecords()) {
 //            orderTransportVO.assemblyGoodsInfo(orderTakeAdrs);
 //            orderTransportVO.assemblyTakeFiles(takeAdrsList, prePath);
             orderTransportVO.setCost(MapUtil.getBool(data, orderTransportVO.getOrderNo()));
             orderTransportVO.assemblyTakeAdrInfos(takeAdrsList, prePath);
             orderTransportVO.assemblyCostStatus(costStatus);
+            orderTransportVO.assemblyWarehouse(warehouseMap);
+            orderTransportVO.doFilterData(dataControl.getAccountType());
         }
 
         return pageInfo;

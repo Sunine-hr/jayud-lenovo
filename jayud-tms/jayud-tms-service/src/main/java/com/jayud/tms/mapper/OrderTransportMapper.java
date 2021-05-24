@@ -4,6 +4,7 @@ package com.jayud.tms.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.entity.DataControl;
 import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.po.OrderTransport;
@@ -81,7 +82,8 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
      * @param form
      * @return
      */
-    IPage<OrderTransportVO> findTransportOrderByPage(Page<OrderTransportVO> page, @Param("form") QueryOrderTmsForm form, @Param("legalIds") List<Long> legalIds);
+    IPage<OrderTransportVO> findTransportOrderByPage(Page<OrderTransportVO> page, @Param("form") QueryOrderTmsForm form,
+                                                     @Param("dataControl") DataControl dataControl);
 
     /**
      * 查询订单状态数量

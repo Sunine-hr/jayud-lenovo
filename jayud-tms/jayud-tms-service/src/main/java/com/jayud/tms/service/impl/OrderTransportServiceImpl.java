@@ -219,8 +219,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
         String prePath = fileClient.getBaseUrl().getData().toString();
 
-        List<String> subOrderNos=new ArrayList<>();
-        List<Long> warehouseIds=new ArrayList<>();
+        List<String> subOrderNos = new ArrayList<>();
+        List<Long> warehouseIds = new ArrayList<>();
         for (OrderTransportVO record : pageInfo.getRecords()) {
             subOrderNos.add(record.getOrderNo());
             warehouseIds.add(record.getWarehouseInfoId());
@@ -231,7 +231,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Map<String, Object> data = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.ZGYS.getSignOne()).getData();
         Map<String, Object> costStatus = omsClient.getCostStatus(null, subOrderNos).getData();
         //批量查询中转仓库
-        Map<Long, Object> warehouseMap = this.omsClient.getWarehouseMapByIds(warehouseIds).getData();
+        Map<Long, Map<String, Object>> warehouseMap = this.omsClient.getWarehouseMapByIds(warehouseIds).getData();
 
         for (OrderTransportVO orderTransportVO : pageInfo.getRecords()) {
 //            orderTransportVO.assemblyGoodsInfo(orderTakeAdrs);

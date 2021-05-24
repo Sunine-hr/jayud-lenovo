@@ -21,5 +21,7 @@ public interface AuditInfoMapper extends BaseMapper<AuditInfo> {
 
     AuditInfo getLatestByExtId(@Param("id") Long id, @Param("tableDesc") String tableDesc);
 
-    List<Map<String,Object>> getByExtUniqueFlag(@Param("extUniqueFlags") List<String> extUniqueFlags);
+    List<AuditInfo> getLatestsByExtIds(@Param("ids") List<Long> ids, @Param("tableDesc") String tableDesc);
+
+    List<Map<String, Object>> getByExtUniqueFlag(@Param("extUniqueFlags") List<String> extUniqueFlags);
 }

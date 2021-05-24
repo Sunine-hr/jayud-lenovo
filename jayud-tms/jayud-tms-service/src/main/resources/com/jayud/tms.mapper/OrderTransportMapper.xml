@@ -412,7 +412,6 @@
         oi.`remarks` mainOrderRemarks,
         ot.`created_user` createdUser,
         ot.warehouse_info_id warehouseInfoId,
-        wi.warehouse_name warehouseName,
         ot.`created_time` createdTimeStr,
         ot.`vehicle_type` vehicleType,
         ot.`vehicle_size` vehicleSize,
@@ -441,8 +440,6 @@
         ON p.`id_code` = ot.`port_code`
         LEFT JOIN product_classify pc
         ON oi.`class_code` = pc.`id_code`
-        LEFT JOIN warehouse_info wi
-        ON ot.warehouse_info_id=wi.id
         LEFT JOIN order_send_cars os
         ON os.order_no = ot.order_no
         LEFT JOIN vehicle_info vi
@@ -459,9 +456,7 @@
         <if test="form.classCode != null and form.classCode !=''">
             and oi.class_code = #{form.classCode}
         </if>
-        <if test="form.customerName != null and form.customerName !=''">
-            and oi.customer_name like concat('%',#{form.customerName},'%')
-        </if>
+
         <if test="form.legalName != null and form.legalName !=''">
             and ot.legal_name like concat('%',#{form.legalName},'%')
         </if>
@@ -529,6 +524,17 @@
             '2' and opc.sub_type = 'zgys')
             OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND orc.`status`
             = '2' and orc.sub_type = 'zgys'))
+        </if>
+
+        <if test="form.customerName != null and form.customerName !=''">
+            <choose>
+                <when test="dataControl.accountType!=null and dataControl.accountType==3">
+                    and ot.legal_name like concat('%',#{form.legalName},'%')
+                </when>
+                <otherwise>
+                    and oi.customer_name like concat('%',#{form.customerName},'%')
+                </otherwise>
+            </choose>
         </if>
 
         <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">

@@ -27,9 +27,16 @@ public interface IAuditInfoService extends IService<AuditInfo> {
     AuditInfo getAuditInfoLatestByExtId(Long id, String tableDesc);
 
     /**
+     * 根据外键ids查询最新的审核信息
+     */
+    public List<AuditInfo> getAuditInfoLatestsByExtIds(List<Long> ids, String tableDesc);
+
+    /**
      * 根据驳回状态集合查询最新的驳回信息
      */
     public AuditInfo getLatestByRejectionStatus(Long orderId, String tableDesc, String... status);
 
     List<Map<String, Object>> getByExtUniqueFlag(List<String> extUniqueFlags);
+
+
 }

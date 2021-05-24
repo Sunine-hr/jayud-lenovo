@@ -575,6 +575,15 @@ public class OrderInTransportController {
         return CommonResult.success(pageVO);
     }
 
+    @ApiOperation(value = "web中港供应商")
+    @PostMapping("/findSupplierTmsByPage")
+    public CommonResult<CommonPageResult<OrderTransportVO>> findSupplierTmsByPage(@RequestBody QueryOrderTmsForm form) {
+        IPage<OrderTransportVO> pageList = orderTransportService.findTransportOrderByPage(form);
+        CommonPageResult<OrderTransportVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
+
+
     /**
      * 该接口针对填各种驳回
      *

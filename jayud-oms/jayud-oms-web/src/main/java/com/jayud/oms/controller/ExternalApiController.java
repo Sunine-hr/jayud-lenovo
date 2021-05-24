@@ -245,11 +245,10 @@ public class ExternalApiController {
     @RequestMapping(value = "api/getWarehouseMapByIds")
     public ApiResult<Map<Long, WarehouseInfo>> getWarehouseMapByIds(@RequestParam("warehouseIds") List<Long> warehouseIds) {
         List<WarehouseInfo> warehouseInfos = this.warehouseInfoService.listByIds(warehouseIds);
-        warehouseInfos.stream().collect(Collectors.toMap(WarehouseInfo::getId, e -> e));
-        return ApiResult.ok(warehouseIds);
+        return ApiResult.ok(warehouseInfos.stream().collect(Collectors.toMap(WarehouseInfo::getId, e -> e)));
     }
 
-    @ApiOperation(value = "下拉框:获取审核通过的车辆供应商")
+    @ApiOperation(value = "下拉框:获取审核通过供应商")
     @RequestMapping(value = "api/initSupplierInfo")
     public CommonResult initSupplierInfo() {
         List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(

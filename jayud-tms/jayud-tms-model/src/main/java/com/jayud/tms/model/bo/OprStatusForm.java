@@ -14,20 +14,23 @@ public class OprStatusForm {
     @ApiModelProperty(value = "主订单号,通关前审核时需，其他场景忽略")
     private String mainOrderNo;
 
-    @ApiModelProperty(value = "主订单ID",required = true)
+    @ApiModelProperty(value = "主订单ID", required = true)
     private Long mainOrderId;
 
-    @ApiModelProperty(value = "子订单ID",required = true)
+    @ApiModelProperty(value = "子订单ID", required = true)
     private Long orderId;
 
     @ApiModelProperty(value = "状态码")
     private String status;
 
+    @ApiModelProperty(value = "指派供应商id")
+    private Long supplierId;
+
     @ApiModelProperty(value = "状态名称")
     private String statusName;
 
     @ApiModelProperty(value = "操作人")
-    private String operatorUser= UserOperator.getToken();
+    private String operatorUser = UserOperator.getToken();
 
     @ApiModelProperty(value = "操作时间")
     private String operatorTime;
@@ -70,7 +73,7 @@ public class OprStatusForm {
 
     @ApiModelProperty(value = "操作指令,cmd = extCustomsRelease外部报关放行,confirmOrder确认接单,carTakeGoods车辆提货,carWeigh车辆过磅, " +
             "goCustomsAudit通过前审核，goCustomsCheck通关前复核,carGoCustoms车辆通关,hkClearCustoms香港清关,carEnterWarehouse车辆入仓," +
-            "carOutWarehouse车辆出仓,carSend车辆派送,confirmSignIn确认签收",required = true)
+            "carOutWarehouse车辆出仓,carSend车辆派送,confirmSignIn确认签收", required = true)
     private String cmd;
 
     @ApiModelProperty(value = "下一步指令")

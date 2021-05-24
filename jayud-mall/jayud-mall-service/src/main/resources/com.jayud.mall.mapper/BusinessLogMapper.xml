@@ -19,5 +19,25 @@
     <sql id="Base_Column_List">
         id, operation_time, user_id, user_name, business_tb, business_name, business_operation, operation_front, operation_after
     </sql>
+    
+    <select id="findBusinessLogByPage" parameterType="com.jayud.mall.model.bo.QueryBusinessLogForm" resultType="com.jayud.mall.model.vo.BusinessLogVO">
+        select
+        t.id,t.operation_time,t.user_id,t.user_name,t.business_tb,t.business_name,t.business_operation,t.operation_front,t.operation_after
+        from business_log t
+        where 1=1
+        <if test="form.userId != null">
+            and t.user_id = #{form.userId}
+        </if>
+        <if test="form.userName != null and form.userName != ''">
+            and t.user_name = #{form.userName}
+        </if>
+        <if test="form.businessTb != null and form.businessTb != ''">
+            and t.business_tb = #{form.businessTb}
+        </if>
+        <if test="form.businessName != null and form.businessName != ''">
+            and t.business_name = #{form.businessName}
+        </if>
+
+    </select>
 
 </mapper>

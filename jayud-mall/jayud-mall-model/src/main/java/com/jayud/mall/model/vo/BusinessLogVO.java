@@ -1,34 +1,15 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * <p>
- * 业务日志表
- * </p>
- *
- * @author fachang.mao
- * @since 2021-05-24
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "BusinessLog对象", description = "业务日志表")
-public class BusinessLog extends Model<BusinessLog> {
-
-    private static final long serialVersionUID = 1L;
+public class BusinessLogVO {
 
     @ApiModelProperty(value = "主键id")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "操作时间")
@@ -55,11 +36,5 @@ public class BusinessLog extends Model<BusinessLog> {
 
     @ApiModelProperty(value = "操作后(text)")
     private String operationAfter;
-
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

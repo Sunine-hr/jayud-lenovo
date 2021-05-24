@@ -170,9 +170,11 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
         List<BusinessLog> businessLogs1 = new ArrayList<>();
         customerGoodsVOList.forEach(customerGoodsVO -> {
             String frontJson = JSONUtil.toJsonStr(customerGoodsVO);
+            CustomerGoodsVO front = JSONUtil.toBean(frontJson, CustomerGoodsVO.class);
             Integer id = customerGoodsVO.getId();
             CustomerGoodsVO customerGoodsById = customerGoodsMapper.findCustomerGoodsById(id);
             String afterJson = JSONUtil.toJsonStr(customerGoodsById);
+            CustomerGoodsVO after = JSONUtil.toBean(afterJson, CustomerGoodsVO.class);
             if(!frontJson.equals(afterJson)){
                 //对象操作前后json不相同，保存日志
                 BusinessLog businessLog = new BusinessLog();

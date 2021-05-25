@@ -122,6 +122,9 @@ public class CustomsDataServiceImpl extends ServiceImpl<CustomsDataMapper, Custo
     @Transactional(rollbackFor = Exception.class)
     public void auditCustomsData(AuditCustomsDataForm form) {
         AuthUser user = baseService.getUser();
+        if(ObjectUtil.isEmpty(user)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "当前登录用户失效，请重新登录");
+        }
         Long id = form.getId();
         CustomsDataVO customsDataVO = customsDataMapper.findAuditCustomsDataId(id);
         if(ObjectUtil.isEmpty(customsDataVO)){

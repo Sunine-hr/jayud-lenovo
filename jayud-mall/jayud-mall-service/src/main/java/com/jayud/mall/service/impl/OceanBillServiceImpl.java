@@ -453,6 +453,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             }
 
             AuthUser user = baseService.getUser();
+            if(ObjectUtil.isEmpty(user)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "当前登录用户失效，请重新登录");
+            }
             oceanBill.setUserId(user.getId().intValue());
             oceanBill.setUserName(user.getName());
             oceanBill.setCreateTime(LocalDateTime.now());
@@ -507,23 +510,6 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             //在保存
             feeCopeWithService.saveOrUpdateBatch(feeCopeWiths);
         }
-
-        //单独添加保存柜子，不在这里保存柜子了
-//        if(CollUtil.isNotEmpty(oceanCounterForms)){
-//            List<OceanCounter> oceanCounterList = new ArrayList<>();
-//            oceanCounterForms.forEach(oceanCounterForm -> {
-//                OceanCounter oceanCounter = ConvertUtil.convert(oceanCounterForm, OceanCounter.class);
-//                oceanCounter.setObId(obId);
-//                oceanCounter.setStatus("1");//状态(0无效 1有效)
-//                oceanCounter.setCreateTime(LocalDateTime.now());
-//                oceanCounterList.add(oceanCounter);
-//            });
-//            //2.保存提单对应的柜子
-//            QueryWrapper<OceanCounter> oceanCounterQueryWrapper = new QueryWrapper<>();
-//            oceanCounterQueryWrapper.eq("ob_id", obId);
-//            oceanCounterService.remove(oceanCounterQueryWrapper);
-//            oceanCounterService.saveOrUpdateBatch(oceanCounterList);
-//        }
 
         OceanBillVO oceanBillVO = ConvertUtil.convert(oceanBill, OceanBillVO.class);
 

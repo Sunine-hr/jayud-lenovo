@@ -14,8 +14,11 @@ import com.jayud.mall.mapper.FabWarehouseMapper;
 import com.jayud.mall.model.bo.FabWarehouseArgsForm;
 import com.jayud.mall.model.bo.FabWarehouseForm;
 import com.jayud.mall.model.bo.QueryFabWarehouseForm;
+import com.jayud.mall.model.po.AuditFabWarehouseForm;
 import com.jayud.mall.model.po.FabWarehouse;
 import com.jayud.mall.model.vo.FabWarehouseVO;
+import com.jayud.mall.model.vo.domain.AuthUser;
+import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.IFabWarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +38,9 @@ public class FabWarehouseServiceImpl extends ServiceImpl<FabWarehouseMapper, Fab
 
     @Autowired
     FabWarehouseMapper fabWarehouseMapper;
+
+    @Autowired
+    BaseService baseService;
 
     @Override
     public IPage<FabWarehouseVO> findFabWarehouseByPage(QueryFabWarehouseForm form) {
@@ -94,7 +100,21 @@ public class FabWarehouseServiceImpl extends ServiceImpl<FabWarehouseMapper, Fab
     }
 
     @Override
-    public CommonResult auditFabWarehouse(FabWarehouseForm form) {
+    public CommonResult auditFabWarehouse(AuditFabWarehouseForm form) {
+        AuthUser user = baseService.getUser();
+        if(ObjectUtil.isEmpty(user)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "当前登录用户失效，请重新登录");
+        }
+        Integer id = form.getId();
+        Integer auditStatus = form.getAuditStatus();
+        FabWarehouseVO fabWarehouseVO = fabWarehouseMapper.findFabWarehouseById(id);
+        FabWarehouse fabWarehouse = ConvertUtil.convert(fabWarehouseVO, FabWarehouse.class);
+
+        fabWarehouse.setAuditStatus(auditStatus);
+        fabWarehouse.setAuditUserId(user.getId().intValue());
+        fabWarehouse.setAuditUserName(user.getName());
+        this.saveOrUpdate(fabWarehouse);
+
         return CommonResult.success("审核成功");
     }
 }

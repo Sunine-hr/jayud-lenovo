@@ -69,7 +69,13 @@
         where t.warehouse_code = #{warehouseCode}
     </select>
 
-
+    <select id="findFabWarehouseById" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.FabWarehouseVO">
+        select
+        t.id,t.warehouse_code,t.warehouse_name,t.contacts,t.company_name,t.contact_number,t.contact_phone,t.address_first,t.address_second,t.address_thirdly,t.zip_code,t.status,t.user_id,t.user_name,t.create_time,t.area_group,t.country_code,t.country_name,t.state_code,t.state_name,t.city_code,t.city_name,t.region_code,t.region_name,t.audit_status,t.audit_user_id,t.audit_user_name
+        from fab_warehouse t
+        where 1=1
+        and t.id = #{id}
+    </select>
 
 
 </mapper>

@@ -122,6 +122,15 @@ public class FabWarehouse extends Model<FabWarehouse> {
     @ApiModelProperty(value = "区县名称")
     private String regionName;
 
+    @ApiModelProperty(value = "审核状态(0待审核 1审核通过 2审核不通过)")
+    private Integer auditStatus;
+
+    @ApiModelProperty(value = "审核用户id(system_user id)")
+    private Integer auditUserId;
+
+    @ApiModelProperty(value = "审核用户名(system_user name)")
+    private String auditUserName;
+
 
     @Override
     protected Serializable pkVal() {

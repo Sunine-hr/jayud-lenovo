@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.FabWarehouseArgsForm;
 import com.jayud.mall.model.bo.FabWarehouseForm;
-import com.jayud.mall.model.bo.InlandFeeCostForm;
 import com.jayud.mall.model.bo.QueryFabWarehouseForm;
+import com.jayud.mall.model.po.AuditFabWarehouseForm;
 import com.jayud.mall.model.po.FabWarehouse;
 import com.jayud.mall.model.vo.FabWarehouseVO;
 
@@ -55,5 +55,5 @@ public interface IFabWarehouseService extends IService<FabWarehouse> {
      * @param form
      * @return
      */
-    CommonResult auditFabWarehouse(FabWarehouseForm form);
+    CommonResult auditFabWarehouse(AuditFabWarehouseForm form);
 }

@@ -31,9 +31,16 @@ public interface QuotationTemplateMapper extends BaseMapper<QuotationTemplate> {
     IPage<QuotationTemplateVO> findQuotationTemplateByPage(Page<QuotationTemplateVO> page, @Param("form") QueryQuotationTemplateForm form);
 
     /**
-     * 查看报价模板
+     * 查看报价模板，仅查询模板
      * @param id
      * @return
      */
     QuotationTemplateVO lookQuotationTemplate(@Param("id") Long id);
+
+    /**
+     * 根据id查询
+     * @param id
+     * @return
+     */
+    QuotationTemplateVO lookQuotationTemplateById(@Param("id") Long id);
 }

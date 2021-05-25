@@ -6,6 +6,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OfferInfoForm;
 import com.jayud.mall.model.bo.OfferInfoParaForm;
 import com.jayud.mall.model.bo.QueryOfferInfoForm;
+import com.jayud.mall.model.vo.OfferInfoDateVO;
 import com.jayud.mall.model.vo.OfferInfoVO;
 import com.jayud.mall.service.IOfferInfoService;
 import io.swagger.annotations.Api;
@@ -71,6 +72,14 @@ public class OfferInfoController {
         return offerInfoService.lookOfferInfo(id);
     }
 
+    //根据开船日期，计算其他日期
+    @ApiOperation(value = "根据开船日期，计算其他日期")
+    @ApiOperationSupport(order = 6)
+    @PostMapping(value = "calcOtherDate")
+    public CommonResult<OfferInfoDateVO> calcOtherDate(@RequestBody OfferInfoForm form){
+        OfferInfoDateVO offerInfoDateVO = offerInfoService.calcOtherDate(form);
+        return CommonResult.success(offerInfoDateVO);
+    }
 
 
 }

@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.QuotationDataTypeEnum;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.*;
@@ -605,6 +607,29 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             });
         }
         return list;
+    }
+
+    @Override
+    public OfferInfoDateVO calcOtherDate(OfferInfoForm form) {
+        Integer qie = form.getQie();//报价模板id
+        LocalDateTime sailTime = form.getSailTime();
+        QuotationTemplateVO quotationTemplateVO = quotationTemplateMapper.lookQuotationTemplateById(Long.valueOf(qie));
+        if (ObjectUtil.isEmpty(quotationTemplateVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "没有找到报价模板");
+        }
+        Integer cutOffTimeCalc = quotationTemplateVO.getCutOffTimeCalc() == null ? 0 : quotationTemplateVO.getCutOffTimeCalc();
+        Integer jcTimeCalc = quotationTemplateVO.getJcTimeCalc() == null ? 0 : quotationTemplateVO.getJcTimeCalc();
+        Integer jkcTimeCalc = quotationTemplateVO.getJkcTimeCalc() == null ? 0 : quotationTemplateVO.getJkcTimeCalc();
+        Integer estimatedTimeCalc = quotationTemplateVO.getEstimatedTimeCalc() == null ? 0 : quotationTemplateVO.getEstimatedTimeCalc();
+        OfferInfoDateVO offerInfoDateVO = new OfferInfoDateVO();
+        offerInfoDateVO.setId(form.getId());
+        offerInfoDateVO.setQie(qie);
+        offerInfoDateVO.setSailTime(sailTime);
+        offerInfoDateVO.setCutOffTime(sailTime.plusDays(cutOffTimeCalc));//计算截单日期
+        offerInfoDateVO.setJcTime(sailTime.plusDays(jcTimeCalc));
+        offerInfoDateVO.setJkcTime(sailTime.plusDays(jkcTimeCalc));
+        offerInfoDateVO.setEstimatedTime(sailTime.plusDays(estimatedTimeCalc));
+        return offerInfoDateVO;
     }
 
 }

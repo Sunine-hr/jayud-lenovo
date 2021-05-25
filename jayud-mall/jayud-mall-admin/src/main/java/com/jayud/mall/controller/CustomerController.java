@@ -1,8 +1,11 @@
 package com.jayud.mall.controller;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.mall.model.bo.CustomerAuditForm;
 import com.jayud.mall.model.bo.CustomerEditForm;
 import com.jayud.mall.model.bo.QueryCustomerForm;
@@ -47,6 +50,9 @@ public class CustomerController {
     @ApiOperationSupport(order = 1)
     public CommonResult<CommonPageResult<CustomerVO>> findAuthCustomerByPage(@RequestBody QueryCustomerForm form) {
         AuthUser user = baseService.getUser();
+        if(ObjectUtil.isEmpty(user)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户过期，请重新登录");
+        }
         form.setMemberUserId(user.getId());
         IPage<CustomerVO> pageList = customerService.findAuthCustomerByPage(form);
         CommonPageResult<CustomerVO> pageVO = new CommonPageResult(pageList);

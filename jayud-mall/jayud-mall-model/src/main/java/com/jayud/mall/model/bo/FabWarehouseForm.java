@@ -1,9 +1,6 @@
 package com.jayud.mall.model.bo;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -15,71 +12,54 @@ import java.time.LocalDateTime;
 @ApiModel(value = "可达仓库(fab_warehouse)")
 public class FabWarehouseForm {
 
-    @ApiModelProperty(value = "主键id", position = 1)
-    @TableId(value = "id", type = IdType.AUTO)
-    @JSONField(ordinal = 1)
+    @ApiModelProperty(value = "主键id")
     private Integer id;
 
-    @ApiModelProperty(value = "仓库代码", position = 2)
-    @JSONField(ordinal = 2)
+    @ApiModelProperty(value = "仓库代码")
     private String warehouseCode;
 
-    @ApiModelProperty(value = "仓库名称", position = 3)
-    @JSONField(ordinal = 3)
+    @ApiModelProperty(value = "仓库名称")
     private String warehouseName;
 
-    @ApiModelProperty(value = "联系人", position = 5)
-    @JSONField(ordinal = 5)
+    @ApiModelProperty(value = "联系人")
     private String contacts;
 
-    @ApiModelProperty(value = "公司名称", position = 6)
-    @JSONField(ordinal = 6)
+    @ApiModelProperty(value = "公司名称")
     private String companyName;
 
-    @ApiModelProperty(value = "联系电话", position = 7)
-    @JSONField(ordinal = 7)
+    @ApiModelProperty(value = "联系电话")
     private String contactNumber;
 
-    @ApiModelProperty(value = "联系手机", position = 8)
-    @JSONField(ordinal = 8)
+    @ApiModelProperty(value = "联系手机")
     private String contactPhone;
 
-    @ApiModelProperty(value = "地址1", position = 9)
-    @JSONField(ordinal = 9)
+    @ApiModelProperty(value = "地址1")
     private String addressFirst;
 
-    @ApiModelProperty(value = "地址2", position = 10)
-    @JSONField(ordinal = 10)
+    @ApiModelProperty(value = "地址2")
     private String addressSecond;
 
-    @ApiModelProperty(value = "地址3", position = 11)
-    @JSONField(ordinal = 11)
+    @ApiModelProperty(value = "地址3")
     private String addressThirdly;
 
-    @ApiModelProperty(value = "邮编", position = 16)
-    @JSONField(ordinal = 16)
+    @ApiModelProperty(value = "邮编")
     private String zipCode;
 
-    @ApiModelProperty(value = "状态(0无效 1有效)", position = 17)
-    @JSONField(ordinal = 17)
+    @ApiModelProperty(value = "状态(0无效 1有效)")
     @TableField(value = "`status`")
     private String status;
 
-    @ApiModelProperty(value = "创建用户id", position = 18)
-    @JSONField(ordinal = 18)
+    @ApiModelProperty(value = "创建用户id")
     private Integer userId;
 
-    @ApiModelProperty(value = "创建用户名", position = 19)
-    @JSONField(ordinal = 19)
+    @ApiModelProperty(value = "创建用户名")
     private String userName;
 
-    @ApiModelProperty(value = "创建时间", position = 20)
+    @ApiModelProperty(value = "创建时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    @JSONField(ordinal = 20, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    @ApiModelProperty(value = "区域分组", position = 20)
-    @JSONField(ordinal = 20)
+    @ApiModelProperty(value = "区域分组")
     private String areaGroup;
 
     @ApiModelProperty(value = "国家代码")

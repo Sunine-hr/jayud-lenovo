@@ -1,10 +1,14 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.FabWarehouseMapper;
 import com.jayud.mall.model.bo.FabWarehouseArgsForm;
@@ -61,6 +65,24 @@ public class FabWarehouseServiceImpl extends ServiceImpl<FabWarehouseMapper, Fab
     @Override
     public CommonResult saveFabWarehouse(FabWarehouseForm form) {
         FabWarehouse fabWarehouse = ConvertUtil.convert(form, FabWarehouse.class);
+        Integer id = fabWarehouse.getId();
+        String warehouseCode = fabWarehouse.getWarehouseCode();
+        if(ObjectUtil.isNotEmpty(id)){
+            QueryWrapper<FabWarehouse> qw = new QueryWrapper<>();
+            qw.ne("id", id);
+            qw.eq("warehouse_code", warehouseCode);
+            List<FabWarehouse> list = this.list(qw);
+            if(CollUtil.isNotEmpty(list)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "仓库代码已存在");
+            }
+        }else{
+            QueryWrapper<FabWarehouse> qw = new QueryWrapper<>();
+            qw.eq("warehouse_code", warehouseCode);
+            List<FabWarehouse> list = this.list(qw);
+            if(CollUtil.isNotEmpty(list)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "仓库代码已存在");
+            }
+        }
         this.saveOrUpdate(fabWarehouse);
         return CommonResult.success("保存成功");
     }

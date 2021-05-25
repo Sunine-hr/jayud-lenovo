@@ -5,7 +5,9 @@ import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.CarTypeEnum;
+import com.jayud.common.utils.BeanUtils;
 import com.jayud.tms.feign.OmsClient;
+import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.DriverInfoLinkVO;
 import com.jayud.tms.model.vo.InitComboxVO;
 import io.swagger.annotations.Api;
@@ -69,6 +71,18 @@ public class OrderTransComboxController {
     public CommonResult<List<InitComboxVO>> initVehicle() {
         List<InitComboxVO> initComboxVOS = omsClient.initVehicle(CarTypeEnum.ZERO.getCode()).getData();
         return CommonResult.success(initComboxVOS);
+    }
+
+    @ApiOperation(value = "运输派车页面-下拉供应商车辆")
+    @PostMapping(value = "/initSupplierVehicle")
+    public CommonResult<List<InitComboxVO>> initSupplierVehicle(@RequestBody Map<String, Object> map) {
+        Long supplierId = MapUtil.getLong(map, BeanUtils.convertToFieldName(OrderTransport::getSupplierId));
+        if (supplierId != null) {
+
+        } else {
+            List<InitComboxVO> initComboxVOS = omsClient.initVehicle(CarTypeEnum.ZERO.getCode()).getData();
+        }
+        return CommonResult.success();
     }
 
     @ApiOperation(value = "运输派车-大陆车牌联动车辆供应商，大陆车牌，香港车牌，司机电话 id = 车辆id")

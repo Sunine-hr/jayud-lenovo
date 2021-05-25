@@ -542,17 +542,18 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
      * @return
      */
     @Override
-    public Integer getNumByStatus(String status, List<Long> legalIds) {
+    public Integer getNumByStatus(String status, DataControl dataControl) {
         Integer num = 0;
         switch (status) {
             case "CostAudit":
+                List<Long> legalIds = dataControl.getCompanyIds();
                 List<OrderTransport> list = this.getByLegalEntityId(legalIds);
                 if (CollectionUtils.isEmpty(list)) return num;
                 List<String> orderNos = list.stream().map(OrderTransport::getOrderNo).collect(Collectors.toList());
                 num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.ZGYS.getSignOne(), legalIds, orderNos).getData();
                 break;
             default:
-                num = this.baseMapper.getNumByStatus(status, legalIds);
+                num = this.baseMapper.getNumByStatus(status, dataControl);
         }
         return num == null ? 0 : num;
     }
@@ -582,6 +583,39 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         condition.lambda().or(e -> e.eq(OrderTransport::getStatus, OrderStatusEnum.TMS_T_5.getCode())
                 .eq(OrderTransport::getIsVehicleWeigh, 0));
         return this.baseMapper.selectList(condition);
+    }
+
+
+    /**
+     * 根据id查询中港详情
+     * @param id
+     * @return
+     */
+    @Override
+    public OrderTransportInfoVO getDetailsById(Long id) {
+        OrderTransportInfoVO orderTransportInfoVO = this.baseMapper.getTmsOrderInfoById(id);
+        List<String> orderNos = new ArrayList<>();
+        List<Long> vehicleIds = new ArrayList<>();
+        if (orderTransportInfoVO == null) {
+            return null;
+        }
+        orderNos.add(orderTransportInfoVO.getOrderNo());
+        OrderSendCarsInfoVO orderSendCars = orderTransportInfoVO.getOrderSendCars();
+        if (orderSendCars != null) {
+            vehicleIds.add(orderSendCars.getVehicleId());
+        }
+        //查询送货/收货地址信息
+        List<OrderTakeAdrInfoVO> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrInfos(orderNos, null);
+        //查询车辆信息
+        Object vehicleInfos = omsClient.getVehicleInfoByIds(vehicleIds).getData();
+        //查询口岸
+        String portName = this.omsClient.getPortNameByCode(orderTransportInfoVO.getPortCode()).getData();
+
+        orderTransportInfoVO.assemblyAddr(takeAdrsList);  //组装地址
+        orderTransportInfoVO.assemblyVehicleInfos(vehicleInfos); //组装车辆信息
+        orderTransportInfoVO.setPortName(portName);
+
+        return orderTransportInfoVO;
     }
 
 

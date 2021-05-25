@@ -687,13 +687,23 @@ public class ExternalApiController {
 
 
     /**
-     * 根据编码获取港口名称
+     * 根据港口名称获取编码
      */
     @RequestMapping(value = "/api/getPortCodeByName")
     public ApiResult getPortCodeByName(@RequestBody String name) {
         PortInfo portInfo = new PortInfo().setName(name);
         List<PortInfo> portInfos = this.portInfoService.findPortInfoByCondition(portInfo);
         return ApiResult.ok(portInfos.size() > 0 ? portInfos.get(0).getIdCode() : null);
+    }
+
+    /**
+     * 根据编码获取港口名称
+     */
+    @RequestMapping(value = "/api/getPortNameByCode")
+    public ApiResult getPortNameByCode(@RequestBody String code) {
+        PortInfo portInfo = new PortInfo().setIdCode(code);
+        List<PortInfo> portInfos = this.portInfoService.findPortInfoByCondition(portInfo);
+        return ApiResult.ok(portInfos.size() > 0 ? portInfos.get(0).getName() : null);
     }
 
     /**

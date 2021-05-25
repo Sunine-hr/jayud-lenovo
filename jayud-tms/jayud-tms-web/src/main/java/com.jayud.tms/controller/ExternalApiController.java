@@ -9,6 +9,7 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.tms.feign.OauthClient;
 import com.jayud.tms.feign.OmsClient;
@@ -260,8 +261,9 @@ public class ExternalApiController {
         tmp.put("费用审核", "CostAudit");
         List<Map<String, Object>> result = new ArrayList<>();
 
-        ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
-        List<Long> legalIds = legalEntityByLegalName.getData();
+//        ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+//        List<Long> legalIds = legalEntityByLegalName.getData();
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken()).getData();
 
         for (Map<String, Object> menus : menusList) {
 
@@ -270,7 +272,7 @@ public class ExternalApiController {
             String status = tmp.get(title);
             Integer num = 0;
             if (status != null) {
-                num = this.orderTransportService.getNumByStatus(status, legalIds);
+                num = this.orderTransportService.getNumByStatus(status, dataControl);
             }
             map.put("menusName", title);
             map.put("num", num);

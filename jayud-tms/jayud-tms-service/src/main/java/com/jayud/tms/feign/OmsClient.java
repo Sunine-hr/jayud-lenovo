@@ -245,7 +245,12 @@ public interface OmsClient {
      * 根据id集合获取中转仓库
      */
     @RequestMapping(value = "api/getWarehouseMapByIds")
-    public ApiResult<Map<Long, Map<String,Object>>> getWarehouseMapByIds(@RequestParam("warehouseIds") List<Long> warehouseIds);
+    public ApiResult<Map<Long, Map<String, Object>>> getWarehouseMapByIds(@RequestParam("warehouseIds") List<Long> warehouseIds);
 
 
+    /**
+     * 根据编码获取港口名称
+     */
+    @RequestMapping(value = "/api/getPortNameByCode")
+    public ApiResult<String> getPortNameByCode(@RequestBody String code);
 }

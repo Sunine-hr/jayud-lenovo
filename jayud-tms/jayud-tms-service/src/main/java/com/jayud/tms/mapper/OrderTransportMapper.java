@@ -92,7 +92,8 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
      * @param legalIds
      * @return
      */
-    public Integer getNumByStatus(@Param("status") String status, @Param("legalIds") List<Long> legalIds);
+    public Integer getNumByStatus(@Param("status") String status,
+                                  @Param("dataControl") DataControl dataControl);
 
     /**
      * 大屏幕展示订单数据(分页查询)
@@ -120,4 +121,10 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
      * @return
      */
     List<OrderTransportInfoVO> getTmsOrderInfoByMainOrderNos(@Param("mainOrderNos") List<String> mainOrderNos);
+
+    /**
+     * 根据主订单号查询中港详情信息
+     * @return
+     */
+    OrderTransportInfoVO getTmsOrderInfoById(@Param("id") Long id);
 }

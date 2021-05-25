@@ -37,6 +37,9 @@ public class OrderTakeAdrInfoVO {
     @ApiModelProperty(value = "货物描述")
     private String goodsDesc;
 
+    @ApiModelProperty(value = "货物信息")
+    private String goodsInfo;
+
     @ApiModelProperty(value = "板数")
     private Integer plateAmount;
 
@@ -68,4 +71,7 @@ public class OrderTakeAdrInfoVO {
     private List<FileView> takeFiles = new ArrayList<>();
 
 
+    public void sortData(){
+
+    }
 }

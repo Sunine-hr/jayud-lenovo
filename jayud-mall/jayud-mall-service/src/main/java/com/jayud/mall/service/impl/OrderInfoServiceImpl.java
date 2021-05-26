@@ -126,6 +126,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     InlandFeeCostMapper inlandFeeCostMapper;
     @Autowired
     CurrencyInfoMapper currencyInfoMapper;
+    @Autowired
+    OrderInteriorStatusMapper orderInteriorStatusMapper;
 
     @Autowired
     BaseService baseService;
@@ -153,6 +155,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     IWaybillTaskService waybillTaskService;
     @Autowired
     IShipmentService shipmentService;
+    @Autowired
+    IOrderInteriorStatusService orderInteriorStatusService;
 
 
 
@@ -1120,9 +1124,38 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         this.saveOrUpdate(orderInfo);
 
+        //保存订单内部流程状态
+        //后台已下单 内部状态 已审单 为审单 ，这个不是流程状态
+        if(orderInfo.getAfterStatusCode().equals(OrderEnum.AFTER_PLACED.getCode())){
+            Map<String, Object> mapParm = new HashMap<>();
+            mapParm.put("order_id", orderInfo.getId());
+            mapParm.put("order_no", orderInfo.getOrderNo());
+            mapParm.put("main_status_type", "after");
+            mapParm.put("main_status_code", OrderEnum.AFTER_PLACED.getCode());
+            mapParm.put("interior_status_code", OrderEnum.IS_AUDIT_ORDER.getCode());
+            OrderInteriorStatusVO orderInteriorStatusVO = orderInteriorStatusMapper.findOrderInteriorStatusByMapParm(mapParm);
+
+            OrderInteriorStatus orderInteriorStatus = new OrderInteriorStatus();
+            if(ObjectUtil.isEmpty(orderInteriorStatusVO)){
+                orderInteriorStatus.setOrderId(orderInfo.getId());
+                orderInteriorStatus.setOrderNo(orderInfo.getOrderNo());
+                orderInteriorStatus.setMainStatusType("after");//主状态类型(front前端 after后端)
+                orderInteriorStatus.setMainStatusCode(OrderEnum.AFTER_PLACED.getCode());
+                orderInteriorStatus.setMainStatusName(OrderEnum.AFTER_PLACED.getName());
+                orderInteriorStatus.setInteriorStatusCode(OrderEnum.IS_AUDIT_ORDER.getCode());//IS_AUDIT_ORDER("is_audit_order", "是否审核单据(1已审单 2未审单)")
+                orderInteriorStatus.setInteriorStatusName(OrderEnum.IS_AUDIT_ORDER.getName());
+                orderInteriorStatus.setStatusFlag("2");
+            }else{
+                orderInteriorStatus = ConvertUtil.convert(orderInteriorStatusVO, OrderInteriorStatus.class);
+            }
+            orderInteriorStatusService.saveOrUpdate(orderInteriorStatus);
+        }
+
+
         //保存-订单对应箱号信息:order_case
 //        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
-        List<OrderCase> orderCaseList = ConvertUtil.convertList(orderCaseVOList, OrderCase.class);
+        List<OrderCase> orderCaseList;
+        orderCaseList = ConvertUtil.convertList(orderCaseVOList, OrderCase.class);
         orderCaseList.forEach(orderCase -> {
             orderCase.setOrderId(orderInfo.getId().intValue());
         });
@@ -2091,6 +2124,26 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
 
         return CommonResult.success(orderInfoVO);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public OrderInfoVO afterAffirm(Long id) {
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(id);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单不存在");
+        }
+        OrderInfo orderInfo = ConvertUtil.convert(orderInfoVO, OrderInfo.class);
+        String afterStatusCode = orderInfo.getAfterStatusCode();
+        if(!afterStatusCode.equals(OrderEnum.AFTER_RECEIVED.getCode())){
+            //AFTER_RECEIVED("20", "已收货"),  只有已收货状态，才能进行订单确认
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单状态错误，不能确认");
+        }
+        orderInfo.setAfterStatusCode(OrderEnum.AFTER_AFFIRM.getCode());
+        orderInfo.setAfterStatusName(OrderEnum.AFTER_AFFIRM.getName());
+        this.saveOrUpdate(orderInfo);
+        OrderInfoVO convert = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
+        return convert;
     }
 
     private String extracted(String url, Map<String, Object> requestMap) {

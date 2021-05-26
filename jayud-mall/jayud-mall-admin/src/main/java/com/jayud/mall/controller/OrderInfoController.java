@@ -8,6 +8,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.IOrderInfoService;
+import com.jayud.mall.service.IOrderInteriorStatusService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSupport;
@@ -30,6 +31,8 @@ public class OrderInfoController {
 
     @Autowired
     IOrderInfoService orderInfoService;
+    @Autowired
+    IOrderInteriorStatusService orderInteriorStatusService;
 
     @ApiOperation(value = "分页查询订单")
     @PostMapping("/findOrderInfoByPage")
@@ -263,8 +266,8 @@ public class OrderInfoController {
 
     //订单下单-提交订单
     @ApiOperation(value = "订单下单-提交订单(新智慧订单)")
-    @PostMapping("/submitOrderInfo")
     @ApiOperationSupport(order = 24)
+    @PostMapping("/submitOrderInfo")
     public CommonResult<OrderInfoVO> submitOrderInfo(@Valid @RequestBody OrderInfoForm form){
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
@@ -300,6 +303,34 @@ public class OrderInfoController {
         return orderInfoService.submitOrderInfo(form);
     }
 
+    // 后台-订单确认
+    @ApiOperation(value = "订单下单-提交订单(新智慧订单)")
+    @ApiOperationSupport(order = 25)
+    @PostMapping("/afterAffirm")
+    public CommonResult<OrderInfoVO> afterAffirm(@Valid @RequestBody OrderInfoParaForm form){
+        Long id = form.getId();
+        OrderInfoVO orderInfoVO = orderInfoService.afterAffirm(id);
+        return CommonResult.success(orderInfoVO);
+    }
+
+    // 查询订单内部状态，
+    // IS_AUDIT_ORDER("is_audit_order", "是否审核单据(1已审单 2未审单)")
+    // 订单已下单-内部状态审核(已审单 未审单)
+    @ApiOperation(value = "查询订单内部状态")
+    @ApiOperationSupport(order = 26)
+    @PostMapping("/findOrderInteriorStatusByOrderIdAndCode")
+    public CommonResult<OrderInteriorStatusVO> findOrderInteriorStatusByOrderIdAndCode(@Valid @RequestBody OrderInteriorStatusQueryForm form){
+        OrderInteriorStatusVO orderInteriorStatusVO = orderInteriorStatusService.findOrderInteriorStatusByOrderIdAndCode(form);
+        return CommonResult.success(orderInteriorStatusVO);
+    }
+
+    @ApiOperation(value = "审核订单内部状态")
+    @ApiOperationSupport(order = 27)
+    @PostMapping("/auditOrderInteriorStatus")
+    public CommonResult auditOrderInteriorStatus(@Valid @RequestBody AuditOrderInteriorStatusForm form){
+        orderInteriorStatusService.auditOrderInteriorStatus(form);
+        return CommonResult.success("操作成功");
+    }
 
 
 

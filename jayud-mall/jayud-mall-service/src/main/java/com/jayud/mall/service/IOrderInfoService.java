@@ -276,4 +276,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     CommonResult<OrderInfoVO> newEditOrderInfo(OrderInfoNewForm form);
 
+    /**
+     * 后台-订单确认
+     * @param id
+     * @return
+     */
+    OrderInfoVO afterAffirm(Long id);
 }

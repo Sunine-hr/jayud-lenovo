@@ -86,6 +86,9 @@ public class OfferInfoForm {
     @JSONField(ordinal = 14)
     private String remarks;
 
+    @ApiModelProperty(value = "开船日期备注")
+    private String sailTimeRemark;
+
     //报价编辑报价模板的费用信息、文件信息
 
     /*报价对应应收费用明细list*/

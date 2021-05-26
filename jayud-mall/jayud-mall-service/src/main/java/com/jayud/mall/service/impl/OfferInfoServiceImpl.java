@@ -140,27 +140,15 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             return CommonResult.error(-1, "日期验证不通过，验证规则：预计到达时间>=开船日期>=（截单日期、截仓日期、截亏仓日期）");
         }
         if(ObjectUtil.isEmpty(id)){
-//            //id 为空 ，代表新增
-//            QueryWrapper<OfferInfo> queryWrapper = new QueryWrapper<>();
-//            queryWrapper.eq("names", names);
-//            List<OfferInfo> list = this.list(queryWrapper);
-//            if(CollUtil.isNotEmpty(list)){
-//                return CommonResult.error(-1, "["+names+"],名称已存在");
-//            }
             AuthUser user = baseService.getUser();
+            if(ObjectUtil.isEmpty(user)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录。");
+            }
             offerInfo.setStatus("1");//状态(0无效 1有效)
             offerInfo.setUserId(user.getId().intValue());
             offerInfo.setUserName(user.getName());
             offerInfo.setCreateTime(LocalDateTime.now());
         }else{
-//            //id 不为空 ，代表修改
-//            QueryWrapper<OfferInfo> queryWrapper = new QueryWrapper<>();
-//            queryWrapper.eq("names", names);
-//            queryWrapper.ne("id", id);
-//            List<OfferInfo> list = this.list(queryWrapper);
-//            if(CollUtil.isNotEmpty(list)){
-//                return CommonResult.error(-1, "["+names+"],名称已存在");
-//            }
         }
 
         // 获得报价模板数据

@@ -78,6 +78,10 @@ public class OfferInfoVO {
     @JSONField(ordinal = 14)
     private String remarks;
 
+    @ApiModelProperty(value = "开船日期备注")
+    private String sailTimeRemark;
+
+
     /*航程*/
     @ApiModelProperty(value = "航程(预计到达时间estimated_time - 开船日期sail_time)", position = 15)
     @JSONField(ordinal = 15)

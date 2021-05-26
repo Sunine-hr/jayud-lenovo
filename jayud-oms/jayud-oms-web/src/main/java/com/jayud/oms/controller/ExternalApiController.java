@@ -3,6 +3,7 @@ package com.jayud.oms.controller;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
@@ -1529,6 +1530,13 @@ public class ExternalApiController {
             list.add(orderReceivableCost.getOrderNo());
         }
         return ApiResult.ok(list);
+    }
+
+    @ApiOperation(value = "获取主订单客户名称")
+    @RequestMapping(value = "/api/getCustomerNameByOrderNo")
+    ApiResult getCustomerNameByOrderNo(@RequestParam(value = "orderNo") String orderNo) {
+        OrderInfo orderInfo = orderInfoService.getOne(Wrappers.<OrderInfo>lambdaQuery().eq(OrderInfo::getOrderNo, orderNo));
+        return ApiResult.ok(Objects.nonNull(orderInfo) ? orderInfo.getCustomerName() : "");
     }
 }
 

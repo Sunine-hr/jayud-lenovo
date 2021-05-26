@@ -24,6 +24,8 @@ public enum KafkaMsgEnums {
 
     VIVO_FREIGHT_TMS_MESSAGE_ONE("vivoTms", "push-vehicle-info"),//推送派车消息
     VIVO_FREIGHT_TMS_MESSAGE_TWO("vivoTms", "receivable-costs-push"),//应收费用推送
+    // 报关发送邮件异步处理
+    CUSTOM_SEND_EMAIL("sendEmail","customs-send-email"),
     ;
 
     private String topic;

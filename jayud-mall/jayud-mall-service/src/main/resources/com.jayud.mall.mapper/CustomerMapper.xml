@@ -133,6 +133,8 @@
                t.new_wisdom_token,
                CONCAT(t.user_name,'(',t.company,')') as text
         from customer t
+        where 1=1
+        and t.audit_status = 1
     </select>
 
     <select id="findCustomerById" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.CustomerVO">

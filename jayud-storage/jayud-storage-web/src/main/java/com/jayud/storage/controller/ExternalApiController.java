@@ -6,14 +6,12 @@ import com.jayud.common.CommonResult;
 import com.jayud.storage.model.bo.StorageInputOrderForm;
 import com.jayud.storage.model.bo.StorageOutOrderForm;
 import com.jayud.storage.model.bo.WarehouseGoodsForm;
+import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.jayud.storage.model.po.StorageInputOrder;
 import com.jayud.storage.model.po.StorageOutOrder;
 import com.jayud.storage.model.vo.StorageInputOrderVO;
 import com.jayud.storage.model.vo.StorageOutOrderVO;
-import com.jayud.storage.service.IGoodService;
-import com.jayud.storage.service.IStockService;
-import com.jayud.storage.service.IStorageInputOrderService;
-import com.jayud.storage.service.IStorageOutOrderService;
+import com.jayud.storage.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -44,6 +42,9 @@ public class ExternalApiController {
 
     @Autowired
     private IGoodService goodService;
+
+    @Autowired
+    private IInGoodsOperationRecordService inGoodsOperationRecordService;
 
     @Autowired
     private IStockService stockService;
@@ -101,9 +102,10 @@ public class ExternalApiController {
     @PostMapping(value = "/isStock")
     public ApiResult isStock(@RequestBody List<WarehouseGoodsForm> warehouseGoodsForms){
         for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
-            String flag = stockService.getIsStockNumber(warehouseGoodsForm.getSku(),warehouseGoodsForm.getNumber());
-            if(flag.equals("pass")){
-                ApiResult.error(444,flag);
+            InGoodsOperationRecord listByWarehousingBatchNoAndSku = inGoodsOperationRecordService.getListByWarehousingBatchNoAndSku(warehouseGoodsForm.getSku(), warehouseGoodsForm.getWarehousingBatchNo());
+
+            if(listByWarehousingBatchNoAndSku.getNumber()<warehouseGoodsForm.getNumber()){
+                ApiResult.error(444,listByWarehousingBatchNoAndSku.getWarehousingBatchNo()+"的"+warehouseGoodsForm.getName()+"数量为"+warehouseGoodsForm.getNumber());
             }
         }
         return ApiResult.ok();

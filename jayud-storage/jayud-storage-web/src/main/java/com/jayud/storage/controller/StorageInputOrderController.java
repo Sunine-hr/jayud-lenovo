@@ -57,6 +57,7 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -705,6 +706,7 @@ public class StorageInputOrderController {
             InGoodsOperationRecordOrderVO convert = ConvertUtil.convert(inGoodsOperationRecord, InGoodsOperationRecordOrderVO.class);
             convert.setNowNumber(nowNumber);
             convert.setNowPcs(nowPcs);
+            convert.setStorageTime(this.getStorageTime(convert.getCreateTime().toString(), LocalDateTime.now().toString()));
             inGoodsOperationRecordOrderVOS.add(convert);
             skuList.add(inGoodsOperationRecord.getSku());
             warehousingBatchNos.add(inGoodsOperationRecord.getWarehousingBatchNo());
@@ -713,13 +715,10 @@ public class StorageInputOrderController {
         warehousingBatchNos = removeDuplicate(warehousingBatchNos);
         //出库记录
         List<OrderOutRecord> orderOutRecords = warehouseGoodsService.getListBySkuAndBatchNo(skuList,warehousingBatchNos);
-        List<OrderOutRecord> orderOutRecords1 = new ArrayList<>();
-        for (OrderOutRecord orderOutRecord : orderOutRecords) {
-
-        }
-
-
-        return CommonResult.success();
+        Map<String,Object> map1 = new HashMap();
+        map1.put("in",inGoodsOperationRecordOrderVOS);
+        map1.put("out",orderOutRecords);
+        return CommonResult.success(map1);
     }
 
     //list集合去重

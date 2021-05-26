@@ -33,7 +33,7 @@ public class GoodsLocationRecordFormVO extends Model<GoodsLocationRecordFormVO> 
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private String createTime;
 
 
 }

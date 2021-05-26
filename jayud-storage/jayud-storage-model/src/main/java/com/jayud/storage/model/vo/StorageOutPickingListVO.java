@@ -27,6 +27,9 @@ public class StorageOutPickingListVO {
     @ApiModelProperty(value = "主键id")
     private Long  id;
 
+    @ApiModelProperty(value = "主键id")
+    private Long  orderId;
+
     @ApiModelProperty(value = "主订单号")
     private String mainOrderNo;
 
@@ -44,7 +47,7 @@ public class StorageOutPickingListVO {
     private String remarks;
 
     @ApiModelProperty(value = "出库商品对象集合")
-    private List<WarehouseGoodsLocationVO> goodsFormList;
+    private List<WarehouseGoodsLocationVO> outWarehouseGoodsForms;
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;

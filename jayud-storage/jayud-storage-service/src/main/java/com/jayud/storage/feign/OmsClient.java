@@ -228,4 +228,8 @@ public interface OmsClient {
     @RequestMapping(value = "/api/isCost")
     public ApiResult<Map<String, Object>> isCost(@RequestBody List<String> orderNos,
                                                  @RequestParam("subType") String subType);
+
+    @ApiOperation(value = "获取公司名称下拉列表")
+    @RequestMapping(value = "/api/getCustomerInfo")
+    ApiResult getCustomerInfo();
 }

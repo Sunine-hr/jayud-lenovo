@@ -37,4 +37,10 @@ public interface IInGoodsOperationRecordService extends IService<InGoodsOperatio
      */
     List<InGoodsOperationRecordFormVO> getListBySkuAndLocationCode(String sku, String locationCode,Long customerId);
 
+    /**
+     * 获取入库批次号下拉
+     * @param id
+     * @return
+     */
+    List<String> getWarehousingBatch(Long id);
 }

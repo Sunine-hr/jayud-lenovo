@@ -4,6 +4,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jayud.common.utils.FileView;
 import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.jayud.storage.model.po.StorageInputOrderDetails;
 import com.jayud.storage.model.po.WarehouseGoods;
@@ -73,8 +74,11 @@ public class QueryStorageOrderForm extends BasePageForm {
     @JsonIgnore
     private List<String> orderNos;
 
-    @ApiModelProperty(value = "当前登录用户,前台传")
+    @ApiModelProperty(value = "附近信息")
     private String loginUserName;
+
+    @ApiModelProperty(value = "当前登录用户,前台传")
+    private List<FileView> fileList;
 
     public void assemblyMainOrderNo(JSONArray mainOrders) {
         mainOrderNos = new ArrayList<>(mainOrders.size());

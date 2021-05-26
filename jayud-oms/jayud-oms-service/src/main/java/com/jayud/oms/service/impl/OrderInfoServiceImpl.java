@@ -1474,6 +1474,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         inputMainOrderForm.getStatus(), SubOrderSignEnum.CCI.getSignOne(), form)) {
                     storageInputOrderForm.setMainOrderNo(mainOrderNo);
                     storageInputOrderForm.setCreateUser(UserOperator.getToken());
+                    for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageInputOrderForm.getGoodsFormList()) {
+                         addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
+                         addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
+                    }
                     Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
                             : ProcessStatusEnum.DRAFT.getCode();
                     storageInputOrderForm.setProcessStatus(processStatus);
@@ -1517,6 +1521,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         inputMainOrderForm.getStatus(), SubOrderSignEnum.CCI.getSignOne(), form)) {
                     storageOutOrderForm.setMainOrderNo(mainOrderNo);
                     storageOutOrderForm.setCreateUser(UserOperator.getToken());
+                    for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageOutOrderForm.getGoodsFormList()) {
+                        addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
+                        addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
+                    }
                     Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
                             : ProcessStatusEnum.DRAFT.getCode();
                     storageOutOrderForm.setProcessStatus(processStatus);

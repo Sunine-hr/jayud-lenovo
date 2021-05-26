@@ -52,7 +52,7 @@ public class GoodForm extends Model<GoodForm> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private String createTime;
 
     @ApiModelProperty(value = "备注")
     private String remarks;
@@ -69,14 +69,17 @@ public class GoodForm extends Model<GoodForm> {
     @ApiModelProperty(value = "高")
     private Double goodHeight;
 
+    @ApiModelProperty(value = "商品重量")
+    private Double goodWeight;
+
     @ApiModelProperty(value = "商品价值")
     private Double commodityValue;
 
     @ApiModelProperty(value = "生产日期")
-    private LocalDateTime dateOfManufacture;
+    private String dateOfManufacture;
 
     @ApiModelProperty(value = "截止有效期")
-    private LocalDateTime expirationDate;
+    private String expirationDate;
 
 
     @Override

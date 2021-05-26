@@ -104,8 +104,9 @@
         unit_code unitCode,department_id departmentId,waybill_no waybillNo,
         plate_number plateNumber,warehouse_number warehouseNumber, create_user createUser, create_time createTime, remarks
         from storage_input_order sio
-        right join (select warehousing_batch_no wbn,order_id,order_no from in_goods_operation_record group by wbn) igor on igor.order_id = sio.id
+        right join (select warehousing_batch_no wbn,order_id,order_no,is_warehousing from in_goods_operation_record group by wbn) igor on igor.order_id = sio.id
         <where>
+        igor.is_warehousing = 0
             <if test="form.orderNo !=null and form.orderNo!=''">
                 and sio.order_no like concat('%',#{form.orderNo},'%')
             </if>
@@ -148,6 +149,23 @@
             </if>
         </where>
         order by sio.id desc
+    </select>
+
+    <select id="findOrderRecordByPage" resultType="com.jayud.storage.model.vo.StorageInputOrderNumberVO">
+        select id,order_no orderNo,main_order_no mainOrderNo,updata_time updateTime
+        from storage_input_order sio
+        <where>
+            sio.process_status = 1
+            <if test="form.orderNo !=null and form.orderNo!=''">
+                and sio.order_no like concat('%',#{form.orderNo},'%')
+            </if>
+            <if test="form.mainOrderNos !=null and form.mainOrderNos.size > 0">
+                and sio.main_order_no IN
+                <foreach collection="form.mainOrderNos" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
     </select>
 
 </mapper>

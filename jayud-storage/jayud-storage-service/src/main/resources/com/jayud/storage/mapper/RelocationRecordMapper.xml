@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.storage.mapper.RelocationRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.storage.model.po.RelocationRecord">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="area_name" property="areaName" />
+        <result column="shelves_name" property="shelvesName" />
+        <result column="old_location_code" property="oldLocationCode" />
+        <result column="new_location_code" property="newLocationCode" />
+        <result column="sku" property="sku" />
+        <result column="number" property="number" />
+        <result column="status" property="status" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="remarks" property="remarks" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, warehouse_name, area_name, shelves_name, old_location_code, new_location_code, sku, number, status, create_user, create_time, remarks
+    </sql>
+
+    <select id="getListBySkuAndLocationCode" resultType="com.jayud.storage.model.vo.RelocationGoodsOperationRecordFormVO">
+        select r.order_no orderNO, r.number number, r.create_time createTime,r.old_location_code oldLocationCode,new_location_code newLocationCode
+        from relocation_record r
+        where r.sku = #{sku} and r.new_location_code = #{locationCode} or r.old_location_code = #{locationCode}
+    </select>
+
+    <select id="findByPage" resultType="com.jayud.storage.model.vo.RelocationRecordVO">
+        select id, order_no orderNo, warehouse_name warehouseName, area_name areaName, shelves_name shelvesName, old_location_code oldLocationCode, new_location_code newLocationCode, sku, number, status, create_user, create_time, remarks
+        from relocation_record r
+        <where>
+        status = 1
+            <if test="form.orderNo !=null and form.orderNo!=''">
+                and r.order_no like concat('%',#{form.orderNo},'%')
+            </if>
+            <if test="form.warehouseName !=null and form.warehouseName!=''">
+                and r.warehouseName like concat('%',#{form.warehouseName},'%')
+            </if>
+            <if test="form.shelvesName !=null and form.shelvesName!=''">
+                and r.shelvesName like concat('%',#{form.shelvesName},'%')
+            </if>
+            <if test="form.areaName !=null and form.areaName!=''">
+                and r.areaName like concat('%',#{form.areaName},'%')
+            </if>
+            <if test="form.sku !=null and form.sku!=''">
+                and r.sku like concat('%',#{form.sku},'%')
+            </if>
+            <if test="form.startTime !=null and form.startTime!=''">
+                and r.create_time <![CDATA[>= ]]> #{form.startTime}
+            </if>
+            <if test="form.endTime !=null and form.endTime!=''">
+                and r.create_time <![CDATA[<= ]]> #{form.endTime}
+            </if>
+        </where>
+    </select>
+
+</mapper>

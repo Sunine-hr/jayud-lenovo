@@ -27,14 +27,12 @@ import com.jayud.storage.feign.FileClient;
 import com.jayud.storage.feign.OauthClient;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.*;
+import com.jayud.storage.model.po.GoodsLocationRecord;
 import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.jayud.storage.model.po.StorageInputOrder;
 import com.jayud.storage.model.po.StorageInputOrderDetails;
 import com.jayud.storage.model.vo.*;
-import com.jayud.storage.service.IInGoodsOperationRecordService;
-import com.jayud.storage.service.IStorageInputOrderDetailsService;
-import com.jayud.storage.service.IStorageInputOrderService;
-import com.jayud.storage.service.IWarehouseGoodsService;
+import com.jayud.storage.service.*;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.Version;
@@ -56,6 +54,9 @@ import javax.validation.Valid;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -95,6 +96,9 @@ public class StorageInputOrderController {
 
     @Autowired
     private RedisUtils redisUtils;
+
+    @Autowired
+    private IGoodsLocationRecordService goodsLocationRecordService;
 
     @ApiOperation("分页查询入库订单列表")
     @PostMapping("/findByPage")
@@ -306,7 +310,6 @@ public class StorageInputOrderController {
     @ApiOperation(value = "执行入库流程操作")
     @PostMapping(value = "/doStorageInProcessOpt")
     public CommonResult doStorageInProcessOpt(@RequestBody @Valid StorageInProcessOptForm form, BindingResult result) {
-
         if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {
                 return CommonResult.error(444, error.getDefaultMessage());
@@ -337,7 +340,7 @@ public class StorageInputOrderController {
         //校验参数
         form.checkProcessOpt(statusEnum);
         form.setStatus(statusEnum.getCode());
-
+        redisUtils.set(form.getOrderNo(),form.getWarehousingBatchNo());
         //指令操作
         switch (statusEnum) {
             case CCI_1: //入库接单
@@ -419,11 +422,11 @@ public class StorageInputOrderController {
         storageInProcessOptFormVO.setOrderId(storageInputOrder.getId());
         storageInProcessOptFormVO.setOrderNo(storageInputOrder.getOrderNo());
         storageInProcessOptFormVO.assemblyMainOrderData(result.getData());
-
+        storageInProcessOptFormVO.setLegalName(storageInputOrder.getLegalName() );
         storageInProcessOptFormVO.setPlateNumber(storageInputOrder.getPlateNumber());
         storageInProcessOptFormVO.setWarehouseNumber(storageInputOrder.getWarehouseNumber());
         storageInProcessOptFormVO.setCreateTime(storageInputOrder.getCreateTime());
-
+        storageInProcessOptFormVO.setWarehousingBatchNo(redisUtils.get(storageInputOrder.getOrderNo()));
         return CommonResult.success(storageInProcessOptFormVO);
     }
 
@@ -455,9 +458,9 @@ public class StorageInputOrderController {
             }
         }
 
+        storageInProcessOptFormVO.setMainOrderNo(storageInputOrder.getMainOrderNo());
         ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageInProcessOptFormVO.getMainOrderNo()));
         storageInProcessOptFormVO.assemblyMainOrderData(result.getData());
-        storageInProcessOptFormVO.setMainOrderNo(storageInputOrder.getMainOrderNo());
         storageInProcessOptFormVO.setOrderId(storageInputOrder.getId());
         storageInProcessOptFormVO.setOrderNo(storageInputOrder.getOrderNo());
         storageInProcessOptFormVO.setPlateNumber(storageInputOrder.getPlateNumber());
@@ -476,10 +479,20 @@ public class StorageInputOrderController {
     @PostMapping(value = "/getWarehousingBatchNumber")
     public CommonResult getWarehousingBatchNumber(@RequestBody Map<String,Object> map){
         String orderNo = MapUtil.getStr(map, "orderNo");
-
+//        boolean b = redisUtils.hasKey(orderNo);
+//        if(b){
+//            return CommonResult.success(redisUtils.get(orderNo));
+//        }else{
+//            //获取入库批次号
+//            String batchNumber = (String)omsClient.getWarehouseNumber("A").getData();
+//            redisUtils.set(orderNo,batchNumber);
+//            return CommonResult.success(batchNumber);
+//        }
         //获取入库批次号
         String batchNumber = (String)omsClient.getWarehouseNumber("A").getData();
+        //redisUtils.set(orderNo,batchNumber);
         return CommonResult.success(batchNumber);
+
     }
 
     @ApiOperation(value = "判断商品信息是否能编辑和删除")
@@ -609,15 +622,147 @@ public class StorageInputOrderController {
         qrCodeInformationVO.setWarehouseNumber(storageInputOrder.getWarehouseNumber());
         qrCodeInformationVO.setLegalName(storageInputOrder.getLegalName());
         qrCodeInformationVO.setGoodInfos(listByWarehousingBatchNo);
+        qrCodeInformationVO.setTotalAmount(totalAmount);
+        qrCodeInformationVO.setTotalJAmount(totalJAmount);
+        qrCodeInformationVO.setTotalPCS(totalPCS);
+
         return CommonResult.success(qrCodeInformationVO);
     }
+
+    @ApiOperation(value = "获取入仓批次号下拉列表")
+    @PostMapping(value = "/getWarehousingBatch")
+    public CommonResult getWarehousingBatch(@RequestBody Map<String,Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        List<String> strings = inGoodsOperationRecordService.getWarehousingBatch(id);
+        return CommonResult.success(strings);
+    }
+
+    @ApiOperation(value = "订单记录列表")
+    @PostMapping(value = "/findOrderRecordByPage")
+    public CommonResult findOrderRecordByPage(@RequestBody QueryInOrderForm form){
+        //模糊查询客户信息
+        if (!StringUtils.isEmpty(form.getCustomerName())) {
+            ApiResult result = omsClient.getByCustomerName(form.getCustomerName());
+            Object data = result.getData();
+            if (data != null && ((List) data).size() > 0) {
+                JSONArray mainOrders = new JSONArray(data);
+                form.assemblyMainOrderNo(mainOrders);
+            } else {
+                form.setMainOrderNos(Collections.singletonList("-1"));
+            }
+        }
+        IPage<StorageInputOrderNumberVO> page = this.storageInputOrderService.findOrderRecordByPage(form);
+        List<String> mainOrders = new ArrayList<>();
+        for (StorageInputOrderNumberVO record : page.getRecords()) {
+            mainOrders.add(record.getMainOrderNo());
+        }
+        ApiResult result = omsClient.getMainOrderByOrderNos(mainOrders);
+
+        for (StorageInputOrderNumberVO record : page.getRecords()) {
+            record.assemblyMainOrderData(result.getData());
+            List<InGoodsOperationRecord> listByOrderId = inGoodsOperationRecordService.getListByOrderId(record.getId(), record.getOrderNo());
+            Integer number = 0;
+            Integer pcs = 0;
+            Integer nowNumber = 0;
+            Integer nowPcs = 0;
+            for (InGoodsOperationRecord inGoodsOperationRecord : listByOrderId) {
+                number = number + inGoodsOperationRecord.getNumber();
+                pcs = pcs + inGoodsOperationRecord.getPcs();
+                nowPcs = nowPcs + inGoodsOperationRecord.getPcs();
+                List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecord.getId());
+                for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
+                    nowNumber = nowNumber + goodsLocationRecord.getUnDeliveredQuantity();
+                }
+            }
+            record.setOrderQuantity(number);
+            record.setOrderQuantityPcs(pcs);
+            record.setNowOrderQuantity(nowNumber);
+            record.setNowOrderQuantityPcs(nowPcs);
+        }
+        return CommonResult.success(page);
+    }
+
+
+    @ApiOperation(value = "查看订单记录")
+    @PostMapping(value = "/viewOrderRecords")
+    public CommonResult viewOrderRecords(@RequestBody Map<String,Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        //获取入库商品信息
+        List<InGoodsOperationRecord> listByOrderId = inGoodsOperationRecordService.getListByOrderId(id);
+        List<String> skuList = new ArrayList<>();
+        List<String> warehousingBatchNos = new ArrayList<>();
+        List<InGoodsOperationRecordOrderVO> inGoodsOperationRecordOrderVOS = new ArrayList<>();
+        for (InGoodsOperationRecord inGoodsOperationRecord : listByOrderId) {
+            Integer nowNumber = 0;
+            Integer nowPcs = 0;
+            if(inGoodsOperationRecord.getPcs() != null){
+                nowPcs = nowPcs + inGoodsOperationRecord.getPcs();
+            }
+            List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecord.getId());
+            for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
+                nowNumber = nowNumber + goodsLocationRecord.getUnDeliveredQuantity();
+            }
+            InGoodsOperationRecordOrderVO convert = ConvertUtil.convert(inGoodsOperationRecord, InGoodsOperationRecordOrderVO.class);
+            convert.setNowNumber(nowNumber);
+            convert.setNowPcs(nowPcs);
+            inGoodsOperationRecordOrderVOS.add(convert);
+            skuList.add(inGoodsOperationRecord.getSku());
+            warehousingBatchNos.add(inGoodsOperationRecord.getWarehousingBatchNo());
+        }
+        skuList = removeDuplicate(skuList);
+        warehousingBatchNos = removeDuplicate(warehousingBatchNos);
+        //出库记录
+        List<OrderOutRecord> orderOutRecords = warehouseGoodsService.getListBySkuAndBatchNo(skuList,warehousingBatchNos);
+        List<OrderOutRecord> orderOutRecords1 = new ArrayList<>();
+        for (OrderOutRecord orderOutRecord : orderOutRecords) {
+
+        }
+
+
+        return CommonResult.success();
+    }
+
+    //list集合去重
+    public static List removeDuplicate(List list) {
+        HashSet h = new HashSet(list);
+        list.clear();
+        list.addAll(h);
+        return list;
+    }
+
+    //获取存仓时长
+    public String getStorageTime(String startTime,String endTime){
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date one;
+        Date two;
+        long day = 0;
+        long hour = 0;
+        try {
+            one = df.parse(startTime);
+            two = df.parse(endTime);
+            long time1 = one.getTime();
+            long time2 = two.getTime();
+            long diff ;
+            if(time1<time2) {
+                diff = time2 - time1;
+            } else {
+                diff = time1 - time2;
+            }
+            day = diff / (24 * 60 * 60 * 1000);
+            hour = (diff / (60 * 60 * 1000) - day * 24);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return day + "天" + hour + "小时" ;
+    }
+
 
     //入仓单模板
     @Value("${address.storageAddr}")
     private String filepath;
 
     @ApiOperation(value = "导出入仓单")
-    @PostMapping(value = "/exportInWarehouseReceipt")
+    @GetMapping(value = "/exportInWarehouseReceipt")
     public void exportInWarehouseReceipt(@RequestBody Map<String,Object> map, HttpServletResponse response){
         StorageInProcessOptFormVO storageInProcessOptFormVO = (StorageInProcessOptFormVO)this.getDataInConfirmEntry(map).getData();
 

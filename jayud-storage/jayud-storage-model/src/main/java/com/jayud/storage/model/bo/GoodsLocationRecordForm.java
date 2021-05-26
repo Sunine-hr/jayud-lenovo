@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 public class GoodsLocationRecordForm extends Model<GoodsLocationRecordForm> {
 
     @ApiModelProperty(value = "库位id")
-    private Long kuCode;
+    private String kuCode;
 
     @ApiModelProperty(value = "入库商品id")
     private Long inGoodId;

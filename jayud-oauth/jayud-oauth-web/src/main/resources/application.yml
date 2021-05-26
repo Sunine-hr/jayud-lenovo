@@ -71,6 +71,7 @@ secure:
       - /api/**
       - /jayudAir/**
       - /websocket/**
+      - /#/QRCode/*
 feign:
   httpclient:
     connection-timeout: 5000

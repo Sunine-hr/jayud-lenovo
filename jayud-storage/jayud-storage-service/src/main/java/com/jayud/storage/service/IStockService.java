@@ -24,7 +24,7 @@ public interface IStockService extends IService<Stock> {
 
     IPage<StockVO> findByPage(QueryStockForm form);
 
-    boolean getIsStockNumber(String sku, Integer number);
+    String getIsStockNumber(String sku, Integer number);
 
     /**
      * 锁定库存

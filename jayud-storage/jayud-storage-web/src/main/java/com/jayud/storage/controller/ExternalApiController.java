@@ -101,9 +101,9 @@ public class ExternalApiController {
     @PostMapping(value = "/isStock")
     public ApiResult isStock(@RequestBody List<WarehouseGoodsForm> warehouseGoodsForms){
         for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
-            boolean flag = stockService.getIsStockNumber(warehouseGoodsForm.getSku(),warehouseGoodsForm.getNumber());
-            if(!flag){
-                ApiResult.error(444,warehouseGoodsForm.getName()+"的数量超出了库存");
+            String flag = stockService.getIsStockNumber(warehouseGoodsForm.getSku(),warehouseGoodsForm.getNumber());
+            if(flag.equals("pass")){
+                ApiResult.error(444,flag);
             }
         }
         return ApiResult.ok();

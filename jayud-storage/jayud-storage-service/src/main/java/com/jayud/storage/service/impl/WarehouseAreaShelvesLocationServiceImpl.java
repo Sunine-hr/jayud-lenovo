@@ -59,8 +59,9 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
 
     @Override
     public boolean saveOrUpdateWarehouseAreaShelvesLocation(List<WarehouseAreaShelvesLocationForm> form) {
-        List<WarehouseAreaShelvesLocation> warehouseAreaShelvesLocations = ConvertUtil.convertList(form, WarehouseAreaShelvesLocation.class);
-        for (WarehouseAreaShelvesLocation warehouseAreaShelvesLocation : warehouseAreaShelvesLocations) {
+
+        for (WarehouseAreaShelvesLocationForm warehouseAreaShelvesLocationForm : form) {
+            WarehouseAreaShelvesLocation warehouseAreaShelvesLocation = ConvertUtil.convert(warehouseAreaShelvesLocationForm, WarehouseAreaShelvesLocation.class);
             warehouseAreaShelvesLocation.setStatus(1);
             warehouseAreaShelvesLocation.setCreateTime(LocalDateTime.now());
             warehouseAreaShelvesLocation.setCreateUser(UserOperator.getToken());
@@ -68,21 +69,24 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
             if(!b){
                 return false;
             }
-            //库位添加成功,生成库位编码
-            List<String> locationCode = this.createLocationCode(warehouseAreaShelvesLocation);
-            List<Location> locations = new ArrayList<>();
-            for (String s : locationCode) {
-                Location location = new Location();
-                location.setLocationId(warehouseAreaShelvesLocation.getId());
-                location.setCreateUser(UserOperator.getToken());
-                location.setLocationCode(s);
-                location.setCreateTime(LocalDateTime.now());
-                location.setStatus(0);
-                locations.add(location);
-            }
-            boolean b1 = this.locationService.saveOrUpdateBatch(locations);
-            if(!b){
-                return false;
+
+            if(warehouseAreaShelvesLocationForm.getId() == null){
+                //库位添加成功,生成库位编码
+                List<String> locationCode = this.createLocationCode(warehouseAreaShelvesLocation);
+                List<Location> locations = new ArrayList<>();
+                for (String s : locationCode) {
+                    Location location = new Location();
+                    location.setLocationId(warehouseAreaShelvesLocation.getId());
+                    location.setCreateUser(UserOperator.getToken());
+                    location.setLocationCode(s);
+                    location.setCreateTime(LocalDateTime.now());
+                    location.setStatus(0);
+                    locations.add(location);
+                }
+                boolean b1 = this.locationService.saveOrUpdateBatch(locations);
+                if(!b){
+                    return false;
+                }
             }
 
         }
@@ -95,10 +99,21 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
     }
 
     @Override
-    public List<WarehouseAreaShelvesLocation> getList() {
+    public List<LocationCodeVO> getList() {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("status",1);
-        return this.baseMapper.selectList(queryWrapper);
+        List<WarehouseAreaShelvesLocation> list = this.baseMapper.selectList(queryWrapper);
+        List<LocationCodeVO> locationCodeVOS = new ArrayList<>();
+
+        for (WarehouseAreaShelvesLocation warehouseAreaShelvesLocation : list) {
+            List<Location> locations = locationService.getList(warehouseAreaShelvesLocation.getId());
+            for (Location location : locations) {
+                LocationCodeVO locationCodeVO = ConvertUtil.convert(warehouseAreaShelvesLocation, LocationCodeVO.class);
+                locationCodeVO.setLocationCode(location.getLocationCode());
+                locationCodeVOS.add(locationCodeVO);
+            }
+        }
+        return locationCodeVOS;
     }
 
     private List<String> createLocationCode(WarehouseAreaShelvesLocation warehouseAreaShelvesLocation){

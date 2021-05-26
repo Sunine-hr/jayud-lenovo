@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.storage.model.po.WarehouseGoods;
 import com.jayud.storage.mapper.WarehouseGoodsMapper;
+import com.jayud.storage.model.vo.OrderOutRecord;
 import com.jayud.storage.model.vo.OutGoodsOperationRecordFormVO;
 import com.jayud.storage.model.vo.WarehouseGoodsVO;
 import com.jayud.storage.service.IWarehouseGoodsService;
@@ -62,6 +63,16 @@ public class WarehouseGoodsServiceImpl extends ServiceImpl<WarehouseGoodsMapper,
 
     @Override
     public List<OutGoodsOperationRecordFormVO> getListBySkuAndLocationCode(String sku, String locationCode,Long customerId) {
-        return null;
+        return this.baseMapper.getListBySkuAndLocationCode(sku,locationCode,customerId);
+    }
+
+    @Override
+    public Integer getCount(String sku, String locationCode, Long customerId) {
+        return this.baseMapper.getCount(sku,locationCode,customerId);
+    }
+
+    @Override
+    public List<OrderOutRecord> getListBySkuAndBatchNo(List<String> skuList, List<String> warehousingBatchNos) {
+        return this.baseMapper.getListBySkuAndBatchNo(skuList,warehousingBatchNos);
     }
 }

@@ -36,6 +36,15 @@ public class QRCodeInformationVO {
     @ApiModelProperty(value = "货物信息")
     private String goodInfo;
 
+    @ApiModelProperty(value = "总板数")
+    private Integer totalAmount;
+
+    @ApiModelProperty(value = "总件数")
+    private Integer totalJAmount;
+
+    @ApiModelProperty(value = "总pcs")
+    private Integer totalPCS;
+
     @ApiModelProperty(value = "货物信息")
     private List<InGoodsOperationRecord> goodInfos;
 }

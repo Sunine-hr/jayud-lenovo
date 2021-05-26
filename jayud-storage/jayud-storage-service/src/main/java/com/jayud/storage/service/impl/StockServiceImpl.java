@@ -48,12 +48,18 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
     @Override
     public boolean saveStock(Stock stock) {
-
+        QueryWrapper queryWrapper1 = new QueryWrapper();
+        queryWrapper1.eq("sku",stock.getSku());
+        queryWrapper1.eq("name",stock.getGoodName());
+        queryWrapper1.eq("specification_model",stock.getSpecificationModel());
+        Good good = goodService.getOne(queryWrapper1);
+        if(good == null){
+            return false;
+        }
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("sku",stock.getSku());
         queryWrapper.eq("good_name",stock.getGoodName());
         queryWrapper.eq("specification_model",stock.getSpecificationModel());
-        Good good = goodService.getOne(queryWrapper);
         Stock stock1 = this.getOne(queryWrapper);
         if(stock1!=null){
             stock1.setAvailableStock(stock1.getAvailableStock()+stock.getAvailableStock());
@@ -61,32 +67,38 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             if(!b){
                 return false;
             }
+            return true;
+        }else{
+//            stock.setCustomerId(good.getCustomerId());
+            stock.setCreateUser(UserOperator.getToken());
+            stock.setCreateTime(LocalDateTime.now());
+            boolean b = this.saveOrUpdate(stock);
+            if(!b){
+                return false;
+            }
+            return true;
         }
-        stock.setCustomerId(good.getCustomerId());
-        stock.setCreateUser(UserOperator.getToken());
-        stock.setCreateTime(LocalDateTime.now());
-        boolean b = this.saveOrUpdate(stock);
-        if(!b){
-            return false;
-        }
-        return true;
     }
 
     @Override
     public IPage<StockVO> findByPage(QueryStockForm form) {
         Page<StockVO> page = new Page<>(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findByPage(page, form);
+        IPage<StockVO> byPage = this.baseMapper.findByPage(page, form);
+        return byPage;
     }
 
     @Override
-    public boolean getIsStockNumber(String sku, Integer number) {
+    public String getIsStockNumber(String sku, Integer number) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("sku",sku);
         Stock stock = this.baseMapper.selectOne(queryWrapper);
-        if(stock.getAvailableStock()<number){
-            return false;
+        if(stock==null){
+            return "该商品不存在";
         }
-        return true;
+        if(stock.getAvailableStock()<number){
+            return "该商品数量超出库存";
+        }
+        return "pass";
     }
 
     @Override

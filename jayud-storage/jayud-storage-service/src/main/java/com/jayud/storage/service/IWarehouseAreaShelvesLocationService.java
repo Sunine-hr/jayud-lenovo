@@ -5,6 +5,7 @@ import com.jayud.storage.model.bo.QueryWarehouseAreaShelvesLocationForm;
 import com.jayud.storage.model.bo.WarehouseAreaShelvesLocationForm;
 import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.storage.model.vo.LocationCodeVO;
 import com.jayud.storage.model.vo.WarehouseAreaShelvesLocationVO;
 
 import java.util.List;
@@ -27,6 +28,6 @@ public interface IWarehouseAreaShelvesLocationService extends IService<Warehouse
 
     List<WarehouseAreaShelvesLocationVO> getListByShelvesId(QueryWarehouseAreaShelvesLocationForm form);
 
-    List<WarehouseAreaShelvesLocation> getList();
+    List<LocationCodeVO> getList();
 
 }

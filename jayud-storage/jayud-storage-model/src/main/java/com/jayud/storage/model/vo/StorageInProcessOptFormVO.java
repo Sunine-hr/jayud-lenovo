@@ -86,6 +86,8 @@ public class StorageInProcessOptFormVO {
     @ApiModelProperty(value = "入库批次号")
     private String warehousingBatchNo;
 
+    @ApiModelProperty(value = "接单法人名称")
+    private String legalName;
 
 
     //入仓信息

@@ -81,7 +81,7 @@ public class GoodVO {
     @ApiModelProperty(value = "截止有效期")
     private LocalDateTime expirationDate;
 
-    public void setProductSize(String productSize) {
+    public void setProductSize() {
         this.productSize = this.goodLength + "*" + this.goodHeight + "*" + this.goodWidth;
     }
 

@@ -4,7 +4,9 @@ package com.jayud.storage.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonResult;
+import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.GoodForm;
 import com.jayud.storage.model.bo.QueryGoodForm;
 import com.jayud.storage.model.bo.QueryWarehouseForm;
@@ -16,12 +18,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
-
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -40,6 +40,9 @@ public class GoodController {
     @Autowired
     IGoodService goodService;
 
+    @Autowired
+    private OmsClient omsClient;
+
     @ApiOperation(value = "不分页查询list")
     @PostMapping("/findGoods")
     public CommonResult<List<GoodVO>> findGoods(@RequestBody QueryGoodForm form) {
@@ -51,13 +54,23 @@ public class GoodController {
     @PostMapping("/findGoodsByPage")
     public CommonResult<IPage<GoodVO>> findGoodsByPage(@RequestBody QueryGoodForm form) {
         IPage<GoodVO> page = goodService.findGoodsByPage(form);
+        for (GoodVO record : page.getRecords()) {
+            record.setCustomerName(omsClient.getCustomerNameById(record.getCustomerId()).getData());
+            record.setProductSize();
+        }
         return CommonResult.success(page);
     }
 
     @ApiOperation(value = "新增或修改商品信息")
     @PostMapping("/saveOrUpdateGood")
-    public CommonResult saveOrUpdateGood(GoodForm goodForm){
+    public CommonResult saveOrUpdateGood(@RequestBody GoodForm goodForm){
         Good convert = ConvertUtil.convert(goodForm, Good.class);
+        if(convert.getId()==null){
+            convert.setSku(convert.getCustomerCode()+"-"+convert.getSku());
+        }
+        convert.setStatus(1);
+        convert.setCreateTime(LocalDateTime.now());
+        convert.setCreateUser(UserOperator.getToken());
         boolean b = goodService.saveOrUpdate(convert);
         if(b){
             return CommonResult.success();
@@ -67,7 +80,7 @@ public class GoodController {
 
     @ApiOperation(value = "校验商品sku是否重复")
     @PostMapping("/isRepeat")
-    public CommonResult isRepeat(String sku){
+    public CommonResult isRepeat(@RequestParam("sku") String sku){
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("sku",sku);
         Good one = this.goodService.getOne(queryWrapper);

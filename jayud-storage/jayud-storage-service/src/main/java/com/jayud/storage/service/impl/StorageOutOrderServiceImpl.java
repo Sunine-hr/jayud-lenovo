@@ -97,10 +97,10 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
                 warehouseGoods.add(convert);
 
                 //出库订单创建成功，锁定库存
-//                boolean result = stockService.lockInInventory(convert);
-//                if(!result){
-//                    log.warn(convert.getName() + "锁定库存失败");
-//                }
+                boolean result = stockService.lockInInventory(convert);
+                if(!result){
+                    log.warn(convert.getName() + "锁定库存失败");
+                }
             }
             warehouseGoodsService.saveOrUpdateBatch(warehouseGoods);
         }
@@ -228,7 +228,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     }
 
     /**
-     * 入库流程操作记录
+     * 出库流程操作记录
      */
     @Override
     public void storageProcessOptRecord(StorageOutProcessOptForm form) {
@@ -244,7 +244,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
         //文件拼接
         form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
         form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
-        form.setBusinessType(BusinessTypeEnum.TC.getCode());
+        form.setBusinessType(BusinessTypeEnum.RK.getCode());
 
         if (omsClient.saveOprStatus(form).getCode() != HttpStatus.SC_OK) {
             log.error("远程调用物流轨迹失败");
@@ -259,7 +259,6 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     @Override
     public boolean printPickingList(StorageOutProcessOptForm form) {
         form.setOperatorUser(UserOperator.getToken());
-        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageOutOrder storageOutOrder = new StorageOutOrder();
         storageOutOrder.setId(form.getOrderId());
         storageOutOrder.setUpdateUser(UserOperator.getToken());
@@ -276,7 +275,8 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
             List<GoodsLocationRecordFormVO> goodsLocationRecordForms = outWarehouseGoodsForm.getGoodsLocationRecordForms();
             for (GoodsLocationRecordFormVO goodsLocationRecordForm : goodsLocationRecordForms) {
                 GoodsLocationRecord goodsLocationRecord = ConvertUtil.convert(goodsLocationRecordForm, GoodsLocationRecord.class);
-                goodsLocationRecord.setCreateTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
+                goodsLocationRecord.setInGoodId(outWarehouseGoodsForm.getId());
+                goodsLocationRecord.setCreateTime(LocalDateTime.now());
                 goodsLocationRecord.setCreateUser(UserOperator.getToken());
                 goodsLocationRecord.setType(2);
                 boolean b1 = goodsLocationRecordService.saveOrUpdate(goodsLocationRecord);
@@ -305,7 +305,6 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     @Override
     public boolean warehousePicking(StorageOutProcessOptForm form) {
         form.setOperatorUser(UserOperator.getToken());
-        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageOutOrder storageOutOrder = new StorageOutOrder();
         storageOutOrder.setId(form.getOrderId());
         storageOutOrder.setUpdateUser(UserOperator.getToken());
@@ -329,7 +328,6 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     public void abnormalOutOfWarehouse(StorageOutProcessOptForm form) {
 
         form.setOperatorUser(UserOperator.getToken());
-        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageOutOrder storageOutOrder = new StorageOutOrder();
         storageOutOrder.setId(form.getOrderId());
         storageOutOrder.setUpdateUser(UserOperator.getToken());
@@ -351,7 +349,6 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     @Override
     public void confirmDelivery(StorageOutProcessOptForm form) {
         form.setOperatorUser(UserOperator.getToken());
-        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageOutOrder storageOutOrder = new StorageOutOrder();
         storageOutOrder.setId(form.getOrderId());
         storageOutOrder.setUpdateUser(UserOperator.getToken());

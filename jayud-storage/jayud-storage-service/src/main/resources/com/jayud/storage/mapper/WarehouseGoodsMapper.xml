@@ -33,4 +33,40 @@
         id, order_no, order_id, name, sku, specification_model, board_number, commodity_batch_number, number, pcs, weight, volume, estimated_arrival_time, expected_delivery_time, remarks, file_path, file_name, create_user, create_time, update_user, update_time, type
     </sql>
 
+    <select id="getListBySkuAndLocationCode" resultType="com.jayud.storage.model.vo.OutGoodsOperationRecordFormVO">
+        select soo.warehouse_number warehouseNumber, wg.warehousing_batch_no warehousingBatchNo ,glr.number number,wg.pcs pcs, soo.update_time createTime
+        glr.inGood_id inGoodId,glr.ku_code kuCode
+        from
+        (select id,ku_code,inGood_id,number,type, un_delivered_quantity	from goods_location_record group by ku_code) glr
+	    left join warehouse_goods wg on glr.inGood_id = wg.id
+	    left join storage_out_order soo on soo.id = wg.order_id
+	    left join stock s on wg.sku = s.sku
+	    where wg.sku = #{sku} and glr.ku_code = #{locationCode} and glr.type = 2 and s.customer_id = #{customerId}
+    </select>
+
+    <select id="getCount" resultType="integer">
+        select sum(glr.number)
+        from
+        (select id,ku_code,inGood_id,number,type, un_delivered_quantity	from goods_location_record group by ku_code) glr
+	    left join warehouse_goods wg on glr.inGood_id = wg.id
+	    left join storage_out_order soo on soo.id = wg.order_id
+	    left join stock s on wg.sku = s.sku
+	    where wg.sku = #{sku} and glr.ku_code = #{locationCode} and glr.type = 2 and s.customer_id = #{customerId}
+    </select>
+
+    <select id="getListBySkuAndBatchNo" resultType="com.jayud.storage.model.vo.OrderOutRecord">
+        select soo.order_no orderNo, wg.warehousing_batch_no warehousingBatchNo, name,sku,number,pcs,soo.update_time createTime,soo.remarks remarks
+        from (select * from warehouse_goods where type = 2) wg
+        left join storage_out_order soo on soo.id = wg.order_id
+        where soo.process_status = 1
+        and wg.sku IN
+        <foreach collection="skuList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and wg.warehousingBatchNo IN
+        <foreach collection="warehousingBatchNos" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>

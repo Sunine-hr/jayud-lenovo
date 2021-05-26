@@ -204,6 +204,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         return this.baseMapper.findWarehousingByPage(page, form,legalIds);
     }
 
+    //仓储入库
     @Override
     public boolean warehousingEntry(StorageInProcessOptForm form) {
         List<InGoodsOperationRecordForm> inGoodsOperationRecords = form.getInGoodsOperationRecords();
@@ -214,7 +215,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
                     GoodsLocationRecord goodsLocationRecord = ConvertUtil.convert(goodsLocationRecordForm, GoodsLocationRecord.class);
                     goodsLocationRecord.setInGoodId(inGoodsOperationRecord.getId());
                     goodsLocationRecord.setCreateUser(UserOperator.getToken());
-                    goodsLocationRecord.setCreateTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
+                    goodsLocationRecord.setCreateTime(LocalDateTime.now());
                     goodsLocationRecord.setType(1);
                     boolean b = goodsLocationRecordService.saveOrUpdate(goodsLocationRecord);
                     if(!b){
@@ -224,7 +225,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
                     stock.setGoodName(inGoodsOperationRecord.getName());
                     stock.setSku(inGoodsOperationRecord.getSku());
                     stock.setSpecificationModel(inGoodsOperationRecord.getSpecificationModel());
-                    stock.setLockStock(goodsLocationRecord.getNumber());
+                    stock.setAvailableStock(goodsLocationRecord.getNumber());
                     boolean result = stockService.saveStock(stock);
                     if(!result){
                         return false;
@@ -232,6 +233,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
                 }
 
             }
+            //确认该商品已入库
             InGoodsOperationRecord inGoodsOperationRecord1 = ConvertUtil.convert(inGoodsOperationRecord, InGoodsOperationRecord.class);
             inGoodsOperationRecord1.setIsWarehousing(1);
             boolean b = inGoodsOperationRecordService.saveOrUpdate(inGoodsOperationRecord1);
@@ -250,6 +252,9 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         if(flag){
             StorageInputOrder storageInputOrder = new StorageInputOrder();
             storageInputOrder.setId(form.getId());
+            storageInputOrder.setUpdateUser(UserOperator.getToken());
+            storageInputOrder.setUpdateTime(LocalDateTime.now());
+            storageInputOrder.setStorageTime(LocalDateTime.now());
             storageInputOrder.setStatus(form.getStatus());
             this.baseMapper.updateById(storageInputOrder);
             this.finishStorageOrderOpt(storageInputOrder);
@@ -258,7 +263,10 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         }
         if(!flag){
             StorageInputOrder storageInputOrder = new StorageInputOrder();
+            storageInputOrder.setUpdateUser(UserOperator.getToken());
+            storageInputOrder.setUpdateTime(LocalDateTime.now());
             storageInputOrder.setId(form.getId());
+            storageInputOrder.setStorageTime(LocalDateTime.now());
             form.setStatusName("该批次入库成功");
             form.setStatus("CCI_2");
             this.baseMapper.updateById(storageInputOrder);
@@ -286,9 +294,16 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
     }
 
     @Override
+    public IPage<StorageInputOrderNumberVO> findOrderRecordByPage(QueryInOrderForm form) {
+
+        Page<StorageInputOrderNumberVO> page = new Page<>(form.getPageNum(), form.getPageSize());
+        return this.baseMapper.findOrderRecordByPage(page, form);
+    }
+
+    //入库接单
+    @Override
     public void warehouseReceipt(StorageInProcessOptForm form) {
         form.setOperatorUser(UserOperator.getToken());
-        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageInputOrder storageInputOrder = new StorageInputOrder();
         storageInputOrder.setOrderTaker(form.getOperatorUser());
         storageInputOrder.setReceivingOrdersDate(form.getOperatorTime());
@@ -336,10 +351,10 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
 
     }
 
+    //确认入仓
     @Override
     public boolean confirmEntry(StorageInProcessOptForm form) {
         form.setOperatorUser(UserOperator.getToken());
-        form.setOperatorTime(LocalDateTime.now().toString());
 
         StorageInputOrderDetails storageInputOrderDetails = ConvertUtil.convert(form, StorageInputOrderDetails.class);
         StringBuffer stringBuffer = new StringBuffer();
@@ -380,24 +395,28 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
             if(!b){
                 return false;
             }
-            InGoodsOperationRecord inGoodsOperationRecord = new InGoodsOperationRecord();
-            inGoodsOperationRecord.setOrderId(form.getOrderId());
-            inGoodsOperationRecord.setOrderNo(form.getOrderNo());
-            inGoodsOperationRecord.setWarehousingBatchNo(form.getWarehousingBatchNo());
-            inGoodsOperationRecord.setName(warehouseGoodsForm.getName());
-            inGoodsOperationRecord.setSku(warehouseGoodsForm.getSku());
-            inGoodsOperationRecord.setSpecificationModel(warehouseGoodsForm.getSpecificationModel());
-            inGoodsOperationRecord.setBoardNumber(warehouseGoodsForm.getSjBoardNumber());
-            inGoodsOperationRecord.setNumber(warehouseGoodsForm.getSjNumber());
-            inGoodsOperationRecord.setPcs(warehouseGoodsForm.getSjPcs());
-            inGoodsOperationRecord.setWeight(warehouseGoodsForm.getSjWeight());
-            inGoodsOperationRecord.setVolume(warehouseGoodsForm.getSjVolume());
-            inGoodsOperationRecord.setCreateTime(LocalDateTime.now());
-            inGoodsOperationRecord.setCreateUser(UserOperator.getToken());
-            boolean save = inGoodsOperationRecordService.save(inGoodsOperationRecord);
-            if(!save){
-                return false;
+            if( warehouseGoodsForm.getSjNumber() != null ){
+                InGoodsOperationRecord inGoodsOperationRecord = new InGoodsOperationRecord();
+                inGoodsOperationRecord.setOrderId(form.getOrderId());
+                inGoodsOperationRecord.setOrderNo(form.getOrderNo());
+                inGoodsOperationRecord.setWarehousingBatchNo(form.getWarehousingBatchNo());
+                inGoodsOperationRecord.setName(warehouseGoodsForm.getName());
+                inGoodsOperationRecord.setSku(warehouseGoodsForm.getSku());
+                inGoodsOperationRecord.setSpecificationModel(warehouseGoodsForm.getSpecificationModel());
+                inGoodsOperationRecord.setBoardNumber(warehouseGoodsForm.getSjBoardNumber());
+                inGoodsOperationRecord.setNumber(warehouseGoodsForm.getSjNumber());
+                inGoodsOperationRecord.setPcs(warehouseGoodsForm.getSjPcs());
+                inGoodsOperationRecord.setWeight(warehouseGoodsForm.getSjWeight());
+                inGoodsOperationRecord.setVolume(warehouseGoodsForm.getSjVolume());
+                inGoodsOperationRecord.setCreateTime(LocalDateTime.now());
+                inGoodsOperationRecord.setCreateUser(UserOperator.getToken());
+                inGoodsOperationRecord.setIsWarehousing(0);
+                boolean save = inGoodsOperationRecordService.save(inGoodsOperationRecord);
+                if(!save){
+                    return false;
+                }
             }
+
         }
         if(form.getCmd().equals("submit")){
 
@@ -410,16 +429,20 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
             this.baseMapper.updateById(storageInputOrder);
             this.finishStorageOrderOpt(storageInputOrder);
             this.storageProcessOptRecord(form);
+            //redisUtils.delete(storageInputOrder.getOrderNo());
             return true;
         }
         if(form.getCmd().equals("end")){
             StorageInputOrder storageInputOrder = new StorageInputOrder();
             storageInputOrder.setId(form.getOrderId());
             storageInputOrder.setIsSubmit(1);
+            storageInputOrder.setUpdateUser(UserOperator.getToken());
+            storageInputOrder.setUpdateTime(LocalDateTime.now());
             storageInputOrder.setStatus(form.getStatus());
             this.baseMapper.updateById(storageInputOrder);
             this.finishStorageOrderOpt(storageInputOrder);
             this.storageProcessOptRecord(form);
+            //redisUtils.delete(storageInputOrder.getOrderNo());
             return true;
         }
         return false;

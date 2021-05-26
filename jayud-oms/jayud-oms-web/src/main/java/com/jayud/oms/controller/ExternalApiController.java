@@ -1522,6 +1522,14 @@ public class ExternalApiController {
         }
         return ApiResult.ok(list);
     }
+
+    @ApiOperation(value = "获取公司名称下拉列表")
+    @RequestMapping(value = "/api/getCustomerInfo")
+    ApiResult getCustomerInfo(){
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status",1);
+        return ApiResult.ok(customerInfoService.list(queryWrapper));
+    }
 }
 
 

@@ -20,8 +20,11 @@ public class RelocationGoodsOperationRecordFormVO {
     @ApiModelProperty(value = "移库单号")
     private String orderNO;
 
-    @ApiModelProperty(value = "入库批次号")
-    private String warehousingBatchNo;
+    @ApiModelProperty(value = "旧库位")
+    private String oldLocationCode;
+
+    @ApiModelProperty(value = "新库位")
+    private String newLocationCode;
 
     @ApiModelProperty(value = "移库件数")
     private Integer number;
@@ -29,6 +32,4 @@ public class RelocationGoodsOperationRecordFormVO {
     @ApiModelProperty(value = "移库时间")
     private LocalDateTime createTime;
 
-    @ApiModelProperty(value = "存仓时长")
-    private String storageTime;
 }

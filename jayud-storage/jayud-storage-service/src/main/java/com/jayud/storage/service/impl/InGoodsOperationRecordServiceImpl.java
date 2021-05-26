@@ -74,5 +74,10 @@ public class InGoodsOperationRecordServiceImpl extends ServiceImpl<InGoodsOperat
         return this.baseMapper.getListBySkuAndLocationCode(sku,locationCode,customerId);
     }
 
+    @Override
+    public List<String> getWarehousingBatch(Long id) {
+        return this.baseMapper.getWarehousingBatch(id);
+    }
+
 
 }

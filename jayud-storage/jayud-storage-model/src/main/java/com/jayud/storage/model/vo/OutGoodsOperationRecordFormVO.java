@@ -36,5 +36,11 @@ public class OutGoodsOperationRecordFormVO {
     @ApiModelProperty(value = "存仓时长")
     private String storageTime;
 
+    @ApiModelProperty(value = "库位id")
+    private String kuCode;
+
+    @ApiModelProperty(value = "入库商品id")
+    private Long inGoodId;
+
 
 }

@@ -231,7 +231,12 @@ public class StorageOutOrderController {
                 Integer number = 0;
                 for (GoodsLocationRecordFormVO goodsLocationRecordForm : goodsLocationRecordForms) {
                     number = number + goodsLocationRecordForm.getNumber();
-                    GoodsLocationRecord goodsLocationRecord = goodsLocationRecordService.getListByGoodIdAndKuCode(goodsLocationRecordForm.getInGoodId(),goodsLocationRecordForm.getKuCode());
+                    //入库商品
+                    GoodsLocationRecord goodsLocationRecord = goodsLocationRecordService.getGoodsLocationRecordBySkuAndKuCode(goodsLocationRecordForm.getKuCode(),outWarehouseGoodsForm.getWarehousingBatchNo(),outWarehouseGoodsForm.getSku());
+                    System.out.println("goodsLocationRecord==============="+goodsLocationRecord);
+                    if(goodsLocationRecord == null){
+                        return CommonResult.error(400, goodsLocationRecordForm.getKuCode()+"不存在"+outWarehouseGoodsForm.getSku());
+                    }
                     if(goodsLocationRecord.getNumber()<goodsLocationRecordForm.getNumber()){//填的商品超过了该库位的总商品数
                         return CommonResult.error(400, goodsLocationRecordForm.getKuCode()+"的该商品最大数量为"+goodsLocationRecord.getNumber());
                     }
@@ -307,6 +312,7 @@ public class StorageOutOrderController {
         Long id = MapUtil.getLong(map, "id");
         StorageOutOrderVO storageOutOrderVO = storageOutOrderService.getStorageOutOrderVOById(id);
         StorageOutPickingListVO convert = ConvertUtil.convert(storageOutOrderVO, StorageOutPickingListVO.class);
+        convert.setOrderId(convert.getId());
 
         ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageOutOrderVO.getMainOrderNo()));
         convert.assemblyMainOrderData(result.getData());
@@ -315,7 +321,8 @@ public class StorageOutOrderController {
         List<WarehouseGoodsLocationVO> goodsFormList = new ArrayList<>();
         for (WarehouseGoodsVO warehouseGoodsVO : storageOutOrderVO.getGoodsFormList()) {
             WarehouseGoodsLocationVO warehouseGoodsLocationVO = ConvertUtil.convert(warehouseGoodsVO, WarehouseGoodsLocationVO.class);
-            List<GoodsLocationRecord> goodsLocationRecords = goodsLocationRecordService.getListByGoodId(warehouseGoodsVO.getId(),warehouseGoodsVO.getOrderId(),warehouseGoodsVO.getSku());
+            //获取该商品所在的库位
+            List<GoodsLocationRecord> goodsLocationRecords = goodsLocationRecordService.getListByGoodId(warehouseGoodsVO.getWarehousingBatchNo(),warehouseGoodsVO.getSku());
             Integer number = warehouseGoodsVO.getNumber();
             List<GoodsLocationRecordFormVO> goodsLocationRecordFormVOS = new ArrayList<>();
             //循环
@@ -343,7 +350,30 @@ public class StorageOutOrderController {
             warehouseGoodsLocationVO.setGoodsLocationRecordForms(goodsLocationRecordFormVOS);
             goodsFormList.add(warehouseGoodsLocationVO);
         }
-        convert.setGoodsFormList(goodsFormList);
+        convert.setOutWarehouseGoodsForms(goodsFormList);
+        return CommonResult.success(convert);
+    }
+
+    @ApiOperation(value = "获取仓储拣货信息")
+    @PostMapping(value = "/getWarehousePickingInformation")
+    public CommonResult getWarehousePickingInformation(@RequestBody Map<String,Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        StorageOutOrderVO storageOutOrderVO = storageOutOrderService.getStorageOutOrderVOById(id);
+        StorageOutPickingListVO convert = ConvertUtil.convert(storageOutOrderVO, StorageOutPickingListVO.class);
+        convert.setOrderId(convert.getId());
+
+        ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageOutOrderVO.getMainOrderNo()));
+        convert.assemblyMainOrderData(result.getData());
+        convert.assemblyPickingListData(storageOutOrderVO.getGoodsFormList());
+        List<WarehouseGoodsLocationVO> goodsFormList = new ArrayList<>();
+        for (WarehouseGoodsVO warehouseGoodsVO : storageOutOrderVO.getGoodsFormList()) {
+            WarehouseGoodsLocationVO warehouseGoodsLocationVO = ConvertUtil.convert(warehouseGoodsVO, WarehouseGoodsLocationVO.class);
+            List<GoodsLocationRecordFormVO> goodsLocationRecordFormVOS = goodsLocationRecordService.getOutGoodsLocationRecordByGoodId(warehouseGoodsLocationVO.getId());
+            System.out.println("goodsLocationRecordFormVOS============================="+goodsLocationRecordFormVOS);
+            warehouseGoodsLocationVO.setGoodsLocationRecordForms(goodsLocationRecordFormVOS);
+            goodsFormList.add(warehouseGoodsLocationVO);
+        }
+        convert.setOutWarehouseGoodsForms(goodsFormList);
         return CommonResult.success(convert);
     }
 
@@ -351,9 +381,11 @@ public class StorageOutOrderController {
     @PostMapping(value = "/getLocationComboxByOrderId")
     public CommonResult getLocationComboxByOrderId(@RequestBody Map<String,Object> map) {
         Long id = MapUtil.getLong(map, "id");
+        //获取实际入库记录
         List<InGoodsOperationRecord> listByOrderId = goodsOperationRecordService.getListByOrderId(id);
         Map map1 = new HashMap();
         for (InGoodsOperationRecord inGoodsOperationRecord : listByOrderId) {
+            //获取入库的实际库位
             List<GoodsLocationRecord> goodsLocationRecords = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecord.getId());
             map1.put(inGoodsOperationRecord.getSku(),goodsLocationRecords);
         }

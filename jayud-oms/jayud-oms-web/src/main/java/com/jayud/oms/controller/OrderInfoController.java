@@ -248,20 +248,20 @@ public class OrderInfoController {
             if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())) {
                 if (inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode())) {
                     InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
-//                    ApiResult stock = storageClient.isStock(storageOutOrderForm.getGoodsFormList());
-//                    if(!stock.isOk()){
-//                        return CommonResult.error(stock.getCode(),stock.getMsg());
-//                    }
-//                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
-//                        return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
-//                    }
+                    ApiResult stock = storageClient.isStock(storageOutOrderForm.getGoodsFormList());
+                    if(!stock.isOk()){
+                        return CommonResult.error(stock.getCode(),stock.getMsg());
+                    }
+                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
+                        return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
+                    }
                 }
                 if (inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())) {
                     InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
-//                    ApiResult commodity = storageClient.isCommodity(storageInputOrderForm.getGoodsFormList());
-//                    if(!commodity.isOk()){
-//                        return CommonResult.error(commodity.getCode(),commodity.getMsg());
-//                    }
+                    ApiResult commodity = storageClient.isCommodity(storageInputOrderForm.getGoodsFormList());
+                    if(!commodity.isOk()){
+                        return CommonResult.error(commodity.getCode(),commodity.getMsg());
+                    }
                 }
             }
 

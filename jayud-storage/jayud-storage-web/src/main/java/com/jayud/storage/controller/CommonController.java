@@ -14,10 +14,7 @@ import com.jayud.storage.model.bo.WarehouseGoodsInForm;
 import com.jayud.storage.model.bo.WarehouseGoodsOutForm;
 import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
-import com.jayud.storage.model.vo.GoodNumberVO;
-import com.jayud.storage.model.vo.GoodVO;
-import com.jayud.storage.model.vo.InitComboxSVO;
-import com.jayud.storage.model.vo.InitComboxWarehouseVO;
+import com.jayud.storage.model.vo.*;
 import com.jayud.storage.service.IGoodService;
 import com.jayud.storage.service.IInGoodsOperationRecordService;
 import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
@@ -88,6 +85,10 @@ public class CommonController {
         log.info("list:{}",  listString);
         JSONArray arryList = JSONObject.parseArray(listString);
         arryList.remove(0);
+        List<WarehouseGoodsInForm> warehouseGoodsInForms = arryList.toJavaList(WarehouseGoodsInForm.class);
+        for (WarehouseGoodsInForm warehouseGoodsInForm : warehouseGoodsInForms) {
+
+        }
         return CommonResult.success(arryList);
     }
 
@@ -97,8 +98,21 @@ public class CommonController {
     @ApiOperation(value = "导入出库商品信息")
     @PostMapping(value = "/importOutProductInformation")
     public CommonResult importOutProductInformation(@RequestBody MultipartFile file){
+        List<Object> list = null;
+        try {
+            list = EasyExcelFactory.read(file.getInputStream(), new Sheet(1));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String listString = JSONObject.toJSONString(list);
+        log.info("list:{}",  listString);
+        JSONArray arryList = JSONObject.parseArray(listString);
+        arryList.remove(0);
+        List<WarehouseGoodsOutForm> warehouseGoodsOutForms = arryList.toJavaList(WarehouseGoodsOutForm.class);
+        for (WarehouseGoodsOutForm warehouseGoodsOutForm : warehouseGoodsOutForms) {
 
-        return CommonResult.success();
+        }
+        return CommonResult.success(arryList);
     }
 
     @ApiOperation(value = "生成入仓号/生成出仓号")
@@ -162,7 +176,7 @@ public class CommonController {
     @ApiOperation(value = "查询所有库位")
     @PostMapping(value = "/location1ComBox")
     public CommonResult location1ComBox(@RequestBody Map<String,Object> map){
-        List<WarehouseAreaShelvesLocation> warehouseAreaShelvesLocations = warehouseAreaShelvesLocationService.getList();
+        List<LocationCodeVO> warehouseAreaShelvesLocations = warehouseAreaShelvesLocationService.getList();
         return CommonResult.success(warehouseAreaShelvesLocations);
     }
 
@@ -174,4 +188,12 @@ public class CommonController {
         hashMap.put("shelfType",data);
         return CommonResult.success(hashMap);
     }
+
+    @ApiOperation(value = "客户名称下拉列表框")
+    @PostMapping(value = "/goodComBox")
+    public CommonResult goodComBox(){
+        return CommonResult.success(omsClient.getCustomerInfo().getData());
+    }
+
+
 }

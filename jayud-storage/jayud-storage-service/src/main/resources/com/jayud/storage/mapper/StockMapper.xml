@@ -25,17 +25,16 @@
         select igor.id ,s.good_name goodName, s.customer_id customerId, s.sku, s.specification_model specificationModel,
         glr.ku_code locationCode,
         ((select un_delivered_quantity from goods_location_record g where g.ku_code = glr.ku_code and g.inGood_id = glr.inGood_id and g.type=1)) inventoryQuantityUnit,
-        (select a.createTime from
+        (select DISTINCT a.createTime from
         (select create_time createTime,ku_code kuCode from goods_location_record g where type = 1 group by ku_code) a
         where not exists (select 1 from (select create_time createTime,ku_code kuCode from goods_location_record g where type = 1 group by ku_code) b
-        where b.kuCode = a.kuCode and b.createTime >= a.createTime
-        )) updateTime
+        where b.kuCode = a.kuCode and b.createTime >= a.createTime )) updateTime
          from location l
          left join warehouse_area_shelves_location wasl on l.location_id = wasl.id
          left join goods_location_record glr on l.location_code = glr.ku_code and glr.type = 1
          left join in_goods_operation_record igor on glr.inGood_id = igor.id
          left join stock s on igor.sku = s.sku
-         where status = 0
+         where l.status = 0
         <if test="form.kuCode !=null and form.kuCode!=''">
             and glr.ku_code like concat('%',#{form.kuCode},'%')
         </if>

@@ -1,9 +1,12 @@
 package com.jayud.storage.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.po.GoodsLocationRecord;
 import com.jayud.storage.mapper.GoodsLocationRecordMapper;
 import com.jayud.storage.model.po.InGoodsOperationRecord;
+import com.jayud.storage.model.vo.GoodsLocationRecordFormVO;
 import com.jayud.storage.model.vo.InGoodsOperationRecordFormVO;
 import com.jayud.storage.model.vo.InGoodsOperationRecordNumberVO;
 import com.jayud.storage.model.vo.StockLocationNumberVO;
@@ -33,33 +36,33 @@ public class GoodsLocationRecordServiceImpl extends ServiceImpl<GoodsLocationRec
     @Autowired
     private IWarehouseGoodsService warehouseGoodsService;
 
+    @Autowired
+    private OmsClient omsClient;
+
+    //入库
     @Override
     public List<GoodsLocationRecord> getGoodsLocationRecordByGoodId(Long id) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("inGood_id",id);
+        queryWrapper.eq("type",1);
         queryWrapper.orderByAsc("create_time");
         return this.baseMapper.selectList(queryWrapper);
     }
 
+    //入库
     @Override
-    public List<GoodsLocationRecord> getListByGoodId(Long id, Long orderId, String sku) {
-        return this.baseMapper.getListByGoodId(id, orderId, sku);
+    public List<GoodsLocationRecord> getListByGoodId( String warehousingBatchNo, String sku) {
+        return this.baseMapper.getListByGoodId(warehousingBatchNo, sku);
     }
 
-    @Override
-    public GoodsLocationRecord getListByGoodIdAndKuCode(Long inGoodId, String kuCode) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("inGood_id",inGoodId);
-        queryWrapper.eq("ku_code",kuCode);
-        return this.baseMapper.selectOne(queryWrapper);
-    }
-
+    //入库
     @Override
     public GoodsLocationRecord getGoodsLocationRecordBySkuAndKuCode(String kuCode, String warehousingBatchNo, String sku) {
         InGoodsOperationRecord inGoodsOperationRecord = inGoodsOperationRecordService.getListByWarehousingBatchNoAndSku(warehousingBatchNo,sku);
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("inGood_id",inGoodsOperationRecord.getId());
         queryWrapper.eq("ku_code",kuCode);
+        queryWrapper.eq("type",1);
         return this.baseMapper.selectOne(queryWrapper);
     }
 
@@ -72,8 +75,25 @@ public class GoodsLocationRecordServiceImpl extends ServiceImpl<GoodsLocationRec
         for (InGoodsOperationRecordFormVO inGoodsOperationRecordFormVO : inGoodsOperationRecordFormVOS) {
             number = number + inGoodsOperationRecordFormVO.getNowNumber();
         }
+        //获取锁定库存
+        Integer result = warehouseGoodsService.getCount(sku, locationCode, customerId);
+        stockLocationNumberVO.setGoodName(inGoodsOperationRecordFormVOS.get(0).getName());
+        stockLocationNumberVO.setCustomerId(customerId);
+        stockLocationNumberVO.setCustomerName(omsClient.getCustomerNameById(customerId).getData());
+        stockLocationNumberVO.setSku(sku);
+        stockLocationNumberVO.setAvailableStock(number);
+        stockLocationNumberVO.setLockStock(result);
+        return stockLocationNumberVO;
+    }
 
-        return null;
+    @Override
+    public List<GoodsLocationRecordFormVO> getOutGoodsLocationRecordByGoodId(Long id) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("inGood_id",id);
+        queryWrapper.eq("type",2);
+        List<GoodsLocationRecord> list = this.baseMapper.selectList(queryWrapper);
+        List<GoodsLocationRecordFormVO> goodsLocationRecordFormVOS = ConvertUtil.convertList(list, GoodsLocationRecordFormVO.class);
+        return goodsLocationRecordFormVOS;
     }
 
 

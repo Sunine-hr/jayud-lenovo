@@ -7,14 +7,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.QueryStockForm;
 import com.jayud.storage.model.bo.QueryStorageOrderForm;
+import com.jayud.storage.model.po.GoodsLocationRecord;
 import com.jayud.storage.model.vo.*;
-import com.jayud.storage.service.IInGoodsOperationRecordService;
-import com.jayud.storage.service.IStockService;
-import com.jayud.storage.service.IWarehouseGoodsService;
+import com.jayud.storage.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -27,6 +27,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -54,6 +57,12 @@ public class StockController {
 
     @Autowired
     private IWarehouseGoodsService warehouseGoodsService;
+
+    @Autowired
+    private IRelocationRecordService relocationRecordService;
+
+    @Autowired
+    private IGoodsLocationRecordService goodsLocationRecordService;
 
     @ApiOperation("库存查询")
     @PostMapping("/findByPage")
@@ -113,14 +122,58 @@ public class StockController {
 
         //获取入库操作记录
         List<InGoodsOperationRecordFormVO> inGoodsOperationRecordFormVOS = inGoodsOperationRecordService.getListBySkuAndLocationCode(sku,locationCode,customerId);
+        for (InGoodsOperationRecordFormVO inGoodsOperationRecordFormVO : inGoodsOperationRecordFormVOS) {
+            inGoodsOperationRecordFormVO.setStorageTime(this.getStorageTime(inGoodsOperationRecordFormVO.getCreateTime().toString(),LocalDateTime.now().toString()));
+        }
+        //获取出库操作记录
         List<OutGoodsOperationRecordFormVO> outGoodsOperationRecordFormVOS = warehouseGoodsService.getListBySkuAndLocationCode(sku,locationCode,customerId);
-        return CommonResult.success();
+        for (OutGoodsOperationRecordFormVO outGoodsOperationRecordFormVO : outGoodsOperationRecordFormVOS) {
+            //获取该商品入库的时间
+            GoodsLocationRecord goodsLocationRecord = goodsLocationRecordService.getGoodsLocationRecordBySkuAndKuCode(outGoodsOperationRecordFormVO.getWarehousingBatchNo(),sku,outGoodsOperationRecordFormVO.getKuCode());
+            outGoodsOperationRecordFormVO.setStorageTime(this.getStorageTime(goodsLocationRecord.getCreateTime().toString(),outGoodsOperationRecordFormVO.getCreateTime().toString()));
+        }
+        //获取移库操作记录
+        List<RelocationGoodsOperationRecordFormVO> relocationGoodsOperationRecordFormVOS = relocationRecordService.getListBySkuAndLocationCode(sku,locationCode);
+        //获取调整下架操作记录
+        //获取调整上架操作记录
+        StockRecordVO stockRecordVO = ConvertUtil.convert(stockLocationNumberVO, StockRecordVO.class);
+        stockRecordVO.setInGoodsOperationRecordFormVOS(inGoodsOperationRecordFormVOS);
+        stockRecordVO.setOutGoodsOperationRecordFormVOS(outGoodsOperationRecordFormVOS);
+        stockRecordVO.setRelocationGoodsOperationRecordFormVOS(relocationGoodsOperationRecordFormVOS);
+        return CommonResult.success(stockRecordVO);
     }
 
     //获取存仓时长
-    public String getStorageTime(LocalDateTime time){
-        return null;
+    public String getStorageTime(String startTime,String endTime){
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date one;
+        Date two;
+        long day = 0;
+        long hour = 0;
+        try {
+            one = df.parse(startTime);
+            two = df.parse(endTime);
+            long time1 = one.getTime();
+            long time2 = two.getTime();
+            long diff ;
+            if(time1<time2) {
+                diff = time2 - time1;
+            } else {
+                diff = time1 - time2;
+            }
+            day = diff / (24 * 60 * 60 * 1000);
+            hour = (diff / (60 * 60 * 1000) - day * 24);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return day + "天" + hour + "小时" ;
     }
+
+//    public static void main(String[] args) {
+//        System.out.println(LocalDateTime.now().getYear());
+//        System.out.println(LocalDateTime.now().getMonthValue());
+//        System.out.println(LocalDateTime.now().getDayOfMonth());
+//    }
 }
 
 

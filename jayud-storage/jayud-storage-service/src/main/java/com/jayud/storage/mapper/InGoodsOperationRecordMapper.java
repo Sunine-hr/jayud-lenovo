@@ -27,4 +27,6 @@ public interface InGoodsOperationRecordMapper extends BaseMapper<InGoodsOperatio
     List<InGoodsOperationRecordFormVO> getListBySkuAndLocationCode(@Param("sku")String sku, @Param("locationCode")String locationCode,@Param("customerId")Long customerId);
 
     InGoodsOperationRecordNumberVO getCountBySkuAndLocationCode(@Param("sku")String sku, @Param("locationCode")String locationCode);
+
+    List<String> getWarehousingBatch(@Param("id")Long id);
 }

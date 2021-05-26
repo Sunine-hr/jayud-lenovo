@@ -5,6 +5,7 @@ import com.jayud.storage.model.bo.*;
 import com.jayud.storage.model.po.StorageInputOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.storage.model.vo.StorageInputOrderFormVO;
+import com.jayud.storage.model.vo.StorageInputOrderNumberVO;
 import com.jayud.storage.model.vo.StorageInputOrderVO;
 import com.jayud.storage.model.vo.StorageInputOrderWarehouseingVO;
 
@@ -86,4 +87,10 @@ public interface IStorageInputOrderService extends IService<StorageInputOrder> {
      */
     void orderReceiving(StorageInputOrder tmp, AuditInfoForm auditInfoForm, StorageInCargoRejected storageInCargoRejected);
 
+    /**
+     * 查询入库订单记录
+     * @param form
+     * @return
+     */
+    IPage<StorageInputOrderNumberVO> findOrderRecordByPage(QueryInOrderForm form);
 }

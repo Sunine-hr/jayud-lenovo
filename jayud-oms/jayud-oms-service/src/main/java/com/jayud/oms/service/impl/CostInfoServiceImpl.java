@@ -14,6 +14,7 @@ import com.jayud.oms.model.po.CostInfo;
 import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.model.vo.CostTypeVO;
+import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.service.ICostInfoService;
 import com.jayud.oms.service.ICostTypeService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -57,8 +58,8 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
             condition.lambda().select(CostType::getId).like(CostType::getCodeName, form.getCostType());
             List<CostType> tmps = this.costTypeService.getBaseMapper().selectList(condition);
             ids = tmps.stream().map(e -> String.valueOf(e.getId())).collect(Collectors.toList());
-            if (CollectionUtils.isEmpty(ids)){
-                ids=new ArrayList<>();
+            if (CollectionUtils.isEmpty(ids)) {
+                ids = new ArrayList<>();
                 ids.add("-1");
             }
         }
@@ -180,5 +181,16 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
         QueryWrapper<CostInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(CostInfo::getStatus, status);
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 下拉根据费用类别查询费用名称
+     *
+     * @return
+     */
+    @Override
+    public List<InitComboxStrVO> getCostInfoByCostTypeName(String costTypeName) {
+        List<CostType> costType=this.costTypeService.getByCondition(new CostType().setCodeName(costTypeName));
+        return null;
     }
 }

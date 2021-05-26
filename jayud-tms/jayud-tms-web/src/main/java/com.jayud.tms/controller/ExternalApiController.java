@@ -11,6 +11,7 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.tms.feign.OauthClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
@@ -263,7 +264,7 @@ public class ExternalApiController {
 
 //        ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
 //        List<Long> legalIds = legalEntityByLegalName.getData();
-        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken()).getData();
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.EMPLOYEE_TYPE.getCode()).getData();
 
         for (Map<String, Object> menus : menusList) {
 

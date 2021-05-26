@@ -103,6 +103,11 @@ public interface OmsClient {
     @RequestMapping(value = "api/initVehicle")
     ApiResult<List<InitComboxVO>> initVehicle(@RequestParam("type") Integer type);
 
+    @ApiOperation(value = "初始化供应商车辆下拉框")
+    @RequestMapping(value = "api/initVehicleBySupplier")
+    public ApiResult<List<InitComboxVO>> initVehicleBySupplier(@RequestParam("supplierId") Long supplierId,
+                                                              @RequestParam("type") Integer type);
+
 //    /**
 //     * 司机下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话
 //     *

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,12 +78,14 @@ public class OrderTransComboxController {
     @PostMapping(value = "/initSupplierVehicle")
     public CommonResult<List<InitComboxVO>> initSupplierVehicle(@RequestBody Map<String, Object> map) {
         Long supplierId = MapUtil.getLong(map, BeanUtils.convertToFieldName(OrderTransport::getSupplierId));
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
         if (supplierId != null) {
-
-        } else {
-            List<InitComboxVO> initComboxVOS = omsClient.initVehicle(CarTypeEnum.ZERO.getCode()).getData();
+            initComboxVOS = this.omsClient.initVehicleBySupplier(supplierId, CarTypeEnum.ZERO.getCode()).getData();
         }
-        return CommonResult.success();
+        //        } else {
+//            initComboxVOS = this.omsClient.initVehicle(CarTypeEnum.ZERO.getCode()).getData();
+//        }
+        return CommonResult.success(initComboxVOS);
     }
 
     @ApiOperation(value = "运输派车-大陆车牌联动车辆供应商，大陆车牌，香港车牌，司机电话 id = 车辆id")

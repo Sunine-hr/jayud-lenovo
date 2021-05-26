@@ -310,9 +310,28 @@ public class ExternalApiController {
 
     @ApiOperation(value = "初始化车辆下拉框")
     @RequestMapping(value = "api/initVehicle")
-    public ApiResult<List<VehicleInfo>> initVehicle(@RequestParam("type") Integer type) {
+    public ApiResult<List<InitComboxVO>> initVehicle(@RequestParam("type") Integer type) {
         List<VehicleInfo> vehicleInfos = vehicleInfoService
                 .getByCondition(new VehicleInfo().setStatus(StatusEnum.ENABLE.getCode())
+                        .setType(type));
+
+        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        for (VehicleInfo vehicleInfo : vehicleInfos) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setId(vehicleInfo.getId());
+            initComboxVO.setName(vehicleInfo.getPlateNumber());
+            initComboxVOS.add(initComboxVO);
+        }
+        return ApiResult.ok(initComboxVOS);
+    }
+
+    @ApiOperation(value = "初始化供应商车辆下拉框")
+    @RequestMapping(value = "api/initVehicleBySupplier")
+    public ApiResult<List<VehicleInfo>> initVehicleBySupplier(@RequestParam("supplierId") Long supplierId,
+                                                              @RequestParam("type") Integer type) {
+        List<VehicleInfo> vehicleInfos = vehicleInfoService
+                .getByCondition(new VehicleInfo().setSupplierId(supplierId)
+                        .setStatus(StatusEnum.ENABLE.getCode())
                         .setType(type));
 
         List<InitComboxVO> initComboxVOS = new ArrayList<>();

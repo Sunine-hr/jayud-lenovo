@@ -126,7 +126,7 @@
             <result column="cntr_no" property="cntrNo"/>
             <result column="cntr_pic" property="cntrPic"/>
             <result column="cntr_pic_name" property="cntrPicName"/>
-            <result column="driver_info_info" property="driverInfoId"/>
+            <result column="driver_info_id" property="driverInfoId"/>
             <result column="vehicle_id" property="vehicleId"/>
             <result column="remarks" property="remarks"/>
             <result column="describes" property="describes"/>
@@ -720,9 +720,9 @@
                 <when test="status == 'HK_C_1'">
                     AND ot.`is_hk_clear` = '1' and ot.clear_customs_no is null
                     AND oi.`status` in ('1','4')
-                    <if test="legalIds != null and legalIds.size>0">
+                    <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
                         and ot.`hk_legal_id` in
-                        <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                        <foreach collection="dataControl.companyIds" item="legalId" open="(" separator="," close=")">
                             #{legalId}
                         </foreach>
                     </if>
@@ -784,13 +784,14 @@
 
     <select id="getTmsOrderInfoById" resultMap="ResultTwoMap">
         select
+        ot.id, ot.supplier_id,
         ot.main_order_no,ot.order_no,ot.port_code,
         ot.goods_type,ot.vehicle_type,
         ot.vehicle_size,ot.unit_code,ot.legal_name,ot.legal_entity_id,ot.status,
         oc.id, oc.transport_no, oc.order_no,oc.vehicle_type, oc.vehicle_size, oc.cntr_no, oc.cntr_pic,
         oc.cntr_pic_name, oc.driver_info_id,
         oc.vehicle_id,oc.remarks, oc.describes, oc.status, oc.updated_time, oc.updated_user, oc.created_user,
-        oc.created_time,oc.jockey_id,oc.jockey
+        oc.created_time,oc.jockey_id,oc.jockey,oc.remarks
         from
         order_transport ot left join order_send_cars oc on ot.order_no=oc.order_no
         <where>

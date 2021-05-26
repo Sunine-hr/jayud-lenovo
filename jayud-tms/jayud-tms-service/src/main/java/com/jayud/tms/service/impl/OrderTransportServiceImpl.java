@@ -13,6 +13,7 @@ import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
@@ -208,10 +209,10 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         //定义排序规则
         page.addOrder(OrderItem.desc("ot.id"));
 
+        DataControl dataControl = null;
         //获取当前用户所属法人主体
-//        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
-//        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
-        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken()).getData();
+        dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), form.getAccountType()).getData();
+
         IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form, dataControl);
         if (pageInfo.getRecords().size() == 0) {
             return pageInfo;
@@ -588,6 +589,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     /**
      * 根据id查询中港详情
+     *
      * @param id
      * @return
      */
@@ -599,10 +601,13 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         if (orderTransportInfoVO == null) {
             return null;
         }
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
+
         orderNos.add(orderTransportInfoVO.getOrderNo());
         OrderSendCarsInfoVO orderSendCars = orderTransportInfoVO.getOrderSendCars();
         if (orderSendCars != null) {
             vehicleIds.add(orderSendCars.getVehicleId());
+            orderTransportInfoVO.getOrderSendCars().assemblyFiles(prePath);
         }
         //查询送货/收货地址信息
         List<OrderTakeAdrInfoVO> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrInfos(orderNos, null);
@@ -610,10 +615,19 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Object vehicleInfos = omsClient.getVehicleInfoByIds(vehicleIds).getData();
         //查询口岸
         String portName = this.omsClient.getPortNameByCode(orderTransportInfoVO.getPortCode()).getData();
+        //查询主订单信息
+        ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(orderTransportInfoVO.getMainOrderNo()));
+        //查询司机姓名
+        Object driverInfos = this.omsClient.getDriverInfoByIds(Collections.singletonList(orderTransportInfoVO.getDriverInfoId())).getData();
 
         orderTransportInfoVO.assemblyAddr(takeAdrsList);  //组装地址
         orderTransportInfoVO.assemblyVehicleInfos(vehicleInfos); //组装车辆信息
         orderTransportInfoVO.setPortName(portName);
+        orderTransportInfoVO.assemblyMainOrderData(result.getData()); //组装主订单信息
+        orderTransportInfoVO.assemblyDriverInfo(driverInfos);
+
+        orderTransportInfoVO.getPickUpAddress().forEach(e -> e.sortData(prePath));
+        orderTransportInfoVO.getDeliveryAddress().forEach(e -> e.sortData(prePath));
 
         return orderTransportInfoVO;
     }

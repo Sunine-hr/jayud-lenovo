@@ -339,9 +339,15 @@ public class ExternalApiController {
 
     @ApiOperation(value = "根据用户名获取用户所属数据权限")
     @RequestMapping(value = "/api/getDataPermission")
-    public ApiResult<DataControl> getDataPermission(@RequestParam("loginName") String loginName) {
+    public ApiResult<DataControl> getDataPermission(@RequestParam("loginName") String loginName,
+                                                    @RequestParam(value = "UserType", required = false) String userType) {
         SystemUser systemUser = userService.getSystemUserBySystemName(loginName);
-        UserTypeEnum userTypeEnum = UserTypeEnum.getEnum(systemUser.getUserType());
+        if (userType == null) {
+            userType = systemUser.getUserType();
+        }
+
+
+        UserTypeEnum userTypeEnum = UserTypeEnum.getEnum(userType);
         if (userTypeEnum == null) {
             throw new JayudBizException("不存在客户类型");
         }

@@ -4,6 +4,7 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.common.utils.BeanUtils;
 import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.vo.OrderTransportInfoVO;
@@ -30,11 +31,11 @@ public class SupplierTmsController {
     @ApiOperation(value = "分页查询供应商订单")
     @PostMapping("/findSupplierTmsByPage")
     public CommonResult<CommonPageResult<OrderTransportVO>> findSupplierTmsByPage(@RequestBody QueryOrderTmsForm form) {
+        form.setAccountType(UserTypeEnum.SUPPLIER_TYPE.getCode());
         IPage<OrderTransportVO> pageList = orderTransportService.findTransportOrderByPage(form);
         CommonPageResult<OrderTransportVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
-
 
     @ApiOperation(value = "查询供应商订单详情")
     @PostMapping("/getSupplierTmsById")
@@ -43,4 +44,8 @@ public class SupplierTmsController {
         OrderTransportInfoVO details = this.orderTransportService.getDetailsById(id);
         return CommonResult.success(details);
     }
+
+
+
+
 }

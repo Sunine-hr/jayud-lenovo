@@ -3,6 +3,7 @@ package com.jayud.tms.model.vo;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.enums.GoodsFlowEnum;
 import com.jayud.tms.model.po.OrderSendCars;
@@ -167,6 +168,8 @@ public class OrderTransportInfoVO extends Model<OrderTransportInfoVO> {
 
     @ApiModelProperty(value = "指派供应商id")
     private Long supplierId;
+    @ApiModelProperty(value = "主订单id")
+    private Long mainOrderId;
 
     @Override
     protected Serializable pkVal() {
@@ -208,8 +211,44 @@ public class OrderTransportInfoVO extends Model<OrderTransportInfoVO> {
         }
     }
 
+    /**
+     * @param mainOrderObjs 远程客户对象集合
+     */
+    public void assemblyMainOrderData(Object mainOrderObjs) {
+        if (mainOrderObjs == null) {
+            return;
+        }
+        JSONArray mainOrders = new JSONArray(JSON.toJSONString(mainOrderObjs));
+        for (int i = 0; i < mainOrders.size(); i++) {
+            JSONObject json = mainOrders.getJSONObject(i);
+            if (this.mainOrderNo.equals(json.getStr("orderNo"))) { //主订单配对
+//                this.customerName = json.getStr("customerName");
+//                this.customerCode = json.getStr("customerCode");
+                this.mainOrderId = json.getLong("id");
+//                this.bizUname = json.getStr("bizUname");
+//                this.bizCode = json.getStr("bizCode");
+//                this.classCode = json.getStr("classCode");
+                break;
+            }
+        }
+
+    }
+
     public void setGoodsType(Integer goodsType) {
         this.goodsType = goodsType;
-        this.goodsTypeDesc= GoodsFlowEnum.getDesc(goodsType);
+        this.goodsTypeDesc = GoodsFlowEnum.getDesc(goodsType);
+    }
+
+    public void assemblyDriverInfo(Object driverInfos) {
+        if (driverInfos == null) {
+            return;
+        }
+        if (this.orderSendCars == null) {
+            return;
+        }
+        JSONArray jsonArray = new JSONArray(driverInfos);
+        JSONObject jsonObject = jsonArray.getJSONObject(0);
+        orderSendCars.setDriverName(jsonObject.getStr("name"));
+        orderSendCars.setDriverPhone(jsonObject.getStr("phone"));
     }
 }

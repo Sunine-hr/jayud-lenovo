@@ -65,4 +65,6 @@ public interface ICostTypeService extends IService<CostType> {
      * @return
      */
     boolean checkUnique(CostType costType);
+
+    List<CostType> getByCondition(CostType setCodeName);
 }

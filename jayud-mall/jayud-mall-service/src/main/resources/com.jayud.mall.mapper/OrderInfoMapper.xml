@@ -171,6 +171,9 @@
         <if test="form.orderNo != null and form.orderNo != ''">
             and t.order_no = #{form.orderNo}
         </if>
+        <if test="form.frontStatusCode != null and form.frontStatusCode != ''">
+            and t.front_status_code = #{form.frontStatusCode}
+        </if>
     </select>
     
     <select id="findOrderInfoDraftCount" parameterType="com.jayud.mall.model.bo.QueryOrderInfoForm" resultType="java.lang.Long">

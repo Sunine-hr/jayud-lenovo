@@ -18,5 +18,7 @@ public class ShipmentIdVO {
     @ApiModelProperty(value = "服务*")
     private String service;
 
+    @ApiModelProperty(value = "收件人邮编")
+    private String postcode;
 
 }

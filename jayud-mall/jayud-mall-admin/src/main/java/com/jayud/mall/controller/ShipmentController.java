@@ -366,6 +366,10 @@ public class ShipmentController {
         //运单服务
         String service = MapUtil.getStr(shipment, "service");
         shipmentIdVO.setService(service);
+
+        Map to_address_map = MapUtil.get(shipment, "to_address", Map.class);
+        String postcode = MapUtil.getStr(to_address_map, "postcode");
+        shipmentIdVO.setPostcode(postcode);
         return CommonResult.success(shipmentIdVO);
     }
 

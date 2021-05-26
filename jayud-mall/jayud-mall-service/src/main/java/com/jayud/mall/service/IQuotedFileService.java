@@ -1,6 +1,7 @@
 package com.jayud.mall.service;
 
 import com.jayud.mall.model.bo.QuotedFileForm;
+import com.jayud.mall.model.bo.QuotedFileStatusForm;
 import com.jayud.mall.model.po.QuotedFile;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.QuotedFileReturnVO;
@@ -43,4 +44,10 @@ public interface IQuotedFileService extends IService<QuotedFile> {
      * @return
      */
     QuotedFile findQuotedFileById(Long id);
+
+    /**
+     * 停用or启用
+     * @param form
+     */
+    void stopOrEnabled(QuotedFileStatusForm form);
 }

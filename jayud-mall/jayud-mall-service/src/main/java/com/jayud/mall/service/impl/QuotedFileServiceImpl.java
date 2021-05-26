@@ -7,6 +7,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.model.bo.QuotedFileForm;
+import com.jayud.mall.model.bo.QuotedFileStatusForm;
 import com.jayud.mall.model.po.QuotedFile;
 import com.jayud.mall.mapper.QuotedFileMapper;
 import com.jayud.mall.model.vo.QuotedFileReturnVO;
@@ -98,5 +99,18 @@ public class QuotedFileServiceImpl extends ServiceImpl<QuotedFileMapper, QuotedF
     @Override
     public QuotedFile findQuotedFileById(Long id) {
         return quotedFileMapper.findQuotedFileById(id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void stopOrEnabled(QuotedFileStatusForm form) {
+        Long id = form.getId();
+        QuotedFile quotedFile = quotedFileMapper.findQuotedFileById(id);
+        if(ObjectUtil.isEmpty(quotedFile)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "没有找到对应的报价文件");
+        }
+        String status = form.getStatus();
+        quotedFile.setStatus(status);
+        this.saveOrUpdate(quotedFile);
     }
 }

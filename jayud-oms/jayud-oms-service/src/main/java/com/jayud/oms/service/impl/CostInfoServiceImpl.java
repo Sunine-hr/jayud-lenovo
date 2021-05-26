@@ -190,7 +190,22 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
      */
     @Override
     public List<InitComboxStrVO> getCostInfoByCostTypeName(String costTypeName) {
-        List<CostType> costType=this.costTypeService.getByCondition(new CostType().setCodeName(costTypeName));
-        return null;
+        List<CostType> costTypes = this.costTypeService.getByCondition(new CostType().setCodeName(costTypeName));
+        if (CollectionUtils.isEmpty(costTypes)) {
+            return null;
+        }
+        CostType costType = costTypes.get(0);
+        QueryWrapper<CostInfo> condition = new QueryWrapper<>();
+        condition.lambda().like(CostInfo::getCids, costType.getId() + ",")
+                .or().eq(CostInfo::getCids, costType.getId());
+        List<InitComboxStrVO> list = new ArrayList<>();
+        for (CostInfo costInfo : this.baseMapper.selectList(condition)) {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setId(costInfo.getId());
+            initComboxStrVO.setName(costInfo.getName());
+            initComboxStrVO.setCode(costInfo.getIdCode());
+            list.add(initComboxStrVO);
+        }
+        return list;
     }
 }

@@ -13,7 +13,6 @@ import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
-import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
@@ -39,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -539,7 +539,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
      * 查询订单状态数量
      *
      * @param status
-     * @param legalIds
+     * @param dataControl
      * @return
      */
     @Override
@@ -626,7 +626,12 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         orderTransportInfoVO.assemblyMainOrderData(result.getData()); //组装主订单信息
         orderTransportInfoVO.assemblyDriverInfo(driverInfos);
 
-        orderTransportInfoVO.getPickUpAddress().forEach(e -> e.sortData(prePath));
+        AtomicReference<Double> totalWeight = new AtomicReference<>(0.0);
+        orderTransportInfoVO.getPickUpAddress().forEach(e -> {
+            e.sortData(prePath);
+            totalWeight.updateAndGet(v -> v + e.getWeight());
+        });
+        orderTransportInfoVO.setTotalWeight(totalWeight.get());
         orderTransportInfoVO.getDeliveryAddress().forEach(e -> e.sortData(prePath));
 
         return orderTransportInfoVO;

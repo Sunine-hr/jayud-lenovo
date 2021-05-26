@@ -6,6 +6,7 @@ import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.enums.GoodsFlowEnum;
+import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import io.swagger.annotations.ApiModel;
@@ -171,6 +172,12 @@ public class OrderTransportInfoVO extends Model<OrderTransportInfoVO> {
     @ApiModelProperty(value = "主订单id")
     private Long mainOrderId;
 
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
+
+    @ApiModelProperty(value = "总重量")
+    private Double totalWeight;
+
     @Override
     protected Serializable pkVal() {
         return this.id;
@@ -222,7 +229,7 @@ public class OrderTransportInfoVO extends Model<OrderTransportInfoVO> {
         for (int i = 0; i < mainOrders.size(); i++) {
             JSONObject json = mainOrders.getJSONObject(i);
             if (this.mainOrderNo.equals(json.getStr("orderNo"))) { //主订单配对
-//                this.customerName = json.getStr("customerName");
+                this.customerName = json.getStr("customerName");
 //                this.customerCode = json.getStr("customerCode");
                 this.mainOrderId = json.getLong("id");
 //                this.bizUname = json.getStr("bizUname");
@@ -251,4 +258,18 @@ public class OrderTransportInfoVO extends Model<OrderTransportInfoVO> {
         orderSendCars.setDriverName(jsonObject.getStr("name"));
         orderSendCars.setDriverPhone(jsonObject.getStr("phone"));
     }
+
+    public void doFilterData(String accountType) {
+        switch (UserTypeEnum.getEnum(accountType)) {
+            case EMPLOYEE_TYPE:
+                break;
+            case CUSTOMER_TYPE:
+                break;
+            case SUPPLIER_TYPE:
+                this.customerName = this.legalName;
+                break;
+        }
+    }
+
+
 }

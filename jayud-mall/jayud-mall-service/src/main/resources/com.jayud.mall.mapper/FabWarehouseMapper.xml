@@ -48,6 +48,9 @@
                 #{item}
             </foreach>
         </if>
+        <if test="form.auditStatus != null">
+            and t.audit_status = #{form.auditStatus}
+        </if>
     </select>
 
     <select id="findFabWarehouseByqie" parameterType="java.lang.Integer"

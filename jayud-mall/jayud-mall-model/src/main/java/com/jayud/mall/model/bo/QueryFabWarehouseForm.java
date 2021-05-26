@@ -24,4 +24,7 @@ public class QueryFabWarehouseForm extends BasePageForm{
     @ApiModelProperty(value = "过滤的仓库ids")
     private List<Integer> filterIds;
 
+    @ApiModelProperty(value = "审核状态(0待审核 1审核通过 2审核不通过)")
+    private Integer auditStatus;
+
 }

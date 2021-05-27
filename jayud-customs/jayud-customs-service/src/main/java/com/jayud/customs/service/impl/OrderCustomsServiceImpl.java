@@ -348,6 +348,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             inputOrderCustomsVO.setSupervisionMode(orderCustomsVO.getSupervisionMode());
             //为了控制驳回编辑子订单之间互不影响,报关中驳回时所有子订单都应驳回
             inputOrderCustomsVO.setSubCustomsStatus(orderCustomsVO.getStatus());
+            inputOrderCustomsVO.setOrderRemarks(orderCustomsVO.getOrderRemarks());
             //处理子订单部分
             List<InputSubOrderCustomsVO> subOrderCustomsVOS = new ArrayList<>();
             for (OrderCustomsVO orderCustoms : orderCustomsVOS) {
@@ -362,6 +363,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 subOrderCustomsVO.setEntrustNo(orderCustoms.getEntrustNo());
                 subOrderCustomsVO.setYunCustomsNo(orderCustoms.getYunCustomsNo());
                 subOrderCustomsVO.setSupervisionMode(orderCustoms.getSupervisionMode());
+                subOrderCustomsVO.setOrderRemarks(orderCustoms.getOrderRemarks());
                 //处理子订单附件信息
                 String fileStr = orderCustoms.getFileStr();
                 String fileNameStr = orderCustoms.getFileNameStr();

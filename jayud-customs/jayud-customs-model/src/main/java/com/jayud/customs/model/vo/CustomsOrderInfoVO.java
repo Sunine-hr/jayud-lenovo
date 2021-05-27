@@ -123,8 +123,8 @@ public class CustomsOrderInfoVO {
     @ApiModelProperty(value = "监管方式")
     private String supervisionMode;
 
-    @ApiModelProperty(value = "订单备注")
-    private String orderRemarks;
+//    @ApiModelProperty(value = "订单备注")
+//    private String orderRemarks;
 
 
     public void setGoodsTypeDesc(Integer goodsType) {

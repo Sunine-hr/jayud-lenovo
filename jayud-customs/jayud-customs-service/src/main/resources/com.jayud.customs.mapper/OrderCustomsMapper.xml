@@ -84,7 +84,8 @@
             oc.`status` status,
             oc.`entrust_no` entrustNo,
             oc.`supervision_mode` supervisionMode,
-            oc.`yun_customs_no` yunCustomsNo
+            oc.`yun_customs_no` yunCustomsNo,
+            oc.order_remarks
         FROM
             order_customs oc
         WHERE 1 = 1

@@ -3,6 +3,7 @@ package com.jayud.customs.controller;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
@@ -286,6 +287,15 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/getOrderNoByYunCustomsNo")
     public ApiResult<InputSubOrderCustomsVO> getOrderCustomsByYunCustomsNo(@RequestParam("yunCustomsNo") String yunCustomsNo){
         return ApiResult.ok(this.orderCustomsService.getOrderCustomsByYunCustomsNo(yunCustomsNo));
+    }
+
+    @ApiOperation(value = "修改报关邮件发送状态")
+    @RequestMapping(value = "/api/changeCustomsIsSendMail")
+    ApiResult changeCustomsIsSendMail(@RequestParam(value = "mainOrderNo") String mainOrderNo) {
+        OrderCustoms orderCustoms = new OrderCustoms();
+        orderCustoms.setIsSendMail("1");
+        orderCustomsService.update(orderCustoms, Wrappers.<OrderCustoms>lambdaUpdate().eq(OrderCustoms::getMainOrderNo, mainOrderNo));
+        return ApiResult.ok();
     }
 }
 

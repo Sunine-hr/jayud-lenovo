@@ -7,12 +7,12 @@ VALUES ('报关邮件收件人', 'BGEmail', 'admin', now(), '1');
 
 -- 多个邮箱配置请用英文逗号隔开(aa@163.com,bb@163.com)
 INSERT INTO dict (value, code, status, dict_type_code, create_user, create_time, remarks)
-VALUES ('hg@jayud.com', 'LAND_TRANSPORT', '1', 'BGEmail', 'admin', now(), '陆路运输');
+VALUES ('hg@jayud.com,luxun.li@jayud.com', 'LAND_TRANSPORT', '1', 'BGEmail', 'admin', now(), '陆路运输');
 INSERT INTO dict (value, code, status, dict_type_code, create_user, create_time, remarks)
-VALUES ('hg@jayud.com', 'AIR_TRANSPORT', '1', 'BGEmail', 'admin', now(), '空运');
+VALUES ('di@jayud.com,luxin.li@jayud.com,yt@jayud.com', 'AIR_TRANSPORT', '1', 'BGEmail', 'admin', now(), '空运');
 INSERT INTO dict (value, code, status, dict_type_code, create_user, create_time, remarks)
-VALUES ('hg@jayud.com', 'SEA_TRANSPORT', '1', 'BGEmail', 'admin', now(), '海运');
+VALUES ('di@jayud.com,luxin.li@jayud.com,yt@jayud.com', 'SEA_TRANSPORT', '1', 'BGEmail', 'admin', now(), '海运');
 INSERT INTO dict (value, code, status, dict_type_code, create_user, create_time, remarks)
-VALUES ('hg@jayud.com', 'EXPRESS', '1', 'BGEmail', 'admin', now(), '快递');
+VALUES ('di@jayud.com,luxin.li@jayud.com,yt@jayud.com', 'EXPRESS', '1', 'BGEmail', 'admin', now(), '快递');
 INSERT INTO dict (value, code, status, dict_type_code, create_user, create_time, remarks)
-VALUES ('hg@jayud.com', 'INLAND', '1', 'BGEmail', 'admin', now(), '内陆');
+VALUES ('hg@jayud.com,luxun.li@jayud.com', 'INLAND', '1', 'BGEmail', 'admin', now(), '内陆');

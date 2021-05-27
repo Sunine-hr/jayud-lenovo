@@ -152,6 +152,9 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "监管方式")
     private String supervisionMode;
 
+    @ApiModelProperty(value = "是否发送邮件(0-否 1-是)")
+    private String isSendMail;
+
     @ApiModelProperty(value = "订单备注")
     private String orderRemarks;
 

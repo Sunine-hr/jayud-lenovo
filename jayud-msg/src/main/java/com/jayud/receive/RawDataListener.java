@@ -1,21 +1,17 @@
 package com.jayud.receive;
 
-import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.enums.KafkaMsgEnums;
-import com.jayud.feign.AirfreightClient;
-import com.jayud.feign.EmailClient;
-import com.jayud.feign.FinanceClient;
-import com.jayud.feign.OmsClient;
+import com.jayud.feign.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -33,6 +29,8 @@ import java.util.Objects;
 @Component
 public class RawDataListener {
     @Autowired
+    KafkaTemplate kafkaTemplate;
+    @Autowired
     AirfreightClient airfreightClient;
     @Autowired
     FinanceClient financeClient;
@@ -40,6 +38,8 @@ public class RawDataListener {
     OmsClient omsClient;
     @Autowired
     EmailClient emailClient;
+    @Autowired
+    CustomsClient customsClient;
 
     /**
      * 实时获取kafka数据(生产一条，监听生产topic自动消费一条)
@@ -234,20 +234,19 @@ public class RawDataListener {
         }
 
         if (match(com.jayud.common.enums.KafkaMsgEnums.CUSTOM_SEND_EMAIL, record)) {
+            log.info("[Email]邮件信息推送...");
             Map<String, String> msg = new HashMap<>();
             msg.put("msg", value);
-            log.info("[Email]邮件信息推送...");
             CommonResult result = emailClient.sendEmail(JSONObject.toJSONString(msg));
+
+            String mainOrderNo = JSONObject.parseObject(value).getString("mainOrderNo");
             if (result.getCode().equals(ResultEnum.SUCCESS.getCode())) {
                 // 更新发送状态
-
+                customsClient.changeCustomsIsSendMail(mainOrderNo);
             } else {
-                log.info("[Email]发送邮件失败...");
-                String mainOrderNo = JSONObject.parseObject(value).getString("mainOrderNo");
-                // TODO: 2021/5/25 消费失败需要重新消费
-
+                log.info("[Email]发送邮件失败,重新推送...");
+                kafkaTemplate.send(topic, key, value);
             }
-
         }
     }
 

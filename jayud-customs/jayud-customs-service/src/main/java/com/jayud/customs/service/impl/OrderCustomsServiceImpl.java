@@ -193,7 +193,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
             email.setTo(emailTo);
             // 业务模式名称+日期+口岸+进出口+单量+件数+主订单号
-            email.setSubject(String.format("%s %s %s %s %s单 %s件 作业号:%s"
+            email.setSubject(String.format("%s %s %s %s %s单 %s 作业号:%s"
                     , bizModelDesc, takeTimeStr, form.getPortName(), goodType, orderCustomsList.size(), totalNum, form.getMainOrderNo()));
             getAssembleEmailTextAndFiles(form, email);
         }
@@ -256,7 +256,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         List<InputSubOrderCustomsVO> subOrders = orderCustomsDetail.getSubOrders();
         String orderNoStrs = subOrders.stream().map(InputSubOrderCustomsVO::getOrderNo).collect(Collectors.joining(","));
         // 客户名称 + 报关订单号 + 备注内容
-        email.setText(String.format("客户名称:%s 报关订单号:%s 备注内容:%s", customerName, orderNoStrs, "备注"));
+        email.setText(String.format("客户名称:%s\n报关订单号:%s\n备注内容:%s", customerName, orderNoStrs, form.getOrderRemarks()));
 
         List<FileView> fileViews = subOrders.stream().map(InputSubOrderCustomsVO::getFileViews)
                 .flatMap(Collection::stream).collect(Collectors.toList());

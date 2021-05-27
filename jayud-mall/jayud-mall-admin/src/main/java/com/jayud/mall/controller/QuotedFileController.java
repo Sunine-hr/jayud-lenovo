@@ -63,8 +63,8 @@ public class QuotedFileController {
     }
 
     @ApiOperation(value = "报价文件-停用启用")
-    @ApiOperationSupport(order = 4)
-    @PostMapping("/findQuotedFileById")
+    @ApiOperationSupport(order = 5)
+    @PostMapping("/stopOrEnabled")
     public CommonResult stopOrEnabled(@Valid @RequestBody QuotedFileStatusForm form){
         quotedFileService.stopOrEnabled(form);
         return CommonResult.success("操作成功");

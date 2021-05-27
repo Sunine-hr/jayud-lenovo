@@ -150,6 +150,9 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "后端状态名称")
     private String afterStatusName;
 
+    @ApiModelProperty(value = "结算方式(1票结 2月结)")
+    private Integer clearingWay;
+
     /*订单对应报关文件：order_customs_file*/
     @ApiModelProperty(value = "订单对应报关文件list", position = 25)
     @JSONField(ordinal = 25)

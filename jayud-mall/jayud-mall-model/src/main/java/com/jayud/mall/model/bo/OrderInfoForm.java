@@ -151,6 +151,8 @@ public class OrderInfoForm {
     @ApiModelProperty(value = "后端状态名称")
     private String afterStatusName;
 
+    @ApiModelProperty(value = "结算方式(1票结 2月结)")
+    private Integer clearingWay;
 
     /*订单对应箱号信息:order_case*/
     @ApiModelProperty(value = "订单对应箱号信息list", position = 25)

@@ -548,10 +548,26 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Transactional(rollbackFor = Exception.class)
     public CommonResult<OrderInfoVO> temporaryStorageOrderInfo(OrderInfoForm form) {
         CustomerUser customerUser = baseService.getCustomerUser();
-
+        if(ObjectUtil.isEmpty(customerUser)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录。");
+        }
         //保存-产品订单表：order_info
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
         Integer offerInfoId = orderInfo.getOfferInfoId();//报价id，运价id
+        OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(Long.valueOf(offerInfoId));
+
+        Integer clearingWay = offerInfoVO.getClearingWay();//结算方式(1票结 2按客户的结算方式(客户表customer clearing_way))
+        if(ObjectUtil.isNotEmpty(clearingWay)){
+            if(clearingWay.equals("2")){
+                Integer customerId = customerUser.getId();
+                CustomerVO customerVO = customerMapper.findCustomerById(customerId);
+                Integer clearingWay1 = customerVO.getClearingWay();//结算方式(1票结 2月结)
+                clearingWay = clearingWay1;
+            }
+        }else{
+            clearingWay = 1;
+        }
+        orderInfo.setClearingWay(clearingWay);//订单的结算方式  结算方式(1票结 2月结)
 
         //集货仓库代码 -> 集货仓库名称
         String storeGoodsWarehouseCode1 = orderInfo.getStoreGoodsWarehouseCode();
@@ -1071,10 +1087,26 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Transactional(rollbackFor = Exception.class)
     public CommonResult<OrderInfoVO> submitOrderInfo(OrderInfoForm form) {
         CustomerUser customerUser = baseService.getCustomerUser();
-
+        if(ObjectUtil.isEmpty(customerUser)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录。");
+        }
         //保存-产品订单表：order_info
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
         Integer offerInfoId = orderInfo.getOfferInfoId();//报价id，运价id
+
+        OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(Long.valueOf(offerInfoId));
+        Integer clearingWay = offerInfoVO.getClearingWay();//结算方式(1票结 2按客户的结算方式(客户表customer clearing_way))
+        if(ObjectUtil.isNotEmpty(clearingWay)){
+            if(clearingWay.equals("2")){
+                Integer customerId = customerUser.getId();
+                CustomerVO customerVO = customerMapper.findCustomerById(customerId);
+                Integer clearingWay1 = customerVO.getClearingWay();//结算方式(1票结 2月结)
+                clearingWay = clearingWay1;
+            }
+        }else{
+            clearingWay = 1;
+        }
+        orderInfo.setClearingWay(clearingWay);//订单的结算方式  结算方式(1票结 2月结)
 
         //集货仓库代码 -> 集货仓库名称
         String storeGoodsWarehouseCode1 = orderInfo.getStoreGoodsWarehouseCode();

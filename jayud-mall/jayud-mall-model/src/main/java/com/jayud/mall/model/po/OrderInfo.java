@@ -165,6 +165,9 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "后端状态名称")
     private String afterStatusName;
 
+    @ApiModelProperty(value = "结算方式(1票结 2月结)")
+    private Integer clearingWay;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

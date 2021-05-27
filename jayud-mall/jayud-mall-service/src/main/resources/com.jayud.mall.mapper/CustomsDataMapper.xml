@@ -72,6 +72,9 @@
         <if test="form.idCode != null and form.idCode != ''">
             AND t.id_code LIKE concat('%',#{form.idCode},'%')
         </if>
+        <if test="form.chName != null and form.chName != ''">
+            and t.ch_name = #{form.chName}
+        </if>
         <if test="form.enName != null and form.enName != ''">
             AND t.en_name LIKE concat('%',#{form.enName},'%')
         </if>

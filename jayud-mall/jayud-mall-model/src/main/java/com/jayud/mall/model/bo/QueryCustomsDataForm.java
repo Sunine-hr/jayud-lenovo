@@ -11,6 +11,9 @@ public class QueryCustomsDataForm extends BasePageForm {
     @ApiModelProperty(value = "IDcode，报关ID")
     private String idCode;
 
+    @ApiModelProperty(value = "报关中文品名")
+    private String chName;
+
     @ApiModelProperty(value = "报关英文品名")
     private String enName;
 

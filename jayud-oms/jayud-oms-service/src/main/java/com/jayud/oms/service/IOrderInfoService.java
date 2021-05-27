@@ -222,4 +222,9 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     public Set<Long> filterGoCustomsAudit(Map<String, Object> callbackParam, List<Long> legalIds);
 
+    /**
+     * 供应商录入费用
+     * @param form
+     */
+    void doSupplierEntryFee(InputCostForm form);
 }

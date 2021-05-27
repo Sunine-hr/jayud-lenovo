@@ -24,7 +24,7 @@ public class InputPaymentCostForm {
     @NotEmpty(message = "costTypeId is required")
     private Long costTypeId;
 
-    @ApiModelProperty(value = "应付项目CODE", required = true)
+    @ApiModelProperty(value = "应付项目CODE(费用名称)", required = true)
     @NotEmpty(message = "costCode is required")
     private String costCode;
 

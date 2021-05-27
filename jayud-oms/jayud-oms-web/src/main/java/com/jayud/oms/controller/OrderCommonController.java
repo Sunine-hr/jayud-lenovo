@@ -3,14 +3,14 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
-import com.jayud.common.enums.OrderOprCmdEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.UserOperator;
+import com.jayud.common.entity.DataControl;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.FileClient;
+import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.feign.TmsClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.enums.VehicleTypeEnum;
@@ -27,6 +27,7 @@ import com.jayud.oms.service.IVehicleInfoService;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,6 +59,8 @@ public class OrderCommonController {
     private IVehicleInfoService vehicleInfoService;
     @Autowired
     private TmsClient tmsClient;
+    @Autowired
+    private OauthClient oauthClient;
 
     @ApiOperation(value = "录入费用")
     @PostMapping(value = "/saveOrUpdateCost")
@@ -135,73 +138,9 @@ public class OrderCommonController {
     @ApiOperation(value = "供应商录入费用")
     @PostMapping(value = "/supplierEntryFee")
     public CommonResult supplierEntryFee(@RequestBody InputCostForm form) {
-        if (form == null || form.getMainOrderId() == null) {
-            return CommonResult.error(400, "参数不合法");
-        }
-
-
-        if ("preSubmit_sub".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
-            if (form.getPaymentCostList() == null ||
-                    form.getReceivableCostList() == null || form.getReceivableCostList().size() == 0 ||
-                    form.getPaymentCostList().size() == 0) {
-                return CommonResult.error(400, "参数不合法");
-            }
-        }
-
-        if ("preSubmit_sub".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())) {
-            if (StringUtil.isNullOrEmpty(form.getOrderNo()) || StringUtil.isNullOrEmpty(form.getSubLegalName()) ||
-                    StringUtil.isNullOrEmpty(form.getSubUnitCode())) {
-                return CommonResult.error(400, "参数不合法");
-            }
-        }
-
-        if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
-            List<InputPaymentCostForm> paymentCostForms = form.getPaymentCostList();
-            List<InputReceivableCostForm> receivableCostForms = form.getReceivableCostList();
-            for (InputPaymentCostForm paymentCost : paymentCostForms) {
-                paymentCost.checkParam();
-            }
-            for (InputReceivableCostForm receivableCost : receivableCostForms) {
-                receivableCost.checkUnitParam();
-            }
-        }
-
-        if ("submit_main".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())) {
-            List<InputPaymentCostForm> paymentCostForms = form.getPaymentCostList();
-            List<InputReceivableCostForm> receivableCostForms = form.getReceivableCostList();
-            for (InputPaymentCostForm paymentCost : paymentCostForms) {
-                if (StringUtil.isNullOrEmpty(paymentCost.getCustomerCode())
-                        || StringUtil.isNullOrEmpty(paymentCost.getCostCode())
-                        || paymentCost.getCostTypeId() == null || paymentCost.getCostGenreId() == null
-                        || StringUtil.isNullOrEmpty(paymentCost.getUnit())
-                        || paymentCost.getUnitPrice() == null || paymentCost.getNumber() == null
-                        || StringUtil.isNullOrEmpty(paymentCost.getCurrencyCode())
-                        || paymentCost.getAmount() == null || paymentCost.getExchangeRate() == null
-                        || paymentCost.getChangeAmount() == null) {
-                    return CommonResult.error(400, "参数不合法");
-                }
-
-                paymentCost.checkParam();
-            }
-            for (InputReceivableCostForm receivableCost : receivableCostForms) {
-                if (StringUtil.isNullOrEmpty(receivableCost.getCustomerCode())
-                        || StringUtil.isNullOrEmpty(receivableCost.getCostCode())
-                        || receivableCost.getCostTypeId() == null || receivableCost.getCostGenreId() == null
-                        || StringUtil.isNullOrEmpty(receivableCost.getUnit())
-                        || receivableCost.getUnitPrice() == null || receivableCost.getNumber() == null
-                        || StringUtil.isNullOrEmpty(receivableCost.getCurrencyCode())
-                        || receivableCost.getAmount() == null || receivableCost.getExchangeRate() == null
-                        || receivableCost.getChangeAmount() == null) {
-                    return CommonResult.error(400, "参数不合法");
-                }
-                receivableCost.checkUnitParam();
-            }
-        }
-        //1.需求为，提交审核按钮跟在每一条记录后面 2.暂存是保存所有未提交审核的数据  3.提交审核的数据不可编辑和删除
-        boolean result = orderInfoService.saveOrUpdateCost(form);
-        if (!result) {
-            return CommonResult.error(400, "调用失败");
-        }
+//        form.getPaymentCostList().forEach(e -> e.setUnit(UnitEnum.PCS.getCode()));
+        form.checkSupplierEntryFee();
+        this.orderInfoService.doSupplierEntryFee(form);
         return CommonResult.success();
     }
 

@@ -10,9 +10,11 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
@@ -24,6 +26,7 @@ import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
 import io.netty.util.internal.StringUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,46 +54,32 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     RedisUtils redisUtils;
-
     @Autowired
     IProductBizService productBizService;
-
     @Autowired
     IOrderPaymentCostService paymentCostService;
-
     @Autowired
     IOrderReceivableCostService receivableCostService;
-
     @Autowired
     IOrderStatusService orderStatusService;
-
     @Autowired
     ILogisticsTrackService logisticsTrackService;
-
     @Autowired
     ICurrencyInfoService currencyInfoService;
-
     @Autowired
     ICostInfoService costInfoService;
-
     @Autowired
     CustomsClient customsClient;
-
     @Autowired
     TmsClient tmsClient;
-
     @Autowired
     ICostTypeService costTypeService;
-
     @Autowired
     FileClient fileClient;
-
     @Autowired
     ICustomerInfoService customerInfoService;
-
     @Autowired
     private FreightAirClient freightAirClient;
-
     @Autowired
     private MsgClient msgClient;
     @Autowired
@@ -109,12 +98,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private IProductClassifyService productClassifyService;
     @Autowired
     private StorageClient storageClient;
-
     @Autowired
     private IGoodsService goodsService;
-
     @Autowired
     private IOrderAddressService orderAddressService;
+    @Autowired
+    private FinanceClient financeClient;
+
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
             SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(),
@@ -1912,6 +1902,44 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
 
         return orderIds;
+    }
+
+    /**
+     * 供应商录入费用
+     *
+     * @param form
+     */
+    @Override
+    public void doSupplierEntryFee(InputCostForm form) {
+        //获取登录用户信息
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.SUPPLIER_TYPE.getCode()).getData();
+        if (CollectionUtils.isEmpty(dataControl.getCompanyIds())) {
+            throw new JayudBizException(400, "无法操作");
+        }
+        //查询供应商信息
+        SupplierInfo supplierInfo = this.supplierInfoService.getById(dataControl.getCompanyIds().get(0));
+        //查询主订单
+        OrderInfo orderInfo = this.getById(form.getMainOrderId());
+        //币种汇率
+        Map<String, BigDecimal> currencyRates = this.financeClient.getExchangeRates("CNY", DateUtils.LocalDateTime2Str(orderInfo.getCreateTime(), "yyyy-MM")).getData();
+        //主订单业务类型(费用类型)
+        ProductBiz productBiz = this.productBizService.getProductBizByCode(orderInfo.getBizCode());
+        //费用类别
+        List<CostType> costTypes = this.costTypeService.getByCondition(new CostType().setCode("FYLB2002"));
+        if (CollectionUtils.isEmpty(costTypes)) {
+            throw new JayudBizException(400, "不存在该费用类别");
+        }
+        form.getPaymentCostList().forEach(e -> {
+            BigDecimal exchangeRate = currencyRates.get(e.getCurrencyCode());
+            e.setUnit(UnitEnum.PCS.getCode());
+            e.setCustomerCode(supplierInfo.getSupplierCode());
+            e.setCostTypeId(costTypes.get(0).getId());
+            e.setCostGenreId(productBiz.getCostGenreDefault());
+            e.setExchangeRate(exchangeRate);
+            e.setChangeAmount(e.getAmount().multiply(exchangeRate));
+        });
+        //1.需求为，提交审核按钮跟在每一条记录后面 2.暂存是保存所有未提交审核的数据  3.提交审核的数据不可编辑和删除
+        this.saveOrUpdateCost(form);
     }
 
     /**

@@ -1003,7 +1003,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if(templateFileByOrder.size() > 0){
             templateFileByOrder.forEach(templateFileVO -> {
                 OrderCustomsFile orderCustomsFile = new OrderCustomsFile();
-                orderCustomsFile.setOrderId(orderInfo.getId().intValue());
                 orderCustomsFile.setIdCode(templateFileVO.getFileCode());
                 orderCustomsFile.setFileName(templateFileVO.getFileName());
                 orderCustomsFile.setOptions(templateFileVO.getOptions());
@@ -1055,7 +1054,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if(templateFileByOrder.size() > 0){
             templateFileByOrder.forEach(templateFileVO -> {
                 OrderClearanceFile orderClearanceFile = new OrderClearanceFile();
-                orderClearanceFile.setOrderId(orderInfo.getId().intValue());
                 orderClearanceFile.setIdCode(templateFileVO.getFileCode());
                 orderClearanceFile.setFileName(templateFileVO.getFileName());
                 orderClearanceFile.setOptions(templateFileVO.getOptions());

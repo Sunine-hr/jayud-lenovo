@@ -333,5 +333,13 @@ public class OrderInfoController {
     }
 
 
+    //订单列表-草稿-取消
+    @ApiOperation(value = "订单列表-草稿-取消")
+    @ApiOperationSupport(order = 28)
+    @PostMapping("/draftCancelOrderInfo")
+    public CommonResult<OrderInfoVO> draftCancelOrderInfo(@RequestBody OrderInfoForm form){
+        return orderInfoService.draftCancelOrderInfo(form);
+    }
+
 
 }

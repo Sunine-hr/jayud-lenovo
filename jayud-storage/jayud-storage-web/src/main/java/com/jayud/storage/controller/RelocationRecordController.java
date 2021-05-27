@@ -10,6 +10,7 @@ import com.jayud.storage.model.vo.RelocationRecordVO;
 import com.jayud.storage.model.vo.WarehouseAreaVO;
 import com.jayud.storage.service.IRelocationRecordService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,9 @@ public class RelocationRecordController {
 
     @ApiOperation(value = "导出移库数据")
     @GetMapping("/exportExcel")
-    public void exportExcel(@RequestParam QueryRelocationRecordForm form){
+    public void exportExcel(@RequestParam("orderNo") String orderNo,@RequestParam("warehouseName")String warehouseName,@RequestParam("areaName")String areaName,
+                            @RequestParam("shelvesName")String shelvesName,@RequestParam("sku")String sku,@RequestParam("startTime")String startTime,@RequestParam("endTime")String endTime){
+
 
     }
 

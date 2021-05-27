@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -104,8 +105,16 @@ public class ExternalApiController {
         for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
             InGoodsOperationRecord listByWarehousingBatchNoAndSku = inGoodsOperationRecordService.getListByWarehousingBatchNoAndSku(warehouseGoodsForm.getSku(), warehouseGoodsForm.getWarehousingBatchNo());
 
+            if(listByWarehousingBatchNoAndSku == null){
+                return ApiResult.error(444,"该商品没有库存");
+            }
+
+            if(warehouseGoodsForm.getNumber() == null){
+                return ApiResult.error(444,"未填写件数");
+            }
+
             if(listByWarehousingBatchNoAndSku.getNumber()<warehouseGoodsForm.getNumber()){
-                ApiResult.error(444,listByWarehousingBatchNoAndSku.getWarehousingBatchNo()+"的"+warehouseGoodsForm.getName()+"数量为"+warehouseGoodsForm.getNumber());
+                return ApiResult.error(444,listByWarehousingBatchNoAndSku.getWarehousingBatchNo()+"的"+warehouseGoodsForm.getName()+"数量为"+warehouseGoodsForm.getNumber());
             }
         }
         return ApiResult.ok();

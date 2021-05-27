@@ -169,7 +169,6 @@ public class CommonController {
                 for (InGoodsOperationRecord inGoodsOperationRecord : list1) {
                     str.add(inGoodsOperationRecord.getWarehousingBatchNo());
                 }
-                str.add("111111");
                 goodNumberVO.setBatchNumbers(str);
             }
             return CommonResult.success(goodNumberVOS);

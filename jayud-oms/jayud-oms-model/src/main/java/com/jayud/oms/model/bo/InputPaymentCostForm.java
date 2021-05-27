@@ -67,6 +67,9 @@ public class InputPaymentCostForm {
     @ApiModelProperty(value = "卸货地址")
     private String unloadingAddress;
 
+    @ApiModelProperty(value = "指定的供应商id")
+    private Long supplierId;
+
 
     public void checkParam() {
         //校验单位匹配数量是否整数

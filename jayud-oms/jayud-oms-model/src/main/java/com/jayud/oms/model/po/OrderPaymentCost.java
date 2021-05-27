@@ -132,6 +132,9 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
     @ApiModelProperty(value = "应收费用id")
     private Long receivableId;
 
+    @ApiModelProperty(value = "指定的供应商id")
+    private Long supplierId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

@@ -70,6 +70,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             return true;
         }else{
 //            stock.setCustomerId(good.getCustomerId());
+            stock.setCustomerId(good.getCustomerId());
             stock.setCreateUser(UserOperator.getToken());
             stock.setCreateTime(LocalDateTime.now());
             boolean b = this.saveOrUpdate(stock);

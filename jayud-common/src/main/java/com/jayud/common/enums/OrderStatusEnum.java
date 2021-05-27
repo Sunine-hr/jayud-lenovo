@@ -30,8 +30,8 @@ public enum OrderStatusEnum {
     TCEDD("TCEDD", "拖车出口订单"),
     TCIDD("TCIDD", "拖车进口订单"),
     CC("CC", "仓储"),
-    CCEDD("CCEDD", "入库订单"),
-    CCIDD("CCIDD", "出库订单"),
+    CCEDD("CCEDD", "出库订单"),
+    CCIDD("CCIDD", "入库订单"),
 
     //主订单状态
     MAIN_1("1", "正常"),

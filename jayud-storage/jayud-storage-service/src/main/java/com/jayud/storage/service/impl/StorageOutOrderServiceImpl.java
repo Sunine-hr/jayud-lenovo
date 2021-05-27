@@ -129,7 +129,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
         StorageOutOrder storageOutOrder = this.baseMapper.selectById(id);
         StorageOutOrderVO storageOutOrderVO = ConvertUtil.convert(storageOutOrder, StorageOutOrderVO.class);
         List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList1(storageOutOrder.getId(),storageOutOrder.getOrderNo());
-        System.out.println("warehouseGoods===================="+warehouseGoods);
+//        System.out.println("warehouseGoods===================="+warehouseGoods);
         if(CollectionUtils.isEmpty(warehouseGoods)){
             warehouseGoods.add(new WarehouseGoodsVO());
             storageOutOrderVO.setTotalNumberStr("0板0件0pcs");
@@ -285,7 +285,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
                 }
                 //计算该库位该商品的未出库数量
                 GoodsLocationRecord goodsLocationRecord1 = goodsLocationRecordService.getGoodsLocationRecordBySkuAndKuCode(goodsLocationRecordForm.getKuCode(),outWarehouseGoodsForm.getWarehousingBatchNo(),outWarehouseGoodsForm.getSku());
-                goodsLocationRecord1.setUnDeliveredQuantity(goodsLocationRecord1.getNumber() - goodsLocationRecord.getNumber());
+                goodsLocationRecord1.setUnDeliveredQuantity(goodsLocationRecord1.getUnDeliveredQuantity() - goodsLocationRecord.getNumber());
                 boolean b2 = goodsLocationRecordService.saveOrUpdate(goodsLocationRecord1);
                 if(!b2){
                     return false;

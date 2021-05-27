@@ -152,7 +152,7 @@
     </select>
 
     <select id="findOrderRecordByPage" resultType="com.jayud.storage.model.vo.StorageInputOrderNumberVO">
-        select id,order_no orderNo,main_order_no mainOrderNo,updata_time updateTime
+        select id,order_no orderNo,main_order_no mainOrderNo,update_time updateTime
         from storage_input_order sio
         <where>
             sio.process_status = 1

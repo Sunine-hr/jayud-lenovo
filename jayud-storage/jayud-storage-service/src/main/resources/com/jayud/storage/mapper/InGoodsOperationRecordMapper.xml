@@ -42,8 +42,8 @@
     </select>
 
     <select id="getListBySkuAndLocationCode" resultType="com.jayud.storage.model.vo.InGoodsOperationRecordFormVO">
-        select sio.warehouse_number warehouseNumber , igor.warehousing_batch_no warehousingBatchNo ,igor.sku sku ,igor.name name
-        igor.number number , igor.pcs ,igor.create_time createTime , glr.un_delivered_quantity nowNumber , s.customer_id customerId
+        select sio.warehouse_number warehouseNumber , igor.warehousing_batch_no warehousingBatchNo ,igor.sku sku ,igor.name name,
+        igor.number number , igor.pcs ,igor.create_time createTime , glr.un_delivered_quantity nowNumber , s.customer_id customerId,
         igor.pcs nowPcs
         from
         (select id,ku_code,inGood_id,number,type, un_delivered_quantity	from goods_location_record group by ku_code) glr

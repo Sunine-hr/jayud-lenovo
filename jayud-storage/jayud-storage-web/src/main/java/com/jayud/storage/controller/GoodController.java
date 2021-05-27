@@ -65,8 +65,11 @@ public class GoodController {
     @PostMapping("/saveOrUpdateGood")
     public CommonResult saveOrUpdateGood(@RequestBody GoodForm goodForm){
         Good convert = ConvertUtil.convert(goodForm, Good.class);
-        if(convert.getId()==null){
+        if(convert.getId() == null){
             convert.setSku(convert.getCustomerCode()+"-"+convert.getSku());
+            if(this.isRepeat(convert.getSku()).getCode().equals(444)){
+                return CommonResult.error(444,"sku重复，不可提交");
+            }
         }
         convert.setStatus(1);
         convert.setCreateTime(LocalDateTime.now());
@@ -75,7 +78,7 @@ public class GoodController {
         if(b){
             return CommonResult.success();
         }
-        return CommonResult.error(444,"添加或修改失败");
+        return CommonResult.error(443,"添加或修改失败");
     }
 
     @ApiOperation(value = "校验商品sku是否重复")
@@ -85,7 +88,7 @@ public class GoodController {
         queryWrapper.eq("sku",sku);
         Good one = this.goodService.getOne(queryWrapper);
         if(one!=null){
-            return CommonResult.error(444,"sku重复，不可提交");
+            return CommonResult.error(444,"sku重复，请修改");
         }
         return CommonResult.success();
     }

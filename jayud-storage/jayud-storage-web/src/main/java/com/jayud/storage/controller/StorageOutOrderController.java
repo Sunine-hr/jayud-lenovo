@@ -181,6 +181,7 @@ public class StorageOutOrderController {
             record.setSubLegalName(record.getLegalName());
             record.setOrderId(record.getId());
             record.setSubUnitCode(record.getUnitCode());
+            record.setDefaultUnitCode(record.getUnitCode());
 
         }
 

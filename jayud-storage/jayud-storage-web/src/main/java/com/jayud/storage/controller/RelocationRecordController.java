@@ -12,11 +12,7 @@ import com.jayud.storage.service.IRelocationRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -41,6 +37,12 @@ public class RelocationRecordController {
         IPage<RelocationRecordVO> page = this.relocationRecordService.findByPage(form);
         CommonPageResult<RelocationRecordVO> pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "导出移库数据")
+    @GetMapping("/exportExcel")
+    public void exportExcel(@RequestParam QueryRelocationRecordForm form){
+
     }
 
 }

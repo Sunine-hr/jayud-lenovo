@@ -4,9 +4,11 @@ import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -109,5 +111,28 @@ public class InputStorageOutOrderVO {
 
     public void setUnitCodeName(String unitCodeName) {
         this.unitCodeName=unitCodeName;
+    }
+
+    public void copyOperationInfo() {
+        this.id = null;
+        this.allPics = new ArrayList<>();
+        this.orderNo = null;
+        this.mainOrderNo = null;
+        this.status = null;
+        this.processStatus = null;
+        this.orderTaker = null;
+        this.createTime = null;
+        this.receivingOrdersDate = null;
+        this.createUser = null;
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(goodsFormList)) {
+            goodsFormList.forEach(e -> {
+                e.setId(null);
+                e.setOrderId(null);
+                e.setOrderNo(null);
+                e.setTakeFiles(null);
+                e.setTakeFiles(null);
+            });
+        }
+
     }
 }

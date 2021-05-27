@@ -161,6 +161,10 @@ public class StorageInputOrderFormVO {
     @ApiModelProperty(value = "是否有费用详情")
     private Boolean cost;
 
+    @ApiModelProperty(value = "子订单结算单位")
+    private String defaultUnitCode;
+
+
     /**
      * 组装商品信息
      */

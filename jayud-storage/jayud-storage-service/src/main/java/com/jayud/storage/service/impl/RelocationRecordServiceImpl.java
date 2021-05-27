@@ -1,11 +1,13 @@
 package com.jayud.storage.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.storage.model.bo.QueryRelocationRecordForm;
 import com.jayud.storage.model.po.RelocationRecord;
 import com.jayud.storage.mapper.RelocationRecordMapper;
 import com.jayud.storage.model.vo.RelocationGoodsOperationRecordFormVO;
 import com.jayud.storage.model.vo.RelocationRecordVO;
+import com.jayud.storage.model.vo.StockVO;
 import com.jayud.storage.service.IRelocationRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,8 @@ public class RelocationRecordServiceImpl extends ServiceImpl<RelocationRecordMap
 
     @Override
     public IPage<RelocationRecordVO> findByPage(QueryRelocationRecordForm form) {
-        return this.baseMapper.findByPage(form);
+        Page<StockVO> page = new Page<>(form.getPageNum(), form.getPageSize());
+        IPage<RelocationRecordVO> pageInfo = this.baseMapper.findByPage(page,form);
+        return pageInfo;
     }
 }

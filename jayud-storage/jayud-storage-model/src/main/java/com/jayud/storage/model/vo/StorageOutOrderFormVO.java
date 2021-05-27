@@ -158,6 +158,9 @@ public class StorageOutOrderFormVO {
     @ApiModelProperty(value = "规格型号")
     private String specificationModel;
 
+    @ApiModelProperty(value = "子订单结算单位")
+    private String defaultUnitCode;
+
     /**
      * 组装商品信息
      */

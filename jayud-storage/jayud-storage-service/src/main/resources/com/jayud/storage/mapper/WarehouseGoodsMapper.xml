@@ -34,7 +34,7 @@
     </sql>
 
     <select id="getListBySkuAndLocationCode" resultType="com.jayud.storage.model.vo.OutGoodsOperationRecordFormVO">
-        select soo.warehouse_number warehouseNumber, wg.warehousing_batch_no warehousingBatchNo ,glr.number number,wg.pcs pcs, soo.update_time createTime
+        select soo.warehouse_number warehouseNumber, wg.warehousing_batch_no warehousingBatchNo ,glr.number number,wg.pcs pcs, soo.update_time createTime,
         glr.inGood_id inGoodId,glr.ku_code kuCode
         from
         (select id,ku_code,inGood_id,number,type, un_delivered_quantity	from goods_location_record group by ku_code) glr

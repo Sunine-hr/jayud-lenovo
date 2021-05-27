@@ -204,6 +204,7 @@ public class StorageInputOrderController {
             record.setCreatedTimeStr(record.getCreateTime().toString());
             record.setSubLegalName(record.getLegalName());
             record.setSubUnitCode(record.getUnitCode());
+            record.setDefaultUnitCode(record.getUnitCode());
 
             List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(record.getId(), record.getOrderNo());
             record.assemblyGoodsInfo(list1);
@@ -342,6 +343,28 @@ public class StorageInputOrderController {
         form.checkProcessOpt(statusEnum);
         form.setStatus(statusEnum.getCode());
         redisUtils.set(form.getOrderNo(),form.getWarehousingBatchNo());
+
+        if(form.getStatus().equals(OrderStatusEnum.CCI_2.getCode()) && form.getCmd().equals("end")){
+            for (WarehouseGoodsForm warehouseGoodsForm : form.getWarehouseGoodsForms()) {
+                List<InGoodsOperationRecord> list = inGoodsOperationRecordService.getList(warehouseGoodsForm.getOrderId(), warehouseGoodsForm.getOrderNo(), warehouseGoodsForm.getSku());
+                Integer number = 0;
+                for (InGoodsOperationRecord inGoodsOperationRecord : list) {
+                    number = number + inGoodsOperationRecord.getNumber();
+                }
+                if(warehouseGoodsForm.getSjNumber() != null){
+                    number = number + warehouseGoodsForm.getSjNumber();
+                }
+                if(warehouseGoodsForm.getNumber() != number){
+                    return CommonResult.error(444,"入库件数不一致");
+                }
+            }
+        }
+        if(form.getStatus().equals(OrderStatusEnum.CCI_3.getCode())){
+            if(this.isWarehousing(form).getCode().equals(444)){
+                return CommonResult.error(444,"入库件数不准确");
+            }
+        }
+
         //指令操作
         switch (statusEnum) {
             case CCI_1: //入库接单
@@ -398,7 +421,7 @@ public class StorageInputOrderController {
 
         for (WarehouseGoodsVO warehouseGoodsVO : list) {
             warehouseGoodsVO.setIsSubmit(storageInputOrder.getIsSubmit());
-            List<InGoodsOperationRecord> inGoodsOperationRecords = inGoodsOperationRecordService.getList(storageInputOrder.getId(), storageInputOrder.getOrderNo(),warehouseGoodsVO.getName());
+            List<InGoodsOperationRecord> inGoodsOperationRecords = inGoodsOperationRecordService.getList(storageInputOrder.getId(), storageInputOrder.getOrderNo(),warehouseGoodsVO.getSku());
             Double totalWeight = 0.0;
             Integer totalAmount = 0;
             Integer totalJAmount = 0;
@@ -424,10 +447,13 @@ public class StorageInputOrderController {
         storageInProcessOptFormVO.setOrderNo(storageInputOrder.getOrderNo());
         storageInProcessOptFormVO.assemblyMainOrderData(result.getData());
         storageInProcessOptFormVO.setLegalName(storageInputOrder.getLegalName() );
+
+        storageInProcessOptFormVO.setCustomerId(omsClient.getCustomerByCode(storageInProcessOptFormVO.getCustomerCode()).getData());
         storageInProcessOptFormVO.setPlateNumber(storageInputOrder.getPlateNumber());
         storageInProcessOptFormVO.setWarehouseNumber(storageInputOrder.getWarehouseNumber());
         storageInProcessOptFormVO.setCreateTime(storageInputOrder.getCreateTime());
         storageInProcessOptFormVO.setWarehousingBatchNo(redisUtils.get(storageInputOrder.getOrderNo()));
+        storageInProcessOptFormVO.setIsSubmit(storageInputOrder.getIsSubmit());
         return CommonResult.success(storageInProcessOptFormVO);
     }
 
@@ -517,6 +543,9 @@ public class StorageInputOrderController {
             totalNumber = totalNumber + inGoodsOperationRecord.getNumber();
         }
         Integer totalNumber1 = 0;
+        if(form.getInGoodsOperationRecords().size()<=0){
+            return CommonResult.error(444,"入库件数不准确");
+        }
         for (InGoodsOperationRecordForm inGoodsOperationRecord : form.getInGoodsOperationRecords()) {
             List<GoodsLocationRecordForm> goodsLocationRecordForms = inGoodsOperationRecord.getGoodsLocationRecordForms();
             for (GoodsLocationRecordForm goodsLocationRecordForm : goodsLocationRecordForms) {
@@ -706,7 +735,7 @@ public class StorageInputOrderController {
             InGoodsOperationRecordOrderVO convert = ConvertUtil.convert(inGoodsOperationRecord, InGoodsOperationRecordOrderVO.class);
             convert.setNowNumber(nowNumber);
             convert.setNowPcs(nowPcs);
-            convert.setStorageTime(this.getStorageTime(convert.getCreateTime().toString(), LocalDateTime.now().toString()));
+            convert.setStorageTime(this.getStorageTime(convert.getCreateTime().toString().replace("T"," "), LocalDateTime.now().toString().replace("T"," ")));
             inGoodsOperationRecordOrderVOS.add(convert);
             skuList.add(inGoodsOperationRecord.getSku());
             warehousingBatchNos.add(inGoodsOperationRecord.getWarehousingBatchNo());
@@ -762,57 +791,64 @@ public class StorageInputOrderController {
 
     @ApiOperation(value = "导出入仓单")
     @GetMapping(value = "/exportInWarehouseReceipt")
-    public void exportInWarehouseReceipt(@RequestBody Map<String,Object> map, HttpServletResponse response){
+    public void exportInWarehouseReceipt(@RequestParam("orderId") Long orderId, HttpServletResponse response){
+        Map map = new HashMap();
+        map.put("orderId",orderId);
         StorageInProcessOptFormVO storageInProcessOptFormVO = (StorageInProcessOptFormVO)this.getDataInConfirmEntry(map).getData();
 
         Map<String,Object> dataMap = new HashMap<String, Object>();
         try {
             //编号
-            dataMap.put("poundWeight", "1");
-            dataMap.put("labeling ", "1");
-            dataMap.put("photograph ","1");
-            dataMap.put("measureSize", "1");
-            dataMap.put("numberOfPoints", "1");
-            dataMap.put("selfUnloading", "1");
-            dataMap.put("warehouseUnloading", "1");
-            dataMap.put("compositeBoard", "1");
-            dataMap.put("rubberSheet", "1");
-            dataMap.put("board", "1");
-            dataMap.put("cardboard", "1");
-            dataMap.put("woodenCase", "1");
-            dataMap.put("yes", "1");
-            dataMap.put("no", "1");
-            dataMap.put("isGone", "1");
-            dataMap.put("isInstructions", "1");
-            dataMap.put("num1", "1");
-            dataMap.put("isDoorCollection", "1");
-            dataMap.put("isSelfDelivery", "1");
-            dataMap.put("isGoldLabels", "1");
-            dataMap.put("isImproperPacking", "1");
-            dataMap.put("num2", "1");
-            dataMap.put("isTomOpen", "1");
-            dataMap.put("tomOpenNumber", "1");
-            dataMap.put("isReTaped", "1");
-            dataMap.put("reTapedNumber", "1");
-            dataMap.put("isCrushedCollapsed", "1");
-            dataMap.put("crushedCollapsedNumber", "1");
-            dataMap.put("isWaterGreased", "1");
-            dataMap.put("waterGreasedNumber", "1");
-            dataMap.put("isPuncturedHoles", "1");
-            dataMap.put("puncturedHolesNumber", "1");
-            dataMap.put("isDamagedCtn", "1");
-            dataMap.put("damagedCtnNumber", "1");
-
-
-            dataMap.put("warehouseNumber", storageInProcessOptFormVO.getWarehouseNumber());
-            dataMap.put("createTime", storageInProcessOptFormVO.getCreateTime());
-            dataMap.put("plateNumber", storageInProcessOptFormVO.getPlateNumber());
-            dataMap.put("customerName", storageInProcessOptFormVO.getCustomerName());
-            dataMap.put("num1", storageInProcessOptFormVO.getNum1());
-            dataMap.put("num2", storageInProcessOptFormVO.getNum2());
-            if(CollectionUtils.isNotEmpty(storageInProcessOptFormVO.getWarehouseGoodsForms())){
-                dataMap.put("userList", storageInProcessOptFormVO.getWarehouseGoodsForms());
-            }
+//            dataMap.put("poundWeight", "1");
+//            dataMap.put("labeling ", "1");
+//            dataMap.put("photograph ","1");
+//            dataMap.put("measureSize", "1");
+//            dataMap.put("numberOfPoints", "1");
+//            dataMap.put("selfUnloading", "1");
+//            dataMap.put("warehouseUnloading", "1");
+//            dataMap.put("compositeBoard", "1");
+//            dataMap.put("rubberSheet", "1");
+//            dataMap.put("board", "1");
+//            dataMap.put("cardboard", "1");
+//            dataMap.put("woodenCase", "1");
+//            dataMap.put("yes", "1");
+//            dataMap.put("no", "1");
+//            dataMap.put("isGone", "1");
+//            dataMap.put("isInstructions", "1");
+//            dataMap.put("num1", "1");
+//            dataMap.put("isDoorCollection", "1");
+//            dataMap.put("isSelfDelivery", "1");
+//            dataMap.put("isGoldLabels", "1");
+//            dataMap.put("isImproperPacking", "1");
+//            dataMap.put("num2", "1");
+//            dataMap.put("isTomOpen", "1");
+//            dataMap.put("tomOpenNumber", "1");
+//            dataMap.put("isReTaped", "1");
+//            dataMap.put("reTapedNumber", "1");
+//            dataMap.put("isCrushedCollapsed", "1");
+//            dataMap.put("crushedCollapsedNumber", "1");
+//            dataMap.put("isWaterGreased", "1");
+//            dataMap.put("waterGreasedNumber", "1");
+//            dataMap.put("isPuncturedHoles", "1");
+//            dataMap.put("puncturedHolesNumber", "1");
+//            dataMap.put("isDamagedCtn", "1");
+//            dataMap.put("damagedCtnNumber", "1");
+//            dataMap.put("remarks","1");
+//            dataMap.put("marks","1");
+//            dataMap.put("documents","1");
+//            dataMap.put("warehouseManagement","1");
+//            dataMap.put("driver","1");
+//            dataMap.put("beizhu","1");
+//
+//            dataMap.put("warehouseNumber", storageInProcessOptFormVO.getWarehouseNumber());
+//            dataMap.put("createTime", storageInProcessOptFormVO.getCreateTime());
+//            dataMap.put("plateNumber", storageInProcessOptFormVO.getPlateNumber());
+//            dataMap.put("customerName", storageInProcessOptFormVO.getCustomerName());
+//            dataMap.put("num1", storageInProcessOptFormVO.getNum1());
+//            dataMap.put("num2", storageInProcessOptFormVO.getNum2());
+//            if(CollectionUtils.isNotEmpty(storageInProcessOptFormVO.getWarehouseGoodsForms())){
+//                dataMap.put("goodLists", storageInProcessOptFormVO.getWarehouseGoodsForms());
+//            }
 
             //Configuration 用于读取ftl文件
             Configuration configuration = new Configuration(new Version("2.3.29"));
@@ -824,7 +860,7 @@ public class StorageInputOrderController {
             response.setHeader("Content-Disposition", "attachment;filename=\"" + new String("入仓单.doc".getBytes("GBK"), "iso8859-1") + "\"");
             response.setCharacterEncoding("utf-8");//此句非常关键,不然word文档全是乱码
             PrintWriter out = response.getWriter();
-            Template t =  configuration.getTemplate("storageWarehousing.ftl","utf-8");//以utf-8的编码读取ftl文件
+            Template t =  configuration.getTemplate("storage (2).ftl","utf-8");//以utf-8的编码读取ftl文件
             t.process(dataMap, out);
 
 

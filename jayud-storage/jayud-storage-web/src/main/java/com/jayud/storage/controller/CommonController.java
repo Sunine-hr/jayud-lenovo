@@ -12,12 +12,9 @@ import com.jayud.common.utils.excel.ExcelUtils;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.WarehouseGoodsInForm;
 import com.jayud.storage.model.bo.WarehouseGoodsOutForm;
-import com.jayud.storage.model.po.InGoodsOperationRecord;
-import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
+import com.jayud.storage.model.po.*;
 import com.jayud.storage.model.vo.*;
-import com.jayud.storage.service.IGoodService;
-import com.jayud.storage.service.IInGoodsOperationRecordService;
-import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
+import com.jayud.storage.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Api(tags = "仓储模块公用接口")
 @RestController
@@ -50,6 +44,14 @@ public class CommonController {
     @Autowired
     private IInGoodsOperationRecordService inGoodsOperationRecordService;
 
+    @Autowired
+    private IWarehouseService warehouseService;
+
+    @Autowired
+    private IWarehouseAreaService warehouseAreaService;
+
+    @Autowired
+    private IWarehouseAreaShelvesService warehouseAreaShelvesService;
 
     /**
      * 导出入库商品模板
@@ -85,10 +87,12 @@ public class CommonController {
         log.info("list:{}",  listString);
         JSONArray arryList = JSONObject.parseArray(listString);
         arryList.remove(0);
-        List<WarehouseGoodsInForm> warehouseGoodsInForms = arryList.toJavaList(WarehouseGoodsInForm.class);
-        for (WarehouseGoodsInForm warehouseGoodsInForm : warehouseGoodsInForms) {
-
-        }
+        Object o = arryList.get(1);
+        System.out.println(o);
+//        List<WarehouseGoodsInForm> warehouseGoodsInForms = arryList.toJavaList(WarehouseGoodsInForm.class);
+//        for (WarehouseGoodsInForm warehouseGoodsInForm : warehouseGoodsInForms) {
+//
+//        }
         return CommonResult.success(arryList);
     }
 
@@ -108,10 +112,10 @@ public class CommonController {
         log.info("list:{}",  listString);
         JSONArray arryList = JSONObject.parseArray(listString);
         arryList.remove(0);
-        List<WarehouseGoodsOutForm> warehouseGoodsOutForms = arryList.toJavaList(WarehouseGoodsOutForm.class);
-        for (WarehouseGoodsOutForm warehouseGoodsOutForm : warehouseGoodsOutForms) {
-
-        }
+//        List<WarehouseGoodsOutForm> warehouseGoodsOutForms = arryList.toJavaList(WarehouseGoodsOutForm.class);
+//        for (WarehouseGoodsOutForm warehouseGoodsOutForm : warehouseGoodsOutForms) {
+//
+//        }
         return CommonResult.success(arryList);
     }
 
@@ -195,5 +199,19 @@ public class CommonController {
         return CommonResult.success(omsClient.getCustomerInfo().getData());
     }
 
+    @ApiOperation(value = "移库下拉列表框")
+    @PostMapping(value = "/relocationComBox")
+    public CommonResult relocationComBox(){
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status",1);
+        List<Warehouse> list = warehouseService.list(queryWrapper);
+        List<WarehouseArea> list1 = warehouseAreaService.list(queryWrapper);
+        List<WarehouseAreaShelves> list2 = warehouseAreaShelvesService.list(queryWrapper);
+        Map<String,Object> map = new HashMap<>();
+        map.put("warehouse",list);
+        map.put("warehouseArea",list1);
+        map.put("warehouseAreaShelves",list2);
+        return CommonResult.success(map);
+    }
 
 }

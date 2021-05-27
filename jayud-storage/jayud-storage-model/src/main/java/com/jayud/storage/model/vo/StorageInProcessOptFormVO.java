@@ -71,6 +71,9 @@ public class StorageInProcessOptFormVO {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
+    @ApiModelProperty(value = "客户id")
+    private Long customerId;
+
     @ApiModelProperty(value = "客户代码")
     private String customerCode;
 
@@ -88,6 +91,9 @@ public class StorageInProcessOptFormVO {
 
     @ApiModelProperty(value = "接单法人名称")
     private String legalName;
+
+    @ApiModelProperty(value = "确认入仓是否提交（0未提交，1已提交）")
+    private Integer isSubmit;
 
 
     //入仓信息

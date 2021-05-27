@@ -23,11 +23,11 @@ import java.util.List;
 public class InGoodsOperationRecordServiceImpl extends ServiceImpl<InGoodsOperationRecordMapper, InGoodsOperationRecord> implements IInGoodsOperationRecordService {
 
     @Override
-    public List<InGoodsOperationRecord> getList(Long id, String orderNo,String name) {
+    public List<InGoodsOperationRecord> getList(Long id, String orderNo,String sku) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("order_no",orderNo);
         queryWrapper.eq("order_id",id);
-        queryWrapper.eq("name",name);
+        queryWrapper.eq("sku",sku);
         return this.baseMapper.selectList(queryWrapper);
     }
 

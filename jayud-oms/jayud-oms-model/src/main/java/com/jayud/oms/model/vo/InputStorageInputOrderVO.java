@@ -5,10 +5,12 @@ import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -122,7 +124,7 @@ public class InputStorageInputOrderVO extends Model<InputStorageInputOrderVO> {
      * 校验创建出库子订单参数
      */
     public String checkCreateOrder() {
-        //拖车
+        //入库
         if (this.legalEntityId == null ){
             return "操作主体不为空";
         }
@@ -143,4 +145,26 @@ public class InputStorageInputOrderVO extends Model<InputStorageInputOrderVO> {
         this.unitCodeName=unitCodeName;
     }
 
+    public void copyOperationInfo() {
+        this.id = null;
+        this.allPics = new ArrayList<>();
+        this.orderNo = null;
+        this.mainOrderNo = null;
+        this.status = null;
+        this.processStatus = null;
+        this.orderTaker = null;
+        this.createTime = null;
+        this.receivingOrdersDate = null;
+        this.createUser = null;
+        this.inGoodsOperationRecords = new ArrayList<>();
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(goodsFormList)) {
+            goodsFormList.forEach(e -> {
+                e.setId(null);
+                e.setOrderId(null);
+                e.setOrderNo(null);
+                e.setTakeFiles(null);
+                e.setTakeFiles(null);
+            });
+        }
+    }
 }

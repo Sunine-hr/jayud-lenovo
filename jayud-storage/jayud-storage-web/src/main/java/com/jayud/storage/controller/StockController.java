@@ -18,6 +18,7 @@ import com.jayud.storage.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -103,7 +104,11 @@ public class StockController {
             return CommonResult.success(map1);
         }
         for (StockVO record : page.getRecords()) {
-            record.setCustomerName(omsClient.getCustomerNameById(record.getId()).getData());
+            if(record.getCustomerId() == null){
+                map1.put("pageInfo", new CommonPageResult(page));
+                return CommonResult.success(map1);
+            }
+            record.setCustomerName(omsClient.getCustomerNameById(record.getCustomerId()).getData());
         }
         map1.put("pageInfo", new CommonPageResult(page));
         return CommonResult.success(page);
@@ -115,23 +120,29 @@ public class StockController {
         //获取查询的库位以及该库位的商品
         String sku = MapUtil.getStr(map, "sku");
         String locationCode = MapUtil.getStr(map, "locationCode");
-        Long customerId = MapUtil.getLong(map, "customer_id");
+        Long customerId = MapUtil.getLong(map, "customerId");
 
         //获取该库位该商品的可用库存
         StockLocationNumberVO stockLocationNumberVO = stockService.getListBySkuAndLocationCode(sku,locationCode,customerId);
 
         //获取入库操作记录
         List<InGoodsOperationRecordFormVO> inGoodsOperationRecordFormVOS = inGoodsOperationRecordService.getListBySkuAndLocationCode(sku,locationCode,customerId);
-        for (InGoodsOperationRecordFormVO inGoodsOperationRecordFormVO : inGoodsOperationRecordFormVOS) {
-            inGoodsOperationRecordFormVO.setStorageTime(this.getStorageTime(inGoodsOperationRecordFormVO.getCreateTime().toString(),LocalDateTime.now().toString()));
+        if(CollectionUtils.isNotEmpty(inGoodsOperationRecordFormVOS)){
+            for (InGoodsOperationRecordFormVO inGoodsOperationRecordFormVO : inGoodsOperationRecordFormVOS) {
+                inGoodsOperationRecordFormVO.setStorageTime(this.getStorageTime(inGoodsOperationRecordFormVO.getCreateTime().toString().replace("T"," "),LocalDateTime.now().toString().replace("T"," ")));
+            }
         }
+
         //获取出库操作记录
         List<OutGoodsOperationRecordFormVO> outGoodsOperationRecordFormVOS = warehouseGoodsService.getListBySkuAndLocationCode(sku,locationCode,customerId);
-        for (OutGoodsOperationRecordFormVO outGoodsOperationRecordFormVO : outGoodsOperationRecordFormVOS) {
-            //获取该商品入库的时间
-            GoodsLocationRecord goodsLocationRecord = goodsLocationRecordService.getGoodsLocationRecordBySkuAndKuCode(outGoodsOperationRecordFormVO.getWarehousingBatchNo(),sku,outGoodsOperationRecordFormVO.getKuCode());
-            outGoodsOperationRecordFormVO.setStorageTime(this.getStorageTime(goodsLocationRecord.getCreateTime().toString(),outGoodsOperationRecordFormVO.getCreateTime().toString()));
+        if(CollectionUtils.isNotEmpty(outGoodsOperationRecordFormVOS)){
+            for (OutGoodsOperationRecordFormVO outGoodsOperationRecordFormVO : outGoodsOperationRecordFormVOS) {
+                //获取该商品入库的时间
+                GoodsLocationRecord goodsLocationRecord = goodsLocationRecordService.getGoodsLocationRecordBySkuAndKuCode(outGoodsOperationRecordFormVO.getWarehousingBatchNo(),sku,outGoodsOperationRecordFormVO.getKuCode());
+                outGoodsOperationRecordFormVO.setStorageTime(this.getStorageTime(goodsLocationRecord.getCreateTime().toString().replace("T"," "),outGoodsOperationRecordFormVO.getCreateTime().toString().replace("T"," ")));
+            }
         }
+
         //获取移库操作记录
         List<RelocationGoodsOperationRecordFormVO> relocationGoodsOperationRecordFormVOS = relocationRecordService.getListBySkuAndLocationCode(sku,locationCode);
         //获取调整下架操作记录
@@ -169,11 +180,9 @@ public class StockController {
         return day + "天" + hour + "小时" ;
     }
 
-//    public static void main(String[] args) {
-//        System.out.println(LocalDateTime.now().getYear());
-//        System.out.println(LocalDateTime.now().getMonthValue());
-//        System.out.println(LocalDateTime.now().getDayOfMonth());
-//    }
+    public static void main(String[] args) {
+        System.out.println("2021-05-27T16:07:43".replace("T", " "));
+    }
 }
 
 

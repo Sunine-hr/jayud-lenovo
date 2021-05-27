@@ -214,6 +214,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
                 if(goodsLocationRecordForm.getKuCode()!=null && goodsLocationRecordForm.getNumber()!=null){
                     GoodsLocationRecord goodsLocationRecord = ConvertUtil.convert(goodsLocationRecordForm, GoodsLocationRecord.class);
                     goodsLocationRecord.setInGoodId(inGoodsOperationRecord.getId());
+                    goodsLocationRecord.setUnDeliveredQuantity(goodsLocationRecord.getNumber());
                     goodsLocationRecord.setCreateUser(UserOperator.getToken());
                     goodsLocationRecord.setCreateTime(LocalDateTime.now());
                     goodsLocationRecord.setType(1);
@@ -357,29 +358,31 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         form.setOperatorUser(UserOperator.getToken());
 
         StorageInputOrderDetails storageInputOrderDetails = ConvertUtil.convert(form, StorageInputOrderDetails.class);
-        StringBuffer stringBuffer = new StringBuffer();
-        StringBuffer s = new StringBuffer();
-        for (Long aLong : form.getOperationId()) {
-            stringBuffer.append(aLong).append(",");
-        }
-        for (Long aLong : form.getCardTypeId()) {
-            s.append(aLong).append(",");
-        }
-        if(stringBuffer.length()>0){
-            storageInputOrderDetails.setOperationId(stringBuffer.substring(0,s.length()-1).toString());
+        if(form.getOperationId().size()>0){
+            StringBuffer stringBuffer = new StringBuffer();
+            for (Long aLong : form.getOperationId()) {
+                stringBuffer.append(aLong).append(",");
+            }
+            storageInputOrderDetails.setOperationId(stringBuffer.substring(0,stringBuffer.length()-1));
         }else{
             storageInputOrderDetails.setOperationId(null);
         }
-        if(s.length()>0){
-            storageInputOrderDetails.setCardTypeId(s.substring(0,s.length()-1).toString());
+        if(form.getCardTypeId().size()>0){
+            StringBuffer s = new StringBuffer();
+            for (Long aLong : form.getCardTypeId()) {
+                s.append(aLong).append(",");
+            }
+            storageInputOrderDetails.setCardTypeId(s.substring(0,s.length()-1));
         }else{
             storageInputOrderDetails.setCardTypeId(null);
         }
 
-        boolean insert = storageInputOrderDetailsService.saveOrUpdate(storageInputOrderDetails);
-        if(!insert){
+        boolean update = storageInputOrderDetailsService.saveOrUpdate(storageInputOrderDetails);
+        if (!update) {
             return false;
         }
+
+
         List<WarehouseGoodsForm> warehouseGoodsForms = form.getWarehouseGoodsForms();
         //在添加商品前，先删除原来的商品信息
         warehouseGoodsService.deleteWarehouseGoodsFormsByOrder(form.getOrderId(),form.getOrderNo());

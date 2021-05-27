@@ -91,10 +91,10 @@
             and t.audit_status = #{form.auditStatus}
         </if>
         <if test="form.chName != null and form.chName != ''">
-            and t.ch_name = #{form.chName}
+            and t.ch_name LIKE concat('%',#{form.chName},'%')
         </if>
         <if test="form.enName != null and form.enName != ''">
-            and t.en_name = #{form.enName}
+            and t.en_name LIKE concat('%',#{form.enName},'%')
         </if>
 
     </select>

@@ -137,5 +137,8 @@ public class CustomerGoodsForm {
     @ApiModelProperty(value = "丢货赔偿金额币种(currency_info id)")
     private Integer lcaCid;
 
+    @ApiModelProperty(value = "是否有效(0无效 1有效)")
+    private Integer isValid;
+
 
 }

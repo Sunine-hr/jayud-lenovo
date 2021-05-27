@@ -10,15 +10,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.CustomerGoodsEnum;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.BusinessLogMapper;
 import com.jayud.mall.mapper.CustomerGoodsMapper;
 import com.jayud.mall.mapper.GoodsServiceCostMapper;
 import com.jayud.mall.mapper.ServiceGroupMapper;
-import com.jayud.mall.model.bo.CustomerGoodsAuditForm;
-import com.jayud.mall.model.bo.CustomerGoodsForm;
-import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
-import com.jayud.mall.model.bo.ServiceGroupForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.BusinessLog;
 import com.jayud.mall.model.po.CustomerGoods;
 import com.jayud.mall.model.po.GoodsServiceCost;
@@ -244,5 +243,18 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
         List<GoodsServiceCostVO> goodsServiceCostList = goodsServiceCostMapper.findGoodsServiceCostByGoodId(goodId);
         customerGoodsVO.setGoodsServiceCostList(goodsServiceCostList);
         return customerGoodsVO;
+    }
+
+    @Override
+    public void stopOrEnabled(CustomerGoodsIsValidForm form) {
+        Integer id = form.getId();
+        CustomerGoodsVO customerGoodsVO = customerGoodsMapper.findCustomerGoodsById(id);
+        if(ObjectUtil.isEmpty(customerGoodsVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "没有找到客户商品");
+        }
+        CustomerGoods customerGoods = ConvertUtil.convert(customerGoodsVO, CustomerGoods.class);
+        Integer isValid = form.getIsValid();
+        customerGoods.setIsValid(isValid);
+        this.saveOrUpdate(customerGoods);
     }
 }

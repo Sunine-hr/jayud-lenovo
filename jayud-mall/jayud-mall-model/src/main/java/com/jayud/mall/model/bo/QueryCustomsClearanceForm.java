@@ -18,4 +18,10 @@ public class QueryCustomsClearanceForm extends BasePageForm {
     @ApiModelProperty(value = "审核状态(0待审核 1已审核 2已取消)")
     private Integer auditStatus;
 
+    @ApiModelProperty(value = "清关中文品名")
+    private String chName;
+
+    @ApiModelProperty(value = "清关英文品名")
+    private String enName;
+
 }

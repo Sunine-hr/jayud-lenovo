@@ -90,6 +90,12 @@
         <if test="form.auditStatus != null">
             and t.audit_status = #{form.auditStatus}
         </if>
+        <if test="form.chName != null and form.chName != ''">
+            and t.ch_name = #{form.chName}
+        </if>
+        <if test="form.enName != null and form.enName != ''">
+            and t.en_name = #{form.enName}
+        </if>
 
     </select>
 

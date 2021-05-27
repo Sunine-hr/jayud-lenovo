@@ -125,6 +125,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 customs.setAirTransPicName(StringUtils.getFileNameStr(form.getAirTransportPics()));
                 customs.setSeaTransportPic(StringUtils.getFileStr(form.getSeaTransportPics()));
                 customs.setSeaTransPicName(StringUtils.getFileNameStr(form.getSeaTransportPics()));
+                customs.setOrderRemarks(form.getOrderRemarks());
                 orderCustomsList.add(customs);
             }
             if (!orderCustomsList.isEmpty()) {
@@ -132,7 +133,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             }
 
             // 发送报关邮件
-            sendEmail(form,orderCustomsList);
+            sendEmail(form, orderCustomsList);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -208,7 +209,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             if (Objects.nonNull(seaOrderVO)) {
                 goodTime = DateUtils.format(seaOrderVO.getGoodTime(), "MM-dd");
                 cabinetType = seaOrderVO.getCabinetTypeName();
-                if (Objects.equals(cabinetType,"FCL")) {
+                if (Objects.equals(cabinetType, "FCL")) {
                     cabinetType = seaOrderVO.getCabinetSizeNumbers().stream()
                             .map(e -> String.format("%s * %S", e.getCabinetTypeSize(), e.getNumber()))
                             .collect(Collectors.joining(","));
@@ -217,7 +218,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
             email.setTo(emailTo);
             email.setSubject(String.format("%s %s %s %s %s %s单 作业号:%s",
-                    bizModelDesc, goodTime, form.getPortName(), goodType, cabinetType , orderCustomsList.size(), form.getMainOrderNo()));
+                    bizModelDesc, goodTime, form.getPortName(), goodType, cabinetType, orderCustomsList.size(), form.getMainOrderNo()));
             getAssembleEmailTextAndFiles(form, email);
         }
 
@@ -232,18 +233,19 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 goodTime = DateUtils.format(airOrderVO.getGoodTime(), "MM-dd");
             }
             email.setTo(emailTo);
-            email.setSubject(String.format("%s %s %s单 %s", bizModelDesc, goodTime , orderCustomsList.size(),form.getPortName()));
+            email.setSubject(String.format("%s %s %s单 %s", bizModelDesc, goodTime, orderCustomsList.size(), form.getPortName()));
             getAssembleEmailTextAndFiles(form, email);
         }
 
         HashMap<String, Object> msg = new HashMap<>();
-        msg.put("mainOrderNo",form.getMainOrderNo());
+        msg.put("mainOrderNo", form.getMainOrderNo());
         msg.put("email", email);
         generateKafkaMsg(KafkaMsgEnums.CUSTOM_SEND_EMAIL.getTopic(), KafkaMsgEnums.CUSTOM_SEND_EMAIL.getKey(), JSONObject.toJSONString(msg));
     }
 
     /**
      * 组装邮件内容及附件
+     *
      * @param form
      * @param email
      */
@@ -285,24 +287,6 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
         return true;
     }
 
-    public static void main(String[] args) {
-        /*String s = DateUtils.LocalDateTime2Str(LocalDateTime.now(), "MM-dd");
-        System.out.println("s = " + s);
-
-        String collect = Arrays.asList("11", "22", "33").stream().collect(Collectors.joining(","));
-        System.out.println("collect = " + collect);
-
-        List<String> result = Stream.of(Arrays.asList("11","22","33"), Arrays.asList("aa","bb","cc"))
-                .flatMap(Collection::stream).distinct().collect(Collectors.toList());
-        System.out.println("result = " + result);
-
-        Email email = new Email();
-        email.setFrom("aa");
-        String s1 = JSONObject.toJSONString(email);
-        System.out.println("s1 = " + s1);*/
-
-        System.out.println(DateUtils.format("2021-05-18 00:00:00","MM-dd"));
-    }
 
     @Override
     public List<OrderCustomsVO> findOrderCustomsByCondition(Map<String, Object> param) {
@@ -563,7 +547,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             return null;
         }
         InputSubOrderCustomsVO inputSubOrderCustomsVO = new InputSubOrderCustomsVO();
-        BeanUtils.copyProperties(orderCustoms,inputSubOrderCustomsVO);
+        BeanUtils.copyProperties(orderCustoms, inputSubOrderCustomsVO);
         return inputSubOrderCustomsVO;
     }
 }

@@ -238,7 +238,8 @@
         ELSE FALSE
         END) isCost,
         oi.`need_input_cost` needInputCost,
-        (select ot.car_weigh_num from order_transport ot where ot.main_order_no = oi.order_no) carWeighNum
+        (select ot.car_weigh_num from order_transport ot where ot.main_order_no = oi.order_no) carWeighNum,
+        oc.order_remarks
         FROM
         order_customs oc,
         order_info oi

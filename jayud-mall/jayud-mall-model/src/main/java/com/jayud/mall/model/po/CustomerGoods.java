@@ -154,6 +154,9 @@ public class CustomerGoods extends Model<CustomerGoods> {
     @ApiModelProperty(value = "是否有效(0无效 1有效)")
     private Integer isValid;
 
+    @ApiModelProperty(value = "出口国家(country code)")
+    private String exportCountry;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

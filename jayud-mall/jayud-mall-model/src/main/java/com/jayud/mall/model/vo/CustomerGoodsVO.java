@@ -137,6 +137,9 @@ public class CustomerGoodsVO {
     @ApiModelProperty(value = "是否有效(0无效 1有效)")
     private Integer isValid;
 
+    @ApiModelProperty(value = "出口国家(country code)")
+    private String exportCountry;
+
     /*客户名称*/
     @ApiModelProperty(value = "客户名称", position = 29)
     @JSONField(ordinal = 29)

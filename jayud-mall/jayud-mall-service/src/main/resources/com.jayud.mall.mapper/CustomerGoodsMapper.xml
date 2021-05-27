@@ -43,7 +43,7 @@
         select
         t.id,t.customer_id,t.sku,t.name_cn,t.name_en,t.image_url,t.barcode,t.weight,t.length,t.width,t.height,t.is_sensitive,t.types,
         t.declared_value,t.declared_currency,t.material_quality,t.purpose,t.declare_elements,t.hs_code,t.data_code,t.clearance_code,t.sales_link,
-        t.sales_price,t.sales_price_currency,t.description,t.`status`,t.status_name,t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid,
+        t.sales_price,t.sales_price_currency,t.description,t.`status`,t.status_name,t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid,t.export_country,
         t1.company customerName,
         (
         select tt3.is_need_fee
@@ -122,7 +122,7 @@
                t.description,
                t.status,
                t.status_name,
-               t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid,
+               t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid,t.export_country,
                t1.company customerName
         from customer_goods t
         join customer t1 on t1.id = t.customer_id
@@ -157,7 +157,7 @@
                t.description,
                t.status,
                t.status_name,
-               t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid
+               t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid,t.export_country
         from customer_goods t
         where
             t.customer_id = #{customerId, jdbcType=INTEGER}
@@ -194,7 +194,7 @@
                t.description,
                t.status,
                t.status_name,
-               t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid
+               t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid,t.export_country
         from customer_goods t
         where 1=1
         and t.customer_id = #{newWisdomParam.customerId}
@@ -234,7 +234,7 @@
                t.description,
                t.status,
                t.status_name,
-               t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid,
+               t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid,t.export_country,
                t1.company customerName
         from customer_goods t
         join customer t1 on t1.id = t.customer_id

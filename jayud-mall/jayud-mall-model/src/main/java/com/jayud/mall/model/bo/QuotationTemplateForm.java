@@ -201,6 +201,10 @@ public class QuotationTemplateForm {
     @ApiModelProperty(value = "预计到达时间(计算天数)")
     private Integer estimatedTimeCalc;
 
+    //结算方式
+    @ApiModelProperty(value = "结算方式(1票结 2按客户的结算方式(客户表customer clearing_way))")
+    private Integer clearingWay;
+
     /*应收费用明细List*/
     @ApiModelProperty(value = "应收费用明细List", position = 30)
     @JSONField(ordinal = 30)

@@ -191,6 +191,10 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
     @ApiModelProperty(value = "预计到达时间(计算天数)")
     private Integer estimatedTimeCalc;
 
+    //结算方式
+    @ApiModelProperty(value = "结算方式(1票结 2按客户的结算方式(客户表customer clearing_way))")
+    private Integer clearingWay;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

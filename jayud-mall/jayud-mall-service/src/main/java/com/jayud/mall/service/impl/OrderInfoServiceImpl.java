@@ -2193,6 +2193,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         OrderInfo orderInfo = ConvertUtil.convert(orderInfoVO, OrderInfo.class);
         String fillMaterialDescription = form.getFillMaterialDescription();
         orderInfo.setFillMaterialDescription(fillMaterialDescription);
+        orderInfo.setAfterStatusCode(OrderEnum.AFTER_UPDATE.getCode());
         orderInfo.setAfterStatusName(OrderEnum.AFTER_UPDATE.getName());
         orderInfo.setFrontStatusCode(OrderEnum.FRONT_UPDATE.getCode());
         orderInfo.setFrontStatusName(OrderEnum.FRONT_UPDATE.getName());

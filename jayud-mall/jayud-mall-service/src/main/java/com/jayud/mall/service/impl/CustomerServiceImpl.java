@@ -18,6 +18,7 @@ import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.Customer;
 import com.jayud.mall.model.vo.CustomerVO;
 import com.jayud.mall.model.vo.domain.AuthUser;
+import com.jayud.mall.model.vo.domain.CustomerUser;
 import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.ICustomerService;
 import com.jayud.mall.service.INumberGeneratedService;
@@ -289,6 +290,35 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         this.saveOrUpdate(customer);
 
         return random;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updatePasswords(CustomerUpdatePwdForm form) {
+        CustomerUser customerUser = baseService.getCustomerUser();
+        if(ObjectUtil.isEmpty(customerUser)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "客户失效，请重新登录。");
+        }
+        Integer id = customerUser.getId();
+        CustomerVO customerVO = customerMapper.findCustomerById(id);
+        if(ObjectUtil.isEmpty(customerVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "没有找到这个客户。");
+        }
+        String passwd = form.getPasswd();
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        String password = bcryptPasswordEncoder.encode(passwd.trim());
+        if (!password.equals(customerVO.getPasswd())){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "旧密码输入错误");
+        }
+        String newPasswd = form.getNewPasswd();
+        String affirmPasswd = form.getAffirmPasswd();
+        if(!newPasswd.equals(affirmPasswd)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "两次的输入的密码不一致");
+        }
+        String passwordCode = bcryptPasswordEncoder.encode(newPasswd);
+        Customer customer = ConvertUtil.convert(customerVO, Customer.class);
+        customer.setPasswd(passwordCode);
+        this.saveOrUpdate(customer);
     }
 
 

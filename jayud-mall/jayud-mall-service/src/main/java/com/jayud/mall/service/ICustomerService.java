@@ -101,4 +101,10 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     String resetPasswords(CustomerParaForm form);
+
+    /**
+     * 客户-修改密码
+     * @param form
+     */
+    void updatePasswords(CustomerUpdatePwdForm form);
 }

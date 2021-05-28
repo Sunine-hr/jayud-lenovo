@@ -403,8 +403,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Override
     public CommonResult<OrderInfoVO> lookOrderInfoDetails(Long id) {
+        /**订单信息**/
         OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(id);
         Long orderId = orderInfoVO.getId();//订单Id
+
+        /**订单物流轨迹**/
+        List<LogisticsTrackVO> logisticsTrackVOS = logisticsTrackMapper.findLogisticsTrackByOrderId(orderId.toString());
+        orderInfoVO.setLogisticsTrackVOS(logisticsTrackVOS);
+
         /**货物信息**/
         /*订单对应商品：order_shop*/
         List<OrderShopVO> orderShopVOList = orderShopMapper.findOrderShopByOrderId(orderId);

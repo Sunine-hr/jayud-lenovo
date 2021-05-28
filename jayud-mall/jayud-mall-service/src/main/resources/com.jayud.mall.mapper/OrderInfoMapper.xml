@@ -86,7 +86,7 @@
     <select id="lookOrderInfoById" parameterType="java.lang.Long"
         resultType="com.jayud.mall.model.vo.OrderInfoVO">
         select
-            t.id,t.order_no,t.customer_id,t.offer_info_id,t.reserve_size,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,t.is_pick,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,t.amazon_reference_id,t.extension_number,t.sales_commission,t.front_status_code,t.front_status_name,t.after_status_code,t.after_status_name,
+            t.id,t.order_no,t.customer_id,t.offer_info_id,t.reserve_size,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,t.is_pick,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,t.amazon_reference_id,t.extension_number,t.sales_commission,t.front_status_code,t.front_status_name,t.after_status_code,t.after_status_name,t.clearing_way,
             t1.company,
             t2.types,t2.names,t2.sail_time,t2.cut_off_time,
             t3.tid,t3.start_shipment,t3.destination_port,t3.gidtype,

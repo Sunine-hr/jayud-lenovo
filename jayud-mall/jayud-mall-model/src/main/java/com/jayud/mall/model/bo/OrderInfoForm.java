@@ -154,6 +154,9 @@ public class OrderInfoForm {
     @ApiModelProperty(value = "结算方式(1票结 2月结)")
     private Integer clearingWay;
 
+    @ApiModelProperty(value = "补充资料说明")
+    private String fillMaterialDescription;
+
     /*订单对应箱号信息:order_case*/
     @ApiModelProperty(value = "订单对应箱号信息list", position = 25)
     @JSONField(ordinal = 25)

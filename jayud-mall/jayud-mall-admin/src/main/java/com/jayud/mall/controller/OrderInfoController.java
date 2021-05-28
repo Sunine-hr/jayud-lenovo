@@ -340,5 +340,15 @@ public class OrderInfoController {
         return orderInfoService.draftCancelOrderInfo(form);
     }
 
+    //补资料操作
+    @ApiOperation(value = "补资料操作")
+    @ApiOperationSupport(order = 29)
+    @PostMapping("/fillMaterial")
+    public CommonResult fillMaterial(@Valid @RequestBody OrderInfoFillForm form){
+        orderInfoService.fillMaterial(form);
+        return CommonResult.success();
+    }
+
+
 
 }

@@ -282,4 +282,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     OrderInfoVO afterAffirm(Long id);
+
+    /**
+     * 补充资料操作
+     * @param form
+     */
+    void fillMaterial(OrderInfoFillForm form);
 }

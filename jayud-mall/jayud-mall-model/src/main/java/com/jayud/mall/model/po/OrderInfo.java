@@ -168,6 +168,9 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "结算方式(1票结 2月结)")
     private Integer clearingWay;
 
+    @ApiModelProperty(value = "补充资料说明")
+    private String fillMaterialDescription;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

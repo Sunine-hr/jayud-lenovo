@@ -2182,6 +2182,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return convert;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void fillMaterial(OrderInfoFillForm form) {
+        Long id = form.getId();
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(id);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单不存在");
+        }
+        OrderInfo orderInfo = ConvertUtil.convert(orderInfoVO, OrderInfo.class);
+        String fillMaterialDescription = form.getFillMaterialDescription();
+        orderInfo.setFillMaterialDescription(fillMaterialDescription);
+        orderInfo.setAfterStatusName(OrderEnum.AFTER_UPDATE.getName());
+        orderInfo.setFrontStatusCode(OrderEnum.FRONT_UPDATE.getCode());
+        orderInfo.setFrontStatusName(OrderEnum.FRONT_UPDATE.getName());
+        this.saveOrUpdate(orderInfo);
+    }
+
     private String extracted(String url, Map<String, Object> requestMap) {
         String feedback = HttpRequest
                 .post(url)

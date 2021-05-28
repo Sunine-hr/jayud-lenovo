@@ -68,6 +68,7 @@ public class OrderCaseController {
         //fba箱号-生成规则
         String amazonReferenceId = form.getAmazonReferenceId();
         String extensionNumber = form.getExtensionNumber();
+        String beginNumberPrefix = form.getBeginNumberPrefix() == null ? "U" : form.getBeginNumberPrefix();
         String beginNumber = form.getBeginNumber();
         Integer bNumber = Integer.valueOf(beginNumber);
         for (int i = 0; i<orderCaseVOList1.size(); i++){
@@ -76,12 +77,11 @@ public class OrderCaseController {
                 bNumber = bNumber + 1;
             }
             //数字转字符串,前面自动补0的实现,补4位数的零
-            String fabNo = extensionNumber+"U"+String.format("%0"+beginNumber.length()+"d", bNumber);
+            String fabNo = extensionNumber+beginNumberPrefix+String.format("%0"+beginNumber.length()+"d", bNumber);
             orderCaseVO.setFabNo(fabNo);
             orderCaseVO.setAmazonReferenceId(amazonReferenceId);
             orderCaseVO.setExtensionNumber(extensionNumber);
         }
-
         orderCaseVOList.addAll(orderCaseVOList1);
 
         CaseVO caseVO = new CaseVO();

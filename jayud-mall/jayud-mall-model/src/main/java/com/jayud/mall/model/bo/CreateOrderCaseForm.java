@@ -57,9 +57,13 @@ public class CreateOrderCaseForm {
     @NotNull(message = "扩展单号(FBA)不能为空")
     private String extensionNumber;
 
+    @ApiModelProperty(value = "起始单号前缀(默认是U)", position = 7)
+    private String beginNumberPrefix;
+
     @ApiModelProperty(value = "起始单号", position = 7)
     @JSONField(ordinal = 7)
     private String beginNumber;
+
 
     @ApiModelProperty(value = "报价id(offer_info id)", position = 8)
     private Integer offerInfoId;

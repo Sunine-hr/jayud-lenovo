@@ -1,3 +1,4 @@
+import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -315,5 +316,18 @@ public class Test {
 
     }
 
+
+    @org.junit.Test
+    public void test15(){
+        //随机字符选取的样本
+        String baseString = RandomUtil.BASE_CHAR_NUMBER + "@&";
+        int i = 0;
+        while (i<1000){
+            //获得一个随机的字符串 8位
+            String s1 = RandomUtil.randomString(baseString, 8);
+            System.out.println(s1);
+            i++;
+        }
+    }
 
 }

@@ -94,4 +94,11 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     CustomerVO customerLogin(CustomerLoginForm form);
+
+    /**
+     * 重置密码-随机8位数(字母+@&+数字)
+     * @param form
+     * @return
+     */
+    String resetPasswords(CustomerParaForm form);
 }

@@ -1,6 +1,8 @@
 package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -8,6 +10,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.CustomerMapper;
 import com.jayud.mall.model.bo.*;
@@ -261,6 +265,30 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     public CustomerVO customerLogin(CustomerLoginForm form) {
         CustomerVO customerVO = customerMapper.customerLogin(form);
         return customerVO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String resetPasswords(CustomerParaForm form) {
+        //随机字符选取的样本
+        String baseString = RandomUtil.BASE_CHAR_NUMBER + "@&";
+        //获得一个随机的字符串 8位
+        String random = RandomUtil.randomString(baseString, 8);
+
+        Integer id = form.getId();
+        CustomerVO customerVO = customerMapper.findCustomerById(id);
+        if(ObjectUtil.isEmpty(customerVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "客户不存在");
+        }
+        Customer customer = ConvertUtil.convert(customerVO, Customer.class);
+
+        //BCryptPasswordEncoder 加密
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        String password = bcryptPasswordEncoder.encode(random.trim());
+        customer.setPasswd(password);
+        this.saveOrUpdate(customer);
+
+        return random;
     }
 
 

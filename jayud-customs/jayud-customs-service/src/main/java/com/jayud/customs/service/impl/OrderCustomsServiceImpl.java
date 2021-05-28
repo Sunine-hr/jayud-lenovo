@@ -162,7 +162,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             String takeTimeStr = "";
             // 件数
             String totalNum = "";
-            if (Objects.nonNull(transportVO)) {
+            if (Objects.nonNull(transportVO) && Objects.nonNull(transportVO.getOrderNo())) {
                 takeTimeStr = transportVO.getOrderTakeAdrForms1().stream()
                         .min(Comparator.comparing(InputOrderTakeAdrVO::getTakeTimeStr)).get().getTakeTimeStr();
                 takeTimeStr = DateUtils.format(takeTimeStr, "MM-dd");
@@ -184,7 +184,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             String takeTimeStr = "";
             // 件数
             String totalNum = "";
-            if (Objects.nonNull(inlandTPVO)) {
+            if (Objects.nonNull(inlandTPVO) && Objects.nonNull(inlandTPVO.getOrderNo())) {
                 takeTimeStr = inlandTPVO.getPickUpAddressList().stream()
                         .min(Comparator.comparing(OrderDeliveryAddress::getDeliveryDate)).get().getDeliveryDate();
                 takeTimeStr = DateUtils.format(takeTimeStr, "MM-dd");
@@ -206,7 +206,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             String goodTime = "";
             // 柜型
             String cabinetType = "";
-            if (Objects.nonNull(seaOrderVO)) {
+            if (Objects.nonNull(seaOrderVO) && Objects.nonNull(seaOrderVO.getOrderNo())) {
                 goodTime = DateUtils.format(seaOrderVO.getGoodTime(), "MM-dd");
                 cabinetType = seaOrderVO.getCabinetTypeName();
                 if (Objects.equals(cabinetType, "FCL")) {
@@ -229,7 +229,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             InputAirOrderVO airOrderVO = this.freightAirClient.getAirOrderDetails(form.getMainOrderNo()).getData();
             // 货好时间
             String goodTime = "";
-            if (Objects.nonNull(airOrderVO)) {
+            if (Objects.nonNull(airOrderVO) && Objects.nonNull(airOrderVO.getOrderNo())) {
                 goodTime = DateUtils.format(airOrderVO.getGoodTime(), "MM-dd");
             }
             email.setTo(emailTo);

@@ -1803,6 +1803,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //AFTER_AFFIRM("30", "订单确认"),
         form.setAfterStatusCode(OrderEnum.AFTER_AFFIRM.getCode());
         Long affirmNum = orderInfoMapper.findOrderInfoAfterCount(form);
+        //AFTER_TRANSIT("31", "转运中"),
+        form.setAfterStatusCode(OrderEnum.AFTER_TRANSIT.getCode());
+        Long transitNum = orderInfoMapper.findOrderInfoAfterCount(form);
+
         //AFTER_SIGNED("40", "已签收"),
         form.setAfterStatusCode(OrderEnum.AFTER_SIGNED.getCode());
         Long signedNum = orderInfoMapper.findOrderInfoAfterCount(form);
@@ -1819,6 +1823,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         totalMap.put("placedNum", placedNum);//已下单
         totalMap.put("receivedNum", receivedNum);//已收货
         totalMap.put("affirmNum", affirmNum);//订单确认 *后端状态
+        totalMap.put("transitNum", transitNum);//转运中
         totalMap.put("signedNum", signedNum);//已签收
         totalMap.put("finishNum", finishNum);//已完成
         totalMap.put("cancelNum", cancelNum);//已取消

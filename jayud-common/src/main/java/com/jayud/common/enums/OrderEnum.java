@@ -28,6 +28,7 @@ public enum OrderEnum {
     AFTER_PLACED("10", "已下单"),
     AFTER_RECEIVED("20", "已收货"),
     AFTER_AFFIRM("30", "订单确认"),
+    AFTER_TRANSIT("31", "转运中"),
     AFTER_SIGNED("40", "已签收"),
     AFTER_FINISH("50", "已完成"),
     AFTER_CANCEL("-1", "已取消"),

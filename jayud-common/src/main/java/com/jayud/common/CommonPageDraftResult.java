@@ -19,7 +19,7 @@ public class CommonPageDraftResult<T> extends CommonPageResult<T>{
     private Long placedNum;
     @ApiModelProperty(value = "已收货")
     private Long receivedNum;
-    @ApiModelProperty(value = "转运中") // * 前端状态
+    @ApiModelProperty(value = "转运中") // * 前端状态 后端状态
     private Long transitNum;
     @ApiModelProperty(value = "已签收")
     private Long signedNum;

@@ -143,5 +143,8 @@ public class CustomerGoodsForm {
     @ApiModelProperty(value = "出口国家(country code)")
     private String exportCountry;
 
+    @ApiModelProperty(value = "规格型号")
+    private String specification;
+
 
 }

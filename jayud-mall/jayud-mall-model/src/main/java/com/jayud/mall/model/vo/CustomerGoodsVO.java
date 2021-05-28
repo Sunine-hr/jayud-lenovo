@@ -140,6 +140,9 @@ public class CustomerGoodsVO {
     @ApiModelProperty(value = "出口国家(country code)")
     private String exportCountry;
 
+    @ApiModelProperty(value = "规格型号")
+    private String specification;
+
     /*客户名称*/
     @ApiModelProperty(value = "客户名称", position = 29)
     @JSONField(ordinal = 29)

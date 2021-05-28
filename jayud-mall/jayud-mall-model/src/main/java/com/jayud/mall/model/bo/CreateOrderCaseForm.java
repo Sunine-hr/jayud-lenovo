@@ -48,6 +48,10 @@ public class CreateOrderCaseForm {
     @NotNull(message = "高不能为空")
     private BigDecimal height;
 
+    //扩展
+    @ApiModelProperty(value = "Amazon Reference ID(亚马逊引用ID)")
+    private String amazonReferenceId;
+
     @ApiModelProperty(value = "扩展单号(FBA)", position = 6)
     @JSONField(ordinal = 6)
     @NotNull(message = "扩展单号(FBA)不能为空")

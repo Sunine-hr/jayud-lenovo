@@ -114,6 +114,12 @@ public class OrderCaseVO {
     @JSONField(ordinal = 23)
     private String remark;
 
+    @ApiModelProperty(value = "Amazon Reference ID(亚马逊引用ID)")
+    private String amazonReferenceId;
+
+    @ApiModelProperty(value = "扩展单号")
+    private String extensionNumber;
+
     /*客户预报长宽高*/
     @ApiModelProperty(value = "客户预报长宽高", position = 24)
     @JSONField(ordinal = 24)

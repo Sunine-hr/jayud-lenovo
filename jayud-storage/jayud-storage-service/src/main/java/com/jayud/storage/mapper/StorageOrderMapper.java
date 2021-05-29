@@ -10,6 +10,8 @@ import com.jayud.storage.model.vo.StorageOrderVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+
 /**
  * <p>
  *  Mapper 接口
@@ -21,4 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface StorageOrderMapper extends BaseMapper<StorageOrder> {
 
     IPage<StorageOrderVO> findByPage(@Param("page") Page<StockVO> page, @Param("form") QueryOrderStorageForm form);
+
+    List<StorageOrderVO> getList(@Param("orderNo")String orderNo, @Param("outOrderNo")String outOrderNo, @Param("customerName")String customerName, @Param("month")String month);
 }

@@ -63,7 +63,7 @@
         <foreach collection="skuList" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
-        and wg.warehousingBatchNo IN
+        and wg.warehousing_batch_no IN
         <foreach collection="warehousingBatchNos" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>

@@ -116,6 +116,7 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
         return locationCodeVOS;
     }
 
+
     private List<String> createLocationCode(WarehouseAreaShelvesLocation warehouseAreaShelvesLocation){
 
         List<InitComboxSVO> data = omsClient.initDictNameByDictTypeCode("shelfType").getData();

@@ -29,5 +29,4 @@ public interface IWarehouseAreaShelvesLocationService extends IService<Warehouse
     List<WarehouseAreaShelvesLocationVO> getListByShelvesId(QueryWarehouseAreaShelvesLocationForm form);
 
     List<LocationCodeVO> getList();
-
 }

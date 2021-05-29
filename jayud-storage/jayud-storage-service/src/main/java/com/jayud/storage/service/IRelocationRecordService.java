@@ -22,4 +22,6 @@ public interface IRelocationRecordService extends IService<RelocationRecord> {
     List<RelocationGoodsOperationRecordFormVO> getListBySkuAndLocationCode(String sku, String locationCode);
 
     IPage<RelocationRecordVO> findByPage(QueryRelocationRecordForm form);
+
+    List<RelocationRecordVO> getList(String orderNo, String warehouseName, String areaName, String shelvesName, String sku, String startTime, String endTime);
 }

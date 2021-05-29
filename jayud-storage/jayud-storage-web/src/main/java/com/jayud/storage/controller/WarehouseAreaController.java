@@ -10,17 +10,15 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.storage.model.bo.*;
 import com.jayud.storage.model.po.WarehouseArea;
 import com.jayud.storage.model.po.WarehouseAreaShelves;
+import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
 import com.jayud.storage.model.vo.*;
 import com.jayud.storage.service.IWarehouseAreaService;
+import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
 import com.jayud.storage.service.IWarehouseAreaShelvesService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -43,6 +41,9 @@ public class WarehouseAreaController {
 
     @Autowired
     private IWarehouseAreaShelvesService warehouseAreaShelvesService;
+
+    @Autowired
+    private IWarehouseAreaShelvesLocationService warehouseAreaShelvesLocationService;
 
     @ApiOperation(value = "不分页查询list")
     @PostMapping("/findWarehouseArea")
@@ -135,6 +136,17 @@ public class WarehouseAreaController {
         return CommonResult.success(pageVO);
     }
 
+
+    @ApiOperation(value = "获取该区域下所有商品信息")
+    @GetMapping("/findGoodByWarehouseArea")
+    public CommonResult findGoodByWarehouseArea(@RequestParam("areaName") String areaName){
+        //根据区域名称获取区域信息
+        WarehouseArea warehouseAreaByAreaName = warehouseAreaService.getWarehouseAreaByAreaName(areaName);
+        //获取该区域下所有库位信息，库位下存储的所有商品信息
+//        List<WarehouseAreaShelvesLocation> warehouseAreaShelvesLocations = warehouseAreaShelvesLocationService.getListByAreaName(areaName);
+        return CommonResult.success(warehouseAreaByAreaName);
+
+    }
 
 
 }

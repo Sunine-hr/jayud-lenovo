@@ -22,14 +22,8 @@ import java.time.LocalDateTime;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="RelocationRecord对象", description="移库信息表")
-public class RelocationRecordVO extends Model<RelocationRecordVO> {
+public class RelocationRecordFormVO {
 
-    private static final long serialVersionUID = 1L;
-
-    @ApiModelProperty(value = "主键id")
-      @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
 
     @ApiModelProperty(value = "移库订单号")
     @ExcelProperty("移库订单号")
@@ -63,25 +57,18 @@ public class RelocationRecordVO extends Model<RelocationRecordVO> {
     @ExcelProperty("移库商品件数")
     private Integer number;
 
-    @ApiModelProperty(value = "0为无效，1为有效")
-    private Integer status;
-
     @ApiModelProperty(value = "创建人(登录用户)")
     @ExcelProperty("创建人")
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
     @ExcelProperty("创建时间")
-    private LocalDateTime createTime;
+    private String createTime;
 
     @ApiModelProperty(value = "备注")
     @ExcelProperty("备注")
     private String remarks;
 
 
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

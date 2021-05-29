@@ -319,9 +319,16 @@ public class ExcelUtils {
             Class<?> clz = t.getClass();
             Field[] fields = clz.getDeclaredFields();
             List<String> titleName = new ArrayList<>();
+//            for (Field field : fields) {
+//                titleName.add(field.getName());
+//                bigWriter.addHeaderAlias(field.getName(), field.getName());
+//            }
             for (Field field : fields) {
-                titleName.add(field.getName());
-                bigWriter.addHeaderAlias(field.getName(), field.getName());
+                ApiModelProperty annotation = field.getAnnotation(ApiModelProperty.class);
+                if(annotation != null){
+                    titleName.add(annotation.value());
+                    bigWriter.addHeaderAlias(field.getName(), annotation.value());
+                }
             }
             //标题写入
             bigWriter.writeHeadRow(titleName);

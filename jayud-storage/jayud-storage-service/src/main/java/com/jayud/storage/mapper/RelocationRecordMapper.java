@@ -25,4 +25,6 @@ public interface RelocationRecordMapper extends BaseMapper<RelocationRecord> {
     List<RelocationGoodsOperationRecordFormVO> getListBySkuAndLocationCode(@Param("sku") String sku, @Param("locationCode")String locationCode);
 
     IPage<RelocationRecordVO> findByPage(@Param("page")Page<StockVO> page,@Param("form")QueryRelocationRecordForm form);
+
+    List<RelocationRecordVO> getList(@Param("orderNo")String orderNo, @Param("warehouseName")String warehouseName, @Param("areaName")String areaName, @Param("shelvesName")String shelvesName, @Param("sku")String sku, @Param("startTime")String startTime, @Param("endTime")String endTime);
 }

@@ -6,6 +6,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.storage.model.bo.StorageInputOrderForm;
 import com.jayud.storage.model.bo.StorageOutOrderForm;
 import com.jayud.storage.model.bo.WarehouseGoodsForm;
+import com.jayud.storage.model.po.GoodsLocationRecord;
 import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.jayud.storage.model.po.StorageInputOrder;
 import com.jayud.storage.model.po.StorageOutOrder;
@@ -49,6 +50,9 @@ public class ExternalApiController {
 
     @Autowired
     private IStockService stockService;
+
+    @Autowired
+    private IGoodsLocationRecordService goodsLocationRecordService;
 
     @ApiOperation("创建入库订单")
     @RequestMapping(value = "/api/storage/createInOrder")
@@ -103,18 +107,21 @@ public class ExternalApiController {
     @PostMapping(value = "/isStock")
     public ApiResult isStock(@RequestBody List<WarehouseGoodsForm> warehouseGoodsForms){
         for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
-            InGoodsOperationRecord listByWarehousingBatchNoAndSku = inGoodsOperationRecordService.getListByWarehousingBatchNoAndSku(warehouseGoodsForm.getSku(), warehouseGoodsForm.getWarehousingBatchNo());
+            InGoodsOperationRecord listByWarehousingBatchNoAndSku = inGoodsOperationRecordService.getListByWarehousingBatchNoAndSku(warehouseGoodsForm.getWarehousingBatchNo(),warehouseGoodsForm.getSku());
 
             if(listByWarehousingBatchNoAndSku == null){
                 return ApiResult.error(444,"该商品没有库存");
             }
 
-            if(warehouseGoodsForm.getNumber() == null){
-                return ApiResult.error(444,"未填写件数");
+            Integer number = 0;
+            List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(listByWarehousingBatchNoAndSku.getId());
+            for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
+                number = number + goodsLocationRecord.getUnDeliveredQuantity();
             }
 
-            if(listByWarehousingBatchNoAndSku.getNumber()<warehouseGoodsForm.getNumber()){
-                return ApiResult.error(444,listByWarehousingBatchNoAndSku.getWarehousingBatchNo()+"的"+warehouseGoodsForm.getName()+"数量为"+warehouseGoodsForm.getNumber());
+
+            if(number < warehouseGoodsForm.getNumber()){
+                return ApiResult.error(444,listByWarehousingBatchNoAndSku.getWarehousingBatchNo()+"的"+warehouseGoodsForm.getName()+"数量为"+number);
             }
         }
         return ApiResult.ok();

@@ -32,13 +32,13 @@
         select id, order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, name,
         sku, specification_model specificationModel, board_number boardNumber, number,
         pcs, weight, volume, create_user createUser, create_time createTime
-        from in_goods_operation_record igor where orderId = #{id} group by sku order by createTime asc
+        from in_goods_operation_record igor where order_id = #{id} group by sku order by createTime asc
     </select>
 
     <select id="getListBySku" resultType="com.jayud.storage.model.po.InGoodsOperationRecord">
         select id, order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, name,
         sku, specification_model specificationModel, board_number boardNumber, number,
-        pcs, weight, volume from in_goods_operation_record igor where sku = #{sku} group by warehousing_batch_no
+        pcs, weight, volume from in_goods_operation_record igor where sku = #{sku} and is_warehousing = 1 group by warehousing_batch_no
     </select>
 
     <select id="getListBySkuAndLocationCode" resultType="com.jayud.storage.model.vo.InGoodsOperationRecordFormVO">

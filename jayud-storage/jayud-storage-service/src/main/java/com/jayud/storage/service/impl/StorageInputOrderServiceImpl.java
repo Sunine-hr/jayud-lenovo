@@ -432,7 +432,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
             this.baseMapper.updateById(storageInputOrder);
             this.finishStorageOrderOpt(storageInputOrder);
             this.storageProcessOptRecord(form);
-            //redisUtils.delete(storageInputOrder.getOrderNo());
+            redisUtils.set(form.getOrderNo(),form.getWarehousingBatchNo());
             return true;
         }
         if(form.getCmd().equals("end")){

@@ -6,6 +6,8 @@ import com.jayud.storage.model.po.StorageOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.storage.model.vo.StorageOrderVO;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务类
@@ -17,4 +19,8 @@ import com.jayud.storage.model.vo.StorageOrderVO;
 public interface IStorageOrderService extends IService<StorageOrder> {
 
     IPage<StorageOrderVO> findByPage(QueryOrderStorageForm form);
+
+    boolean saveStorageOrder(StorageOrder storageOrder);
+
+    List<StorageOrderVO> getList(String orderNo, String outOrderNo, String customerName, String month);
 }

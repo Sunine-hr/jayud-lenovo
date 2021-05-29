@@ -27,4 +27,5 @@ public interface WarehouseAreaShelvesLocationMapper extends BaseMapper<Warehouse
     IPage<WarehouseAreaShelvesLocationVO> findWarehouseAreaShelvesLocationByPage(@Param("page") Page<WarehouseAreaShelvesLocationVO> page, @Param("form") QueryWarehouseAreaShelvesLocationForm form);
 
     List<WarehouseAreaShelvesLocationVO> getListByShelvesId(@Param("form")QueryWarehouseAreaShelvesLocationForm form);
+
 }

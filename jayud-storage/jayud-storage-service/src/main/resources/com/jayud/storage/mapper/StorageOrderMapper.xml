@@ -35,10 +35,30 @@
                 and so.customer_name like concat('%',#{form.customerName},'%')
             </if>
             <if test="form.outOrderNo !=null and form.outOrderNo!=''">
-                and r.out_order_no like concat('%',#{form.outOrderNo},'%')
+                and so.out_order_no like concat('%',#{form.outOrderNo},'%')
             </if>
-            <if test="form.sku !=null and form.sku!=''">
-                and so.sku like concat('%',#{form.sku},'%')
+            <if test="form.month !=null and form.month!=''">
+                and so.month like concat('%',#{form.month},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="getList" resultType="com.jayud.storage.model.vo.StorageOrderVO">
+        select id, order_no orderNo, status, customer_name customerName, out_order_no outOrderNo, warehousing_batch_no warehousingBatchNo, sku, start_time startTime, end_time endTime, month, create_time createTime, remarks
+        from storage_order so
+        <where>
+            status = 1
+            <if test="orderNo !=null and orderNo!=''">
+                and so.order_no like concat('%',#{orderNo},'%')
+            </if>
+            <if test="customerName !=null and customerName!=''">
+                and so.customer_name like concat('%',#{customerName},'%')
+            </if>
+            <if test="outOrderNo !=null and outOrderNo!=''">
+                and so.out_order_no like concat('%',#{outOrderNo},'%')
+            </if>
+            <if test="month !=null and month!=''">
+                and so.month like concat('%',#{month},'%')
             </if>
         </where>
     </select>

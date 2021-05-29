@@ -78,6 +78,9 @@ public class InputStorageOutOrderForm {
     @ApiModelProperty(value = "出库商品对象集合")
     private List<AddWarehouseGoodsForm> goodsFormList;
 
+    @ApiModelProperty(value = "提交还是暂存")
+    private String cmd;
+
     /**
      * 校验创建出库子订单参数
      */

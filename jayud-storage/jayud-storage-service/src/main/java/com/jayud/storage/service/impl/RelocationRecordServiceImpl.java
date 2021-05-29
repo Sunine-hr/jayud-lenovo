@@ -36,4 +36,9 @@ public class RelocationRecordServiceImpl extends ServiceImpl<RelocationRecordMap
         IPage<RelocationRecordVO> pageInfo = this.baseMapper.findByPage(page,form);
         return pageInfo;
     }
+
+    @Override
+    public List<RelocationRecordVO> getList(String orderNo, String warehouseName, String areaName, String shelvesName, String sku, String startTime, String endTime) {
+        return this.baseMapper.getList(orderNo,warehouseName,areaName,shelvesName,sku,startTime,endTime);
+    }
 }

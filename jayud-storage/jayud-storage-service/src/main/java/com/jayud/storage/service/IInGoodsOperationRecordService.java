@@ -43,4 +43,8 @@ public interface IInGoodsOperationRecordService extends IService<InGoodsOperatio
      * @return
      */
     List<String> getWarehousingBatch(Long id);
+
+    //获取分批次获取所有未出库数据
+    List<InGoodsOperationRecord> getList1();
+
 }

@@ -1518,8 +1518,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
 
                 if (this.queryEditOrderCondition(storageOutOrderForm.getStatus(),
-                        inputMainOrderForm.getStatus(), SubOrderSignEnum.CCI.getSignOne(), form)) {
+                        inputMainOrderForm.getStatus(), SubOrderSignEnum.CCE.getSignOne(), form)) {
                     storageOutOrderForm.setMainOrderNo(mainOrderNo);
+                    storageOutOrderForm.setCmd(form.getCmd());
                     storageOutOrderForm.setCreateUser(UserOperator.getToken());
                     for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageOutOrderForm.getGoodsFormList()) {
                         addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));

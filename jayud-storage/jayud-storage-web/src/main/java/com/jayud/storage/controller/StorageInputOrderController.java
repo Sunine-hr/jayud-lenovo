@@ -342,9 +342,9 @@ public class StorageInputOrderController {
         //校验参数
         form.checkProcessOpt(statusEnum);
         form.setStatus(statusEnum.getCode());
-        redisUtils.set(form.getOrderNo(),form.getWarehousingBatchNo());
 
-        if(form.getStatus().equals(OrderStatusEnum.CCI_2.getCode()) && form.getCmd().equals("end")){
+
+        if(form.getStatus().equals(OrderStatusEnum.CCI_2.getCode()) && form.getCmd().equals("end") && form.getIsOver().equals("true")){
             for (WarehouseGoodsForm warehouseGoodsForm : form.getWarehouseGoodsForms()) {
                 List<InGoodsOperationRecord> list = inGoodsOperationRecordService.getList(warehouseGoodsForm.getOrderId(), warehouseGoodsForm.getOrderNo(), warehouseGoodsForm.getSku());
                 Integer number = 0;
@@ -546,14 +546,17 @@ public class StorageInputOrderController {
         if(form.getInGoodsOperationRecords().size()<=0){
             return CommonResult.error(444,"入库件数不准确");
         }
-        for (InGoodsOperationRecordForm inGoodsOperationRecord : form.getInGoodsOperationRecords()) {
-            List<GoodsLocationRecordForm> goodsLocationRecordForms = inGoodsOperationRecord.getGoodsLocationRecordForms();
-            for (GoodsLocationRecordForm goodsLocationRecordForm : goodsLocationRecordForms) {
-                if(goodsLocationRecordForm.getNumber() != null && goodsLocationRecordForm.getKuCode() != null){
-                    totalNumber1 = totalNumber1 + goodsLocationRecordForm.getNumber();
+        if(CollectionUtils.isNotEmpty(form.getInGoodsOperationRecords())){
+            for (InGoodsOperationRecordForm inGoodsOperationRecord : form.getInGoodsOperationRecords()) {
+                List<GoodsLocationRecordForm> goodsLocationRecordForms = inGoodsOperationRecord.getGoodsLocationRecordForms();
+                for (GoodsLocationRecordForm goodsLocationRecordForm : goodsLocationRecordForms) {
+                    if(goodsLocationRecordForm.getNumber() != null && goodsLocationRecordForm.getKuCode() != null){
+                        totalNumber1 = totalNumber1 + goodsLocationRecordForm.getNumber();
+                    }
                 }
             }
         }
+
         if(totalNumber == totalNumber1){
             return CommonResult.success();
         }
@@ -662,8 +665,8 @@ public class StorageInputOrderController {
     @ApiOperation(value = "获取入仓批次号下拉列表")
     @PostMapping(value = "/getWarehousingBatch")
     public CommonResult getWarehousingBatch(@RequestBody Map<String,Object> map) {
-        Long id = MapUtil.getLong(map, "id");
-        List<String> strings = inGoodsOperationRecordService.getWarehousingBatch(id);
+        Long orderId = MapUtil.getLong(map, "orderId");
+        List<String> strings = inGoodsOperationRecordService.getWarehousingBatch(orderId);
         return CommonResult.success(strings);
     }
 

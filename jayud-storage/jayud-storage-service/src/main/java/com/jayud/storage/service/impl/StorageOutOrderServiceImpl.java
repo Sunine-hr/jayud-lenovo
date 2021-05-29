@@ -16,17 +16,11 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.storage.feign.OauthClient;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.*;
-import com.jayud.storage.model.po.GoodsLocationRecord;
-import com.jayud.storage.model.po.StorageInputOrder;
-import com.jayud.storage.model.po.StorageOutOrder;
+import com.jayud.storage.model.po.*;
 import com.jayud.storage.mapper.StorageOutOrderMapper;
-import com.jayud.storage.model.po.WarehouseGoods;
 import com.jayud.storage.model.vo.*;
-import com.jayud.storage.service.IGoodsLocationRecordService;
-import com.jayud.storage.service.IStockService;
-import com.jayud.storage.service.IStorageOutOrderService;
+import com.jayud.storage.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.storage.service.IWarehouseGoodsService;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,6 +57,9 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     @Autowired
     private IStockService stockService;
 
+    @Autowired
+    private IStorageOrderService storageOrderService;
+
     @Override
     public String createOrder(StorageOutOrderForm storageOutOrderForm) {
         //无论驳回还是草稿在提交，都先删除原来的商品信息
@@ -96,10 +93,14 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
                 convert.setFilePath(StringUtils.getFileStr(warehouseGood.getTakeFiles()));
                 warehouseGoods.add(convert);
 
-                //出库订单创建成功，锁定库存
-                boolean result = stockService.lockInInventory(convert);
-                if(!result){
-                    log.warn(convert.getName() + "锁定库存失败");
+                //出库订单创建成功，锁定库存  如果暂存，不锁定库存
+                if(storageOutOrderForm.getCmd().equals("submit")){
+                    if(convert.getNumber() != null || convert.getPcs() != null){
+                        boolean result = stockService.lockInInventory(convert);
+                        if(!result){
+                            log.warn(convert.getName() + "锁定库存失败");
+                        }
+                    }
                 }
             }
             warehouseGoodsService.saveOrUpdateBatch(warehouseGoods);
@@ -207,7 +208,6 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     @Override
     public void warehouseReceipt(StorageOutProcessOptForm form) {
         form.setOperatorUser(UserOperator.getToken());
-        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageOutOrder storageOutOrder = new StorageOutOrder();
         storageOutOrder.setOrderTaker(form.getOperatorUser());
         storageOutOrder.setReceivingOrdersDate(form.getOperatorTime());
@@ -371,6 +371,22 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
 
             //完成订单状态
             finishStorageOrderOpt(storageOutOrder);
+
+            //出仓成功，生成存仓订单
+            List<OutWarehouseGoodsForm> outWarehouseGoodsForms = form.getOutWarehouseGoodsForms();
+            for (OutWarehouseGoodsForm outWarehouseGoodsForm : outWarehouseGoodsForms) {
+                StorageOrder storageOrder = new StorageOrder();
+                storageOrder.setOutOrderNo(form.getOrderNo());
+                storageOrder.setSku(outWarehouseGoodsForm.getSku());
+                storageOrder.setWarehousingBatchNo(outWarehouseGoodsForm.getWarehousingBatchNo());
+                storageOrder.setEndTime(storageOutOrder.getUpdateTime());
+                boolean b2 = this.storageOrderService.saveStorageOrder(storageOrder);
+                if(!b2){
+                    log.warn(storageOrder.getSku() +"添加存仓订单失败");
+                }
+            }
+
+
         }
         if(form.getCmd().equals("fail")){
             form.setDescription("确认出库，审核不通过");

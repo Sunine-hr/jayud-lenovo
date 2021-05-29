@@ -71,4 +71,7 @@ public class StorageOutOrderForm extends Model<StorageOutOrderForm> {
     @ApiModelProperty(value = "入库商品对象集合")
     private List<WarehouseGoodsForm> goodsFormList;
 
+    @ApiModelProperty(value = "提交还是暂存")
+    private String cmd;
+
 }

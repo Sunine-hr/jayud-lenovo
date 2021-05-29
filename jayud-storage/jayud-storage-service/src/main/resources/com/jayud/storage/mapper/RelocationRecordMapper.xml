@@ -31,7 +31,7 @@
     </select>
 
     <select id="findByPage" resultType="com.jayud.storage.model.vo.RelocationRecordVO">
-        select id, order_no orderNo, warehouse_name warehouseName, area_name areaName, shelves_name shelvesName, old_location_code oldLocationCode, new_location_code newLocationCode, sku, number, status, create_user, create_time, remarks
+        select id, order_no orderNo, warehouse_name warehouseName, area_name areaName, shelves_name shelvesName, old_location_code oldLocationCode, new_location_code newLocationCode, sku, number, status, create_user createUser, create_time createTime, remarks
         from relocation_record r
         <where>
         status = 1
@@ -39,13 +39,13 @@
                 and r.order_no like concat('%',#{form.orderNo},'%')
             </if>
             <if test="form.warehouseName !=null and form.warehouseName!=''">
-                and r.warehouseName like concat('%',#{form.warehouseName},'%')
+                and r.warehouse_name like concat('%',#{form.warehouseName},'%')
             </if>
             <if test="form.shelvesName !=null and form.shelvesName!=''">
-                and r.shelvesName like concat('%',#{form.shelvesName},'%')
+                and r.shelves_name like concat('%',#{form.shelvesName},'%')
             </if>
             <if test="form.areaName !=null and form.areaName!=''">
-                and r.areaName like concat('%',#{form.areaName},'%')
+                and r.area_name like concat('%',#{form.areaName},'%')
             </if>
             <if test="form.sku !=null and form.sku!=''">
                 and r.sku like concat('%',#{form.sku},'%')
@@ -55,6 +55,35 @@
             </if>
             <if test="form.endTime !=null and form.endTime!=''">
                 and r.create_time <![CDATA[<= ]]> #{form.endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="getList" resultType="com.jayud.storage.model.vo.RelocationRecordVO">
+        select id, order_no orderNo, warehouse_name warehouseName, area_name areaName, shelves_name shelvesName, old_location_code oldLocationCode, new_location_code newLocationCode, sku, number, status, create_user createUser, create_time createTime, remarks
+        from relocation_record r
+        <where>
+            status = 1
+            <if test="orderNo !=null and orderNo!=''">
+                and r.order_no like concat('%',#{orderNo},'%')
+            </if>
+            <if test="warehouseName !=null and warehouseName!=''">
+                and r.warehouse_name like concat('%',#{warehouseName},'%')
+            </if>
+            <if test="shelvesName !=null and shelvesName!=''">
+                and r.shelves_name like concat('%',#{shelvesName},'%')
+            </if>
+            <if test="areaName !=null and areaName!=''">
+                and r.area_name like concat('%',#{areaName},'%')
+            </if>
+            <if test="sku !=null and sku!=''">
+                and r.sku like concat('%',#{sku},'%')
+            </if>
+            <if test="startTime !=null and startTime!=''">
+                and r.create_time <![CDATA[>= ]]> #{startTime}
+            </if>
+            <if test="endTime !=null and endTime!=''">
+                and r.create_time <![CDATA[<= ]]> #{endTime}
             </if>
         </where>
     </select>

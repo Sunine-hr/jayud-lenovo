@@ -146,11 +146,18 @@ public class StockController {
         //获取移库操作记录
         List<RelocationGoodsOperationRecordFormVO> relocationGoodsOperationRecordFormVOS = relocationRecordService.getListBySkuAndLocationCode(sku,locationCode);
         //获取调整下架操作记录
+        List<AdjustOffShelfRecordFormVO> adjustOffShelfRecordFormVOS = new ArrayList<>();
+
         //获取调整上架操作记录
+        List<AdjustShelfRecordFormVO> adjustShelfRecordFormVOS = new ArrayList<>();
+
         StockRecordVO stockRecordVO = ConvertUtil.convert(stockLocationNumberVO, StockRecordVO.class);
         stockRecordVO.setInGoodsOperationRecordFormVOS(inGoodsOperationRecordFormVOS);
         stockRecordVO.setOutGoodsOperationRecordFormVOS(outGoodsOperationRecordFormVOS);
         stockRecordVO.setRelocationGoodsOperationRecordFormVOS(relocationGoodsOperationRecordFormVOS);
+        stockRecordVO.setAdjustOffShelfRecordFormVOS(adjustOffShelfRecordFormVOS);
+        stockRecordVO.setAdjustShelfRecordFormVOS(adjustShelfRecordFormVOS);
+
         return CommonResult.success(stockRecordVO);
     }
 

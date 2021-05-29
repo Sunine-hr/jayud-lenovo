@@ -62,14 +62,13 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         queryWrapper.eq("specification_model",stock.getSpecificationModel());
         Stock stock1 = this.getOne(queryWrapper);
         if(stock1!=null){
-            stock1.setAvailableStock(stock1.getAvailableStock()+stock.getAvailableStock());
+            stock1.setAvailableStock(stock1.getAvailableStock() + stock.getAvailableStock());
             boolean b = this.saveOrUpdate(stock1);
             if(!b){
                 return false;
             }
             return true;
         }else{
-//            stock.setCustomerId(good.getCustomerId());
             stock.setCustomerId(good.getCustomerId());
             stock.setCreateUser(UserOperator.getToken());
             stock.setCreateTime(LocalDateTime.now());
@@ -107,7 +106,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("sku",convert.getSku());
         Stock stock = this.baseMapper.selectOne(queryWrapper);
-        stock.setAvailableStock(stock.getAvailableStock()-convert.getNumber());
+        stock.setAvailableStock(stock.getAvailableStock() - convert.getNumber());
         stock.setLockStock(convert.getNumber());
         boolean b = this.saveOrUpdate(stock);
         if(!b){

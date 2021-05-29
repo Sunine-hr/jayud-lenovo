@@ -1,14 +1,18 @@
 package com.jayud.storage.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.storage.model.po.GoodsLocationRecord;
 import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.jayud.storage.mapper.InGoodsOperationRecordMapper;
 import com.jayud.storage.model.vo.InGoodsOperationRecordFormVO;
 import com.jayud.storage.model.vo.InGoodsOperationRecordNumberVO;
+import com.jayud.storage.service.IGoodsLocationRecordService;
 import com.jayud.storage.service.IInGoodsOperationRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +25,9 @@ import java.util.List;
  */
 @Service
 public class InGoodsOperationRecordServiceImpl extends ServiceImpl<InGoodsOperationRecordMapper, InGoodsOperationRecord> implements IInGoodsOperationRecordService {
+
+    @Autowired
+    private IGoodsLocationRecordService goodsLocationRecordService;
 
     @Override
     public List<InGoodsOperationRecord> getList(Long id, String orderNo,String sku) {
@@ -77,6 +84,25 @@ public class InGoodsOperationRecordServiceImpl extends ServiceImpl<InGoodsOperat
     @Override
     public List<String> getWarehousingBatch(Long id) {
         return this.baseMapper.getWarehousingBatch(id);
+    }
+
+    @Override
+    public List<InGoodsOperationRecord> getList1() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status",1);
+        List<InGoodsOperationRecord> list = this.baseMapper.selectList(queryWrapper);
+        List<InGoodsOperationRecord> list1 = new ArrayList<>();
+        for (InGoodsOperationRecord inGoodsOperationRecord : list) {
+            List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecord.getId());
+            Integer number = 0;
+            for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
+                number = number + goodsLocationRecord.getUnDeliveredQuantity();
+            }
+            if(number>0){
+                list1.add(inGoodsOperationRecord);
+            }
+        }
+        return list1;
     }
 
 

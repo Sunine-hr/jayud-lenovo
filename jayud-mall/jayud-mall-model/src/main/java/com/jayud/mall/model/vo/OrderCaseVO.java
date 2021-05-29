@@ -168,7 +168,7 @@ public class OrderCaseVO {
     @ApiModelProperty(value = "材积重", position = 33)
     private BigDecimal volumeWeight;
 
-    /* 收费重 ，比较 实际重 和 材积重 的大小，谁大取谁 */
+    /* 收费重，谁大取谁 */
     @ApiModelProperty(value = "收费重", position = 20)
     private BigDecimal chargeWeight;
 

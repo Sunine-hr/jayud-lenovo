@@ -73,22 +73,52 @@ public class OrderCaseServiceImpl extends ServiceImpl<OrderCaseMapper, OrderCase
         BigDecimal bubbleCoefficient = (offerInfoVO.getBubbleCoefficient() == null) ? new BigDecimal("6000") : offerInfoVO.getBubbleCoefficient();
         //最小重量(默认12) 最小收费重
         BigDecimal minimumQuantity = (offerInfoVO.getMinimumQuantity() == null) ? new BigDecimal("12") : offerInfoVO.getMinimumQuantity();
+        //计费重单位(1柜 2KG 3CBM 4车)
+        Integer billingWeightUnit = offerInfoVO.getBillingWeightUnit();
+        //计算公式 1材积->重量：长*高*宽/计泡系数(单位KG)  2重量->材积：实重/计泡系数(单位CBM)
+        Integer designFormulas = offerInfoVO.getDesignFormulas() == null ? 1 : offerInfoVO.getDesignFormulas();
 
         //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
         BigDecimal volume = length.multiply(width).multiply(height).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
-        //材积重(CBM) = (长cm * 宽cm * 高cm) / 计泡系数
+        //材积重 = (长cm * 宽cm * 高cm) / 计泡系数
         BigDecimal volumeWeight = length.multiply(width).multiply(height).divide(bubbleCoefficient,3, BigDecimal.ROUND_HALF_UP);
         //收费重 ，比较实际重和材积重的大小，谁大取谁 chargeWeight
         BigDecimal chargeWeight = new BigDecimal("0");
-        if(weight.compareTo(volumeWeight) == 1){
-            //weight > volumeWeight
-            chargeWeight = weight;
-        }else{
-            chargeWeight = volumeWeight;
-        }
-        if(chargeWeight.compareTo(minimumQuantity) < 0){
-            // chargeWeight  < minimumQuantity   收费重  < 最小收费重
-            chargeWeight = minimumQuantity;
+        //计算值
+        BigDecimal calcValue = new BigDecimal("0");
+        if(designFormulas.equals(1)){
+            //1材积->重量：长cm*高cm*宽cm/计泡系数(单位KG)   以重量KG为计费重单位，计算数据
+            BigDecimal calcWeight = length.multiply(width).multiply(height).divide(bubbleCoefficient, 2, BigDecimal.ROUND_HALF_UP); // KG 重量，也就是千克
+            calcValue = calcWeight;
+
+            //比较重量KG，谁大取谁，作为计费重
+            if(weight.compareTo(calcValue) == 1){
+                //weight > calcValue
+                chargeWeight = weight;
+            }else{
+                chargeWeight = calcValue;
+            }
+            if(chargeWeight.compareTo(minimumQuantity) < 0){
+                // chargeWeight  < minimumQuantity   收费重  < 最小收费重
+                chargeWeight = minimumQuantity;
+            }
+        }else if(designFormulas.equals(2)){
+            //2重量->材积：实重/计泡系数(单位CBM)      以材积CBM为计费单位，计算数据
+            BigDecimal calcVolume = weight.divide(bubbleCoefficient,3, BigDecimal.ROUND_HALF_UP); // CBM 体积，也就是方
+            calcValue = calcVolume;
+
+            //比较体积CBM，谁大取谁，作为计费重
+            if(volume.compareTo(calcValue) == 1){
+                //volume > calcValue
+                chargeWeight = volume;
+            }else{
+                chargeWeight = calcValue;
+            }
+            BigDecimal minimumVolume = minimumQuantity.divide(bubbleCoefficient,3, BigDecimal.ROUND_HALF_UP); // CBM 体积，也就是方
+            if(chargeWeight.compareTo(minimumVolume) < 0){
+                // chargeWeight  < minimumQuantity   收费重  < 最小收费重
+                chargeWeight = minimumQuantity;
+            }
         }
 
         List<OrderCaseVO> list = new ArrayList<>();
@@ -132,35 +162,64 @@ public class OrderCaseServiceImpl extends ServiceImpl<OrderCaseMapper, OrderCase
         BigDecimal bubbleCoefficient = (offerInfoVO.getBubbleCoefficient() == null) ? new BigDecimal("6000") : offerInfoVO.getBubbleCoefficient();
         //最小重量(默认12) 最小收费重
         BigDecimal minimumQuantity = (offerInfoVO.getMinimumQuantity() == null) ? new BigDecimal("12") : offerInfoVO.getMinimumQuantity();
+        //计费重单位(1柜 2KG 3CBM 4车)
+        Integer billingWeightUnit = offerInfoVO.getBillingWeightUnit();
+        //计算公式 1材积->重量：长*高*宽/计泡系数(单位KG)  2重量->材积：实重/计泡系数(单位CBM)
+        Integer designFormulas = offerInfoVO.getDesignFormulas() == null ? 1 : offerInfoVO.getDesignFormulas();
+
 
         for (int i=0; i<orderCaseVOList.size(); i++){
             OrderCaseVO orderCaseVO = orderCaseVOList.get(i);
-            BigDecimal weight = orderCaseVO.getAsnWeight();//重
+            BigDecimal weight = orderCaseVO.getAsnWeight();//重  实际重量
             BigDecimal length = orderCaseVO.getAsnLength();//长
             BigDecimal width = orderCaseVO.getAsnWidth();//宽
             BigDecimal height = orderCaseVO.getAsnHeight();//高
 
             //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
             BigDecimal volume = length.multiply(width).multiply(height).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
-            //材积重(CBM) = (长cm * 宽cm * 高cm) / 计泡系数
+            //材积重 = (长cm * 宽cm * 高cm) / 计泡系数
             BigDecimal volumeWeight = length.multiply(width).multiply(height).divide(bubbleCoefficient,3, BigDecimal.ROUND_HALF_UP);
             //收费重 ，比较实际重和材积重的大小，谁大取谁 chargeWeight
             BigDecimal chargeWeight = new BigDecimal("0");
-            if(weight.compareTo(volumeWeight) == 1){
-                //weight > volumeWeight
-                chargeWeight = weight;
-            }else{
-                chargeWeight = volumeWeight;
-            }
-            if(chargeWeight.compareTo(minimumQuantity) < 0){
-                // chargeWeight  < minimumQuantity   收费重  < 最小收费重
-                chargeWeight = minimumQuantity;
-            }
+            //计算值
+            BigDecimal calcValue = new BigDecimal("0");
+            if(designFormulas.equals(1)){
+                //1材积->重量：长cm*高cm*宽cm/计泡系数(单位KG)   以重量KG为计费重单位，计算数据
+                BigDecimal calcWeight = length.multiply(width).multiply(height).divide(bubbleCoefficient, 2, BigDecimal.ROUND_HALF_UP); // KG 重量，也就是千克
+                calcValue = calcWeight;
 
+                //比较重量KG，谁大取谁，作为计费重
+                if(weight.compareTo(calcValue) == 1){
+                    //weight > calcValue
+                    chargeWeight = weight;
+                }else{
+                    chargeWeight = calcValue;
+                }
+                if(chargeWeight.compareTo(minimumQuantity) < 0){
+                    // chargeWeight  < minimumQuantity   收费重  < 最小收费重
+                    chargeWeight = minimumQuantity;
+                }
+            }else if(designFormulas.equals(2)){
+                //2重量->材积：实重/计泡系数(单位CBM)      以材积CBM为计费单位，计算数据
+                BigDecimal calcVolume = weight.divide(bubbleCoefficient,3, BigDecimal.ROUND_HALF_UP); // CBM 体积，也就是方
+                calcValue = calcVolume;
+
+                //比较体积CBM，谁大取谁，作为计费重
+                if(volume.compareTo(calcValue) == 1){
+                    //volume > calcValue
+                    chargeWeight = volume;
+                }else{
+                    chargeWeight = calcValue;
+                }
+                BigDecimal minimumVolume = minimumQuantity.divide(bubbleCoefficient,3, BigDecimal.ROUND_HALF_UP); // CBM 体积，也就是方
+                if(chargeWeight.compareTo(minimumVolume) < 0){
+                    // chargeWeight  < minimumQuantity   收费重  < 最小收费重
+                    chargeWeight = minimumQuantity;
+                }
+            }
             orderCaseVO.setAsnVolume(volume);//重量
             orderCaseVO.setVolumeWeight(volumeWeight);//材积重
             orderCaseVO.setChargeWeight(chargeWeight);//收费重
-
         }
         return orderCaseVOList;
     }

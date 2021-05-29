@@ -38,6 +38,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -217,19 +218,26 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     public List<SupplierInfo> getApprovedSupplier(String... fields) {
         QueryWrapper<SupplierInfo> condition = new QueryWrapper<>();
         if (fields != null) {
+            condition.lambda().select(SupplierInfo::getId);
             condition.select(fields);
         }
         condition.lambda().eq(SupplierInfo::getStatus, StatusEnum.ENABLE.getCode());
         List<SupplierInfo> supplierInfos = this.baseMapper.selectList(condition);
+        List<Long> ids = supplierInfos.stream().map(SupplierInfo::getId).collect(Collectors.toList());
         //查询所有审核通过的供应商
         List<SupplierInfo> tmp = new ArrayList<>();
+        //审核记录
+        List<AuditInfo> list = this.auditInfoService.getAuditInfoLatestsByExtIds(ids, AuditTypeDescEnum.ONE.getTable());
+        Map<Long, AuditInfo> auditInfoMap = list.stream().collect(Collectors.toMap(AuditInfo::getExtId, e -> e));
+
         for (SupplierInfo supplierInfo : supplierInfos) {
-            AuditInfo info = this.auditInfoService.getAuditInfoLatestByExtId(supplierInfo.getId()
-                    , AuditTypeDescEnum.ONE.getTable());
-            if (info == null) {
+//            AuditInfo info = this.auditInfoService.getAuditInfoLatestByExtId(supplierInfo.getId()
+//                    , AuditTypeDescEnum.ONE.getTable());
+            AuditInfo auditInfo = auditInfoMap.get(supplierInfo.getId());
+            if (auditInfo == null) {
                 continue;
             }
-            if (AuditStatusEnum.SUCCESS.getCode().equals(info.getAuditStatus())) {
+            if (AuditStatusEnum.SUCCESS.getCode().equals(auditInfo.getAuditStatus())) {
                 tmp.add(supplierInfo);
             }
         }

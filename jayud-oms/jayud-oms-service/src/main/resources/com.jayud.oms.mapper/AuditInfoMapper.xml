@@ -41,10 +41,29 @@
 
     </select>
 
+    <select id="getLatestsByExtIds" resultType="com.jayud.oms.model.po.AuditInfo">
+        select
+        a.id, ext_id, audit_type_desc, audit_status, audit_comment, audit_user,
+        created_user, audit_time, created_time,status_file,
+        status_file_name,ext_desc
+        from audit_info a,
+        (select max(id) id from audit_info
+        where ext_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and
+        ext_desc=#{tableDesc} group by ext_id) tmp
+        <where>
+            a.id=tmp.id
+        </where>
+
+    </select>
+
 
     <select id="getByExtUniqueFlag" resultType="java.util.Map">
         select a.ext_unique_flag extUniqueFlag,a.audit_comment auditComment from
-        (select  max(ai.id) id from audit_info ai
+        (select max(ai.id) id from audit_info ai
         <where>
             ai.ext_unique_flag in
             <foreach collection="extUniqueFlags" item="item" open="(" separator="," close=")">

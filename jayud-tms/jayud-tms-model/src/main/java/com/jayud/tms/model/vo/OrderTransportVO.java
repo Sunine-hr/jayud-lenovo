@@ -2,13 +2,17 @@ package com.jayud.tms.model.vo;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.xmlbeans.UserType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,26 +143,26 @@ public class OrderTransportVO {
     private String takeTimeStr;
 
     //提供货信息
-    @ApiModelProperty(value = "省")//提货
-    private String stateName1;
-
-    @ApiModelProperty(value = "市")
-    private String cityName1;
-
-    @ApiModelProperty(value = "详细地址")
-    private String address1;
+//    @ApiModelProperty(value = "省")//提货
+//    private String stateName1;
+//
+//    @ApiModelProperty(value = "市")
+//    private String cityName1;
+//
+//    @ApiModelProperty(value = "详细地址")
+//    private String address1;
 
     @ApiModelProperty(value = "提货完整地址")
     private String entireAddress1;
 
-    @ApiModelProperty(value = "省")//送货
-    private String stateName2;
-
-    @ApiModelProperty(value = "市")
-    private String cityName2;
-
-    @ApiModelProperty(value = "详细地址")
-    private String address2;
+//    @ApiModelProperty(value = "省")//送货
+//    private String stateName2;
+//
+//    @ApiModelProperty(value = "市")
+//    private String cityName2;
+//
+//    @ApiModelProperty(value = "详细地址")
+//    private String address2;
 
     @ApiModelProperty(value = "送货完整地址")
     private String entireAddress2;
@@ -172,6 +176,9 @@ public class OrderTransportVO {
 
     @ApiModelProperty(value = "商品信息")
     private String goodsInfo;
+
+    @ApiModelProperty(value = "中转仓库id")
+    private Long warehouseInfoId;
 
     @ApiModelProperty(value = "中转仓库")
     private String warehouseName;
@@ -204,39 +211,16 @@ public class OrderTransportVO {
     private String paymentCostStatus;
 
     @ApiModelProperty(value = "标识")
-    private String mark="zgys";
+    private String mark = "zgys";
 
-//    public String getEntireAddress1() {
-////        String stateName1 = this.stateName1;
-////        String cityName1 = this.cityName1;
-//        String address1 = this.address1;
-////        if (StringUtil.isNullOrEmpty(this.stateName1)) {
-////            stateName1 = "";
-////        }
-////        if (StringUtil.isNullOrEmpty(this.cityName1)) {
-////            cityName1 = "";
-////        }
-//        if (StringUtil.isNullOrEmpty(this.address1)) {
-//            address1 = "";
-//        }
-//        return this.entireAddress1 = address1;
-//    }
+    @ApiModelProperty(value = "是否虚拟仓库")
+    @JsonIgnore
+    private Boolean isVirtual;
 
-//    public String getEntireAddress2() {
-//        String stateName2 = this.stateName2;
-//        String cityName2 = this.cityName2;
-//        String address2 = this.address2;
-//        if (StringUtil.isNullOrEmpty(this.stateName2)) {
-//            stateName2 = "";
-//        }
-//        if (StringUtil.isNullOrEmpty(this.cityName2)) {
-//            cityName2 = "";
-//        }
-//        if (StringUtil.isNullOrEmpty(this.address2)) {
-//            address2 = "";
-//        }
-//        return this.entireAddress2 = stateName2 + cityName2 + address2;
-//    }
+    @ApiModelProperty(value = "中转仓库详细地址")
+    @JsonIgnore
+    private String warehouseAddr;
+
 
     /**
      * 组装商品信息
@@ -378,5 +362,54 @@ public class OrderTransportVO {
         } else {
             this.paymentCostStatus = "未录入";
         }
+    }
+
+    public void doFilterData(String accountType) {
+        switch (UserTypeEnum.getEnum(accountType)) {
+            case EMPLOYEE_TYPE:
+                break;
+            case CUSTOMER_TYPE:
+                break;
+            case SUPPLIER_TYPE:
+                this.customerName = this.subLegalName;
+                this.paymentCostStatus = null;
+                this.subLegalName = null;
+                this.legalName = null;
+                //送货地址处理
+                this.shippingAddressHandle();
+                break;
+        }
+    }
+
+    /**
+     * 送货地址处理
+     * 多个地址并且不是虚拟仓,展示中转仓地址
+     */
+    private void shippingAddressHandle() {
+        if (this.entireAddress2.length() > 1) {
+            if (this.isVirtual == null || !this.isVirtual) {
+                this.entireAddress2 = this.warehouseAddr;
+            }
+        }
+
+    }
+
+    /**
+     * 组装中转仓库地址
+     *
+     * @param warehouseMap
+     */
+    public void assemblyWarehouse(Map<Long, Map<String, Object>> warehouseMap) {
+        if (CollectionUtil.isEmpty(warehouseMap)) {
+            return;
+        }
+        Object tmp = warehouseMap.get(this.warehouseInfoId);
+        if (tmp == null) {
+            return;
+        }
+        JSONObject jsonObject = new JSONObject(tmp);
+        this.warehouseName = jsonObject.getStr("warehouseName");
+        this.isVirtual = jsonObject.getBool("isVirtual");
+        this.warehouseAddr = jsonObject.getStr("address");
     }
 }

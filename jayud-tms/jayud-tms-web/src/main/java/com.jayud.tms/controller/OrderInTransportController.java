@@ -99,7 +99,8 @@ public class OrderInTransportController {
         if (CommonConstant.COMFIRM_ORDER.equals(form.getCmd())) {//确认接单
             orderTransport.setStatus(OrderStatusEnum.TMS_T_1.getCode());
             orderTransport.setJiedanTime(LocalDateTime.now());
-            orderTransport.setJiedanUser(form.getOperatorUser());
+            orderTransport.setJiedanUser(form.getOperatorUser())
+                    .setSupplierId(form.getSupplierId());
 
             form.setStatus(OrderStatusEnum.TMS_T_1.getCode());
             form.setStatusName(OrderStatusEnum.TMS_T_1.getDesc());
@@ -548,6 +549,22 @@ public class OrderInTransportController {
         return CommonResult.success(transportNo);
     }
 
+    /**
+     * 生成派车单号
+     */
+//    @ApiOperation(value = "生成派车单号")
+//    @PostMapping(value = "/createTransportNo")
+//    public CommonResult createTransportNo(@RequestBody Map<String, Object> map) {
+//        Long id = MapUtil.getLong(map, OrderTransport.class);
+//        if (id == null) {
+//            return CommonResult.error(ResultEnum.PARAM_ERROR);
+//        }
+//        //根据主订单操作主体iD查询操作代码
+//
+//        //组装派车单号 P+接单法人主体的代码+年月日+3位数序列号
+//        return CommonResult.success();
+//    }
+
 
     /**
      * 派车单号是否存在
@@ -574,6 +591,15 @@ public class OrderInTransportController {
         CommonPageResult<OrderTransportVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
+
+//    @ApiOperation(value = "web中港供应商")
+//    @PostMapping("/findSupplierTmsByPage")
+//    public CommonResult<CommonPageResult<OrderTransportVO>> findSupplierTmsByPage(@RequestBody QueryOrderTmsForm form) {
+//        IPage<OrderTransportVO> pageList = orderTransportService.findTransportOrderByPage(form);
+//        CommonPageResult<OrderTransportVO> pageVO = new CommonPageResult(pageList);
+//        return CommonResult.success(pageVO);
+//    }
+
 
     /**
      * 该接口针对填各种驳回

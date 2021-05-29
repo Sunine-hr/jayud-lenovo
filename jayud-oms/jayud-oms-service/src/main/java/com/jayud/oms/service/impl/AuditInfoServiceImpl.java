@@ -48,6 +48,14 @@ public class AuditInfoServiceImpl extends ServiceImpl<AuditInfoMapper, AuditInfo
     }
 
     /**
+     * 根据外键ids查询最新的审核信息
+     */
+    @Override
+    public List<AuditInfo> getAuditInfoLatestsByExtIds(List<Long> ids, String tableDesc) {
+        return this.baseMapper.getLatestsByExtIds(ids, tableDesc);
+    }
+
+    /**
      * 根据驳回状态集合查询最新的驳回信息
      */
     @Override

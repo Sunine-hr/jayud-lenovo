@@ -2,6 +2,7 @@ package com.jayud.tms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.entity.DataControl;
 import com.jayud.tms.model.bo.InputOrderTransportForm;
 import com.jayud.tms.model.bo.OprStatusForm;
 import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
@@ -120,10 +121,11 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      * @param legalIds
      * @return
      */
-    public Integer getNumByStatus(String status, List<Long> legalIds);
+    public Integer getNumByStatus(String status, DataControl dataControl);
 
     /**
      * 根据主订单号集合查询中港详情信息
+     *
      * @param mainOrderNos
      * @return
      */
@@ -132,5 +134,12 @@ public interface IOrderTransportService extends IService<OrderTransport> {
     List<OrderTransport> getByLegalEntityId(List<Long> legalIds);
 
     List<OrderTransport> preconditionsGoCustomsAudit();
+
+    /**
+     * 根据id查询中港详情
+     * @param id
+     * @return
+     */
+    public OrderTransportInfoVO getDetailsById(Long id);
 
 }

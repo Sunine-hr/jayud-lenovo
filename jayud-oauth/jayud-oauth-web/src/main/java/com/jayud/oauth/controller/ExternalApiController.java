@@ -7,7 +7,10 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.entity.DataControl;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.UserTypeEnum;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oauth.model.bo.AddCusAccountForm;
@@ -332,6 +335,34 @@ public class ExternalApiController {
         List<Long> legalId = systemUserLegalService.getLegalId(systemUser.getId());
         return ApiResult.ok(legalId);
     }
+
+
+    @ApiOperation(value = "根据用户名获取用户所属数据权限")
+    @RequestMapping(value = "/api/getDataPermission")
+    public ApiResult<DataControl> getDataPermission(@RequestParam("loginName") String loginName) {
+        SystemUser systemUser = userService.getSystemUserBySystemName(loginName);
+        UserTypeEnum userTypeEnum = UserTypeEnum.getEnum(systemUser.getUserType());
+        if (userTypeEnum == null) {
+            throw new JayudBizException("不存在客户类型");
+        }
+        DataControl dataControl = new DataControl();
+        List<Long> companyIds = null;
+        switch (userTypeEnum) {
+            case EMPLOYEE_TYPE:
+                companyIds = systemUserLegalService.getLegalId(systemUser.getId());
+                break;
+            case CUSTOMER_TYPE:
+                break;
+            case SUPPLIER_TYPE:
+                companyIds = new ArrayList<>();
+                companyIds.add(systemUser.getCompanyId());
+                break;
+            default:
+        }
+        dataControl.setCompanyIds(companyIds).setAccountType(userTypeEnum.getCode());
+        return ApiResult.ok(dataControl);
+    }
+
 
     @ApiOperation(value = "根据用户名获取用户所属法人主体")
     @RequestMapping(value = "/api/getLegalNameBySystemName")

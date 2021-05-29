@@ -423,7 +423,7 @@ public class OrderComboxController {
             initComboxVO.setTaxRate(costGenre.getTaxRate());
             if (productBizs.size() == 1) {
                 ProductBiz productBiz = productBizs.get(0);
-                if (productBiz.getCostGenreDefault().equals(costGenre.getId())) {
+                if (costGenre.getId().equals(productBiz.getCostGenreDefault())) {
                     initComboxVO.setIsDefault(true);
                 } else {
                     initComboxVO.setIsDefault(false);
@@ -561,10 +561,10 @@ public class OrderComboxController {
     public CommonResult initStorageUnit() {
         //获取操作主体下拉列表
         List<InitComboxVO> legals = oauthClient.findLegalEntity().getData();
-        List<InitComboxVO> departments= (List<InitComboxVO>)oauthClient.findDepartment().getData();
+        List<InitComboxVO> departments = (List<InitComboxVO>) oauthClient.findDepartment().getData();
         Map map = new HashMap();
         map.put("legalEntitys", legals);
-        map.put("departments",departments);
+        map.put("departments", departments);
         return CommonResult.success(map);
     }
 

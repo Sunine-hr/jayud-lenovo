@@ -5,6 +5,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.entity.DataControl;
 import com.jayud.tms.feign.OauthClient;
 import com.jayud.tms.model.bo.BasePageForm;
 import com.jayud.tms.model.vo.statistical.BusinessPeople;
@@ -91,12 +92,11 @@ public class StatisticalChart {
         tmp.put("确认签收", "T_14");
         List<Map<String, Object>> result = new ArrayList<>();
 
-        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
-        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken()).getData();
 
         tmp.forEach((k, v) -> {
             Map<String, Object> map = new HashMap<>();
-            Integer num = this.orderTransportService.getNumByStatus(v, legalIds);
+            Integer num = this.orderTransportService.getNumByStatus(v, dataControl);
             map.put("name", k);
             map.put("num", num);
             result.add(map);

@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.jayud.common.enums.GoodsFlowEnum;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import io.swagger.annotations.ApiModel;
@@ -47,10 +48,16 @@ public class OrderTransportInfoVO extends Model<OrderTransportInfoVO> {
     @ApiModelProperty(value = "第三方订单号")
     private String thirdPartyOrderNo;
 
-    @ApiModelProperty(value = "口岸code(port_info code)")
+    @ApiModelProperty(value = "口岸code")
     private String portCode;
 
+    @ApiModelProperty(value = "口岸名称")
+    private String portName;
+
     @ApiModelProperty(value = "货物流向(1进口 2出口)")
+    private String goodsTypeDesc;
+
+    @ApiModelProperty(value = "货物流向code(1进口 2出口)")
     private Integer goodsType;
 
     @ApiModelProperty(value = "车型(1吨车 2柜车)")
@@ -158,6 +165,9 @@ public class OrderTransportInfoVO extends Model<OrderTransportInfoVO> {
     @ApiModelProperty(value = "派车信息")
     private OrderSendCarsInfoVO orderSendCars;
 
+    @ApiModelProperty(value = "指派供应商id")
+    private Long supplierId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;
@@ -196,5 +206,10 @@ public class OrderTransportInfoVO extends Model<OrderTransportInfoVO> {
             }
 
         }
+    }
+
+    public void setGoodsType(Integer goodsType) {
+        this.goodsType = goodsType;
+        this.goodsTypeDesc= GoodsFlowEnum.getDesc(goodsType);
     }
 }

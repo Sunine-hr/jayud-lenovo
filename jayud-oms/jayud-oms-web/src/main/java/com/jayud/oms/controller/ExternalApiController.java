@@ -241,7 +241,14 @@ public class ExternalApiController {
         return CommonResult.success(initComboxVOS);
     }
 
-    @ApiOperation(value = "下拉框:获取审核通过的车辆供应商")
+    @ApiOperation(value = "根据id集合获取中转仓库")
+    @RequestMapping(value = "api/getWarehouseMapByIds")
+    public ApiResult<Map<Long, WarehouseInfo>> getWarehouseMapByIds(@RequestParam("warehouseIds") List<Long> warehouseIds) {
+        List<WarehouseInfo> warehouseInfos = this.warehouseInfoService.listByIds(warehouseIds);
+        return ApiResult.ok(warehouseInfos.stream().collect(Collectors.toMap(WarehouseInfo::getId, e -> e)));
+    }
+
+    @ApiOperation(value = "下拉框:获取审核通过供应商")
     @RequestMapping(value = "api/initSupplierInfo")
     public CommonResult initSupplierInfo() {
         List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(
@@ -680,13 +687,23 @@ public class ExternalApiController {
 
 
     /**
-     * 根据编码获取港口名称
+     * 根据港口名称获取编码
      */
     @RequestMapping(value = "/api/getPortCodeByName")
     public ApiResult getPortCodeByName(@RequestBody String name) {
         PortInfo portInfo = new PortInfo().setName(name);
         List<PortInfo> portInfos = this.portInfoService.findPortInfoByCondition(portInfo);
         return ApiResult.ok(portInfos.size() > 0 ? portInfos.get(0).getIdCode() : null);
+    }
+
+    /**
+     * 根据编码获取港口名称
+     */
+    @RequestMapping(value = "/api/getPortNameByCode")
+    public ApiResult getPortNameByCode(@RequestBody String code) {
+        PortInfo portInfo = new PortInfo().setIdCode(code);
+        List<PortInfo> portInfos = this.portInfoService.findPortInfoByCondition(portInfo);
+        return ApiResult.ok(portInfos.size() > 0 ? portInfos.get(0).getName() : null);
     }
 
     /**
@@ -1382,7 +1399,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "查询客户名称")
     @RequestMapping(value = "/api/getCustomerNameById")
-    public ApiResult<String> getCustomerNameById(@RequestParam("id")Long id){
+    public ApiResult<String> getCustomerNameById(@RequestParam("id") Long id) {
         CustomerInfo byCode = customerInfoService.getById(id);
         return ApiResult.ok(byCode.getName());
     }

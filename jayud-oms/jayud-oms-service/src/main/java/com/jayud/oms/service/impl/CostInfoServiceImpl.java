@@ -191,6 +191,26 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
     @Override
     public List<InitComboxStrVO> getCostInfoByCostTypeName(String costTypeName) {
         List<CostType> costTypes = this.costTypeService.getByCondition(new CostType().setCodeName(costTypeName));
+        return this.getCostInfoByCostType(costTypes);
+    }
+
+    /**
+     * 下拉根据费用类别code查询费用名称
+     * @return
+     */
+    @Override
+    public List<InitComboxStrVO> getCostInfoByCostTypeCode(String costTypeCde) {
+        List<CostType> costTypes = this.costTypeService.getByCondition(new CostType().setCode(costTypeCde));
+        return this.getCostInfoByCostType(costTypes);
+    }
+
+    /**
+     * 下拉根据费用类别查询费用名称
+     *
+     * @return
+     */
+    @Override
+    public List<InitComboxStrVO> getCostInfoByCostType(List<CostType> costTypes) {
         if (CollectionUtils.isEmpty(costTypes)) {
             return null;
         }

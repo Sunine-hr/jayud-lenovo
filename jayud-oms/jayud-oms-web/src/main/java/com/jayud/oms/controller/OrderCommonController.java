@@ -135,15 +135,6 @@ public class OrderCommonController {
     }
 
 
-    @ApiOperation(value = "供应商录入费用")
-    @PostMapping(value = "/supplierEntryFee")
-    public CommonResult supplierEntryFee(@RequestBody InputCostForm form) {
-//        form.getPaymentCostList().forEach(e -> e.setUnit(UnitEnum.PCS.getCode()));
-        form.checkSupplierEntryFee();
-        this.orderInfoService.doSupplierEntryFee(form);
-        return CommonResult.success();
-    }
-
     @ApiOperation(value = "费用详情")
     @PostMapping(value = "/getCostDetail")
     public CommonResult<InputCostVO> getCostDetail(@RequestBody @Valid GetCostDetailForm form) {
@@ -368,6 +359,55 @@ public class OrderCommonController {
         CostOrderDetailsVO costOrderDetailsVO = new CostOrderDetailsVO();
         costOrderDetailsVO.assemblyData(inputOrderVO);
         return CommonResult.success(costOrderDetailsVO);
+    }
+
+    @ApiOperation(value = "供应商录入费用")
+    @PostMapping(value = "/supplierEntryFee")
+    public CommonResult supplierEntryFee(@RequestBody InputCostForm form) {
+//        form.getPaymentCostList().forEach(e -> e.setUnit(UnitEnum.PCS.getCode()));
+        form.checkSupplierEntryFee();
+        this.orderInfoService.doSupplierEntryFee(form);
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "获取供应商费用详情")
+    @PostMapping(value = "/getSupplierCostDetail")
+    public CommonResult<InputCostVO> getSupplierCostDetail(@RequestBody @Valid GetCostDetailForm form) {
+        form.checkQuerySubOrderCost();
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.SUPPLIER_TYPE.getCode()).getData();
+        InputCostVO inputCostVO = new InputCostVO();
+        //查询供应商费用
+        if (!CollectionUtils.isEmpty(dataControl.getCompanyIds())) {
+            form.setSupplierId(dataControl.getCompanyIds().get(0));
+            inputCostVO = orderInfoService.getPayCostDetail(form);
+        }
+        return CommonResult.success(inputCostVO);
+    }
+
+    @ApiOperation(value = "获取供应商异常费用详情")
+    @PostMapping(value = "/getSupplierAbnormalCostDetail")
+    public CommonResult<InputCostVO> getSupplierAbnormalCostDetail(@RequestBody @Valid GetCostDetailForm form) {
+        form.checkQuerySubOrderCost();
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.SUPPLIER_TYPE.getCode()).getData();
+        InputCostVO inputCostVO = new InputCostVO();
+        //查询供应商费用
+        if (CollectionUtils.isEmpty(dataControl.getCompanyIds())) {
+            form.setSupplierId(dataControl.getCompanyIds().get(0));
+            inputCostVO = orderInfoService.getSupplierAbnormalCostDetail(form);
+        }
+        return CommonResult.success(inputCostVO);
+    }
+
+    @ApiOperation(value = "获取供应待处理操作")
+    @PostMapping(value = "/getSupplyPendingOpt")
+    public CommonResult<InputCostVO> getSupplyPendingOpt() {
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.SUPPLIER_TYPE.getCode()).getData();
+        InputCostVO inputCostVO = new InputCostVO();
+        //查询供应商费用
+        if (CollectionUtils.isEmpty(dataControl.getCompanyIds())) {
+//            List<Map<String, Object>> list = this.orderInfoService.getSupplyPendingOpt(dataControl);
+        }
+        return CommonResult.success(inputCostVO);
     }
 
 }

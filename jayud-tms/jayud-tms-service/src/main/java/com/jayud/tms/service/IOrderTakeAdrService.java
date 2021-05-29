@@ -54,4 +54,10 @@ public interface IOrderTakeAdrService extends IService<OrderTakeAdr> {
      */
     List<OrderTakeAdrInfoVO> getOrderTakeAdrInfos(List<String> orderNoList, Integer oprType);
 
+    /**
+     * 根据时间获取提货时间
+     *
+     * @param month
+     */
+    List<OrderTakeAdr> getByTakeTime(List<String> month, String format);
 }

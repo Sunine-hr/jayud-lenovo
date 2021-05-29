@@ -1,6 +1,7 @@
 package com.jayud.oms.model.bo;
 
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.StringUtils;
 import io.netty.util.internal.StringUtil;
@@ -40,7 +41,6 @@ public class InputCostForm {
     private String subType;
 
 
-
     /**
      * 检查供应商录用费用
      */
@@ -54,7 +54,7 @@ public class InputCostForm {
         if (StringUtils.isEmpty(this.orderNo)
                 || StringUtils.isEmpty(this.subLegalName)
                 || StringUtils.isEmpty(this.subUnitCode)) {
-            throw new JayudBizException("请提交费用");
+            throw new JayudBizException(ResultEnum.PARAM_ERROR);
         }
 
 //        if ("preSubmit_main".equals(this.cmd) || "preSubmit_sub".equals(this.cmd)) {
@@ -72,7 +72,7 @@ public class InputCostForm {
                     throw new JayudBizException("请填写费用名称");
                 }
                 if (paymentCost.getUnitPrice() == null) {
-                    throw new JayudBizException("请填写费用名称");
+                    throw new JayudBizException("单价");
                 }
                 if (paymentCost.getNumber() == null) {
                     throw new JayudBizException("请填写数量");

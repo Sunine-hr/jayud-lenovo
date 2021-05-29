@@ -1,5 +1,6 @@
 package com.jayud.tms.service;
 
+import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.entity.DataControl;
@@ -9,8 +10,13 @@ import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
 import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
+import com.jayud.tms.model.vo.supplier.QuerySupplierBill;
+import com.jayud.tms.model.vo.supplier.QuerySupplierBillInfo;
+import com.jayud.tms.model.vo.supplier.SupplierBill;
+import com.jayud.tms.model.vo.supplier.SupplierBillInfo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -137,9 +143,48 @@ public interface IOrderTransportService extends IService<OrderTransport> {
 
     /**
      * 根据id查询中港详情
+     *
      * @param id
      * @return
      */
     public OrderTransportInfoVO getDetailsById(Long id);
 
+    /**
+     * 待处理数量
+     *
+     * @param userType
+     * @return
+     */
+    Map<String, Object> getPendingOpt(String userType);
+
+    /**
+     * 供应商待处理数量
+     *
+     * @return
+     */
+    Map<String, Object> getSupplyPendingOpt();
+
+    /**
+     * 计算费用待处理数
+     *
+     * @param tmsOrders
+     * @param jsonArray
+     * @param map
+     */
+    void calculatePendingCostNum(List<OrderTransport> tmsOrders, JSONArray jsonArray, Map<String, Object> map);
+
+    /**
+     * 获取供应商账单列表
+     *
+     * @return
+     */
+    IPage<SupplierBill> findSupplierBillByPage(QuerySupplierBill form, Map<String, Object> callbackParam);
+
+    /**
+     * 查询供应商账单明细列表
+     *
+     * @param form
+     * @return
+     */
+    IPage<SupplierBillInfo> findSupplierBillInfoByPage(QuerySupplierBillInfo form);
 }

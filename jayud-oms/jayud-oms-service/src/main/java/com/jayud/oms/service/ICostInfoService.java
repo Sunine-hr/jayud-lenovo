@@ -6,6 +6,7 @@ import com.jayud.oms.model.bo.AddCostInfoForm;
 import com.jayud.oms.model.bo.QueryCostInfoForm;
 import com.jayud.oms.model.po.CostGenre;
 import com.jayud.oms.model.po.CostInfo;
+import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.model.vo.InitComboxStrVO;
 
@@ -67,9 +68,23 @@ public interface ICostInfoService extends IService<CostInfo> {
     List<CostInfo> getCostInfoByStatus(String status);
 
     /**
-     * 下拉根据费用类别查询费用名称
+     * 下拉根据费用类别名称查询费用名称
      *
      * @return
      */
     List<InitComboxStrVO> getCostInfoByCostTypeName(String costTypeName);
+
+    /**
+     * 下拉根据费用类别code查询费用名称
+     *
+     * @return
+     */
+    List<InitComboxStrVO> getCostInfoByCostTypeCode(String costTypeCde);
+
+    /**
+     * 下拉根据费用类别查询费用名称
+     *
+     * @return
+     */
+    public List<InitComboxStrVO> getCostInfoByCostType(List<CostType> costTypes);
 }

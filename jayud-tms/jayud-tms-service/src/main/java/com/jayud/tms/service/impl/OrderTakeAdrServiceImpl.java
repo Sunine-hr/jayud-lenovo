@@ -84,4 +84,14 @@ public class OrderTakeAdrServiceImpl extends ServiceImpl<OrderTakeAdrMapper, Ord
         return this.baseMapper.getOrderTakeAdrInfos(orderNoList, oprType);
     }
 
+    /**
+     * 根据时间获取提货时间
+     *
+     * @param month
+     */
+    @Override
+    public List<OrderTakeAdr> getByTakeTime(List<String> month, String format) {
+        return this.baseMapper.getByTakeTime(month,format);
+    }
+
 }

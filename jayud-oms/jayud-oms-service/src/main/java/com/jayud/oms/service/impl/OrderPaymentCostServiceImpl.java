@@ -6,12 +6,15 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.mapper.OrderPaymentCostMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
+import com.jayud.oms.model.po.CurrencyInfo;
 import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
+import com.jayud.oms.service.ICurrencyInfoService;
 import com.jayud.oms.service.IOrderPaymentCostService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -30,6 +33,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMapper, OrderPaymentCost> implements IOrderPaymentCostService {
+
+    @Autowired
+    private ICurrencyInfoService currencyInfoService;
 
     @Override
     public List<InputPaymentCostVO> findPaymentCost(GetCostDetailForm form) {
@@ -196,10 +202,47 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
     @Override
     public List<OrderPaymentCost> getBySubType(String subType) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status",2);
-        queryWrapper.eq("sub_type",subType);
+        queryWrapper.eq("status", 2);
+        queryWrapper.eq("sub_type", subType);
         return this.baseMapper.selectList(queryWrapper);
     }
+
+    /**
+     * 查询应付供应商异常费用
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public List<InputPaymentCostVO> getSupplierAbnormalCostDetail(GetCostDetailForm form) {
+        return this.baseMapper.getSupplierAbnormalCostDetail(form);
+    }
+
+    @Override
+    public List<OrderPaymentCost> getByCondition(OrderPaymentCost paymentCost) {
+        return this.baseMapper.selectList(new QueryWrapper<>(paymentCost));
+    }
+
+    /**
+     * 根据子订单号集合查询供应商费用
+     *
+     * @param supplierId
+     * @param subOrderNos
+     * @return
+     */
+    @Override
+    public List<OrderPaymentCost> getSupplierPayCostByOrderNos(Long supplierId,
+                                                               List<String> subOrderNos,
+                                                               Integer status) {
+        QueryWrapper<OrderPaymentCost> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderPaymentCost::getOrderNo, subOrderNos)
+                .eq(OrderPaymentCost::getSupplierId, supplierId);
+        if (status != null) {
+            condition.lambda().eq(OrderPaymentCost::getStatus, status);
+        }
+        return this.baseMapper.selectList(condition);
+    }
+
 
     /**
      * 根据主订单号获取应收绑定数据
@@ -214,6 +257,28 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
                 .eq(OrderPaymentCost::getIsSumToMain, paymentCost.getIsSumToMain())
                 .isNotNull(OrderPaymentCost::getReceivableId);
         return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public Map<String, Map<String, BigDecimal>> statisticalPayCostByOrderNos(List<OrderPaymentCost> list, Boolean isMain) {
+        Map<String, List<OrderPaymentCost>> group = null;
+        if (isMain) {
+            group = list.stream().collect(Collectors.groupingBy(OrderPaymentCost::getMainOrderNo));
+        } else {
+            group = list.stream().collect(Collectors.groupingBy(OrderPaymentCost::getOrderNo));
+        }
+        List<CurrencyInfo> currencyInfos = currencyInfoService.list();
+        Map<String, String> currencyMap = currencyInfos.stream().collect(Collectors.toMap(CurrencyInfo::getCurrencyCode, CurrencyInfo::getCurrencyName));
+        Map<String, Map<String, BigDecimal>> map = new HashMap<>();
+        group.forEach((k, v) -> {
+            Map<String, BigDecimal> costMap = new HashMap<>();
+            for (OrderPaymentCost tmp : v) {
+                if (tmp.getAmount() == null || tmp.getChangeAmount() == null) return;
+                costMap.merge(currencyMap.get(tmp.getCurrencyCode()), tmp.getAmount(), BigDecimal::add);
+            }
+            map.put(k, costMap);
+        });
+        return map;
     }
 
 }

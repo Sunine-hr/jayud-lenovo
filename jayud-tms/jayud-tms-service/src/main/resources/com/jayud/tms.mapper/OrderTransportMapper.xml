@@ -141,7 +141,6 @@
     </resultMap>
 
 
-
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, main_order_no, order_no, port_code, goods_type, vehicle_type, vehicle_size, cntr_no, cntr_pic, cntrPicName,
@@ -575,6 +574,13 @@
         <if test="form.cmd == 'list'">
             AND (oi.`status`= 1 or oi.`status`=4)
         </if>
+
+        <if test="form.subOrderIds !=null and form.subOrderIds.size>0">
+            AND ot.id in
+            <foreach collection="form.subOrderIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="form.cmd == 'costAudit'">
             and oi.`status` IN (1,4)
             AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND opc.`status` =
@@ -655,8 +661,8 @@
                     #{item}
                 </foreach>
             </if>
-            -- and DATE_FORMAT( ot.created_time, '%Y%m' ) >= DATE_FORMAT( DATE_SUB( curdate(), INTERVAL 1 MONTH ),
-            '%Y%m' )
+            -- and DATE_FORMAT( ot.created_time, '%Y%m' ) >= DATE_FORMAT( DATE_SUB( curdate(), INTERVAL 1 MONTH ),'%Y%m'
+            )
             and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT(NOW(), '%Y%m')
         </where>
         GROUP BY ot.created_user
@@ -755,12 +761,12 @@
                 </foreach>
             </if>
 
-<!--            <if test="legalIds != null and legalIds.size>0">-->
-<!--                and ot.`legal_entity_id` in-->
-<!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
-<!--                    #{legalId}-->
-<!--                </foreach>-->
-<!--            </if>-->
+            <!--            <if test="legalIds != null and legalIds.size>0">-->
+            <!--                and ot.`legal_entity_id` in-->
+            <!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+            <!--                    #{legalId}-->
+            <!--                </foreach>-->
+            <!--            </if>-->
         </where>
     </select>
 
@@ -797,5 +803,51 @@
         <where>
             and ot.id = #{id}
         </where>
+    </select>
+    <select id="findSupplierBillByPage" resultType="com.jayud.tms.model.vo.supplier.SupplierBill">
+        select
+        ot.id subOrderId,
+        ot.legal_name customer,
+        DATE_FORMAT(ota.take_time,'%Y-%m') month,
+        count(ot.id) orderNum
+        from
+        order_transport ot left join order_take_adr ota on ot.order_no=ota.order_no
+        and ota.opr_type=1
+        <where>
+            ot.supplier_id = #{form.supplierId}
+            <if test="form.customer !=null and form.customer !='' ">
+                and ot.legal_name like concat('%',#{form.customer},'%')
+            </if>
+            <if test="form.month !=null and form.month.size >0 ">
+                and DATE_FORMAT(ota.take_time,'%Y-%m') between #{form.month[0]} and #{form.month[1]}
+            </if>
+        </where>
+        GROUP BY
+        DATE_FORMAT( ota.take_time, '%Y-%m')
+        order by ota.take_time desc
+    </select>
+
+
+    <select id="findSupplierBillInfoByPage" resultType="com.jayud.tms.model.vo.supplier.SupplierBillInfo">
+        select
+        ot.id subOrderId,
+        ot.order_no,
+        DATE_FORMAT(ota.take_time,'%Y-%m') month,
+        ot.legal_name customerName,
+        osc.vehicle_size,
+        ot.warehouse_info_id
+        from
+        order_transport ot left join order_take_adr ota on ot.order_no=ota.order_no and ota.opr_type=1
+        left join order_send_cars osc on osc.order_no = ota.order_no
+        <where>
+            ot.supplier_id = #{form.supplierId}
+            <if test="form.customer !=null and form.customer !='' ">
+                and ot.legal_name like concat('%',#{form.customer},'%')
+            </if>
+            <if test="form.month !=null and form.month !='' ">
+                and DATE_FORMAT(ota.take_time,'%Y-%m') between #{form.month[0]} and #{form.month[1]}
+            </if>
+        </where>
+        order by ota.take_time desc
     </select>
 </mapper>

@@ -1,6 +1,7 @@
 package com.jayud.oms.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
@@ -11,6 +12,8 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.*;
 import com.jayud.oms.feign.FileClient;
@@ -28,11 +31,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -101,6 +102,8 @@ public class ExternalApiController {
     private IOrderFlowSheetService orderFlowSheetService;
     @Autowired
     private ICostCommonService costCommonService;
+    @Autowired
+    private ICostInfoService costInfoService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -1557,6 +1560,47 @@ public class ExternalApiController {
             list.add(orderReceivableCost.getOrderNo());
         }
         return ApiResult.ok(list);
+    }
+
+
+    @ApiOperation(value = "根据费用类型查询费用名称")
+    @PostMapping(value = "/getCostInfoByCostType")
+    public ApiResult<List<InitComboxStrVO>> getCostInfoByCostType(@RequestBody Map<String, String> map) {
+        String code = MapUtil.getStr(map, "code");
+        String name = MapUtil.getStr(map, "name");
+//        if (StringUtils.isEmpty(code) && StringUtils.isEmpty(name)) {
+//            return CommonResult.error(ResultEnum.PARAM_ERROR);
+//        }
+        if (!StringUtils.isEmpty(code)) {
+            return ApiResult.ok(this.costInfoService.getCostInfoByCostTypeCode(code));
+        }
+        if (!StringUtils.isEmpty(name)) {
+            return ApiResult.ok(this.costInfoService.getCostInfoByCostTypeCode(name));
+        }
+
+        return ApiResult.error(ResultEnum.PARAM_ERROR.getMessage());
+    }
+
+
+    /**
+     * 查询供应商费用
+     */
+    @PostMapping(value = "/getSupplierCost")
+    public ApiResult<OrderPaymentCost> getSupplierCost(@RequestParam("supplierId") Long supplierId) {
+        List<OrderPaymentCost> list = this.paymentCostService.getByCondition(new OrderPaymentCost().setSupplierId(supplierId));
+        return ApiResult.ok(list);
+    }
+
+    /**
+     * 根据子订单号集合查询供应商费用
+     */
+    @PostMapping(value = "/getSupplierPayCostByOrderNos")
+    public ApiResult<Map<String, Map<String, BigDecimal>>> statisticalSupplierPayCostByOrderNos(@RequestParam("supplierId") Long supplierId,
+                                                                                                @RequestParam("orderNos") List<String> subOrderNos) {
+        List<OrderPaymentCost> list = this.paymentCostService.getSupplierPayCostByOrderNos(supplierId, subOrderNos,
+                Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
+        Map<String, Map<String, BigDecimal>> map = this.paymentCostService.statisticalPayCostByOrderNos(list, false);
+        return ApiResult.ok(map);
     }
 }
 

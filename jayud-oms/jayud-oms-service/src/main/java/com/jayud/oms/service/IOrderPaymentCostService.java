@@ -6,6 +6,7 @@ import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -79,10 +80,44 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
 
     /**
      * 根据主订单号获取应收绑定数据
+     *
      * @param paymentCost
      * @return
      */
     List<OrderPaymentCost> getReceivableBinding(OrderPaymentCost paymentCost);
 
     List<OrderPaymentCost> getBySubType(String subType);
+
+    /**
+     * 查询异常费用
+     *
+     * @param form
+     * @return
+     */
+    List<InputPaymentCostVO> getSupplierAbnormalCostDetail(GetCostDetailForm form);
+
+    /**
+     * 根据条件查询应付费用
+     *
+     * @return
+     */
+    List<OrderPaymentCost> getByCondition(OrderPaymentCost paymentCost);
+
+    /**
+     * 根据子订单号集合查询供应商费用
+     *
+     * @param supplierId
+     * @param subOrderNos
+     * @return
+     */
+    List<OrderPaymentCost> getSupplierPayCostByOrderNos(Long supplierId, List<String> subOrderNos, Integer status);
+
+    /**
+     * 计算应付费用
+     *
+     * @param list
+     * @param isMain
+     * @return
+     */
+    Map<String, Map<String, BigDecimal>> statisticalPayCostByOrderNos(List<OrderPaymentCost> list, Boolean isMain);
 }

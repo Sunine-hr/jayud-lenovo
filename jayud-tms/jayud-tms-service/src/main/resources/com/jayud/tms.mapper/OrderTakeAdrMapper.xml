@@ -123,5 +123,23 @@
             </foreach>
         </where>
     </select>
+    <select id="getByTakeTime" resultType="com.jayud.tms.model.po.OrderTakeAdr">
+        select id, order_no, delivery_id,take_time,
+        goods_desc, plate_amount, piece_amount, weight,
+        volume, remarks, opr_type, enter_warehouse_no,
+        create_time, create_user,file,file_name
+        from order_take_adr
+        <where>
+            DATE_FORMAT(take_time,
+            <choose>
+                <when test="format!=null">#{format}</when>
+                <otherwise>'%Y-%m'</otherwise>
+            </choose>
+            ) in
+            <foreach collection="months" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
 
 </mapper>

@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @Data
 public class QueryOrderTmsForm extends BasePageForm {
@@ -41,6 +42,9 @@ public class QueryOrderTmsForm extends BasePageForm {
     @ApiModelProperty(value = "操作指令", required = true)
     @NotEmpty(message = "cmd is required")
     private String cmd;
+
+    @ApiModelProperty(value = "子订单id集合")
+    private List<Long> subOrderIds;
 
 
 }

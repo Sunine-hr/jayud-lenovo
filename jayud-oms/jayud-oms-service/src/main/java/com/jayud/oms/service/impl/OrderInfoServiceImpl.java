@@ -500,6 +500,37 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         receivableCostService.removeByIds(oldReceivableMap.values());
     }
 
+    /**
+     * 供应商费用详情
+     *
+     * @param form
+     */
+    @Override
+    public InputCostVO getPayCostDetail(GetCostDetailForm form) {
+        List<InputPaymentCostVO> paymentCost = this.paymentCostService.findPaymentCost(form);
+        InputCostVO inputCostVO = new InputCostVO();
+        inputCostVO.setPaymentCostList(paymentCost);
+        //计算费用,利润/合计币种
+        this.calculateCost(inputCostVO);
+        return inputCostVO;
+    }
+
+    /**
+     * 查询供应商异常费用
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public InputCostVO getSupplierAbnormalCostDetail(GetCostDetailForm form) {
+        List<InputPaymentCostVO> paymentCost = this.paymentCostService.getSupplierAbnormalCostDetail(form);
+        InputCostVO inputCostVO = new InputCostVO();
+        inputCostVO.setPaymentCostList(paymentCost);
+        //计算费用,利润/合计币种
+        this.calculateCost(inputCostVO);
+        return inputCostVO;
+    }
+
 
     @Override
     public InputCostVO getCostDetail(GetCostDetailForm form) {
@@ -1939,9 +1970,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             e.setChangeAmount(e.getAmount().multiply(exchangeRate));
             e.setSupplierId(supplierInfo.getId());
         });
+        form.setReceivableCostList(new ArrayList<>());
         //1.需求为，提交审核按钮跟在每一条记录后面 2.暂存是保存所有未提交审核的数据  3.提交审核的数据不可编辑和删除
         this.saveOrUpdateCost(form);
     }
+
 
     /**
      * 子订单使用

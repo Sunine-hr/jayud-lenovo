@@ -13,23 +13,13 @@ import com.jayud.common.enums.CustomerGoodsEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.mapper.BusinessLogMapper;
-import com.jayud.mall.mapper.CustomerGoodsMapper;
-import com.jayud.mall.mapper.GoodsServiceCostMapper;
-import com.jayud.mall.mapper.ServiceGroupMapper;
+import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.*;
-import com.jayud.mall.model.po.BusinessLog;
-import com.jayud.mall.model.po.CustomerGoods;
-import com.jayud.mall.model.po.GoodsServiceCost;
-import com.jayud.mall.model.vo.CustomerGoodsVO;
-import com.jayud.mall.model.vo.GoodsServiceCostVO;
-import com.jayud.mall.model.vo.ServiceGroupVO;
+import com.jayud.mall.model.po.*;
+import com.jayud.mall.model.vo.*;
 import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.model.vo.domain.CustomerUser;
-import com.jayud.mall.service.BaseService;
-import com.jayud.mall.service.IBusinessLogService;
-import com.jayud.mall.service.ICustomerGoodsService;
-import com.jayud.mall.service.IGoodsServiceCostService;
+import com.jayud.mall.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +49,14 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
     GoodsServiceCostMapper goodsServiceCostMapper;
     @Autowired
     BusinessLogMapper businessLogMapper;
+    @Autowired
+    GoodsCustomsValueMapper goodsCustomsValueMapper;
+    @Autowired
+    GoodsClearanceValueMapper goodsClearanceValueMapper;
+    @Autowired
+    GoodsCustomsFileMapper goodsCustomsFileMapper;
+    @Autowired
+    GoodsClearanceFileMapper goodsClearanceFileMapper;
 
     @Autowired
     BaseService baseService;
@@ -66,6 +64,14 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
     IGoodsServiceCostService goodsServiceCostService;
     @Autowired
     IBusinessLogService businessLogService;
+    @Autowired
+    IGoodsCustomsValueService goodsCustomsValueService;
+    @Autowired
+    IGoodsClearanceValueService goodsClearanceValueService;
+    @Autowired
+    IGoodsCustomsFileService goodsCustomsFileService;
+    @Autowired
+    IGoodsClearanceFileService goodsClearanceFileService;
 
 
     @Override
@@ -204,7 +210,69 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
             CustomerUser customerUser = baseService.getCustomerUser();
             customerGoods.setCustomerId(customerUser.getId());
         }
+        //1.保存客户商品信息
         this.saveOrUpdate(customerGoods);
+
+        Integer goodId = customerGoods.getId();
+        //2.保存商品关联表信息
+        //保存-商品报关申报价值
+        List<GoodsCustomsValueForm> goodsCustomsValueList = form.getGoodsCustomsValueList();
+        if(CollUtil.isNotEmpty(goodsCustomsValueList)){
+            goodsCustomsValueList.forEach(goodsCustomsValueForm -> {
+                goodsCustomsValueForm.setGoodId(goodId);
+            });
+            QueryWrapper<GoodsCustomsValue> qw = new QueryWrapper<>();
+            qw.eq("good_id", goodId);
+            goodsCustomsValueService.remove(qw);
+            List<GoodsCustomsValue> goodsCustomsValues = ConvertUtil.convertList(goodsCustomsValueList, GoodsCustomsValue.class);
+            goodsCustomsValueService.saveOrUpdateBatch(goodsCustomsValues);
+        }
+        //保存-商品清关申报价值
+        List<GoodsClearanceValueForm> goodsClearanceValueList = form.getGoodsClearanceValueList();
+        if(CollUtil.isNotEmpty(goodsClearanceValueList)){
+            goodsClearanceValueList.forEach(goodsClearanceValueForm -> {
+                goodsClearanceValueForm.setGoodId(goodId);
+            });
+            QueryWrapper<GoodsClearanceValue> qw = new QueryWrapper<>();
+            qw.eq("good_id", goodId);
+            goodsClearanceValueService.remove(qw);
+            List<GoodsClearanceValue> goodsClearanceValues = ConvertUtil.convertList(goodsClearanceValueList, GoodsClearanceValue.class);
+            goodsClearanceValueService.saveOrUpdateBatch(goodsClearanceValues);
+        }
+        //保存-商品报关文件列表
+        List<GoodsCustomsFileForm> goodsCustomsFileList = form.getGoodsCustomsFileList();
+        if(CollUtil.isNotEmpty(goodsCustomsFileList)){
+            goodsCustomsFileList.forEach(goodsCustomsFileForm -> {
+                goodsCustomsFileForm.setGoodId(goodId);
+                List<TemplateUrlVO> templateUrls = goodsCustomsFileForm.getTemplateUrls();
+                if(CollUtil.isNotEmpty(templateUrls)){
+                    String json = JSONUtil.toJsonStr(templateUrls);
+                    goodsCustomsFileForm.setTemplateUrl(json);//模版文件地址
+                }
+            });
+            QueryWrapper<GoodsCustomsFile> qw = new QueryWrapper<>();
+            qw.eq("good_id", goodId);
+            goodsCustomsFileService.remove(qw);
+            List<GoodsCustomsFile> goodsCustomsFiles = ConvertUtil.convertList(goodsCustomsFileList, GoodsCustomsFile.class);
+            goodsCustomsFileService.saveOrUpdateBatch(goodsCustomsFiles);
+        }
+        //保存-商品清关文件列表
+        List<GoodsClearanceFileForm> goodsClearanceFileList = form.getGoodsClearanceFileList();
+        if(CollUtil.isNotEmpty(goodsClearanceFileList)){
+            goodsClearanceFileList.forEach(goodsClearanceFileForm -> {
+                goodsClearanceFileForm.setGoodId(goodId);
+                List<TemplateUrlVO> templateUrls = goodsClearanceFileForm.getTemplateUrls();
+                if(CollUtil.isNotEmpty(templateUrls)){
+                    String json = JSONUtil.toJsonStr(templateUrls);
+                    goodsClearanceFileForm.setTemplateUrl(json);//模版文件地址
+                }
+            });
+            QueryWrapper<GoodsClearanceFile> qw = new QueryWrapper<>();
+            qw.eq("good_id", goodId);
+            goodsClearanceFileService.remove(qw);
+            List<GoodsClearanceFile> goodsClearanceFiles = ConvertUtil.convertList(goodsClearanceFileList, GoodsClearanceFile.class);
+            goodsClearanceFileService.saveOrUpdateBatch(goodsClearanceFiles);
+        }
         CustomerGoodsVO customerGoodsVO = ConvertUtil.convert(customerGoods, CustomerGoodsVO.class);
         return customerGoodsVO;
     }
@@ -229,10 +297,25 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
 
     @Override
     public CommonResult<CustomerGoodsVO> findCustomerGoodsById(Integer id) {
+        //1.查询商品
         CustomerGoodsVO customerGoodsVO = customerGoodsMapper.findCustomerGoodsById(id);
         if(ObjectUtil.isEmpty(customerGoodsVO)){
             return CommonResult.error(-1, "没有找到商品");
         }
+        Integer goodId = customerGoodsVO.getId();
+        //2.查询商品关联信息
+        //查询-商品报关申报价值
+        List<GoodsCustomsValueVO> goodsCustomsValueList = goodsCustomsValueMapper.findGoodsCustomsValueByGoodId(goodId);
+        customerGoodsVO.setGoodsCustomsValueList(goodsCustomsValueList);
+        //查询-商品清关申报价值
+        List<GoodsClearanceValueVO> goodsClearanceValueList = goodsClearanceValueMapper.findGoodsClearanceValueByGoodId(goodId);
+        customerGoodsVO.setGoodsClearanceValueList(goodsClearanceValueList);
+        //查询-商品报关文件列表
+        List<GoodsCustomsFileVO> goodsCustomsFileList = goodsCustomsFileMapper.findGoodsCustomsFileByGoodId(goodId);
+        customerGoodsVO.setGoodsCustomsFileList(goodsCustomsFileList);
+        //查询-商品清关文件列表
+        List<GoodsClearanceFileVO> goodsClearanceFileList = goodsClearanceFileMapper.findGoodsClearanceFileByGoodId(goodId);
+        customerGoodsVO.setGoodsClearanceFileList(goodsClearanceFileList);
         return CommonResult.success(customerGoodsVO);
     }
 

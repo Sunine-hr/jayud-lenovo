@@ -169,4 +169,23 @@ public class CustomerGoodsVO {
     @ApiModelProperty(value = "商品服务的单位(1公斤 2方 3票 4柜)")
     private Integer serviceUnit;
 
+
+    //商品关联信息
+    //商品报关申报价值
+    @ApiModelProperty(value = "商品报关申报价值")
+    private List<GoodsCustomsValueVO> goodsCustomsValueList;
+
+    //商品清关申报价值
+    @ApiModelProperty(value = "商品清关申报价值")
+    private List<GoodsClearanceValueVO> goodsClearanceValueList;
+
+    //商品报关文件列表
+    @ApiModelProperty(value = "商品报关文件列表")
+    private List<GoodsCustomsFileVO> goodsCustomsFileList;
+
+    //商品清关文件列表
+    @ApiModelProperty(value = "商品清关文件列表")
+    private List<GoodsClearanceFileVO> goodsClearanceFileList;
+
+
 }

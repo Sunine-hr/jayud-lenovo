@@ -19,4 +19,12 @@
         id, good_id, type, country_code, country_name, file_name, template_url, describe
     </sql>
 
+    <select id="findGoodsCustomsFileByGoodId" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.GoodsCustomsFileVO">
+        select
+        t.id,t.good_id,t.type,t.country_code,t.country_name,t.file_name,t.template_url,t.`describe`
+        from goods_customs_file t
+        where 1=1
+        and t.good_id = #{goodId}
+    </select>
+
 </mapper>

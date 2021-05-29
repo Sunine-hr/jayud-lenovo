@@ -8,6 +8,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class CustomerGoodsForm {
@@ -145,6 +146,23 @@ public class CustomerGoodsForm {
 
     @ApiModelProperty(value = "规格型号")
     private String specification;
+
+    //商品报关申报价值
+    @ApiModelProperty(value = "商品报关申报价值")
+    private List<GoodsCustomsValueForm> goodsCustomsValueList;
+
+    //商品清关申报价值
+    @ApiModelProperty(value = "商品清关申报价值")
+    private List<GoodsClearanceValueForm> goodsClearanceValueList;
+
+    //商品报关文件列表
+    @ApiModelProperty(value = "商品报关文件列表")
+    private List<GoodsCustomsFileForm> goodsCustomsFileList;
+
+    //商品清关文件列表
+    @ApiModelProperty(value = "商品清关文件列表")
+    private List<GoodsClearanceFileForm> goodsClearanceFileList;
+
 
 
 }

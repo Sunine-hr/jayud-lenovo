@@ -1,13 +1,15 @@
 package com.jayud.mall.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -19,13 +21,13 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="GoodsCustomsFile对象", description="商品报关文件列表")
+@ApiModel(value = "GoodsCustomsFile对象", description = "商品报关文件列表")
 public class GoodsCustomsFile extends Model<GoodsCustomsFile> {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键id")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     @ApiModelProperty(value = "商品id(customer_goods id)")
@@ -47,6 +49,7 @@ public class GoodsCustomsFile extends Model<GoodsCustomsFile> {
     private String templateUrl;
 
     @ApiModelProperty(value = "说明")
+    @TableField("`describe`")
     private String describe;
 
 

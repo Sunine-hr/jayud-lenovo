@@ -294,7 +294,6 @@ public class OrderInfoController {
     @ApiOperationSupport(order = 16)
     public CommonResult<OrderInfoVO> importExcelByNewWisdom(
             //用@RequestHeader获取请求头
-            @RequestHeader(value = "customerId") String customerId,
             @RequestHeader(value = "offerInfoId") Integer offerInfoId,
             @RequestParam("file") MultipartFile file){
         //用HttpServletRequest，获取请求头内容
@@ -308,7 +307,7 @@ public class OrderInfoController {
         if(ObjectUtil.isEmpty(customerUser)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "客户失效，请重新登录");
         }
-        customerId = customerUser.getId().toString();
+        String customerId = customerUser.getId().toString();
 
         //运单id
         String shipment_id = originalFilename.substring("运单 ".length(), originalFilename.length() - ".xls".length());

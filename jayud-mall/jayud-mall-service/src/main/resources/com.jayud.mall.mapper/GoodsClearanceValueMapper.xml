@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.GoodsClearanceValueMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.GoodsClearanceValue">
+        <id column="id" property="id" />
+        <result column="good_id" property="goodId" />
+        <result column="type" property="type" />
+        <result column="country_code" property="countryCode" />
+        <result column="country_name" property="countryName" />
+        <result column="declared_value" property="declaredValue" />
+        <result column="declared_currency" property="declaredCurrency" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, good_id, type, country_code, country_name, declared_value, declared_currency
+    </sql>
+
+</mapper>

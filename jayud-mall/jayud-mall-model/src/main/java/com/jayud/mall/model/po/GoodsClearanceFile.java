@@ -21,7 +21,7 @@ import java.io.Serializable;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "GoodsClearanceFile对象", description = "")
+@ApiModel(value = "GoodsClearanceFile对象", description = "商品清关文件列表")
 public class GoodsClearanceFile extends Model<GoodsClearanceFile> {
 
     private static final long serialVersionUID = 1L;

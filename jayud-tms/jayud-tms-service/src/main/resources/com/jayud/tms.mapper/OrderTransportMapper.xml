@@ -504,7 +504,7 @@
         ON si.id=vi.supplier_id
         where 1 = 1
         <if test="form.orderNo != null and form.orderNo != ''">
-            and ot.order_no = #{form.orderNo}
+            and ot.order_no like concat('%',#{form.orderNo},'%')
         </if>
         <if test="form.portCode != null and form.portCode != ''">
             and ot.port_code = #{form.portCode}

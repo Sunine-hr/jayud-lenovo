@@ -1564,6 +1564,13 @@ public class ExternalApiController {
         return ApiResult.ok(list);
     }
 
+    @ApiOperation(value = "获取主订单客户名称")
+    @RequestMapping(value = "/api/getCustomerNameByOrderNo")
+    ApiResult getCustomerNameByOrderNo(@RequestParam(value = "orderNo") String orderNo) {
+        OrderInfo orderInfo = orderInfoService.getOne(Wrappers.<OrderInfo>lambdaQuery().eq(OrderInfo::getOrderNo, orderNo));
+        return ApiResult.ok(Objects.nonNull(orderInfo) ? orderInfo.getCustomerName() : "");
+    }
+
 
     @ApiOperation(value = "根据费用类型查询费用名称")
     @PostMapping(value = "/getCostInfoByCostType")
@@ -1605,12 +1612,6 @@ public class ExternalApiController {
         return ApiResult.ok(map);
     }
 
-    @ApiOperation(value = "获取主订单客户名称")
-    @RequestMapping(value = "/api/getCustomerNameByOrderNo")
-    ApiResult getCustomerNameByOrderNo(@RequestParam(value = "orderNo") String orderNo) {
-        OrderInfo orderInfo = orderInfoService.getOne(Wrappers.<OrderInfo>lambdaQuery().eq(OrderInfo::getOrderNo, orderNo));
-        return ApiResult.ok(Objects.nonNull(orderInfo) ? orderInfo.getCustomerName() : "");
-    }
 }
 
 

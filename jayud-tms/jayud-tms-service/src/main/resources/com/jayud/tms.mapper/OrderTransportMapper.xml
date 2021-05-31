@@ -572,7 +572,7 @@
             AND ot.`status` = 'T_14'
         </if>
         <if test="form.cmd == 'list'">
-            AND (oi.`status`= 1 or oi.`status`=4)
+            AND (oi.`status` in (1,3,4))
         </if>
 
         <if test="form.subOrderIds !=null and form.subOrderIds.size>0">

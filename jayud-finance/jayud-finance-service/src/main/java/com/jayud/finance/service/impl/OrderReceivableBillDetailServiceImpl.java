@@ -740,6 +740,11 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         return CommonResult.success();
     }
 
+    /**
+     * 1.客服主管-应收反审核 kf_s_reject
+     * 2.财务-应收反审核 cw_s_reject
+     * ①未申请开票或付款的或作废的才可进行反审核
+     */
     @Override
     public CommonResult contrarySAudit(ListForm form) {
         //反审核条件

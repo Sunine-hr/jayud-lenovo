@@ -341,8 +341,12 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/getDataPermission")
     public ApiResult<DataControl> getDataPermission(@RequestParam("loginName") String loginName,
                                                     @RequestParam(value = "UserType", required = false) String userType) {
-        SystemUser systemUser = userService.getSystemUserBySystemName(loginName);
+        SystemUser systemUser;
         if (userType == null) {
+            systemUser = userService.getSystemUserBySystemName(loginName);
+            userType = systemUser.getUserType();
+        } else {
+            systemUser = userService.getByCondition(new SystemUser().setName(loginName).setUserType(userType)).get(0);
             userType = systemUser.getUserType();
         }
 

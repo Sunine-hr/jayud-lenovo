@@ -504,7 +504,7 @@
         ON si.id=vi.supplier_id
         where 1 = 1
         <if test="form.orderNo != null and form.orderNo != ''">
-            and ot.order_no = #{form.orderNo}
+            and ot.order_no like concat('%',#{form.orderNo},'%')
         </if>
         <if test="form.portCode != null and form.portCode != ''">
             and ot.port_code = #{form.portCode}
@@ -592,7 +592,7 @@
         <if test="form.customerName != null and form.customerName !=''">
             <choose>
                 <when test="dataControl.accountType!=null and dataControl.accountType==3">
-                    and ot.legal_name like concat('%',#{form.legalName},'%')
+                    and ot.legal_name like concat('%',#{form.customerName},'%')
                 </when>
                 <otherwise>
                     and oi.customer_name like concat('%',#{form.customerName},'%')

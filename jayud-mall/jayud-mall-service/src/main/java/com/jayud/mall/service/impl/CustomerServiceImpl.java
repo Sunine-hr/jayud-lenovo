@@ -306,9 +306,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }
         String passwd = form.getPasswd();
         BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
-        String password = bcryptPasswordEncoder.encode(passwd.trim());
         //判断条件
-        if (!bcryptPasswordEncoder.matches(password,customerVO.getPasswd())){
+        if (!bcryptPasswordEncoder.matches(passwd,customerVO.getPasswd())){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "旧密码输入错误");
         }
         String newPasswd = form.getNewPasswd();

@@ -27,5 +27,16 @@
         FROM system_menu
     </select>
 
+    <select id="findSystemMenuByUserId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.SystemMenuVO">
+        select
+        t.id,t.parent_id,t.create_time,t.title,t.name,t.level,t.sort,t.`key`,t.icon,t.hidden,t.router
+        from system_menu t
+        join system_role_menu_relation t1 on t1.menu_id = t.id
+        join system_user_role_relation t2 on t2.role_id = t1.role_id
+        join system_user t3 on t3.id = t2.user_id
+        where 1=1
+        and t3.id = #{userId}
+        group by t.id
+    </select>
 
 </mapper>

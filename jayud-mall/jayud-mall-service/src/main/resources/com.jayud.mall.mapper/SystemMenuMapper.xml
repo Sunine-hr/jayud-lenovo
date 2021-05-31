@@ -27,6 +27,7 @@
         FROM system_menu
     </select>
 
+    <!--UNION 只有菜单子集，没有服务，需要单独查询子集的父集，合并展示-->
     <select id="findSystemMenuByUserId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.SystemMenuVO">
         select
         t.id,t.parent_id,t.create_time,t.title,t.name,t.level,t.sort,t.`key`,t.icon,t.hidden,t.router
@@ -37,6 +38,28 @@
         where 1=1
         and t3.id = #{userId}
         group by t.id
+
+        UNION
+
+        select
+        m.id,m.parent_id,m.create_time,m.title,m.name,m.level,m.sort,m.`key`,m.icon,m.hidden,m.router
+        from (
+        select
+        DISTINCT substring_index( substring_index(t1.parent,',',t2.id + 1), ',' ,-1 ) as parent
+        from (
+        select
+        t.id,getMenuParentList(t.id) parent
+        from system_menu t
+        join system_role_menu_relation t1 on t1.menu_id = t.id
+        join system_user_role_relation t2 on t2.role_id = t1.role_id
+        join system_user t3 on t3.id = t2.user_id
+        where 1=1
+        and t3.id = #{userId}
+        group by t.id
+        ) t1
+        join help_index t2 on t2.id   <![CDATA[ < ]]>    (length(t1.parent) - length(REPLACE(t1.parent,',','')) + 1 )
+        ) t
+        join system_menu m on m.id = t.parent
     </select>
 
 </mapper>

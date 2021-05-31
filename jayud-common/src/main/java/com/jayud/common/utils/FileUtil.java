@@ -3,6 +3,7 @@ package com.jayud.common.utils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.io.FileUtils;
 import org.apache.http.entity.ContentType;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
@@ -165,4 +166,38 @@ public class FileUtil {
         return new CommonsMultipartFile(item);
     }
 
+    /**
+     * 下载Url网络文件
+     *
+     * @param url
+     * @return
+     */
+    public static File downloadFromUrl(String url, String name) {
+        File file = null;
+        try {
+            URL httpUrl = new URL(url);
+            file = new File(name);
+            FileUtils.copyURLToFile(httpUrl, file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    /**
+     * 获取文件名
+     * @param url
+     * @return
+     */
+    public static String getFileNameFromUrl(String url) {
+        String name = "";
+        int index = url.lastIndexOf("/");
+        if (index > 0) {
+            name = url.substring(index + 1);
+            if (name.trim().length() > 0) {
+                return name;
+            }
+        }
+        return name;
+    }
 }

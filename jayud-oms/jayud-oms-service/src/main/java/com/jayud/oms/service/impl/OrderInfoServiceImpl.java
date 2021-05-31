@@ -1093,50 +1093,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         String classCode = inputMainOrderForm.getClassCode();//订单类型
         String selectedServer = inputMainOrderForm.getSelectedServer();//所选服务
 
-        //纯报关和出口报关并且订单状态为驳回(C_1_1)或为空或为暂存待补全的待接单
-
-        if (OrderStatusEnum.CBG.getCode().equals(classCode) ||
-                selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
-            InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
-
-            //生成报关订单号
-            if (form.getCmd().equals("submit") && CollectionUtil.isNotEmpty(orderCustomsForm.getSubOrders())) {
-
-                for (InputSubOrderCustomsForm subOrder : orderCustomsForm.getSubOrders()) {
-
-                    String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), orderCustomsForm.getGoodsType(), OrderStatusEnum.CBG.getCode());
-                    subOrder.setOrderNo(orderNo);
-
-//                    if (orderCustomsForm.getStatus() != null && subOrder.getStatus().equals("NL_0")) {
-//                        String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), null, OrderStatusEnum.NLYS.getCode());
-//                        subOrder.setOrderNo(orderNo);
-//                    }
-                }
-
-            }
-
-            //查询编辑条件
-            //主订单草稿状态,可以对所有订单进行编辑
-            //创建订单如果没有选择资料齐全,提交订单报关状态待是补全状态,可以进行编辑,报关状态待接单或者没有创建状态
-            if (this.queryEditOrderCondition(orderCustomsForm.getSubCustomsStatus(),
-                    inputMainOrderForm.getStatus(), SubOrderSignEnum.BG.getSignOne(), form)) {
-                //如果没有生成子订单则不调用
-                if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
-                    orderCustomsForm.setMainOrderNo(mainOrderNo);
-                    if (OrderStatusEnum.CBG.getCode().equals(classCode)) {
-                        orderCustomsForm.setClassCode(OrderStatusEnum.CBG.getCode());
-                    } else {
-                        orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
-                    }
-                    orderCustomsForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
-                    Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
-                    if (!result) {//调用失败
-                        return false;
-                    }
-                }
-            }
-        }
-
         //中港运输并且并且订单状态为驳回或为空或为待接单
         if (OrderStatusEnum.ZGYS.getCode().equals(classCode) ||
                 selectedServer.contains(OrderStatusEnum.ZGYSDD.getCode())) {
@@ -1556,6 +1512,48 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
 
+        //纯报关和出口报关并且订单状态为驳回(C_1_1)或为空或为暂存待补全的待接单
+        if (OrderStatusEnum.CBG.getCode().equals(classCode) ||
+                selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
+            InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
+
+            //生成报关订单号
+            if (form.getCmd().equals("submit") && CollectionUtil.isNotEmpty(orderCustomsForm.getSubOrders())) {
+
+                for (InputSubOrderCustomsForm subOrder : orderCustomsForm.getSubOrders()) {
+
+                    String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), orderCustomsForm.getGoodsType(), OrderStatusEnum.CBG.getCode());
+                    subOrder.setOrderNo(orderNo);
+
+//                    if (orderCustomsForm.getStatus() != null && subOrder.getStatus().equals("NL_0")) {
+//                        String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), null, OrderStatusEnum.NLYS.getCode());
+//                        subOrder.setOrderNo(orderNo);
+//                    }
+                }
+
+            }
+
+            //查询编辑条件
+            //主订单草稿状态,可以对所有订单进行编辑
+            //创建订单如果没有选择资料齐全,提交订单报关状态待是补全状态,可以进行编辑,报关状态待接单或者没有创建状态
+            if (this.queryEditOrderCondition(orderCustomsForm.getSubCustomsStatus(),
+                    inputMainOrderForm.getStatus(), SubOrderSignEnum.BG.getSignOne(), form)) {
+                //如果没有生成子订单则不调用
+                if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
+                    orderCustomsForm.setMainOrderNo(mainOrderNo);
+                    if (OrderStatusEnum.CBG.getCode().equals(classCode)) {
+                        orderCustomsForm.setClassCode(OrderStatusEnum.CBG.getCode());
+                    } else {
+                        orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
+                    }
+                    orderCustomsForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
+                    Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
+                    if (!result) {//调用失败
+                        return false;
+                    }
+                }
+            }
+        }
         return true;
     }
 

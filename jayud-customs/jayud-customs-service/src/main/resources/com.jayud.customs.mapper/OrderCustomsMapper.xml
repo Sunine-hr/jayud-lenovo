@@ -84,7 +84,8 @@
             oc.`status` status,
             oc.`entrust_no` entrustNo,
             oc.`supervision_mode` supervisionMode,
-            oc.`yun_customs_no` yunCustomsNo
+            oc.`yun_customs_no` yunCustomsNo,
+            oc.order_remarks
         FROM
             order_customs oc
         WHERE 1 = 1
@@ -238,7 +239,8 @@
         ELSE FALSE
         END) isCost,
         oi.`need_input_cost` needInputCost,
-        (select ot.car_weigh_num from order_transport ot where ot.main_order_no = oi.order_no) carWeighNum
+        (select ot.car_weigh_num from order_transport ot where ot.main_order_no = oi.order_no) carWeighNum,
+        oc.order_remarks
         FROM
         order_customs oc,
         order_info oi

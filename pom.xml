@@ -33,6 +33,8 @@
         <module>jayud-trailer</module>
         <module>jayud-storage</module>
 
+        <module>jayud-email</module>
+
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

@@ -109,6 +109,9 @@ public class OrderCustomsVO {
     @ApiModelProperty(value = "报关单号")
     private String yunCustomsNo;
 
+    @ApiModelProperty(value = "订单备注")
+    private String orderRemarks;
+
     public void setStatusDesc(String status) {
         this.status = status;
         this.statusDesc = OrderStatusEnum.getDesc(status);

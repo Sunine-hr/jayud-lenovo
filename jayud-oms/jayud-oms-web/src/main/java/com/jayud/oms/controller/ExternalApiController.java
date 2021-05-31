@@ -328,21 +328,22 @@ public class ExternalApiController {
         return ApiResult.ok(initComboxVOS);
     }
 
-    @ApiOperation(value = "初始化供应商车辆下拉框")
+    @ApiOperation(value = "初始化供应商车辆下拉框 type:车辆类型(0:中港车,1:内陆车)")
     @RequestMapping(value = "api/initVehicleBySupplier")
-    public ApiResult<List<VehicleInfo>> initVehicleBySupplier(@RequestParam("supplierId") Long supplierId,
+    public ApiResult<List<InitComboxStrVO>> initVehicleBySupplier(@RequestParam("supplierId") Long supplierId,
                                                               @RequestParam("type") Integer type) {
         List<VehicleInfo> vehicleInfos = vehicleInfoService
                 .getByCondition(new VehicleInfo().setSupplierId(supplierId)
                         .setStatus(StatusEnum.ENABLE.getCode())
                         .setType(type));
 
-        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        List<InitComboxStrVO> initComboxVOS = new ArrayList<>();
         for (VehicleInfo vehicleInfo : vehicleInfos) {
-            InitComboxVO initComboxVO = new InitComboxVO();
-            initComboxVO.setId(vehicleInfo.getId());
-            initComboxVO.setName(vehicleInfo.getPlateNumber());
-            initComboxVOS.add(initComboxVO);
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setId(vehicleInfo.getId());
+            initComboxStrVO.setName(vehicleInfo.getPlateNumber());
+            initComboxStrVO.setNote(vehicleInfo.getHkNumber());
+            initComboxVOS.add(initComboxStrVO);
         }
         return ApiResult.ok(initComboxVOS);
     }

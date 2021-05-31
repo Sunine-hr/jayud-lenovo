@@ -535,10 +535,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public InputCostVO getCostDetail(GetCostDetailForm form) {
         List<InputPaymentCostVO> inputPaymentCostVOS = paymentCostService.findPaymentCost(form);
+        //供应商过滤
+        List<InputPaymentCostVO> payCost = inputPaymentCostVOS.stream()
+                .filter(e -> e.getSupplierId() == null
+                        || (e.getSupplierId() != null
+                        && OrderStatusEnum.COST_2.getCode().equals(e.getStatus().toString()))).collect(Collectors.toList());
+
         List<InputReceivableCostVO> inputReceivableCostVOS = receivableCostService.findReceivableCost(form);
 
         InputCostVO inputCostVO = new InputCostVO();
-        inputCostVO.setPaymentCostList(inputPaymentCostVOS);
+        inputCostVO.setPaymentCostList(payCost);
         inputCostVO.setReceivableCostList(inputReceivableCostVOS);
         //计算费用,利润/合计币种
         this.calculateCost(inputCostVO);

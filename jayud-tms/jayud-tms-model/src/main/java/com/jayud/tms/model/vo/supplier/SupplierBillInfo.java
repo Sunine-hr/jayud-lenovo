@@ -3,7 +3,6 @@ package com.jayud.tms.model.vo.supplier;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.model.vo.OrderTakeAdrInfoVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,7 +10,6 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,10 +31,10 @@ public class SupplierBillInfo {
     private String customerName;
 
     @ApiModelProperty(value = "提货地址")
-    private String pickUpAddress;
+    private String entireAddress1;
 
     @ApiModelProperty(value = "送货地址")
-    private String deliveryAddress;
+    private String entireAddress2;
 
     @ApiModelProperty("尺寸")
     private String vehicleSize;
@@ -51,13 +49,19 @@ public class SupplierBillInfo {
     @JsonIgnore
     private Long warehouseInfoId;
 
+    @ApiModelProperty("车辆id")
+    @JsonIgnore
+    private Long vehicleId;
+
 //    @ApiModelProperty("中转仓库")
 //    private String warehouseName;
 
     @ApiModelProperty("是否虚拟仓库")
+    @JsonIgnore
     private Boolean isVirtual;
 
     @ApiModelProperty("仓库地址")
+    @JsonIgnore
     private String warehouseAddr;
 
 
@@ -90,8 +94,8 @@ public class SupplierBillInfo {
                 }
             }
         }
-        this.pickUpAddress = pickUpAddr.toString();
-        this.deliveryAddress = deliveryAddr.toString();
+        this.entireAddress1 = pickUpAddr.toString();
+        this.entireAddress2 = deliveryAddr.toString();
     }
 
     /**
@@ -120,9 +124,9 @@ public class SupplierBillInfo {
      * 多个地址并且不是虚拟仓,展示中转仓地址
      */
     private void shippingAddressHandle() {
-        if (this.deliveryAddress.length() > 1) {
+        if (this.entireAddress2.length() > 1) {
             if (this.isVirtual == null || !this.isVirtual) {
-                this.deliveryAddress = this.warehouseAddr;
+                this.entireAddress2 = this.warehouseAddr;
             }
         }
 

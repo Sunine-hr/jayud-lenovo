@@ -13,6 +13,7 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.enums.UserTypeEnum;
@@ -806,13 +807,16 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         List<OrderTakeAdrInfoVO> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrInfos(subOrderNos, null);
         //批量查询中转仓库
         Map<Long, Map<String, Object>> warehouseMap = this.omsClient.getWarehouseMapByIds(warehouseIds).getData();
-
+        //应付金额
         Map<String, Map<String, BigDecimal>> payCostMap = this.omsClient.statisticalSupplierPayCostByOrderNos(form.getSupplierId(), new ArrayList<>(subOrderNos)).getData();
-
+        //供应车辆信息
+        List<InitComboxStrVO> initVehicle = this.omsClient.initVehicleBySupplier(form.getSupplierId(), 0).getData();
+        Map<Long, String> initVehicleMap = initVehicle.stream().collect(Collectors.toMap(InitComboxStrVO::getId, InitComboxStrVO::getName));
         for (SupplierBillInfo supplierBillInfo : pageInfo.getRecords()) {
             supplierBillInfo.assemblyTakeAdrInfos(takeAdrsList);
             supplierBillInfo.assemblyWarehouse(warehouseMap);
             supplierBillInfo.assemblyCost(payCostMap.get(supplierBillInfo.getOrderNo()));
+            supplierBillInfo.setPlateNumber(initVehicleMap.get(supplierBillInfo.getVehicleId()));
         }
 
         return pageInfo;

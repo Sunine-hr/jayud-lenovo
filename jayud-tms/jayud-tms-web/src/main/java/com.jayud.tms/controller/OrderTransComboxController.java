@@ -4,6 +4,7 @@ package com.jayud.tms.controller;
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.enums.CarTypeEnum;
 import com.jayud.common.utils.BeanUtils;
 import com.jayud.tms.feign.OmsClient;
@@ -76,9 +77,9 @@ public class OrderTransComboxController {
 
     @ApiOperation(value = "运输派车页面-下拉供应商车辆")
     @PostMapping(value = "/initSupplierVehicle")
-    public CommonResult<List<InitComboxVO>> initSupplierVehicle(@RequestBody Map<String, Object> map) {
+    public CommonResult<List<InitComboxStrVO>> initSupplierVehicle(@RequestBody Map<String, Object> map) {
         Long supplierId = MapUtil.getLong(map, BeanUtils.convertToFieldName(OrderTransport::getSupplierId));
-        List<InitComboxVO> initComboxVOS = new ArrayList<>();
+        List<InitComboxStrVO> initComboxVOS = new ArrayList<>();
         if (supplierId != null) {
             initComboxVOS = this.omsClient.initVehicleBySupplier(supplierId, CarTypeEnum.ZERO.getCode()).getData();
         }

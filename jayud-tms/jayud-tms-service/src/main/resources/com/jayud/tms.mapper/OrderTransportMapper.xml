@@ -832,10 +832,11 @@
         select
         ot.id subOrderId,
         ot.order_no,
-        DATE_FORMAT(ota.take_time,'%Y-%m') month,
+        DATE_FORMAT(ota.take_time,'%Y-%m') takeTimeStr,
         ot.legal_name customerName,
         osc.vehicle_size,
-        ot.warehouse_info_id
+        ot.warehouse_info_id,
+        osc.vehicle_id
         from
         order_transport ot left join order_take_adr ota on ot.order_no=ota.order_no and ota.opr_type=1
         left join order_send_cars osc on osc.order_no = ota.order_no
@@ -845,7 +846,7 @@
                 and ot.legal_name like concat('%',#{form.customer},'%')
             </if>
             <if test="form.month !=null and form.month !='' ">
-                and DATE_FORMAT(ota.take_time,'%Y-%m') between #{form.month[0]} and #{form.month[1]}
+                and DATE_FORMAT(ota.take_time,'%Y-%m') = #{form.month}
             </if>
         </where>
         order by ota.take_time desc

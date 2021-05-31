@@ -34,8 +34,8 @@ public class OrderConfController {
     IOrderConfService orderConfService;
 
     @ApiOperation(value = "分页查询配载单")
-    @PostMapping("/findOrderConfByPage")
     @ApiOperationSupport(order = 1)
+    @PostMapping("/findOrderConfByPage")
     public CommonResult<CommonPageResult<OrderConfVO>> findOrderConfByPage(@RequestBody QueryOrderConfForm form) {
         IPage<OrderConfVO> pageList = orderConfService.findOrderConfByPage(form);
         CommonPageResult<OrderConfVO> pageVO = new CommonPageResult(pageList);
@@ -43,16 +43,16 @@ public class OrderConfController {
     }
 
     @ApiOperation(value = "保存配载单")
-    @PostMapping(value = "saveOrderConf")
     @ApiOperationSupport(order = 2)
+    @PostMapping(value = "saveOrderConf")
     public CommonResult saveOrderConf(@RequestBody OrderConfForm form){
         orderConfService.saveOrderConf(form);
         return CommonResult.success("保存配载单，成功！");
     }
 
     @ApiOperation(value = "查看配载单详情")
-    @PostMapping(value = "lookOrderConf")
     @ApiOperationSupport(order = 3)
+    @PostMapping(value = "lookOrderConf")
     public CommonResult<OrderConfVO> lookOrderConf(@RequestBody OrderConfParaForm form){
         Long id = form.getId();
         return orderConfService.lookOrderConf(id);
@@ -60,8 +60,8 @@ public class OrderConfController {
 
     //获取配载单号
     @ApiOperation(value = "获取配载单号(自动递增)")
-    @PostMapping(value = "getOrderConfNo")
     @ApiOperationSupport(order = 4)
+    @PostMapping(value = "getOrderConfNo")
     public CommonResult<String> getOrderConfNo(){
         //String orderNo = numberGeneratedService.getOrderNoByCode("order_conf_code");
         String orderNo = NumberGeneratedUtils.getOrderNoByCode2("order_conf_code");
@@ -69,32 +69,32 @@ public class OrderConfController {
     }
 
     @ApiOperation(value = "保存配载单-关联报价")
-    @PostMapping(value = "saveOrderConfByOfferInfo")
     @ApiOperationSupport(order = 5)
+    @PostMapping(value = "saveOrderConfByOfferInfo")
     public CommonResult<OrderConfVO> saveOrderConfByOfferInfo(@RequestBody OrderConfForm form){
         OrderConfVO orderConfVO = orderConfService.saveOrderConfByOfferInfo(form);
         return CommonResult.success(orderConfVO);
     }
 
     @ApiOperation(value = "保存配载单-关联提单")
-    @PostMapping(value = "saveOrderConfByOceanBill")
     @ApiOperationSupport(order = 6)
+    @PostMapping(value = "saveOrderConfByOceanBill")
     public CommonResult<OrderConfVO> saveOrderConfByOceanBill(@RequestBody OrderConfForm form){
         OrderConfVO orderConfVO = orderConfService.saveOrderConfByOceanBill(form);
         return CommonResult.success(orderConfVO);
     }
 
     @ApiOperation(value = "新增配载单（新增后在编辑，配载报价和提单）")
-    @PostMapping(value = "addOrderConf")
     @ApiOperationSupport(order = 7)
+    @PostMapping(value = "addOrderConf")
     public CommonResult<OrderConfVO> addOrderConf(@RequestBody OrderConfForm form){
         OrderConfVO orderConfVO = orderConfService.addOrderConf(form);
         return CommonResult.success(orderConfVO);
     }
 
     @ApiOperation(value = "新增编辑查询配载：提单、报价、运单(订单)")
-    @PostMapping(value = "findOrderConfById")
     @ApiOperationSupport(order = 8)
+    @PostMapping(value = "findOrderConfById")
     public CommonResult<OrderConfVO> findOrderConfById(@Valid @RequestBody OrderConfIdForm form){
         Long id = form.getId();
         OrderConfVO orderConfVO = orderConfService.findOrderConfById(id);
@@ -102,12 +102,57 @@ public class OrderConfController {
     }
 
     @ApiOperation(value = "根据配载id，查询配载下所有的提单列表")
-    @PostMapping(value = "findOceanBillByConfId")
     @ApiOperationSupport(order = 9)
+    @PostMapping(value = "findOceanBillByConfId")
     public CommonResult<List<OceanBillVO>> findOceanBillByConfId(@Valid @RequestBody OrderConfIdForm form){
         Long id = form.getId();
         List<OceanBillVO> oceanBillVOList = orderConfService.findOceanBillByConfId(id);
         return CommonResult.success(oceanBillVOList);
+    }
+
+    //配载单-启用按钮
+    @ApiOperation(value = "配载单-启用按钮")
+    @ApiOperationSupport(order = 10)
+    @PostMapping(value = "enableStatus")
+    public CommonResult enableStatus(@Valid @RequestBody OrderConfIdForm form){
+        orderConfService.enableStatus(form);
+        return CommonResult.success("操作成功");
+    }
+
+    //配载单-取消按钮
+    @ApiOperation(value = "配载单-取消按钮")
+    @ApiOperationSupport(order = 11)
+    @PostMapping(value = "cancelStatus")
+    public CommonResult cancelStatus(@Valid @RequestBody OrderConfIdForm form){
+        orderConfService.cancelStatus(form);
+        return CommonResult.success("操作成功");
+    }
+
+    //配载单-开始配载按钮
+    @ApiOperation(value = "配载单-开始配载按钮")
+    @ApiOperationSupport(order = 12)
+    @PostMapping(value = "startAutostowStatus")
+    public CommonResult startAutostowStatus(@Valid @RequestBody OrderConfIdForm form){
+        orderConfService.startAutostowStatus(form);
+        return CommonResult.success("操作成功");
+    }
+
+    //配载单-转运中按钮
+    @ApiOperation(value = "配载单-转运中按钮")
+    @ApiOperationSupport(order = 13)
+    @PostMapping(value = "transitStatus")
+    public CommonResult transitStatus(@Valid @RequestBody OrderConfIdForm form){
+        orderConfService.transitStatus(form);
+        return CommonResult.success("操作成功");
+    }
+
+    //配载单-完成按钮
+    @ApiOperation(value = "配载单-完成按钮")
+    @ApiOperationSupport(order = 14)
+    @PostMapping(value = "finishStatus")
+    public CommonResult finishStatus(@Valid @RequestBody OrderConfIdForm form){
+        orderConfService.finishStatus(form);
+        return CommonResult.success("操作成功");
     }
 
 

@@ -3,6 +3,7 @@ package com.jayud.mall.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OrderConfForm;
+import com.jayud.mall.model.bo.OrderConfIdForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.po.OrderConf;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -76,4 +77,34 @@ public interface IOrderConfService extends IService<OrderConf> {
      * @return
      */
     List<OceanBillVO> findOceanBillByConfId(Long id);
+
+    /**
+     * 配载单-启用按钮
+     * @param form
+     */
+    void enableStatus(OrderConfIdForm form);
+
+    /**
+     * 配载单-取消按钮
+     * @param form
+     */
+    void cancelStatus(OrderConfIdForm form);
+
+    /**
+     * 配载单-开始配载按钮
+     * @param form
+     */
+    void startAutostowStatus(OrderConfIdForm form);
+
+    /**
+     * 配载单-转运中按钮
+     * @param form
+     */
+    void transitStatus(OrderConfIdForm form);
+
+    /**
+     * 配载单-完成按钮
+     * @param form
+     */
+    void finishStatus(OrderConfIdForm form);
 }

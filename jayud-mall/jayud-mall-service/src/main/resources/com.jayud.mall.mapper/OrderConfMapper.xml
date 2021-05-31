@@ -33,6 +33,9 @@
         <if test="form.destinationCountryCode != null and form.destinationCountryCode != ''">
             and t.destination_country_code = #{form.destinationCountryCode}
         </if>
+        <if test="form.statusCode != null and form.statusCode != ''">
+            and t.status_code = #{form.statusCode}
+        </if>
     </select>
 
     <select id="findOrderConfById" parameterType="java.lang.Long"
@@ -51,7 +54,7 @@
     <select id="findOfferInfoVOByOrderId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OfferInfoVO" >
         select
-        t.id,t.qie,t.names,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,t.status_code,t.status_name,
+        t.id,t.qie,t.names,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,t.sail_time_remark,
         CONCat(t4.code_name,'-',t5.code_name) route
         from offer_info t
         JOIN ocean_conf_detail t1 on t1.id_code = t.id and t1.types=1

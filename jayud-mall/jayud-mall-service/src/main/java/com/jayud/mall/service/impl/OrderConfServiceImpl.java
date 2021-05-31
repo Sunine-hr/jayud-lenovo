@@ -16,6 +16,7 @@ import com.jayud.mall.mapper.OceanCounterMapper;
 import com.jayud.mall.mapper.OrderConfMapper;
 import com.jayud.mall.mapper.OrderInfoMapper;
 import com.jayud.mall.model.bo.OrderConfForm;
+import com.jayud.mall.model.bo.OrderConfIdForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.po.OceanConfDetail;
 import com.jayud.mall.model.po.OrderConf;
@@ -278,6 +279,91 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         //提单信息list
         List<OceanBillVO> oceanBillVOList = orderConfMapper.findOceanBillVOByOrderId(id);
         return oceanBillVOList;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void enableStatus(OrderConfIdForm form) {
+        Long id = form.getId();
+        OrderConfVO orderConfVO = orderConfMapper.findOrderConfById(id);
+        if(ObjectUtil.isEmpty(orderConfVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "沒有找到配载单");
+        }
+        if(!orderConfVO.getStatusCode().equals(OrderConfStatusEnum.PREPARE.getCode())){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "配载单状态不正确，不能操作");
+        }
+        OrderConf orderConf = ConvertUtil.convert(orderConfVO, OrderConf.class);
+        orderConf.setStatusCode(OrderConfStatusEnum.ENABLE.getCode());
+        orderConf.setStatusName(OrderConfStatusEnum.ENABLE.getName());
+        this.saveOrUpdate(orderConf);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelStatus(OrderConfIdForm form) {
+        Long id = form.getId();
+        OrderConfVO orderConfVO = orderConfMapper.findOrderConfById(id);
+        if(ObjectUtil.isEmpty(orderConfVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "沒有找到配载单");
+        }
+//        if(orderConfVO.getStatusCode().equals(OrderConfStatusEnum.PREPARE.getCode())){
+//            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "配载单状态不正确，不能操作");
+//        }
+        OrderConf orderConf = ConvertUtil.convert(orderConfVO, OrderConf.class);
+        orderConf.setStatusCode(OrderConfStatusEnum.CANCEL.getCode());
+        orderConf.setStatusName(OrderConfStatusEnum.CANCEL.getName());
+        this.saveOrUpdate(orderConf);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void startAutostowStatus(OrderConfIdForm form) {
+        Long id = form.getId();
+        OrderConfVO orderConfVO = orderConfMapper.findOrderConfById(id);
+        if(ObjectUtil.isEmpty(orderConfVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "沒有找到配载单");
+        }
+        if(!orderConfVO.getStatusCode().equals(OrderConfStatusEnum.ENABLE.getCode())){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "配载单状态不正确，不能操作");
+        }
+        OrderConf orderConf = ConvertUtil.convert(orderConfVO, OrderConf.class);
+        orderConf.setStatusCode(OrderConfStatusEnum.START_AUTOSTOW.getCode());
+        orderConf.setStatusName(OrderConfStatusEnum.START_AUTOSTOW.getName());
+        this.saveOrUpdate(orderConf);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void transitStatus(OrderConfIdForm form) {
+        Long id = form.getId();
+        OrderConfVO orderConfVO = orderConfMapper.findOrderConfById(id);
+        if(ObjectUtil.isEmpty(orderConfVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "沒有找到配载单");
+        }
+        if(!orderConfVO.getStatusCode().equals(OrderConfStatusEnum.START_AUTOSTOW.getCode())){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "配载单状态不正确，不能操作");
+        }
+        OrderConf orderConf = ConvertUtil.convert(orderConfVO, OrderConf.class);
+        orderConf.setStatusCode(OrderConfStatusEnum.TRANSIT.getCode());
+        orderConf.setStatusName(OrderConfStatusEnum.TRANSIT.getName());
+        this.saveOrUpdate(orderConf);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void finishStatus(OrderConfIdForm form) {
+        Long id = form.getId();
+        OrderConfVO orderConfVO = orderConfMapper.findOrderConfById(id);
+        if(ObjectUtil.isEmpty(orderConfVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "沒有找到配载单");
+        }
+        if(!orderConfVO.getStatusCode().equals(OrderConfStatusEnum.TRANSIT.getCode())){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "配载单状态不正确，不能操作");
+        }
+        OrderConf orderConf = ConvertUtil.convert(orderConfVO, OrderConf.class);
+        orderConf.setStatusCode(OrderConfStatusEnum.FINISH.getCode());
+        orderConf.setStatusName(OrderConfStatusEnum.FINISH.getName());
+        this.saveOrUpdate(orderConf);
     }
 
 

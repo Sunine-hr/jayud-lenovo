@@ -18,7 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, parent_id, create_time, `name`, `level`, sort, `key`, icon, hidden, router
+        id, parent_id, create_time, title, `name`, `level`, sort, `key`, icon, hidden, router
     </sql>
 
     <select id="findAllMenuVO" resultType="com.jayud.mall.model.vo.SystemMenuVO">

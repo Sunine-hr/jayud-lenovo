@@ -7,7 +7,6 @@
         <id column="id" property="id" />
         <result column="order_no" property="orderNo" />
         <result column="tid" property="tid" />
-        <result column="status" property="status" />
         <result column="user_id" property="userId" />
         <result column="user_name" property="userName" />
         <result column="create_time" property="createTime" />
@@ -15,13 +14,13 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, tid, destination_country_code, status, user_id, user_name, create_time
+        id, order_no, tid, destination_country_code, user_id, user_name, create_time
     </sql>
 
     <select id="findOrderConfByPage" parameterType="com.jayud.mall.model.bo.QueryOrderConfForm"
             resultType="com.jayud.mall.model.vo.OrderConfVO" >
         select
-        t.id,t.order_no,t.tid,t.destination_country_code,t.status,t.user_id,t.user_name,t.create_time,t.conf_name,t.remark,
+        t.id,t.order_no,t.tid,t.destination_country_code,t.user_id,t.user_name,t.create_time,t.conf_name,t.remark,t.status_code,t.status_name,
         t1.code_name tname,
         t2.name destinationCountryName
         from order_conf t
@@ -39,7 +38,7 @@
     <select id="findOrderConfById" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OrderConfVO" >
         select
-        t.id,t.order_no,t.tid,t.destination_country_code,t.status,t.user_id,t.user_name,t.create_time,t.conf_name,t.remark,
+        t.id,t.order_no,t.tid,t.destination_country_code,t.user_id,t.user_name,t.create_time,t.conf_name,t.remark,t.status_code,t.status_name,
         t1.code_name tname,
         t2.name destinationCountryName
         from order_conf t
@@ -52,7 +51,7 @@
     <select id="findOfferInfoVOByOrderId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OfferInfoVO" >
         select
-        t.id,t.qie,t.names,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,
+        t.id,t.qie,t.names,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,t.status_code,t.status_name,
         CONCat(t4.code_name,'-',t5.code_name) route
         from offer_info t
         JOIN ocean_conf_detail t1 on t1.id_code = t.id and t1.types=1

@@ -8,6 +8,9 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.OrderConfStatusEnum;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.OceanCounterMapper;
 import com.jayud.mall.mapper.OrderConfMapper;
@@ -72,8 +75,13 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         OrderConf orderConf = ConvertUtil.convert(form, OrderConf.class);
         Long id = orderConf.getId();
         if(id == null){
+            //新增
             AuthUser user = baseService.getUser();
-            orderConf.setStatus("1");//状态(0无效 1有效)
+            if(ObjectUtil.isEmpty(user)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录");
+            }
+            orderConf.setStatusCode(OrderConfStatusEnum.PREPARE.getCode());
+            orderConf.setStatusName(OrderConfStatusEnum.PREPARE.getName());
             orderConf.setUserId(user.getId().intValue());
             orderConf.setUserName(user.getName());
             orderConf.setCreateTime(LocalDateTime.now());
@@ -136,7 +144,11 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         Long id = orderConf.getId();
         if(id == null){
             AuthUser user = baseService.getUser();
-            orderConf.setStatus("1");//状态(0无效 1有效)
+            if(ObjectUtil.isEmpty(user)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录");
+            }
+            orderConf.setStatusCode(OrderConfStatusEnum.PREPARE.getCode());
+            orderConf.setStatusName(OrderConfStatusEnum.PREPARE.getName());
             orderConf.setUserId(user.getId().intValue());
             orderConf.setUserName(user.getName());
             orderConf.setCreateTime(LocalDateTime.now());
@@ -172,7 +184,11 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         Long id = orderConf.getId();
         if(id == null){
             AuthUser user = baseService.getUser();
-            orderConf.setStatus("1");//状态(0无效 1有效)
+            if(ObjectUtil.isEmpty(user)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录");
+            }
+            orderConf.setStatusCode(OrderConfStatusEnum.PREPARE.getCode());
+            orderConf.setStatusName(OrderConfStatusEnum.PREPARE.getName());
             orderConf.setUserId(user.getId().intValue());
             orderConf.setUserName(user.getName());
             orderConf.setCreateTime(LocalDateTime.now());
@@ -242,7 +258,11 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         Long id = orderConf.getId();
         if(id == null){
             AuthUser user = baseService.getUser();
-            orderConf.setStatus("1");//状态(0无效 1有效)
+            if(ObjectUtil.isEmpty(user)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录");
+            }
+            orderConf.setStatusCode(OrderConfStatusEnum.PREPARE.getCode());
+            orderConf.setStatusName(OrderConfStatusEnum.PREPARE.getName());
             orderConf.setUserId(user.getId().intValue());
             orderConf.setUserName(user.getName());
             orderConf.setCreateTime(LocalDateTime.now());

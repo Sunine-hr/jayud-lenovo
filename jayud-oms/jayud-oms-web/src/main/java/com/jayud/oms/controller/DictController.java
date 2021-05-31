@@ -2,6 +2,7 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
@@ -16,13 +17,11 @@ import com.jayud.oms.service.IDictService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -95,5 +94,13 @@ public class DictController {
         return CommonResult.success(dict);
     }
 
+    @ApiOperation(value = "查询字典")
+    @PostMapping(value = "/findDict")
+    public CommonResult<List<Dict>> findDictType(@RequestParam("dictTypeCode") String dictTypeCode) {
+        QueryWrapper<Dict> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Dict::getDictTypeCode, dictTypeCode);
+        List<Dict> dictList = this.dictService.list(queryWrapper);
+        return CommonResult.success(dictList);
+    }
 }
 

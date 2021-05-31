@@ -123,6 +123,10 @@ public class CustomsOrderInfoVO {
     @ApiModelProperty(value = "监管方式")
     private String supervisionMode;
 
+//    @ApiModelProperty(value = "订单备注")
+//    private String orderRemarks;
+
+
     public void setGoodsTypeDesc(Integer goodsType) {
         if (goodsType == 1) {
             this.goodsTypeDesc = "进口";

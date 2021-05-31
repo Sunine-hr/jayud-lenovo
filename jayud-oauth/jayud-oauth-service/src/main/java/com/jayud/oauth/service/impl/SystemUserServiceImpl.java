@@ -406,6 +406,11 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         return this.baseMapper.selectList(condition);
     }
 
+    @Override
+    public List<SystemUser> getByCondition(SystemUser user) {
+        return this.baseMapper.selectList(new QueryWrapper<>(user));
+    }
+
     /**
      * 添加登录记录
      *

@@ -1607,7 +1607,7 @@ public class ExternalApiController {
     public ApiResult<Map<String, Map<String, BigDecimal>>> statisticalSupplierPayCostByOrderNos(@RequestParam("supplierId") Long supplierId,
                                                                                                 @RequestParam("orderNos") List<String> subOrderNos) {
         List<OrderPaymentCost> list = this.paymentCostService.getSupplierPayCostByOrderNos(supplierId, subOrderNos,
-                Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
+                Integer.valueOf(OrderStatusEnum.COST_3.getCode()));
         Map<String, Map<String, BigDecimal>> map = this.paymentCostService.statisticalPayCostByOrderNos(list, false);
         return ApiResult.ok(map);
     }

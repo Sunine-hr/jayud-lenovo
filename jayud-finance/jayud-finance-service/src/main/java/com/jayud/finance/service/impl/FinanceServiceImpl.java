@@ -60,7 +60,34 @@ public class FinanceServiceImpl implements FinanceService {
         }
     }
 
+    /**
+     * 推金蝶
+     *
+     * @param jsonObject
+     * @param auditStatus
+     * @return
+     */
     private boolean checkPushKingdee(JSONObject jsonObject, String auditStatus) {
+        //TODO 财务审核对账单通过和开票申请(付款申请)通过可以推送
+        if (BillEnum.B_4.getCode().equals(auditStatus)
+                || BillEnum.B_5.getCode().equals(auditStatus)
+                || BillEnum.B_5_1.getCode().equals(auditStatus)
+                || BillEnum.B_6.getCode().equals(auditStatus)
+                || BillEnum.B_6_1.getCode().equals(auditStatus)
+                || BillEnum.B_9.getCode().equals(auditStatus)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 校验反审核
+     *
+     * @param auditStatus
+     * @return
+     */
+    @Override
+    public boolean checkAntiAudite(String auditStatus) {
         //TODO 财务审核对账单通过和开票申请(付款申请)通过可以推送
         if (BillEnum.B_4.getCode().equals(auditStatus)
                 || BillEnum.B_5.getCode().equals(auditStatus)

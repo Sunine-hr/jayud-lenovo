@@ -152,6 +152,14 @@
         where order_id = #{orderId}
     </select>
 
+    
+    <select id="findOrderPickById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderPickVO">
+        select
+            t.id,t.order_id,t.pick_no,t.pick_status,t.warehouse_no,t.pick_time,t.assign_pick_time,t.weight,t.volume,t.total_carton,t.remark,t.address_id,t.create_time,t.transport_id,t.from_country,t.from_province,t.from_city,t.from_region,t.to_country,t.to_province,t.to_city,t.to_region,t.unit_price,t.cid,t.unit,t.status,t.count,t.amount,t.fee_remark
+        from order_pick t
+        where t.id = #{id}
+
+    </select>
 
 
 </mapper>

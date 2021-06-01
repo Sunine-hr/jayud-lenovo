@@ -806,13 +806,23 @@
     </select>
     <select id="findSupplierBillByPage" resultType="com.jayud.tms.model.vo.supplier.SupplierBill">
         select
+        tmp.subOrderId,
+        tmp.customer,
+        tmp.MONTH,
+        sum(tmp.orderNum) orderNum
+        from (
+        SELECT
         ot.id subOrderId,
         ot.legal_name customer,
-        DATE_FORMAT(ota.take_time,'%Y-%m') month,
-        count(distinct ot.id) orderNum
-        from
-        order_transport ot left join order_take_adr ota on ot.order_no=ota.order_no
-        and ota.opr_type=1
+        DATE_FORMAT(tmp1.take_time, '%Y-%m' ) MONTH,
+        count( DISTINCT ot.id ) orderNum
+        FROM
+        order_transport ot
+        LEFT JOIN
+        (select ota1.* from order_take_adr ota1,
+        (select min(ota2.id) id from order_take_adr ota2 where ota2.opr_type=1 group by ota2.order_no) ota3 where
+        ota1.id=ota3.id)
+        tmp1 ON ot.order_no = tmp1.order_no
         <where>
             ot.supplier_id = #{form.supplierId}
             <if test="form.customer !=null and form.customer !='' ">
@@ -822,9 +832,10 @@
                 and DATE_FORMAT(ota.take_time,'%Y-%m') between #{form.month[0]} and #{form.month[1]}
             </if>
         </where>
-        GROUP BY
-        DATE_FORMAT( ota.take_time, '%Y-%m')
-        order by ota.take_time desc
+        GROUP BY tmp1.order_no)
+        tmp
+        GROUP BY tmp.MONTH
+        ORDER BY tmp.MONTH DESC
     </select>
 
 

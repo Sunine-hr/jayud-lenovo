@@ -741,14 +741,14 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         });
         List<OrderTakeAdr> takeAdrs = this.orderTakeAdrService.getByTakeTime(month, "%Y-%m");
         Set<String> orderNos = new HashSet<>();
-        Map<String, List<String>> group = new HashMap<>();
+        Map<String, Set<String>> group = new HashMap<>();
 
         for (OrderTakeAdr takeAdr : takeAdrs) {
             orderNos.add(takeAdr.getOrderNo());
             String key = DateUtils.LocalDateTime2Str(takeAdr.getTakeTime(), "yyyy-MM");
-            List<String> data = group.get(key);
+            Set<String> data = group.get(key);
             if (data == null) {
-                List<String> tmp = new ArrayList<>();
+                Set<String> tmp = new HashSet<>();
                 tmp.add(takeAdr.getOrderNo());
                 group.put(key, tmp);
             } else {

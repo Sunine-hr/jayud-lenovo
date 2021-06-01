@@ -1547,6 +1547,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
                     }
                     orderCustomsForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
+                    orderCustomsForm.setMainOrderStatus(inputMainOrderForm.getStatus());
                     Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
                     if (!result) {//调用失败
                         return false;

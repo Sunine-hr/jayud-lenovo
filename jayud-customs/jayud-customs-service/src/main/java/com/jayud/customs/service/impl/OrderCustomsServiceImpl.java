@@ -143,6 +143,11 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     }
 
     private void sendEmail(InputOrderCustomsForm form, List<OrderCustoms> orderCustomsList) {
+        if (OrderStatusEnum.MAIN_1.getCode().equals(form.getMainOrderStatus())
+                || OrderStatusEnum.MAIN_4.getCode().equals(form.getMainOrderStatus())) {
+            return;
+        }
+
         // 获取收件人信息
         Map<String, Dict> transportToEmail = omsClient.findDictType("BGEmail").getData()
                 .stream().collect(Collectors.toMap(Dict::getCode, e -> e));

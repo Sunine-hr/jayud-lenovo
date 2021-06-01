@@ -1,6 +1,7 @@
 package com.jayud.mall.utils;
 
 import com.jayud.common.utils.SpringContextUtil;
+import com.jayud.mall.service.IIntoWarehouseNumberService;
 import com.jayud.mall.service.INumberGeneratedService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -55,6 +56,16 @@ public class NumberGeneratedUtils {
         INumberGeneratedService numberGeneratedService2 = SpringContextUtil2.getBean(INumberGeneratedService.class);
         String orderNoByCode = numberGeneratedService2.getOrderNoByCode(code);
         return orderNoByCode;
+    }
+
+    /**
+     * 获取进仓单号
+     * @return
+     */
+    public static String getWarehouseNo(){
+        IIntoWarehouseNumberService intoWarehouseNumberService = SpringContextUtil.getBean(IIntoWarehouseNumberService.class);
+        String warehouseNo = intoWarehouseNumberService.getWarehouseNo();
+        return warehouseNo;
     }
 
 

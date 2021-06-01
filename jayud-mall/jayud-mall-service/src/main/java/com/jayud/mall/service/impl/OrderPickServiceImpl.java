@@ -39,7 +39,7 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
             String pickNo = NumberGeneratedUtils.getOrderNoByCode2("pick_no");
             orderPickVO.setPickNo(pickNo);//提货单号
             orderPickVO.setPickStatus(1);//提货状态(1未提货 2正在提货 3已提货 4已到仓)
-            String warehouseNo = NumberGeneratedUtils.getOrderNoByCode2("warehouse_receipt");
+            String warehouseNo = NumberGeneratedUtils.getWarehouseNo();
             orderPickVO.setWarehouseNo(warehouseNo);//进仓单号
             orderPickVO.setAddressId(deliveryAddressVO.getId());
             orderPickVO.setContacts(deliveryAddressVO.getContacts());

@@ -539,7 +539,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<InputPaymentCostVO> payCost = inputPaymentCostVOS.stream()
                 .filter(e -> e.getSupplierId() == null
                         || (e.getSupplierId() != null
-                        && OrderStatusEnum.COST_2.getCode().equals(e.getStatus().toString()))).collect(Collectors.toList());
+                        && (OrderStatusEnum.COST_2.getCode().equals(e.getStatus().toString())
+                        || OrderStatusEnum.COST_3.getCode().equals(e.getStatus().toString())))).collect(Collectors.toList());
 
         List<InputReceivableCostVO> inputReceivableCostVOS = receivableCostService.findReceivableCost(form);
 

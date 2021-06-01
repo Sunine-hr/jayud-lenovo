@@ -196,6 +196,7 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
 
     /**
      * 下拉根据费用类别code查询费用名称
+     *
      * @return
      */
     @Override
@@ -216,15 +217,20 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
         }
         CostType costType = costTypes.get(0);
         QueryWrapper<CostInfo> condition = new QueryWrapper<>();
-        condition.lambda().like(CostInfo::getCids, costType.getId() + ",")
-                .or().eq(CostInfo::getCids, costType.getId());
+        condition.lambda().like(CostInfo::getCids, costType.getId());
+
         List<InitComboxStrVO> list = new ArrayList<>();
         for (CostInfo costInfo : this.baseMapper.selectList(condition)) {
-            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
-            initComboxStrVO.setId(costInfo.getId());
-            initComboxStrVO.setName(costInfo.getName());
-            initComboxStrVO.setCode(costInfo.getIdCode());
-            list.add(initComboxStrVO);
+            String[] split = costInfo.getCids().split(",");
+            for (String cid : split) {
+                if (costType.getId().equals(Long.valueOf(cid))) {
+                    InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+                    initComboxStrVO.setId(costInfo.getId());
+                    initComboxStrVO.setName(costInfo.getName());
+                    initComboxStrVO.setCode(costInfo.getIdCode());
+                    list.add(initComboxStrVO);
+                }
+            }
         }
         return list;
     }

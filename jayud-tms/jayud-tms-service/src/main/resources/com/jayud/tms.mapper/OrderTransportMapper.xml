@@ -118,7 +118,7 @@
         <result column="is_vehicle_weigh" property="isVehicleWeigh"/>
         <result column="supplier_id" property="supplierId"/>
         <association property="orderSendCars" javaType="com.jayud.tms.model.vo.OrderSendCarsInfoVO">
-            <id column="id" property="id"/>
+            <id column="sendCarId" property="id"/>
             <result column="transport_no" property="transportNo"/>
             <result column="order_no" property="orderNo"/>
             <result column="vehicle_type" property="vehicleType"/>
@@ -794,7 +794,7 @@
         ot.main_order_no,ot.order_no,ot.port_code,
         ot.goods_type,ot.vehicle_type,
         ot.vehicle_size,ot.unit_code,ot.legal_name,ot.legal_entity_id,ot.status,
-        oc.id, oc.transport_no, oc.order_no,oc.vehicle_type, oc.vehicle_size, oc.cntr_no, oc.cntr_pic,
+        oc.id sendCarId, oc.transport_no, oc.order_no,oc.vehicle_type, oc.vehicle_size, oc.cntr_no, oc.cntr_pic,
         oc.cntr_pic_name, oc.driver_info_id,
         oc.vehicle_id,oc.remarks, oc.describes, oc.status, oc.updated_time, oc.updated_user, oc.created_user,
         oc.created_time,oc.jockey_id,oc.jockey,oc.remarks

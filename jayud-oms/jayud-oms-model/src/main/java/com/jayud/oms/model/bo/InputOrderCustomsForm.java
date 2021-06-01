@@ -110,6 +110,9 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "订单备注")
     private String orderRemarks;
 
+    @ApiModelProperty(value = "子订单状态")
+    private Integer mainOrderStatus;
+
 
     public void checkCustomsInfoParam() {
         String title = "报关:";
@@ -141,7 +144,7 @@ public class InputOrderCustomsForm {
         }
         //只用中港才有六联单号
         if ("1".equals(this.bizModel)) {
-            if ( StringUtil.isNullOrEmpty(this.getEncode())) {//六联单号
+            if (StringUtil.isNullOrEmpty(this.getEncode())) {//六联单号
                 sb.append("六联单号").append("参数不能为空").append(",");
                 isSuccess = false;
             }

@@ -103,4 +103,7 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "订单备注")
     private String orderRemarks;
 
+    @ApiModelProperty(value = "主订单状态")
+    private String mainOrderStatus;
+
 }

@@ -233,7 +233,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
                     }
                 }
             }
-            if (StringUtils.isEmpty(systemUser.getPassword())) {
+            if (StringUtils.isEmpty(systemUser1.getPassword())) {
                 systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
             }
 

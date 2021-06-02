@@ -143,8 +143,8 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     }
 
     private void sendEmail(InputOrderCustomsForm form, List<OrderCustoms> orderCustomsList) {
-        if (OrderStatusEnum.MAIN_1.getCode().equals(form.getMainOrderStatus())
-                || OrderStatusEnum.MAIN_4.getCode().equals(form.getMainOrderStatus())) {
+        if (!OrderStatusEnum.MAIN_1.getCode().equals(form.getMainOrderStatus())
+                && !OrderStatusEnum.MAIN_4.getCode().equals(form.getMainOrderStatus())) {
             return;
         }
 

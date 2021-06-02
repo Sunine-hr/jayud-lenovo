@@ -2,6 +2,7 @@ package com.jayud.oms.model.bo;
 
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -144,15 +145,17 @@ public class InputOrderCustomsForm {
         }
         //只用中港才有六联单号
         if ("1".equals(this.bizModel)) {
-            if (StringUtil.isNullOrEmpty(this.getEncode())) {//六联单号
-                sb.append("六联单号").append("参数不能为空").append(",");
-                isSuccess = false;
-            }
-            //六联单号必须为13位的纯数字
-            String encode = this.getEncode();
-            if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
-                sb.append("六联单号必须为13位的纯数字").append(",");
-                isSuccess = false;
+//            if (StringUtil.isNullOrEmpty(this.getEncode())) {//六联单号
+//                sb.append("六联单号").append("参数不能为空").append(",");
+//                isSuccess = false;
+//            }
+            if (!StringUtils.isEmpty(this.getEncode())) {
+                //六联单号必须为13位的纯数字
+                String encode = this.getEncode();
+                if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
+                    sb.append("六联单号必须为13位的纯数字").append(",");
+                    isSuccess = false;
+                }
             }
         }
 

@@ -627,7 +627,7 @@ public class OrderInfoController {
     @ApiOperation(value = "订单-计算订单费用")
     @ApiOperationSupport(order = 17)
     @PostMapping("/calcOrderCopeReceivable")
-    public CommonResult<OrderInfoVO> calcOrderCopeReceivable(OrderInfoForm form){
+    public CommonResult<OrderInfoVO> calcOrderCopeReceivable(@Valid @RequestBody OrderInfoForm form){
         //1.先暂存
         CommonResult<OrderInfoVO> orderInfoVOCommonResult = orderInfoService.temporaryStorageOrderInfo(form);
         OrderInfoVO orderInfoVO = orderInfoVOCommonResult.getData();

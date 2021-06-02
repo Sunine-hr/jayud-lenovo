@@ -16,6 +16,7 @@ import com.jayud.mall.service.IOrderPickService;
 import com.jayud.mall.utils.NumberGeneratedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -86,13 +87,22 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         String warehouseNo = orderPickVO.getWarehouseNo();
         Long orderId = orderPickVO.getOrderId();
         Integer totalCarton = orderPickVO.getTotalCarton();
+        int num = 0;//当前提货信息表，在订单提货中排第几个 从0开始
+        List<OrderPickVO> orderPickVOList = orderPickMapper.findOrderPickByOrderId(orderId);
+        for (int i=0; i<orderPickVOList.size(); i++){
+            OrderPickVO orderPickVO1 = orderPickVOList.get(i);
+            String warehouseNo1 = orderPickVO1.getWarehouseNo();
+            if(warehouseNo.equals(warehouseNo1)){
+                num = i;
+                break;
+            }
+        }
         OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(orderId);
         if(ObjectUtil.isEmpty(orderInfoVO)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单不存在");
         }
         Integer offerInfoId = orderInfoVO.getOfferInfoId();
         String storeGoodsWarehouseCode = orderInfoVO.getStoreGoodsWarehouseCode();
-
         OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(Long.valueOf(offerInfoId));
         if(ObjectUtil.isEmpty(offerInfoVO)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "报价不存在");
@@ -106,9 +116,32 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         String addressFirst = shippingAreaVO.getAddressFirst();
         String contacts = shippingAreaVO.getContacts();
         String contactPhone = shippingAreaVO.getContactPhone();
-        List<OrderCaseVO> orderCaseVOS = orderCaseMapper.findOrderCaseByOrderId(orderId);
+        List<OrderCaseVO> orderCaseVOS = orderCaseMapper.findOrderCaseByOrderId(orderId);//订单箱号
+        List<MarkVO> markList = new ArrayList<>();
         if(CollUtil.isNotEmpty(orderCaseVOS)){
-            //todo
+            int begin = 0;
+            int end = 0;
+            if(num == 0){
+                begin = 0;
+                end = totalCarton;
+            }else{
+                for (int i=0; i<num; i++){
+                    OrderPickVO orderPickVO1 = orderPickVOList.get(i);
+                    Integer totalCarton1 = orderPickVO1.getTotalCarton();
+                    begin += totalCarton1;
+                }
+                end = begin + orderPickVOList.get(num).getTotalCarton();
+            }
+            for(int i=begin; i<end; i++){
+                OrderCaseVO orderCaseVO = orderCaseVOS.get(i);
+                MarkVO markVO = new MarkVO();
+                markVO.setCartonNo(orderCaseVO.getCartonNo());
+                markVO.setWarehouseNo(warehouseNo);
+                int r = i+1;//单箱数量 i默认从0加上，所以加上1
+                Integer totalCarton1 = orderPickVOList.get(num).getTotalCarton();//当前批次总箱数
+                markVO.setCartonRatio(r+"/"+totalCarton1);//箱数比例(第几箱，第几份) 1/10  2/10 3/10 ... 10/10
+                markList.add(markVO);
+            }
         }
         OrderWarehouseNoVO orderWarehouseNoVO = new OrderWarehouseNoVO();
         orderWarehouseNoVO.setWarehouseNo(warehouseNo);
@@ -116,16 +149,24 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         orderWarehouseNoVO.setJcTime(jcTime);
         orderWarehouseNoVO.setTotalCarton(totalCarton);
         orderWarehouseNoVO.setWarehouseAddress(addressFirst);
-        orderWarehouseNoVO.setContacts(contacts + " " + contactPhone);
-
-
-
-        return null;
+        orderWarehouseNoVO.setContacts(contacts+" "+contactPhone);
+        orderWarehouseNoVO.setMarkList(markList);
+        return orderWarehouseNoVO;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public OrderWarehouseNoVO downloadWarehouseNoByOrderId(Long id) {
-        //todo
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(id);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单不存在");
+        }
+        Integer isPick = orderInfoVO.getIsPick();//是否上门提货(0否 1是,order_pick)
+        if(isPick == 1){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "此订单的进仓单，在提货地址下下载");
+        }
+
+
         return null;
     }
 }

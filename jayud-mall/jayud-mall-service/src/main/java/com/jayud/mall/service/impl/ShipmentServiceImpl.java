@@ -209,7 +209,7 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             orderInfo.setCreateUserName(shipmentVO.getCustomerUserName());//创建人名称(customer user_name)
             orderInfo.setOrderOrigin("2");//订单来源(1web端 2新智慧同步)
 
-            orderInfo.setRemark("新智慧同步订单");
+            orderInfo.setRemark("旧系统同步订单");
             if(ObjectUtil.isNotEmpty(shipmentVO.getChargeable_weight())){
                 orderInfo.setChargeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//收费重(KG)
                 orderInfo.setVolumeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//材积重(KG),默认等于 收费重(KG)
@@ -264,7 +264,7 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             orderInfo.setCreateUserName(shipmentVO.getCustomerUserName());//创建人名称(customer user_name)
             orderInfo.setOrderOrigin("2");//订单来源(1web端 2新智慧同步)
 
-            orderInfo.setRemark("新智慧同步订单");
+            orderInfo.setRemark("旧系统同步订单");
             if(ObjectUtil.isNotEmpty(shipmentVO.getChargeable_weight())){
                 orderInfo.setChargeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//收费重(KG)
                 orderInfo.setVolumeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//材积重(KG),默认等于 收费重(KG)

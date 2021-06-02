@@ -179,7 +179,7 @@ public class OrderTransportInfoVO extends Model<OrderTransportInfoVO> {
     private Double totalWeight;
 
     @ApiModelProperty(value = "总件数")
-    private Double totalNum;
+    private Integer totalNum;
 
     @Override
     protected Serializable pkVal() {

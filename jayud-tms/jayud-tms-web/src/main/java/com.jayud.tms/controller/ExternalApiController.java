@@ -335,6 +335,18 @@ public class ExternalApiController {
         List<OrderTransport> list = this.orderTransportService.preconditionsGoCustomsAudit();
         return ApiResult.ok(list);
     }
+
+    /**
+     * 根据单个主订单获取子订单详情
+     */
+    @RequestMapping(value = "/api/getInfoByMainOrderNo")
+    public ApiResult<OrderTransportInfoVO> getInfoByMainOrderNo(@RequestParam("mainOrderNo") String mainOrderNo) {
+        QueryWrapper<OrderTransport> condition = new QueryWrapper<>();
+        condition.lambda().select(OrderTransport::getId).eq(OrderTransport::getMainOrderNo, mainOrderNo);
+        OrderTransport tmsOrder = this.orderTransportService.getOne(condition);
+        OrderTransportInfoVO details = this.orderTransportService.getDetailsById(tmsOrder.getId());
+        return ApiResult.ok(details);
+    }
 }
 
 

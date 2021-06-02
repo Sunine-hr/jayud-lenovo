@@ -149,4 +149,10 @@ public interface TmsClient {
      */
     @RequestMapping(value = "/api/getTmsOrderInfoByMainOrderNos")
     public ApiResult getTmsOrderInfoByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos);
+
+    /**
+     * 根据单个主订单获取子订单详情
+     */
+    @RequestMapping(value = "/api/getInfoByMainOrderNo")
+    public ApiResult getInfoByMainOrderNo(@RequestParam("mainOrderNo") String mainOrderNo);
 }

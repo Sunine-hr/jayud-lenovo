@@ -20,16 +20,11 @@ import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.feign.TmsClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.enums.VehicleTypeEnum;
-import com.jayud.oms.model.po.LogisticsTrack;
-import com.jayud.oms.model.po.OrderPaymentCost;
-import com.jayud.oms.model.po.OrderReceivableCost;
-import com.jayud.oms.model.po.ProductClassify;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.model.vo.cost.CostOrderDetailsVO;
-import com.jayud.oms.service.ILogisticsTrackService;
-import com.jayud.oms.service.IOrderInfoService;
-import com.jayud.oms.service.IProductClassifyService;
-import com.jayud.oms.service.IVehicleInfoService;
+import com.jayud.oms.model.vo.worksheet.TmsWorksheet;
+import com.jayud.oms.service.*;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,10 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.io.File;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @RestController
@@ -68,6 +60,8 @@ public class OrderCommonController {
     private TmsClient tmsClient;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private IProductBizService productBizService;
 
     @ApiOperation(value = "录入费用")
     @PostMapping(value = "/saveOrUpdateCost")
@@ -420,12 +414,22 @@ public class OrderCommonController {
 
     @ApiOperation(value = "工作表")
     @PostMapping(value = "/worksheet")
-    public CommonResult worksheet(@RequestBody Map<String, Object> map) {
-        String mainOrderNo = MapUtil.getStr(map, "mainOrderNo");
-        if (StringUtils.isEmpty(mainOrderNo)) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR);
-        }
-//        this.orderInfoService.get()
+    public CommonResult worksheet(@RequestBody @Valid GetOrderDetailForm form) {
+
+//        List<OrderInfo> orderNos = this.orderInfoService.getByOrderNos(Collections.singletonList(mainOrderNo));
+//        if (CollectionUtils.isEmpty(orderNos)) {
+//            return CommonResult.error(ResultEnum.PARAM_ERROR);
+//        }
+//        OrderInfo orderInfo = orderNos.get(0);
+//        Object data = this.tmsClient.getInfoByMainOrderNo(orderInfo.getOrderNo()).getData();
+//        if (data == null) {
+//            return CommonResult.success();
+//        }
+        InputOrderVO orderDetail = this.orderInfoService.getOrderDetail(form);
+//        ProductBiz productBiz = this.productBizService.getProductBizByCode(orderInfo.getBizCode());
+        TmsWorksheet tmsWorksheet = new TmsWorksheet().assemblyData(orderDetail);
+
+
 
         return CommonResult.success();
     }

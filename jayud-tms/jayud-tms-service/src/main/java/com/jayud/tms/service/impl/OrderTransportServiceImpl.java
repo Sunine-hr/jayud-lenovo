@@ -636,11 +636,13 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         orderTransportInfoVO.assemblyDriverInfo(driverInfos);
 
         AtomicReference<Double> totalWeight = new AtomicReference<>(0.0);
+        AtomicReference<Integer> totalNum = new AtomicReference<>(0);
         orderTransportInfoVO.getPickUpAddress().forEach(e -> {
             e.sortData(prePath);
             totalWeight.updateAndGet(v -> v + e.getWeight());
+            totalNum.updateAndGet(v -> v + e.getPieceAmount());
         });
-        orderTransportInfoVO.setTotalWeight(totalWeight.get());
+        orderTransportInfoVO.setTotalWeight(totalWeight.get()).setTotalNum(totalNum.get());
         orderTransportInfoVO.getDeliveryAddress().forEach(e -> e.sortData(prePath));
 
         return orderTransportInfoVO;

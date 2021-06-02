@@ -217,7 +217,7 @@ public class OrderCaseServiceImpl extends ServiceImpl<OrderCaseMapper, OrderCase
                     chargeWeight = minimumQuantity;
                 }
             }
-            orderCaseVO.setAsnVolume(volume);//重量
+            orderCaseVO.setAsnVolume(volume);//体积
             orderCaseVO.setVolumeWeight(volumeWeight);//材积重
             orderCaseVO.setChargeWeight(chargeWeight);//收费重
         }

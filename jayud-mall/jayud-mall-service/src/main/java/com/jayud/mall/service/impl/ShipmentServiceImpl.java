@@ -504,10 +504,20 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                 orderCase.setAsnWidth(parcelsJsonObject.get("client_width", BigDecimal.class));//客户测量的宽度，单位cm
                 orderCase.setAsnHeight(parcelsJsonObject.get("client_height", BigDecimal.class));//客户测量的高度，单位cm
                 orderCase.setAsnWeight(parcelsJsonObject.get("client_weight", BigDecimal.class));//客户测量的重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal asnVolume = orderCase.getAsnLength().multiply(orderCase.getAsnWidth()).multiply(orderCase.getAsnHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setAsnVolume(asnVolume);
+
                 orderCase.setConfirmLength(parcelsJsonObject.get("chargeable_length", BigDecimal.class));//最终确认长度，单位cm
                 orderCase.setConfirmWidth(parcelsJsonObject.get("chargeable_width", BigDecimal.class));//最终确认宽度，单位cm
                 orderCase.setConfirmHeight(parcelsJsonObject.get("chargeable_height", BigDecimal.class));//最终确认高度，单位cm
                 orderCase.setConfirmWeight(parcelsJsonObject.get("chargeable_weight", BigDecimal.class));//最终确认重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal confirmVolume = orderCase.getConfirmLength().multiply(orderCase.getConfirmWidth()).multiply(orderCase.getConfirmHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setConfirmVolume(confirmVolume);
+
                 Long picking_time = parcelsJsonObject.get("picking_time", Long.class);
                 if(ObjectUtil.isNotEmpty(picking_time)){
                     long l = picking_time*1000L;//秒转为毫秒
@@ -524,10 +534,20 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                 orderCase.setAsnWidth(parcelsJsonObject.get("client_width", BigDecimal.class));//客户测量的宽度，单位cm
                 orderCase.setAsnHeight(parcelsJsonObject.get("client_height", BigDecimal.class));//客户测量的高度，单位cm
                 orderCase.setAsnWeight(parcelsJsonObject.get("client_weight", BigDecimal.class));//客户测量的重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal asnVolume = orderCase.getAsnLength().multiply(orderCase.getAsnWidth()).multiply(orderCase.getAsnHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setAsnVolume(asnVolume);
+
                 orderCase.setConfirmLength(parcelsJsonObject.get("chargeable_length", BigDecimal.class));//最终确认长度，单位cm
                 orderCase.setConfirmWidth(parcelsJsonObject.get("chargeable_width", BigDecimal.class));//最终确认宽度，单位cm
                 orderCase.setConfirmHeight(parcelsJsonObject.get("chargeable_height", BigDecimal.class));//最终确认高度，单位cm
                 orderCase.setConfirmWeight(parcelsJsonObject.get("chargeable_weight", BigDecimal.class));//最终确认重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal confirmVolume = orderCase.getConfirmLength().multiply(orderCase.getConfirmWidth()).multiply(orderCase.getConfirmHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setConfirmVolume(confirmVolume);
+
                 Long picking_time = parcelsJsonObject.get("picking_time", Long.class);
                 if(ObjectUtil.isNotEmpty(picking_time)){
                     long l = picking_time*1000L;//秒转为毫秒

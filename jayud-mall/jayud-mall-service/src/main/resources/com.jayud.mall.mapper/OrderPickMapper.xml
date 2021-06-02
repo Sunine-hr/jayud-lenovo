@@ -29,7 +29,7 @@
         from order_pick t
         LEFT JOIN delivery_address t1 on t1.id = t.address_id
         where order_id = #{orderId}
-        order by t.warehouse_no desc
+        order by t.warehouse_no asc
     </select>
 
     <select id="findOrderPickByPage" parameterType="com.jayud.mall.model.bo.QueryOrderPickForm"

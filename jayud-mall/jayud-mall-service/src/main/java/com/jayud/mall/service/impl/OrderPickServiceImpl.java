@@ -132,12 +132,13 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
                 }
                 end = begin + orderPickVOList.get(num).getTotalCarton();
             }
+            int r = 0;
             for(int i=begin; i<end; i++){
                 OrderCaseVO orderCaseVO = orderCaseVOS.get(i);
                 MarkVO markVO = new MarkVO();
                 markVO.setCartonNo(orderCaseVO.getCartonNo());
                 markVO.setWarehouseNo(warehouseNo);
-                int r = i+1;//单箱数量 i默认从0加上，所以加上1
+                r = r+1;//单箱数量 默认0加上，所以加上1
                 Integer totalCarton1 = orderPickVOList.get(num).getTotalCarton();//当前批次总箱数
                 markVO.setCartonRatio(r+"/"+totalCarton1);//箱数比例(第几箱，第几份) 1/10  2/10 3/10 ... 10/10
                 markList.add(markVO);
@@ -165,8 +166,45 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         if(isPick == 1){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "此订单的进仓单，在提货地址下下载");
         }
-
-
-        return null;
+        String warehouseNo = orderInfoVO.getWarehouseNo();
+        Long orderId = orderInfoVO.getId();
+        Integer offerInfoId = orderInfoVO.getOfferInfoId();
+        String storeGoodsWarehouseCode = orderInfoVO.getStoreGoodsWarehouseCode();
+        OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(Long.valueOf(offerInfoId));
+        if(ObjectUtil.isEmpty(offerInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "报价不存在");
+        }
+        LocalDateTime sailTime = offerInfoVO.getSailTime();
+        LocalDateTime jcTime = offerInfoVO.getJcTime();
+        ShippingAreaVO shippingAreaVO = shippingAreaMapper.findShippingAreaByWarehouseCode(storeGoodsWarehouseCode);
+        if(ObjectUtil.isEmpty(shippingAreaVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "集货仓库不存在");
+        }
+        String addressFirst = shippingAreaVO.getAddressFirst();
+        String contacts = shippingAreaVO.getContacts();
+        String contactPhone = shippingAreaVO.getContactPhone();
+        List<OrderCaseVO> orderCaseVOS = orderCaseMapper.findOrderCaseByOrderId(orderId);//订单箱号
+        Integer totalCarton = orderCaseVOS.size();//直接将订单下的所有箱号，作为总箱数
+        List<MarkVO> markList = new ArrayList<>();
+        if(CollUtil.isNotEmpty(orderCaseVOS)){
+            for(int i=0; i<orderCaseVOS.size(); i++){
+                OrderCaseVO orderCaseVO = orderCaseVOS.get(i);
+                MarkVO markVO = new MarkVO();
+                markVO.setCartonNo(orderCaseVO.getCartonNo());
+                markVO.setWarehouseNo(warehouseNo);
+                int r = i+1;//单箱数量 i默认从0加上，所以加上1
+                markVO.setCartonRatio(r+"/"+totalCarton);//箱数比例(第几箱，第几份) 1/10  2/10 3/10 ... 10/10
+                markList.add(markVO);
+            }
+        }
+        OrderWarehouseNoVO orderWarehouseNoVO = new OrderWarehouseNoVO();
+        orderWarehouseNoVO.setWarehouseNo(warehouseNo);
+        orderWarehouseNoVO.setSailTime(sailTime);
+        orderWarehouseNoVO.setJcTime(jcTime);
+        orderWarehouseNoVO.setTotalCarton(totalCarton);
+        orderWarehouseNoVO.setWarehouseAddress(addressFirst);
+        orderWarehouseNoVO.setContacts(contacts+" "+contactPhone);
+        orderWarehouseNoVO.setMarkList(markList);
+        return orderWarehouseNoVO;
     }
 }

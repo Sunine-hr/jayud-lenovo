@@ -2213,6 +2213,32 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         this.saveOrUpdate(orderInfo);
     }
 
+    @Override
+    public void orderCaseReceipt(OrderCaseReceiptForm form) {
+        String cartonNo = form.getCartonNo();
+        OrderCaseVO orderCaseVO = orderCaseMapper.findOrderCaseByCartonNo(cartonNo);
+        if(ObjectUtil.isEmpty(orderCaseVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单箱号不存在");
+        }
+        OrderCase orderCase = ConvertUtil.convert(orderCaseVO, OrderCase.class);
+
+        BigDecimal wmsLength = form.getWmsLength();
+        BigDecimal wmsWidth = form.getWmsWidth();
+        BigDecimal wmsHeight = form.getWmsHeight();
+        BigDecimal wmsWeight = form.getWmsWeight();
+        orderCase.setWmsLength(wmsLength);
+        orderCase.setWmsHeight(wmsHeight);
+        orderCase.setWmsWidth(wmsWidth);
+        orderCase.setWmsWeight(wmsWeight);
+
+        //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+        BigDecimal wmsVolume = wmsLength.multiply(wmsWidth).multiply(wmsHeight).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+        orderCase.setWmsVolume(wmsVolume);
+        orderCase.setWmsWeighDate(LocalDateTime.now());
+
+        orderCaseService.saveOrUpdate(orderCase);
+    }
+
     private String extracted(String url, Map<String, Object> requestMap) {
         String feedback = HttpRequest
                 .post(url)

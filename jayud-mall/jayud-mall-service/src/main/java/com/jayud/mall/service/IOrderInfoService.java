@@ -289,4 +289,9 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     void fillMaterial(OrderInfoFillForm form);
 
+    /**
+     * 订单-仓库收货(订单箱号收货)
+     * @param form
+     */
+    void orderCaseReceipt(OrderCaseReceiptForm form);
 }

@@ -349,5 +349,13 @@ public class OrderInfoController {
         return CommonResult.success("操作成功");
     }
 
+    //订单-仓库收货(订单箱号收货)
+    @ApiOperation(value = "订单-仓库收货(订单箱号收货)")
+    @ApiOperationSupport(order = 30)
+    @PostMapping("/orderCaseReceipt")
+    public CommonResult orderCaseReceipt(@Valid @RequestBody OrderCaseReceiptForm form){
+        orderInfoService.orderCaseReceipt(form);
+        return CommonResult.success("操作成功");
+    }
 
 }

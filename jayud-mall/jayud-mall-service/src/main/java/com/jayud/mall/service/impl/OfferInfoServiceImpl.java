@@ -562,16 +562,16 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
                 BigDecimal max = oceanFeeList.get(0).getAmount();//最大值
                 Integer cid = oceanFeeList.get(0).getCid();
                 for (int i =1; i<oceanFeeList.size(); i++){
-                    BigDecimal amount = oceanFeeList.get(i).getAmount();
+                    BigDecimal unitPrice = oceanFeeList.get(i).getUnitPrice();//最小值 最大值 用单价
                     Integer cid2 = oceanFeeList.get(i).getCid();
-                    if(cid != cid2){
+                    if(!cid.equals(cid2)){
                         cid = cid2;
                     }
-                    if(min.compareTo(amount) == 1){ //min > amount
-                        min = amount;
+                    if(min.compareTo(unitPrice) == 1){ //min > amount
+                        min = unitPrice;
                     }
-                    if(max.compareTo(amount) == -1 ){ //max < amount
-                        max = amount;
+                    if(max.compareTo(unitPrice) == -1 ){ //max < amount
+                        max = unitPrice;
                     }
                     minMap.put(cid, min);
                     maxMap.put(cid, max);

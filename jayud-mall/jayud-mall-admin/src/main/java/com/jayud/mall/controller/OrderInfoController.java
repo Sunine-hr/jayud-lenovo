@@ -304,7 +304,7 @@ public class OrderInfoController {
     }
 
     // 后台-订单确认
-    @ApiOperation(value = "订单下单-提交订单(新智慧订单)")
+    @ApiOperation(value = "后台-订单确认")
     @ApiOperationSupport(order = 25)
     @PostMapping("/afterAffirm")
     public CommonResult<OrderInfoVO> afterAffirm(@Valid @RequestBody OrderInfoParaForm form){
@@ -346,9 +346,8 @@ public class OrderInfoController {
     @PostMapping("/fillMaterial")
     public CommonResult fillMaterial(@Valid @RequestBody OrderInfoFillForm form){
         orderInfoService.fillMaterial(form);
-        return CommonResult.success();
+        return CommonResult.success("操作成功");
     }
-
 
 
 }

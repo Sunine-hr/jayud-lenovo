@@ -2186,7 +2186,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         OrderInfo orderInfo = ConvertUtil.convert(orderInfoVO, OrderInfo.class);
         String afterStatusCode = orderInfo.getAfterStatusCode();
         if(!afterStatusCode.equals(OrderEnum.AFTER_RECEIVED.getCode())){
-            //AFTER_RECEIVED("20", "已收货"),  只有已收货状态，才能进行订单确认
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单状态错误，不能确认");
         }
         orderInfo.setAfterStatusCode(OrderEnum.AFTER_AFFIRM.getCode());

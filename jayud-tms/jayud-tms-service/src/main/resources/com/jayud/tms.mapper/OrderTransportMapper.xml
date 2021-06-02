@@ -738,14 +738,7 @@
                 </otherwise>
             </choose>
 
-            <choose>
-                <when test="status== 'T_8'">
-                    group by ot.status in ('T_8','T_9_1','T_9_2')
-                </when>
-                <when test="status != 'HK_C_1'">
-                    group by ot.status
-                </when>
-            </choose>
+
 
             <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
                 <choose>
@@ -760,6 +753,15 @@
                     #{companyId}
                 </foreach>
             </if>
+
+            <choose>
+                <when test="status== 'T_8'">
+                    group by ot.status in ('T_8','T_9_1','T_9_2')
+                </when>
+                <when test="status != 'HK_C_1'">
+                    group by ot.status
+                </when>
+            </choose>
 
             <!--            <if test="legalIds != null and legalIds.size>0">-->
             <!--                and ot.`legal_entity_id` in-->

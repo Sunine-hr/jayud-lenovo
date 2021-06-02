@@ -156,6 +156,9 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "补充资料说明")
     private String fillMaterialDescription;
 
+    @ApiModelProperty(value = "进仓单号")
+    private String warehouseNo;
+
     /*订单对应报关文件：order_customs_file*/
     @ApiModelProperty(value = "订单对应报关文件list", position = 25)
     @JSONField(ordinal = 25)

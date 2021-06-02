@@ -26,6 +26,7 @@ import com.jayud.mall.model.vo.*;
 import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.model.vo.domain.CustomerUser;
 import com.jayud.mall.service.*;
+import com.jayud.mall.utils.NumberGeneratedUtils;
 import com.jayud.mall.utils.SnowflakeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
@@ -1158,6 +1159,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfo.setActualVolume(totalAsnVolume);
         orderInfo.setTotalCartons(totalCase);
 
+        Integer isPick1 = orderInfo.getIsPick();//是否上门提货(0否 1是,order_pick)
+        if(isPick1.equals(0)){
+            String warehouseNo1 = orderInfo.getWarehouseNo();
+            if(ObjectUtil.isEmpty(warehouseNo1)){
+                String warehouseNo = NumberGeneratedUtils.getWarehouseNo();
+                orderInfo.setWarehouseNo(warehouseNo);//订单提交时，判断是否生成进仓单号
+            }
+        }
         this.saveOrUpdate(orderInfo);
 
         //保存订单内部流程状态

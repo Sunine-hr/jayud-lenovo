@@ -157,6 +157,9 @@ public class OrderInfoForm {
     @ApiModelProperty(value = "补充资料说明")
     private String fillMaterialDescription;
 
+    @ApiModelProperty(value = "进仓单号")
+    private String warehouseNo;
+
     /*订单对应箱号信息:order_case*/
     @ApiModelProperty(value = "订单对应箱号信息list", position = 25)
     @JSONField(ordinal = 25)

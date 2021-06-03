@@ -41,7 +41,7 @@ public class SupplierBill {
             billAmount.append(v).append(k).append("</br>");
             billAmountStr.append(v).append(k).append(",");
         });
-        this.billAmount = billAmount.toString();
-        this.billAmountStr = billAmountStr.toString();
+        this.billAmount = billAmount.length() > 0 ? billAmount.toString() : "0";
+        this.billAmountStr = billAmountStr.length() > 0 ? billAmountStr.toString() : "0";
     }
 }

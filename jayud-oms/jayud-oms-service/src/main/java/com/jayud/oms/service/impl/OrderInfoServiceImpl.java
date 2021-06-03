@@ -910,7 +910,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     List<FileView> attachments = this.logisticsTrackService.getAttachments(subOrder.getSubOrderId()
                             , BusinessTypeEnum.BG.getCode(), prePath);//节点附件
                     allPics.addAll(attachments);
-                    subOrder.setFileViews(attachments);
+                    if (CollectionUtils.isEmpty(subOrder.getFileViews())) {
+                        subOrder.setFileViews(attachments);
+                    } else {
+                        subOrder.getFileViews().addAll(attachments);
+                    }
+
                     //结算单位名称
                     CustomerInfo customerInfo = customerInfoService.getByCode(subOrder.getUnitCode());
                     if (customerInfo != null) {

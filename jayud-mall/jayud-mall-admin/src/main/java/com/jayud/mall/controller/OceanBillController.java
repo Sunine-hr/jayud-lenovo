@@ -422,7 +422,7 @@ public class OceanBillController {
     //查询-提单关联订单(任务通知表)
     @ApiOperation(value = "查询-提单关联订单(任务通知表)")
     @ApiOperationSupport(order = 31)
-    @GetMapping(value = "/findBillOrderRelevanceByBillId")
+    @PostMapping(value = "/findBillOrderRelevanceByBillId")
     public CommonResult<List<BillOrderRelevance>> findBillOrderRelevanceByBillId(@Valid @RequestBody OceanBillParaForm form){
         Long billId = form.getId();
         List<BillOrderRelevance> billOrderRelevances = billOrderRelevanceService.findBillOrderRelevanceByBillId(billId);
@@ -432,7 +432,7 @@ public class OceanBillController {
     //修改-提单关联订单(任务通知表)
     @ApiOperation(value = "修改-提单关联订单(任务通知表)")
     @ApiOperationSupport(order = 32)
-    @GetMapping(value = "/updateBillOrderRelevance")
+    @PostMapping(value = "/updateBillOrderRelevance")
     public CommonResult updateBillOrderRelevance(@Valid @RequestBody List<BillOrderRelevance> form){
         billOrderRelevanceService.updateBillOrderRelevance(form);
         return CommonResult.success("修改成功");

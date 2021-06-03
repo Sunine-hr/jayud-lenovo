@@ -49,5 +49,13 @@
             and t.cost_item_id = #{form.costItemId}
         </if>
     </select>
+    
+    <select id="findSupplierServeBySupplierInfoId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.SupplierServeVO">
+        select
+            t.id,t.supplier_info_id,t.service_type_id,t.serve_code,t.serve_name,t.effective_date,t.expiry_date,t.status,t.user_id,t.user_name,t.create_time
+        from supplier_serve t
+        where 1=1
+          and t.supplier_info_id = #{supplierInfoId}
+    </select>
 
 </mapper>

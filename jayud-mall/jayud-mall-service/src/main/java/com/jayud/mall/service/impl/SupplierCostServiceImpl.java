@@ -4,6 +4,7 @@ import com.jayud.mall.model.bo.SupplierCostForm;
 import com.jayud.mall.model.po.SupplierCost;
 import com.jayud.mall.mapper.SupplierCostMapper;
 import com.jayud.mall.model.vo.SupplierCostVO;
+import com.jayud.mall.model.vo.SupplierServeVO;
 import com.jayud.mall.service.ISupplierCostService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,10 @@ public class SupplierCostServiceImpl extends ServiceImpl<SupplierCostMapper, Sup
     public List<SupplierCostVO> findSupplierCost(SupplierCostForm form) {
         List<SupplierCostVO> supplierCostVOS = supplierCostMapper.findSupplierCost(form);
         return supplierCostVOS;
+    }
+
+    @Override
+    public List<SupplierServeVO> findSupplierServeBySupplierInfoId(Long supplierInfoId) {
+        return supplierCostMapper.findSupplierServeBySupplierInfoId(supplierInfoId);
     }
 }

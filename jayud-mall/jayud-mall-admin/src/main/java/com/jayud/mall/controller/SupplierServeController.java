@@ -3,13 +3,13 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.QuerySupplierServeForm;
-import com.jayud.mall.model.bo.SupplierServeForm;
-import com.jayud.mall.model.bo.SupplierServeIdForm;
-import com.jayud.mall.model.bo.SupplierServeStatusForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.SupplierServeVO;
 import com.jayud.mall.service.ISupplierServeService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/supplierserve")
@@ -58,6 +59,15 @@ public class SupplierServeController {
     public CommonResult disableEnabledSupplierServe(@Valid @RequestBody SupplierServeStatusForm form){
         supplierServeService.disableEnabledSupplierServe(form);
         return CommonResult.success("操作成功");
+    }
+
+    @ApiOperation(value = "根据供应商id，查询供应商服务")
+    @PostMapping("/findSupplierServeBySupplierInfoId")
+    @ApiOperationSupport(order = 5)
+    public CommonResult<List<SupplierServeVO>> findSupplierServeBySupplierInfoId(@Valid @RequestBody SupplierServeSupplierInfoIdForm form){
+        Long supplierInfoId = form.getSupplierInfoId();
+        List<SupplierServeVO> supplierServeVOS = supplierServeService.findSupplierServeBySupplierInfoId(supplierInfoId);
+        return CommonResult.success(supplierServeVOS);
     }
 
 

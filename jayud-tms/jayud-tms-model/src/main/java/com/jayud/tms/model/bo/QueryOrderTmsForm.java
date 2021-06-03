@@ -11,6 +11,9 @@ import java.util.List;
 @Data
 public class QueryOrderTmsForm extends BasePageForm {
 
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrderNo;
+
     @ApiModelProperty(value = "订单号")
     private String orderNo;
 

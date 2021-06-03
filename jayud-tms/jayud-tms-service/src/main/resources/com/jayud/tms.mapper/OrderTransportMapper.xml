@@ -506,6 +506,9 @@
         <if test="form.orderNo != null and form.orderNo != ''">
             and ot.order_no like concat('%',#{form.orderNo},'%')
         </if>
+        <if test="form.mainOrderNo != null and form.mainOrderNo != ''">
+            and ot.main_order_no like concat('%',#{form.mainOrderNo},'%')
+        </if>
         <if test="form.portCode != null and form.portCode != ''">
             and ot.port_code = #{form.portCode}
         </if>

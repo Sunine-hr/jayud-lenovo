@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -146,8 +147,11 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         }
         OrderWarehouseNoVO orderWarehouseNoVO = new OrderWarehouseNoVO();
         orderWarehouseNoVO.setWarehouseNo(warehouseNo);
-        orderWarehouseNoVO.setSailTime(sailTime);
-        orderWarehouseNoVO.setJcTime(jcTime);
+
+        DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        orderWarehouseNoVO.setSailTime(dtf2.format(sailTime));
+        orderWarehouseNoVO.setJcTime(dtf2.format(jcTime));
+
         orderWarehouseNoVO.setTotalCarton(totalCarton);
         orderWarehouseNoVO.setWarehouseAddress(addressFirst);
         orderWarehouseNoVO.setContacts(contacts+" "+contactPhone);
@@ -200,8 +204,9 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         OrderWarehouseNoVO orderWarehouseNoVO = new OrderWarehouseNoVO();
         orderWarehouseNoVO.setWarehouseNo(warehouseNo);
 
-        orderWarehouseNoVO.setSailTime(sailTime);
-        orderWarehouseNoVO.setJcTime(jcTime);
+        DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        orderWarehouseNoVO.setSailTime(dtf2.format(sailTime));
+        orderWarehouseNoVO.setJcTime(dtf2.format(jcTime));
 
         orderWarehouseNoVO.setTotalCarton(totalCarton);
         orderWarehouseNoVO.setWarehouseAddress(addressFirst);

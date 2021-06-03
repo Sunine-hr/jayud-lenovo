@@ -1,10 +1,8 @@
 package com.jayud.mall.model.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -16,13 +14,13 @@ public class OrderWarehouseNoVO {
 
     //开船日期
     @ApiModelProperty(value = "开船日期")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-    private LocalDateTime sailTime;
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private String sailTime;
 
     //截仓日期
     @ApiModelProperty(value = "截仓日期")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-    private LocalDateTime jcTime;
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private String jcTime;
 
     //箱数
     @ApiModelProperty(value = "箱数")

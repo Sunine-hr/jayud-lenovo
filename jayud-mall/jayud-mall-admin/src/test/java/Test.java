@@ -330,4 +330,14 @@ public class Test {
         }
     }
 
+    @org.junit.Test
+    public void test16(){
+        LocalDateTime time=LocalDateTime.now();
+        System.out.println(time);
+        DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String strDate2 = dtf2.format(time);
+        System.out.println(strDate2);
+    }
+
+
 }

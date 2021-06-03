@@ -245,7 +245,7 @@ public class RawDataListener {
                 customsClient.changeCustomsIsSendMail(mainOrderNo);
             } else {
                 log.info("[Email]发送邮件失败,重新推送...");
-                kafkaTemplate.send(topic, key, value);
+//                kafkaTemplate.send(topic, key, value);
             }
         }
     }

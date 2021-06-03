@@ -199,8 +199,10 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         }
         OrderWarehouseNoVO orderWarehouseNoVO = new OrderWarehouseNoVO();
         orderWarehouseNoVO.setWarehouseNo(warehouseNo);
+
         orderWarehouseNoVO.setSailTime(sailTime);
         orderWarehouseNoVO.setJcTime(jcTime);
+
         orderWarehouseNoVO.setTotalCarton(totalCarton);
         orderWarehouseNoVO.setWarehouseAddress(addressFirst);
         orderWarehouseNoVO.setContacts(contacts+" "+contactPhone);

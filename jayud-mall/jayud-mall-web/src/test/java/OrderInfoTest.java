@@ -1,4 +1,3 @@
-import com.jayud.common.enums.OrderEnum;
 import com.jayud.mall.model.bo.OrderInfoForm;
 import com.jayud.mall.model.vo.OrderCaseVO;
 import com.jayud.mall.model.vo.OrderPickVO;
@@ -30,8 +29,8 @@ public class OrderInfoTest {
         form.setDestinationWarehouseCode("YMX1");
         form.setDestinationWarehouseName("亚马逊1仓");
         form.setIsPick(1);//是否上门提货(0否 1是,order_pick)
-        form.setStatus(OrderEnum.DRAFT.getCode());
-        form.setStatusName(OrderEnum.DRAFT.getName());
+//        form.setStatus(OrderEnum.DRAFT.getCode());
+//        form.setStatusName(OrderEnum.DRAFT.getName());
         form.setCreateUserId(null);
         form.setCreateUserName(null);
         form.setOrderOrigin("1");//订单来源，默认为1，web端；

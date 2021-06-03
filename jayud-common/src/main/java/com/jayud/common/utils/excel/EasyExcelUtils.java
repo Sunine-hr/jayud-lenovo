@@ -12,9 +12,11 @@ import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.jayud.common.entity.InitChangeStatusVO;
+import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
@@ -440,38 +442,62 @@ public class EasyExcelUtils {
 
     }
 
-    public static void fillTemplate(JSONObject json, Map<String, List<?>> list, String templateFileName) {
+    @SneakyThrows
+    public static <T> void fillTemplate(JSONObject json, Map<String, List<T>> list,
+                                        String templateFilePath, HttpServletResponse response) {
         // 模板注意 用{} 来表示你要用的变量 如果本来就有"{","}" 特殊字符 用"\{","\}"代替
         // {} 代表普通变量 {.} 代表是list的变量 {前缀.} 前缀可以区分不同的list
         String fileName = "D:\\公司\\" + "compositeFill" + System.currentTimeMillis() + ".xlsx";
-        ExcelWriter excelWriter = EasyExcel.write(fileName).withTemplate(templateFileName).build();
+//        ExcelWriter excelWriter = EasyExcel.write(fileName).withTemplate(templateFileName).build();
+
+//        FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
+        String templateFileName = URLDecoder.decode(templateFilePath, "utf-8");
+
+        XSSFWorkbook templateWorkbook = new XSSFWorkbook(new FileInputStream(templateFileName));
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        templateWorkbook.write(outStream);
+        ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
+
+        ExcelWriter excelWriter = null;
+        if (response != null) { //网络流下载
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+            String filename = URLEncoder.encode("工作表", "utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xls");
+            excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+        } else {
+            excelWriter = EasyExcel.write(fileName).withTemplate(templateInputStream).build();
+        }
         WriteSheet writeSheet = EasyExcel.writerSheet().build();
-        FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
+
         // 如果有多个list 模板上必须有{前缀.} 这里的前缀就是 data1，然后多个list必须用 FillWrapper包裹
+        ExcelWriter finalExcelWriter = excelWriter;
         list.forEach((k, v) -> {
-            excelWriter.fill(new FillWrapper(k, v), writeSheet);
+            finalExcelWriter.fill(new FillWrapper(k, v), writeSheet);
         });
+
         Map<String, Object> map = new HashMap<>();
         json.forEach(map::put);
-        excelWriter.fill(map, writeSheet);
+        finalExcelWriter.fill(map, writeSheet);
         // 别忘记关闭流
-        excelWriter.finish();
+        finalExcelWriter.finish();
     }
 
 
-    public static void main(String[] args) throws IOException {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("customer", "深圳客户");
-        jsonObject.put("optUser", "张三");
-        jsonObject.put("mainOrderNo", "JY10002046");
-        jsonObject.put("subOrderNo", "ZG0002154");
-        jsonObject.put("takeTime", "2021/6/2");
-        jsonObject.put("totalNum", "200");
-        jsonObject.put("totalWeight", "5");
-        jsonObject.put("bizType", "跨境运输+内陆");
-        Map<String, List<?>> list = new HashMap<>();
-        fillTemplate(jsonObject, list, "D:\\公司\\模板\\20210601工作表.xlsx");
-    }
+//    public static void main(String[] args) throws IOException {
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("customer", "深圳客户");
+//        jsonObject.put("optUser", "张三");
+//        jsonObject.put("mainOrderNo", "JY10002046");
+//        jsonObject.put("subOrderNo", "ZG0002154");
+//        jsonObject.put("takeTime", "2021/6/2");
+//        jsonObject.put("totalNum", "200");
+//        jsonObject.put("totalWeight", "5");
+//        jsonObject.put("bizType", "跨境运输+内陆");
+//        Map<String, List> list = new HashMap<>();
+//        fillTemplate(jsonObject, list, "D:\\公司\\模板\\20210601工作表.xlsx");
+//    }
 
 
     public static void copyFirstSheet(XSSFWorkbook workbook, int times) {

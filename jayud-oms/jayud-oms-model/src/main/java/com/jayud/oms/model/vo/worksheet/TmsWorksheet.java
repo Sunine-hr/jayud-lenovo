@@ -5,6 +5,8 @@ import cn.hutool.json.JSONObject;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.oms.model.po.OrderPaymentCost;
+import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.vo.InputMainOrderVO;
 import com.jayud.oms.model.vo.InputOrderTakeAdrVO;
 import com.jayud.oms.model.vo.InputOrderTransportVO;
@@ -15,7 +17,11 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 中港工作表
@@ -50,7 +56,13 @@ public class TmsWorksheet {
     private String bizType;
 
     @ApiModelProperty(value = "费用明细")
-    private List<CostDetailsWorksheet> costDetails;
+    private List<CostDetailsWorksheet> reCostDetails;
+
+    @ApiModelProperty(value = "费用明细")
+    private List<CostDetailsWorksheet> payCostDetails;
+
+    @ApiModelProperty(value = "利润")
+    private BigDecimal profit;
 
     public TmsWorksheet assemblyData(InputOrderVO data) {
         if (data.getOrderForm() == null || data.getOrderTransportForm() == null) {
@@ -64,11 +76,12 @@ public class TmsWorksheet {
 //        this.subOrderNo = jsonObject.getStr("orderNo");
 //        this.takeTime = jsonObject.getJSONArray("pickUpAddress")
         InputMainOrderVO orderForm = data.getOrderForm();
-        this.customer = orderForm.getCustomerName();
+        this.customer = orderForm.getCustomerName().split("\\(")[0];
         this.createdUser = orderForm.getCreatedUser();
         this.mainOrderNo = orderForm.getOrderNo();
         this.bizType = orderForm.getBizDesc();
         this.subOrderNo = transportForm.getOrderNo();
+
 
         assemblyTakeAdr(transportForm.getOrderTakeAdrForms1());
         return this;
@@ -88,5 +101,39 @@ public class TmsWorksheet {
         this.totalNum = totalNum;
         this.totalWeight = totalWeight;
         this.takeTime = DateUtils.format(orderTakeAdrForms2.get(0).getTakeTimeStr(), DateUtils.DATE_PATTERN);
+    }
+
+    public void assemblyCost(List<OrderReceivableCost> receivableCosts,
+                             List<OrderPaymentCost> paymentCosts,
+                             Map<String, String> costInfoMap) {
+        List<CostDetailsWorksheet> reCostDetails = new ArrayList<>();
+        List<CostDetailsWorksheet> payCostDetails = new ArrayList<>();
+        Map<String, BigDecimal> totalReCost = new HashMap<>();
+        Map<String, BigDecimal> totalPayCost = new HashMap<>();
+        BigDecimal profit = new BigDecimal(0);
+        for (OrderReceivableCost receivableCost : receivableCosts) {
+            CostDetailsWorksheet costDetail = new CostDetailsWorksheet();
+            costDetail.setReCustomer(receivableCost.getCustomerName())
+                    .setReCost(costInfoMap.get(receivableCost.getCostCode()))
+                    .setReCurrency(receivableCost.getCurrencyCode())
+                    .setReAmount(receivableCost.getAmount());
+            totalReCost.merge(receivableCost.getCurrencyCode(), receivableCost.getAmount(), BigDecimal::add);
+            reCostDetails.add(costDetail);
+            profit = profit.add(receivableCost.getChangeAmount());
+        }
+
+        for (OrderPaymentCost paymentCost : paymentCosts) {
+            CostDetailsWorksheet costDetail = new CostDetailsWorksheet();
+            costDetail.setReCustomer(paymentCost.getCustomerName())
+                    .setReCost(costInfoMap.get(paymentCost.getCostCode()))
+                    .setReCurrency(paymentCost.getCurrencyCode())
+                    .setReAmount(paymentCost.getAmount());
+            totalPayCost.merge(paymentCost.getCurrencyCode(), paymentCost.getAmount(), BigDecimal::add);
+            payCostDetails.add(costDetail);
+            profit = profit.subtract(paymentCost.getChangeAmount());
+        }
+        this.profit = profit;
+        this.reCostDetails = reCostDetails.size() > 13 ? reCostDetails.subList(0, 13) : reCostDetails;
+        this.payCostDetails = payCostDetails.size() > 13 ? payCostDetails.subList(0, 13) : payCostDetails;
     }
 }

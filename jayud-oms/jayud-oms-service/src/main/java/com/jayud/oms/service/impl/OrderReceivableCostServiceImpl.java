@@ -237,4 +237,19 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
         queryWrapper.eq("sub_type", subType);
         return this.baseMapper.selectList(queryWrapper);
     }
+
+    /**
+     * 根据主订单查询费用
+     *
+     * @param mainOrderNo
+     * @param exclusionStatus
+     * @return
+     */
+    @Override
+    public List<OrderReceivableCost> getByMainOrderNo(String mainOrderNo, List<String> exclusionStatus) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderReceivableCost::getMainOrderNo, mainOrderNo)
+                .notIn(OrderReceivableCost::getStatus, exclusionStatus);
+        return this.baseMapper.selectList(condition);
+    }
 }

@@ -120,4 +120,12 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
      * @return
      */
     Map<String, Map<String, BigDecimal>> statisticalPayCostByOrderNos(List<OrderPaymentCost> list, Boolean isMain);
+
+    /**
+     * 获取主订单费用
+     *
+     * @param mainOrderNo
+     * @return
+     */
+    List<OrderPaymentCost> getMainOrderCost(String mainOrderNo, List<String> mainCostStatus);
 }

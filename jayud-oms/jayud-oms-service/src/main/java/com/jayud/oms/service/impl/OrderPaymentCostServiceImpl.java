@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Condition;
 import java.util.stream.Collectors;
 
 /**
@@ -279,6 +280,22 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
             map.put(k, costMap);
         });
         return map;
+    }
+
+    /**
+     * 获取主订单费用
+     *
+     * @param mainOrderNo
+     * @return
+     */
+    @Override
+    public List<OrderPaymentCost> getMainOrderCost(String mainOrderNo, List<String> mainCostStatus) {
+        QueryWrapper<OrderPaymentCost> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderPaymentCost::getMainOrderNo, mainOrderNo)
+                .eq(OrderPaymentCost::getIsSumToMain, true)
+                .and(e -> e.eq(OrderPaymentCost::getStatus, OrderStatusEnum.COST_3)//子订单合并费用
+                        .or().in(OrderPaymentCost::getStatus, mainCostStatus));//主订单费用
+        return this.baseMapper.selectList(condition);
     }
 
 }

@@ -465,11 +465,11 @@ public class EasyExcelUtils {
         }
         WriteSheet writeSheet = EasyExcel.writerSheet().build();
         // 这里注意 入参用了forceNewRow 代表在写入list的时候不管list下面有没有空行 都会创建一行，然后下面的数据往后移动。默认 是false，会直接使用下一行，如果没有则创建。但是这个就会把所有数据放到内存 会很耗内存
-        FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
+//        FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
         // 如果有多个list 模板上必须有{前缀.} 这里的前缀就是 data1，然后多个list必须用 FillWrapper包裹
         ExcelWriter finalExcelWriter = excelWriter;
         list.forEach((k, v) -> {
-            finalExcelWriter.fill(new FillWrapper(k, v), fillConfig, writeSheet);
+            finalExcelWriter.fill(new FillWrapper(k, v), writeSheet);
         });
 
         Map<String, Object> map = new HashMap<>();

@@ -100,4 +100,7 @@ public class WarehouseGoodsVO {
     @ApiModelProperty(value = "确认入仓是否提交（0未提交，1已提交）")
     private Integer isSubmit;
 
+    @ApiModelProperty(value = "操作人")
+    private String orderTaker;
+
 }

@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.storage.model.po.WarehouseGoods;
 import com.jayud.storage.mapper.WarehouseGoodsMapper;
-import com.jayud.storage.model.vo.OrderOutRecord;
-import com.jayud.storage.model.vo.OutGoodsOperationRecordFormVO;
-import com.jayud.storage.model.vo.WarehouseGoodsVO;
+import com.jayud.storage.model.vo.*;
 import com.jayud.storage.service.IWarehouseGoodsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -75,4 +73,40 @@ public class WarehouseGoodsServiceImpl extends ServiceImpl<WarehouseGoodsMapper,
     public List<OrderOutRecord> getListBySkuAndBatchNo(List<String> skuList, List<String> warehousingBatchNos) {
         return this.baseMapper.getListBySkuAndBatchNo(skuList,warehousingBatchNos);
     }
+
+    @Override
+    public List<WarehouseGoods> getListBySkuAndOrderNo(String sku, String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("sku",sku);
+        queryWrapper.eq("order_no",orderNo);
+        queryWrapper.eq("type",2);
+        return this.baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<WarehouseGoods> getOutListByOrderNo(String orderNo) {
+        return this.baseMapper.getOutListByOrderNo(orderNo);
+    }
+
+    @Override
+    public List<WarehouseGoodsVO> getListByWarehousingBatchNoAndOrderNo(String warehousingBatchNo, String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("warehousing_batch_no",warehousingBatchNo);
+        queryWrapper.eq("order_no",orderNo);
+        queryWrapper.eq("type",2);
+        List<WarehouseGoods> list = this.baseMapper.selectList(queryWrapper);
+        List<WarehouseGoodsVO> warehouseGoodsVOS = ConvertUtil.convertList(list, WarehouseGoodsVO.class);
+        return warehouseGoodsVOS;
+    }
+
+    @Override
+    public List<OnShelfOrderVO> getListByOrderIdAndTime(Long id, String orderNo, String searchTime) {
+        return this.baseMapper.getListByOrderIdAndTime(id,orderNo,searchTime);
+    }
+
+    @Override
+    public List<OnShelfOrderVO> getListByOrderIdAndTime2(Long id, String orderNo, String startTime, String endTime) {
+        return this.baseMapper.getListByOrderIdAndTime2(id,orderNo,startTime,endTime);
+    }
+
 }

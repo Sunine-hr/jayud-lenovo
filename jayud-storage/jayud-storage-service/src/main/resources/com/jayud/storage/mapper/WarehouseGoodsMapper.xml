@@ -69,4 +69,31 @@
         </foreach>
     </select>
 
+    <select id="getOutListByOrderNo" resultType="com.jayud.storage.model.po.WarehouseGoods">
+        select wg.id, wg.order_no orderNo, wg.order_id orderId, wg.name, wg.sku, wg.specification_model specificationModel, wg.number,wg.pcs, wg.type
+        from warehouse_goods wg
+        left join goods_location_record glr on glr.inGood_id = wg.id
+        where wg.type = 2 and glr.is_picked_goods = 1 and order_no = #{orderNo}
+    </select>
+
+    <select id="getListByOrderIdAndTime" resultType="com.jayud.storage.model.vo.OnShelfOrderVO">
+        select id,order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, count(number) number
+        from warehouse_goods wg
+        where wg.order_id = #{orderId} and wg.order_no = #{orderNo} and wg.update_time = #{searchTime}
+        group by warehousing_batch_no
+    </select>
+
+    <select id="getListByOrderIdAndTime2" resultType="com.jayud.storage.model.vo.OnShelfOrderVO">
+        select id,order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, count(number) number
+        from warehouse_goods wg
+        where wg.order_id = #{orderId} and wg.order_no = #{orderNo}
+        <if test="form.startTime !=null and form.startTime!=''">
+            and igor.create_time <![CDATA[>= ]]> #{form.startTime}
+        </if>
+        <if test="form.endTime !=null and form.endTime!=''">
+            and igor.create_time <![CDATA[<= ]]> #{form.endTime}
+        </if>
+        group by warehousing_batch_no
+    </select>
+
 </mapper>

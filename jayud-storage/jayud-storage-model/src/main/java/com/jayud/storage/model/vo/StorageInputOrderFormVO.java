@@ -183,7 +183,7 @@ public class StorageInputOrderFormVO {
 
             sb.append(goods.getName())
                     .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
-                    .append(",").append(goods.getPcs()== null ? 0 : goods.getNumber()).append("件")
+                    .append(",").append(goods.getNumber()== null ? 0 : goods.getNumber()).append("件")
                     .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
                     .append(";");
             if(goods.getVolume()!=null){
@@ -205,9 +205,9 @@ public class StorageInputOrderFormVO {
 
             sb.append(goods.getName())
                     .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
-                    .append(",").append(goods.getNumber()).append("件")
+                    .append(",").append(goods.getNumber() == null ? 0 : goods.getNumber()).append("件")
                     .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
-                    .append(",").append("重量:").append(goods.getWeight()).append("KG")
+                    .append(",").append("重量:").append(goods.getWeight()== null ? 0 : goods.getWeight()).append("KG")
                     .append(";");
         }
 

@@ -62,5 +62,12 @@ public class InGoodsOperationRecordVO extends Model<InGoodsOperationRecordVO> {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
+    @ApiModelProperty(value = "出库时间")
+    private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "操作人")
+    private String orderTaker;
+
+
 
 }

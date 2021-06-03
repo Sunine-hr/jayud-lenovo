@@ -231,7 +231,9 @@ public class StorageOutOrderController {
                 List<GoodsLocationRecordFormVO> goodsLocationRecordForms = outWarehouseGoodsForm.getGoodsLocationRecordForms();
                 Integer number = 0;
                 for (GoodsLocationRecordFormVO goodsLocationRecordForm : goodsLocationRecordForms) {
-                    number = number + goodsLocationRecordForm.getNumber();
+                    if(goodsLocationRecordForm.getNumber() != null){
+                        number = number + goodsLocationRecordForm.getNumber();
+                    }
                     //入库商品
                     GoodsLocationRecord goodsLocationRecord = goodsLocationRecordService.getGoodsLocationRecordBySkuAndKuCode(goodsLocationRecordForm.getKuCode(),outWarehouseGoodsForm.getWarehousingBatchNo(),outWarehouseGoodsForm.getSku());
                     System.out.println("goodsLocationRecord==============="+goodsLocationRecord);

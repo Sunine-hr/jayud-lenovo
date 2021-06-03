@@ -22,6 +22,7 @@ import com.jayud.storage.model.vo.*;
 import com.jayud.storage.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.velocity.runtime.directive.contrib.For;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +60,9 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
 
     @Autowired
     private IStorageOrderService storageOrderService;
+
+    @Autowired
+    private IWarehouseAreaShelvesLocationService warehouseAreaShelvesLocationService;
 
     @Override
     public String createOrder(StorageOutOrderForm storageOutOrderForm) {
@@ -158,6 +162,10 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
             storageOutOrderVO.setTotalWeightStr(totalWeight+"KG");
         }
         storageOutOrderVO.setGoodsFormList(warehouseGoods);
+        for (WarehouseGoodsVO warehouseGood : warehouseGoods) {
+            warehouseGood.setOrderTaker(storageOutOrderVO.getOrderTaker());
+        }
+        storageOutOrderVO.setWarehouseGoodsVOS(warehouseGoods);
         return storageOutOrderVO;
     }
 
@@ -279,6 +287,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
                 goodsLocationRecord.setCreateTime(LocalDateTime.now());
                 goodsLocationRecord.setCreateUser(UserOperator.getToken());
                 goodsLocationRecord.setType(2);
+                goodsLocationRecord.setIsPickedGoods(1);
                 boolean b1 = goodsLocationRecordService.saveOrUpdate(goodsLocationRecord);
                 if(!b1){
                     return false;
@@ -393,6 +402,112 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
             //节点操作记录
             this.storageProcessOptRecord(form);
         }
+    }
+
+    @Override
+    public List<WarehouseGoodsLocationCodeVO> findByOrderNo(QueryPickUpGoodForm form) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if(form.getOrderNo() != null){
+            queryWrapper.eq("order_no",form.getOrderNo());
+        }
+        StorageOutOrder storageOutOrder = this.baseMapper.selectOne(queryWrapper);
+        List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList1(storageOutOrder.getId(), storageOutOrder.getOrderNo());
+        List<WarehouseGoodsLocationCodeVO> warehouseGoodsLocationVOS = new ArrayList<>();
+        for (WarehouseGoodsVO warehouseGoodsVO : list1) {
+
+            List<GoodsLocationRecordFormVO> outGoodsLocationRecordByGoodId = goodsLocationRecordService.getOutGoodsLocationRecordByGoodIdAndPicked(warehouseGoodsVO.getId());
+            for (GoodsLocationRecordFormVO goodsLocationRecordFormVO : outGoodsLocationRecordByGoodId) {
+                WarehouseGoodsLocationCodeVO warehouseGoodsLocationCodeVO = new WarehouseGoodsLocationCodeVO();
+                warehouseGoodsLocationCodeVO.setName(warehouseGoodsVO.getName());
+                warehouseGoodsLocationCodeVO.setSku(warehouseGoodsVO.getSku());
+                warehouseGoodsLocationCodeVO.setNumber(goodsLocationRecordFormVO.getNumber());
+                warehouseGoodsLocationCodeVO.setWarehousingBatchNo(warehouseGoodsVO.getWarehousingBatchNo());
+                warehouseGoodsLocationCodeVO.setExpectedDeliveryTime(warehouseGoodsVO.getExpectedDeliveryTime());
+                warehouseGoodsLocationCodeVO.setSpecificationModel(warehouseGoodsVO.getSpecificationModel());
+                warehouseGoodsLocationCodeVO.setKuCode(goodsLocationRecordFormVO.getKuCode());
+                warehouseGoodsLocationCodeVO.setId(warehouseGoodsVO.getId());
+                warehouseGoodsLocationVOS.add(warehouseGoodsLocationCodeVO);
+            }
+
+        }
+        return warehouseGoodsLocationVOS;
+    }
+
+    //PDA拣货
+    @Override
+    public boolean PDAWarehousePicking(WarehousePickingForm form) {
+        //拣货成功，修改拣货状态
+        GoodsLocationRecord outListByKuCodeAndInGoodId = goodsLocationRecordService.getOutListByKuCodeAndInGoodId(form.getId(),form.getKuCode());
+        outListByKuCodeAndInGoodId.setIsPickedGoods(2);
+        boolean update = goodsLocationRecordService.saveOrUpdate(outListByKuCodeAndInGoodId);
+        if(!update){
+            return false;
+        }
+        if(form.getCmd().equals("end")){
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("order_no",form.getOrderNo());
+            StorageOutOrder one = this.getOne(queryWrapper);
+            one.setStatus("CCE_3");
+            one.setUpdateUser(UserOperator.getToken());
+            one.setUpdateTime(LocalDateTime.now());
+            boolean update1 = this.saveOrUpdate(one);
+            if(!update1){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public List<OnShelfOrderVO> getListByForm(QueryPutGoodForm form) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status","CCE_3");
+        List<StorageInputOrder> list = this.baseMapper.selectList(queryWrapper);
+        List<OnShelfOrderVO> onShelfOrderVOS = new ArrayList<>();
+        for (StorageInputOrder storageInputOrder : list) {
+            List<OnShelfOrderVO> onShelfOrderVOS1 = warehouseGoodsService.getListByOrderIdAndTime(storageInputOrder.getId(),storageInputOrder.getOrderNo(),form.getSearchTime());
+            String warehouseName = null;
+            if(CollectionUtils.isNotEmpty(onShelfOrderVOS1)){
+                List<GoodsLocationRecordFormVO> goodsLocationRecordByGoodId = goodsLocationRecordService.getOutGoodsLocationRecordByGoodId(onShelfOrderVOS1.get(0).getId());
+                //通过库位编码获取仓库名称
+                if(CollectionUtils.isNotEmpty(goodsLocationRecordByGoodId)){
+                    warehouseName = warehouseAreaShelvesLocationService.getWarehouseNameByKuCode(goodsLocationRecordByGoodId.get(0).getKuCode());
+                }
+            }
+            for (OnShelfOrderVO inGoodsOperationRecord : onShelfOrderVOS1) {
+                inGoodsOperationRecord.setWarehouseName(warehouseName);
+                onShelfOrderVOS.add(inGoodsOperationRecord);
+            }
+        }
+        return onShelfOrderVOS;
+    }
+
+    @Override
+    public List<OnShelfOrderVO> getListByQueryForm(QueryPutGoodForm form) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status","CCE_3");
+        if(form.getOrderNo() != null){
+            queryWrapper.like("order_no",form.getOrderNo());
+        }
+        List<StorageInputOrder> list = this.baseMapper.selectList(queryWrapper);
+        List<OnShelfOrderVO> onShelfOrderVOS = new ArrayList<>();
+        for (StorageInputOrder storageInputOrder : list) {
+            List<OnShelfOrderVO> onShelfOrderVOS1 = warehouseGoodsService.getListByOrderIdAndTime2(storageInputOrder.getId(),storageInputOrder.getOrderNo(),form.getStartTime(),form.getEndTime());
+            String warehouseName = null;
+            if(CollectionUtils.isNotEmpty(onShelfOrderVOS1)){
+                List<GoodsLocationRecordFormVO> goodsLocationRecordByGoodId = goodsLocationRecordService.getOutGoodsLocationRecordByGoodId(onShelfOrderVOS1.get(0).getId());
+                //通过库位编码获取仓库名称
+                if(CollectionUtils.isNotEmpty(goodsLocationRecordByGoodId)){
+                    warehouseName = warehouseAreaShelvesLocationService.getWarehouseNameByKuCode(goodsLocationRecordByGoodId.get(0).getKuCode());
+                }
+            }
+            for (OnShelfOrderVO inGoodsOperationRecord : onShelfOrderVOS1) {
+                inGoodsOperationRecord.setWarehouseName(warehouseName);
+                onShelfOrderVOS.add(inGoodsOperationRecord);
+            }
+        }
+        return onShelfOrderVOS;
     }
 
     //判断订单完成状态

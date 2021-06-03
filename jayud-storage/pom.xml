@@ -20,6 +20,7 @@
         <module>jayud-storage-web</module>
         <module>jayud-storage-model</module>
         <module>jayud-storage-service</module>
+        <module>jayud-storage-PDA</module>
     </modules>
 
     <dependencies>

@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 public class InGoodsOperationRecordOrderVO {
 
     @ApiModelProperty(value = "主键id")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "订单号")

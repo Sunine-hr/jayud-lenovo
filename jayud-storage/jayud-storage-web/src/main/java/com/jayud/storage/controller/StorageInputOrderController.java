@@ -8,6 +8,7 @@ import cn.hutool.json.JSONObject;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.excel.write.metadata.fill.FillWrapper;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -284,6 +285,8 @@ public class StorageInputOrderController {
             unitCodeInfo = this.omsClient.getCustomerByUnitCode(unitCodes);
         }
 
+        String path = (String)fileClient.getBaseUrl().getData();
+
         //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
         for (StorageInputOrderWarehouseingVO record : records) {
@@ -297,6 +300,9 @@ public class StorageInputOrderController {
             record.assemblyUnitCodeInfo(unitCodeInfo);
             //获取订单商品信息
             List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(record.getId(), record.getOrderNo());
+            for (WarehouseGoodsVO warehouseGoodsVO : list1) {
+                warehouseGoodsVO.setTakeFiles(StringUtils.getFileViews(warehouseGoodsVO.getFileName(),warehouseGoodsVO.getFilePath(),path));
+            }
             record.assemblyGoodsInfo(list1);
             //获取该批次的入库商品信息
             List<InGoodsOperationRecord> inGoodsOperationRecords = inGoodsOperationRecordService.getListByWarehousingBatchNo(record.getWarehousingBatchNo());
@@ -447,6 +453,15 @@ public class StorageInputOrderController {
         storageInProcessOptFormVO.setOrderNo(storageInputOrder.getOrderNo());
         storageInProcessOptFormVO.assemblyMainOrderData(result.getData());
         storageInProcessOptFormVO.setLegalName(storageInputOrder.getLegalName() );
+
+        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
+        for (InitComboxWarehouseVO initComboxWarehouseVO : data2) {
+            if(initComboxWarehouseVO.getId().equals(storageInputOrderDetails.getWarehouseId())){
+                storageInProcessOptFormVO.setWarehouseName(initComboxWarehouseVO.getName());
+                storageInProcessOptFormVO.setWarehousePhone(initComboxWarehouseVO.getPhone());
+                storageInProcessOptFormVO.setWarehouseAddress(initComboxWarehouseVO.getAddress());
+            }
+        }
 
         storageInProcessOptFormVO.setCustomerId(omsClient.getCustomerByCode(storageInProcessOptFormVO.getCustomerCode()).getData());
         storageInProcessOptFormVO.setPlateNumber(storageInputOrder.getPlateNumber());
@@ -799,9 +814,84 @@ public class StorageInputOrderController {
         map.put("orderId",orderId);
         StorageInProcessOptFormVO storageInProcessOptFormVO = (StorageInProcessOptFormVO)this.getDataInConfirmEntry(map).getData();
 
-        Map<String,Object> dataMap = new HashMap<String, Object>();
+
+        File file = new File(filepath);
+        String name = file.getName();
+
         try {
-            //编号
+            InputStream inputStream = new FileInputStream(file);
+            Workbook templateWorkbook = null;
+            String fileType = name.substring(name.lastIndexOf("."));
+            if (".xls".equals(fileType)) {
+                templateWorkbook = new HSSFWorkbook(inputStream); // 2003-
+            } else if (".xlsx".equals(fileType)) {
+                templateWorkbook = new XSSFWorkbook(inputStream); // 2007+
+            } else {
+
+            }
+            //HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
+
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            templateWorkbook.write(outStream);
+            ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
+
+            String fileName = "入仓单";
+
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+            String filename = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
+
+            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+
+            WriteSheet writeSheet = EasyExcel.writerSheet().build();
+
+//            FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
+            //将集合数据填充
+            Integer number = 0;
+            Double weight = 0.0;
+            Double volume = 0.0;
+            if(CollectionUtils.isNotEmpty(storageInProcessOptFormVO.getWarehouseGoodsForms())){
+                excelWriter.fill(new FillWrapper("goodList", storageInProcessOptFormVO.getWarehouseGoodsForms()), writeSheet);
+                for (WarehouseGoodsVO warehouseGoodsForm : storageInProcessOptFormVO.getWarehouseGoodsForms()) {
+                    if(warehouseGoodsForm.getNumber() != null){
+                        number = number + warehouseGoodsForm.getNumber();
+                    }
+                    if(warehouseGoodsForm.getWeight() != null){
+                        weight = weight + warehouseGoodsForm.getWeight();
+                    }
+                    if(warehouseGoodsForm.getVolume() != null){
+                        volume = volume + warehouseGoodsForm.getVolume();
+                    }
+                }
+
+            }
+            //将指定数据填充
+            Map<String,Object> dataMap = new HashMap<String, Object>();
+
+            List<Long> operationId = storageInProcessOptFormVO.getOperationId();
+            List<Long> cardTypeId = storageInProcessOptFormVO.getCardTypeId();
+
+
+            List<InitComboxSVO> data = omsClient.initDictNameByDictTypeCode("operation").getData();
+            List<InitComboxSVO> data1 = omsClient.initDictNameByDictTypeCode("cardType").getData();
+            for (InitComboxSVO datum : data) {
+                for (Long aLong : operationId) {
+                    if(datum.getId().equals(aLong)){
+                        dataMap.put(datum.getValue(), "√");
+                    }
+                }
+            }
+
+            for (InitComboxSVO datum : data1) {
+                for (Long aLong : cardTypeId) {
+                    if(datum.getId().equals(aLong)){
+                        dataMap.put(datum.getValue(), "√");
+                    }
+                }
+            }
+
 //            dataMap.put("poundWeight", "1");
 //            dataMap.put("labeling ", "1");
 //            dataMap.put("photograph ","1");
@@ -814,77 +904,88 @@ public class StorageInputOrderController {
 //            dataMap.put("board", "1");
 //            dataMap.put("cardboard", "1");
 //            dataMap.put("woodenCase", "1");
-//            dataMap.put("yes", "1");
-//            dataMap.put("no", "1");
-//            dataMap.put("isGone", "1");
-//            dataMap.put("isInstructions", "1");
-//            dataMap.put("num1", "1");
-//            dataMap.put("isDoorCollection", "1");
-//            dataMap.put("isSelfDelivery", "1");
-//            dataMap.put("isGoldLabels", "1");
-//            dataMap.put("isImproperPacking", "1");
-//            dataMap.put("num2", "1");
-//            dataMap.put("isTomOpen", "1");
-//            dataMap.put("tomOpenNumber", "1");
-//            dataMap.put("isReTaped", "1");
-//            dataMap.put("reTapedNumber", "1");
-//            dataMap.put("isCrushedCollapsed", "1");
-//            dataMap.put("crushedCollapsedNumber", "1");
-//            dataMap.put("isWaterGreased", "1");
-//            dataMap.put("waterGreasedNumber", "1");
-//            dataMap.put("isPuncturedHoles", "1");
-//            dataMap.put("puncturedHolesNumber", "1");
-//            dataMap.put("isDamagedCtn", "1");
-//            dataMap.put("damagedCtnNumber", "1");
-//            dataMap.put("remarks","1");
-//            dataMap.put("marks","1");
-//            dataMap.put("documents","1");
-//            dataMap.put("warehouseManagement","1");
-//            dataMap.put("driver","1");
-//            dataMap.put("beizhu","1");
-//
-//            dataMap.put("warehouseNumber", storageInProcessOptFormVO.getWarehouseNumber());
-//            dataMap.put("createTime", storageInProcessOptFormVO.getCreateTime());
-//            dataMap.put("plateNumber", storageInProcessOptFormVO.getPlateNumber());
-//            dataMap.put("customerName", storageInProcessOptFormVO.getCustomerName());
-//            dataMap.put("num1", storageInProcessOptFormVO.getNum1());
-//            dataMap.put("num2", storageInProcessOptFormVO.getNum2());
-//            if(CollectionUtils.isNotEmpty(storageInProcessOptFormVO.getWarehouseGoodsForms())){
-//                dataMap.put("goodLists", storageInProcessOptFormVO.getWarehouseGoodsForms());
-//            }
+            if(storageInProcessOptFormVO.getYes().equals(true)){
+                dataMap.put("yes", "√");
+            }
+            if(storageInProcessOptFormVO.getNo() != null && storageInProcessOptFormVO.getNo().equals(true)){
+                dataMap.put("no", "√");
+            }
+            if(storageInProcessOptFormVO.getYes().equals(true)){
+                dataMap.put("isGone", "√");
+            }
+            if(storageInProcessOptFormVO.getYes().equals(true)){
+                dataMap.put("isInstructions", "√");
+            }
+            if(storageInProcessOptFormVO.getYes().equals(true)){
+                dataMap.put("isDoorCollection", "√");
+            }
+            if(storageInProcessOptFormVO.getYes().equals(true)){
+                dataMap.put("isSelfDelivery", "√");
+            }
+            if(storageInProcessOptFormVO.getYes().equals(true)){
+                dataMap.put("isGoldLabels", "√");
+            }
+            if(storageInProcessOptFormVO.getYes().equals(true)){
+                dataMap.put("isImproperPacking", "√");
+            }
+            if(storageInProcessOptFormVO.getYes().equals(true)){
+                dataMap.put("isTomOpen", "√");
+            }
+            if(storageInProcessOptFormVO.getYes().equals(true)){
+                dataMap.put("isReTaped", "√");
+            }
+            if(storageInProcessOptFormVO.getYes().equals(true)){
+                dataMap.put("isCrushedCollapsed", "√");
+            }
+            if(storageInProcessOptFormVO.getYes().equals(true)){
+                dataMap.put("isWaterGreased", "√");
+            }
+            if(storageInProcessOptFormVO.getYes().equals(true)){
+                dataMap.put("isPuncturedHoles", "√");
+            }
+            if(storageInProcessOptFormVO.getYes().equals(true)){
+                dataMap.put("isDamagedCtn", "√");
+            }
 
-            //Configuration 用于读取ftl文件
-            Configuration configuration = new Configuration(new Version("2.3.29"));
-            configuration.setDefaultEncoding("utf-8");
+            dataMap.put("num1", storageInProcessOptFormVO.getNum1());
+            dataMap.put("num2", storageInProcessOptFormVO.getNum2());
 
+            dataMap.put("tomOpenNumber", storageInProcessOptFormVO.getTomOpenNumber());
 
-            configuration.setDirectoryForTemplateLoading(new File(filepath));//指定ftl所在目录,根据自己的改
-            response.setContentType("application/msword");
-            response.setHeader("Content-Disposition", "attachment;filename=\"" + new String("入仓单.doc".getBytes("GBK"), "iso8859-1") + "\"");
-            response.setCharacterEncoding("utf-8");//此句非常关键,不然word文档全是乱码
-            PrintWriter out = response.getWriter();
-            Template t =  configuration.getTemplate("storage (2).ftl","utf-8");//以utf-8的编码读取ftl文件
-            t.process(dataMap, out);
+            dataMap.put("reTapedNumber", storageInProcessOptFormVO.getReTapedNumber());
 
+            dataMap.put("crushedCollapsedNumber", storageInProcessOptFormVO.getCrushedCollapsedNumber());
 
-//            /**
-//             * 以下是两种指定ftl文件所在目录路径的方式，注意这两种方式都是
-//             * 指定ftl文件所在目录的路径，而不是ftl文件的路径
-//             */
-            //指定路径的第一种方式（根据某个类的相对路径指定）
-//                configuration.setClassForTemplateLoading(this.getClass(), "");
+            dataMap.put("waterGreasedNumber", storageInProcessOptFormVO.getWaterGreasedNumber());
 
-            //指定路径的第二种方式，我的路径是C：/a.ftl
-//            configuration.setDirectoryForTemplateLoading(new File("c:/"));
+            dataMap.put("puncturedHolesNumber", storageInProcessOptFormVO.getPuncturedHolesNumber());
 
-            //输出文档路径及名称
-//            File outFile = new File("D:/报销信息导出.doc");
-            //以utf-8的编码读取ftl文件
-//            Template template = configuration.getTemplate("报销信息导出.ftl", "utf-8");
-//            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), "utf-8"), 10240);
-//            template.process(dataMap, out);
-            out.close();
-        } catch (Exception e) {
+            dataMap.put("damagedCtnNumber", storageInProcessOptFormVO.getDamagedCtnNumber());
+            dataMap.put("remarks",storageInProcessOptFormVO.getRemarks());
+            dataMap.put("marks",storageInProcessOptFormVO.getMarks());
+            dataMap.put("documents",storageInProcessOptFormVO.getDocuments());
+            dataMap.put("warehouseManagement",storageInProcessOptFormVO.getWarehouseManagement());
+            dataMap.put("driver",storageInProcessOptFormVO.getDriver());
+            dataMap.put("beizhu",storageInProcessOptFormVO.getBeizhu());
+
+            dataMap.put("warehouseNumber", storageInProcessOptFormVO.getWarehouseNumber());
+            dataMap.put("createTime", storageInProcessOptFormVO.getCreateTime().toString());
+            dataMap.put("plateNumber", storageInProcessOptFormVO.getPlateNumber());
+            dataMap.put("customerName", storageInProcessOptFormVO.getCustomerName());
+            dataMap.put("warehouseName",storageInProcessOptFormVO.getWarehouseName());
+            dataMap.put("warehousePhone",storageInProcessOptFormVO.getWarehousePhone());
+            dataMap.put("warehouseAddress",storageInProcessOptFormVO.getWarehouseAddress());
+            dataMap.put("number",number);
+            dataMap.put("weight",weight);
+            dataMap.put("volume",volume);
+
+            excelWriter.fill(dataMap, writeSheet);
+
+            excelWriter.finish();
+            outStream.close();
+            inputStream.close();
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

@@ -101,13 +101,13 @@ public class AddWarehouseGoodsForm extends Model<AddWarehouseGoodsForm> {
     public String checkCreateOrder() {
         //拖车
         if (StringUtils.isEmpty(this.sku)) {
-            return "sku不为空";
+            return "出库sku不为空";
         }
         if(StringUtils.isEmpty(this.warehousingBatchNo)){
-            return "入库批次不为空";
+            return "出库批次号不为空";
         }
         if(this.number == null){
-            return "件数不为空";
+            return "出库件数不为空";
         }
         return "pass";
     }

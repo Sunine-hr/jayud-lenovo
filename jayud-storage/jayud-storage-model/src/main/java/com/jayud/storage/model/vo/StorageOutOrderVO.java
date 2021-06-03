@@ -86,6 +86,9 @@ public class StorageOutOrderVO {
     @ApiModelProperty(value = "出库商品对象集合")
     private List<WarehouseGoodsVO> goodsFormList;
 
+    @ApiModelProperty(value = "出库商品对象集合")
+    private List<WarehouseGoodsVO> warehouseGoodsVOS;
+
     @ApiModelProperty(value = "附件集合")
     private List<FileView> allPics;
 

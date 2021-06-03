@@ -17,4 +17,5 @@ public interface ILocationService extends IService<Location> {
 
     List<Location> getList(Long id);
 
+    boolean isExistence(String kuCode);
 }

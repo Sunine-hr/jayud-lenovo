@@ -29,4 +29,18 @@ public interface IWarehouseAreaShelvesLocationService extends IService<Warehouse
     List<WarehouseAreaShelvesLocationVO> getListByShelvesId(QueryWarehouseAreaShelvesLocationForm form);
 
     List<LocationCodeVO> getList();
+
+    /**
+     * 根据货架名称获取库位信息
+     * @param shelvesName
+     * @return
+     */
+    List<LocationCodeVO> getListByShelvesName(String shelvesName);
+
+    /**
+     * 根据库位编码获取仓库名称
+     * @param kuCode
+     * @return
+     */
+    String getWarehouseNameByKuCode(String kuCode);
 }

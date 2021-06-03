@@ -58,4 +58,13 @@
         order by wasl.create_time desc
     </select>
 
+    <select id="getListByShelvesName" resultType="com.jayud.storage.model.vo.LocationCodeVO">
+        select l.location_code locationCode , wasl.shelves_id shelvesId, wasl.shelves_line shelvesLine, wasl.shelves_column shelvesColumn, wasl.shelves_type shelvesType,
+        wasl.length, wasl.width, wasl.height, wasl.maximum_weight maximumWeight, wasl.category_upper_limit categoryUpperLimit
+        from location l
+        left join warehouse_area_shelves_location wasl on l.location_id = wasl.id
+        left join warehouse_area_shelves was on was.id = wasl.shelves_id
+        where was.shelves_name = #{shelvesName}
+    </select>
+
 </mapper>

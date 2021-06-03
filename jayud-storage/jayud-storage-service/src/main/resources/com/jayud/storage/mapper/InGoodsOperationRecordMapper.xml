@@ -60,4 +60,49 @@
         where sio.id = #{id} group by igor.warehousing_batch_no
     </select>
 
+    <select id="getListByAreaName" resultType="com.jayud.storage.model.po.InGoodsOperationRecord">
+        select igor.id, igor.order_no orderNo, igor.order_id orderId, igor.warehousing_batch_no warehousingBatchNo, igor.name,
+        igor.sku, igor.specification_model specificationModel, igor.board_number boardNumber, igor.number,
+        igor.pcs
+        from goods_location_record glr
+        left join in_goods_operation_record igor on glr.inGood_id = igor.id
+        left join (select ku_code,wasl.shelves_id shelves_id from location l left join warehouse_area_shelves_location wasl on l.location_id = wasl.id) wl on glr.ku_code = wl.ku_code
+        left join warehouse_area_shelves was on wl.shelves_id = was.id
+        where was.area_name = #{areaName}
+    </select>
+
+    <select id="getListByKuCode" resultType="com.jayud.storage.model.vo.QRCodeLocationGoodVO">
+        select igor.name,igor.sku, igor.specification_model specificationModel, glr.un_delivered_quantity number
+        from goods_location_record glr
+        left join in_goods_operation_record igor on glr.inGood_id = igor.id
+        where glr.ku_code = #{kuCode}
+    </select>
+
+    <select id="getWarehousingBatchNoComBox" resultType="list">
+        select distinct igor.warehousing_batch_no warehousingBatchNo
+        from goods_location_record glr
+        left join in_goods_operation_record igor on glr.inGood_id = igor.id
+        where igor.sku = #{sku} and glr.ku_code = #{kuCode} and glr.type = 1
+    </select>
+
+    <select id="getListByOrderIdAndTime" resultType="com.jayud.storage.model.vo.OnShelfOrderVO">
+        select id,order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, count(number) number
+        from in_goods_operation_record igor
+        where igor.order_id = #{orderId} and igor.order_no = #{orderNo} and igor.update_time = #{searchTime}
+        group by warehousing_batch_no
+    </select>
+
+    <select id="getListByOrderIdAndTime2" resultType="com.jayud.storage.model.vo.OnShelfOrderVO">
+        select id,order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, count(number) number
+        from in_goods_operation_record igor
+        where igor.order_id = #{orderId} and igor.order_no = #{orderNo}
+        <if test="form.startTime !=null and form.startTime!=''">
+            and igor.create_time <![CDATA[>= ]]> #{form.startTime}
+        </if>
+        <if test="form.endTime !=null and form.endTime!=''">
+            and igor.create_time <![CDATA[<= ]]> #{form.endTime}
+        </if>
+        group by warehousing_batch_no
+    </select>
+
 </mapper>

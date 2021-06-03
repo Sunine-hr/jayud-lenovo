@@ -51,6 +51,9 @@ public class LocationCodeVO extends Model<LocationCodeVO> {
     @ApiModelProperty(value = "sku种类上限")
     private Integer categoryUpperLimit;
 
+    @ApiModelProperty(value = "二维码地址")
+    private String qrUrl;
+
     public void setMaximumVolume(Double maximumVolume) {
         this.maximumVolume = this.height+"*"+this.length+"*"+this.height;
     }

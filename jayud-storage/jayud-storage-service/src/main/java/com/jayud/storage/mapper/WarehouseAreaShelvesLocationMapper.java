@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.storage.model.bo.QueryWarehouseAreaShelvesLocationForm;
 import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.storage.model.vo.LocationCodeVO;
 import com.jayud.storage.model.vo.WarehouseAreaShelvesLocationVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -28,4 +29,5 @@ public interface WarehouseAreaShelvesLocationMapper extends BaseMapper<Warehouse
 
     List<WarehouseAreaShelvesLocationVO> getListByShelvesId(@Param("form")QueryWarehouseAreaShelvesLocationForm form);
 
+    List<LocationCodeVO> getListByShelvesName(@Param("shelvesName")String shelvesName);
 }

@@ -1,5 +1,6 @@
 package com.jayud.storage.service;
 
+import com.jayud.storage.model.bo.WarehousePickingForm;
 import com.jayud.storage.model.po.GoodsLocationRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.storage.model.vo.GoodsLocationRecordFormVO;
@@ -29,4 +30,13 @@ public interface IGoodsLocationRecordService extends IService<GoodsLocationRecor
 
     //出库
     List<GoodsLocationRecordFormVO> getOutGoodsLocationRecordByGoodId(Long id);
+
+    //根据库位和id查询库位信息
+    GoodsLocationRecord getInListByKuCodeAndInGoodId(String kuCode, Long id);
+
+    //获取未拣货的数据
+    List<GoodsLocationRecordFormVO> getOutGoodsLocationRecordByGoodIdAndPicked(Long id);
+
+    //出库 根据库位和id查询库位信息
+    GoodsLocationRecord getOutListByKuCodeAndInGoodId(Long id, String kuCode);
 }

@@ -26,4 +26,15 @@ public class LocationServiceImpl extends ServiceImpl<LocationMapper, Location> i
         queryWrapper.eq("location_id",id);
         return this.baseMapper.selectList(queryWrapper);
     }
+
+    @Override
+    public boolean isExistence(String kuCode) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("location_code",kuCode);
+        Location location = this.baseMapper.selectOne(queryWrapper);
+        if(location == null){
+            return false;
+        }
+        return true;
+    }
 }

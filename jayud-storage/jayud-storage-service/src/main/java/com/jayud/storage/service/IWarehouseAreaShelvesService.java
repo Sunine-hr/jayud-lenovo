@@ -10,6 +10,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.storage.model.vo.WarehouseAreaShelvesFormVO;
 import com.jayud.storage.model.vo.WarehouseAreaShelvesVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 商品区域货架表 服务类
@@ -31,4 +33,6 @@ public interface IWarehouseAreaShelvesService extends IService<WarehouseAreaShel
     WarehouseAreaShelves getWarehouseAreaShelvesByShelvesName(String name);
 
     WarehouseAreaShelvesFormVO getWarehouseAreaShelvesByShelvesId(Long shelvesId);
+
+    List<WarehouseAreaShelves> getWarehouseAreaShelvesByAreaName(String areaName);
 }

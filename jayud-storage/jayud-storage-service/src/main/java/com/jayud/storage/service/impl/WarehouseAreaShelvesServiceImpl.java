@@ -22,6 +22,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -85,11 +86,20 @@ public class WarehouseAreaShelvesServiceImpl extends ServiceImpl<WarehouseAreaSh
     public WarehouseAreaShelves getWarehouseAreaShelvesByShelvesName(String name) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("shelves_name",name);
+        queryWrapper.eq("status",1);
         return this.baseMapper.selectOne(queryWrapper);
     }
 
     @Override
     public WarehouseAreaShelvesFormVO getWarehouseAreaShelvesByShelvesId(Long shelvesId) {
         return this.baseMapper.getWarehouseAreaShelvesByShelvesId(shelvesId);
+    }
+
+    @Override
+    public List<WarehouseAreaShelves> getWarehouseAreaShelvesByAreaName(String areaName) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("area_name",areaName);
+        queryWrapper.eq("status",1);
+        return this.baseMapper.selectList(queryWrapper);
     }
 }

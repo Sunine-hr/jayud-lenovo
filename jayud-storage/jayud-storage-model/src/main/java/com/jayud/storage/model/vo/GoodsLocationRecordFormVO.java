@@ -35,5 +35,8 @@ public class GoodsLocationRecordFormVO extends Model<GoodsLocationRecordFormVO> 
     @ApiModelProperty(value = "创建时间")
     private String createTime;
 
+    @ApiModelProperty(value = "是否已拣货 (1为已拣货，2为未拣货)")
+    private Integer isPickedGoods;
+
 
 }

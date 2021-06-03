@@ -246,7 +246,7 @@ public class OrderInfoController {
             }
             //仓储校验参数
             if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())) {
-                if (inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode())) {
+                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())) {
                     InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
                     if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
                         return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
@@ -257,7 +257,7 @@ public class OrderInfoController {
                     }
 
                 }
-//                if (inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())) {
+//                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())) {
 //                    InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
 //                    ApiResult commodity = storageClient.isCommodity(storageInputOrderForm.getGoodsFormList());
 //                    if(!commodity.isOk()){

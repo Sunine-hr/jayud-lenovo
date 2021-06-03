@@ -9,15 +9,11 @@ import com.jayud.storage.feign.OauthClient;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.QueryWarehouseAreaShelvesLocationForm;
 import com.jayud.storage.model.bo.WarehouseAreaShelvesLocationForm;
-import com.jayud.storage.model.po.Location;
-import com.jayud.storage.model.po.WarehouseAreaShelves;
-import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
+import com.jayud.storage.model.po.*;
 import com.jayud.storage.mapper.WarehouseAreaShelvesLocationMapper;
 import com.jayud.storage.model.vo.*;
-import com.jayud.storage.service.ILocationService;
-import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
+import com.jayud.storage.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.storage.service.IWarehouseAreaShelvesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +40,12 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
 
     @Autowired
     private ILocationService locationService;
+
+    @Autowired
+    private IWarehouseAreaService warehouseAreaService;
+
+    @Autowired
+    private IWarehouseService warehouseService;
 
     @Override
     public List<WarehouseAreaShelvesLocation> getUpdateTime() {
@@ -114,6 +116,23 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
             }
         }
         return locationCodeVOS;
+    }
+
+    @Override
+    public List<LocationCodeVO> getListByShelvesName(String shelvesName) {
+        return this.baseMapper.getListByShelvesName(shelvesName);
+    }
+
+    @Override
+    public String getWarehouseNameByKuCode(String kuCode) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("location_code",kuCode);
+        Location one = locationService.getOne(queryWrapper);
+        WarehouseAreaShelvesLocation byId = this.getById(one.getLocationId());
+        WarehouseAreaShelves byId1 = warehouseAreaShelvesService.getById(byId.getShelvesId());
+        WarehouseArea byId2 = warehouseAreaService.getById(byId1.getAreaId());
+        Warehouse byId3 = warehouseService.getById(byId2.getWarehouseId());
+        return byId3.getName();
     }
 
 

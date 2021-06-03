@@ -16,6 +16,7 @@ import com.jayud.storage.model.bo.WarehouseAreaShelvesLocationForm;
 import com.jayud.storage.model.po.Location;
 import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
 import com.jayud.storage.model.vo.*;
+import com.jayud.storage.service.IInGoodsOperationRecordService;
 import com.jayud.storage.service.ILocationService;
 import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
 import com.jayud.storage.service.IWarehouseAreaShelvesService;
@@ -23,11 +24,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +53,9 @@ public class WarehouseAreaShelvesLocationController {
 
     @Autowired
     private ILocationService locationService;
+
+    @Autowired
+    private IInGoodsOperationRecordService inGoodsOperationRecordService;
 
     @Autowired
     private OmsClient omsClient;
@@ -117,6 +118,9 @@ public class WarehouseAreaShelvesLocationController {
         return CommonResult.success(locationVOS);
     }
 
+    @Value("${address.locationUrl}")
+    String locationUrl;
+
     @ApiOperation(value = "查看库位编码")
     @PostMapping("/viewLocationCode")
     public CommonResult<List<LocationCodeVO>> viewLocationCode(@RequestBody QueryWarehouseAreaShelvesLocationForm form){
@@ -129,13 +133,20 @@ public class WarehouseAreaShelvesLocationController {
             for (Location location : locations) {
                 LocationCodeVO locationCodeVO = ConvertUtil.convert(warehouseAreaShelvesLocation, LocationCodeVO.class);
                 locationCodeVO.setLocationCode(location.getLocationCode());
+                locationCodeVO.setQrUrl(locationUrl+location.getLocationCode());
                 locationCodeVOS.add(locationCodeVO);
             }
         }
         return CommonResult.success(locationCodeVOS);
     }
 
-
+    @ApiOperation(value = "获取该库位下所有商品")
+    @GetMapping("/findGoodByKuCode")
+    public CommonResult findGoodByKuCode(@RequestParam("kuCode")String kuCode){
+        //获取该库位下所有商品
+        List<QRCodeLocationGoodVO> locationGoodVOS = inGoodsOperationRecordService.getListByKuCode(kuCode);
+        return CommonResult.success(locationGoodVOS);
+    }
 
 }
 

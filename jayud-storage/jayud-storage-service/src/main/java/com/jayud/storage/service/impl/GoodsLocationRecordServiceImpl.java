@@ -3,6 +3,7 @@ package com.jayud.storage.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.storage.feign.OmsClient;
+import com.jayud.storage.model.bo.WarehousePickingForm;
 import com.jayud.storage.model.po.GoodsLocationRecord;
 import com.jayud.storage.mapper.GoodsLocationRecordMapper;
 import com.jayud.storage.model.po.InGoodsOperationRecord;
@@ -94,6 +95,35 @@ public class GoodsLocationRecordServiceImpl extends ServiceImpl<GoodsLocationRec
         List<GoodsLocationRecord> list = this.baseMapper.selectList(queryWrapper);
         List<GoodsLocationRecordFormVO> goodsLocationRecordFormVOS = ConvertUtil.convertList(list, GoodsLocationRecordFormVO.class);
         return goodsLocationRecordFormVOS;
+    }
+
+    @Override
+    public GoodsLocationRecord getInListByKuCodeAndInGoodId(String kuCode, Long id) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("inGood_id",id);
+        queryWrapper.eq("ku_code",kuCode);
+        queryWrapper.eq("type",1);
+        return this.baseMapper.selectOne(queryWrapper);
+    }
+
+    @Override
+    public List<GoodsLocationRecordFormVO> getOutGoodsLocationRecordByGoodIdAndPicked(Long id) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("inGood_id",id);
+        queryWrapper.eq("type",2);
+        queryWrapper.eq("is_picked_goods",1);
+        List<GoodsLocationRecord> list = this.baseMapper.selectList(queryWrapper);
+        List<GoodsLocationRecordFormVO> goodsLocationRecordFormVOS = ConvertUtil.convertList(list, GoodsLocationRecordFormVO.class);
+        return goodsLocationRecordFormVOS;
+    }
+
+    @Override
+    public GoodsLocationRecord getOutListByKuCodeAndInGoodId(Long id, String kuCode) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("inGood_id",id);
+        queryWrapper.eq("ku_code",kuCode);
+        queryWrapper.eq("type",2);
+        return this.baseMapper.selectOne(queryWrapper);
     }
 
 

@@ -52,5 +52,8 @@ public class WarehouseAreaVO extends Model<WarehouseAreaVO> {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
+    @ApiModelProperty(value = "二维码地址")
+    private String qrUrl;
+
 
 }

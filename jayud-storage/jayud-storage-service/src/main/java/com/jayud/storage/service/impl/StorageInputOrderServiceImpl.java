@@ -68,6 +68,9 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
     @Autowired
     private IStockService stockService;
 
+    @Autowired
+    private IWarehouseAreaShelvesLocationService warehouseAreaShelvesLocationService;
+
     @Override
     public String createOrder(StorageInputOrderForm storageInputOrderForm) {
 
@@ -124,7 +127,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         //获取商品信息
         List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList(storageInputOrder.getId(),storageInputOrder.getOrderNo());
         if(CollectionUtils.isEmpty(warehouseGoods)){
-            warehouseGoods.add(new WarehouseGoodsVO());
+                warehouseGoods.add(new WarehouseGoodsVO());
             storageInputOrderVO.setTotalNumber("0板0件0pcs");
             storageInputOrderVO.setTotalWeight("0KG");
         }else{
@@ -151,6 +154,11 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         }
         List<InGoodsOperationRecord> listByOrderId = inGoodsOperationRecordService.getListByOrderId(storageInputOrder.getId(), storageInputOrder.getOrderNo());
         List<InGoodsOperationRecordVO> inGoodsOperationRecordVOS = ConvertUtil.convertList(listByOrderId, InGoodsOperationRecordVO.class);
+        if(CollectionUtils.isNotEmpty(inGoodsOperationRecordVOS)){
+            for (InGoodsOperationRecordVO inGoodsOperationRecordVO : inGoodsOperationRecordVOS) {
+                inGoodsOperationRecordVO.setOrderTaker(storageInputOrderVO.getOrderTaker());
+            }
+        }
         if(CollectionUtils.isEmpty(inGoodsOperationRecordVOS)){
             inGoodsOperationRecordVOS.add(new InGoodsOperationRecordVO());
         }
@@ -234,22 +242,44 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
                 }
 
             }
-            //确认该商品已入库
-            InGoodsOperationRecord inGoodsOperationRecord1 = ConvertUtil.convert(inGoodsOperationRecord, InGoodsOperationRecord.class);
-            inGoodsOperationRecord1.setIsWarehousing(1);
-            boolean b = inGoodsOperationRecordService.saveOrUpdate(inGoodsOperationRecord1);
-            if(!b){
-                return false;
+
+            List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecord.getId());
+            Integer number = 0;
+            for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
+                number = number + goodsLocationRecord.getNumber();
             }
+            if(inGoodsOperationRecord.getNumber() == number){
+                //确认该商品已入库
+                InGoodsOperationRecord inGoodsOperationRecord1 = ConvertUtil.convert(inGoodsOperationRecord, InGoodsOperationRecord.class);
+                inGoodsOperationRecord1.setIsWarehousing(1);
+                inGoodsOperationRecord1.setUpdateTime(LocalDateTime.now());
+                inGoodsOperationRecord1.setUpdateUser(UserOperator.getToken());
+                boolean b = inGoodsOperationRecordService.saveOrUpdate(inGoodsOperationRecord1);
+                if(!b){
+                    return false;
+                }
+            }
+
         }
         //获取该订单所有入仓信息
         boolean flag = true;
         List<InGoodsOperationRecord> listByOrderId = inGoodsOperationRecordService.getListByOrderId(form.getId(), form.getOrderNo());
-        for (InGoodsOperationRecord inGoodsOperationRecord : listByOrderId) {
-            if(!inGoodsOperationRecord.getIsWarehousing().equals(1)){
-                flag = false;
+        if(CollectionUtils.isNotEmpty(listByOrderId)){
+            for (InGoodsOperationRecord inGoodsOperationRecord : listByOrderId) {
+                if(!inGoodsOperationRecord.getIsWarehousing().equals(1)){
+                    flag = false;
+                }
+                List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecord.getId());
+                Integer number = 0;
+                for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
+                    number = number + goodsLocationRecord.getNumber();
+                }
+                if(inGoodsOperationRecord.getNumber() != number){
+                    flag = false;
+                }
             }
         }
+
         if(flag){
             StorageInputOrder storageInputOrder = new StorageInputOrder();
             storageInputOrder.setId(form.getId());
@@ -299,6 +329,58 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
 
         Page<StorageInputOrderNumberVO> page = new Page<>(form.getPageNum(), form.getPageSize());
         return this.baseMapper.findOrderRecordByPage(page, form);
+    }
+
+    //上架订单列表
+    @Override
+    public List<OnShelfOrderVO> getListByForm(QueryPutGoodForm form) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status","CCI_3");
+        List<StorageInputOrder> list = this.baseMapper.selectList(queryWrapper);
+        List<OnShelfOrderVO> onShelfOrderVOS = new ArrayList<>();
+        for (StorageInputOrder storageInputOrder : list) {
+            List<OnShelfOrderVO> inGoodsOperationRecords = inGoodsOperationRecordService.getListByOrderIdAndTime(storageInputOrder.getId(),storageInputOrder.getOrderNo(),form.getSearchTime());
+            String warehouseName = null;
+            if(CollectionUtils.isNotEmpty(inGoodsOperationRecords)){
+                List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecords.get(0).getId());
+                //通过库位编码获取仓库名称
+                if(CollectionUtils.isNotEmpty(goodsLocationRecordByGoodId)){
+                    warehouseName = warehouseAreaShelvesLocationService.getWarehouseNameByKuCode(goodsLocationRecordByGoodId.get(0).getKuCode());
+                }
+            }
+            for (OnShelfOrderVO inGoodsOperationRecord : inGoodsOperationRecords) {
+                inGoodsOperationRecord.setWarehouseName(warehouseName);
+                onShelfOrderVOS.add(inGoodsOperationRecord);
+            }
+        }
+        return onShelfOrderVOS;
+    }
+
+    @Override
+    public List<OnShelfOrderVO> getListByQueryForm(QueryPutGoodForm form) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status","CCI_3");
+        if(form.getOrderNo() != null){
+            queryWrapper.like("order_no",form.getOrderNo());
+        }
+        List<StorageInputOrder> list = this.baseMapper.selectList(queryWrapper);
+        List<OnShelfOrderVO> onShelfOrderVOS = new ArrayList<>();
+        for (StorageInputOrder storageInputOrder : list) {
+            List<OnShelfOrderVO> inGoodsOperationRecords = inGoodsOperationRecordService.getListByOrderIdAndTime2(storageInputOrder.getId(),storageInputOrder.getOrderNo(),form.getStartTime(),form.getEndTime());
+            String warehouseName = null;
+            if(CollectionUtils.isNotEmpty(inGoodsOperationRecords)){
+                List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecords.get(0).getId());
+                //通过库位编码获取仓库名称
+                if(CollectionUtils.isNotEmpty(goodsLocationRecordByGoodId)){
+                    warehouseName = warehouseAreaShelvesLocationService.getWarehouseNameByKuCode(goodsLocationRecordByGoodId.get(0).getKuCode());
+                }
+            }
+            for (OnShelfOrderVO inGoodsOperationRecord : inGoodsOperationRecords) {
+                inGoodsOperationRecord.setWarehouseName(warehouseName);
+                onShelfOrderVOS.add(inGoodsOperationRecord);
+            }
+        }
+        return onShelfOrderVOS;
     }
 
     //入库接单
@@ -376,7 +458,8 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         }else{
             storageInputOrderDetails.setCardTypeId(null);
         }
-
+        storageInputOrderDetails.setCreateTime(LocalDateTime.now());
+        storageInputOrderDetails.setCreateUser(UserOperator.getToken()  );
         boolean update = storageInputOrderDetailsService.saveOrUpdate(storageInputOrderDetails);
         if (!update) {
             return false;

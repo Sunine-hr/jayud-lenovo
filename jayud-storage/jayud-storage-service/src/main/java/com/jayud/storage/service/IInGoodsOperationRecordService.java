@@ -2,8 +2,7 @@ package com.jayud.storage.service;
 
 import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.storage.model.vo.InGoodsOperationRecordFormVO;
-import com.jayud.storage.model.vo.InGoodsOperationRecordNumberVO;
+import com.jayud.storage.model.vo.*;
 
 import java.util.List;
 
@@ -47,4 +46,32 @@ public interface IInGoodsOperationRecordService extends IService<InGoodsOperatio
     //获取分批次获取所有未出库数据
     List<InGoodsOperationRecord> getList1();
 
+    List<InGoodsOperationRecord> getListByAreaName(String areaName);
+
+    /**
+     * 获取库位下所有商品信息
+     * @param kuCode
+     * @return
+     */
+    List<QRCodeLocationGoodVO> getListByKuCode(String kuCode);
+
+    /**
+     * 获取该库位下，该商品的批次号
+     * @param kuCode
+     * @param sku
+     * @return
+     */
+    List<String> getWarehousingBatchNoComBox(String kuCode, String sku);
+
+    List<OnShelfOrderVO> getListByOrderIdAndTime(Long id, String orderNo, String searchTime);
+
+    /**
+     * 获取批次号和订单号，获取订单入库商品信息
+     * @param warehousingBatchNo
+     * @param orderNo
+     * @return
+     */
+    List<InGoodsOperationRecordVO> getListByWarehousingBatchNoAndOrderNo(String warehousingBatchNo, String orderNo);
+
+    List<OnShelfOrderVO> getListByOrderIdAndTime2(Long id, String orderNo, String startTime, String endTime);
 }

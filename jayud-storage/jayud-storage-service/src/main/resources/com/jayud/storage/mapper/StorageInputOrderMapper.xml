@@ -43,7 +43,7 @@
                 and sio.order_no like concat('%',#{form.orderNo},'%')
             </if>
             <if test="form.warehouseNumber !=null and form.warehouseNumber!=''">
-                and sio.warehouseNumber like concat('%',#{form.warehouseNumber},'%')
+                and sio.warehouse_number like concat('%',#{form.warehouseNumber},'%')
             </if>
             <if test="form.processStatus !=null and form.processStatus!=''">
                 and sio.process_status like concat('%',#{form.processStatus},'%')
@@ -111,7 +111,7 @@
                 and sio.order_no like concat('%',#{form.orderNo},'%')
             </if>
             <if test="form.warehouseNumber !=null and form.warehouseNumber!=''">
-                and sio.warehouseNumber like concat('%',#{form.warehouseNumber},'%')
+                and sio.warehouse_number like concat('%',#{form.warehouseNumber},'%')
             </if>
             <if test="form.processStatus !=null and form.processStatus!=''">
                 and sio.process_status like concat('%',#{form.processStatus},'%')

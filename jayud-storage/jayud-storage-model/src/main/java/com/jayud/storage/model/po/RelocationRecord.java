@@ -65,6 +65,9 @@ public class RelocationRecord extends Model<RelocationRecord> {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
+    @ApiModelProperty(value = "入库批次号")
+    private String warehousingBatchNo;
+
 
     @Override
     protected Serializable pkVal() {

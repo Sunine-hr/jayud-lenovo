@@ -1,11 +1,11 @@
 package com.jayud.storage.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.storage.model.po.GoodsLocationRecord;
 import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.jayud.storage.mapper.InGoodsOperationRecordMapper;
-import com.jayud.storage.model.vo.InGoodsOperationRecordFormVO;
-import com.jayud.storage.model.vo.InGoodsOperationRecordNumberVO;
+import com.jayud.storage.model.vo.*;
 import com.jayud.storage.service.IGoodsLocationRecordService;
 import com.jayud.storage.service.IInGoodsOperationRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -42,6 +42,7 @@ public class InGoodsOperationRecordServiceImpl extends ServiceImpl<InGoodsOperat
     public List<InGoodsOperationRecord> getListByWarehousingBatchNo(String warehousingBatchNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("warehousing_batch_no",warehousingBatchNo);
+        queryWrapper.eq("is_warehousing",0);
         return this.baseMapper.selectList(queryWrapper);
     }
 
@@ -103,6 +104,50 @@ public class InGoodsOperationRecordServiceImpl extends ServiceImpl<InGoodsOperat
             }
         }
         return list1;
+    }
+
+    @Override
+    public List<InGoodsOperationRecord> getListByAreaName(String areaName) {
+        return this.baseMapper.getListByAreaName(areaName);
+    }
+
+    @Override
+    public List<QRCodeLocationGoodVO> getListByKuCode(String kuCode) {
+        List<QRCodeLocationGoodVO> listByKuCode = this.baseMapper.getListByKuCode(kuCode);
+        for  ( int  i  =   0 ; i  <  listByKuCode.size()  -   1 ; i ++ )  {
+            for  ( int  j  =  listByKuCode.size()  -   1 ; j  >  i; j -- )  {
+                if  (listByKuCode.get(j).getSku().equals(listByKuCode.get(i).getSku()))  {
+                    listByKuCode.get(i).setNumber(listByKuCode.get(i).getNumber() + listByKuCode.get(j).getNumber());
+                    listByKuCode.remove(j);
+                }
+            }
+        }
+        return listByKuCode;
+    }
+
+    @Override
+    public List<String> getWarehousingBatchNoComBox(String kuCode, String sku) {
+        return this.baseMapper.getWarehousingBatchNoComBox(kuCode,sku);
+    }
+
+    @Override
+    public List<OnShelfOrderVO> getListByOrderIdAndTime(Long id, String orderNo, String searchTime) {
+        return this.baseMapper.getListByOrderIdAndTime(id,orderNo,searchTime);
+    }
+
+    @Override
+    public List<InGoodsOperationRecordVO> getListByWarehousingBatchNoAndOrderNo(String warehousingBatchNo, String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("warehousing_batch_no",warehousingBatchNo);
+        queryWrapper.eq("order_no",orderNo);
+        List<InGoodsOperationRecord> list = this.baseMapper.selectList(queryWrapper);
+        List<InGoodsOperationRecordVO> inGoodsOperationRecordVOS = ConvertUtil.convertList(list, InGoodsOperationRecordVO.class);
+        return inGoodsOperationRecordVOS;
+    }
+
+    @Override
+    public List<OnShelfOrderVO> getListByOrderIdAndTime2(Long id, String orderNo, String startTime, String endTime) {
+        return this.baseMapper.getListByOrderIdAndTime2(id,orderNo,startTime,endTime);
     }
 
 

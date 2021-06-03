@@ -8,18 +8,19 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.storage.model.bo.*;
+import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.jayud.storage.model.po.WarehouseArea;
 import com.jayud.storage.model.po.WarehouseAreaShelves;
 import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
 import com.jayud.storage.model.vo.*;
-import com.jayud.storage.service.IWarehouseAreaService;
-import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
-import com.jayud.storage.service.IWarehouseAreaShelvesService;
+import com.jayud.storage.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +46,13 @@ public class WarehouseAreaController {
     @Autowired
     private IWarehouseAreaShelvesLocationService warehouseAreaShelvesLocationService;
 
+    @Autowired
+    private IInGoodsOperationRecordService inGoodsOperationRecordService;
+
+
+    @Value("${address.areaUrl}")
+    String areaUrl;
+
     @ApiOperation(value = "不分页查询list")
     @PostMapping("/findWarehouseArea")
     public CommonResult<List<WarehouseAreaVO>> findWarehouseArea(@RequestBody QueryWarehouseAreaForm form) {
@@ -57,6 +65,9 @@ public class WarehouseAreaController {
     @PostMapping("/findWarehouseAreaByPage")
     public CommonResult<CommonPageResult<WarehouseAreaVO>> findWarehouseAreaByPage(@RequestBody QueryWarehouseAreaForm form){
         IPage<WarehouseAreaVO> page = this.warehouseAreaService.findWarehouseAreaByPage(form);
+        for (WarehouseAreaVO record : page.getRecords()) {
+            record.setQrUrl(areaUrl+record.getAreaName());
+        }
         CommonPageResult<WarehouseAreaVO> pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);
     }
@@ -128,10 +139,17 @@ public class WarehouseAreaController {
         return CommonResult.success("操作成功！");
     }
 
+    @Value("${address.shelvesUrl}")
+    String shelvesUrl;
+
     @ApiOperation(value = "货架分页查询list")
     @PostMapping("/findWarehouseAreaShelvesByPage")
     public CommonResult<CommonPageResult<WarehouseAreaShelvesVO>> findWarehouseAreaShelvesByPage(@RequestBody QueryWarehouseAreaShelvesForm form){
         IPage<WarehouseAreaShelvesVO> page = this.warehouseAreaShelvesService.findWarehouseAreaShelvesByPage(form);
+
+        for (WarehouseAreaShelvesVO record : page.getRecords()) {
+            record.setQrUrl(areaUrl+record.getAreaName());
+        }
         CommonPageResult<WarehouseAreaShelvesVO> pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);
     }
@@ -140,11 +158,46 @@ public class WarehouseAreaController {
     @ApiOperation(value = "获取该区域下所有商品信息")
     @GetMapping("/findGoodByWarehouseArea")
     public CommonResult findGoodByWarehouseArea(@RequestParam("areaName") String areaName){
-        //根据区域名称获取区域信息
-        WarehouseArea warehouseAreaByAreaName = warehouseAreaService.getWarehouseAreaByAreaName(areaName);
-        //获取该区域下所有库位信息，库位下存储的所有商品信息
-//        List<WarehouseAreaShelvesLocation> warehouseAreaShelvesLocations = warehouseAreaShelvesLocationService.getListByAreaName(areaName);
-        return CommonResult.success(warehouseAreaByAreaName);
+
+        //获取该区域下所有货架信息
+        List<WarehouseAreaShelves> warehouseAreaShelves = warehouseAreaShelvesService.getWarehouseAreaShelvesByAreaName(areaName);
+        List<QRCodeAreaGoodVO> qrCodeAreaGoodVOS = new ArrayList<>();
+        for (WarehouseAreaShelves warehouseAreaShelf : warehouseAreaShelves) {
+            QRCodeAreaGoodVO qrCodeAreaGoodVO = new QRCodeAreaGoodVO();
+
+            List<LocationCodeVO> locationCodeVOS = warehouseAreaShelvesLocationService.getListByShelvesName(warehouseAreaShelf.getShelvesName());
+            List<QRCodeShelvesGoodVO> qrCodeShelvesGoodVOS = new ArrayList<>();
+            for (LocationCodeVO locationCodeVO : locationCodeVOS) {
+                QRCodeShelvesGoodVO qrCodeShelvesGoodVO = new QRCodeShelvesGoodVO();
+                List<QRCodeLocationGoodVO> listByKuCode = inGoodsOperationRecordService.getListByKuCode(locationCodeVO.getLocationCode());
+                qrCodeShelvesGoodVO.setKuCode(locationCodeVO.getLocationCode());
+                qrCodeShelvesGoodVO.setQrCodeLocationGoodVOS(listByKuCode);
+                qrCodeShelvesGoodVOS.add(qrCodeShelvesGoodVO);
+            }
+
+            qrCodeAreaGoodVO.setShelvesName(warehouseAreaShelf.getShelvesName());
+            qrCodeAreaGoodVO.setQrCodeShelvesGoodVOS(qrCodeShelvesGoodVOS);
+            qrCodeAreaGoodVOS.add(qrCodeAreaGoodVO);
+        }
+        return CommonResult.success(qrCodeAreaGoodVOS);
+
+    }
+
+    @ApiOperation(value = "获取该货架下所有商品信息")
+    @GetMapping("/findGoodByWarehouseAreaShelves")
+    public CommonResult findGoodByWarehouseAreaShelves(@RequestParam("shelvesName") String shelvesName){
+
+        //获取该货架下所有库位信息，库位下存储的所有商品信息
+        List<LocationCodeVO> locationCodeVOS = warehouseAreaShelvesLocationService.getListByShelvesName(shelvesName);
+        List<QRCodeShelvesGoodVO> qrCodeShelvesGoodVOS = new ArrayList<>();
+        for (LocationCodeVO locationCodeVO : locationCodeVOS) {
+            QRCodeShelvesGoodVO qrCodeShelvesGoodVO = new QRCodeShelvesGoodVO();
+            List<QRCodeLocationGoodVO> listByKuCode = inGoodsOperationRecordService.getListByKuCode(locationCodeVO.getLocationCode());
+            qrCodeShelvesGoodVO.setKuCode(locationCodeVO.getLocationCode());
+            qrCodeShelvesGoodVO.setQrCodeLocationGoodVOS(listByKuCode);
+            qrCodeShelvesGoodVOS.add(qrCodeShelvesGoodVO);
+        }
+        return CommonResult.success(qrCodeShelvesGoodVOS);
 
     }
 

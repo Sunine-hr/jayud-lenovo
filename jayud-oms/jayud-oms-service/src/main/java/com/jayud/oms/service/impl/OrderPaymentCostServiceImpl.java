@@ -8,10 +8,13 @@ import com.jayud.oms.mapper.OrderPaymentCostMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.po.CurrencyInfo;
 import com.jayud.oms.model.po.OrderPaymentCost;
+import com.jayud.oms.model.po.OrderReceivableCost;
+import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
 import com.jayud.oms.service.ICurrencyInfoService;
 import com.jayud.oms.service.IOrderPaymentCostService;
+import com.jayud.oms.service.ISupplierInfoService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +40,8 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
 
     @Autowired
     private ICurrencyInfoService currencyInfoService;
+    @Autowired
+    private ISupplierInfoService supplierInfoService;
 
     @Override
     public List<InputPaymentCostVO> findPaymentCost(GetCostDetailForm form) {
@@ -296,6 +301,46 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
                 .and(e -> e.eq(OrderPaymentCost::getStatus, OrderStatusEnum.COST_3)//子订单合并费用
                         .or().in(OrderPaymentCost::getStatus, mainCostStatus));//主订单费用
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 根据主订单查询费用
+     *
+     * @param mainOrderNo
+     * @param exclusionStatus
+     * @return
+     */
+    @Override
+    public List<OrderPaymentCost> getByMainOrderNo(String mainOrderNo, List<String> exclusionStatus) {
+        QueryWrapper<OrderPaymentCost> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderPaymentCost::getMainOrderNo, mainOrderNo)
+                .notIn(OrderPaymentCost::getStatus, exclusionStatus);
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 补充供应商信息
+     *
+     * @param paymentCosts
+     */
+    @Override
+    public void supplySupplierInfo(List<OrderPaymentCost> paymentCosts) {
+        Map<String, String> supplierInfoMap = new HashMap<>();
+        for (OrderPaymentCost paymentCost : paymentCosts) {
+            //供应商名称
+            if (StringUtils.isEmpty(paymentCost.getCustomerName())) {
+                String supplierName = supplierInfoMap.get(paymentCost.getCustomerCode());
+                if (com.jayud.common.utils.StringUtils.isEmpty(supplierName)) {
+                    List<SupplierInfo> supplierInfos = this.supplierInfoService.getByCondition(new SupplierInfo().setSupplierCode(paymentCost.getCustomerCode()));
+                    SupplierInfo supplierInfo = supplierInfos.get(0);
+                    paymentCost.setCustomerName(supplierInfo.getSupplierChName());
+                    supplierInfoMap.put(paymentCost.getCustomerCode(), supplierInfo.getSupplierChName());
+                } else {
+                    paymentCost.setCustomerName(supplierName);
+                }
+            }
+        }
+
     }
 
 }

@@ -107,4 +107,7 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      * @return
      */
     public Integer getNumByStatus(String status, List<Long> legalIds);
+
+
+    List<SupplierInfo> getByCondition(SupplierInfo supplierInfo);
 }

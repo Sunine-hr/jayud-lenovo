@@ -128,4 +128,12 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
      * @return
      */
     List<OrderPaymentCost> getMainOrderCost(String mainOrderNo, List<String> mainCostStatus);
+
+    List<OrderPaymentCost> getByMainOrderNo(String mainOrderNo, List<String> exclusionStatus);
+
+    /**
+     * 补充供应商信息
+     * @param paymentCosts
+     */
+    void supplySupplierInfo(List<OrderPaymentCost> paymentCosts);
 }

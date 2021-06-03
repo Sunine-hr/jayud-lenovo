@@ -444,13 +444,7 @@ public class EasyExcelUtils {
 
     @SneakyThrows
     public static <T> void fillTemplate(JSONObject json, Map<String, List<T>> list,
-                                        String templateFilePath, HttpServletResponse response) {
-        // 模板注意 用{} 来表示你要用的变量 如果本来就有"{","}" 特殊字符 用"\{","\}"代替
-        // {} 代表普通变量 {.} 代表是list的变量 {前缀.} 前缀可以区分不同的list
-        String fileName = "D:\\公司\\" + "compositeFill" + System.currentTimeMillis() + ".xlsx";
-//        ExcelWriter excelWriter = EasyExcel.write(fileName).withTemplate(templateFileName).build();
-
-//        FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
+                                        String templateFilePath, String outputPath, String fileName, HttpServletResponse response) {
         String templateFileName = URLDecoder.decode(templateFilePath, "utf-8");
 
         XSSFWorkbook templateWorkbook = new XSSFWorkbook(new FileInputStream(templateFileName));
@@ -463,18 +457,19 @@ public class EasyExcelUtils {
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
-            String filename = URLEncoder.encode("工作表", "utf-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xls");
+            fileName = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
             excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
         } else {
-            excelWriter = EasyExcel.write(fileName).withTemplate(templateInputStream).build();
+            excelWriter = EasyExcel.write(outputPath).withTemplate(templateInputStream).build();
         }
         WriteSheet writeSheet = EasyExcel.writerSheet().build();
-
+        // 这里注意 入参用了forceNewRow 代表在写入list的时候不管list下面有没有空行 都会创建一行，然后下面的数据往后移动。默认 是false，会直接使用下一行，如果没有则创建。但是这个就会把所有数据放到内存 会很耗内存
+        FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
         // 如果有多个list 模板上必须有{前缀.} 这里的前缀就是 data1，然后多个list必须用 FillWrapper包裹
         ExcelWriter finalExcelWriter = excelWriter;
         list.forEach((k, v) -> {
-            finalExcelWriter.fill(new FillWrapper(k, v), writeSheet);
+            finalExcelWriter.fill(new FillWrapper(k, v), fillConfig, writeSheet);
         });
 
         Map<String, Object> map = new HashMap<>();

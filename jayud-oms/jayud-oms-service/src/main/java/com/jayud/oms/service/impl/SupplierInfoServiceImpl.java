@@ -538,4 +538,9 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         return num == null ? 0 : num;
     }
 
+    @Override
+    public List<SupplierInfo> getByCondition(SupplierInfo supplierInfo) {
+        return this.baseMapper.selectList(new QueryWrapper<>(supplierInfo));
+    }
+
 }

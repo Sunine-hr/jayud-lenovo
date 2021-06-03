@@ -1,7 +1,6 @@
 package com.jayud.oms.model.vo.worksheet;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.json.JSONObject;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.DateUtils;
@@ -15,7 +14,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.apache.commons.collections4.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -61,8 +59,27 @@ public class TmsWorksheet {
     @ApiModelProperty(value = "费用明细")
     private List<CostDetailsWorksheet> payCostDetails;
 
+    @ApiModelProperty(value = "应收人民币")
+    private BigDecimal reRmb;
+
+    @ApiModelProperty(value = "应收港币")
+    private BigDecimal reHkd;
+
+    @ApiModelProperty(value = "应收美元")
+    private BigDecimal reUsd;
+
+    @ApiModelProperty(value = "应付人民币")
+    private BigDecimal payRmb;
+
+    @ApiModelProperty(value = "应付港币")
+    private BigDecimal payHkd;
+
+    @ApiModelProperty(value = "应付美元")
+    private BigDecimal payUsd;
+
     @ApiModelProperty(value = "利润")
     private BigDecimal profit;
+
 
     public TmsWorksheet assemblyData(InputOrderVO data) {
         if (data.getOrderForm() == null || data.getOrderTransportForm() == null) {
@@ -105,35 +122,65 @@ public class TmsWorksheet {
 
     public void assemblyCost(List<OrderReceivableCost> receivableCosts,
                              List<OrderPaymentCost> paymentCosts,
-                             Map<String, String> costInfoMap) {
+                             Map<String, String> costInfoMap, Map<String, String> currencyMap) {
         List<CostDetailsWorksheet> reCostDetails = new ArrayList<>();
         List<CostDetailsWorksheet> payCostDetails = new ArrayList<>();
         Map<String, BigDecimal> totalReCost = new HashMap<>();
         Map<String, BigDecimal> totalPayCost = new HashMap<>();
         BigDecimal profit = new BigDecimal(0);
         for (OrderReceivableCost receivableCost : receivableCosts) {
+            String currencyName = currencyMap.get(receivableCost.getCurrencyCode());
             CostDetailsWorksheet costDetail = new CostDetailsWorksheet();
             costDetail.setReCustomer(receivableCost.getCustomerName())
                     .setReCost(costInfoMap.get(receivableCost.getCostCode()))
-                    .setReCurrency(receivableCost.getCurrencyCode())
+                    .setReCurrency(currencyName)
                     .setReAmount(receivableCost.getAmount());
-            totalReCost.merge(receivableCost.getCurrencyCode(), receivableCost.getAmount(), BigDecimal::add);
+            totalReCost.merge(currencyName, receivableCost.getAmount(), BigDecimal::add);
             reCostDetails.add(costDetail);
             profit = profit.add(receivableCost.getChangeAmount());
         }
 
         for (OrderPaymentCost paymentCost : paymentCosts) {
+            String currencyName = currencyMap.get(paymentCost.getCurrencyCode());
             CostDetailsWorksheet costDetail = new CostDetailsWorksheet();
-            costDetail.setReCustomer(paymentCost.getCustomerName())
-                    .setReCost(costInfoMap.get(paymentCost.getCostCode()))
-                    .setReCurrency(paymentCost.getCurrencyCode())
-                    .setReAmount(paymentCost.getAmount());
-            totalPayCost.merge(paymentCost.getCurrencyCode(), paymentCost.getAmount(), BigDecimal::add);
+            costDetail.setPayCustomer(paymentCost.getCustomerName())
+                    .setPayCost(costInfoMap.get(paymentCost.getCostCode()))
+                    .setPayCurrency(currencyName)
+                    .setPayAmount(paymentCost.getAmount());
+            totalPayCost.merge(currencyName, paymentCost.getAmount(), BigDecimal::add);
             payCostDetails.add(costDetail);
             profit = profit.subtract(paymentCost.getChangeAmount());
         }
         this.profit = profit;
         this.reCostDetails = reCostDetails.size() > 13 ? reCostDetails.subList(0, 13) : reCostDetails;
         this.payCostDetails = payCostDetails.size() > 13 ? payCostDetails.subList(0, 13) : payCostDetails;
+
+        totalReCost.forEach((k, v) -> {
+            switch (k) {
+                case "人民币":
+                    this.reRmb = v;
+                    break;
+                case "港币":
+                    this.reHkd = v;
+                    break;
+                case "美元":
+                    this.reUsd = v;
+                    break;
+            }
+        });
+
+        totalPayCost.forEach((k, v) -> {
+            switch (k) {
+                case "人民币":
+                    this.payRmb = v;
+                    break;
+                case "港币":
+                    this.payHkd = v;
+                    break;
+                case "美元":
+                    this.payUsd = v;
+                    break;
+            }
+        });
     }
 }

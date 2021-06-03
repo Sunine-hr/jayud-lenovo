@@ -85,8 +85,15 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
     /**
      * 根据主订单查询费用
      * @param mainOrderNo
+     * @param isMainOrder
      * @param exclusionStatus
      * @return
      */
-    List<OrderReceivableCost> getByMainOrderNo(String mainOrderNo, List<String> exclusionStatus);
+    List<OrderReceivableCost> getByMainOrderNo(String mainOrderNo, boolean isMainOrder, List<String> exclusionStatus);
+
+    /**
+     * 补充客户信息
+     * @param receivableCosts
+     */
+    void supplyCustomerInfo(List<OrderReceivableCost> receivableCosts);
 }

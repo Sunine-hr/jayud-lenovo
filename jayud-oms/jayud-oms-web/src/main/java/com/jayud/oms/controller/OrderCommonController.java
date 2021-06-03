@@ -7,6 +7,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.entity.DataControl;
 import com.jayud.common.enums.*;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
@@ -27,6 +28,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -63,6 +65,13 @@ public class OrderCommonController {
     private IOrderPaymentCostService paymentCostService;
     @Autowired
     private ICostInfoService costInfoService;
+    @Autowired
+    private ICurrencyInfoService currencyInfoService;
+
+
+    @Value("${worksheet.tms}")
+    private String worksheetTms;
+
 
     @ApiOperation(value = "录入费用")
     @PostMapping(value = "/saveOrUpdateCost")
@@ -415,13 +424,13 @@ public class OrderCommonController {
 
     @ApiOperation(value = "工作表")
     @GetMapping(value = "/worksheet")
-    public CommonResult worksheet(@RequestParam("mainOrderId") Long mainOrderId,
-                                  @RequestParam("classCode") String classCode,
-                                  @RequestParam("isMainEntrance") String isMainEntrance,
-                                  HttpServletResponse response) {
+    public void worksheet(@RequestParam("mainOrderId") Long mainOrderId,
+                          @RequestParam("classCode") String classCode,
+                          @RequestParam("isMainEntrance") String isMainEntrance,
+                          HttpServletResponse response) {
         if (StringUtils.isEmpty(isMainEntrance)
                 || StringUtils.isEmpty(classCode) || mainOrderId == null) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR);
+            throw new JayudBizException(ResultEnum.PARAM_ERROR);
         }
         GetOrderDetailForm form = new GetOrderDetailForm();
         form.setClassCode(classCode);
@@ -431,28 +440,32 @@ public class OrderCommonController {
         //费用明细
         Map<String, String> costInfoMap = this.costInfoService.findCostInfo().stream().collect(Collectors.toMap(CostInfo::getIdCode,
                 CostInfo::getName));
+        //币种
+        Map<String, String> currencyMap = this.currencyInfoService.initCurrencyInfo().stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
 
         if ("main".equals(isMainEntrance)) {
             //查询所有应收费用
-            List<OrderReceivableCost> receivableCosts = this.receivableCostService.getByMainOrderNo(tmsWorksheet.getMainOrderNo(),
+            List<OrderReceivableCost> receivableCosts = this.receivableCostService.getByMainOrderNo(tmsWorksheet.getMainOrderNo(), true,
                     Collections.singletonList(OrderStatusEnum.COST_1.getCode()));
-            //查询所有合并过来审核通过子订单费用
-//            List<OrderPaymentCost> paymentCosts = this.paymentCostService.getByCondition(new OrderPaymentCost().setMainOrderNo(tmsWorksheet.getMainOrderNo())
-//                    .setIsSumToMain(true).setStatus(Integer.valueOf(OrderStatusEnum.COST_3.getCode())));
+            //补充充客户信息
+            this.receivableCostService.supplyCustomerInfo(receivableCosts);
             List<OrderPaymentCost> paymentCosts = this.paymentCostService.getMainOrderCost(tmsWorksheet.getMainOrderNo(),
                     Arrays.asList(OrderStatusEnum.COST_0.getCode(), OrderStatusEnum.COST_2.getCode(), OrderStatusEnum.COST_3.getCode()));
-
-            tmsWorksheet.assemblyCost(receivableCosts, paymentCosts, costInfoMap);
+            //补充供应商信息
+            this.paymentCostService.supplySupplierInfo(paymentCosts);
+            tmsWorksheet.assemblyCost(receivableCosts, paymentCosts, costInfoMap, currencyMap);
         } else {
-
+            List<OrderPaymentCost> paymentCosts = this.paymentCostService.getByMainOrderNo(tmsWorksheet.getMainOrderNo(), Collections.singletonList(OrderStatusEnum.COST_1.getCode()));
+            //补充供应商信息
+            this.paymentCostService.supplySupplierInfo(paymentCosts);
+            tmsWorksheet.assemblyCost(new ArrayList<>(), paymentCosts, costInfoMap, currencyMap);
         }
         Map<String, List<CostDetailsWorksheet>> costMap = new HashMap<>();
-        costMap.put("reCostDetails", tmsWorksheet.getReCostDetails());
-        costMap.put("payCostDetails", tmsWorksheet.getPayCostDetails());
+        costMap.put("re", tmsWorksheet.getReCostDetails());
+        costMap.put("pay", tmsWorksheet.getPayCostDetails());
         EasyExcelUtils.fillTemplate(new JSONObject(tmsWorksheet), costMap,
-                "D:\\公司\\模板\\工作表\\工作表.xlsx", response);
+                worksheetTms, null, "工作表", response);
 
-        return CommonResult.success();
     }
 
 }

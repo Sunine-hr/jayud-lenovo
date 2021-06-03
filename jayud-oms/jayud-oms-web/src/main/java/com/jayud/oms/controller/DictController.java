@@ -53,7 +53,8 @@ public class DictController {
         Dict dictType = new Dict().setId(form.getId())
                 .setCode(form.getCode()).setValue(form.getValue());
         if (this.dictService.checkUnique(dictType)) {
-            return CommonResult.error(400, "名称或代码已经存在");
+//            return CommonResult.error(400, "名称或代码已经存在");
+            return CommonResult.error(400, "代码已经存在");
         }
         Dict tmp = ConvertUtil.convert(form, Dict.class);
         if (tmp.getId() == null) {

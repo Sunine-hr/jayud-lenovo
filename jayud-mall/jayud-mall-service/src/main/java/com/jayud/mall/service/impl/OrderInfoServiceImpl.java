@@ -439,8 +439,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderCopeReceivableVO> orderCopeReceivableVOList =
                 orderCopeReceivableMapper.findOrderCopeReceivableByOrderId(orderId);
         orderInfoVO.setOrderCopeReceivableVOList(orderCopeReceivableVOList);
-        /*订单对应应付费用汇总list*/
-        List<AggregateAmountVO> orderCopeWithAggregate = new ArrayList<>();
+        /*订单对应应收费用汇总ist*/
+        List<AggregateAmountVO> orderCopeReceivableAggregate = new ArrayList<>();
         Map<Integer, List<OrderCopeReceivableVO>> stringListMap1 = groupListByCid1(orderCopeReceivableVOList);
         for (Map.Entry<Integer, List<OrderCopeReceivableVO>> entry : stringListMap1.entrySet()) {
             Integer cid = entry.getKey();
@@ -459,16 +459,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             aggregateAmountVO.setCid(cid);
             aggregateAmountVO.setCurrencyCode(currencyInfoVO.getCurrencyCode());
             aggregateAmountVO.setCurrencyName(currencyInfoVO.getCurrencyName());
-            orderCopeWithAggregate.add(aggregateAmountVO);
+            orderCopeReceivableAggregate.add(aggregateAmountVO);
         }
-        orderInfoVO.setOrderCopeWithAggregate(orderCopeWithAggregate);
+        orderInfoVO.setOrderCopeReceivableAggregate(orderCopeReceivableAggregate);
 
         /*订单对应应付费用明细:order_cope_with*/
         List<OrderCopeWithVO> orderCopeWithVOList =
                 orderCopeWithMapper.findOrderCopeWithByOrderId(orderId);
         orderInfoVO.setOrderCopeWithVOList(orderCopeWithVOList);
-        /*订单对应应收费用汇总ist*/
-        List<AggregateAmountVO> orderCopeReceivableAggregate = new ArrayList<>();
+        /*订单对应应付费用汇总list*/
+        List<AggregateAmountVO> orderCopeWithAggregate = new ArrayList<>();
         Map<Integer, List<OrderCopeWithVO>> stringListMap2 = groupListByCid2(orderCopeWithVOList);
         for (Map.Entry<Integer, List<OrderCopeWithVO>> entry : stringListMap2.entrySet()) {
             Integer cid = entry.getKey();
@@ -485,9 +485,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             aggregateAmountVO.setCid(cid);
             aggregateAmountVO.setCurrencyCode(currencyInfoVO.getCurrencyCode());
             aggregateAmountVO.setCurrencyName(currencyInfoVO.getCurrencyName());
-            orderCopeReceivableAggregate.add(aggregateAmountVO);
+            orderCopeWithAggregate.add(aggregateAmountVO);
         }
-        orderInfoVO.setOrderCopeReceivableAggregate(orderCopeReceivableAggregate);
+        orderInfoVO.setOrderCopeWithAggregate(orderCopeWithAggregate);
 
         /**文件信息**/
         //订单对应报关文件list

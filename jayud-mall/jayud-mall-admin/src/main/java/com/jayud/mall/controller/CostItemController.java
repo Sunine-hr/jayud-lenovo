@@ -3,10 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.CostItemForm;
-import com.jayud.mall.model.bo.CostItemStatusForm;
-import com.jayud.mall.model.bo.CostItemSupForm;
-import com.jayud.mall.model.bo.QueryCostItemForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.CostItemVO;
 import com.jayud.mall.service.ICostItemService;
 import io.swagger.annotations.Api;
@@ -83,7 +80,6 @@ public class CostItemController {
         return CommonResult.success(list);
     }
 
-
     //分页
     @ApiOperation(value = "分页-费用项目分页查询")
     @ApiOperationSupport(order = 6)
@@ -112,5 +108,14 @@ public class CostItemController {
         costItemService.stopOrEnabled(form);
         return CommonResult.success("操作成功");
     }
+
+    @ApiOperation(value = "根据供应商服务id，获取供应商费用（应付费用信息）")
+    @ApiOperationSupport(order = 9)
+    @PostMapping("/findCostItemByServiceId")
+    public CommonResult<List<CostItemVO>> findCostItemByServiceId(@Valid @RequestBody SupplierCostServerIdForm form) {
+        List<CostItemVO> list = costItemService.findCostItemByServiceId(form);
+        return CommonResult.success(list);
+    }
+
 
 }

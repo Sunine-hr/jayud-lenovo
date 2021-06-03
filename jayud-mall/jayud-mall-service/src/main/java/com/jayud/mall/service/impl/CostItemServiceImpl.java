@@ -11,10 +11,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.CostItemMapper;
-import com.jayud.mall.model.bo.CostItemForm;
-import com.jayud.mall.model.bo.CostItemStatusForm;
-import com.jayud.mall.model.bo.CostItemSupForm;
-import com.jayud.mall.model.bo.QueryCostItemForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.CostItem;
 import com.jayud.mall.model.vo.CostItemVO;
 import com.jayud.mall.model.vo.domain.AuthUser;
@@ -145,6 +142,12 @@ public class CostItemServiceImpl extends ServiceImpl<CostItemMapper, CostItem> i
         CostItem costItem = ConvertUtil.convert(costItemVO, CostItem.class);
         costItem.setStatus(status);
         this.saveOrUpdate(costItem);
+    }
+
+    @Override
+    public List<CostItemVO> findCostItemByServiceId(SupplierCostServerIdForm form) {
+        Long serviceId = form.getServiceId();
+        return costItemMapper.findCostItemByServiceId(serviceId);
     }
 
 }

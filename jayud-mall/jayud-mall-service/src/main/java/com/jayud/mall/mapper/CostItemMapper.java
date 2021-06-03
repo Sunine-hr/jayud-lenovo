@@ -53,4 +53,11 @@ public interface CostItemMapper extends BaseMapper<CostItem> {
      * @return
      */
     CostItemVO findCostItemById(@Param("id") Long id);
+
+    /**
+     * 根据供应商服务id，获取供应商费用（应付费用信息）
+     * @param serviceId
+     * @return
+     */
+    List<CostItemVO> findCostItemByServiceId(@Param("serviceId") Long serviceId);
 }

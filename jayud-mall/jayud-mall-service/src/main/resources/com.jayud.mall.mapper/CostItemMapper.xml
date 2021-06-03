@@ -69,4 +69,14 @@
 
     </select>
 
+    <select id="findCostItemByServiceId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CostItemVO">
+        select
+        t.id,t.identifying,t.cost_code,t.cost_name,t.status,t.user_id,t.user_name,t.create_time
+        from cost_item t
+        left join (select distinct supplier_info_id,service_id,cost_item_id from supplier_cost) t1 on t1.cost_item_id = t.id
+        where 1=1
+        and t1.service_id = #{serviceId}
+    </select>
+
+
 </mapper>

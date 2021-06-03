@@ -160,7 +160,7 @@ public class TmsWorksheet {
                 case "人民币":
                     this.reRmb = v;
                     break;
-                case "港币":
+                case "港元":
                     this.reHkd = v;
                     break;
                 case "美元":
@@ -174,7 +174,7 @@ public class TmsWorksheet {
                 case "人民币":
                     this.payRmb = v;
                     break;
-                case "港币":
+                case "港元":
                     this.payHkd = v;
                     break;
                 case "美元":

@@ -81,6 +81,8 @@ public class OfferInfoVO {
     @ApiModelProperty(value = "开船日期备注")
     private String sailTimeRemark;
 
+    @ApiModelProperty(value = "特别说明")
+    private String specialVersion;
 
     /*航程*/
     @ApiModelProperty(value = "航程(预计到达时间estimated_time - 开船日期sail_time)", position = 15)

@@ -178,6 +178,9 @@ public class QuotationTemplateVO {
     @ApiModelProperty(value = "结算方式(1票结 2按客户的结算方式(客户表customer clearing_way))")
     private Integer clearingWay;
 
+    @ApiModelProperty(value = "特别说明")
+    private String specialVersion;
+
     /*报价服务组:service_group*/
     @ApiModelProperty(value = "服务名称service_group.code_name", position = 30)
     @JSONField(ordinal = 30)

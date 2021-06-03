@@ -93,6 +93,9 @@ public class OfferInfo extends Model<OfferInfo> {
     @ApiModelProperty(value = "开船日期备注")
     private String sailTimeRemark;
 
+    @ApiModelProperty(value = "特别说明")
+    private String specialVersion;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

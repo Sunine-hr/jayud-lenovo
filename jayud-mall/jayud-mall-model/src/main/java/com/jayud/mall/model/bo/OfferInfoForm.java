@@ -89,6 +89,9 @@ public class OfferInfoForm {
     @ApiModelProperty(value = "开船日期备注")
     private String sailTimeRemark;
 
+    @ApiModelProperty(value = "特别说明")
+    private String specialVersion;
+
     //报价编辑报价模板的费用信息、文件信息
 
     /*报价对应应收费用明细list*/

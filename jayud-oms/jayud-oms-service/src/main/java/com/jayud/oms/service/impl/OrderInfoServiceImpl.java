@@ -256,6 +256,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
         }
         saveOrUpdate(orderInfo);
+        form.setStatus(orderInfo.getStatus());
         return orderInfo.getOrderNo();
     }
 

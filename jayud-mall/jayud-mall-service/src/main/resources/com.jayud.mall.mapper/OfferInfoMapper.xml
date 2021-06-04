@@ -41,7 +41,7 @@
         t.create_time,
         t.estimated_time,
         t.remarks,
-        t.sail_time_remark,
+        t.sail_time_remark,t.special_version,
         t1.start_shipment,
         t1.destination_port,
         t1.gidtype,
@@ -90,7 +90,8 @@
     <select id="selectOfferInfoVO" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OfferInfoVO" >
         select
-        t.id,t.qie,t.names,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,datediff(t.estimated_time,t.sail_time) voyage_day,
+        t.id,t.qie,t.names,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,t.sail_time_remark,t.special_version,
+        datediff(t.estimated_time,t.sail_time) voyage_day,
         t1.sid,
         t1.pic_url,
         t1.tid,
@@ -127,7 +128,7 @@
     <select id="findOfferInfoFareByPage" parameterType="com.jayud.mall.model.bo.QueryOfferInfoFareForm"
             resultType="com.jayud.mall.model.vo.OfferInfoVO">
         select
-        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,t.sail_time_remark,
+        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,t.sail_time_remark,t.special_version,
         t1.start_shipment,t1.destination_port,
         t3.code_name startShipmentName,
         t4.code_name destinationPortName,
@@ -230,7 +231,7 @@
             resultType="com.jayud.mall.model.vo.OfferInfoVO">
 
         select
-        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,t.sail_time_remark,
+        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,t.sail_time_remark,t.special_version,
         t1.start_shipment,t1.destination_port,t1.pic_url,
         t3.code_name startShipmentName,
         t4.code_name destinationPortName,

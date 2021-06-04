@@ -267,6 +267,9 @@
                 <when test="status=='S_0'">
                     and so.status=#{status} AND oi.`status` in ('1','4')
                 </when>
+                <when test="status=='S_9'">
+                    and so.status=#{status} AND so.terms in (5,6)
+                </when>
                 <otherwise>
                     and so.status=#{status}
                 </otherwise>

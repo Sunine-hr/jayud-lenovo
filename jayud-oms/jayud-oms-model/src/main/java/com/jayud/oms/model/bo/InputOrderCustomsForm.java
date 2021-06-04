@@ -20,6 +20,9 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "主订单号,前台忽略")
     private String mainOrderNo;
 
+    @ApiModelProperty(value = "旧主订单号,前台忽略")
+    private String oldMainOrderNo;
+
     @ApiModelProperty(value = "通关口岸code", required = true)
     @NotEmpty(message = "portCode is required")
     private String portCode;

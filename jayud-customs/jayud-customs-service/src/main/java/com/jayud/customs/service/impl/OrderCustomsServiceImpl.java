@@ -92,14 +92,14 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
     public boolean oprOrderCustoms(InputOrderCustomsForm form) {
         try {
             //暂存或提交只是主订单的状态不一样，子订单的操作每次先根据主订单号清空子订单
-//            QueryWrapper<OrderCustoms> queryWrapper = new QueryWrapper<OrderCustoms>();
-//            queryWrapper.eq("main_order_no", form.getMainOrderNo());
-//            remove(queryWrapper);
-            for (InputSubOrderCustomsForm subOrder : form.getSubOrders()) {
-                if (subOrder.getSubOrderId() != null) {
-                    removeById(subOrder.getSubOrderId());
-                }
-            }
+            QueryWrapper<OrderCustoms> queryWrapper = new QueryWrapper<OrderCustoms>();
+            queryWrapper.eq("main_order_no", form.getOldMainOrderNo());
+            remove(queryWrapper);
+//            for (InputSubOrderCustomsForm subOrder : form.getSubOrders()) {
+//                if (subOrder.getSubOrderId() != null) {
+//                    removeById(subOrder.getSubOrderId());
+//                }
+//            }
             //子订单数据初始化处理
             //设置子订单号/报关抬头/结算单位/附件
             List<OrderCustoms> orderCustomsList = new ArrayList<>();

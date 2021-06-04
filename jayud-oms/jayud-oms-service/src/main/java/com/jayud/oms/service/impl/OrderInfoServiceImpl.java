@@ -1083,6 +1083,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public boolean createOrder(InputOrderForm form) {
         //保存主订单
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
+
+        String oldMainOrderNo = inputMainOrderForm.getOrderNo() != null ? inputMainOrderForm.getOrderNo() : null;
+
         inputMainOrderForm.setCmd(form.getCmd());
         //特殊处理
         this.specialTreatment(form, inputMainOrderForm);
@@ -1541,6 +1544,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     inputMainOrderForm.getStatus(), SubOrderSignEnum.BG.getSignOne(), form)) {
                 //如果没有生成子订单则不调用
                 if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
+
+                    if(oldMainOrderNo != null){
+                        orderCustomsForm.setOldMainOrderNo(oldMainOrderNo);
+                    }
+
                     orderCustomsForm.setMainOrderNo(mainOrderNo);
                     if (OrderStatusEnum.CBG.getCode().equals(classCode)) {
                         orderCustomsForm.setClassCode(OrderStatusEnum.CBG.getCode());

@@ -70,6 +70,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     BillOrderRelevanceMapper billOrderRelevanceMapper;
     @Autowired
     FeeCopeWithMapper feeCopeWithMapper;
+    @Autowired
+    BillLogisticsTrackMapper billLogisticsTrackMapper;
 
     @Autowired
     BaseService baseService;
@@ -101,7 +103,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     IBillOrderRelevanceService billOrderRelevanceService;
     @Autowired
     IFeeCopeWithService feeCopeWithService;
-
+    @Autowired
+    IBillLogisticsTrackService billLogisticsTrackService;
 
     @Override
     public IPage<OceanBillVO> findOceanBillByPage(QueryOceanBillForm form) {
@@ -1091,5 +1094,31 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             }
         });
         return counterListInfoVOS;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveTrackNotice(TrackNoticeForm form) {
+        AuthUser user = baseService.getUser();
+        if(ObjectUtil.isEmpty(user)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录");
+        }
+        String billId = form.getBillId();
+        OceanBillVO oceanBillVO = oceanBillMapper.findOceanBillById(Long.valueOf(billId));
+        if(ObjectUtil.isEmpty(oceanBillVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "提单不存在");
+        }
+        BillLogisticsTrack billLogisticsTrack = new BillLogisticsTrack();
+        billLogisticsTrack.setBillId(billId);
+        billLogisticsTrack.setDescription(form.getDescription());
+        billLogisticsTrack.setCreateTime(form.getCreateTime());
+        billLogisticsTrack.setOperatorId(user.getId().intValue());
+        billLogisticsTrack.setOperatorName(user.getName());
+        billLogisticsTrack.setRemark(form.getRemark());
+        //提单-保存轨迹通知
+        billLogisticsTrackService.saveOrUpdate(billLogisticsTrack);
+
+
+
     }
 }

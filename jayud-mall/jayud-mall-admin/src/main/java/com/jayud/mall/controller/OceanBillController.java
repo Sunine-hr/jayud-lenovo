@@ -438,4 +438,18 @@ public class OceanBillController {
         return CommonResult.success("修改成功");
     }
 
+    //提单-保存轨迹通知
+    @ApiOperation(value = "提单-保存轨迹通知")
+    @ApiOperationSupport(order = 33)
+    @PostMapping(value = "/saveTrackNotice")
+    public CommonResult saveTrackNotice(@Valid @RequestBody TrackNoticeForm form){
+        oceanBillService.saveTrackNotice(form);
+        return CommonResult.success("操作成功");
+    }
+
+
+
+
+
+
 }

@@ -206,4 +206,10 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @return
      */
     List<CounterListInfoVO> findCounterListInfoByCounterId(Long counterId);
+
+    /**
+     * 提单-保存轨迹通知
+     * @param form
+     */
+    void saveTrackNotice(TrackNoticeForm form);
 }

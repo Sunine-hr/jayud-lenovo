@@ -42,7 +42,7 @@
         select
         t.id,t.types,t.sid,t.`names`,t.pic_url,t.tid,t.start_shipment,t.destination_port,
         t.arrive_warehouse,t.visible_customer,t.visible_uid,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.estimated_time,t.gidtype,t.gid,t.area_id,t.qidtype,t.qid,t.task_id,t.bubble_coefficient,
-        t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,t.update_time,t.billing_weight_unit,t.whole_time,t.design_formulas,t.volume,t.volume_unit,t.minimum_quantity,t.cut_off_time_calc,t.jc_time_calc,t.jkc_time_calc,t.estimated_time_calc,t.clearing_way,
+        t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,t.update_time,t.billing_weight_unit,t.whole_time,t.design_formulas,t.volume,t.volume_unit,t.minimum_quantity,t.cut_off_time_calc,t.jc_time_calc,t.jkc_time_calc,t.estimated_time_calc,t.clearing_way,t.special_version,
         t1.code_name sname,
         t2.code_name tname,
         t3.code_name startShipmentName,
@@ -103,7 +103,7 @@
         select
         t.id,t.types,t.sid,t.`names`,t.pic_url,t.tid,t.start_shipment,t.destination_port,
         t.arrive_warehouse,t.visible_customer,t.visible_uid,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.estimated_time,t.gidtype,t.gid,t.area_id,t.qidtype,t.qid,t.task_id,t.bubble_coefficient,
-        t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,t.update_time,t.billing_weight_unit,t.whole_time,t.design_formulas,t.volume,t.volume_unit,t.minimum_quantity,t.data_type,t.cut_off_time_calc,t.jc_time_calc,t.jkc_time_calc,t.estimated_time_calc,t.clearing_way,
+        t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,t.update_time,t.billing_weight_unit,t.whole_time,t.design_formulas,t.volume,t.volume_unit,t.minimum_quantity,t.data_type,t.cut_off_time_calc,t.jc_time_calc,t.jkc_time_calc,t.estimated_time_calc,t.clearing_way,t.special_version,
         t1.code_name sname,
         t2.code_name tname,
         t3.code_name startShipmentName,

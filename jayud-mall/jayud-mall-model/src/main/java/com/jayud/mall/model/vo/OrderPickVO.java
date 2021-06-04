@@ -189,4 +189,10 @@ public class OrderPickVO {
     @ApiModelProperty(value = "供应商名称", position = 28)
     private String supplierName;
 
+    @ApiModelProperty(value = "提货地址")
+    private String pickupAddress;
+
+    @ApiModelProperty(value = "送货地址")
+    private String deliveryAddress;
+
 }

@@ -455,10 +455,14 @@ public class OrderCommonController {
             this.paymentCostService.supplySupplierInfo(paymentCosts);
             tmsWorksheet.assemblyCost(receivableCosts, paymentCosts, costInfoMap, currencyMap);
         } else {
-            List<OrderPaymentCost> paymentCosts = this.paymentCostService.getByMainOrderNo(tmsWorksheet.getMainOrderNo(), Collections.singletonList(OrderStatusEnum.COST_1.getCode()));
+            //查询所有应收费用
+            List<OrderReceivableCost> receivableCosts = this.receivableCostService.getByMainOrderNo(tmsWorksheet.getMainOrderNo(), false,
+                    Collections.singletonList(OrderStatusEnum.COST_1.getCode()));
+            List<OrderPaymentCost> paymentCosts = this.paymentCostService.getSubCostByMainOrderNo(new OrderPaymentCost().setMainOrderNo(tmsWorksheet.getMainOrderNo()).setSubType(SubOrderSignEnum.ZGYS.getSignOne()),
+                    Collections.singletonList(OrderStatusEnum.COST_1.getCode()));
             //补充供应商信息
             this.paymentCostService.supplySupplierInfo(paymentCosts);
-            tmsWorksheet.assemblyCost(new ArrayList<>(), paymentCosts, costInfoMap, currencyMap);
+            tmsWorksheet.assemblyCost(receivableCosts, paymentCosts, costInfoMap, currencyMap);
         }
         Map<String, List<CostDetailsWorksheet>> costMap = new HashMap<>();
         costMap.put("re", tmsWorksheet.getReCostDetails());

@@ -2,6 +2,7 @@ package com.jayud.oms.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.entity.DataControl;
 import com.jayud.oms.model.bo.DriverFeedbackStatusForm;
 import com.jayud.oms.model.bo.InputOrderTransportForm;
 import com.jayud.oms.model.bo.QueryDriverOrderTransportForm;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * oms模块消费tms模块的接口
@@ -155,4 +157,10 @@ public interface TmsClient {
      */
     @RequestMapping(value = "/api/getInfoByMainOrderNo")
     public ApiResult getInfoByMainOrderNo(@RequestParam("mainOrderNo") String mainOrderNo);
+
+    /**
+     * 获取状态数量
+     */
+    @RequestMapping(value = "/api/getNumByStatus")
+    public ApiResult<Map<String, Integer>> getNumByStatus(@RequestParam("cmd") String cmd, @RequestBody DataControl dataControl);
 }

@@ -343,4 +343,13 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
 
     }
 
+    @Override
+    public List<OrderPaymentCost> getSubCostByMainOrderNo(OrderPaymentCost paymentCost, List<String> exclusionStatus) {
+        QueryWrapper<OrderPaymentCost> condition = new QueryWrapper<>(paymentCost);
+        if (CollectionUtils.isNotEmpty(exclusionStatus)) {
+            condition.lambda().notIn(OrderPaymentCost::getStatus, exclusionStatus);
+        }
+        return this.baseMapper.selectList(condition);
+    }
+
 }

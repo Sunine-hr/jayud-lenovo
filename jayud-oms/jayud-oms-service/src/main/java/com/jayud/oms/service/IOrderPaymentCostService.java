@@ -133,7 +133,16 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
 
     /**
      * 补充供应商信息
+     *
      * @param paymentCosts
      */
     void supplySupplierInfo(List<OrderPaymentCost> paymentCosts);
+
+    /**
+     * 查询子订单费用
+     * @param paymentCost
+     * @param exclusionStatus
+     * @return
+     */
+    List<OrderPaymentCost> getSubCostByMainOrderNo(OrderPaymentCost paymentCost, List<String> exclusionStatus);
 }

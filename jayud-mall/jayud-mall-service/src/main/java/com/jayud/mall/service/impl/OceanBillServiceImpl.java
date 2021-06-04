@@ -938,6 +938,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
                         billOrder.setId(billOrderRelevance.getId());//主键id 更新数据id
                         billOrder.setIsInform(billOrderRelevance.getIsInform());
                         billOrder.setCreateTime(billOrderRelevance.getCreateTime());
+                        //不删除的数据
                         notDelIds.add(billOrderRelevance.getId());
                     }
                 }
@@ -945,6 +946,7 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             }
         }else{
             billOrderRelevanceList.forEach(billOrderRelevance -> {
+                //要删除的数据
                 delIds.add(billOrderRelevance.getId());
             });
         }

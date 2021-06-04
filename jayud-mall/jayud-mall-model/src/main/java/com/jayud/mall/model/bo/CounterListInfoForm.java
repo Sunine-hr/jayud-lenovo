@@ -1,5 +1,6 @@
 package com.jayud.mall.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.mall.model.vo.TemplateUrlVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -44,6 +45,7 @@ public class CounterListInfoForm {
     private String userName;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "柜子箱号信息list")

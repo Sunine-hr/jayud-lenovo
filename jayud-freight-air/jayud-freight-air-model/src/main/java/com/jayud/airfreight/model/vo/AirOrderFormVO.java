@@ -146,6 +146,9 @@ public class AirOrderFormVO {
     @ApiModelProperty(value = "费用录用默认结算单位")
     private String defaultUnitCode;
 
+    @ApiModelProperty(value = "分单号")
+    private String subNo;
+
     /**
      * 组装商品信息
      */

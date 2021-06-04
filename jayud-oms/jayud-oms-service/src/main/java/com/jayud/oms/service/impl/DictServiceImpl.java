@@ -56,7 +56,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements ID
 //            } else {
 //                return false;
 //            }
-            return true;
+            return false;
         } else {
 //            condition.lambda().eq(Dict::getCode, dict.getCode())
 //                    .or().eq(Dict::getValue, dict.getValue());

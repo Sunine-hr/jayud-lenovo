@@ -562,9 +562,9 @@
         <if test="form.cmd == 'clearCustoms'">
             AND ot.`is_hk_clear` = '1' and ot.clear_customs_no is null
             AND oi.`status` in ('1','4')
-            <if test="legalIds != null and legalIds.size>0">
+            <if test="dataControl.accountType==1 and dataControl.companyIds != null and dataControl.companyIds.size>0">
                 and ot.`hk_legal_id` in
-                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                <foreach collection="dataControl.companyIds" item="legalId" open="(" separator="," close=")">
                     #{legalId}
                 </foreach>
             </if>

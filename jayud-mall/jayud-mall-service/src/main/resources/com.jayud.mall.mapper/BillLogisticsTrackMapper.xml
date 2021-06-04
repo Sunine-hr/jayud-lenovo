@@ -19,4 +19,13 @@
         id, bill_id, status, status_name, description, create_time, operator_id, operator_name
     </sql>
 
+    <select id="findBillLogisticsTrackByBillId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.BillLogisticsTrackVO">
+        select
+        t.id,t.bill_id,t.status,t.status_name,t.description,t.create_time,t.operator_id,t.operator_name,t.remark
+        from bill_logistics_track t
+        where 1=1
+        and t.bill_id = #{billId}
+    </select>
+
+
 </mapper>

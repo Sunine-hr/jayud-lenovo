@@ -212,4 +212,11 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @param form
      */
     void saveTrackNotice(TrackNoticeForm form);
+
+    /**
+     * 查询提单下的物流轨迹通知
+     * @param billId 提单id
+     * @return
+     */
+    List<BillLogisticsTrackVO> findBillLogisticsTrackByBillId(Long billId);
 }

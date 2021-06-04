@@ -1141,4 +1141,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             logisticsTrackService.saveOrUpdateBatch(logisticsTracks);
         }
     }
+
+    @Override
+    public List<BillLogisticsTrackVO> findBillLogisticsTrackByBillId(Long billId) {
+        return billLogisticsTrackMapper.findBillLogisticsTrackByBillId(billId);
+    }
 }

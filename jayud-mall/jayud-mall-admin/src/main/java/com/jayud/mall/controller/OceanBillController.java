@@ -447,7 +447,15 @@ public class OceanBillController {
         return CommonResult.success("操作成功");
     }
 
-
+    //查询提单下的物流轨迹通知
+    @ApiOperation(value = "查询提单下的物流轨迹通知")
+    @ApiOperationSupport(order = 34)
+    @PostMapping(value = "/findBillLogisticsTrackByBillId")
+    public CommonResult<List<BillLogisticsTrackVO>> findBillLogisticsTrackByBillId(@Valid @RequestBody OceanBillParaForm form){
+        Long billId = form.getId();
+        List<BillLogisticsTrackVO> billLogisticsTrackVOS = oceanBillService.findBillLogisticsTrackByBillId(billId);
+        return CommonResult.success(billLogisticsTrackVOS);
+    }
 
 
 

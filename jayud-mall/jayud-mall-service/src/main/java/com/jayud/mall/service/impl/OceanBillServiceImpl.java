@@ -72,6 +72,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     FeeCopeWithMapper feeCopeWithMapper;
     @Autowired
     BillLogisticsTrackMapper billLogisticsTrackMapper;
+    @Autowired
+    LogisticsTrackMapper logisticsTrackMapper;
 
     @Autowired
     BaseService baseService;
@@ -105,6 +107,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     IFeeCopeWithService feeCopeWithService;
     @Autowired
     IBillLogisticsTrackService billLogisticsTrackService;
+    @Autowired
+    ILogisticsTrackService logisticsTrackService;
 
     @Override
     public IPage<OceanBillVO> findOceanBillByPage(QueryOceanBillForm form) {
@@ -1108,6 +1112,9 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         if(ObjectUtil.isEmpty(oceanBillVO)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "提单不存在");
         }
+        String isInform = "1";//是否通知运单物流轨迹(1通知 2不通知)
+        List<BillOrderRelevance> billOrderRelevanceList = billOrderRelevanceMapper.findBillOrderRelevanceByBillIdAndIsInform(Integer.valueOf(billId), isInform);
+
         BillLogisticsTrack billLogisticsTrack = new BillLogisticsTrack();
         billLogisticsTrack.setBillId(billId);
         billLogisticsTrack.setDescription(form.getDescription());
@@ -1115,10 +1122,23 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         billLogisticsTrack.setOperatorId(user.getId().intValue());
         billLogisticsTrack.setOperatorName(user.getName());
         billLogisticsTrack.setRemark(form.getRemark());
-        //提单-保存轨迹通知
+        //1.保存提单轨迹通知
         billLogisticsTrackService.saveOrUpdate(billLogisticsTrack);
 
-
-
+        List<LogisticsTrack> logisticsTracks = new ArrayList<>();
+        billOrderRelevanceList.forEach(billOrderRelevance -> {
+            LogisticsTrack logisticsTrack = new LogisticsTrack();
+            logisticsTrack.setOrderId(billOrderRelevance.getOrderId().toString());
+            logisticsTrack.setDescription(form.getDescription());
+            logisticsTrack.setCreateTime(form.getCreateTime());
+            logisticsTrack.setOperatorId(user.getId().intValue());
+            logisticsTrack.setOperatorName(user.getName());
+            logisticsTrack.setRemark(form.getRemark());
+            logisticsTracks.add(logisticsTrack);
+        });
+        if(CollUtil.isNotEmpty(logisticsTracks)){
+            //2.保存 提单下的运单的轨迹通知
+            logisticsTrackService.saveOrUpdateBatch(logisticsTracks);
+        }
     }
 }

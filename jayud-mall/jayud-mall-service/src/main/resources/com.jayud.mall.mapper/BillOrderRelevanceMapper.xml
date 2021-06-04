@@ -25,5 +25,14 @@
         from bill_order_relevance t
         where t.bill_id = #{billId}
     </select>
+    
+    <select id="findBillOrderRelevanceByBillIdAndIsInform" resultType="com.jayud.mall.model.po.BillOrderRelevance">
+        select
+        t.id,t.bill_id,t.bill_no,t.order_id,t.order_no,t.is_inform,t.create_time
+        from bill_order_relevance t
+        where 1=1
+        and t.bill_id = #{billId, jdbcType=INTEGER}
+        and t.is_inform = #{isInform, jdbcType=VARCHAR}
+    </select>
 
 </mapper>

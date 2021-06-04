@@ -43,4 +43,7 @@ public class LogisticsTrackForm {
     @JSONField(ordinal = 8)
     private String operatorName;
 
+    @ApiModelProperty(value = "备注")
+    private String remark;
+
 }

@@ -506,6 +506,13 @@
         <if test="form.orderNo != null and form.orderNo != ''">
             and ot.order_no like concat('%',#{form.orderNo},'%')
         </if>
+        <if test="form.subOrderNos != null and form.subOrderNos.size>0">
+            and ot.order_no in
+            <foreach collection="form.subOrderNos" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
         <if test="form.mainOrderNo != null and form.mainOrderNo != ''">
             and ot.main_order_no like concat('%',#{form.mainOrderNo},'%')
         </if>
@@ -740,7 +747,6 @@
                     and ot.status=#{status}
                 </otherwise>
             </choose>
-
 
 
             <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">

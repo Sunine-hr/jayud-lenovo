@@ -6,7 +6,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class QueryOrderTmsForm extends BasePageForm {
@@ -38,6 +41,9 @@ public class QueryOrderTmsForm extends BasePageForm {
     @ApiModelProperty(value = "当前登录用户,前台传")
     private String loginUserName;
 
+    @ApiModelProperty(value = "提货时间")
+    private List<String> takeTimeStr;
+
     @ApiModelProperty(value = "1-用户 2-客户 3-供应商")
     @JsonIgnore
     private String accountType = UserTypeEnum.EMPLOYEE_TYPE.getCode();
@@ -47,7 +53,10 @@ public class QueryOrderTmsForm extends BasePageForm {
     private String cmd;
 
     @ApiModelProperty(value = "子订单id集合")
-    private List<Long> subOrderIds;
+    private List<Long> subOrderIds = new ArrayList<>();
+
+    @ApiModelProperty(value = "子订单号")
+    private Set<String> subOrderNos = new HashSet<>();
 
 
 }

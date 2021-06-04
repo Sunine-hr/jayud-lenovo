@@ -14,6 +14,7 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.enums.OrderAddressEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.enums.UserTypeEnum;
@@ -25,6 +26,7 @@ import com.jayud.tms.feign.OauthClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.*;
+import com.jayud.tms.model.enums.OrderTakeAdrTypeEnum;
 import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
@@ -214,6 +216,15 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     @Override
     public IPage<OrderTransportVO> findTransportOrderByPage(QueryOrderTmsForm form) {
+        //检索提货时间
+        if (CollectionUtils.isNotEmpty(form.getTakeTimeStr())) {
+            Set<String> orderNos = this.orderTakeAdrService.getOrderNosByTakeTime(form.getTakeTimeStr(), OrderTakeAdrTypeEnum.ONE.getCode());
+            if (CollectionUtils.isEmpty(orderNos)) {
+                orderNos.add("-1");
+            }
+            form.setSubOrderNos(orderNos);
+        }
+
         //定义分页参数
         Page<OrderTransportVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则

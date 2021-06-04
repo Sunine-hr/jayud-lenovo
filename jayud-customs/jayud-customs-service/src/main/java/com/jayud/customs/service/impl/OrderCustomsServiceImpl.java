@@ -190,9 +190,12 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             // 件数
             String totalNum = "";
             if (Objects.nonNull(inlandTPVO) && Objects.nonNull(inlandTPVO.getOrderNo())) {
-                takeTimeStr = inlandTPVO.getPickUpAddressList().stream()
-                        .min(Comparator.comparing(OrderDeliveryAddress::getDeliveryDate)).get().getDeliveryDate();
-                takeTimeStr = DateUtils.format(takeTimeStr, "MM-dd");
+//                takeTimeStr = inlandTPVO.getPickUpAddressList().stream()
+//                        .min(Comparator.comparing(OrderDeliveryAddress::getDeliveryDate)).get().getDeliveryDate();
+                List<OrderDeliveryAddress> pickUpAddressList = inlandTPVO.getPickUpAddressList();
+                if (CollectionUtils.isEmpty(pickUpAddressList)){
+                    takeTimeStr = DateUtils.format(pickUpAddressList.get(0).getDeliveryDate(), "MM-dd");
+                }
                 totalNum = inlandTPVO.getTotalNum();
             }
 

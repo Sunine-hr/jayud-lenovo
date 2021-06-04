@@ -2,44 +2,40 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONObject;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.entity.DataControl;
 import com.jayud.common.enums.*;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.excel.EasyExcelUtils;
 import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.feign.TmsClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.enums.VehicleTypeEnum;
-import com.jayud.oms.model.po.LogisticsTrack;
-import com.jayud.oms.model.po.OrderPaymentCost;
-import com.jayud.oms.model.po.OrderReceivableCost;
-import com.jayud.oms.model.po.ProductClassify;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.model.vo.cost.CostOrderDetailsVO;
-import com.jayud.oms.service.ILogisticsTrackService;
-import com.jayud.oms.service.IOrderInfoService;
-import com.jayud.oms.service.IProductClassifyService;
-import com.jayud.oms.service.IVehicleInfoService;
+import com.jayud.oms.model.vo.worksheet.CostDetailsWorksheet;
+import com.jayud.oms.model.vo.worksheet.TmsWorksheet;
+import com.jayud.oms.service.*;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -61,6 +57,21 @@ public class OrderCommonController {
     private TmsClient tmsClient;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private IProductBizService productBizService;
+    @Autowired
+    private IOrderReceivableCostService receivableCostService;
+    @Autowired
+    private IOrderPaymentCostService paymentCostService;
+    @Autowired
+    private ICostInfoService costInfoService;
+    @Autowired
+    private ICurrencyInfoService currencyInfoService;
+
+
+    @Value("${worksheet.tms}")
+    private String worksheetTms;
+
 
     @ApiOperation(value = "录入费用")
     @PostMapping(value = "/saveOrUpdateCost")
@@ -408,6 +419,57 @@ public class OrderCommonController {
 //            List<Map<String, Object>> list = this.orderInfoService.getSupplyPendingOpt(dataControl);
         }
         return CommonResult.success(inputCostVO);
+    }
+
+
+    @ApiOperation(value = "工作表")
+    @GetMapping(value = "/worksheet")
+    public void worksheet(@RequestParam("mainOrderId") Long mainOrderId,
+                          @RequestParam("classCode") String classCode,
+                          @RequestParam("isMainEntrance") String isMainEntrance,
+                          HttpServletResponse response) {
+        if (StringUtils.isEmpty(isMainEntrance)
+                || StringUtils.isEmpty(classCode) || mainOrderId == null) {
+            throw new JayudBizException(ResultEnum.PARAM_ERROR);
+        }
+        GetOrderDetailForm form = new GetOrderDetailForm();
+        form.setClassCode(classCode);
+        form.setMainOrderId(mainOrderId);
+        InputOrderVO orderDetail = this.orderInfoService.getOrderDetail(form);
+        TmsWorksheet tmsWorksheet = new TmsWorksheet().assemblyData(orderDetail);
+        //费用明细
+        Map<String, String> costInfoMap = this.costInfoService.findCostInfo().stream().collect(Collectors.toMap(CostInfo::getIdCode,
+                CostInfo::getName));
+        //币种
+        Map<String, String> currencyMap = this.currencyInfoService.initCurrencyInfo().stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
+
+        if ("main".equals(isMainEntrance)) {
+            //查询所有应收费用
+            List<OrderReceivableCost> receivableCosts = this.receivableCostService.getByMainOrderNo(tmsWorksheet.getMainOrderNo(), true,
+                    Collections.singletonList(OrderStatusEnum.COST_1.getCode()));
+            //补充充客户信息
+            this.receivableCostService.supplyCustomerInfo(receivableCosts);
+            List<OrderPaymentCost> paymentCosts = this.paymentCostService.getMainOrderCost(tmsWorksheet.getMainOrderNo(),
+                    Arrays.asList(OrderStatusEnum.COST_0.getCode(), OrderStatusEnum.COST_2.getCode(), OrderStatusEnum.COST_3.getCode()));
+            //补充供应商信息
+            this.paymentCostService.supplySupplierInfo(paymentCosts);
+            tmsWorksheet.assemblyCost(receivableCosts, paymentCosts, costInfoMap, currencyMap);
+        } else {
+            //查询所有应收费用
+            List<OrderReceivableCost> receivableCosts = this.receivableCostService.getByMainOrderNo(tmsWorksheet.getMainOrderNo(), false,
+                    Collections.singletonList(OrderStatusEnum.COST_1.getCode()));
+            List<OrderPaymentCost> paymentCosts = this.paymentCostService.getSubCostByMainOrderNo(new OrderPaymentCost().setMainOrderNo(tmsWorksheet.getMainOrderNo()).setSubType(SubOrderSignEnum.ZGYS.getSignOne()),
+                    Collections.singletonList(OrderStatusEnum.COST_1.getCode()));
+            //补充供应商信息
+            this.paymentCostService.supplySupplierInfo(paymentCosts);
+            tmsWorksheet.assemblyCost(receivableCosts, paymentCosts, costInfoMap, currencyMap);
+        }
+        Map<String, List<CostDetailsWorksheet>> costMap = new HashMap<>();
+        costMap.put("re", tmsWorksheet.getReCostDetails());
+        costMap.put("pay", tmsWorksheet.getPayCostDetails());
+        EasyExcelUtils.fillTemplate(new JSONObject(tmsWorksheet), costMap,
+                worksheetTms, null, "工作表", response);
+
     }
 
 }

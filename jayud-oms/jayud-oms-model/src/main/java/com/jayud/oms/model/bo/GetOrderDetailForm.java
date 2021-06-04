@@ -18,4 +18,10 @@ public class GetOrderDetailForm {
     @NotEmpty(message = "classCode is required")
     private String classCode;
 
+//    @ApiModelProperty(value = "是否主订单入口", required = true)
+//    private Boolean isMainEntrance;
+//
+//    public void setMainEntrance(String isMainEntrance) {
+//        this.isMainEntrance = "main".equals(isMainEntrance);
+//    }
 }

@@ -11,4 +11,12 @@ public interface FinanceService {
      * @param type 1-应付 2-应收
      */
     public void isPushKingdee(List list, Integer type);
+
+    /**
+     * 校验反审核
+     *
+     * @param auditStatus
+     * @return
+     */
+    public boolean checkAntiAudite(String auditStatus);
 }

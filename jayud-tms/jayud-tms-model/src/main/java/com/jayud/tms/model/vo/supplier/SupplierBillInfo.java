@@ -43,7 +43,7 @@ public class SupplierBillInfo {
     private String plateNumber;
 
     @ApiModelProperty("费用金额")
-    private String billAmount;
+    private String billAmount = "0";
 
     @ApiModelProperty("中转仓库id")
     @JsonIgnore

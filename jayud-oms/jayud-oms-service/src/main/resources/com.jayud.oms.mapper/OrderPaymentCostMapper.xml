@@ -161,7 +161,7 @@
                 WHERE
                 opc.sub_type = "main"
                 AND opc.`status` = 2
-                AND oi.`status` IN (1,4)
+                AND oi.`status` IN (1,3,4)
                 <if test="orderNos != null and orderNos.size()>0">
                     and main_order_no in
                     <foreach collection="orderNos" item="item" open="(" separator="," close=")">

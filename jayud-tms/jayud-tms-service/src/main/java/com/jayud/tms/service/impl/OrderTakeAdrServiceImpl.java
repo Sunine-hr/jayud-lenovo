@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -91,7 +93,24 @@ public class OrderTakeAdrServiceImpl extends ServiceImpl<OrderTakeAdrMapper, Ord
      */
     @Override
     public List<OrderTakeAdr> getByTakeTime(List<String> month, String format) {
-        return this.baseMapper.getByTakeTime(month,format);
+        return this.baseMapper.getByTakeTime(month, format);
+    }
+
+    /**
+     * 根据提货时间范围返回订单号
+     *
+     * @param takeTimeStr
+     * @param oprType
+     * @return
+     */
+    @Override
+    public Set<String> getOrderNosByTakeTime(List<String> takeTimeStr, Integer oprType) {
+        QueryWrapper<OrderTakeAdr> condition = new QueryWrapper<>();
+        condition.lambda().between(OrderTakeAdr::getTakeTime, takeTimeStr.get(0), takeTimeStr.get(1));
+        if (oprType != null) {
+            condition.lambda().eq(OrderTakeAdr::getOprType, oprType);
+        }
+        return this.baseMapper.selectList(condition).stream().map(OrderTakeAdr::getOrderNo).collect(Collectors.toSet());
     }
 
 }

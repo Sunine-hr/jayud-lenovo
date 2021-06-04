@@ -7,6 +7,7 @@ import com.jayud.tms.model.vo.InputOrderTakeAdrVO;
 import com.jayud.tms.model.vo.OrderTakeAdrInfoVO;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -60,4 +61,13 @@ public interface IOrderTakeAdrService extends IService<OrderTakeAdr> {
      * @param month
      */
     List<OrderTakeAdr> getByTakeTime(List<String> month, String format);
+
+
+    /**
+     * 根据提货时间获取订单号
+     * @param takeTimeStr
+     * @param oprType
+     * @return
+     */
+    Set<String> getOrderNosByTakeTime(List<String> takeTimeStr, Integer oprType);
 }

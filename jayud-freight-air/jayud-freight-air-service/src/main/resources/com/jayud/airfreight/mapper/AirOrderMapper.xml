@@ -52,6 +52,7 @@
         a.settlement_unit_code subUnitCode,
         a.legal_entity_id,
         ab.agent_supplier_id supplierId,
+        ab.sub_no,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = a.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = a.`order_no`)>0 THEN TRUE
         ELSE FALSE
@@ -64,6 +65,9 @@
         <where>
             <if test="form.orderNo !=null and form.orderNo!=''">
                 and a.order_no like concat('%',#{form.orderNo},'%')
+            </if>
+            <if test="form.subNo !=null and form.subNo!=''">
+                and ab.sub_no like concat('%',#{form.subNo},'%')
             </if>
             <if test="form.portDeparture !=null and form.portDeparture!=''">
                 and ap.name like concat('%',#{form.portDeparture},'%')

@@ -125,7 +125,7 @@ public class OrderInfoController {
         if (CommonConstant.SUBMIT.equals(form.getCmd())) {
             //1.报关资料是否齐全 1-齐全 0-不齐全 齐全时校验报关数据
             //2.纯报关时校验数据
-            if (CommonConstant.VALUE_1.equals(inputMainOrderForm.getIsDataAll()) ||
+            if (CommonConstant.VALUE_1.equals(inputMainOrderForm .getIsDataAll()) ||
                     OrderStatusEnum.CBG.getCode().equals(form.getOrderForm().getClassCode())) {
                 //报关订单参数校验
                 InputOrderCustomsForm inputOrderCustomsForm = form.getOrderCustomsForm();
@@ -173,17 +173,20 @@ public class OrderInfoController {
             if (OrderStatusEnum.ZGYS.getCode().equals(inputMainOrderForm.getClassCode())) {
                 //中港订单参数校验
                 InputOrderTransportForm inputOrderTransportForm = form.getOrderTransportForm();
-                if (inputOrderTransportForm == null ||
-                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getPortCode()) ||
-                        inputOrderTransportForm.getGoodsType() == null ||
-                        inputOrderTransportForm.getVehicleType() == null ||
-                        inputOrderTransportForm.getVehicleSize() == null ||
-                        inputOrderTransportForm.getWarehouseInfoId() == null ||
-                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getLegalName()) ||
-                        inputOrderTransportForm.getLegalEntityId() == null ||
-                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getUnitCode())) {
-                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
-                }
+                if (inputMainOrderForm == null) return CommonResult.error(ResultEnum.PARAM_ERROR);
+                inputOrderTransportForm.cheackAddParam();
+
+//                if (inputOrderTransportForm == null ||
+//                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getPortCode()) ||
+//                        inputOrderTransportForm.getGoodsType() == null ||
+//                        inputOrderTransportForm.getVehicleType() == null ||
+//                        inputOrderTransportForm.getVehicleSize() == null ||
+//                        inputOrderTransportForm.getWarehouseInfoId() == null ||
+//                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getLegalName()) ||
+//                        inputOrderTransportForm.getLegalEntityId() == null ||
+//                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getUnitCode())) {
+//                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+//                }
                 //中港订单提货收货信息参数校验
                 List<InputOrderTakeAdrForm> takeAdrForms1 = inputOrderTransportForm.getTakeAdrForms1();//必填
                 List<InputOrderTakeAdrForm> takeAdrForms2 = inputOrderTransportForm.getTakeAdrForms2();
@@ -501,7 +504,7 @@ public class OrderInfoController {
                 }
             }
             Map<String, Object> costStatus = this.orderInfoService.getCostStatus(null, subOrderNos);
-            templates.forEach(e->e.assembleCostStatus(e.getOrderNo(),costStatus));
+            templates.forEach(e -> e.assembleCostStatus(e.getOrderNo(), costStatus));
 
             Template<TrailerOrderTemplate> template = new Template<TrailerOrderTemplate>() {
             }.setList(templates);

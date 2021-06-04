@@ -282,6 +282,31 @@ public class ExternalApiController {
         return ApiResult.ok(result);
     }
 
+    @ApiModelProperty(value = "获取状态数量")
+    @RequestMapping(value = "/api/getNumByStatus")
+    public ApiResult getNumByStatus(@RequestParam("cmd") String cmd, @RequestBody DataControl dataControl) {
+        if (dataControl == null) {
+            return ApiResult.error("权限数据不能为空");
+        }
+        Map<String, String> tmp = new HashMap<>();
+        if ("supplier".equals(cmd)) { //供应商
+            tmp.put("派车", "T_1");
+            tmp.put("提货", "T_4");
+            tmp.put("过磅", "T_5");
+            tmp.put("驳回", "T_3_1");
+            tmp.put("通关", "T_8");
+            tmp.put("派送", "T_13");
+            tmp.put("签收", "T_14");
+        }
+
+        Map<String, Integer> map = new HashMap<>();
+        tmp.forEach((k, v) -> {
+            Integer num = this.orderTransportService.getNumByStatus(v, dataControl);
+            map.put(k, num);
+        });
+        return ApiResult.ok(map);
+    }
+
     @ApiModelProperty(value = "根据订单号获取送货地址信息(下拉选择)")
     @RequestMapping(value = "/api/initTakeAdrBySubOrderNo")
     public ApiResult initTakeAdrBySubOrderNo(@RequestParam("subOrderNo") String subOrderNo) {
@@ -334,6 +359,18 @@ public class ExternalApiController {
     public ApiResult<List<OrderTransport>> preconditionsGoCustomsAudit() {
         List<OrderTransport> list = this.orderTransportService.preconditionsGoCustomsAudit();
         return ApiResult.ok(list);
+    }
+
+    /**
+     * 根据单个主订单获取子订单详情
+     */
+    @RequestMapping(value = "/api/getInfoByMainOrderNo")
+    public ApiResult<OrderTransportInfoVO> getInfoByMainOrderNo(@RequestParam("mainOrderNo") String mainOrderNo) {
+        QueryWrapper<OrderTransport> condition = new QueryWrapper<>();
+        condition.lambda().select(OrderTransport::getId).eq(OrderTransport::getMainOrderNo, mainOrderNo);
+        OrderTransport tmsOrder = this.orderTransportService.getOne(condition);
+        OrderTransportInfoVO details = this.orderTransportService.getDetailsById(tmsOrder.getId());
+        return ApiResult.ok(details);
     }
 }
 

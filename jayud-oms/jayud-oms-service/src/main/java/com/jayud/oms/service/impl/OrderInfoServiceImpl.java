@@ -256,6 +256,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
         }
         saveOrUpdate(orderInfo);
+        form.setStatus(orderInfo.getStatus());
         return orderInfo.getOrderNo();
     }
 
@@ -400,12 +401,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             }
 
-
+            Map<String, String> supplierInfoMap = new HashMap<>();
             for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用
                 orderPaymentCost.setMainOrderNo(inputOrderVO.getOrderNo());
                 orderPaymentCost.setOrderNo(form.getOrderNo());
                 orderPaymentCost.setIsBill("0");//未出账
                 orderPaymentCost.setSubType(form.getSubType());
+                //客户名称
+                String supplierName = supplierInfoMap.get(orderPaymentCost.getCustomerCode());
+                if (StringUtils.isEmpty(supplierName)) {
+                    List<SupplierInfo> supplierInfos = this.supplierInfoService.getByCondition(new SupplierInfo().setSupplierCode(orderPaymentCost.getCustomerCode()));
+                    SupplierInfo supplierInfo = supplierInfos.get(0);
+                    orderPaymentCost.setCustomerName(supplierInfo.getSupplierChName());
+                    supplierInfoMap.put(orderPaymentCost.getCustomerCode(), supplierInfo.getSupplierChName());
+                } else {
+                    orderPaymentCost.setCustomerName(supplierName);
+                }
+
 
                 //新增
                 if (isSumToMain) {
@@ -428,11 +440,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     orderPaymentCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
                 }
             }
+
+            Map<String, String> customerInfoMap = new HashMap<>();
             for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {//应收费用
                 orderReceivableCost.setMainOrderNo(inputOrderVO.getOrderNo());
                 orderReceivableCost.setOrderNo(form.getOrderNo());
                 orderReceivableCost.setIsBill("0");//未出账
                 orderReceivableCost.setSubType(form.getSubType());
+
+                //客户名称
+                String customerName = customerInfoMap.get(orderReceivableCost.getCustomerCode());
+                if (StringUtils.isEmpty(customerName)) {
+                    CustomerInfo customerInfo = this.customerInfoService.getByCode(orderReceivableCost.getCustomerCode());
+                    orderReceivableCost.setCustomerName(customerInfo.getName());
+                    customerInfoMap.put(orderReceivableCost.getCustomerCode(), customerInfo.getName());
+                } else {
+                    orderReceivableCost.setCustomerName(customerName);
+                }
 
                 //新增
                 if (isSumToMain) {
@@ -887,7 +911,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     List<FileView> attachments = this.logisticsTrackService.getAttachments(subOrder.getSubOrderId()
                             , BusinessTypeEnum.BG.getCode(), prePath);//节点附件
                     allPics.addAll(attachments);
-                    subOrder.setFileViews(attachments);
+                    if (CollectionUtils.isEmpty(subOrder.getFileViews())) {
+                        subOrder.setFileViews(attachments);
+                    } else {
+                        subOrder.getFileViews().addAll(attachments);
+                    }
+
                     //结算单位名称
                     CustomerInfo customerInfo = customerInfoService.getByCode(subOrder.getUnitCode());
                     if (customerInfo != null) {

@@ -11,14 +11,13 @@ import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.OrderDeliveryAddress;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.*;
 import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.feign.OauthClient;
+import com.jayud.oms.feign.TmsClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.enums.VehicleTypeEnum;
@@ -105,6 +104,8 @@ public class ExternalApiController {
     private ICostCommonService costCommonService;
     @Autowired
     private ICostInfoService costInfoService;
+    @Autowired
+    private TmsClient tmsClient;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -332,7 +333,7 @@ public class ExternalApiController {
     @ApiOperation(value = "初始化供应商车辆下拉框 type:车辆类型(0:中港车,1:内陆车)")
     @RequestMapping(value = "api/initVehicleBySupplier")
     public ApiResult<List<InitComboxStrVO>> initVehicleBySupplier(@RequestParam("supplierId") Long supplierId,
-                                                              @RequestParam("type") Integer type) {
+                                                                  @RequestParam("type") Integer type) {
         List<VehicleInfo> vehicleInfos = vehicleInfoService
                 .getByCondition(new VehicleInfo().setSupplierId(supplierId)
                         .setStatus(StatusEnum.ENABLE.getCode())
@@ -1520,20 +1521,36 @@ public class ExternalApiController {
         Map<String, String> tmp = new HashMap<>();
         tmp.put("财务审核", "financialCheck");
         tmp.put("总经办审核", "managerCheck");
+//        tmp.put("派车", "T_1");
+//        tmp.put("提货", "T_4");
+//        tmp.put("过磅", "T_5");
+//        tmp.put("驳回", "T_3_1");
+//        tmp.put("通关", "T_8");
+//        tmp.put("派送", "T_13");
+//        tmp.put("签收", "T_14");
 
         List<Map<String, Object>> result = new ArrayList<>();
 
 //        ApiResult<List<Long>> legalEntityByLegalName = this.oauthClient.getLegalIdBySystemName(UserOperator.getToken());
 //        List<Long> legalIds = legalEntityByLegalName.getData();
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.SUPPLIER_TYPE.getCode()).getData();
+        //中港待处理节点+
+        Map<String, Integer> tmsPendingNum = null;
+        if (UserTypeEnum.SUPPLIER_TYPE.getCode().equals(dataControl.getAccountType())) {
+            tmsPendingNum = this.tmsClient.getNumByStatus("", dataControl).getData();
+        }
 
         for (Map<String, Object> menus : menusList) {
-
             Map<String, Object> map = new HashMap<>();
             Object title = menus.get("title");
-            String status = tmp.get(title);
             Integer num = 0;
-            if (status != null) {
-                num = this.supplierInfoService.getNumByStatus(status, null);
+            if (tmsPendingNum != null) {
+                num = tmsPendingNum.get(title);
+            } else {
+                String status = tmp.get(title);
+                if (status != null) {
+                    num = this.supplierInfoService.getNumByStatus(status, null);
+                }
             }
             map.put("menusName", title);
             map.put("num", num);

@@ -234,10 +234,11 @@ public class InputOrderTransportVO {
         this.id = null;
         this.allPics = new ArrayList<>();
         this.orderNo = null;
-        this.jiedanUser=null;
-        this.jiedanTimeStr=null;
-        this.encode=null;
-        this.status=null;
+        this.jiedanUser = null;
+        this.jiedanTimeStr = null;
+        this.encode = null;
+        this.status = null;
+        this.subTmsStatus = null;
         if (this.orderTakeAdrForms1 != null) {
             orderTakeAdrForms1.forEach(e -> {
                 e.setTakeAdrId(null);

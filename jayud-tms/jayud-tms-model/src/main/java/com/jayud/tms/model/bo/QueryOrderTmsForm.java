@@ -2,6 +2,7 @@ package com.jayud.tms.model.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jayud.common.enums.UserTypeEnum;
+import com.jayud.common.utils.DateUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -59,4 +60,12 @@ public class QueryOrderTmsForm extends BasePageForm {
     private Set<String> subOrderNos = new HashSet<>();
 
 
+    public void setTakeTimeStr(List<String> takeTimeStr) {
+        this.takeTimeStr = takeTimeStr;
+        if (takeTimeStr != null && takeTimeStr.size() > 1) {
+            String endTime = takeTimeStr.get(1);
+            String[] tmp = endTime.split(" ");
+            takeTimeStr.set(1, tmp[0] + " 23:59:59");
+        }
+    }
 }

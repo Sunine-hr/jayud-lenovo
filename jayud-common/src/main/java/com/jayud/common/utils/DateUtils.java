@@ -9,10 +9,7 @@ import org.joda.time.format.DateTimeFormat;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -86,7 +83,6 @@ public class DateUtils {
     }
 
 
-
     /**
      * 字符串转换成日期
      *
@@ -113,7 +109,7 @@ public class DateUtils {
 
 
     public static void main(String[] args) {
-        System.out.println( format("2021-04-02 14:06:01","yyyy-MM-dd"));
+        System.out.println(format("2021-04-02 14:06:01", "yyyy-MM-dd"));
         //  System.out.println(DateUtil.to("Mar 5, 2014 12:00:00 AM", "yyyy-MM-dd HH:ss:mm"));
     }
 
@@ -397,4 +393,11 @@ public class DateUtils {
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
+
+    public static Date getMaxDay(String time) {
+        Date date = convert2Date(time, DateUtils.DATE_TIME_PATTERN);
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), ZoneId.systemDefault());
+        LocalDateTime maxDateTime = localDateTime.with(LocalTime.MAX);
+        return Date.from(maxDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    }
 }

@@ -2,6 +2,7 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.HashUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONConfig;
 import cn.hutool.json.JSONUtil;
@@ -13,10 +14,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
-import com.jayud.common.enums.CreditStatusEnum;
-import com.jayud.common.enums.CustomsCreditRatingEnum;
-import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.enums.UnitEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
@@ -24,6 +22,7 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.FreightAirClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.enums.*;
+import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
@@ -41,6 +40,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.jayud.common.enums.SubOrderSignEnum.BG;
 
 
 @RestController
@@ -581,6 +582,26 @@ public class OrderComboxController {
         }
         return CommonResult.success(array);
     }
+
+    @ApiOperation(value = "根据传入类型获取默认值(创建订单页面)")
+    @PostMapping(value = "/initCreateOrderDefaultValue")
+    public CommonResult<Map<String, Object>> initCreateOrderDefaultValue(@RequestBody Map<String, Object> map) {
+        String type = MapUtil.getStr(map, "type");
+        if (StringUtils.isEmpty(type)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        SubOrderSignEnum subType = SubOrderSignEnum.getEnum(type);
+        Map<String, Object> response = new HashMap<>();
+        switch (subType) {
+            case BG:
+                response.put("bgDefaultLegalEntity", 802);
+                break;
+        }
+
+
+        return CommonResult.success(response);
+    }
+
 
 }
 

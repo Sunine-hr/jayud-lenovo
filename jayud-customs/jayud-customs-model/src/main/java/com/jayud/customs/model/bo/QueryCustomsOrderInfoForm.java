@@ -9,6 +9,9 @@ public class QueryCustomsOrderInfoForm extends BasePageForm{
     @ApiModelProperty(value = "订单号")
     private String orderNo;
 
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrderNo;
+
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 

@@ -31,7 +31,7 @@ public class OceanBillForm {
 
     @ApiModelProperty(value = "供应商id(supplier_info id)", position = 3)
     @JSONField(ordinal = 3)
-    @NotNull(message = "供应商必填")
+//    @NotNull(message = "供应商必填")
     private Integer supplierId;
 
     @ApiModelProperty(value = "提单号(供应商提供)", position = 4)

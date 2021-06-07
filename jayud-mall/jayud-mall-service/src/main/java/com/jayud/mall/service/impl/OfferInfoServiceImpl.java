@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -609,14 +610,25 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         Integer jcTimeCalc = quotationTemplateVO.getJcTimeCalc() == null ? 0 : quotationTemplateVO.getJcTimeCalc();
         Integer jkcTimeCalc = quotationTemplateVO.getJkcTimeCalc() == null ? 0 : quotationTemplateVO.getJkcTimeCalc();
         Integer estimatedTimeCalc = quotationTemplateVO.getEstimatedTimeCalc() == null ? 0 : quotationTemplateVO.getEstimatedTimeCalc();
+
+        String cutOffTimeCalcHms = quotationTemplateVO.getCutOffTimeCalcHms() == null ? "00:00:00" : quotationTemplateVO.getCutOffTimeCalcHms();
+        String jcTimeCalcHms = quotationTemplateVO.getJcTimeCalcHms() == null ? "00:00:00" : quotationTemplateVO.getJcTimeCalcHms();
+        String jkcTimeCalcHms = quotationTemplateVO.getJkcTimeCalcHms() == null ? "00:00:00" : quotationTemplateVO.getJkcTimeCalcHms();
+        String estimatedTimeCalcHms = quotationTemplateVO.getEstimatedTimeCalcHms() == null ? "00:00:00" : quotationTemplateVO.getJkcTimeCalcHms();
+
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
         OfferInfoDateVO offerInfoDateVO = new OfferInfoDateVO();
         offerInfoDateVO.setId(form.getId());
         offerInfoDateVO.setQie(qie);
         offerInfoDateVO.setSailTime(sailTime);
-        offerInfoDateVO.setCutOffTime(sailTime.plusDays(cutOffTimeCalc));//计算截单日期
-        offerInfoDateVO.setJcTime(sailTime.plusDays(jcTimeCalc));
-        offerInfoDateVO.setJkcTime(sailTime.plusDays(jkcTimeCalc));
-        offerInfoDateVO.setEstimatedTime(sailTime.plusDays(estimatedTimeCalc));
+
+        offerInfoDateVO.setCutOffTime(LocalDateTime.parse(dtf.format(sailTime.plusDays(cutOffTimeCalc))+" "+cutOffTimeCalcHms,df));//计算截单日期
+        offerInfoDateVO.setJcTime(LocalDateTime.parse(dtf.format(sailTime.plusDays(jcTimeCalc))+" "+jcTimeCalcHms,df));
+        offerInfoDateVO.setJkcTime(LocalDateTime.parse(dtf.format(sailTime.plusDays(jkcTimeCalc))+" "+jkcTimeCalcHms,df));
+        offerInfoDateVO.setEstimatedTime(LocalDateTime.parse(dtf.format(sailTime.plusDays(estimatedTimeCalc))+" "+estimatedTimeCalcHms,df));
         return offerInfoDateVO;
     }
 

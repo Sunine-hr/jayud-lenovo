@@ -339,5 +339,30 @@ public class Test {
         System.out.println(strDate2);
     }
 
+    @org.junit.Test
+    public void test17(){
+
+        LocalDateTime time=LocalDateTime.now();
+        System.out.println(time);
+
+        LocalDateTime localDateTime = time.plusDays(3);
+
+        LocalDateTime of = LocalDateTime.of(localDateTime.getYear(), localDateTime.getMonth(), localDateTime.getDayOfMonth(), 15, 25, 00);
+        System.out.println(of);
+
+    }
+
+    @org.junit.Test
+    public void test18(){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime time = LocalDateTime.now();
+
+        String localTime = df.format(time);
+        LocalDateTime ldt = LocalDateTime.parse(dtf.format(time)+" 17:07:05",df);
+        System.out.println("LocalDateTime转成String类型的时间："+localTime);
+        System.out.println("String类型的时间转成LocalDateTime："+ldt);
+    }
+
 
 }

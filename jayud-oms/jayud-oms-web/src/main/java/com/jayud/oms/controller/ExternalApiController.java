@@ -1,20 +1,23 @@
 package com.jayud.oms.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.OrderDeliveryAddress;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.*;
 import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.feign.OauthClient;
+import com.jayud.oms.feign.TmsClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.enums.VehicleTypeEnum;
@@ -28,11 +31,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -101,6 +102,10 @@ public class ExternalApiController {
     private IOrderFlowSheetService orderFlowSheetService;
     @Autowired
     private ICostCommonService costCommonService;
+    @Autowired
+    private ICostInfoService costInfoService;
+    @Autowired
+    private TmsClient tmsClient;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -310,7 +315,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "初始化车辆下拉框")
     @RequestMapping(value = "api/initVehicle")
-    public ApiResult<List<VehicleInfo>> initVehicle(@RequestParam("type") Integer type) {
+    public ApiResult<List<InitComboxVO>> initVehicle(@RequestParam("type") Integer type) {
         List<VehicleInfo> vehicleInfos = vehicleInfoService
                 .getByCondition(new VehicleInfo().setStatus(StatusEnum.ENABLE.getCode())
                         .setType(type));
@@ -321,6 +326,26 @@ public class ExternalApiController {
             initComboxVO.setId(vehicleInfo.getId());
             initComboxVO.setName(vehicleInfo.getPlateNumber());
             initComboxVOS.add(initComboxVO);
+        }
+        return ApiResult.ok(initComboxVOS);
+    }
+
+    @ApiOperation(value = "初始化供应商车辆下拉框 type:车辆类型(0:中港车,1:内陆车)")
+    @RequestMapping(value = "api/initVehicleBySupplier")
+    public ApiResult<List<InitComboxStrVO>> initVehicleBySupplier(@RequestParam("supplierId") Long supplierId,
+                                                                  @RequestParam("type") Integer type) {
+        List<VehicleInfo> vehicleInfos = vehicleInfoService
+                .getByCondition(new VehicleInfo().setSupplierId(supplierId)
+                        .setStatus(StatusEnum.ENABLE.getCode())
+                        .setType(type));
+
+        List<InitComboxStrVO> initComboxVOS = new ArrayList<>();
+        for (VehicleInfo vehicleInfo : vehicleInfos) {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setId(vehicleInfo.getId());
+            initComboxStrVO.setName(vehicleInfo.getPlateNumber());
+            initComboxStrVO.setNote(vehicleInfo.getHkNumber());
+            initComboxVOS.add(initComboxStrVO);
         }
         return ApiResult.ok(initComboxVOS);
     }
@@ -1496,20 +1521,36 @@ public class ExternalApiController {
         Map<String, String> tmp = new HashMap<>();
         tmp.put("财务审核", "financialCheck");
         tmp.put("总经办审核", "managerCheck");
+//        tmp.put("派车", "T_1");
+//        tmp.put("提货", "T_4");
+//        tmp.put("过磅", "T_5");
+//        tmp.put("驳回", "T_3_1");
+//        tmp.put("通关", "T_8");
+//        tmp.put("派送", "T_13");
+//        tmp.put("签收", "T_14");
 
         List<Map<String, Object>> result = new ArrayList<>();
 
 //        ApiResult<List<Long>> legalEntityByLegalName = this.oauthClient.getLegalIdBySystemName(UserOperator.getToken());
 //        List<Long> legalIds = legalEntityByLegalName.getData();
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.SUPPLIER_TYPE.getCode()).getData();
+        //中港待处理节点+
+        Map<String, Integer> tmsPendingNum = null;
+        if (UserTypeEnum.SUPPLIER_TYPE.getCode().equals(dataControl.getAccountType())) {
+            tmsPendingNum = this.tmsClient.getNumByStatus("", dataControl).getData();
+        }
 
         for (Map<String, Object> menus : menusList) {
-
             Map<String, Object> map = new HashMap<>();
             Object title = menus.get("title");
-            String status = tmp.get(title);
             Integer num = 0;
-            if (status != null) {
-                num = this.supplierInfoService.getNumByStatus(status, null);
+            if (tmsPendingNum != null) {
+                num = tmsPendingNum.get(title);
+            } else {
+                String status = tmp.get(title);
+                if (status != null) {
+                    num = this.supplierInfoService.getNumByStatus(status, null);
+                }
             }
             map.put("menusName", title);
             map.put("num", num);
@@ -1539,6 +1580,55 @@ public class ExternalApiController {
         }
         return ApiResult.ok(list);
     }
+
+    @ApiOperation(value = "获取主订单客户名称")
+    @RequestMapping(value = "/api/getCustomerNameByOrderNo")
+    ApiResult getCustomerNameByOrderNo(@RequestParam(value = "orderNo") String orderNo) {
+        OrderInfo orderInfo = orderInfoService.getOne(Wrappers.<OrderInfo>lambdaQuery().eq(OrderInfo::getOrderNo, orderNo));
+        return ApiResult.ok(Objects.nonNull(orderInfo) ? orderInfo.getCustomerName() : "");
+    }
+
+
+    @ApiOperation(value = "根据费用类型查询费用名称")
+    @PostMapping(value = "/getCostInfoByCostType")
+    public ApiResult<List<InitComboxStrVO>> getCostInfoByCostType(@RequestBody Map<String, String> map) {
+        String code = MapUtil.getStr(map, "code");
+        String name = MapUtil.getStr(map, "name");
+//        if (StringUtils.isEmpty(code) && StringUtils.isEmpty(name)) {
+//            return CommonResult.error(ResultEnum.PARAM_ERROR);
+//        }
+        if (!StringUtils.isEmpty(code)) {
+            return ApiResult.ok(this.costInfoService.getCostInfoByCostTypeCode(code));
+        }
+        if (!StringUtils.isEmpty(name)) {
+            return ApiResult.ok(this.costInfoService.getCostInfoByCostTypeCode(name));
+        }
+
+        return ApiResult.error(ResultEnum.PARAM_ERROR.getMessage());
+    }
+
+
+    /**
+     * 查询供应商费用
+     */
+    @PostMapping(value = "/getSupplierCost")
+    public ApiResult<OrderPaymentCost> getSupplierCost(@RequestParam("supplierId") Long supplierId) {
+        List<OrderPaymentCost> list = this.paymentCostService.getByCondition(new OrderPaymentCost().setSupplierId(supplierId));
+        return ApiResult.ok(list);
+    }
+
+    /**
+     * 根据子订单号集合查询供应商费用
+     */
+    @PostMapping(value = "/getSupplierPayCostByOrderNos")
+    public ApiResult<Map<String, Map<String, BigDecimal>>> statisticalSupplierPayCostByOrderNos(@RequestParam("supplierId") Long supplierId,
+                                                                                                @RequestParam("orderNos") List<String> subOrderNos) {
+        List<OrderPaymentCost> list = this.paymentCostService.getSupplierPayCostByOrderNos(supplierId, subOrderNos,
+                Integer.valueOf(OrderStatusEnum.COST_3.getCode()));
+        Map<String, Map<String, BigDecimal>> map = this.paymentCostService.statisticalPayCostByOrderNos(list, false);
+        return ApiResult.ok(map);
+    }
+
 
     @ApiOperation(value = "获取公司名称下拉列表")
     @RequestMapping(value = "/api/getCustomerInfo")

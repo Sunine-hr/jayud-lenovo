@@ -6,12 +6,15 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.mapper.OrderReceivableCostMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
-import com.jayud.oms.model.po.OrderPaymentCost;
+import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.po.OrderReceivableCost;
+import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
+import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.oms.service.IOrderReceivableCostService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -30,6 +33,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableCostMapper, OrderReceivableCost> implements IOrderReceivableCostService {
+
+    @Autowired
+    private ICustomerInfoService customerInfoService;
 
     @Override
     public List<InputReceivableCostVO> findReceivableCost(GetCostDetailForm form) {
@@ -236,5 +242,47 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
         queryWrapper.eq("status", 2);
         queryWrapper.eq("sub_type", subType);
         return this.baseMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * 根据主订单查询费用
+     *
+     * @param mainOrderNo
+     * @param isMainOrder
+     * @param exclusionStatus
+     * @return
+     */
+    @Override
+    public List<OrderReceivableCost> getByMainOrderNo(String mainOrderNo, boolean isMainOrder, List<String> exclusionStatus) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderReceivableCost::getMainOrderNo, mainOrderNo)
+                .eq(OrderReceivableCost::getIsSumToMain, isMainOrder)
+                .notIn(OrderReceivableCost::getStatus, exclusionStatus);
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 补充客户信息
+     *
+     * @param receivableCosts
+     */
+    @Override
+    public void supplyCustomerInfo(List<OrderReceivableCost> receivableCosts) {
+        Map<String, String> customerInfoMap = new HashMap<>();
+        for (OrderReceivableCost receivableCost : receivableCosts) {
+            //客户名称
+            if (StringUtils.isEmpty(receivableCost.getCustomerName())) {
+                String customerName = customerInfoMap.get(receivableCost.getCustomerCode());
+                if (com.jayud.common.utils.StringUtils.isEmpty(customerName)) {
+                    CustomerInfo customerInfo = this.customerInfoService.getByCode(receivableCost.getCustomerCode());
+                    receivableCost.setCustomerName(customerInfo.getName());
+                    customerInfoMap.put(receivableCost.getCustomerCode(), customerInfo.getName());
+                } else {
+                    receivableCost.setCustomerName(customerName);
+                }
+            }
+
+        }
+
     }
 }

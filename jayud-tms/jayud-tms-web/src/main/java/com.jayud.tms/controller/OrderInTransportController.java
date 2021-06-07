@@ -417,14 +417,8 @@ public class OrderInTransportController {
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtId(form.getOrderId());
         if (CommonConstant.SEND_CAR.equals(form.getCmd()) || CommonConstant.EDIT_CAR.equals(form.getCmd())) {
-            //参数校验
-            if ((CommonConstant.EDIT_CAR.equals(form.getCmd()) && form.getId() == null) ||
-                    form.getOrderId() == null || form.getMainOrderId() == null ||
-                    StringUtil.isNullOrEmpty(form.getTransportNo()) || StringUtil.isNullOrEmpty(form.getOrderNo()) ||
-                    form.getVehicleSize() == null || form.getVehicleType() == null ||
-                    form.getVehicleId() == null || form.getDriverInfoId() == null) {
-                return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
-            }
+            //派车参数校验
+            form.checkSendCar();
             //当运输派车后在驳回时,重新编辑,再次走流程时会出现两条派车记录,原来那条作废
             if (CommonConstant.SEND_CAR.equals(form.getCmd())) {
                 QueryWrapper removeWrapper = new QueryWrapper();
@@ -802,6 +796,7 @@ public class OrderInTransportController {
         InputOrderTransportVO inputOrderTransportVO = orderTransportService.getOrderTransport(mainOrderNo);
         return CommonResult.success(inputOrderTransportVO);
     }
+
 
 }
 

@@ -6,6 +6,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.entity.DataControl;
+import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.tms.feign.OauthClient;
 import com.jayud.tms.model.bo.BasePageForm;
 import com.jayud.tms.model.vo.statistical.BusinessPeople;
@@ -92,7 +93,7 @@ public class StatisticalChart {
         tmp.put("确认签收", "T_14");
         List<Map<String, Object>> result = new ArrayList<>();
 
-        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken()).getData();
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.EMPLOYEE_TYPE.getCode()).getData();
 
         tmp.forEach((k, v) -> {
             Map<String, Object> map = new HashMap<>();

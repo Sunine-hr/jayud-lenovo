@@ -2,6 +2,7 @@ package com.jayud.oms.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.entity.DataControl;
 import com.jayud.oms.model.bo.AddCusAccountForm;
 import com.jayud.oms.model.bo.QueryAccountForm;
 import com.jayud.oms.model.vo.InitComboxVO;
@@ -148,4 +149,12 @@ public interface OauthClient {
     @RequestMapping(value = "/api/matchingCodeByLegalIds")
     ApiResult<Boolean> matchingCodeByLegalIds(@RequestParam("legalEntityIds") List<Long> legalEntityIds,
                                               @RequestParam("code") String code);
+
+    /**
+     * 根据用户名获取用户所属数据权限
+     */
+    @RequestMapping(value = "/api/getDataPermission")
+    public ApiResult<DataControl> getDataPermission(@RequestParam("loginName") String loginName,
+                                                    @RequestParam(value = "UserType") String userType);
+
 }

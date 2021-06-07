@@ -118,7 +118,7 @@
         <result column="is_vehicle_weigh" property="isVehicleWeigh"/>
         <result column="supplier_id" property="supplierId"/>
         <association property="orderSendCars" javaType="com.jayud.tms.model.vo.OrderSendCarsInfoVO">
-            <id column="id" property="id"/>
+            <id column="sendCarId" property="id"/>
             <result column="transport_no" property="transportNo"/>
             <result column="order_no" property="orderNo"/>
             <result column="vehicle_type" property="vehicleType"/>
@@ -126,7 +126,7 @@
             <result column="cntr_no" property="cntrNo"/>
             <result column="cntr_pic" property="cntrPic"/>
             <result column="cntr_pic_name" property="cntrPicName"/>
-            <result column="driver_info_info" property="driverInfoId"/>
+            <result column="driver_info_id" property="driverInfoId"/>
             <result column="vehicle_id" property="vehicleId"/>
             <result column="remarks" property="remarks"/>
             <result column="describes" property="describes"/>
@@ -139,7 +139,6 @@
             <result column="jockey" property="jockey"/>
         </association>
     </resultMap>
-
 
 
     <!-- 通用查询结果列 -->
@@ -505,7 +504,17 @@
         ON si.id=vi.supplier_id
         where 1 = 1
         <if test="form.orderNo != null and form.orderNo != ''">
-            and ot.order_no = #{form.orderNo}
+            and ot.order_no like concat('%',#{form.orderNo},'%')
+        </if>
+        <if test="form.subOrderNos != null and form.subOrderNos.size>0">
+            and ot.order_no in
+            <foreach collection="form.subOrderNos" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="form.mainOrderNo != null and form.mainOrderNo != ''">
+            and ot.main_order_no like concat('%',#{form.mainOrderNo},'%')
         </if>
         <if test="form.portCode != null and form.portCode != ''">
             and ot.port_code = #{form.portCode}
@@ -553,9 +562,9 @@
         <if test="form.cmd == 'clearCustoms'">
             AND ot.`is_hk_clear` = '1' and ot.clear_customs_no is null
             AND oi.`status` in ('1','4')
-            <if test="legalIds != null and legalIds.size>0">
+            <if test="dataControl.accountType==1 and dataControl.companyIds != null and dataControl.companyIds.size>0">
                 and ot.`hk_legal_id` in
-                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                <foreach collection="dataControl.companyIds" item="legalId" open="(" separator="," close=")">
                     #{legalId}
                 </foreach>
             </if>
@@ -573,10 +582,17 @@
             AND ot.`status` = 'T_14'
         </if>
         <if test="form.cmd == 'list'">
-            AND (oi.`status`= 1 or oi.`status`=4)
+            AND (oi.`status` in (1,3,4))
+        </if>
+
+        <if test="form.subOrderIds !=null and form.subOrderIds.size>0">
+            AND ot.id in
+            <foreach collection="form.subOrderIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </if>
         <if test="form.cmd == 'costAudit'">
-            and oi.`status` IN (1,4)
+            and oi.`status` IN (1,3,4)
             AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND opc.`status` =
             '2' and opc.sub_type = 'zgys')
             OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND orc.`status`
@@ -586,7 +602,7 @@
         <if test="form.customerName != null and form.customerName !=''">
             <choose>
                 <when test="dataControl.accountType!=null and dataControl.accountType==3">
-                    and ot.legal_name like concat('%',#{form.legalName},'%')
+                    and ot.legal_name like concat('%',#{form.customerName},'%')
                 </when>
                 <otherwise>
                     and oi.customer_name like concat('%',#{form.customerName},'%')
@@ -655,8 +671,8 @@
                     #{item}
                 </foreach>
             </if>
-            -- and DATE_FORMAT( ot.created_time, '%Y%m' ) >= DATE_FORMAT( DATE_SUB( curdate(), INTERVAL 1 MONTH ),
-            '%Y%m' )
+            -- and DATE_FORMAT( ot.created_time, '%Y%m' ) >= DATE_FORMAT( DATE_SUB( curdate(), INTERVAL 1 MONTH ),'%Y%m'
+            )
             and DATE_FORMAT(ot.created_time, '%Y%m')=DATE_FORMAT(NOW(), '%Y%m')
         </where>
         GROUP BY ot.created_user
@@ -720,9 +736,9 @@
                 <when test="status == 'HK_C_1'">
                     AND ot.`is_hk_clear` = '1' and ot.clear_customs_no is null
                     AND oi.`status` in ('1','4')
-                    <if test="legalIds != null and legalIds.size>0">
+                    <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
                         and ot.`hk_legal_id` in
-                        <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                        <foreach collection="dataControl.companyIds" item="legalId" open="(" separator="," close=")">
                             #{legalId}
                         </foreach>
                     </if>
@@ -732,14 +748,6 @@
                 </otherwise>
             </choose>
 
-            <choose>
-                <when test="status== 'T_8'">
-                    group by ot.status in ('T_8','T_9_1','T_9_2')
-                </when>
-                <when test="status != 'HK_C_1'">
-                    group by ot.status
-                </when>
-            </choose>
 
             <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
                 <choose>
@@ -755,12 +763,21 @@
                 </foreach>
             </if>
 
-<!--            <if test="legalIds != null and legalIds.size>0">-->
-<!--                and ot.`legal_entity_id` in-->
-<!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
-<!--                    #{legalId}-->
-<!--                </foreach>-->
-<!--            </if>-->
+            <choose>
+                <when test="status== 'T_8'">
+                    group by ot.status in ('T_8','T_9_1','T_9_2')
+                </when>
+                <when test="status != 'HK_C_1'">
+                    group by ot.status
+                </when>
+            </choose>
+
+            <!--            <if test="legalIds != null and legalIds.size>0">-->
+            <!--                and ot.`legal_entity_id` in-->
+            <!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+            <!--                    #{legalId}-->
+            <!--                </foreach>-->
+            <!--            </if>-->
         </where>
     </select>
 
@@ -784,17 +801,77 @@
 
     <select id="getTmsOrderInfoById" resultMap="ResultTwoMap">
         select
+        ot.id, ot.supplier_id,
         ot.main_order_no,ot.order_no,ot.port_code,
         ot.goods_type,ot.vehicle_type,
         ot.vehicle_size,ot.unit_code,ot.legal_name,ot.legal_entity_id,ot.status,
-        oc.id, oc.transport_no, oc.order_no,oc.vehicle_type, oc.vehicle_size, oc.cntr_no, oc.cntr_pic,
+        oc.id sendCarId, oc.transport_no, oc.order_no,oc.vehicle_type, oc.vehicle_size, oc.cntr_no, oc.cntr_pic,
         oc.cntr_pic_name, oc.driver_info_id,
         oc.vehicle_id,oc.remarks, oc.describes, oc.status, oc.updated_time, oc.updated_user, oc.created_user,
-        oc.created_time,oc.jockey_id,oc.jockey
+        oc.created_time,oc.jockey_id,oc.jockey,oc.remarks
         from
         order_transport ot left join order_send_cars oc on ot.order_no=oc.order_no
         <where>
             and ot.id = #{id}
         </where>
+    </select>
+    <select id="findSupplierBillByPage" resultType="com.jayud.tms.model.vo.supplier.SupplierBill">
+        select
+        tmp.subOrderId,
+        tmp.customer,
+        tmp.MONTH,
+        sum(tmp.orderNum) orderNum
+        from (
+        SELECT
+        ot.id subOrderId,
+        ot.legal_name customer,
+        DATE_FORMAT(tmp1.take_time, '%Y-%m' ) MONTH,
+        count( DISTINCT ot.id ) orderNum
+        FROM
+        order_transport ot
+        LEFT JOIN
+        (select ota1.* from order_take_adr ota1,
+        (select min(ota2.id) id from order_take_adr ota2 where ota2.opr_type=1 group by ota2.order_no) ota3 where
+        ota1.id=ota3.id)
+        tmp1 ON ot.order_no = tmp1.order_no
+        <where>
+            ot.supplier_id = #{form.supplierId}
+            <if test="form.customer !=null and form.customer !='' ">
+                and ot.legal_name like concat('%',#{form.customer},'%')
+            </if>
+            <if test="form.month !=null and form.month.size >0 ">
+                and DATE_FORMAT(ota.take_time,'%Y-%m') between #{form.month[0]} and #{form.month[1]}
+            </if>
+        </where>
+        GROUP BY tmp1.order_no)
+        tmp
+        GROUP BY tmp.MONTH
+        ORDER BY tmp.MONTH DESC
+    </select>
+
+
+    <select id="findSupplierBillInfoByPage" resultType="com.jayud.tms.model.vo.supplier.SupplierBillInfo">
+        select
+        ot.id subOrderId,
+        ot.order_no,
+        DATE_FORMAT(ota.take_time,'%Y-%m') takeTimeStr,
+        ot.legal_name customerName,
+        osc.vehicle_size,
+        ot.warehouse_info_id,
+        osc.vehicle_id
+        from
+        order_transport ot left join order_take_adr ota on ot.order_no=ota.order_no and ota.opr_type=1
+        left join order_send_cars osc on osc.order_no = ota.order_no
+        <where>
+            ot.supplier_id = #{form.supplierId}
+            <if test="form.customer !=null and form.customer !='' ">
+                and ot.legal_name like concat('%',#{form.customer},'%')
+            </if>
+            <if test="form.month !=null and form.month !='' ">
+                and DATE_FORMAT(ota.take_time,'%Y-%m') = #{form.month}
+            </if>
+        </where>
+        group by ot.order_no
+        order by ota.take_time desc
     </select>
 </mapper>

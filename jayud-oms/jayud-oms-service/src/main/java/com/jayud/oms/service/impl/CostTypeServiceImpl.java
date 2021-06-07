@@ -162,4 +162,11 @@ public class CostTypeServiceImpl extends ServiceImpl<CostTypeMapper, CostType> i
 
     }
 
+
+    @Override
+    public List<CostType> getByCondition(CostType costType) {
+        QueryWrapper<CostType> condition = new QueryWrapper<>(costType);
+        return this.baseMapper.selectList(condition);
+    }
+
 }

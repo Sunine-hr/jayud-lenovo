@@ -74,6 +74,8 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     private IMakeInvoiceService makeInvoiceService;
     @Autowired
     private DataProcessingService dataProcessingService;
+    @Autowired
+    private FinanceService financeService;
 
     @Override
     public IPage<OrderPaymentBillDetailVO> findReceiveBillDetailByPage(QueryPaymentBillDetailForm form) {
@@ -740,6 +742,11 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         return CommonResult.success();
     }
 
+    /**
+     * 1.客服主管-应收反审核 kf_s_reject
+     * 2.财务-应收反审核 cw_s_reject
+     * ①未申请开票或付款的或作废的才可进行反审核
+     */
     @Override
     public CommonResult contrarySAudit(ListForm form) {
         //反审核条件
@@ -773,7 +780,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             }
         } else if ("cw_s_reject".equals(form.getCmd())) {
             for (OrderReceivableBillDetail existObject : existList) {
-                if (!BillEnum.B_5_1.getCode().equals(existObject.getAuditStatus())) {
+                if (!this.financeService.checkAntiAudite(existObject.getAuditStatus())) {
                     return CommonResult.error(10001, "存在不符合操作条件的数据");
                 }
             }

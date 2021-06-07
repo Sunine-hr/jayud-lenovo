@@ -81,4 +81,19 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
     public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds);
 
     List<OrderReceivableCost> getBySubType(String subType);
+
+    /**
+     * 根据主订单查询费用
+     * @param mainOrderNo
+     * @param isMainOrder
+     * @param exclusionStatus
+     * @return
+     */
+    List<OrderReceivableCost> getByMainOrderNo(String mainOrderNo, boolean isMainOrder, List<String> exclusionStatus);
+
+    /**
+     * 补充客户信息
+     * @param receivableCosts
+     */
+    void supplyCustomerInfo(List<OrderReceivableCost> receivableCosts);
 }

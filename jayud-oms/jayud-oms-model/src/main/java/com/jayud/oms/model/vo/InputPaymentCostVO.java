@@ -75,4 +75,7 @@ public class InputPaymentCostVO {
     @ApiModelProperty(value = "卸货地址")
     private String unloadingAddress;
 
+    @ApiModelProperty(value = "供应商指派id")
+    private String supplierId;
+
 }

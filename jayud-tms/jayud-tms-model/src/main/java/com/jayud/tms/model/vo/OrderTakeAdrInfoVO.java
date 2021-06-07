@@ -1,6 +1,7 @@
 package com.jayud.tms.model.vo;
 
 import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -71,7 +72,15 @@ public class OrderTakeAdrInfoVO {
     private List<FileView> takeFiles = new ArrayList<>();
 
 
-    public void sortData(){
-
+    public void sortData(String url) {
+        StringBuilder goodsInfo = new StringBuilder(goodsDesc)
+                .append("/")
+                .append(this.getPlateAmount() == null ? 0 : this.getPlateAmount()).append("板")
+                .append("/")
+                .append(this.getPieceAmount()).append("件数")
+                .append("/")
+                .append(this.getWeight()).append("kg");
+        this.goodsInfo = goodsInfo.toString();
+        StringUtils.getFileViews(this.file, this.fileName, url);
     }
 }

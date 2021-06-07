@@ -23,6 +23,7 @@ public interface OauthClient {
      * 根据用户名获取用户所属数据权限
      */
     @RequestMapping(value = "/api/getDataPermission")
-    public ApiResult<DataControl> getDataPermission(@RequestParam("loginName") String loginName);
+    public ApiResult<DataControl> getDataPermission(@RequestParam("loginName") String loginName,
+                                                    @RequestParam(value = "UserType") String userType);
 
 }

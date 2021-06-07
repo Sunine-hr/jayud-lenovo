@@ -64,7 +64,8 @@
         opc.`exchange_rate` exchangeRate,
         opc.`remarks`,
         opc.`status`,
-        opc.unloading_address unloadingAddress
+        opc.unloading_address unloadingAddress,
+        opc.supplier_id
         FROM
         order_payment_cost opc
         where opc.`main_order_no` = #{form.mainOrderNo}
@@ -74,7 +75,7 @@
         </if>
         <if test="form.cmd == 'main_cost_audit'">
             and ((opc.`status` in ('2','3') and opc.sub_type = 'main')
-            or  (opc.`status` in ('3') and opc.sub_type !='main' and opc.is_sum_to_main=true))
+            or (opc.`status` in ('3') and opc.sub_type !='main' and opc.is_sum_to_main=true))
         </if>
         <if test="form.cmd == 'sub_cost'">
             and opc.sub_type = #{form.subType}
@@ -84,6 +85,9 @@
             and opc.`status` in ('2','3')
             and opc.sub_type = #{form.subType}
             and opc.order_no = #{form.subOrderNo}
+        </if>
+        <if test="form.supplierId !=null">
+            and opc.supplier_id = #{form.supplierId}
         </if>
 
         <!--        <if test="form.cmd == 'zgys_sub_cost'">-->
@@ -157,7 +161,7 @@
                 WHERE
                 opc.sub_type = "main"
                 AND opc.`status` = 2
-                AND oi.`status` IN (1,4)
+                AND oi.`status` IN (1,3,4)
                 <if test="orderNos != null and orderNos.size()>0">
                     and main_order_no in
                     <foreach collection="orderNos" item="item" open="(" separator="," close=")">
@@ -187,14 +191,51 @@
                         #{item}
                     </foreach>
                 </if>
-<!--                <if test="legalIds != null and legalIds.size>0">-->
-<!--                    and oi.`legal_entity_id` in-->
-<!--                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
-<!--                        #{legalId}-->
-<!--                    </foreach>-->
-<!--                </if>-->
+                <!--                <if test="legalIds != null and legalIds.size>0">-->
+                <!--                    and oi.`legal_entity_id` in-->
+                <!--                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+                <!--                        #{legalId}-->
+                <!--                    </foreach>-->
+                <!--                </if>-->
                 GROUP BY opc.order_no
             </otherwise>
         </choose>
+    </select>
+    <select id="getSupplierAbnormalCostDetail" resultType="com.jayud.oms.model.vo.InputPaymentCostVO">
+        SELECT distinct
+        opc.`id`,
+        opc.main_order_no,
+        opc.`customer_code` customerCode ,
+        (select si.supplier_ch_name from supplier_info si where si.supplier_code = opc.customer_code limit
+        1)customerName,
+        opc.`cost_type_id` costTypeId,
+        (SELECT ct.code_name FROM cost_type ct WHERE ct.id = opc.`cost_type_id` LIMIT 1) costType,
+        opc.`cost_genre_id` costGenreId,
+        (SELECT cg.name FROM cost_genre cg WHERE cg.id = opc.cost_genre_id LIMIT 1) costGenre,
+        opc.`unit`,
+        opc.`cost_code` costCode,
+        (SELECT ci.name FROM cost_info ci WHERE ci.id_code = opc.`cost_code` LIMIT 1) costName,
+        opc.`unit_price` unitPrice,
+        opc.`number`,
+        opc.`currency_code` currencyCode,
+        (SELECT ci.currency_name FROM currency_info ci WHERE ci.currency_code = opc.`currency_code` LIMIT 1)
+        currencyName,
+        opc.`amount`,
+        opc.`change_amount` changeAmount,
+        opc.`exchange_rate` exchangeRate,
+        opc.`remarks`,
+        opc.`status`,
+        opc.unloading_address unloadingAddress
+        FROM
+        order_payment_cost opc
+        where opc.`main_order_no` = #{form.mainOrderNo}
+        <if test="form.cmd == 'sub_cost'">
+            and opc.sub_type = #{form.subType}
+            and opc.order_no = #{form.subOrderNo}
+            and opc.`status` in (0)
+        </if>
+        <if test="form.supplierId !=null">
+            and opc.supplier_id = #{form.supplierId}
+        </if>
     </select>
 </mapper>

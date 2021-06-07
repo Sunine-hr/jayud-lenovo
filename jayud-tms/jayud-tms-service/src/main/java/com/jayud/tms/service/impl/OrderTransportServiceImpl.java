@@ -1,6 +1,8 @@
 package com.jayud.tms.service.impl;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -11,8 +13,11 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
+import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.enums.OrderAddressEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
@@ -21,10 +26,15 @@ import com.jayud.tms.feign.OauthClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.*;
+import com.jayud.tms.model.enums.OrderTakeAdrTypeEnum;
 import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
+import com.jayud.tms.model.vo.supplier.QuerySupplierBill;
+import com.jayud.tms.model.vo.supplier.QuerySupplierBillInfo;
+import com.jayud.tms.model.vo.supplier.SupplierBill;
+import com.jayud.tms.model.vo.supplier.SupplierBillInfo;
 import com.jayud.tms.service.IDeliveryAddressService;
 import com.jayud.tms.service.IOrderSendCarsService;
 import com.jayud.tms.service.IOrderTakeAdrService;
@@ -36,8 +46,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -203,15 +216,23 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     @Override
     public IPage<OrderTransportVO> findTransportOrderByPage(QueryOrderTmsForm form) {
+        //检索提货时间
+        if (CollectionUtils.isNotEmpty(form.getTakeTimeStr())) {
+            Set<String> orderNos = this.orderTakeAdrService.getOrderNosByTakeTime(form.getTakeTimeStr(), OrderTakeAdrTypeEnum.ONE.getCode());
+            if (CollectionUtils.isEmpty(orderNos)) {
+                orderNos.add("-1");
+            }
+            form.setSubOrderNos(orderNos);
+        }
+
         //定义分页参数
         Page<OrderTransportVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("ot.id"));
 
         //获取当前用户所属法人主体
-//        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
-//        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
-        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken()).getData();
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), form.getAccountType()).getData();
+
         IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form, dataControl);
         if (pageInfo.getRecords().size() == 0) {
             return pageInfo;
@@ -538,7 +559,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
      * 查询订单状态数量
      *
      * @param status
-     * @param legalIds
+     * @param dataControl
      * @return
      */
     @Override
@@ -588,6 +609,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     /**
      * 根据id查询中港详情
+     *
      * @param id
      * @return
      */
@@ -599,10 +621,13 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         if (orderTransportInfoVO == null) {
             return null;
         }
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
+
         orderNos.add(orderTransportInfoVO.getOrderNo());
         OrderSendCarsInfoVO orderSendCars = orderTransportInfoVO.getOrderSendCars();
         if (orderSendCars != null) {
             vehicleIds.add(orderSendCars.getVehicleId());
+            orderTransportInfoVO.getOrderSendCars().assemblyFiles(prePath);
         }
         //查询送货/收货地址信息
         List<OrderTakeAdrInfoVO> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrInfos(orderNos, null);
@@ -610,12 +635,204 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Object vehicleInfos = omsClient.getVehicleInfoByIds(vehicleIds).getData();
         //查询口岸
         String portName = this.omsClient.getPortNameByCode(orderTransportInfoVO.getPortCode()).getData();
+        //查询主订单信息
+        ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(orderTransportInfoVO.getMainOrderNo()));
+        //查询司机姓名
+        Object driverInfos = this.omsClient.getDriverInfoByIds(Collections.singletonList(orderTransportInfoVO.getDriverInfoId())).getData();
 
         orderTransportInfoVO.assemblyAddr(takeAdrsList);  //组装地址
         orderTransportInfoVO.assemblyVehicleInfos(vehicleInfos); //组装车辆信息
         orderTransportInfoVO.setPortName(portName);
+        orderTransportInfoVO.assemblyMainOrderData(result.getData()); //组装主订单信息
+        orderTransportInfoVO.assemblyDriverInfo(driverInfos);
+
+        AtomicReference<Double> totalWeight = new AtomicReference<>(0.0);
+        AtomicReference<Integer> totalNum = new AtomicReference<>(0);
+        orderTransportInfoVO.getPickUpAddress().forEach(e -> {
+            e.sortData(prePath);
+            totalWeight.updateAndGet(v -> v + e.getWeight());
+            totalNum.updateAndGet(v -> v + e.getPieceAmount());
+        });
+        orderTransportInfoVO.setTotalWeight(totalWeight.get()).setTotalNum(totalNum.get());
+        orderTransportInfoVO.getDeliveryAddress().forEach(e -> e.sortData(prePath));
 
         return orderTransportInfoVO;
+    }
+
+    /**
+     * 待处理数量
+     *
+     * @param userType
+     * @return
+     */
+    @Override
+    public Map<String, Object> getPendingOpt(String userType) {
+        Map<String, Object> map = new HashMap<>();
+        switch (UserTypeEnum.getEnum(userType)) {
+            case SUPPLIER_TYPE:
+                map = this.orderTransportService.getSupplyPendingOpt();
+                break;
+            case EMPLOYEE_TYPE:
+                break;
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> getSupplyPendingOpt() {
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.SUPPLIER_TYPE.getCode()).getData();
+        Map<String, Object> map = new HashMap<>();
+        if (dataControl.getCompanyIds() != null) {
+            Long supplierId = dataControl.getCompanyIds().get(0);
+            List<OrderTransport> tmsOrders = this.orderTransportService.getOrderTmsByCondition(new OrderTransport().setSupplierId(supplierId));
+            Object payCost = this.omsClient.getSupplierCost(supplierId).getData();
+            JSONArray jsonArray = new JSONArray(payCost);
+            this.calculatePendingCostNum(tmsOrders, jsonArray, map);
+        }
+        return map;
+    }
+
+
+    /**
+     * 计算费用待处理数
+     *
+     * @param tmsOrders
+     * @param jsonArray
+     * @param map
+     */
+    @Override
+    public void calculatePendingCostNum(List<OrderTransport> tmsOrders, JSONArray jsonArray, Map<String, Object> map) {
+        ConcurrentMap<String, Long> tmsMap = tmsOrders.stream().collect(Collectors.toConcurrentMap(OrderTransport::getOrderNo, OrderTransport::getId));
+        Map<String, Object> notCost = new HashMap<>();
+        Map<String, Object> abnormalCost = new HashMap<>();
+        List<Long> abnormalIds = new ArrayList<>();
+        List<String> employedOrder = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            String orderNo = jsonObject.getStr("orderNo");
+            //异常订单
+            if (OrderStatusEnum.COST_0.getCode().equals(jsonObject.getStr("status"))) {
+                abnormalIds.add(tmsMap.get(orderNo));
+            }
+            employedOrder.add(orderNo);
+        }
+        employedOrder.forEach(tmsMap::remove);
+        notCost.put("num", tmsMap.size());
+        notCost.put("subOrderIds", tmsMap.values());
+        abnormalCost.put("num", abnormalIds.size());
+        abnormalCost.put("subOrderIds", abnormalIds);
+        map.put("notCost", notCost);
+        map.put("abnormalCost", abnormalCost);
+    }
+
+    /**
+     * 查询供应商账单列表
+     *
+     * @param form
+     * @param callbackParam
+     * @return
+     */
+    @Override
+    public IPage<SupplierBill> findSupplierBillByPage(QuerySupplierBill form, Map<String, Object> callbackParam) {
+        //定义分页参数
+        Page<SupplierBill> page = new Page(form.getPageNum(), form.getPageSize());
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.SUPPLIER_TYPE.getCode()).getData();
+        if (CollectionUtils.isEmpty(dataControl.getCompanyIds())) {
+            return new Page<>();
+        }
+        form.setSupplierId(dataControl.getCompanyIds().get(0));
+        //供应商订单信息
+        IPage<SupplierBill> pageInfo = this.baseMapper.findSupplierBillByPage(page, form);
+        if (CollectionUtils.isEmpty(pageInfo.getRecords())) {
+            return new Page<>();
+        }
+        List<String> month = new ArrayList<>();
+        AtomicReference<Integer> orderTotalNum = new AtomicReference<>(0);
+        pageInfo.getRecords().forEach(e -> {
+            orderTotalNum.updateAndGet(v -> v + e.getOrderNum());
+            month.add(e.getMonth());
+        });
+        List<OrderTakeAdr> takeAdrs = this.orderTakeAdrService.getByTakeTime(month, "%Y-%m");
+        Set<String> orderNos = new HashSet<>();
+        Map<String, Set<String>> group = new HashMap<>();
+
+        for (OrderTakeAdr takeAdr : takeAdrs) {
+            orderNos.add(takeAdr.getOrderNo());
+            String key = DateUtils.LocalDateTime2Str(takeAdr.getTakeTime(), "yyyy-MM");
+            Set<String> data = group.get(key);
+            if (data == null) {
+                Set<String> tmp = new HashSet<>();
+                tmp.add(takeAdr.getOrderNo());
+                group.put(key, tmp);
+            } else {
+                data.add(takeAdr.getOrderNo());
+                group.put(key, data);
+            }
+        }
+        //子订单应付费用统计
+        Map<String, Map<String, BigDecimal>> payCostMap = this.omsClient.statisticalSupplierPayCostByOrderNos(form.getSupplierId(), new ArrayList<>(orderNos)).getData();
+        Map<String, Map<String, BigDecimal>> cost = new HashMap<>();
+        Map<String, BigDecimal> total = new HashMap<>();
+        group.forEach((k, v) -> {
+            Map<String, BigDecimal> tmp = new HashMap<>();
+            for (String orderNo : v) {
+                Map<String, BigDecimal> obj = payCostMap.get(orderNo);
+                if (obj != null) {
+                    obj.forEach((k1, v1) -> tmp.merge(k1, v1, BigDecimal::add));
+                }
+            }
+            //合计
+            tmp.forEach((k2, v2) -> total.merge(k2, v2, BigDecimal::add));
+            cost.put(k, tmp);
+        });
+        pageInfo.getRecords().forEach(e -> e.assemblyCost(cost.get(e.getMonth())));
+        callbackParam.put("total", total);
+        callbackParam.put("orderTotalNum", orderTotalNum.get());
+        return pageInfo;
+    }
+
+
+    /**
+     * 查询供应商账单明细列表
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public IPage<SupplierBillInfo> findSupplierBillInfoByPage(QuerySupplierBillInfo form) {
+        //获取当前用户所属法人主体
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.SUPPLIER_TYPE.getCode()).getData();
+        if (CollectionUtils.isEmpty(dataControl.getCompanyIds())) {
+            return new Page<>();
+        }
+        form.setSupplierId(dataControl.getCompanyIds().get(0));
+        //定义分页参数
+        Page<SupplierBillInfo> page = new Page<>(form.getPageNum(), 10000000);
+        IPage<SupplierBillInfo> pageInfo = this.baseMapper.findSupplierBillInfoByPage(page, form);
+
+        List<String> subOrderNos = new ArrayList<>();
+        List<Long> warehouseIds = new ArrayList<>();
+        for (SupplierBillInfo record : pageInfo.getRecords()) {
+            subOrderNos.add(record.getOrderNo());
+            warehouseIds.add(record.getWarehouseInfoId());
+        }
+
+        List<OrderTakeAdrInfoVO> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrInfos(subOrderNos, null);
+        //批量查询中转仓库
+        Map<Long, Map<String, Object>> warehouseMap = this.omsClient.getWarehouseMapByIds(warehouseIds).getData();
+        //应付金额
+        Map<String, Map<String, BigDecimal>> payCostMap = this.omsClient.statisticalSupplierPayCostByOrderNos(form.getSupplierId(), new ArrayList<>(subOrderNos)).getData();
+        //供应车辆信息
+        List<InitComboxStrVO> initVehicle = this.omsClient.initVehicleBySupplier(form.getSupplierId(), 0).getData();
+        Map<Long, String> initVehicleMap = initVehicle.stream().collect(Collectors.toMap(InitComboxStrVO::getId, InitComboxStrVO::getName));
+        for (SupplierBillInfo supplierBillInfo : pageInfo.getRecords()) {
+            supplierBillInfo.assemblyTakeAdrInfos(takeAdrsList);
+            supplierBillInfo.assemblyWarehouse(warehouseMap);
+            supplierBillInfo.assemblyCost(payCostMap.get(supplierBillInfo.getOrderNo()));
+            supplierBillInfo.setPlateNumber(initVehicleMap.get(supplierBillInfo.getVehicleId()));
+        }
+
+        return pageInfo;
     }
 
 

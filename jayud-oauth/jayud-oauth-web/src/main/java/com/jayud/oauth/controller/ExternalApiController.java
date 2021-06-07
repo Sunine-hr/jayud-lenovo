@@ -339,14 +339,32 @@ public class ExternalApiController {
 
     @ApiOperation(value = "根据用户名获取用户所属数据权限")
     @RequestMapping(value = "/api/getDataPermission")
-    public ApiResult<DataControl> getDataPermission(@RequestParam("loginName") String loginName) {
-        SystemUser systemUser = userService.getSystemUserBySystemName(loginName);
-        UserTypeEnum userTypeEnum = UserTypeEnum.getEnum(systemUser.getUserType());
+    public ApiResult<DataControl> getDataPermission(@RequestParam("loginName") String loginName,
+                                                    @RequestParam(value = "UserType", required = false) String userType) {
+        List<Long> companyIds = new ArrayList<>();
+        companyIds.add(-1L); //没有就是-1
+        DataControl dataControl = new DataControl().setCompanyIds(companyIds);
+        SystemUser systemUser;
+        if (userType == null) {
+            systemUser = userService.getSystemUserBySystemName(loginName);
+            userType = systemUser.getUserType();
+        } else {
+            List<SystemUser> list = userService.getByCondition(new SystemUser().setName(loginName).setUserType(userType));
+            if (CollectionUtils.isEmpty(list)) {
+                dataControl.setAccountType(userType);
+                return ApiResult.ok(dataControl);
+            }
+            systemUser = list.get(0);
+            userType = systemUser.getUserType();
+        }
+
+
+        UserTypeEnum userTypeEnum = UserTypeEnum.getEnum(userType);
         if (userTypeEnum == null) {
             throw new JayudBizException("不存在客户类型");
         }
-        DataControl dataControl = new DataControl();
-        List<Long> companyIds = null;
+
+
         switch (userTypeEnum) {
             case EMPLOYEE_TYPE:
                 companyIds = systemUserLegalService.getLegalId(systemUser.getId());

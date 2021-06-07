@@ -4,14 +4,19 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.enums.WriteDirectionEnum;
 import com.alibaba.excel.util.WorkBookUtil;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.WriteWorkbook;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
+import com.alibaba.excel.write.metadata.fill.FillWrapper;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
+import com.jayud.common.entity.InitChangeStatusVO;
+import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
@@ -26,10 +31,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.apache.poi.ss.usermodel.BorderStyle.THIN;
@@ -354,19 +356,6 @@ public class EasyExcelUtils {
         return rowNum;
     }
 
-    public static void main(String[] args) throws IOException {
-        EasyExcelUtils demo = new EasyExcelUtils();
-
-        EasyExcelEntity easyExcelEntity = new EasyExcelEntity();
-        easyExcelEntity.setTitle(Arrays.asList("深圳市佳裕达国际货运代理有限公司",
-                "客户应收款对帐单", "对帐日期：2020年05月01日到2020年05月31日"));
-        easyExcelEntity.setStageHead(Arrays.asList("TO:深圳市伟维运通国际货运代理有限公司",
-                "FR:深圳市佳裕达国际货运代理有限公司-账单编号: JYD803_SZ_2020060028"));
-//        easyExcelEntity.setTableHead(Arrays.asList("序号", "建单日期", "订单编号", "客户"
-//                , "启运地", "目的地", "车牌号", "车型", "件数", "毛重(KGS)", "报关单号"));
-        autoGeneration("d://Demo1.xlsx", easyExcelEntity);
-    }
-
 
     // 自适应宽度(中文支持)
     public static void setSizeColumn(Sheet sheet, int size) {
@@ -436,7 +425,6 @@ public class EasyExcelUtils {
             excelWriter = EasyExcel.write(fileName).withTemplate(templateInputStream).build();
         }
 
-
         // 这里注意 入参用了forceNewRow 代表在写入list的时候不管list下面有没有空行 都会创建一行，然后下面的数据往后移动。默认 是false，会直接使用下一行，如果没有则创建。
         // forceNewRow 如果设置了true,有个缺点 就是他会把所有的数据都放到内存了，所以慎用
         // 简单的说 如果你的模板有list,且list不是最后一行，下面还有数据需要填充 就必须设置 forceNewRow=true 但是这个就会把所有数据放到内存 会很耗内存
@@ -453,6 +441,59 @@ public class EasyExcelUtils {
         excelWriter.finish();
 
     }
+
+    @SneakyThrows
+    public static <T> void fillTemplate(JSONObject json, Map<String, List<T>> list,
+                                        String templateFilePath, String outputPath, String fileName, HttpServletResponse response) {
+        String templateFileName = URLDecoder.decode(templateFilePath, "utf-8");
+
+        XSSFWorkbook templateWorkbook = new XSSFWorkbook(new FileInputStream(templateFileName));
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        templateWorkbook.write(outStream);
+        ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
+
+        ExcelWriter excelWriter = null;
+        if (response != null) { //网络流下载
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+            fileName = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
+            excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+        } else {
+            excelWriter = EasyExcel.write(outputPath).withTemplate(templateInputStream).build();
+        }
+        WriteSheet writeSheet = EasyExcel.writerSheet().build();
+        // 这里注意 入参用了forceNewRow 代表在写入list的时候不管list下面有没有空行 都会创建一行，然后下面的数据往后移动。默认 是false，会直接使用下一行，如果没有则创建。但是这个就会把所有数据放到内存 会很耗内存
+//        FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
+        // 如果有多个list 模板上必须有{前缀.} 这里的前缀就是 data1，然后多个list必须用 FillWrapper包裹
+        ExcelWriter finalExcelWriter = excelWriter;
+        list.forEach((k, v) -> {
+            finalExcelWriter.fill(new FillWrapper(k, v), writeSheet);
+        });
+
+        Map<String, Object> map = new HashMap<>();
+        json.forEach(map::put);
+        finalExcelWriter.fill(map, writeSheet);
+        // 别忘记关闭流
+        finalExcelWriter.finish();
+    }
+
+
+//    public static void main(String[] args) throws IOException {
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("customer", "深圳客户");
+//        jsonObject.put("optUser", "张三");
+//        jsonObject.put("mainOrderNo", "JY10002046");
+//        jsonObject.put("subOrderNo", "ZG0002154");
+//        jsonObject.put("takeTime", "2021/6/2");
+//        jsonObject.put("totalNum", "200");
+//        jsonObject.put("totalWeight", "5");
+//        jsonObject.put("bizType", "跨境运输+内陆");
+//        Map<String, List> list = new HashMap<>();
+//        fillTemplate(jsonObject, list, "D:\\公司\\模板\\20210601工作表.xlsx");
+//    }
+
 
     public static void copyFirstSheet(XSSFWorkbook workbook, int times) {
         if (times <= 0) throw new IllegalArgumentException("times error");

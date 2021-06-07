@@ -2,8 +2,10 @@ package com.jayud.customs.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.customs.model.bo.*;
+import com.jayud.customs.model.po.Dict;
 import com.jayud.customs.model.vo.OrderStatusVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -128,4 +130,18 @@ public interface OmsClient {
      */
     @RequestMapping(path = "/api/finance/oms/yunbaoguan/receivable/push", method = RequestMethod.POST)
     Boolean saveReceivableBill(@RequestBody String msg);
+
+    /**
+     * 获取字典配置
+     * @param dictTypeCode
+     * @return
+     */
+    @RequestMapping(path = "/dict/findDict", method = RequestMethod.POST)
+    CommonResult<List<Dict>> findDictType(@RequestParam("dictTypeCode") String dictTypeCode);
+
+    /**
+     * 获取主订单客户名称
+     */
+    @RequestMapping(value = "/api/getCustomerNameByOrderNo")
+    ApiResult<String> getCustomerNameByOrderNo(@RequestParam(value = "orderNo") String orderNo);
 }

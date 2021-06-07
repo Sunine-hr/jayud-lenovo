@@ -2,7 +2,9 @@ package com.jayud.tms.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.entity.DelOprStatusForm;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.tms.model.bo.AuditInfoForm;
 import com.jayud.tms.model.bo.HandleSubProcessForm;
 import com.jayud.tms.model.bo.OprStatusForm;
@@ -10,10 +12,12 @@ import com.jayud.tms.model.vo.InitComboxVO;
 import com.jayud.tms.model.vo.OrderStatusVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -102,6 +106,14 @@ public interface OmsClient {
      */
     @RequestMapping(value = "api/initVehicle")
     ApiResult<List<InitComboxVO>> initVehicle(@RequestParam("type") Integer type);
+
+    /**
+     * 初始化供应商车辆下拉框
+     * type:车辆类型(0:中港车,1:内陆车)
+     */
+    @RequestMapping(value = "api/initVehicleBySupplier")
+    public ApiResult<List<InitComboxStrVO>> initVehicleBySupplier(@RequestParam("supplierId") Long supplierId,
+                                                               @RequestParam("type") Integer type);
 
 //    /**
 //     * 司机下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话
@@ -253,4 +265,29 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getPortNameByCode")
     public ApiResult<String> getPortNameByCode(@RequestBody String code);
+
+
+    @ApiOperation(value = "根据费用类型查询费用名称")
+    @PostMapping(value = "/getCostInfoByCostType")
+    public ApiResult<List<InitComboxStrVO>> getCostInfoByCostType(@RequestBody Map<String, String> map);
+
+    /**
+     * 查询供应商应付费用
+     */
+    @PostMapping(value = "/getSupplierCost")
+    public ApiResult getSupplierCost(@RequestParam("supplierId") Long supplierId);
+
+    /**
+     * 根据子订单号集合查询供应商费用
+     */
+    @PostMapping(value = "/getSupplierPayCostByOrderNos")
+    public ApiResult getSupplierPayCostByOrderNos(@RequestParam("supplierId") Long supplierId,
+                                                  @RequestParam("orderNos") List<String> subOrderNos);
+
+    /**
+     * 根据子订单号集合查询供应商费用
+     */
+    @PostMapping(value = "/getSupplierPayCostByOrderNos")
+    public ApiResult<Map<String, Map<String, BigDecimal>>> statisticalSupplierPayCostByOrderNos(@RequestParam("supplierId") Long supplierId,
+                                                                                                @RequestParam("orderNos") List<String> subOrderNos);
 }

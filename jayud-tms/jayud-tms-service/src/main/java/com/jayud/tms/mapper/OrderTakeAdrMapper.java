@@ -42,4 +42,12 @@ public interface OrderTakeAdrMapper extends BaseMapper<OrderTakeAdr> {
      */
     List<OrderTakeAdrInfoVO> getOrderTakeAdrInfos(@Param("list") List<String> orderNoList
             , @Param("oprType") Integer oprType);
+
+    /**
+     *
+     * @param months
+     * @param format
+     * @return
+     */
+    List<OrderTakeAdr> getByTakeTime(@Param("months") List<String> months,@Param("format") String format);
 }

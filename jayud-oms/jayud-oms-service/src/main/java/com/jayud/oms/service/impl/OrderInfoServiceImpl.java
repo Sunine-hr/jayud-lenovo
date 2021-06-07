@@ -10,9 +10,11 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
@@ -24,6 +26,7 @@ import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
 import io.netty.util.internal.StringUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,46 +54,32 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     RedisUtils redisUtils;
-
     @Autowired
     IProductBizService productBizService;
-
     @Autowired
     IOrderPaymentCostService paymentCostService;
-
     @Autowired
     IOrderReceivableCostService receivableCostService;
-
     @Autowired
     IOrderStatusService orderStatusService;
-
     @Autowired
     ILogisticsTrackService logisticsTrackService;
-
     @Autowired
     ICurrencyInfoService currencyInfoService;
-
     @Autowired
     ICostInfoService costInfoService;
-
     @Autowired
     CustomsClient customsClient;
-
     @Autowired
     TmsClient tmsClient;
-
     @Autowired
     ICostTypeService costTypeService;
-
     @Autowired
     FileClient fileClient;
-
     @Autowired
     ICustomerInfoService customerInfoService;
-
     @Autowired
     private FreightAirClient freightAirClient;
-
     @Autowired
     private MsgClient msgClient;
     @Autowired
@@ -109,12 +98,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private IProductClassifyService productClassifyService;
     @Autowired
     private StorageClient storageClient;
-
     @Autowired
     private IGoodsService goodsService;
-
     @Autowired
     private IOrderAddressService orderAddressService;
+    @Autowired
+    private FinanceClient financeClient;
+
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
             SubOrderSignEnum.KY.getSignOne(), SubOrderSignEnum.HY.getSignOne(),
@@ -266,6 +256,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
         }
         saveOrUpdate(orderInfo);
+        form.setStatus(orderInfo.getStatus());
         return orderInfo.getOrderNo();
     }
 
@@ -410,12 +401,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             }
 
-
+            Map<String, String> supplierInfoMap = new HashMap<>();
             for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用
                 orderPaymentCost.setMainOrderNo(inputOrderVO.getOrderNo());
                 orderPaymentCost.setOrderNo(form.getOrderNo());
                 orderPaymentCost.setIsBill("0");//未出账
                 orderPaymentCost.setSubType(form.getSubType());
+                //客户名称
+                String supplierName = supplierInfoMap.get(orderPaymentCost.getCustomerCode());
+                if (StringUtils.isEmpty(supplierName)) {
+                    List<SupplierInfo> supplierInfos = this.supplierInfoService.getByCondition(new SupplierInfo().setSupplierCode(orderPaymentCost.getCustomerCode()));
+                    SupplierInfo supplierInfo = supplierInfos.get(0);
+                    orderPaymentCost.setCustomerName(supplierInfo.getSupplierChName());
+                    supplierInfoMap.put(orderPaymentCost.getCustomerCode(), supplierInfo.getSupplierChName());
+                } else {
+                    orderPaymentCost.setCustomerName(supplierName);
+                }
+
 
                 //新增
                 if (isSumToMain) {
@@ -438,11 +440,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     orderPaymentCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
                 }
             }
+
+            Map<String, String> customerInfoMap = new HashMap<>();
             for (OrderReceivableCost orderReceivableCost : orderReceivableCosts) {//应收费用
                 orderReceivableCost.setMainOrderNo(inputOrderVO.getOrderNo());
                 orderReceivableCost.setOrderNo(form.getOrderNo());
                 orderReceivableCost.setIsBill("0");//未出账
                 orderReceivableCost.setSubType(form.getSubType());
+
+                //客户名称
+                String customerName = customerInfoMap.get(orderReceivableCost.getCustomerCode());
+                if (StringUtils.isEmpty(customerName)) {
+                    CustomerInfo customerInfo = this.customerInfoService.getByCode(orderReceivableCost.getCustomerCode());
+                    orderReceivableCost.setCustomerName(customerInfo.getName());
+                    customerInfoMap.put(orderReceivableCost.getCustomerCode(), customerInfo.getName());
+                } else {
+                    orderReceivableCost.setCustomerName(customerName);
+                }
 
                 //新增
                 if (isSumToMain) {
@@ -510,14 +524,52 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         receivableCostService.removeByIds(oldReceivableMap.values());
     }
 
+    /**
+     * 供应商费用详情
+     *
+     * @param form
+     */
+    @Override
+    public InputCostVO getPayCostDetail(GetCostDetailForm form) {
+        List<InputPaymentCostVO> paymentCost = this.paymentCostService.findPaymentCost(form);
+        InputCostVO inputCostVO = new InputCostVO();
+        inputCostVO.setPaymentCostList(paymentCost);
+        //计算费用,利润/合计币种
+        this.calculateCost(inputCostVO);
+        return inputCostVO;
+    }
+
+    /**
+     * 查询供应商异常费用
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public InputCostVO getSupplierAbnormalCostDetail(GetCostDetailForm form) {
+        List<InputPaymentCostVO> paymentCost = this.paymentCostService.getSupplierAbnormalCostDetail(form);
+        InputCostVO inputCostVO = new InputCostVO();
+        inputCostVO.setPaymentCostList(paymentCost);
+        //计算费用,利润/合计币种
+        this.calculateCost(inputCostVO);
+        return inputCostVO;
+    }
+
 
     @Override
     public InputCostVO getCostDetail(GetCostDetailForm form) {
         List<InputPaymentCostVO> inputPaymentCostVOS = paymentCostService.findPaymentCost(form);
+        //供应商过滤
+        List<InputPaymentCostVO> payCost = inputPaymentCostVOS.stream()
+                .filter(e -> e.getSupplierId() == null
+                        || (e.getSupplierId() != null
+                        && (OrderStatusEnum.COST_2.getCode().equals(e.getStatus().toString())
+                        || OrderStatusEnum.COST_3.getCode().equals(e.getStatus().toString())))).collect(Collectors.toList());
+
         List<InputReceivableCostVO> inputReceivableCostVOS = receivableCostService.findReceivableCost(form);
 
         InputCostVO inputCostVO = new InputCostVO();
-        inputCostVO.setPaymentCostList(inputPaymentCostVOS);
+        inputCostVO.setPaymentCostList(payCost);
         inputCostVO.setReceivableCostList(inputReceivableCostVOS);
         //计算费用,利润/合计币种
         this.calculateCost(inputCostVO);
@@ -859,7 +911,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     List<FileView> attachments = this.logisticsTrackService.getAttachments(subOrder.getSubOrderId()
                             , BusinessTypeEnum.BG.getCode(), prePath);//节点附件
                     allPics.addAll(attachments);
-                    subOrder.setFileViews(attachments);
+                    if (CollectionUtils.isEmpty(subOrder.getFileViews())) {
+                        subOrder.setFileViews(attachments);
+                    } else {
+                        subOrder.getFileViews().addAll(attachments);
+                    }
+
                     //结算单位名称
                     CustomerInfo customerInfo = customerInfoService.getByCode(subOrder.getUnitCode());
                     if (customerInfo != null) {
@@ -1055,6 +1112,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public boolean createOrder(InputOrderForm form) {
         //保存主订单
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
+
+        String oldMainOrderNo = inputMainOrderForm.getOrderNo() != null ? inputMainOrderForm.getOrderNo() : null;
+
         inputMainOrderForm.setCmd(form.getCmd());
         //特殊处理
         this.specialTreatment(form, inputMainOrderForm);
@@ -1065,50 +1125,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         String classCode = inputMainOrderForm.getClassCode();//订单类型
         String selectedServer = inputMainOrderForm.getSelectedServer();//所选服务
-
-        //纯报关和出口报关并且订单状态为驳回(C_1_1)或为空或为暂存待补全的待接单
-
-        if (OrderStatusEnum.CBG.getCode().equals(classCode) ||
-                selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
-            InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
-
-            //生成报关订单号
-            if (form.getCmd().equals("submit") && CollectionUtil.isNotEmpty(orderCustomsForm.getSubOrders())) {
-
-                for (InputSubOrderCustomsForm subOrder : orderCustomsForm.getSubOrders()) {
-
-                    String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), orderCustomsForm.getGoodsType(), OrderStatusEnum.CBG.getCode());
-                    subOrder.setOrderNo(orderNo);
-
-//                    if (orderCustomsForm.getStatus() != null && subOrder.getStatus().equals("NL_0")) {
-//                        String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), null, OrderStatusEnum.NLYS.getCode());
-//                        subOrder.setOrderNo(orderNo);
-//                    }
-                }
-
-            }
-
-            //查询编辑条件
-            //主订单草稿状态,可以对所有订单进行编辑
-            //创建订单如果没有选择资料齐全,提交订单报关状态待是补全状态,可以进行编辑,报关状态待接单或者没有创建状态
-            if (this.queryEditOrderCondition(orderCustomsForm.getSubCustomsStatus(),
-                    inputMainOrderForm.getStatus(), SubOrderSignEnum.BG.getSignOne(), form)) {
-                //如果没有生成子订单则不调用
-                if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
-                    orderCustomsForm.setMainOrderNo(mainOrderNo);
-                    if (OrderStatusEnum.CBG.getCode().equals(classCode)) {
-                        orderCustomsForm.setClassCode(OrderStatusEnum.CBG.getCode());
-                    } else {
-                        orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
-                    }
-                    orderCustomsForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
-                    Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
-                    if (!result) {//调用失败
-                        return false;
-                    }
-                }
-            }
-        }
 
         //中港运输并且并且订单状态为驳回或为空或为待接单
         if (OrderStatusEnum.ZGYS.getCode().equals(classCode) ||
@@ -1538,6 +1554,54 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
 
+        //纯报关和出口报关并且订单状态为驳回(C_1_1)或为空或为暂存待补全的待接单
+        if (OrderStatusEnum.CBG.getCode().equals(classCode) ||
+                selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
+            InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
+
+            //生成报关订单号
+            if (form.getCmd().equals("submit") && CollectionUtil.isNotEmpty(orderCustomsForm.getSubOrders())) {
+
+                for (InputSubOrderCustomsForm subOrder : orderCustomsForm.getSubOrders()) {
+
+                    String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), orderCustomsForm.getGoodsType(), OrderStatusEnum.CBG.getCode());
+                    subOrder.setOrderNo(orderNo);
+
+//                    if (orderCustomsForm.getStatus() != null && subOrder.getStatus().equals("NL_0")) {
+//                        String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), null, OrderStatusEnum.NLYS.getCode());
+//                        subOrder.setOrderNo(orderNo);
+//                    }
+                }
+
+            }
+
+            //查询编辑条件
+            //主订单草稿状态,可以对所有订单进行编辑
+            //创建订单如果没有选择资料齐全,提交订单报关状态待是补全状态,可以进行编辑,报关状态待接单或者没有创建状态
+            if (this.queryEditOrderCondition(orderCustomsForm.getSubCustomsStatus(),
+                    inputMainOrderForm.getStatus(), SubOrderSignEnum.BG.getSignOne(), form)) {
+                //如果没有生成子订单则不调用
+                if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
+
+                    if(oldMainOrderNo != null){
+                        orderCustomsForm.setOldMainOrderNo(oldMainOrderNo);
+                    }
+
+                    orderCustomsForm.setMainOrderNo(mainOrderNo);
+                    if (OrderStatusEnum.CBG.getCode().equals(classCode)) {
+                        orderCustomsForm.setClassCode(OrderStatusEnum.CBG.getCode());
+                    } else {
+                        orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
+                    }
+                    orderCustomsForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
+                    orderCustomsForm.setMainOrderStatus(inputMainOrderForm.getStatus());
+                    Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
+                    if (!result) {//调用失败
+                        return false;
+                    }
+                }
+            }
+        }
         return true;
     }
 
@@ -1922,6 +1986,47 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         return orderIds;
     }
+
+    /**
+     * 供应商录入费用
+     *
+     * @param form
+     */
+    @Override
+    public void doSupplierEntryFee(InputCostForm form) {
+        //获取登录用户信息
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.SUPPLIER_TYPE.getCode()).getData();
+        if (CollectionUtils.isEmpty(dataControl.getCompanyIds())) {
+            throw new JayudBizException(400, "无法操作");
+        }
+        //查询供应商信息
+        SupplierInfo supplierInfo = this.supplierInfoService.getById(dataControl.getCompanyIds().get(0));
+        //查询主订单
+        OrderInfo orderInfo = this.getById(form.getMainOrderId());
+        //币种汇率
+        Map<String, BigDecimal> currencyRates = this.financeClient.getExchangeRates("CNY", DateUtils.LocalDateTime2Str(orderInfo.getCreateTime(), "yyyy-MM")).getData();
+        //主订单业务类型(费用类型)
+        ProductBiz productBiz = this.productBizService.getProductBizByCode(orderInfo.getBizCode());
+        //费用类别
+        List<CostType> costTypes = this.costTypeService.getByCondition(new CostType().setCode("FYLB2002"));
+        if (CollectionUtils.isEmpty(costTypes)) {
+            throw new JayudBizException(400, "不存在该费用类别");
+        }
+        form.getPaymentCostList().forEach(e -> {
+            BigDecimal exchangeRate = currencyRates.get(e.getCurrencyCode());
+            e.setUnit(UnitEnum.PCS.getCode());
+            e.setCustomerCode(supplierInfo.getSupplierCode());
+            e.setCostTypeId(costTypes.get(0).getId());
+            e.setCostGenreId(productBiz.getCostGenreDefault());
+            e.setExchangeRate(exchangeRate);
+            e.setChangeAmount(e.getAmount().multiply(exchangeRate));
+            e.setSupplierId(supplierInfo.getId());
+        });
+        form.setReceivableCostList(new ArrayList<>());
+        //1.需求为，提交审核按钮跟在每一条记录后面 2.暂存是保存所有未提交审核的数据  3.提交审核的数据不可编辑和删除
+        this.saveOrUpdateCost(form);
+    }
+
 
     /**
      * 子订单使用

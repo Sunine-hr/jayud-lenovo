@@ -2,7 +2,8 @@ jayud:
   nacos:
     server-addr: 113.100.140.250:8848
     config:
-      namespace: 7a4f5e06-9d25-4cd7-afaa-7ce6e46d687d
+#      namespace: 7a4f5e06-9d25-4cd7-afaa-7ce6e46d687d
+      namespace: 8f1f1f76-aaa3-4fc9-81b8-e61963b11d7b
 mybatis-plus:
   mapper-locations: classpath:com.jayud.storage.mapper/*.xml
   typeAliasesPackage: com.jayud.model

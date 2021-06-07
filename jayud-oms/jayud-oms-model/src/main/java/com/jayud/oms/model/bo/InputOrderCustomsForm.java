@@ -2,6 +2,7 @@ package com.jayud.oms.model.bo;
 
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -18,6 +19,9 @@ public class InputOrderCustomsForm {
 
     @ApiModelProperty(value = "主订单号,前台忽略")
     private String mainOrderNo;
+
+    @ApiModelProperty(value = "旧主订单号,前台忽略")
+    private String oldMainOrderNo;
 
     @ApiModelProperty(value = "通关口岸code", required = true)
     @NotEmpty(message = "portCode is required")
@@ -107,6 +111,12 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "监管方式")
     private String supervisionMode;
 
+    @ApiModelProperty(value = "订单备注")
+    private String orderRemarks;
+
+    @ApiModelProperty(value = "子订单状态")
+    private Integer mainOrderStatus;
+
 
     public void checkCustomsInfoParam() {
         String title = "报关:";
@@ -138,15 +148,17 @@ public class InputOrderCustomsForm {
         }
         //只用中港才有六联单号
         if ("1".equals(this.bizModel)) {
-            if ( StringUtil.isNullOrEmpty(this.getEncode())) {//六联单号
-                sb.append("六联单号").append("参数不能为空").append(",");
-                isSuccess = false;
-            }
-            //六联单号必须为13位的纯数字
-            String encode = this.getEncode();
-            if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
-                sb.append("六联单号必须为13位的纯数字").append(",");
-                isSuccess = false;
+//            if (StringUtil.isNullOrEmpty(this.getEncode())) {//六联单号
+//                sb.append("六联单号").append("参数不能为空").append(",");
+//                isSuccess = false;
+//            }
+            if (!StringUtils.isEmpty(this.getEncode())) {
+                //六联单号必须为13位的纯数字
+                String encode = this.getEncode();
+                if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
+                    sb.append("六联单号必须为13位的纯数字").append(",");
+                    isSuccess = false;
+                }
             }
         }
 

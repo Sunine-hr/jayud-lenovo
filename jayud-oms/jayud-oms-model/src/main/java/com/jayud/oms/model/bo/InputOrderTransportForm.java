@@ -1,6 +1,9 @@
 package com.jayud.oms.model.bo;
 
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -98,4 +101,19 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
     private Integer createUserType;
 
+    public void cheackAddParam() {
+        if (StringUtil.isNullOrEmpty(this.getPortCode()) ||
+                this.getGoodsType() == null ||
+                this.getVehicleType() == null ||
+                this.getVehicleSize() == null ||
+                this.getWarehouseInfoId() == null ||
+                StringUtil.isNullOrEmpty(this.getLegalName()) ||
+                this.getLegalEntityId() == null ||
+                StringUtil.isNullOrEmpty(this.getUnitCode())) {
+            throw new JayudBizException(ResultEnum.PARAM_ERROR);
+        }
+        if (this.isVehicleWeigh==null){
+            throw new JayudBizException(400,"请选择是否车辆过磅");
+        }
+    }
 }

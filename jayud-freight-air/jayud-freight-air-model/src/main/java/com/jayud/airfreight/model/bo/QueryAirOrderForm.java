@@ -59,6 +59,9 @@ public class QueryAirOrderForm extends BasePageForm {
     @ApiModelProperty(value = "结束日期")
     private String endCreatedTime;
 
+    @ApiModelProperty(value = "分单号")
+    private String subNo;
+
     public void assemblyMainOrderNo(JSONArray mainOrders) {
         mainOrderNos = new ArrayList<>(mainOrders.size());
         for (int i = 0; i < mainOrders.size(); i++) {

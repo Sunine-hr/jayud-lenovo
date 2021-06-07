@@ -15,4 +15,7 @@ public class InitComboxStrVO {
     @ApiModelProperty(value = "显示其他值,比如合同的剩余时效")
     private String note;
 
+    @ApiModelProperty(value = "id值")
+    private Long id;
+
 }

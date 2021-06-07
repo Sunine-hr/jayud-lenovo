@@ -222,6 +222,7 @@ public class OrderTransportVO {
     private String warehouseAddr;
 
 
+
     /**
      * 组装商品信息
      */
@@ -242,6 +243,7 @@ public class OrderTransportVO {
 //        }
 //        this.goodsInfo = sb.toString();
 //    }
+
     public String getStatusDesc() {
         return OrderStatusEnum.getDesc(this.status);
     }
@@ -372,8 +374,8 @@ public class OrderTransportVO {
                 break;
             case SUPPLIER_TYPE:
                 this.customerName = this.subLegalName;
-                this.paymentCostStatus = null;
-                this.subLegalName = null;
+                this.receivableCostStatus = null;
+//                this.subLegalName = null;
                 this.legalName = null;
                 //送货地址处理
                 this.shippingAddressHandle();

@@ -3,6 +3,8 @@ package com.jayud.tms.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,6 +13,8 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -23,7 +27,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="OrderSendCars对象", description="订单派车信息")
+@ApiModel(value = "OrderSendCars对象", description = "订单派车信息")
 public class OrderSendCarsInfoVO extends Model<OrderSendCarsInfoVO> {
 
     private static final long serialVersionUID = 1L;
@@ -65,6 +69,12 @@ public class OrderSendCarsInfoVO extends Model<OrderSendCarsInfoVO> {
     @ApiModelProperty(value = "大陆司机名ID")
     private Long driverInfoId;
 
+    @ApiModelProperty(value = "大陆司机名")
+    private String driverName;
+
+    @ApiModelProperty(value = "司机电话")
+    private String driverPhone;
+
     @ApiModelProperty(value = "要求")
     private String remarks;
 
@@ -91,6 +101,14 @@ public class OrderSendCarsInfoVO extends Model<OrderSendCarsInfoVO> {
 
     @ApiModelProperty(value = "骑师姓名")
     private String jockey;
+
+    @ApiModelProperty(value = "柜号图片附件")
+    private List<FileView> cntrPics;
+
+
+    public void assemblyFiles(String url) {
+        this.cntrPics = StringUtils.getFileViews(this.cntrPic, this.cntrPicName, url);
+    }
 
 
     @Override

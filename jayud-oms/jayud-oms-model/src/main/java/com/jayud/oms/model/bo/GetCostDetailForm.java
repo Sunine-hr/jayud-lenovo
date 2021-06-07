@@ -1,5 +1,11 @@
 package com.jayud.oms.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jayud.common.CommonResult;
+import com.jayud.common.enums.OrderOprCmdEnum;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.JayudBizException;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -25,13 +31,18 @@ public class GetCostDetailForm {
     @ApiModelProperty(value = "子订单类型")
     private String subType;
 
+    @ApiModelProperty(value = "指派供应商id录用费用")
+    @JsonIgnore
+    private Long supplierId;
+
+
     public void setCmd(String cmd) {
         //重新组合
         if (cmd.contains("main")) {
             this.cmd = cmd;
         } else {
             this.cmd = cmd.substring(cmd.indexOf("_") + 1, cmd.length());
-            this.subType=cmd.substring(0,cmd.indexOf("_"));
+            this.subType = cmd.substring(0, cmd.indexOf("_"));
         }
 //        this.cmd = cmd;
     }
@@ -44,5 +55,15 @@ public class GetCostDetailForm {
             System.out.println(cmd.substring(cmd.indexOf("_") + 1, cmd.length()));
             System.out.println(cmd.substring(0, cmd.indexOf("_")));
         }
+    }
+
+    public void checkQuerySubOrderCost() {
+        if (OrderOprCmdEnum.SUB_COST.getCode().equals(this.getCmd())
+                || OrderOprCmdEnum.SUB_COST_AUDIT.getCode().equals(this.getCmd())) {
+            if (StringUtil.isNullOrEmpty(this.getSubOrderNo())) {
+                throw new JayudBizException(ResultEnum.PARAM_ERROR);
+            }
+        }
+
     }
 }

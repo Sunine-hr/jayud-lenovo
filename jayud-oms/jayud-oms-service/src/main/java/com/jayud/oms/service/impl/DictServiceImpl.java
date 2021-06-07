@@ -45,20 +45,22 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements ID
         QueryWrapper<Dict> condition = new QueryWrapper<>();
         if (dict.getId() != null) {
             //修改过滤自身名字
-            condition.lambda().and(tmp -> tmp.eq(Dict::getId, dict.getId())
-                    .eq(Dict::getValue, dict.getValue()));
-            int count = this.count(condition);
-            //匹配到自己名称,不进行唯一校验
-            if (count == 0) {
-                condition = new QueryWrapper<>();
-                condition.lambda().eq(Dict::getValue, dict.getValue());
-                return this.count(condition) > 0;
-            } else {
-                return false;
-            }
+//            condition.lambda().and(tmp -> tmp.eq(Dict::getId, dict.getId())
+//                    .eq(Dict::getValue, dict.getValue()));
+//            int count = this.count(condition);
+//            //匹配到自己名称,不进行唯一校验
+//            if (count == 0) {
+//                condition = new QueryWrapper<>();
+//                condition.lambda().eq(Dict::getValue, dict.getValue());
+//                return this.count(condition) > 0;
+//            } else {
+//                return false;
+//            }
+            return false;
         } else {
-            condition.lambda().eq(Dict::getCode, dict.getCode())
-                    .or().eq(Dict::getValue, dict.getValue());
+//            condition.lambda().eq(Dict::getCode, dict.getCode())
+//                    .or().eq(Dict::getValue, dict.getValue());
+            condition.lambda().eq(Dict::getCode, dict.getCode());
             return this.count(condition) > 0;
         }
 

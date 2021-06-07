@@ -11,6 +11,10 @@ import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
 import com.jayud.tms.model.vo.statistical.BusinessPeople;
 import com.jayud.tms.model.vo.statistical.TVOrderTransportVO;
+import com.jayud.tms.model.vo.supplier.QuerySupplierBill;
+import com.jayud.tms.model.vo.supplier.QuerySupplierBillInfo;
+import com.jayud.tms.model.vo.supplier.SupplierBill;
+import com.jayud.tms.model.vo.supplier.SupplierBillInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -117,6 +121,7 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
 
     /**
      * 根据主订单号集合查询中港详情信息
+     *
      * @param mainOrderNos
      * @return
      */
@@ -124,7 +129,29 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
 
     /**
      * 根据主订单号查询中港详情信息
+     *
      * @return
      */
     OrderTransportInfoVO getTmsOrderInfoById(@Param("id") Long id);
+
+    /**
+     * 分页查询供应商账单
+     *
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<SupplierBill> findSupplierBillByPage(Page<SupplierBill> page,
+                                               @Param("form") QuerySupplierBill form);
+
+
+    /**
+     * 分页查询供应商账单
+     *
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<SupplierBillInfo> findSupplierBillInfoByPage(Page<SupplierBillInfo> page,
+                                                   @Param("form") QuerySupplierBillInfo form);
 }

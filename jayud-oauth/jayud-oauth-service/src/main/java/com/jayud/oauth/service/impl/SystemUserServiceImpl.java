@@ -233,7 +233,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
                     }
                 }
             }
-            if (StringUtils.isEmpty(systemUser.getPassword())) {
+            if (StringUtils.isEmpty(systemUser1.getPassword())) {
                 systemUser.setPassword("E10ADC3949BA59ABBE56E057F20F883E");//默认密码为:123456
             }
 
@@ -404,6 +404,11 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         condition.lambda().in(SystemUser::getDepartmentId, departmentIds);
         condition.lambda().eq(SystemUser::getStatus, SystemUserStatusEnum.ON.getCode());
         return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public List<SystemUser> getByCondition(SystemUser user) {
+        return this.baseMapper.selectList(new QueryWrapper<>(user));
     }
 
     /**

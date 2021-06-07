@@ -14,6 +14,6 @@ public class DataControl {
     @ApiModelProperty(value = "当前用户账户类型(1-用户 2-客户 3-供应商)")
     private String accountType;
 
-    @ApiModelProperty(value = "当前用户账户类型(1-用户 2-客户 3-供应商)")
+    @ApiModelProperty(value = "用户(法人主体),供应商(供应商)")
     private List<Long> companyIds;
 }

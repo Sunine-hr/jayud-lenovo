@@ -136,7 +136,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             sendEmail(form, orderCustomsList);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("发送邮件失败 message={}", e.getMessage());
             return false;
         }
         return true;
@@ -154,7 +154,10 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
 
         Email email = new Email();
         String bizModelDesc = BGBizModelEnum.getDesc(form.getBizModel());
-        String goodType = CommonConstant.VALUE_1.equals(form.getGoodsType().toString()) ? CommonConstant.GOODS_TYPE_DESC_1 : CommonConstant.GOODS_TYPE_DESC_2;
+        String goodType = null;
+        if (form.getGoodsType() != null) {
+            goodType = CommonConstant.VALUE_1.equals(form.getGoodsType().toString()) ? CommonConstant.GOODS_TYPE_DESC_1 : CommonConstant.GOODS_TYPE_DESC_2;
+        }
         BGBizModelEnum bizModelEnum = BGBizModelEnum.getEnum(form.getBizModel());
         String emailTo = transportToEmail.get(bizModelEnum.getDictCode()).getValue();
 

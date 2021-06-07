@@ -181,6 +181,9 @@ public class OrderTransportInfoVO extends Model<OrderTransportInfoVO> {
     @ApiModelProperty(value = "总件数")
     private Integer totalNum;
 
+    @ApiModelProperty(value = "供应商车型")
+    private String supplierVehicleSize;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

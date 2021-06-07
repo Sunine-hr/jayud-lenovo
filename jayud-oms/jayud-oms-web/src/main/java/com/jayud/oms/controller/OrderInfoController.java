@@ -125,8 +125,7 @@ public class OrderInfoController {
         if (CommonConstant.SUBMIT.equals(form.getCmd())) {
             //1.报关资料是否齐全 1-齐全 0-不齐全 齐全时校验报关数据
             //2.纯报关时校验数据
-            if (CommonConstant.VALUE_1.equals(inputMainOrderForm .getIsDataAll()) ||
-                    OrderStatusEnum.CBG.getCode().equals(form.getOrderForm().getClassCode())) {
+            if (CommonConstant.VALUE_1.equals(inputMainOrderForm.getIsDataAll())) {
                 //报关订单参数校验
                 InputOrderCustomsForm inputOrderCustomsForm = form.getOrderCustomsForm();
                 form.checkCustomsParam();

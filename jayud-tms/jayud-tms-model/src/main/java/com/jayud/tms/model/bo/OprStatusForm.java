@@ -26,6 +26,9 @@ public class OprStatusForm {
     @ApiModelProperty(value = "指派供应商id")
     private Long supplierId;
 
+    @ApiModelProperty(value = "指派供应商吨位")
+    private String supplierVehicleSize;
+
     @ApiModelProperty(value = "状态名称")
     private String statusName;
 
@@ -78,4 +81,5 @@ public class OprStatusForm {
 
     @ApiModelProperty(value = "下一步指令")
     private String nextCmd;
+
 }

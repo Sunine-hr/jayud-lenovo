@@ -117,6 +117,7 @@
         <result column="vehicle_id" property="vehicleId"/>
         <result column="is_vehicle_weigh" property="isVehicleWeigh"/>
         <result column="supplier_id" property="supplierId"/>
+        <result column="supplier_vehicle_size" property="supplierVehicleSize"/>
         <association property="orderSendCars" javaType="com.jayud.tms.model.vo.OrderSendCarsInfoVO">
             <id column="sendCarId" property="id"/>
             <result column="transport_no" property="transportNo"/>
@@ -487,7 +488,8 @@
         si.supplier_code defaultSupplierCode,
         os.vehicle_id vehicleId,
         os.driver_info_id driverInfoId,
-        vi.plate_number plateNumber
+        vi.plate_number plateNumber,
+        ot.supplier_vehicle_size
         FROM
         order_transport ot
         LEFT JOIN order_info oi
@@ -804,7 +806,7 @@
         ot.id, ot.supplier_id,
         ot.main_order_no,ot.order_no,ot.port_code,
         ot.goods_type,ot.vehicle_type,
-        ot.vehicle_size,ot.unit_code,ot.legal_name,ot.legal_entity_id,ot.status,
+        ot.vehicle_size,ot.unit_code,ot.legal_name,ot.legal_entity_id,ot.status,ot.supplier_vehicle_size,
         oc.id sendCarId, oc.transport_no, oc.order_no,oc.vehicle_type, oc.vehicle_size, oc.cntr_no, oc.cntr_pic,
         oc.cntr_pic_name, oc.driver_info_id,
         oc.vehicle_id,oc.remarks, oc.describes, oc.status, oc.updated_time, oc.updated_user, oc.created_user,

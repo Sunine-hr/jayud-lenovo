@@ -157,4 +157,9 @@ public interface OauthClient {
     public ApiResult<DataControl> getDataPermission(@RequestParam("loginName") String loginName,
                                                     @RequestParam(value = "UserType") String userType);
 
+    /**
+     * 根据法人code获取法人主体
+     */
+    @RequestMapping(value = "/api/getLegalEntityByCode")
+    ApiResult<Boolean> getLegalEntityByCode(@RequestParam("code") String code);
 }

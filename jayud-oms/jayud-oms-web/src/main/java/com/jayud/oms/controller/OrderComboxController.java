@@ -2,10 +2,6 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.HashUtil;
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONConfig;
-import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -21,8 +17,8 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.FreightAirClient;
 import com.jayud.oms.feign.OauthClient;
-import com.jayud.oms.model.enums.*;
 import com.jayud.oms.model.enums.StatusEnum;
+import com.jayud.oms.model.enums.*;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
@@ -40,8 +36,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.jayud.common.enums.SubOrderSignEnum.BG;
 
 
 @RestController
@@ -594,7 +588,10 @@ public class OrderComboxController {
         Map<String, Object> response = new HashMap<>();
         switch (subType) {
             case BG:
-                response.put("bgDefaultLegalEntity", 802);
+                Object data = this.oauthClient.getLegalEntityByCode("802").getData();
+                cn.hutool.json.JSONObject jsonObject = new cn.hutool.json.JSONObject(data);
+                response.put("bgLegalEntityId", 802);
+                response.put("bgLegalEntityName", jsonObject.getStr("legalName"));
                 break;
         }
 

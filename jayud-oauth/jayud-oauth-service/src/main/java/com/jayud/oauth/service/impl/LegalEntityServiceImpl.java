@@ -62,5 +62,10 @@ public class LegalEntityServiceImpl extends ServiceImpl<LegalEntityMapper, Legal
         return this.count(condition) > 0;
     }
 
+    @Override
+    public List<LegalEntity> getByCondition(LegalEntity legalEntity) {
+        return this.baseMapper.selectList(new QueryWrapper<>(legalEntity));
+    }
+
 
 }

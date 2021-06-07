@@ -104,6 +104,7 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         }
         Integer offerInfoId = orderInfoVO.getOfferInfoId();
         String storeGoodsWarehouseCode = orderInfoVO.getStoreGoodsWarehouseCode();
+        String add = orderInfoVO.getDestinationWarehouseCode();//目的仓库
         OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(Long.valueOf(offerInfoId));
         if(ObjectUtil.isEmpty(offerInfoVO)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "报价不存在");
@@ -143,6 +144,12 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
                 r = r+1;//单箱数量 默认0加上，所以加上1
                 Integer totalCarton1 = orderPickVOList.get(num).getTotalCarton();//当前批次总箱数
                 markVO.setCartonRatio(r+"/"+totalCarton1);//箱数比例(第几箱，第几份) 1/10  2/10 3/10 ... 10/10
+
+                markVO.setAdd(add);
+                markVO.setTotalCarton(totalCarton1);
+                markVO.setServiceName(serviceName);
+
+
                 markList.add(markVO);
             }
         }
@@ -173,6 +180,10 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "此订单的进仓单，在提货地址下下载");
         }
         String warehouseNo = orderInfoVO.getWarehouseNo();
+
+        String add = orderInfoVO.getDestinationWarehouseCode();//目的仓库
+
+
         Long orderId = orderInfoVO.getId();
         Integer offerInfoId = orderInfoVO.getOfferInfoId();
         String storeGoodsWarehouseCode = orderInfoVO.getStoreGoodsWarehouseCode();
@@ -201,6 +212,11 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
                 markVO.setWarehouseNo(warehouseNo);
                 int r = i+1;//单箱数量 i默认从0加上，所以加上1
                 markVO.setCartonRatio(r+"/"+totalCarton);//箱数比例(第几箱，第几份) 1/10  2/10 3/10 ... 10/10
+
+                markVO.setAdd(add);
+                markVO.setTotalCarton(totalCarton);
+                markVO.setServiceName(serviceName);
+
                 markList.add(markVO);
             }
         }

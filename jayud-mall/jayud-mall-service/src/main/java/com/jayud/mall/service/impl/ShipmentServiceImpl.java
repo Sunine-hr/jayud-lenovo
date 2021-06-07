@@ -195,11 +195,11 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             }
             orderInfo.setIsPick(0);//是否上门提货(0否 1是),默认为否
 
-            //状态码,默认为草稿状态
-            orderInfo.setFrontStatusCode(OrderEnum.FRONT_DRAFT.getCode());
-            orderInfo.setFrontStatusName(OrderEnum.FRONT_DRAFT.getName());
-            orderInfo.setAfterStatusCode(OrderEnum.AFTER_DRAFT.getCode());
-            orderInfo.setAfterStatusName(OrderEnum.AFTER_DRAFT.getName());
+            //状态码,默认为 旧系统导入 状态
+            orderInfo.setFrontStatusCode(OrderEnum.FRONT_IMPORT.getCode());
+            orderInfo.setFrontStatusName(OrderEnum.FRONT_IMPORT.getName());
+            orderInfo.setAfterStatusCode(OrderEnum.AFTER_IMPORT.getCode());
+            orderInfo.setAfterStatusName(OrderEnum.AFTER_IMPORT.getName());
 
             orderInfo.setNeedDeclare(0);//是否需要报关0-否，1-是 (订单对应报关文件:order_customs_file)
             orderInfo.setNeedClearance(0);//是否需要清关0-否，1-是 (订单对应清关文件:order_clearance_file)
@@ -253,11 +253,11 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
 
             orderInfo.setIsPick(0);//是否上门提货(0否 1是),默认为否
 
-            //状态码,默认为草稿状态
-            orderInfo.setFrontStatusCode(OrderEnum.FRONT_DRAFT.getCode());
-            orderInfo.setFrontStatusName(OrderEnum.FRONT_DRAFT.getName());
-            orderInfo.setAfterStatusCode(OrderEnum.AFTER_DRAFT.getCode());
-            orderInfo.setAfterStatusName(OrderEnum.AFTER_DRAFT.getName());
+//            //状态码,默认为草稿状态  不改状态
+//            orderInfo.setFrontStatusCode(OrderEnum.FRONT_DRAFT.getCode());
+//            orderInfo.setFrontStatusName(OrderEnum.FRONT_DRAFT.getName());
+//            orderInfo.setAfterStatusCode(OrderEnum.AFTER_DRAFT.getCode());
+//            orderInfo.setAfterStatusName(OrderEnum.AFTER_DRAFT.getName());
 
             orderInfo.setCreateTime(shipmentVO.getCreatTime());//创建日期,新智慧的下单日期
             orderInfo.setCreateUserId(shipmentVO.getCustomerId());//创建人ID(customer id)

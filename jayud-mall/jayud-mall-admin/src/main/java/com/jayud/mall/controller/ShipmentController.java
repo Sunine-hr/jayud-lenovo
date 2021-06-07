@@ -345,7 +345,7 @@ public class ShipmentController {
         String shipmentJson = JSONUtil.toJsonStr(shipmentVO);
 
         CustomerVO customerVO = customerMapper.findCustomerById(Integer.valueOf(customerId));
-        String newWisdomToken = customerVO.getNewWisdomToken();//新智慧token不能为空,每个客户的token不用，通过tonken区分客户
+        String newWisdomToken = customerVO.getNewWisdomToken();//新智慧token不能为空,每个客户的token不同，通过tonken区分客户
         shipmentVO.setNew_wisdom_token(newWisdomToken);//没有确认运单归属的客户token，暂时为空
         ShipmentVO saveShipment = shipmentService.saveShipment(shipmentVO);
 

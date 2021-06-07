@@ -28,10 +28,7 @@ import com.jayud.storage.feign.FileClient;
 import com.jayud.storage.feign.OauthClient;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.*;
-import com.jayud.storage.model.po.GoodsLocationRecord;
-import com.jayud.storage.model.po.InGoodsOperationRecord;
-import com.jayud.storage.model.po.StorageInputOrder;
-import com.jayud.storage.model.po.StorageInputOrderDetails;
+import com.jayud.storage.model.po.*;
 import com.jayud.storage.model.vo.*;
 import com.jayud.storage.service.*;
 import freemarker.template.Configuration;
@@ -101,6 +98,9 @@ public class StorageInputOrderController {
 
     @Autowired
     private IGoodsLocationRecordService goodsLocationRecordService;
+
+    @Autowired
+    private IWarehouseService warehouseService;
 
     @ApiOperation("分页查询入库订单列表")
     @PostMapping("/findByPage")
@@ -349,6 +349,26 @@ public class StorageInputOrderController {
         form.checkProcessOpt(statusEnum);
         form.setStatus(statusEnum.getCode());
 
+        if(form.getStatus().equals(OrderStatusEnum.CCI_2.getCode()) && form.getCmd().equals("submit")){
+            if(form.getWarehousingBatchNo() == null){
+                return CommonResult.error(443,"未进行反馈入仓，请前往反馈入仓");
+            }else{
+                List<WarehouseGoodsForm> warehouseGoodsForms = form.getWarehouseGoodsForms();
+                if(CollectionUtils.isEmpty(warehouseGoodsForms)){
+                    return CommonResult.error(443,"申报信息为空");
+                } else{
+                    Integer count = 0;
+                    for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
+                        if(warehouseGoodsForm.getSjNumber() != null){
+                            count++;
+                        }
+                    }
+                    if(count == 0){
+                        return CommonResult.error(443,"反馈入仓件数信息不为空");
+                    }
+                }
+            }
+        }
 
         if(form.getStatus().equals(OrderStatusEnum.CCI_2.getCode()) && form.getCmd().equals("end") && form.getIsOver().equals("true")){
             for (WarehouseGoodsForm warehouseGoodsForm : form.getWarehouseGoodsForms()) {
@@ -366,8 +386,8 @@ public class StorageInputOrderController {
             }
         }
         if(form.getStatus().equals(OrderStatusEnum.CCI_3.getCode())){
-            if(this.isWarehousing(form).getCode().equals(444)){
-                return CommonResult.error(444,"入库件数不准确");
+            if(this.isWarehousing(form).getCode().equals(443)){
+                return CommonResult.error(443,"入库件数不准确");
             }
         }
 
@@ -379,13 +399,13 @@ public class StorageInputOrderController {
             case CCI_2: //确认入仓
                 boolean b = storageInputOrderService.confirmEntry(form);
                 if(!b){
-                    CommonResult.error(444,"确认入仓失败");
+                    CommonResult.error(443,"确认入仓失败");
                 }
                 break;
             case CCI_3: //仓储入库
                 boolean a = storageInputOrderService.warehousingEntry(form);
                 if(!a){
-                    CommonResult.error(444,"仓储入库失败");
+                    CommonResult.error(443,"仓储入库失败");
                 }
                 break;
         }
@@ -454,14 +474,21 @@ public class StorageInputOrderController {
         storageInProcessOptFormVO.assemblyMainOrderData(result.getData());
         storageInProcessOptFormVO.setLegalName(storageInputOrder.getLegalName() );
 
-        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
-        for (InitComboxWarehouseVO initComboxWarehouseVO : data2) {
-            if(initComboxWarehouseVO.getId().equals(storageInputOrderDetails.getWarehouseId())){
-                storageInProcessOptFormVO.setWarehouseName(initComboxWarehouseVO.getName());
-                storageInProcessOptFormVO.setWarehousePhone(initComboxWarehouseVO.getPhone());
-                storageInProcessOptFormVO.setWarehouseAddress(initComboxWarehouseVO.getAddress());
-            }
+//        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
+//        for (InitComboxWarehouseVO initComboxWarehouseVO : data2) {
+//            if(initComboxWarehouseVO.getId().equals(storageInputOrderDetails.getWarehouseId())){
+//                storageInProcessOptFormVO.setWarehouseName(initComboxWarehouseVO.getName());
+//                storageInProcessOptFormVO.setWarehousePhone(initComboxWarehouseVO.getPhone());
+//                storageInProcessOptFormVO.setWarehouseAddress(initComboxWarehouseVO.getAddress());
+//            }
+//        }
+        if(storageInputOrderDetails.getWarehouseId() != null){
+            WarehouseVO warehouseById = warehouseService.findWarehouseById(storageInputOrderDetails.getWarehouseId());
+            storageInProcessOptFormVO.setWarehouseName(warehouseById.getName());
+            storageInProcessOptFormVO.setWarehousePhone(warehouseById.getPhone());
+            storageInProcessOptFormVO.setWarehouseAddress(warehouseById.getAddress());
         }
+
 
         storageInProcessOptFormVO.setCustomerId(omsClient.getCustomerByCode(storageInProcessOptFormVO.getCustomerCode()).getData());
         storageInProcessOptFormVO.setPlateNumber(storageInputOrder.getPlateNumber());
@@ -491,13 +518,19 @@ public class StorageInputOrderController {
         System.out.println("inGoodsOperationRecordVOS============="+inGoodsOperationRecordVOS);
         storageInProcessOptFormVO.setInGoodsOperationRecords(inGoodsOperationRecordVOS);
 
-        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
-        for (InitComboxWarehouseVO initComboxWarehouseVO : data2) {
-            if(initComboxWarehouseVO.getId().equals(storageInputOrderDetails.getWarehouseId())){
-                storageInProcessOptFormVO.setWarehouseName(initComboxWarehouseVO.getName());
-                storageInProcessOptFormVO.setWarehousePhone(initComboxWarehouseVO.getPhone());
-                storageInProcessOptFormVO.setWarehouseAddress(initComboxWarehouseVO.getAddress());
-            }
+//        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
+//        for (InitComboxWarehouseVO initComboxWarehouseVO : data2) {
+//            if(initComboxWarehouseVO.getId().equals(storageInputOrderDetails.getWarehouseId())){
+//                storageInProcessOptFormVO.setWarehouseName(initComboxWarehouseVO.getName());
+//                storageInProcessOptFormVO.setWarehousePhone(initComboxWarehouseVO.getPhone());
+//                storageInProcessOptFormVO.setWarehouseAddress(initComboxWarehouseVO.getAddress());
+//            }
+//        }
+        if(storageInputOrderDetails.getWarehouseId() != null){
+            WarehouseVO warehouseById = warehouseService.findWarehouseById(storageInputOrderDetails.getWarehouseId());
+            storageInProcessOptFormVO.setWarehouseName(warehouseById.getName());
+            storageInProcessOptFormVO.setWarehousePhone(warehouseById.getPhone());
+            storageInProcessOptFormVO.setWarehouseAddress(warehouseById.getAddress());
         }
 
         storageInProcessOptFormVO.setMainOrderNo(storageInputOrder.getMainOrderNo());
@@ -559,7 +592,7 @@ public class StorageInputOrderController {
         }
         Integer totalNumber1 = 0;
         if(form.getInGoodsOperationRecords().size()<=0){
-            return CommonResult.error(444,"入库件数不准确");
+            return CommonResult.error(443,"入库件数不准确");
         }
         if(CollectionUtils.isNotEmpty(form.getInGoodsOperationRecords())){
             for (InGoodsOperationRecordForm inGoodsOperationRecord : form.getInGoodsOperationRecords()) {
@@ -575,7 +608,7 @@ public class StorageInputOrderController {
         if(totalNumber == totalNumber1){
             return CommonResult.success();
         }
-        return CommonResult.error(444,"入库件数不准确");
+        return CommonResult.error(443,"入库件数不准确");
     }
 
 

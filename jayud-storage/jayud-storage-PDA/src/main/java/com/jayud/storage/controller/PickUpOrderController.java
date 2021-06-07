@@ -1,15 +1,14 @@
 package com.jayud.storage.controller;
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.storage.model.bo.*;
-import com.jayud.storage.model.po.GoodsLocationRecord;
-import com.jayud.storage.model.po.InGoodsOperationRecord;
-import com.jayud.storage.model.po.StorageInputOrder;
-import com.jayud.storage.model.po.WarehouseGoods;
+import com.jayud.storage.model.po.*;
 import com.jayud.storage.model.vo.*;
 import com.jayud.storage.service.*;
+import com.jayud.storage.utils.DateDayUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +55,12 @@ public class PickUpOrderController {
     @ApiOperation("通过订单号查询出库商品信息")
     @PostMapping("/findByOrderNo")
     public CommonResult findByOrderNo(@RequestBody QueryPickUpGoodForm form) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_no",form.getOrderNo());
+        StorageOutOrder one = storageOutOrderService.getOne(queryWrapper);
+        if(one == null){
+            return CommonResult.error(444,"该订单不存在");
+        }
         List<WarehouseGoodsLocationCodeVO> warehouseGoodsLocationVOS = storageOutOrderService.findByOrderNo(form);
         StorageOutOrderGoodVO storageOutOrderGoodVO = new StorageOutOrderGoodVO();
         storageOutOrderGoodVO.setWarehouseGoodsLocationCodeVOS(warehouseGoodsLocationVOS);
@@ -75,6 +80,9 @@ public class PickUpOrderController {
 
         if(orderNo != null && sku != null){
             List<WarehouseGoods> warehouseGoods = warehouseGoodsService.getListBySkuAndOrderNo(sku,orderNo);
+            if(CollectionUtils.isEmpty(warehouseGoods)){
+                return CommonResult.error(444,"该订单或者该sku不存在数据");
+            }
             List<WarehouseGoodsLocationVO> warehouseGoodsLocationVOS = new ArrayList<>();
             if(CollectionUtils.isNotEmpty(warehouseGoods)){
                 for (WarehouseGoods warehouseGood : warehouseGoods) {
@@ -140,19 +148,13 @@ public class PickUpOrderController {
         return CommonResult.success();
     }
 
-    @ApiOperation("获取拣货订单记录")
-    @PostMapping("/getListByForm")
-    public CommonResult getListByForm(@RequestBody QueryPutGoodForm form) {
-        if(form.getSearchTime() == null){
-            form.setSearchTime(LocalDateTime.now().toString());
-        }
-        List<OnShelfOrderVO> onShelfOrderVOS = storageOutOrderService.getListByForm(form);
-        return CommonResult.success(onShelfOrderVOS);
-    }
-
     @ApiOperation("根据条件获取拣货订单记录")
     @PostMapping("/getListByQueryForm")
     public CommonResult getListByQueryForm(@RequestBody QueryPutGoodForm form) {
+        if(form.getCreateTime().length <= 0){
+            String[] strings = new String[]{DateDayUtils.getFirst(),DateDayUtils.getLast()};
+            form.setCreateTime(strings);
+        }
         form.setStartTime();
         List<OnShelfOrderVO> onShelfOrderVOS = storageOutOrderService.getListByQueryForm(form);
         return CommonResult.success(onShelfOrderVOS);

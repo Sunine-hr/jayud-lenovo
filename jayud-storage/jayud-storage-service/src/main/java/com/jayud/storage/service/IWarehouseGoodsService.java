@@ -72,7 +72,7 @@ public interface IWarehouseGoodsService extends IService<WarehouseGoods> {
      */
     List<WarehouseGoodsVO> getListByWarehousingBatchNoAndOrderNo(String warehousingBatchNo, String orderNo);
 
-    List<OnShelfOrderVO> getListByOrderIdAndTime(Long id, String orderNo, String searchTime);
+
 
     List<OnShelfOrderVO> getListByOrderIdAndTime2(Long id, String orderNo, String startTime, String endTime);
 

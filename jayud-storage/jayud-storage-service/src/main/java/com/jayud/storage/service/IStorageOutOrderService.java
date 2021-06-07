@@ -103,7 +103,6 @@ public interface IStorageOutOrderService extends IService<StorageOutOrder> {
      */
     boolean PDAWarehousePicking(WarehousePickingForm form);
 
-    List<OnShelfOrderVO> getListByForm(QueryPutGoodForm form);
 
     List<OnShelfOrderVO> getListByQueryForm(QueryPutGoodForm form);
 }

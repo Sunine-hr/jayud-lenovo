@@ -13,9 +13,6 @@ public class QueryPutGoodForm extends BasePageForm{
     @ApiModelProperty(value = "入库批次号")
     private String warehousingBatchNo;
 
-    @ApiModelProperty(value = "搜索时间")
-    private String searchTime;
-
     @ApiModelProperty(value = "订单号")
     private String orderNo;
 

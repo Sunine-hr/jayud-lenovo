@@ -38,7 +38,5 @@ public interface InGoodsOperationRecordMapper extends BaseMapper<InGoodsOperatio
 
     List<String> getWarehousingBatchNoComBox(@Param("kuCode")String kuCode, @Param("sku")String sku);
 
-    List<OnShelfOrderVO> getListByOrderIdAndTime(@Param("id")Long id, @Param("orderNo")String orderNo, @Param("searchTime")String searchTime);
-
     List<OnShelfOrderVO> getListByOrderIdAndTime2(@Param("id")Long id, @Param("orderNo")String orderNo, @Param("startTime")String startTime, @Param("endTime")String endTime);
 }

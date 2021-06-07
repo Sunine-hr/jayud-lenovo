@@ -187,7 +187,7 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
                     .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
                     .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
                     .append("B").append(warehouseAreaShelvesLocation.getShelvesColumn());
-            string.add(locationCode.toString());
+            string.add(locationCode1.toString());
 
         }else {
             log.warn("货架类型不存在，无法生成货架编码");

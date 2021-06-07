@@ -63,7 +63,6 @@ public interface IInGoodsOperationRecordService extends IService<InGoodsOperatio
      */
     List<String> getWarehousingBatchNoComBox(String kuCode, String sku);
 
-    List<OnShelfOrderVO> getListByOrderIdAndTime(Long id, String orderNo, String searchTime);
 
     /**
      * 获取批次号和订单号，获取订单入库商品信息

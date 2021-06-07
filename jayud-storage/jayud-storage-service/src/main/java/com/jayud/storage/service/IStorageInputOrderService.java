@@ -98,7 +98,5 @@ public interface IStorageInputOrderService extends IService<StorageInputOrder> {
      * @param form
      * @return
      */
-    List<OnShelfOrderVO> getListByForm(QueryPutGoodForm form);
-
     List<OnShelfOrderVO> getListByQueryForm(QueryPutGoodForm form);
 }

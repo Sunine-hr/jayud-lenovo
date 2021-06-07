@@ -333,30 +333,6 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
 
     //上架订单列表
     @Override
-    public List<OnShelfOrderVO> getListByForm(QueryPutGoodForm form) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status","CCI_3");
-        List<StorageInputOrder> list = this.baseMapper.selectList(queryWrapper);
-        List<OnShelfOrderVO> onShelfOrderVOS = new ArrayList<>();
-        for (StorageInputOrder storageInputOrder : list) {
-            List<OnShelfOrderVO> inGoodsOperationRecords = inGoodsOperationRecordService.getListByOrderIdAndTime(storageInputOrder.getId(),storageInputOrder.getOrderNo(),form.getSearchTime());
-            String warehouseName = null;
-            if(CollectionUtils.isNotEmpty(inGoodsOperationRecords)){
-                List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecords.get(0).getId());
-                //通过库位编码获取仓库名称
-                if(CollectionUtils.isNotEmpty(goodsLocationRecordByGoodId)){
-                    warehouseName = warehouseAreaShelvesLocationService.getWarehouseNameByKuCode(goodsLocationRecordByGoodId.get(0).getKuCode());
-                }
-            }
-            for (OnShelfOrderVO inGoodsOperationRecord : inGoodsOperationRecords) {
-                inGoodsOperationRecord.setWarehouseName(warehouseName);
-                onShelfOrderVOS.add(inGoodsOperationRecord);
-            }
-        }
-        return onShelfOrderVOS;
-    }
-
-    @Override
     public List<OnShelfOrderVO> getListByQueryForm(QueryPutGoodForm form) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("status","CCI_3");
@@ -367,16 +343,8 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         List<OnShelfOrderVO> onShelfOrderVOS = new ArrayList<>();
         for (StorageInputOrder storageInputOrder : list) {
             List<OnShelfOrderVO> inGoodsOperationRecords = inGoodsOperationRecordService.getListByOrderIdAndTime2(storageInputOrder.getId(),storageInputOrder.getOrderNo(),form.getStartTime(),form.getEndTime());
-            String warehouseName = null;
-            if(CollectionUtils.isNotEmpty(inGoodsOperationRecords)){
-                List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecords.get(0).getId());
-                //通过库位编码获取仓库名称
-                if(CollectionUtils.isNotEmpty(goodsLocationRecordByGoodId)){
-                    warehouseName = warehouseAreaShelvesLocationService.getWarehouseNameByKuCode(goodsLocationRecordByGoodId.get(0).getKuCode());
-                }
-            }
+
             for (OnShelfOrderVO inGoodsOperationRecord : inGoodsOperationRecords) {
-                inGoodsOperationRecord.setWarehouseName(warehouseName);
                 onShelfOrderVOS.add(inGoodsOperationRecord);
             }
         }

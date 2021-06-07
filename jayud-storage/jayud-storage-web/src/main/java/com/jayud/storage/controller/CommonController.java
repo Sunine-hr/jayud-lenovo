@@ -87,8 +87,8 @@ public class CommonController {
         log.info("list:{}",  listString);
         JSONArray arryList = JSONObject.parseArray(listString);
         arryList.remove(0);
-        Object o = arryList.get(1);
-        System.out.println(o);
+//        Object o = arryList.get(1);
+//        System.out.println(o);
 //        List<WarehouseGoodsInForm> warehouseGoodsInForms = arryList.toJavaList(WarehouseGoodsInForm.class);
 //        for (WarehouseGoodsInForm warehouseGoodsInForm : warehouseGoodsInForms) {
 //
@@ -141,11 +141,14 @@ public class CommonController {
     public CommonResult commonComBox(){
         List<InitComboxSVO> data = omsClient.initDictNameByDictTypeCode("operation").getData();
         List<InitComboxSVO> data1 = omsClient.initDictNameByDictTypeCode("cardType").getData();
-        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
+//        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status",1);
+        List<Warehouse> list = warehouseService.list(queryWrapper);
         HashMap<String,Object> hashMap = new HashMap();
         hashMap.put("operation",data);
         hashMap.put("cardType",data1);
-        hashMap.put("warehouseInfo",data2);
+        hashMap.put("warehouseInfo",list);
         return CommonResult.success(hashMap);
     }
 

@@ -29,7 +29,6 @@ public interface WarehouseGoodsMapper extends BaseMapper<WarehouseGoods> {
 
     List<WarehouseGoods> getOutListByOrderNo(@Param("orderNo")String orderNo);
 
-    List<OnShelfOrderVO> getListByOrderIdAndTime(@Param("id")Long id, @Param("orderNo")String orderNo, @Param("searchTime")String searchTime);
 
     List<OnShelfOrderVO> getListByOrderIdAndTime2(@Param("id")Long id, @Param("orderNo")String orderNo, @Param("startTime")String startTime, @Param("endTime")String endTime);
 }

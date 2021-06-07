@@ -26,14 +26,14 @@ public class WarehouseGoodsInForm{
     @ApiModelProperty(value = "预计到达时间")
     private LocalDateTime estimatedArrivalTime;
 
-    @ApiModelProperty(value = "商品名称")
-    private String name;
+//    @ApiModelProperty(value = "商品名称")
+//    private String name;
 
     @ApiModelProperty(value = "sku")
     private String sku;
 
-    @ApiModelProperty(value = "规格型号")
-    private String specificationModel;
+//    @ApiModelProperty(value = "规格型号")
+//    private String specificationModel;
 
     @ApiModelProperty(value = "板数")
     private Integer boardNumber;

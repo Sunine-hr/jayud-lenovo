@@ -131,11 +131,6 @@ public class InGoodsOperationRecordServiceImpl extends ServiceImpl<InGoodsOperat
     }
 
     @Override
-    public List<OnShelfOrderVO> getListByOrderIdAndTime(Long id, String orderNo, String searchTime) {
-        return this.baseMapper.getListByOrderIdAndTime(id,orderNo,searchTime);
-    }
-
-    @Override
     public List<InGoodsOperationRecordVO> getListByWarehousingBatchNoAndOrderNo(String warehousingBatchNo, String orderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("warehousing_batch_no",warehousingBatchNo);

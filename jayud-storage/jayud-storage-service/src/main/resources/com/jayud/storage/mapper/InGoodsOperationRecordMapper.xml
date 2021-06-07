@@ -85,13 +85,6 @@
         where igor.sku = #{sku} and glr.ku_code = #{kuCode} and glr.type = 1
     </select>
 
-    <select id="getListByOrderIdAndTime" resultType="com.jayud.storage.model.vo.OnShelfOrderVO">
-        select id,order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, count(number) number
-        from in_goods_operation_record igor
-        where igor.order_id = #{orderId} and igor.order_no = #{orderNo} and igor.update_time = #{searchTime}
-        group by warehousing_batch_no
-    </select>
-
     <select id="getListByOrderIdAndTime2" resultType="com.jayud.storage.model.vo.OnShelfOrderVO">
         select id,order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, count(number) number
         from in_goods_operation_record igor

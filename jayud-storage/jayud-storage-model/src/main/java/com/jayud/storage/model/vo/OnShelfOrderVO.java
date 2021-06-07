@@ -32,9 +32,6 @@ public class OnShelfOrderVO {
     @ApiModelProperty(value = "入库批次号")
     private String warehousingBatchNo;
 
-    @ApiModelProperty(value = "仓库")
-    private String warehouseName;
-
     @ApiModelProperty(value = "商品总数")
     private Integer number;
 

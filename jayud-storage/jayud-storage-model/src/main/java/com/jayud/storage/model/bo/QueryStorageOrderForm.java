@@ -91,8 +91,8 @@ public class QueryStorageOrderForm extends BasePageForm {
     public void setStartTime(){
         String[] time = this.createTime;
         if(time != null && time.length>0){
-            this.startTime = time[0];
-            this.endTime = time[1];
+            this.startTime = time[0] + " 00:00:00";
+            this.endTime = time[1] + " 23:59:59";
         }
     }
 }

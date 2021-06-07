@@ -99,10 +99,6 @@ public class WarehouseGoodsServiceImpl extends ServiceImpl<WarehouseGoodsMapper,
         return warehouseGoodsVOS;
     }
 
-    @Override
-    public List<OnShelfOrderVO> getListByOrderIdAndTime(Long id, String orderNo, String searchTime) {
-        return this.baseMapper.getListByOrderIdAndTime(id,orderNo,searchTime);
-    }
 
     @Override
     public List<OnShelfOrderVO> getListByOrderIdAndTime2(Long id, String orderNo, String startTime, String endTime) {

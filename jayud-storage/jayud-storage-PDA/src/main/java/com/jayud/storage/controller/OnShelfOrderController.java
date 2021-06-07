@@ -3,6 +3,7 @@ package com.jayud.storage.controller;
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.storage.model.bo.GoodsLocationRecordForm;
 import com.jayud.storage.model.bo.InGoodsOperationRecordForm;
 import com.jayud.storage.model.bo.QueryPutGoodForm;
@@ -17,6 +18,7 @@ import com.jayud.storage.service.IGoodsLocationRecordService;
 import com.jayud.storage.service.IInGoodsOperationRecordService;
 import com.jayud.storage.service.ILocationService;
 import com.jayud.storage.service.IStorageInputOrderService;
+import com.jayud.storage.utils.DateDayUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +30,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.activation.CommandMap;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -141,19 +145,14 @@ public class OnShelfOrderController {
         return CommonResult.success();
     }
 
-    @ApiOperation("获取上架订单记录")
-    @PostMapping("/getListByForm")
-    public CommonResult getListByForm(@RequestBody QueryPutGoodForm form) {
-        if(form.getSearchTime() == null){
-            form.setSearchTime(LocalDateTime.now().toString());
-        }
-        List<OnShelfOrderVO> onShelfOrderVOS = storageInputOrderService.getListByForm(form);
-        return CommonResult.success(onShelfOrderVOS);
-    }
 
     @ApiOperation("根据条件获取上架订单记录")
     @PostMapping("/getListByQueryForm")
     public CommonResult getListByQueryForm(@RequestBody QueryPutGoodForm form) {
+        if(form.getCreateTime().length <= 0){
+            String[] strings = new String[]{DateDayUtils.getFirst(),DateDayUtils.getLast()};
+            form.setCreateTime(strings);
+        }
         form.setStartTime();
         List<OnShelfOrderVO> onShelfOrderVOS = storageInputOrderService.getListByQueryForm(form);
         return CommonResult.success(onShelfOrderVOS);
@@ -167,4 +166,6 @@ public class OnShelfOrderController {
         List<InGoodsOperationRecordVO> inGoodsOperationRecords = inGoodsOperationRecordService.getListByWarehousingBatchNoAndOrderNo(warehousingBatchNo,orderNo);
         return CommonResult.success(inGoodsOperationRecords);
     }
+
+
 }

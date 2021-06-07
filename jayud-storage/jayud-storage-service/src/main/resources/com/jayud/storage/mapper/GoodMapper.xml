@@ -40,7 +40,7 @@
             and good.sku like concat('%',#{form.sku},'%')
         </if>
         <if test="form.customerName !=null and form.customerName!=''">
-            and glr.customer_name like concat('%',#{form.customerName},'%')
+            and good.customer_name like concat('%',#{form.customerName},'%')
         </if>
          order by createTime desc
     </select>

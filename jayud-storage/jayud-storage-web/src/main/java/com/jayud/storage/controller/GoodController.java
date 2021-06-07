@@ -1,11 +1,14 @@
 package com.jayud.storage.controller;
 
 
+import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.GoodForm;
 import com.jayud.storage.model.bo.QueryGoodForm;
@@ -22,6 +25,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -53,6 +57,18 @@ public class GoodController {
     @ApiOperation(value = "分页查询list")
     @PostMapping("/findGoodsByPage")
     public CommonResult<IPage<GoodVO>> findGoodsByPage(@RequestBody QueryGoodForm form) {
+
+        if (!StringUtils.isEmpty(form.getCustomerName())) {
+            ApiResult result = omsClient.getCustomerIdByCustomerName(form.getCustomerName());
+            Object data = result.getData();
+            if (data != null && ((List) data).size() > 0) {
+                JSONArray mainOrders = new JSONArray(data);
+                form.assemblyCustomerIds(mainOrders);
+            } else {
+                form.setCustomerIds(Collections.singletonList((long)-1));
+            }
+        }
+
         IPage<GoodVO> page = goodService.findGoodsByPage(form);
         for (GoodVO record : page.getRecords()) {
             record.setCustomerName(omsClient.getCustomerNameById(record.getCustomerId()).getData());

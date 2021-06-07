@@ -92,6 +92,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
                 convert.setOrderId(storageOutOrder.getId());
                 convert.setOrderNo(storageOutOrder.getOrderNo());
                 convert.setCreateTime(LocalDateTime.now());
+                convert.setCreateUser(UserOperator.getToken());
                 convert.setType(2);
                 convert.setFileName(StringUtils.getFileNameStr(warehouseGood.getTakeFiles()));
                 convert.setFilePath(StringUtils.getFileStr(warehouseGood.getTakeFiles()));
@@ -459,29 +460,6 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
         return true;
     }
 
-    @Override
-    public List<OnShelfOrderVO> getListByForm(QueryPutGoodForm form) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status","CCE_3");
-        List<StorageInputOrder> list = this.baseMapper.selectList(queryWrapper);
-        List<OnShelfOrderVO> onShelfOrderVOS = new ArrayList<>();
-        for (StorageInputOrder storageInputOrder : list) {
-            List<OnShelfOrderVO> onShelfOrderVOS1 = warehouseGoodsService.getListByOrderIdAndTime(storageInputOrder.getId(),storageInputOrder.getOrderNo(),form.getSearchTime());
-            String warehouseName = null;
-            if(CollectionUtils.isNotEmpty(onShelfOrderVOS1)){
-                List<GoodsLocationRecordFormVO> goodsLocationRecordByGoodId = goodsLocationRecordService.getOutGoodsLocationRecordByGoodId(onShelfOrderVOS1.get(0).getId());
-                //通过库位编码获取仓库名称
-                if(CollectionUtils.isNotEmpty(goodsLocationRecordByGoodId)){
-                    warehouseName = warehouseAreaShelvesLocationService.getWarehouseNameByKuCode(goodsLocationRecordByGoodId.get(0).getKuCode());
-                }
-            }
-            for (OnShelfOrderVO inGoodsOperationRecord : onShelfOrderVOS1) {
-                inGoodsOperationRecord.setWarehouseName(warehouseName);
-                onShelfOrderVOS.add(inGoodsOperationRecord);
-            }
-        }
-        return onShelfOrderVOS;
-    }
 
     @Override
     public List<OnShelfOrderVO> getListByQueryForm(QueryPutGoodForm form) {
@@ -494,16 +472,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
         List<OnShelfOrderVO> onShelfOrderVOS = new ArrayList<>();
         for (StorageInputOrder storageInputOrder : list) {
             List<OnShelfOrderVO> onShelfOrderVOS1 = warehouseGoodsService.getListByOrderIdAndTime2(storageInputOrder.getId(),storageInputOrder.getOrderNo(),form.getStartTime(),form.getEndTime());
-            String warehouseName = null;
-            if(CollectionUtils.isNotEmpty(onShelfOrderVOS1)){
-                List<GoodsLocationRecordFormVO> goodsLocationRecordByGoodId = goodsLocationRecordService.getOutGoodsLocationRecordByGoodId(onShelfOrderVOS1.get(0).getId());
-                //通过库位编码获取仓库名称
-                if(CollectionUtils.isNotEmpty(goodsLocationRecordByGoodId)){
-                    warehouseName = warehouseAreaShelvesLocationService.getWarehouseNameByKuCode(goodsLocationRecordByGoodId.get(0).getKuCode());
-                }
-            }
             for (OnShelfOrderVO inGoodsOperationRecord : onShelfOrderVOS1) {
-                inGoodsOperationRecord.setWarehouseName(warehouseName);
                 onShelfOrderVOS.add(inGoodsOperationRecord);
             }
         }

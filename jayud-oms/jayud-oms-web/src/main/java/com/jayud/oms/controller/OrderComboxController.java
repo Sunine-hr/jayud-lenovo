@@ -590,7 +590,7 @@ public class OrderComboxController {
             case BG:
                 Object data = this.oauthClient.getLegalEntityByCode("802").getData();
                 cn.hutool.json.JSONObject jsonObject = new cn.hutool.json.JSONObject(data);
-                response.put("bgLegalEntityId", 802);
+                response.put("bgLegalEntityId", jsonObject.getInt("id"));
                 response.put("bgLegalEntityName", jsonObject.getStr("legalName"));
                 break;
         }

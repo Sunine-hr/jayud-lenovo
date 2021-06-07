@@ -161,5 +161,5 @@ public interface OauthClient {
      * 根据法人code获取法人主体
      */
     @RequestMapping(value = "/api/getLegalEntityByCode")
-    ApiResult<Boolean> getLegalEntityByCode(@RequestParam("code") String code);
+    ApiResult getLegalEntityByCode(@RequestParam("code") String code);
 }

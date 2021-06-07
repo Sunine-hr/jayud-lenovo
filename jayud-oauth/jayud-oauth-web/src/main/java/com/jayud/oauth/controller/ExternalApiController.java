@@ -415,7 +415,7 @@ public class ExternalApiController {
      * 根据法人code获取法人主体
      */
     @RequestMapping(value = "/api/getLegalEntityByCode")
-    ApiResult<Boolean> getLegalEntityByCode(@RequestParam("code") String code) {
+    ApiResult<LegalEntity> getLegalEntityByCode(@RequestParam("code") String code) {
         List<LegalEntity> list = this.legalEntityService.getByCondition(new LegalEntity().setLegalCode(code));
         return ApiResult.ok(list.size() > 0 ? list.get(0) : null);
     }

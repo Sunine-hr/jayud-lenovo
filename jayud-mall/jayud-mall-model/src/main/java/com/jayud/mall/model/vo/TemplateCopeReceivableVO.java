@@ -83,6 +83,14 @@ public class TemplateCopeReceivableVO {
     @JSONField(ordinal = 16)
     private String unitPriceFormat;
 
+    @ApiModelProperty(value = "区间最小值")
+    private BigDecimal min;
+
+    @ApiModelProperty(value = "区间最大值")
+    private BigDecimal max;
+
+
+
 
 
 }

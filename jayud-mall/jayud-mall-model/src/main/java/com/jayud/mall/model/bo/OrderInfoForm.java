@@ -165,6 +165,10 @@ public class OrderInfoForm {
     @JSONField(ordinal = 25)
     private List<OrderCaseVO> orderCaseVOList;
 
+    //caseVO
+    @ApiModelProperty(value = "订单箱号汇总计算")
+    private CaseVO caseVO;
+
     /*订单对应商品：order_shop*/
     @ApiModelProperty(value = "订单对应商品list", position = 26)
     @JSONField(ordinal = 26)

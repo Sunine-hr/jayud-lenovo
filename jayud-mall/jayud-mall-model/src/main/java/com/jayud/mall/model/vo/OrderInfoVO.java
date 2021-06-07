@@ -180,7 +180,7 @@ public class OrderInfoVO {
     private List<OrderCaseVO> orderCaseVOList;
 
     //caseVO
-    @ApiModelProperty(value = "订单箱号核销")
+    @ApiModelProperty(value = "订单箱号汇总计算")
     private CaseVO caseVO;
 
     /*订单对应箱号配载信息:order_case、order_conf*/

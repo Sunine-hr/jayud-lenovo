@@ -198,6 +198,20 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
     @ApiModelProperty(value = "特别说明")
     private String specialVersion;
 
+    //add field
+    @ApiModelProperty(value = "截单日期(后缀时分秒)")
+    private String cutOffTimeCalcHms;
+
+    @ApiModelProperty(value = "截仓日期(后缀时分秒)")
+    private String jcTimeCalcHms;
+
+    @ApiModelProperty(value = "截亏仓日期(后缀时分秒)")
+    private String jkcTimeCalcHms;
+
+    @ApiModelProperty(value = "预计到达时间(后缀时分秒)")
+    private String estimatedTimeCalcHms;
+
+
     @Override
     protected Serializable pkVal() {
         return this.id;

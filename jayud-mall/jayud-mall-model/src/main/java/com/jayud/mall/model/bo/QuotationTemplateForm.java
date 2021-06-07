@@ -208,6 +208,19 @@ public class QuotationTemplateForm {
     @ApiModelProperty(value = "特别说明")
     private String specialVersion;
 
+    //add field
+    @ApiModelProperty(value = "截单日期(后缀时分秒)")
+    private String cutOffTimeCalcHms;
+
+    @ApiModelProperty(value = "截仓日期(后缀时分秒)")
+    private String jcTimeCalcHms;
+
+    @ApiModelProperty(value = "截亏仓日期(后缀时分秒)")
+    private String jkcTimeCalcHms;
+
+    @ApiModelProperty(value = "预计到达时间(后缀时分秒)")
+    private String estimatedTimeCalcHms;
+
     /*应收费用明细List*/
     @ApiModelProperty(value = "应收费用明细List", position = 30)
     @JSONField(ordinal = 30)

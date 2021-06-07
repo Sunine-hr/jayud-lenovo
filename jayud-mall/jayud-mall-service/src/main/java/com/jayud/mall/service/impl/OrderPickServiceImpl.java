@@ -110,6 +110,7 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         }
         LocalDateTime sailTime = offerInfoVO.getSailTime();
         LocalDateTime jcTime = offerInfoVO.getJcTime();
+        String serviceName = offerInfoVO.getSname();
         ShippingAreaVO shippingAreaVO = shippingAreaMapper.findShippingAreaByWarehouseCode(storeGoodsWarehouseCode);
         if(ObjectUtil.isEmpty(shippingAreaVO)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "集货仓库不存在");
@@ -151,6 +152,7 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         orderWarehouseNoVO.setSailTime(dtf2.format(sailTime));
         orderWarehouseNoVO.setJcTime(dtf2.format(jcTime));
+        orderWarehouseNoVO.setServiceName(serviceName);
 
         orderWarehouseNoVO.setTotalCarton(totalCarton);
         orderWarehouseNoVO.setWarehouseAddress(addressFirst);
@@ -180,6 +182,7 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         }
         LocalDateTime sailTime = offerInfoVO.getSailTime();
         LocalDateTime jcTime = offerInfoVO.getJcTime();
+        String serviceName = offerInfoVO.getSname();
         ShippingAreaVO shippingAreaVO = shippingAreaMapper.findShippingAreaByWarehouseCode(storeGoodsWarehouseCode);
         if(ObjectUtil.isEmpty(shippingAreaVO)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "集货仓库不存在");
@@ -207,6 +210,7 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         orderWarehouseNoVO.setSailTime(dtf2.format(sailTime));
         orderWarehouseNoVO.setJcTime(dtf2.format(jcTime));
+        orderWarehouseNoVO.setServiceName(serviceName);
 
         orderWarehouseNoVO.setTotalCarton(totalCarton);
         orderWarehouseNoVO.setWarehouseAddress(addressFirst);

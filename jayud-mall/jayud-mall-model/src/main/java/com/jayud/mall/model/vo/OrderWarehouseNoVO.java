@@ -22,6 +22,10 @@ public class OrderWarehouseNoVO {
     //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private String jcTime;
 
+    //服务名称
+    @ApiModelProperty(value = "服务名称")
+    private String serviceName;
+
     //箱数
     @ApiModelProperty(value = "箱数")
     private Integer totalCarton;

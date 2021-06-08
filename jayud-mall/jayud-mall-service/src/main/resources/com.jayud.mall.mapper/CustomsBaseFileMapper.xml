@@ -19,4 +19,13 @@
         id, type, customs_id, country_code, country_name, file_name, template_url, describe
     </sql>
 
+    <select id="findCustomsBaseFileByParaMap" parameterType="java.util.Map" resultType="com.jayud.mall.model.vo.CustomsBaseFileVO">
+        select
+        t.id,t.type,t.customs_id,t.country_code,t.country_name,t.file_name,t.template_url,t.`describe`
+        from customs_base_file t
+        where 1=1
+        and t.type = #{paraMap.type}
+        and t.customs_id = #{paraMap.customs_id}
+    </select>
+
 </mapper>

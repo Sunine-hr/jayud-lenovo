@@ -18,4 +18,13 @@
         id, type, customs_id, country_code, country_name, declared_value, declared_currency
     </sql>
 
+    <select id="findCustomsBaseValueByParaMap" parameterType="java.util.Map" resultType="com.jayud.mall.model.vo.CustomsBaseValueVO">
+        select
+        t.id,t.type,t.customs_id,t.country_code,t.country_name,t.declared_value,t.declared_currency
+        from customs_base_value t
+        where 1=1
+        and t.type = #{paraMap.type}
+        and t.customs_id = #{paraMap.customs_id}
+    </select>
+    
 </mapper>

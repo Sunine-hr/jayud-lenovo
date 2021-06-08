@@ -16,4 +16,10 @@
         id, name, code, geo, status
     </sql>
 
+    <select id="findCountryByCode" parameterType="java.lang.String" resultType="com.jayud.mall.model.vo.CountryVO">
+        select t.id,t.name,t.code,t.geo,t.status from country t
+        where 1=1
+        and t.code = #{code}
+    </select>
+
 </mapper>

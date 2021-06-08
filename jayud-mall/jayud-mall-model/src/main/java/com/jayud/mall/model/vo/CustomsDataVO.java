@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class CustomsDataVO {
@@ -130,6 +131,20 @@ public class CustomsDataVO {
 
     @ApiModelProperty(value = "审核用户名(system_user name)")
     private String auditUserName;
+
+    //服务费用
+    @ApiModelProperty(value = "服务费用list")
+    private List<CustomsBaseServiceCostVO> customsBaseServiceCostList;
+
+    //审报价值
+    @ApiModelProperty(value = "审报价值list")
+    private List<CustomsBaseValueVO> customsBaseValueList;
+
+    //申报文件
+    @ApiModelProperty(value = "申报文件list")
+    private List<CustomsBaseFileVO> customsBaseFileList;
+
+
 
 
 }

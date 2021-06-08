@@ -125,5 +125,43 @@
 
     </select>
     
+    <select id="findCustomsDataById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CustomsDataVO">
+        select t.id,
+               t.id_code,
+               t.cn_code,
+               t.hs_code,
+               t.ch_name,
+               t.en_name,
+               t.texture,
+               t.uses,
+               t.declare_price,
+               t.cid,
+               t.suttle,
+               t.suttle_unit,
+               t.gross_weight,
+               t.gross_unit,
+               t.drawback_tax,
+               t.efund_rates,
+               t.annex_fee,
+               t.pic_url,
+               t.declare_elements,
+               t.status,
+               t.user_id,
+               t.user_name,
+               t.create_time,
+               t.additional_duty,
+               t.sales_tax,
+               t.sundry_tax,
+               t.brand,
+               t.specification,
+               t.audit_status,
+               t.audit_user_id,
+               t.audit_user_name
+        from customs_data t
+        WHERE
+            1 = 1
+          and t.id = #{id}
+    </select>
+    
 
 </mapper>

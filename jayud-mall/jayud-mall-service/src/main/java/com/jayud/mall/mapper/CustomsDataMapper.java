@@ -36,4 +36,11 @@ public interface CustomsDataMapper extends BaseMapper<CustomsData> {
      * @return
      */
     CustomsDataVO findAuditCustomsDataId(@Param("id") Long id);
+
+    /**
+     * 查询
+      * @param id
+     * @return
+     */
+    CustomsDataVO findCustomsDataById(@Param("id") Long id);
 }

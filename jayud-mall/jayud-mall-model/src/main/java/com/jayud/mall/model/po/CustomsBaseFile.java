@@ -1,6 +1,7 @@
 package com.jayud.mall.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
@@ -48,8 +49,8 @@ public class CustomsBaseFile extends Model<CustomsBaseFile> {
     private String templateUrl;
 
     @ApiModelProperty(value = "说明")
+    @TableField(value = "`describe`")
     private String describe;
-
 
     @Override
     protected Serializable pkVal() {

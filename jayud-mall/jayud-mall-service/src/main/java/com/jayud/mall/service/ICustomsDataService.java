@@ -46,4 +46,11 @@ public interface ICustomsDataService extends IService<CustomsData> {
      * @param form
      */
     void auditCustomsData(AuditCustomsDataForm form);
+
+    /**
+     * 查看
+     * @param id
+     * @return
+     */
+    CustomsDataVO findCustomsDataById(Long id);
 }

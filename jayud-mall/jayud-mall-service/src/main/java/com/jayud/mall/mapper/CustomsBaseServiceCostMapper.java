@@ -2,8 +2,13 @@ package com.jayud.mall.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.po.CustomsBaseServiceCost;
+import com.jayud.mall.model.vo.CustomsBaseServiceCostVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -17,4 +22,12 @@ import org.springframework.stereotype.Component;
 @Component
 public interface CustomsBaseServiceCostMapper extends BaseMapper<CustomsBaseServiceCost> {
 
+    /**
+     * 查询
+     * @param paraMap
+        paraMap.put("type", 1);
+        paraMap.put("customs_id", customsId);
+     * @return
+     */
+    List<CustomsBaseServiceCostVO> findCustomsBaseServiceCostByParaMap(@Param("paraMap") Map<String, Object> paraMap);
 }

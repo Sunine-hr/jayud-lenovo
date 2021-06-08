@@ -5,6 +5,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.AuditCustomsClearanceForm;
 import com.jayud.mall.model.bo.CustomsClearanceForm;
+import com.jayud.mall.model.bo.CustomsClearanceIdForm;
 import com.jayud.mall.model.bo.QueryCustomsClearanceForm;
 import com.jayud.mall.model.vo.CustomsClearanceVO;
 import com.jayud.mall.service.ICustomsClearanceService;
@@ -61,6 +62,15 @@ public class CustomsClearanceController {
     public CommonResult auditCustomsClearance(@Valid @RequestBody AuditCustomsClearanceForm form){
         customsClearanceService.auditCustomsClearance(form);
         return CommonResult.success("操作成功");
+    }
+
+    @ApiOperation(value = "查看报关商品资料")
+    @ApiOperationSupport(order = 5)
+    @PostMapping("/findCustomsClearanceById")
+    public CommonResult<CustomsClearanceVO> findCustomsClearanceById(@Valid @RequestBody CustomsClearanceIdForm form) {
+        Long id = form.getId();
+        CustomsClearanceVO customsClearanceVO = customsClearanceService.findCustomsClearanceById(id);
+        return CommonResult.success(customsClearanceVO);
     }
 
 

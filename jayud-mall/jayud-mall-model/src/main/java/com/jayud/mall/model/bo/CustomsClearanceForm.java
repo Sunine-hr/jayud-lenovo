@@ -8,6 +8,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class CustomsClearanceForm {
@@ -140,5 +141,16 @@ public class CustomsClearanceForm {
     @ApiModelProperty(value = "审核用户名(system_user name)")
     private String auditUserName;
 
+    //服务费用
+    @ApiModelProperty(value = "服务费用list")
+    private List<CustomsBaseServiceCostForm> customsBaseServiceCostList;
+
+    //申报价值
+    @ApiModelProperty(value = "申报价值list")
+    private List<CustomsBaseValueForm> customsBaseValueList;
+
+    //申报文件
+    @ApiModelProperty(value = "申报文件list")
+    private List<CustomsBaseFileForm> customsBaseFileList;
 
 }

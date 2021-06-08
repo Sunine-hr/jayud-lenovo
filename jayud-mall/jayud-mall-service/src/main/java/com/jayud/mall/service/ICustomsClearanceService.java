@@ -46,4 +46,11 @@ public interface ICustomsClearanceService extends IService<CustomsClearance> {
      * @param form
      */
     void auditCustomsClearance(AuditCustomsClearanceForm form);
+
+    /**
+     * 查询
+     * @param id
+     * @return
+     */
+    CustomsClearanceVO findCustomsClearanceById(Long id);
 }

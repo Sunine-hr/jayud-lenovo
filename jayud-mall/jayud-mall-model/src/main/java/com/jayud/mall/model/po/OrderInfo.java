@@ -157,6 +157,7 @@ public class OrderInfo extends Model<OrderInfo> {
             "        -- 未审单\n" +
             "    已收货:20\n" +
             "    订单确认:30\n" +
+            "    转运中:31\n" +
             "    已签收:40\n" +
             "    已完成:50\n" +
             "    已取消:-1")

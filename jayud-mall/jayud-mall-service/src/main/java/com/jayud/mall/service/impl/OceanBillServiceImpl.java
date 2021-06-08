@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.OrderEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
@@ -109,6 +110,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     IBillLogisticsTrackService billLogisticsTrackService;
     @Autowired
     ILogisticsTrackService logisticsTrackService;
+    @Autowired
+    IOrderInfoService orderInfoService;
 
     @Override
     public IPage<OceanBillVO> findOceanBillByPage(QueryOceanBillForm form) {
@@ -966,6 +969,30 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             billOrderRelevanceService.saveOrUpdateBatch(billOrderRelevances);
         }
         CounterListInfoVO counterListInfoVO = ConvertUtil.convert(counterListInfo, CounterListInfoVO.class);
+
+        //4.保存-修改提单关联运单的订单状态 从 订单确认 改为 转运中
+        //第二次查询
+        billOrderRelevanceList = billOrderRelevanceMapper.findBillOrderRelevanceByBillId(billId);
+        List<OrderInfo> orderInfos = new ArrayList<>();
+        List<Long> orderIds = new ArrayList<>();//查询的订单id
+        billOrderRelevanceList.forEach(billOrderRelevance -> {
+            Long orderId = billOrderRelevance.getOrderId();
+            orderIds.add(orderId);
+        });
+        List<String> afterStatusCodes = new ArrayList<>();
+        afterStatusCodes.add(OrderEnum.AFTER_AFFIRM.getCode());//AFTER_AFFIRM("30", "订单确认"),
+        QueryWrapper<OrderInfo> orderInfoQw = new QueryWrapper<>();
+        orderInfoQw.in("id", orderIds);
+        orderInfoQw.in("after_status_code", afterStatusCodes);
+        List<OrderInfo> orderInfoList = orderInfoService.list(orderInfoQw);
+        if(CollUtil.isNotEmpty(orderInfoList)){
+            orderInfoList.forEach(orderInfo -> {
+                // 将订单状态 从 订单确认 改为 转运中
+                orderInfo.setAfterStatusCode(OrderEnum.AFTER_TRANSIT.getCode());
+                orderInfo.setAfterStatusName(OrderEnum.AFTER_TRANSIT.getName());
+            });
+            orderInfoService.saveOrUpdateBatch(orderInfoList);
+        }
         return counterListInfoVO;
     }
 

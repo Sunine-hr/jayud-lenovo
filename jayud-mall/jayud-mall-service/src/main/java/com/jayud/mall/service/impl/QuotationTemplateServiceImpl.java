@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.QuotationDataTypeEnum;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.*;
@@ -126,6 +128,9 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
                 return CommonResult.error(-1, "["+names+"]"+",名称已存在");
             }
             AuthUser user = baseService.getUser();
+            if(ObjectUtil.isEmpty(user)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "当前用户失效，请重新登录。");
+            }
             quotationTemplate.setUserId(user.getId().intValue());
             quotationTemplate.setUserName(user.getName());
             quotationTemplate.setCreateTime(LocalDateTime.now());

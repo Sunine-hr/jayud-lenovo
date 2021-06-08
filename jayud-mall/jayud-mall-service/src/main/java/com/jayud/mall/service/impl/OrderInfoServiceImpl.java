@@ -2304,6 +2304,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         /*订单对应箱号信息:order_case*/
         List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderCaseByOrderId(orderInfoId);
         orderInfoVO.setOrderCaseVOList(orderCaseVOList);
+        CaseVO caseVO = getCaseVO(orderCaseVOList, orderInfoVO);
+        orderInfoVO.setCaseVO(caseVO);
 
         //关联的订单商品
         /*订单对应商品：order_shop*/

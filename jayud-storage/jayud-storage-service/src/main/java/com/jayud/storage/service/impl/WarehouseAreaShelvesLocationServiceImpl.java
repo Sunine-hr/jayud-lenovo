@@ -89,6 +89,25 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
                 if(!b){
                     return false;
                 }
+            }else{
+                //删除原来的库位编码，重新生成新的库位编码
+                locationService.deleteLocation(warehouseAreaShelvesLocation.getId());
+
+                List<String> locationCode = this.createLocationCode(warehouseAreaShelvesLocation);
+                List<Location> locations = new ArrayList<>();
+                for (String s : locationCode) {
+                    Location location = new Location();
+                    location.setLocationId(warehouseAreaShelvesLocation.getId());
+                    location.setCreateUser(UserOperator.getToken());
+                    location.setLocationCode(s);
+                    location.setCreateTime(LocalDateTime.now());
+                    location.setStatus(0);
+                    locations.add(location);
+                }
+                boolean b1 = this.locationService.saveOrUpdateBatch(locations);
+                if(!b){
+                    return false;
+                }
             }
 
         }
@@ -124,7 +143,7 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
     }
 
     @Override
-    public String getWarehouseNameByKuCode(String kuCode) {
+    public WarehouseNameVO getWarehouseNameByKuCode(String kuCode) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("location_code",kuCode);
         Location one = locationService.getOne(queryWrapper);
@@ -132,7 +151,19 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
         WarehouseAreaShelves byId1 = warehouseAreaShelvesService.getById(byId.getShelvesId());
         WarehouseArea byId2 = warehouseAreaService.getById(byId1.getAreaId());
         Warehouse byId3 = warehouseService.getById(byId2.getWarehouseId());
-        return byId3.getName();
+        WarehouseNameVO warehouseNameVO = new WarehouseNameVO();
+        warehouseNameVO.setName(byId3.getName());
+        warehouseNameVO.setAreaName(byId2.getAreaName());
+        warehouseNameVO.setShelvesName(byId1.getShelvesName());
+        return warehouseNameVO;
+    }
+
+    @Override
+    public WarehouseAreaShelvesLocation getLocation(Integer shelvesLine, Long shelvesType) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("shelves_line",shelvesLine);
+        queryWrapper.eq("shelves_type",shelvesType);
+        return this.baseMapper.selectOne(queryWrapper);
     }
 
 
@@ -152,42 +183,47 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
         List<String> string = new ArrayList<>();
         if(shelvesTypeName.equals("A面")){
             StringBuffer locationCode = new StringBuffer();
-            locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
-                    .append("A").append(warehouseAreaShelvesLocation.getShelvesColumn());
-            string.add(locationCode.toString());
+            for (Integer integer = 1; integer < warehouseAreaShelvesLocation.getShelvesColumn(); integer++) {
+                locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
+                        .append("A").append(integer);
+                string.add(locationCode.toString());
+            }
+
         }
         if(shelvesTypeName.equals("B面")){
             StringBuffer locationCode = new StringBuffer();
-            locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
-                    .append("B").append(warehouseAreaShelvesLocation.getShelvesColumn());
-            string.add(locationCode.toString());
+            for (Integer integer = 1; integer < warehouseAreaShelvesLocation.getShelvesColumn(); integer++) {
+                locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
+                        .append("B").append(integer);
+                string.add(locationCode.toString());
+            }
+
         }
         if(shelvesTypeName.equals("AB面")){
             StringBuffer locationCode = new StringBuffer();
-            locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
-                    .append("A").append(warehouseAreaShelvesLocation.getShelvesColumn());
-            string.add(locationCode.toString());
-
             StringBuffer locationCode1 = new StringBuffer();
-            locationCode1.append(warehouseAreaShelvesVO.getCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
-                    .append("B").append(warehouseAreaShelvesLocation.getShelvesColumn());
-            string.add(locationCode1.toString());
+            for (Integer integer = 1; integer < warehouseAreaShelvesLocation.getShelvesColumn(); integer++) {
+                locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
+                        .append("A").append(integer);
+                string.add(locationCode.toString());
+
+
+                locationCode1.append(warehouseAreaShelvesVO.getCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
+                        .append("B").append(integer);
+                string.add(locationCode1.toString());
+            }
 
         }else {
             log.warn("货架类型不存在，无法生成货架编码");

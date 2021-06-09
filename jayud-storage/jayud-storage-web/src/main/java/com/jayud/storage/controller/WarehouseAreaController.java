@@ -80,15 +80,14 @@ public class WarehouseAreaController {
             if(areaForm.getAreaCode()==null || areaForm.getAreaName()==null){
                 return CommonResult.error(444,"数据不完整");
             }
-            if(areaForm.getId() == null){
-                WarehouseArea warehouseArea = warehouseAreaService.getWarehouseAreaByAreaCode(areaForm.getAreaCode());
-                if(warehouseArea!=null){
-                    return CommonResult.error(444,areaForm.getAreaCode()+"该代码已存在");
-                }
-                WarehouseArea warehouseArea1 = warehouseAreaService.getWarehouseAreaByAreaName(areaForm.getAreaName());
-                if(warehouseArea1!=null){
-                    return CommonResult.error(444,areaForm.getAreaName()+"该名字已存在");
-                }
+
+            WarehouseArea warehouseArea = warehouseAreaService.getWarehouseAreaByAreaCode(areaForm.getAreaCode());
+            if (warehouseArea != null) {
+                return CommonResult.error(444, areaForm.getAreaCode() + "该代码已存在");
+            }
+            WarehouseArea warehouseArea1 = warehouseAreaService.getWarehouseAreaByAreaName(areaForm.getAreaName());
+            if (warehouseArea1 != null) {
+                return CommonResult.error(444, areaForm.getAreaName() + "该名字已存在");
             }
 
         }
@@ -124,6 +123,7 @@ public class WarehouseAreaController {
             if(warehouseAreaShelves!=null){
                 return CommonResult.error(444,shelvesForm.getName()+"该货架名已存在");
             }
+
         }
         boolean result = warehouseAreaShelvesService.saveOrUpdateWarehouseAreaShelves(form);
         if(!result){

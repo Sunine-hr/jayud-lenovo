@@ -1,8 +1,11 @@
 package com.jayud.storage.controller;
 
 import cn.hutool.core.map.MapUtil;
+import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.EasyExcelFactory;
+import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.metadata.Sheet;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -18,12 +21,16 @@ import com.jayud.storage.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 
 @Api(tags = "仓储模块公用接口")
@@ -53,13 +60,45 @@ public class CommonController {
     @Autowired
     private IWarehouseAreaShelvesService warehouseAreaShelvesService;
 
+    @Autowired
+    private IWarehouseGoodsService warehouseGoodsService;
+
+    @Autowired
+    private IGoodsLocationRecordService goodsLocationRecordService;
+
+    @Autowired
+    private IStorageOutOrderService storageOutOrderService;
+
     /**
      * 导出入库商品模板
      */
     @ApiOperation(value = "导出入库商品模板")
     @GetMapping(value = "/exportInProductTemplate")
-    public void exportInProductTemplate( HttpServletResponse response){
-        ExcelUtils.exportSinglePageHeadExcel("入库商品模板", WarehouseGoodsInForm.class,response);
+    public void exportInProductTemplate( HttpServletResponse response) throws IOException {
+//        ExcelUtils.exportSinglePageHeadExcel("入库商品模板", WarehouseGoodsInForm.class,response);
+
+        ExcelWriter excelWriter = null;
+        OutputStream outputStream = null;
+        String fileName = "入库商品模板";
+        try {
+            outputStream = response.getOutputStream();
+            fileName = fileName + ".xls";
+            response.setHeader("Content-disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            response.setContentType("application/vnd.ms-excel;charset=UTF-8");// 定义输出类型
+            excelWriter = EasyExcel.write(response.getOutputStream(),WarehouseGoodsInForm.class).build();
+            WriteSheet writeSheet = EasyExcel.writerSheet("入库商品").build();
+            List<WarehouseGoodsInForm> warehouseGoodsInForms = new ArrayList<>();
+            excelWriter.write(warehouseGoodsInForms, writeSheet);
+        }  catch (Exception e) {
+            outputStream.close();
+            e.printStackTrace();
+        } finally {
+            // 千万别忘记finish 会帮忙关闭流
+            if (excelWriter != null) {
+                excelWriter.finish();
+            }
+
+        }
     }
 
     /**
@@ -67,8 +106,31 @@ public class CommonController {
      */
     @ApiOperation(value = "导出出库商品模板")
     @GetMapping(value = "/exportOutProductTemplate")
-    public void exportOutProductTemplate( HttpServletResponse response){
-        ExcelUtils.exportSinglePageHeadExcel("出库商品模板", WarehouseGoodsOutForm.class,response);
+    public void exportOutProductTemplate( HttpServletResponse response) throws IOException {
+//        ExcelUtils.exportSinglePageHeadExcel("出库商品模板", WarehouseGoodsOutForm.class,response);
+
+        ExcelWriter excelWriter = null;
+        OutputStream outputStream = null;
+        String fileName = "出库商品模板";
+        try {
+            outputStream = response.getOutputStream();
+            fileName = fileName + ".xls";
+            response.setHeader("Content-disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            response.setContentType("application/vnd.ms-excel;charset=UTF-8");// 定义输出类型
+            excelWriter = EasyExcel.write(response.getOutputStream(),WarehouseGoodsOutForm.class).build();
+            WriteSheet writeSheet = EasyExcel.writerSheet("出库商品").build();
+            List<WarehouseGoodsInForm> warehouseGoodsInForms = new ArrayList<>();
+            excelWriter.write(warehouseGoodsInForms, writeSheet);
+        }  catch (Exception e) {
+            outputStream.close();
+            e.printStackTrace();
+        } finally {
+            // 千万别忘记finish 会帮忙关闭流
+            if (excelWriter != null) {
+                excelWriter.finish();
+            }
+
+        }
     }
 
     /**
@@ -214,6 +276,28 @@ public class CommonController {
         map.put("warehouseArea",list1);
         map.put("warehouseAreaShelves",list2);
         return CommonResult.success(map);
+    }
+
+    @ApiOperation(value = "获取打印拣货单库位下拉列表框")
+    @PostMapping(value = "/pickLocationComBox")
+    public CommonResult pickLocationComBox(@RequestBody Map<String,Object> map){
+
+        String orderNo = MapUtil.getStr(map, "orderNo");
+
+        List<WarehouseGoods> outListByOrderNo = warehouseGoodsService.getOutWarehouseGoodsByOrderNo(orderNo);
+
+        Map<String,Object> map1 = new HashMap<>();
+
+        if(CollectionUtils.isNotEmpty(outListByOrderNo)){
+            for (WarehouseGoods warehouseGoods : outListByOrderNo) {
+                InGoodsOperationRecord listByWarehousingBatchNoAndSku = inGoodsOperationRecordService.getListByWarehousingBatchNoAndSku(warehouseGoods.getWarehousingBatchNo(), warehouseGoods.getSku());
+                //获取商品对应的库位编码
+                List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(listByWarehousingBatchNoAndSku.getId());
+                map1.put(warehouseGoods.getSku(),goodsLocationRecordByGoodId);
+            }
+        }
+
+        return CommonResult.success(map1);
     }
 
 }

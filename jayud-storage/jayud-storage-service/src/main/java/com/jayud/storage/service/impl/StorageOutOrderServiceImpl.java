@@ -439,11 +439,21 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     public boolean PDAWarehousePicking(WarehousePickingForm form) {
         //拣货成功，修改拣货状态
         GoodsLocationRecord outListByKuCodeAndInGoodId = goodsLocationRecordService.getOutListByKuCodeAndInGoodId(form.getId(),form.getKuCode());
-        outListByKuCodeAndInGoodId.setIsPickedGoods(2);
-        boolean update = goodsLocationRecordService.saveOrUpdate(outListByKuCodeAndInGoodId);
-        if(!update){
-            return false;
+        outListByKuCodeAndInGoodId.setUnDeliveredQuantity(form.getPickedNumber());
+        if(outListByKuCodeAndInGoodId.getNumber().equals(outListByKuCodeAndInGoodId.getUnDeliveredQuantity())){
+            outListByKuCodeAndInGoodId.setIsPickedGoods(2);
+            boolean update = goodsLocationRecordService.saveOrUpdate(outListByKuCodeAndInGoodId);
+            if(!update){
+                return false;
+            }
+        }else{
+            boolean update = goodsLocationRecordService.saveOrUpdate(outListByKuCodeAndInGoodId);
+            if(!update){
+                return false;
+            }
         }
+
+
         if(form.getCmd().equals("end")){
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("order_no",form.getOrderNo());
@@ -464,14 +474,14 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     @Override
     public List<OnShelfOrderVO> getListByQueryForm(QueryPutGoodForm form) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status","CCE_3");
+        queryWrapper.eq("status","CCE_2");
         if(form.getOrderNo() != null){
             queryWrapper.like("order_no",form.getOrderNo());
         }
-        List<StorageInputOrder> list = this.baseMapper.selectList(queryWrapper);
+        List<StorageOutOrder> list = this.baseMapper.selectList(queryWrapper);
         List<OnShelfOrderVO> onShelfOrderVOS = new ArrayList<>();
-        for (StorageInputOrder storageInputOrder : list) {
-            List<OnShelfOrderVO> onShelfOrderVOS1 = warehouseGoodsService.getListByOrderIdAndTime2(storageInputOrder.getId(),storageInputOrder.getOrderNo(),form.getStartTime(),form.getEndTime());
+        for (StorageOutOrder storageOutOrder : list) {
+            List<OnShelfOrderVO> onShelfOrderVOS1 = warehouseGoodsService.getListByOrderIdAndTime2(storageOutOrder.getId(),storageOutOrder.getOrderNo(),form.getStartTime(),form.getEndTime());
             for (OnShelfOrderVO inGoodsOperationRecord : onShelfOrderVOS1) {
                 onShelfOrderVOS.add(inGoodsOperationRecord);
             }

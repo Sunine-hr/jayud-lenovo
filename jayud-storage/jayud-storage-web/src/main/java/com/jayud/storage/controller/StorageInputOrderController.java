@@ -585,17 +585,14 @@ public class StorageInputOrderController {
     @PostMapping(value = "/isWarehousing")
     public CommonResult isWarehousing(@RequestBody StorageInProcessOptForm form) {
         //获取该批次所有的入仓商品
-        List<InGoodsOperationRecord> listByWarehousingBatchNo = inGoodsOperationRecordService.getListByWarehousingBatchNo(form.getWarehousingBatchNo());
         Integer totalNumber = 0;
-        for (InGoodsOperationRecord inGoodsOperationRecord : listByWarehousingBatchNo) {
-            totalNumber = totalNumber + inGoodsOperationRecord.getNumber();
-        }
         Integer totalNumber1 = 0;
         if(form.getInGoodsOperationRecords().size()<=0){
             return CommonResult.error(443,"入库件数不准确");
         }
         if(CollectionUtils.isNotEmpty(form.getInGoodsOperationRecords())){
             for (InGoodsOperationRecordForm inGoodsOperationRecord : form.getInGoodsOperationRecords()) {
+                totalNumber = totalNumber + inGoodsOperationRecord.getNumber();
                 List<GoodsLocationRecordForm> goodsLocationRecordForms = inGoodsOperationRecord.getGoodsLocationRecordForms();
                 for (GoodsLocationRecordForm goodsLocationRecordForm : goodsLocationRecordForms) {
                     if(goodsLocationRecordForm.getNumber() != null && goodsLocationRecordForm.getKuCode() != null){
@@ -605,7 +602,7 @@ public class StorageInputOrderController {
             }
         }
 
-        if(totalNumber == totalNumber1){
+        if(totalNumber.equals(totalNumber1)){
             return CommonResult.success();
         }
         return CommonResult.error(443,"入库件数不准确");
@@ -747,12 +744,19 @@ public class StorageInputOrderController {
             Integer nowNumber = 0;
             Integer nowPcs = 0;
             for (InGoodsOperationRecord inGoodsOperationRecord : listByOrderId) {
-                number = number + inGoodsOperationRecord.getNumber();
-                pcs = pcs + inGoodsOperationRecord.getPcs();
-                nowPcs = nowPcs + inGoodsOperationRecord.getPcs();
+                if(inGoodsOperationRecord.getNumber() != null){
+                    number = number + inGoodsOperationRecord.getNumber();
+                }
+                if(inGoodsOperationRecord.getPcs() != null){
+                    pcs = pcs + inGoodsOperationRecord.getPcs();
+                    nowPcs = nowPcs + inGoodsOperationRecord.getPcs();
+                }
                 List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecord.getId());
                 for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
-                    nowNumber = nowNumber + goodsLocationRecord.getUnDeliveredQuantity();
+                    if(goodsLocationRecord.getUnDeliveredQuantity() != null){
+                        nowNumber = nowNumber + goodsLocationRecord.getUnDeliveredQuantity();
+                    }
+
                 }
             }
             record.setOrderQuantity(number);
@@ -937,46 +941,46 @@ public class StorageInputOrderController {
 //            dataMap.put("board", "1");
 //            dataMap.put("cardboard", "1");
 //            dataMap.put("woodenCase", "1");
-            if(storageInProcessOptFormVO.getYes().equals(true)){
+            if(storageInProcessOptFormVO.getYes() != null && storageInProcessOptFormVO.getYes().equals(true)){
                 dataMap.put("yes", "√");
             }
             if(storageInProcessOptFormVO.getNo() != null && storageInProcessOptFormVO.getNo().equals(true)){
                 dataMap.put("no", "√");
             }
-            if(storageInProcessOptFormVO.getYes().equals(true)){
+            if(storageInProcessOptFormVO.getIsGone() != null && storageInProcessOptFormVO.getIsGone().equals(true)){
                 dataMap.put("isGone", "√");
             }
-            if(storageInProcessOptFormVO.getYes().equals(true)){
+            if(storageInProcessOptFormVO.getIsInstructions() != null && storageInProcessOptFormVO.getIsInstructions().equals(true)){
                 dataMap.put("isInstructions", "√");
             }
-            if(storageInProcessOptFormVO.getYes().equals(true)){
+            if(storageInProcessOptFormVO.getIsDoorCollection() != null && storageInProcessOptFormVO.getIsDoorCollection().equals(true)){
                 dataMap.put("isDoorCollection", "√");
             }
-            if(storageInProcessOptFormVO.getYes().equals(true)){
+            if(storageInProcessOptFormVO.getIsSelfDelivery() != null && storageInProcessOptFormVO.getIsSelfDelivery().equals(true)){
                 dataMap.put("isSelfDelivery", "√");
             }
-            if(storageInProcessOptFormVO.getYes().equals(true)){
+            if(storageInProcessOptFormVO.getIsGoldLabels() != null && storageInProcessOptFormVO.getIsGoldLabels().equals(true)){
                 dataMap.put("isGoldLabels", "√");
             }
-            if(storageInProcessOptFormVO.getYes().equals(true)){
+            if(storageInProcessOptFormVO.getIsImproperPacking() != null && storageInProcessOptFormVO.getIsImproperPacking().equals(true)){
                 dataMap.put("isImproperPacking", "√");
             }
-            if(storageInProcessOptFormVO.getYes().equals(true)){
+            if(storageInProcessOptFormVO.getIsTomOpen() != null && storageInProcessOptFormVO.getIsTomOpen().equals(true)){
                 dataMap.put("isTomOpen", "√");
             }
-            if(storageInProcessOptFormVO.getYes().equals(true)){
+            if(storageInProcessOptFormVO.getIsReTaped() != null && storageInProcessOptFormVO.getIsReTaped().equals(true)){
                 dataMap.put("isReTaped", "√");
             }
-            if(storageInProcessOptFormVO.getYes().equals(true)){
+            if(storageInProcessOptFormVO.getIsCrushedCollapsed() != null && storageInProcessOptFormVO.getIsCrushedCollapsed().equals(true)){
                 dataMap.put("isCrushedCollapsed", "√");
             }
-            if(storageInProcessOptFormVO.getYes().equals(true)){
+            if(storageInProcessOptFormVO.getIsWaterGreased() != null && storageInProcessOptFormVO.getIsWaterGreased().equals(true)){
                 dataMap.put("isWaterGreased", "√");
             }
-            if(storageInProcessOptFormVO.getYes().equals(true)){
+            if(storageInProcessOptFormVO.getIsPuncturedHoles() != null && storageInProcessOptFormVO.getIsPuncturedHoles().equals(true)){
                 dataMap.put("isPuncturedHoles", "√");
             }
-            if(storageInProcessOptFormVO.getYes().equals(true)){
+            if(storageInProcessOptFormVO.getIsDamagedCtn() != null && storageInProcessOptFormVO.getIsDamagedCtn().equals(true)){
                 dataMap.put("isDamagedCtn", "√");
             }
 

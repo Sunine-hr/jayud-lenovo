@@ -72,6 +72,15 @@ public class WarehouseAreaShelvesLocationVO extends Model<WarehouseAreaShelvesLo
     private Integer categoryUpperLimit;
 
     public void setMaximumVolume() {
-        this.maximumVolume = this.height+"*"+this.length+"*"+this.height;
+        if(this.height == null){
+            this.height = 0.0;
+        }
+        if(this.length == null){
+            this.length = 0.0;
+        }
+        if(this.width == null){
+            this.width = 0.0;
+        }
+        this.maximumVolume = this.height+"*"+this.length+"*"+this.width;
     }
 }

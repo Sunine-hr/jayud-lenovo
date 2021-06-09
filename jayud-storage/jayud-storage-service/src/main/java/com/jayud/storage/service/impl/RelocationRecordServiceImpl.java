@@ -14,10 +14,12 @@ import com.jayud.storage.mapper.RelocationRecordMapper;
 import com.jayud.storage.model.vo.RelocationGoodsOperationRecordFormVO;
 import com.jayud.storage.model.vo.RelocationRecordVO;
 import com.jayud.storage.model.vo.StockVO;
+import com.jayud.storage.model.vo.WarehouseNameVO;
 import com.jayud.storage.service.IGoodsLocationRecordService;
 import com.jayud.storage.service.IInGoodsOperationRecordService;
 import com.jayud.storage.service.IRelocationRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +43,9 @@ public class RelocationRecordServiceImpl extends ServiceImpl<RelocationRecordMap
     @Autowired
     private IGoodsLocationRecordService goodsLocationRecordService;
 
+    @Autowired
+    private IWarehouseAreaShelvesLocationService warehouseAreaShelvesLocationService;
+
     @Override
     public List<RelocationGoodsOperationRecordFormVO> getListBySkuAndLocationCode(String sku, String locationCode) {
         return this.baseMapper.getListBySkuAndLocationCode(sku,locationCode);
@@ -61,20 +66,26 @@ public class RelocationRecordServiceImpl extends ServiceImpl<RelocationRecordMap
     @Override
     public boolean createRelocationOrder(RelocationRecordForm form) {
         RelocationRecord relocationRecord = ConvertUtil.convert(form, RelocationRecord.class);
+        //通过库位获取货架名和仓库名，区域名
+        WarehouseNameVO warehouseNameByKuCode = warehouseAreaShelvesLocationService.getWarehouseNameByKuCode(form.getOldLocationCode());
+        relocationRecord.setWarehouseName(warehouseNameByKuCode.getName());
+        relocationRecord.setAreaName(warehouseNameByKuCode.getAreaName());
+        relocationRecord.setShelvesName(warehouseNameByKuCode.getShelvesName());
         relocationRecord.setCreateTime(LocalDateTime.now());
         relocationRecord.setCreateUser(UserOperator.getToken());
+        relocationRecord.setStatus(1);
         boolean update = this.saveOrUpdate(relocationRecord);
         if(update){
             //移库成功，修改库位信息
             InGoodsOperationRecord listByWarehousingBatchNoAndSku = inGoodsOperationRecordService.getListByWarehousingBatchNoAndSku(form.getWarehousingBatchNo(), form.getSku());
             GoodsLocationRecord inListByKuCodeAndInGoodId = goodsLocationRecordService.getInListByKuCodeAndInGoodId(form.getOldLocationCode(), listByWarehousingBatchNoAndSku.getId());
-            inListByKuCodeAndInGoodId.setNumber(inListByKuCodeAndInGoodId.getNumber()-form.getNumber());
+            inListByKuCodeAndInGoodId.setNumber(inListByKuCodeAndInGoodId.getUnDeliveredQuantity()-form.getNumber());
             boolean update1 = goodsLocationRecordService.saveOrUpdate(inListByKuCodeAndInGoodId);
             if(!update1){
                 log.warn("修改库位商品信息失败");
             }
             GoodsLocationRecord inListByKuCodeAndInGoodId1 = goodsLocationRecordService.getInListByKuCodeAndInGoodId(form.getNewLocationCode(), listByWarehousingBatchNoAndSku.getId());
-            if(inListByKuCodeAndInGoodId == null){
+            if(inListByKuCodeAndInGoodId1 == null){
                 GoodsLocationRecord goodsLocationRecord = new GoodsLocationRecord();
                 goodsLocationRecord.setNumber(form.getNumber());
                 goodsLocationRecord.setUnDeliveredQuantity(form.getNumber());
@@ -89,6 +100,7 @@ public class RelocationRecordServiceImpl extends ServiceImpl<RelocationRecordMap
                 }
             }else{
                 inListByKuCodeAndInGoodId1.setNumber(inListByKuCodeAndInGoodId1.getNumber() + form.getNumber());
+                inListByKuCodeAndInGoodId1.setNumber(inListByKuCodeAndInGoodId1.getUnDeliveredQuantity() + form.getNumber());
                 boolean update3 = goodsLocationRecordService.saveOrUpdate(inListByKuCodeAndInGoodId1);
                 if(!update3){
                     log.warn("修改库位商品信息失败");

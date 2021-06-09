@@ -80,12 +80,12 @@
     <select id="getListByOrderIdAndTime2" resultType="com.jayud.storage.model.vo.OnShelfOrderVO">
         select id,order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, count(number) number
         from warehouse_goods wg
-        where wg.order_id = #{orderId} and wg.order_no = #{orderNo}
-        <if test="form.startTime !=null and form.startTime!=''">
-            and igor.create_time <![CDATA[>= ]]> #{form.startTime}
+        where wg.order_id = #{id} and wg.order_no = #{orderNo}
+        <if test="startTime != null and startTime != ''">
+            and wg.create_time <![CDATA[>= ]]> #{startTime}
         </if>
-        <if test="form.endTime !=null and form.endTime!=''">
-            and igor.create_time <![CDATA[<= ]]> #{form.endTime}
+        <if test="endTime != null and endTime != ''">
+            and wg.create_time <![CDATA[<= ]]> #{endTime}
         </if>
         group by warehousing_batch_no
     </select>

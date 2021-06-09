@@ -66,6 +66,9 @@ public class OnShelfOrderController {
     @PostMapping("/findByWarehousingBatchNo")
     public CommonResult findByWarehousingBatchNo(@RequestBody QueryPutGoodForm form) {
         List<InGoodsOperationRecord> listByWarehousingBatchNo = inGoodsOperationRecordService.getListByWarehousingBatchNo(form.getWarehousingBatchNo());
+        if(CollectionUtils.isEmpty(listByWarehousingBatchNo)){
+            return CommonResult.error(444,"该批次无上架信息");
+        }
         return CommonResult.success(listByWarehousingBatchNo);
     }
 
@@ -76,6 +79,9 @@ public class OnShelfOrderController {
         String sku = MapUtil.getStr(map, "sku");
         if(warehousingBatchNo != null && sku == null){
             List<InGoodsOperationRecord> listByWarehousingBatchNo = inGoodsOperationRecordService.getListByWarehousingBatchNo(warehousingBatchNo);
+            if(CollectionUtils.isEmpty(listByWarehousingBatchNo)){
+                return CommonResult.error(444,"该批次无上架信息");
+            }
             InGoodsOperationRecordBatchNoVO inGoodsOperationRecordBatchNoVO = new InGoodsOperationRecordBatchNoVO();
             for (InGoodsOperationRecord inGoodsOperationRecord : listByWarehousingBatchNo) {
                 StorageInputOrder byId = storageInputOrderService.getById(inGoodsOperationRecord.getOrderId());
@@ -87,6 +93,9 @@ public class OnShelfOrderController {
         if(warehousingBatchNo != null && sku != null){
             InGoodsOperationRecord listByWarehousingBatchNoAndSku = inGoodsOperationRecordService.getListByWarehousingBatchNoAndSku(warehousingBatchNo, sku);
 
+            if(listByWarehousingBatchNoAndSku == null){
+                return CommonResult.error(444,"该批次没有"+sku+"这个商品");
+            }
             //获取入仓号
             StorageInputOrder byId = storageInputOrderService.getById(listByWarehousingBatchNoAndSku.getOrderId());
 
@@ -99,7 +108,7 @@ public class OnShelfOrderController {
 
             InGoodsOperationRecordBatchNoVO convert = ConvertUtil.convert(listByWarehousingBatchNoAndSku, InGoodsOperationRecordBatchNoVO.class);
             convert.setWarehouseNumber(byId.getWarehouseNumber());
-            convert.setNumber(convert.getNumber()-number);
+            convert.setNumber(convert.getNumber() - number);
             return CommonResult.success(convert) ;
         }
         return CommonResult.success();

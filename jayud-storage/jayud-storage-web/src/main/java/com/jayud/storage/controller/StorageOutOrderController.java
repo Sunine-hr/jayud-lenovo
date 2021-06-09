@@ -244,7 +244,7 @@ public class StorageOutOrderController {
                         return CommonResult.error(400, goodsLocationRecordForm.getKuCode()+"的该商品最大数量为"+goodsLocationRecord.getNumber());
                     }
                 }
-                if(outWarehouseGoodsForm.getNumber()!=number){
+                if(!outWarehouseGoodsForm.getNumber().equals(number)){
                     return CommonResult.error(400, "该商品拣货数量与订单不一致");
                 }
             }

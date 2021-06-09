@@ -76,4 +76,5 @@ public interface IWarehouseGoodsService extends IService<WarehouseGoods> {
 
     List<OnShelfOrderVO> getListByOrderIdAndTime2(Long id, String orderNo, String startTime, String endTime);
 
+    List<WarehouseGoods> getOutWarehouseGoodsByOrderNo(String orderNo);
 }

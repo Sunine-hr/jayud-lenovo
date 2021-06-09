@@ -100,6 +100,29 @@ public class WarehouseAreaShelvesLocationController {
     @ApiOperation(value = "增加或修改库位信息")
     @PostMapping("/saveOrUpdateWarehouseAreaShelvesLocation")
     public CommonResult saveOrUpdateWarehouseAreaShelvesLocation(@RequestBody List<WarehouseAreaShelvesLocationForm> form){
+
+        for (WarehouseAreaShelvesLocationForm warehouseAreaShelvesLocationForm : form) {
+            if(warehouseAreaShelvesLocationForm.getId() == null){
+                for (WarehouseAreaShelvesLocationForm areaShelvesLocationForm : form) {
+                    if(warehouseAreaShelvesLocationForm.getShelvesLine().equals(areaShelvesLocationForm.getShelvesLine()) &&
+                            warehouseAreaShelvesLocationForm.getShelvesType().equals("AB面")){
+                        return CommonResult.error(444,warehouseAreaShelvesLocationForm.getShelvesLine()+"层,填的数据重复");
+                    }
+
+                    if(warehouseAreaShelvesLocationForm.getShelvesLine().equals(areaShelvesLocationForm.getShelvesLine()) &&
+                            warehouseAreaShelvesLocationForm.getShelvesType().equals(areaShelvesLocationForm.getShelvesType())){
+                        return CommonResult.error(444,warehouseAreaShelvesLocationForm.getShelvesLine()+"层，填的数据重复");
+                    }
+                }
+
+                WarehouseAreaShelvesLocation warehouseAreaShelvesLocation = warehouseAreaShelvesLocationService.getLocation(warehouseAreaShelvesLocationForm.getShelvesLine(),warehouseAreaShelvesLocationForm.getShelvesType());
+                if(warehouseAreaShelvesLocation != null){
+                    return CommonResult.error(444,warehouseAreaShelvesLocationForm.getShelvesLine()+"层"+warehouseAreaShelvesLocationForm.getShelvesType()+"已存在");
+                }
+            }
+
+        }
+
         boolean result = this.warehouseAreaShelvesLocationService.saveOrUpdateWarehouseAreaShelvesLocation(form);
         if(!result){
             return CommonResult.error(444,"数据插入失败");

@@ -97,7 +97,7 @@ public class StorageOutPickingListVO {
         Double totalWeight = 0.0;
         for (WarehouseGoodsVO warehouseGoodsVO : goodsFormList) {
             if(warehouseGoodsVO.getEstimatedArrivalTime() != null){
-                str.append(warehouseGoodsVO.getEstimatedArrivalTime()).append("  ");
+                str.append(warehouseGoodsVO.getExpectedDeliveryTime()).append("  ");
             }
             if(warehouseGoodsVO.getNumber() != null){
                 totalNumber = totalNumber + warehouseGoodsVO.getNumber();

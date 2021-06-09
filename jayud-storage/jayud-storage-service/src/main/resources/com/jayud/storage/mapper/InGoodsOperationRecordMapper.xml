@@ -78,7 +78,7 @@
         where glr.ku_code = #{kuCode}
     </select>
 
-    <select id="getWarehousingBatchNoComBox" resultType="list">
+    <select id="getWarehousingBatchNoComBox" resultType="string">
         select distinct igor.warehousing_batch_no warehousingBatchNo
         from goods_location_record glr
         left join in_goods_operation_record igor on glr.inGood_id = igor.id
@@ -88,12 +88,12 @@
     <select id="getListByOrderIdAndTime2" resultType="com.jayud.storage.model.vo.OnShelfOrderVO">
         select id,order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, count(number) number
         from in_goods_operation_record igor
-        where igor.order_id = #{orderId} and igor.order_no = #{orderNo}
-        <if test="form.startTime !=null and form.startTime!=''">
-            and igor.create_time <![CDATA[>= ]]> #{form.startTime}
+        where igor.order_id = #{id} and igor.order_no = #{orderNo}
+        <if test="startTime != null and startTime != ''">
+            and igor.create_time <![CDATA[>= ]]> #{startTime}
         </if>
-        <if test="form.endTime !=null and form.endTime!=''">
-            and igor.create_time <![CDATA[<= ]]> #{form.endTime}
+        <if test="endTime != null and endTime != ''">
+            and igor.create_time <![CDATA[<= ]]> #{endTime}
         </if>
         group by warehousing_batch_no
     </select>

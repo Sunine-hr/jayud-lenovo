@@ -96,4 +96,7 @@ public class WarehouseGoodsVO {
     @ApiModelProperty(value = "入库批次号")
     private String warehousingBatchNo;
 
+    @ApiModelProperty(value = "操作人")
+    private String orderTaker;
+
 }

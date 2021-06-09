@@ -1115,11 +1115,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         String oldMainOrderNo = inputMainOrderForm.getOrderNo() != null ? inputMainOrderForm.getOrderNo() : null;
 
+        Integer status = inputMainOrderForm.getStatus();
+
         inputMainOrderForm.setCmd(form.getCmd());
         //特殊处理
         this.specialTreatment(form, inputMainOrderForm);
 
         String mainOrderNo = oprMainOrder(inputMainOrderForm, form.getLoginUserName());
+
         if (StringUtil.isNullOrEmpty(mainOrderNo)) {
             return false;
         }
@@ -1487,7 +1490,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
 
                 if (this.queryEditOrderCondition(storageInputOrderForm.getStatus(),
-                        inputMainOrderForm.getStatus(), SubOrderSignEnum.CCI.getSignOne(), form)) {
+//                        inputMainOrderForm.getStatus()
+                        status, SubOrderSignEnum.CCI.getSignOne(), form)) {
                     storageInputOrderForm.setMainOrderNo(mainOrderNo);
                     storageInputOrderForm.setCreateUser(UserOperator.getToken());
                     for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageInputOrderForm.getGoodsFormList()) {

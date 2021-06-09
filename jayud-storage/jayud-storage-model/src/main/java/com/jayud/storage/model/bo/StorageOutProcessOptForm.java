@@ -1,6 +1,5 @@
 package com.jayud.storage.model.bo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;

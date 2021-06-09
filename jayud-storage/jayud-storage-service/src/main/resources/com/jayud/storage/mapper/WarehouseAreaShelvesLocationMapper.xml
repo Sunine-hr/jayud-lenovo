@@ -55,6 +55,9 @@
         left join warehouse_area wa on wa.`id` = was.`area_id`
         left join warehouse w on w.`id` = wa.`warehouse_id`
         where wasl.status = 1 and wasl.shelves_id = #{form.shelvesId}
+        <if test="form.id != null and form.id != ''">
+            and wasl.id = #{form.id}
+        </if>
         order by wasl.create_time desc
     </select>
 

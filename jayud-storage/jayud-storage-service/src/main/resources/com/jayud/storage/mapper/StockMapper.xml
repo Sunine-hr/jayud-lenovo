@@ -22,7 +22,7 @@
     </sql>
 
     <select id="findByPage" resultType="com.jayud.storage.model.vo.StockVO">
-        select igor.id ,s.good_name goodName, s.customer_id customerId, s.sku, s.specification_model specificationModel,
+        select distinct igor.id ,s.good_name goodName, s.customer_id customerId, s.sku, s.specification_model specificationModel,
         l.location_code locationCode,
         ((select un_delivered_quantity from goods_location_record g where g.ku_code = glr.ku_code and g.inGood_id = glr.inGood_id and g.type=1)) inventoryQuantityUnit,
         (select DISTINCT a.createTime from

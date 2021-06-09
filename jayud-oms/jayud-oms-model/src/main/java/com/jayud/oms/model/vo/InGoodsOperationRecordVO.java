@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
  * <p>
  * 入库商品操作记录表
@@ -56,6 +58,12 @@ public class InGoodsOperationRecordVO extends Model<InGoodsOperationRecordVO> {
 
     @ApiModelProperty(value = "备注")
     private String remarks;
+
+    @ApiModelProperty(value = "出库时间")
+    private String createTime;
+
+    @ApiModelProperty(value = "操作人")
+    private String orderTaker;
 
 
 }

@@ -62,11 +62,14 @@ public class PickUpOrderController {
             return CommonResult.error(444,"该订单不存在");
         }
         List<WarehouseGoodsLocationCodeVO> warehouseGoodsLocationVOS = storageOutOrderService.findByOrderNo(form);
+        if(CollectionUtils.isEmpty(warehouseGoodsLocationVOS)){
+            return CommonResult.error(444,"该订单无拣货信息");
+        }
         StorageOutOrderGoodVO storageOutOrderGoodVO = new StorageOutOrderGoodVO();
         storageOutOrderGoodVO.setWarehouseGoodsLocationCodeVOS(warehouseGoodsLocationVOS);
         if(CollectionUtils.isNotEmpty(warehouseGoodsLocationVOS)){
             if(warehouseGoodsLocationVOS.get(0).getExpectedDeliveryTime() != null){
-                storageOutOrderGoodVO.setDefaultOutTime(warehouseGoodsLocationVOS.get(0).getExpectedDeliveryTime().toString());
+                storageOutOrderGoodVO.setDefaultOutTime(warehouseGoodsLocationVOS.get(0).getExpectedDeliveryTime().toString().replace("T"," "));
             }
         }
         return CommonResult.success(storageOutOrderGoodVO);
@@ -91,6 +94,13 @@ public class PickUpOrderController {
 
                     if(CollectionUtils.isNotEmpty(outGoodsLocationRecordByGoodId)){
                         convert.setDefaultLocation(outGoodsLocationRecordByGoodId.get(0).getKuCode());
+                    }
+
+                    for (GoodsLocationRecordFormVO goodsLocationRecordFormVO : outGoodsLocationRecordByGoodId) {
+                        if(goodsLocationRecordFormVO.getUnDeliveredQuantity() != null){
+                            goodsLocationRecordFormVO.setNumber(goodsLocationRecordFormVO.getNumber()-goodsLocationRecordFormVO.getUnDeliveredQuantity());
+
+                        }
                     }
 
                     convert.setGoodsLocationRecordForms(outGoodsLocationRecordByGoodId);
@@ -135,11 +145,11 @@ public class PickUpOrderController {
                 return CommonResult.error(444, error.getDefaultMessage());
             }
         }
-        if(form.getKuCode().equals(form.getScanningKuCode())){
+        if(!form.getKuCode().equals(form.getScanningKuCode())){
             return CommonResult.error(444, "选择库位与扫描库位不一致");
         }
-        if(form.getNumber().equals(form.getPickedNumber())){
-            return CommonResult.error(444, "已拣数量和待拣数量不一致");
+        if(form.getNumber() < form.getPickedNumber()){
+            return CommonResult.error(444, "已拣数量不能大于待拣数量");
         }
         boolean b = storageOutOrderService.PDAWarehousePicking(form);
         if(!b){

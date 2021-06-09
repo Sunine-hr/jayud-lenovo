@@ -7,6 +7,7 @@ import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.storage.model.vo.LocationCodeVO;
 import com.jayud.storage.model.vo.WarehouseAreaShelvesLocationVO;
+import com.jayud.storage.model.vo.WarehouseNameVO;
 
 import java.util.List;
 
@@ -42,5 +43,7 @@ public interface IWarehouseAreaShelvesLocationService extends IService<Warehouse
      * @param kuCode
      * @return
      */
-    String getWarehouseNameByKuCode(String kuCode);
+    WarehouseNameVO getWarehouseNameByKuCode(String kuCode);
+
+    WarehouseAreaShelvesLocation getLocation(Integer shelvesLine, Long shelvesType);
 }

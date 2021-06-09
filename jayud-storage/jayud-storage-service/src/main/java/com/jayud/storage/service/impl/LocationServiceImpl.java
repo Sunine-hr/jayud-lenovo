@@ -37,4 +37,14 @@ public class LocationServiceImpl extends ServiceImpl<LocationMapper, Location> i
         }
         return true;
     }
+
+    @Override
+    public void deleteLocation(Long id) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("location_id",id);
+        int delete = this.baseMapper.delete(queryWrapper);
+        if(delete<=0){
+            log.warn("删除库位编码失败");
+        }
+    }
 }

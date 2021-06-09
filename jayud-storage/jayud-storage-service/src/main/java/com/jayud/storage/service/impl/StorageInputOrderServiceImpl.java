@@ -248,7 +248,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
             for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
                 number = number + goodsLocationRecord.getNumber();
             }
-            if(inGoodsOperationRecord.getNumber() == number){
+            if(inGoodsOperationRecord.getNumber().equals(number)){
                 //确认该商品已入库
                 InGoodsOperationRecord inGoodsOperationRecord1 = ConvertUtil.convert(inGoodsOperationRecord, InGoodsOperationRecord.class);
                 inGoodsOperationRecord1.setIsWarehousing(1);

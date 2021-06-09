@@ -12,4 +12,7 @@ public class QueryWarehouseAreaShelvesLocationForm extends BasePageForm{
     @NotNull
     private Long shelvesId;
 
+    @ApiModelProperty(value = "库位id")
+    private Long id;
+
 }

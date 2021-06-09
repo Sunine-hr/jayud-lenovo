@@ -105,4 +105,12 @@ public class WarehouseGoodsServiceImpl extends ServiceImpl<WarehouseGoodsMapper,
         return this.baseMapper.getListByOrderIdAndTime2(id,orderNo,startTime,endTime);
     }
 
+    @Override
+    public List<WarehouseGoods> getOutWarehouseGoodsByOrderNo(String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_no",orderNo);
+        queryWrapper.eq("type",2);
+        return this.baseMapper.selectList(queryWrapper);
+    }
+
 }

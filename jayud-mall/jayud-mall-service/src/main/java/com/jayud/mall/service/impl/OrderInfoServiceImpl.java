@@ -761,9 +761,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 BigDecimal min = templateCopeReceivableVO.getMin() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMin();
                 BigDecimal max = templateCopeReceivableVO.getMax() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMax();
                 totalChargeWeight = caseVO.getTotalChargeWeight();//客户预报的总收费重 收费重
-                if(totalChargeWeight.compareTo(min) == -1 || totalChargeWeight.compareTo(max) == 1){
-                    Asserts.fail(ResultEnum.UNKNOWN_ERROR, "收费重超出或小于，订舱区间的所对应的数量范围");
-                }
+//                if(totalChargeWeight.compareTo(min) == -1 || totalChargeWeight.compareTo(max) == 1){
+//                    Asserts.fail(ResultEnum.UNKNOWN_ERROR, "收费重超出或小于，订舱区间的所对应的数量范围");
+//                }
 
                 OrderCopeReceivable orderCopeReceivable = new OrderCopeReceivable();
                 orderCopeReceivable.setOrderId(orderId);//订单ID(order_info id)
@@ -1383,9 +1383,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 BigDecimal min = templateCopeReceivableVO.getMin() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMin();
                 BigDecimal max = templateCopeReceivableVO.getMax() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMax();
                 totalChargeWeight = caseVO.getTotalChargeWeight();//客户预报的总收费重 收费重
-                if(totalChargeWeight.compareTo(min) == -1 || totalChargeWeight.compareTo(max) == 1){
-                    Asserts.fail(ResultEnum.UNKNOWN_ERROR, "收费重超出或小于，订舱区间的所对应的数量范围");
-                }
+//                if(totalChargeWeight.compareTo(min) == -1 || totalChargeWeight.compareTo(max) == 1){
+//                    Asserts.fail(ResultEnum.UNKNOWN_ERROR, "收费重超出或小于，订舱区间的所对应的数量范围");
+//                }
 
                 OrderCopeReceivable orderCopeReceivable = new OrderCopeReceivable();
                 orderCopeReceivable.setOrderId(orderId);//订单ID(order_info id)

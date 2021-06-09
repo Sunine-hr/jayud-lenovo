@@ -36,7 +36,8 @@ public enum OrderEnum {
     AFTER_IMPORT("-2", "旧系统导入"),
 
     //订单小状态，内部状态，非流程状态
-    IS_AUDIT_ORDER("is_audit_order", "是否审核单据(1已审单 2未审单)")
+    IS_AUDIT_ORDER("is_audit_order", "是否审核单据(1已审单 2未审单)"),
+    IS_CONFIRM_BILLING("is_confirm_billing", "是否确认计费重(1已确认 2为确认)")
     ;
 
     private String code;

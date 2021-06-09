@@ -92,6 +92,12 @@ public class WarehouseAreaShelvesLocationController {
                     record.setShelvesTypeName(datum.getValue());
                 }
             }
+            List<Location> list = locationService.getList(record.getId());
+            List<String> strings = new ArrayList<>();
+            for (Location location : list) {
+                strings.add(location.getLocationCode());
+            }
+            record.setKuCodeList(strings);
         }
         CommonPageResult<WarehouseAreaShelvesVO> pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);

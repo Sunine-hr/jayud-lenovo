@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -70,6 +71,9 @@ public class WarehouseAreaShelvesLocationVO extends Model<WarehouseAreaShelvesLo
 
     @ApiModelProperty(value = "sku种类上限")
     private Integer categoryUpperLimit;
+
+    @ApiModelProperty(value = "sku种类上限")
+    private List<String> kuCodeList;
 
     public void setMaximumVolume() {
         if(this.height == null){

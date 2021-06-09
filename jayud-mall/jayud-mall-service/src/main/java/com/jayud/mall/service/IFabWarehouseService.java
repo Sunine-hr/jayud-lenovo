@@ -56,4 +56,11 @@ public interface IFabWarehouseService extends IService<FabWarehouse> {
      * @return
      */
     CommonResult auditFabWarehouse(AuditFabWarehouseForm form);
+
+    /**
+     * 根据代码，查询仓库
+     * @param warehouseCode
+     * @return
+     */
+    FabWarehouseVO findfabWarehouseByWarehouseCode(String warehouseCode);
 }

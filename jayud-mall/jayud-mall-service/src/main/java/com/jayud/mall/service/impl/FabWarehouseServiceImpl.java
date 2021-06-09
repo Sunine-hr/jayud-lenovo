@@ -117,4 +117,10 @@ public class FabWarehouseServiceImpl extends ServiceImpl<FabWarehouseMapper, Fab
 
         return CommonResult.success("审核成功");
     }
+
+    @Override
+    public FabWarehouseVO findfabWarehouseByWarehouseCode(String warehouseCode) {
+        FabWarehouseVO fabWarehouseVO = fabWarehouseMapper.findFabWarehouseByWarehouseCode(warehouseCode);
+        return fabWarehouseVO;
+    }
 }

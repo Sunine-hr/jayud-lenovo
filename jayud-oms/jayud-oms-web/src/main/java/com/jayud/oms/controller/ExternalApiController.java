@@ -1534,7 +1534,7 @@ public class ExternalApiController {
 //        ApiResult<List<Long>> legalEntityByLegalName = this.oauthClient.getLegalIdBySystemName(UserOperator.getToken());
 //        List<Long> legalIds = legalEntityByLegalName.getData();
         DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.SUPPLIER_TYPE.getCode()).getData();
-        //中港待处理节点+
+        //中港待处理节点
         Map<String, Integer> tmsPendingNum = null;
         if (UserTypeEnum.SUPPLIER_TYPE.getCode().equals(dataControl.getAccountType())) {
             tmsPendingNum = this.tmsClient.getNumByStatus("supplier", dataControl).getData();

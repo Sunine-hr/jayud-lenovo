@@ -109,5 +109,7 @@ public class OfferInfoForm {
     @JSONField(ordinal = 44)
     private List<TemplateFileVO> templateFileVOList;
 
+    @ApiModelProperty(value = "配载id", notes="注释:从配载添加的报价，直接关联配载单，一个报价只能关联一个配载")
+    private Long confId;
 
 }

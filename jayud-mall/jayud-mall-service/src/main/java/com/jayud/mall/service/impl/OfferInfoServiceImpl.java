@@ -20,6 +20,7 @@ import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -41,63 +42,53 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
 
     @Autowired
     OfferInfoMapper offerInfoMapper;
-
     @Autowired
     ServiceGroupMapper serviceGroupMapper;
-
     @Autowired
     TransportWayMapper transportWayMapper;
-
     @Autowired
     FabWarehouseMapper fabWarehouseMapper;
-
     @Autowired
     CustomerMapper customerMapper;
-
     @Autowired
     GoodsTypeMapper goodsTypeMapper;
-
     @Autowired
     ShippingAreaMapper shippingAreaMapper;
-
     @Autowired
     QuotationTypeMapper quotationTypeMapper;
-
     @Autowired
     TaskGroupMapper taskGroupMapper;
-
     @Autowired
     CurrencyInfoMapper currencyInfoMapper;
-
     @Autowired
     TemplateCopeReceivableMapper templateCopeReceivableMapper;
-
     @Autowired
     TemplateCopeWithMapper templateCopeWithMapper;
-
     @Autowired
     TemplateFileMapper templateFileMapper;
-
     @Autowired
     OrderCaseMapper orderCaseMapper;
-
     @Autowired
     QuotationTemplateMapper quotationTemplateMapper;
+    @Autowired
+    OrderConfMapper orderConfMapper;
+    @Autowired
+    OceanConfDetailMapper oceanConfDetailMapper;
 
     @Autowired
     BaseService baseService;
-
     @Autowired
     ITemplateCopeReceivableService templateCopeReceivableService;
-
     @Autowired
     ITemplateCopeWithService templateCopeWithService;
-
     @Autowired
     ITemplateFileService templateFileService;
-
     @Autowired
     IQuotationTemplateService quotationTemplateService;
+    @Autowired
+    IOrderConfService orderConfService;
+    @Autowired
+    IOceanConfDetailService oceanConfDetailService;
 
     @Override
     public IPage<OfferInfoVO> findOfferInfoByPage(QueryOfferInfoForm form) {
@@ -124,6 +115,7 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult saveOfferInfo(OfferInfoForm form) {
         OfferInfo offerInfo = ConvertUtil.convert(form, OfferInfo.class);
         Long id = form.getId();
@@ -150,12 +142,14 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             offerInfo.setUserName(user.getName());
             offerInfo.setCreateTime(LocalDateTime.now());
         }else{
+
         }
 
         // 获得报价模板数据
         QuotationTemplate quotationTemplate = quotationTemplateMapper.selectById(offerInfo.getQie());
         quotationTemplate.setId(null);
         quotationTemplate.setDataType(QuotationDataTypeEnum.MANAGEMENT.getCode());
+        // 1.复制报价模板 关联保存
         quotationTemplateService.saveOrUpdate(quotationTemplate);
 
         //报价模板id(quotation_template id)
@@ -232,8 +226,23 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             //保存
             templateFileService.saveOrUpdateBatch(list);
         }
-        //保存报价
+        //2.保存报价
         this.saveOrUpdate(offerInfo);
+
+        //3.关联保存配载
+        Long confId = form.getConfId();
+        if(ObjectUtil.isNotEmpty(confId)){
+            OrderConfVO orderConfVO = orderConfMapper.findOrderConfById(confId);
+            if(ObjectUtil.isNotEmpty(orderConfVO)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "配载单没有找到，无法关联报价");
+            }
+            OceanConfDetail oceanConfDetail = new OceanConfDetail();
+            oceanConfDetail.setOrderId(orderConfVO.getId());//配载id(order_conf id)
+            oceanConfDetail.setIdCode(offerInfo.getId().intValue());//报价id(offer_info id)  报价/提单id(offer_info id  ocean_bill id)
+            oceanConfDetail.setTypes(1);//分类区分当前是报价或提单(1报价 2提单)
+            oceanConfDetail.setStatus("1");//状态(0无效 1有效)
+            oceanConfDetailService.saveOrUpdate(oceanConfDetail);
+        }
         return CommonResult.success("保存报价，成功！");
     }
 

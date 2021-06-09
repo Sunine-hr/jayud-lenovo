@@ -50,7 +50,7 @@ public class CustomerForm {
     private Integer salesmanId;
 
     @ApiModelProperty(value = "运营(服务)小组id(operation_team id)")
-    private Long operationTeamId;
+    private String operationTeamId;
 
     @ApiModelProperty(value = "备注")
     private String remark;

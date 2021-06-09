@@ -78,6 +78,8 @@ public class OrderPickController {
                              HttpServletRequest request, HttpServletResponse response) {
         try {
             OrderWarehouseNoVO orderWarehouseNoVO = orderPickService.downloadWarehouseNoByPickId(id);
+            String customerName = orderWarehouseNoVO.getCustomerName();//客户公司名称
+            String add = orderWarehouseNoVO.getAdd();//目的仓库代码
             String json = JSON.toJSONString(orderWarehouseNoVO, SerializerFeature.DisableCircularReferenceDetect);
             JSONObject jsonObject = JSONObject.parseObject(json);
             ClassPathResource classPathResource = new ClassPathResource("template/nanjing_warehouse_no.xlsx");
@@ -91,7 +93,7 @@ public class OrderPickController {
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
             templateWorkbook.write(outStream);
             ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
-            String fileName = "下载进仓单号(进仓单)";
+            String fileName = customerName+"_"+add+"_"+"进仓单";
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
@@ -119,6 +121,8 @@ public class OrderPickController {
                                              HttpServletRequest request, HttpServletResponse response) {
         try {
             OrderWarehouseNoVO orderWarehouseNoVO = orderPickService.downloadWarehouseNoByPickId(id);
+            String customerName = orderWarehouseNoVO.getCustomerName();//客户公司名称
+            String add = orderWarehouseNoVO.getAdd();//目的仓库代码
             List<MarkVO> markList = orderWarehouseNoVO.getMarkList();
             String json = JSON.toJSONString(markList, SerializerFeature.DisableCircularReferenceDetect);
             JSONArray jsonArray = JSONArray.parseArray(json);
@@ -135,7 +139,7 @@ public class OrderPickController {
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
             templateWorkbook.write(outStream);
             ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
-            String fileName = "下载进仓单号(箱唛)";
+            String fileName = customerName+"_"+add+"_"+"箱唛";
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
@@ -162,6 +166,8 @@ public class OrderPickController {
                                              HttpServletRequest request, HttpServletResponse response) {
         try {
             OrderWarehouseNoVO orderWarehouseNoVO = orderPickService.downloadWarehouseNoByOrderId(id);
+            String customerName = orderWarehouseNoVO.getCustomerName();//客户公司名称
+            String add = orderWarehouseNoVO.getAdd();//目的仓库代码
             String json = JSON.toJSONString(orderWarehouseNoVO, SerializerFeature.DisableCircularReferenceDetect);
             JSONObject jsonObject = JSONObject.parseObject(json);
             ClassPathResource classPathResource = new ClassPathResource("template/nanjing_warehouse_no.xlsx");
@@ -175,7 +181,8 @@ public class OrderPickController {
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
             templateWorkbook.write(outStream);
             ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
-            String fileName = "下载进仓单号(进仓单)";
+
+            String fileName = customerName+"_"+add+"_"+"进仓单";
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
@@ -203,6 +210,8 @@ public class OrderPickController {
                                              HttpServletRequest request, HttpServletResponse response) {
         try {
             OrderWarehouseNoVO orderWarehouseNoVO = orderPickService.downloadWarehouseNoByOrderId(id);
+            String customerName = orderWarehouseNoVO.getCustomerName();//客户公司名称
+            String add = orderWarehouseNoVO.getAdd();//目的仓库代码
             List<MarkVO> markList = orderWarehouseNoVO.getMarkList();
             String json = JSON.toJSONString(markList, SerializerFeature.DisableCircularReferenceDetect);
             JSONArray jsonArray = JSONArray.parseArray(json);
@@ -219,7 +228,7 @@ public class OrderPickController {
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
             templateWorkbook.write(outStream);
             ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
-            String fileName = "下载进仓单号(箱唛)";
+            String fileName = customerName+"_"+add+"_"+"箱唛";
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系

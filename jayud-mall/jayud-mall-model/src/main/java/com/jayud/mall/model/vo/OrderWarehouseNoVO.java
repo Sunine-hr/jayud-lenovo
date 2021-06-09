@@ -42,4 +42,11 @@ public class OrderWarehouseNoVO {
     @ApiModelProperty(value = "唛头list")
     private List<MarkVO> markList;
 
+    //文件名使用
+    @ApiModelProperty(value = "客户公司名称")
+    private String customerName;
+
+    @ApiModelProperty(value = "目的仓库代码")
+    private String add;
+
 }

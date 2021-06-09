@@ -104,6 +104,7 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         }
         Integer offerInfoId = orderInfoVO.getOfferInfoId();
         String storeGoodsWarehouseCode = orderInfoVO.getStoreGoodsWarehouseCode();
+        String customerName = orderInfoVO.getCompany();
         String add = orderInfoVO.getDestinationWarehouseCode();//目的仓库
         OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(Long.valueOf(offerInfoId));
         if(ObjectUtil.isEmpty(offerInfoVO)){
@@ -165,6 +166,10 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         orderWarehouseNoVO.setWarehouseAddress(addressFirst);
         orderWarehouseNoVO.setContacts(contacts+" "+contactPhone);
         orderWarehouseNoVO.setMarkList(markList);
+
+        orderWarehouseNoVO.setCustomerName(customerName);
+        orderWarehouseNoVO.setAdd(add);
+
         return orderWarehouseNoVO;
     }
 
@@ -180,9 +185,8 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "此订单的进仓单，在提货地址下下载");
         }
         String warehouseNo = orderInfoVO.getWarehouseNo();
-
+        String customerName = orderInfoVO.getCompany();
         String add = orderInfoVO.getDestinationWarehouseCode();//目的仓库
-
 
         Long orderId = orderInfoVO.getId();
         Integer offerInfoId = orderInfoVO.getOfferInfoId();
@@ -232,6 +236,10 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         orderWarehouseNoVO.setWarehouseAddress(addressFirst);
         orderWarehouseNoVO.setContacts(contacts+" "+contactPhone);
         orderWarehouseNoVO.setMarkList(markList);
+
+        orderWarehouseNoVO.setCustomerName(customerName);
+        orderWarehouseNoVO.setAdd(add);
+
         return orderWarehouseNoVO;
     }
 }

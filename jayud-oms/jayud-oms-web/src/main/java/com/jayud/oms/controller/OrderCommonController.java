@@ -346,6 +346,16 @@ public class OrderCommonController {
         return CommonResult.success(initVehicleSizeInfoVO);
     }
 
+
+    @ApiOperation(value = "根据车类型初始化车型尺寸,区分车型")
+    @PostMapping(value = "/initVehicleSizeByType")
+    public CommonResult<List<VehicleSizeInfoVO>> initVehicleSizeByType(@RequestBody Map<String, Object> map) {
+        Integer type = MapUtil.getInt(map, "type");
+        List<VehicleSizeInfoVO> list = vehicleInfoService.findVehicleSize();
+        List<VehicleSizeInfoVO> datas = list.stream().filter(e -> type == null || e.getVehicleType().equals(type)).collect(Collectors.toList());
+        return CommonResult.success(datas);
+    }
+
     @ApiOperation(value = "下拉选择卸货地址")
     @PostMapping(value = "/initTakeAdrBySubOrderNo")
     public CommonResult getCostOrderDetails(@RequestBody Map<String, Object> map) {

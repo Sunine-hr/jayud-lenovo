@@ -221,6 +221,8 @@ public class OrderTransportVO {
     @JsonIgnore
     private String warehouseAddr;
 
+    @ApiModelProperty(value = "指派供应商吨位")
+    private String supplierVehicleSize;
 
 
     /**
@@ -243,7 +245,6 @@ public class OrderTransportVO {
 //        }
 //        this.goodsInfo = sb.toString();
 //    }
-
     public String getStatusDesc() {
         return OrderStatusEnum.getDesc(this.status);
     }
@@ -377,6 +378,7 @@ public class OrderTransportVO {
                 this.receivableCostStatus = null;
 //                this.subLegalName = null;
                 this.legalName = null;
+                this.vehicleSize = this.supplierVehicleSize;
                 //送货地址处理
                 this.shippingAddressHandle();
                 break;

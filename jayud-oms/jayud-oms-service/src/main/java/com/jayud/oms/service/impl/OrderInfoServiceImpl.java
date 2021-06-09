@@ -256,7 +256,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_1.getCode()));
         }
         saveOrUpdate(orderInfo);
-        form.setStatus(orderInfo.getStatus());
+        form.setNextStatus(orderInfo.getStatus());
         return orderInfo.getOrderNo();
     }
 
@@ -1587,7 +1587,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 //如果没有生成子订单则不调用
                 if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
 
-                    if(oldMainOrderNo != null){
+                    if (oldMainOrderNo != null) {
                         orderCustomsForm.setOldMainOrderNo(oldMainOrderNo);
                     }
 
@@ -1598,7 +1598,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
                     }
                     orderCustomsForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
-                    orderCustomsForm.setMainOrderStatus(inputMainOrderForm.getStatus());
+                    orderCustomsForm.setMainOrderStatus(inputMainOrderForm.getNextStatus());
                     Boolean result = customsClient.createOrderCustoms(orderCustomsForm).getData();
                     if (!result) {//调用失败
                         return false;

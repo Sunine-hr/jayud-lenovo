@@ -16,11 +16,11 @@ public enum SubOrderSignEnum {
     KY("ky", "air_order", "空运"),
     BG("bg", "order_customs", "报关"),
     ZGYS("zgys", "order_transport", "中港运输"),
-    HY("hy","sea_order","海运"),
-    NL("nl","order_inland_transport","内陆运输"),
-    TC("tc","trailer_order","拖车"),
-    CCI("cci","storage_input_order","仓储入库"),
-    CCE("cce","storage_out_order","仓储出库");
+    HY("hy", "sea_order", "海运"),
+    NL("nl", "order_inland_transport", "内陆运输"),
+    TC("tc", "trailer_order", "拖车"),
+    CCI("cci", "storage_input_order", "仓储入库"),
+    CCE("cce", "storage_out_order", "仓储出库");
     //    private Integer code;
     private String signOne;
     private String signTwo;
@@ -33,6 +33,15 @@ public enum SubOrderSignEnum {
             }
         }
         return "";
+    }
+
+    public static SubOrderSignEnum getEnum(String signOne) {
+        for (SubOrderSignEnum value : values()) {
+            if (Objects.equals(signOne, value.getSignOne())) {
+                return value;
+            }
+        }
+        return null;
     }
 
 //    public static Integer getCode(String desc) {

@@ -100,7 +100,7 @@ public class OrderInTransportController {
             orderTransport.setStatus(OrderStatusEnum.TMS_T_1.getCode());
             orderTransport.setJiedanTime(LocalDateTime.now());
             orderTransport.setJiedanUser(form.getOperatorUser())
-                    .setSupplierId(form.getSupplierId());
+                    .setSupplierId(form.getSupplierId()).setSupplierVehicleSize(form.getSupplierVehicleSize());
 
             form.setStatus(OrderStatusEnum.TMS_T_1.getCode());
             form.setStatusName(OrderStatusEnum.TMS_T_1.getDesc());

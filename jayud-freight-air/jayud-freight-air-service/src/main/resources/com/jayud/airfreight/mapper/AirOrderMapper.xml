@@ -66,6 +66,10 @@
             <if test="form.orderNo !=null and form.orderNo!=''">
                 and a.order_no like concat('%',#{form.orderNo},'%')
             </if>
+            <if test="form.mainOrderNo !=null and form.mainOrderNo!=''">
+                and a.main_order_no like concat('%',#{form.mainOrderNo},'%')
+            </if>
+
             <if test="form.subNo !=null and form.subNo!=''">
                 and ab.sub_no like concat('%',#{form.subNo},'%')
             </if>

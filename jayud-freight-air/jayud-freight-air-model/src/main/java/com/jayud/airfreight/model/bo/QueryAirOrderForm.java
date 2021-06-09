@@ -25,6 +25,9 @@ public class QueryAirOrderForm extends BasePageForm {
     @ApiModelProperty(value = "空运订单编号")
     private String orderNo;
 
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrderNo;
+
     @ApiModelProperty(value = "状态(k_0待接单,k_1空运接单,k_2订舱,k_3订单入仓, k_4确认提单,k_5确认离港,k_6确认到港,k_7海外代理k_8确认签收)")
     private String status;
 
@@ -40,7 +43,7 @@ public class QueryAirOrderForm extends BasePageForm {
 //    @ApiModelProperty(value = "创建时间")
 //    private String createTime;
 
-    @ApiModelProperty(value = "主订单号")
+    @ApiModelProperty(value = "主订单号集合")
     @JsonIgnore
     private List<String> mainOrderNos;
 

@@ -394,8 +394,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                     return CommonResult.error(ResultEnum.OPR_FAIL);
                 }
                 //删除旧的费用
-                QueryWrapper removeWrapper = new QueryWrapper();
-                removeWrapper.in("cost_id", costIds);
+                QueryWrapper<OrderBillCostTotal> removeWrapper = new QueryWrapper<>();
+                removeWrapper.lambda().in(OrderBillCostTotal::getCostId, costIds)
+                        .eq(OrderBillCostTotal::getBillNo, form.getBillNo());
                 costTotalService.remove(removeWrapper);
                 //开始保存费用维度的金额信息  以结算币种进行转换后保存
                 List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
@@ -1037,9 +1038,10 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             omsClient.oprCostBill(oprCostBillForm);
 
             //相应的费用出账金额记录要做删除
-            QueryWrapper removeDelWrapper = new QueryWrapper();
-            removeDelWrapper.in("cost_id", delCostIds);
-            costTotalService.remove(removeWrapper);
+            QueryWrapper<OrderBillCostTotal> removeDelWrapper = new QueryWrapper<>();
+            removeDelWrapper.lambda().in(OrderBillCostTotal::getCostId, delCostIds)
+                    .eq(OrderBillCostTotal::getBillNo, form.getBillNo());
+            costTotalService.remove(removeDelWrapper);
 
             //4.修改录用费用状态
             this.omsClient.batchUpdateCostStatus(delCostIds, "0", 1, 1);

@@ -396,8 +396,9 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                     return CommonResult.error(ResultEnum.OPR_FAIL);
                 }
                 //删除旧的费用
-                QueryWrapper removeWrapper = new QueryWrapper();
-                removeWrapper.in("cost_id", costIds);
+                QueryWrapper<OrderBillCostTotal> removeWrapper = new QueryWrapper<>();
+                removeWrapper.lambda().in(OrderBillCostTotal::getCostId, costIds)
+                        .eq(OrderBillCostTotal::getBillNo, form.getBillNo());
                 costTotalService.remove(removeWrapper);
                 //开始保存费用维度的金额信息  以结算币种进行转换后保存
                 List<OrderBillCostTotal> orderBillCostTotals = new ArrayList<>();
@@ -1109,8 +1110,8 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             omsClient.oprCostBill(oprCostBillForm);
 
             //3.相应的费用出账金额记录要做删除
-            QueryWrapper removeDelWrapper = new QueryWrapper();
-            removeDelWrapper.in("cost_id", delCostIds);
+//            QueryWrapper removeDelWrapper = new QueryWrapper();
+//            removeDelWrapper.in("cost_id", delCostIds);
             costTotalService.remove(removeWrapper);
 
             //4.修改录用费用状态

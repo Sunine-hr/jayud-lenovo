@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageDraftResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.OrderEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
@@ -26,10 +27,7 @@ import com.jayud.mall.model.vo.domain.CustomerUser;
 import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.IOrderInfoService;
 import com.jayud.mall.service.IShipmentService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiOperationSupport;
-import io.swagger.annotations.ApiSort;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -632,6 +630,37 @@ public class OrderInfoController {
         Long orderId = orderInfoVO.getId();
         //2.在查询费用
         return orderInfoService.lookOrderInfoCost(orderId);
+    }
+
+    @ApiOperation(value = "查询-订单状态")
+    @ApiOperationSupport(order = 18)
+    @PostMapping("/findOrderStatus")
+    public CommonResult<OrderStatusVO> findOrderStatus(){
+        OrderStatusVO orderStatusVO = new OrderStatusVO();
+        //前端状态list
+        List<OrderStatusVO> frontStatus = new ArrayList<>();
+        frontStatus.add(new OrderStatusVO(OrderEnum.FRONT_DRAFT.getCode(), OrderEnum.FRONT_DRAFT.getName()));
+        frontStatus.add(new OrderStatusVO(OrderEnum.FRONT_UPDATE.getCode(), OrderEnum.FRONT_UPDATE.getName()));
+        frontStatus.add(new OrderStatusVO(OrderEnum.FRONT_PLACED.getCode(), OrderEnum.FRONT_PLACED.getName()));
+        frontStatus.add(new OrderStatusVO(OrderEnum.FRONT_RECEIVED.getCode(), OrderEnum.FRONT_RECEIVED.getName()));
+        frontStatus.add(new OrderStatusVO(OrderEnum.FRONT_TRANSIT.getCode(), OrderEnum.FRONT_TRANSIT.getName()));
+        frontStatus.add(new OrderStatusVO(OrderEnum.FRONT_SIGNED.getCode(), OrderEnum.FRONT_SIGNED.getName()));
+        frontStatus.add(new OrderStatusVO(OrderEnum.FRONT_FINISH.getCode(), OrderEnum.FRONT_FINISH.getName()));
+        frontStatus.add(new OrderStatusVO(OrderEnum.FRONT_CANCEL.getCode(), OrderEnum.FRONT_CANCEL.getName()));
+        orderStatusVO.setFrontStatus(frontStatus);
+        //后端状态list
+        List<OrderStatusVO> afterStatus = new ArrayList<>();
+        afterStatus.add(new OrderStatusVO(OrderEnum.AFTER_DRAFT.getCode(), OrderEnum.AFTER_DRAFT.getName()));
+        afterStatus.add(new OrderStatusVO(OrderEnum.AFTER_UPDATE.getCode(), OrderEnum.AFTER_UPDATE.getName()));
+        afterStatus.add(new OrderStatusVO(OrderEnum.AFTER_PLACED.getCode(), OrderEnum.AFTER_PLACED.getName()));
+        afterStatus.add(new OrderStatusVO(OrderEnum.AFTER_RECEIVED.getCode(), OrderEnum.AFTER_RECEIVED.getName()));
+        afterStatus.add(new OrderStatusVO(OrderEnum.AFTER_AFFIRM.getCode(), OrderEnum.AFTER_AFFIRM.getName()));
+        afterStatus.add(new OrderStatusVO(OrderEnum.AFTER_TRANSIT.getCode(), OrderEnum.AFTER_TRANSIT.getName()));
+        afterStatus.add(new OrderStatusVO(OrderEnum.AFTER_SIGNED.getCode(), OrderEnum.AFTER_SIGNED.getName()));
+        afterStatus.add(new OrderStatusVO(OrderEnum.AFTER_FINISH.getCode(), OrderEnum.AFTER_FINISH.getName()));
+        afterStatus.add(new OrderStatusVO(OrderEnum.AFTER_CANCEL.getCode(), OrderEnum.AFTER_CANCEL.getName()));
+        orderStatusVO.setAfterStatus(afterStatus);
+        return CommonResult.success(orderStatusVO);
     }
 
 

@@ -80,4 +80,9 @@ public class InputMainOrderForm {
     @JsonIgnore
     private String rejectComment;
 
+
+    @ApiModelProperty(value = "下一个订单状态")
+    @JsonIgnore
+    private Integer nextStatus;
+
 }

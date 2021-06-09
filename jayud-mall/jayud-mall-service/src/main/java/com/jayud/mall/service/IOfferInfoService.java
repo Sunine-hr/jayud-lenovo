@@ -97,4 +97,11 @@ public interface IOfferInfoService extends IService<OfferInfo> {
      * @return
      */
     OfferInfoDateVO calcOtherDate(OfferInfoForm form);
+
+    /**
+     * 分页查询报价(给配载查询报价使用)
+     * @param form
+     * @return
+     */
+    IPage<OfferInfoVO> findOfferInfoPageByConf(QueryOfferInfoForm form);
 }

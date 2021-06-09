@@ -82,4 +82,15 @@ public class OfferInfoController {
     }
 
 
+    @ApiOperation(value = "分页查询报价(给配载查询报价使用)")
+    @PostMapping("/findOfferInfoPageByConf")
+    @ApiOperationSupport(order = 7)
+    public CommonResult<CommonPageResult<OfferInfoVO>> findOfferInfoPageByConf(@RequestBody QueryOfferInfoForm form) {
+        IPage<OfferInfoVO> pageList = offerInfoService.findOfferInfoPageByConf(form);
+        CommonPageResult<OfferInfoVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
+
+
+
 }

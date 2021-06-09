@@ -632,4 +632,14 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         return offerInfoDateVO;
     }
 
+    @Override
+    public IPage<OfferInfoVO> findOfferInfoPageByConf(QueryOfferInfoForm form) {
+        //定义分页参数
+        Page<OfferInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.desc("t.id"));
+        IPage<OfferInfoVO> pageInfo = offerInfoMapper.findOfferInfoPageByConf(page, form);
+        return pageInfo;
+    }
+
 }

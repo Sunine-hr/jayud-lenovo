@@ -61,4 +61,12 @@ public interface OfferInfoMapper extends BaseMapper<OfferInfo> {
      * @return
      */
     List<OfferInfoVO> findOfferInfoFareTop4(@Param("form") QueryOfferInfoFareForm form);
+
+    /**
+     * 分页查询报价(给配载查询报价使用)
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<OfferInfoVO> findOfferInfoPageByConf(Page<OfferInfoVO> page, @Param("form") QueryOfferInfoForm form);
 }

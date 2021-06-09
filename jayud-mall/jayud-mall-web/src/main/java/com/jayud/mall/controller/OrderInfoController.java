@@ -15,10 +15,7 @@ import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.CustomerMapper;
 import com.jayud.mall.mapper.FabWarehouseMapper;
-import com.jayud.mall.model.bo.OrderInfoCustomerForm;
-import com.jayud.mall.model.bo.OrderInfoForm;
-import com.jayud.mall.model.bo.OrderInfoNewForm;
-import com.jayud.mall.model.bo.QueryOrderInfoForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.OrderClearanceFile;
 import com.jayud.mall.model.po.OrderCustomsFile;
 import com.jayud.mall.model.po.OrderInfo;
@@ -27,7 +24,10 @@ import com.jayud.mall.model.vo.domain.CustomerUser;
 import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.IOrderInfoService;
 import com.jayud.mall.service.IShipmentService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -186,13 +186,13 @@ public class OrderInfoController {
         return orderInfoService.lookOrderInfo(form);
     }
 
-    //订单详情-计柜重信息-确认 TODO 待具体实现 预留
-    @ApiOperation(value = "订单详情-计柜重信息-确认(待具体实现 预留)")
+    //订单详情-确认计费重信息
+    @ApiOperation(value = "订单详情-确认计费重信息")
     @PostMapping("/affirmCounterWeightInfo")
     @ApiOperationSupport(order = 8)
-    public CommonResult affirmCounterWeightInfo(@RequestBody OrderInfoForm form){
-        Long id = form.getId();
-        return CommonResult.success("订单详情-计柜重信息-确认 TODO 待具体实现 预留");
+    public CommonResult affirmCounterWeightInfo(@RequestBody IsConfirmBillingForm form){
+        orderInfoService.affirmCounterWeightInfo(form);
+        return CommonResult.success("操作成功");
     }
 
     //订单详情-打印唛头（打印订单箱号）
@@ -661,6 +661,17 @@ public class OrderInfoController {
         afterStatus.add(new OrderStatusVO(OrderEnum.AFTER_CANCEL.getCode(), OrderEnum.AFTER_CANCEL.getName()));
         orderStatusVO.setAfterStatus(afterStatus);
         return CommonResult.success(orderStatusVO);
+    }
+
+
+    //订单详情-确认计费重信息
+    @ApiOperation(value = "查询-订单计费重确认状态")
+    @PostMapping("/findOrderIsConfirmBilling")
+    @ApiOperationSupport(order = 19)
+    public CommonResult<IsConfirmBillingVO> findOrderIsConfirmBilling(@RequestBody OrderInfoParaForm form){
+        Long orderId = form.getId();
+        IsConfirmBillingVO isConfirmBillingVO = orderInfoService.findOrderIsConfirmBilling(orderId);
+        return CommonResult.success(isConfirmBillingVO);
     }
 
 

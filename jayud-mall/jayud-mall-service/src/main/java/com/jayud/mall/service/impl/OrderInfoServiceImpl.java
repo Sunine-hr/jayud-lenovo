@@ -1213,34 +1213,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         this.saveOrUpdate(orderInfo);
 
-        //保存订单内部流程状态
-        //后台已下单 内部状态 已审单 为审单 ，这个不是流程状态
-        if(orderInfo.getAfterStatusCode().equals(OrderEnum.AFTER_PLACED.getCode())){
-            Map<String, Object> mapParm = new HashMap<>();
-            mapParm.put("order_id", orderInfo.getId());
-            mapParm.put("order_no", orderInfo.getOrderNo());
-            mapParm.put("main_status_type", "after");
-            mapParm.put("main_status_code", OrderEnum.AFTER_PLACED.getCode());
-            mapParm.put("interior_status_code", OrderEnum.IS_AUDIT_ORDER.getCode());
-            OrderInteriorStatusVO orderInteriorStatusVO = orderInteriorStatusMapper.findOrderInteriorStatusByMapParm(mapParm);
-
-            OrderInteriorStatus orderInteriorStatus = new OrderInteriorStatus();
-            if(ObjectUtil.isEmpty(orderInteriorStatusVO)){
-                orderInteriorStatus.setOrderId(orderInfo.getId());
-                orderInteriorStatus.setOrderNo(orderInfo.getOrderNo());
-                orderInteriorStatus.setMainStatusType("after");//主状态类型(front前端 after后端)
-                orderInteriorStatus.setMainStatusCode(OrderEnum.AFTER_PLACED.getCode());
-                orderInteriorStatus.setMainStatusName(OrderEnum.AFTER_PLACED.getName());
-                orderInteriorStatus.setInteriorStatusCode(OrderEnum.IS_AUDIT_ORDER.getCode());//IS_AUDIT_ORDER("is_audit_order", "是否审核单据(1已审单 2未审单)")
-                orderInteriorStatus.setInteriorStatusName(OrderEnum.IS_AUDIT_ORDER.getName());
-                orderInteriorStatus.setStatusFlag("2");
-            }else{
-                orderInteriorStatus = ConvertUtil.convert(orderInteriorStatusVO, OrderInteriorStatus.class);
-            }
-            orderInteriorStatusService.saveOrUpdate(orderInteriorStatus);
-        }
-
-
         //保存-订单对应箱号信息:order_case
 //        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
         List<OrderCase> orderCaseList;
@@ -2425,6 +2397,65 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //保存-订单物流轨迹。
         logisticsTrackService.saveOrUpdate(logisticsTrack);
 
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void affirmCounterWeightInfo(IsConfirmBillingForm form) {
+        Long orderId = form.getOrderId();
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(orderId);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单不存在");
+        }
+        Map<String, Object> mapParm = new HashMap<>();
+        mapParm.put("order_id", orderInfoVO.getId());
+        mapParm.put("order_no", orderInfoVO.getOrderNo());
+        mapParm.put("main_status_type", "front");
+        mapParm.put("main_status_code", OrderEnum.FRONT_RECEIVED.getCode());//FRONT_RECEIVED("20", "已收货"),
+        mapParm.put("interior_status_code", OrderEnum.IS_CONFIRM_BILLING.getCode());//IS_CONFIRM_BILLING("is_confirm_billing", "是否确认计费重(1已确认 2未确认)")
+        OrderInteriorStatusVO orderInteriorStatusVO = orderInteriorStatusMapper.findOrderInteriorStatusByMapParm(mapParm);
+
+        OrderInteriorStatus orderInteriorStatus = new OrderInteriorStatus();
+        if(ObjectUtil.isEmpty(orderInteriorStatusVO)){
+            orderInteriorStatus.setOrderId(orderInfoVO.getId());
+            orderInteriorStatus.setOrderNo(orderInfoVO.getOrderNo());
+            orderInteriorStatus.setMainStatusType("front");//主状态类型(front前端 after后端)
+            orderInteriorStatus.setMainStatusCode(OrderEnum.FRONT_RECEIVED.getCode());
+            orderInteriorStatus.setMainStatusName(OrderEnum.FRONT_RECEIVED.getName());
+            orderInteriorStatus.setInteriorStatusCode(OrderEnum.IS_CONFIRM_BILLING.getCode());
+            orderInteriorStatus.setInteriorStatusName(OrderEnum.IS_CONFIRM_BILLING.getName());
+            orderInteriorStatus.setStatusFlag(form.getStatusFlag());//状态标志-是否确认计费重(1已确认 2为确认)
+        }else{
+            orderInteriorStatus = ConvertUtil.convert(orderInteriorStatusVO, OrderInteriorStatus.class);
+            orderInteriorStatus.setStatusFlag(form.getStatusFlag());//状态标志-是否确认计费重(1已确认 2为确认)
+        }
+        orderInteriorStatusService.saveOrUpdate(orderInteriorStatus);
+    }
+
+    @Override
+    public IsConfirmBillingVO findOrderIsConfirmBilling(Long orderId) {
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(orderId);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单不存在");
+        }
+        Map<String, Object> mapParm = new HashMap<>();
+        mapParm.put("order_id", orderInfoVO.getId());
+        mapParm.put("order_no", orderInfoVO.getOrderNo());
+        mapParm.put("main_status_type", "front");
+        mapParm.put("main_status_code", OrderEnum.FRONT_RECEIVED.getCode());//FRONT_RECEIVED("20", "已收货"),
+        mapParm.put("interior_status_code", OrderEnum.IS_CONFIRM_BILLING.getCode());//IS_CONFIRM_BILLING("is_confirm_billing", "是否确认计费重(1已确认 2未确认)")
+        OrderInteriorStatusVO orderInteriorStatusVO = orderInteriorStatusMapper.findOrderInteriorStatusByMapParm(mapParm);
+
+        String statusFlag = "";//状态标志-是否确认计费重(1已确认 2未确认)
+        if(ObjectUtil.isEmpty(orderInteriorStatusVO)){
+            statusFlag = "2";
+        }else{
+            statusFlag = orderInteriorStatusVO.getStatusFlag();
+        }
+        IsConfirmBillingVO isConfirmBillingVO = new IsConfirmBillingVO();
+        isConfirmBillingVO.setOrderId(orderId);
+        isConfirmBillingVO.setStatusFlag(statusFlag);
+        return isConfirmBillingVO;
     }
 
     private String extracted(String url, Map<String, Object> requestMap) {

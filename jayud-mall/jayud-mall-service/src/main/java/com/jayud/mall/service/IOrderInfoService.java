@@ -300,4 +300,17 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param form
      */
     void saveTrackNotice(OrderTrackNoticeForm form);
+
+    /**
+     * 确认计费重信息
+     * @param form
+     */
+    void affirmCounterWeightInfo(IsConfirmBillingForm form);
+
+    /**
+     * 查询订单计费重状态
+     * @param orderId
+     * @return
+     */
+    IsConfirmBillingVO findOrderIsConfirmBilling(Long orderId);
 }

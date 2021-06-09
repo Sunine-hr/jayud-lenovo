@@ -2416,21 +2416,39 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      * @return
      */
     private OrderCostDetailVO getOrderCostDetailVO(OrderInfoVO orderInfoVO) {
+        /**费用信息**/
+        //将币种信息转换为map，cid为键，币种信息为值
+        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
+        Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
+
         Long orderId = orderInfoVO.getId();//订单id
         OrderCostDetailVO orderCostDetailVO = new OrderCostDetailVO();
-        List<OrderCopeReceivableVO> orderCopeReceivableVOS = orderCopeReceivableMapper.findOrderCopeReceivableByOrderId(orderId);
-        orderCostDetailVO.setOrderCopeReceivableVOS(orderCopeReceivableVOS);//订单应收费用
-        BigDecimal orderCopeReceivableAmountTotal = new BigDecimal("0");//汇总金额
-        if(orderCopeReceivableVOS != null && orderCopeReceivableVOS.size() > 0){
-            for (int i = 0; i<orderCopeReceivableVOS.size(); i++){
+        List<OrderCopeReceivableVO> orderCopeReceivableVOList = orderCopeReceivableMapper.findOrderCopeReceivableByOrderId(orderId);
+        orderCostDetailVO.setOrderCopeReceivableVOS(orderCopeReceivableVOList);//订单应收费用
+
+        /*订单对应应收费用汇总ist*/
+        List<AggregateAmountVO> orderCopeReceivableAggregate = new ArrayList<>();
+        Map<Integer, List<OrderCopeReceivableVO>> stringListMap1 = groupListByCid1(orderCopeReceivableVOList);
+        for (Map.Entry<Integer, List<OrderCopeReceivableVO>> entry : stringListMap1.entrySet()) {
+            Integer cid = entry.getKey();
+            List<OrderCopeReceivableVO> orderCopeReceivableVOS = entry.getValue();
+
+            CurrencyInfoVO currencyInfoVO = cidMap.get(Long.valueOf(cid));
+
+            BigDecimal amountSum = new BigDecimal("0");
+            for (int i=0; i<orderCopeReceivableVOS.size(); i++){
                 OrderCopeReceivableVO orderCopeReceivableVO = orderCopeReceivableVOS.get(i);
-                BigDecimal amount = orderCopeReceivableVO.getAmount() != null ? orderCopeReceivableVO.getAmount() : new BigDecimal("0");
-                orderCopeReceivableAmountTotal = orderCopeReceivableAmountTotal.add(amount);
+                BigDecimal amount = orderCopeReceivableVO.getAmount();
+                amountSum = amountSum.add(amount);
             }
-            String currencyCode = orderCopeReceivableVOS.get(0).getCurrencyCode();//金额的币种，默认取第一个
-            String orderCopeReceivableAmountTotalFormat = orderCopeReceivableAmountTotal.toString() + " " + currencyCode;
-            orderCostDetailVO.setOrderCopeReceivableAmountTotal(orderCopeReceivableAmountTotalFormat);
+            AggregateAmountVO aggregateAmountVO = new AggregateAmountVO();
+            aggregateAmountVO.setAmount(amountSum);//金额
+            aggregateAmountVO.setCid(cid);
+            aggregateAmountVO.setCurrencyCode(currencyInfoVO.getCurrencyCode());
+            aggregateAmountVO.setCurrencyName(currencyInfoVO.getCurrencyName());
+            orderCopeReceivableAggregate.add(aggregateAmountVO);
         }
+        orderCostDetailVO.setOrderCopeReceivableAggregate(orderCopeReceivableAggregate);
         return orderCostDetailVO;
     }
 

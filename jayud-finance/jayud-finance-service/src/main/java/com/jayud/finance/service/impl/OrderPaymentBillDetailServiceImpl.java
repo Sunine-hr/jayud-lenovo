@@ -1038,10 +1038,10 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             omsClient.oprCostBill(oprCostBillForm);
 
             //相应的费用出账金额记录要做删除
-            QueryWrapper<OrderBillCostTotal> removeDelWrapper = new QueryWrapper<>();
-            removeDelWrapper.lambda().in(OrderBillCostTotal::getCostId, delCostIds)
-                    .eq(OrderBillCostTotal::getBillNo, form.getBillNo());
-            costTotalService.remove(removeDelWrapper);
+//            QueryWrapper<OrderBillCostTotal> removeDelWrapper = new QueryWrapper<>();
+//            removeDelWrapper.lambda().in(OrderBillCostTotal::getCostId, delCostIds)
+//                    .eq(OrderBillCostTotal::getBillNo, form.getBillNo());
+            costTotalService.remove(removeWrapper);
 
             //4.修改录用费用状态
             this.omsClient.batchUpdateCostStatus(delCostIds, "0", 1, 1);

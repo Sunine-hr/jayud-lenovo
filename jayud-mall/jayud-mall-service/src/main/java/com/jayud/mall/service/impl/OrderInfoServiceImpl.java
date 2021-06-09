@@ -158,6 +158,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     IShipmentService shipmentService;
     @Autowired
     IOrderInteriorStatusService orderInteriorStatusService;
+    @Autowired
+    ILogisticsTrackService logisticsTrackService;
 
 
 
@@ -2399,6 +2401,30 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderCase.setWmsWeighDate(LocalDateTime.now());
 
         orderCaseService.saveOrUpdate(orderCase);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveTrackNotice(OrderTrackNoticeForm form) {
+        AuthUser user = baseService.getUser();
+        if(ObjectUtil.isEmpty(user)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录");
+        }
+        String orderId = form.getOrderId();
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(Long.valueOf(orderId));
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单不存在");
+        }
+        LogisticsTrack logisticsTrack = new LogisticsTrack();
+        logisticsTrack.setOrderId(orderInfoVO.getId().toString());
+        logisticsTrack.setDescription(form.getDescription());
+        logisticsTrack.setCreateTime(form.getCreateTime());
+        logisticsTrack.setOperatorId(user.getId().intValue());
+        logisticsTrack.setOperatorName(user.getName());
+        logisticsTrack.setRemark(form.getRemark());
+        //保存-订单物流轨迹。
+        logisticsTrackService.saveOrUpdate(logisticsTrack);
+
     }
 
     private String extracted(String url, Map<String, Object> requestMap) {

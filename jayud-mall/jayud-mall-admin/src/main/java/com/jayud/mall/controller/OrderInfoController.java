@@ -358,4 +358,13 @@ public class OrderInfoController {
         return CommonResult.success("操作成功");
     }
 
+    @ApiOperation(value = "运单-保存轨迹通知")
+    @ApiOperationSupport(order = 31)
+    @PostMapping(value = "/saveTrackNotice")
+    public CommonResult saveTrackNotice(@Valid @RequestBody OrderTrackNoticeForm form){
+        orderInfoService.saveTrackNotice(form);
+        return CommonResult.success("操作成功");
+    }
+
+
 }

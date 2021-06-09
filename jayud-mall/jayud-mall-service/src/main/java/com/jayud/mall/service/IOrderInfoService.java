@@ -294,4 +294,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param form
      */
     void orderCaseReceipt(OrderCaseReceiptForm form);
+
+    /**
+     * 订单 - 保存物流轨迹
+     * @param form
+     */
+    void saveTrackNotice(OrderTrackNoticeForm form);
 }

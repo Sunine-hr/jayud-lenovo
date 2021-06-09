@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OrderCaseWmsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OrderCaseWms">
+        <id column="carton_no" property="cartonNo" />
+        <result column="wms_length" property="wmsLength" />
+        <result column="wms_width" property="wmsWidth" />
+        <result column="wms_height" property="wmsHeight" />
+        <result column="wms_weight" property="wmsWeight" />
+        <result column="wms_volume" property="wmsVolume" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        carton_no, wms_length, wms_width, wms_height, wms_weight, wms_volume, user_id, user_name, create_time
+    </sql>
+
+</mapper>

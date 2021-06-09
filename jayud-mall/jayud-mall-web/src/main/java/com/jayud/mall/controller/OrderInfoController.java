@@ -81,9 +81,7 @@ public class OrderInfoController {
         IPage<OrderInfoVO> pageList = orderInfoService.findWebOrderInfoByPage(form);
 
         Map<String,Long> totalMap = orderInfoService.findOrderInfoDraftCount(form);
-
         CommonPageDraftResult<OrderInfoVO> draftResult = new CommonPageDraftResult(pageList, totalMap);
-
         return CommonResult.success(draftResult);
     }
 

@@ -1,6 +1,5 @@
 package com.jayud.mall.model.bo;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,16 +10,13 @@ import java.time.LocalDateTime;
 public class QueryOrderInfoForm extends BasePageForm {
 
     /*产品订单表:order_info*/
-    @ApiModelProperty(value = "客户ID(customer id)", position = 1)
-    @JSONField(ordinal = 1)
+    @ApiModelProperty(value = "客户ID(customer id)")
     private Integer customerId;
 
-    @ApiModelProperty(value = "订单号", position = 2)
-    @JSONField(ordinal = 2)
+    @ApiModelProperty(value = "订单号")
     private String orderNo;
 
-    @ApiModelProperty(value = "目的仓库代码(fab_warehouse warehouse_code)", position = 3)
-    @JSONField(ordinal = 3)
+    @ApiModelProperty(value = "目的仓库代码(fab_warehouse warehouse_code)")
     private String destinationWarehouseCode;
 
     @ApiModelProperty(value = "前端状态代码\n" +
@@ -49,20 +45,21 @@ public class QueryOrderInfoForm extends BasePageForm {
             "    已取消:-1")
     private String afterStatusCode;
 
+    @ApiModelProperty(value = "开船日期(offer_info.sail_time)")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime sailTime;
 
+    @ApiModelProperty(value = "服务名称 (quotation_template.sid -> service_group.id)")
+    private Integer sid;
 
-    /*订单关联运价(报价offer_info，报价模板quotation_template)*/
-    @ApiModelProperty(value = "起运港(harbour_info id_code)", position = 5)
-    @JSONField(ordinal = 5)
+    @ApiModelProperty(value = "运输方式 (quotation_template.tid -> transport_way.id)")
+    private Integer tid;
+
+    @ApiModelProperty(value = "起运港 (quotation_template.start_shipment -> harbour_info.id_code)")
     private String startShipment;
 
-    @ApiModelProperty(value = "目的港(harbour_info id_code)", position = 6)
-    @JSONField(ordinal = 6)
+    @ApiModelProperty(value = "目的港 (quotation_template.destination_port -> harbour_info.id_code)")
     private String destinationPort;
 
-    @ApiModelProperty(value = "开船日期", position = 7)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    @JSONField(ordinal = 7, format="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime sailTime;
 
 }

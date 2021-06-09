@@ -169,9 +169,31 @@
         <if test="form.orderNo != null and form.orderNo != ''">
             and t.order_no = #{form.orderNo}
         </if>
+        <if test="form.destinationWarehouseCode != null and form.destinationWarehouseCode != ''">
+            and t.destination_warehouse_code = #{form.destinationWarehouseCode}
+        </if>
         <if test="form.frontStatusCode != null and form.frontStatusCode != ''">
             and t.front_status_code = #{form.frontStatusCode}
         </if>
+        <if test="form.afterStatusCode != null and form.afterStatusCode != ''">
+            and t.after_status_code = #{form.afterStatusCode}
+        </if>
+        <if test="form.sailTime != null">
+            and t1.sail_time <![CDATA[ >= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 00:00:00') AND t1.sail_time <![CDATA[ <= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 23:59:59')
+        </if>
+        <if test="form.sid != null">
+            and t2.sid = #{form.sid}
+        </if>
+        <if test="form.tid != null">
+            and t2.tid = #{form.tid}
+        </if>
+        <if test="form.startShipment != null and form.startShipment != ''">
+            and t2.start_shipment = #{form.startShipment}
+        </if>
+        <if test="form.destinationPort != null and form.destinationPort != ''">
+            and t2.destination_port = #{form.destinationPort}
+        </if>
+
     </select>
     
     <select id="findOrderInfoDraftCount" parameterType="com.jayud.mall.model.bo.QueryOrderInfoForm" resultType="java.lang.Long">

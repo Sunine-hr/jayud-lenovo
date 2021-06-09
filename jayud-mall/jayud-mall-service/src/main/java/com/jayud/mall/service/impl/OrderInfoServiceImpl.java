@@ -1876,6 +1876,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public IPage<OrderInfoVO> findWebOrderInfoByPage(QueryOrderInfoForm form) {
         CustomerUser customerUser = baseService.getCustomerUser();
+        if(ObjectUtil.isNotEmpty(customerUser)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录。");
+        }
         form.setCustomerId(customerUser.getId().intValue());
         //定义分页参数
         Page<OrderInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
@@ -1897,7 +1900,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             });
         }
-
         return pageInfo;
     }
 

@@ -806,6 +806,15 @@ public class ExternalApiController {
         return ApiResult.ok(orderAddresses);
     }
 
+    @ApiOperation("根据时间区间查询订单id")
+    @RequestMapping(value = "/api/getOrderAddressOrderIdByTimeInterval")
+    public ApiResult<Set<Long>> getOrderAddressOrderIdByTimeInterval(@RequestParam("timeInterval") List<String> timeInterval,
+                                                                    @RequestParam("type") Integer type,
+                                                                    @RequestParam("businessType") Integer businessType) {
+        Set<Long> businessIds = this.orderAddressService.getOrderAddressOrderIdByTimeInterval(new OrderAddress().setType(type).setBusinessType(businessType),timeInterval);
+        return ApiResult.ok(businessIds);
+    }
+
 
     @ApiOperation("根据订单id集合查询商品信息")
     @RequestMapping(value = "/api/getGoodsByBusIds")

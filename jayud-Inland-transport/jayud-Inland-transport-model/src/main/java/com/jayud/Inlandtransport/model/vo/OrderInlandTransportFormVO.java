@@ -1,5 +1,7 @@
 package com.jayud.Inlandtransport.model.vo;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSON;
@@ -17,6 +19,8 @@ import org.apache.commons.collections.CollectionUtils;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * <p>
@@ -35,17 +39,20 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
     @ApiModelProperty(value = "内陆订单主键")
     private Long id;
 
-    @ApiModelProperty(value = "主订单编号")
-    private String mainOrderNo;
-
     @ApiModelProperty(value = "主订单id")
     private String mainOrderId;
+
+    @ApiModelProperty(value = "主订单编号",required = true)
+    private String mainOrderNo;
 
     @ApiModelProperty(value = "订单编号", required = true)
     private String orderNo;
 
     @ApiModelProperty(value = "客户名称", required = true)
     private String customerName;
+
+    @ApiModelProperty(value = "提货日期", required = true)
+    private String deliveryDate;
 
 //    @ApiModelProperty(value = "操作主体", required = true)
 //    private String legalName;
@@ -64,6 +71,15 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
 
     @ApiModelProperty(value = "状态", required = true)
     private String statusDesc;
+
+    @ApiModelProperty(value = "应收状态", required = true)
+    private String receivableCostStatus;
+
+    @ApiModelProperty(value = "应付状态", required = true)
+    private String paymentCostStatus;
+
+    @ApiModelProperty(value = "车牌", required = true)
+    private String licensePlate;
 
     @ApiModelProperty(value = "货物信息", required = true)
     private String goodsInfo;
@@ -106,7 +122,6 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
 
 //    @ApiModelProperty(value = "接单日期")
 //    private LocalDateTime receivingOrdersDate;
-
 
     @ApiModelProperty(value = "客户代码")
     private String customerCode;
@@ -184,9 +199,11 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
     public void assemblyAddressInfo(List<OrderAddressVO> orderAddressList) {
         StringBuilder pickUpAddressSb = new StringBuilder();
         StringBuilder orderDeliveryAddressSb = new StringBuilder();
+        StringBuilder deliverDate = new StringBuilder();
         orderAddressList.forEach(e -> {
             if (OrderAddressEnum.PICK_UP.getCode().equals(e.getType())) {
                 pickUpAddressSb.append(e.getAddress()).append(",");
+                deliverDate.append(e.getDeliveryDate()).append(",");
             }
             if (OrderAddressEnum.DELIVERY.getCode().equals(e.getType())) {
                 orderDeliveryAddressSb.append(e.getAddress()).append(",");
@@ -194,6 +211,7 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
         });
         this.pickUpAddress = pickUpAddressSb.toString();
         this.orderDeliveryAddress = orderDeliveryAddressSb.toString();
+        this.deliveryDate = deliverDate.toString();
     }
 
     /**
@@ -235,11 +253,11 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
         }
     }
 
-    /**
-     * 组装法人主体
-     *
-     * @param legalEntityResult
-     */
+//    /**
+//     * 组装法人主体
+//     *
+//     * @param legalEntityResult
+//     */
 //    public void assemblyLegalEntity(ApiResult legalEntityResult) {
 //        if (legalEntityResult == null) {
 //            return;
@@ -257,6 +275,31 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
 //            }
 //        }
 //    }
+
+    public void assemblyCostStatus(Map<String, Object> costStatus) {
+        if (CollectionUtil.isEmpty(costStatus)) return;
+
+        Map<String, Object> receivableCostStatus = (Map<String, Object>) costStatus.get("receivableCostStatus");
+        Map<String, Object> paymentCostStatus = (Map<String, Object>) costStatus.get("paymentCostStatus");
+
+        String receivableStatusDesc = MapUtil.getStr(receivableCostStatus, orderNo);
+        String paymentStatusDesc = MapUtil.getStr(paymentCostStatus, orderNo);
+
+        if (!StringUtils.isEmpty(receivableStatusDesc)) {
+            String[] split = receivableStatusDesc.split("-");
+            this.receivableCostStatus = split[0];
+        } else {
+            this.receivableCostStatus = "未录入";
+        }
+
+        if (!StringUtils.isEmpty(paymentStatusDesc)) {
+            String[] split = paymentStatusDesc.split("-");
+            this.paymentCostStatus = split[0];
+        } else {
+            this.paymentCostStatus = "未录入";
+        }
+    }
+
     public void setStatus(String status) {
         this.status = status;
         this.statusDesc = OrderStatusEnum.getDesc(status);

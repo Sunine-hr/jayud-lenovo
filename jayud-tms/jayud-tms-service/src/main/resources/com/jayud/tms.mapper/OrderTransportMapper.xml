@@ -190,7 +190,8 @@
           ot.hk_legal_id hkLegalId,
           ot.`hk_unit_code` hkUnitCode,
           ot.`is_hk_clear` isHkClear,
-		  ot.is_vehicle_weigh isVehicleWeigh
+		  ot.is_vehicle_weigh isVehicleWeigh,
+		  ot.supplier_vehicle_size
         FROM
           order_transport ot
           LEFT JOIN order_info oi

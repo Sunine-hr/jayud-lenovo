@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -60,6 +61,23 @@ public class QueryOrderForm extends BasePageForm {
 
     @ApiModelProperty(value = "车型", required = true)
     private String vehicleSize;
+
+    @ApiModelProperty(value = "子订单id集合")
+    private Set<Long> subOrderIds;
+
+    @ApiModelProperty(value = "提货时间")
+    private List<String> deliveryDate;
+
+
+
+    public void setDeliveryDate(List<String> deliveryDate) {
+        this.deliveryDate = deliveryDate;
+        if (deliveryDate != null && deliveryDate.size() > 1) {
+            String endTime = deliveryDate.get(1);
+            String[] tmp = endTime.split(" ");
+            deliveryDate.set(1, tmp[0] + " 23:59:59");
+        }
+    }
 
     public void assemblyMainOrderNo(JSONArray mainOrders) {
         mainOrderNos = new ArrayList<>(mainOrders.size());

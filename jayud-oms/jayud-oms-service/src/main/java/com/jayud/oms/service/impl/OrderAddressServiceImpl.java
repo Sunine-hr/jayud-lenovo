@@ -209,4 +209,19 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
         }
         return this.baseMapper.selectList(condition).stream().map(OrderAddress::getOrderNo).collect(Collectors.toSet());
     }
+
+    /**
+     * 根据条件查询订单id
+     *
+     * @param orderAddress
+     * @param timeInterval
+     * @return
+     */
+    @Override
+    public Set<Long> getOrderAddressOrderIdByTimeInterval(OrderAddress orderAddress, List<String> timeInterval) {
+        QueryWrapper<OrderAddress> condition = new QueryWrapper<>(orderAddress);
+        condition.lambda().select(OrderAddress::getBusinessId);
+        condition.lambda().between(OrderAddress::getDeliveryDate, timeInterval.get(0), timeInterval.get(1));
+        return this.baseMapper.selectList(condition).stream().map(OrderAddress::getBusinessId).collect(Collectors.toSet());
+    }
 }

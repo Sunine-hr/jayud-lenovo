@@ -75,8 +75,9 @@
         i.unit_code subUnitCode,
         i.legal_entity_id,
         i.legal_name subLegalName,
-        ic.supplier_id supplierId,
         i.vehicle_size vehicleSize,
+        ic.supplier_id supplierId,
+        ic.license_plate license_plate,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = i.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = i.`order_no`)>0 THEN TRUE
         ELSE FALSE
@@ -100,6 +101,12 @@
             <if test="form.processStatusList!=null">
                 and i.process_status IN
                 <foreach collection="form.processStatusList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.subOrderIds !=null and form.subOrderIds.size>0">
+                and i.id IN
+                <foreach collection="form.subOrderIds" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
@@ -150,12 +157,12 @@
         order_inland_transport i
         left join order_inland_send_cars ic on i.order_no=ic.order_no
         <where>
-        <if test="mainOrderNos !=null and mainOrderNos.size > 0">
-            and i.main_order_no IN
-            <foreach collection="mainOrderNos" index="index" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
+            <if test="mainOrderNos !=null and mainOrderNos.size > 0">
+                and i.main_order_no IN
+                <foreach collection="mainOrderNos" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         </where>
     </select>
 

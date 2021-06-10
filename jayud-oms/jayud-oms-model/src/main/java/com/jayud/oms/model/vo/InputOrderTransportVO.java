@@ -165,6 +165,9 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "审核状态")
     private String subTmsStatus;
 
+    @ApiModelProperty(value = "指派供应车型尺寸")
+    private String supplierVehicleSize;
+
     public String getGoodsTypeDesc() {
         if (CommonConstant.VALUE_1.equals(this.goodsType)) {
             goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_1;

@@ -1,17 +1,17 @@
 package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.mapper.CurrencyInfoMapper;
-import com.jayud.mall.mapper.OrderInfoMapper;
-import com.jayud.mall.mapper.ReceivableBillDetailMapper;
-import com.jayud.mall.mapper.ReceivableBillMasterMapper;
+import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.QueryReceivableBillMasterForm;
 import com.jayud.mall.model.bo.ReceivableBillForm;
 import com.jayud.mall.model.bo.ReceivableBillMasterForm;
@@ -19,9 +19,7 @@ import com.jayud.mall.model.po.OrderCopeReceivable;
 import com.jayud.mall.model.po.ReceivableBillDetail;
 import com.jayud.mall.model.po.ReceivableBillMaster;
 import com.jayud.mall.model.vo.*;
-import com.jayud.mall.service.IOrderCopeReceivableService;
-import com.jayud.mall.service.IReceivableBillDetailService;
-import com.jayud.mall.service.IReceivableBillMasterService;
+import com.jayud.mall.service.*;
 import com.jayud.mall.utils.NumberGeneratedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,9 +52,16 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
     @Autowired
     CurrencyInfoMapper currencyInfoMapper;
     @Autowired
+    CustomerMapper customerMapper;
+
+    @Autowired
+    BaseService baseService;
+    @Autowired
     IReceivableBillDetailService receivableBillDetailService;
     @Autowired
     IOrderCopeReceivableService orderCopeReceivableService;
+    @Autowired
+    ICustomerService customerService;
 
     @Override
     public CommonResult<ReceivableBillMasterVO> createReceivableBill(ReceivableBillForm form) {
@@ -223,6 +228,44 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
         receivableBillMasterVO.setBillAmountList(billAmountList);//账单金额(bill_amount)
         receivableBillMasterVO.setReceivableBillDetailVOS(receivableBillDetailVOS);
         return CommonResult.success(receivableBillMasterVO);
+    }
+
+    @Override
+    public ReceivableBillExcelMasterVO downloadBills(Integer customerId, List<Long> ids) {
+        CustomerVO customer = customerMapper.findCustomerById(customerId);
+        if(ObjectUtil.isEmpty(customer)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "客户不存在");
+        }
+        String company = customer.getCompany();//客户公司名称
+        String billCodes = "";//账单编号(多个)
+        List<ReceivableBillDetailExcelVO> receivableBillDetailList = new ArrayList<>();
+        if(ObjectUtil.isNotEmpty(ids)){
+            for (int i=0; i<ids.size(); i++){
+                Long billMasterId = ids.get(i);
+                ReceivableBillMasterVO receivableBillMasterVO = receivableBillMasterMapper.findReceivableBillById(billMasterId);
+                String billCode = receivableBillMasterVO.getBillCode();
+                if(i==0){
+                    billCodes = billCode;
+                }else{
+                    billCodes += ","+billCode;
+                }
+                //明细
+                List<ReceivableBillDetailExcelVO> receivableBillDetailExcelList = receivableBillDetailMapper.findReceivableBillDetailExcelByBillMasterId(billMasterId);
+                receivableBillDetailList.addAll(receivableBillDetailExcelList);
+            }
+        }
+        ReceivableBillExcelMasterVO receivableBillExcelMasterVO = new ReceivableBillExcelMasterVO();
+        receivableBillExcelMasterVO.setBillCodes(billCodes);
+        receivableBillExcelMasterVO.setCustomerName(company);
+        if(CollUtil.isNotEmpty(receivableBillDetailList)){
+            for (int i=0; i<receivableBillDetailList.size(); i++){
+                ReceivableBillDetailExcelVO receivableBillDetailExcelVO = receivableBillDetailList.get(i);
+                Integer sequenceNumber = i+1;
+                receivableBillDetailExcelVO.setSequenceNumber(sequenceNumber.toString());
+            }
+            receivableBillExcelMasterVO.setReceivableBillDetailList(receivableBillDetailList);
+        }
+        return receivableBillExcelMasterVO;
     }
 
 

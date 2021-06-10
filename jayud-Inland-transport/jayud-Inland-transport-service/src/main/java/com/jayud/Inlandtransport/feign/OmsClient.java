@@ -222,7 +222,8 @@ public interface OmsClient {
 
     @ApiOperation("根据类型和业务类型查询订单id")
     @RequestMapping(value = "/api/getOrderAddressOrderIdByType")
-    public ApiResult<Set<Long>> getOrderAddressOrderIdByTimeInterval(@RequestParam("type") Integer type,
+    public ApiResult<Set<Long>> getOrderAddressOrderIdByTimeInterval(@RequestParam("timeInterval") List<String> timeInterval,
+                                                                     @RequestParam("type") Integer type,
                                                                      @RequestParam("businessType") Integer businessType);
 
     /**

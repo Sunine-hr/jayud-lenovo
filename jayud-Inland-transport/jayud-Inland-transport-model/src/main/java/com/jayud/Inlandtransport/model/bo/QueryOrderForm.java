@@ -66,16 +66,16 @@ public class QueryOrderForm extends BasePageForm {
     private Set<Long> subOrderIds;
 
     @ApiModelProperty(value = "提货时间")
-    private List<String> deliveryDate;
+    private List<String> takeTimeStr;
 
 
 
-    public void setDeliveryDate(List<String> deliveryDate) {
-        this.deliveryDate = deliveryDate;
-        if (deliveryDate != null && deliveryDate.size() > 1) {
-            String endTime = deliveryDate.get(1);
+    public void setTakeTimeStr(List<String> takeTimeStr) {
+        this.takeTimeStr = takeTimeStr;
+        if (takeTimeStr != null && takeTimeStr.size() > 1) {
+            String endTime = takeTimeStr.get(1);
             String[] tmp = endTime.split(" ");
-            deliveryDate.set(1, tmp[0] + " 23:59:59");
+            takeTimeStr.set(1, tmp[0] + " 23:59:59");
         }
     }
 

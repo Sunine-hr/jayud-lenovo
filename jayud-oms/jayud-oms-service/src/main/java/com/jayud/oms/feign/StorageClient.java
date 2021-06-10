@@ -1,10 +1,7 @@
 package com.jayud.oms.feign;
 
 import com.jayud.common.ApiResult;
-import com.jayud.oms.model.bo.AddWarehouseGoodsForm;
-import com.jayud.oms.model.bo.InputStorageInputOrderForm;
-import com.jayud.oms.model.bo.InputStorageOutOrderForm;
-import com.jayud.oms.model.bo.InputTrailerOrderFrom;
+import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.vo.InputStorageInputOrderVO;
 import com.jayud.oms.model.vo.InputStorageOutOrderVO;
 import com.jayud.oms.model.vo.InputTrailerOrderVO;
@@ -36,6 +33,12 @@ public interface StorageClient {
      */
     @RequestMapping(value = "/api/storage/createOutOrder")
     ApiResult<String> createOutOrder(@RequestBody InputStorageOutOrderForm inputStorageOutOrderForm);
+
+    /**
+     * 创建仓储快进快出订单
+     */
+    @RequestMapping(value = "/api/storage/createOutOrder")
+    ApiResult<String> createFastOrder(@RequestBody InputStorageFastOrderForm inputStorageFastOrderForm);
 
     /**
      * 根据主订单号获取仓储入库单信息

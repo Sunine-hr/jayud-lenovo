@@ -20,7 +20,8 @@ public enum SubOrderSignEnum {
     NL("nl", "order_inland_transport", "内陆运输"),
     TC("tc", "trailer_order", "拖车"),
     CCI("cci", "storage_input_order", "仓储入库"),
-    CCE("cce", "storage_out_order", "仓储出库");
+    CCE("cce", "storage_out_order", "仓储出库"),
+    CCF("ccf", "storage_fast_order", "仓储快进快出");
     //    private Integer code;
     private String signOne;
     private String signTwo;

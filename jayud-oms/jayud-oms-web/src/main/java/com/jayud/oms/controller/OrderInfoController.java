@@ -247,7 +247,10 @@ public class OrderInfoController {
                 }
             }
             //仓储校验参数
-            if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())) {
+            if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) ||
+                    inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) ||
+                    inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode()) ||
+                    inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode()) ) {
                 if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())) {
                     InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
                     if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {

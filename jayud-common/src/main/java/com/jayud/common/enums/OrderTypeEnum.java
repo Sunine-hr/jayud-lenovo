@@ -28,7 +28,8 @@ public enum OrderTypeEnum {
     ZD("ZD", "对账单号"),
     FW("FW", "服务单号"),
     RK("RK", "入库订单号"),
-    CK("CK", "出库订单号");
+    CK("CK", "出库订单号"),
+    IO("IO", "快进快出订单号");
 
     private String code;
     private String desc;

@@ -32,6 +32,7 @@ public enum OrderStatusEnum {
     CC("CC", "仓储"),
     CCEDD("CCEDD", "出库订单"),
     CCIDD("CCIDD", "入库订单"),
+    CCFDD("CCFDD", "快进快出订单"),
 
     //主订单状态
     MAIN_1("1", "正常"),
@@ -175,6 +176,15 @@ public enum OrderStatusEnum {
     CCE_3("CCE_3", "仓储拣货"),
     CCE_4("CCE_4", "出仓确认"),
     CCE_5("CCE_5", "出仓异常"),
+
+    CCF_0("CCF_0","待接单"),
+    CCF_1("CCF_1","入库确认"),
+    CCF_2("CCF_2","入库货物确认"),
+    CCF_3("CCF_3","入库完结"),
+    CCF_4("CCF_4","出库确认"),
+    CCF_5("CCF_5","入库确认"),
+    CCF_6("CCF_6","入库确认"),
+
     //外部报关放行
     EXT_CUSTOMS_RELEASE("E_C_0", "外部报关放行"),
 

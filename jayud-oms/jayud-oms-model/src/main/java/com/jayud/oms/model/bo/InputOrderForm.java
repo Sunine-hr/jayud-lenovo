@@ -41,6 +41,9 @@ public class InputOrderForm {
     @ApiModelProperty(value = "出库")
     private  InputStorageOutOrderForm storageOutOrderForm;
 
+    @ApiModelProperty(value = "快进快出")
+    private  InputStorageFastOrderForm storageFastOrderForm;
+
     @ApiModelProperty(value = "登录人")
     private String loginUserName;
 

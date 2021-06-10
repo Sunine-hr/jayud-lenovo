@@ -188,7 +188,7 @@ public class OrderCommonController {
         //内陆
         if (SubOrderSignEnum.NL.getSignOne().equals(mark)) {
             result.put("licensePlate", MapUtil.getStr(map, "licensePlate"));
-            result.put("deliveryDate", MapUtil.getStr(map, "deliveryDate"));
+            result.put("takeTimeStr", MapUtil.getStr(map, "deliveryDate"));
         }
 
         result.put("mainOrderNo", mainOrderNo);

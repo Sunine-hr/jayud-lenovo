@@ -212,7 +212,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     //@ApiModelProperty(value = "拖车订单地址信息")
     private List<TrailerOrderAddressVO> orderAddressForms;
 
-    //@ApiModelProperty(value = "提货时间拼接字符串")
+//    @ApiModelProperty(value = "提货时间")
     private String dateStr;
 
 //    @ApiModelProperty(value = "货品信息")
@@ -268,6 +268,9 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
 
     @ApiModelProperty(value = "应付费用状态")
     private String paymentCostStatus;
+
+    @ApiModelProperty(value = "提货时间")
+    private String deliveryDate;
 
     /**
      * 组装商品信息

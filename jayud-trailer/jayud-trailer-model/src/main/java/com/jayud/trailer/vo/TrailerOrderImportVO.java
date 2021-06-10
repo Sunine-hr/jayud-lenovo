@@ -232,6 +232,18 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
     //@ApiModelProperty(value = "主订单id")
     private String mainOrderId;
 
+//    @ApiModelProperty(value = "提货时间")
+    private String dateStr;
+
+    @ApiModelProperty(value = "提货时间")
+    private String deliveryDate;
+
+    @ApiModelProperty(value = "应收费用状态")
+    private String receivableCostStatus;
+
+    @ApiModelProperty(value = "应付费用状态")
+    private String paymentCostStatus;
+
 
 
     /**

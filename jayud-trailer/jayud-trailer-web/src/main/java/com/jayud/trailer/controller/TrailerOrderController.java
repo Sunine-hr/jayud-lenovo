@@ -275,6 +275,7 @@ public class TrailerOrderController {
                 record.setOrderAddressForms(trailerOrderAddressVOS);
                 if(CollectionUtils.isNotEmpty(record.getOrderAddressForms())){
                     record.assemblyDateStr();
+                    record.setDeliveryDate(record.getOrderAddressForms().get(0).getDeliveryDate());
                 }
             }
 

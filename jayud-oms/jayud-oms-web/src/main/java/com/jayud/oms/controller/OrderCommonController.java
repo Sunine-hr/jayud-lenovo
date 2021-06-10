@@ -179,11 +179,16 @@ public class OrderCommonController {
             isTrailer = true;
         }
 
-        //订单列表
+        //中港订单列表
         String mark = MapUtil.getStr(map, "mark");
         if (SubOrderSignEnum.ZGYS.getSignOne().equals(mark)) {
             result.put("licensePlate", MapUtil.getStr(map, "plateNumber"));
             result.put("takeTimeStr", MapUtil.getStr(map, "takeTimeStr"));
+        }
+        //内陆
+        if (SubOrderSignEnum.NL.getSignOne().equals(mark)) {
+            result.put("licensePlate", MapUtil.getStr(map, "licensePlate"));
+            result.put("deliveryDate", MapUtil.getStr(map, "deliveryDate"));
         }
 
         result.put("mainOrderNo", mainOrderNo);

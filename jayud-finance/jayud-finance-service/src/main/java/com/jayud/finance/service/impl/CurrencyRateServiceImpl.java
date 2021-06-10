@@ -104,7 +104,8 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
             currencyRates.add(currencyRate);
 
             //原币兑人民币才有间接汇率:算法1/原币兑人民币汇率
-            if ("CNY".equals(currencyMap.get(addCurrencyRateForm.getDcid()).getCode())) {
+            if ("CNY".equals(currencyMap.get(addCurrencyRateForm.getDcid()).getCode())
+                    && !"CNY".equals(currencyMap.get(addCurrencyRateForm.getOcid()).getCode())) {
                 CurrencyRate tmpRate = map.get(addCurrencyRateForm.getDcid() + "-" + addCurrencyRateForm.getOcid());
                 BigDecimal indirectExchangeRate = new BigDecimal(1).divide(addCurrencyRateForm.getExchangeRate(), 4, RoundingMode.HALF_EVEN);
                 CurrencyRate indirectRate = new CurrencyRate().setMonth(currencyRate.getMonth()).setExchangeRate(indirectExchangeRate)

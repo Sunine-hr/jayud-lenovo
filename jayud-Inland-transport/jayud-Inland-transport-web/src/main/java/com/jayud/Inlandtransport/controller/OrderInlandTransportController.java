@@ -83,6 +83,9 @@ public class OrderInlandTransportController {
 
         if (CollectionUtils.isNotEmpty(form.getTakeTimeStr())) {
             Set<Long> subOrderIds = this.omsClient.getOrderAddressOrderIdByTimeInterval(form.getTakeTimeStr(), OrderAddressEnum.PICK_UP.getCode(), BusinessTypeEnum.NL.getCode()).getData();
+            if (subOrderIds.size() ==0) {
+                subOrderIds.add(-1L);
+            }
             form.setSubOrderIds(subOrderIds);
         }
 

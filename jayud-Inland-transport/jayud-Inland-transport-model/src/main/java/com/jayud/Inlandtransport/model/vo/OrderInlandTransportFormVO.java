@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.OrderAddressEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -42,7 +43,7 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
     @ApiModelProperty(value = "主订单id")
     private String mainOrderId;
 
-    @ApiModelProperty(value = "主订单编号",required = true)
+    @ApiModelProperty(value = "主订单编号", required = true)
     private String mainOrderNo;
 
     @ApiModelProperty(value = "订单编号", required = true)
@@ -154,6 +155,8 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdTimeStr;
 
+    @ApiModelProperty(value = "标识")
+    private String mark = SubOrderSignEnum.NL.getSignOne();
 
     @Override
     protected Serializable pkVal() {
@@ -201,12 +204,14 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
         StringBuilder orderDeliveryAddressSb = new StringBuilder();
         StringBuilder deliverDate = new StringBuilder();
         orderAddressList.forEach(e -> {
-            if (OrderAddressEnum.PICK_UP.getCode().equals(e.getType())) {
-                pickUpAddressSb.append(e.getAddress()).append(",");
-                deliverDate.append(e.getDeliveryDate()).append(",");
-            }
-            if (OrderAddressEnum.DELIVERY.getCode().equals(e.getType())) {
-                orderDeliveryAddressSb.append(e.getAddress()).append(",");
+            if (this.orderNo.equals(e.getOrderNo())) {
+                if (OrderAddressEnum.PICK_UP.getCode().equals(e.getType())) {
+                    pickUpAddressSb.append(e.getAddress()).append(",");
+                    deliverDate.append(e.getDeliveryDate()).append(",");
+                }
+                if (OrderAddressEnum.DELIVERY.getCode().equals(e.getType())) {
+                    orderDeliveryAddressSb.append(e.getAddress()).append(",");
+                }
             }
         });
         this.pickUpAddress = pickUpAddressSb.toString();

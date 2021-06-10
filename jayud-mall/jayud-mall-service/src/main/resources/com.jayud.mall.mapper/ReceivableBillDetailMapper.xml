@@ -37,7 +37,7 @@
     <select id="findReceivableBillDetailExcelByBillMasterId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.ReceivableBillDetailExcelVO">
         select
         t.id,
-        t.amount,t.cost_name,t.remarks,
+        t.amount,t.cid,t.cost_name,t.remarks,
         t1.count,t1.unit_price,
         DATE_FORMAT(t2.create_time,'%Y-%m-%d') create_time,t2.order_no,t2.total_cartons,
         t3.country_name,

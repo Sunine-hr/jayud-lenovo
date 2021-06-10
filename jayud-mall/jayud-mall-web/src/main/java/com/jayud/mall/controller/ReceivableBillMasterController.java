@@ -17,7 +17,6 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.mall.model.bo.BillMasterForm;
 import com.jayud.mall.model.bo.QueryReceivableBillMasterForm;
-import com.jayud.mall.model.vo.BillAmountTotalVO;
 import com.jayud.mall.model.vo.ReceivableBillExcelMasterVO;
 import com.jayud.mall.model.vo.ReceivableBillMasterVO;
 import com.jayud.mall.model.vo.domain.CustomerUser;
@@ -39,7 +38,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -90,11 +88,6 @@ public class ReceivableBillMasterController {
             }
             Integer customerId = customerUser.getId();
             ReceivableBillExcelMasterVO receivableBillExcelVO = receivableBillMasterService.downloadBills(customerId, ids);
-            List<BillAmountTotalVO> billAmountTotalList = new ArrayList<>();
-            billAmountTotalList.add(new BillAmountTotalVO("人民币总计","1000.00"));
-            billAmountTotalList.add(new BillAmountTotalVO("美元总计","120.00"));
-            billAmountTotalList.add(new BillAmountTotalVO("日元总计","900.00"));
-            receivableBillExcelVO.setBillAmountTotalList(billAmountTotalList);
 
             String customerName = receivableBillExcelVO.getCustomerName();
             String json = JSON.toJSONString(receivableBillExcelVO, SerializerFeature.DisableCircularReferenceDetect);

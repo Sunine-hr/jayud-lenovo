@@ -12,6 +12,9 @@ public class BillAmountTotalVO {
     @ApiModelProperty(value = "总计")
     private String total;
 
+    // ... 扩展的字段 ...
+    @ApiModelProperty(value = "填充格式")
+    private String fillFormat;
 
     public BillAmountTotalVO() {
     }

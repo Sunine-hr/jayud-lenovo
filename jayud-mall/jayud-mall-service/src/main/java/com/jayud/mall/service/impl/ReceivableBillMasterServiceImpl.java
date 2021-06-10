@@ -236,6 +236,10 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
         if(ObjectUtil.isEmpty(customer)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "客户不存在");
         }
+        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
+        //将币种信息转换为map，城市cid为键，币种信息为值
+        Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
+
         String company = customer.getCompany();//客户公司名称
         String billCodes = "";//账单编号(多个)
         List<ReceivableBillDetailExcelVO> receivableBillDetailList = new ArrayList<>();
@@ -264,9 +268,33 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
                 receivableBillDetailExcelVO.setSequenceNumber(sequenceNumber.toString());
             }
             receivableBillExcelMasterVO.setReceivableBillDetailList(receivableBillDetailList);
+
+            //计算汇总 分币种
+            Map<String, List<ReceivableBillDetailExcelVO>> stringListMap = groupListByCid2(receivableBillDetailList);
+            List<BillAmountTotalVO> billAmountTotalList = new ArrayList<>();
+            for (Map.Entry<String, List<ReceivableBillDetailExcelVO>> entry : stringListMap.entrySet()) {
+                String cid = entry.getKey();
+                List<ReceivableBillDetailExcelVO> receivableBillDetailExcelVOS = entry.getValue();
+                BigDecimal amountSum = new BigDecimal("0");
+                for (int i=0; i<receivableBillDetailExcelVOS.size(); i++){
+                    ReceivableBillDetailExcelVO receivableBillDetailExcelVO = receivableBillDetailExcelVOS.get(i);
+                    BigDecimal amount = new BigDecimal(receivableBillDetailExcelVO.getAmount());
+                    amountSum = amountSum.add(amount);
+                }
+
+                BillAmountTotalVO billAmountTotalVO = new BillAmountTotalVO();
+
+                String currencyName = cidMap.get(Long.valueOf(cid)).getCurrencyName();//币种名称
+                billAmountTotalVO.setCurrency(currencyName);//币种
+                billAmountTotalVO.setTotal(amountSum.toString());//汇总金额
+                billAmountTotalList.add(billAmountTotalVO);
+            }
+            receivableBillExcelMasterVO.setBillAmountTotalList(billAmountTotalList);
         }
         return receivableBillExcelMasterVO;
     }
+
+
 
 
     /**
@@ -285,6 +313,27 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
                 map.put(key, tmpList);
             } else {
                 tmpList.add(receivableBillDetailVO);
+            }
+        }
+        return map;
+    }
+
+    /**
+     * 根据币种id，对应收账单费用进行分组
+     * @param receivableBillDetailList
+     * @return
+     */
+    private Map<String, List<ReceivableBillDetailExcelVO>> groupListByCid2(List<ReceivableBillDetailExcelVO> receivableBillDetailList) {
+        Map<String, List<ReceivableBillDetailExcelVO>> map = new HashMap<>();
+        for (ReceivableBillDetailExcelVO receivableBillDetailExcelVO : receivableBillDetailList) {
+            String key = receivableBillDetailExcelVO.getCid().toString();
+            List<ReceivableBillDetailExcelVO> tmpList = map.get(key);
+            if (CollUtil.isEmpty(tmpList)) {
+                tmpList = new ArrayList<>();
+                tmpList.add(receivableBillDetailExcelVO);
+                map.put(key, tmpList);
+            } else {
+                tmpList.add(receivableBillDetailExcelVO);
             }
         }
         return map;

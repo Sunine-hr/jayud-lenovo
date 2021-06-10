@@ -48,5 +48,12 @@ public class ReceivableBillDetailExcelVO {
     @ApiModelProperty(value = "描述")
     private String remarks;
 
+    // ... 扩展的字段 ...
+    @ApiModelProperty(value = "币种id")
+    private String cid;
+
+    @ApiModelProperty(value = "填充格式")
+    private String fillFormat;
+
 
 }

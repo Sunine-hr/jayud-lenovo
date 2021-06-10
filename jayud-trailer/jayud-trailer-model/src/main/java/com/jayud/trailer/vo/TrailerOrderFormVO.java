@@ -1,5 +1,7 @@
 package com.jayud.trailer.vo;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSON;
@@ -23,6 +25,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -184,7 +187,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "创建人")
     private String createUser;
 
-    @ApiModelProperty(value = "创建时间")
+//    @ApiModelProperty(value = "创建时间")
     private String createTime;
 
     @ApiModelProperty(value = "创建时间")
@@ -259,6 +262,12 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
 
     //@ApiModelProperty(value = "流程描述")
     private String processDescription;
+
+    @ApiModelProperty(value = "应收费用状态")
+    private String receivableCostStatus;
+
+    @ApiModelProperty(value = "应付费用状态")
+    private String paymentCostStatus;
 
     /**
      * 组装商品信息
@@ -428,5 +437,29 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
         this.billPics = StringUtils.getFileViews(this.getBolFilePath(),this.getBolFileName(),path);
         this.cnPics = StringUtils.getFileViews(this.getCnFilePath(),this.getCnFileName(),path);
         this.pssPics = StringUtils.getFileViews(this.getPssFilePath(),this.getPssFileName(),path);
+    }
+
+    public void assemblyCostStatus(Map<String, Object> costStatus) {
+        if (CollectionUtil.isEmpty(costStatus)) return;
+
+        Map<String, Object> receivableCostStatus = (Map<String, Object>) costStatus.get("receivableCostStatus");
+        Map<String, Object> paymentCostStatus = (Map<String, Object>) costStatus.get("paymentCostStatus");
+
+        String receivableStatusDesc = MapUtil.getStr(receivableCostStatus, orderNo);
+        String paymentStatusDesc = MapUtil.getStr(paymentCostStatus, orderNo);
+
+        if (!StringUtils.isEmpty(receivableStatusDesc)) {
+            String[] split = receivableStatusDesc.split("-");
+            this.receivableCostStatus = split[0];
+        } else {
+            this.receivableCostStatus = "未录入";
+        }
+
+        if (!StringUtils.isEmpty(paymentStatusDesc)) {
+            String[] split = paymentStatusDesc.split("-");
+            this.paymentCostStatus = split[0];
+        } else {
+            this.paymentCostStatus = "未录入";
+        }
     }
 }

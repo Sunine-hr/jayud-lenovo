@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -197,5 +198,15 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
         condition.lambda().in(OrderAddress::getOrderNo, orderNo);
         condition.lambda().in(OrderAddress::getBusinessType, businessType);
         this.baseMapper.delete(condition);
+    }
+
+    @Override
+    public Set<String> getOrderNosByTakeTime(String[] takeTimeStr, Integer code) {
+        QueryWrapper<OrderAddress> condition = new QueryWrapper<>();
+        condition.lambda().between(OrderAddress::getDeliveryDate, takeTimeStr[0], takeTimeStr[1]);
+        if (code != null) {
+            condition.lambda().eq(OrderAddress::getBusinessType , code);
+        }
+        return this.baseMapper.selectList(condition).stream().map(OrderAddress::getOrderNo).collect(Collectors.toSet());
     }
 }

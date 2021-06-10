@@ -1629,6 +1629,18 @@ public class ExternalApiController {
         return ApiResult.ok(map);
     }
 
+    /**
+     * 根据提货时间获取订单号
+     * @param takeTimeStr
+     * @param code
+     * @return
+     */
+    @PostMapping(value = "/api/getOrderNosByTakeTime")
+    public ApiResult<Set<String>> getOrderNosByTakeTime(String[] takeTimeStr, Integer code){
+        Set<String> orderNos = orderAddressService.getOrderNosByTakeTime(takeTimeStr,code);
+        return ApiResult.ok(orderNos);
+    }
+
 }
 
 

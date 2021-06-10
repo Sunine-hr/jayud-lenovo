@@ -6,6 +6,7 @@ import com.jayud.oms.model.po.OrderAddress;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -50,4 +51,12 @@ public interface IOrderAddressService extends IService<OrderAddress> {
     List<OrderAddress> getOrderAddressByBusOrders(List<String> orderNo, Integer businessType);
 
     void deleteOrderAddressByBusOrders(List<String> orderNo, Integer businessType);
+
+    /**
+     * 根据提货时间获取子订单号集合
+     * @param takeTimeStr
+     * @param code
+     * @return
+     */
+    Set<String> getOrderNosByTakeTime(String[] takeTimeStr, Integer code);
 }

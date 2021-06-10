@@ -2008,7 +2008,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             e.setCostTypeId(costTypes.get(0).getId());
             e.setCostGenreId(productBiz.getCostGenreDefault());
             e.setExchangeRate(exchangeRate);
-            e.setChangeAmount(e.getAmount().multiply(exchangeRate));
+            if (e.getAmount() != null) {
+                e.setChangeAmount(e.getAmount().multiply(exchangeRate));
+            }
             e.setSupplierId(supplierInfo.getId());
         });
         form.setReceivableCostList(new ArrayList<>());

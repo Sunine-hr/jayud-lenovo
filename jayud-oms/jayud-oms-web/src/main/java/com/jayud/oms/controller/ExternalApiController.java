@@ -1636,7 +1636,7 @@ public class ExternalApiController {
      * @return
      */
     @PostMapping(value = "/api/getOrderNosByTakeTime")
-    public ApiResult<Set<String>> getOrderNosByTakeTime(String[] takeTimeStr, Integer code){
+    public ApiResult<Set<String>> getOrderNosByTakeTime(@RequestParam("takeTimeStr") String[] takeTimeStr, @RequestParam("code") Integer code){
         Set<String> orderNos = orderAddressService.getOrderNosByTakeTime(takeTimeStr,code);
         return ApiResult.ok(orderNos);
     }

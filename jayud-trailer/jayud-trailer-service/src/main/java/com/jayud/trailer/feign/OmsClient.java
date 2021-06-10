@@ -256,7 +256,7 @@ public interface OmsClient {
      * @return
      */
     @RequestMapping(value = "/api/getOrderNosByTakeTime")
-    ApiResult<Set<String>> getOrderNosByTakeTime(String[] takeTimeStr, Integer code);
+    public ApiResult<Set<String>> getOrderNosByTakeTime(@RequestParam("takeTimeStr") String[] takeTimeStr, @RequestParam("code") Integer code);
 
     /**
      * 是否录用费用

@@ -278,7 +278,7 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
         <where>
             <choose>
                 <when test="status=='TT_0'">
-                    and tor.status=#{status} AND oi.`status` in ('1','4')
+                    and tor.status=#{status} AND oi.`status` in ('1','4') and tor.is_info_complete = 1
                 </when>
                 <when test="status=='TT_3'">
                     and tor.status=#{status} AND tor.`imp_and_exp_type` = 1

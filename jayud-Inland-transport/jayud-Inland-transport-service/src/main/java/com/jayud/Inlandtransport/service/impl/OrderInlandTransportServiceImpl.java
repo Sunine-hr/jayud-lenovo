@@ -1,6 +1,7 @@
 package com.jayud.Inlandtransport.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,10 +12,7 @@ import com.jayud.Inlandtransport.mapper.OrderInlandTransportMapper;
 import com.jayud.Inlandtransport.model.bo.*;
 import com.jayud.Inlandtransport.model.po.OrderInlandSendCars;
 import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
-import com.jayud.Inlandtransport.model.vo.OrderInlandSendCarsVO;
-import com.jayud.Inlandtransport.model.vo.OrderInlandTransportDetails;
-import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
-import com.jayud.Inlandtransport.model.vo.OrderRejectedOpt;
+import com.jayud.Inlandtransport.model.vo.*;
 import com.jayud.Inlandtransport.service.IOrderInlandSendCarsService;
 import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
 import com.jayud.common.ApiResult;
@@ -36,10 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.jayud.common.enums.OrderStatusEnum.getInlandTPStatus;
@@ -118,7 +113,61 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
         Page<OrderInlandTransport> page = new Page<>(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findByPage(page, form, legalIds);
+        IPage<OrderInlandTransportFormVO> iPage = this.baseMapper.findByPage(page, form, legalIds);
+
+        List<OrderInlandTransportFormVO> records = iPage.getRecords();
+        if (iPage.getRecords().size() == 0) {
+            return iPage;
+        }
+
+        List<Long> orderIds = new ArrayList<>();
+        List<String> mainOrder = new ArrayList<>();
+//        List<Long> entityIds = new ArrayList<>();
+        List<Long> supplierIds = new ArrayList<>();
+        List<String> subOrderNos = new ArrayList<>();
+        for (OrderInlandTransportFormVO record : records) {
+            orderIds.add(record.getId());
+            mainOrder.add(record.getMainOrderNo());
+//            entityIds.add(record.getLegalEntityId());
+            subOrderNos.add(record.getOrderNo());
+            if (record.getSupplierId() != null) {
+                supplierIds.add(record.getSupplierId());
+            }
+
+        }
+        //查询商品信息
+        List<GoodsVO> goods = this.omsClient.getGoodsByBusIds(orderIds, BusinessTypeEnum.NL.getCode()).getData();
+        //查询订单地址
+        List<OrderAddressVO> orderAddressList = this.omsClient.getOrderAddressByBusIds(orderIds, BusinessTypeEnum.NL.getCode()).getData();
+        //查询费用状态
+        Map<String, Object> costStatus = omsClient.getCostStatus(null, subOrderNos).getData();
+
+        //查询法人主体
+//        ApiResult legalEntityResult = null;
+//        if (CollectionUtils.isNotEmpty(entityIds)) {
+//            legalEntityResult = this.oauthClient.getLegalEntityByLegalIds(entityIds);
+//        }
+        //查询供应商信息
+        JSONArray supplierInfo = null;
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(supplierIds)) {
+            supplierInfo = new JSONArray(this.omsClient.getSupplierInfoByIds(supplierIds).getData());
+        }
+        //查询主订单信息
+        ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
+        for (OrderInlandTransportFormVO record : records) {
+            //组装商品信息
+            record.assemblyGoodsInfo(goods);
+            //拼装地址信息
+            record.assemblyAddressInfo(orderAddressList);
+            //拼装主订单信息
+            record.assemblyMainOrderData(result.getData());
+            //拼装供应商
+            record.assemblySupplierInfo(supplierInfo);
+            //组装费用费用状态
+            record.assemblyCostStatus(costStatus);
+        }
+
+        return iPage;
     }
 
     /**

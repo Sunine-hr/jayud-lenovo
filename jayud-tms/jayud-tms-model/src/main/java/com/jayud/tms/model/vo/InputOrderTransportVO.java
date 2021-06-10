@@ -153,6 +153,9 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "审核状态")
     private String subTmsStatus;
 
+    @ApiModelProperty(value = "指派供应车型尺寸")
+    private String supplierVehicleSize;
+
     public String getSubTmsStatus() {
         return subTmsStatus = this.status;
     }

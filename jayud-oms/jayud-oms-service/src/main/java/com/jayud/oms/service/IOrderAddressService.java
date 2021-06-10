@@ -1,6 +1,5 @@
 package com.jayud.oms.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.oms.model.po.OrderAddress;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -51,6 +50,15 @@ public interface IOrderAddressService extends IService<OrderAddress> {
     List<OrderAddress> getOrderAddressByBusOrders(List<String> orderNo, Integer businessType);
 
     void deleteOrderAddressByBusOrders(List<String> orderNo, Integer businessType);
+
+
+    /**
+     * 根据条件查询订单id
+     * @param orderAddress
+     * @param timeInterval
+     * @return
+     */
+    Set<Long> getOrderAddressOrderIdByTimeInterval(OrderAddress orderAddress, List<String> timeInterval);
 
     /**
      * 根据提货时间获取子订单号集合

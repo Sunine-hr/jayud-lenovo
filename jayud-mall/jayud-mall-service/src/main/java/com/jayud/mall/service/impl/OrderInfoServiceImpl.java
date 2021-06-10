@@ -1872,6 +1872,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }else{
                     orderInfoVO.setPickStatusVOList(new ArrayList<>());
                 }
+
+                //IsConfirmBilling  IS_CONFIRM_BILLING("is_confirm_billing", "是否确认计费重(1已确认 2未确认)")
+                String isConfirmBilling = "";
+                Map<String, Object> mapParm = new HashMap<>();
+                mapParm.put("order_id", orderInfoVO.getId());
+                mapParm.put("order_no", orderInfoVO.getOrderNo());
+                mapParm.put("main_status_type", "front");
+                mapParm.put("main_status_code", OrderEnum.FRONT_RECEIVED.getCode());//FRONT_RECEIVED("20", "已收货"),
+                mapParm.put("interior_status_code", OrderEnum.IS_CONFIRM_BILLING.getCode());//IS_CONFIRM_BILLING("is_confirm_billing", "是否确认计费重(1已确认 2未确认)")
+                OrderInteriorStatusVO orderInteriorStatusVO = orderInteriorStatusMapper.findOrderInteriorStatusByMapParm(mapParm);
+
+                String statusFlag = "";//状态标志-是否确认计费重(1已确认 2未确认)
+                if(ObjectUtil.isEmpty(orderInteriorStatusVO)){
+                    statusFlag = "2";
+                }else{
+                    statusFlag = orderInteriorStatusVO.getStatusFlag();
+                }
+
+                isConfirmBilling = statusFlag;
+                orderInfoVO.setIsConfirmBilling(isConfirmBilling);
+
             });
         }
         return pageInfo;

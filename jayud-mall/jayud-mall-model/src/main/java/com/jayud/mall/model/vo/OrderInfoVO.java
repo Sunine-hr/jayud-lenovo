@@ -376,5 +376,7 @@ public class OrderInfoVO {
     @JSONField(ordinal = 69)
     private List<PickStatusVO> pickStatusVOList;
 
+    @ApiModelProperty(value = "状态标志-是否确认计费重(1已确认 2未确认)")
+    private String isConfirmBilling;
 
 }

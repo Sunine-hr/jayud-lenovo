@@ -104,7 +104,7 @@ public class TrailerOrderController {
             }
         }
         //检索提货时间
-        if (form.getTakeTimeStr().length > 0) {
+        if (form.getTakeTimeStr() != null && form.getTakeTimeStr().length > 0) {
             Set<String> orderNos = omsClient.getOrderNosByTakeTime(form.getTakeTimeStr(), BusinessTypeEnum.TC.getCode()).getData();
             if (org.apache.commons.collections4.CollectionUtils.isEmpty(orderNos)) {
                 orderNos.add("-1");

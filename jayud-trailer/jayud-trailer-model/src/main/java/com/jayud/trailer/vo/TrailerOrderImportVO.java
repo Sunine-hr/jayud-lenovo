@@ -37,14 +37,20 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "子订单编号")
-    private String orderNo;
-
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 
+    @ApiModelProperty(value = "子订单编号")
+    private String orderNo;
+
     @ApiModelProperty(value = "客户名称")
     private String customerName;
+
+    @ApiModelProperty(value = "货物信息")
+    private String goodsInfo;
+
+    @ApiModelProperty(value = "提货时间")
+    private String deliveryDate;
 
     //进出口类型(1：进口，2：出口)
     //@ApiModelProperty(value = "进出口类型")
@@ -205,9 +211,6 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
     //@ApiModelProperty(value = "客户代码")
     private String customerCode;
 
-    @ApiModelProperty(value = "货物信息")
-    private String goodsInfo;
-
     //@ApiModelProperty(value = "是否录用费用")
     private Boolean cost;
 
@@ -234,9 +237,6 @@ public class TrailerOrderImportVO extends Model<TrailerOrderImportVO> {
 
 //    @ApiModelProperty(value = "提货时间")
     private String dateStr;
-
-    @ApiModelProperty(value = "提货时间")
-    private String deliveryDate;
 
     @ApiModelProperty(value = "应收费用状态")
     private String receivableCostStatus;

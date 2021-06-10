@@ -96,6 +96,9 @@ public class SendCarPdfVO {
     @ApiModelProperty(value = "总板数")
     private Integer totalPlateAmount;
 
+    @ApiModelProperty(value = "指派供应商车型")
+    private String supplierVehicleSize;
+
     public String getVehicleTypeDesc() {
         if (this.vehicleType != null) {
             if (this.vehicleType == 1) {

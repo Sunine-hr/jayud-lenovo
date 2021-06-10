@@ -704,6 +704,7 @@
         ot.`goods_type` goodsType,
         '' jiedanUser,
         si.`supplier_ch_name` clearCustomsAddress,
+        ot.supplier_vehicle_size,
         (SELECT su.phone FROM `system_user` su WHERE su.name = ot.`jiedan_user`) jiedanPhone
         FROM
         order_transport ot

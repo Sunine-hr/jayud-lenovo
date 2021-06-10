@@ -2502,6 +2502,65 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return isConfirmBillingVO;
     }
 
+    @Override
+    public IsAuditOrderVO findOrderIsAuditOrder(Long orderId) {
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(orderId);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单不存在");
+        }
+        Map<String, Object> mapParm = new HashMap<>();
+        mapParm.put("order_id", orderInfoVO.getId());
+        mapParm.put("order_no", orderInfoVO.getOrderNo());
+        mapParm.put("main_status_type", "after");
+        mapParm.put("main_status_code", OrderEnum.AFTER_PLACED.getCode());//AFTER_PLACED("10", "已下单"),
+        mapParm.put("interior_status_code", OrderEnum.IS_CONFIRM_BILLING.getCode());//IS_AUDIT_ORDER("is_audit_order", "是否审核单据(1已审单 2未审单)"),
+        OrderInteriorStatusVO orderInteriorStatusVO = orderInteriorStatusMapper.findOrderInteriorStatusByMapParm(mapParm);
+
+        String statusFlag = "";//状态标志-是否审核单据(1已审单 2未审单)
+        if(ObjectUtil.isEmpty(orderInteriorStatusVO)){
+            statusFlag = "2";
+        }else{
+            statusFlag = orderInteriorStatusVO.getStatusFlag();
+        }
+        IsAuditOrderVO isAuditOrderVO = new IsAuditOrderVO();
+        isAuditOrderVO.setOrderId(orderId);
+        isAuditOrderVO.setStatusFlag(statusFlag);
+        return isAuditOrderVO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void auditOrderIsAuditOrder(IsAuditOrderForm form) {
+        Long orderId = form.getOrderId();
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(orderId);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单不存在");
+        }
+        Map<String, Object> mapParm = new HashMap<>();
+        mapParm.put("order_id", orderInfoVO.getId());
+        mapParm.put("order_no", orderInfoVO.getOrderNo());
+        mapParm.put("main_status_type", "after");
+        mapParm.put("main_status_code", OrderEnum.AFTER_PLACED.getCode());//AFTER_PLACED("10", "已下单"),
+        mapParm.put("interior_status_code", OrderEnum.IS_AUDIT_ORDER.getCode());//IS_AUDIT_ORDER("is_audit_order", "是否审核单据(1已审单 2未审单)"),
+        OrderInteriorStatusVO orderInteriorStatusVO = orderInteriorStatusMapper.findOrderInteriorStatusByMapParm(mapParm);
+
+        OrderInteriorStatus orderInteriorStatus = new OrderInteriorStatus();
+        if(ObjectUtil.isEmpty(orderInteriorStatusVO)){
+            orderInteriorStatus.setOrderId(orderInfoVO.getId());
+            orderInteriorStatus.setOrderNo(orderInfoVO.getOrderNo());
+            orderInteriorStatus.setMainStatusType("after");//主状态类型(front前端 after后端)
+            orderInteriorStatus.setMainStatusCode(OrderEnum.AFTER_PLACED.getCode());
+            orderInteriorStatus.setMainStatusName(OrderEnum.AFTER_PLACED.getName());
+            orderInteriorStatus.setInteriorStatusCode(OrderEnum.IS_AUDIT_ORDER.getCode());
+            orderInteriorStatus.setInteriorStatusName(OrderEnum.IS_AUDIT_ORDER.getName());
+            orderInteriorStatus.setStatusFlag(form.getStatusFlag());//状态标志-是否审核单据(1已审单 2未审单)
+        }else{
+            orderInteriorStatus = ConvertUtil.convert(orderInteriorStatusVO, OrderInteriorStatus.class);
+            orderInteriorStatus.setStatusFlag(form.getStatusFlag());//状态标志-是否审核单据(1已审单 2未审单)
+        }
+        orderInteriorStatusService.saveOrUpdate(orderInteriorStatus);
+    }
+
     private String extracted(String url, Map<String, Object> requestMap) {
         String feedback = HttpRequest
                 .post(url)

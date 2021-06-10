@@ -313,4 +313,17 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     IsConfirmBillingVO findOrderIsConfirmBilling(Long orderId);
+
+    /**
+     * 查询，订单是否审核单据状态
+     * @param orderId
+     * @return
+     */
+    IsAuditOrderVO findOrderIsAuditOrder(Long orderId);
+
+    /**
+     * 审核，订单内部状态(是否审核单据)
+     * @param form
+     */
+    void auditOrderIsAuditOrder(IsAuditOrderForm form);
 }

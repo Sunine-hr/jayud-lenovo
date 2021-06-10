@@ -316,19 +316,20 @@ public class OrderInfoController {
     // 查询订单内部状态，
     // IS_AUDIT_ORDER("is_audit_order", "是否审核单据(1已审单 2未审单)")
     // 订单已下单-内部状态审核(已审单 未审单)
-    @ApiOperation(value = "查询订单内部状态")
+    @ApiOperation(value = "查询-订单是否审核单据状态")
     @ApiOperationSupport(order = 26)
-    @PostMapping("/findOrderInteriorStatusByOrderIdAndCode")
-    public CommonResult<OrderInteriorStatusVO> findOrderInteriorStatusByOrderIdAndCode(@Valid @RequestBody OrderInteriorStatusQueryForm form){
-        OrderInteriorStatusVO orderInteriorStatusVO = orderInteriorStatusService.findOrderInteriorStatusByOrderIdAndCode(form);
-        return CommonResult.success(orderInteriorStatusVO);
+    @PostMapping("/findOrderIsAuditOrder")
+    public CommonResult<IsAuditOrderVO> findOrderIsAuditOrder(@Valid @RequestBody OrderInfoParaForm form){
+        Long orderId = form.getId();
+        IsAuditOrderVO isAuditOrderVO = orderInfoService.findOrderIsAuditOrder(orderId);
+        return CommonResult.success(isAuditOrderVO);
     }
 
-    @ApiOperation(value = "审核订单内部状态")
+    @ApiOperation(value = "审核-订单内部状态(是否审核单据)")
     @ApiOperationSupport(order = 27)
-    @PostMapping("/auditOrderInteriorStatus")
-    public CommonResult auditOrderInteriorStatus(@Valid @RequestBody AuditOrderInteriorStatusForm form){
-        orderInteriorStatusService.auditOrderInteriorStatus(form);
+    @PostMapping("/auditOrderIsAuditOrder")
+    public CommonResult auditOrderIsAuditOrder(@Valid @RequestBody IsAuditOrderForm form){
+        orderInfoService.auditOrderIsAuditOrder(form);
         return CommonResult.success("操作成功");
     }
 

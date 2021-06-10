@@ -202,8 +202,9 @@ public class OrderCommonController {
         result.put("cabinet", MapUtil.getStr(map, "cabinetTypeName") + "/" + MapUtil.getStr(map, "cabinetSizeName"));
         result.put("isTrailer", isTrailer);
         result.put("cabinetSizeName", MapUtil.getStr(map, "cabinetSizeName"));
+        result.put("licensePlate", MapUtil.getStr(map, "plateNumber"));
 
-        result.put("dateStr", MapUtil.getStr(map, "dateStr"));
+        result.put("takeTimeStr", MapUtil.getStr(map, "dateStr"));
         return CommonResult.success(result);
     }
 

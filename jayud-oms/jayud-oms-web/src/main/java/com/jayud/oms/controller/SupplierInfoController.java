@@ -179,8 +179,8 @@ public class SupplierInfoController {
         if (StringUtil.isNullOrEmpty(supplierName)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.like("supplier_ch_name", supplierName);
+        QueryWrapper<SupplierInfo> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(SupplierInfo::getSupplierChName, supplierName);
         List<SupplierInfo> supplierInfos = supplierInfoService.list(queryWrapper);
         if ((StringUtil.isNullOrEmpty(idStr) && supplierInfos != null && supplierInfos.size() > 0) || ((!StringUtil.isNullOrEmpty(idStr)) && supplierInfos != null && supplierInfos.size() > 1)) {
             return CommonResult.error(ResultEnum.SUPPLIER_NAME_EXIST);
@@ -335,7 +335,7 @@ public class SupplierInfoController {
     public CommonResult initCompany() {
         List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(
                 BeanUtils.convertToFieldName(true,
-                SupplierInfo::getId, SupplierInfo::getSupplierChName));
+                        SupplierInfo::getId, SupplierInfo::getSupplierChName));
         List<InitComboxVO> initComboxVOS = new ArrayList<>();
         for (SupplierInfo supplierInfo : supplierInfos) {
             InitComboxVO initComboxVO = new InitComboxVO();

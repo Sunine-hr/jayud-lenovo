@@ -3,6 +3,7 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.entity.DataControl;
@@ -422,6 +423,20 @@ public class OrderCommonController {
             inputCostVO = orderInfoService.getSupplierAbnormalCostDetail(form);
         }
         return CommonResult.success(inputCostVO);
+    }
+
+    @ApiOperation(value = "获取供应商默认录用费用值")
+    @PostMapping("/getDefaultSupplierCostValue")
+    public CommonResult<Map<String, Object>> getDefaultSupplierCostValue(@RequestBody Map<String, Object> map) {
+        String cmd = MapUtil.getStr(map, "cmd");
+        if (StringUtils.isEmpty(cmd)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        Map<String,Object> response=new HashMap<>();
+        if (SubOrderSignEnum.ZGYS.getSignOne().equals(cmd)){
+            response.put("currencyCode","HKD");
+        }
+        return CommonResult.success(response);
     }
 
     @ApiOperation(value = "获取供应待处理操作")

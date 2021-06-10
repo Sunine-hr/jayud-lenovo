@@ -129,6 +129,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     CurrencyInfoMapper currencyInfoMapper;
     @Autowired
     OrderInteriorStatusMapper orderInteriorStatusMapper;
+    @Autowired
+    OrderCaseWmsMapper orderCaseWmsMapper;
 
     @Autowired
     BaseService baseService;
@@ -160,7 +162,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     IOrderInteriorStatusService orderInteriorStatusService;
     @Autowired
     ILogisticsTrackService logisticsTrackService;
-
+    @Autowired
+    IOrderCaseWmsService orderCaseWmsService;
 
 
 
@@ -2371,11 +2374,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void orderCaseReceipt(OrderCaseReceiptForm form) {
         String cartonNo = form.getCartonNo();
+        //根据订单箱号查询，判断箱号是否存在
         OrderCaseVO orderCaseVO = orderCaseMapper.findOrderCaseByCartonNo(cartonNo);
         if(ObjectUtil.isEmpty(orderCaseVO)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单箱号不存在");
+        }
+        AuthUser user = baseService.getUser();
+        if(ObjectUtil.isEmpty(user)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录");
         }
         OrderCase orderCase = ConvertUtil.convert(orderCaseVO, OrderCase.class);
 
@@ -2393,7 +2402,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderCase.setWmsVolume(wmsVolume);
         orderCase.setWmsWeighDate(LocalDateTime.now());
 
+        //1.修改订单箱号
         orderCaseService.saveOrUpdate(orderCase);
+
+        //2.保存 - 订单装箱信息(仓库测量)
+        OrderCaseWmsVO orderCaseWmsVO = orderCaseWmsMapper.findOrderCaseWmsByCartonNo(cartonNo);
+        if(ObjectUtil.isEmpty(orderCaseWmsVO)){
+            orderCaseWmsVO = ConvertUtil.convert(form, OrderCaseWmsVO.class);
+        }else{
+            orderCaseWmsVO = ConvertUtil.convert(form, OrderCaseWmsVO.class);
+        }
+        OrderCaseWms orderCaseWms = ConvertUtil.convert(orderCaseWmsVO, OrderCaseWms.class);
+        orderCaseWms.setWmsVolume(wmsVolume);
+        orderCaseWms.setUserId(user.getId().intValue());
+        orderCaseWms.setUserName(user.getName());
+        orderCaseWmsService.saveOrUpdate(orderCaseWms);
     }
 
     @Override

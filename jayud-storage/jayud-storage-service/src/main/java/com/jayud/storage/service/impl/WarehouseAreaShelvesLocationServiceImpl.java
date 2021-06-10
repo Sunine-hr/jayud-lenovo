@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.storage.feign.OauthClient;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.QueryWarehouseAreaShelvesLocationForm;
 import com.jayud.storage.model.bo.WarehouseAreaShelvesLocationForm;
@@ -159,10 +158,12 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
     }
 
     @Override
-    public WarehouseAreaShelvesLocation getLocation(Integer shelvesLine, Long shelvesType) {
+    public WarehouseAreaShelvesLocation getLocation(Integer shelvesLine, Long shelvesId, Long shelvesType) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("shelves_line",shelvesLine);
         queryWrapper.eq("shelves_type",shelvesType);
+        queryWrapper.eq("shelves_id",shelvesId);
+        queryWrapper.eq("status",1);
         return this.baseMapper.selectOne(queryWrapper);
     }
 

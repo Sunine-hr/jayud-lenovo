@@ -50,7 +50,4 @@ public class WarehouseAreaShelvesVO extends Model<WarehouseAreaShelvesVO> {
     @ApiModelProperty(value = "区域id")
     private String areaId;
 
-    @ApiModelProperty(value = "二维码地址")
-    private String qrUrl;
-
 }

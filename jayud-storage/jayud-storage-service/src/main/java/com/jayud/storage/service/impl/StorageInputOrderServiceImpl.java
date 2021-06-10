@@ -15,6 +15,7 @@ import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.storage.feign.FileClient;
 import com.jayud.storage.feign.OauthClient;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.*;
@@ -67,6 +68,9 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
 
     @Autowired
     private IStockService stockService;
+
+    @Autowired
+    private FileClient fileClient;
 
     @Autowired
     private IWarehouseAreaShelvesLocationService warehouseAreaShelvesLocationService;
@@ -122,6 +126,9 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
 
     @Override
     public StorageInputOrderVO getStorageInputOrderVOById(Long id) {
+        //获取附件地址
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
+
         StorageInputOrder storageInputOrder = this.baseMapper.selectById(id);
         StorageInputOrderVO storageInputOrderVO = ConvertUtil.convert(storageInputOrder, StorageInputOrderVO.class);
         //获取商品信息
@@ -148,6 +155,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
                 if(warehouseGood.getPcs()!=null){
                     pcs = pcs + warehouseGood.getPcs();
                 }
+                warehouseGood.setTakeFiles(StringUtils.getFileViews(warehouseGood.getFilePath(),warehouseGood.getFileName(),prePath));
             }
             storageInputOrderVO.setTotalNumber(borderNumber+"板"+number+"件"+pcs+"pcs");
             storageInputOrderVO.setTotalWeight(totalWeight+"KG");
@@ -391,7 +399,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         //文件拼接
         form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
         form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
-        form.setBusinessType(BusinessTypeEnum.CK.getCode());
+        form.setBusinessType(BusinessTypeEnum.RK.getCode());
 
         if (omsClient.saveOprStatus(form).getCode() != HttpStatus.SC_OK) {
             log.error("远程调用物流轨迹失败");

@@ -1077,7 +1077,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 if (storageOutOrderVO != null) {
                     //添加附件
                     List<FileView> attachments = this.logisticsTrackService.getAttachments(storageOutOrderVO.getId()
-                            , BusinessTypeEnum.RK.getCode(), prePath);
+                            , BusinessTypeEnum.CK.getCode(), prePath);
                     storageOutOrderVO.setAllPics(attachments);
                     //结算单位名称
                     CustomerInfo customerInfo = customerInfoService.getByCode(storageOutOrderVO.getUnitCode());

@@ -83,9 +83,10 @@ public class WarehouseAreaShelvesServiceImpl extends ServiceImpl<WarehouseAreaSh
     }
 
     @Override
-    public WarehouseAreaShelves getWarehouseAreaShelvesByShelvesName(String name) {
+    public WarehouseAreaShelves getWarehouseAreaShelvesByShelvesName(String name,Long id) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("shelves_name",name);
+        queryWrapper.eq("area_id",id);
         queryWrapper.eq("status",1);
         return this.baseMapper.selectOne(queryWrapper);
     }

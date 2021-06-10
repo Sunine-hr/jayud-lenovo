@@ -30,7 +30,7 @@ public interface IWarehouseAreaShelvesService extends IService<WarehouseAreaShel
 
     IPage<WarehouseAreaShelvesFormVO> findWarehouseAreaShelvesLocationByPage(QueryWarehouseAreaShelves2Form form);
 
-    WarehouseAreaShelves getWarehouseAreaShelvesByShelvesName(String name);
+    WarehouseAreaShelves getWarehouseAreaShelvesByShelvesName(String name,Long id);
 
     WarehouseAreaShelvesFormVO getWarehouseAreaShelvesByShelvesId(Long shelvesId);
 

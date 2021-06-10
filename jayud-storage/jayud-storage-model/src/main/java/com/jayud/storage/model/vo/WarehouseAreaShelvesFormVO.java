@@ -39,7 +39,7 @@ public class WarehouseAreaShelvesFormVO extends Model<WarehouseAreaShelvesFormVO
     private String shelvesName;
 
     @ApiModelProperty(value = "二维码")
-    private String QRCode;
+    private String qrUrl;
 
     @ApiModelProperty(value = "更新时间")
     private String updateTime;

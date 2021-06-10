@@ -45,5 +45,5 @@ public interface IWarehouseAreaShelvesLocationService extends IService<Warehouse
      */
     WarehouseNameVO getWarehouseNameByKuCode(String kuCode);
 
-    WarehouseAreaShelvesLocation getLocation(Integer shelvesLine, Long shelvesType);
+    WarehouseAreaShelvesLocation getLocation(Integer shelvesLine, Long shelvesId, Long shelvesType);
 }

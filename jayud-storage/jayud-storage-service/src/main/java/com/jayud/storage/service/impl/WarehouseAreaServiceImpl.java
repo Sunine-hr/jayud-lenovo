@@ -4,29 +4,20 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
-import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.StringUtils;
 import com.jayud.storage.model.bo.*;
 import com.jayud.storage.model.enums.WarehouseStatusEnum;
-import com.jayud.storage.model.po.Warehouse;
 import com.jayud.storage.model.po.WarehouseArea;
 import com.jayud.storage.mapper.WarehouseAreaMapper;
-import com.jayud.storage.model.vo.GoodVO;
-import com.jayud.storage.model.vo.StorageInputOrderFormVO;
 import com.jayud.storage.model.vo.WarehouseAreaVO;
-import com.jayud.storage.model.vo.WarehouseVO;
 import com.jayud.storage.service.IWarehouseAreaService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -87,16 +78,18 @@ public class WarehouseAreaServiceImpl extends ServiceImpl<WarehouseAreaMapper, W
     }
 
     @Override
-    public WarehouseArea getWarehouseAreaByAreaCode(String areaCode) {
+    public WarehouseArea getWarehouseAreaByAreaCode(String areaCode, Long warehouseId) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("area_code",areaCode);
+        queryWrapper.eq("warehouse_id",warehouseId);
         return this.baseMapper.selectOne(queryWrapper);
     }
 
     @Override
-    public WarehouseArea getWarehouseAreaByAreaName(String areaName) {
+    public WarehouseArea getWarehouseAreaByAreaName(String areaName, Long warehouseId) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("area_name",areaName);
+        queryWrapper.eq("warehouse_id",warehouseId);
         return this.baseMapper.selectOne(queryWrapper);
     }
 

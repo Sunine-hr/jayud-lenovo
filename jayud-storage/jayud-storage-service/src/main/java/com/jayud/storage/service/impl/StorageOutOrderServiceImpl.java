@@ -13,6 +13,7 @@ import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.storage.feign.FileClient;
 import com.jayud.storage.feign.OauthClient;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.*;
@@ -60,6 +61,9 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
 
     @Autowired
     private IStorageOrderService storageOrderService;
+
+    @Autowired
+    private FileClient fileClient;
 
     @Autowired
     private IWarehouseAreaShelvesLocationService warehouseAreaShelvesLocationService;
@@ -132,6 +136,10 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
      */
     @Override
     public StorageOutOrderVO getStorageOutOrderVOById(Long id) {
+
+        //获取附件地址
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
+
         StorageOutOrder storageOutOrder = this.baseMapper.selectById(id);
         StorageOutOrderVO storageOutOrderVO = ConvertUtil.convert(storageOutOrder, StorageOutOrderVO.class);
         List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList1(storageOutOrder.getId(),storageOutOrder.getOrderNo());
@@ -158,6 +166,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
                 if(warehouseGood.getPcs()!=null){
                     pcs = pcs + warehouseGood.getPcs();
                 }
+                warehouseGood.setTakeFiles(StringUtils.getFileViews(warehouseGood.getFilePath(),warehouseGood.getFileName(),prePath));
             }
             storageOutOrderVO.setTotalNumberStr(borderNumber+"板"+number+"件"+pcs+"pcs");
             storageOutOrderVO.setTotalWeightStr(totalWeight+"KG");
@@ -253,7 +262,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
         //文件拼接
         form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
         form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
-        form.setBusinessType(BusinessTypeEnum.RK.getCode());
+        form.setBusinessType(BusinessTypeEnum.CK.getCode());
 
         if (omsClient.saveOprStatus(form).getCode() != HttpStatus.SC_OK) {
             log.error("远程调用物流轨迹失败");

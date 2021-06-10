@@ -81,11 +81,11 @@ public class WarehouseAreaController {
                 return CommonResult.error(444,"数据不完整");
             }
 
-            WarehouseArea warehouseArea = warehouseAreaService.getWarehouseAreaByAreaCode(areaForm.getAreaCode());
+            WarehouseArea warehouseArea = warehouseAreaService.getWarehouseAreaByAreaCode(areaForm.getAreaCode(),warehouseAreaForm.getWarehouseId());
             if (warehouseArea != null) {
                 return CommonResult.error(444, areaForm.getAreaCode() + "该代码已存在");
             }
-            WarehouseArea warehouseArea1 = warehouseAreaService.getWarehouseAreaByAreaName(areaForm.getAreaName());
+            WarehouseArea warehouseArea1 = warehouseAreaService.getWarehouseAreaByAreaName(areaForm.getAreaName(),warehouseAreaForm.getWarehouseId());
             if (warehouseArea1 != null) {
                 return CommonResult.error(444, areaForm.getAreaName() + "该名字已存在");
             }
@@ -119,7 +119,7 @@ public class WarehouseAreaController {
     @PostMapping("/saveOrUpdateWarehouseAreaShelves")
     public CommonResult saveOrUpdateWarehouseAreaShelves(@RequestBody WarehouseAreaShelvesForm form){
         for (ShelvesForm shelvesForm : form.getShelvesName()) {
-            WarehouseAreaShelves warehouseAreaShelves = warehouseAreaShelvesService.getWarehouseAreaShelvesByShelvesName(shelvesForm.getName());
+            WarehouseAreaShelves warehouseAreaShelves = warehouseAreaShelvesService.getWarehouseAreaShelvesByShelvesName(shelvesForm.getName(),form.getAreaId());
             if(warehouseAreaShelves!=null){
                 return CommonResult.error(444,shelvesForm.getName()+"该货架名已存在");
             }
@@ -139,17 +139,13 @@ public class WarehouseAreaController {
         return CommonResult.success("操作成功！");
     }
 
-    @Value("${address.shelvesUrl}")
-    String shelvesUrl;
+
 
     @ApiOperation(value = "货架分页查询list")
     @PostMapping("/findWarehouseAreaShelvesByPage")
     public CommonResult<CommonPageResult<WarehouseAreaShelvesVO>> findWarehouseAreaShelvesByPage(@RequestBody QueryWarehouseAreaShelvesForm form){
         IPage<WarehouseAreaShelvesVO> page = this.warehouseAreaShelvesService.findWarehouseAreaShelvesByPage(form);
 
-        for (WarehouseAreaShelvesVO record : page.getRecords()) {
-            record.setQrUrl(areaUrl+record.getAreaName());
-        }
         CommonPageResult<WarehouseAreaShelvesVO> pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);
     }

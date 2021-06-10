@@ -49,7 +49,8 @@ public class WarehouseAreaShelvesForm extends Model<WarehouseAreaShelvesForm> {
     private String remarks;
 
     @ApiModelProperty(value = "区域id")
-    private String areaId;
+    @NotNull(message = "区域名称不为空")
+    private Long areaId;
 
 
 }

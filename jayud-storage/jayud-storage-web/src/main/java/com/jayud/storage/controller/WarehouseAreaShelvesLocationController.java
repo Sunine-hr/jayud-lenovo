@@ -60,6 +60,9 @@ public class WarehouseAreaShelvesLocationController {
     @Autowired
     private OmsClient omsClient;
 
+    @Value("${address.shelvesUrl}")
+    String shelvesUrl;
+
     @ApiOperation(value = "分页查询所有货架")
     @PostMapping("/findWarehouseAreaShelvesByPage")
     public CommonResult findWarehouseAreaShelvesByPage(@RequestBody QueryWarehouseAreaShelves2Form form){
@@ -71,11 +74,12 @@ public class WarehouseAreaShelvesLocationController {
                 for (WarehouseAreaShelvesFormVO record : page.getRecords()) {
                     if(record.getId().equals(warehouseAreaShelvesLocation.getShelvesId())){
                         record.setUpdateTime(warehouseAreaShelvesLocation.getCreateTime().toString());
+                        record.setQrUrl(shelvesUrl+record.getShelvesName());
                     }
                 }
             }
         }
-        CommonPageResult<WarehouseAreaShelvesVO> pageVO = new CommonPageResult(page);
+        CommonPageResult<WarehouseAreaShelvesFormVO> pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);
     }
 
@@ -121,7 +125,7 @@ public class WarehouseAreaShelvesLocationController {
                     }
                 }
 
-                WarehouseAreaShelvesLocation warehouseAreaShelvesLocation = warehouseAreaShelvesLocationService.getLocation(warehouseAreaShelvesLocationForm.getShelvesLine(),warehouseAreaShelvesLocationForm.getShelvesType());
+                WarehouseAreaShelvesLocation warehouseAreaShelvesLocation = warehouseAreaShelvesLocationService.getLocation(warehouseAreaShelvesLocationForm.getShelvesLine(),warehouseAreaShelvesLocationForm.getShelvesType(),warehouseAreaShelvesLocationForm.getShelvesId());
                 if(warehouseAreaShelvesLocation != null){
                     return CommonResult.error(444,warehouseAreaShelvesLocationForm.getShelvesLine()+"层"+warehouseAreaShelvesLocationForm.getShelvesType()+"已存在");
                 }

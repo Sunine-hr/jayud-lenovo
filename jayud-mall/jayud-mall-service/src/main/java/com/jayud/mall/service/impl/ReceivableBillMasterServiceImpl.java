@@ -53,6 +53,12 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
     CurrencyInfoMapper currencyInfoMapper;
     @Autowired
     CustomerMapper customerMapper;
+    @Autowired
+    LegalEntityMapper legalEntityMapper;
+    @Autowired
+    OrderPickMapper orderPickMapper;
+    @Autowired
+    OrderCaseMapper orderCaseMapper;
 
     @Autowired
     BaseService baseService;
@@ -62,6 +68,12 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
     IOrderCopeReceivableService orderCopeReceivableService;
     @Autowired
     ICustomerService customerService;
+    @Autowired
+    ILegalEntityService legalEntityService;
+    @Autowired
+    IOrderPickService orderPickService;
+    @Autowired
+    IOrderCaseService orderCaseService;
 
     @Override
     public CommonResult<ReceivableBillMasterVO> createReceivableBill(ReceivableBillForm form) {
@@ -236,6 +248,15 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
         if(ObjectUtil.isEmpty(customer)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "客户不存在");
         }
+        Long legalEntityId = customer.getLegalEntityId();
+        String legalName = "";
+        String legalEnName = "";
+        if(ObjectUtil.isNotEmpty(legalEntityId)){
+            LegalEntityVO legalEntityVO = legalEntityMapper.findLegalEntityById(legalEntityId);
+            legalName = legalEntityVO.getLegalName();
+            legalEnName = legalEntityVO.getLegalEnName();
+        }
+
         List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
         //将币种信息转换为map，城市cid为键，币种信息为值
         Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
@@ -255,10 +276,52 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
                 }
                 //明细
                 List<ReceivableBillDetailExcelVO> receivableBillDetailExcelList = receivableBillDetailMapper.findReceivableBillDetailExcelByBillMasterId(billMasterId);
+
+                if (CollUtil.isNotEmpty(receivableBillDetailExcelList)){
+                    for (int k=0; k<receivableBillDetailExcelList.size(); k++){
+                        ReceivableBillDetailExcelVO receivableBillDetailExcelVO = receivableBillDetailExcelList.get(k);
+                        String orderId = receivableBillDetailExcelVO.getOrderId();
+                        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(Long.valueOf(orderId));
+                        String warehouseNo = "";
+                        Integer isPick = orderInfoVO.getIsPick();//是否上门提货(0否 1是,order_pick)
+                        if(ObjectUtil.isNotEmpty(isPick) && isPick.equals(0)){
+                            warehouseNo = orderInfoVO.getWarehouseNo();
+                        }else if(ObjectUtil.isNotEmpty(isPick) && isPick.equals(1)){
+                            List<OrderPickVO> orderPickList = orderPickMapper.findOrderPickByOrderId(Long.valueOf(orderId));
+                            for(int j=0; j<orderPickList.size(); j++){
+                                OrderPickVO orderPickVO = orderPickList.get(j);
+                                String warehouseNo1 = orderPickVO.getWarehouseNo();
+                                if(j==0){
+                                    warehouseNo = warehouseNo1;
+                                }else{
+                                    warehouseNo += ","+warehouseNo1;
+                                }
+                            }
+                        }
+
+                        String fabNo = "";
+                        List<OrderCaseVO> orderCaseList = orderCaseMapper.findOrderCaseByOrderId(Long.valueOf(orderId));
+                        for(int l=0; l<orderCaseList.size(); l++){
+                            OrderCaseVO orderCaseVO = orderCaseList.get(l);
+                            String fabNo1 = orderCaseVO.getFabNo();
+                            if(l==0){
+                                fabNo = fabNo1;
+                            }else{
+                                fabNo += ","+fabNo1;
+                            }
+                        }
+                        receivableBillDetailExcelVO.setWarehouseNo(warehouseNo);//客户运单号-》进仓编号  order_info.warehouse_no  / order_info.is_pick 1是  -> order_pick.warehouse_no
+                        receivableBillDetailExcelVO.setFabNo(fabNo);//FBA号 order_info  -> order_case.fab_no
+                    }
+                }
+
+
                 receivableBillDetailList.addAll(receivableBillDetailExcelList);
             }
         }
         ReceivableBillExcelMasterVO receivableBillExcelMasterVO = new ReceivableBillExcelMasterVO();
+        receivableBillExcelMasterVO.setLegalName(legalName);
+        receivableBillExcelMasterVO.setLegalEnName(legalEnName);
         receivableBillExcelMasterVO.setBillCodes(billCodes);
         receivableBillExcelMasterVO.setCustomerName(company);
         if(CollUtil.isNotEmpty(receivableBillDetailList)){

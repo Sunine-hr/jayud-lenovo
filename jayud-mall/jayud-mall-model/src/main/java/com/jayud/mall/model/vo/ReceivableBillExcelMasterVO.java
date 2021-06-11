@@ -8,6 +8,14 @@ import java.util.List;
 @Data
 public class ReceivableBillExcelMasterVO {
 
+    //客户-结算法人主体
+    @ApiModelProperty(value = "客户-结算法人主体")
+    private String legalName;
+
+    //客户-结算法人主体英文名
+    @ApiModelProperty(value = "客户-结算法人主体英文名")
+    private String legalEnName;
+
     //账单编号
     @ApiModelProperty(value = "账单编号(多个)")
     private String billCodes;

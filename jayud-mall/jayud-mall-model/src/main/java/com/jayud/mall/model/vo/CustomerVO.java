@@ -132,6 +132,9 @@ public class CustomerVO {
     @JSONField(ordinal = 29)
     private String newWisdomToken;
 
+    @ApiModelProperty(value = "法人主体id(legal_entity id)")
+    private Long legalEntityId;
+
     /****/
     @ApiModelProperty(value = "展示字段(user_name + company)", position = 30)
     private String text;

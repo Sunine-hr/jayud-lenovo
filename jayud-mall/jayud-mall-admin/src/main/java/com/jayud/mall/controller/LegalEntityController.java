@@ -67,7 +67,7 @@ public class LegalEntityController {
     }
 
     @ApiOperation(value = "查询，法人主体list")
-    @ApiOperationSupport(order = 4)
+    @ApiOperationSupport(order = 5)
     @PostMapping("/findLegalEntity")
     public CommonResult<List<LegalEntityVO>> findLegalEntity(){
         List<LegalEntityVO> list = legalEntityService.findLegalEntity();

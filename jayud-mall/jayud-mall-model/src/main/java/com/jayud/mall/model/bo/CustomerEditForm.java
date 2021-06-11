@@ -51,4 +51,7 @@ public class CustomerEditForm {
     @JSONField(ordinal = 9)
     private String newWisdomToken;
 
+    @ApiModelProperty(value = "法人主体id(legal_entity id)")
+    private Long legalEntityId;
+
 }

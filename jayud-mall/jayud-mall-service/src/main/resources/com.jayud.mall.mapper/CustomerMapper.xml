@@ -39,7 +39,7 @@
     <select id="findCustomerByPage" parameterType="com.jayud.mall.model.bo.QueryCustomerForm"
             resultType="com.jayud.mall.model.vo.CustomerVO" >
         select
-        t.id,t.code,t.company,t.name_cn,t.name_en,t.contact_number,t.phone,t.user_name,t.passwd,t.audit_status,t.audit_user_id,t.audit_time,t.status,t.salesman_id,t.operation_team_id,t.currency,t.address,t.level,t.origin,t.create_date,t.pay_type,t.pay_passwd,t.clearing_way,t.clearing_date,t.lock_date,t.real_date,t.business_license_url,t.remark,t.new_wisdom_token
+        t.id,t.code,t.company,t.name_cn,t.name_en,t.contact_number,t.phone,t.user_name,t.passwd,t.audit_status,t.audit_user_id,t.audit_time,t.status,t.salesman_id,t.operation_team_id,t.currency,t.address,t.level,t.origin,t.create_date,t.pay_type,t.pay_passwd,t.clearing_way,t.clearing_date,t.lock_date,t.real_date,t.business_license_url,t.remark,t.new_wisdom_token,t.legal_entity_id
         FROM customer t
         where 1=1
         <if test="form.company != null and form.company != ''">
@@ -62,7 +62,7 @@
     <select id="findAuthCustomerByPage" parameterType="com.jayud.mall.model.bo.QueryCustomerForm"
             resultType="com.jayud.mall.model.vo.CustomerVO" >
         select
-        t.id,t.code,t.company,t.name_cn,t.name_en,t.contact_number,t.phone,t.user_name,t.passwd,t.audit_status,t.audit_user_id,t.audit_time,t.status,t.salesman_id,t.operation_team_id,t.currency,t.address,t.level,t.origin,t.create_date,t.pay_type,t.pay_passwd,t.clearing_way,t.clearing_date,t.lock_date,t.real_date,t.business_license_url,t.remark,t.new_wisdom_token
+        t.id,t.code,t.company,t.name_cn,t.name_en,t.contact_number,t.phone,t.user_name,t.passwd,t.audit_status,t.audit_user_id,t.audit_time,t.status,t.salesman_id,t.operation_team_id,t.currency,t.address,t.level,t.origin,t.create_date,t.pay_type,t.pay_passwd,t.clearing_way,t.clearing_date,t.lock_date,t.real_date,t.business_license_url,t.remark,t.new_wisdom_token,t.legal_entity_id
         FROM customer t
         join (
         select
@@ -94,7 +94,7 @@
     <select id="customerLogin" parameterType="com.jayud.mall.model.bo.CustomerLoginForm"
             resultType="com.jayud.mall.model.vo.CustomerVO">
         select
-        t.id,t.code,t.company,t.name_cn,t.name_en,t.contact_number,t.phone,t.user_name,t.passwd,t.audit_status,t.audit_user_id,t.audit_time,t.status,t.salesman_id,t.operation_team_id,t.currency,t.address,t.level,t.origin,t.create_date,t.pay_type,t.pay_passwd,t.clearing_way,t.clearing_date,t.lock_date,t.real_date,t.business_license_url,t.remark
+        t.id,t.code,t.company,t.name_cn,t.name_en,t.contact_number,t.phone,t.user_name,t.passwd,t.audit_status,t.audit_user_id,t.audit_time,t.status,t.salesman_id,t.operation_team_id,t.currency,t.address,t.level,t.origin,t.create_date,t.pay_type,t.pay_passwd,t.clearing_way,t.clearing_date,t.lock_date,t.real_date,t.business_license_url,t.remark,t.new_wisdom_token,t.legal_entity_id
         from customer t
         where 1=1
         and (t.phone=#{form.loginname} OR t.user_name=#{form.loginname})
@@ -131,6 +131,7 @@
                t.business_license_url,
                t.remark,
                t.new_wisdom_token,
+               t.legal_entity_id,
                CONCAT(t.user_name,'(',t.company,')') as text
         from customer t
         where 1=1
@@ -167,6 +168,7 @@
                t.business_license_url,
                t.remark,
                t.new_wisdom_token,
+               t.legal_entity_id,
                CONCAT(t.user_name,'(',t.company,')') as text
         from customer t
         where t.id = #{customerId}

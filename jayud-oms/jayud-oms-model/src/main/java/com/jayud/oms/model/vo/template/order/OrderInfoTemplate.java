@@ -30,7 +30,8 @@ public class OrderInfoTemplate {
     @ApiModelProperty("出库订单信息")
     private Template<StorageOutTemplate> storageOutTemplateTemplate;
 
-
+    @ApiModelProperty("快进快出订单信息")
+    private Template<StorageFastTemplate> storageFastTemplateTemplate;
 
 
 }

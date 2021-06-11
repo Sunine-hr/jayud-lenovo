@@ -537,6 +537,17 @@ public class OrderInfoController {
 
             orderInfoTemplate.setStorageOutTemplateTemplate(template);
         }
+        //快进快出
+        InputStorageFastOrderVO storageFastOrderForm = inputOrderVO.getStorageFastOrderForm();
+        if(storageFastOrderForm != null){
+            StorageFastTemplate storageFastTemplate = ConvertUtil.convert(storageFastOrderForm, StorageFastTemplate.class);
+            storageFastTemplate.setCost(this.orderInfoService.isCost(storageFastTemplate.getOrderNo(), 1));
+
+            Template<StorageFastTemplate> template = new Template<StorageFastTemplate>() {
+            }.setList(Collections.singletonList(storageFastTemplate));
+
+            orderInfoTemplate.setStorageFastTemplateTemplate(template);
+        }
 
 
         return CommonResult.success(orderInfoTemplate);

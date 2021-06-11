@@ -23,11 +23,11 @@ import java.util.List;
 public class WarehouseGoodsServiceImpl extends ServiceImpl<WarehouseGoodsMapper, WarehouseGoods> implements IWarehouseGoodsService {
 
     @Override
-    public List<WarehouseGoodsVO> getList(Long id, String orderNo) {
+    public List<WarehouseGoodsVO> getList(Long id, String orderNo,Integer type) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("order_id",id);
         queryWrapper.eq("order_no",orderNo);
-        queryWrapper.eq("type",1);
+        queryWrapper.eq("type",type);
         List list = this.baseMapper.selectList(queryWrapper);
         List list1 = ConvertUtil.convertList(list, WarehouseGoodsVO.class);
         return list1;
@@ -48,16 +48,6 @@ public class WarehouseGoodsServiceImpl extends ServiceImpl<WarehouseGoodsMapper,
         this.baseMapper.delete(queryWrapper);
     }
 
-    @Override
-    public List<WarehouseGoodsVO> getList1(Long id, String orderNo) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("order_id",id);
-        queryWrapper.eq("order_no",orderNo);
-        queryWrapper.eq("type",2);
-        List list = this.baseMapper.selectList(queryWrapper);
-        List list1 = ConvertUtil.convertList(list, WarehouseGoodsVO.class);
-        return list1;
-    }
 
     @Override
     public List<OutGoodsOperationRecordFormVO> getListBySkuAndLocationCode(String sku, String locationCode,Long customerId) {
@@ -112,5 +102,6 @@ public class WarehouseGoodsServiceImpl extends ServiceImpl<WarehouseGoodsMapper,
         queryWrapper.eq("type",2);
         return this.baseMapper.selectList(queryWrapper);
     }
+
 
 }

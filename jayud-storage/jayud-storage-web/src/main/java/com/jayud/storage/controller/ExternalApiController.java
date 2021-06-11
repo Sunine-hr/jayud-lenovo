@@ -3,13 +3,12 @@ package com.jayud.storage.controller;
 
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
+import com.jayud.storage.model.bo.StorageFastOrderForm;
 import com.jayud.storage.model.bo.StorageInputOrderForm;
 import com.jayud.storage.model.bo.StorageOutOrderForm;
 import com.jayud.storage.model.bo.WarehouseGoodsForm;
-import com.jayud.storage.model.po.GoodsLocationRecord;
-import com.jayud.storage.model.po.InGoodsOperationRecord;
-import com.jayud.storage.model.po.StorageInputOrder;
-import com.jayud.storage.model.po.StorageOutOrder;
+import com.jayud.storage.model.po.*;
+import com.jayud.storage.model.vo.StorageFastOrderVO;
 import com.jayud.storage.model.vo.StorageInputOrderVO;
 import com.jayud.storage.model.vo.StorageOutOrderVO;
 import com.jayud.storage.service.*;
@@ -41,6 +40,9 @@ public class ExternalApiController {
 
     @Autowired
     private IStorageOutOrderService storageOutOrderService;
+
+    @Autowired
+    private IStorageFastOrderService storageFastOrderService;
 
     @Autowired
     private IGoodService goodService;
@@ -127,4 +129,22 @@ public class ExternalApiController {
         return ApiResult.ok();
     }
 
+    /**
+     * 创建仓储快进快出订单
+     */
+    @RequestMapping(value = "/api/storage/createOutOrder")
+    ApiResult<String> createFastOrder(@RequestBody StorageFastOrderForm inputStorageFastOrderForm){
+        String orderNo = storageFastOrderService.createOrder(inputStorageFastOrderForm);
+        return ApiResult.ok(orderNo);
+    }
+
+    /**
+     * 根据主订单号获取仓储出库单信息
+     */
+    @RequestMapping(value = "/api/storage/getStorageFastOrderDetails")
+    ApiResult<StorageFastOrderVO> getStorageFastOrderDetails(@RequestParam("orderNo") String orderNo){
+        StorageFastOrder storageFastOrder = storageFastOrderService.getStorageFastOrderByMainOrderNO(orderNo);
+        StorageFastOrderVO storageFastOrderVO = storageFastOrderService.getStorageFastOrderVOById(storageFastOrder.getId());
+        return ApiResult.ok(storageFastOrderVO);
+    }
 }

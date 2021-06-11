@@ -132,9 +132,9 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         StorageInputOrder storageInputOrder = this.baseMapper.selectById(id);
         StorageInputOrderVO storageInputOrderVO = ConvertUtil.convert(storageInputOrder, StorageInputOrderVO.class);
         //获取商品信息
-        List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList(storageInputOrder.getId(),storageInputOrder.getOrderNo());
+        List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList(storageInputOrder.getId(),storageInputOrder.getOrderNo(),1);
         if(CollectionUtils.isEmpty(warehouseGoods)){
-                warehouseGoods.add(new WarehouseGoodsVO());
+            warehouseGoods.add(new WarehouseGoodsVO());
             storageInputOrderVO.setTotalNumber("0板0件0pcs");
             storageInputOrderVO.setTotalWeight("0KG");
         }else{

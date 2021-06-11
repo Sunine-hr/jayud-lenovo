@@ -1,7 +1,9 @@
 package com.jayud.storage.service;
 
+import com.jayud.storage.model.bo.StorageFastOrderForm;
 import com.jayud.storage.model.po.StorageFastOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.storage.model.vo.StorageFastOrderVO;
 
 /**
  * <p>
@@ -13,4 +15,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IStorageFastOrderService extends IService<StorageFastOrder> {
 
+    String createOrder(StorageFastOrderForm inputStorageFastOrderForm);
+
+    StorageFastOrder getStorageFastOrderByMainOrderNO(String orderNo);
+
+    StorageFastOrderVO getStorageFastOrderVOById(Long id);
 }

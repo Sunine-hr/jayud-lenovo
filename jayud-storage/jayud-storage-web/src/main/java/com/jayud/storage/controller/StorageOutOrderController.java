@@ -170,7 +170,7 @@ public class StorageOutOrderController {
             record.assemblyLegalEntity(legalEntityResult);
 
             //拼装商品信息
-            record.assemblyGoodsInfo(warehouseGoodsService.getList1(record.getId(),record.getOrderNo()));
+            record.assemblyGoodsInfo(warehouseGoodsService.getList(record.getId(),record.getOrderNo(),2));
 
             //拼装结算单位
             record.assemblyUnitCodeInfo(unitCodeInfo);

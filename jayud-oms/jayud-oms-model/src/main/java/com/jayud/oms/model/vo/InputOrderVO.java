@@ -41,6 +41,9 @@ public class InputOrderVO {
     @ApiModelProperty(value = "出库订单")
     private InputStorageOutOrderVO storageOutOrderForm;
 
+    @ApiModelProperty(value = "快进快出订单")
+    private InputStorageFastOrderVO storageFastOrderForm;
+
     public void copyOperationInfo() {
         if (orderForm == null) return;
         orderForm.setOrderId(null);

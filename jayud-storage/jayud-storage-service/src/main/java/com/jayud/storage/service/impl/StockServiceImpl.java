@@ -117,7 +117,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
     @Override
     public boolean releaseInventory(Long orderId, String orderNo) {
-        List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList1(orderId, orderNo);
+        List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(orderId, orderNo,2);
         List<Stock> stocks = new ArrayList<>();
         for (WarehouseGoodsVO warehouseGoodsVO : list1) {
             QueryWrapper queryWrapper = new QueryWrapper();
@@ -135,7 +135,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
     @Override
     public boolean changeInventory(String orderNo, Long id) {
-        List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList1(id, orderNo);
+        List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(id, orderNo,2);
         List<Stock> stocks = new ArrayList<>();
         for (WarehouseGoodsVO warehouseGoodsVO : list1) {
             QueryWrapper queryWrapper = new QueryWrapper();

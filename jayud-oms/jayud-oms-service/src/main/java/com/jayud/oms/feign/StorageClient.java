@@ -2,6 +2,7 @@ package com.jayud.oms.feign;
 
 import com.jayud.common.ApiResult;
 import com.jayud.oms.model.bo.*;
+import com.jayud.oms.model.vo.InputStorageFastOrderVO;
 import com.jayud.oms.model.vo.InputStorageInputOrderVO;
 import com.jayud.oms.model.vo.InputStorageOutOrderVO;
 import com.jayud.oms.model.vo.InputTrailerOrderVO;
@@ -51,6 +52,12 @@ public interface StorageClient {
      */
     @RequestMapping(value = "/api/storage/getStorageOutOrderDetails")
     ApiResult<InputStorageOutOrderVO> getStorageOutOrderDetails(@RequestParam("orderNo") String orderNo);
+
+    /**
+     * 根据主订单号获取仓储出库单信息
+     */
+    @RequestMapping(value = "/api/storage/getStorageFastOrderDetails")
+    ApiResult<InputStorageFastOrderVO> getStorageFastOrderDetails(@RequestParam("orderNo") String orderNo);
 
     @ApiOperation(value = "判断商品是否为商品表维护的数据")
     @PostMapping(value = "/isCommodity")

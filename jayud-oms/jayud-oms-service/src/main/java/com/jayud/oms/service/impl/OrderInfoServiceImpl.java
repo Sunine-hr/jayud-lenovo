@@ -1072,7 +1072,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         }
         //获取仓储订单信息
-        if (OrderStatusEnum.CC.getCode().equals(form.getClassCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())) {
+        if (OrderStatusEnum.CC.getCode().equals(form.getClassCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())
+                || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode()) || inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())) {
             if (inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())) {
                 InputStorageOutOrderVO storageOutOrderVO = this.storageClient.getStorageOutOrderDetails(inputMainOrderVO.getOrderNo()).getData();
                 if (storageOutOrderVO != null) {
@@ -1102,6 +1103,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     }
                 }
                 inputOrderVO.setStorageInputOrderForm(storageInputOrderVO);
+            }
+            if(inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())){
+                InputStorageFastOrderVO inputStorageFastOrderVO = this.storageClient.getStorageFastOrderDetails(inputMainOrderVO.getOrderNo()).getData();
+                if (inputStorageFastOrderVO != null) {
+                    //添加附件
+                    List<FileView> attachments = this.logisticsTrackService.getAttachments(inputStorageFastOrderVO.getId()
+                            , BusinessTypeEnum.IO.getCode(), prePath);
+                    inputStorageFastOrderVO.setAllPics(attachments);
+                    //结算单位名称
+                    CustomerInfo customerInfo = customerInfoService.getByCode(inputStorageFastOrderVO.getUnitCode());
+                    if (customerInfo != null) {
+                        inputStorageFastOrderVO.setUnitCodeName(customerInfo.getName());
+                    }
+                }
+                inputOrderVO.setStorageFastOrderForm(inputStorageFastOrderVO);
             }
         }
 
@@ -1562,7 +1578,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         storageFastOrderForm.setOrderNo(orderNo);
                     }
                     //草稿编辑提交
-                    if (storageFastOrderForm.getStatus() != null && storageFastOrderForm.getStatus().equals("CCE_0")) {
+                    if (storageFastOrderForm.getStatus() != null && storageFastOrderForm.getStatus().equals("CCF_0")) {
                         String orderNo = generationOrderNo(storageFastOrderForm.getLegalEntityId(), 3, OrderStatusEnum.CC.getCode());
                         storageFastOrderForm.setOrderNo(orderNo);
                     }
@@ -1586,18 +1602,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         inputMainOrderForm.getStatus(), SubOrderSignEnum.CCF.getSignOne(), form)) {
                     storageFastOrderForm.setMainOrderNo(mainOrderNo);
                     storageFastOrderForm.setCreateUser(UserOperator.getToken());
-                    for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getInGoodsFormList()) {
-                        addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
-                        addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
+                    if(CollectionUtils.isNotEmpty(storageFastOrderForm.getInGoodsFormList())){
+                        for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getInGoodsFormList()) {
+                            addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
+                            addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
+                        }
                     }
-                    for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getOutGoodsFormList()) {
-                        addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
-                        addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
+                    if(CollectionUtils.isNotEmpty(storageFastOrderForm.getInGoodsFormList())){
+                        for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getOutGoodsFormList()) {
+                            addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
+                            addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
+                        }
                     }
-                    for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getFastGoodsFormList()) {
-                        addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
-                        addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
+                    if(CollectionUtils.isNotEmpty(storageFastOrderForm.getInGoodsFormList())){
+                        for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getFastGoodsFormList()) {
+                            addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
+                            addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
+                        }
                     }
+
                     Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
                             : ProcessStatusEnum.DRAFT.getCode();
                     storageFastOrderForm.setProcessStatus(processStatus);
@@ -1606,7 +1629,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
                     if(storageFastOrderForm.getIsWarehouse().equals(1)){
                         this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.CC,
-                                form, storageFastOrderForm.getId(), OrderStatusEnum.getOutStorageOrderProcess());
+                                form, storageFastOrderForm.getId(), OrderStatusEnum.getFastStorageOrderProcess());
                     }
 
                 }

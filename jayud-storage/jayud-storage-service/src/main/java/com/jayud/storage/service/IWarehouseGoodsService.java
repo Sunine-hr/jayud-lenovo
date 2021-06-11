@@ -17,12 +17,12 @@ import java.util.List;
 public interface IWarehouseGoodsService extends IService<WarehouseGoods> {
 
     /**
-     * 入库商品查询
+     * 商品查询,根据type
      * @param id
      * @param orderNo
      * @return
      */
-    List<WarehouseGoodsVO> getList(Long id, String orderNo);
+    List<WarehouseGoodsVO> getList(Long id, String orderNo,Integer type);
 
     /**
      * 删除商品信息
@@ -33,14 +33,6 @@ public interface IWarehouseGoodsService extends IService<WarehouseGoods> {
     void deleteWarehouseGoodsFormsByOrder(Long orderId, String orderNo);
 
     void deleteWarehouseGoodsFormsByOrderId(Long id);
-
-    /**
-     * 出库商品查询
-     * @param id
-     * @param orderNo
-     * @return
-     */
-    List<WarehouseGoodsVO> getList1(Long id, String orderNo);
 
     /**
      * 获取出库操作记录

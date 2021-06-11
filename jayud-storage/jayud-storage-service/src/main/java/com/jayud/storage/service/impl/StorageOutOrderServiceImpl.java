@@ -142,7 +142,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
 
         StorageOutOrder storageOutOrder = this.baseMapper.selectById(id);
         StorageOutOrderVO storageOutOrderVO = ConvertUtil.convert(storageOutOrder, StorageOutOrderVO.class);
-        List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList1(storageOutOrder.getId(),storageOutOrder.getOrderNo());
+        List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList(storageOutOrder.getId(),storageOutOrder.getOrderNo(),2);
 //        System.out.println("warehouseGoods===================="+warehouseGoods);
         if(CollectionUtils.isEmpty(warehouseGoods)){
             warehouseGoods.add(new WarehouseGoodsVO());
@@ -421,7 +421,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
             queryWrapper.eq("order_no",form.getOrderNo());
         }
         StorageOutOrder storageOutOrder = this.baseMapper.selectOne(queryWrapper);
-        List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList1(storageOutOrder.getId(), storageOutOrder.getOrderNo());
+        List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(storageOutOrder.getId(), storageOutOrder.getOrderNo(),2);
         List<WarehouseGoodsLocationCodeVO> warehouseGoodsLocationVOS = new ArrayList<>();
         for (WarehouseGoodsVO warehouseGoodsVO : list1) {
 

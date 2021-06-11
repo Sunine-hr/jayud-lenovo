@@ -207,7 +207,7 @@ public class StorageInputOrderController {
             record.setSubUnitCode(record.getUnitCode());
             record.setDefaultUnitCode(record.getUnitCode());
 
-            List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(record.getId(), record.getOrderNo());
+            List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(record.getId(), record.getOrderNo(),1);
             record.assemblyGoodsInfo(list1);
             //获取该批次的入库商品信息
             List<InGoodsOperationRecord> inGoodsOperationRecords = inGoodsOperationRecordService.getListByOrderId(record.getId(), record.getOrderNo());
@@ -299,7 +299,7 @@ public class StorageInputOrderController {
             //拼装结算单位
             record.assemblyUnitCodeInfo(unitCodeInfo);
             //获取订单商品信息
-            List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(record.getId(), record.getOrderNo());
+            List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(record.getId(), record.getOrderNo(),1);
             for (WarehouseGoodsVO warehouseGoodsVO : list1) {
                 warehouseGoodsVO.setTakeFiles(StringUtils.getFileViews(warehouseGoodsVO.getFileName(),warehouseGoodsVO.getFilePath(),path));
             }
@@ -359,6 +359,9 @@ public class StorageInputOrderController {
                 } else{
                     Integer count = 0;
                     for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
+                        if(warehouseGoodsForm.getNumber() == null){
+                            return CommonResult.error(443,"申报信息件数不能为空");
+                        }
                         if(warehouseGoodsForm.getSjNumber() != null){
                             count++;
                         }
@@ -442,7 +445,7 @@ public class StorageInputOrderController {
 
         storageInProcessOptFormVO.setCardTypeId(longs);
         storageInProcessOptFormVO.setOperationId(list1);
-        List<WarehouseGoodsVO> list = warehouseGoodsService.getList(storageInputOrder.getId(), storageInputOrder.getOrderNo());
+        List<WarehouseGoodsVO> list = warehouseGoodsService.getList(storageInputOrder.getId(), storageInputOrder.getOrderNo(),1);
         storageInProcessOptFormVO.setWarehouseGoodsForms(list);
 
         for (WarehouseGoodsVO warehouseGoodsVO : list) {

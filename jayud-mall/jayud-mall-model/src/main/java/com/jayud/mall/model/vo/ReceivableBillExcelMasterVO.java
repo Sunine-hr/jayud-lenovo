@@ -36,5 +36,17 @@ public class ReceivableBillExcelMasterVO {
     @ApiModelProperty(value = "金额汇总(要分币种)")
     private List<BillAmountTotalVO> billAmountTotalList;
 
+    //户名
+    @ApiModelProperty(value = "户名")
+    private String bankAccountName;
+
+    //银行账号
+    @ApiModelProperty(value = "银行账号")
+    private String accountOpen;
+
+    //开户银行
+    @ApiModelProperty(value = "开户银行")
+    private String bank;
+
 
 }

@@ -251,10 +251,16 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
         Long legalEntityId = customer.getLegalEntityId();
         String legalName = "";
         String legalEnName = "";
+        String bankAccountName = "";
+        String accountOpen = "";
+        String bank = "";
         if(ObjectUtil.isNotEmpty(legalEntityId)){
             LegalEntityVO legalEntityVO = legalEntityMapper.findLegalEntityById(legalEntityId);
             legalName = legalEntityVO.getLegalName();
             legalEnName = legalEntityVO.getLegalEnName();
+            bankAccountName = legalEntityVO.getLegalName();
+            accountOpen = legalEntityVO.getAccountOpen();
+            bank = legalEntityVO.getBank();
         }
 
         List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
@@ -354,6 +360,11 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
             }
             receivableBillExcelMasterVO.setBillAmountTotalList(billAmountTotalList);
         }
+
+        receivableBillExcelMasterVO.setBankAccountName(bankAccountName);
+        receivableBillExcelMasterVO.setAccountOpen(accountOpen);
+        receivableBillExcelMasterVO.setBank(bank);
+
         return receivableBillExcelMasterVO;
     }
 

@@ -182,8 +182,7 @@ public enum OrderStatusEnum {
     CCF_2("CCF_2","入库货物确认"),
     CCF_3("CCF_3","入库完结"),
     CCF_4("CCF_4","出库确认"),
-    CCF_5("CCF_5","入库确认"),
-    CCF_6("CCF_6","入库确认"),
+    CCF_5("CCF_5","出库完结"),
 
     //外部报关放行
     EXT_CUSTOMS_RELEASE("E_C_0", "外部报关放行"),

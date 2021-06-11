@@ -60,7 +60,6 @@ public class SupplierTmsController {
     public CommonResult<OrderTransportInfoVO> getSupplierTmsById(@RequestBody Map<String, Object> map) {
         Long id = MapUtil.getLong(map, BeanUtils.convertToFieldName(OrderTransportVO::getId));
         OrderTransportInfoVO details = this.orderTransportService.getDetailsById(id);
-        details.setVehicleSize(details.getSupplierVehicleSize());
         details.doFilterData(UserTypeEnum.SUPPLIER_TYPE.getCode());
         return CommonResult.success(details);
     }

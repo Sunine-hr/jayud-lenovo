@@ -1,5 +1,7 @@
 package com.jayud.trailer.vo;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSON;
@@ -23,6 +25,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -42,14 +45,20 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long orderId;
 
-    @ApiModelProperty(value = "子订单编号")
-    private String orderNo;
-
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 
+    @ApiModelProperty(value = "子订单编号")
+    private String orderNo;
+
     @ApiModelProperty(value = "客户名称")
     private String customerName;
+
+    @ApiModelProperty(value = "货物信息")
+    private String goodsInfo;
+
+    @ApiModelProperty(value = "提货时间")
+    private String deliveryDate;
 
     //进出口类型(1：进口，2：出口)
     //@ApiModelProperty(value = "进出口类型")
@@ -184,7 +193,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "创建人")
     private String createUser;
 
-    @ApiModelProperty(value = "创建时间")
+//    @ApiModelProperty(value = "创建时间")
     private String createTime;
 
     @ApiModelProperty(value = "创建时间")
@@ -209,7 +218,7 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     //@ApiModelProperty(value = "拖车订单地址信息")
     private List<TrailerOrderAddressVO> orderAddressForms;
 
-    //@ApiModelProperty(value = "提货时间拼接字符串")
+//    @ApiModelProperty(value = "提货时间")
     private String dateStr;
 
 //    @ApiModelProperty(value = "货品信息")
@@ -226,9 +235,6 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
 
     //@ApiModelProperty(value = "客户代码")
     private String customerCode;
-
-    @ApiModelProperty(value = "货物信息")
-    private String goodsInfo;
 
     //@ApiModelProperty(value = "是否录用费用")
     private Boolean cost;
@@ -259,6 +265,13 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
 
     //@ApiModelProperty(value = "流程描述")
     private String processDescription;
+
+    @ApiModelProperty(value = "应收费用状态")
+    private String receivableCostStatus;
+
+    @ApiModelProperty(value = "应付费用状态")
+    private String paymentCostStatus;
+
 
     /**
      * 组装商品信息
@@ -428,5 +441,29 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
         this.billPics = StringUtils.getFileViews(this.getBolFilePath(),this.getBolFileName(),path);
         this.cnPics = StringUtils.getFileViews(this.getCnFilePath(),this.getCnFileName(),path);
         this.pssPics = StringUtils.getFileViews(this.getPssFilePath(),this.getPssFileName(),path);
+    }
+
+    public void assemblyCostStatus(Map<String, Object> costStatus) {
+        if (CollectionUtil.isEmpty(costStatus)) return;
+
+        Map<String, Object> receivableCostStatus = (Map<String, Object>) costStatus.get("receivableCostStatus");
+        Map<String, Object> paymentCostStatus = (Map<String, Object>) costStatus.get("paymentCostStatus");
+
+        String receivableStatusDesc = MapUtil.getStr(receivableCostStatus, orderNo);
+        String paymentStatusDesc = MapUtil.getStr(paymentCostStatus, orderNo);
+
+        if (!StringUtils.isEmpty(receivableStatusDesc)) {
+            String[] split = receivableStatusDesc.split("-");
+            this.receivableCostStatus = split[0];
+        } else {
+            this.receivableCostStatus = "未录入";
+        }
+
+        if (!StringUtils.isEmpty(paymentStatusDesc)) {
+            String[] split = paymentStatusDesc.split("-");
+            this.paymentCostStatus = split[0];
+        } else {
+            this.paymentCostStatus = "未录入";
+        }
     }
 }

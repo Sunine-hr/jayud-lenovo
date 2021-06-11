@@ -190,7 +190,8 @@
           ot.hk_legal_id hkLegalId,
           ot.`hk_unit_code` hkUnitCode,
           ot.`is_hk_clear` isHkClear,
-		  ot.is_vehicle_weigh isVehicleWeigh
+		  ot.is_vehicle_weigh isVehicleWeigh,
+		  ot.supplier_vehicle_size
         FROM
           order_transport ot
           LEFT JOIN order_info oi
@@ -703,6 +704,7 @@
         ot.`goods_type` goodsType,
         '' jiedanUser,
         si.`supplier_ch_name` clearCustomsAddress,
+        ot.supplier_vehicle_size,
         (SELECT su.phone FROM `system_user` su WHERE su.name = ot.`jiedan_user`) jiedanPhone
         FROM
         order_transport ot

@@ -8,7 +8,9 @@ import io.swagger.models.auth.In;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -25,6 +27,9 @@ public class QueryTrailerOrderForm extends BasePageForm {
 
     @ApiModelProperty(value = "拖车订单编号")
     private String orderNo;
+
+    @ApiModelProperty(value = "主订单编号")
+    private String mainOrderNo;
 
     @ApiModelProperty(value = "进出口类型",required = true)
     private Integer impAndExpType;
@@ -68,7 +73,7 @@ public class QueryTrailerOrderForm extends BasePageForm {
     @ApiModelProperty(value = "封条")
     private String paperStripSeal;
 
-    @ApiModelProperty(value = "主订单号")
+    @ApiModelProperty(value = "主订单号集合")
     @JsonIgnore
     private List<String> mainOrderNos;
 
@@ -80,6 +85,12 @@ public class QueryTrailerOrderForm extends BasePageForm {
 
     @ApiModelProperty(value = "当前登录用户,前台传")
     private String loginUserName;
+
+    @ApiModelProperty(value = "提货时间")
+    private String[] takeTimeStr;
+
+    @ApiModelProperty(value = "子订单号")
+    private Set<String> subOrderNos = new HashSet<>();
 
     public void assemblyMainOrderNo(JSONArray mainOrders) {
         mainOrderNos = new ArrayList<>(mainOrders.size());
@@ -95,5 +106,9 @@ public class QueryTrailerOrderForm extends BasePageForm {
             this.startTime = time[0];
             this.endTime = time[1];
         }
+    }
+
+    public void setTakeTimeStr(String[] takeTimeStr) {
+        this.takeTimeStr = new String[]{takeTimeStr[0]+" 00:00:00",takeTimeStr[1]+" 23:59:59"};
     }
 }

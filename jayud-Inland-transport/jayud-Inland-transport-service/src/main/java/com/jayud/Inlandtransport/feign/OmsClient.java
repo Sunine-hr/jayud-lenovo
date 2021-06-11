@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -218,4 +219,20 @@ public interface OmsClient {
     public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
                                                    @RequestParam("legalIds") List<Long> legalIds,
                                                    @RequestParam("orderNos") List<String> orderNos);
+
+    @ApiOperation("根据类型和业务类型查询订单id")
+    @RequestMapping(value = "/api/getOrderAddressOrderIdByTimeInterval")
+    public ApiResult<Set<Long>> getOrderAddressOrderIdByTimeInterval(@RequestParam("timeInterval") List<String> timeInterval,
+                                                                     @RequestParam("type") Integer type,
+                                                                     @RequestParam("businessType") Integer businessType);
+
+    /**
+     * 应收/应付费用状态
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostStatus")
+    public ApiResult<Map<String, Object>> getCostStatus(@RequestParam("mainOrderNos") List<String> mainOrderNos,
+                                                        @RequestParam("orderNos") List<String> orderNos);
+
 }

@@ -2,7 +2,9 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.entity.DataControl;
@@ -13,6 +15,7 @@ import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.excel.EasyExcelUtils;
 import com.jayud.oms.feign.FileClient;
+import com.jayud.oms.feign.FinanceClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.feign.TmsClient;
 import com.jayud.oms.model.bo.*;
@@ -67,6 +70,8 @@ public class OrderCommonController {
     private ICostInfoService costInfoService;
     @Autowired
     private ICurrencyInfoService currencyInfoService;
+    @Autowired
+    private FinanceClient financeClient;
 
 
     @Value("${worksheet.tms}")
@@ -179,11 +184,16 @@ public class OrderCommonController {
             isTrailer = true;
         }
 
-        //订单列表
+        //中港订单列表
         String mark = MapUtil.getStr(map, "mark");
         if (SubOrderSignEnum.ZGYS.getSignOne().equals(mark)) {
             result.put("licensePlate", MapUtil.getStr(map, "plateNumber"));
             result.put("takeTimeStr", MapUtil.getStr(map, "takeTimeStr"));
+        }
+        //内陆
+        if (SubOrderSignEnum.NL.getSignOne().equals(mark)) {
+            result.put("licensePlate", MapUtil.getStr(map, "licensePlate"));
+            result.put("takeTimeStr", MapUtil.getStr(map, "deliveryDate"));
         }
 
         result.put("mainOrderNo", mainOrderNo);
@@ -196,8 +206,9 @@ public class OrderCommonController {
         result.put("cabinet", MapUtil.getStr(map, "cabinetTypeName") + "/" + MapUtil.getStr(map, "cabinetSizeName"));
         result.put("isTrailer", isTrailer);
         result.put("cabinetSizeName", MapUtil.getStr(map, "cabinetSizeName"));
+        result.put("licensePlate", MapUtil.getStr(map, "plateNumber"));
 
-        result.put("dateStr", MapUtil.getStr(map, "dateStr"));
+        result.put("takeTimeStr", MapUtil.getStr(map, "dateStr"));
         return CommonResult.success(result);
     }
 
@@ -418,6 +429,31 @@ public class OrderCommonController {
         }
         return CommonResult.success(inputCostVO);
     }
+
+//    @ApiOperation(value = "获取供应商默认录用费用值")
+//    @PostMapping("/getDefaultSupplierCostValue")
+//    public CommonResult<Map<String, Object>> getDefaultSupplierCostValue(@RequestBody Map<String, Object> map) {
+//        String cmd = MapUtil.getStr(map, "cmd");
+//        if (StringUtils.isEmpty(cmd)) {
+//            return CommonResult.error(ResultEnum.PARAM_ERROR);
+//        }
+//        Map<String, Object> response = new HashMap<>();
+//        if (SubOrderSignEnum.ZGYS.getSignOne().equals(cmd)) {
+//            String currencyCodes = MapUtil.getStr(map, "currencyCodes");
+//            if (StringUtils.isEmpty(currencyCodes)) return CommonResult.error(ResultEnum.PARAM_ERROR);
+//            JSONArray currencyCodesArray = new JSONArray(currencyCodes);
+//            response.put("isDefaultCurrency", false);
+//            for (int i = 0; i < currencyCodesArray.size(); i++) {
+//                JSONObject jsonObject = currencyCodesArray.getJSONObject(i);
+//                if ("HKD".equals(jsonObject.getStr("code"))) {
+//                    response.put("currencyCode", "HKD");
+//                    response.put("isDefaultCurrency", true);
+//                }
+//            }
+//
+//        }
+//        return CommonResult.success(response);
+//    }
 
     @ApiOperation(value = "获取供应待处理操作")
     @PostMapping(value = "/getSupplyPendingOpt")

@@ -806,6 +806,15 @@ public class ExternalApiController {
         return ApiResult.ok(orderAddresses);
     }
 
+    @ApiOperation("根据时间区间查询订单id")
+    @RequestMapping(value = "/api/getOrderAddressOrderIdByTimeInterval")
+    public ApiResult<Set<Long>> getOrderAddressOrderIdByTimeInterval(@RequestParam("timeInterval") List<String> timeInterval,
+                                                                    @RequestParam("type") Integer type,
+                                                                    @RequestParam("businessType") Integer businessType) {
+        Set<Long> businessIds = this.orderAddressService.getOrderAddressOrderIdByTimeInterval(new OrderAddress().setType(type).setBusinessType(businessType),timeInterval);
+        return ApiResult.ok(businessIds);
+    }
+
 
     @ApiOperation("根据订单id集合查询商品信息")
     @RequestMapping(value = "/api/getGoodsByBusIds")
@@ -1627,6 +1636,18 @@ public class ExternalApiController {
                 Integer.valueOf(OrderStatusEnum.COST_3.getCode()));
         Map<String, Map<String, BigDecimal>> map = this.paymentCostService.statisticalPayCostByOrderNos(list, false);
         return ApiResult.ok(map);
+    }
+
+    /**
+     * 根据提货时间获取订单号
+     * @param takeTimeStr
+     * @param code
+     * @return
+     */
+    @PostMapping(value = "/api/getOrderNosByTakeTime")
+    public ApiResult<Set<String>> getOrderNosByTakeTime(@RequestParam("takeTimeStr") String[] takeTimeStr, @RequestParam("code") Integer code){
+        Set<String> orderNos = orderAddressService.getOrderNosByTakeTime(takeTimeStr,code);
+        return ApiResult.ok(orderNos);
     }
 
 

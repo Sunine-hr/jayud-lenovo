@@ -19,10 +19,7 @@ import com.jayud.common.aop.annotations.DynamicHead;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.AuditInfoForm;
 import com.jayud.common.entity.InitComboxStrVO;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ProcessStatusEnum;
-import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
@@ -36,10 +33,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.jayud.common.enums.OrderStatusEnum.getInlandTPStatus;
 
@@ -87,54 +81,21 @@ public class OrderInlandTransportController {
             form.setStatus(statusEnum.getCode());
         }
 
+        if (CollectionUtils.isNotEmpty(form.getTakeTimeStr())) {
+            Set<Long> subOrderIds = this.omsClient.getOrderAddressOrderIdByTimeInterval(form.getTakeTimeStr(), OrderAddressEnum.PICK_UP.getCode(), BusinessTypeEnum.NL.getCode()).getData();
+            if (subOrderIds.size() ==0) {
+                subOrderIds.add(-1L);
+            }
+            form.setSubOrderIds(subOrderIds);
+        }
+
 
         IPage<OrderInlandTransportFormVO> page = this.orderInlandTransportService.findByPage(form);
         if (page.getRecords().size() == 0) {
             return CommonResult.success(new CommonPageResult<>(page));
         }
 
-        List<OrderInlandTransportFormVO> records = page.getRecords();
-        List<Long> orderIds = new ArrayList<>();
-        List<String> mainOrder = new ArrayList<>();
-        List<Long> entityIds = new ArrayList<>();
-        List<Long> supplierIds = new ArrayList<>();
-        for (OrderInlandTransportFormVO record : records) {
-            orderIds.add(record.getId());
-            mainOrder.add(record.getMainOrderNo());
-            entityIds.add(record.getLegalEntityId());
-            if (record.getSupplierId() != null) {
-                supplierIds.add(record.getSupplierId());
-            }
 
-        }
-        //查询商品信息
-        List<GoodsVO> goods = this.omsClient.getGoodsByBusIds(orderIds, BusinessTypeEnum.NL.getCode()).getData();
-        //查询订单地址
-        List<OrderAddressVO> orderAddressList = this.omsClient.getOrderAddressByBusIds(orderIds, BusinessTypeEnum.NL.getCode()).getData();
-        //查询法人主体
-//        ApiResult legalEntityResult = null;
-//        if (CollectionUtils.isNotEmpty(entityIds)) {
-//            legalEntityResult = this.oauthClient.getLegalEntityByLegalIds(entityIds);
-//        }
-        //查询供应商信息
-        JSONArray supplierInfo = null;
-        if (CollectionUtils.isNotEmpty(supplierIds)) {
-            supplierInfo = new JSONArray(this.omsClient.getSupplierInfoByIds(supplierIds).getData());
-        }
-        //查询主订单信息
-        ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
-        for (OrderInlandTransportFormVO record : records) {
-            //组装商品信息
-            record.assemblyGoodsInfo(goods);
-            //拼装地址信息
-            record.assemblyAddressInfo(orderAddressList);
-            //拼装主订单信息
-            record.assemblyMainOrderData(result.getData());
-            //组装法人名称
-//            record.assemblyLegalEntity(legalEntityResult);
-            //拼装供应商
-            record.assemblySupplierInfo(supplierInfo);
-        }
         return CommonResult.success(new CommonPageResult(page));
     }
 
@@ -156,10 +117,10 @@ public class OrderInlandTransportController {
         //空运订单信息
         OrderInlandTransport order = this.orderInlandTransportService.getById(form.getOrderId());
         if (ProcessStatusEnum.COMPLETE.getCode().equals(order.getProcessStatus())) {
-            return CommonResult.error(400, "订单号为"+order.getOrderNo() + "已经完成操作");
+            return CommonResult.error(400, "订单号为" + order.getOrderNo() + "已经完成操作");
         }
         if (!ProcessStatusEnum.PROCESSING.getCode().equals(order.getProcessStatus())) {
-            return CommonResult.error(400, "订单号为"+order.getOrderNo() + "无法操作");
+            return CommonResult.error(400, "订单号为" + order.getOrderNo() + "无法操作");
         }
         //节点处理
         String nextStatus = nodeProcessing(order);

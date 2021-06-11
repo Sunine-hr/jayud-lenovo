@@ -87,7 +87,7 @@ public class TrailerOrderController {
     @Autowired
     private ITrailerDispatchService trailerDispatchService;
 
-    @ApiOperation("分页查询海运订单列表")
+    @ApiOperation("分页查询拖车订单列表")
     @PostMapping("/findByPage")
     public CommonResult findByPage(@RequestBody QueryTrailerOrderForm form) {
 
@@ -102,6 +102,14 @@ public class TrailerOrderController {
             } else {
                 form.setMainOrderNos(Collections.singletonList("-1"));
             }
+        }
+        //检索提货时间
+        if (form.getTakeTimeStr() != null && form.getTakeTimeStr().length > 0) {
+            Set<String> orderNos = omsClient.getOrderNosByTakeTime(form.getTakeTimeStr(), BusinessTypeEnum.TC.getCode()).getData();
+            if (org.apache.commons.collections4.CollectionUtils.isEmpty(orderNos)) {
+                orderNos.add("-1");
+            }
+            form.setSubOrderNos(orderNos);
         }
 
         List list = new ArrayList();
@@ -164,15 +172,21 @@ public class TrailerOrderController {
         List<Long> entityIds = new ArrayList<>();
 //        List<Long> supplierIds = new ArrayList<>();
         List<String> unitCodes = new ArrayList<>();
+        List<String> subOrderNos = new ArrayList<>();
         for (TrailerOrderFormVO record : records) {
             trailerOrderIds.add(record.getOrderId());
             mainOrder.add(record.getMainOrderNo());
             entityIds.add(record.getLegalEntityId());
             unitCodes.add(record.getUnitCode());
+            subOrderNos.add(record.getOrderNo());
 //            if(record.getTrailerDispatchVO().getSupplierId()!=null){
 //                supplierIds.add(record.getTrailerDispatchVO().getSupplierId());
 //            }
         }
+
+        //是否录用费用
+        Map<String, Object> data1 = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.TC.getSignOne()).getData();
+        Map<String, Object> costStatus = omsClient.getCostStatus(null, subOrderNos).getData();
 
         //查询法人主体
         ApiResult legalEntityResult = null;
@@ -215,6 +229,8 @@ public class TrailerOrderController {
 //                }
 //            }
 //            record.setGoodsForms(goodsVOS);
+            record.setCost(MapUtil.getBool(data1, record.getOrderNo()));
+            record.assemblyCostStatus(costStatus);
 
             //拼装主订单信息
             record.assemblyMainOrderData(result.getData());
@@ -259,6 +275,7 @@ public class TrailerOrderController {
                 record.setOrderAddressForms(trailerOrderAddressVOS);
                 if(CollectionUtils.isNotEmpty(record.getOrderAddressForms())){
                     record.assemblyDateStr();
+                    record.setDeliveryDate(record.getOrderAddressForms().get(0).getDeliveryDate());
                 }
             }
 

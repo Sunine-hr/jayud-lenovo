@@ -966,9 +966,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 List<FileView> attachments = this.logisticsTrackService.getAttachments(inputOrderTransportVO.getId()
                         , BusinessTypeEnum.ZGYS.getCode(), prePath);
                 allPics.addAll(attachments);
-
                 inputOrderTransportVO.setAllPics(allPics);
-
                 //设置提货信息的客户
                 List<InputOrderTakeAdrVO> orderTakeAdrForms1 = inputOrderTransportVO.getOrderTakeAdrForms1();
                 for (InputOrderTakeAdrVO inputOrderTakeAdr1 : orderTakeAdrForms1) {
@@ -2080,7 +2078,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             e.setCostTypeId(costTypes.get(0).getId());
             e.setCostGenreId(productBiz.getCostGenreDefault());
             e.setExchangeRate(exchangeRate);
-            e.setChangeAmount(e.getAmount().multiply(exchangeRate));
+            if (e.getAmount() != null && exchangeRate != null) {
+                e.setChangeAmount(e.getAmount().multiply(exchangeRate));
+            }
             e.setSupplierId(supplierInfo.getId());
         });
         form.setReceivableCostList(new ArrayList<>());

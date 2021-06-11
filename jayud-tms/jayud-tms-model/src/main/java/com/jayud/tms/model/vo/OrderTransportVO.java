@@ -6,6 +6,7 @@ import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
@@ -211,7 +212,7 @@ public class OrderTransportVO {
     private String paymentCostStatus;
 
     @ApiModelProperty(value = "标识")
-    private String mark = "zgys";
+    private String mark = SubOrderSignEnum.ZGYS.getSignOne();
 
     @ApiModelProperty(value = "是否虚拟仓库")
     @JsonIgnore

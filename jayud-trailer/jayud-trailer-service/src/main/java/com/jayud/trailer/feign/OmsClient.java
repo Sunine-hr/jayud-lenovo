@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -247,4 +248,31 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getVehicleInfoByIds")
     public ApiResult getVehicleInfoByIds(@RequestParam("orderIds") List<Long> vehicleIds);
+
+    /**
+     * 根据提货时间获取订单号
+     * @param takeTimeStr
+     * @param code
+     * @return
+     */
+    @RequestMapping(value = "/api/getOrderNosByTakeTime")
+    public ApiResult<Set<String>> getOrderNosByTakeTime(@RequestParam("takeTimeStr") String[] takeTimeStr, @RequestParam("code") Integer code);
+
+    /**
+     * 是否录用费用
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/isCost")
+    public ApiResult<Map<String, Object>> isCost(@RequestBody List<String> orderNos,
+                                                 @RequestParam("subType") String subType);
+
+    /**
+     * 应收/应付费用状态
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostStatus")
+    public ApiResult<Map<String, Object>> getCostStatus(@RequestParam("mainOrderNos") List<String> mainOrderNos,
+                                                        @RequestParam("orderNos") List<String> orderNos);
 }

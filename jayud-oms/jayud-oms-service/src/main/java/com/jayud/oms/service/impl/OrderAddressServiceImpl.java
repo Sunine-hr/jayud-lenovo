@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -197,5 +198,30 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
         condition.lambda().in(OrderAddress::getOrderNo, orderNo);
         condition.lambda().in(OrderAddress::getBusinessType, businessType);
         this.baseMapper.delete(condition);
+    }
+
+    @Override
+    public Set<String> getOrderNosByTakeTime(String[] takeTimeStr, Integer code) {
+        QueryWrapper<OrderAddress> condition = new QueryWrapper<>();
+        condition.lambda().between(OrderAddress::getDeliveryDate, takeTimeStr[0], takeTimeStr[1]);
+        if (code != null) {
+            condition.lambda().eq(OrderAddress::getBusinessType , code);
+        }
+        return this.baseMapper.selectList(condition).stream().map(OrderAddress::getOrderNo).collect(Collectors.toSet());
+    }
+
+    /**
+     * 根据条件查询订单id
+     *
+     * @param orderAddress
+     * @param timeInterval
+     * @return
+     */
+    @Override
+    public Set<Long> getOrderAddressOrderIdByTimeInterval(OrderAddress orderAddress, List<String> timeInterval) {
+        QueryWrapper<OrderAddress> condition = new QueryWrapper<>(orderAddress);
+        condition.lambda().select(OrderAddress::getBusinessId);
+        condition.lambda().between(OrderAddress::getDeliveryDate, timeInterval.get(0), timeInterval.get(1));
+        return this.baseMapper.selectList(condition).stream().map(OrderAddress::getBusinessId).collect(Collectors.toSet());
     }
 }

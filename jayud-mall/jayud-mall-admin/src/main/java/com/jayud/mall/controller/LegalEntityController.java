@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Api(tags = "A064-admin-法人主体接口")
 @ApiSort(value = 64)
@@ -63,6 +64,14 @@ public class LegalEntityController {
     public CommonResult auditLegalEntity(@Valid @RequestBody LegalEntityAuditForm form){
         legalEntityService.auditLegalEntity(form);
         return CommonResult.success("审核成功");
+    }
+
+    @ApiOperation(value = "查询，法人主体list")
+    @ApiOperationSupport(order = 4)
+    @PostMapping("/findLegalEntity")
+    public CommonResult<List<LegalEntityVO>> findLegalEntity(){
+        List<LegalEntityVO> list = legalEntityService.findLegalEntity();
+        return CommonResult.success(list);
     }
 
 }

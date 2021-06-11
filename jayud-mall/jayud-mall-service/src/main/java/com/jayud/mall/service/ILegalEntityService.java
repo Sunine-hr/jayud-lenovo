@@ -8,6 +8,8 @@ import com.jayud.mall.model.po.LegalEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.LegalEntityVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 法人主体 服务类
@@ -43,4 +45,10 @@ public interface ILegalEntityService extends IService<LegalEntity> {
      * @param form
      */
     void auditLegalEntity(LegalEntityAuditForm form);
+
+    /**
+     * 查询list
+     * @return
+     */
+    List<LegalEntityVO> findLegalEntity();
 }

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -100,5 +101,11 @@ public class LegalEntityServiceImpl extends ServiceImpl<LegalEntityMapper, Legal
         legalEntity.setUpdatedUser(user.getName());
         legalEntity.setUpdatedTime(LocalDateTime.now());
         this.saveOrUpdate(legalEntity);
+    }
+
+    @Override
+    public List<LegalEntityVO> findLegalEntity() {
+        List<LegalEntityVO> legalEntityList = legalEntityMapper.findLegalEntity();
+        return legalEntityList;
     }
 }

@@ -52,4 +52,11 @@
         and t.id = #{id}
     </select>
 
+    <select id="findLegalEntity" resultType="com.jayud.mall.model.vo.LegalEntityVO">
+        select
+            t.id,t.legal_name,t.legal_code,t.rigis_address,t.sale_depart_id,t.audit_comment,t.audit_status,t.created_user,t.created_time,t.updated_user,t.updated_time,t.legal_en_name,t.phone,t.fax,t.address,t.bank,t.account_open,t.tax_identification_num
+        from legal_entity t
+        where 1=1
+    </select>
+
 </mapper>

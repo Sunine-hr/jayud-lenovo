@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
  * 法人主体 Mapper 接口
@@ -36,4 +38,10 @@ public interface LegalEntityMapper extends BaseMapper<LegalEntity> {
      * @return
      */
     LegalEntityVO findLegalEntityById(@Param("id") Long id);
+
+    /**
+     * 查询list
+     * @return
+     */
+    List<LegalEntityVO> findLegalEntity();
 }

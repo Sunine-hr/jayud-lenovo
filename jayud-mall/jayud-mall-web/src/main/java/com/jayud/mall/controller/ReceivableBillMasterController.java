@@ -38,6 +38,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -77,10 +78,10 @@ public class ReceivableBillMasterController {
 
 
     @ApiOperation(value = "应收账单-下载账单")
-    //@GetMapping("/downloadBills")
-    @PostMapping("/downloadBills")
+    @GetMapping("/downloadBills")
+    //@PostMapping("/downloadBills")
     @ApiOperationSupport(order = 6)
-    public void downloadBills(@RequestParam(value = "ids",required=false) List<Long> ids,
+    public void downloadBills(@RequestParam(value = "ids",required=false) String ids,
                                               HttpServletRequest request, HttpServletResponse response) {
         try {
             CustomerUser customerUser = baseService.getCustomerUser();
@@ -88,7 +89,15 @@ public class ReceivableBillMasterController {
                 Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录");
             }
             Integer customerId = customerUser.getId();
-            ReceivableBillExcelMasterVO receivableBillExcelVO = receivableBillMasterService.downloadBills(customerId, ids);
+
+            String[] split = ids.split(",");
+
+            List<Long> ids2 = new ArrayList<>();
+            for(int i=0; i<split.length; i++){
+                ids2.add(Long.valueOf(split[i]));
+            }
+
+            ReceivableBillExcelMasterVO receivableBillExcelVO = receivableBillMasterService.downloadBills(customerId, ids2);
 
             String customerName = receivableBillExcelVO.getCustomerName();
             String json = JSON.toJSONString(receivableBillExcelVO, SerializerFeature.DisableCircularReferenceDetect);

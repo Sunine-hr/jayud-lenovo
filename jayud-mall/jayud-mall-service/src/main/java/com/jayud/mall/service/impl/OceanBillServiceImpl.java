@@ -667,21 +667,21 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         billClearanceInfoService.saveOrUpdate(billClearanceInfo);
         Long b_id = billClearanceInfo.getId();//提单对应清关信息id(bill_clearance_info id)
 
-        //2.保存-提单对应清关箱号信息
-        List<ClearanceInfoCaseForm> clearanceInfoCaseForms = form.getClearanceInfoCases();
-        List<ClearanceInfoCase> clearanceInfoCases = ConvertUtil.convertList(clearanceInfoCaseForms, ClearanceInfoCase.class);
-        QueryWrapper<ClearanceInfoCase> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("b_id", b_id);
-        clearanceInfoCaseService.remove(queryWrapper);
-        if(CollUtil.isNotEmpty(clearanceInfoCases)){
-            clearanceInfoCases.forEach(clearanceInfoCase -> {
-                clearanceInfoCase.setBId(b_id);//提单对应清关信息id(bill_clearance_info id)
-                clearanceInfoCase.setBName(billClearanceInfo.getFileName());
-                clearanceInfoCase.setBillId(billId);
-                clearanceInfoCase.setBillNo(billNo);
-            });
-            clearanceInfoCaseService.saveOrUpdateBatch(clearanceInfoCases);
-        }
+//        //2.保存-提单对应清关箱号信息
+//        List<ClearanceInfoCaseForm> clearanceInfoCaseForms = form.getClearanceInfoCases();
+//        List<ClearanceInfoCase> clearanceInfoCases = ConvertUtil.convertList(clearanceInfoCaseForms, ClearanceInfoCase.class);
+//        QueryWrapper<ClearanceInfoCase> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("b_id", b_id);
+//        clearanceInfoCaseService.remove(queryWrapper);
+//        if(CollUtil.isNotEmpty(clearanceInfoCases)){
+//            clearanceInfoCases.forEach(clearanceInfoCase -> {
+//                clearanceInfoCase.setBId(b_id);//提单对应清关信息id(bill_clearance_info id)
+//                clearanceInfoCase.setBName(billClearanceInfo.getFileName());
+//                clearanceInfoCase.setBillId(billId);
+//                clearanceInfoCase.setBillNo(billNo);
+//            });
+//            clearanceInfoCaseService.saveOrUpdateBatch(clearanceInfoCases);
+//        }
         BillClearanceInfoVO billClearanceInfoVO = ConvertUtil.convert(billClearanceInfo, BillClearanceInfoVO.class);
         return billClearanceInfoVO;
     }
@@ -708,21 +708,21 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
         billCustomsInfoService.saveOrUpdate(billCustomsInfo);
         Long b_id = billCustomsInfo.getId();//提单对应报关信息id(bill_customs_info id)
 
-        //2.保存-提单对应报关箱号信息
-        QueryWrapper<CustomsInfoCase> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("b_id", b_id);
-        customsInfoCaseService.remove(queryWrapper);
-        List<CustomsInfoCaseForm> customsInfoCaseForms = form.getCustomsInfoCases();
-        if(CollUtil.isNotEmpty(customsInfoCaseForms)){
-            List<CustomsInfoCase> customsInfoCases = ConvertUtil.convertList(customsInfoCaseForms, CustomsInfoCase.class);
-            customsInfoCases.forEach(customsInfoCase -> {
-                customsInfoCase.setBId(b_id);//提单对应报关信息id(bill_customs_info id)
-                customsInfoCase.setBName(billCustomsInfo.getFileName());
-                customsInfoCase.setBillId(billId);
-                customsInfoCase.setBillNo(billNo);
-            });
-            customsInfoCaseService.saveOrUpdateBatch(customsInfoCases);
-        }
+//        //2.保存-提单对应报关箱号信息
+//        QueryWrapper<CustomsInfoCase> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("b_id", b_id);
+//        customsInfoCaseService.remove(queryWrapper);
+//        List<CustomsInfoCaseForm> customsInfoCaseForms = form.getCustomsInfoCases();
+//        if(CollUtil.isNotEmpty(customsInfoCaseForms)){
+//            List<CustomsInfoCase> customsInfoCases = ConvertUtil.convertList(customsInfoCaseForms, CustomsInfoCase.class);
+//            customsInfoCases.forEach(customsInfoCase -> {
+//                customsInfoCase.setBId(b_id);//提单对应报关信息id(bill_customs_info id)
+//                customsInfoCase.setBName(billCustomsInfo.getFileName());
+//                customsInfoCase.setBillId(billId);
+//                customsInfoCase.setBillNo(billNo);
+//            });
+//            customsInfoCaseService.saveOrUpdateBatch(customsInfoCases);
+//        }
         BillCustomsInfoVO billCustomsInfoVO = ConvertUtil.convert(billCustomsInfo, BillCustomsInfoVO.class);
         return billCustomsInfoVO;
     }

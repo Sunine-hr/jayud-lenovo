@@ -9,7 +9,7 @@ import com.jayud.common.exception.Asserts;
 import com.jayud.mall.mapper.CounterListInfoMapper;
 import com.jayud.mall.mapper.CounterOrderInfoMapper;
 import com.jayud.mall.mapper.OrderInfoMapper;
-import com.jayud.mall.model.bo.BtchCounterOrderInfoForm;
+import com.jayud.mall.model.bo.BatchCounterOrderInfoForm;
 import com.jayud.mall.model.po.CounterOrderInfo;
 import com.jayud.mall.model.vo.CounterListInfoVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
@@ -42,7 +42,7 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void batchIntoCounterOrderInfo(BtchCounterOrderInfoForm form) {
+    public void batchIntoCounterOrderInfo(BatchCounterOrderInfoForm form) {
         //批量移入(柜子清单-绑定订单)
         Long bId = form.getCounterListInfoId();//柜子清单信息表(counter_list_info id)
         CounterListInfoVO counterListInfoVO = counterListInfoMapper.findCounterListInfoById(bId);
@@ -77,7 +77,7 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void batchRemoveCounterOrderInfo(BtchCounterOrderInfoForm form) {
+    public void batchRemoveCounterOrderInfo(BatchCounterOrderInfoForm form) {
         //批量移除(柜子清单-绑定订单)
         Long bId = form.getCounterListInfoId();//柜子清单信息表(counter_list_info id)
         CounterListInfoVO counterListInfoVO = counterListInfoMapper.findCounterListInfoById(bId);

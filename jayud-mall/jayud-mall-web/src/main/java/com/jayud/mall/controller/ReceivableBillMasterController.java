@@ -77,7 +77,8 @@ public class ReceivableBillMasterController {
 
 
     @ApiOperation(value = "应收账单-下载账单")
-    @GetMapping("/downloadBills")
+    //@GetMapping("/downloadBills")
+    @PostMapping("/downloadBills")
     @ApiOperationSupport(order = 6)
     public void downloadBills(@RequestParam(value = "ids",required=false) List<Long> ids,
                                               HttpServletRequest request, HttpServletResponse response) {

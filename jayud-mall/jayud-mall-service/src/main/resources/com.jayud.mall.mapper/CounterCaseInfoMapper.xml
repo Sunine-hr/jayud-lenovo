@@ -20,4 +20,65 @@
         id, b_id, b_name, bill_id, bill_no, case_id, carton_no, create_time, order_no
     </sql>
 
+    <select id="findCounterCaseInfoByBidAndOrderId" resultType="com.jayud.mall.model.vo.CounterCaseInfoVO">
+        select
+        t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.order_id,t.order_no,t.case_id,t.carton_no,t.create_time
+        from counter_case_info t
+        where 1=1
+        and t.b_id = #{bId,jdbcType=BIGINT}
+        and t.order_id = #{orderId,jdbcType=BIGINT}
+
+    </select>
+
+
+    <select id="findUnselectedOrderCase" parameterType="com.jayud.mall.model.bo.OrderCaseQueryForm" resultType="com.jayud.mall.model.vo.OrderCaseVO">
+        select
+        t.id,t.order_id,t.carton_no,t.fab_no,
+        t.asn_length,t.asn_width,t.asn_height,t.asn_weight,t.asn_volume,t.asn_weigh_date,
+        t.wms_length,t.wms_height,t.wms_width,t.wms_weight,t.wms_volume,t.wms_weigh_date,
+        t.confirm_length,t.confirm_height,t.confirm_width,t.confirm_weight,t.confirm_volume,t.confirm_weigh_date,
+        t.`status`,t.remark,
+        CONCAT(t.asn_length,'*',t.asn_width,'*',t.asn_height) asn_lwg
+        from order_case t
+        where 1=1
+        <if test="form.orderId != null">
+            and t.order_id = #{form.orderId}
+        </if>
+        <if test="form.filterCaseIds !=null and form.filterCaseIds.size > 0">
+            and t.id not in
+            <foreach collection="form.filterCaseIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="form.cartonNo != null and form.cartonNo != ''">
+            and t.carton_no like concat('%',#{form.cartonNo},'%')
+        </if>
+        order by t.carton_no asc
+    </select>
+
+    <select id="findSelectedOrderCase" parameterType="com.jayud.mall.model.bo.OrderCaseQueryForm" resultType="com.jayud.mall.model.vo.OrderCaseVO">
+        select
+        t.id,t.order_id,t.carton_no,t.fab_no,
+        t.asn_length,t.asn_width,t.asn_height,t.asn_weight,t.asn_volume,t.asn_weigh_date,
+        t.wms_length,t.wms_height,t.wms_width,t.wms_weight,t.wms_volume,t.wms_weigh_date,
+        t.confirm_length,t.confirm_height,t.confirm_width,t.confirm_weight,t.confirm_volume,t.confirm_weigh_date,
+        t.`status`,t.remark,
+        CONCAT(t.asn_length,'*',t.asn_width,'*',t.asn_height) asn_lwg
+        from order_case t
+        join counter_case_info cci on cci.order_id = t.order_id and cci.case_id = t.id
+        where 1=1
+        <if test="form.counterListInfoId != null">
+            and cci.b_id = #{form.counterListInfoId}
+        </if>
+        <if test="form.orderId != null">
+            and cci.order_id = #{form.orderId}
+        </if>
+        <if test="form.cartonNo != null and form.cartonNo != ''">
+            and t.carton_no like concat('%',#{form.cartonNo},'%')
+        </if>
+        order by t.carton_no asc
+
+    </select>
+
+
 </mapper>

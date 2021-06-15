@@ -48,6 +48,8 @@ public class OceanBillController {
     IOceanCounterService oceanCounterService;
     @Autowired
     ICounterOrderInfoService counterOrderInfoService;
+    @Autowired
+    ICounterCaseInfoService counterCaseInfoService;
 
     @ApiOperation(value = "分页查询提单信息")
     @PostMapping("/findOceanBillByPage")
@@ -482,7 +484,7 @@ public class OceanBillController {
     @ApiOperation(value = "批量移入(柜子清单-绑定订单)")
     @ApiOperationSupport(order = 37)
     @PostMapping(value = "/batchIntoCounterOrderInfo")
-    public CommonResult batchIntoCounterOrderInfo(@Valid @RequestBody BtchCounterOrderInfoForm form){
+    public CommonResult batchIntoCounterOrderInfo(@Valid @RequestBody BatchCounterOrderInfoForm form){
         counterOrderInfoService.batchIntoCounterOrderInfo(form);
         return CommonResult.success("操作成功");
     }
@@ -491,10 +493,49 @@ public class OceanBillController {
     @ApiOperation(value = "批量移除(柜子清单-绑定订单)")
     @ApiOperationSupport(order = 38)
     @PostMapping(value = "/batchRemoveCounterOrderInfo")
-    public CommonResult batchRemoveCounterOrderInfo(@Valid @RequestBody BtchCounterOrderInfoForm form){
+    public CommonResult batchRemoveCounterOrderInfo(@Valid @RequestBody BatchCounterOrderInfoForm form){
         counterOrderInfoService.batchRemoveCounterOrderInfo(form);
         return CommonResult.success("操作成功");
     }
+
+    //查询-未选择的箱子(运单-绑定装柜箱子)
+    @ApiOperation(value = "查询-未选择的箱子(运单-绑定装柜箱子)")
+    @ApiOperationSupport(order = 39)
+    @PostMapping(value = "/findUnselectedOrderCase")
+    public CommonResult<List<OrderCaseVO>> findUnselectedOrderCase(@Valid @RequestBody OrderCaseQueryForm form){
+        List<OrderCaseVO> orderInfoList = counterCaseInfoService.findUnselectedOrderCase(form);
+        return CommonResult.success(orderInfoList);
+    }
+
+    //查询-已选择的箱子(运单-绑定装柜箱子)
+    @ApiOperation(value = "查询-已选择的箱子(运单-绑定装柜箱子)")
+    @ApiOperationSupport(order = 40)
+    @PostMapping(value = "/findSelectedOrderCase")
+    public CommonResult<List<OrderCaseVO>> findSelectedOrderCase(@Valid @RequestBody OrderCaseQueryForm form){
+        List<OrderCaseVO> orderInfoList = counterCaseInfoService.findSelectedOrderCase(form);
+        return CommonResult.success(orderInfoList);
+    }
+
+    //批量移入(运单-绑定装柜箱子)
+    @ApiOperation(value = "批量移入(运单-绑定装柜箱子)")
+    @ApiOperationSupport(order = 41)
+    @PostMapping(value = "/batchIntoCounterCaseInfo")
+    public CommonResult batchIntoCounterCaseInfo(@Valid @RequestBody BatchCounterCaseInfoForm form){
+        counterCaseInfoService.batchIntoCounterCaseInfo(form);
+        return CommonResult.success("操作成功");
+    }
+
+    //批量移除(运单-绑定装柜箱子)
+    @ApiOperation(value = "批量移除(运单-绑定装柜箱子)")
+    @ApiOperationSupport(order = 42)
+    @PostMapping(value = "/batchRemoveCounterCaseInfo")
+    public CommonResult batchRemoveCounterCaseInfo(@Valid @RequestBody BatchCounterCaseInfoForm form){
+        counterCaseInfoService.batchRemoveCounterCaseInfo(form);
+        return CommonResult.success("操作成功");
+    }
+
+
+
 
 
 }

@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class BtchCounterOrderInfoForm {
+public class BatchCounterOrderInfoForm {
 
     @ApiModelProperty(value = "柜子清单信息表(counter_list_info id)")
     private Long counterListInfoId;

@@ -145,4 +145,19 @@
     </select>
 
 
+    <select id="findOrderCaseById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderCaseVO">
+        select
+        t.id,t.order_id,t.carton_no,t.fab_no,
+        t.asn_length,t.asn_width,t.asn_height,t.asn_weight,t.asn_volume,t.asn_weigh_date,
+        t.wms_length,t.wms_height,t.wms_width,t.wms_weight,t.wms_volume,t.wms_weigh_date,
+        t.confirm_length,t.confirm_height,t.confirm_width,t.confirm_weight,t.confirm_volume,t.confirm_weigh_date,
+        t.`status`,t.remark,
+        CONCAT(t.asn_length,'*',t.asn_width,'*',t.asn_height) asn_lwg
+        from order_case t
+        where 1=1
+        and t.id = #{caseId}
+
+    </select>
+
+
 </mapper>

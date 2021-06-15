@@ -979,19 +979,21 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             Long orderId = billOrderRelevance.getOrderId();
             orderIds.add(orderId);
         });
-        List<String> afterStatusCodes = new ArrayList<>();
-        afterStatusCodes.add(OrderEnum.AFTER_AFFIRM.getCode());//AFTER_AFFIRM("30", "订单确认"),
-        QueryWrapper<OrderInfo> orderInfoQw = new QueryWrapper<>();
-        orderInfoQw.in("id", orderIds);
-        orderInfoQw.in("after_status_code", afterStatusCodes);
-        List<OrderInfo> orderInfoList = orderInfoService.list(orderInfoQw);
-        if(CollUtil.isNotEmpty(orderInfoList)){
-            orderInfoList.forEach(orderInfo -> {
-                // 将订单状态 从 订单确认 改为 转运中
-                orderInfo.setAfterStatusCode(OrderEnum.AFTER_TRANSIT.getCode());
-                orderInfo.setAfterStatusName(OrderEnum.AFTER_TRANSIT.getName());
-            });
-            orderInfoService.saveOrUpdateBatch(orderInfoList);
+        if(CollUtil.isNotEmpty(orderIds)){
+            List<String> afterStatusCodes = new ArrayList<>();
+            afterStatusCodes.add(OrderEnum.AFTER_AFFIRM.getCode());//AFTER_AFFIRM("30", "订单确认"),
+            QueryWrapper<OrderInfo> orderInfoQw = new QueryWrapper<>();
+            orderInfoQw.in("id", orderIds);
+            orderInfoQw.in("after_status_code", afterStatusCodes);
+            List<OrderInfo> orderInfoList = orderInfoService.list(orderInfoQw);
+            if(CollUtil.isNotEmpty(orderInfoList)){
+                orderInfoList.forEach(orderInfo -> {
+                    // 将订单状态 从 订单确认 改为 转运中
+                    orderInfo.setAfterStatusCode(OrderEnum.AFTER_TRANSIT.getCode());
+                    orderInfo.setAfterStatusName(OrderEnum.AFTER_TRANSIT.getName());
+                });
+                orderInfoService.saveOrUpdateBatch(orderInfoList);
+            }
         }
         return counterListInfoVO;
     }

@@ -458,4 +458,29 @@ public class OceanBillController {
     }
 
 
+    //查询-未选择的订单(柜子清单-绑定订单)
+    @ApiOperation(value = "查询-未选择的订单(柜子清单-绑定订单)")
+    @ApiOperationSupport(order = 35)
+    @PostMapping(value = "/findUnselectedOrderInfo")
+    public CommonResult<List<OrderInfoVO>> findUnselectedOrderInfo(@Valid @RequestBody OrderInfoQueryForm form){
+        List<OrderInfoVO> orderInfoList = counterListInfoService.findUnselectedOrderInfo(form);
+        return CommonResult.success(orderInfoList);
+    }
+
+    //查询-已选择的订单(柜子清单-绑定订单)
+    @ApiOperation(value = "查询-已选择的订单(柜子清单-绑定订单)")
+    @ApiOperationSupport(order = 36)
+    @PostMapping(value = "/findSelectedOrderInfo")
+    public CommonResult<List<OrderInfoVO>> findSelectedOrderInfo(@Valid @RequestBody OrderInfoQueryForm form){
+        List<OrderInfoVO> orderInfoList = counterListInfoService.findSelectedOrderInfo(form);
+        return CommonResult.success(orderInfoList);
+    }
+
+    //批量移入(柜子清单-绑定订单)
+
+
+    //批量移除(柜子清单-绑定订单)
+
+
+
 }

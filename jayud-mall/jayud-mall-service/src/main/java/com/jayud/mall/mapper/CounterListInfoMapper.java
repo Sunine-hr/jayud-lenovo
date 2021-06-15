@@ -1,10 +1,13 @@
 package com.jayud.mall.mapper;
 
+import com.jayud.mall.model.bo.OrderInfoQueryForm;
 import com.jayud.mall.model.po.CounterListInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.CounterCaseInfoExcelVO;
 import com.jayud.mall.model.vo.CounterCaseInfoVO;
 import com.jayud.mall.model.vo.CounterListInfoVO;
+import com.jayud.mall.model.vo.OrderInfoVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +21,7 @@ import java.util.List;
  * @author fachang.mao
  * @since 2021-04-28
  */
+@Mapper
 @Component
 public interface CounterListInfoMapper extends BaseMapper<CounterListInfo> {
 
@@ -55,4 +59,18 @@ public interface CounterListInfoMapper extends BaseMapper<CounterListInfo> {
      * @return
      */
     List<CounterCaseInfoExcelVO> findCounterCaseInfoBybid(@Param("b_id") Long b_id);
+
+    /**
+     * 查询-未选择的订单(柜子清单-绑定订单)
+     * @param form
+     * @return
+     */
+    List<OrderInfoVO> findUnselectedOrderInfo(@Param("form") OrderInfoQueryForm form);
+
+    /**
+     * 查询-已选择的订单(柜子清单-绑定订单)
+     * @param form
+     * @return
+     */
+    List<OrderInfoVO> findSelectedOrderInfo(@Param("form") OrderInfoQueryForm form);
 }

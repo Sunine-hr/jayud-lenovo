@@ -379,4 +379,7 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "状态标志-是否确认计费重(1已确认 2未确认)")
     private String isConfirmBilling;
 
+    @ApiModelProperty(value = "报价服务名称")
+    private String serviceName;
+
 }

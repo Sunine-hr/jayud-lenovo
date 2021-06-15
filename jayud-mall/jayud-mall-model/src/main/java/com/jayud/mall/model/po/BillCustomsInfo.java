@@ -3,6 +3,7 @@ package com.jayud.mall.model.po;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -21,13 +22,13 @@ import java.time.LocalDateTime;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="BillCustomsInfo对象", description="(提单)报关信息表")
+@ApiModel(value = "BillCustomsInfo对象", description = "(提单)报关信息表")
 public class BillCustomsInfo extends Model<BillCustomsInfo> {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "自增id")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "提单id(ocean_bill id)")
@@ -58,7 +59,11 @@ public class BillCustomsInfo extends Model<BillCustomsInfo> {
     private String userName;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "类型(0买单 1独立)")
+    private Integer type;
 
 
     @Override

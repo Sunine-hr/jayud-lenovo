@@ -25,7 +25,7 @@
     <select id="findCounterListInfoById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterListInfoVO">
         select
             t.id,t.counter_id,t.cntr_no,t.file_name,t.template_url,t.describes,t.cartons,t.status,t.user_id,t.user_name,t.create_time,
-            t2.id billId
+            t2.id billId, t2.order_id billNo
         from counter_list_info t
         left join ocean_counter t1 on t1.id = t.counter_id
         left join ocean_bill t2 on t2.id = t1.ob_id

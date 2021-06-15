@@ -51,4 +51,7 @@ public class CounterListInfoVO {
     @ApiModelProperty(value = "提单id(ocean_bill id)")
     private Long billId;
 
+    @ApiModelProperty(value = "提单号(ocean_bill order_id)")
+    private String billNo;
+
 }

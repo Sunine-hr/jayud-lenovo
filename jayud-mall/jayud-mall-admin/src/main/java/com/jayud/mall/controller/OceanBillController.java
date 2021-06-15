@@ -46,6 +46,8 @@ public class OceanBillController {
     IBillOrderRelevanceService billOrderRelevanceService;
     @Autowired
     IOceanCounterService oceanCounterService;
+    @Autowired
+    ICounterOrderInfoService counterOrderInfoService;
 
     @ApiOperation(value = "分页查询提单信息")
     @PostMapping("/findOceanBillByPage")
@@ -477,10 +479,22 @@ public class OceanBillController {
     }
 
     //批量移入(柜子清单-绑定订单)
-
+    @ApiOperation(value = "批量移入(柜子清单-绑定订单)")
+    @ApiOperationSupport(order = 37)
+    @PostMapping(value = "/batchIntoCounterOrderInfo")
+    public CommonResult batchIntoCounterOrderInfo(@Valid @RequestBody BtchCounterOrderInfoForm form){
+        counterOrderInfoService.batchIntoCounterOrderInfo(form);
+        return CommonResult.success("操作成功");
+    }
 
     //批量移除(柜子清单-绑定订单)
-
+    @ApiOperation(value = "批量移除(柜子清单-绑定订单)")
+    @ApiOperationSupport(order = 38)
+    @PostMapping(value = "/batchRemoveCounterOrderInfo")
+    public CommonResult batchRemoveCounterOrderInfo(@Valid @RequestBody BtchCounterOrderInfoForm form){
+        counterOrderInfoService.batchRemoveCounterOrderInfo(form);
+        return CommonResult.success("操作成功");
+    }
 
 
 }

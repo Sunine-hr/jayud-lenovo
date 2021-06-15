@@ -233,7 +233,7 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         Long confId = form.getConfId();
         if(ObjectUtil.isNotEmpty(confId)){
             OrderConfVO orderConfVO = orderConfMapper.findOrderConfById(confId);
-            if(ObjectUtil.isNotEmpty(orderConfVO)){
+            if(ObjectUtil.isEmpty(orderConfVO)){
                 Asserts.fail(ResultEnum.UNKNOWN_ERROR, "配载单没有找到，无法关联报价");
             }
             OceanConfDetail oceanConfDetail = new OceanConfDetail();

@@ -2,6 +2,7 @@ package com.jayud.mall.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -52,7 +53,11 @@ public class BillClearanceInfoVO {
     private String userName;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "类型(0买单 1独立)")
+    private Integer type;
 
     @ApiModelProperty(value = "提单对应清关箱号信息list")
     private List<ClearanceInfoCaseVO> clearanceInfoCases;

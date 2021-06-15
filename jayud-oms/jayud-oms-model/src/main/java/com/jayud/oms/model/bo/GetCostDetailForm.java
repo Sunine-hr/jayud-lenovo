@@ -24,7 +24,8 @@ public class GetCostDetailForm {
 
     @ApiModelProperty(value = "操作指令:cmd=main_cost 主订单费用 or main_cost_audit主订单费用审核 " +
             "or zgys_sub_cost/bg_sub_cost/ky_sub_cost/hy_sub_cost子订单费用 " +
-            "or zgys_sub_cost_audit/bg_sub_cost_audit/ky_sub_cost_audit/hy_sub_cost_audit/cci_sub_cost_audit/cce_sub_cost_audit子订单费用审核", required = true)
+            "or zgys_sub_cost_audit/bg_sub_cost_audit/ky_sub_cost_audit/hy_sub_cost_audit/cci_sub_cost_audit/cce_sub_cost_audit子订单费用审核" +
+            "or main_cost_audited 子订单_sub_cost_audited", required = true)
     @NotEmpty(message = "cmd is required")
     private String cmd;
 

@@ -70,9 +70,14 @@
             and (orc.sub_type = 'main'
             or (orc.is_sum_to_main = 1 and orc.`status` = '3'))
         </if>
+
         <if test="form.cmd == 'main_cost_audit'">
             and ((orc.`status` in ('2','3') and orc.sub_type = 'main')
-            or (orc.`status` in ('3') and orc.sub_type !='main'and orc.sub_type !='main' and orc.is_sum_to_main=true))
+            or (orc.`status` in ('3') and orc.sub_type !='main' and orc.is_sum_to_main=true))
+        </if>
+        <if test="form.cmd == 'main_cost_audited'">
+            and ((orc.`status` in ('2','3') and orc.sub_type = 'main' and orc.is_bill='0')
+            or (orc.`status` in ('3') and orc.sub_type !='main' and orc.is_sum_to_main=true and orc.is_bill='0'))
         </if>
         <if test="form.cmd == 'sub_cost'">
             and orc.sub_type = #{form.subType}
@@ -83,6 +88,13 @@
             and orc.sub_type = #{form.subType}
             and orc.order_no = #{form.subOrderNo}
         </if>
+        <if test="form.cmd == 'sub_cost_audit'">
+            and orc.`status` ='3'
+            and orc.sub_type = #{form.subType}
+            and orc.order_no = #{form.subOrderNo}
+            and orc.is_bill='0'
+        </if>
+
         <!--        <if test="form.cmd == 'bg_sub_cost_audit'">-->
         <!--            and orc.`status` in ('2','3')-->
         <!--            and orc.sub_type = 'bg'-->

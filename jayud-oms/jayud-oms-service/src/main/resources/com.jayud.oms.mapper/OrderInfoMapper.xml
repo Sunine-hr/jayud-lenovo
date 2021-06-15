@@ -87,6 +87,13 @@
                 orc.`status`
                 = '2' and orc.sub_type='main'))
             </if>
+            <if test="form.cmd == 'costAudited'">
+                and oi.`status` IN (1,3,4)
+                AND oi.order_no in (
+                (SELECT opc.main_order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='main' and opc.is_bill=0
+                union SELECT orc.main_order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and orc.sub_type='main' and orc.is_bill=0)
+                )
+            </if>
             <if test="form.cmd == 'outCustomsRelease'">
                 and (oi.class_code = 'ZGYS' or oi.selected_server like concat('%','ZGYSDD','%')) and oi.`status` = 1
                 and oi.customs_release = 0
@@ -159,7 +166,6 @@
         oi.selected_server selectedServer
         FROM
         order_info oi
-
         <where>
             <choose>
                 <when test="form.mainOrderIds !=null and form.mainOrderIds.size>0 ">

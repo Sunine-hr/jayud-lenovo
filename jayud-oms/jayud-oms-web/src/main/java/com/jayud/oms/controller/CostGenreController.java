@@ -4,6 +4,7 @@ package com.jayud.oms.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.aop.annotations.RepeatSubmitLimit;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.AddCostGenreForm;
@@ -103,6 +104,14 @@ public class CostGenreController {
             list.add(costGenreVO);
         }
         return CommonResult.success(list);
+    }
+
+    @RepeatSubmitLimit
+    @ApiOperation("查询所用启用费用类型")
+    @PostMapping("/test")
+    public CommonResult test(@RequestBody List<Map<String,Object>> maps) {
+
+        return CommonResult.success(null);
     }
 }
 

@@ -88,7 +88,7 @@
             and orc.sub_type = #{form.subType}
             and orc.order_no = #{form.subOrderNo}
         </if>
-        <if test="form.cmd == 'sub_cost_audit'">
+        <if test="form.cmd == 'sub_cost_audited'">
             and orc.`status` ='3'
             and orc.sub_type = #{form.subType}
             and orc.order_no = #{form.subOrderNo}

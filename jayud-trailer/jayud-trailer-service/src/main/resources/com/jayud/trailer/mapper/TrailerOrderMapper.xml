@@ -246,6 +246,12 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
                 =
                 '2' and orc.sub_type = 'tc'))
             </if>
+            <if test="form.cmd == 'costAudited'">
+                AND tor.order_no in (
+                (SELECT opc.order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='tc' and opc.is_bill='0'
+                union SELECT orc.order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and orc.sub_type='tc' and orc.is_bill='0')
+                )
+            </if>
 
             <if test="legalIds != null and legalIds.size>0">
                 and tor.`legal_entity_id` in

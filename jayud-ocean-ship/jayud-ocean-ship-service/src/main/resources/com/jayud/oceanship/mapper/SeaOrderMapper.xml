@@ -151,6 +151,7 @@
 
 <!--  分页获取订单列表-->
 <!--    <select id="findByPage" resultType="com.jayud.oceanship.vo.SeaOrderFormVO">-->
+
     <select id="findByPage" resultMap="map1">
         select so.id,so.main_order_no mainOrderNo,so.order_no orderNo,so.status,
         so.process_status processStatus,
@@ -245,6 +246,12 @@
                 '2' and opc.sub_type = 'hy')
                 OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = so.order_no AND orc.`status` =
                 '2' and orc.sub_type = 'hy'))
+            </if>
+            <if test="form.cmd == 'costAudited'">
+                AND so.order_no in (
+                (SELECT opc.order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='hy' and opc.is_bill='0'
+                union SELECT orc.order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and orc.sub_type='hy' and orc.is_bill='0')
+                )
             </if>
 
             <if test="legalIds != null and legalIds.size>0">

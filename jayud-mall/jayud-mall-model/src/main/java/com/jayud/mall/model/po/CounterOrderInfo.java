@@ -53,6 +53,9 @@ public class CounterOrderInfo extends Model<CounterOrderInfo> {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "订单类型(1普通运单 2留仓运单)")
+    private Integer orderType;
+
 
     @Override
     protected Serializable pkVal() {

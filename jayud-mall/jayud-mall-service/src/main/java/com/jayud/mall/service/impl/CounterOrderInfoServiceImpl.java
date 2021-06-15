@@ -53,6 +53,7 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
         if (CollUtil.isEmpty(orderIds)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "没有选择订单，不能操作");
         }
+        Integer orderType = form.getOrderType();
         List<CounterOrderInfo> counterOrderInfoList = new ArrayList<>();
         for (int i=0; i<orderIds.size(); i++){
             Long orderId = orderIds.get(i);
@@ -67,6 +68,8 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
             counterOrderInfo.setBillNo(counterListInfoVO.getBillNo());
             counterOrderInfo.setOrderId(orderInfoVO.getId());
             counterOrderInfo.setOrderNo(orderInfoVO.getOrderNo());
+
+            counterOrderInfo.setOrderType(orderType);//订单类型(1普通运单 2留仓运单)
             counterOrderInfoList.add(counterOrderInfo);
         }
         if(CollUtil.isNotEmpty(counterOrderInfoList)){

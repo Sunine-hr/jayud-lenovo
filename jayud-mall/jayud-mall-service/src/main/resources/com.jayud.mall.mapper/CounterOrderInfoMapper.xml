@@ -21,10 +21,10 @@
 
     <select id="findCounterOrderInfoBybId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterOrderInfoVO">
         select
-            t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.order_id,t.order_no,t.create_time
+        t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.order_id,t.order_no,t.create_time
         from counter_order_info t
         where 1=1
-          and t.b_id = #{bId}
+        and t.b_id = #{bId}
     </select>
 
 </mapper>

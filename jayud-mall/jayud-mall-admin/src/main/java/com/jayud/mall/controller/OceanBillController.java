@@ -50,6 +50,11 @@ public class OceanBillController {
     ICounterOrderInfoService counterOrderInfoService;
     @Autowired
     ICounterCaseInfoService counterCaseInfoService;
+    @Autowired
+    ICustomsInfoCaseService customsInfoCaseService;
+    @Autowired
+    IClearanceInfoCaseService clearanceInfoCaseService;
+
 
     @ApiOperation(value = "分页查询提单信息")
     @PostMapping("/findOceanBillByPage")
@@ -346,7 +351,7 @@ public class OceanBillController {
 
     //导出清单-报关箱子
     //exportCustomsInfoCase
-    @ApiOperation(value = "导出清单-报关箱子")
+    @ApiOperation(value = "导出报关清单")
     @ApiOperationSupport(order = 30)
     @GetMapping(value = "/exportCustomsInfoCase")
     public void exportCustomsInfoCase(HttpServletResponse response, @RequestParam(value = "id",required=false) Long id) throws IOException {
@@ -543,6 +548,36 @@ public class OceanBillController {
         List<CounterOrderInfoVO> counterOrderInfoList = counterOrderInfoService.findCounterOrderInfoByBid(bId);
         return CommonResult.success(counterOrderInfoList);
     }
+
+    //报关箱子-查询提单下未生成的订单箱子(分类型)
+    @ApiOperation(value = "报关箱子-查询提单下未生成的订单箱子(分类型)")
+    @PostMapping("/findUnselectedBillCaseByCustoms")
+    @ApiOperationSupport(order = 44)
+    public CommonResult<List<BillCaseVO>> findUnselectedBillCaseByCustoms(@Valid @RequestBody BillCustomsInfoQueryForm form){
+        List<BillCaseVO> billCaseList = customsInfoCaseService.findUnselectedBillCaseByCustoms(form);
+        return CommonResult.success(billCaseList);
+    }
+
+    //报关箱子-查询提单下已生成的订单箱子
+    @ApiOperation(value = "报关箱子-查询提单下已生成的订单箱子")
+    @ApiOperationSupport(order = 45)
+    @PostMapping(value = "/findSelectedBillCaseByCustoms")
+    public CommonResult<List<BillCaseVO>> findSelectedBillCaseByCustoms(@Valid @RequestBody BillCustomsInfoQueryForm form){
+        List<BillCaseVO> billCaseList = customsInfoCaseService.findSelectedBillCaseByCustoms(form);
+        return CommonResult.success(billCaseList);
+    }
+
+    //提单下的报关-生成报关清单
+    @ApiOperation(value = "提单下的报关-生成报关清单")
+    @ApiOperationSupport(order = 46)
+    @PostMapping(value = "/createCustomsInfoCase")
+    public CommonResult createCustomsInfoCase(@Valid @RequestBody CreateCustomsInfoCaseForm form){
+        customsInfoCaseService.createCustomsInfoCase(form);
+        return CommonResult.success("操作成功");
+    }
+
+
+
 
 
 }

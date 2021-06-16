@@ -152,8 +152,10 @@
         t.wms_length,t.wms_height,t.wms_width,t.wms_weight,t.wms_volume,t.wms_weigh_date,
         t.confirm_length,t.confirm_height,t.confirm_width,t.confirm_weight,t.confirm_volume,t.confirm_weigh_date,
         t.`status`,t.remark,
-        CONCAT(t.asn_length,'*',t.asn_width,'*',t.asn_height) asn_lwg
+        CONCAT(t.asn_length,'*',t.asn_width,'*',t.asn_height) asn_lwg,
+        t1.order_no
         from order_case t
+        join order_info t1 on t1.id = t.order_id
         where 1=1
         and t.id = #{caseId}
 

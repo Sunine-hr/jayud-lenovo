@@ -43,4 +43,5 @@ public interface ICounterCaseInfoService extends IService<CounterCaseInfo> {
      * @param form
      */
     void batchRemoveCounterCaseInfo(BatchCounterCaseInfoForm form);
+
 }

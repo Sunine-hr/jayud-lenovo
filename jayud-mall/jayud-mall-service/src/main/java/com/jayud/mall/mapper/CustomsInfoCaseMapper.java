@@ -1,17 +1,15 @@
 package com.jayud.mall.mapper;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jayud.mall.model.bo.BillCustomsInfoForm;
-import com.jayud.mall.model.bo.ClearanceInfoCaseForm;
-import com.jayud.mall.model.bo.CustomsInfoCaseForm;
-import com.jayud.mall.model.po.ClearanceInfoCase;
-import com.jayud.mall.model.po.CustomsInfoCase;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jayud.mall.model.vo.BillCustomsInfoVO;
-import com.jayud.mall.model.vo.ClearanceInfoCaseVO;
+import com.jayud.mall.model.bo.BillCustomsInfoQueryForm;
+import com.jayud.mall.model.po.CustomsInfoCase;
+import com.jayud.mall.model.vo.BillCaseVO;
 import com.jayud.mall.model.vo.CustomsInfoCaseVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -21,30 +19,28 @@ import org.apache.ibatis.annotations.Param;
  * @author fachang.mao
  * @since 2021-04-27
  */
+@Mapper
+@Component
 public interface CustomsInfoCaseMapper extends BaseMapper<CustomsInfoCase> {
+
     /**
-     * 集合数据
-     * @param
+     * 根据bid，查询
+     * @param bId 提单对应报关信息id(bill_customs_info id)
      * @return
      */
-    IPage<BillCustomsInfoVO> findCustomsInfoCasePage(@Param("form") CustomsInfoCaseForm form);
-
-
-    /**
-     * 增加
-     * @param customsInfoCase
-     */
-    void insertCustomsInfoCase(@Param("customsInfoCase") CustomsInfoCaseForm customsInfoCase);
+    List<CustomsInfoCaseVO> findCustomsInfoCaseByBid(@Param("bId") Long bId);
 
     /**
-     * 修改
-     * @param customsInfoCases
+     * 报关箱子-查询提单下未生成的订单箱子(分类型)
+     * @param form
+     * @return
      */
-    void updateCustomsInfoCase(@Param("customsInfoCase") CustomsInfoCaseForm customsInfoCase);
+    List<BillCaseVO> findUnselectedBillCaseByCustoms(@Param("form") BillCustomsInfoQueryForm form);
 
     /**
-     * 删除
-     * @param id
+     * 报关箱子-查询提单下已生成的订单箱子
+     * @param form
+     * @return
      */
-    void deleteCustomsInfoCase(@Param("id") Long id);
+    List<BillCaseVO> findSelectedBillCaseByCustoms(@Param("form") BillCustomsInfoQueryForm form);
 }

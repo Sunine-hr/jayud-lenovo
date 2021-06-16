@@ -18,30 +18,67 @@
     <sql id="Base_Column_List">
         id, b_id, b_name, bill_id, bill_no, case_id, carton_no, create_time
     </sql>
-    <!--获取对应数据结合-->
-    <select id="findCustomsInfoCaseByPage" resultType="com.jayud.mall.model.vo.CustomsInfoCaseVO">
+
+    <select id="findCustomsInfoCaseByBid" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CustomsInfoCaseVO">
         select
-        <include refid="Base_Column_List"/>
-        from customs_info_case
+        t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.case_id,t.carton_no,t.create_time,t.order_no
+        from customs_info_case t
+        where 1=1
+        and t.b_id = #{bId}
+
     </select>
 
-    <!--插入用户-->
-    <insert id="insertCustomsInfoCase" parameterType="com.jayud.mall.model.bo.CustomsInfoCaseForm">
-        INSERT INTO customs_info_case (b_id, b_name, bill_id, bill_no, case_id,carton_no,create_time)
-        VALUES (#{bId}, #{bName}, #{billId}, #{billNo}, #{caseId},1,#{cartonNo},now())
-    </insert>
+    <select id="findUnselectedBillCaseByCustoms" parameterType="com.jayud.mall.model.bo.BillCustomsInfoQueryForm" resultType="com.jayud.mall.model.vo.BillCaseVO">
+        select
+        t.id caseId,t.carton_no,t.fab_no,
+        t1.id orderId,t1.order_no,t1.need_declare,t1.need_clearance,
+        t2.company customerName,
+        t3.good_id,
+        t4.name_cn,t4.name_en,t4.image_url,t4.data_code,t4.material_quality,t4.purpose,
+        t5.bill_id, t5.bill_no
+        from order_case t
+        join order_info t1 on t1.id = t.order_id
+        join customer t2 on t2.id = t1.customer_id
+        left join (select case_id,good_id from order_case_shop group by case_id) t3 on t3.case_id = t.id
+        left join customer_goods t4 on t4.id = t3.good_id
+        join counter_case_info t5 on t5.case_id = t.id
+        where 1=1
+        <if test="form.billId != null">
+            and t5.bill_id = #{form.billId}
+        </if>
+        <if test="form.type != null">
+            and t1.need_declare = #{form.type}
+        </if>
+        <if test="form.filterCaseIds !=null and form.filterCaseIds.size > 0">
+            and t.id not in
+            <foreach collection="form.filterCaseIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by t.id desc
 
-    <!--修改用户-->
-    <update id="updateCustomsInfoCase" parameterType="com.jayud.mall.model.bo.CustomsInfoCaseForm">
-        UPDATE customs_info_case
-        SET
-            b_id = #{bId},b_name = #{bName},bill_id = #{billId},
-            bill_no = #{billNo},case_id = #{caseId},carton_no = #{cartonNo},create_time=now()
-        where id = #{id}
-    </update>
+    </select>
 
-    <!--删除用户-->
-    <delete id="deleteCustomsInfoCase" parameterType="Long">
-        delete from customs_info_case where id = #{id}
-    </delete>
+    <select id="findSelectedBillCaseByCustoms" parameterType="com.jayud.mall.model.bo.BillCustomsInfoQueryForm"
+            resultType="com.jayud.mall.model.vo.BillCaseVO">
+        select
+        t.id caseId,t.carton_no,t.fab_no,
+        t1.id orderId,t1.order_no,t1.need_declare,t1.need_clearance,
+        t2.company customerName,
+        t3.good_id,
+        t4.name_cn,t4.name_en,t4.image_url,t4.data_code,t4.material_quality,t4.purpose,
+        t5.bill_id, t5.bill_no
+        from order_case t
+        join order_info t1 on t1.id = t.order_id
+        join customer t2 on t2.id = t1.customer_id
+        left join (select case_id,good_id from order_case_shop group by case_id) t3 on t3.case_id = t.id
+        left join customer_goods t4 on t4.id = t3.good_id
+        left join customs_info_case t5 on t5.case_id = t.id
+        where 1=1
+        <if test="form.id != null">
+            and t5.b_id = #{id}
+        </if>
+        order by t.id desc
+    </select>
+
 </mapper>

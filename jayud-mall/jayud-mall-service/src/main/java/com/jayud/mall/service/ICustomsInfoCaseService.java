@@ -1,12 +1,12 @@
 package com.jayud.mall.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jayud.mall.model.bo.CustomsInfoCaseForm;
-import com.jayud.mall.model.po.CustomsInfoCase;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.mall.model.vo.CustomsInfoCaseVO;
-import org.apache.ibatis.annotations.Param;
+import com.jayud.mall.model.bo.BillCustomsInfoQueryForm;
+import com.jayud.mall.model.bo.CreateCustomsInfoCaseForm;
+import com.jayud.mall.model.po.CustomsInfoCase;
+import com.jayud.mall.model.vo.BillCaseVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,29 +17,24 @@ import org.apache.ibatis.annotations.Param;
  * @since 2021-04-27
  */
 public interface ICustomsInfoCaseService extends IService<CustomsInfoCase> {
+
     /**
-     * 集合数据
-     * @param
+     * 报关箱子-查询提单下未生成的订单箱子(分类型)
+     * @param form
      * @return
      */
-    IPage<CustomsInfoCaseVO> findCustomsInfoCasePage(@Param("form") CustomsInfoCaseForm form);
-
-
-    /**
-     * 增加
-     * @param customsInfoCase
-     */
-    void insertCustomsInfoCase(@Param("customsInfoCase") CustomsInfoCaseForm customsInfoCase);
+    List<BillCaseVO> findUnselectedBillCaseByCustoms(BillCustomsInfoQueryForm form);
 
     /**
-     * 修改
-     * @param customsInfoCase
+     * 报关箱子-查询提单下已生成的订单箱子
+     * @param form
+     * @return
      */
-    void updateCustomsInfoCase(@Param("customsInfoCase") CustomsInfoCaseForm customsInfoCase);
+    List<BillCaseVO> findSelectedBillCaseByCustoms(BillCustomsInfoQueryForm form);
 
     /**
-     * 删除
-     * @param id
+     * 提单下的报关-生成报关清单
+     * @param form
      */
-    void deleteCustomsInfoCase(@Param("id") Long id);
+    void createCustomsInfoCase(CreateCustomsInfoCaseForm form);
 }

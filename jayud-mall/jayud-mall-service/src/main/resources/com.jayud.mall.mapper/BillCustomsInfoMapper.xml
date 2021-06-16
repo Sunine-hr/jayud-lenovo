@@ -31,7 +31,7 @@
 
     <select id="findBillCustomsInfoById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.BillCustomsInfoVO">
         select
-            t.id,t.bill_id,t.bill_no,t.file_name,t.template_url,t.describes,t.cartons,t.status,t.user_id,t.user_name,t.create_time
+            t.id,t.bill_id,t.bill_no,t.file_name,t.template_url,t.describes,t.cartons,t.status,t.user_id,t.user_name,t.create_time,t.type
         from bill_customs_info t
         where t.id = #{id}
     </select>

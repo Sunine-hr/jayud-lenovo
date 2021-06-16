@@ -1,5 +1,7 @@
 package com.jayud.mall.model.po;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -27,6 +29,7 @@ public class OrderCaseWms extends Model<OrderCaseWms> {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "箱号")
+    @TableId(type = IdType.INPUT)
     private String cartonNo;
 
     @ApiModelProperty(value = "仓库测量的长度，单位cm")

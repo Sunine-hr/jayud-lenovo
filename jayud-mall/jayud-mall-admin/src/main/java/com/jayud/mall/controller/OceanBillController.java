@@ -534,8 +534,15 @@ public class OceanBillController {
         return CommonResult.success("操作成功");
     }
 
-
-
+    //查询-柜子清单下运单信息list
+    @ApiOperation(value = "查询-柜子清单下运单信息list")
+    @PostMapping("/findCounterOrderInfoByBid")
+    @ApiOperationSupport(order = 43)
+    public CommonResult<List<CounterOrderInfoVO>> findCounterOrderInfoByBid(@Valid @RequestBody CounterListInfoIdForm form){
+        Long bId = form.getId();
+        List<CounterOrderInfoVO> counterOrderInfoList = counterOrderInfoService.findCounterOrderInfoByBid(bId);
+        return CommonResult.success(counterOrderInfoList);
+    }
 
 
 }

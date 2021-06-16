@@ -27,4 +27,5 @@ public interface CounterOrderInfoMapper extends BaseMapper<CounterOrderInfo> {
      * @return
      */
     List<CounterOrderInfoVO> findCounterOrderInfoBybId(@Param("bId") Long bId);
+
 }

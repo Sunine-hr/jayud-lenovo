@@ -12,6 +12,7 @@ import com.jayud.mall.mapper.OrderInfoMapper;
 import com.jayud.mall.model.bo.BatchCounterOrderInfoForm;
 import com.jayud.mall.model.po.CounterOrderInfo;
 import com.jayud.mall.model.vo.CounterListInfoVO;
+import com.jayud.mall.model.vo.CounterOrderInfoVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
 import com.jayud.mall.service.ICounterOrderInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,12 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
         qw.eq("b_id", bId);
         qw.in("order_id", orderIds);
         this.remove(qw);
+    }
+
+    @Override
+    public List<CounterOrderInfoVO> findCounterOrderInfoByBid(Long bId) {
+        List<CounterOrderInfoVO> counterOrderInfoList = counterOrderInfoMapper.findCounterOrderInfoBybId(bId);
+        return counterOrderInfoList;
     }
 
 }

@@ -3,6 +3,9 @@ package com.jayud.mall.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.bo.BatchCounterOrderInfoForm;
 import com.jayud.mall.model.po.CounterOrderInfo;
+import com.jayud.mall.model.vo.CounterOrderInfoVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -26,4 +29,10 @@ public interface ICounterOrderInfoService extends IService<CounterOrderInfo> {
      */
     void batchRemoveCounterOrderInfo(BatchCounterOrderInfoForm form);
 
+    /**
+     * 查询柜子清单下的运单信息list
+     * @param bId
+     * @return
+     */
+    List<CounterOrderInfoVO> findCounterOrderInfoByBid(Long bId);
 }

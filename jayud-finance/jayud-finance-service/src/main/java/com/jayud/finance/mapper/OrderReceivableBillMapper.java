@@ -58,7 +58,9 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
      * @param form
      * @return
      */
-    IPage<ReceiveNotPaidBillVO> findNotPaidBillByPage(Page page, @Param("form") QueryNotPaidBillForm form);
+    IPage<ReceiveNotPaidBillVO> findNotPaidBillByPage(Page page,
+                                                      @Param("form") QueryNotPaidBillForm form,
+                                                      @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
 
     /**
      * 获取已出账订单数

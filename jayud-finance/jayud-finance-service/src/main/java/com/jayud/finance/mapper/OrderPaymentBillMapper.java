@@ -58,7 +58,9 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
      * @param form
      * @return
      */
-    IPage<PaymentNotPaidBillVO> findNotPaidBillByPage(Page page, @Param("form") QueryNotPaidBillForm form);
+    IPage<PaymentNotPaidBillVO> findNotPaidBillByPage(Page page,
+                                                      @Param("form") QueryNotPaidBillForm form,
+                                                      @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
 
     /**
      * 获取已出账订单数

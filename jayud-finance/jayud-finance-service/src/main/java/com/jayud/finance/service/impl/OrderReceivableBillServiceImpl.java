@@ -134,18 +134,25 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
 
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.costId"));
-        IPage<ReceiveNotPaidBillVO> pageInfo = null;
+//        IPage<ReceiveNotPaidBillVO> pageInfo = null;
 
-        if (SubOrderSignEnum.NL.getSignOne().equals(form.getCmd())) {
-            Map<String, Object> param = new HashMap<>();
-            param.put("cmd", form.getCmd());
-            form.setIsQueryOrderAddress(true);
-            Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
-            pageInfo = this.baseMapper.findBaseNotPaidBillByPage(page, form, dynamicSqlParam);
-        } else {
-            pageInfo = baseMapper.findNotPaidBillByPage(page, form);
+//        if (SubOrderSignEnum.NL.getSignOne().equals(form.getCmd())) {
+//
+//            form.setIsQueryOrderAddress(true);
+//            Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
+//            pageInfo = this.baseMapper.findBaseNotPaidBillByPage(page, form, dynamicSqlParam);
+//        } else {
+//            Map<String, Object> param = new HashMap<>();
+//            param.put("cmd", form.getCmd());
+//            Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
+//            pageInfo = baseMapper.findNotPaidBillByPage(page, form, dynamicSqlParam);
+//
+//        }
 
-        }
+        Map<String, Object> param = new HashMap<>();
+        param.put("cmd", form.getCmd());
+        Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
+        IPage<ReceiveNotPaidBillVO> pageInfo = baseMapper.findNotPaidBillByPage(page, form, dynamicSqlParam);
 
         List<ReceiveNotPaidBillVO> pageList = pageInfo.getRecords();
         if (CollectionUtils.isEmpty(pageList)) {

@@ -97,28 +97,12 @@
         pb.`name` bizCodeDesc,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         c.`name` unitAccount,
-        <!--        <choose>-->
-        <!--            <when test="form.cmd == 'zgys'">-->
-        <!--                <include refid="TmsGoods"/>-->
-        <!--                ot.vehicle_size vehicleSize,-->
-        <!--                (select sum(ota.plate_amount) from order_take_adr ota where ota.order_no = ot.order_no) pieceNum,-->
-        <!--                (select sum(ota.weight) from order_take_adr ota where ota.order_no = ot.order_no)	weight,-->
-        <!--                concat( vi.plate_number,',', vi.hk_number ) licensePlate,-->
-        <!--            </when>-->
-        <!--            <otherwise>-->
-        <!--                <include refid="GoodsAndOrderAddress"/>-->
-        <!--            </otherwise>-->
-        <!--        </choose>-->
-        (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota WHERE ota.order_no = ot.order_no AND ota.opr_type =
-        '1' GROUP BY ot.order_no) goodsDesc,
-        (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
-        order_take_adr ota ON da.id = ota.delivery_id
-        WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY ot.order_no) startAddress,
-        (SELECT GROUP_CONCAT(concat( ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
-        order_take_adr ota ON da.id = ota.delivery_id
-        WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' GROUP BY ot.order_no) endAddress,
-        ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no =
-        oi.order_no ) yunCustomsNo,
+        <choose>
+            <when test="form.cmd == 'zgys'">
+                <include refid="TmsInfo"/>
+            </when>
+
+        </choose>
         cg.`name` costGenreName,
         ct.code_name costTypeName,
         ci.`name` costName,
@@ -126,8 +110,8 @@
         orc.currency_code,
         orc.change_amount localAmount,
         orc.id costId,
-        orc.is_bill isBill,
-        concat(vi.plate_number,' ',vi.hk_number) licensePlate
+        orc.is_bill isBill
+
         FROM
         order_receivable_cost orc
         LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
@@ -136,16 +120,25 @@
         LEFT JOIN cost_genre cg ON orc.cost_genre_id = cg.id
         LEFT JOIN cost_type ct ON orc.cost_type_id = ct.id
         LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code
-        LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
-        LEFT JOIN order_send_cars osc ON ot.order_no = osc.order_no
-        left join order_customs oc on oc.order_no = orc.order_no
-        left join vehicle_info vi on vi.id = osc.vehicle_id
-        left join air_order ao on ao.order_no = orc.order_no
-        left join sea_order so on so.order_no = orc.order_no
-        left join order_inland_transport oit on oit.order_no = orc.order_no
-        left join trailer_order tor on tor.order_no = orc.order_no
---         left join storage_input_order sio on sio.order_no = orc.order_no
---         left join storage_out_order soo on soo.order_no = orc.order_no
+        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+            <choose>
+                <when test="form.cmd == 'zgys'">
+                    LEFT JOIN order_transport sub ON sub.main_order_no = oi.order_no
+                    LEFT JOIN order_send_cars osc ON sub.order_no = osc.order_no
+                    left join order_customs oc on oc.order_no = orc.order_no
+                    left join vehicle_info vi on vi.id = osc.vehicle_id
+                </when>
+                <otherwise>
+                    left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no
+                </otherwise>
+            </choose>
+        </if>
+        -- left join air_order ao on ao.order_no = orc.order_no
+        -- left join sea_order so on so.order_no = orc.order_no
+        -- left join order_inland_transport oit on oit.order_no = orc.order_no
+        -- left join trailer_order tor on tor.order_no = orc.order_no
+        -- left join storage_input_order sio on sio.order_no = orc.order_no
+        -- left join storage_out_order soo on soo.order_no = orc.order_no
         WHERE
         orc.id NOT IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd where orbd.audit_status!='edit_del')
         and (orc.is_bill != '2' and orc.is_bill!='save_confirm')
@@ -155,38 +148,51 @@
             and oi.legal_name = #{form.legalName}
             and orc.is_sum_to_main = 1
         </if>
-        <if test="form.cmd == 'zgys'">
-            and ot.legal_name = #{form.legalName}
-            and orc.is_sum_to_main = 0 and orc.sub_type = 'zgys'
+        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+            <choose>
+                <when test="form.cmd == 'cce' or form.cmd == 'cci'">
+                    and orc.legal_name = #{form.legalName}
+                    and orc.is_sum_to_main = 0 and orc.sub_type = #{form.cmd}
+                </when>
+                <otherwise>
+                    and sub.legal_name = #{form.legalName}
+                    and orc.is_sum_to_main = 0 and orc.sub_type = #{form.cmd}
+                </otherwise>
+            </choose>
         </if>
-        <if test="form.cmd == 'bg'">
-            and oc.legal_name = #{form.legalName}
-            and orc.is_sum_to_main = 0 and orc.sub_type = 'bg'
-        </if>
-        <if test="form.cmd == 'ky'">
-            and ao.legal_name = #{form.legalName}
-            and orc.is_sum_to_main = 0 and orc.sub_type = 'ky'
-        </if>
-        <if test="form.cmd == 'hy'">
-            and so.legal_name = #{form.legalName}
-            and orc.is_sum_to_main = 0 and orc.sub_type = 'hy'
-        </if>
-        <if test="form.cmd == 'tc'">
-            and tor.legal_name = #{form.legalName}
-            and orc.is_sum_to_main = 0 and orc.sub_type = 'tc'
-        </if>
-        <if test="form.cmd == 'nl'">
-            and oit.legal_name = #{form.legalName}
-            and orc.is_sum_to_main = 0 and orc.sub_type = 'nl'
-        </if>
-        <if test="form.cmd == 'cci'">
-            and orc.legal_name = #{form.legalName}
-            and orc.is_sum_to_main = 0 and orc.sub_type = 'cci'
-        </if>
-        <if test="form.cmd == 'cce'">
-            and orc.legal_name = #{form.legalName}
-            and orc.is_sum_to_main = 0 and orc.sub_type = 'cce'
-        </if>
+
+<!--        <if test="form.cmd == 'zgys'">-->
+<!--            and ot.legal_name = #{form.legalName}-->
+<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'zgys'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'bg'">-->
+<!--            and oc.legal_name = #{form.legalName}-->
+<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'bg'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'ky'">-->
+<!--            and ao.legal_name = #{form.legalName}-->
+<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'ky'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'hy'">-->
+<!--            and so.legal_name = #{form.legalName}-->
+<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'hy'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'tc'">-->
+<!--            and tor.legal_name = #{form.legalName}-->
+<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'tc'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'nl'">-->
+<!--            and oit.legal_name = #{form.legalName}-->
+<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'nl'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'cci'">-->
+<!--            and orc.legal_name = #{form.legalName}-->
+<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'cci'-->
+<!--        </if>-->
+<!--        <if test="form.cmd == 'cce'">-->
+<!--            and orc.legal_name = #{form.legalName}-->
+<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'cce'-->
+<!--        </if>-->
         ) temp where 1 = 1
         <if test="form.startAddress != null and form.startAddress != ''">
             and temp.startAddress like concat('%',#{form.startAddress},'%')
@@ -200,18 +206,18 @@
         <if test="form.currencyCode !=null and form.currencyCode !=''">
             and temp.currency_code = #{form.currencyCode}
         </if>
-<!--        <if test="form.currencyCode == 'CNY'">-->
-<!--            and temp.rmb is not null-->
-<!--        </if>-->
-<!--        <if test="form.currencyCode == 'USD'">-->
-<!--            and temp.dollar is not null-->
-<!--        </if>-->
-<!--        <if test="form.currencyCode == 'HKD'">-->
-<!--            and temp.hKDollar is not null-->
-<!--        </if>-->
-<!--        <if test="form.currencyCode == 'EUR'">-->
-<!--            and temp.euro is not null-->
-<!--        </if>-->
+        <!--        <if test="form.currencyCode == 'CNY'">-->
+        <!--            and temp.rmb is not null-->
+        <!--        </if>-->
+        <!--        <if test="form.currencyCode == 'USD'">-->
+        <!--            and temp.dollar is not null-->
+        <!--        </if>-->
+        <!--        <if test="form.currencyCode == 'HKD'">-->
+        <!--            and temp.hKDollar is not null-->
+        <!--        </if>-->
+        <!--        <if test="form.currencyCode == 'EUR'">-->
+        <!--            and temp.euro is not null-->
+        <!--        </if>-->
         <if test="form.endCreatedTimeStr != null and form.endCreatedTimeStr !=''">
             and date_format(temp.createdTimeStr,'%Y-%m-%d') &lt;= date_format(#{form.endCreatedTimeStr},'%Y-%m-%d')
         </if>
@@ -289,13 +295,13 @@
             </otherwise>
         </choose>
 
-<!--        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">-->
-<!--            left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no-->
-<!--            &lt;!&ndash;            <if test="form.cmd == 'zgys'">&ndash;&gt;-->
-<!--            &lt;!&ndash;                &#45;&#45; TODO 扩展连接&ndash;&gt;-->
+        <!--        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">-->
+        <!--            left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no-->
+        <!--            &lt;!&ndash;            <if test="form.cmd == 'zgys'">&ndash;&gt;-->
+        <!--            &lt;!&ndash;                &#45;&#45; TODO 扩展连接&ndash;&gt;-->
 
-<!--            &lt;!&ndash;            </if>&ndash;&gt;-->
-<!--        </if>-->
+        <!--            &lt;!&ndash;            </if>&ndash;&gt;-->
+        <!--        </if>-->
 
 
         -- LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
@@ -397,7 +403,6 @@
     </select>
 
 
-
     <!--TODO 1.1 历史BUG根据法人名称和结算名称查询-->
     <select id="getSAlreadyPaidAmount" resultType="java.math.BigDecimal">
       SELECT
@@ -427,8 +432,6 @@
     </select>
 
 
-
-
     <select id="getSBillNum" resultType="java.lang.Integer">
       SELECT
 	    count( DISTINCT orbd.bill_no ) billOrderNum
@@ -440,7 +443,7 @@
         AND orb.unit_account = #{unitAccount}
         AND orb.sub_type = #{subType}
     </select>
-<!--TODO 修改成根据法人id和结算code-->
+    <!--TODO 修改成根据法人id和结算code-->
     <select id="getSBillNumByLegalId" resultType="java.lang.Integer">
       SELECT
 	    count( DISTINCT orbd.bill_no ) billOrderNum
@@ -655,46 +658,46 @@
             </otherwise>
         </choose>
 
-<!--        SELECT DISTINCT-->
-<!--        <if test="cmd == 'main'">-->
-<!--            oi.legal_name legalName,-->
-<!--        </if>-->
-<!--        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">-->
-<!--            sub.legal_name legalName,-->
-<!--        </if>-->
-<!--        &lt;!&ndash;        <if test="cmd == 'bg'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            oc.legal_name legalName,&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="cmd == 'zgys'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            ot.legal_name legalName,&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="cmd == 'ky'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            ao.legal_name legalName,&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        ci.`name` customerName-->
-<!--        FROM-->
-<!--        <if test="cmd == 'main'">-->
-<!--            order_info oi LEFT JOIN order_receivable_cost orc ON oi.order_no = orc.main_order_no-->
-<!--        </if>-->
-<!--        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">-->
-<!--            ${dynamicSqlParam.table} sub LEFT JOIN order_receivable_cost orc on sub.order_no = orc.order_no-->
-<!--        </if>-->
+        <!--        SELECT DISTINCT-->
+        <!--        <if test="cmd == 'main'">-->
+        <!--            oi.legal_name legalName,-->
+        <!--        </if>-->
+        <!--        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">-->
+        <!--            sub.legal_name legalName,-->
+        <!--        </if>-->
+        <!--        &lt;!&ndash;        <if test="cmd == 'bg'">&ndash;&gt;-->
+        <!--        &lt;!&ndash;            oc.legal_name legalName,&ndash;&gt;-->
+        <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+        <!--        &lt;!&ndash;        <if test="cmd == 'zgys'">&ndash;&gt;-->
+        <!--        &lt;!&ndash;            ot.legal_name legalName,&ndash;&gt;-->
+        <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+        <!--        &lt;!&ndash;        <if test="cmd == 'ky'">&ndash;&gt;-->
+        <!--        &lt;!&ndash;            ao.legal_name legalName,&ndash;&gt;-->
+        <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+        <!--        ci.`name` customerName-->
+        <!--        FROM-->
+        <!--        <if test="cmd == 'main'">-->
+        <!--            order_info oi LEFT JOIN order_receivable_cost orc ON oi.order_no = orc.main_order_no-->
+        <!--        </if>-->
+        <!--        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">-->
+        <!--            ${dynamicSqlParam.table} sub LEFT JOIN order_receivable_cost orc on sub.order_no = orc.order_no-->
+        <!--        </if>-->
 
-<!--        &lt;!&ndash;        <if test="cmd == 'bg'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            order_customs oc LEFT JOIN order_receivable_cost orc on oc.order_no = orc.order_no&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="cmd == 'zgys'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            order_transport ot LEFT JOIN order_receivable_cost orc on ot.order_no = orc.order_no&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="cmd == 'ky'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            air_order ao LEFT JOIN order_receivable_cost orc on ao.order_no = orc.order_no&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        left join customer_info ci on ci.id_code = orc.customer_code-->
-<!--        WHERE-->
-<!--        orc.id IN-->
-<!--        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">-->
-<!--            #{item}-->
-<!--        </foreach>-->
+        <!--        &lt;!&ndash;        <if test="cmd == 'bg'">&ndash;&gt;-->
+        <!--        &lt;!&ndash;            order_customs oc LEFT JOIN order_receivable_cost orc on oc.order_no = orc.order_no&ndash;&gt;-->
+        <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+        <!--        &lt;!&ndash;        <if test="cmd == 'zgys'">&ndash;&gt;-->
+        <!--        &lt;!&ndash;            order_transport ot LEFT JOIN order_receivable_cost orc on ot.order_no = orc.order_no&ndash;&gt;-->
+        <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+        <!--        &lt;!&ndash;        <if test="cmd == 'ky'">&ndash;&gt;-->
+        <!--        &lt;!&ndash;            air_order ao LEFT JOIN order_receivable_cost orc on ao.order_no = orc.order_no&ndash;&gt;-->
+        <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+        <!--        left join customer_info ci on ci.id_code = orc.customer_code-->
+        <!--        WHERE-->
+        <!--        orc.id IN-->
+        <!--        <foreach collection="costIds" index="index" item="item" open="(" separator="," close=")">-->
+        <!--            #{item}-->
+        <!--        </foreach>-->
     </select>
     <select id="findSaveConfirmData" parameterType="java.util.List" resultType="java.lang.Long">
         SELECT
@@ -816,7 +819,8 @@
                 <if test="form.cmd != null and form.cmd != ''">
                     le.legal_name legalName,
                     orc.legal_id legalEntityId,
-                    (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_bill
+                    (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND
+                    t1.is_bill
                     != 'save_confirm' AND
                     t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =
                     orc.customer_code and t1.legal_id = orc.legal_id) notPaidAmount,
@@ -856,7 +860,8 @@
                 <if test="form.cmd != null and form.cmd != ''">
                     le.legal_name legalName,
                     sub.legal_entity_id legalEntityId,
-                    (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_bill
+                    (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND
+                    t1.is_bill
                     != 'save_confirm' AND
                     t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =
                     orc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where
@@ -899,49 +904,48 @@
         </choose>
 
 
-
-<!--        <if test="form.cmd != null and form.cmd != ''">-->
-<!--            le.legal_name legalName,-->
-<!--            sub.legal_entity_id legalEntityId,-->
-<!--            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_bill-->
-<!--            != 'save_confirm' AND-->
-<!--            t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =-->
-<!--            orc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where-->
-<!--            o1.legal_entity_id = sub.legal_entity_id)) notPaidAmount,-->
-<!--            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND-->
-<!--            t1.is_bill != 'save_confirm' AND-->
-<!--            t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =-->
-<!--            orc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where-->
-<!--            o1.legal_entity_id = sub.legal_entity_id)) notPaidOrderNum,-->
-<!--        </if>-->
-<!--        ci.`name` unitAccount,-->
-<!--        orc.customer_code unitCode,-->
-<!--        ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,-->
-<!--        ifnull( orb.bill_order_num, 0 ) billOrderNum,-->
-<!--        ifnull( orb.bill_num, 0 ) billNum-->
-<!--        FROM-->
-<!--        order_receivable_cost orc-->
-<!--        left join customer_info ci on ci.id_code = orc.customer_code-->
-<!--        <if test="form.cmd != null and form.cmd != ''">-->
-<!--            left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no-->
-<!--            left join legal_entity le on sub.legal_entity_id = le.id-->
-<!--            left join order_receivable_bill orb on orb.legal_entity_id = sub.legal_entity_id-->
-<!--            and orb.unit_code = orc.customer_code-->
-<!--            and orb.sub_type = #{form.cmd}-->
-<!--            where orc.is_sum_to_main = 0 and orc.sub_type = #{form.cmd} and orc.status = '3'-->
-<!--            <if test="form.unitAccount != null and form.unitAccount != ''">-->
-<!--                and ci.`name` like concat('%',#{form.unitAccount},'%')-->
-<!--            </if>-->
-<!--            <if test="form.legalName != null and form.legalName != ''">-->
-<!--                and le.legal_name like concat('%',#{form.legalName},'%')-->
-<!--            </if>-->
-<!--            <if test="legalIds != null and legalIds.size>0">-->
-<!--                and sub.`legal_entity_id` in-->
-<!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
-<!--                    #{legalId}-->
-<!--                </foreach>-->
-<!--            </if>-->
-<!--        </if>-->
+        <!--        <if test="form.cmd != null and form.cmd != ''">-->
+        <!--            le.legal_name legalName,-->
+        <!--            sub.legal_entity_id legalEntityId,-->
+        <!--            (select ifnull(sum(t1.change_amount),0) from order_receivable_cost t1 where t1.is_bill != '2' AND t1.is_bill-->
+        <!--            != 'save_confirm' AND-->
+        <!--            t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =-->
+        <!--            orc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where-->
+        <!--            o1.legal_entity_id = sub.legal_entity_id)) notPaidAmount,-->
+        <!--            (select count(DISTINCT t1.main_order_no) from order_receivable_cost t1 where t1.is_bill != '2' AND-->
+        <!--            t1.is_bill != 'save_confirm' AND-->
+        <!--            t1.is_sum_to_main = '0' and t1.status = '3' and t1.sub_type=#{form.cmd} and t1.customer_code =-->
+        <!--            orc.customer_code and t1.order_no in (select o1.order_no from ${dynamicSqlParam.table} o1 where-->
+        <!--            o1.legal_entity_id = sub.legal_entity_id)) notPaidOrderNum,-->
+        <!--        </if>-->
+        <!--        ci.`name` unitAccount,-->
+        <!--        orc.customer_code unitCode,-->
+        <!--        ifnull( orb.already_paid_amount, 0 ) alreadyPaidAmount,-->
+        <!--        ifnull( orb.bill_order_num, 0 ) billOrderNum,-->
+        <!--        ifnull( orb.bill_num, 0 ) billNum-->
+        <!--        FROM-->
+        <!--        order_receivable_cost orc-->
+        <!--        left join customer_info ci on ci.id_code = orc.customer_code-->
+        <!--        <if test="form.cmd != null and form.cmd != ''">-->
+        <!--            left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no-->
+        <!--            left join legal_entity le on sub.legal_entity_id = le.id-->
+        <!--            left join order_receivable_bill orb on orb.legal_entity_id = sub.legal_entity_id-->
+        <!--            and orb.unit_code = orc.customer_code-->
+        <!--            and orb.sub_type = #{form.cmd}-->
+        <!--            where orc.is_sum_to_main = 0 and orc.sub_type = #{form.cmd} and orc.status = '3'-->
+        <!--            <if test="form.unitAccount != null and form.unitAccount != ''">-->
+        <!--                and ci.`name` like concat('%',#{form.unitAccount},'%')-->
+        <!--            </if>-->
+        <!--            <if test="form.legalName != null and form.legalName != ''">-->
+        <!--                and le.legal_name like concat('%',#{form.legalName},'%')-->
+        <!--            </if>-->
+        <!--            <if test="legalIds != null and legalIds.size>0">-->
+        <!--                and sub.`legal_entity_id` in-->
+        <!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+        <!--                    #{legalId}-->
+        <!--                </foreach>-->
+        <!--            </if>-->
+        <!--        </if>-->
 
         <!--        <if test="form.cmd == 'zgys'">-->
         <!--            left join order_transport ot on ot.order_no = orc.order_no-->

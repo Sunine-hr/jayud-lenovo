@@ -138,16 +138,21 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.costId"));
 
-        IPage<PaymentNotPaidBillVO> pageInfo = null;
-        if (SubOrderSignEnum.NL.getSignOne().equals(form.getCmd())) {
-            Map<String, Object> param = new HashMap<>();
-            param.put("cmd", form.getCmd());
-            form.setIsQueryOrderAddress(true);
-            Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
-            pageInfo = this.baseMapper.findBaseNotPaidBillByPage(page, form, dynamicSqlParam);
-        } else {
-            pageInfo = baseMapper.findNotPaidBillByPage(page, form);
-        }
+//        IPage<PaymentNotPaidBillVO> pageInfo = null;
+//        if (SubOrderSignEnum.NL.getSignOne().equals(form.getCmd())) {
+//            Map<String, Object> param = new HashMap<>();
+//            param.put("cmd", form.getCmd());
+//            form.setIsQueryOrderAddress(true);
+//            Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
+//            pageInfo = this.baseMapper.findBaseNotPaidBillByPage(page, form, dynamicSqlParam);
+//        } else {
+//            pageInfo = baseMapper.findNotPaidBillByPage(page, form);
+//        }
+        Map<String, Object> param = new HashMap<>();
+        param.put("cmd", form.getCmd());
+        form.setIsQueryOrderAddress(true);
+        Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
+        IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findNotPaidBillByPage(page, form, dynamicSqlParam);
 
         List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
 
@@ -469,7 +474,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
 
         //内陆数据处理
 //        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
-        array = this.commonService.templateDataProcessing(form.getCmd(),form.getCmd(), array, mainOrderNos, 1);
+        array = this.commonService.templateDataProcessing(form.getCmd(), form.getCmd(), array, mainOrderNos, 1);
         return array;
     }
 
@@ -509,7 +514,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         try {
             Class template = BillTemplateEnum.getTemplate(cmd);
             if (template != null) {
-                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template,false);
+                List<Map<String, Object>> maps = Utilities.assembleEntityHead(template, false);
                 fixHeadList = Utilities.obj2List(maps, SheetHeadVO.class);
             } else {//TODO 增强不影响原有系统,除非更替完成
                 ViewFBilToOrderHeadVO viewBilToOrderVO = new ViewFBilToOrderHeadVO();

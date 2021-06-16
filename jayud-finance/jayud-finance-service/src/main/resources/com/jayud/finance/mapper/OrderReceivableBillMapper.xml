@@ -122,20 +122,9 @@
         cg.`name` costGenreName,
         ct.code_name costTypeName,
         ci.`name` costName,
-        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'CNY' GROUP
-        BY
-        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
-        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'USD' GROUP
-        BY
-        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
-        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'EUR' GROUP
-        BY
-        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
-        (SELECT sum(rmb.amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'HKD' GROUP
-        BY
-        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
-        (SELECT sum(rmb.change_amount) FROM order_receivable_cost rmb WHERE rmb.id = orc.id GROUP BY
-        rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) localAmount,
+        orc.amount,
+        orc.currency_code,
+        orc.change_amount localAmount,
         orc.id costId,
         orc.is_bill isBill,
         concat(vi.plate_number,' ',vi.hk_number) licensePlate
@@ -208,18 +197,21 @@
         <if test="form.costName != null and form.costName != ''">
             and temp.costName like concat('%',#{form.costName},'%')
         </if>
-        <if test="form.currencyCode == 'CNY'">
-            and temp.rmb is not null
+        <if test="form.currencyCode !=null and form.currencyCode !=''">
+            and temp.currency_code = #{form.currencyCode}
         </if>
-        <if test="form.currencyCode == 'USD'">
-            and temp.dollar is not null
-        </if>
-        <if test="form.currencyCode == 'HKD'">
-            and temp.hKDollar is not null
-        </if>
-        <if test="form.currencyCode == 'EUR'">
-            and temp.euro is not null
-        </if>
+<!--        <if test="form.currencyCode == 'CNY'">-->
+<!--            and temp.rmb is not null-->
+<!--        </if>-->
+<!--        <if test="form.currencyCode == 'USD'">-->
+<!--            and temp.dollar is not null-->
+<!--        </if>-->
+<!--        <if test="form.currencyCode == 'HKD'">-->
+<!--            and temp.hKDollar is not null-->
+<!--        </if>-->
+<!--        <if test="form.currencyCode == 'EUR'">-->
+<!--            and temp.euro is not null-->
+<!--        </if>-->
         <if test="form.endCreatedTimeStr != null and form.endCreatedTimeStr !=''">
             and date_format(temp.createdTimeStr,'%Y-%m-%d') &lt;= date_format(#{form.endCreatedTimeStr},'%Y-%m-%d')
         </if>

@@ -170,6 +170,12 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                 }
             }
         }
+
+        //币种
+        Map<String, String> currencyMap = this.omsClient.initCurrencyInfo().getData().stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
+        pageInfo.getRecords().forEach(e -> {
+            e.assembleAmountStr(currencyMap.get(e.getCurrencyCode()));
+        });
         return pageInfo;
     }
 

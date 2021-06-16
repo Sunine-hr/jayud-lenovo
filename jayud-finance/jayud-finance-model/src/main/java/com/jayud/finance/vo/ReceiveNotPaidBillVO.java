@@ -51,17 +51,26 @@ public class ReceiveNotPaidBillVO {
     @ApiModelProperty(value = "费用名称")
     private String costName;
 
-    @ApiModelProperty(value = "人民币")
-    private BigDecimal rmb;
+//    @ApiModelProperty(value = "人民币")
+//    private BigDecimal rmb;
+//
+//    @ApiModelProperty(value = "美元")
+//    private BigDecimal dollar;
+//
+//    @ApiModelProperty(value = "欧元")
+//    private BigDecimal euro;
+//
+//    @ApiModelProperty(value = "港币")
+//    private BigDecimal hKDollar;
 
-    @ApiModelProperty(value = "美元")
-    private BigDecimal dollar;
+    @ApiModelProperty(value = "应收金额")
+    private BigDecimal amount;
 
-    @ApiModelProperty(value = "欧元")
-    private BigDecimal euro;
+    @ApiModelProperty(value = "本币代码")
+    private String currencyCode;
 
-    @ApiModelProperty(value = "港币")
-    private BigDecimal hKDollar;
+    @ApiModelProperty(value = "应收金额描述")
+    private String amountStr;
 
     @ApiModelProperty(value = "税率")
     private BigDecimal taxRate;
@@ -110,4 +119,7 @@ public class ReceiveNotPaidBillVO {
     }
 
 
+    public void assembleAmountStr(String currencyName) {
+        this.amountStr = this.amount.toPlainString()  + " " + currencyName;
+    }
 }

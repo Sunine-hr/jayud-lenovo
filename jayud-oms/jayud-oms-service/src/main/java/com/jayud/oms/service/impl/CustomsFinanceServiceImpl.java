@@ -153,10 +153,14 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                     orderReceivableCost.setChangeAmount(price);
                     orderReceivableCost.setIsBill("0");
                     orderReceivableCost.setSubType(ReceivableAndPayableOrderTypeEnum.CBG.getCode());
-                    if(orderInfo.getLegalEntityId().equals(subOrderCustoms.getLegalEntityId()) && orderInfo.getUnitCode().equals(subOrderCustoms.getUnitCode())){
+                    if (orderInfo.getLegalEntityId().equals(subOrderCustoms.getLegalEntityId()) && orderInfo.getUnitCode().equals(subOrderCustoms.getUnitCode())) {
                         orderReceivableCost.setIsSumToMain(Boolean.TRUE);
-                    }else{
+                        orderReceivableCost.setLegalName(orderInfo.getLegalName());
+                        orderReceivableCost.setLegalId(orderInfo.getLegalEntityId().intValue());
+                    } else {
                         orderReceivableCost.setIsSumToMain(Boolean.FALSE);
+                        orderReceivableCost.setLegalName(subOrderCustoms.getLegalName());
+                        orderReceivableCost.setLegalId(subOrderCustoms.getLegalEntityId().intValue());
                     }
 
                     orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_3.getCode()));

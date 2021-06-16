@@ -1,15 +1,15 @@
 package com.jayud.mall.mapper;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jayud.mall.model.bo.BillClearanceInfoForm;
-import com.jayud.mall.model.bo.ClearanceInfoCaseForm;
-import com.jayud.mall.model.po.BillClearanceInfo;
-import com.jayud.mall.model.po.ClearanceInfoCase;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jayud.mall.model.vo.AccountReceivableVO;
+import com.jayud.mall.model.bo.BillClearanceInfoQueryForm;
+import com.jayud.mall.model.po.ClearanceInfoCase;
+import com.jayud.mall.model.vo.BillCaseVO;
 import com.jayud.mall.model.vo.ClearanceInfoCaseVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -19,30 +19,28 @@ import org.apache.ibatis.annotations.Param;
  * @author fachang.mao
  * @since 2021-04-27
  */
+@Mapper
+@Component
 public interface ClearanceInfoCaseMapper extends BaseMapper<ClearanceInfoCase> {
+
     /**
-     * 集合数据
-     * @param
+     * 根据bid，查询
+     * @param bId 提单对应清关信息id(bill_clearance_info id)
      * @return
      */
-    IPage<ClearanceInfoCaseVO> findClearanceInfoCaseByPage(Page<ClearanceInfoCase> page, @Param("form") ClearanceInfoCaseForm form);
-
-
-    /**
-     * 增加
-     * @param clearanceInfoCase
-     */
-    void insertClearanceInfoCase(@Param("clearanceInfoCase") ClearanceInfoCaseForm clearanceInfoCase);
+    List<ClearanceInfoCaseVO> findClearanceInfoCaseByBid(@Param("bId") Long bId);
 
     /**
-     * 修改
-     * @param clearanceInfoCase
+     * 清关箱子-查询提单下未生成的订单箱子(分类型)
+     * @param form
+     * @return
      */
-    void updateClearanceInfoCase(@Param("clearanceInfoCase") ClearanceInfoCaseForm clearanceInfoCase);
+    List<BillCaseVO> findUnselectedBillCaseByClearance(@Param("form") BillClearanceInfoQueryForm form);
 
     /**
-     * 删除
-     * @param id
+     * 清关箱子-查询提单下已生成的订单箱子
+     * @param form
+     * @return
      */
-    void deleteClearanceInfoCase(@Param("id") Long id);
+    List<BillCaseVO> findSelectedBillCaseByClearance(@Param("form") BillClearanceInfoQueryForm form);
 }

@@ -309,7 +309,7 @@ public class OceanBillController {
 
     //导出清单-清关箱子
     //exportClearanceInfoCase
-    @ApiOperation(value = "导出清单-清关箱子")
+    @ApiOperation(value = "导出清关清单")
     @ApiOperationSupport(order = 29)
     @GetMapping(value = "/exportClearanceInfoCase")
     public void exportClearanceInfoCase(
@@ -576,8 +576,32 @@ public class OceanBillController {
         return CommonResult.success("操作成功");
     }
 
+    //清关箱子-查询提单下未生成的订单箱子(分类型)
+    @ApiOperation(value = "清关箱子-查询提单下未生成的订单箱子(分类型)")
+    @PostMapping("/findUnselectedBillCaseByClearance")
+    @ApiOperationSupport(order = 47)
+    public CommonResult<List<BillCaseVO>> findUnselectedBillCaseByClearance(@Valid @RequestBody BillClearanceInfoQueryForm form){
+        List<BillCaseVO> billCaseList = clearanceInfoCaseService.findUnselectedBillCaseByClearance(form);
+        return CommonResult.success(billCaseList);
+    }
 
+    //清关箱子-查询提单下已生成的订单箱子
+    @ApiOperation(value = "清关箱子-查询提单下已生成的订单箱子")
+    @ApiOperationSupport(order = 48)
+    @PostMapping(value = "/findSelectedBillCaseByClearance")
+    public CommonResult<List<BillCaseVO>> findSelectedBillCaseByClearance(@Valid @RequestBody BillClearanceInfoQueryForm form){
+        List<BillCaseVO> billCaseList = clearanceInfoCaseService.findSelectedBillCaseByClearance(form);
+        return CommonResult.success(billCaseList);
+    }
 
+    //提单下的清关-生成清关清单
+    @ApiOperation(value = "提单下的清关-生成清关清单")
+    @ApiOperationSupport(order = 49)
+    @PostMapping(value = "/createClearanceInfoCase")
+    public CommonResult createClearanceInfoCase(@Valid @RequestBody CreateClearanceInfoCaseForm form){
+        clearanceInfoCaseService.createClearanceInfoCase(form);
+        return CommonResult.success("操作成功");
+    }
 
 
 }

@@ -2513,7 +2513,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         mapParm.put("order_no", orderInfoVO.getOrderNo());
         mapParm.put("main_status_type", "after");
         mapParm.put("main_status_code", OrderEnum.AFTER_PLACED.getCode());//AFTER_PLACED("10", "已下单"),
-        mapParm.put("interior_status_code", OrderEnum.IS_CONFIRM_BILLING.getCode());//IS_AUDIT_ORDER("is_audit_order", "是否审核单据(1已审单 2未审单)"),
+        mapParm.put("interior_status_code", OrderEnum.IS_AUDIT_ORDER.getCode());//IS_AUDIT_ORDER("is_audit_order", "是否审核单据(1已审单 2未审单)"),
         OrderInteriorStatusVO orderInteriorStatusVO = orderInteriorStatusMapper.findOrderInteriorStatusByMapParm(mapParm);
 
         String statusFlag = "";//状态标志-是否审核单据(1已审单 2未审单)

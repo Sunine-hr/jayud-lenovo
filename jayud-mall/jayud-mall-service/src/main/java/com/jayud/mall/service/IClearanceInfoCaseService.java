@@ -1,12 +1,12 @@
 package com.jayud.mall.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jayud.mall.model.bo.ClearanceInfoCaseForm;
-import com.jayud.mall.model.po.ClearanceInfoCase;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.mall.model.vo.ClearanceInfoCaseVO;
-import org.apache.ibatis.annotations.Param;
+import com.jayud.mall.model.bo.BillClearanceInfoQueryForm;
+import com.jayud.mall.model.bo.CreateClearanceInfoCaseForm;
+import com.jayud.mall.model.po.ClearanceInfoCase;
+import com.jayud.mall.model.vo.BillCaseVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,29 +17,24 @@ import org.apache.ibatis.annotations.Param;
  * @since 2021-04-27
  */
 public interface IClearanceInfoCaseService extends IService<ClearanceInfoCase> {
+
     /**
-     * 集合数据
-     * @param
+     * 清关箱子-查询提单下未生成的订单箱子(分类型)
+     * @param form
      * @return
      */
-    IPage<ClearanceInfoCaseVO> findClearanceInfoCaseByPage(@Param("form") ClearanceInfoCaseForm form);
-
-
-    /**
-     * 增加
-     * @param clearanceInfoCase
-     */
-    void insertClearanceInfoCase(@Param("clearanceInfoCase") ClearanceInfoCaseForm clearanceInfoCase);
+    List<BillCaseVO> findUnselectedBillCaseByClearance(BillClearanceInfoQueryForm form);
 
     /**
-     * 修改
-     * @param clearanceInfoCase
+     * 清关箱子-查询提单下已生成的订单箱子
+     * @param form
+     * @return
      */
-    void updateClearanceInfoCase(@Param("clearanceInfoCase") ClearanceInfoCaseForm clearanceInfoCase);
+    List<BillCaseVO> findSelectedBillCaseByClearance(BillClearanceInfoQueryForm form);
 
     /**
-     * 删除
-     * @param id
+     * 提单下的清关-生成清关清单
+     * @param form
      */
-    void deleteClearanceInfoCase(@Param("id") Long id);
+    void createClearanceInfoCase(CreateClearanceInfoCaseForm form);
 }

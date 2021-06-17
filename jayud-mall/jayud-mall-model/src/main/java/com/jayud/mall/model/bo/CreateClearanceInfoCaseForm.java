@@ -1,5 +1,6 @@
 package com.jayud.mall.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,6 +12,7 @@ public class CreateClearanceInfoCaseForm {
 
     @ApiModelProperty(value = "提单对应清关信息id(bill_clearance_info id)")
     @NotNull(message = "提单对应清关信息id,不能为空")
+    @JsonProperty(value = "bId")
     private Long bId;
 
     @ApiModelProperty(value = "箱号id(order_case id) list")

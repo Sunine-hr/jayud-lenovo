@@ -623,7 +623,7 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         String cutOffTimeCalcHms = quotationTemplateVO.getCutOffTimeCalcHms() == null ? "00:00:00" : quotationTemplateVO.getCutOffTimeCalcHms();
         String jcTimeCalcHms = quotationTemplateVO.getJcTimeCalcHms() == null ? "00:00:00" : quotationTemplateVO.getJcTimeCalcHms();
         String jkcTimeCalcHms = quotationTemplateVO.getJkcTimeCalcHms() == null ? "00:00:00" : quotationTemplateVO.getJkcTimeCalcHms();
-        String estimatedTimeCalcHms = quotationTemplateVO.getEstimatedTimeCalcHms() == null ? "00:00:00" : quotationTemplateVO.getJkcTimeCalcHms();
+        String estimatedTimeCalcHms = quotationTemplateVO.getEstimatedTimeCalcHms() == null ? "00:00:00" : quotationTemplateVO.getEstimatedTimeCalcHms();
 
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");

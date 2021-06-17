@@ -107,6 +107,9 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "应付费用ID,不显示")
     private Long costId;
 
+    @ApiModelProperty(value = "应付费用ID集合,不显示")
+    private List<Long> costIds;
+
     @ApiModelProperty(value = "车型 如：3T,不显示")
     private String vehicleSize;
 
@@ -183,5 +186,36 @@ public class PaymentNotPaidBillVO {
 
     public void assembleAmountStr(String currencyName) {
         this.amountStr = this.amount.toPlainString() + " " + currencyName;
+    }
+
+    public void assemblyCost(Map<String, Map<String, BigDecimal>> costMap,
+                             Boolean isMain) {
+        if (costMap == null) {
+            return;
+        }
+        String orderNo = isMain ? this.orderNo : this.subOrderNo;
+        Map<String, BigDecimal> tmp = costMap.get(orderNo);
+        StringBuilder sb = new StringBuilder();
+        tmp.forEach((k, v) -> {
+            sb.append(v).append(" ").append(k).append(",");
+        });
+        this.amountStr = sb.toString();
+    }
+
+    public void assemblyCostInfo(Object reCostInfo, Boolean isMain) {
+        if (reCostInfo == null) {
+            return;
+        }
+        String key = isMain ? "mainOrderNo" : "orderNo";
+        String orderNo = isMain ? this.orderNo : this.subOrderNo;
+        JSONArray jsonArray = new JSONArray(reCostInfo);
+        List<Long> list = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            if (orderNo.equals(jsonObject.get(key))) {
+                list.add(jsonObject.getLong("id"));
+            }
+        }
+        this.costIds = list;
     }
 }

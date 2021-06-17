@@ -10,7 +10,9 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.enums.BillTypeEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.feign.OmsClient;
@@ -60,7 +62,12 @@ public class PaymentBillController {
     @ApiOperation(value = "未出账订单数列表(主订单/子订单)")
     @PostMapping("/findNotPaidBillByPage")
     public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findNotPaidBillByPage(@RequestBody @Valid QueryNotPaidBillForm form) {
-        IPage<PaymentNotPaidBillVO> pageList = billService.findNotPaidBillByPage(form);
+        IPage<PaymentNotPaidBillVO> pageList = null;
+        if (form.getType() == 1) {
+            pageList = billService.findNotPaidBillByPage(form);
+        } else {
+            pageList = billService.findNotPaidOrderBillByPage(form);
+        }
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
@@ -69,6 +76,21 @@ public class PaymentBillController {
     @PostMapping("/createBill")
     public CommonResult createPaymentBill(@RequestBody @Valid CreatePaymentBillForm form) {
         form.checkCreateReceiveBill();
+        //订单维度补充数据
+        if (form.getType() == 2) {
+            List<String> orderNos = new ArrayList<>();
+            Boolean isMain = form.getSubType().equals(SubOrderSignEnum.MAIN.getSignOne());
+            form.getPaymentBillDetailForms().forEach(e -> {
+                if (isMain) {
+                    orderNos.add(e.getOrderNo());
+                } else {
+                    orderNos.add(e.getSubOrderNo());
+                }
+            });
+            Object payCost = this.omsClient.getNoBillCost(orderNos, isMain, BillTypeEnum.PAYMENT.getCode()).getData();
+            form.assemblyOrderDimensionData(payCost, isMain);
+        }
+
         return billService.createPaymentBill(form);
     }
 
@@ -94,7 +116,13 @@ public class PaymentBillController {
         List<Long> costIds = new ArrayList<>();
         for (OrderPaymentBillDetailForm billDetailForm : billDetailForms) {
             costIds.add(billDetailForm.getCostId());
+            if (form.getType() == 2) {
+                costIds.addAll(billDetailForm.getCostIds());
+            } else {
+                costIds.add(billDetailForm.getCostId());
+            }
         }
+
         Map<String, Object> resultMap = new HashMap<>();
 //        JSONArray list = billService.viewPaymentBill(form, costIds);
         JSONArray jsonArray = billService.viewPaymentBillInfo(form, costIds);

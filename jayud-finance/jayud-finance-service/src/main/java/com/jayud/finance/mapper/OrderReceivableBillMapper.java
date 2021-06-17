@@ -63,6 +63,16 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
                                                       @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
 
     /**
+     * 应收未出账单列表分页查询(订单维度)
+     *
+     * @param form
+     * @return
+     */
+    IPage<ReceiveNotPaidBillVO> findNotPaidOrderBillByPage(Page page,
+                                                      @Param("form") QueryNotPaidBillForm form,
+                                                      @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
+
+    /**
      * 获取已出账订单数
      *
      * @param legalName
@@ -186,6 +196,15 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
     Integer getSBillOrderNumByLegalId(@Param("legalId") Long legalEntityId, @Param("unitCode") String unitCode, @Param("subType") String subType);
 
     Integer getSBillNumByLegalId(@Param("legalId") Long legalEntityId,@Param("unitCode")String unitCode, @Param("subType") String subType);
+
+    /**
+     * 根据创建账单时间查询数量
+     *
+     * @param makeTime
+     * @param format
+     * @return
+     */
+    int getCountByMakeTime(@Param("makeTime") String makeTime, String format);
 
 
 //    List<Map<String, Object>> statisticsNotPaidBillInfo(@Param("isMain") Boolean isMain, @Param("customerCode") String customerCode,

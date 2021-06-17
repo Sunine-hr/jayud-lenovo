@@ -5,6 +5,7 @@ import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -84,6 +85,7 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
 
     /**
      * 根据主订单查询费用
+     *
      * @param mainOrderNo
      * @param isMainOrder
      * @param exclusionStatus
@@ -93,7 +95,17 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
 
     /**
      * 补充客户信息
+     *
      * @param receivableCosts
      */
     void supplyCustomerInfo(List<OrderReceivableCost> receivableCosts);
+
+    /**
+     * 统计应收费用合计
+     *
+     * @param list
+     * @param isMain
+     * @return
+     */
+    public Map<String, Map<String, BigDecimal>> statisticalReCostByOrderNos(List<OrderReceivableCost> list, Boolean isMain);
 }

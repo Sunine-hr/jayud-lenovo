@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 
@@ -44,11 +45,16 @@ public class QueryNotPaidBillForm extends BasePageForm {
     @Pattern(regexp = "(main|zgys|bg|ky|hy|nl|tc|cci|cce)", message = "只允许填写main or zgys or bg ")
     private String cmd;
 
-    @ApiModelProperty(value = "当前登录用户名",required = true)
+    @ApiModelProperty(value = "当前登录用户名", required = true)
     @NotEmpty(message = "legalName is required")
     private String loginUserName;
 
-    @ApiModelProperty(value = "是否查询订单地址",required = true)
+
+    @ApiModelProperty(value = "展示维度(1:费用项展示,2:订单维度)", required = true)
+    @NotNull(message = "type is required")
+    private Integer type;
+
+    @ApiModelProperty(value = "是否查询订单地址", required = true)
     @JsonIgnore
     private Boolean isQueryOrderAddress;
 }

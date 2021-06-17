@@ -7,6 +7,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.po.OrderPaymentBill;
 import com.jayud.finance.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -168,4 +169,20 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      * @return
      */
     List<OrderPaymentBill> getByCondition(OrderPaymentBill paymentBill);
+
+    /**
+     * 根据创建账单时间查询数量
+     * @param makeTime
+     * @param format
+     * @return
+     */
+    int getCountByMakeTime(@Param("makeTime") String makeTime, String format);
+
+    /**
+     * 订单维度展示未出账单
+     *
+     * @param form
+     * @return
+     */
+    IPage<PaymentNotPaidBillVO> findNotPaidOrderBillByPage(QueryNotPaidBillForm form);
 }

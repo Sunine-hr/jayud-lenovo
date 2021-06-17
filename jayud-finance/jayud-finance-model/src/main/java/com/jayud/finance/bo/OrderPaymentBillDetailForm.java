@@ -6,6 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class OrderPaymentBillDetailForm {
@@ -13,19 +14,22 @@ public class OrderPaymentBillDetailForm {
     @ApiModelProperty(value = "账单详情ID,有则必传")
     private Long billDetailId;
 
-    @ApiModelProperty(value = "订单编号",required = true)
+    @ApiModelProperty(value = "订单编号", required = true)
     @NotEmpty(message = "orderNo is required")
     private String orderNo;
 
-    @ApiModelProperty(value = "业务类型",required = true)
+    @ApiModelProperty(value = "子订单编号", required = true)
+    private String subOrderNo;
+
+    @ApiModelProperty(value = "业务类型", required = true)
     @NotEmpty(message = "bizCodeDesc is required")
     private String bizCodeDesc;
 
-    @ApiModelProperty(value = "创建日期",required = true)
+    @ApiModelProperty(value = "创建日期", required = true)
     @NotEmpty(message = "createdTimeStr is required")
     private String createdTimeStr;
 
-    @ApiModelProperty(value = "供应商",required = true)
+    @ApiModelProperty(value = "供应商", required = true)
     @NotEmpty(message = "supplierChName is required")
     private String supplierChName;
 
@@ -41,18 +45,18 @@ public class OrderPaymentBillDetailForm {
     @ApiModelProperty(value = "报关单号,仅报关有")
     private String yunCustomsNo;
 
-    @ApiModelProperty(value = "费用类型",required = true)
+    @ApiModelProperty(value = "费用类型", required = true)
     @NotEmpty(message = "costGenreName is required")
     private String costGenreName;
 
     @ApiModelProperty(value = "费用类型ID,财务编辑时需要")
     private Long costGenreId;
 
-    @ApiModelProperty(value = "费用类别",required = true)
+    @ApiModelProperty(value = "费用类别", required = true)
     @NotEmpty(message = "costTypeName is required")
     private String costTypeName;
 
-    @ApiModelProperty(value = "费用名称",required = true)
+    @ApiModelProperty(value = "费用名称", required = true)
     @NotEmpty(message = "costName is required")
     private String costName;
 
@@ -68,7 +72,7 @@ public class OrderPaymentBillDetailForm {
     @ApiModelProperty(value = "港币")
     private BigDecimal hKDollar;
 
-    @ApiModelProperty(value = "费用类型/类别/名称维度的本币金额",required = true)
+    @ApiModelProperty(value = "费用类型/类别/名称维度的本币金额", required = true)
     @NotNull(message = "localAmount is required")
     private BigDecimal localAmount;
 
@@ -78,9 +82,12 @@ public class OrderPaymentBillDetailForm {
     @ApiModelProperty(value = "费用备注")
     private String remarks;
 
-    @ApiModelProperty(value = "应付费用ID",required = true)
+    @ApiModelProperty(value = "应付费用ID", required = true)
     @NotNull(message = "costId is required")
     private Long costId;
+
+    @ApiModelProperty(value = "应付费用ID集合", required = true)
+    private List<Long> costIds;
 
     @ApiModelProperty(value = "车型 如：3T,纯报关没有")
     private String vehicleSize;

@@ -6,6 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class OrderReceiveBillDetailForm {
@@ -15,7 +16,11 @@ public class OrderReceiveBillDetailForm {
 
     @ApiModelProperty(value = "订单编号",required = true)
     @NotEmpty(message = "orderNo is required")
-    private String orderNo;
+    private String  orderNo;
+
+    //TODO 2021-6-17
+    @ApiModelProperty(value = "子订单编号")
+    private String subOrderNo;
 
     @ApiModelProperty(value = "业务类型",required = true)
     @NotEmpty(message = "bizCodeDesc is required")
@@ -81,6 +86,9 @@ public class OrderReceiveBillDetailForm {
     @ApiModelProperty(value = "应付费用ID",required = true)
     @NotNull(message = "costId is required")
     private Long costId;
+
+    @ApiModelProperty(value = "应付费用ID集合",required = true)
+    private List<Long> costIds;
 
     @ApiModelProperty(value = "车型 如：3T,纯报关没有")
     private String vehicleSize;

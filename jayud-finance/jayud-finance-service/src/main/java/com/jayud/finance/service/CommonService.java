@@ -47,4 +47,13 @@ public interface CommonService {
 
 
     Map<String, Object> getTrailerOrderTemplate(List<String> mainOrderNos, String cmd, BillTemplateEnum templateEnum);
+
+    /**
+     * 生成账单编号
+     *
+     * @param type 类型(0:应收,1:应付)
+     * @param legalEntityId
+     * @return
+     */
+    String generateBillNo(Long legalEntityId, Integer type);
 }

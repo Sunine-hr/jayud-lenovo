@@ -809,9 +809,9 @@ public class ExternalApiController {
     @ApiOperation("根据时间区间查询订单id")
     @RequestMapping(value = "/api/getOrderAddressOrderIdByTimeInterval")
     public ApiResult<Set<Long>> getOrderAddressOrderIdByTimeInterval(@RequestParam("timeInterval") List<String> timeInterval,
-                                                                    @RequestParam("type") Integer type,
-                                                                    @RequestParam("businessType") Integer businessType) {
-        Set<Long> businessIds = this.orderAddressService.getOrderAddressOrderIdByTimeInterval(new OrderAddress().setType(type).setBusinessType(businessType),timeInterval);
+                                                                     @RequestParam("type") Integer type,
+                                                                     @RequestParam("businessType") Integer businessType) {
+        Set<Long> businessIds = this.orderAddressService.getOrderAddressOrderIdByTimeInterval(new OrderAddress().setType(type).setBusinessType(businessType), timeInterval);
         return ApiResult.ok(businessIds);
     }
 
@@ -1006,6 +1006,68 @@ public class ExternalApiController {
                 return ApiResult.ok(orderReceivableCosts);
             case 1: //应付
                 Collection<OrderPaymentCost> orderPaymentCosts = this.orderPaymentCostService.listByIds(costIds);
+                return ApiResult.ok(orderPaymentCosts);
+        }
+        return ApiResult.error("找不到对应费用");
+
+    }
+
+    /**
+     * 根据订单号统计费用金额
+     *
+     * @param type 类型(0:应收,1:应付)
+     * @return
+     */
+    @RequestMapping(value = "/api/statisticalCostByOrderNos")
+    public ApiResult<Map<String, Map<String, BigDecimal>>> statisticalCostByOrderNos(@RequestParam("orderNos") List<String> orderNos,
+                                                                                     @RequestParam("isMain") Boolean isMain,
+                                                                                     @RequestParam("type") Integer type) {
+        QueryWrapper codition = new QueryWrapper<>();
+        if (isMain) {
+            codition.in("main_order_no", orderNos);
+        } else {
+            codition.in("order_no", orderNos);
+        }
+        codition.notIn("is_bill", "2", "save_confirm");
+        codition.eq("is_sum_to_main", isMain);
+        codition.eq("status", 3);
+        switch (type) {
+            case 0: //应收
+                List<OrderReceivableCost> orderReceivableCosts = this.orderReceivableCostService.getBaseMapper().selectList(codition);
+                return ApiResult.ok(this.orderReceivableCostService.statisticalReCostByOrderNos(orderReceivableCosts, isMain));
+            case 1: //应付
+                List<OrderPaymentCost> orderPaymentCosts = this.orderPaymentCostService.getBaseMapper().selectList(codition);
+                return ApiResult.ok(this.orderPaymentCostService.statisticalPayCostByOrderNos(orderPaymentCosts, isMain));
+        }
+        return ApiResult.error("找不到对应费用");
+
+    }
+
+    /**
+     * 根据订单号查询未出账单费用
+     *
+     * @param type 类型(0:应收,1:应付)
+     * @return
+     */
+    @RequestMapping(value = "/api/getNoBillCost")
+    public ApiResult getNoBillCost(@RequestParam("orderNos") List<String> orderNos,
+                                   @RequestParam("isMain") Boolean isMain,
+                                   @RequestParam("type") Integer type) {
+        QueryWrapper codition = new QueryWrapper<>();
+        if (isMain) {
+            codition.in("main_order_no", orderNos);
+        } else {
+            codition.in("order_no", orderNos);
+        }
+        codition.notIn("is_bill", "2", "save_confirm");
+        codition.eq("is_sum_to_main", isMain);
+        codition.eq("status", 3);
+        switch (type) {
+            case 0: //应收
+                List<OrderReceivableCost> orderReceivableCosts = this.orderReceivableCostService.getBaseMapper().selectList(codition);
+                return ApiResult.ok(orderReceivableCosts);
+            case 1: //应付
+                List<OrderPaymentCost> orderPaymentCosts = this.orderPaymentCostService.getBaseMapper().selectList(codition);
                 return ApiResult.ok(orderPaymentCosts);
         }
         return ApiResult.error("找不到对应费用");
@@ -1640,13 +1702,14 @@ public class ExternalApiController {
 
     /**
      * 根据提货时间获取订单号
+     *
      * @param takeTimeStr
      * @param code
      * @return
      */
     @PostMapping(value = "/api/getOrderNosByTakeTime")
-    public ApiResult<Set<String>> getOrderNosByTakeTime(@RequestParam("takeTimeStr") String[] takeTimeStr, @RequestParam("code") Integer code){
-        Set<String> orderNos = orderAddressService.getOrderNosByTakeTime(takeTimeStr,code);
+    public ApiResult<Set<String>> getOrderNosByTakeTime(@RequestParam("takeTimeStr") String[] takeTimeStr, @RequestParam("code") Integer code) {
+        Set<String> orderNos = orderAddressService.getOrderNosByTakeTime(takeTimeStr, code);
         return ApiResult.ok(orderNos);
     }
 

@@ -178,4 +178,19 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      * @return
      */
     List<OrderReceivableBill> getByCondition(OrderReceivableBill orderReceivableBill);
+
+    /**
+     * 订单维度展示未出账单
+     * @param form
+     * @return
+     */
+    IPage<ReceiveNotPaidBillVO> findNotPaidOrderBillByPage(QueryNotPaidBillForm form);
+
+    /**
+     * 根据创建账单时间查询数量
+     * @param makeTime
+     * @param format
+     * @return
+     */
+    int getCountByMakeTime(String makeTime, String format);
 }

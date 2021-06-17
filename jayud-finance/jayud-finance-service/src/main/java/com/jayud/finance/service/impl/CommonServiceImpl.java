@@ -3,7 +3,9 @@ package com.jayud.finance.service.impl;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.jayud.common.ApiResult;
+import com.jayud.common.enums.BillTypeEnum;
 import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.OrderTypeEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
@@ -11,6 +13,8 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.finance.enums.BillTemplateEnum;
 import com.jayud.finance.feign.*;
 import com.jayud.finance.service.CommonService;
+import com.jayud.finance.service.IOrderPaymentBillService;
+import com.jayud.finance.service.IOrderReceivableBillService;
 import com.jayud.finance.vo.InputGoodsVO;
 import com.jayud.finance.vo.template.order.AirOrderTemplate;
 import com.jayud.finance.vo.template.order.InlandTPTemplate;
@@ -19,10 +23,8 @@ import com.jayud.finance.vo.template.order.TrailerOrderTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * 公共处理类
@@ -40,6 +42,12 @@ public class CommonServiceImpl implements CommonService {
     private TrailerClient trailerClient;
     @Autowired
     private InlandTpClient inlandTpClient;
+    @Autowired
+    private IOrderPaymentBillService orderPaymentBillService;
+    @Autowired
+    private IOrderReceivableBillService orderReceivableBillService;
+    @Autowired
+    private OauthClient oauthClient;
 
     /**
      * 获取空运明细
@@ -284,10 +292,6 @@ public class CommonServiceImpl implements CommonService {
         return jsonArray.size() == 0 ? array : jsonArray;
     }
 
-    public static void main(String[] args) {
-        String nl = "nl";
-        System.out.println("n2ln-2".contains(nl));
-    }
 
     /**
      * 拖车模板
@@ -324,5 +328,48 @@ public class CommonServiceImpl implements CommonService {
         return map;
     }
 
+    /**
+     * 生成账单编号
+     *
+     * @param type          类型(0:应收,1:应付)
+     * @param legalEntityId
+     * @return
+     */
+    @Override
+    public String generateBillNo(Long legalEntityId, Integer type) {
+        LocalDateTime now = LocalDateTime.now();
+        String date = DateUtils.LocalDateTime2Str(now, "YYMM");
+        //查询法人主体代码
+        Object legalEntitys = this.oauthClient.getLegalEntityByLegalIds(Collections.singletonList(legalEntityId)).getData();
+        JSONObject jsonObject = new JSONArray(legalEntitys).getJSONObject(0);
+        String legalCode = jsonObject.getStr("legalCode");
+        StringBuilder billNo = new StringBuilder();
+        switch (BillTypeEnum.getEnum(type)) {
+            case RECEIVABLE:
+                billNo.append(OrderTypeEnum.AR.getCode())
+                        .append(legalCode).append(date);
+                //查询该日期订单数量
+                String format = "YYYY-MM";
+                int count = this.orderReceivableBillService.getCountByMakeTime(DateUtils.LocalDateTime2Str(now, format), format);
+                //当前数量+1
+                billNo.append(StringUtils.zeroComplement(4, count + 1));
+                break;
+            case PAYMENT:
+                billNo.append(OrderTypeEnum.AP.getCode())
+                        .append(legalCode).append(date);
+                //查询该日期订单数量
+                format = "YYYY-MM";
+                count = this.orderPaymentBillService.getCountByMakeTime(DateUtils.LocalDateTime2Str(now, format), format);
+                //当前数量+1
+                billNo.append(StringUtils.zeroComplement(4, count + 1));
+                break;
+        }
+        return billNo.toString();
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println(DateUtils.LocalDateTime2Str(LocalDateTime.now(), "YYMM"));
+    }
 
 }

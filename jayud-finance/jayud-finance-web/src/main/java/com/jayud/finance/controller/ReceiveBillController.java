@@ -10,7 +10,9 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.enums.BillTypeEnum;
 import com.jayud.common.enums.ResultEnum;;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.service.IOrderReceivableBillService;
@@ -60,7 +62,12 @@ public class ReceiveBillController {
     @ApiOperation(value = "未出账订单数列表(主订单/子订单)")
     @PostMapping("/findNotPaidBillByPage")
     public CommonResult<CommonPageResult<ReceiveNotPaidBillVO>> findNotPaidBillByPage(@RequestBody @Valid QueryNotPaidBillForm form) {
-        IPage<ReceiveNotPaidBillVO> pageList = billService.findNotPaidBillByPage(form);
+        IPage<ReceiveNotPaidBillVO> pageList = null;
+        if (form.getType() == 1) {
+            pageList = billService.findNotPaidBillByPage(form);
+        } else {
+            pageList = billService.findNotPaidOrderBillByPage(form);
+        }
         CommonPageResult<ReceiveNotPaidBillVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
@@ -72,27 +79,68 @@ public class ReceiveBillController {
         if ("create".equals(form.getCmd())) {
             OrderReceiveBillForm receiveBillForm = form.getReceiveBillForm();
             if (receiveBillForm == null || StringUtil.isNullOrEmpty(receiveBillForm.getLegalName()) || StringUtil.isNullOrEmpty(receiveBillForm.getUnitAccount()) ||
-                    receiveBillForm.getBillOrderNum() == null || receiveBillForm.getAlreadyPaidAmount() == null || receiveBillForm.getBillNum() == null ||
-                    StringUtil.isNullOrEmpty(form.getBillNo()) || StringUtil.isNullOrEmpty(form.getAccountTermStr()) || StringUtil.isNullOrEmpty(form.getSettlementCurrency()) ||
+                    receiveBillForm.getBillOrderNum() == null || receiveBillForm.getAlreadyPaidAmount() == null || receiveBillForm.getBillNum() == null
+//                    || StringUtil.isNullOrEmpty(form.getBillNo())
+                    || StringUtil.isNullOrEmpty(form.getAccountTermStr()) || StringUtil.isNullOrEmpty(form.getSettlementCurrency()) ||
                     StringUtil.isNullOrEmpty(form.getSubType()) ||
                     (!("main".equals(form.getSubType()) || "zgys".equals(form.getSubType()) || "bg".equals(form.getSubType()) || "hy".equals(form.getSubType())
-                            || "ky".equals(form.getSubType()) || "nl".equals(form.getSubType()) || "tc".equals(form.getSubType())|| "cci".equals(form.getSubType())|| "cce".equals(form.getSubType())))
-            ) {
+                            || "ky".equals(form.getSubType()) || "nl".equals(form.getSubType()) || "tc".equals(form.getSubType()) || "cci".equals(form.getSubType()) || "cce".equals(form.getSubType())))) {
                 return CommonResult.error(ResultEnum.PARAM_ERROR);
             }
         }
         form.checkCreateReceiveBill();
+
+        //订单维度补充数据
+        if (form.getType() == 2) {
+            List<String> orderNos = new ArrayList<>();
+            Boolean isMain = form.getSubType().equals(SubOrderSignEnum.MAIN.getSignOne());
+            form.getReceiveBillDetailForms().forEach(e -> {
+                if (isMain) {
+                    orderNos.add(e.getOrderNo());
+                } else {
+                    orderNos.add(e.getSubOrderNo());
+                }
+            });
+            Object reCost = this.omsClient.getNoBillCost(orderNos, isMain, BillTypeEnum.RECEIVABLE.getCode()).getData();
+            form.assemblyOrderDimensionData(reCost, isMain);
+        }
         return billService.createReceiveBill(form);
     }
+
 
     @ApiOperation(value = "预览应收账单")
     @PostMapping("/viewReceiveBill")
     public CommonResult<Map<String, Object>> viewReceiveBill(@RequestBody @Valid ViewSBillForm form) {
         List<OrderReceiveBillDetailForm> billDetailForms = form.getBillDetailForms();
         List<Long> costIds = new ArrayList<>();
+
         for (OrderReceiveBillDetailForm billDetailForm : billDetailForms) {
-            costIds.add(billDetailForm.getCostId());
+            if (form.getType() == 2) {
+                costIds.addAll(billDetailForm.getCostIds());
+            } else {
+                costIds.add(billDetailForm.getCostId());
+            }
         }
+
+        //订单维度补充数据
+
+        //订单维度补充数据
+//        if (form.getType() == 2) {
+//            List<String> orderNos = new ArrayList<>();
+//            Boolean isMain = form.getCmd().equals(SubOrderSignEnum.MAIN.getSignOne());
+//            form.getBillDetailForms().forEach(e -> {
+//                if (isMain) {
+//                    orderNos.add(e.getOrderNo());
+//                } else {
+//                    orderNos.add(e.getSubOrderNo());
+//                }
+//            });
+//            Object reCost = this.omsClient.getNoBillCost(orderNos, isMain, 0).getData();
+//            if (reCost != null) {
+//                costIds = new JSONArray(reCost).stream().map(e -> ((JSONObject) e).getLong("id")).collect(Collectors.toList());
+//            }
+//        }
+
         Map<String, Object> resultMap = new HashMap<>();
 //        JSONArray list = billService.viewReceiveBill(form, costIds);
         JSONArray jsonArray = billService.viewReceiveBillInfo(form, costIds);
@@ -134,5 +182,9 @@ public class ReceiveBillController {
         return CommonResult.success(initComboxStrVOS);
     }
 
+
+    private Object orderDimensionOpt(CreateReceiveBillForm form) {
+        return null;
+    }
 
 }

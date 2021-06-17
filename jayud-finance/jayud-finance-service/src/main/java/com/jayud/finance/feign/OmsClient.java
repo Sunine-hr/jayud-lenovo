@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -132,6 +133,7 @@ public interface OmsClient {
 
     /**
      * 根据费用主键集合批量查询费用信息
+     *
      * @param costIds 费用主键
      * @param type    类型(0:应收,1:应付)
      * @return
@@ -166,4 +168,27 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getByExtUniqueFlag")
     public ApiResult<Map<String, Object>> getByExtUniqueFlag(@RequestBody List<String> extUniqueFlags);
+
+
+    /**
+     * 根据订单号统计费用金额
+     *
+     * @param type 类型(0:应收,1:应付)
+     * @return
+     */
+    @RequestMapping(value = "/api/statisticalCostByOrderNos")
+    public ApiResult<Map<String, Map<String, BigDecimal>>> statisticalCostByOrderNos(@RequestParam("orderNos") List<String> orderNos,
+                                                                                     @RequestParam("isMain") Boolean isMain,
+                                                                                     @RequestParam("type") Integer type);
+
+    /**
+     * 根据订单号查询未出账单费用
+     *
+     * @param type 类型(0:应收,1:应付)
+     * @return
+     */
+    @RequestMapping(value = "/api/getNoBillCost")
+    public ApiResult getNoBillCost(@RequestParam("orderNos") List<String> orderNos,
+                                   @RequestParam("isMain") Boolean isMain,
+                                   @RequestParam("type") Integer type);
 }

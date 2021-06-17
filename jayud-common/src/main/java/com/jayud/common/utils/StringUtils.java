@@ -434,7 +434,7 @@ public class StringUtils {
      * @return
      */
     public static String subStringVals(String sourceNo, String split) {
-        if (!sourceNo.contains(split)){
+        if (!sourceNo.contains(split)) {
             return sourceNo;
         }
         //寻找第一个破折号出现的位置
@@ -445,5 +445,14 @@ public class StringUtils {
         final Integer index = matcher.start();
         final String operationType = sourceNo.substring(0, index);
         return operationType;
+    }
+
+    /**
+     * 不够位数补0
+     *
+     * @return
+     */
+    public static String zeroComplement(Integer digit, Integer num) {
+        return String.format("%0" + digit + "d", num);
     }
 }

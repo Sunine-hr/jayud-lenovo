@@ -101,7 +101,6 @@
             <when test="form.cmd == 'zgys'">
                 <include refid="TmsInfo"/>
             </when>
-
         </choose>
         cg.`name` costGenreName,
         ct.code_name costTypeName,
@@ -111,7 +110,6 @@
         orc.change_amount localAmount,
         orc.id costId,
         orc.is_bill isBill
-
         FROM
         order_receivable_cost orc
         LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
@@ -161,38 +159,38 @@
             </choose>
         </if>
 
-<!--        <if test="form.cmd == 'zgys'">-->
-<!--            and ot.legal_name = #{form.legalName}-->
-<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'zgys'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'bg'">-->
-<!--            and oc.legal_name = #{form.legalName}-->
-<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'bg'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky'">-->
-<!--            and ao.legal_name = #{form.legalName}-->
-<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'ky'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'hy'">-->
-<!--            and so.legal_name = #{form.legalName}-->
-<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'hy'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'tc'">-->
-<!--            and tor.legal_name = #{form.legalName}-->
-<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'tc'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'nl'">-->
-<!--            and oit.legal_name = #{form.legalName}-->
-<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'nl'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'cci'">-->
-<!--            and orc.legal_name = #{form.legalName}-->
-<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'cci'-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'cce'">-->
-<!--            and orc.legal_name = #{form.legalName}-->
-<!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'cce'-->
-<!--        </if>-->
+        <!--        <if test="form.cmd == 'zgys'">-->
+        <!--            and ot.legal_name = #{form.legalName}-->
+        <!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'zgys'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'bg'">-->
+        <!--            and oc.legal_name = #{form.legalName}-->
+        <!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'bg'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'ky'">-->
+        <!--            and ao.legal_name = #{form.legalName}-->
+        <!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'ky'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'hy'">-->
+        <!--            and so.legal_name = #{form.legalName}-->
+        <!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'hy'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'tc'">-->
+        <!--            and tor.legal_name = #{form.legalName}-->
+        <!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'tc'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'nl'">-->
+        <!--            and oit.legal_name = #{form.legalName}-->
+        <!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'nl'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'cci'">-->
+        <!--            and orc.legal_name = #{form.legalName}-->
+        <!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'cci'-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'cce'">-->
+        <!--            and orc.legal_name = #{form.legalName}-->
+        <!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'cce'-->
+        <!--        </if>-->
         ) temp where 1 = 1
         <if test="form.startAddress != null and form.startAddress != ''">
             and temp.startAddress like concat('%',#{form.startAddress},'%')
@@ -226,6 +224,54 @@
         </if>
     </select>
 
+
+    <select id="findNotPaidOrderBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm"
+            resultType="com.jayud.finance.vo.ReceiveNotPaidBillVO">
+        select * from (
+        SELECT DISTINCT
+        orc.main_order_no orderNo,
+        orc.order_no subOrderNo,
+        pb.`name` bizCodeDesc,
+        -- orc.is_bill,
+        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr
+        FROM
+        order_receivable_cost orc
+        LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
+        left join customer_info c on c.id_code = orc.customer_code
+        LEFT JOIN product_biz pb ON pb.id_code = oi.biz_code
+        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+            left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no
+        </if>
+        WHERE
+        orc.id NOT IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd where orbd.audit_status!='edit_del')
+        and (orc.is_bill != '2' and orc.is_bill!='save_confirm')
+        and orc.`status` = '3'
+        and c.`name` = #{form.unitAccount}
+        <if test="form.cmd == 'main'">
+            and oi.legal_name = #{form.legalName}
+            and orc.is_sum_to_main = 1
+        </if>
+        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+            <choose>
+                <when test="form.cmd == 'cce' or form.cmd == 'cci'">
+                    and orc.legal_name = #{form.legalName}
+                    and orc.is_sum_to_main = 0 and orc.sub_type = #{form.cmd}
+                </when>
+                <otherwise>
+                    and sub.legal_name = #{form.legalName}
+                    and orc.is_sum_to_main = 0 and orc.sub_type = #{form.cmd}
+                </otherwise>
+            </choose>
+        </if>
+        ) temp where 1 = 1
+        <if test="form.endCreatedTimeStr != null and form.endCreatedTimeStr !=''">
+            and date_format(temp.createdTimeStr,'%Y-%m-%d') &lt;= date_format(#{form.endCreatedTimeStr},'%Y-%m-%d')
+        </if>
+        <if test="form.beginCreatedTimeStr != null and form.beginCreatedTimeStr !=''">
+            and date_format(temp.createdTimeStr,'%Y-%m-%d') >= date_format(#{form.beginCreatedTimeStr},'%Y-%m-%d')
+        </if>
+        group by temp.orderNo,temp.subOrderNo
+    </select>
 
     <select id="findBaseNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm"
             resultType="com.jayud.finance.vo.ReceiveNotPaidBillVO">
@@ -1079,5 +1125,10 @@
                 </otherwise>
             </choose>
         </where>
+    </select>
+
+    <select id="getCountByMakeTime" resultType="java.lang.Integer">
+        select count(*) from order_receivable_bill_detail
+        where  DATE_FORMAT( make_time, '%Y-%m')=#{makeTime}
     </select>
 </mapper>

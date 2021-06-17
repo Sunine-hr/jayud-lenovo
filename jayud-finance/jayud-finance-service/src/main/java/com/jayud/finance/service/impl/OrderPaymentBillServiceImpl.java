@@ -12,6 +12,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.enums.BillTypeEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
@@ -269,6 +270,9 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         }
         //生成账单操作才是生成对账单数据
         if ("create".equals(form.getCmd()) && costIds.size() > 0) {
+            //订单编号生成
+            form.setBillNo(this.commonService.generateBillNo(form.getPaymentBillForm().getLegalEntityId(), BillTypeEnum.PAYMENT.getCode()));
+
             //先保存对账单信息，在保存对账单详情信息
             OrderPaymentBill orderPaymentBill = ConvertUtil.convert(paymentBillForm, OrderPaymentBill.class);
 
@@ -738,5 +742,54 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
     public List<OrderPaymentBill> getByCondition(OrderPaymentBill paymentBill) {
         QueryWrapper<OrderPaymentBill> condition = new QueryWrapper<>(paymentBill);
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 根据创建账单时间查询数量
+     *
+     * @param makeTime
+     * @param format
+     * @return
+     */
+    @Override
+    public int getCountByMakeTime(String makeTime, String format) {
+        return this.baseMapper.getCountByMakeTime(makeTime, format);
+    }
+
+    /**
+     * 订单维度展示未出账单
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public IPage<PaymentNotPaidBillVO> findNotPaidOrderBillByPage(QueryNotPaidBillForm form) {
+        //定义分页参数
+        Page<PaymentNotPaidBillVO> page = new Page(form.getPageNum(), form.getPageSize());
+        Map<String, Object> param = new HashMap<>();
+        param.put("cmd", form.getCmd());
+        Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
+        IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findNotPaidOrderBillByPage(page, form, dynamicSqlParam);
+
+        List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
+        if (CollectionUtils.isEmpty(pageList)) {
+            return pageInfo;
+        }
+        List<String> orderNos = new ArrayList<>();
+        boolean isMain = SubOrderSignEnum.MAIN.getSignOne().equals(form.getCmd());
+        //根据cmd获取主单号或者子订单号
+        for (PaymentNotPaidBillVO tmp : pageList) {
+            orderNos.add(isMain ? tmp.getOrderNo() : tmp.getSubOrderNo());
+        }
+        //查询费用合计金额
+        Map<String, Map<String, BigDecimal>> costAmountMap = this.omsClient.statisticalCostByOrderNos(orderNos, isMain, BillTypeEnum.PAYMENT.getCode()).getData();
+        //查询所有费用详情
+        Object reCostInfo = this.omsClient.getNoBillCost(orderNos, isMain, BillTypeEnum.PAYMENT.getCode()).getData();
+        //币种
+        pageInfo.getRecords().forEach(e -> {
+            e.assemblyCost(costAmountMap, isMain);
+            e.assemblyCostInfo(reCostInfo, isMain);
+        });
+        return pageInfo;
     }
 }

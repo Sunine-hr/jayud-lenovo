@@ -194,4 +194,14 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
     Integer getBillNumByLegalId(@Param("legalEntityId") Long legalEntityId,
                                 @Param("supplierCode")String supplierCode,
                                 @Param("subType")String subType);
+
+    /**
+     * 根据创建账单时间查询数量
+     * @param makeTime
+     * @param format
+     * @return
+     */
+    int getCountByMakeTime(String makeTime, String format);
+
+    IPage<PaymentNotPaidBillVO> findNotPaidOrderBillByPage(Page<PaymentNotPaidBillVO> page, QueryNotPaidBillForm form, Map<String, Object> dynamicSqlParam);
 }

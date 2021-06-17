@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.enums.BillTypeEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
@@ -189,56 +190,6 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         return pageInfo;
     }
 
-//    @Override
-//    public IPage<ReceiveNotPaidBillVO> findNotPaidBillByPage(QueryNotPaidBillForm form) {
-//        //定义分页参数
-//        Page<ReceiveNotPaidBillVO> page = new Page(form.getPageNum(), form.getPageSize());
-//
-//        //定义排序规则
-//        page.addOrder(OrderItem.desc("temp.costId"));
-//        IPage<ReceiveNotPaidBillVO> pageInfo = null;
-//
-//        if (SubOrderSignEnum.NL.getSignOne().equals(form.getCmd())) {
-//            Map<String, Object> param = new HashMap<>();
-//            param.put("cmd", form.getCmd());
-//            form.setIsQueryOrderAddress(true);
-//            Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
-//            pageInfo = this.baseMapper.findBaseNotPaidBillByPage(page, form, dynamicSqlParam);
-//        } else {
-//            pageInfo = baseMapper.findNotPaidBillByPage(page, form);
-//
-//        }
-//        this.assembleTemplate(form.getCmd(),page.getRecords());
-//
-//        List<ReceiveNotPaidBillVO> pageList = pageInfo.getRecords();
-//        if (CollectionUtils.isEmpty(pageList)) {
-//            return pageInfo;
-//        }
-//
-//        //内陆处理
-//        if (SubOrderSignEnum.NL.getSignOne().equals(form.getCmd())) {
-//            List<String> mainOrderNos = pageList.stream().map(ReceiveNotPaidBillVO::getOrderNo).collect(Collectors.toList());
-//            List<OrderInlandTransportDetails> data = this.inlandTpClient.getInlandOrderInfoByMainOrderNos(mainOrderNos).getData();
-//            pageList.forEach(e -> e.assembleInlandTPData(data));
-//        }
-//
-//
-//        //中港处理
-//        if (SubOrderSignEnum.ZGYS.getSignOne().equals(form.getCmd())) {
-//            for (ReceiveNotPaidBillVO receiveNotPaidBillVO : pageList) {
-//                //处理目的地:当有两条或两条以上时,则获取中转仓地址
-//                if (!StringUtil.isNullOrEmpty(receiveNotPaidBillVO.getEndAddress())) {
-//                    String[] strs = receiveNotPaidBillVO.getEndAddress().split(",");
-//                    if (strs.length > 1) {
-//                        receiveNotPaidBillVO.setEndAddress(getWarehouseAddress(receiveNotPaidBillVO.getOrderNo()));
-//                    }
-//                }
-//            }
-//        }
-//
-//        return pageInfo;
-//    }
-
 
     @Override
     public CommonResult createReceiveBill(CreateReceiveBillForm form) {
@@ -328,6 +279,9 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         }
         //生成账单操作才是生成对账单数据
         if ("create".equals(form.getCmd()) && costIds.size() > 0) {
+            //订单编号生成
+            form.setBillNo(this.commonService.generateBillNo(form.getReceiveBillForm().getLegalEntityId(), BillTypeEnum.RECEIVABLE.getCode()));
+
             //先保存对账单信息，在保存对账单详情信息
             OrderReceivableBill orderReceivableBill = ConvertUtil.convert(receiveBillForm, OrderReceivableBill.class);
             //统计账单
@@ -759,6 +713,58 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
     public List<OrderReceivableBill> getByCondition(OrderReceivableBill orderReceivableBill) {
         QueryWrapper<OrderReceivableBill> condition = new QueryWrapper<>(orderReceivableBill);
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 订单维度展示未出账单
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public IPage<ReceiveNotPaidBillVO> findNotPaidOrderBillByPage(QueryNotPaidBillForm form) {
+        //定义分页参数
+        Page<ReceiveNotPaidBillVO> page = new Page(form.getPageNum(), form.getPageSize());
+        //定义排序规则
+        Map<String, Object> param = new HashMap<>();
+        param.put("cmd", form.getCmd());
+        Map<String, Object> dynamicSqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
+        IPage<ReceiveNotPaidBillVO> pageInfo = baseMapper.findNotPaidOrderBillByPage(page, form, dynamicSqlParam);
+
+        List<ReceiveNotPaidBillVO> pageList = pageInfo.getRecords();
+        if (CollectionUtils.isEmpty(pageList)) {
+            return pageInfo;
+        }
+        List<String> orderNos = new ArrayList<>();
+        boolean isMain = SubOrderSignEnum.MAIN.getSignOne().equals(form.getCmd());
+        //根据cmd获取主单号或者子订单号
+        for (ReceiveNotPaidBillVO tmp : pageList) {
+            orderNos.add(isMain ? tmp.getOrderNo() : tmp.getSubOrderNo());
+        }
+        //查询费用合计金额
+        Map<String, Map<String, BigDecimal>> costAmountMap = this.omsClient.statisticalCostByOrderNos(orderNos, isMain, BillTypeEnum.RECEIVABLE.getCode()).getData();
+        //查询所有费用详情
+        Object reCostInfo = this.omsClient.getNoBillCost(orderNos, isMain, BillTypeEnum.RECEIVABLE.getCode()).getData();
+        //币种
+        pageInfo.getRecords().forEach(e -> {
+            e.assemblyCost(costAmountMap, isMain);
+            e.assemblyCostInfo(reCostInfo, isMain);
+        });
+
+
+        return pageInfo;
+    }
+
+    /**
+     * 根据创建账单时间查询数量
+     *
+     * @param makeTime
+     * @param format
+     * @return
+     */
+    @Override
+    public int getCountByMakeTime(String makeTime, String format) {
+        return this.baseMapper.getCountByMakeTime(makeTime, format);
     }
 
 

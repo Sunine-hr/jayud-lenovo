@@ -1,15 +1,22 @@
 package com.jayud.finance.bo;
 
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.finance.vo.InitComboxStrVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 暂存/提交对账单
@@ -20,7 +27,7 @@ public class CreatePaymentBillForm {
     @ApiModelProperty(value = "应付出账单界面部分,生成账单时必传")
     private OrderPaymentBillForm paymentBillForm;
 
-    @Valid
+    //    @Valid
     @ApiModelProperty(value = "应付出账单详情界面部分", required = true)
     private List<OrderPaymentBillDetailForm> paymentBillDetailForms;
 
@@ -49,6 +56,10 @@ public class CreatePaymentBillForm {
     @ApiModelProperty(value = "自定义汇率")
     private List<InitComboxStrVO> customExchangeRate;
 
+    @ApiModelProperty(value = "展示维度(1:费用项展示,2:订单维度)", required = true)
+    @NotNull(message = "type is required")
+    private Integer type=1;
+
     /**
      * 校验出账单参数
      */
@@ -60,5 +71,33 @@ public class CreatePaymentBillForm {
                 throw new JayudBizException(400, "请配置自定义汇率");
             }
         }
+    }
+
+    /**
+     * 组装订单维度数据
+     *
+     * @param payCost
+     * @param isMain
+     */
+    public void assemblyOrderDimensionData(Object payCost, Boolean isMain) {
+        if (payCost == null) {
+            return;
+        }
+        String key = isMain ? "mainOrderNo" : "orderNo";
+        JSONArray jsonArray = new JSONArray(payCost);
+
+        Map<String, OrderPaymentBillDetailForm> map = this.paymentBillDetailForms.stream().collect(Collectors.toMap(e -> isMain ? e.getOrderNo() : e.getSubOrderNo(), e -> e));
+        List<OrderPaymentBillDetailForm> list = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            OrderPaymentBillDetailForm billDetailForm = map.get(jsonObject.getStr(key));
+            OrderPaymentBillDetailForm tmp = ConvertUtil.convert(billDetailForm, OrderPaymentBillDetailForm.class);
+            if (billDetailForm != null) {
+                tmp.setCostId(jsonObject.getLong("id"));
+                tmp.setLocalAmount(jsonObject.getBigDecimal("changeAmount"));
+            }
+            list.add(tmp);
+        }
+        this.paymentBillDetailForms = list;
     }
 }

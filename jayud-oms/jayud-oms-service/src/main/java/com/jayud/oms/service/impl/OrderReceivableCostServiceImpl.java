@@ -6,10 +6,9 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.mapper.OrderReceivableCostMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
-import com.jayud.oms.model.po.CustomerInfo;
-import com.jayud.oms.model.po.OrderReceivableCost;
-import com.jayud.oms.model.po.SupplierInfo;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
+import com.jayud.oms.service.ICurrencyInfoService;
 import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.oms.service.IOrderReceivableCostService;
 import org.apache.commons.collections.CollectionUtils;
@@ -36,6 +35,8 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
 
     @Autowired
     private ICustomerInfoService customerInfoService;
+    @Autowired
+    private ICurrencyInfoService currencyInfoService;
 
     @Override
     public List<InputReceivableCostVO> findReceivableCost(GetCostDetailForm form) {
@@ -284,5 +285,33 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
 
         }
 
+    }
+
+    /**
+     * 统计应收费用合计
+     * @param list
+     * @param isMain
+     * @return
+     */
+    @Override
+    public Map<String, Map<String, BigDecimal>> statisticalReCostByOrderNos(List<OrderReceivableCost> list, Boolean isMain) {
+        Map<String, List<OrderReceivableCost>> group = null;
+        if (isMain) {
+            group = list.stream().collect(Collectors.groupingBy(OrderReceivableCost::getMainOrderNo));
+        } else {
+            group = list.stream().collect(Collectors.groupingBy(OrderReceivableCost::getOrderNo));
+        }
+        List<CurrencyInfo> currencyInfos = currencyInfoService.list();
+        Map<String, String> currencyMap = currencyInfos.stream().collect(Collectors.toMap(CurrencyInfo::getCurrencyCode, CurrencyInfo::getCurrencyName));
+        Map<String, Map<String, BigDecimal>> map = new HashMap<>();
+        group.forEach((k, v) -> {
+            Map<String, BigDecimal> costMap = new HashMap<>();
+            for (OrderReceivableCost tmp : v) {
+                if (tmp.getAmount() == null || tmp.getChangeAmount() == null) return;
+                costMap.merge(currencyMap.get(tmp.getCurrencyCode()), tmp.getAmount(), BigDecimal::add);
+            }
+            map.put(k, costMap);
+        });
+        return map;
     }
 }

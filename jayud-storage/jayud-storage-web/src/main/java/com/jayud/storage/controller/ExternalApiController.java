@@ -129,17 +129,29 @@ public class ExternalApiController {
         return ApiResult.ok();
     }
 
+    @ApiOperation(value = "判断出库商品数量是否小于等于该商品库存")
+    @PostMapping(value = "/isEnough")
+    public ApiResult isEnough(@RequestBody List<WarehouseGoodsForm> goodsFormList){
+        for (WarehouseGoodsForm warehouseGoodsForm : goodsFormList) {
+            Stock stock = stockService.getStockBySku(warehouseGoodsForm.getSku());
+            if(stock.getAvailableStock() < warehouseGoodsForm.getNumber()){
+                return ApiResult.error(444,warehouseGoodsForm.getSku()+"的库存数量不足，剩余数量为" + stock.getAvailableStock());
+            }
+        }
+        return ApiResult.ok();
+    }
+
     /**
      * 创建仓储快进快出订单
      */
-    @RequestMapping(value = "/api/storage/createOutOrder")
+    @RequestMapping(value = "/api/storage/createFastOrder")
     ApiResult<String> createFastOrder(@RequestBody StorageFastOrderForm inputStorageFastOrderForm){
         String orderNo = storageFastOrderService.createOrder(inputStorageFastOrderForm);
         return ApiResult.ok(orderNo);
     }
 
     /**
-     * 根据主订单号获取仓储出库单信息
+     * 根据主订单号获取仓储快进快出单信息
      */
     @RequestMapping(value = "/api/storage/getStorageFastOrderDetails")
     ApiResult<StorageFastOrderVO> getStorageFastOrderDetails(@RequestParam("orderNo") String orderNo){

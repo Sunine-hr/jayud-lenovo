@@ -202,7 +202,7 @@ public class StorageInputOrderController {
 
             record.setCost(MapUtil.getBool(data, record.getOrderNo()));
 
-            record.setCreatedTimeStr(record.getCreateTime().toString());
+            record.setCreatedTimeStr(record.getCreateTime().toString().replace("T"," "));
             record.setSubLegalName(record.getLegalName());
             record.setSubUnitCode(record.getUnitCode());
             record.setDefaultUnitCode(record.getUnitCode());
@@ -350,31 +350,33 @@ public class StorageInputOrderController {
         form.setStatus(statusEnum.getCode());
 
         if(form.getStatus().equals(OrderStatusEnum.CCI_2.getCode()) && form.getCmd().equals("submit")){
-            if(form.getWarehousingBatchNo() == null){
-                return CommonResult.error(443,"未进行反馈入仓，请前往反馈入仓");
-            }else{
-                List<WarehouseGoodsForm> warehouseGoodsForms = form.getWarehouseGoodsForms();
-                if(CollectionUtils.isEmpty(warehouseGoodsForms)){
-                    return CommonResult.error(443,"申报信息为空");
-                } else{
-                    Integer count = 0;
-                    for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
-                        if(warehouseGoodsForm.getNumber() == null){
-                            return CommonResult.error(443,"申报信息件数不能为空");
-                        }
-                        if(warehouseGoodsForm.getSjNumber() != null){
-                            count++;
-                        }
+            List<WarehouseGoodsForm> warehouseGoodsForms = form.getWarehouseGoodsForms();
+            if(CollectionUtils.isEmpty(warehouseGoodsForms)){
+                return CommonResult.error(443,"申报信息为空");
+            } else{
+                for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
+                    if(warehouseGoodsForm.getNumber() == null){
+                        return CommonResult.error(443,"申报件数不能为空");
                     }
-                    if(count == 0){
-                        return CommonResult.error(443,"反馈入仓件数信息不为空");
+
+                    if(warehouseGoodsForm.getSjBoardNumber() != null || warehouseGoodsForm.getSjVolume() != null
+                    || warehouseGoodsForm.getSjWeight() != null || warehouseGoodsForm.getSjPcs() != null){
+                        if(warehouseGoodsForm.getSjNumber() == null){
+                            return CommonResult.error(443,"反馈入仓件数信息不为空");
+                        }
                     }
                 }
+
             }
+
         }
 
-        if(form.getStatus().equals(OrderStatusEnum.CCI_2.getCode()) && form.getCmd().equals("end") && form.getIsOver().equals("true")){
+        if(form.getStatus().equals(OrderStatusEnum.CCI_2.getCode()) && form.getCmd().equals("end") && form.getIsOver()){
             for (WarehouseGoodsForm warehouseGoodsForm : form.getWarehouseGoodsForms()) {
+                List<InGoodsOperationRecord> listByOrderId = inGoodsOperationRecordService.getListByOrderId(warehouseGoodsForm.getOrderId(), warehouseGoodsForm.getOrderNo());
+                if(CollectionUtils.isEmpty(listByOrderId)){
+                    return CommonResult.error(443,"该订单没有反馈入仓数据，无法完结，请前往反馈入仓");
+                }
                 List<InGoodsOperationRecord> list = inGoodsOperationRecordService.getList(warehouseGoodsForm.getOrderId(), warehouseGoodsForm.getOrderNo(), warehouseGoodsForm.getSku());
                 Integer number = 0;
                 for (InGoodsOperationRecord inGoodsOperationRecord : list) {
@@ -615,7 +617,7 @@ public class StorageInputOrderController {
     @ApiOperation(value = "入库订单驳回")
     @PostMapping(value = "/rejectOrder")
     public CommonResult rejectOrder(@RequestBody StorageInCargoRejected storageInCargoRejected) {
-        //查询拖车订单
+        //查询入库订单
         StorageInputOrder tmp = this.storageInputOrderService.getById(storageInCargoRejected.getStorageInOrderId());
         //获取相应驳回操作
         OrderStatusEnum orderStatusEnum = OrderStatusEnum.getInStorageOrderRejection(tmp.getStatus());
@@ -667,7 +669,7 @@ public class StorageInputOrderController {
         ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageInputOrder.getMainOrderNo()));
         JSONArray mainOrders = new JSONArray(JSON.toJSONString(result.getData()));
         qrCodeInformationVO.setCustomerName(mainOrders.getJSONObject(0).getStr("customerName"));
-        qrCodeInformationVO.setCreateTime(listByWarehousingBatchNo.get(0).getCreateTime().toString());
+        qrCodeInformationVO.setCreateTime(listByWarehousingBatchNo.get(0).getCreateTime());
         qrCodeInformationVO.setWarehouseNumber(storageInputOrder.getWarehouseNumber());
         qrCodeInformationVO.setLegalName(storageInputOrder.getLegalName());
         return CommonResult.success(qrCodeInformationVO);
@@ -683,9 +685,9 @@ public class StorageInputOrderController {
         Integer totalPCS = 0;
 
         for (InGoodsOperationRecord inGoodsOperationRecord : listByWarehousingBatchNo) {
-            totalAmount = totalAmount + inGoodsOperationRecord.getNumber();
-            totalJAmount = totalJAmount + inGoodsOperationRecord.getBoardNumber();
-            totalPCS = totalPCS + inGoodsOperationRecord.getPcs();
+            totalAmount = totalAmount + (inGoodsOperationRecord.getNumber()==null ? 0:inGoodsOperationRecord.getNumber());
+            totalJAmount = totalJAmount + (inGoodsOperationRecord.getBoardNumber()==null ? 0:inGoodsOperationRecord.getBoardNumber());
+            totalPCS = totalPCS + (inGoodsOperationRecord.getPcs()==null ? 0:inGoodsOperationRecord.getPcs());
         }
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(totalJAmount).append("板").append("/")
@@ -699,7 +701,7 @@ public class StorageInputOrderController {
         ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageInputOrder.getMainOrderNo()));
         JSONArray mainOrders = new JSONArray(JSON.toJSONString(result.getData()));
         qrCodeInformationVO.setCustomerName(mainOrders.getJSONObject(0).getStr("customerName"));
-        qrCodeInformationVO.setCreateTime(listByWarehousingBatchNo.get(0).getCreateTime().toString());
+        qrCodeInformationVO.setCreateTime(listByWarehousingBatchNo.get(0).getCreateTime());
         qrCodeInformationVO.setWarehouseNumber(storageInputOrder.getWarehouseNumber());
         qrCodeInformationVO.setLegalName(storageInputOrder.getLegalName());
         qrCodeInformationVO.setGoodInfos(listByWarehousingBatchNo);
@@ -715,6 +717,9 @@ public class StorageInputOrderController {
     public CommonResult getWarehousingBatch(@RequestBody Map<String,Object> map) {
         Long orderId = MapUtil.getLong(map, "orderId");
         List<String> strings = inGoodsOperationRecordService.getWarehousingBatch(orderId);
+        if(strings.size()<=0){
+            return CommonResult.error(443,"未进行反馈入仓，不存在反馈入仓信息");
+        }
         return CommonResult.success(strings);
     }
 
@@ -892,9 +897,23 @@ public class StorageInputOrderController {
             Integer number = 0;
             Double weight = 0.0;
             Double volume = 0.0;
-            if(CollectionUtils.isNotEmpty(storageInProcessOptFormVO.getWarehouseGoodsForms())){
-                excelWriter.fill(new FillWrapper("goodList", storageInProcessOptFormVO.getWarehouseGoodsForms()), writeSheet);
-                for (WarehouseGoodsVO warehouseGoodsForm : storageInProcessOptFormVO.getWarehouseGoodsForms()) {
+            if(CollectionUtils.isNotEmpty(storageInProcessOptFormVO.getInGoodsOperationRecords())){
+                List<InGoodsOperationRecordVO> inGoodsOperationRecords = storageInProcessOptFormVO.getInGoodsOperationRecords();
+                List<InGoodsOperationRecordExcelVO> inGoodsOperationRecordExcelVOS = new ArrayList<>();
+                for (InGoodsOperationRecordVO inGoodsOperationRecord : inGoodsOperationRecords) {
+                    InGoodsOperationRecordExcelVO convert = ConvertUtil.convert(inGoodsOperationRecord, InGoodsOperationRecordExcelVO.class);
+                    List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(convert.getId());
+                    StringBuffer stringBuffer = new StringBuffer();
+                    if(CollectionUtils.isNotEmpty(goodsLocationRecordByGoodId)){
+                        for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
+                            stringBuffer.append(goodsLocationRecord.getKuCode()).append(" ").append(goodsLocationRecord.getNumber()).append(";");
+                        }
+                    }
+                    convert.setLocation(stringBuffer.toString());
+                    inGoodsOperationRecordExcelVOS.add(convert);
+                }
+                excelWriter.fill(new FillWrapper("goodList", inGoodsOperationRecordExcelVOS), writeSheet);
+                for (InGoodsOperationRecordVO warehouseGoodsForm : storageInProcessOptFormVO.getInGoodsOperationRecords()) {
                     if(warehouseGoodsForm.getNumber() != null){
                         number = number + warehouseGoodsForm.getNumber();
                     }
@@ -1009,7 +1028,7 @@ public class StorageInputOrderController {
             dataMap.put("beizhu",storageInProcessOptFormVO.getBeizhu());
 
             dataMap.put("warehouseNumber", storageInProcessOptFormVO.getWarehouseNumber());
-            dataMap.put("createTime", storageInProcessOptFormVO.getCreateTime().toString());
+            dataMap.put("createTime", storageInProcessOptFormVO.getCreateTime().toString().replace("T"," "));
             dataMap.put("plateNumber", storageInProcessOptFormVO.getPlateNumber());
             dataMap.put("customerName", storageInProcessOptFormVO.getCustomerName());
             dataMap.put("warehouseName",storageInProcessOptFormVO.getWarehouseName());

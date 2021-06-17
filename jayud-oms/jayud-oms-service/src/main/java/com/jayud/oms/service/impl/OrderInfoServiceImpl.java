@@ -1507,7 +1507,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 if (this.queryEditOrderCondition(storageInputOrderForm.getStatus(),
                         inputMainOrderForm.getStatus(),SubOrderSignEnum.CCI.getSignOne(), form)) {
                     storageInputOrderForm.setMainOrderNo(mainOrderNo);
-                    storageInputOrderForm.setCreateUser(UserOperator.getToken());
                     for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageInputOrderForm.getGoodsFormList()) {
                          addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
                          addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
@@ -1555,7 +1554,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         inputMainOrderForm.getStatus(), SubOrderSignEnum.CCE.getSignOne(), form)) {
                     storageOutOrderForm.setMainOrderNo(mainOrderNo);
                     storageOutOrderForm.setCmd(form.getCmd());
-                    storageOutOrderForm.setCreateUser(UserOperator.getToken());
                     for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageOutOrderForm.getGoodsFormList()) {
                         addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
                         addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
@@ -1601,7 +1599,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 if (this.queryEditOrderCondition(storageFastOrderForm.getStatus(),
                         inputMainOrderForm.getStatus(), SubOrderSignEnum.CCF.getSignOne(), form)) {
                     storageFastOrderForm.setMainOrderNo(mainOrderNo);
-                    storageFastOrderForm.setCreateUser(UserOperator.getToken());
                     if(CollectionUtils.isNotEmpty(storageFastOrderForm.getInGoodsFormList())){
                         for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getInGoodsFormList()) {
                             addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));

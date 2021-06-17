@@ -82,11 +82,11 @@ public class WarehouseAreaController {
             }
 
             WarehouseArea warehouseArea = warehouseAreaService.getWarehouseAreaByAreaCode(areaForm.getAreaCode(),warehouseAreaForm.getWarehouseId());
-            if (warehouseArea != null) {
+            if (warehouseArea != null && !warehouseArea.getId().equals(areaForm.getId())) {
                 return CommonResult.error(444, areaForm.getAreaCode() + "该代码已存在");
             }
             WarehouseArea warehouseArea1 = warehouseAreaService.getWarehouseAreaByAreaName(areaForm.getAreaName(),warehouseAreaForm.getWarehouseId());
-            if (warehouseArea1 != null) {
+            if (warehouseArea1 != null && !warehouseArea1.getId().equals(areaForm.getId())) {
                 return CommonResult.error(444, areaForm.getAreaName() + "该名字已存在");
             }
 
@@ -153,7 +153,7 @@ public class WarehouseAreaController {
 
     @ApiOperation(value = "获取该区域下所有商品信息")
     @GetMapping("/findGoodByWarehouseArea")
-    public CommonResult findGoodByWarehouseArea(@RequestParam("areaName") String areaName){
+    public List<QRCodeAreaGoodVO> findGoodByWarehouseArea(@RequestParam("areaName") String areaName){
 
         //获取该区域下所有货架信息
         List<WarehouseAreaShelves> warehouseAreaShelves = warehouseAreaShelvesService.getWarehouseAreaShelvesByAreaName(areaName);
@@ -175,13 +175,13 @@ public class WarehouseAreaController {
             qrCodeAreaGoodVO.setQrCodeShelvesGoodVOS(qrCodeShelvesGoodVOS);
             qrCodeAreaGoodVOS.add(qrCodeAreaGoodVO);
         }
-        return CommonResult.success(qrCodeAreaGoodVOS);
+        return qrCodeAreaGoodVOS;
 
     }
 
     @ApiOperation(value = "获取该货架下所有商品信息")
     @GetMapping("/findGoodByWarehouseAreaShelves")
-    public CommonResult findGoodByWarehouseAreaShelves(@RequestParam("shelvesName") String shelvesName){
+    public List<QRCodeShelvesGoodVO> findGoodByWarehouseAreaShelves(@RequestParam("shelvesName") String shelvesName){
 
         //获取该货架下所有库位信息，库位下存储的所有商品信息
         List<LocationCodeVO> locationCodeVOS = warehouseAreaShelvesLocationService.getListByShelvesName(shelvesName);
@@ -193,7 +193,7 @@ public class WarehouseAreaController {
             qrCodeShelvesGoodVO.setQrCodeLocationGoodVOS(listByKuCode);
             qrCodeShelvesGoodVOS.add(qrCodeShelvesGoodVO);
         }
-        return CommonResult.success(qrCodeShelvesGoodVOS);
+        return qrCodeShelvesGoodVOS;
 
     }
 

@@ -183,7 +183,7 @@ public class CommonController {
 
     @ApiOperation(value = "生成入仓号/生成出仓号")
     @PostMapping(value = "/getWarehouseNumber")
-    public CommonResult getWarehouseNumber(@RequestBody Map<String,Object> map){
+    public synchronized CommonResult getWarehouseNumber(@RequestBody Map<String,Object> map){
         Long type = MapUtil.getLong(map,"type");
         String warehouseNumber = null;
         if(type == 1){//生成入仓号
@@ -196,6 +196,19 @@ public class CommonController {
             return CommonResult.error(444,"获取入仓号失败");
         }
         return CommonResult.success(warehouseNumber);
+
+    }
+
+    @ApiOperation(value = "生成入仓号/生成出仓号")
+    @PostMapping(value = "/getOutWarehouseNumber")
+    public synchronized CommonResult getOutWarehouseNumber(){
+        String warehouseNumber = (String)omsClient.getWarehouseNumber("JYDCK").getData();
+
+        if(warehouseNumber==null){
+            return CommonResult.error(444,"获取出仓号失败");
+        }
+        return CommonResult.success(warehouseNumber);
+
     }
 
     @ApiOperation(value = "确认入仓下拉列表框")
@@ -232,7 +245,15 @@ public class CommonController {
                 List<String> str = new ArrayList<>();
                 List<InGoodsOperationRecord> list1 = inGoodsOperationRecordService.getListBySku(goodNumberVO.getSku());
                 for (InGoodsOperationRecord inGoodsOperationRecord : list1) {
-                    str.add(inGoodsOperationRecord.getWarehousingBatchNo());
+                    Integer number = 0;
+                    List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecord.getId());
+                    for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
+                        number = number + goodsLocationRecord.getUnDeliveredQuantity();
+                    }
+                    if(number>0){
+                        str.add(inGoodsOperationRecord.getWarehousingBatchNo());
+                    }
+
                 }
                 goodNumberVO.setBatchNumbers(str);
             }

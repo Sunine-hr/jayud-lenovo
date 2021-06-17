@@ -35,4 +35,83 @@
         id, order_no, main_order_no, status, process_status, unit_code, legal_name, legal_entity_id, department_id, waybill_no, in_plate_number, in_warehouse_number, create_user, create_time, update_user, update_time, remarks, order_taker, receiving_orders_date, estimated_arrival_time, expected_delivery_time, out_plate_number, out_warehouse_number, is_warehouse
     </sql>
 
+    <select id="findByPage" resultType="com.jayud.storage.model.vo.StorageFastOrderFormVO">
+        select sfo.id id,sfo.order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
+        legal_entity_id legalEntityId,legal_name leaglName,
+        unit_code unitCode,department_id departmentId,waybill_no waybillNo,
+        in_plate_number inPlateNumber, in_warehouse_number inWarehouseNumber, create_user createUser, create_time createTime, remarks,
+        receiving_orders_date receivingOrdersDate, estimated_arrival_time estimatedArrivalTime, expected_delivery_time expectedDeliveryTime, out_plate_number outPlateNumber, out_warehouse_number outWarehouseNumber, is_warehouse isWarehouse
+        --         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = sio.`order_no`) +
+        --         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = sio.`order_no`)>0 THEN TRUE
+        --         ELSE FALSE
+        --         END) cost
+        from storage_fast_order sfo
+        <where>
+            <if test="form.orderNo !=null and form.orderNo!=''">
+                and sfo.order_no like concat('%',#{form.orderNo},'%')
+            </if>
+            <if test="form.mainOrderNo !=null and form.mainOrderNo!=''">
+                and sfo.main_order_no like concat('%',#{form.mainOrderNo},'%')
+            </if>
+            <if test="form.inWarehouseNumber !=null and form.inWarehouseNumber!=''">
+                and sfo.in_warehouse_number like concat('%',#{form.inWarehouseNumber},'%')
+            </if>
+            <if test="form.legalName !=null and form.legalName!=''">
+                and sfo.legal_name like concat('%',#{form.legalName},'%')
+            </if>
+            <if test="form.outWarehouseNumber !=null and form.outWarehouseNumber!=''">
+                and sfo.out_warehouse_number like concat('%',#{form.outWarehouseNumber},'%')
+            </if>
+            <if test="form.processStatus !=null and form.processStatus!=''">
+                and sfo.process_status like concat('%',#{form.processStatus},'%')
+            </if>
+            <if test="form.createUser !=null and form.createUser!=''">
+                and sfo.create_user like concat('%',#{form.createUser},'%')
+            </if>
+            <if test="form.mainOrderNos !=null and form.mainOrderNos.size > 0">
+                and sfo.main_order_no IN
+                <foreach collection="form.mainOrderNos" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.status !=null and form.status!=''">
+                and sfo.status = #{form.status}
+            </if>
+            <if test="form.processStatusList!=null and form.processStatusList.size>0">
+                and sfo.process_status IN
+                <foreach collection="form.processStatusList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.startTime !=null and form.startTime!=''">
+                and sfo.create_time <![CDATA[>= ]]> #{form.startTime}
+            </if>
+            <if test="form.endTime !=null and form.endTime!=''">
+                and sfo.create_time <![CDATA[<= ]]> #{form.endTime}
+            </if>
+            <if test="form.cmd == 'costAudit'">
+                --                 AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = sio.order_no AND opc.`status` =
+                --                 '2' and opc.sub_type = 'cci')
+                --                 OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = sio.order_no AND orc.`status` =
+                --                 '2' and orc.sub_type = 'cci'))
+                and sfo.`order_no` in
+                <foreach collection="form.subPaymentOrderNos" item="orderNo" open="(" separator="," close=")">
+                    #{orderNo}
+                </foreach>
+                or sfo.`order_no` in
+                <foreach collection="form.subReceviableOrderNos" item="orderNo" open="(" separator="," close=")">
+                    #{orderNo}
+                </foreach>
+            </if>
+
+            <if test="legalIds != null and legalIds.size>0">
+                and sfo.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+        </where>
+        order by sfo.id desc
+    </select>
+
 </mapper>

@@ -2,6 +2,7 @@ package com.jayud.storage.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -79,12 +80,14 @@ public class StorageFastOrderVO {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "备注")
@@ -97,10 +100,12 @@ public class StorageFastOrderVO {
     private String receivingOrdersDate;
 
     @ApiModelProperty(value = "预计到达时间")
-    private String estimatedArrivalTime;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime estimatedArrivalTime;
 
     @ApiModelProperty(value = "预计出库时间")
-    private String expectedDeliveryTime;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime expectedDeliveryTime;
 
     @ApiModelProperty(value = "出库车牌号")
     private String outPlateNumber;
@@ -130,48 +135,15 @@ public class StorageFastOrderVO {
     @ApiModelProperty(value = "费用状态")
     private Boolean cost;
 
+    @ApiModelProperty(value = "总件数")
+    private String totalNumberStr;
+
+    @ApiModelProperty(value = "总重量")
+    private String totalWeightStr;
+
     public void setUnitCodeName(String unitCodeName) {
         this.unitCodeName=unitCodeName;
     }
 
-    public void copyOperationInfo() {
-        this.id = null;
-        this.allPics = new ArrayList<>();
-        this.orderNo = null;
-        this.mainOrderNo = null;
-        this.status = null;
-        this.processStatus = null;
-        this.orderTaker = null;
-        this.createTime = null;
-        this.receivingOrdersDate = null;
-        this.createUser = null;
-        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(fastGoodsFormList)) {
-            fastGoodsFormList.forEach(e -> {
-                e.setId(null);
-                e.setOrderId(null);
-                e.setOrderNo(null);
-                e.setTakeFiles(null);
-                e.setTakeFiles(null);
-            });
-        }
-        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(inGoodsFormList)) {
-            inGoodsFormList.forEach(e -> {
-                e.setId(null);
-                e.setOrderId(null);
-                e.setOrderNo(null);
-                e.setTakeFiles(null);
-                e.setTakeFiles(null);
-            });
-        }
-        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(outGoodsFormList)) {
-            outGoodsFormList.forEach(e -> {
-                e.setId(null);
-                e.setOrderId(null);
-                e.setOrderNo(null);
-                e.setTakeFiles(null);
-                e.setTakeFiles(null);
-            });
-        }
 
-    }
 }

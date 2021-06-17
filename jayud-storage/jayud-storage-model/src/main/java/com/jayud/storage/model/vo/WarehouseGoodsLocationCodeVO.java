@@ -1,5 +1,6 @@
 package com.jayud.storage.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -37,6 +38,7 @@ public class WarehouseGoodsLocationCodeVO {
     private String warehousingBatchNo;
 
     @ApiModelProperty(value = "预计出库时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expectedDeliveryTime;
 
     @ApiModelProperty(value = "库位编码")

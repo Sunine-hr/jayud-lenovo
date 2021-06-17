@@ -48,4 +48,6 @@ public interface IStockService extends IService<Stock> {
     boolean changeInventory(String orderNo, Long id);
 
     StockLocationNumberVO getListBySkuAndLocationCode(String sku, String locationCode,Long customerId);
+
+    Stock getStockBySku(String sku);
 }

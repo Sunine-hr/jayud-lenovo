@@ -38,7 +38,7 @@ public interface StorageClient {
     /**
      * 创建仓储快进快出订单
      */
-    @RequestMapping(value = "/api/storage/createOutOrder")
+    @RequestMapping(value = "/api/storage/createFastOrder")
     ApiResult<String> createFastOrder(@RequestBody InputStorageFastOrderForm inputStorageFastOrderForm);
 
     /**
@@ -63,7 +63,11 @@ public interface StorageClient {
     @PostMapping(value = "/isCommodity")
     public ApiResult isCommodity(@RequestBody List<AddWarehouseGoodsForm> warehouseGoodsForms);
 
-    @ApiOperation(value = "判断出库商品数量是否小于等于该商品库存")
+    @ApiOperation(value = "判断出库商品数量是否小于等于该批次商品库存")
     @PostMapping(value = "/isStock")
     public ApiResult isStock(@RequestBody List<AddWarehouseGoodsForm> warehouseGoodsForms);
+
+    @ApiOperation(value = "判断出库商品数量是否小于等于该商品库存")
+    @PostMapping(value = "/isEnough")
+    public ApiResult isEnough(@RequestBody List<AddWarehouseGoodsForm> goodsFormList);
 }

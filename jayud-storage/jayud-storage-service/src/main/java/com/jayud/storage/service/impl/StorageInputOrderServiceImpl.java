@@ -271,7 +271,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         }
         //获取该订单所有入仓信息
         boolean flag = true;
-        List<InGoodsOperationRecord> listByOrderId = inGoodsOperationRecordService.getListByOrderId(form.getId(), form.getOrderNo());
+        List<InGoodsOperationRecord> listByOrderId = inGoodsOperationRecordService.getListByOrderId(form.getOrderId(), form.getOrderNo());
         if(CollectionUtils.isNotEmpty(listByOrderId)){
             for (InGoodsOperationRecord inGoodsOperationRecord : listByOrderId) {
                 if(!inGoodsOperationRecord.getIsWarehousing().equals(1)){
@@ -282,7 +282,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
                 for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
                     number = number + goodsLocationRecord.getNumber();
                 }
-                if(inGoodsOperationRecord.getNumber() != number){
+                if(!inGoodsOperationRecord.getNumber().equals(number)){
                     flag = false;
                 }
             }
@@ -290,7 +290,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
 
         if(flag){
             StorageInputOrder storageInputOrder = new StorageInputOrder();
-            storageInputOrder.setId(form.getId());
+            storageInputOrder.setId(form.getOrderId());
             storageInputOrder.setUpdateUser(UserOperator.getToken());
             storageInputOrder.setUpdateTime(LocalDateTime.now());
             storageInputOrder.setStorageTime(LocalDateTime.now());
@@ -304,7 +304,7 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
             StorageInputOrder storageInputOrder = new StorageInputOrder();
             storageInputOrder.setUpdateUser(UserOperator.getToken());
             storageInputOrder.setUpdateTime(LocalDateTime.now());
-            storageInputOrder.setId(form.getId());
+            storageInputOrder.setId(form.getOrderId());
             storageInputOrder.setStorageTime(LocalDateTime.now());
             form.setStatusName("该批次入库成功");
             form.setStatus("CCI_2");
@@ -445,6 +445,37 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         List<WarehouseGoodsForm> warehouseGoodsForms = form.getWarehouseGoodsForms();
         //在添加商品前，先删除原来的商品信息
         warehouseGoodsService.deleteWarehouseGoodsFormsByOrder(form.getOrderId(),form.getOrderNo());
+
+        //筛选商品数据
+        for (int i = 0; i < warehouseGoodsForms.size(); i++) {
+            for (int j = i+1; j < warehouseGoodsForms.size(); j++) {
+                if(warehouseGoodsForms.get(i).getSku().equals(warehouseGoodsForms.get(j).getSku())){
+                    WarehouseGoodsForm warehouseGoodsForm = warehouseGoodsForms.get(i);
+                    warehouseGoodsForm.setNumber((warehouseGoodsForm.getNumber()==null ? 0: warehouseGoodsForm.getNumber())
+                            + (warehouseGoodsForms.get(j).getNumber()==null ? 0: warehouseGoodsForms.get(j).getNumber()));
+                    warehouseGoodsForm.setBoardNumber((warehouseGoodsForm.getBoardNumber()==null ? 0: warehouseGoodsForm.getBoardNumber())
+                            + (warehouseGoodsForms.get(j).getBoardNumber()==null ? 0: warehouseGoodsForms.get(j).getBoardNumber()));
+                    warehouseGoodsForm.setPcs((warehouseGoodsForm.getPcs()==null ? 0: warehouseGoodsForm.getPcs())
+                            + (warehouseGoodsForms.get(j).getPcs()==null ? 0: warehouseGoodsForms.get(j).getPcs()));
+                    warehouseGoodsForm.setWeight((warehouseGoodsForm.getWeight()==null ? 0: warehouseGoodsForm.getWeight())
+                            + (warehouseGoodsForms.get(j).getWeight()==null ? 0: warehouseGoodsForms.get(j).getWeight()));
+                    warehouseGoodsForm.setVolume((warehouseGoodsForm.getVolume()==null ? 0: warehouseGoodsForm.getVolume())
+                            + (warehouseGoodsForms.get(j).getVolume()==null ? 0: warehouseGoodsForms.get(j).getVolume()));
+                    warehouseGoodsForm.setSjBoardNumber((warehouseGoodsForm.getSjBoardNumber()==null ? 0: warehouseGoodsForm.getSjBoardNumber())
+                            + (warehouseGoodsForms.get(j).getSjBoardNumber()==null ? 0: warehouseGoodsForms.get(j).getSjBoardNumber()));
+                    warehouseGoodsForm.setSjNumber((warehouseGoodsForm.getSjNumber()==null ? 0: warehouseGoodsForm.getSjNumber())
+                            + (warehouseGoodsForms.get(j).getSjNumber()==null ? 0: warehouseGoodsForms.get(j).getSjNumber()));
+                    warehouseGoodsForm.setSjPcs((warehouseGoodsForm.getSjPcs()==null ? 0: warehouseGoodsForm.getSjPcs())
+                            + (warehouseGoodsForms.get(j).getSjPcs()==null ? 0: warehouseGoodsForms.get(j).getSjPcs()));
+                    warehouseGoodsForm.setSjWeight((warehouseGoodsForm.getSjWeight()==null ? 0: warehouseGoodsForm.getSjWeight())
+                            + (warehouseGoodsForms.get(j).getSjWeight()==null ? 0: warehouseGoodsForms.get(j).getSjWeight()));
+                    warehouseGoodsForm.setSjVolume((warehouseGoodsForm.getSjVolume()==null ? 0: warehouseGoodsForm.getSjVolume())
+                            + (warehouseGoodsForms.get(j).getSjVolume()==null ? 0: warehouseGoodsForms.get(j).getSjVolume()));
+                    warehouseGoodsForms.set(i,warehouseGoodsForm);
+                    warehouseGoodsForms.remove(j);
+                }
+            }
+        }
 
         for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
             WarehouseGoods warehouseGoods = ConvertUtil.convert(warehouseGoodsForm, WarehouseGoods.class);

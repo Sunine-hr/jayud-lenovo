@@ -275,6 +275,10 @@
             and opc.legal_name = #{form.legalName}
             and opc.is_sum_to_main = 0 and opc.sub_type = 'cce'
         </if>
+        <if test="form.cmd == 'ccf'">
+            and opc.legal_name = #{form.legalName}
+            and opc.is_sum_to_main = 0 and opc.sub_type = 'ccf'
+        </if>
         ) temp where 1 = 1
         <if test="form.startAddress != null and form.startAddress != ''">
             and temp.startAddress like concat('%',#{form.startAddress},'%')
@@ -350,7 +354,7 @@
         LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
         LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
         <choose>
-            <when test="form.cmd == cci or form.cmd == cce ">
+            <when test="form.cmd == cci or form.cmd == cce or form.cmd == 'ccf'">
                 <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
                     left join order_payment_cost sub on sub.legal_id = opc.legal_id
                     <!--            <if test="form.cmd == 'zgys'">-->
@@ -387,7 +391,7 @@
                 and oi.legal_name = #{form.legalName}
                 and opc.is_sum_to_main = 1
             </when>
-            <when test="form.cmd == 'cci' or form.cmd == 'cce'">
+            <when test="form.cmd == 'cci' or form.cmd == 'cce' or form.cmd == 'ccf'">
                 and sub.legal_name = #{form.legalName}
                 and opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd}
             </when>
@@ -578,7 +582,7 @@
 
 
         <choose>
-            <when test="cmd == 'cci' or cmd == 'cce' ">
+            <when test="cmd == 'cci' or cmd == 'cce' or cmd == 'ccf' ">
                 SELECT DISTINCT
                 <if test="cmd == 'main'">
                     oi.legal_name legalName,
@@ -804,7 +808,7 @@
         <!--        </if>-->
 
         <choose>
-            <when test="form.cmd == 'cci' or form.cmd == 'cce'">
+            <when test="form.cmd == 'cci' or form.cmd == 'cce' or form.cmd =='ccf'">
                 <if test="form.cmd != null and form.cmd != ''">
                     le.legal_name legalName,
                     opc.legal_id legalEntityId,

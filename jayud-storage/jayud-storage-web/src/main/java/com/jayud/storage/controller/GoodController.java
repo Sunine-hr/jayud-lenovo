@@ -88,6 +88,7 @@ public class GoodController {
             }
         }
         convert.setStatus(1);
+        convert.setCustomerName(omsClient.getCustomerNameById(convert.getCustomerId()).getData());
         convert.setCreateTime(LocalDateTime.now());
         convert.setCreateUser(UserOperator.getToken());
         boolean b = goodService.saveOrUpdate(convert);

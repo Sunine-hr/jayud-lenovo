@@ -3,6 +3,7 @@ package com.jayud.storage.model.vo;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.ApiResult;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
 
 import javax.validation.constraints.NotNull;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -87,6 +89,7 @@ public class StorageOutOrderFormVO {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "创建时间")
@@ -96,12 +99,13 @@ public class StorageOutOrderFormVO {
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "备注")
     private String remarks;
 
-    @ApiModelProperty(value = "入库商品对象集合")
+    @ApiModelProperty(value = "出库商品对象集合")
     private List<WarehouseGoodsVO> goodsFormList;
 
     @ApiModelProperty(value = "附件集合")
@@ -141,10 +145,10 @@ public class StorageOutOrderFormVO {
     private Boolean cost;
 
     @ApiModelProperty(value = "重量")
-    private Double weight = 0.0;
+    private String weight;
 
     @ApiModelProperty(value = "体积")
-    private Double volume = 0.0;
+    private String volume;
 
     @ApiModelProperty(value = "货物名称")
     private String name;
@@ -161,6 +165,9 @@ public class StorageOutOrderFormVO {
     @ApiModelProperty(value = "子订单结算单位")
     private String defaultUnitCode;
 
+    @ApiModelProperty(value = "预计出库时间")
+    private String expectedDeliveryTime;
+
     /**
      * 组装商品信息
      */
@@ -169,33 +176,50 @@ public class StorageOutOrderFormVO {
         StringBuilder sb1 = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();
         StringBuilder sb3 = new StringBuilder();
-
+        StringBuilder sb4 = new StringBuilder();
+        Double volume = 0.0;
+        Double weight = 0.0;
         for (WarehouseGoodsVO goods : goodsList) {
 
-            sb1.append(goods.getName()).append(" ");
-            sb2.append(goods.getSku()).append(" ");
-            sb3.append(goods.getSpecificationModel()).append(" ");
+            if(goods.getName() != null){
+                sb1.append(goods.getName()).append(" ");
+            }
+            if(goods.getSku() != null){
+                sb2.append(goods.getSku()).append(" ");
+            }
+            if(goods.getSpecificationModel() != null){
+                sb3.append(goods.getSpecificationModel()).append(" ");
+            }
+            if(goods.getExpectedDeliveryTime()!=null){
+                sb4.append(goods.getExpectedDeliveryTime().toString().replace("T"," ")).append(";");
+            }
+            if(goods.getName() != null){
+                sb.append(goods.getName())
+                        .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
+                        .append(",").append(goods.getNumber()).append("件")
+                        .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
+                        .append(",").append("重量:").append(goods.getWeight() == null ? 0 : goods.getWeight()).append("KG")
+                        .append(";");
+            }
 
-            sb.append(goods.getName())
-                    .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
-                    .append(",").append(goods.getNumber()).append("件")
-                    .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
-                    .append(",").append("重量:").append(goods.getWeight() == null ? 0 : goods.getWeight()).append("KG")
-                    .append(";");
 
             if(goods.getVolume()!=null){
-                this.volume = this.volume + goods.getVolume();
+                volume = volume + goods.getVolume();
             }
             if(goods.getWeight()!=null){
-                this.weight = this.weight + goods.getWeight();
+                weight = weight + goods.getWeight();
             }
         }
-
+        DecimalFormat df = new DecimalFormat("0.0000");
+        this.volume = df.format(volume);
+        this.weight = df.format(weight);
         this.goodsInfo = sb.toString();
         this.name = sb1.toString();
         this.sku = sb2.toString();
         this.specificationModel = sb3.toString();
+        this.expectedDeliveryTime = sb4.toString();
     }
+
 
     /**
      * @param mainOrderObjs 远程客户对象集合

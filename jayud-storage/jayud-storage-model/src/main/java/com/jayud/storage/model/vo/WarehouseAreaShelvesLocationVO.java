@@ -85,6 +85,6 @@ public class WarehouseAreaShelvesLocationVO extends Model<WarehouseAreaShelvesLo
         if(this.width == null){
             this.width = 0.0;
         }
-        this.maximumVolume = this.height+"*"+this.length+"*"+this.width;
+        this.maximumVolume = this.length+"*"+this.width+"*"+this.height;
     }
 }

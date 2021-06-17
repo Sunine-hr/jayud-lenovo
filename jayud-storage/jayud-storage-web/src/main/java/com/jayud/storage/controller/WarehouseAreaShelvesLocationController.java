@@ -73,7 +73,7 @@ public class WarehouseAreaShelvesLocationController {
             for (WarehouseAreaShelvesLocation warehouseAreaShelvesLocation : warehouseAreaShelvesLocationList) {
                 for (WarehouseAreaShelvesFormVO record : page.getRecords()) {
                     if(record.getId().equals(warehouseAreaShelvesLocation.getShelvesId())){
-                        record.setUpdateTime(warehouseAreaShelvesLocation.getCreateTime().toString());
+                        record.setUpdateTime(warehouseAreaShelvesLocation.getCreateTime());
                         record.setQrUrl(shelvesUrl+record.getShelvesName());
                     }
                 }
@@ -111,26 +111,53 @@ public class WarehouseAreaShelvesLocationController {
     @PostMapping("/saveOrUpdateWarehouseAreaShelvesLocation")
     public CommonResult saveOrUpdateWarehouseAreaShelvesLocation(@RequestBody List<WarehouseAreaShelvesLocationForm> form){
 
+        List<InitComboxSVO> data = omsClient.initDictNameByDictTypeCode("shelfType").getData();
+
         for (WarehouseAreaShelvesLocationForm warehouseAreaShelvesLocationForm : form) {
+            int j = 0;
             if(warehouseAreaShelvesLocationForm.getId() == null){
-                for (WarehouseAreaShelvesLocationForm areaShelvesLocationForm : form) {
-                    if(warehouseAreaShelvesLocationForm.getShelvesLine().equals(areaShelvesLocationForm.getShelvesLine()) &&
+                for (int i = j+1; i < form.size(); i++) {
+                    if(warehouseAreaShelvesLocationForm.getShelvesLine().equals(form.get(i).getShelvesLine()) &&
                             warehouseAreaShelvesLocationForm.getShelvesType().equals("AB面")){
                         return CommonResult.error(444,warehouseAreaShelvesLocationForm.getShelvesLine()+"层,填的数据重复");
                     }
 
-                    if(warehouseAreaShelvesLocationForm.getShelvesLine().equals(areaShelvesLocationForm.getShelvesLine()) &&
-                            warehouseAreaShelvesLocationForm.getShelvesType().equals(areaShelvesLocationForm.getShelvesType())){
+                    if(warehouseAreaShelvesLocationForm.getShelvesLine().equals(form.get(i).getShelvesLine()) &&
+                            warehouseAreaShelvesLocationForm.getShelvesType().equals(form.get(i).getShelvesType())){
                         return CommonResult.error(444,warehouseAreaShelvesLocationForm.getShelvesLine()+"层，填的数据重复");
                     }
                 }
 
-                WarehouseAreaShelvesLocation warehouseAreaShelvesLocation = warehouseAreaShelvesLocationService.getLocation(warehouseAreaShelvesLocationForm.getShelvesLine(),warehouseAreaShelvesLocationForm.getShelvesType(),warehouseAreaShelvesLocationForm.getShelvesId());
+                WarehouseAreaShelvesLocation warehouseAreaShelvesLocation = warehouseAreaShelvesLocationService.getLocationByShelvesLine(warehouseAreaShelvesLocationForm.getShelvesLine(),warehouseAreaShelvesLocationForm.getShelvesId());
                 if(warehouseAreaShelvesLocation != null){
-                    return CommonResult.error(444,warehouseAreaShelvesLocationForm.getShelvesLine()+"层"+warehouseAreaShelvesLocationForm.getShelvesType()+"已存在");
+                    if(warehouseAreaShelvesLocation.getShelvesType().equals("AB面")){
+                        return CommonResult.error(444,warehouseAreaShelvesLocation.getShelvesLine()+"层没有多余面");
+                    }
+                    if(warehouseAreaShelvesLocation.getShelvesType().equals(warehouseAreaShelvesLocationForm.getShelvesType())){
+                        String shelvesTypeName = null;
+                        for (InitComboxSVO datum : data) {
+                            if(datum.getId().equals(warehouseAreaShelvesLocationForm.getShelvesType())){
+                                shelvesTypeName = datum.getValue();
+                            }
+                        }
+                        return CommonResult.error(444,warehouseAreaShelvesLocation.getShelvesLine()+"层"+shelvesTypeName+"已存在");
+                    }
+                }
+
+                WarehouseAreaShelvesLocation warehouseAreaShelvesLocation1 = warehouseAreaShelvesLocationService.getLocation(warehouseAreaShelvesLocationForm.getShelvesLine(),warehouseAreaShelvesLocationForm.getShelvesId(),warehouseAreaShelvesLocationForm.getShelvesType());
+                if(warehouseAreaShelvesLocation1 != null){
+                    return CommonResult.error(444,warehouseAreaShelvesLocation1.getShelvesLine()+"层已存在");
+                }
+
+
+            }else{
+                WarehouseAreaShelvesLocation byId = warehouseAreaShelvesLocationService.getById(warehouseAreaShelvesLocationForm.getId());
+                if(warehouseAreaShelvesLocationForm.getShelvesColumn()<byId.getShelvesColumn()){
+                    return CommonResult.error(444,"列数修改只能比原来大");
                 }
             }
 
+            j++;
         }
 
         boolean result = this.warehouseAreaShelvesLocationService.saveOrUpdateWarehouseAreaShelvesLocation(form);
@@ -175,10 +202,19 @@ public class WarehouseAreaShelvesLocationController {
 
     @ApiOperation(value = "获取该库位下所有商品")
     @GetMapping("/findGoodByKuCode")
-    public CommonResult findGoodByKuCode(@RequestParam("kuCode")String kuCode){
+    public List<String> findGoodByKuCode(@RequestParam("kuCode")String kuCode){
         //获取该库位下所有商品
         List<QRCodeLocationGoodVO> locationGoodVOS = inGoodsOperationRecordService.getListByKuCode(kuCode);
-        return CommonResult.success(locationGoodVOS);
+        List<String> list = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(locationGoodVOS)){
+            for (QRCodeLocationGoodVO locationGoodVO : locationGoodVOS) {
+                StringBuffer buffer = new StringBuffer();
+                buffer.append(locationGoodVO.getName()).append(" ").append(locationGoodVO.getSku()).append(" ").append(locationGoodVO.getSpecificationModel()).append(" ").append(locationGoodVO.getNumber());
+                list.add(buffer.toString());
+            }
+
+        }
+        return list;
     }
 
 }

@@ -198,6 +198,10 @@
             and orc.legal_name = #{form.legalName}
             and orc.is_sum_to_main = 0 and orc.sub_type = 'cce'
         </if>
+        <if test="form.cmd == 'ccf'">
+            and orc.legal_name = #{form.legalName}
+            and orc.is_sum_to_main = 0 and orc.sub_type = 'ccf'
+        </if>
         ) temp where 1 = 1
         <if test="form.startAddress != null and form.startAddress != ''">
             and temp.startAddress like concat('%',#{form.startAddress},'%')
@@ -277,7 +281,7 @@
         LEFT JOIN cost_info ci ON orc.cost_code = ci.id_code
 
         <choose>
-            <when test="form.cmd == cci or form.cmd == cce ">
+            <when test="form.cmd == 'cci' or form.cmd == 'cce' or form.cmd == 'ccf'">
                 <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
                     left join order_payment_cost sub on sub.legal_id = opc.legal_id
                     <!--            <if test="form.cmd == 'zgys'">-->
@@ -322,7 +326,7 @@
                 and oi.legal_name = #{form.legalName}
                 and orc.is_sum_to_main = 1
             </when>
-            <when test="form.cmd == 'cci' or form.cmd == 'cce'">
+            <when test="form.cmd == 'cci' or form.cmd == 'cce' or form.cmd == 'ccf'">
                 and sub.legal_name = #{form.legalName}
                 and orc.is_sum_to_main = 0 and orc.sub_type = #{form.cmd}
             </when>
@@ -580,7 +584,7 @@
     <select id="getViewBillByCostIds" parameterType="java.util.Map" resultType="com.jayud.finance.vo.ViewBillVO">
 
         <choose>
-            <when test="cmd == 'cci' or cmd == 'cce' ">
+            <when test="cmd == 'cci' or cmd == 'cce' or form.cmd == 'ccf'">
                 SELECT DISTINCT
                 <if test="cmd == 'main'">
                     oi.legal_name legalName,
@@ -820,7 +824,7 @@
 
         -- 仓储
         <choose>
-            <when test="form.cmd == 'cci' or form.cmd == 'cce'">
+            <when test="form.cmd == 'cci' or form.cmd == 'cce' or form.cmd == 'ccf'">
                 <if test="form.cmd != null and form.cmd != ''">
                     le.legal_name legalName,
                     orc.legal_id legalEntityId,

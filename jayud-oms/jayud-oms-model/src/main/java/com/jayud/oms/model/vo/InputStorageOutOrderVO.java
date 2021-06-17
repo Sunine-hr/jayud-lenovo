@@ -1,5 +1,6 @@
 package com.jayud.oms.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -74,12 +75,14 @@ public class InputStorageOutOrderVO {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "备注")
@@ -88,7 +91,7 @@ public class InputStorageOutOrderVO {
     @ApiModelProperty(value = "出库商品对象集合")
     private List<WarehouseGoodsVO> goodsFormList;
 
-    @ApiModelProperty(value = "出库商品对象集合")
+    @ApiModelProperty(value = "拣货商品对象集合")
     private List<WarehouseGoodsVO> warehouseGoodsVOS;
 
     @ApiModelProperty(value = "附件集合")
@@ -100,11 +103,14 @@ public class InputStorageOutOrderVO {
     @ApiModelProperty(value = "接单日期")
     private String receivingOrdersDate;
 
-    @ApiModelProperty(value = "总件数")
-    private String totalNumber;
+    @ApiModelProperty(value = "重量")
+    private Double weight = 0.0;
 
-    @ApiModelProperty(value = "总重量")
-    private String totalWeight;
+    @ApiModelProperty(value = "体积")
+    private Double volume = 0.0;
+
+    @ApiModelProperty(value = "状态")
+    private String statusDesc;
 
     @ApiModelProperty(value = "费用状态", required = true)
     private String costDesc;

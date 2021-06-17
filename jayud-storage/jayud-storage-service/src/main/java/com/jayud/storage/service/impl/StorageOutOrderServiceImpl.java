@@ -392,12 +392,12 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
             finishStorageOrderOpt(storageOutOrder);
 
             //出仓成功，生成存仓订单
-            List<OutWarehouseGoodsForm> outWarehouseGoodsForms = form.getOutWarehouseGoodsForms();
-            for (OutWarehouseGoodsForm outWarehouseGoodsForm : outWarehouseGoodsForms) {
+            List<WarehouseGoodsVO> outWarehouseGoodsForms = warehouseGoodsService.getList(form.getOrderId(),form.getOrderNo(),2);
+            for (WarehouseGoodsVO warehouseGoodsVO : outWarehouseGoodsForms) {
                 StorageOrder storageOrder = new StorageOrder();
                 storageOrder.setOutOrderNo(form.getOrderNo());
-                storageOrder.setSku(outWarehouseGoodsForm.getSku());
-                storageOrder.setWarehousingBatchNo(outWarehouseGoodsForm.getWarehousingBatchNo());
+                storageOrder.setSku(warehouseGoodsVO.getSku());
+                storageOrder.setWarehousingBatchNo(warehouseGoodsVO.getWarehousingBatchNo());
                 storageOrder.setEndTime(storageOutOrder.getUpdateTime());
                 boolean b2 = this.storageOrderService.saveStorageOrder(storageOrder);
                 if(!b2){

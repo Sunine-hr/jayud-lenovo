@@ -325,6 +325,9 @@
         <if test="form.cmd == 'cce'">
             orc.legal_name
         </if>
+        <if test="form.cmd == 'ccf'">
+            orc.legal_name
+        </if>
         = (select orb1.legal_name from order_receivable_bill orb1 left join order_receivable_bill_detail orbd1 on
         orb1.id = orbd1.bill_id where orbd1.bill_no = #{form.billNo} limit 1)
         and cus.`name` = (select orb1.unit_account from order_receivable_bill orb1 left join

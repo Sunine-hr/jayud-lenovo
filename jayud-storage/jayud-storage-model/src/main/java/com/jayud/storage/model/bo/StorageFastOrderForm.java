@@ -65,18 +65,6 @@ public class StorageFastOrderForm extends Model<StorageFastOrderForm> {
     @ApiModelProperty(value = "入仓号")
     private String inWarehouseNumber;
 
-    @ApiModelProperty(value = "创建人(登录用户)")
-    private String createUser;
-
-    @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "更新人")
-    private String updateUser;
-
-    @ApiModelProperty(value = "更新时间")
-    private LocalDateTime updateTime;
-
     @ApiModelProperty(value = "备注")
     private String remarks;
 
@@ -84,13 +72,13 @@ public class StorageFastOrderForm extends Model<StorageFastOrderForm> {
     private String orderTaker;
 
     @ApiModelProperty(value = "接单日期")
-    private LocalDateTime receivingOrdersDate;
+    private String receivingOrdersDate;
 
     @ApiModelProperty(value = "预计到达时间")
-    private LocalDateTime estimatedArrivalTime;
+    private String estimatedArrivalTime;
 
     @ApiModelProperty(value = "预计出库时间")
-    private LocalDateTime expectedDeliveryTime;
+    private String expectedDeliveryTime;
 
     @ApiModelProperty(value = "出库车牌号")
     private String outPlateNumber;

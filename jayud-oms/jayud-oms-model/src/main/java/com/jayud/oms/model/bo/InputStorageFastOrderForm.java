@@ -67,18 +67,6 @@ public class InputStorageFastOrderForm  {
     @NotNull(message = "入仓号不为空")
     private String inWarehouseNumber;
 
-    @ApiModelProperty(value = "创建人(登录用户)")
-    private String createUser;
-
-    @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "更新人")
-    private String updateUser;
-
-    @ApiModelProperty(value = "更新时间")
-    private LocalDateTime updateTime;
-
     @ApiModelProperty(value = "备注")
     private String remarks;
 

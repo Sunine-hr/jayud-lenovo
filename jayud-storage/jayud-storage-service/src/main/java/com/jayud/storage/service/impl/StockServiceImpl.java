@@ -50,16 +50,12 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     public boolean saveStock(Stock stock) {
         QueryWrapper queryWrapper1 = new QueryWrapper();
         queryWrapper1.eq("sku",stock.getSku());
-        queryWrapper1.eq("name",stock.getGoodName());
-        queryWrapper1.eq("specification_model",stock.getSpecificationModel());
         Good good = goodService.getOne(queryWrapper1);
         if(good == null){
             return false;
         }
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("sku",stock.getSku());
-        queryWrapper.eq("good_name",stock.getGoodName());
-        queryWrapper.eq("specification_model",stock.getSpecificationModel());
         Stock stock1 = this.getOne(queryWrapper);
         if(stock1!=null){
             stock1.setAvailableStock(stock1.getAvailableStock() + stock.getAvailableStock());
@@ -107,7 +103,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         queryWrapper.eq("sku",convert.getSku());
         Stock stock = this.baseMapper.selectOne(queryWrapper);
         stock.setAvailableStock(stock.getAvailableStock() - convert.getNumber());
-        stock.setLockStock(convert.getNumber());
+        stock.setLockStock(convert.getNumber() + (stock.getLockStock()==null ? 0 : stock.getLockStock()));
         boolean b = this.saveOrUpdate(stock);
         if(!b){
             return false;
@@ -155,5 +151,12 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     @Override
     public StockLocationNumberVO getListBySkuAndLocationCode(String sku, String locationCode,Long customerId) {
         return goodsLocationRecordService.getListBySkuAndLocationCode(sku, locationCode,customerId);
+    }
+
+    @Override
+    public Stock getStockBySku(String sku) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("sku",sku);
+        return this.baseMapper.selectOne(queryWrapper);
     }
 }

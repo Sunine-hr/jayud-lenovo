@@ -256,6 +256,10 @@ public class OrderInfoController {
                     if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
                         return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
                     }
+                    ApiResult result = storageClient.isEnough(storageOutOrderForm.getGoodsFormList());
+                    if(!result.isOk()){
+                        return CommonResult.error(result.getCode(),result.getMsg());
+                    }
                     ApiResult stock = storageClient.isStock(storageOutOrderForm.getGoodsFormList());
                     if(!stock.isOk()){
                         return CommonResult.error(stock.getCode(),stock.getMsg());

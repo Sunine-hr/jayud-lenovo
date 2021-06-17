@@ -3,6 +3,7 @@ package com.jayud.storage.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -63,7 +64,8 @@ public class InGoodsOperationRecordVO extends Model<InGoodsOperationRecordVO> {
     private String remarks;
 
     @ApiModelProperty(value = "入库时间")
-    private String createTime;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 
     @ApiModelProperty(value = "操作人")
     private String orderTaker;

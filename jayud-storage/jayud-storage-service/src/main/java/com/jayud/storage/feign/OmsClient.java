@@ -8,6 +8,7 @@ import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
 import com.jayud.storage.model.bo.AuditInfoForm;
+import com.jayud.storage.model.bo.StorageFastProcessOptForm;
 import com.jayud.storage.model.bo.StorageInProcessOptForm;
 import com.jayud.storage.model.bo.StorageOutProcessOptForm;
 import com.jayud.storage.model.vo.InitComboxSVO;
@@ -59,6 +60,12 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/saveOprStatus")
     ApiResult saveOprStatus(@RequestBody StorageOutProcessOptForm form);
+
+    /**
+     * 只记录成功操作流程状态
+     */
+    @RequestMapping(value = "/api/saveOprStatus")
+    ApiResult saveOprStatus(@RequestBody StorageFastProcessOptForm form);
 
     /**
      * 记录审核信息

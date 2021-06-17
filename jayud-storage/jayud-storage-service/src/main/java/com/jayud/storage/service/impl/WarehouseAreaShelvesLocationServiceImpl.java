@@ -167,6 +167,14 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
         return this.baseMapper.selectOne(queryWrapper);
     }
 
+    @Override
+    public WarehouseAreaShelvesLocation getLocationByShelvesLine(Integer shelvesLine, Long shelvesId) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("shelves_line",shelvesLine);
+        queryWrapper.eq("shelves_id",shelvesId);
+        return this.baseMapper.selectOne(queryWrapper);
+    }
+
 
     private List<String> createLocationCode(WarehouseAreaShelvesLocation warehouseAreaShelvesLocation){
 
@@ -183,8 +191,9 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
 
         List<String> string = new ArrayList<>();
         if(shelvesTypeName.equals("A面")){
-            StringBuffer locationCode = new StringBuffer();
-            for (Integer integer = 1; integer < warehouseAreaShelvesLocation.getShelvesColumn(); integer++) {
+
+            for (Integer integer = 1; integer < warehouseAreaShelvesLocation.getShelvesColumn()+1; integer++) {
+                StringBuffer locationCode = new StringBuffer();
                 locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
                         .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
                         .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
@@ -195,8 +204,9 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
 
         }
         if(shelvesTypeName.equals("B面")){
-            StringBuffer locationCode = new StringBuffer();
-            for (Integer integer = 1; integer < warehouseAreaShelvesLocation.getShelvesColumn(); integer++) {
+
+            for (Integer integer = 1; integer < warehouseAreaShelvesLocation.getShelvesColumn()+1; integer++) {
+                StringBuffer locationCode = new StringBuffer();
                 locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
                         .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
                         .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
@@ -207,9 +217,9 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
 
         }
         if(shelvesTypeName.equals("AB面")){
-            StringBuffer locationCode = new StringBuffer();
-            StringBuffer locationCode1 = new StringBuffer();
-            for (Integer integer = 1; integer < warehouseAreaShelvesLocation.getShelvesColumn(); integer++) {
+            for (Integer integer = 1; integer < warehouseAreaShelvesLocation.getShelvesColumn()+1; integer++) {
+                StringBuffer locationCode = new StringBuffer();
+                StringBuffer locationCode1 = new StringBuffer();
                 locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
                         .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
                         .append(warehouseAreaShelvesVO.getShelvesName()).append("-")

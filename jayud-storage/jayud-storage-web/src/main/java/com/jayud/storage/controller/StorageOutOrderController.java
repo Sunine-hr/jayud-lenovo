@@ -171,6 +171,7 @@ public class StorageOutOrderController {
 
             //拼装商品信息
             record.assemblyGoodsInfo(warehouseGoodsService.getList(record.getId(),record.getOrderNo(),2));
+            record.setGoodsFormList(warehouseGoodsService.getList(record.getId(),record.getOrderNo(),2));
 
             //拼装结算单位
             record.assemblyUnitCodeInfo(unitCodeInfo);
@@ -240,8 +241,8 @@ public class StorageOutOrderController {
                     if(goodsLocationRecord == null){
                         return CommonResult.error(400, goodsLocationRecordForm.getKuCode()+"不存在"+outWarehouseGoodsForm.getSku());
                     }
-                    if(goodsLocationRecord.getNumber()<goodsLocationRecordForm.getNumber()){//填的商品超过了该库位的总商品数
-                        return CommonResult.error(400, goodsLocationRecordForm.getKuCode()+"的该商品最大数量为"+goodsLocationRecord.getNumber());
+                    if(goodsLocationRecord.getUnDeliveredQuantity()<goodsLocationRecordForm.getNumber()){//填的商品超过了该库位的总商品数
+                        return CommonResult.error(400, goodsLocationRecordForm.getKuCode()+"的该商品最大数量为"+goodsLocationRecord.getUnDeliveredQuantity());
                     }
                 }
                 if(!outWarehouseGoodsForm.getNumber().equals(number)){
@@ -283,7 +284,7 @@ public class StorageOutOrderController {
     @ApiOperation(value = "出库订单驳回")
     @PostMapping(value = "/rejectOrder")
     public CommonResult rejectOrder(@RequestBody StorageOutCargoRejected storageOutCargoRejected) {
-        //查询拖车订单
+        //查询出库订单
         StorageOutOrder tmp = this.storageOutOrderService.getById(storageOutCargoRejected.getStorageInOrderId());
         //获取相应驳回操作
         OrderStatusEnum orderStatusEnum = OrderStatusEnum.getOutStorageOrderRejection(tmp.getStatus());
@@ -331,21 +332,21 @@ public class StorageOutOrderController {
             //循环
             for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecords) {
                 //数量小于这个库位的数量，循环结束，
-                if(goodsLocationRecord.getNumber()>=number){
+                if(goodsLocationRecord.getUnDeliveredQuantity()>=number){
                     GoodsLocationRecordFormVO goodsLocationRecordFormVO = new GoodsLocationRecordFormVO();
                     goodsLocationRecordFormVO.setKuCode(goodsLocationRecord.getKuCode());
                     goodsLocationRecordFormVO.setInGoodId(goodsLocationRecord.getInGoodId());
                     goodsLocationRecordFormVO.setNumber(number);
                     goodsLocationRecordFormVOS.add(goodsLocationRecordFormVO);
                     break;
-                }else if(goodsLocationRecord.getNumber()<number){
+                }else if(goodsLocationRecord.getUnDeliveredQuantity()<number){
                     GoodsLocationRecordFormVO goodsLocationRecordFormVO = new GoodsLocationRecordFormVO();
                     goodsLocationRecordFormVO.setKuCode(goodsLocationRecord.getKuCode());
                     goodsLocationRecordFormVO.setInGoodId(goodsLocationRecord.getInGoodId());
-                    goodsLocationRecordFormVO.setNumber(goodsLocationRecord.getNumber());
+                    goodsLocationRecordFormVO.setNumber(goodsLocationRecord.getUnDeliveredQuantity());
                     goodsLocationRecordFormVOS.add(goodsLocationRecordFormVO);
                 }
-                number = number - goodsLocationRecord.getNumber();
+                number = number - goodsLocationRecord.getUnDeliveredQuantity();
                 if(number<=0){
                     break;
                 }

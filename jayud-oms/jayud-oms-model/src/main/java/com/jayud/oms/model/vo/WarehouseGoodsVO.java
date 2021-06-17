@@ -1,6 +1,7 @@
 package com.jayud.oms.model.vo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -60,10 +61,12 @@ public class WarehouseGoodsVO {
     private Double volume;
 
     @ApiModelProperty(value = "预计到达时间")
-    private String estimatedArrivalTime;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime estimatedArrivalTime;
 
     @ApiModelProperty(value = "预计出库时间")
-    private String expectedDeliveryTime;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime expectedDeliveryTime;
 
     @ApiModelProperty(value = "备注")
     private String remarks;
@@ -81,13 +84,15 @@ public class WarehouseGoodsVO {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private String createTime;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
-    private String updateTime;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "商品类型 1为入库  2为出库")
     @NotNull(message = "货物类型不能为空")

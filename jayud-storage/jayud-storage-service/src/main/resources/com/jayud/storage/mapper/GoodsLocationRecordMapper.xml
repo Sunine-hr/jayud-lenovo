@@ -19,7 +19,8 @@
     </sql>
 
     <select id="getListByGoodId" resultType="com.jayud.storage.model.po.GoodsLocationRecord">
-        select glr.id, glr.ku_code kuCode, glr.inGood_id inGoodId, glr.number, glr.create_user createUser, glr.create_time createTime,glr.type
+        select glr.id, glr.ku_code kuCode, glr.inGood_id inGoodId, glr.number, glr.create_user createUser, glr.create_time createTime,glr.type,
+        glr.un_delivered_quantity unDeliveredQuantity
         from goods_location_record glr
         left join in_goods_operation_record igor on igor.id = glr.inGood_id
         where igor.sku = #{sku} and igor.warehousing_batch_no = #{warehousingBatchNo} and type = 1 order by createTime asc

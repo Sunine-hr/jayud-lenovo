@@ -1,9 +1,11 @@
 package com.jayud.storage.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.storage.model.po.InGoodsOperationRecord;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -31,7 +33,8 @@ public class QRCodeInformationVO {
     private String warehouseNumber;
 
     @ApiModelProperty(value = "入仓时间")
-    private String createTime;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 
     @ApiModelProperty(value = "货物信息")
     private String goodInfo;

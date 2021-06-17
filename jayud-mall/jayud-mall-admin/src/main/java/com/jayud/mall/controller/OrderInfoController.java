@@ -367,5 +367,14 @@ public class OrderInfoController {
         return CommonResult.success("操作成功");
     }
 
+    @ApiOperation(value = "后台-确认收货")
+    @ApiOperationSupport(order = 25)
+    @PostMapping("/affirmReceived")
+    public CommonResult<OrderInfoVO> affirmReceived(@Valid @RequestBody OrderInfoParaForm form){
+        Long id = form.getId();
+        OrderInfoVO orderInfoVO = orderInfoService.affirmReceived(id);
+        return CommonResult.success(orderInfoVO);
+    }
+
 
 }

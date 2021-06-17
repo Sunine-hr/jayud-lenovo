@@ -2561,6 +2561,24 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInteriorStatusService.saveOrUpdate(orderInteriorStatus);
     }
 
+    @Override
+    public OrderInfoVO affirmReceived(Long id) {
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(id);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单不存在");
+        }
+        OrderInfo orderInfo = ConvertUtil.convert(orderInfoVO, OrderInfo.class);
+        String afterStatusCode = orderInfo.getAfterStatusCode();
+//        if(!afterStatusCode.equals(OrderEnum.AFTER_RECEIVED.getCode())){
+//            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单状态错误，不能确认");
+//        }
+        orderInfo.setAfterStatusCode(OrderEnum.AFTER_RECEIVED.getCode());//AFTER_RECEIVED("20", "已收货"),
+        orderInfo.setAfterStatusName(OrderEnum.AFTER_RECEIVED.getName());
+        this.saveOrUpdate(orderInfo);
+        OrderInfoVO convert = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
+        return convert;
+    }
+
     private String extracted(String url, Map<String, Object> requestMap) {
         String feedback = HttpRequest
                 .post(url)

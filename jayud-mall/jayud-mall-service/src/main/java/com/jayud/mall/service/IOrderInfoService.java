@@ -326,4 +326,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param form
      */
     void auditOrderIsAuditOrder(IsAuditOrderForm form);
+
+    /**
+     * 后台-确认收货
+     * @param id
+     * @return
+     */
+    OrderInfoVO affirmReceived(Long id);
 }

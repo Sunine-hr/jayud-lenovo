@@ -106,6 +106,8 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         String storeGoodsWarehouseCode = orderInfoVO.getStoreGoodsWarehouseCode();
         String customerName = orderInfoVO.getCompany();
         String add = orderInfoVO.getDestinationWarehouseCode();//目的仓库
+        Integer needDeclare = orderInfoVO.getNeedDeclare();//0 否 对应 买关   -->  买单报关; 1 是 对应 独立   -->  退税报关
+
         OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(Long.valueOf(offerInfoId));
         if(ObjectUtil.isEmpty(offerInfoVO)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "报价不存在");
@@ -150,6 +152,10 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
                 markVO.setTotalCarton(totalCarton1);
                 markVO.setServiceName(serviceName);
 
+                if(needDeclare.equals(1)){
+                    //1 是 对应 独立   -->  退税报关
+                    markVO.setShowText("报关");
+                }
 
                 markList.add(markVO);
             }
@@ -187,6 +193,7 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
         String warehouseNo = orderInfoVO.getWarehouseNo();
         String customerName = orderInfoVO.getCompany();
         String add = orderInfoVO.getDestinationWarehouseCode();//目的仓库
+        Integer needDeclare = orderInfoVO.getNeedDeclare();//0 否 对应 买关   -->  买单报关; 1 是 对应 独立   -->  退税报关
 
         Long orderId = orderInfoVO.getId();
         Integer offerInfoId = orderInfoVO.getOfferInfoId();
@@ -220,6 +227,11 @@ public class OrderPickServiceImpl extends ServiceImpl<OrderPickMapper, OrderPick
                 markVO.setAdd(add);
                 markVO.setTotalCarton(totalCarton);
                 markVO.setServiceName(serviceName);
+
+                if(needDeclare.equals(1)){
+                    //1 是 对应 独立   -->  退税报关
+                    markVO.setShowText("报关");
+                }
 
                 markList.add(markVO);
             }

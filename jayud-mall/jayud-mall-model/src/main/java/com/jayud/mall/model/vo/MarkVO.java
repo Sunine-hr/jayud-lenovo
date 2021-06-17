@@ -26,4 +26,7 @@ public class MarkVO {
 
     @ApiModelProperty(value = "服务")
     private String serviceName;
+
+    @ApiModelProperty(value = "显示文本(报关)", notes = "只有退税报关，才显示`报关`两个字")
+    private String showText;
 }

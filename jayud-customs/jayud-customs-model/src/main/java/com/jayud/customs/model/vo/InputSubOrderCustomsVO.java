@@ -62,6 +62,9 @@ public class InputSubOrderCustomsVO {
     @ApiModelProperty(value = "法人名称")
     private String legalName;
 
+    @ApiModelProperty(value = "法人名称id")
+    private Long legalEntityId;
+
     @ApiModelProperty(value = "订单备注")
     private String orderRemarks;
 }

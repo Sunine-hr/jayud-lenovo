@@ -362,6 +362,18 @@ public class Test {
         LocalDateTime ldt = LocalDateTime.parse(dtf.format(time)+" 17:07:05",df);
         System.out.println("LocalDateTime转成String类型的时间："+localTime);
         System.out.println("String类型的时间转成LocalDateTime："+ldt);
+
+
+    }
+
+
+    @org.junit.Test
+    public void test19(){
+        int a = -2;
+        int b = 3;
+
+        System.out.println("a % b = "+(a % b));
+        System.out.println("a / b = "+(a / b));
     }
 
 

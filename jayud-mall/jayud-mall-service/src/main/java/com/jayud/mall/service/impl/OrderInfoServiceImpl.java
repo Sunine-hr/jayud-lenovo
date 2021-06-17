@@ -131,6 +131,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     OrderInteriorStatusMapper orderInteriorStatusMapper;
     @Autowired
     OrderCaseWmsMapper orderCaseWmsMapper;
+    @Autowired
+    OrderCaseShopMapper orderCaseShopMapper;
 
     @Autowired
     BaseService baseService;
@@ -164,7 +166,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     ILogisticsTrackService logisticsTrackService;
     @Autowired
     IOrderCaseWmsService orderCaseWmsService;
-
+    @Autowired
+    IOrderCaseShopService orderCaseShopService;
 
 
     @Override
@@ -649,6 +652,67 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderShopService.remove(orderShopQueryWrapper);
         orderShopService.saveOrUpdateBatch(orderShopList);
 
+        // 订单商品 均分到 订单箱号
+        /**
+         * 业务梳理：
+         * 1.   3个箱子，6个 商品A,可以平均分配 ，每个箱子 2个商品；
+         * 2.   3个箱子，7个 商品A，不能平均分配，前两个均分，最后一个用减法；
+         * 3.   3个箱子，2个 商品A，不能分配，提示用户。
+         *
+         * 多个商品的情况，
+         * 对每一个商品A，商品B，商品C 进行单独判断，拆分到箱子。
+         */
+        Long orderInfoId = orderInfo.getId();//订单id
+        //查询保存后的数据库-订单箱号list
+        List<OrderCaseVO> db_orderCaseList = orderCaseMapper.findOrderCaseByOrderId(orderInfoId);
+        int case_number = db_orderCaseList.size();//箱子总数量  后面计算用的 商品均分到箱子
+        //查询保存后的数据库-订单商品list
+        List<OrderShopVO> db_orderShopList = orderShopMapper.findOrderShopByOrderId(orderInfoId);
+        //开始分配 订单商品  到  订单箱子  准备保存的数据
+        List<OrderCaseShop> orderCaseShopList = new ArrayList<>();
+        //第一层循环：循环订单商品
+        for (int i=0; i<db_orderShopList.size(); i++){
+            OrderShopVO orderShopVO = db_orderShopList.get(i);
+            Integer goodId = orderShopVO.getGoodId();//商品id
+            Integer quantity = orderShopVO.getQuantity();//商品数量
+            int mod = quantity % case_number;//求模运算,求余数
+            int case_shop_quantity = quantity / case_number;//整数，得到每箱箱子商品数量
+            if(case_shop_quantity <= 0){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "商品数量不足，不能分配到箱子");
+            }
+            if(mod < 0){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "商品数量为负数，不能分配到箱子");
+            }
+            //第二层循环：循环订单箱子
+            for(int j=0; j<db_orderCaseList.size(); j++){
+                OrderCaseVO orderCaseVO = db_orderCaseList.get(j);
+                Long caseId = orderCaseVO.getId();
+                String cartonNo = orderCaseVO.getCartonNo();
+                OrderCaseShop orderCaseShop = new OrderCaseShop();
+                orderCaseShop.setCaseId(caseId);
+                orderCaseShop.setCartonNo(cartonNo);
+                orderCaseShop.setOrderId(orderInfoId.intValue());
+                orderCaseShop.setOrderNo(orderInfo.getOrderNo());
+                orderCaseShop.setGoodId(goodId);
+                //箱子分配的商品数量 重点 最后一个箱子用减法
+                if(j==(db_orderCaseList.size()-1)){
+                    //商品分配到箱子的数量 = 订单商品数量 - (之前的箱子个数 * 均分到箱子的数量)
+                    int case_shop_quantity2 = quantity - (j * case_shop_quantity);
+                    orderCaseShop.setQuantity(case_shop_quantity2);//商品分配到箱子的数量
+                }else{
+                    orderCaseShop.setQuantity(case_shop_quantity);//商品分配到箱子的数量
+                }
+                orderCaseShop.setCreateTime(LocalDateTime.now());
+                orderCaseShopList.add(orderCaseShop);
+            }
+        }
+        QueryWrapper<OrderCaseShop> orderCaseShopQueryWrapper = new QueryWrapper<>();
+        orderCaseShopQueryWrapper.eq("order_id", orderInfo.getId());
+        orderCaseShopService.remove(orderCaseShopQueryWrapper);
+        if(CollUtil.isNotEmpty(orderCaseShopList)){
+            orderCaseShopService.saveOrUpdateBatch(orderCaseShopList);
+        }
+
         //保存-订单对应提货信息表：order_pick
         List<OrderPickVO> orderPickVOList = form.getOrderPickVOList();
         if(CollUtil.isNotEmpty(orderPickVOList)){
@@ -660,7 +724,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
             List<OrderPick> orderPickList = ConvertUtil.convertList(orderPickVOList, OrderPick.class);
             orderPickList.forEach(orderPick -> {
-
 
                 //form 提货地址
                 //  `address_id` int(11) DEFAULT NULL COMMENT '提货地址id(delivery_address id)',
@@ -1239,6 +1302,68 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderShopQueryWrapper.eq("order_id", orderInfo.getId());
         orderShopService.remove(orderShopQueryWrapper);
         orderShopService.saveOrUpdateBatch(orderShopList);
+
+        // 订单商品 均分到 订单箱号
+        /**
+         * 业务梳理：
+         * 1.   3个箱子，6个 商品A,可以平均分配 ，每个箱子 2个商品；
+         * 2.   3个箱子，7个 商品A，不能平均分配，前两个均分，最后一个用减法；
+         * 3.   3个箱子，2个 商品A，不能分配，提示用户。
+         *
+         * 多个商品的情况，
+         * 对每一个商品A，商品B，商品C 进行单独判断，拆分到箱子。
+         */
+        Long orderInfoId = orderInfo.getId();//订单id
+        //查询保存后的数据库-订单箱号list
+        List<OrderCaseVO> db_orderCaseList = orderCaseMapper.findOrderCaseByOrderId(orderInfoId);
+        int case_number = db_orderCaseList.size();//箱子总数量  后面计算用的 商品均分到箱子
+        //查询保存后的数据库-订单商品list
+        List<OrderShopVO> db_orderShopList = orderShopMapper.findOrderShopByOrderId(orderInfoId);
+        //开始分配 订单商品  到  订单箱子  准备保存的数据
+        List<OrderCaseShop> orderCaseShopList = new ArrayList<>();
+        //第一层循环：循环订单商品
+        for (int i=0; i<db_orderShopList.size(); i++){
+            OrderShopVO orderShopVO = db_orderShopList.get(i);
+            Integer goodId = orderShopVO.getGoodId();//商品id
+            Integer quantity = orderShopVO.getQuantity();//商品数量
+            int mod = quantity % case_number;//求模运算,求余数
+            int case_shop_quantity = quantity / case_number;//整数，得到每箱箱子商品数量
+            if(case_shop_quantity <= 0){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "商品数量不足，不能分配到箱子");
+            }
+            if(mod < 0){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "商品数量为负数，不能分配到箱子");
+            }
+            //第二层循环：循环订单箱子
+            for(int j=0; j<db_orderCaseList.size(); j++){
+                OrderCaseVO orderCaseVO = db_orderCaseList.get(j);
+                Long caseId = orderCaseVO.getId();
+                String cartonNo = orderCaseVO.getCartonNo();
+                OrderCaseShop orderCaseShop = new OrderCaseShop();
+                orderCaseShop.setCaseId(caseId);
+                orderCaseShop.setCartonNo(cartonNo);
+                orderCaseShop.setOrderId(orderInfoId.intValue());
+                orderCaseShop.setOrderNo(orderInfo.getOrderNo());
+                orderCaseShop.setGoodId(goodId);
+                //箱子分配的商品数量 重点 最后一个箱子用减法
+                if(j==(db_orderCaseList.size()-1)){
+                    //商品分配到箱子的数量 = 订单商品数量 - (之前的箱子个数 * 均分到箱子的数量)
+                    int case_shop_quantity2 = quantity - (j * case_shop_quantity);
+                    orderCaseShop.setQuantity(case_shop_quantity2);//商品分配到箱子的数量
+                }else{
+                    orderCaseShop.setQuantity(case_shop_quantity);//商品分配到箱子的数量
+                }
+                orderCaseShop.setCreateTime(LocalDateTime.now());
+                orderCaseShopList.add(orderCaseShop);
+            }
+        }
+        QueryWrapper<OrderCaseShop> orderCaseShopQueryWrapper = new QueryWrapper<>();
+        orderCaseShopQueryWrapper.eq("order_id", orderInfo.getId());
+        orderCaseShopService.remove(orderCaseShopQueryWrapper);
+        if(CollUtil.isNotEmpty(orderCaseShopList)){
+            orderCaseShopService.saveOrUpdateBatch(orderCaseShopList);
+        }
+
 
         //保存-订单对应提货信息表：order_pick
         List<OrderPickVO> orderPickVOList = form.getOrderPickVOList();

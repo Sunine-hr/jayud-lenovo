@@ -318,7 +318,8 @@
         oi.`is_data_all` isDataAll,
         oi.`status` status,
         oi.legal_entity_id legalEntityId,
-        ci.id customerId
+        ci.id customerId,
+        oi.operation_time
         FROM
         order_info oi
         left join customer_info ci on oi.customer_code = ci.id_code

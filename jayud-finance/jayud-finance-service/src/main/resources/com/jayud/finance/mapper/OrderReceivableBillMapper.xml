@@ -109,7 +109,8 @@
         orc.currency_code,
         orc.change_amount localAmount,
         orc.id costId,
-        orc.is_bill isBill
+        orc.is_bill isBill,
+        oi.operation_time
         FROM
         order_receivable_cost orc
         LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
@@ -192,6 +193,9 @@
         <!--            and orc.is_sum_to_main = 0 and orc.sub_type = 'cce'-->
         <!--        </if>-->
         ) temp where 1 = 1
+        <if test="form.orderNo != null and form.orderNo != ''">
+            and temp.orderNo like concat('%',#{form.orderNo},'%')
+        </if>
         <if test="form.startAddress != null and form.startAddress != ''">
             and temp.startAddress like concat('%',#{form.startAddress},'%')
         </if>
@@ -222,6 +226,10 @@
         <if test="form.beginCreatedTimeStr != null and form.beginCreatedTimeStr !=''">
             and date_format(temp.createdTimeStr,'%Y-%m-%d') >= date_format(#{form.beginCreatedTimeStr},'%Y-%m-%d')
         </if>
+        <if test="form.operationTime != null and form.operationTime.size>0">
+            and date_format(temp.operation_time,'%Y-%m-%d')
+            BETWEEN #{form.operationTime[0]} AND #{form.operationTime[1]}
+        </if>
     </select>
 
 
@@ -232,6 +240,7 @@
         orc.main_order_no orderNo,
         orc.order_no subOrderNo,
         pb.`name` bizCodeDesc,
+        oi.operation_time,
         -- orc.is_bill,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr
         FROM
@@ -264,11 +273,18 @@
             </choose>
         </if>
         ) temp where 1 = 1
+        <if test="form.orderNo != null and form.orderNo != ''">
+            and temp.orderNo like concat('%',#{form.orderNo},'%')
+        </if>
         <if test="form.endCreatedTimeStr != null and form.endCreatedTimeStr !=''">
             and date_format(temp.createdTimeStr,'%Y-%m-%d') &lt;= date_format(#{form.endCreatedTimeStr},'%Y-%m-%d')
         </if>
         <if test="form.beginCreatedTimeStr != null and form.beginCreatedTimeStr !=''">
             and date_format(temp.createdTimeStr,'%Y-%m-%d') >= date_format(#{form.beginCreatedTimeStr},'%Y-%m-%d')
+        </if>
+        <if test="form.operationTime != null and form.operationTime.size>0">
+            and date_format(temp.operation_time,'%Y-%m-%d')
+            BETWEEN #{form.operationTime[0]} AND #{form.operationTime[1]}
         </if>
         group by temp.orderNo,temp.subOrderNo
     </select>

@@ -8,10 +8,14 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.List;
 
 
 @Data
 public class QueryNotPaidBillForm extends BasePageForm {
+
+    @ApiModelProperty(value = "主订单号")
+    private String orderNo;
 
     @ApiModelProperty(value = "供应商,应付必填")
     private String supplierChName;
@@ -57,4 +61,7 @@ public class QueryNotPaidBillForm extends BasePageForm {
     @ApiModelProperty(value = "是否查询订单地址", required = true)
     @JsonIgnore
     private Boolean isQueryOrderAddress;
+
+    @ApiModelProperty(value = "操作时间")
+    private List<String> operationTime;
 }

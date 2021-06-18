@@ -287,6 +287,9 @@
         <!--            and opc.is_sum_to_main = 0 and opc.sub_type = 'cce'-->
         <!--        </if>-->
         ) temp where 1 = 1
+        <if test="form.orderNo != null and form.orderNo != ''">
+            and temp.orderNo like concat('%',#{form.orderNo},'%')
+        </if>
         <if test="form.startAddress != null and form.startAddress != ''">
             and temp.startAddress like concat('%',#{form.startAddress},'%')
         </if>
@@ -313,6 +316,10 @@
         </if>
         <if test="form.beginCreatedTimeStr != null and form.beginCreatedTimeStr !=''">
             and date_format(temp.createdTimeStr,'%Y-%m-%d') >= date_format(#{form.beginCreatedTimeStr},'%Y-%m-%d')
+        </if>
+        <if test="form.operationTime != null and form.operationTime.size>0">
+            and date_format(temp.operation_time,'%Y-%m-%d')
+            BETWEEN #{form.operationTime[0]} AND #{form.operationTime[1]}
         </if>
 
     </select>
@@ -1122,13 +1129,20 @@
             </choose>
         </if>
         ) temp where 1 = 1
-
+        <if test="form.orderNo != null and form.orderNo != ''">
+            and temp.orderNo like concat('%',#{form.orderNo},'%')
+        </if>
         <if test="form.endCreatedTimeStr != null and form.endCreatedTimeStr !=''">
             and date_format(temp.createdTimeStr,'%Y-%m-%d') &lt;= date_format(#{form.endCreatedTimeStr},'%Y-%m-%d')
         </if>
         <if test="form.beginCreatedTimeStr != null and form.beginCreatedTimeStr !=''">
             and date_format(temp.createdTimeStr,'%Y-%m-%d') >= date_format(#{form.beginCreatedTimeStr},'%Y-%m-%d')
         </if>
+        <if test="form.operationTime != null and form.operationTime.size>0">
+            and date_format(temp.operation_time,'%Y-%m-%d')
+            BETWEEN #{form.operationTime[0]} AND #{form.operationTime[1]}
+        </if>
+
         group by temp.orderNo,temp.subOrderNo
     </select>
 </mapper>

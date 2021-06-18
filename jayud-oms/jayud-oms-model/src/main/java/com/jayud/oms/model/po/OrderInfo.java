@@ -3,6 +3,7 @@ package com.jayud.oms.model.po;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -115,6 +116,9 @@ public class OrderInfo extends Model<OrderInfo> {
 
     @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo.... 参照CreateUserTypeEnum)")
     private Integer createUserType;
+
+    @ApiModelProperty(value = "操作时间")
+    private LocalDateTime operationTime;
 
     @Override
     protected Serializable pkVal() {

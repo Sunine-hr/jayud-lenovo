@@ -1,7 +1,10 @@
 package com.jayud.oms.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 
 @Data
@@ -75,5 +78,9 @@ public class InputMainOrderVO {
 
     @ApiModelProperty(value = "主订单备注")
     private String remarks;
+
+    @ApiModelProperty(value = "操作时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    private LocalDateTime operationTime;
 
 }

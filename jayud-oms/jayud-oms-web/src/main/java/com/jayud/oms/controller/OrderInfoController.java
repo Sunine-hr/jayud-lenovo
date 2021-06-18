@@ -93,12 +93,13 @@ public class OrderInfoController {
     @PostMapping("/createOrder")
     public CommonResult createOrder(@RequestBody InputOrderForm form) {
         //通用参数校验
-        if (form == null || StringUtil.isNullOrEmpty(form.getCmd()) ||
-                form.getOrderForm() == null || "".equals(form.getOrderForm())) {
+        if (form == null || StringUtil.isNullOrEmpty(form.getCmd()) || form.getOrderForm() == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
         //主订单参数校验
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
+        inputMainOrderForm.checkCreateOrder();
+
         //待处理状态无法操作
         if (inputMainOrderForm.getOrderId() != null) {
             OrderInfo orderInfo = this.orderInfoService.getById(inputMainOrderForm.getOrderId());
@@ -107,22 +108,8 @@ public class OrderInfoController {
             }
         }
 
-        if (inputMainOrderForm == null || StringUtil.isNullOrEmpty(inputMainOrderForm.getCustomerCode())
-                || StringUtil.isNullOrEmpty(inputMainOrderForm.getCustomerName())
-                || inputMainOrderForm.getBizUid() == null
-                || StringUtil.isNullOrEmpty(inputMainOrderForm.getBizUname())
-                || StringUtil.isNullOrEmpty(inputMainOrderForm.getLegalName())
-                || inputMainOrderForm.getLegalEntityId() == null
-                || inputMainOrderForm.getBizBelongDepart() == null
-                || StringUtil.isNullOrEmpty(inputMainOrderForm.getBizCode())
-                || StringUtil.isNullOrEmpty(inputMainOrderForm.getClassCode())
-                || StringUtil.isNullOrEmpty(inputMainOrderForm.getSelectedServer())
-                || StringUtil.isNullOrEmpty(inputMainOrderForm.getUnitCode())
-                || StringUtil.isNullOrEmpty(inputMainOrderForm.getUnitAccount())
-                || (StringUtil.isNullOrEmpty(inputMainOrderForm.getIsDataAll())
-                && inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode()))) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
-        }
+
+
         if (CommonConstant.SUBMIT.equals(form.getCmd())) {
             //1.报关资料是否齐全 1-齐全 0-不齐全 齐全时校验报关数据
             //2.纯报关时校验数据

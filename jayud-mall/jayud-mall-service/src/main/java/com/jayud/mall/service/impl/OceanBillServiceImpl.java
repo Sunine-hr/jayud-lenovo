@@ -735,6 +735,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "提单id不能为空");
         }
         OceanCounter oceanCounter = ConvertUtil.convert(form, OceanCounter.class);
+        oceanCounter.setCreateTime(LocalDateTime.now());
+
         //1.保存(提单)柜子
         oceanCounterService.saveOrUpdate(oceanCounter);
         Long counterId = oceanCounter.getId();

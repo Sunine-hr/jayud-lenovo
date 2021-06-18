@@ -88,12 +88,14 @@ public class CounterListInfoServiceImpl extends ServiceImpl<CounterListInfoMappe
         }
         Long listInfoId = counterListExcelVO.getListInfoId();//柜子清单id 柜子清单信息表(counter_list_info id)
         List<CounterOrderInfoExcelVO> counterOrderInfoExcelList = counterOrderInfoMapper.findCounterOrderInfoExcelBybid(listInfoId);
-        String warehouseNo = "";//进仓编号，多个
-        String fabNo = "";//FBA号，多个
-        String cartons = "";//箱数
-        String weight = "";//重量
-        String volume = "";//体积
+
         for (int i=0; i<counterOrderInfoExcelList.size(); i++){
+            String warehouseNo = "";//进仓编号，多个
+            String fabNo = "";//FBA号，多个
+            String cartons = "";//箱数
+            String weight = "";//重量
+            String volume = "";//体积
+
             CounterOrderInfoExcelVO counterOrderInfoExcelVO = counterOrderInfoExcelList.get(i);
             Long orderId = counterOrderInfoExcelVO.getOrderId();
             OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(orderId);

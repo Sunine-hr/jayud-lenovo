@@ -242,15 +242,14 @@
     <select id="findBillOrderByBillId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.po.BillOrderRelevance">
         select
-        distinct bill_id,bill_no,orderId,order_no
+        distinct bill_id,bill_no,order_id,order_no
         from (
             select
-            t.id, t1.cntr_no, t1.cabinet_code,t2.file_name,t3.case_id,t3.carton_no,t3.bill_id,t3.bill_no,t3.order_no,t4.id orderId
+            t.id, t1.cntr_no, t1.cabinet_code,t2.file_name,t3.order_id,t3.order_no,t3.bill_id,t3.bill_no
             from ocean_bill t
             left join ocean_counter t1 on t1.ob_id = t.id
             left join counter_list_info t2 on t2.counter_id = t1.id
-            left join counter_case_info t3 on t3.b_id = t2.id
-            left join order_info t4 on t4.order_no = t3.order_no
+            left join counter_order_info t3 on t3.b_id = t2.id
             where 1=1
             and t3.bill_id = #{billId}
         ) temp

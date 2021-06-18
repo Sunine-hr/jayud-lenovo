@@ -90,17 +90,17 @@ public class FinanceServiceImpl implements FinanceService {
     @Override
     public boolean checkAntiAudite(String auditStatus) {
         //TODO 财务审核对账单通过和开票申请(付款申请)通过可以推送
-//        if (BillEnum.B_4.getCode().equals(auditStatus)
-//                || BillEnum.B_5.getCode().equals(auditStatus)
-//                || BillEnum.B_5_1.getCode().equals(auditStatus)
-//                || BillEnum.B_6.getCode().equals(auditStatus)
-//                || BillEnum.B_6_1.getCode().equals(auditStatus)
-//                || BillEnum.B_9.getCode().equals(auditStatus)) {
-//            return true;
-//        }
-        if (BillEnum.B_5_1.getCode().equals(auditStatus)) {
-           return true;
+        if (BillEnum.B_4.getCode().equals(auditStatus)
+                || BillEnum.B_5.getCode().equals(auditStatus)
+                || BillEnum.B_5_1.getCode().equals(auditStatus)
+                || BillEnum.B_6.getCode().equals(auditStatus)
+                || BillEnum.B_6_1.getCode().equals(auditStatus)
+                || BillEnum.B_9.getCode().equals(auditStatus)) {
+            return true;
         }
+//        if (BillEnum.B_5_1.getCode().equals(auditStatus)) {
+//           return true;
+//        }
         return false;
     }
 

@@ -455,4 +455,13 @@ public class StringUtils {
     public static String zeroComplement(Integer digit, Integer num) {
         return String.format("%0" + digit + "d", num);
     }
+
+    /**
+     * 获取括号值
+     */
+    public static String getBracketsValue(String value) {
+        return value.substring(value.indexOf("(") + 1, value.indexOf(")"));
+    }
+
+
 }

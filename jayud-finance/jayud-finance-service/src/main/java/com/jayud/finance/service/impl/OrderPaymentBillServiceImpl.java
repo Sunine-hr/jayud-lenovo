@@ -34,7 +34,6 @@ import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.*;
 import com.jayud.finance.vo.*;
 import com.jayud.finance.vo.InlandTP.OrderInlandTransportDetails;
-import com.jayud.finance.vo.template.order.AirOrderTemplate;
 import io.netty.util.internal.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -512,7 +511,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
     }
 
     @Override
-    public List<SheetHeadVO> findSheetHeadInfo(List<Long> costIds, String cmd) {
+    public List<SheetHeadVO> findSheetHeadInfo(List<Long> costIds, Map<String, Object> callbackArg, String cmd) {
         List<SheetHeadVO> allHeadList = new ArrayList<>();
         List<SheetHeadVO> fixHeadList = new ArrayList<>();
         try {
@@ -533,6 +532,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                     fixHeadList.add(sheetHeadVO);
                 }
             }
+            //固定头部数目
+            callbackArg.put("fixHeadIndex", fixHeadList.size());
         } catch (Exception e) {
             e.printStackTrace();
         }

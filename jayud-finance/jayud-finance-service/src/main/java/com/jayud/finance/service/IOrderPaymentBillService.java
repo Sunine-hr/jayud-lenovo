@@ -85,7 +85,7 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      *
      * @return
      */
-    List<SheetHeadVO> findSheetHeadInfo(List<Long> costIds, String cmd);
+    List<SheetHeadVO> findSheetHeadInfo(List<Long> costIds, Map<String, Object> callbackArg, String cmd);
 
     /**
      * 预览账单全局数据

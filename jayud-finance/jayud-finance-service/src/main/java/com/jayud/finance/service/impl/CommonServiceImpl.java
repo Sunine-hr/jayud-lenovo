@@ -16,6 +16,7 @@ import com.jayud.finance.service.CommonService;
 import com.jayud.finance.service.IOrderPaymentBillService;
 import com.jayud.finance.service.IOrderReceivableBillService;
 import com.jayud.finance.vo.InputGoodsVO;
+import com.jayud.finance.vo.SheetHeadVO;
 import com.jayud.finance.vo.template.order.AirOrderTemplate;
 import com.jayud.finance.vo.template.order.InlandTPTemplate;
 import com.jayud.finance.vo.template.order.TmsOrderTemplate;
@@ -23,6 +24,7 @@ import com.jayud.finance.vo.template.order.TrailerOrderTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -367,9 +369,46 @@ public class CommonServiceImpl implements CommonService {
         return billNo.toString();
     }
 
+    /**
+     * 动态头部合计费用
+     */
+    @Override
+    public Map<String, Map<String, BigDecimal>> totalDynamicHeadCost(int dynamicHeadCostIndex,
+                                                                     List<SheetHeadVO> sheetHeadVOS,
+                                                                     JSONArray datas) {
+        LinkedHashMap<String, String> dynamicHead = new LinkedHashMap<>();
+        for (int i = 0; i < sheetHeadVOS.size(); i++) {
+            SheetHeadVO sheetHeadVO = sheetHeadVOS.get(i);
+            if (i > dynamicHeadCostIndex) {
+                dynamicHead.put(sheetHeadVO.getName(), sheetHeadVO.getViewName());
+            }
+        }
+        Map<String, BigDecimal> totalCostItem = new HashMap<>();
+        Map<String, BigDecimal> totalItem = new HashMap<>();
+        for (int i = 0; i < datas.size(); i++) {
+            JSONObject jsonObject = datas.getJSONObject(i);
+            dynamicHead.forEach((k, v) -> {
+                BigDecimal cost = jsonObject.getBigDecimal(k);
+                if (cost != null) {
+                    if (v.startsWith("合计")) {
+                        totalItem.merge(v, cost, BigDecimal::add);
+                    } else {
+                        totalCostItem.merge(v, cost, BigDecimal::add);
+                    }
+                }
+            });
+
+        }
+        Map<String, Map<String, BigDecimal>> cost = new HashMap<>();
+        cost.put("totalCostItem", totalCostItem);
+        cost.put("totalItem", totalItem);
+        return cost;
+    }
+
 
     public static void main(String[] args) {
-        System.out.println(DateUtils.LocalDateTime2Str(LocalDateTime.now(), "YYMM"));
+        String str = "合计(港元)";
+        System.out.println(str.startsWith("合计"));
     }
 
 }

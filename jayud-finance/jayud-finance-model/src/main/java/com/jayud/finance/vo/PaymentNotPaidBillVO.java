@@ -4,6 +4,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.vo.InlandTP.OrderInlandSendCarsVO;
 import com.jayud.finance.vo.InlandTP.OrderInlandTransportDetails;
@@ -12,6 +13,7 @@ import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -151,6 +153,10 @@ public class PaymentNotPaidBillVO {
 
     @ApiModelProperty(value = "原始金额")
     private String originalAmount;
+
+    @ApiModelProperty(value = "操作时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    private LocalDateTime operationTime;
 
     public void setAuditStatus(String auditStatus) {
         this.auditStatus = auditStatus;

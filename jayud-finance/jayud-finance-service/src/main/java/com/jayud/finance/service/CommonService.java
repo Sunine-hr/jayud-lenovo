@@ -2,8 +2,10 @@ package com.jayud.finance.service;
 
 import cn.hutool.json.JSONArray;
 import com.jayud.finance.enums.BillTemplateEnum;
+import com.jayud.finance.vo.SheetHeadVO;
 import com.jayud.finance.vo.template.order.AirOrderTemplate;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -51,9 +53,16 @@ public interface CommonService {
     /**
      * 生成账单编号
      *
-     * @param type 类型(0:应收,1:应付)
+     * @param type          类型(0:应收,1:应付)
      * @param legalEntityId
      * @return
      */
     String generateBillNo(Long legalEntityId, Integer type);
+
+    /**
+     * 动态头部合计费用
+     */
+    public Map<String, Map<String, BigDecimal>>  totalDynamicHeadCost(int dynamicHeadCostIndex,
+                                                        List<SheetHeadVO> sheetHeadVOS,
+                                                        JSONArray datas);
 }

@@ -76,6 +76,8 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     private CommonService commonService;
     @Autowired
     private DataProcessingService dataProcessingService;
+    @Autowired
+    private FinanceService financeService;
 
     @Override
     public IPage<OrderPaymentBillDetailVO> findPaymentBillDetailByPage(QueryPaymentBillDetailForm form) {
@@ -777,7 +779,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             }
         } else if ("cw_f_reject".equals(form.getCmd())) {
             for (OrderPaymentBillDetail existObject : existList) {
-                if (!BillEnum.B_5_1.getCode().equals(existObject.getAuditStatus())) {
+                if (!this.financeService.checkAntiAudite(existObject.getAuditStatus())) {
                     return CommonResult.error(10001, "存在不符合操作条件的数据");
                 }
             }

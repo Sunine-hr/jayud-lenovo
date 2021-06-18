@@ -17,6 +17,7 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.po.OrderPaymentBillDetail;
+import com.jayud.finance.service.CommonService;
 import com.jayud.finance.service.IOrderPaymentBillService;
 import com.jayud.finance.vo.*;
 import io.swagger.annotations.Api;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +45,8 @@ public class PaymentBillController {
     IOrderPaymentBillService billService;
     @Autowired
     private OmsClient omsClient;
+    @Autowired
+    private CommonService commonService;
 
     @ApiOperation(value = "应付出账单列表(主订单/子订单)")
     @PostMapping("/findPaymentBillByPage")
@@ -128,9 +132,15 @@ public class PaymentBillController {
         JSONArray jsonArray = billService.viewPaymentBillInfo(form, costIds);
         resultMap.put(CommonConstant.LIST, jsonArray);//分页数据
 //        List<SheetHeadVO> sheetHeadVOS = billService.findSheetHead(costIds);
-        List<SheetHeadVO> sheetHeadVOS = billService.findSheetHeadInfo(costIds, form.getCmd());
+        Map<String, Object> callbackArg = new HashMap<>();
+        List<SheetHeadVO> sheetHeadVOS = billService.findSheetHeadInfo(costIds, callbackArg, form.getCmd());
+        int index = Integer.parseInt(callbackArg.get("fixHeadIndex").toString()) - 1;
+        //合计费用
+        Map<String, Map<String, BigDecimal>> cost = this.commonService.totalDynamicHeadCost(index, sheetHeadVOS, jsonArray);
+
         resultMap.put(CommonConstant.SHEET_HEAD, sheetHeadVOS);//表头
         ViewBillVO viewBillVO = billService.getViewBillByCostIds(costIds, form.getCmd());
+        viewBillVO.assembleTotalCost(cost).setOrderNum(jsonArray.size());
         resultMap.put(CommonConstant.WHOLE_DATA, viewBillVO);//全局数据
         return CommonResult.success(resultMap);
     }

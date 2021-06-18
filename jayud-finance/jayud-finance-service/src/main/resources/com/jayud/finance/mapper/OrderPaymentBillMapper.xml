@@ -200,7 +200,8 @@
         opc.currency_code,
         opc.change_amount localAmount,
         opc.id costId,
-        opc.is_bill isBill
+        opc.is_bill isBill,
+        oi.operation_time
         FROM
         order_payment_cost opc
         left join supplier_info si on si.supplier_code = opc.customer_code
@@ -1081,6 +1082,7 @@
         opc.main_order_no orderNo,
         opc.order_no subOrderNo,
         pb.`name` bizCodeDesc,
+        oi.operation_time,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr
         <choose>
             <when test="form.cmd == 'zgys'">

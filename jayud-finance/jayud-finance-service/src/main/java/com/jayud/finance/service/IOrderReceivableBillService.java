@@ -87,7 +87,7 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      *
      * @return
      */
-    public List<SheetHeadVO> findSheetHeadInfo(List<Long> costIds, String cmd);
+    public List<SheetHeadVO> findSheetHeadInfo(List<Long> costIds, Map<String, Object> callbackArg, String cmd);
 
     /**
      * 预览账单全局数据

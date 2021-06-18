@@ -38,6 +38,8 @@ public class CounterListInfoServiceImpl extends ServiceImpl<CounterListInfoMappe
     OrderInfoMapper orderInfoMapper;
     @Autowired
     OrderPickMapper orderPickMapper;
+    @Autowired
+    OrderCaseMapper orderCaseMapper;
 
 
 
@@ -54,6 +56,7 @@ public class CounterListInfoServiceImpl extends ServiceImpl<CounterListInfoMappe
     @Override
     public List<OrderInfoVO> findUnselectedOrderInfo(OrderInfoQueryForm form) {
         //1.查询过滤的订单id
+        //1.1 过滤 已选择的订单id
         Long bId = form.getCounterListInfoId();
         List<Long> filterOrderIds = new ArrayList<>();
         List<CounterOrderInfoVO> counterOrderInfoList = counterOrderInfoMapper.findCounterOrderInfoBybId(bId);
@@ -63,13 +66,30 @@ public class CounterListInfoServiceImpl extends ServiceImpl<CounterListInfoMappe
                 filterOrderIds.add(orderId);
             });
         }
+        //1.2 过滤 订单里面已经没有箱子可用的 订单id
         if(CollUtil.isNotEmpty(filterOrderIds)){
             form.setFilterOrderIds(filterOrderIds);
         }
+        List<OrderInfoVO> prepareOrderInfoList = counterListInfoMapper.findUnselectedOrderInfo(form);
+        for (int i=0; i<prepareOrderInfoList.size(); i++){
+            OrderInfoVO orderInfoVO = prepareOrderInfoList.get(i);
+            Long orderId = orderInfoVO.getId();
+            //判断 订单id 下面的箱子是否 全部 被 使用了
+            List<OrderCaseVO> orderCaseList = orderCaseMapper.findOrderCaseByOrderId(orderId);//查询订单下有多少个箱子 数量
+            int a = orderCaseList.size();
+            List<CounterCaseInfoVO> counterCaseInfoList = counterCaseInfoMapper.findCounterCaseInfoByOrderId(orderId);//查询订单被用掉的箱子 数量
+            int b = counterCaseInfoList.size();
+            if(a == b){
+                //说明订单的箱子被用完了 后面要过滤掉
+                filterOrderIds.add(orderId);
+            }
+        }
 
         //2.查询未选择的订单list
+        if(CollUtil.isNotEmpty(filterOrderIds)){
+            form.setFilterOrderIds(filterOrderIds);
+        }
         List<OrderInfoVO> orderInfoList = counterListInfoMapper.findUnselectedOrderInfo(form);
-
         return orderInfoList;
     }
 

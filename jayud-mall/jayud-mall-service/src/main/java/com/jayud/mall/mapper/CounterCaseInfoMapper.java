@@ -44,4 +44,11 @@ public interface CounterCaseInfoMapper extends BaseMapper<CounterCaseInfo> {
      * @return
      */
     List<OrderCaseVO> findSelectedOrderCase(@Param("form") OrderCaseQueryForm form);
+
+    /**
+     * 查询 柜子(订单)箱号信息
+     * @param orderId 订单id(order_info id)
+     * @return
+     */
+    List<CounterCaseInfoVO> findCounterCaseInfoByOrderId(@Param("orderId") Long orderId);
 }

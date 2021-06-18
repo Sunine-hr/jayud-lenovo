@@ -51,13 +51,6 @@
         select count(*) total from counter_case_info where b_id=#{b_id}
     </select>
 
-    <select id="findCounterCaseInfoBybid" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterCaseInfoExcelVO">
-        select
-            t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.case_id,t.carton_no,t.create_time,t.order_no
-        from counter_case_info t
-        where t.b_id = #{b_id}
-    </select>
-
     <select id="findUnselectedOrderInfo" parameterType="com.jayud.mall.model.bo.OrderInfoQueryForm" resultType="com.jayud.mall.model.vo.OrderInfoVO">
         select
         t.id,t.order_no,t.customer_id,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,
@@ -114,5 +107,17 @@
 
     </select>
 
+
+    <select id="findCounterListExcelById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterListExcelVO">
+        select
+        t.id listInfoId,
+        t1.id counterId,t1.cabinet_code,t1.cntr_no,DATE_FORMAT(t1.create_time, '%Y-%m-%d') create_time,
+        t2.id billId,t2.order_id billNo,DATE_FORMAT(t2.sail_time, '%Y-%m-%d') sail_time
+        from counter_list_info t
+        join ocean_counter t1 on t1.id = t.counter_id
+        join ocean_bill t2 on t2.id = t1.ob_id
+        where 1=1
+        and t.id = 26
+    </select>
 
 </mapper>

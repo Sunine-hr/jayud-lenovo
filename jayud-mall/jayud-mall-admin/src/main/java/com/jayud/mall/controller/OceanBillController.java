@@ -4,6 +4,14 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.excel.write.metadata.fill.FillConfig;
+import com.alibaba.excel.write.metadata.fill.FillWrapper;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
@@ -18,14 +26,20 @@ import io.swagger.annotations.ApiOperationSupport;
 import io.swagger.annotations.ApiSort;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.URLEncoder;
 import java.util.List;
 
 @RestController
@@ -391,41 +405,45 @@ public class OceanBillController {
 
     //导出清单-柜子清单箱子
     //exportCounterCaseInfo
-    @ApiOperation(value = "导出清单-柜子清单箱子")
+    @ApiOperation(value = "导出清单-柜子清单(装柜清单)")
     @ApiOperationSupport(order = 30)
     @GetMapping(value = "/exportCounterCaseInfo")
     public void exportCounterCaseInfo(HttpServletResponse response, @RequestParam(value = "id",required=false) Long id) throws IOException {
-        List<CounterCaseInfoExcelVO> rows = counterListInfoService.findCounterCaseInfoBybid(id);
-        if(CollUtil.isNotEmpty(rows)){
-            ExcelWriter writer = ExcelUtil.getWriter(true);
-            writer.getStyleSet().setAlign(HorizontalAlignment.LEFT, VerticalAlignment.CENTER); //水平左对齐，垂直中间对齐
-            writer.setColumnWidth(0, 40); //第1列40px宽
-            writer.setColumnWidth(1, 15); //第2列15px 宽
-            writer.setColumnWidth(2, 30); //第3列15px 宽
-            writer.setColumnWidth(3, 30); //第4列15px 宽
+        CounterListExcelVO counterListExcelVO = counterListInfoService.findCounterListExcelById(id);
+        try {
+            String json = JSON.toJSONString(counterListExcelVO, SerializerFeature.DisableCircularReferenceDetect);
+            JSONObject jsonObject = JSONObject.parseObject(json);
+            ClassPathResource classPathResource = new ClassPathResource("template/counter_list.xlsx");
+            InputStream inputStream = classPathResource.getInputStream();
+            XSSFWorkbook templateWorkbook = new XSSFWorkbook(inputStream);
+            String sheetNamePrefix = "";
+            for (int i = 0; i < templateWorkbook.getNumberOfSheets(); i++) {
+                String sheetName = sheetNamePrefix + (i + 1);
+                templateWorkbook.setSheetName(i, sheetName);
+            }
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            templateWorkbook.write(outStream);
+            ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
 
-            //自定义标题别名
-            writer.addHeaderAlias("bName", "文件名称");
-            writer.addHeaderAlias("billNo", "提单号");
-            writer.addHeaderAlias("cartonNo", "箱号");
-            writer.addHeaderAlias("orderNo", "订单号");
-            Field[] s = ClearanceInfoCaseExcelVO.class.getDeclaredFields();
-            int lastColumn = s.length-1;
-            // 合并单元格后的标题行，使用默认标题样式
-            writer.merge(lastColumn, "导出清单-柜子清单箱子");
-            // 一次性写出内容，使用默认样式，强制输出标题
-            writer.write(rows, true);
-            //out为OutputStream，需要写出到的目标流
-
-            ServletOutputStream out=response.getOutputStream();
-            String name = StringUtils.toUtf8String("导出清单-柜子清单箱子");
-            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
-            response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
-            writer.flush(out);
-            writer.close();
-            IoUtil.close(out);
+            String fileName = "装柜清单";
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+            String filename = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
+            com.alibaba.excel.ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+            FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
+            for (int i = 0; i < templateWorkbook.getNumberOfSheets(); i++) {
+                WriteSheet sheet = EasyExcel.writerSheet(i).build();
+                JSONArray list1 = jsonObject.getJSONArray("counterOrderInfoExcelList");
+                // 如果有多个list 模板上必须有{前缀.} 这里的前缀就是 a，然后多个list必须用 FillWrapper包裹
+                excelWriter.fill(new FillWrapper("a", list1), fillConfig, sheet);
+                excelWriter.fill(jsonObject, sheet);
+            }
+            excelWriter.finish();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
 
     //查询-提单关联订单(任务通知表)

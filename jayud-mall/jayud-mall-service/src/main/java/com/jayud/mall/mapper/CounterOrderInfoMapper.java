@@ -2,6 +2,7 @@ package com.jayud.mall.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.po.CounterOrderInfo;
+import com.jayud.mall.model.vo.CounterOrderInfoExcelVO;
 import com.jayud.mall.model.vo.CounterOrderInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -28,4 +29,10 @@ public interface CounterOrderInfoMapper extends BaseMapper<CounterOrderInfo> {
      */
     List<CounterOrderInfoVO> findCounterOrderInfoBybId(@Param("bId") Long bId);
 
+    /**
+     * 根据bid，查询导出数据
+     * @param bid
+     * @return
+     */
+    List<CounterOrderInfoExcelVO> findCounterOrderInfoExcelBybid(@Param("bid") Long bid);
 }

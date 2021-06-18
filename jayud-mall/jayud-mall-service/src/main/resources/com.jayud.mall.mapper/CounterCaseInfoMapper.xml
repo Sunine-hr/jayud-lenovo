@@ -22,8 +22,10 @@
 
     <select id="findCounterCaseInfoByBidAndOrderId" resultType="com.jayud.mall.model.vo.CounterCaseInfoVO">
         select
-        t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.order_id,t.order_no,t.case_id,t.carton_no,t.create_time
+        t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.order_id,t.order_no,t.case_id,t.carton_no,t.create_time,
+        t1.fab_no,t1.asn_weight,t1.asn_volume
         from counter_case_info t
+        join order_case t1 on t1.id = t.case_id
         where 1=1
         and t.b_id = #{bId,jdbcType=BIGINT}
         and t.order_id = #{orderId,jdbcType=BIGINT}

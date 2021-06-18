@@ -1,10 +1,10 @@
 package com.jayud.mall.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.bo.OrderInfoQueryForm;
 import com.jayud.mall.model.po.CounterListInfo;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.mall.model.vo.CounterCaseInfoExcelVO;
 import com.jayud.mall.model.vo.CounterCaseInfoVO;
+import com.jayud.mall.model.vo.CounterListExcelVO;
 import com.jayud.mall.model.vo.CounterListInfoVO;
 import com.jayud.mall.model.vo.OrderInfoVO;
 
@@ -35,13 +35,6 @@ public interface ICounterListInfoService extends IService<CounterListInfo> {
     List<CounterCaseInfoVO> findCounterCaseInfo(Long b_id);
 
     /**
-     * 导出清单-柜子清单箱子
-     * @param b_id
-     * @return
-     */
-    List<CounterCaseInfoExcelVO> findCounterCaseInfoBybid(Long b_id);
-
-    /**
      * 查询-未选择的订单(柜子清单-绑定订单)
      * @param form
      * @return
@@ -54,4 +47,11 @@ public interface ICounterListInfoService extends IService<CounterListInfo> {
      * @return
      */
     List<OrderInfoVO> findSelectedOrderInfo(OrderInfoQueryForm form);
+
+    /**
+     * 导出-柜子下的装柜清单
+     * @param id
+     * @return
+     */
+    CounterListExcelVO findCounterListExcelById(Long id);
 }

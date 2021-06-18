@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -39,5 +40,15 @@ public class CounterCaseInfoVO {
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+
+    //**--箱子信息--**
+    @ApiModelProperty(value = "FBA箱号")
+    private String fabNo;
+
+    @ApiModelProperty(value = "客户测量的重量，单位kg")
+    private BigDecimal asnWeight;
+
+    @ApiModelProperty(value = "预报长宽高计算得到的体积，单位m³")
+    private BigDecimal asnVolume;
 
 }

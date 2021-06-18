@@ -27,4 +27,19 @@
         and t.b_id = #{bId}
     </select>
 
+    <select id="findCounterOrderInfoExcelBybid" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterOrderInfoExcelVO">
+        select
+        t.order_id,t.order_no,
+        t1.destination_warehouse_code,
+        t4.code_name serviceName
+        from counter_order_info t
+        join order_info t1 on t1.id = t.order_id
+        join offer_info t2 on t2.id = t1.offer_info_id
+        join quotation_template t3 on t3.id = t2.qie
+        join service_group t4 on t4.id = t3.sid
+        where 1=1
+        and t.b_id = #{bid}
+    </select>
+
+
 </mapper>

@@ -479,6 +479,12 @@ public class StorageInputOrderController {
         storageInProcessOptFormVO.assemblyMainOrderData(result.getData());
         storageInProcessOptFormVO.setLegalName(storageInputOrder.getLegalName() );
 
+        //获取该订单已入仓信息
+        List<InGoodsOperationRecord> listByOrderId = inGoodsOperationRecordService.getListByOrderId(storageInputOrder.getId(), storageInputOrder.getOrderNo());
+        if(CollectionUtils.isNotEmpty(listByOrderId)){
+            storageInProcessOptFormVO.setInGoodsOperationRecords(ConvertUtil.convertList(listByOrderId,InGoodsOperationRecordVO.class));
+        }
+
 //        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
 //        for (InitComboxWarehouseVO initComboxWarehouseVO : data2) {
 //            if(initComboxWarehouseVO.getId().equals(storageInputOrderDetails.getWarehouseId())){
@@ -894,28 +900,32 @@ public class StorageInputOrderController {
 
 //            FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
             //将集合数据填充
-            Integer number = 0;
+            String number = null;
+            Integer sNumber = 0;
+            Integer borderNumber = 0;
+            Integer pcs = 0;
             Double weight = 0.0;
             Double volume = 0.0;
             if(CollectionUtils.isNotEmpty(storageInProcessOptFormVO.getInGoodsOperationRecords())){
                 List<InGoodsOperationRecordVO> inGoodsOperationRecords = storageInProcessOptFormVO.getInGoodsOperationRecords();
-                List<InGoodsOperationRecordExcelVO> inGoodsOperationRecordExcelVOS = new ArrayList<>();
                 for (InGoodsOperationRecordVO inGoodsOperationRecord : inGoodsOperationRecords) {
-                    InGoodsOperationRecordExcelVO convert = ConvertUtil.convert(inGoodsOperationRecord, InGoodsOperationRecordExcelVO.class);
-                    List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(convert.getId());
-                    StringBuffer stringBuffer = new StringBuffer();
-                    if(CollectionUtils.isNotEmpty(goodsLocationRecordByGoodId)){
-                        for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
-                            stringBuffer.append(goodsLocationRecord.getKuCode()).append(" ").append(goodsLocationRecord.getNumber()).append(";");
-                        }
+                    if(inGoodsOperationRecord.getBoardNumber() == null){
+                        inGoodsOperationRecord.setBoardNumber(0);
                     }
-                    convert.setLocation(stringBuffer.toString());
-                    inGoodsOperationRecordExcelVOS.add(convert);
+                    if(inGoodsOperationRecord.getPcs() == null){
+                        inGoodsOperationRecord.setPcs(0);
+                    }
                 }
-                excelWriter.fill(new FillWrapper("goodList", inGoodsOperationRecordExcelVOS), writeSheet);
+                excelWriter.fill(new FillWrapper("goodList", inGoodsOperationRecords), writeSheet);
                 for (InGoodsOperationRecordVO warehouseGoodsForm : storageInProcessOptFormVO.getInGoodsOperationRecords()) {
+                    if(warehouseGoodsForm.getPcs() != null){
+                        pcs = pcs + warehouseGoodsForm.getPcs();
+                    }
+                    if(warehouseGoodsForm.getBoardNumber() != null){
+                        borderNumber = borderNumber + warehouseGoodsForm.getBoardNumber();
+                    }
                     if(warehouseGoodsForm.getNumber() != null){
-                        number = number + warehouseGoodsForm.getNumber();
+                        sNumber = sNumber + warehouseGoodsForm.getNumber();
                     }
                     if(warehouseGoodsForm.getWeight() != null){
                         weight = weight + warehouseGoodsForm.getWeight();
@@ -924,7 +934,7 @@ public class StorageInputOrderController {
                         volume = volume + warehouseGoodsForm.getVolume();
                     }
                 }
-
+                number = borderNumber +"板"+ sNumber + "件" + pcs + "pcs";
             }
             //将指定数据填充
             Map<String,Object> dataMap = new HashMap<String, Object>();

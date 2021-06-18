@@ -103,11 +103,11 @@ public class InputStorageOutOrderVO {
     @ApiModelProperty(value = "接单日期")
     private String receivingOrdersDate;
 
-    @ApiModelProperty(value = "重量")
-    private Double weight = 0.0;
+    @ApiModelProperty(value = "总件数")
+    private String totalNumberStr;
 
-    @ApiModelProperty(value = "体积")
-    private Double volume = 0.0;
+    @ApiModelProperty(value = "总重量")
+    private String totalWeightStr;
 
     @ApiModelProperty(value = "状态")
     private String statusDesc;

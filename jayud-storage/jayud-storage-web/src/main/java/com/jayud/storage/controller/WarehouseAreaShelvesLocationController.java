@@ -112,9 +112,9 @@ public class WarehouseAreaShelvesLocationController {
     public CommonResult saveOrUpdateWarehouseAreaShelvesLocation(@RequestBody List<WarehouseAreaShelvesLocationForm> form){
 
         List<InitComboxSVO> data = omsClient.initDictNameByDictTypeCode("shelfType").getData();
-
+        int j = 0;
         for (WarehouseAreaShelvesLocationForm warehouseAreaShelvesLocationForm : form) {
-            int j = 0;
+
             if(warehouseAreaShelvesLocationForm.getId() == null){
                 for (int i = j+1; i < form.size(); i++) {
                     if(warehouseAreaShelvesLocationForm.getShelvesLine().equals(form.get(i).getShelvesLine()) &&

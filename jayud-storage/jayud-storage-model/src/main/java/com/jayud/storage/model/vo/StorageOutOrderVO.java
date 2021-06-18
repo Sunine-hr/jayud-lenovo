@@ -111,11 +111,11 @@ public class StorageOutOrderVO {
     private String totalWeightStr;
 
     @ApiModelProperty(value = "状态")
-    private String statusDesc;
+    private String statusName;
 
     public void setStatus(String status) {
         this.status = status;
-        this.statusDesc = OrderStatusEnum.getDesc(status);
+        this.statusName = OrderStatusEnum.getDesc(status);
     }
 
     public void setProcessStatus(Integer processStatus) {

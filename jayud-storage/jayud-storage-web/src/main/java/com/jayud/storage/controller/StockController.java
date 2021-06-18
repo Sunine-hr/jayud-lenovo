@@ -103,12 +103,30 @@ public class StockController {
             map1.put("pageInfo", new CommonPageResult(page));
             return CommonResult.success(map1);
         }
+        List<StockVO> records = page.getRecords();
+        for (StockVO record : records) {
+            if(record.getLocationCode() == null){
+                records.remove(record);
+            }
+        }
+        for (int i = 0; i < records.size(); i++) {
+            StockVO stockVO = records.get(i);
+            for (int j = i+1; j < records.size(); j++) {
+                if(stockVO.getSku().equals(records.get(j).getSku()) && stockVO.getLocationCode().equals(records.get(j).getLocationCode())){
+                    stockVO.setInventoryQuantityUnit(stockVO.getInventoryQuantityUnit() + records.get(j).getInventoryQuantityUnit());
+                    if(stockVO.getUpdateTime().compareTo(records.get(j).getUpdateTime()) != 1){
+                        stockVO.setUpdateTime(records.get(j).getUpdateTime());
+                    }
+                    records.remove(j);
+                }
+            }
+        }
+        page.setRecords(records);
         for (StockVO record : page.getRecords()) {
             if(record.getCustomerId() == null){
-                map1.put("pageInfo", new CommonPageResult(page));
-                return CommonResult.success(map1);
+                record.setCustomerName(omsClient.getCustomerNameById(record.getCustomerId()).getData());
             }
-            record.setCustomerName(omsClient.getCustomerNameById(record.getCustomerId()).getData());
+
         }
         map1.put("pageInfo", new CommonPageResult(page));
         return CommonResult.success(page);

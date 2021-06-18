@@ -915,25 +915,43 @@ public class StorageInputOrderController {
                     if(inGoodsOperationRecord.getPcs() == null){
                         inGoodsOperationRecord.setPcs(0);
                     }
+                    if(inGoodsOperationRecord.getPcs() != null){
+                        pcs = pcs + inGoodsOperationRecord.getPcs();
+                    }
+                    if(inGoodsOperationRecord.getBoardNumber() != null){
+                        borderNumber = borderNumber + inGoodsOperationRecord.getBoardNumber();
+                    }
+                    if(inGoodsOperationRecord.getNumber() != null){
+                        sNumber = sNumber + inGoodsOperationRecord.getNumber();
+                    }
+                    if(inGoodsOperationRecord.getWeight() != null){
+                        weight = weight + inGoodsOperationRecord.getWeight();
+                    }
+                    if(inGoodsOperationRecord.getVolume() != null){
+                        volume = volume + inGoodsOperationRecord.getVolume();
+                    }
+                }
+                for (int i = 0; i < inGoodsOperationRecords.size(); i++) {
+                    for (int j = i+1; j < inGoodsOperationRecords.size(); j++) {
+                        if(inGoodsOperationRecords.get(i).getSku().equals(inGoodsOperationRecords.get(j).getSku())){
+                            InGoodsOperationRecordVO inGoodsOperationRecordVO = inGoodsOperationRecords.get(i);
+                            inGoodsOperationRecordVO.setNumber((inGoodsOperationRecordVO.getNumber()==null ? 0: inGoodsOperationRecordVO.getNumber())
+                                    + (inGoodsOperationRecords.get(j).getNumber()==null ? 0: inGoodsOperationRecords.get(j).getNumber()));
+                            inGoodsOperationRecordVO.setBoardNumber((inGoodsOperationRecordVO.getBoardNumber()==null ? 0: inGoodsOperationRecordVO.getBoardNumber())
+                                    + (inGoodsOperationRecords.get(j).getBoardNumber()==null ? 0: inGoodsOperationRecords.get(j).getBoardNumber()));
+                            inGoodsOperationRecordVO.setPcs((inGoodsOperationRecordVO.getPcs()==null ? 0: inGoodsOperationRecordVO.getPcs())
+                                    + (inGoodsOperationRecords.get(j).getPcs()==null ? 0: inGoodsOperationRecords.get(j).getPcs()));
+                            inGoodsOperationRecordVO.setWeight((inGoodsOperationRecordVO.getWeight()==null ? 0: inGoodsOperationRecordVO.getWeight())
+                                    + (inGoodsOperationRecords.get(j).getWeight()==null ? 0: inGoodsOperationRecords.get(j).getWeight()));
+                            inGoodsOperationRecordVO.setVolume((inGoodsOperationRecordVO.getVolume()==null ? 0: inGoodsOperationRecordVO.getVolume())
+                                    + (inGoodsOperationRecords.get(j).getVolume()==null ? 0: inGoodsOperationRecords.get(j).getVolume()));
+                            inGoodsOperationRecordVO.setRemarks(inGoodsOperationRecordVO.getRemarks()+inGoodsOperationRecords.get(j).getRemarks());
+                            inGoodsOperationRecords.remove(j);
+                        }
+                    }
                 }
                 excelWriter.fill(new FillWrapper("goodList", inGoodsOperationRecords), writeSheet);
-                for (InGoodsOperationRecordVO warehouseGoodsForm : storageInProcessOptFormVO.getInGoodsOperationRecords()) {
-                    if(warehouseGoodsForm.getPcs() != null){
-                        pcs = pcs + warehouseGoodsForm.getPcs();
-                    }
-                    if(warehouseGoodsForm.getBoardNumber() != null){
-                        borderNumber = borderNumber + warehouseGoodsForm.getBoardNumber();
-                    }
-                    if(warehouseGoodsForm.getNumber() != null){
-                        sNumber = sNumber + warehouseGoodsForm.getNumber();
-                    }
-                    if(warehouseGoodsForm.getWeight() != null){
-                        weight = weight + warehouseGoodsForm.getWeight();
-                    }
-                    if(warehouseGoodsForm.getVolume() != null){
-                        volume = volume + warehouseGoodsForm.getVolume();
-                    }
-                }
+
                 number = borderNumber +"板"+ sNumber + "件" + pcs + "pcs";
             }
             //将指定数据填充

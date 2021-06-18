@@ -42,6 +42,9 @@
             <if test="form.orderNo !=null and form.orderNo!=''">
                 and sio.order_no like concat('%',#{form.orderNo},'%')
             </if>
+            <if test="form.mainOrderNo !=null and form.mainOrderNo!=''">
+                and sio.main_order_no like concat('%',#{form.mainOrderNo},'%')
+            </if>
             <if test="form.warehouseNumber !=null and form.warehouseNumber!=''">
                 and sio.warehouse_number like concat('%',#{form.warehouseNumber},'%')
             </if>

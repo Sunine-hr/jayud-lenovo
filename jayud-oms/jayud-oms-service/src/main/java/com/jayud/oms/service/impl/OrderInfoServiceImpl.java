@@ -425,10 +425,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 //新增
                 if (isSumToMain) {
                     orderPaymentCost.setLegalName(inputOrderVO.getLegalName());
-                    orderPaymentCost.setLegalId((Integer) (oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData()));
+                    orderPaymentCost.setLegalId((Long) (oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData()));
                 } else {
                     orderPaymentCost.setLegalName(form.getSubLegalName());
-                    orderPaymentCost.setLegalId((Integer) (oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData()));
+                    orderPaymentCost.setLegalId((Long) (oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData()));
                 }
 
 
@@ -464,10 +464,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 //新增
                 if (isSumToMain) {
                     orderReceivableCost.setLegalName(inputOrderVO.getLegalName());
-                    orderReceivableCost.setLegalId((Integer) (oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData()));
+                    orderReceivableCost.setLegalId((Long) (oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData()));
                 } else {
                     orderReceivableCost.setLegalName(form.getSubLegalName());
-                    orderReceivableCost.setLegalId((Integer) (oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData()));
+                    orderReceivableCost.setLegalId((Long) (oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData()));
                 }
 
                 if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
@@ -1605,13 +1605,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                             addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
                         }
                     }
-                    if(CollectionUtils.isNotEmpty(storageFastOrderForm.getInGoodsFormList())){
+                    if(CollectionUtils.isNotEmpty(storageFastOrderForm.getOutGoodsFormList())){
                         for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getOutGoodsFormList()) {
                             addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
                             addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
                         }
                     }
-                    if(CollectionUtils.isNotEmpty(storageFastOrderForm.getInGoodsFormList())){
+                    if(CollectionUtils.isNotEmpty(storageFastOrderForm.getFastGoodsFormList())){
                         for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getFastGoodsFormList()) {
                             addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
                             addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));

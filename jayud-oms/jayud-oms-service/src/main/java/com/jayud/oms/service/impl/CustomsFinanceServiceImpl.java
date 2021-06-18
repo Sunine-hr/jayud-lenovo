@@ -9,6 +9,7 @@ import com.jayud.common.enums.ReceivableAndPayableOrderTypeEnum;
 import com.jayud.common.enums.UnitEnum;
 import com.jayud.oms.feign.CustomsClient;
 import com.jayud.oms.feign.FinanceClient;
+import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.AuditCostForm;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.InputSubOrderCustomsVO;
@@ -33,6 +34,9 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
 
     @Autowired
     FinanceClient financeClient;
+
+    @Autowired
+    OauthClient oauthClient;
 
     @Autowired
     IOrderReceivableCostService receivableCostService;
@@ -157,6 +161,14 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                         orderReceivableCost.setIsSumToMain(Boolean.TRUE);
                     }else{
                         orderReceivableCost.setIsSumToMain(Boolean.FALSE);
+                    }
+
+                    if (orderReceivableCost.getIsSumToMain()) {
+                        orderReceivableCost.setLegalName(orderInfo.getLegalName());
+                        orderReceivableCost.setLegalId((Long) (oauthClient.getLegalEntityByLegalName(orderInfo.getLegalName()).getData()));
+                    } else {
+                        orderReceivableCost.setLegalName(subOrderCustoms.getLegalName());
+                        orderReceivableCost.setLegalId((Long) (oauthClient.getLegalEntityByLegalName(subOrderCustoms.getLegalName()).getData()));
                     }
 
                     orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_3.getCode()));

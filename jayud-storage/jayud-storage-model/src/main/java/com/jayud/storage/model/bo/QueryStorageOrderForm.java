@@ -28,6 +28,9 @@ public class QueryStorageOrderForm extends BasePageForm {
     @ApiModelProperty(value = "入库订单编号")
     private String orderNo;
 
+    @ApiModelProperty(value = "主订单编号")
+    private String mainOrderNo;
+
     @ApiModelProperty(value = "状态()")
     private String status;
 

@@ -110,7 +110,7 @@ public class InputStorageOutOrderVO {
     private String totalWeightStr;
 
     @ApiModelProperty(value = "状态")
-    private String statusDesc;
+    private String statusName;
 
     @ApiModelProperty(value = "费用状态", required = true)
     private String costDesc;

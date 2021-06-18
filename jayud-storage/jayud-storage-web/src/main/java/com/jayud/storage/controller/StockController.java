@@ -123,7 +123,7 @@ public class StockController {
         }
         page.setRecords(records);
         for (StockVO record : page.getRecords()) {
-            if(record.getCustomerId() == null){
+            if(record.getCustomerId() != null){
                 record.setCustomerName(omsClient.getCustomerNameById(record.getCustomerId()).getData());
             }
 

@@ -28,7 +28,7 @@ public class StockVO {
     private Long id;
 
     @ApiModelProperty(value = "商品名称")
-    private String goodName;
+    private String name;
 
     @ApiModelProperty(value = "客户id")
     private Long customerId;

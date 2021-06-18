@@ -24,7 +24,7 @@
     <select id="findByPage" resultType="com.jayud.storage.model.vo.StockVO">
         SELECT
         igor.id,
-        igor.name goodName,
+        igor.name name,
         good.customer_id customerId,
         igor.sku,
         igor.specification_model specificationModel,

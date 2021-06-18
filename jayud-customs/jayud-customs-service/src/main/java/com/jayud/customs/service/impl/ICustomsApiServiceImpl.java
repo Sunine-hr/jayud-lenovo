@@ -330,7 +330,7 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
                 }
             }
             if (hasPayable) {
-                log.debug(String.format("拼装数据完成，开始上传财务数据：customs-payable口..." + payable + "====" + payable));
+                log.debug(String.format("拼装数据完成，开始上传财务数据：customs-payable..." + payable.replaceAll("%", "%%") + "====" + payable.replaceAll("%", "%%")));
                 sentPayableStatus = generateKafkaMsg("financeTest", "customs-payable", payable);
             } else {
                 //如果本次推送没有应付数据，需要查看是否存在本单号的应付，如有，要删去

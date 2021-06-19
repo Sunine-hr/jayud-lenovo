@@ -50,7 +50,8 @@ public class CounterCaseInfoServiceImpl extends ServiceImpl<CounterCaseInfoMappe
         Long bId = form.getCounterListInfoId();//柜子清单信息表(counter_list_info id)
         Long orderId = form.getOrderId();
         List<Long> filterCaseIds = new ArrayList<>();
-        List<CounterCaseInfoVO> counterCaseInfoList = counterCaseInfoMapper.findCounterCaseInfoByBidAndOrderId(bId, orderId);
+        //List<CounterCaseInfoVO> counterCaseInfoList = counterCaseInfoMapper.findCounterCaseInfoByBidAndOrderId(bId, orderId);
+        List<CounterCaseInfoVO> counterCaseInfoList = counterCaseInfoMapper.findCounterCaseInfoByOrderId(orderId);
         if(CollUtil.isNotEmpty(counterCaseInfoList)){
             counterCaseInfoList.forEach(counterCaseInfoVO -> {
                 Long caseId = counterCaseInfoVO.getCaseId();

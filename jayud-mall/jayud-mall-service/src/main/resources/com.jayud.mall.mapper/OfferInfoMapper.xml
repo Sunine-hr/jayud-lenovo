@@ -317,6 +317,7 @@
         where 1=1
         and t.id not in(select id_code offerInfoId from ocean_conf_detail where types = 1 group by id_code)
         and t.jc_time >= now()
+        and t.status = 1
         <if test="form.names != null and form.names != ''">
             AND t.`names` LIKE concat('%',#{form.names},'%')
         </if>

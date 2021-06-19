@@ -248,6 +248,18 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
     @Override
     public List<CounterOrderInfoVO> findCounterOrderInfoByBid(Long bId) {
         List<CounterOrderInfoVO> counterOrderInfoList = counterOrderInfoMapper.findCounterOrderInfoBybId(bId);
+
+        for (int i=0; i<counterOrderInfoList.size(); i++){
+            CounterOrderInfoVO counterOrderInfoVO = counterOrderInfoList.get(i);
+            Long orderId = counterOrderInfoVO.getOrderId();//订单id(order_info id)
+            Long listInfoId = counterOrderInfoVO.getBId();//柜子清单信息表(counter_list_info id)
+            //TODO
+
+
+
+        }
+
+
         return counterOrderInfoList;
     }
 

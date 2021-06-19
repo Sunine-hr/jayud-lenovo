@@ -14,8 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -111,10 +110,14 @@ public class CounterListInfoServiceImpl extends ServiceImpl<CounterListInfoMappe
 
         for (int i=0; i<counterOrderInfoExcelList.size(); i++){
             String warehouseNo = "";//进仓编号，多个
-            String fabNo = "";//FBA号，多个
+            String amazonReferenceId = "";//亚马逊引用ID
+            String extensionNumber = "";//扩展单号,FBA号，多个
             String cartons = "";//箱数
             String weight = "";//重量
             String volume = "";//体积
+
+            Set<String> amazonReferenceIdSet = new HashSet<>();//set去重
+            Set<String> extensionNumberSet = new HashSet<>();//set去重
 
             CounterOrderInfoExcelVO counterOrderInfoExcelVO = counterOrderInfoExcelList.get(i);
             Long orderId = counterOrderInfoExcelVO.getOrderId();
@@ -143,21 +146,48 @@ public class CounterListInfoServiceImpl extends ServiceImpl<CounterListInfoMappe
             BigDecimal v = new BigDecimal("0");
             for (int k=0; k<counterCaseInfoList.size(); k++){
                 CounterCaseInfoVO counterCaseInfoVO = counterCaseInfoList.get(k);
-                String fabNo1 = counterCaseInfoVO.getFabNo();
+                //String fabNo1 = counterCaseInfoVO.getFabNo();
+                String amazonReferenceId1 = counterCaseInfoVO.getAmazonReferenceId();
+                String extensionNumber1 = counterCaseInfoVO.getExtensionNumber();
+
+                amazonReferenceIdSet.add(amazonReferenceId1);
+                extensionNumberSet.add(extensionNumber1);
+
                 BigDecimal weight1 = counterCaseInfoVO.getAsnWeight();
                 BigDecimal volume1 = counterCaseInfoVO.getAsnVolume();
-                if(k == 0){
-                    fabNo = fabNo1;
-                }else{
-                    fabNo += ","+fabNo1;
-                }
                 w = w.add(weight1);//重量
                 v = v.add(volume1);//体积
             }
             weight = w.toString();
             volume = v.toString();
+
+            Iterator<String> it1 = amazonReferenceIdSet.iterator();
+            int aa = 0;
+            while(it1.hasNext()){
+                String next = it1.next();
+                if(aa == 0){
+                    amazonReferenceId = next;
+                }else{
+                    amazonReferenceId += ","+next;
+                }
+                aa++;
+            }
+
+            Iterator<String> it2 = extensionNumberSet.iterator();
+            int bb = 0;
+            while(it2.hasNext()){
+                String next = it2.next();
+                if(bb == 0){
+                    extensionNumber = next;
+                }else{
+                    extensionNumber += ","+next;
+                }
+                bb++;
+            }
+
             counterOrderInfoExcelVO.setWarehouseNo(warehouseNo);
-            counterOrderInfoExcelVO.setFabNo(fabNo);
+            counterOrderInfoExcelVO.setAmazonReferenceId(amazonReferenceId);
+            counterOrderInfoExcelVO.setExtensionNumber(extensionNumber);
             counterOrderInfoExcelVO.setCartons(cartons);
             counterOrderInfoExcelVO.setWeight(weight);
             counterOrderInfoExcelVO.setVolume(volume);

@@ -51,4 +51,10 @@ public class CounterCaseInfoVO {
     @ApiModelProperty(value = "预报长宽高计算得到的体积，单位m³")
     private BigDecimal asnVolume;
 
+    @ApiModelProperty(value = "Amazon Reference ID(亚马逊引用ID)")
+    private String amazonReferenceId;
+
+    @ApiModelProperty(value = "扩展单号")
+    private String extensionNumber;
+
 }

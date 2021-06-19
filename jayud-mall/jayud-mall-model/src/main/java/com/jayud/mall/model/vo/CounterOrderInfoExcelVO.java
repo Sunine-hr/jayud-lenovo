@@ -21,9 +21,13 @@ public class CounterOrderInfoExcelVO {
     //进仓编号
     @ApiModelProperty(value = "进仓编号，多个")
     private String warehouseNo;
+
+    //Amazon Reference ID(亚马逊引用ID)
+    @ApiModelProperty(value = "亚马逊引用ID")
+    private String amazonReferenceId;
     //FBA号
     @ApiModelProperty(value = "FBA号，多个")
-    private String fabNo;
+    private String extensionNumber;
     //箱数
     @ApiModelProperty(value = "箱数")
     private String cartons;

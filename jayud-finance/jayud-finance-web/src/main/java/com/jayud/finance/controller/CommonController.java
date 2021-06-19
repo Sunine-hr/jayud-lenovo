@@ -27,7 +27,7 @@ public class CommonController {
 
     @ApiOperation(value = "计算费用")
     @PostMapping("/calculatingCosts")
-    public CommonResult<Map<String, String>> findReceiveBillByPage(@RequestBody Map<String, Object> map) {
+    public CommonResult<Map<String, String>> calculatingCosts(@RequestBody Map<String, Object> map) {
         List<String> amountStrs = MapUtil.get(map, "amountStrs", List.class);
         Map<String, String> response = new HashMap<>();
         response.put("totalCost", "0");

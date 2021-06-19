@@ -1,6 +1,7 @@
 package com.jayud.storage.model.vo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.utils.FileView;
@@ -82,12 +83,14 @@ public class StorageInputOrderVO extends Model<StorageInputOrderVO> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "备注")
@@ -103,7 +106,8 @@ public class StorageInputOrderVO extends Model<StorageInputOrderVO> {
     private String orderTaker;
 
     @ApiModelProperty(value = "接单日期")
-    private String receivingOrdersDate;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime receivingOrdersDate;
 
     @ApiModelProperty(value = "总件数")
     private String totalNumber;

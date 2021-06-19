@@ -13,21 +13,17 @@ import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.storage.feign.FileClient;
 import com.jayud.storage.feign.OauthClient;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.*;
-import com.jayud.storage.model.po.GoodsLocationRecord;
-import com.jayud.storage.model.po.StorageInputOrder;
-import com.jayud.storage.model.po.StorageOutOrder;
+import com.jayud.storage.model.po.*;
 import com.jayud.storage.mapper.StorageOutOrderMapper;
-import com.jayud.storage.model.po.WarehouseGoods;
 import com.jayud.storage.model.vo.*;
-import com.jayud.storage.service.IGoodsLocationRecordService;
-import com.jayud.storage.service.IStockService;
-import com.jayud.storage.service.IStorageOutOrderService;
+import com.jayud.storage.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.storage.service.IWarehouseGoodsService;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.velocity.runtime.directive.contrib.For;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,6 +59,15 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     @Autowired
     private IStockService stockService;
 
+    @Autowired
+    private IStorageOrderService storageOrderService;
+
+    @Autowired
+    private FileClient fileClient;
+
+    @Autowired
+    private IWarehouseAreaShelvesLocationService warehouseAreaShelvesLocationService;
+
     @Override
     public String createOrder(StorageOutOrderForm storageOutOrderForm) {
         //无论驳回还是草稿在提交，都先删除原来的商品信息
@@ -91,15 +96,20 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
                 convert.setOrderId(storageOutOrder.getId());
                 convert.setOrderNo(storageOutOrder.getOrderNo());
                 convert.setCreateTime(LocalDateTime.now());
+                convert.setCreateUser(UserOperator.getToken());
                 convert.setType(2);
                 convert.setFileName(StringUtils.getFileNameStr(warehouseGood.getTakeFiles()));
                 convert.setFilePath(StringUtils.getFileStr(warehouseGood.getTakeFiles()));
                 warehouseGoods.add(convert);
 
-                //出库订单创建成功，锁定库存
-//                boolean result = stockService.lockInInventory(convert);
-//                if(!result){
-//                    log.warn(convert.getName() + "锁定库存失败");
+                //出库订单创建成功，锁定库存  如果暂存，不锁定库存
+//                if(storageOutOrderForm.getCmd().equals("submit")){
+//                    if(convert.getNumber() != null || convert.getPcs() != null){
+//                        boolean result = stockService.lockInInventory(convert);
+//                        if(!result){
+//                            log.warn(convert.getName() + "锁定库存失败");
+//                        }
+//                    }
 //                }
             }
             warehouseGoodsService.saveOrUpdateBatch(warehouseGoods);
@@ -126,10 +136,14 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
      */
     @Override
     public StorageOutOrderVO getStorageOutOrderVOById(Long id) {
+
+        //获取附件地址
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
+
         StorageOutOrder storageOutOrder = this.baseMapper.selectById(id);
         StorageOutOrderVO storageOutOrderVO = ConvertUtil.convert(storageOutOrder, StorageOutOrderVO.class);
-        List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList1(storageOutOrder.getId(),storageOutOrder.getOrderNo());
-        System.out.println("warehouseGoods===================="+warehouseGoods);
+        List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList(storageOutOrder.getId(),storageOutOrder.getOrderNo(),2);
+//        System.out.println("warehouseGoods===================="+warehouseGoods);
         if(CollectionUtils.isEmpty(warehouseGoods)){
             warehouseGoods.add(new WarehouseGoodsVO());
             storageOutOrderVO.setTotalNumberStr("0板0件0pcs");
@@ -152,11 +166,16 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
                 if(warehouseGood.getPcs()!=null){
                     pcs = pcs + warehouseGood.getPcs();
                 }
+                warehouseGood.setTakeFiles(StringUtils.getFileViews(warehouseGood.getFilePath(),warehouseGood.getFileName(),prePath));
             }
             storageOutOrderVO.setTotalNumberStr(borderNumber+"板"+number+"件"+pcs+"pcs");
             storageOutOrderVO.setTotalWeightStr(totalWeight+"KG");
         }
         storageOutOrderVO.setGoodsFormList(warehouseGoods);
+        for (WarehouseGoodsVO warehouseGood : warehouseGoods) {
+            warehouseGood.setOrderTaker(storageOutOrderVO.getOrderTaker());
+        }
+        storageOutOrderVO.setWarehouseGoodsVOS(warehouseGoods);
         return storageOutOrderVO;
     }
 
@@ -207,7 +226,6 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     @Override
     public void warehouseReceipt(StorageOutProcessOptForm form) {
         form.setOperatorUser(UserOperator.getToken());
-        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageOutOrder storageOutOrder = new StorageOutOrder();
         storageOutOrder.setOrderTaker(form.getOperatorUser());
         storageOutOrder.setReceivingOrdersDate(form.getOperatorTime());
@@ -228,7 +246,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     }
 
     /**
-     * 入库流程操作记录
+     * 出库流程操作记录
      */
     @Override
     public void storageProcessOptRecord(StorageOutProcessOptForm form) {
@@ -244,7 +262,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
         //文件拼接
         form.setStatusPic(StringUtils.getFileStr(form.getFileViewList()));
         form.setStatusPicName(StringUtils.getFileNameStr(form.getFileViewList()));
-        form.setBusinessType(BusinessTypeEnum.TC.getCode());
+        form.setBusinessType(BusinessTypeEnum.CK.getCode());
 
         if (omsClient.saveOprStatus(form).getCode() != HttpStatus.SC_OK) {
             log.error("远程调用物流轨迹失败");
@@ -259,7 +277,6 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     @Override
     public boolean printPickingList(StorageOutProcessOptForm form) {
         form.setOperatorUser(UserOperator.getToken());
-        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageOutOrder storageOutOrder = new StorageOutOrder();
         storageOutOrder.setId(form.getOrderId());
         storageOutOrder.setUpdateUser(UserOperator.getToken());
@@ -276,16 +293,18 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
             List<GoodsLocationRecordFormVO> goodsLocationRecordForms = outWarehouseGoodsForm.getGoodsLocationRecordForms();
             for (GoodsLocationRecordFormVO goodsLocationRecordForm : goodsLocationRecordForms) {
                 GoodsLocationRecord goodsLocationRecord = ConvertUtil.convert(goodsLocationRecordForm, GoodsLocationRecord.class);
-                goodsLocationRecord.setCreateTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN));
+                goodsLocationRecord.setInGoodId(outWarehouseGoodsForm.getId());
+                goodsLocationRecord.setCreateTime(LocalDateTime.now());
                 goodsLocationRecord.setCreateUser(UserOperator.getToken());
                 goodsLocationRecord.setType(2);
+                goodsLocationRecord.setIsPickedGoods(1);
                 boolean b1 = goodsLocationRecordService.saveOrUpdate(goodsLocationRecord);
                 if(!b1){
                     return false;
                 }
                 //计算该库位该商品的未出库数量
                 GoodsLocationRecord goodsLocationRecord1 = goodsLocationRecordService.getGoodsLocationRecordBySkuAndKuCode(goodsLocationRecordForm.getKuCode(),outWarehouseGoodsForm.getWarehousingBatchNo(),outWarehouseGoodsForm.getSku());
-                goodsLocationRecord1.setUnDeliveredQuantity(goodsLocationRecord1.getNumber() - goodsLocationRecord.getNumber());
+                goodsLocationRecord1.setUnDeliveredQuantity(goodsLocationRecord1.getUnDeliveredQuantity() - goodsLocationRecord.getNumber());
                 boolean b2 = goodsLocationRecordService.saveOrUpdate(goodsLocationRecord1);
                 if(!b2){
                     return false;
@@ -305,7 +324,6 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     @Override
     public boolean warehousePicking(StorageOutProcessOptForm form) {
         form.setOperatorUser(UserOperator.getToken());
-        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageOutOrder storageOutOrder = new StorageOutOrder();
         storageOutOrder.setId(form.getOrderId());
         storageOutOrder.setUpdateUser(UserOperator.getToken());
@@ -329,7 +347,6 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     public void abnormalOutOfWarehouse(StorageOutProcessOptForm form) {
 
         form.setOperatorUser(UserOperator.getToken());
-        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageOutOrder storageOutOrder = new StorageOutOrder();
         storageOutOrder.setId(form.getOrderId());
         storageOutOrder.setUpdateUser(UserOperator.getToken());
@@ -351,7 +368,6 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
     @Override
     public void confirmDelivery(StorageOutProcessOptForm form) {
         form.setOperatorUser(UserOperator.getToken());
-        form.setOperatorTime(DateUtils.str2LocalDateTime(form.getOperatorTime(), DateUtils.DATE_TIME_PATTERN).toString());
         StorageOutOrder storageOutOrder = new StorageOutOrder();
         storageOutOrder.setId(form.getOrderId());
         storageOutOrder.setUpdateUser(UserOperator.getToken());
@@ -374,12 +390,112 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
 
             //完成订单状态
             finishStorageOrderOpt(storageOutOrder);
+
+            //出仓成功，生成存仓订单
+            List<WarehouseGoodsVO> outWarehouseGoodsForms = warehouseGoodsService.getList(form.getOrderId(),form.getOrderNo(),2);
+            for (WarehouseGoodsVO warehouseGoodsVO : outWarehouseGoodsForms) {
+                StorageOrder storageOrder = new StorageOrder();
+                storageOrder.setOutOrderNo(form.getOrderNo());
+                storageOrder.setSku(warehouseGoodsVO.getSku());
+                storageOrder.setWarehousingBatchNo(warehouseGoodsVO.getWarehousingBatchNo());
+                storageOrder.setEndTime(storageOutOrder.getUpdateTime());
+                boolean b2 = this.storageOrderService.saveStorageOrder(storageOrder);
+                if(!b2){
+                    log.warn(storageOrder.getSku() +"添加存仓订单失败");
+                }
+            }
+
+
         }
         if(form.getCmd().equals("fail")){
             form.setDescription("确认出库，审核不通过");
             //节点操作记录
             this.storageProcessOptRecord(form);
         }
+    }
+
+    @Override
+    public List<WarehouseGoodsLocationCodeVO> findByOrderNo(QueryPickUpGoodForm form) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if(form.getOrderNo() != null){
+            queryWrapper.eq("order_no",form.getOrderNo());
+        }
+        StorageOutOrder storageOutOrder = this.baseMapper.selectOne(queryWrapper);
+        List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(storageOutOrder.getId(), storageOutOrder.getOrderNo(),2);
+        List<WarehouseGoodsLocationCodeVO> warehouseGoodsLocationVOS = new ArrayList<>();
+        for (WarehouseGoodsVO warehouseGoodsVO : list1) {
+
+            List<GoodsLocationRecordFormVO> outGoodsLocationRecordByGoodId = goodsLocationRecordService.getOutGoodsLocationRecordByGoodIdAndPicked(warehouseGoodsVO.getId());
+            for (GoodsLocationRecordFormVO goodsLocationRecordFormVO : outGoodsLocationRecordByGoodId) {
+                WarehouseGoodsLocationCodeVO warehouseGoodsLocationCodeVO = new WarehouseGoodsLocationCodeVO();
+                warehouseGoodsLocationCodeVO.setName(warehouseGoodsVO.getName());
+                warehouseGoodsLocationCodeVO.setSku(warehouseGoodsVO.getSku());
+                warehouseGoodsLocationCodeVO.setNumber(goodsLocationRecordFormVO.getNumber());
+                warehouseGoodsLocationCodeVO.setWarehousingBatchNo(warehouseGoodsVO.getWarehousingBatchNo());
+                warehouseGoodsLocationCodeVO.setExpectedDeliveryTime(warehouseGoodsVO.getExpectedDeliveryTime());
+                warehouseGoodsLocationCodeVO.setSpecificationModel(warehouseGoodsVO.getSpecificationModel());
+                warehouseGoodsLocationCodeVO.setKuCode(goodsLocationRecordFormVO.getKuCode());
+                warehouseGoodsLocationCodeVO.setId(warehouseGoodsVO.getId());
+                warehouseGoodsLocationVOS.add(warehouseGoodsLocationCodeVO);
+            }
+
+        }
+        return warehouseGoodsLocationVOS;
+    }
+
+    //PDA拣货
+    @Override
+    public boolean PDAWarehousePicking(WarehousePickingForm form) {
+        //拣货成功，修改拣货状态
+        GoodsLocationRecord outListByKuCodeAndInGoodId = goodsLocationRecordService.getOutListByKuCodeAndInGoodId(form.getId(),form.getKuCode());
+        outListByKuCodeAndInGoodId.setUnDeliveredQuantity(form.getPickedNumber());
+        if(outListByKuCodeAndInGoodId.getNumber().equals(outListByKuCodeAndInGoodId.getUnDeliveredQuantity())){
+            outListByKuCodeAndInGoodId.setIsPickedGoods(2);
+            boolean update = goodsLocationRecordService.saveOrUpdate(outListByKuCodeAndInGoodId);
+            if(!update){
+                return false;
+            }
+        }else{
+            boolean update = goodsLocationRecordService.saveOrUpdate(outListByKuCodeAndInGoodId);
+            if(!update){
+                return false;
+            }
+        }
+
+
+        if(form.getCmd().equals("end")){
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("order_no",form.getOrderNo());
+            StorageOutOrder one = this.getOne(queryWrapper);
+            one.setStatus("CCE_3");
+            one.setUpdateUser(UserOperator.getToken());
+            one.setUpdateTime(LocalDateTime.now());
+            boolean update1 = this.saveOrUpdate(one);
+            if(!update1){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    @Override
+    public List<OnShelfOrderVO> getListByQueryForm(QueryPutGoodForm form) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status","CCE_2");
+        if(form.getOrderNo() != null){
+            queryWrapper.like("order_no",form.getOrderNo());
+        }
+        List<StorageOutOrder> list = this.baseMapper.selectList(queryWrapper);
+        List<OnShelfOrderVO> onShelfOrderVOS = new ArrayList<>();
+        for (StorageOutOrder storageOutOrder : list) {
+            List<OnShelfOrderVO> onShelfOrderVOS1 = warehouseGoodsService.getListByOrderIdAndTime2(storageOutOrder.getId(),storageOutOrder.getOrderNo(),form.getStartTime(),form.getEndTime());
+            for (OnShelfOrderVO inGoodsOperationRecord : onShelfOrderVOS1) {
+                onShelfOrderVOS.add(inGoodsOperationRecord);
+            }
+        }
+        return onShelfOrderVOS;
     }
 
     //判断订单完成状态

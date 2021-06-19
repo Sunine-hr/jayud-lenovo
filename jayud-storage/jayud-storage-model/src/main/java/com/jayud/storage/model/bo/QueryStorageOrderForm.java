@@ -4,6 +4,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jayud.common.utils.FileView;
 import com.jayud.storage.model.po.InGoodsOperationRecord;
 import com.jayud.storage.model.po.StorageInputOrderDetails;
 import com.jayud.storage.model.po.WarehouseGoods;
@@ -26,6 +27,9 @@ public class QueryStorageOrderForm extends BasePageForm {
 
     @ApiModelProperty(value = "入库订单编号")
     private String orderNo;
+
+    @ApiModelProperty(value = "主订单编号")
+    private String mainOrderNo;
 
     @ApiModelProperty(value = "状态()")
     private String status;
@@ -73,8 +77,11 @@ public class QueryStorageOrderForm extends BasePageForm {
     @JsonIgnore
     private List<String> orderNos;
 
-    @ApiModelProperty(value = "当前登录用户,前台传")
+    @ApiModelProperty(value = "附近信息")
     private String loginUserName;
+
+    @ApiModelProperty(value = "当前登录用户,前台传")
+    private List<FileView> fileList;
 
     public void assemblyMainOrderNo(JSONArray mainOrders) {
         mainOrderNos = new ArrayList<>(mainOrders.size());
@@ -87,8 +94,8 @@ public class QueryStorageOrderForm extends BasePageForm {
     public void setStartTime(){
         String[] time = this.createTime;
         if(time != null && time.length>0){
-            this.startTime = time[0];
-            this.endTime = time[1];
+            this.startTime = time[0] + " 00:00:00";
+            this.endTime = time[1] + " 23:59:59";
         }
     }
 }

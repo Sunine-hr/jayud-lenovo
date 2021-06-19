@@ -11,6 +11,7 @@ import com.jayud.common.exception.Asserts;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
@@ -319,9 +320,16 @@ public class ExcelUtils {
             Class<?> clz = t.getClass();
             Field[] fields = clz.getDeclaredFields();
             List<String> titleName = new ArrayList<>();
+//            for (Field field : fields) {
+//                titleName.add(field.getName());
+//                bigWriter.addHeaderAlias(field.getName(), field.getName());
+//            }
             for (Field field : fields) {
-                titleName.add(field.getName());
-                bigWriter.addHeaderAlias(field.getName(), field.getName());
+                ApiModelProperty annotation = field.getAnnotation(ApiModelProperty.class);
+                if(annotation != null){
+                    titleName.add(annotation.value());
+                    bigWriter.addHeaderAlias(field.getName(), annotation.value());
+                }
             }
             //标题写入
             bigWriter.writeHeadRow(titleName);
@@ -399,6 +407,10 @@ public class ExcelUtils {
             response.setHeader("Content-disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
             response.setContentType("application/vnd.ms-excel;charset=UTF-8");// 定义输出类型
             ExcelWriter bigWriter = ExcelUtil.getBigWriter();
+
+//            Cell cell = bigWriter.getCell();
+
+
             //装载标题
             T t = clz.newInstance();
             Field[] fields = clz.getDeclaredFields();

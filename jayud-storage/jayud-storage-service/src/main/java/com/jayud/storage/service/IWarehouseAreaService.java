@@ -2,12 +2,10 @@ package com.jayud.storage.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.storage.model.bo.OperationForm;
-import com.jayud.storage.model.bo.OperationWarehouseForm;
 import com.jayud.storage.model.bo.QueryWarehouseAreaForm;
 import com.jayud.storage.model.bo.WarehouseAreaForm;
 import com.jayud.storage.model.po.WarehouseArea;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.storage.model.vo.StorageInputOrderFormVO;
 import com.jayud.storage.model.vo.WarehouseAreaVO;
 
 import java.util.List;
@@ -30,7 +28,7 @@ public interface IWarehouseAreaService extends IService<WarehouseArea> {
 
     void operationWarehouseArea(OperationForm form);
 
-    WarehouseArea getWarehouseAreaByAreaCode(String areaCode);
+    WarehouseArea getWarehouseAreaByAreaCode(String areaCode, Long warehouseId);
 
-    WarehouseArea getWarehouseAreaByAreaName(String areaName);
+    WarehouseArea getWarehouseAreaByAreaName(String areaName, Long warehouseId);
 }

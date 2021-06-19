@@ -60,23 +60,14 @@ public class InputStorageOutOrderForm {
     @NotNull(message = "入仓号不为空")
     private String warehouseNumber;
 
-    @ApiModelProperty(value = "创建人(登录用户)")
-    private String createUser;
-
-    @ApiModelProperty(value = "创建时间")
-    private String createTime;
-
-    @ApiModelProperty(value = "更新人")
-    private String updateUser;
-
-    @ApiModelProperty(value = "更新时间")
-    private String updateTime;
-
     @ApiModelProperty(value = "备注")
     private String remarks;
 
     @ApiModelProperty(value = "出库商品对象集合")
     private List<AddWarehouseGoodsForm> goodsFormList;
+
+    @ApiModelProperty(value = "提交还是暂存")
+    private String cmd;
 
     /**
      * 校验创建出库子订单参数

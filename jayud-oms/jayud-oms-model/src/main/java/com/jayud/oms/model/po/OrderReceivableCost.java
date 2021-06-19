@@ -116,7 +116,7 @@ public class OrderReceivableCost extends Model<OrderReceivableCost> {
     private String legalName;
 
     @ApiModelProperty(value = "子订单法人主体id")
-    private Integer legalId;
+    private Long legalId;
 
     @Override
     protected Serializable pkVal() {

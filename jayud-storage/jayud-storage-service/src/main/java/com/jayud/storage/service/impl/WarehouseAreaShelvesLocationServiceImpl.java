@@ -5,19 +5,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.storage.feign.OauthClient;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.QueryWarehouseAreaShelvesLocationForm;
 import com.jayud.storage.model.bo.WarehouseAreaShelvesLocationForm;
-import com.jayud.storage.model.po.Location;
-import com.jayud.storage.model.po.WarehouseAreaShelves;
-import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
+import com.jayud.storage.model.po.*;
 import com.jayud.storage.mapper.WarehouseAreaShelvesLocationMapper;
 import com.jayud.storage.model.vo.*;
-import com.jayud.storage.service.ILocationService;
-import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
+import com.jayud.storage.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.storage.service.IWarehouseAreaShelvesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +40,12 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
     @Autowired
     private ILocationService locationService;
 
+    @Autowired
+    private IWarehouseAreaService warehouseAreaService;
+
+    @Autowired
+    private IWarehouseService warehouseService;
+
     @Override
     public List<WarehouseAreaShelvesLocation> getUpdateTime() {
         return this.baseMapper.getUpdateTime();
@@ -59,8 +60,9 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
 
     @Override
     public boolean saveOrUpdateWarehouseAreaShelvesLocation(List<WarehouseAreaShelvesLocationForm> form) {
-        List<WarehouseAreaShelvesLocation> warehouseAreaShelvesLocations = ConvertUtil.convertList(form, WarehouseAreaShelvesLocation.class);
-        for (WarehouseAreaShelvesLocation warehouseAreaShelvesLocation : warehouseAreaShelvesLocations) {
+
+        for (WarehouseAreaShelvesLocationForm warehouseAreaShelvesLocationForm : form) {
+            WarehouseAreaShelvesLocation warehouseAreaShelvesLocation = ConvertUtil.convert(warehouseAreaShelvesLocationForm, WarehouseAreaShelvesLocation.class);
             warehouseAreaShelvesLocation.setStatus(1);
             warehouseAreaShelvesLocation.setCreateTime(LocalDateTime.now());
             warehouseAreaShelvesLocation.setCreateUser(UserOperator.getToken());
@@ -68,21 +70,43 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
             if(!b){
                 return false;
             }
-            //库位添加成功,生成库位编码
-            List<String> locationCode = this.createLocationCode(warehouseAreaShelvesLocation);
-            List<Location> locations = new ArrayList<>();
-            for (String s : locationCode) {
-                Location location = new Location();
-                location.setLocationId(warehouseAreaShelvesLocation.getId());
-                location.setCreateUser(UserOperator.getToken());
-                location.setLocationCode(s);
-                location.setCreateTime(LocalDateTime.now());
-                location.setStatus(0);
-                locations.add(location);
-            }
-            boolean b1 = this.locationService.saveOrUpdateBatch(locations);
-            if(!b){
-                return false;
+
+            if(warehouseAreaShelvesLocationForm.getId() == null){
+                //库位添加成功,生成库位编码
+                List<String> locationCode = this.createLocationCode(warehouseAreaShelvesLocation);
+                List<Location> locations = new ArrayList<>();
+                for (String s : locationCode) {
+                    Location location = new Location();
+                    location.setLocationId(warehouseAreaShelvesLocation.getId());
+                    location.setCreateUser(UserOperator.getToken());
+                    location.setLocationCode(s);
+                    location.setCreateTime(LocalDateTime.now());
+                    location.setStatus(0);
+                    locations.add(location);
+                }
+                boolean b1 = this.locationService.saveOrUpdateBatch(locations);
+                if(!b){
+                    return false;
+                }
+            }else{
+                //删除原来的库位编码，重新生成新的库位编码
+                locationService.deleteLocation(warehouseAreaShelvesLocation.getId());
+
+                List<String> locationCode = this.createLocationCode(warehouseAreaShelvesLocation);
+                List<Location> locations = new ArrayList<>();
+                for (String s : locationCode) {
+                    Location location = new Location();
+                    location.setLocationId(warehouseAreaShelvesLocation.getId());
+                    location.setCreateUser(UserOperator.getToken());
+                    location.setLocationCode(s);
+                    location.setCreateTime(LocalDateTime.now());
+                    location.setStatus(0);
+                    locations.add(location);
+                }
+                boolean b1 = this.locationService.saveOrUpdateBatch(locations);
+                if(!b){
+                    return false;
+                }
             }
 
         }
@@ -95,11 +119,62 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
     }
 
     @Override
-    public List<WarehouseAreaShelvesLocation> getList() {
+    public List<LocationCodeVO> getList() {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("status",1);
-        return this.baseMapper.selectList(queryWrapper);
+        List<WarehouseAreaShelvesLocation> list = this.baseMapper.selectList(queryWrapper);
+        List<LocationCodeVO> locationCodeVOS = new ArrayList<>();
+
+        for (WarehouseAreaShelvesLocation warehouseAreaShelvesLocation : list) {
+            List<Location> locations = locationService.getList(warehouseAreaShelvesLocation.getId());
+            for (Location location : locations) {
+                LocationCodeVO locationCodeVO = ConvertUtil.convert(warehouseAreaShelvesLocation, LocationCodeVO.class);
+                locationCodeVO.setLocationCode(location.getLocationCode());
+                locationCodeVOS.add(locationCodeVO);
+            }
+        }
+        return locationCodeVOS;
     }
+
+    @Override
+    public List<LocationCodeVO> getListByShelvesName(String shelvesName) {
+        return this.baseMapper.getListByShelvesName(shelvesName);
+    }
+
+    @Override
+    public WarehouseNameVO getWarehouseNameByKuCode(String kuCode) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("location_code",kuCode);
+        Location one = locationService.getOne(queryWrapper);
+        WarehouseAreaShelvesLocation byId = this.getById(one.getLocationId());
+        WarehouseAreaShelves byId1 = warehouseAreaShelvesService.getById(byId.getShelvesId());
+        WarehouseArea byId2 = warehouseAreaService.getById(byId1.getAreaId());
+        Warehouse byId3 = warehouseService.getById(byId2.getWarehouseId());
+        WarehouseNameVO warehouseNameVO = new WarehouseNameVO();
+        warehouseNameVO.setName(byId3.getName());
+        warehouseNameVO.setAreaName(byId2.getAreaName());
+        warehouseNameVO.setShelvesName(byId1.getShelvesName());
+        return warehouseNameVO;
+    }
+
+    @Override
+    public WarehouseAreaShelvesLocation getLocation(Integer shelvesLine, Long shelvesId, Long shelvesType) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("shelves_line",shelvesLine);
+        queryWrapper.eq("shelves_type",shelvesType);
+        queryWrapper.eq("shelves_id",shelvesId);
+        queryWrapper.eq("status",1);
+        return this.baseMapper.selectOne(queryWrapper);
+    }
+
+    @Override
+    public WarehouseAreaShelvesLocation getLocationByShelvesLine(Integer shelvesLine, Long shelvesId) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("shelves_line",shelvesLine);
+        queryWrapper.eq("shelves_id",shelvesId);
+        return this.baseMapper.selectOne(queryWrapper);
+    }
+
 
     private List<String> createLocationCode(WarehouseAreaShelvesLocation warehouseAreaShelvesLocation){
 
@@ -116,43 +191,50 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
 
         List<String> string = new ArrayList<>();
         if(shelvesTypeName.equals("A面")){
-            StringBuffer locationCode = new StringBuffer();
-            locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
-                    .append("A").append(warehouseAreaShelvesLocation.getShelvesColumn());
-            string.add(locationCode.toString());
+
+            for (Integer integer = 1; integer < warehouseAreaShelvesLocation.getShelvesColumn()+1; integer++) {
+                StringBuffer locationCode = new StringBuffer();
+                locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
+                        .append("A").append(integer);
+                string.add(locationCode.toString());
+            }
+
         }
         if(shelvesTypeName.equals("B面")){
-            StringBuffer locationCode = new StringBuffer();
-            locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
-                    .append("B").append(warehouseAreaShelvesLocation.getShelvesColumn());
-            string.add(locationCode.toString());
+
+            for (Integer integer = 1; integer < warehouseAreaShelvesLocation.getShelvesColumn()+1; integer++) {
+                StringBuffer locationCode = new StringBuffer();
+                locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
+                        .append("B").append(integer);
+                string.add(locationCode.toString());
+            }
+
         }
         if(shelvesTypeName.equals("AB面")){
-            StringBuffer locationCode = new StringBuffer();
-            locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
-                    .append("A").append(warehouseAreaShelvesLocation.getShelvesColumn());
-            string.add(locationCode.toString());
+            for (Integer integer = 1; integer < warehouseAreaShelvesLocation.getShelvesColumn()+1; integer++) {
+                StringBuffer locationCode = new StringBuffer();
+                StringBuffer locationCode1 = new StringBuffer();
+                locationCode.append(warehouseAreaShelvesVO.getCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
+                        .append("A").append(integer);
+                string.add(locationCode.toString());
 
-            StringBuffer locationCode1 = new StringBuffer();
-            locationCode1.append(warehouseAreaShelvesVO.getCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
-                    .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
-                    .append(warehouseAreaShelvesLocation.getShelvesColumn()).append("-")
-                    .append("B").append(warehouseAreaShelvesLocation.getShelvesColumn());
-            string.add(locationCode.toString());
+
+                locationCode1.append(warehouseAreaShelvesVO.getCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getAreaCode()).append("-")
+                        .append(warehouseAreaShelvesVO.getShelvesName()).append("-")
+                        .append(warehouseAreaShelvesLocation.getShelvesLine()).append("-")
+                        .append("B").append(integer);
+                string.add(locationCode1.toString());
+            }
 
         }else {
             log.warn("货架类型不存在，无法生成货架编码");

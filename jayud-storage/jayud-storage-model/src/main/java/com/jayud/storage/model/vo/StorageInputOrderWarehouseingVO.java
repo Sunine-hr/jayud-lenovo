@@ -3,6 +3,7 @@ package com.jayud.storage.model.vo;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.ApiResult;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
@@ -103,12 +104,14 @@ public class StorageInputOrderWarehouseingVO {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     //@ApiModelProperty(value = "更新人")
     private String updateUser;
 
     //@ApiModelProperty(value = "更新时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "备注")
@@ -136,7 +139,8 @@ public class StorageInputOrderWarehouseingVO {
     private String orderTaker;
 
     @ApiModelProperty(value = "接单日期")
-    private String receivingOrdersDate;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime receivingOrdersDate;
 
     /**
      * 组装商品信息
@@ -146,12 +150,14 @@ public class StorageInputOrderWarehouseingVO {
 
         for (WarehouseGoodsVO goods : goodsList) {
 
-            sb.append(goods.getName())
-                    .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
-                    .append(",").append(goods.getNumber()).append("件")
-                    .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
-                    .append(",").append("重量:").append(goods.getWeight()).append("KG")
-                    .append(";");
+            if(goods.getName() != null){
+                sb.append(goods.getName())
+                        .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
+                        .append(",").append(goods.getNumber()).append("件")
+                        .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
+                        .append(",").append("重量:").append(goods.getWeight() == null ? 0 : goods.getWeight()).append("KG")
+                        .append(";");
+            }
         }
 
         this.goodsInfo = sb.toString();
@@ -162,12 +168,15 @@ public class StorageInputOrderWarehouseingVO {
 
         for (InGoodsOperationRecord goods : goodsList) {
 
-            sb.append(goods.getName())
-                    .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
-                    .append(",").append(goods.getNumber()).append("件")
-                    .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
-                    .append(",").append("重量:").append(goods.getWeight()).append("KG")
-                    .append(";");
+            if(goods.getName() != null){
+                sb.append(goods.getName())
+                        .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
+                        .append(",").append(goods.getNumber()).append("件")
+                        .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
+                        .append(",").append("重量:").append(goods.getWeight() == null ? 0 : goods.getWeight()).append("KG")
+                        .append(";");
+            }
+
         }
 
         this.inGoodsInfo = sb.toString();

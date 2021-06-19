@@ -55,4 +55,6 @@ public abstract class SqlConstant {
     public static final String STORAGE_INPUT_ORDER = "storage_input_order表";
 
     public static final String STORAGE_OUT_ORDER = "storage_out_order表";
+
+    public static final String STORAGE_FAST_ORDER = "storage_fast_order表";
 }

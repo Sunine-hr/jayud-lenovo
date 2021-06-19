@@ -235,24 +235,32 @@ public class OrderInfoController {
                 }
             }
             //仓储校验参数
-            if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode()) || inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())) {
-                if (inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCEDD.getCode())) {
-                    InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
+            if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) ||
+                    inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) ||
+                    inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode()) ||
+                    inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode()) ) {
+//                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())) {
+//                    InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
+//                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
+//                        return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
+//                    }
+//                    ApiResult result = storageClient.isEnough(storageOutOrderForm.getGoodsFormList());
+//                    if(!result.isOk()){
+//                        return CommonResult.error(result.getCode(),result.getMsg());
+//                    }
 //                    ApiResult stock = storageClient.isStock(storageOutOrderForm.getGoodsFormList());
 //                    if(!stock.isOk()){
 //                        return CommonResult.error(stock.getCode(),stock.getMsg());
 //                    }
-//                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
-//                        return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
-//                    }
-                }
-                if (inputMainOrderForm.getSelectedServer().equals(OrderStatusEnum.CCIDD.getCode())) {
-                    InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
+//
+//                }
+//                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())) {
+//                    InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
 //                    ApiResult commodity = storageClient.isCommodity(storageInputOrderForm.getGoodsFormList());
 //                    if(!commodity.isOk()){
 //                        return CommonResult.error(commodity.getCode(),commodity.getMsg());
 //                    }
-                }
+//                }
             }
 
             //校验参数
@@ -521,6 +529,17 @@ public class OrderInfoController {
 
             orderInfoTemplate.setStorageOutTemplateTemplate(template);
         }
+        //快进快出
+        InputStorageFastOrderVO storageFastOrderForm = inputOrderVO.getStorageFastOrderForm();
+        if(storageFastOrderForm != null){
+            StorageFastTemplate storageFastTemplate = ConvertUtil.convert(storageFastOrderForm, StorageFastTemplate.class);
+            storageFastTemplate.setCost(this.orderInfoService.isCost(storageFastTemplate.getOrderNo(), 1));
+
+            Template<StorageFastTemplate> template = new Template<StorageFastTemplate>() {
+            }.setList(Collections.singletonList(storageFastTemplate));
+
+            orderInfoTemplate.setStorageFastTemplateTemplate(template);
+        }
 
 
         return CommonResult.success(orderInfoTemplate);
@@ -568,6 +587,18 @@ public class OrderInfoController {
         InputOrderServiceVO orderServiceForm = inputOrderVO.getOrderServiceForm();
         if (orderServiceForm != null) {
             orderServiceForm.copyOperationInfo();
+        }
+        InputStorageInputOrderVO storageInputOrderForm = inputOrderVO.getStorageInputOrderForm();
+        if(storageInputOrderForm != null){
+            storageInputOrderForm.copyOperationInfo();
+        }
+        InputStorageOutOrderVO storageOutOrderForm = inputOrderVO.getStorageOutOrderForm();
+        if(storageOutOrderForm != null){
+            storageOutOrderForm.copyOperationInfo();
+        }
+        InputStorageFastOrderVO storageFastOrderForm = inputOrderVO.getStorageFastOrderForm();
+        if(storageFastOrderForm != null){
+            storageFastOrderForm.copyOperationInfo();
         }
         return CommonResult.success(inputOrderVO);
     }

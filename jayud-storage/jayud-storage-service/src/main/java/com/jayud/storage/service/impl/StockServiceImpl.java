@@ -48,45 +48,53 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
     @Override
     public boolean saveStock(Stock stock) {
-
+        QueryWrapper queryWrapper1 = new QueryWrapper();
+        queryWrapper1.eq("sku",stock.getSku());
+        Good good = goodService.getOne(queryWrapper1);
+        if(good == null){
+            return false;
+        }
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("sku",stock.getSku());
-        queryWrapper.eq("good_name",stock.getGoodName());
-        queryWrapper.eq("specification_model",stock.getSpecificationModel());
-        Good good = goodService.getOne(queryWrapper);
         Stock stock1 = this.getOne(queryWrapper);
         if(stock1!=null){
-            stock1.setAvailableStock(stock1.getAvailableStock()+stock.getAvailableStock());
+            stock1.setAvailableStock(stock1.getAvailableStock() + stock.getAvailableStock());
             boolean b = this.saveOrUpdate(stock1);
             if(!b){
                 return false;
             }
+            return true;
+        }else{
+            stock.setCustomerId(good.getCustomerId());
+            stock.setCreateUser(UserOperator.getToken());
+            stock.setCreateTime(LocalDateTime.now());
+            boolean b = this.saveOrUpdate(stock);
+            if(!b){
+                return false;
+            }
+            return true;
         }
-        stock.setCustomerId(good.getCustomerId());
-        stock.setCreateUser(UserOperator.getToken());
-        stock.setCreateTime(LocalDateTime.now());
-        boolean b = this.saveOrUpdate(stock);
-        if(!b){
-            return false;
-        }
-        return true;
     }
 
     @Override
     public IPage<StockVO> findByPage(QueryStockForm form) {
         Page<StockVO> page = new Page<>(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findByPage(page, form);
+        IPage<StockVO> byPage = this.baseMapper.findByPage(page, form);
+        return byPage;
     }
 
     @Override
-    public boolean getIsStockNumber(String sku, Integer number) {
+    public String getIsStockNumber(String sku, Integer number) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("sku",sku);
         Stock stock = this.baseMapper.selectOne(queryWrapper);
-        if(stock.getAvailableStock()<number){
-            return false;
+        if(stock==null){
+            return "该商品不存在";
         }
-        return true;
+        if(stock.getAvailableStock()<number){
+            return "该商品数量超出库存";
+        }
+        return "pass";
     }
 
     @Override
@@ -94,8 +102,8 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("sku",convert.getSku());
         Stock stock = this.baseMapper.selectOne(queryWrapper);
-        stock.setAvailableStock(stock.getAvailableStock()-convert.getNumber());
-        stock.setLockStock(convert.getNumber());
+        stock.setAvailableStock(stock.getAvailableStock() - convert.getNumber());
+        stock.setLockStock(convert.getNumber() + (stock.getLockStock()==null ? 0 : stock.getLockStock()));
         boolean b = this.saveOrUpdate(stock);
         if(!b){
             return false;
@@ -105,7 +113,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
     @Override
     public boolean releaseInventory(Long orderId, String orderNo) {
-        List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList1(orderId, orderNo);
+        List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(orderId, orderNo,2);
         List<Stock> stocks = new ArrayList<>();
         for (WarehouseGoodsVO warehouseGoodsVO : list1) {
             QueryWrapper queryWrapper = new QueryWrapper();
@@ -123,7 +131,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
     @Override
     public boolean changeInventory(String orderNo, Long id) {
-        List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList1(id, orderNo);
+        List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(id, orderNo,2);
         List<Stock> stocks = new ArrayList<>();
         for (WarehouseGoodsVO warehouseGoodsVO : list1) {
             QueryWrapper queryWrapper = new QueryWrapper();
@@ -143,5 +151,12 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     @Override
     public StockLocationNumberVO getListBySkuAndLocationCode(String sku, String locationCode,Long customerId) {
         return goodsLocationRecordService.getListBySkuAndLocationCode(sku, locationCode,customerId);
+    }
+
+    @Override
+    public Stock getStockBySku(String sku) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("sku",sku);
+        return this.baseMapper.selectOne(queryWrapper);
     }
 }

@@ -7,17 +7,18 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.QueryStockForm;
 import com.jayud.storage.model.bo.QueryStorageOrderForm;
+import com.jayud.storage.model.po.GoodsLocationRecord;
 import com.jayud.storage.model.vo.*;
-import com.jayud.storage.service.IInGoodsOperationRecordService;
-import com.jayud.storage.service.IStockService;
-import com.jayud.storage.service.IWarehouseGoodsService;
+import com.jayud.storage.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -54,6 +58,12 @@ public class StockController {
 
     @Autowired
     private IWarehouseGoodsService warehouseGoodsService;
+
+    @Autowired
+    private IRelocationRecordService relocationRecordService;
+
+    @Autowired
+    private IGoodsLocationRecordService goodsLocationRecordService;
 
     @ApiOperation("库存查询")
     @PostMapping("/findByPage")
@@ -93,8 +103,30 @@ public class StockController {
             map1.put("pageInfo", new CommonPageResult(page));
             return CommonResult.success(map1);
         }
+        List<StockVO> records = page.getRecords();
+        for (StockVO record : records) {
+            if(record.getLocationCode() == null){
+                records.remove(record);
+            }
+        }
+        for (int i = 0; i < records.size(); i++) {
+            StockVO stockVO = records.get(i);
+            for (int j = i+1; j < records.size(); j++) {
+                if(stockVO.getSku().equals(records.get(j).getSku()) && stockVO.getLocationCode().equals(records.get(j).getLocationCode())){
+                    stockVO.setInventoryQuantityUnit(stockVO.getInventoryQuantityUnit() + records.get(j).getInventoryQuantityUnit());
+                    if(stockVO.getUpdateTime().compareTo(records.get(j).getUpdateTime()) != 1){
+                        stockVO.setUpdateTime(records.get(j).getUpdateTime());
+                    }
+                    records.remove(j);
+                }
+            }
+        }
+        page.setRecords(records);
         for (StockVO record : page.getRecords()) {
-            record.setCustomerName(omsClient.getCustomerNameById(record.getId()).getData());
+            if(record.getCustomerId() != null){
+                record.setCustomerName(omsClient.getCustomerNameById(record.getCustomerId()).getData());
+            }
+
         }
         map1.put("pageInfo", new CommonPageResult(page));
         return CommonResult.success(page);
@@ -106,20 +138,75 @@ public class StockController {
         //获取查询的库位以及该库位的商品
         String sku = MapUtil.getStr(map, "sku");
         String locationCode = MapUtil.getStr(map, "locationCode");
-        Long customerId = MapUtil.getLong(map, "customer_id");
+        Long customerId = MapUtil.getLong(map, "customerId");
 
         //获取该库位该商品的可用库存
         StockLocationNumberVO stockLocationNumberVO = stockService.getListBySkuAndLocationCode(sku,locationCode,customerId);
 
         //获取入库操作记录
         List<InGoodsOperationRecordFormVO> inGoodsOperationRecordFormVOS = inGoodsOperationRecordService.getListBySkuAndLocationCode(sku,locationCode,customerId);
+        if(CollectionUtils.isNotEmpty(inGoodsOperationRecordFormVOS)){
+            for (InGoodsOperationRecordFormVO inGoodsOperationRecordFormVO : inGoodsOperationRecordFormVOS) {
+                inGoodsOperationRecordFormVO.setStorageTime(this.getStorageTime(inGoodsOperationRecordFormVO.getCreateTime().toString().replace("T"," "),LocalDateTime.now().toString().replace("T"," ")));
+            }
+        }
+
+        //获取出库操作记录
         List<OutGoodsOperationRecordFormVO> outGoodsOperationRecordFormVOS = warehouseGoodsService.getListBySkuAndLocationCode(sku,locationCode,customerId);
-        return CommonResult.success();
+        if(CollectionUtils.isNotEmpty(outGoodsOperationRecordFormVOS)){
+            for (OutGoodsOperationRecordFormVO outGoodsOperationRecordFormVO : outGoodsOperationRecordFormVOS) {
+                //获取该商品入库的时间
+                GoodsLocationRecord goodsLocationRecord = goodsLocationRecordService.getGoodsLocationRecordBySkuAndKuCode(outGoodsOperationRecordFormVO.getWarehousingBatchNo(),sku,outGoodsOperationRecordFormVO.getKuCode());
+                outGoodsOperationRecordFormVO.setStorageTime(this.getStorageTime(goodsLocationRecord.getCreateTime().toString().replace("T"," "),outGoodsOperationRecordFormVO.getCreateTime().toString().replace("T"," ")));
+            }
+        }
+
+        //获取移库操作记录
+        List<RelocationGoodsOperationRecordFormVO> relocationGoodsOperationRecordFormVOS = relocationRecordService.getListBySkuAndLocationCode(sku,locationCode);
+        //获取调整下架操作记录
+        List<AdjustOffShelfRecordFormVO> adjustOffShelfRecordFormVOS = new ArrayList<>();
+
+        //获取调整上架操作记录
+        List<AdjustShelfRecordFormVO> adjustShelfRecordFormVOS = new ArrayList<>();
+
+        StockRecordVO stockRecordVO = ConvertUtil.convert(stockLocationNumberVO, StockRecordVO.class);
+        stockRecordVO.setInGoodsOperationRecordFormVOS(inGoodsOperationRecordFormVOS);
+        stockRecordVO.setOutGoodsOperationRecordFormVOS(outGoodsOperationRecordFormVOS);
+        stockRecordVO.setRelocationGoodsOperationRecordFormVOS(relocationGoodsOperationRecordFormVOS);
+        stockRecordVO.setAdjustOffShelfRecordFormVOS(adjustOffShelfRecordFormVOS);
+        stockRecordVO.setAdjustShelfRecordFormVOS(adjustShelfRecordFormVOS);
+
+        return CommonResult.success(stockRecordVO);
     }
 
     //获取存仓时长
-    public String getStorageTime(LocalDateTime time){
-        return null;
+    public String getStorageTime(String startTime,String endTime){
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date one;
+        Date two;
+        long day = 0;
+        long hour = 0;
+        try {
+            one = df.parse(startTime);
+            two = df.parse(endTime);
+            long time1 = one.getTime();
+            long time2 = two.getTime();
+            long diff ;
+            if(time1<time2) {
+                diff = time2 - time1;
+            } else {
+                diff = time1 - time2;
+            }
+            day = diff / (24 * 60 * 60 * 1000);
+            hour = (diff / (60 * 60 * 1000) - day * 24);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return day + "天" + hour + "小时" ;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("2021-05-27T16:07:43".replace("T", " "));
     }
 }
 

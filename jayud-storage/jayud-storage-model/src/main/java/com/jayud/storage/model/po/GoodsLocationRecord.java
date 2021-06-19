@@ -52,6 +52,9 @@ public class GoodsLocationRecord extends Model<GoodsLocationRecord> {
     @ApiModelProperty(value = "存储类型 (1为入库，2为出库)")
     private Integer type;
 
+    @ApiModelProperty(value = "是否已拣货 (1为已拣货，2为未拣货)")
+    private Integer isPickedGoods;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

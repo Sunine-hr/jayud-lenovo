@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.storage.model.bo.*;
 import com.jayud.storage.model.po.StorageInputOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.storage.model.vo.StorageInputOrderFormVO;
-import com.jayud.storage.model.vo.StorageInputOrderVO;
-import com.jayud.storage.model.vo.StorageInputOrderWarehouseingVO;
+import com.jayud.storage.model.vo.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -86,4 +86,17 @@ public interface IStorageInputOrderService extends IService<StorageInputOrder> {
      */
     void orderReceiving(StorageInputOrder tmp, AuditInfoForm auditInfoForm, StorageInCargoRejected storageInCargoRejected);
 
+    /**
+     * 查询入库订单记录
+     * @param form
+     * @return
+     */
+    IPage<StorageInputOrderNumberVO> findOrderRecordByPage(QueryInOrderForm form);
+
+    /**
+     * PDA 获取上架订单
+     * @param form
+     * @return
+     */
+    List<OnShelfOrderVO> getListByQueryForm(QueryPutGoodForm form);
 }

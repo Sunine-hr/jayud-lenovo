@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.storage.mapper.StorageOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.storage.model.po.StorageOrder">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="status" property="status" />
+        <result column="customer_name" property="customerName" />
+        <result column="out_order_no" property="outOrderNo" />
+        <result column="warehousing_batch_no" property="warehousingBatchNo" />
+        <result column="sku" property="sku" />
+        <result column="start_time" property="startTime" />
+        <result column="end_time" property="endTime" />
+        <result column="month" property="month" />
+        <result column="create_time" property="createTime" />
+        <result column="remarks" property="remarks" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, status, customer_name, out_order_no, warehousing_batch_no, sku, start_time, end_time, month, create_time, remarks
+    </sql>
+
+    <select id="findByPage" resultType="com.jayud.storage.model.vo.StorageOrderVO">
+        select id, order_no orderNo, status, customer_name customerName, out_order_no outOrderNo, warehousing_batch_no warehousingBatchNo, sku, start_time startTime, end_time endTime, month, create_time createTime, remarks
+        from storage_order so
+        <where>
+            status = 1
+            <if test="form.orderNo !=null and form.orderNo!=''">
+                and so.order_no like concat('%',#{form.orderNo},'%')
+            </if>
+            <if test="form.customerName !=null and form.customerName!=''">
+                and so.customer_name like concat('%',#{form.customerName},'%')
+            </if>
+            <if test="form.outOrderNo !=null and form.outOrderNo!=''">
+                and so.out_order_no like concat('%',#{form.outOrderNo},'%')
+            </if>
+            <if test="form.month !=null and form.month!=''">
+                and so.month like concat('%',#{form.month},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="getList" resultType="com.jayud.storage.model.vo.StorageOrderVO">
+        select id, order_no orderNo, status, customer_name customerName, out_order_no outOrderNo, warehousing_batch_no warehousingBatchNo, sku, start_time startTime, end_time endTime, month, create_time createTime, remarks
+        from storage_order so
+        <where>
+            status = 1
+            <if test="orderNo !=null and orderNo!=''">
+                and so.order_no like concat('%',#{orderNo},'%')
+            </if>
+            <if test="customerName !=null and customerName!=''">
+                and so.customer_name like concat('%',#{customerName},'%')
+            </if>
+            <if test="outOrderNo !=null and outOrderNo!=''">
+                and so.out_order_no like concat('%',#{outOrderNo},'%')
+            </if>
+            <if test="month !=null and month!=''">
+                and so.month like concat('%',#{month},'%')
+            </if>
+        </where>
+    </select>
+
+</mapper>

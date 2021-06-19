@@ -29,6 +29,7 @@ public enum OrderTypeEnum {
     FW("FW", "服务单号"),
     RK("RK", "入库订单号"),
     CK("CK", "出库订单号"),
+    IO("IO", "快进快出订单号"),
 
     //账单编号
     AR("AR", "应收账单"),

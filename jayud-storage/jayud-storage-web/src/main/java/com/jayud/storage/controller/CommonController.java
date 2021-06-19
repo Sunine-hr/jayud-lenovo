@@ -1,8 +1,11 @@
 package com.jayud.storage.controller;
 
 import cn.hutool.core.map.MapUtil;
+import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.EasyExcelFactory;
+import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.metadata.Sheet;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -12,28 +15,23 @@ import com.jayud.common.utils.excel.ExcelUtils;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.WarehouseGoodsInForm;
 import com.jayud.storage.model.bo.WarehouseGoodsOutForm;
-import com.jayud.storage.model.po.InGoodsOperationRecord;
-import com.jayud.storage.model.po.WarehouseAreaShelvesLocation;
-import com.jayud.storage.model.vo.GoodNumberVO;
-import com.jayud.storage.model.vo.GoodVO;
-import com.jayud.storage.model.vo.InitComboxSVO;
-import com.jayud.storage.model.vo.InitComboxWarehouseVO;
-import com.jayud.storage.service.IGoodService;
-import com.jayud.storage.service.IInGoodsOperationRecordService;
-import com.jayud.storage.service.IWarehouseAreaShelvesLocationService;
+import com.jayud.storage.model.po.*;
+import com.jayud.storage.model.vo.*;
+import com.jayud.storage.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
 
 @Api(tags = "仓储模块公用接口")
 @RestController
@@ -53,14 +51,54 @@ public class CommonController {
     @Autowired
     private IInGoodsOperationRecordService inGoodsOperationRecordService;
 
+    @Autowired
+    private IWarehouseService warehouseService;
+
+    @Autowired
+    private IWarehouseAreaService warehouseAreaService;
+
+    @Autowired
+    private IWarehouseAreaShelvesService warehouseAreaShelvesService;
+
+    @Autowired
+    private IWarehouseGoodsService warehouseGoodsService;
+
+    @Autowired
+    private IGoodsLocationRecordService goodsLocationRecordService;
+
+    @Autowired
+    private IStorageOutOrderService storageOutOrderService;
 
     /**
      * 导出入库商品模板
      */
     @ApiOperation(value = "导出入库商品模板")
     @GetMapping(value = "/exportInProductTemplate")
-    public void exportInProductTemplate( HttpServletResponse response){
-        ExcelUtils.exportSinglePageHeadExcel("入库商品模板", WarehouseGoodsInForm.class,response);
+    public void exportInProductTemplate( HttpServletResponse response) throws IOException {
+//        ExcelUtils.exportSinglePageHeadExcel("入库商品模板", WarehouseGoodsInForm.class,response);
+
+        ExcelWriter excelWriter = null;
+        OutputStream outputStream = null;
+        String fileName = "入库商品模板";
+        try {
+            outputStream = response.getOutputStream();
+            fileName = fileName + ".xls";
+            response.setHeader("Content-disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            response.setContentType("application/vnd.ms-excel;charset=UTF-8");// 定义输出类型
+            excelWriter = EasyExcel.write(response.getOutputStream(),WarehouseGoodsInForm.class).build();
+            WriteSheet writeSheet = EasyExcel.writerSheet("入库商品").build();
+            List<WarehouseGoodsInForm> warehouseGoodsInForms = new ArrayList<>();
+            excelWriter.write(warehouseGoodsInForms, writeSheet);
+        }  catch (Exception e) {
+            outputStream.close();
+            e.printStackTrace();
+        } finally {
+            // 千万别忘记finish 会帮忙关闭流
+            if (excelWriter != null) {
+                excelWriter.finish();
+            }
+
+        }
     }
 
     /**
@@ -68,8 +106,31 @@ public class CommonController {
      */
     @ApiOperation(value = "导出出库商品模板")
     @GetMapping(value = "/exportOutProductTemplate")
-    public void exportOutProductTemplate( HttpServletResponse response){
-        ExcelUtils.exportSinglePageHeadExcel("出库商品模板", WarehouseGoodsOutForm.class,response);
+    public void exportOutProductTemplate( HttpServletResponse response) throws IOException {
+//        ExcelUtils.exportSinglePageHeadExcel("出库商品模板", WarehouseGoodsOutForm.class,response);
+
+        ExcelWriter excelWriter = null;
+        OutputStream outputStream = null;
+        String fileName = "出库商品模板";
+        try {
+            outputStream = response.getOutputStream();
+            fileName = fileName + ".xls";
+            response.setHeader("Content-disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            response.setContentType("application/vnd.ms-excel;charset=UTF-8");// 定义输出类型
+            excelWriter = EasyExcel.write(response.getOutputStream(),WarehouseGoodsOutForm.class).build();
+            WriteSheet writeSheet = EasyExcel.writerSheet("出库商品").build();
+            List<WarehouseGoodsInForm> warehouseGoodsInForms = new ArrayList<>();
+            excelWriter.write(warehouseGoodsInForms, writeSheet);
+        }  catch (Exception e) {
+            outputStream.close();
+            e.printStackTrace();
+        } finally {
+            // 千万别忘记finish 会帮忙关闭流
+            if (excelWriter != null) {
+                excelWriter.finish();
+            }
+
+        }
     }
 
     /**
@@ -88,6 +149,12 @@ public class CommonController {
         log.info("list:{}",  listString);
         JSONArray arryList = JSONObject.parseArray(listString);
         arryList.remove(0);
+//        Object o = arryList.get(1);
+//        System.out.println(o);
+//        List<WarehouseGoodsInForm> warehouseGoodsInForms = arryList.toJavaList(WarehouseGoodsInForm.class);
+//        for (WarehouseGoodsInForm warehouseGoodsInForm : warehouseGoodsInForms) {
+//
+//        }
         return CommonResult.success(arryList);
     }
 
@@ -97,13 +164,26 @@ public class CommonController {
     @ApiOperation(value = "导入出库商品信息")
     @PostMapping(value = "/importOutProductInformation")
     public CommonResult importOutProductInformation(@RequestBody MultipartFile file){
-
-        return CommonResult.success();
+        List<Object> list = null;
+        try {
+            list = EasyExcelFactory.read(file.getInputStream(), new Sheet(1));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String listString = JSONObject.toJSONString(list);
+        log.info("list:{}",  listString);
+        JSONArray arryList = JSONObject.parseArray(listString);
+        arryList.remove(0);
+//        List<WarehouseGoodsOutForm> warehouseGoodsOutForms = arryList.toJavaList(WarehouseGoodsOutForm.class);
+//        for (WarehouseGoodsOutForm warehouseGoodsOutForm : warehouseGoodsOutForms) {
+//
+//        }
+        return CommonResult.success(arryList);
     }
 
     @ApiOperation(value = "生成入仓号/生成出仓号")
     @PostMapping(value = "/getWarehouseNumber")
-    public CommonResult getWarehouseNumber(@RequestBody Map<String,Object> map){
+    public synchronized CommonResult getWarehouseNumber(@RequestBody Map<String,Object> map){
         Long type = MapUtil.getLong(map,"type");
         String warehouseNumber = null;
         if(type == 1){//生成入仓号
@@ -116,6 +196,19 @@ public class CommonController {
             return CommonResult.error(444,"获取入仓号失败");
         }
         return CommonResult.success(warehouseNumber);
+
+    }
+
+    @ApiOperation(value = "生成入仓号/生成出仓号")
+    @PostMapping(value = "/getOutWarehouseNumber")
+    public synchronized CommonResult getOutWarehouseNumber(){
+        String warehouseNumber = (String)omsClient.getWarehouseNumber("JYDCK").getData();
+
+        if(warehouseNumber==null){
+            return CommonResult.error(444,"获取出仓号失败");
+        }
+        return CommonResult.success(warehouseNumber);
+
     }
 
     @ApiOperation(value = "确认入仓下拉列表框")
@@ -123,11 +216,14 @@ public class CommonController {
     public CommonResult commonComBox(){
         List<InitComboxSVO> data = omsClient.initDictNameByDictTypeCode("operation").getData();
         List<InitComboxSVO> data1 = omsClient.initDictNameByDictTypeCode("cardType").getData();
-        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
+//        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status",1);
+        List<Warehouse> list = warehouseService.list(queryWrapper);
         HashMap<String,Object> hashMap = new HashMap();
         hashMap.put("operation",data);
         hashMap.put("cardType",data1);
-        hashMap.put("warehouseInfo",data2);
+        hashMap.put("warehouseInfo",list);
         return CommonResult.success(hashMap);
     }
 
@@ -149,9 +245,16 @@ public class CommonController {
                 List<String> str = new ArrayList<>();
                 List<InGoodsOperationRecord> list1 = inGoodsOperationRecordService.getListBySku(goodNumberVO.getSku());
                 for (InGoodsOperationRecord inGoodsOperationRecord : list1) {
-                    str.add(inGoodsOperationRecord.getWarehousingBatchNo());
+                    Integer number = 0;
+                    List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecord.getId());
+                    for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
+                        number = number + goodsLocationRecord.getUnDeliveredQuantity();
+                    }
+                    if(number>0){
+                        str.add(inGoodsOperationRecord.getWarehousingBatchNo());
+                    }
+
                 }
-                str.add("111111");
                 goodNumberVO.setBatchNumbers(str);
             }
             return CommonResult.success(goodNumberVOS);
@@ -162,7 +265,7 @@ public class CommonController {
     @ApiOperation(value = "查询所有库位")
     @PostMapping(value = "/location1ComBox")
     public CommonResult location1ComBox(@RequestBody Map<String,Object> map){
-        List<WarehouseAreaShelvesLocation> warehouseAreaShelvesLocations = warehouseAreaShelvesLocationService.getList();
+        List<LocationCodeVO> warehouseAreaShelvesLocations = warehouseAreaShelvesLocationService.getList();
         return CommonResult.success(warehouseAreaShelvesLocations);
     }
 
@@ -174,4 +277,48 @@ public class CommonController {
         hashMap.put("shelfType",data);
         return CommonResult.success(hashMap);
     }
+
+    @ApiOperation(value = "客户名称下拉列表框")
+    @PostMapping(value = "/goodComBox")
+    public CommonResult goodComBox(){
+        return CommonResult.success(omsClient.getCustomerInfo().getData());
+    }
+
+    @ApiOperation(value = "移库下拉列表框")
+    @PostMapping(value = "/relocationComBox")
+    public CommonResult relocationComBox(){
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status",1);
+        List<Warehouse> list = warehouseService.list(queryWrapper);
+        List<WarehouseArea> list1 = warehouseAreaService.list(queryWrapper);
+        List<WarehouseAreaShelves> list2 = warehouseAreaShelvesService.list(queryWrapper);
+        Map<String,Object> map = new HashMap<>();
+        map.put("warehouse",list);
+        map.put("warehouseArea",list1);
+        map.put("warehouseAreaShelves",list2);
+        return CommonResult.success(map);
+    }
+
+    @ApiOperation(value = "获取打印拣货单库位下拉列表框")
+    @PostMapping(value = "/pickLocationComBox")
+    public CommonResult pickLocationComBox(@RequestBody Map<String,Object> map){
+
+        String orderNo = MapUtil.getStr(map, "orderNo");
+
+        List<WarehouseGoods> outListByOrderNo = warehouseGoodsService.getOutWarehouseGoodsByOrderNo(orderNo);
+
+        Map<String,Object> map1 = new HashMap<>();
+
+        if(CollectionUtils.isNotEmpty(outListByOrderNo)){
+            for (WarehouseGoods warehouseGoods : outListByOrderNo) {
+                InGoodsOperationRecord listByWarehousingBatchNoAndSku = inGoodsOperationRecordService.getListByWarehousingBatchNoAndSku(warehouseGoods.getWarehousingBatchNo(), warehouseGoods.getSku());
+                //获取商品对应的库位编码
+                List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(listByWarehousingBatchNoAndSku.getId());
+                map1.put(warehouseGoods.getSku(),goodsLocationRecordByGoodId);
+            }
+        }
+
+        return CommonResult.success(map1);
+    }
+
 }

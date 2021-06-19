@@ -32,25 +32,70 @@
         select id, order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, name,
         sku, specification_model specificationModel, board_number boardNumber, number,
         pcs, weight, volume, create_user createUser, create_time createTime
-        from in_goods_operation_record igor where orderId = #{id} group by sku order by createTime asc
+        from in_goods_operation_record igor where order_id = #{id} group by sku order by createTime asc
     </select>
 
     <select id="getListBySku" resultType="com.jayud.storage.model.po.InGoodsOperationRecord">
         select id, order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, name,
         sku, specification_model specificationModel, board_number boardNumber, number,
-        pcs, weight, volume from in_goods_operation_record igor where sku = #{sku} group by warehousing_batch_no
+        pcs, weight, volume from in_goods_operation_record igor where sku = #{sku} and is_warehousing = 1 group by warehousing_batch_no
     </select>
 
     <select id="getListBySkuAndLocationCode" resultType="com.jayud.storage.model.vo.InGoodsOperationRecordFormVO">
-        select sio.warehouse_number warehouseNumber , igor.warehousing_batch_no warehousingBatchNo ,igor.sku sku ,igor.name name
-	igor.number number , igor.pcs ,igor.create_time createTime , glr.un_delivered_quantity nowNumber , s.customer_id customerId
-	igor.pcs nowPcs
-	from
-	(select id,ku_code,inGood_id,number,type, un_delivered_quantity	from goods_location_record group by ku_code) glr
-	left join in_goods_operation_record igor on glr.inGood_id = igor.id
-	left join storage_input_order sio on sio.id = igor.order_id
-	left join stock s on igor.sku = s.sku
-	where igor.sku = #{sku} and glr.ku_code = #{locationCode} and glr.type = 1 and s.customer_id = #{customerId}
+        select sio.warehouse_number warehouseNumber , igor.warehousing_batch_no warehousingBatchNo ,igor.sku sku ,igor.name name,
+        igor.number number , igor.pcs ,igor.create_time createTime , glr.un_delivered_quantity nowNumber , s.customer_id customerId,
+        igor.pcs nowPcs,glr.ku_code kuCode
+        from
+        goods_location_record glr
+        left join in_goods_operation_record igor on glr.inGood_id = igor.id
+        left join storage_input_order sio on sio.id = igor.order_id
+        left join stock s on igor.sku = s.sku
+        where igor.sku = #{sku} and glr.ku_code = #{locationCode} and glr.type = 1 and s.customer_id = #{customerId}
+    </select>
+
+    <select id="getWarehousingBatch" resultType="string">
+        select igor.warehousing_batch_no warehousingBatchNo
+        from in_goods_operation_record igor
+        left join storage_input_order sio on igor.order_id = sio.id
+        where sio.id = #{id} group by igor.warehousing_batch_no
+    </select>
+
+    <select id="getListByAreaName" resultType="com.jayud.storage.model.po.InGoodsOperationRecord">
+        select igor.id, igor.order_no orderNo, igor.order_id orderId, igor.warehousing_batch_no warehousingBatchNo, igor.name,
+        igor.sku, igor.specification_model specificationModel, igor.board_number boardNumber, igor.number,
+        igor.pcs
+        from goods_location_record glr
+        left join in_goods_operation_record igor on glr.inGood_id = igor.id
+        left join (select ku_code,wasl.shelves_id shelves_id from location l left join warehouse_area_shelves_location wasl on l.location_id = wasl.id) wl on glr.ku_code = wl.ku_code
+        left join warehouse_area_shelves was on wl.shelves_id = was.id
+        where was.area_name = #{areaName}
+    </select>
+
+    <select id="getListByKuCode" resultType="com.jayud.storage.model.vo.QRCodeLocationGoodVO">
+        select igor.name,igor.sku, igor.specification_model specificationModel, glr.un_delivered_quantity number
+        from goods_location_record glr
+        left join in_goods_operation_record igor on glr.inGood_id = igor.id
+        where glr.ku_code = #{kuCode}
+    </select>
+
+    <select id="getWarehousingBatchNoComBox" resultType="string">
+        select distinct igor.warehousing_batch_no warehousingBatchNo
+        from goods_location_record glr
+        left join in_goods_operation_record igor on glr.inGood_id = igor.id
+        where igor.sku = #{sku} and glr.ku_code = #{kuCode} and glr.type = 1
+    </select>
+
+    <select id="getListByOrderIdAndTime2" resultType="com.jayud.storage.model.vo.OnShelfOrderVO">
+        select id,order_no orderNo, order_id orderId, warehousing_batch_no warehousingBatchNo, count(number) number
+        from in_goods_operation_record igor
+        where igor.order_id = #{id} and igor.order_no = #{orderNo}
+        <if test="startTime != null and startTime != ''">
+            and igor.create_time <![CDATA[>= ]]> #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and igor.create_time <![CDATA[<= ]]> #{endTime}
+        </if>
+        group by warehousing_batch_no
     </select>
 
 </mapper>

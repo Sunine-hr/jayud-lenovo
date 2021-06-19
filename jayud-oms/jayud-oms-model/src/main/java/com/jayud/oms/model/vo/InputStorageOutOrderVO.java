@@ -1,12 +1,15 @@
 package com.jayud.oms.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,12 +75,14 @@ public class InputStorageOutOrderVO {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "备注")
@@ -85,6 +90,9 @@ public class InputStorageOutOrderVO {
 
     @ApiModelProperty(value = "出库商品对象集合")
     private List<WarehouseGoodsVO> goodsFormList;
+
+    @ApiModelProperty(value = "拣货商品对象集合")
+    private List<WarehouseGoodsVO> warehouseGoodsVOS;
 
     @ApiModelProperty(value = "附件集合")
     private List<FileView> allPics;
@@ -96,10 +104,13 @@ public class InputStorageOutOrderVO {
     private String receivingOrdersDate;
 
     @ApiModelProperty(value = "总件数")
-    private String totalNumber;
+    private String totalNumberStr;
 
     @ApiModelProperty(value = "总重量")
-    private String totalWeight;
+    private String totalWeightStr;
+
+    @ApiModelProperty(value = "状态")
+    private String statusName;
 
     @ApiModelProperty(value = "费用状态", required = true)
     private String costDesc;
@@ -109,5 +120,28 @@ public class InputStorageOutOrderVO {
 
     public void setUnitCodeName(String unitCodeName) {
         this.unitCodeName=unitCodeName;
+    }
+
+    public void copyOperationInfo() {
+        this.id = null;
+        this.allPics = new ArrayList<>();
+        this.orderNo = null;
+        this.mainOrderNo = null;
+        this.status = null;
+        this.processStatus = null;
+        this.orderTaker = null;
+        this.createTime = null;
+        this.receivingOrdersDate = null;
+        this.createUser = null;
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(goodsFormList)) {
+            goodsFormList.forEach(e -> {
+                e.setId(null);
+                e.setOrderId(null);
+                e.setOrderNo(null);
+                e.setTakeFiles(null);
+                e.setTakeFiles(null);
+            });
+        }
+
     }
 }

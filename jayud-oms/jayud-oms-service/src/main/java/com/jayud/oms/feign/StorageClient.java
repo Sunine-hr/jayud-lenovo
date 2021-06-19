@@ -1,10 +1,8 @@
 package com.jayud.oms.feign;
 
 import com.jayud.common.ApiResult;
-import com.jayud.oms.model.bo.AddWarehouseGoodsForm;
-import com.jayud.oms.model.bo.InputStorageInputOrderForm;
-import com.jayud.oms.model.bo.InputStorageOutOrderForm;
-import com.jayud.oms.model.bo.InputTrailerOrderFrom;
+import com.jayud.oms.model.bo.*;
+import com.jayud.oms.model.vo.InputStorageFastOrderVO;
 import com.jayud.oms.model.vo.InputStorageInputOrderVO;
 import com.jayud.oms.model.vo.InputStorageOutOrderVO;
 import com.jayud.oms.model.vo.InputTrailerOrderVO;
@@ -38,6 +36,12 @@ public interface StorageClient {
     ApiResult<String> createOutOrder(@RequestBody InputStorageOutOrderForm inputStorageOutOrderForm);
 
     /**
+     * 创建仓储快进快出订单
+     */
+    @RequestMapping(value = "/api/storage/createFastOrder")
+    ApiResult<String> createFastOrder(@RequestBody InputStorageFastOrderForm inputStorageFastOrderForm);
+
+    /**
      * 根据主订单号获取仓储入库单信息
      */
     @RequestMapping(value = "/api/storage/getStorageInOrderDetails")
@@ -49,11 +53,21 @@ public interface StorageClient {
     @RequestMapping(value = "/api/storage/getStorageOutOrderDetails")
     ApiResult<InputStorageOutOrderVO> getStorageOutOrderDetails(@RequestParam("orderNo") String orderNo);
 
+    /**
+     * 根据主订单号获取仓储出库单信息
+     */
+    @RequestMapping(value = "/api/storage/getStorageFastOrderDetails")
+    ApiResult<InputStorageFastOrderVO> getStorageFastOrderDetails(@RequestParam("orderNo") String orderNo);
+
     @ApiOperation(value = "判断商品是否为商品表维护的数据")
     @PostMapping(value = "/isCommodity")
     public ApiResult isCommodity(@RequestBody List<AddWarehouseGoodsForm> warehouseGoodsForms);
 
-    @ApiOperation(value = "判断出库商品数量是否小于等于该商品库存")
+    @ApiOperation(value = "判断出库商品数量是否小于等于该批次商品库存")
     @PostMapping(value = "/isStock")
     public ApiResult isStock(@RequestBody List<AddWarehouseGoodsForm> warehouseGoodsForms);
+
+    @ApiOperation(value = "判断出库商品数量是否小于等于该商品库存")
+    @PostMapping(value = "/isEnough")
+    public ApiResult isEnough(@RequestBody List<AddWarehouseGoodsForm> goodsFormList);
 }

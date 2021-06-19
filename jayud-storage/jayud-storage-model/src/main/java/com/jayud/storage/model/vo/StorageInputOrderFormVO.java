@@ -4,6 +4,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.ApiResult;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
@@ -99,6 +100,7 @@ public class StorageInputOrderFormVO {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "创建时间")
@@ -108,6 +110,7 @@ public class StorageInputOrderFormVO {
     private String updateUser;
 
     //@ApiModelProperty(value = "更新时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "备注")
@@ -144,7 +147,8 @@ public class StorageInputOrderFormVO {
     private String orderTaker;
 
     @ApiModelProperty(value = "接单日期")
-    private String receivingOrdersDate;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime receivingOrdersDate;
 
     @ApiModelProperty(value = "重量")
     private Double weight = 0.0;
@@ -161,6 +165,10 @@ public class StorageInputOrderFormVO {
     @ApiModelProperty(value = "是否有费用详情")
     private Boolean cost;
 
+    @ApiModelProperty(value = "子订单结算单位")
+    private String defaultUnitCode;
+
+
     /**
      * 组装商品信息
      */
@@ -174,14 +182,16 @@ public class StorageInputOrderFormVO {
         for (WarehouseGoodsVO goods : goodsList) {
 
             if(goods.getEstimatedArrivalTime()!=null){
-                sb1.append(goods.getEstimatedArrivalTime()).append(";");
+                sb1.append(goods.getEstimatedArrivalTime().toString().replace("T"," ")).append(";");
+            }
+            if(goods.getName() != null){
+                sb.append(goods.getName())
+                        .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
+                        .append(",").append(goods.getNumber()== null ? 0 : goods.getNumber()).append("件")
+                        .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
+                        .append(";");
             }
 
-            sb.append(goods.getName())
-                    .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
-                    .append(",").append(goods.getPcs()== null ? 0 : goods.getNumber()).append("件")
-                    .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
-                    .append(";");
             if(goods.getVolume()!=null){
                 this.volume = this.volume + goods.getVolume();
             }
@@ -201,9 +211,9 @@ public class StorageInputOrderFormVO {
 
             sb.append(goods.getName())
                     .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
-                    .append(",").append(goods.getNumber()).append("件")
+                    .append(",").append(goods.getNumber() == null ? 0 : goods.getNumber()).append("件")
                     .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
-                    .append(",").append("重量:").append(goods.getWeight()).append("KG")
+                    .append(",").append("重量:").append(goods.getWeight()== null ? 0 : goods.getWeight()).append("KG")
                     .append(";");
         }
 

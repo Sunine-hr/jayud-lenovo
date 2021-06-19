@@ -41,6 +41,9 @@
             <if test="form.orderNo !=null and form.orderNo!=''">
                 and soo.order_no like concat('%',#{form.orderNo},'%')
             </if>
+            <if test="form.mainOrderNo !=null and form.mainOrderNo!=''">
+                and soo.main_order_no like concat('%',#{form.mainOrderNo},'%')
+            </if>
             <if test="form.processStatus !=null and form.processStatus!=''">
                 and soo.process_status like concat('%',#{form.processStatus},'%')
             </if>

@@ -1,15 +1,15 @@
 package com.jayud.storage.model.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
 
 /**
  * <p>
@@ -37,55 +37,56 @@ public class StorageInputOrderDetails extends Model<StorageInputOrderDetails> {
     private Long orderId;
 
     @ApiModelProperty(value = "入仓操作id（可多选，以逗号隔开）")
+    @TableField(value = "operation_id",fill = FieldFill.UPDATE)
     private String operationId;
 
     @ApiModelProperty(value = "卡板类型id（可多选，以逗号隔开）")
-    @TableField("cardType_id")
+    @TableField(value = "cardType_id",fill = FieldFill.UPDATE)
     private String cardTypeId;
 
     @ApiModelProperty(value = "YES(1为是，2为否)")
     @TableField("YES")
-    private boolean yes;
+    private Boolean yes;
 
     @ApiModelProperty(value = "NO(1为是，2为否)")
     @TableField("NO")
-    private boolean no;
+    private Boolean no;
 
     @ApiModelProperty(value = "已影相(1为是，2为否)")
-    private boolean isGone;
+    private Boolean isGone;
 
     @ApiModelProperty(value = "(不可叠放)指示(1为是，2为否)")
-    private boolean isInstructions;
+    private Boolean isInstructions;
 
     @ApiModelProperty(value = "数量1")
     private Integer num1;
 
     @ApiModelProperty(value = "上门收件(1为是，2为否)")
-    private boolean isDoorCollection;
+    private Boolean isDoorCollection;
 
     @ApiModelProperty(value = "客户自送(1为是，2为否)")
-    private boolean isSelfDelivery;
+    private Boolean isSelfDelivery;
 
     @ApiModelProperty(value = "已贴Gold Labels(1为是，2为否)")
-    private boolean isGoldLabels;
+    private Boolean isGoldLabels;
 
     @ApiModelProperty(value = "包装不当(1为是，2为否)")
-    private boolean isImproperPacking;
+    private Boolean isImproperPacking;
 
     @ApiModelProperty(value = "数量2")
     private Integer num2;
 
     @ApiModelProperty(value = "Tom Open 已开口(1为是，2为否)")
-    private boolean isTomOpen;
+    private Boolean isTomOpen;
 
     @ApiModelProperty(value = "Tom Open 已开口的数量")
     private Integer tomOpenNumber;
 
     @ApiModelProperty(value = "Re Taped 重贴胶纸(1为是，2为否)")
-    private boolean isReTaped;
+    private Boolean isReTaped;
 
     @ApiModelProperty(value = "Crushed Collapsed 已压破/摺曲(1为是，2为否)")
-    private boolean isCrushedCollapsed;
+    private Boolean isCrushedCollapsed;
 
     @ApiModelProperty(value = "Crushed Collapsed 已压破/摺曲的数量")
     private Integer crushedCollapsedNumber;
@@ -94,19 +95,19 @@ public class StorageInputOrderDetails extends Model<StorageInputOrderDetails> {
     private Integer reTapedNumber;
 
     @ApiModelProperty(value = "Water Greased 有水渍/油渍(1为是，2为否)")
-    private boolean isWaterGreased;
+    private Boolean isWaterGreased;
 
     @ApiModelProperty(value = "Water Greased 有水渍/油渍的数量")
     private Integer waterGreasedNumber;
 
     @ApiModelProperty(value = "Punctured/Holes 外箱破损/有洞(1为是，2为否)")
-    private boolean isPuncturedHoles;
+    private Boolean isPuncturedHoles;
 
     @ApiModelProperty(value = "Punctured/Holes 外箱破损/有洞的数量")
     private Integer puncturedHolesNumber;
 
     @ApiModelProperty(value = "Damaged Ctn.No.PCS(1为是，2为否)")
-    private boolean isDamagedCtn;
+    private Boolean isDamagedCtn;
 
     @ApiModelProperty(value = "Damaged Ctn.No.PCS的数量")
     private Integer damagedCtnNumber;

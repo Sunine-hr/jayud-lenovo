@@ -1,9 +1,11 @@
 package com.jayud.storage.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -62,6 +64,13 @@ public class WarehouseGoodsLocationVO {
 
     @ApiModelProperty(value = "备注")
     private String remarks;
+
+    @ApiModelProperty(value = "预计出库时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime expectedDeliveryTime;
+
+    @ApiModelProperty(value = "默认库位")
+    private String defaultLocation;
 
     @ApiModelProperty(value = "出库库位以及对应的商品和数量")
     private List<GoodsLocationRecordFormVO> goodsLocationRecordForms;

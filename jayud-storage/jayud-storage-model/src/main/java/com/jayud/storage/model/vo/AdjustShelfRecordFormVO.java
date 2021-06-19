@@ -1,5 +1,6 @@
 package com.jayud.storage.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -26,6 +27,7 @@ public class AdjustShelfRecordFormVO {
     private Integer number;
 
     @ApiModelProperty(value = "上架时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "存仓时长")

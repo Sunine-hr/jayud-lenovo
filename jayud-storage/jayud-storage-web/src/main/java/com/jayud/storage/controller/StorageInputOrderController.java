@@ -8,6 +8,7 @@ import cn.hutool.json.JSONObject;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.excel.write.metadata.fill.FillWrapper;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -27,14 +28,9 @@ import com.jayud.storage.feign.FileClient;
 import com.jayud.storage.feign.OauthClient;
 import com.jayud.storage.feign.OmsClient;
 import com.jayud.storage.model.bo.*;
-import com.jayud.storage.model.po.InGoodsOperationRecord;
-import com.jayud.storage.model.po.StorageInputOrder;
-import com.jayud.storage.model.po.StorageInputOrderDetails;
+import com.jayud.storage.model.po.*;
 import com.jayud.storage.model.vo.*;
-import com.jayud.storage.service.IInGoodsOperationRecordService;
-import com.jayud.storage.service.IStorageInputOrderDetailsService;
-import com.jayud.storage.service.IStorageInputOrderService;
-import com.jayud.storage.service.IWarehouseGoodsService;
+import com.jayud.storage.service.*;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.Version;
@@ -56,6 +52,10 @@ import javax.validation.Valid;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -95,6 +95,12 @@ public class StorageInputOrderController {
 
     @Autowired
     private RedisUtils redisUtils;
+
+    @Autowired
+    private IGoodsLocationRecordService goodsLocationRecordService;
+
+    @Autowired
+    private IWarehouseService warehouseService;
 
     @ApiOperation("分页查询入库订单列表")
     @PostMapping("/findByPage")
@@ -196,11 +202,12 @@ public class StorageInputOrderController {
 
             record.setCost(MapUtil.getBool(data, record.getOrderNo()));
 
-            record.setCreatedTimeStr(record.getCreateTime().toString());
+            record.setCreatedTimeStr(record.getCreateTime().toString().replace("T"," "));
             record.setSubLegalName(record.getLegalName());
             record.setSubUnitCode(record.getUnitCode());
+            record.setDefaultUnitCode(record.getUnitCode());
 
-            List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(record.getId(), record.getOrderNo());
+            List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(record.getId(), record.getOrderNo(),1);
             record.assemblyGoodsInfo(list1);
             //获取该批次的入库商品信息
             List<InGoodsOperationRecord> inGoodsOperationRecords = inGoodsOperationRecordService.getListByOrderId(record.getId(), record.getOrderNo());
@@ -278,6 +285,8 @@ public class StorageInputOrderController {
             unitCodeInfo = this.omsClient.getCustomerByUnitCode(unitCodes);
         }
 
+        String path = (String)fileClient.getBaseUrl().getData();
+
         //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
         for (StorageInputOrderWarehouseingVO record : records) {
@@ -290,7 +299,10 @@ public class StorageInputOrderController {
             //拼装结算单位
             record.assemblyUnitCodeInfo(unitCodeInfo);
             //获取订单商品信息
-            List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(record.getId(), record.getOrderNo());
+            List<WarehouseGoodsVO> list1 = warehouseGoodsService.getList(record.getId(), record.getOrderNo(),1);
+            for (WarehouseGoodsVO warehouseGoodsVO : list1) {
+                warehouseGoodsVO.setTakeFiles(StringUtils.getFileViews(warehouseGoodsVO.getFileName(),warehouseGoodsVO.getFilePath(),path));
+            }
             record.assemblyGoodsInfo(list1);
             //获取该批次的入库商品信息
             List<InGoodsOperationRecord> inGoodsOperationRecords = inGoodsOperationRecordService.getListByWarehousingBatchNo(record.getWarehousingBatchNo());
@@ -306,7 +318,6 @@ public class StorageInputOrderController {
     @ApiOperation(value = "执行入库流程操作")
     @PostMapping(value = "/doStorageInProcessOpt")
     public CommonResult doStorageInProcessOpt(@RequestBody @Valid StorageInProcessOptForm form, BindingResult result) {
-
         if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {
                 return CommonResult.error(444, error.getDefaultMessage());
@@ -338,6 +349,53 @@ public class StorageInputOrderController {
         form.checkProcessOpt(statusEnum);
         form.setStatus(statusEnum.getCode());
 
+        if(form.getStatus().equals(OrderStatusEnum.CCI_2.getCode()) && form.getCmd().equals("submit")){
+            List<WarehouseGoodsForm> warehouseGoodsForms = form.getWarehouseGoodsForms();
+            if(CollectionUtils.isEmpty(warehouseGoodsForms)){
+                return CommonResult.error(443,"申报信息为空");
+            } else{
+                for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
+                    if(warehouseGoodsForm.getNumber() == null){
+                        return CommonResult.error(443,"申报件数不能为空");
+                    }
+
+                    if(warehouseGoodsForm.getSjBoardNumber() != null || warehouseGoodsForm.getSjVolume() != null
+                    || warehouseGoodsForm.getSjWeight() != null || warehouseGoodsForm.getSjPcs() != null){
+                        if(warehouseGoodsForm.getSjNumber() == null){
+                            return CommonResult.error(443,"反馈入仓件数信息不为空");
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+        if(form.getStatus().equals(OrderStatusEnum.CCI_2.getCode()) && form.getCmd().equals("end") && form.getIsOver()){
+            for (WarehouseGoodsForm warehouseGoodsForm : form.getWarehouseGoodsForms()) {
+                List<InGoodsOperationRecord> listByOrderId = inGoodsOperationRecordService.getListByOrderId(warehouseGoodsForm.getOrderId(), warehouseGoodsForm.getOrderNo());
+                if(CollectionUtils.isEmpty(listByOrderId)){
+                    return CommonResult.error(443,"该订单没有反馈入仓数据，无法完结，请前往反馈入仓");
+                }
+                List<InGoodsOperationRecord> list = inGoodsOperationRecordService.getList(warehouseGoodsForm.getOrderId(), warehouseGoodsForm.getOrderNo(), warehouseGoodsForm.getSku());
+                Integer number = 0;
+                for (InGoodsOperationRecord inGoodsOperationRecord : list) {
+                    number = number + inGoodsOperationRecord.getNumber();
+                }
+                if(warehouseGoodsForm.getSjNumber() != null){
+                    number = number + warehouseGoodsForm.getSjNumber();
+                }
+                if(warehouseGoodsForm.getNumber() != number){
+                    return CommonResult.error(444,"入库件数不一致");
+                }
+            }
+        }
+        if(form.getStatus().equals(OrderStatusEnum.CCI_3.getCode())){
+            if(this.isWarehousing(form).getCode().equals(443)){
+                return CommonResult.error(443,"入库件数不准确");
+            }
+        }
+
         //指令操作
         switch (statusEnum) {
             case CCI_1: //入库接单
@@ -346,13 +404,13 @@ public class StorageInputOrderController {
             case CCI_2: //确认入仓
                 boolean b = storageInputOrderService.confirmEntry(form);
                 if(!b){
-                    CommonResult.error(444,"确认入仓失败");
+                    CommonResult.error(443,"确认入仓失败");
                 }
                 break;
             case CCI_3: //仓储入库
                 boolean a = storageInputOrderService.warehousingEntry(form);
                 if(!a){
-                    CommonResult.error(444,"仓储入库失败");
+                    CommonResult.error(443,"仓储入库失败");
                 }
                 break;
         }
@@ -389,12 +447,12 @@ public class StorageInputOrderController {
 
         storageInProcessOptFormVO.setCardTypeId(longs);
         storageInProcessOptFormVO.setOperationId(list1);
-        List<WarehouseGoodsVO> list = warehouseGoodsService.getList(storageInputOrder.getId(), storageInputOrder.getOrderNo());
+        List<WarehouseGoodsVO> list = warehouseGoodsService.getList(storageInputOrder.getId(), storageInputOrder.getOrderNo(),1);
         storageInProcessOptFormVO.setWarehouseGoodsForms(list);
 
         for (WarehouseGoodsVO warehouseGoodsVO : list) {
             warehouseGoodsVO.setIsSubmit(storageInputOrder.getIsSubmit());
-            List<InGoodsOperationRecord> inGoodsOperationRecords = inGoodsOperationRecordService.getList(storageInputOrder.getId(), storageInputOrder.getOrderNo(),warehouseGoodsVO.getName());
+            List<InGoodsOperationRecord> inGoodsOperationRecords = inGoodsOperationRecordService.getList(storageInputOrder.getId(), storageInputOrder.getOrderNo(),warehouseGoodsVO.getSku());
             Double totalWeight = 0.0;
             Integer totalAmount = 0;
             Integer totalJAmount = 0;
@@ -419,11 +477,36 @@ public class StorageInputOrderController {
         storageInProcessOptFormVO.setOrderId(storageInputOrder.getId());
         storageInProcessOptFormVO.setOrderNo(storageInputOrder.getOrderNo());
         storageInProcessOptFormVO.assemblyMainOrderData(result.getData());
+        storageInProcessOptFormVO.setLegalName(storageInputOrder.getLegalName() );
 
+        //获取该订单已入仓信息
+        List<InGoodsOperationRecord> listByOrderId = inGoodsOperationRecordService.getListByOrderId(storageInputOrder.getId(), storageInputOrder.getOrderNo());
+        if(CollectionUtils.isNotEmpty(listByOrderId)){
+            storageInProcessOptFormVO.setInGoodsOperationRecords(ConvertUtil.convertList(listByOrderId,InGoodsOperationRecordVO.class));
+        }
+
+//        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
+//        for (InitComboxWarehouseVO initComboxWarehouseVO : data2) {
+//            if(initComboxWarehouseVO.getId().equals(storageInputOrderDetails.getWarehouseId())){
+//                storageInProcessOptFormVO.setWarehouseName(initComboxWarehouseVO.getName());
+//                storageInProcessOptFormVO.setWarehousePhone(initComboxWarehouseVO.getPhone());
+//                storageInProcessOptFormVO.setWarehouseAddress(initComboxWarehouseVO.getAddress());
+//            }
+//        }
+        if(storageInputOrderDetails.getWarehouseId() != null){
+            WarehouseVO warehouseById = warehouseService.findWarehouseById(storageInputOrderDetails.getWarehouseId());
+            storageInProcessOptFormVO.setWarehouseName(warehouseById.getName());
+            storageInProcessOptFormVO.setWarehousePhone(warehouseById.getPhone());
+            storageInProcessOptFormVO.setWarehouseAddress(warehouseById.getAddress());
+        }
+
+
+        storageInProcessOptFormVO.setCustomerId(omsClient.getCustomerByCode(storageInProcessOptFormVO.getCustomerCode()).getData());
         storageInProcessOptFormVO.setPlateNumber(storageInputOrder.getPlateNumber());
         storageInProcessOptFormVO.setWarehouseNumber(storageInputOrder.getWarehouseNumber());
         storageInProcessOptFormVO.setCreateTime(storageInputOrder.getCreateTime());
-
+        storageInProcessOptFormVO.setWarehousingBatchNo(redisUtils.get(storageInputOrder.getOrderNo()));
+        storageInProcessOptFormVO.setIsSubmit(storageInputOrder.getIsSubmit());
         return CommonResult.success(storageInProcessOptFormVO);
     }
 
@@ -446,18 +529,24 @@ public class StorageInputOrderController {
         System.out.println("inGoodsOperationRecordVOS============="+inGoodsOperationRecordVOS);
         storageInProcessOptFormVO.setInGoodsOperationRecords(inGoodsOperationRecordVOS);
 
-        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
-        for (InitComboxWarehouseVO initComboxWarehouseVO : data2) {
-            if(initComboxWarehouseVO.getId().equals(storageInputOrderDetails.getWarehouseId())){
-                storageInProcessOptFormVO.setWarehouseName(initComboxWarehouseVO.getName());
-                storageInProcessOptFormVO.setWarehousePhone(initComboxWarehouseVO.getPhone());
-                storageInProcessOptFormVO.setWarehouseAddress(initComboxWarehouseVO.getAddress());
-            }
+//        List<InitComboxWarehouseVO> data2 = omsClient.initComboxWarehouseVO().getData();
+//        for (InitComboxWarehouseVO initComboxWarehouseVO : data2) {
+//            if(initComboxWarehouseVO.getId().equals(storageInputOrderDetails.getWarehouseId())){
+//                storageInProcessOptFormVO.setWarehouseName(initComboxWarehouseVO.getName());
+//                storageInProcessOptFormVO.setWarehousePhone(initComboxWarehouseVO.getPhone());
+//                storageInProcessOptFormVO.setWarehouseAddress(initComboxWarehouseVO.getAddress());
+//            }
+//        }
+        if(storageInputOrderDetails.getWarehouseId() != null){
+            WarehouseVO warehouseById = warehouseService.findWarehouseById(storageInputOrderDetails.getWarehouseId());
+            storageInProcessOptFormVO.setWarehouseName(warehouseById.getName());
+            storageInProcessOptFormVO.setWarehousePhone(warehouseById.getPhone());
+            storageInProcessOptFormVO.setWarehouseAddress(warehouseById.getAddress());
         }
 
+        storageInProcessOptFormVO.setMainOrderNo(storageInputOrder.getMainOrderNo());
         ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageInProcessOptFormVO.getMainOrderNo()));
         storageInProcessOptFormVO.assemblyMainOrderData(result.getData());
-        storageInProcessOptFormVO.setMainOrderNo(storageInputOrder.getMainOrderNo());
         storageInProcessOptFormVO.setOrderId(storageInputOrder.getId());
         storageInProcessOptFormVO.setOrderNo(storageInputOrder.getOrderNo());
         storageInProcessOptFormVO.setPlateNumber(storageInputOrder.getPlateNumber());
@@ -476,10 +565,20 @@ public class StorageInputOrderController {
     @PostMapping(value = "/getWarehousingBatchNumber")
     public CommonResult getWarehousingBatchNumber(@RequestBody Map<String,Object> map){
         String orderNo = MapUtil.getStr(map, "orderNo");
-
+//        boolean b = redisUtils.hasKey(orderNo);
+//        if(b){
+//            return CommonResult.success(redisUtils.get(orderNo));
+//        }else{
+//            //获取入库批次号
+//            String batchNumber = (String)omsClient.getWarehouseNumber("A").getData();
+//            redisUtils.set(orderNo,batchNumber);
+//            return CommonResult.success(batchNumber);
+//        }
         //获取入库批次号
         String batchNumber = (String)omsClient.getWarehouseNumber("A").getData();
+        //redisUtils.set(orderNo,batchNumber);
         return CommonResult.success(batchNumber);
+
     }
 
     @ApiOperation(value = "判断商品信息是否能编辑和删除")
@@ -497,31 +596,34 @@ public class StorageInputOrderController {
     @PostMapping(value = "/isWarehousing")
     public CommonResult isWarehousing(@RequestBody StorageInProcessOptForm form) {
         //获取该批次所有的入仓商品
-        List<InGoodsOperationRecord> listByWarehousingBatchNo = inGoodsOperationRecordService.getListByWarehousingBatchNo(form.getWarehousingBatchNo());
         Integer totalNumber = 0;
-        for (InGoodsOperationRecord inGoodsOperationRecord : listByWarehousingBatchNo) {
-            totalNumber = totalNumber + inGoodsOperationRecord.getNumber();
-        }
         Integer totalNumber1 = 0;
-        for (InGoodsOperationRecordForm inGoodsOperationRecord : form.getInGoodsOperationRecords()) {
-            List<GoodsLocationRecordForm> goodsLocationRecordForms = inGoodsOperationRecord.getGoodsLocationRecordForms();
-            for (GoodsLocationRecordForm goodsLocationRecordForm : goodsLocationRecordForms) {
-                if(goodsLocationRecordForm.getNumber() != null && goodsLocationRecordForm.getKuCode() != null){
-                    totalNumber1 = totalNumber1 + goodsLocationRecordForm.getNumber();
+        if(form.getInGoodsOperationRecords().size()<=0){
+            return CommonResult.error(443,"入库件数不准确");
+        }
+        if(CollectionUtils.isNotEmpty(form.getInGoodsOperationRecords())){
+            for (InGoodsOperationRecordForm inGoodsOperationRecord : form.getInGoodsOperationRecords()) {
+                totalNumber = totalNumber + inGoodsOperationRecord.getNumber();
+                List<GoodsLocationRecordForm> goodsLocationRecordForms = inGoodsOperationRecord.getGoodsLocationRecordForms();
+                for (GoodsLocationRecordForm goodsLocationRecordForm : goodsLocationRecordForms) {
+                    if(goodsLocationRecordForm.getNumber() != null && goodsLocationRecordForm.getKuCode() != null){
+                        totalNumber1 = totalNumber1 + goodsLocationRecordForm.getNumber();
+                    }
                 }
             }
         }
-        if(totalNumber == totalNumber1){
+
+        if(totalNumber.equals(totalNumber1)){
             return CommonResult.success();
         }
-        return CommonResult.error(444,"入库件数不准确");
+        return CommonResult.error(443,"入库件数不准确");
     }
 
 
     @ApiOperation(value = "入库订单驳回")
     @PostMapping(value = "/rejectOrder")
     public CommonResult rejectOrder(@RequestBody StorageInCargoRejected storageInCargoRejected) {
-        //查询拖车订单
+        //查询入库订单
         StorageInputOrder tmp = this.storageInputOrderService.getById(storageInCargoRejected.getStorageInOrderId());
         //获取相应驳回操作
         OrderStatusEnum orderStatusEnum = OrderStatusEnum.getInStorageOrderRejection(tmp.getStatus());
@@ -573,7 +675,7 @@ public class StorageInputOrderController {
         ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageInputOrder.getMainOrderNo()));
         JSONArray mainOrders = new JSONArray(JSON.toJSONString(result.getData()));
         qrCodeInformationVO.setCustomerName(mainOrders.getJSONObject(0).getStr("customerName"));
-        qrCodeInformationVO.setCreateTime(listByWarehousingBatchNo.get(0).getCreateTime().toString());
+        qrCodeInformationVO.setCreateTime(listByWarehousingBatchNo.get(0).getCreateTime());
         qrCodeInformationVO.setWarehouseNumber(storageInputOrder.getWarehouseNumber());
         qrCodeInformationVO.setLegalName(storageInputOrder.getLegalName());
         return CommonResult.success(qrCodeInformationVO);
@@ -589,9 +691,9 @@ public class StorageInputOrderController {
         Integer totalPCS = 0;
 
         for (InGoodsOperationRecord inGoodsOperationRecord : listByWarehousingBatchNo) {
-            totalAmount = totalAmount + inGoodsOperationRecord.getNumber();
-            totalJAmount = totalJAmount + inGoodsOperationRecord.getBoardNumber();
-            totalPCS = totalPCS + inGoodsOperationRecord.getPcs();
+            totalAmount = totalAmount + (inGoodsOperationRecord.getNumber()==null ? 0:inGoodsOperationRecord.getNumber());
+            totalJAmount = totalJAmount + (inGoodsOperationRecord.getBoardNumber()==null ? 0:inGoodsOperationRecord.getBoardNumber());
+            totalPCS = totalPCS + (inGoodsOperationRecord.getPcs()==null ? 0:inGoodsOperationRecord.getPcs());
         }
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(totalJAmount).append("板").append("/")
@@ -605,103 +707,372 @@ public class StorageInputOrderController {
         ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageInputOrder.getMainOrderNo()));
         JSONArray mainOrders = new JSONArray(JSON.toJSONString(result.getData()));
         qrCodeInformationVO.setCustomerName(mainOrders.getJSONObject(0).getStr("customerName"));
-        qrCodeInformationVO.setCreateTime(listByWarehousingBatchNo.get(0).getCreateTime().toString());
+        qrCodeInformationVO.setCreateTime(listByWarehousingBatchNo.get(0).getCreateTime());
         qrCodeInformationVO.setWarehouseNumber(storageInputOrder.getWarehouseNumber());
         qrCodeInformationVO.setLegalName(storageInputOrder.getLegalName());
         qrCodeInformationVO.setGoodInfos(listByWarehousingBatchNo);
+        qrCodeInformationVO.setTotalAmount(totalAmount);
+        qrCodeInformationVO.setTotalJAmount(totalJAmount);
+        qrCodeInformationVO.setTotalPCS(totalPCS);
+
         return CommonResult.success(qrCodeInformationVO);
     }
+
+    @ApiOperation(value = "获取入仓批次号下拉列表")
+    @PostMapping(value = "/getWarehousingBatch")
+    public CommonResult getWarehousingBatch(@RequestBody Map<String,Object> map) {
+        Long orderId = MapUtil.getLong(map, "orderId");
+        List<String> strings = inGoodsOperationRecordService.getWarehousingBatch(orderId);
+        if(strings.size()<=0){
+            return CommonResult.error(443,"未进行反馈入仓，不存在反馈入仓信息");
+        }
+        return CommonResult.success(strings);
+    }
+
+    @ApiOperation(value = "订单记录列表")
+    @PostMapping(value = "/findOrderRecordByPage")
+    public CommonResult findOrderRecordByPage(@RequestBody QueryInOrderForm form){
+        //模糊查询客户信息
+        if (!StringUtils.isEmpty(form.getCustomerName())) {
+            ApiResult result = omsClient.getByCustomerName(form.getCustomerName());
+            Object data = result.getData();
+            if (data != null && ((List) data).size() > 0) {
+                JSONArray mainOrders = new JSONArray(data);
+                form.assemblyMainOrderNo(mainOrders);
+            } else {
+                form.setMainOrderNos(Collections.singletonList("-1"));
+            }
+        }
+        IPage<StorageInputOrderNumberVO> page = this.storageInputOrderService.findOrderRecordByPage(form);
+        List<String> mainOrders = new ArrayList<>();
+        for (StorageInputOrderNumberVO record : page.getRecords()) {
+            mainOrders.add(record.getMainOrderNo());
+        }
+        ApiResult result = omsClient.getMainOrderByOrderNos(mainOrders);
+
+        for (StorageInputOrderNumberVO record : page.getRecords()) {
+            record.assemblyMainOrderData(result.getData());
+            List<InGoodsOperationRecord> listByOrderId = inGoodsOperationRecordService.getListByOrderId(record.getId(), record.getOrderNo());
+            Integer number = 0;
+            Integer pcs = 0;
+            Integer nowNumber = 0;
+            Integer nowPcs = 0;
+            for (InGoodsOperationRecord inGoodsOperationRecord : listByOrderId) {
+                if(inGoodsOperationRecord.getNumber() != null){
+                    number = number + inGoodsOperationRecord.getNumber();
+                }
+                if(inGoodsOperationRecord.getPcs() != null){
+                    pcs = pcs + inGoodsOperationRecord.getPcs();
+                    nowPcs = nowPcs + inGoodsOperationRecord.getPcs();
+                }
+                List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecord.getId());
+                for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
+                    if(goodsLocationRecord.getUnDeliveredQuantity() != null){
+                        nowNumber = nowNumber + goodsLocationRecord.getUnDeliveredQuantity();
+                    }
+
+                }
+            }
+            record.setOrderQuantity(number);
+            record.setOrderQuantityPcs(pcs);
+            record.setNowOrderQuantity(nowNumber);
+            record.setNowOrderQuantityPcs(nowPcs);
+        }
+        return CommonResult.success(page);
+    }
+
+
+    @ApiOperation(value = "查看订单记录")
+    @PostMapping(value = "/viewOrderRecords")
+    public CommonResult viewOrderRecords(@RequestBody Map<String,Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        //获取入库商品信息
+        List<InGoodsOperationRecord> listByOrderId = inGoodsOperationRecordService.getListByOrderId(id);
+        List<String> skuList = new ArrayList<>();
+        List<String> warehousingBatchNos = new ArrayList<>();
+        List<InGoodsOperationRecordOrderVO> inGoodsOperationRecordOrderVOS = new ArrayList<>();
+        for (InGoodsOperationRecord inGoodsOperationRecord : listByOrderId) {
+            Integer nowNumber = 0;
+            Integer nowPcs = 0;
+            if(inGoodsOperationRecord.getPcs() != null){
+                nowPcs = nowPcs + inGoodsOperationRecord.getPcs();
+            }
+            List<GoodsLocationRecord> goodsLocationRecordByGoodId = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecord.getId());
+            for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecordByGoodId) {
+                nowNumber = nowNumber + goodsLocationRecord.getUnDeliveredQuantity();
+            }
+            InGoodsOperationRecordOrderVO convert = ConvertUtil.convert(inGoodsOperationRecord, InGoodsOperationRecordOrderVO.class);
+            convert.setNowNumber(nowNumber);
+            convert.setNowPcs(nowPcs);
+            convert.setStorageTime(this.getStorageTime(convert.getCreateTime().toString().replace("T"," "), LocalDateTime.now().toString().replace("T"," ")));
+            inGoodsOperationRecordOrderVOS.add(convert);
+            skuList.add(inGoodsOperationRecord.getSku());
+            warehousingBatchNos.add(inGoodsOperationRecord.getWarehousingBatchNo());
+        }
+        skuList = removeDuplicate(skuList);
+        warehousingBatchNos = removeDuplicate(warehousingBatchNos);
+        //出库记录
+        List<OrderOutRecord> orderOutRecords = warehouseGoodsService.getListBySkuAndBatchNo(skuList,warehousingBatchNos);
+        Map<String,Object> map1 = new HashMap();
+        map1.put("in",inGoodsOperationRecordOrderVOS);
+        map1.put("out",orderOutRecords);
+        return CommonResult.success(map1);
+    }
+
+    //list集合去重
+    public static List removeDuplicate(List list) {
+        HashSet h = new HashSet(list);
+        list.clear();
+        list.addAll(h);
+        return list;
+    }
+
+    //获取存仓时长
+    public String getStorageTime(String startTime,String endTime){
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date one;
+        Date two;
+        long day = 0;
+        long hour = 0;
+        try {
+            one = df.parse(startTime);
+            two = df.parse(endTime);
+            long time1 = one.getTime();
+            long time2 = two.getTime();
+            long diff ;
+            if(time1<time2) {
+                diff = time2 - time1;
+            } else {
+                diff = time1 - time2;
+            }
+            day = diff / (24 * 60 * 60 * 1000);
+            hour = (diff / (60 * 60 * 1000) - day * 24);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return day + "天" + hour + "小时" ;
+    }
+
 
     //入仓单模板
     @Value("${address.storageAddr}")
     private String filepath;
 
     @ApiOperation(value = "导出入仓单")
-    @PostMapping(value = "/exportInWarehouseReceipt")
-    public void exportInWarehouseReceipt(@RequestBody Map<String,Object> map, HttpServletResponse response){
+    @GetMapping(value = "/exportInWarehouseReceipt")
+    public void exportInWarehouseReceipt(@RequestParam("orderId") Long orderId, HttpServletResponse response){
+        Map map = new HashMap();
+        map.put("orderId",orderId);
         StorageInProcessOptFormVO storageInProcessOptFormVO = (StorageInProcessOptFormVO)this.getDataInConfirmEntry(map).getData();
 
-        Map<String,Object> dataMap = new HashMap<String, Object>();
+
+        File file = new File(filepath);
+        String name = file.getName();
+
         try {
-            //编号
-            dataMap.put("poundWeight", "1");
-            dataMap.put("labeling ", "1");
-            dataMap.put("photograph ","1");
-            dataMap.put("measureSize", "1");
-            dataMap.put("numberOfPoints", "1");
-            dataMap.put("selfUnloading", "1");
-            dataMap.put("warehouseUnloading", "1");
-            dataMap.put("compositeBoard", "1");
-            dataMap.put("rubberSheet", "1");
-            dataMap.put("board", "1");
-            dataMap.put("cardboard", "1");
-            dataMap.put("woodenCase", "1");
-            dataMap.put("yes", "1");
-            dataMap.put("no", "1");
-            dataMap.put("isGone", "1");
-            dataMap.put("isInstructions", "1");
-            dataMap.put("num1", "1");
-            dataMap.put("isDoorCollection", "1");
-            dataMap.put("isSelfDelivery", "1");
-            dataMap.put("isGoldLabels", "1");
-            dataMap.put("isImproperPacking", "1");
-            dataMap.put("num2", "1");
-            dataMap.put("isTomOpen", "1");
-            dataMap.put("tomOpenNumber", "1");
-            dataMap.put("isReTaped", "1");
-            dataMap.put("reTapedNumber", "1");
-            dataMap.put("isCrushedCollapsed", "1");
-            dataMap.put("crushedCollapsedNumber", "1");
-            dataMap.put("isWaterGreased", "1");
-            dataMap.put("waterGreasedNumber", "1");
-            dataMap.put("isPuncturedHoles", "1");
-            dataMap.put("puncturedHolesNumber", "1");
-            dataMap.put("isDamagedCtn", "1");
-            dataMap.put("damagedCtnNumber", "1");
+            InputStream inputStream = new FileInputStream(file);
+            Workbook templateWorkbook = null;
+            String fileType = name.substring(name.lastIndexOf("."));
+            if (".xls".equals(fileType)) {
+                templateWorkbook = new HSSFWorkbook(inputStream); // 2003-
+            } else if (".xlsx".equals(fileType)) {
+                templateWorkbook = new XSSFWorkbook(inputStream); // 2007+
+            } else {
+
+            }
+            //HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
+
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            templateWorkbook.write(outStream);
+            ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
+
+            String fileName = "入仓单";
+
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+            String filename = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
+
+            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+
+            WriteSheet writeSheet = EasyExcel.writerSheet().build();
+
+//            FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
+            //将集合数据填充
+            String number = null;
+            Integer sNumber = 0;
+            Integer borderNumber = 0;
+            Integer pcs = 0;
+            Double weight = 0.0;
+            Double volume = 0.0;
+            if(CollectionUtils.isNotEmpty(storageInProcessOptFormVO.getInGoodsOperationRecords())){
+                List<InGoodsOperationRecordVO> inGoodsOperationRecords = storageInProcessOptFormVO.getInGoodsOperationRecords();
+                for (InGoodsOperationRecordVO inGoodsOperationRecord : inGoodsOperationRecords) {
+                    if(inGoodsOperationRecord.getBoardNumber() == null){
+                        inGoodsOperationRecord.setBoardNumber(0);
+                    }
+                    if(inGoodsOperationRecord.getPcs() == null){
+                        inGoodsOperationRecord.setPcs(0);
+                    }
+                    if(inGoodsOperationRecord.getPcs() != null){
+                        pcs = pcs + inGoodsOperationRecord.getPcs();
+                    }
+                    if(inGoodsOperationRecord.getBoardNumber() != null){
+                        borderNumber = borderNumber + inGoodsOperationRecord.getBoardNumber();
+                    }
+                    if(inGoodsOperationRecord.getNumber() != null){
+                        sNumber = sNumber + inGoodsOperationRecord.getNumber();
+                    }
+                    if(inGoodsOperationRecord.getWeight() != null){
+                        weight = weight + inGoodsOperationRecord.getWeight();
+                    }
+                    if(inGoodsOperationRecord.getVolume() != null){
+                        volume = volume + inGoodsOperationRecord.getVolume();
+                    }
+                }
+                for (int i = 0; i < inGoodsOperationRecords.size(); i++) {
+                    for (int j = i+1; j < inGoodsOperationRecords.size(); j++) {
+                        if(inGoodsOperationRecords.get(i).getSku().equals(inGoodsOperationRecords.get(j).getSku())){
+                            InGoodsOperationRecordVO inGoodsOperationRecordVO = inGoodsOperationRecords.get(i);
+                            inGoodsOperationRecordVO.setNumber((inGoodsOperationRecordVO.getNumber()==null ? 0: inGoodsOperationRecordVO.getNumber())
+                                    + (inGoodsOperationRecords.get(j).getNumber()==null ? 0: inGoodsOperationRecords.get(j).getNumber()));
+                            inGoodsOperationRecordVO.setBoardNumber((inGoodsOperationRecordVO.getBoardNumber()==null ? 0: inGoodsOperationRecordVO.getBoardNumber())
+                                    + (inGoodsOperationRecords.get(j).getBoardNumber()==null ? 0: inGoodsOperationRecords.get(j).getBoardNumber()));
+                            inGoodsOperationRecordVO.setPcs((inGoodsOperationRecordVO.getPcs()==null ? 0: inGoodsOperationRecordVO.getPcs())
+                                    + (inGoodsOperationRecords.get(j).getPcs()==null ? 0: inGoodsOperationRecords.get(j).getPcs()));
+                            inGoodsOperationRecordVO.setWeight((inGoodsOperationRecordVO.getWeight()==null ? 0: inGoodsOperationRecordVO.getWeight())
+                                    + (inGoodsOperationRecords.get(j).getWeight()==null ? 0: inGoodsOperationRecords.get(j).getWeight()));
+                            inGoodsOperationRecordVO.setVolume((inGoodsOperationRecordVO.getVolume()==null ? 0: inGoodsOperationRecordVO.getVolume())
+                                    + (inGoodsOperationRecords.get(j).getVolume()==null ? 0: inGoodsOperationRecords.get(j).getVolume()));
+                            inGoodsOperationRecordVO.setRemarks(inGoodsOperationRecordVO.getRemarks()+inGoodsOperationRecords.get(j).getRemarks());
+                            inGoodsOperationRecords.remove(j);
+                        }
+                    }
+                }
+                excelWriter.fill(new FillWrapper("goodList", inGoodsOperationRecords), writeSheet);
+
+                number = borderNumber +"板"+ sNumber + "件" + pcs + "pcs";
+            }
+            //将指定数据填充
+            Map<String,Object> dataMap = new HashMap<String, Object>();
+
+            List<Long> operationId = storageInProcessOptFormVO.getOperationId();
+            List<Long> cardTypeId = storageInProcessOptFormVO.getCardTypeId();
 
 
-            dataMap.put("warehouseNumber", storageInProcessOptFormVO.getWarehouseNumber());
-            dataMap.put("createTime", storageInProcessOptFormVO.getCreateTime());
-            dataMap.put("plateNumber", storageInProcessOptFormVO.getPlateNumber());
-            dataMap.put("customerName", storageInProcessOptFormVO.getCustomerName());
-            dataMap.put("num1", storageInProcessOptFormVO.getNum1());
-            dataMap.put("num2", storageInProcessOptFormVO.getNum2());
-            if(CollectionUtils.isNotEmpty(storageInProcessOptFormVO.getWarehouseGoodsForms())){
-                dataMap.put("userList", storageInProcessOptFormVO.getWarehouseGoodsForms());
+            List<InitComboxSVO> data = omsClient.initDictNameByDictTypeCode("operation").getData();
+            List<InitComboxSVO> data1 = omsClient.initDictNameByDictTypeCode("cardType").getData();
+            for (InitComboxSVO datum : data) {
+                for (Long aLong : operationId) {
+                    if(datum.getId().equals(aLong)){
+                        dataMap.put(datum.getValue(), "√");
+                    }
+                }
             }
 
-            //Configuration 用于读取ftl文件
-            Configuration configuration = new Configuration(new Version("2.3.29"));
-            configuration.setDefaultEncoding("utf-8");
+            for (InitComboxSVO datum : data1) {
+                for (Long aLong : cardTypeId) {
+                    if(datum.getId().equals(aLong)){
+                        dataMap.put(datum.getValue(), "√");
+                    }
+                }
+            }
 
+//            dataMap.put("poundWeight", "1");
+//            dataMap.put("labeling ", "1");
+//            dataMap.put("photograph ","1");
+//            dataMap.put("measureSize", "1");
+//            dataMap.put("numberOfPoints", "1");
+//            dataMap.put("selfUnloading", "1");
+//            dataMap.put("warehouseUnloading", "1");
+//            dataMap.put("compositeBoard", "1");
+//            dataMap.put("rubberSheet", "1");
+//            dataMap.put("board", "1");
+//            dataMap.put("cardboard", "1");
+//            dataMap.put("woodenCase", "1");
+            if(storageInProcessOptFormVO.getYes() != null && storageInProcessOptFormVO.getYes().equals(true)){
+                dataMap.put("yes", "√");
+            }
+            if(storageInProcessOptFormVO.getNo() != null && storageInProcessOptFormVO.getNo().equals(true)){
+                dataMap.put("no", "√");
+            }
+            if(storageInProcessOptFormVO.getIsGone() != null && storageInProcessOptFormVO.getIsGone().equals(true)){
+                dataMap.put("isGone", "√");
+            }
+            if(storageInProcessOptFormVO.getIsInstructions() != null && storageInProcessOptFormVO.getIsInstructions().equals(true)){
+                dataMap.put("isInstructions", "√");
+            }
+            if(storageInProcessOptFormVO.getIsDoorCollection() != null && storageInProcessOptFormVO.getIsDoorCollection().equals(true)){
+                dataMap.put("isDoorCollection", "√");
+            }
+            if(storageInProcessOptFormVO.getIsSelfDelivery() != null && storageInProcessOptFormVO.getIsSelfDelivery().equals(true)){
+                dataMap.put("isSelfDelivery", "√");
+            }
+            if(storageInProcessOptFormVO.getIsGoldLabels() != null && storageInProcessOptFormVO.getIsGoldLabels().equals(true)){
+                dataMap.put("isGoldLabels", "√");
+            }
+            if(storageInProcessOptFormVO.getIsImproperPacking() != null && storageInProcessOptFormVO.getIsImproperPacking().equals(true)){
+                dataMap.put("isImproperPacking", "√");
+            }
+            if(storageInProcessOptFormVO.getIsTomOpen() != null && storageInProcessOptFormVO.getIsTomOpen().equals(true)){
+                dataMap.put("isTomOpen", "√");
+            }
+            if(storageInProcessOptFormVO.getIsReTaped() != null && storageInProcessOptFormVO.getIsReTaped().equals(true)){
+                dataMap.put("isReTaped", "√");
+            }
+            if(storageInProcessOptFormVO.getIsCrushedCollapsed() != null && storageInProcessOptFormVO.getIsCrushedCollapsed().equals(true)){
+                dataMap.put("isCrushedCollapsed", "√");
+            }
+            if(storageInProcessOptFormVO.getIsWaterGreased() != null && storageInProcessOptFormVO.getIsWaterGreased().equals(true)){
+                dataMap.put("isWaterGreased", "√");
+            }
+            if(storageInProcessOptFormVO.getIsPuncturedHoles() != null && storageInProcessOptFormVO.getIsPuncturedHoles().equals(true)){
+                dataMap.put("isPuncturedHoles", "√");
+            }
+            if(storageInProcessOptFormVO.getIsDamagedCtn() != null && storageInProcessOptFormVO.getIsDamagedCtn().equals(true)){
+                dataMap.put("isDamagedCtn", "√");
+            }
 
-            configuration.setDirectoryForTemplateLoading(new File(filepath));//指定ftl所在目录,根据自己的改
-            response.setContentType("application/msword");
-            response.setHeader("Content-Disposition", "attachment;filename=\"" + new String("入仓单.doc".getBytes("GBK"), "iso8859-1") + "\"");
-            response.setCharacterEncoding("utf-8");//此句非常关键,不然word文档全是乱码
-            PrintWriter out = response.getWriter();
-            Template t =  configuration.getTemplate("storageWarehousing.ftl","utf-8");//以utf-8的编码读取ftl文件
-            t.process(dataMap, out);
+            dataMap.put("num1", storageInProcessOptFormVO.getNum1());
+            dataMap.put("num2", storageInProcessOptFormVO.getNum2());
 
+            dataMap.put("tomOpenNumber", storageInProcessOptFormVO.getTomOpenNumber());
 
-//            /**
-//             * 以下是两种指定ftl文件所在目录路径的方式，注意这两种方式都是
-//             * 指定ftl文件所在目录的路径，而不是ftl文件的路径
-//             */
-            //指定路径的第一种方式（根据某个类的相对路径指定）
-//                configuration.setClassForTemplateLoading(this.getClass(), "");
+            dataMap.put("reTapedNumber", storageInProcessOptFormVO.getReTapedNumber());
 
-            //指定路径的第二种方式，我的路径是C：/a.ftl
-//            configuration.setDirectoryForTemplateLoading(new File("c:/"));
+            dataMap.put("crushedCollapsedNumber", storageInProcessOptFormVO.getCrushedCollapsedNumber());
 
-            //输出文档路径及名称
-//            File outFile = new File("D:/报销信息导出.doc");
-            //以utf-8的编码读取ftl文件
-//            Template template = configuration.getTemplate("报销信息导出.ftl", "utf-8");
-//            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), "utf-8"), 10240);
-//            template.process(dataMap, out);
-            out.close();
-        } catch (Exception e) {
+            dataMap.put("waterGreasedNumber", storageInProcessOptFormVO.getWaterGreasedNumber());
+
+            dataMap.put("puncturedHolesNumber", storageInProcessOptFormVO.getPuncturedHolesNumber());
+
+            dataMap.put("damagedCtnNumber", storageInProcessOptFormVO.getDamagedCtnNumber());
+            dataMap.put("remarks",storageInProcessOptFormVO.getRemarks());
+            dataMap.put("marks",storageInProcessOptFormVO.getMarks());
+            dataMap.put("documents",storageInProcessOptFormVO.getDocuments());
+            dataMap.put("warehouseManagement",storageInProcessOptFormVO.getWarehouseManagement());
+            dataMap.put("driver",storageInProcessOptFormVO.getDriver());
+            dataMap.put("beizhu",storageInProcessOptFormVO.getBeizhu());
+
+            dataMap.put("warehouseNumber", storageInProcessOptFormVO.getWarehouseNumber());
+            dataMap.put("createTime", storageInProcessOptFormVO.getCreateTime().toString().replace("T"," "));
+            dataMap.put("plateNumber", storageInProcessOptFormVO.getPlateNumber());
+            dataMap.put("customerName", storageInProcessOptFormVO.getCustomerName());
+            dataMap.put("warehouseName",storageInProcessOptFormVO.getWarehouseName());
+            dataMap.put("warehousePhone",storageInProcessOptFormVO.getWarehousePhone());
+            dataMap.put("warehouseAddress",storageInProcessOptFormVO.getWarehouseAddress());
+            dataMap.put("number",number);
+            dataMap.put("weight",weight);
+            dataMap.put("volume",volume);
+
+            excelWriter.fill(dataMap, writeSheet);
+
+            excelWriter.finish();
+            outStream.close();
+            inputStream.close();
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

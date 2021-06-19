@@ -33,16 +33,16 @@
          remarks, customer_code customerCode, good_length goodLength, good_width goodWidth,
          good_height goodHeight, commodity_value commodityValue, date_of_manufacture dateOfManufacture, expiration_date expirationDate,customer_name customerName,good_weight goodWeight
          from good where status = 1
-         <if test="form.name!=null || form.name!=''">
-          and good.name like concat('%',#{form.name},'%')
-         </if>
-        <if test="form.sku!=null || form.sku!=''">
+        <if test="form.name !=null and form.name!=''">
+            and good.name like concat('%',#{form.name},'%')
+        </if>
+        <if test="form.sku !=null and form.sku!=''">
             and good.sku like concat('%',#{form.sku},'%')
         </if>
-        <if test="form.customerName!=null || form.customerName!=''">
+        <if test="form.customerName !=null and form.customerName!=''">
             and good.customer_name like concat('%',#{form.customerName},'%')
         </if>
-        order by createTime desc
+         order by createTime desc
     </select>
 
 </mapper>

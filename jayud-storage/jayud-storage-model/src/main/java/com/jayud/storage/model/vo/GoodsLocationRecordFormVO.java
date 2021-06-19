@@ -1,6 +1,7 @@
 package com.jayud.storage.model.vo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -33,7 +34,11 @@ public class GoodsLocationRecordFormVO extends Model<GoodsLocationRecordFormVO> 
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private String createTime;
+
+    @ApiModelProperty(value = "是否已拣货 (1为已拣货，2为未拣货)")
+    private Integer isPickedGoods;
 
 
 }

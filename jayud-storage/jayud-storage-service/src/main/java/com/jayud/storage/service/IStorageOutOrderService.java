@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.storage.model.bo.*;
 import com.jayud.storage.model.po.StorageOutOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.storage.model.vo.StorageInputOrderFormVO;
-import com.jayud.storage.model.vo.StorageOutOrderFormVO;
-import com.jayud.storage.model.vo.StorageOutOrderVO;
+import com.jayud.storage.model.vo.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -88,4 +88,21 @@ public interface IStorageOutOrderService extends IService<StorageOutOrder> {
      * @param form
      */
     void confirmDelivery(StorageOutProcessOptForm form);
+
+    /**
+     * 根据条件获取拣货订单商品
+     * @param form
+     * @return
+     */
+    List<WarehouseGoodsLocationCodeVO> findByOrderNo(QueryPickUpGoodForm form);
+
+    /**
+     * PDA仓储拣货
+     * @param form
+     * @return
+     */
+    boolean PDAWarehousePicking(WarehousePickingForm form);
+
+
+    List<OnShelfOrderVO> getListByQueryForm(QueryPutGoodForm form);
 }

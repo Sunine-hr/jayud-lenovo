@@ -19,6 +19,6 @@ import java.util.List;
 @Mapper
 public interface GoodsLocationRecordMapper extends BaseMapper<GoodsLocationRecord> {
 
-    List<GoodsLocationRecord> getListByGoodId(@Param("id") Long id,@Param("orderId") Long orderId,@Param("sku") String sku);
+    List<GoodsLocationRecord> getListByGoodId(@Param("warehousingBatchNo") String warehousingBatchNo,@Param("sku") String sku);
 
 }

@@ -68,6 +68,9 @@ public class StorageInProcessOptForm {
     @ApiModelProperty(value = "入库批次号")
     private String warehousingBatchNo;
 
+    @ApiModelProperty(value = "判断是否校验")
+    private Boolean isOver;
+
     //入仓信息
 
     @ApiModelProperty(value = "订单详情主键id")

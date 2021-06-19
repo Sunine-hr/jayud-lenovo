@@ -4,8 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.storage.model.po.WarehouseGoods;
 import com.jayud.storage.mapper.WarehouseGoodsMapper;
-import com.jayud.storage.model.vo.OutGoodsOperationRecordFormVO;
-import com.jayud.storage.model.vo.WarehouseGoodsVO;
+import com.jayud.storage.model.vo.*;
 import com.jayud.storage.service.IWarehouseGoodsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -24,11 +23,11 @@ import java.util.List;
 public class WarehouseGoodsServiceImpl extends ServiceImpl<WarehouseGoodsMapper, WarehouseGoods> implements IWarehouseGoodsService {
 
     @Override
-    public List<WarehouseGoodsVO> getList(Long id, String orderNo) {
+    public List<WarehouseGoodsVO> getList(Long id, String orderNo,Integer type) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("order_id",id);
         queryWrapper.eq("order_no",orderNo);
-        queryWrapper.eq("type",1);
+        queryWrapper.eq("type",type);
         List list = this.baseMapper.selectList(queryWrapper);
         List list1 = ConvertUtil.convertList(list, WarehouseGoodsVO.class);
         return list1;
@@ -49,19 +48,60 @@ public class WarehouseGoodsServiceImpl extends ServiceImpl<WarehouseGoodsMapper,
         this.baseMapper.delete(queryWrapper);
     }
 
-    @Override
-    public List<WarehouseGoodsVO> getList1(Long id, String orderNo) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("order_id",id);
-        queryWrapper.eq("order_no",orderNo);
-        queryWrapper.eq("type",2);
-        List list = this.baseMapper.selectList(queryWrapper);
-        List list1 = ConvertUtil.convertList(list, WarehouseGoodsVO.class);
-        return list1;
-    }
 
     @Override
     public List<OutGoodsOperationRecordFormVO> getListBySkuAndLocationCode(String sku, String locationCode,Long customerId) {
-        return null;
+        return this.baseMapper.getListBySkuAndLocationCode(sku,locationCode,customerId);
     }
+
+    @Override
+    public Integer getCount(String sku, String locationCode, Long customerId) {
+        return this.baseMapper.getCount(sku,locationCode,customerId);
+    }
+
+    @Override
+    public List<OrderOutRecord> getListBySkuAndBatchNo(List<String> skuList, List<String> warehousingBatchNos) {
+        return this.baseMapper.getListBySkuAndBatchNo(skuList,warehousingBatchNos);
+    }
+
+    @Override
+    public List<WarehouseGoods> getListBySkuAndOrderNo(String sku, String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("sku",sku);
+        queryWrapper.eq("order_no",orderNo);
+        queryWrapper.eq("type",2);
+        return this.baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<WarehouseGoods> getOutListByOrderNo(String orderNo) {
+        return this.baseMapper.getOutListByOrderNo(orderNo);
+    }
+
+    @Override
+    public List<WarehouseGoodsVO> getListByWarehousingBatchNoAndOrderNo(String warehousingBatchNo, String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("warehousing_batch_no",warehousingBatchNo);
+        queryWrapper.eq("order_no",orderNo);
+        queryWrapper.eq("type",2);
+        List<WarehouseGoods> list = this.baseMapper.selectList(queryWrapper);
+        List<WarehouseGoodsVO> warehouseGoodsVOS = ConvertUtil.convertList(list, WarehouseGoodsVO.class);
+        return warehouseGoodsVOS;
+    }
+
+
+    @Override
+    public List<OnShelfOrderVO> getListByOrderIdAndTime2(Long id, String orderNo, String startTime, String endTime) {
+        return this.baseMapper.getListByOrderIdAndTime2(id,orderNo,startTime,endTime);
+    }
+
+    @Override
+    public List<WarehouseGoods> getOutWarehouseGoodsByOrderNo(String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_no",orderNo);
+        queryWrapper.eq("type",2);
+        return this.baseMapper.selectList(queryWrapper);
+    }
+
+
 }

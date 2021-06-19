@@ -71,6 +71,10 @@ secure:
       - /api/**
       - /jayudAir/**
       - /websocket/**
+      - /#/QRCode/*
+      - /warehouseArea/findGoodByWarehouseArea/*
+      - /warehouseAreaShelvesLocation/findGoodByKuCode/*
+      - /warehouseArea/findGoodByWarehouseAreaShelves/*
 feign:
   httpclient:
     connection-timeout: 5000

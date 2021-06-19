@@ -1,6 +1,5 @@
 package com.jayud.storage.model.bo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
@@ -78,8 +77,8 @@ public class StorageOutProcessOptForm {
         boolean pass = true;
         switch (statusEnum) {
             case CCE_1: //出库接单
-            case CCE_2: //打印拣货单
-            case CCE_3: //仓储拣货
+//            case CCE_2: //打印拣货单
+//            case CCE_3: //仓储拣货
             case CCE_4: //出仓确认
             case CCE_5: //出仓异常
                 pass = checkOptInfo();

@@ -27,6 +27,7 @@
             <artifactId>jayud-storage-model</artifactId>
             <version>1.0</version>
         </dependency>
+
     </dependencies>
     <build>
         <plugins>

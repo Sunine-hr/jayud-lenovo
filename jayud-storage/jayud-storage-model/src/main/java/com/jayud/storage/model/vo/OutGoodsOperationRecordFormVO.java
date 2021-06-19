@@ -1,6 +1,7 @@
 package com.jayud.storage.model.vo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -31,10 +32,17 @@ public class OutGoodsOperationRecordFormVO {
     private Integer pcs;
 
     @ApiModelProperty(value = "出库时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "存仓时长")
     private String storageTime;
+
+    @ApiModelProperty(value = "库位id")
+    private String kuCode;
+
+    @ApiModelProperty(value = "入库商品id")
+    private Long inGoodId;
 
 
 }

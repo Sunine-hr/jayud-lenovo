@@ -170,7 +170,8 @@ public class StorageOutOrderController {
             record.assemblyLegalEntity(legalEntityResult);
 
             //拼装商品信息
-            record.assemblyGoodsInfo(warehouseGoodsService.getList1(record.getId(),record.getOrderNo()));
+            record.assemblyGoodsInfo(warehouseGoodsService.getList(record.getId(),record.getOrderNo(),2));
+            record.setGoodsFormList(warehouseGoodsService.getList(record.getId(),record.getOrderNo(),2));
 
             //拼装结算单位
             record.assemblyUnitCodeInfo(unitCodeInfo);
@@ -181,6 +182,7 @@ public class StorageOutOrderController {
             record.setSubLegalName(record.getLegalName());
             record.setOrderId(record.getId());
             record.setSubUnitCode(record.getUnitCode());
+            record.setDefaultUnitCode(record.getUnitCode());
 
         }
 
@@ -230,13 +232,20 @@ public class StorageOutOrderController {
                 List<GoodsLocationRecordFormVO> goodsLocationRecordForms = outWarehouseGoodsForm.getGoodsLocationRecordForms();
                 Integer number = 0;
                 for (GoodsLocationRecordFormVO goodsLocationRecordForm : goodsLocationRecordForms) {
-                    number = number + goodsLocationRecordForm.getNumber();
-                    GoodsLocationRecord goodsLocationRecord = goodsLocationRecordService.getListByGoodIdAndKuCode(goodsLocationRecordForm.getInGoodId(),goodsLocationRecordForm.getKuCode());
-                    if(goodsLocationRecord.getNumber()<goodsLocationRecordForm.getNumber()){//填的商品超过了该库位的总商品数
-                        return CommonResult.error(400, goodsLocationRecordForm.getKuCode()+"的该商品最大数量为"+goodsLocationRecord.getNumber());
+                    if(goodsLocationRecordForm.getNumber() != null){
+                        number = number + goodsLocationRecordForm.getNumber();
+                    }
+                    //入库商品
+                    GoodsLocationRecord goodsLocationRecord = goodsLocationRecordService.getGoodsLocationRecordBySkuAndKuCode(goodsLocationRecordForm.getKuCode(),outWarehouseGoodsForm.getWarehousingBatchNo(),outWarehouseGoodsForm.getSku());
+                    System.out.println("goodsLocationRecord==============="+goodsLocationRecord);
+                    if(goodsLocationRecord == null){
+                        return CommonResult.error(400, goodsLocationRecordForm.getKuCode()+"不存在"+outWarehouseGoodsForm.getSku());
+                    }
+                    if(goodsLocationRecord.getUnDeliveredQuantity()<goodsLocationRecordForm.getNumber()){//填的商品超过了该库位的总商品数
+                        return CommonResult.error(400, goodsLocationRecordForm.getKuCode()+"的该商品最大数量为"+goodsLocationRecord.getUnDeliveredQuantity());
                     }
                 }
-                if(outWarehouseGoodsForm.getNumber()!=number){
+                if(!outWarehouseGoodsForm.getNumber().equals(number)){
                     return CommonResult.error(400, "该商品拣货数量与订单不一致");
                 }
             }
@@ -275,7 +284,7 @@ public class StorageOutOrderController {
     @ApiOperation(value = "出库订单驳回")
     @PostMapping(value = "/rejectOrder")
     public CommonResult rejectOrder(@RequestBody StorageOutCargoRejected storageOutCargoRejected) {
-        //查询拖车订单
+        //查询出库订单
         StorageOutOrder tmp = this.storageOutOrderService.getById(storageOutCargoRejected.getStorageInOrderId());
         //获取相应驳回操作
         OrderStatusEnum orderStatusEnum = OrderStatusEnum.getOutStorageOrderRejection(tmp.getStatus());
@@ -307,6 +316,7 @@ public class StorageOutOrderController {
         Long id = MapUtil.getLong(map, "id");
         StorageOutOrderVO storageOutOrderVO = storageOutOrderService.getStorageOutOrderVOById(id);
         StorageOutPickingListVO convert = ConvertUtil.convert(storageOutOrderVO, StorageOutPickingListVO.class);
+        convert.setOrderId(convert.getId());
 
         ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageOutOrderVO.getMainOrderNo()));
         convert.assemblyMainOrderData(result.getData());
@@ -315,27 +325,28 @@ public class StorageOutOrderController {
         List<WarehouseGoodsLocationVO> goodsFormList = new ArrayList<>();
         for (WarehouseGoodsVO warehouseGoodsVO : storageOutOrderVO.getGoodsFormList()) {
             WarehouseGoodsLocationVO warehouseGoodsLocationVO = ConvertUtil.convert(warehouseGoodsVO, WarehouseGoodsLocationVO.class);
-            List<GoodsLocationRecord> goodsLocationRecords = goodsLocationRecordService.getListByGoodId(warehouseGoodsVO.getId(),warehouseGoodsVO.getOrderId(),warehouseGoodsVO.getSku());
+            //获取该商品所在的库位
+            List<GoodsLocationRecord> goodsLocationRecords = goodsLocationRecordService.getListByGoodId(warehouseGoodsVO.getWarehousingBatchNo(),warehouseGoodsVO.getSku());
             Integer number = warehouseGoodsVO.getNumber();
             List<GoodsLocationRecordFormVO> goodsLocationRecordFormVOS = new ArrayList<>();
             //循环
             for (GoodsLocationRecord goodsLocationRecord : goodsLocationRecords) {
                 //数量小于这个库位的数量，循环结束，
-                if(goodsLocationRecord.getNumber()>=number){
+                if(goodsLocationRecord.getUnDeliveredQuantity()>=number){
                     GoodsLocationRecordFormVO goodsLocationRecordFormVO = new GoodsLocationRecordFormVO();
                     goodsLocationRecordFormVO.setKuCode(goodsLocationRecord.getKuCode());
                     goodsLocationRecordFormVO.setInGoodId(goodsLocationRecord.getInGoodId());
                     goodsLocationRecordFormVO.setNumber(number);
                     goodsLocationRecordFormVOS.add(goodsLocationRecordFormVO);
                     break;
-                }else if(goodsLocationRecord.getNumber()<number){
+                }else if(goodsLocationRecord.getUnDeliveredQuantity()<number){
                     GoodsLocationRecordFormVO goodsLocationRecordFormVO = new GoodsLocationRecordFormVO();
                     goodsLocationRecordFormVO.setKuCode(goodsLocationRecord.getKuCode());
                     goodsLocationRecordFormVO.setInGoodId(goodsLocationRecord.getInGoodId());
-                    goodsLocationRecordFormVO.setNumber(goodsLocationRecord.getNumber());
+                    goodsLocationRecordFormVO.setNumber(goodsLocationRecord.getUnDeliveredQuantity());
                     goodsLocationRecordFormVOS.add(goodsLocationRecordFormVO);
                 }
-                number = number - goodsLocationRecord.getNumber();
+                number = number - goodsLocationRecord.getUnDeliveredQuantity();
                 if(number<=0){
                     break;
                 }
@@ -343,7 +354,30 @@ public class StorageOutOrderController {
             warehouseGoodsLocationVO.setGoodsLocationRecordForms(goodsLocationRecordFormVOS);
             goodsFormList.add(warehouseGoodsLocationVO);
         }
-        convert.setGoodsFormList(goodsFormList);
+        convert.setOutWarehouseGoodsForms(goodsFormList);
+        return CommonResult.success(convert);
+    }
+
+    @ApiOperation(value = "获取仓储拣货信息")
+    @PostMapping(value = "/getWarehousePickingInformation")
+    public CommonResult getWarehousePickingInformation(@RequestBody Map<String,Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        StorageOutOrderVO storageOutOrderVO = storageOutOrderService.getStorageOutOrderVOById(id);
+        StorageOutPickingListVO convert = ConvertUtil.convert(storageOutOrderVO, StorageOutPickingListVO.class);
+        convert.setOrderId(convert.getId());
+
+        ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(storageOutOrderVO.getMainOrderNo()));
+        convert.assemblyMainOrderData(result.getData());
+        convert.assemblyPickingListData(storageOutOrderVO.getGoodsFormList());
+        List<WarehouseGoodsLocationVO> goodsFormList = new ArrayList<>();
+        for (WarehouseGoodsVO warehouseGoodsVO : storageOutOrderVO.getGoodsFormList()) {
+            WarehouseGoodsLocationVO warehouseGoodsLocationVO = ConvertUtil.convert(warehouseGoodsVO, WarehouseGoodsLocationVO.class);
+            List<GoodsLocationRecordFormVO> goodsLocationRecordFormVOS = goodsLocationRecordService.getOutGoodsLocationRecordByGoodId(warehouseGoodsLocationVO.getId());
+            System.out.println("goodsLocationRecordFormVOS============================="+goodsLocationRecordFormVOS);
+            warehouseGoodsLocationVO.setGoodsLocationRecordForms(goodsLocationRecordFormVOS);
+            goodsFormList.add(warehouseGoodsLocationVO);
+        }
+        convert.setOutWarehouseGoodsForms(goodsFormList);
         return CommonResult.success(convert);
     }
 
@@ -351,9 +385,11 @@ public class StorageOutOrderController {
     @PostMapping(value = "/getLocationComboxByOrderId")
     public CommonResult getLocationComboxByOrderId(@RequestBody Map<String,Object> map) {
         Long id = MapUtil.getLong(map, "id");
+        //获取实际入库记录
         List<InGoodsOperationRecord> listByOrderId = goodsOperationRecordService.getListByOrderId(id);
         Map map1 = new HashMap();
         for (InGoodsOperationRecord inGoodsOperationRecord : listByOrderId) {
+            //获取入库的实际库位
             List<GoodsLocationRecord> goodsLocationRecords = goodsLocationRecordService.getGoodsLocationRecordByGoodId(inGoodsOperationRecord.getId());
             map1.put(inGoodsOperationRecord.getSku(),goodsLocationRecords);
         }

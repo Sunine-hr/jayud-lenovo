@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class StorageInCargoRejected {
 
-    @ApiModelProperty(value = "拖车订单id")
+    @ApiModelProperty(value = "入库订单id")
     @NotNull(message = "入库订单id不能为空")
     private Long storageInOrderId;
 

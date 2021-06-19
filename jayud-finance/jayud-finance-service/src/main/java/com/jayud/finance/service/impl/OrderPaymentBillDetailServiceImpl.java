@@ -1,6 +1,5 @@
 package com.jayud.finance.service.impl;
 
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -11,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.enums.BillTypeEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.BeanUtils;
@@ -96,7 +96,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         if (CollectionUtils.isEmpty(records)) {
             return pageInfo;
         }
-        dataProcessingService.processingPaymentBillDetail(records, 1);
+        dataProcessingService.processingBillDetail(records, BillTypeEnum.PAYMENT.getCode());
 
 //        List<String> billNos = records.stream().map(OrderPaymentBillDetailVO::getBillNo).collect(toList());
 //        //统计合计币种金额
@@ -121,6 +121,9 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
     public List<OrderPaymentBillDetailVO> findPaymentBillDetail(QueryPaymentBillDetailForm form) {
         List<OrderPaymentBillDetailVO> list = baseMapper.findPaymentBillDetailByPage(form, null);
         List<String> billNos = list.stream().map(OrderPaymentBillDetailVO::getBillNo).collect(toList());
+
+//        List<InitComboxStrVO> currencyInfo = omsClient.initCurrencyInfo().getData();
+//        Map<String, String> currencyInfoMap = currencyInfo.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
         //统计合计币种金额
         List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(billNos);
         for (OrderPaymentBillDetailVO record : list) {

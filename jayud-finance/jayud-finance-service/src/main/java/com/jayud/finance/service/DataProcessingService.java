@@ -17,7 +17,7 @@ public interface DataProcessingService {
      * @param list
      * @param type 0:应收,1:应付
      */
-    public void processingPaymentBillDetail(List<OrderPaymentBillDetailVO> list, Integer type);
+    public void processingBillDetail(List<OrderPaymentBillDetailVO> list, Integer type);
 
     /**
      * 财务核算数据处理

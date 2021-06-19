@@ -208,6 +208,9 @@
         <if test="form.currencyCode !=null and form.currencyCode !=''">
             and temp.currency_code = #{form.currencyCode}
         </if>
+        <if test="form.userName !=null and form.userName !=''">
+            and oi.created_user =#{form.userName}
+        </if>
         <!--        <if test="form.currencyCode == 'CNY'">-->
         <!--            and temp.rmb is not null-->
         <!--        </if>-->
@@ -281,6 +284,9 @@
         </if>
         <if test="form.beginCreatedTimeStr != null and form.beginCreatedTimeStr !=''">
             and date_format(temp.createdTimeStr,'%Y-%m-%d') >= date_format(#{form.beginCreatedTimeStr},'%Y-%m-%d')
+        </if>
+        <if test="form.userName !=null and form.userName !=''">
+            and oi.created_user =#{form.userName}
         </if>
         <if test="form.operationTime != null and form.operationTime.size>0">
             and date_format(temp.operation_time,'%Y-%m-%d')

@@ -58,6 +58,12 @@ public class ReceiveBillDetailController {
     @PostMapping("/findReceiveBillDetailByPage")
     public CommonResult<CommonPageResult<OrderPaymentBillDetailVO>> findReceiveBillDetailByPage(@RequestBody @Valid QueryPaymentBillDetailForm form) {
         IPage<OrderPaymentBillDetailVO> pageList = billDetailService.findReceiveBillDetailByPage(form);
+        Map<String, BigDecimal> map = new HashMap<>();
+        for (OrderPaymentBillDetailVO record : pageList.getRecords()) {
+            String[] split = record.getAmountStr().split(" ");
+            map.merge(split[1], new BigDecimal(split[0]), BigDecimal::add);
+        }
+//        map.forEach(());
         CommonPageResult<OrderPaymentBillDetailVO> pageVO = new CommonPageResult(pageList);
         return CommonResult.success(pageVO);
     }
@@ -340,7 +346,7 @@ public class ReceiveBillDetailController {
                 .append(legalEntityJson.getStr("bank", ""))
                 .append(EasyExcelUtils.SPLIT_SYMBOL)
                 .append("制单时间:")
-                .append(DateUtils.format(viewBillVO.getMakeTimeStr(),DateUtils.DATE_PATTERN)).toString());
+                .append(DateUtils.format(viewBillVO.getMakeTimeStr(), DateUtils.DATE_PATTERN)).toString());
 
         bottomData.add(new StringBuilder()
                 .append("开户账号:")
@@ -354,7 +360,7 @@ public class ReceiveBillDetailController {
                 .append(legalEntityJson.getStr("taxIdentificationNum", ""))
                 .append(EasyExcelUtils.SPLIT_SYMBOL)
                 .append("审单时间:")
-                .append(DateUtils.format(viewBillVO.getAuditTimeStr(),DateUtils.DATE_PATTERN)).toString());
+                .append(DateUtils.format(viewBillVO.getAuditTimeStr(), DateUtils.DATE_PATTERN)).toString());
         bottomData.add(new
                 StringBuilder()
                 .append("公司地址:")

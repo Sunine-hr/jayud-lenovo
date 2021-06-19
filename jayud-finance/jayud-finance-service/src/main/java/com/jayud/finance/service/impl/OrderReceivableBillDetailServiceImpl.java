@@ -1,10 +1,7 @@
 package com.jayud.finance.service.impl;
 
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.json.JSON;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -13,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.enums.BillTypeEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.*;
@@ -29,7 +27,6 @@ import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.*;
 import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
-import com.jayud.finance.vo.template.order.AirOrderTemplate;
 import io.netty.util.internal.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +37,6 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -94,22 +90,23 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         if (CollectionUtils.isEmpty(records)) {
             return pageInfo;
         }
-        dataProcessingService.processingPaymentBillDetail(records, 0);
-//        List<String> billNos = records.stream().map(OrderPaymentBillDetailVO::getBillNo).collect(toList());
-//        //统计合计币种金额
-//        List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(billNos);
-//        //审核意见
-//        Map<String, Object> auditComment = this.omsClient.getByExtUniqueFlag(billNos).getData();
-//        //币种
-//        List<InitComboxStrVO> currencyInfo = omsClient.initCurrencyInfo().getData();
-//        Map<String, String> currencyInfoMap = currencyInfo.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
-//        //核算
-//        this.makeInvoiceService.calculationAccounting(billNos,2);
-//        for (OrderPaymentBillDetailVO record : records) {
-//            record.totalCurrencyAmount(currencyAmounts);
-//            record.setAuditComment(MapUtil.getStr(auditComment, record.getBillNo()));
-//            record.setSettlementCurrency(currencyInfoMap.get(record.getSettlementCurrency()));
-//        }
+        dataProcessingService.processingBillDetail(records, BillTypeEnum.RECEIVABLE.getCode());
+
+        //        List<String> billNos = records.stream().map(OrderPaymentBillDetailVO::getBillNo).collect(toList());
+        //        //统计合计币种金额
+        //        List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(billNos);
+        //        //审核意见
+        //        Map<String, Object> auditComment = this.omsClient.getByExtUniqueFlag(billNos).getData();
+        //        //币种
+        //        List<InitComboxStrVO> currencyInfo = omsClient.initCurrencyInfo().getData();
+        //        Map<String, String> currencyInfoMap = currencyInfo.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+        //        //核算
+        //        this.makeInvoiceService.calculationAccounting(billNos,2);
+        //        for (OrderPaymentBillDetailVO record : records) {
+        //            record.totalCurrencyAmount(currencyAmounts);
+        //            record.setAuditComment(MapUtil.getStr(auditComment, record.getBillNo()));
+        //            record.setSettlementCurrency(currencyInfoMap.get(record.getSettlementCurrency()));
+        //        }
         return pageInfo;
     }
 
@@ -117,6 +114,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
     public List<OrderPaymentBillDetailVO> findReceiveBillDetail(QueryPaymentBillDetailForm form) {
         List<OrderPaymentBillDetailVO> list = baseMapper.findReceiveBillDetailByPage(form, null);
         List<String> billNos = list.stream().map(OrderPaymentBillDetailVO::getBillNo).collect(toList());
+
         //统计合计币种金额
         List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(billNos);
         for (OrderPaymentBillDetailVO record : list) {

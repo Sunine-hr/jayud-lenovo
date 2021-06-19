@@ -45,7 +45,7 @@ public class DataProcessingServiceImpl implements DataProcessingService {
      * 应收/应付对账单列表,应收/应付对账单审核列表,应收/应付财务应付对账单列表
      */
     @Override
-    public void processingPaymentBillDetail(List<OrderPaymentBillDetailVO> list, Integer type) {
+    public void processingBillDetail(List<OrderPaymentBillDetailVO> list, Integer type) {
         List<String> billNos = list.stream().map(OrderPaymentBillDetailVO::getBillNo).collect(toList());
         //统计合计币种金额
         List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(billNos);
@@ -66,7 +66,7 @@ public class DataProcessingServiceImpl implements DataProcessingService {
             e.setHeXiaoAmount(money).setNotHeXiaoAmount(e.getPaymentAmount().subtract(money))
                     .setAuditComment(MapUtil.getStr(auditComment, e.getBillNo()))
                     .setSettlementCurrency(currencyInfoMap.get(e.getSettlementCurrency()))
-                    .totalCurrencyAmount(currencyAmounts)
+                    .totalCurrencyAmount(currencyAmounts,currencyInfoMap)
                     .assemblyVerificationInfo(verificationMap);
         });
     }

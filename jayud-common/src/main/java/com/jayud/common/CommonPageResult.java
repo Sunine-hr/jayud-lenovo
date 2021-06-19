@@ -5,9 +5,11 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 公共分页结果
+ *
  * @param <T>
  */
 @Getter
@@ -24,6 +26,8 @@ public class CommonPageResult<T> {
     private List<T> list;
     @ApiModelProperty(value = "总页数", position = 6)
     private Long totalPages;
+    @ApiModelProperty(value = "扩展数据")
+    private Map<String, Object> data;
 
     public CommonPageResult(IPage pageInfo) {
         this.pageNum = pageInfo.getCurrent();

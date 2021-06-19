@@ -318,6 +318,9 @@
         <if test="form.beginCreatedTimeStr != null and form.beginCreatedTimeStr !=''">
             and date_format(temp.createdTimeStr,'%Y-%m-%d') >= date_format(#{form.beginCreatedTimeStr},'%Y-%m-%d')
         </if>
+        <if test="form.userName !=null and form.userName !=''">
+            and oi.created_user =#{form.userName}
+        </if>
         <if test="form.operationTime != null and form.operationTime.size>0">
             and date_format(temp.operation_time,'%Y-%m-%d')
             BETWEEN #{form.operationTime[0]} AND #{form.operationTime[1]}
@@ -1139,6 +1142,9 @@
         </if>
         <if test="form.beginCreatedTimeStr != null and form.beginCreatedTimeStr !=''">
             and date_format(temp.createdTimeStr,'%Y-%m-%d') >= date_format(#{form.beginCreatedTimeStr},'%Y-%m-%d')
+        </if>
+        <if test="form.userName !=null and form.userName !=''">
+            and oi.created_user =#{form.userName}
         </if>
         <if test="form.operationTime != null and form.operationTime.size>0">
             and date_format(temp.operation_time,'%Y-%m-%d')

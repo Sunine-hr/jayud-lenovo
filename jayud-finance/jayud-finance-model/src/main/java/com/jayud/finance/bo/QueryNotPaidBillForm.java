@@ -4,6 +4,7 @@ package com.jayud.finance.bo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -53,7 +54,6 @@ public class QueryNotPaidBillForm extends BasePageForm {
     @NotEmpty(message = "legalName is required")
     private String loginUserName;
 
-
     @ApiModelProperty(value = "展示维度(1:费用项展示,2:订单维度)", required = true)
     @NotNull(message = "type is required")
     private Integer type;
@@ -64,4 +64,7 @@ public class QueryNotPaidBillForm extends BasePageForm {
 
     @ApiModelProperty(value = "操作时间")
     private List<String> operationTime;
+
+    @ApiModelProperty(value = "用户名")
+    private String userName;
 }

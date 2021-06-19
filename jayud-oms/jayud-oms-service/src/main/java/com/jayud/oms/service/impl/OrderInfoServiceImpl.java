@@ -424,7 +424,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
                 //新增
                 if (isSumToMain) {
-                    orderPaymentCost.setLegalName(inputOrderVO.getLegalName(orderPaymentCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData().toString()));
+                    orderPaymentCost.setLegalName(inputOrderVO.getLegalName());
+                    orderPaymentCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData().toString()));
                 } else {
                     orderPaymentCost.setLegalName(form.getSubLegalName());
                     orderPaymentCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData().toString()));

@@ -183,7 +183,7 @@ public class StorageFastOrderController {
 
             record.setCost(MapUtil.getBool(data, record.getOrderNo()));
             record.setLicensePlate((record.getOutPlateNumber()==null ? "":record.getOutPlateNumber()));
-            record.setTakeTimeStr((record.getExpectedDeliveryTime().toString()==null ? "":record.getExpectedDeliveryTime().toString()));
+            record.setTakeTimeStr((record.getExpectedDeliveryTime()==null ? "":record.getExpectedDeliveryTime().toString()));
             record.setCreatedTimeStr(record.getCreateTime().toString());
             record.setSubLegalName(record.getLegalName());
             record.setOrderId(record.getId());

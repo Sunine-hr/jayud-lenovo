@@ -117,7 +117,7 @@
         join ocean_counter t1 on t1.id = t.counter_id
         join ocean_bill t2 on t2.id = t1.ob_id
         where 1=1
-        and t.id = 26
+        and t.id = #{listInfoId}
     </select>
 
 </mapper>

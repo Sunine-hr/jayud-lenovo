@@ -20,6 +20,7 @@ import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.po.OrderPaymentBillDetail;
+import com.jayud.finance.service.CommonService;
 import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderPaymentBillDetailService;
 import com.jayud.finance.util.StringUtils;
@@ -37,6 +38,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -50,12 +52,18 @@ public class PaymentBillDetailController {
     private OauthClient oauthClient;
     @Autowired
     private IOrderBillCostTotalService orderBillCostTotalService;
+    @Autowired
+    private CommonService commonService;
 
     @ApiOperation(value = "应付对账单列表,应付对账单审核列表,财务应付对账单列表")
     @PostMapping("/findPaymentBillDetailByPage")
     public CommonResult<CommonPageResult<OrderPaymentBillDetailVO>> findPaymentBillDetailByPage(@RequestBody @Valid QueryPaymentBillDetailForm form) {
         IPage<OrderPaymentBillDetailVO> pageList = billDetailService.findPaymentBillDetailByPage(form);
-        CommonPageResult<OrderPaymentBillDetailVO> pageVO = new CommonPageResult(pageList);
+        List<String> amountStr = pageList.getRecords().stream().map(OrderPaymentBillDetailVO::getAmountStr).collect(Collectors.toList());
+        String amount = this.commonService.calculatingCosts(amountStr);
+        Map<String, Object> data = new HashMap<>();
+        data.put("amountStr", amount == null ? "" : amount);
+        CommonPageResult<OrderPaymentBillDetailVO> pageVO = new CommonPageResult(pageList,data);
         return CommonResult.success(pageVO);
     }
 
@@ -278,7 +286,7 @@ public class PaymentBillDetailController {
         }
 
         //计算结算币种
-        this.orderBillCostTotalService.exportSettlementCurrency(cmd,headMap, dynamicHead, datas, "1");
+        this.orderBillCostTotalService.exportSettlementCurrency(cmd, headMap, dynamicHead, datas, "1");
 
         //查询人主体信息
         cn.hutool.json.JSONArray tmp = new cn.hutool.json.JSONArray(this.oauthClient
@@ -333,7 +341,7 @@ public class PaymentBillDetailController {
         bottomData.add(new StringBuilder()
                 .append("开户银行:").append(legalEntityJson.getStr("bank", ""))
                 .append(EasyExcelUtils.SPLIT_SYMBOL)
-                .append("制单时间:").append(DateUtils.format(viewBillVO.getMakeTimeStr(),DateUtils.DATE_PATTERN)).toString());
+                .append("制单时间:").append(DateUtils.format(viewBillVO.getMakeTimeStr(), DateUtils.DATE_PATTERN)).toString());
         bottomData.add(new StringBuilder()
                 .append("开户账号:").append(legalEntityJson.getStr("accountOpen", ""))
                 .append(EasyExcelUtils.SPLIT_SYMBOL)
@@ -341,7 +349,7 @@ public class PaymentBillDetailController {
         bottomData.add(new StringBuilder()
                 .append("纳税人识别号:").append(legalEntityJson.getStr("taxIdentificationNum", ""))
                 .append(EasyExcelUtils.SPLIT_SYMBOL)
-                .append("审单时间:").append(DateUtils.format(viewBillVO.getAuditTimeStr(),DateUtils.DATE_PATTERN)).toString());
+                .append("审单时间:").append(DateUtils.format(viewBillVO.getAuditTimeStr(), DateUtils.DATE_PATTERN)).toString());
         bottomData.add(new StringBuilder()
                 .append("公司地址:").append(legalEntityJson.getStr("rigisAddress", ""))
                 .append(EasyExcelUtils.SPLIT_SYMBOL).toString());

@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.QueryReceiveBillForm;
+import com.jayud.finance.service.CommonService;
 import com.jayud.finance.vo.OrderReceiveBillVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +26,8 @@ import java.util.Map;
 @Api(tags = "公共方法")
 public class CommonController {
 
+    @Autowired
+    private CommonService commonService;
 
     @ApiOperation(value = "计算费用")
     @PostMapping("/calculatingCosts")
@@ -34,26 +38,8 @@ public class CommonController {
         if (CollectionUtils.isEmpty(amountStrs)) {
             return CommonResult.success(response);
         }
-        Map<String, BigDecimal> cost = new HashMap<>();
-        for (String amount : amountStrs) {
-            if (amount.contains(",")) {
-                String[] split = amount.split(",");
-                for (int i = 0; i < split.length; i++) {
-                    String[] tmp = split[i].split(" ");
-                    String currencyName = tmp[1];
-                    cost.merge(currencyName, new BigDecimal(tmp[0]), BigDecimal::add);
-                }
-            } else {
-                String[] split = amount.split(" ");
-                String currencyName = split[1];
-                cost.merge(currencyName, new BigDecimal(split[0]), BigDecimal::add);
-            }
-
-        }
-        //返回合计的费用
-        StringBuilder sb = new StringBuilder();
-        cost.forEach((k, v) -> sb.append(v).append(" ").append(k).append(","));
-        response.put("totalCost", sb.toString());
+        String totalCostStr=this.commonService.calculatingCosts(amountStrs);
+        response.put("totalCost", totalCostStr);
         return CommonResult.success(response);
     }
 }

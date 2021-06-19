@@ -21,6 +21,7 @@ import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.po.OrderReceivableBillDetail;
+import com.jayud.finance.service.CommonService;
 import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.util.StringUtils;
@@ -38,6 +39,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -53,18 +55,18 @@ public class ReceiveBillDetailController {
     private IOrderBillCostTotalService orderBillCostTotalService;
     @Autowired
     private OmsClient omsClient;
+    @Autowired
+    private CommonService commonService;
 
     @ApiOperation(value = "应收对账单列表,应收对账单审核列表,财务应收对账单列表")
     @PostMapping("/findReceiveBillDetailByPage")
     public CommonResult<CommonPageResult<OrderPaymentBillDetailVO>> findReceiveBillDetailByPage(@RequestBody @Valid QueryPaymentBillDetailForm form) {
         IPage<OrderPaymentBillDetailVO> pageList = billDetailService.findReceiveBillDetailByPage(form);
-        Map<String, BigDecimal> map = new HashMap<>();
-        for (OrderPaymentBillDetailVO record : pageList.getRecords()) {
-            String[] split = record.getAmountStr().split(" ");
-            map.merge(split[1], new BigDecimal(split[0]), BigDecimal::add);
-        }
-//        map.forEach(());
-        CommonPageResult<OrderPaymentBillDetailVO> pageVO = new CommonPageResult(pageList);
+        List<String> amountStr = pageList.getRecords().stream().map(OrderPaymentBillDetailVO::getAmountStr).collect(Collectors.toList());
+        String amount = this.commonService.calculatingCosts(amountStr);
+        Map<String, Object> data = new HashMap<>();
+        data.put("amountStr", amount == null ? "" : amount);
+        CommonPageResult<OrderPaymentBillDetailVO> pageVO = new CommonPageResult(pageList,data);
         return CommonResult.success(pageVO);
     }
 

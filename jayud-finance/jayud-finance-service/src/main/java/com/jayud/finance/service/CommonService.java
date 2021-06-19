@@ -65,4 +65,11 @@ public interface CommonService {
     public Map<String, Map<String, BigDecimal>>  totalDynamicHeadCost(int dynamicHeadCostIndex,
                                                         List<SheetHeadVO> sheetHeadVOS,
                                                         JSONArray datas);
+
+    /**
+     * 计算费用并且拼接
+     * @param amountStrs
+     * @return
+     */
+    String calculatingCosts(List<String> amountStrs);
 }

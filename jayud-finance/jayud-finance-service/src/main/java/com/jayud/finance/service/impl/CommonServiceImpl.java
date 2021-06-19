@@ -405,6 +405,30 @@ public class CommonServiceImpl implements CommonService {
         return cost;
     }
 
+    @Override
+    public String calculatingCosts(List<String> amountStrs) {
+        Map<String, BigDecimal> cost = new HashMap<>();
+        for (String amount : amountStrs) {
+            if (amount.contains(",")) {
+                String[] split = amount.split(",");
+                for (int i = 0; i < split.length; i++) {
+                    String[] tmp = split[i].split(" ");
+                    String currencyName = tmp[1];
+                    cost.merge(currencyName, new BigDecimal(tmp[0]), BigDecimal::add);
+                }
+            } else {
+                String[] split = amount.split(" ");
+                String currencyName = split[1];
+                cost.merge(currencyName, new BigDecimal(split[0]), BigDecimal::add);
+            }
+        }
+        //返回合计的费用
+        StringBuilder sb = new StringBuilder();
+        cost.forEach((k, v) -> sb.append(v).append(" ").append(k).append(","));
+
+        return sb.toString();
+    }
+
 
     public static void main(String[] args) {
         String str = "合计(港元)";

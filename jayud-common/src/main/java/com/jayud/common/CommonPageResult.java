@@ -27,7 +27,7 @@ public class CommonPageResult<T> {
     @ApiModelProperty(value = "总页数", position = 6)
     private Long totalPages;
     @ApiModelProperty(value = "扩展数据")
-    private Map<String, Object> data;
+    private Map<String, Object> extendedData;
 
     public CommonPageResult(IPage pageInfo) {
         this.pageNum = pageInfo.getCurrent();
@@ -36,6 +36,16 @@ public class CommonPageResult<T> {
         this.hasNextPage = pageInfo.getCurrent() < pageInfo.getPages();
         this.list = pageInfo.getRecords();
         this.totalPages = pageInfo.getPages();
+    }
+
+    public CommonPageResult(IPage pageInfo, Map<String, Object> data) {
+        this.pageNum = pageInfo.getCurrent();
+        this.pageSize = pageInfo.getSize();
+        this.total = pageInfo.getTotal();
+        this.hasNextPage = pageInfo.getCurrent() < pageInfo.getPages();
+        this.list = pageInfo.getRecords();
+        this.totalPages = pageInfo.getPages();
+        this.extendedData = data;
     }
 
 }

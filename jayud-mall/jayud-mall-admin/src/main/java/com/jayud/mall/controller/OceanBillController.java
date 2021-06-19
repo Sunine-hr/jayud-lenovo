@@ -425,7 +425,13 @@ public class OceanBillController {
             templateWorkbook.write(outStream);
             ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
 
-            String fileName = "装柜清单";
+
+            //# 装柜清单-提单号（billNo）-柜号（cntr_no）-装柜清单名称（fileName）
+            String billNo = counterListExcelVO.getBillNo();
+            String cntrNo = counterListExcelVO.getCntrNo();
+            String fileName1 = counterListExcelVO.getFileName();
+
+            String fileName = "装柜清单_"+billNo+"_"+cntrNo+"_"+fileName1;
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系

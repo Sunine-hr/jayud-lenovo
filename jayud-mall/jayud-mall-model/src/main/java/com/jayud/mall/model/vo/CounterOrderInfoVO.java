@@ -42,7 +42,6 @@ public class CounterOrderInfoVO {
     private Integer orderType;
 
 
-    //destination_warehouse_name,t1.need_declare,t1.is_pick,
 
     @ApiModelProperty(value = "目的仓库代码(fab_warehouse warehouse_code)',")
     private String destinationWarehouseCode;

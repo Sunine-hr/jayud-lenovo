@@ -110,7 +110,7 @@
 
     <select id="findCounterListExcelById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterListExcelVO">
         select
-        t.id listInfoId,
+        t.id listInfoId,t.file_name,
         t1.id counterId,t1.cabinet_code,t1.cntr_no,DATE_FORMAT(t1.create_time, '%Y-%m-%d') create_time,
         t2.id billId,t2.order_id billNo,DATE_FORMAT(t2.sail_time, '%Y-%m-%d') sail_time
         from counter_list_info t

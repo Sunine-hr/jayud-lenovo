@@ -19,6 +19,8 @@ public class CounterListExcelVO {
     @ApiModelProperty(value = "提单id")
     private Long billId;
 
+    @ApiModelProperty(value = "清单名称")
+    private String fileName;
 
     //提单号
     @ApiModelProperty(value = "提单号")

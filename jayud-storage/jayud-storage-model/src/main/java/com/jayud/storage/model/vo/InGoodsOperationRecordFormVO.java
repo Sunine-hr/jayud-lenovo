@@ -53,4 +53,7 @@ public class InGoodsOperationRecordFormVO {
 
     @ApiModelProperty(value = "客户id")
     private Long customerId;
+
+    @ApiModelProperty(value = "库位")
+    private String kuCode;
 }

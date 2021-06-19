@@ -165,10 +165,10 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
 
                     if (orderReceivableCost.getIsSumToMain()) {
                         orderReceivableCost.setLegalName(orderInfo.getLegalName());
-                        orderReceivableCost.setLegalId((Long) (oauthClient.getLegalEntityByLegalName(orderInfo.getLegalName()).getData()));
+                        orderReceivableCost.setLegalId(Long.parseLong((oauthClient.getLegalEntityByLegalName(orderInfo.getLegalName()).getData().toString())));
                     } else {
                         orderReceivableCost.setLegalName(subOrderCustoms.getLegalName());
-                        orderReceivableCost.setLegalId((Long) (oauthClient.getLegalEntityByLegalName(subOrderCustoms.getLegalName()).getData()));
+                        orderReceivableCost.setLegalId(Long.parseLong((oauthClient.getLegalEntityByLegalName(subOrderCustoms.getLegalName()).getData().toString())));
                     }
 
                     orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_3.getCode()));

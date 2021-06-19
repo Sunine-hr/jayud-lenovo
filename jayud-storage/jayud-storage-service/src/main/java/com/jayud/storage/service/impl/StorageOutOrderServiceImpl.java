@@ -103,14 +103,14 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
                 warehouseGoods.add(convert);
 
                 //出库订单创建成功，锁定库存  如果暂存，不锁定库存
-                if(storageOutOrderForm.getCmd().equals("submit")){
-                    if(convert.getNumber() != null || convert.getPcs() != null){
-                        boolean result = stockService.lockInInventory(convert);
-                        if(!result){
-                            log.warn(convert.getName() + "锁定库存失败");
-                        }
-                    }
-                }
+//                if(storageOutOrderForm.getCmd().equals("submit")){
+//                    if(convert.getNumber() != null || convert.getPcs() != null){
+//                        boolean result = stockService.lockInInventory(convert);
+//                        if(!result){
+//                            log.warn(convert.getName() + "锁定库存失败");
+//                        }
+//                    }
+//                }
             }
             warehouseGoodsService.saveOrUpdateBatch(warehouseGoods);
         }

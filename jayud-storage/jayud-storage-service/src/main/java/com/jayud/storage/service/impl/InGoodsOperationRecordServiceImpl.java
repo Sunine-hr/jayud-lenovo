@@ -79,7 +79,9 @@ public class InGoodsOperationRecordServiceImpl extends ServiceImpl<InGoodsOperat
 
     @Override
     public List<InGoodsOperationRecordFormVO> getListBySkuAndLocationCode(String sku, String locationCode,Long customerId) {
-        return this.baseMapper.getListBySkuAndLocationCode(sku,locationCode,customerId);
+        List<InGoodsOperationRecordFormVO> listBySkuAndLocationCode = this.baseMapper.getListBySkuAndLocationCode(sku, locationCode, customerId);
+
+        return listBySkuAndLocationCode;
     }
 
     @Override

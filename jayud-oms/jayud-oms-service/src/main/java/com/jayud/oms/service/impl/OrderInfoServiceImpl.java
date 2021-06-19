@@ -424,11 +424,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
                 //新增
                 if (isSumToMain) {
-                    orderPaymentCost.setLegalName(inputOrderVO.getLegalName());
-                    orderPaymentCost.setLegalId((Long) (oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData()));
+                    orderPaymentCost.setLegalName(inputOrderVO.getLegalName(orderPaymentCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData().toString()));
                 } else {
                     orderPaymentCost.setLegalName(form.getSubLegalName());
-                    orderPaymentCost.setLegalId((Long) (oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData()));
+                    orderPaymentCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData().toString()));
                 }
 
 
@@ -464,10 +463,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 //新增
                 if (isSumToMain) {
                     orderReceivableCost.setLegalName(inputOrderVO.getLegalName());
-                    orderReceivableCost.setLegalId((Long) (oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData()));
+                    orderReceivableCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData().toString()));
                 } else {
                     orderReceivableCost.setLegalName(form.getSubLegalName());
-                    orderReceivableCost.setLegalId((Long) (oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData()));
+                    orderReceivableCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData().toString()));
                 }
 
                 if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {

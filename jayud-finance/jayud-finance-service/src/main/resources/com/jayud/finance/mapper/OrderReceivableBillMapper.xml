@@ -584,7 +584,7 @@
     <select id="getViewBillByCostIds" parameterType="java.util.Map" resultType="com.jayud.finance.vo.ViewBillVO">
 
         <choose>
-            <when test="cmd == 'cci' or cmd == 'cce' or form.cmd == 'ccf'">
+            <when test="cmd == 'cci' or cmd == 'cce' or cmd == 'ccf'">
                 SELECT DISTINCT
                 <if test="cmd == 'main'">
                     oi.legal_name legalName,

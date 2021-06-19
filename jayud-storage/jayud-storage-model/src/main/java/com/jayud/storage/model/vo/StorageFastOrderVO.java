@@ -3,6 +3,8 @@ package com.jayud.storage.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -140,6 +142,16 @@ public class StorageFastOrderVO {
 
     @ApiModelProperty(value = "总重量")
     private String totalWeightStr;
+
+    public void setStatus(String status) {
+        this.status = status;
+        this.statusDesc = OrderStatusEnum.getDesc(status);
+    }
+
+    public void setProcessStatus(Integer processStatus) {
+        this.processStatus = processStatus;
+        this.processStatusDesc = ProcessStatusEnum.getDesc(processStatus);
+    }
 
     public void setUnitCodeName(String unitCodeName) {
         this.unitCodeName=unitCodeName;

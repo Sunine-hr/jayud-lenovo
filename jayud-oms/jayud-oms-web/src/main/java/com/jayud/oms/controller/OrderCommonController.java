@@ -183,6 +183,10 @@ public class OrderCommonController {
         if (OrderStatusEnum.TC.getCode().equals(classCode)) {
             isTrailer = true;
         }
+        Boolean isFast = false;
+        if (OrderStatusEnum.CC.getCode().equals(classCode)) {
+            isFast = true;
+        }
 
         //中港订单列表
         String mark = MapUtil.getStr(map, "mark");
@@ -207,6 +211,7 @@ public class OrderCommonController {
         result.put("isTrailer", isTrailer);
         result.put("cabinetSizeName", MapUtil.getStr(map, "cabinetSizeName"));
         result.put("licensePlate", MapUtil.getStr(map, "plateNumber"));
+        result.put("isFast",isFast);
 
         result.put("takeTimeStr", MapUtil.getStr(map, "dateStr"));
         return CommonResult.success(result);

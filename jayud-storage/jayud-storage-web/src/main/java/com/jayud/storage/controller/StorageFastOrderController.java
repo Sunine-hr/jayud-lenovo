@@ -259,17 +259,17 @@ public class StorageFastOrderController {
     @ApiOperation(value = "快进快出订单驳回")
     @PostMapping(value = "/rejectOrder")
     public CommonResult rejectOrder(@RequestBody StorageOutCargoRejected storageOutCargoRejected) {
-        //查询拖车订单
+        //查询快进快出订单
         StorageFastOrder tmp = this.storageFastOrderService.getById(storageOutCargoRejected.getStorageInOrderId());
         //获取相应驳回操作
-        OrderStatusEnum orderStatusEnum = OrderStatusEnum.getOutStorageOrderRejection(tmp.getStatus());
+        OrderStatusEnum orderStatusEnum = OrderStatusEnum.getFastStorageOrderRejection(tmp.getStatus());
         if (orderStatusEnum == null) {
             return CommonResult.error(400, "驳回操作失败,没有相对应的操作");
         }
         //记录审核信息
         AuditInfoForm auditInfoForm = new AuditInfoForm();
         auditInfoForm.setExtId(storageOutCargoRejected.getStorageInOrderId());
-        auditInfoForm.setExtDesc(SqlConstant.STORAGE_OUT_ORDER);
+        auditInfoForm.setExtDesc(SqlConstant.STORAGE_FAST_ORDER);
         auditInfoForm.setAuditStatus(orderStatusEnum.getCode());
         auditInfoForm.setAuditTypeDesc(orderStatusEnum.getDesc());
 

@@ -29,7 +29,7 @@ public interface IInGoodsOperationRecordService extends IService<InGoodsOperatio
     InGoodsOperationRecord getListByWarehousingBatchNoAndSku(String warehousingBatchNo, String sku);
 
     /**
-     * 入库操作记录表
+     * 根据sku和库位获取入库商品记录
      * @param sku
      * @param locationCode
      * @return

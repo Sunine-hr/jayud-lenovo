@@ -251,21 +251,21 @@ public class OrderInfoController {
                     inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) ||
                     inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode()) ||
                     inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode()) ) {
-                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())) {
-                    InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
-                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
-                        return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
-                    }
-                    ApiResult result = storageClient.isEnough(storageOutOrderForm.getGoodsFormList());
-                    if(!result.isOk()){
-                        return CommonResult.error(result.getCode(),result.getMsg());
-                    }
-                    ApiResult stock = storageClient.isStock(storageOutOrderForm.getGoodsFormList());
-                    if(!stock.isOk()){
-                        return CommonResult.error(stock.getCode(),stock.getMsg());
-                    }
-
-                }
+//                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())) {
+//                    InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
+//                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
+//                        return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
+//                    }
+//                    ApiResult result = storageClient.isEnough(storageOutOrderForm.getGoodsFormList());
+//                    if(!result.isOk()){
+//                        return CommonResult.error(result.getCode(),result.getMsg());
+//                    }
+//                    ApiResult stock = storageClient.isStock(storageOutOrderForm.getGoodsFormList());
+//                    if(!stock.isOk()){
+//                        return CommonResult.error(stock.getCode(),stock.getMsg());
+//                    }
+//
+//                }
 //                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())) {
 //                    InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
 //                    ApiResult commodity = storageClient.isCommodity(storageInputOrderForm.getGoodsFormList());
@@ -607,6 +607,10 @@ public class OrderInfoController {
         InputStorageOutOrderVO storageOutOrderForm = inputOrderVO.getStorageOutOrderForm();
         if(storageOutOrderForm != null){
             storageOutOrderForm.copyOperationInfo();
+        }
+        InputStorageFastOrderVO storageFastOrderForm = inputOrderVO.getStorageFastOrderForm();
+        if(storageFastOrderForm != null){
+            storageFastOrderForm.copyOperationInfo();
         }
         return CommonResult.success(inputOrderVO);
     }

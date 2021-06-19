@@ -29,7 +29,7 @@ public enum OrderStatusEnum {
     TC("TC", "拖车"),
     TCEDD("TCEDD", "拖车出口订单"),
     TCIDD("TCIDD", "拖车进口订单"),
-    CC("CC", "仓储"),
+    CC("CCPS", "仓储"),
     CCEDD("CCEDD", "出库订单"),
     CCIDD("CCIDD", "入库订单"),
     CCFDD("CCFDD", "快进快出订单"),

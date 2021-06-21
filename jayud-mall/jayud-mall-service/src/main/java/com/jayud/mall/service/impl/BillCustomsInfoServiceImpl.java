@@ -5,6 +5,7 @@ import com.jayud.mall.mapper.BillCustomsInfoMapper;
 import com.jayud.mall.model.vo.BillCustomsInfoVO;
 import com.jayud.mall.model.vo.CustomsInfoCaseExcelVO;
 import com.jayud.mall.model.vo.CustomsInfoCaseVO;
+import com.jayud.mall.model.vo.CustomsListExcelVO;
 import com.jayud.mall.service.IBillCustomsInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,14 @@ public class BillCustomsInfoServiceImpl extends ServiceImpl<BillCustomsInfoMappe
     public List<CustomsInfoCaseExcelVO> findCustomsInfoCaseBybid(Long b_id) {
         List<CustomsInfoCaseExcelVO> customsInfoCaseExcelVOS = billCustomsInfoMapper.findCustomsInfoCaseBybid(b_id);
         return customsInfoCaseExcelVOS;
+    }
+
+    @Override
+    public CustomsListExcelVO findCustomsListExcelById(Long id) {
+        CustomsListExcelVO customsListExcelVO = new CustomsListExcelVO();
+        //TODO
+
+        return customsListExcelVO;
     }
 
 }

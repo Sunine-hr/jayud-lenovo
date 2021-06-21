@@ -2,19 +2,17 @@ package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
-import com.jayud.mall.mapper.BillCustomsInfoMapper;
-import com.jayud.mall.mapper.CustomsInfoCaseMapper;
-import com.jayud.mall.mapper.OrderCaseMapper;
+import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.BillCustomsInfoQueryForm;
 import com.jayud.mall.model.bo.CreateCustomsInfoCaseForm;
 import com.jayud.mall.model.po.CustomsInfoCase;
-import com.jayud.mall.model.vo.BillCaseVO;
-import com.jayud.mall.model.vo.BillCustomsInfoVO;
-import com.jayud.mall.model.vo.CustomsInfoCaseVO;
-import com.jayud.mall.model.vo.OrderCaseVO;
+import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.ICustomsInfoCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +40,8 @@ public class CustomsInfoCaseServiceImpl extends ServiceImpl<CustomsInfoCaseMappe
     BillCustomsInfoMapper billCustomsInfoMapper;
     @Autowired
     OrderCaseMapper orderCaseMapper;
+    @Autowired
+    OrderCustomsFileMapper orderCustomsFileMapper;
 
 
     @Override
@@ -66,6 +66,33 @@ public class CustomsInfoCaseServiceImpl extends ServiceImpl<CustomsInfoCaseMappe
         form.setFilterCaseIds(filterCaseIds);
         //报关箱子-查询提单下未生成的订单箱子(分类型)
         List<BillCaseVO> billCaseList = customsInfoCaseMapper.findUnselectedBillCaseByCustoms(form);
+
+        for(int i=0; i<billCaseList.size(); i++){
+            BillCaseVO billCaseVO = billCaseList.get(i);
+            Long orderId = billCaseVO.getOrderId();
+            //运单中所有 报关文件列表
+            List<OrderCustomsFileVO> orderCustomsFileList = orderCustomsFileMapper.findOrderCustomsFileByOrderId(orderId);
+            if(CollUtil.isNotEmpty(orderCustomsFileList)){
+                orderCustomsFileList.forEach(orderCustomsFileVO -> {
+                    String templateUrl = orderCustomsFileVO.getTemplateUrl();
+                    if(templateUrl != null && templateUrl.length() > 0){
+                        String json = templateUrl;
+                        try {
+                            List<TemplateUrlVO> templateUrlVOS = JSON.parseObject(json, new TypeReference<List<TemplateUrlVO>>() {
+                            });
+                            orderCustomsFileVO.setTemplateUrlVOS(templateUrlVOS);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            System.out.println("json格式错误");
+                            orderCustomsFileVO.setTemplateUrlVOS(new ArrayList<>());
+                        }
+                    }else{
+                        orderCustomsFileVO.setTemplateUrlVOS(new ArrayList<>());
+                    }
+                });
+            }
+            billCaseVO.setOrderCustomsFileList(orderCustomsFileList);
+        }
         return billCaseList;
     }
 

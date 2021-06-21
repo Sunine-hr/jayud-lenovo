@@ -28,7 +28,8 @@
 
     </select>
 
-    <select id="findUnselectedBillCaseByCustoms" parameterType="com.jayud.mall.model.bo.BillCustomsInfoQueryForm" resultType="com.jayud.mall.model.vo.BillCaseVO">
+    <select id="findUnselectedBillCaseByCustoms" parameterType="com.jayud.mall.model.bo.BillCustomsInfoQueryForm"
+            resultType="com.jayud.mall.model.vo.BillCaseVO">
         select
         t.id caseId,t.carton_no,t.fab_no,
         t1.id orderId,t1.order_no,t1.need_declare,t1.need_clearance,
@@ -76,7 +77,7 @@
         left join customs_info_case t5 on t5.case_id = t.id
         where 1=1
         <if test="form.id != null">
-            and t5.b_id = #{id}
+            and t5.b_id = #{form.id}
         </if>
         order by t.id desc
     </select>

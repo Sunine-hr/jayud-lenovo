@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 @ApiModel(value = "BillCaseVO", description = "提单箱子")
 @Data
 public class BillCaseVO {
@@ -52,5 +54,12 @@ public class BillCaseVO {
 
     @ApiModelProperty(value = "提单号(ocean_bill order_id)")
     private String billNo;
+
+    @ApiModelProperty(value = "订单报关文件列表list")
+    private List<OrderCustomsFileVO> orderCustomsFileList;
+
+    @ApiModelProperty(value = "订单清关文件列表list")
+    private List<OrderClearanceFileVO> orderClearanceFileList;
+
 
 }

@@ -17,6 +17,7 @@ import com.jayud.mall.mapper.OrderConfMapper;
 import com.jayud.mall.mapper.OrderInfoMapper;
 import com.jayud.mall.model.bo.OrderConfForm;
 import com.jayud.mall.model.bo.OrderConfIdForm;
+import com.jayud.mall.model.bo.OrderConfVerifyForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.po.OceanConfDetail;
 import com.jayud.mall.model.po.OrderConf;
@@ -364,6 +365,20 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         orderConf.setStatusCode(OrderConfStatusEnum.FINISH.getCode());
         orderConf.setStatusName(OrderConfStatusEnum.FINISH.getName());
         this.saveOrUpdate(orderConf);
+    }
+
+    @Override
+    public void cancelStatusVerify(OrderConfVerifyForm form) {
+        Long id = form.getId();
+        OrderConfVO orderConfVO = orderConfMapper.findOrderConfById(id);
+        if(ObjectUtil.isEmpty(orderConfVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "沒有找到配载单");
+        }
+        String verifyPassword = form.getVerifyPassword();
+        if("jyd".equals(verifyPassword)){
+            //取消时，输入jdy，确认后才能取消
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "取消时，输入jdy，确认后才能取消");
+        }
     }
 
 

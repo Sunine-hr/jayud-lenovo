@@ -3,10 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.OrderConfForm;
-import com.jayud.mall.model.bo.OrderConfIdForm;
-import com.jayud.mall.model.bo.OrderConfParaForm;
-import com.jayud.mall.model.bo.QueryOrderConfForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.OceanBillVO;
 import com.jayud.mall.model.vo.OrderConfVO;
 import com.jayud.mall.service.IOrderConfService;
@@ -155,6 +152,14 @@ public class OrderConfController {
         return CommonResult.success("操作成功");
     }
 
+    //配载单-取消按钮前验证
+    @ApiOperation(value = "配载单-取消按钮前验证")
+    @ApiOperationSupport(order = 15)
+    @PostMapping(value = "cancelStatusVerify")
+    public CommonResult cancelStatusVerify(@Valid @RequestBody OrderConfVerifyForm form){
+        orderConfService.cancelStatusVerify(form);
+        return CommonResult.success("验证成功");
+    }
 
 
 

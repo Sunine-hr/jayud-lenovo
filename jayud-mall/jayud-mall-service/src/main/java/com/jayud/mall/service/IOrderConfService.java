@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OrderConfForm;
 import com.jayud.mall.model.bo.OrderConfIdForm;
+import com.jayud.mall.model.bo.OrderConfVerifyForm;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.po.OrderConf;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -107,4 +108,10 @@ public interface IOrderConfService extends IService<OrderConf> {
      * @param form
      */
     void finishStatus(OrderConfIdForm form);
+
+    /**
+     * 配载单-取消按钮前验证
+     * @param form
+     */
+    void cancelStatusVerify(OrderConfVerifyForm form);
 }

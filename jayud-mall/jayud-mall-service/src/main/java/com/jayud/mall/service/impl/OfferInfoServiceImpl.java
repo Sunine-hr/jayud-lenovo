@@ -566,42 +566,45 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
                 List<TemplateCopeReceivableVO> oceanFeeList = templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
                 offerInfoVO.setOceanFeeList(oceanFeeList);
 
-                Map<Integer, BigDecimal> minMap = new HashMap<>();
-                Map<Integer, BigDecimal> maxMap = new HashMap<>();
-                BigDecimal min = oceanFeeList.get(0).getAmount();//最小值
-                BigDecimal max = oceanFeeList.get(0).getAmount();//最大值
-                Integer cid = oceanFeeList.get(0).getCid();
-                for (int i =1; i<oceanFeeList.size(); i++){
-                    BigDecimal unitPrice = oceanFeeList.get(i).getUnitPrice();//最小值 最大值 用单价
-                    Integer cid2 = oceanFeeList.get(i).getCid();
-                    if(!cid.equals(cid2)){
-                        cid = cid2;
+                if(CollUtil.isNotEmpty(oceanFeeList)){
+                    Map<Integer, BigDecimal> minMap = new HashMap<>();
+                    Map<Integer, BigDecimal> maxMap = new HashMap<>();
+                    BigDecimal min = oceanFeeList.get(0).getAmount();//最小值
+                    BigDecimal max = oceanFeeList.get(0).getAmount();//最大值
+                    Integer cid = oceanFeeList.get(0).getCid();
+                    for (int i =1; i<oceanFeeList.size(); i++){
+                        BigDecimal unitPrice = oceanFeeList.get(i).getUnitPrice();//最小值 最大值 用单价
+                        Integer cid2 = oceanFeeList.get(i).getCid();
+                        if(!cid.equals(cid2)){
+                            cid = cid2;
+                        }
+                        if(min.compareTo(unitPrice) == 1){ //min > amount
+                            min = unitPrice;
+                        }
+                        if(max.compareTo(unitPrice) == -1 ){ //max < amount
+                            max = unitPrice;
+                        }
+                        minMap.put(cid, min);
+                        maxMap.put(cid, max);
                     }
-                    if(min.compareTo(unitPrice) == 1){ //min > amount
-                        min = unitPrice;
+                    String minAmountFormat = "";
+                    String maxAmountFormat = "";
+                    for (Map.Entry<Integer, BigDecimal> entry : minMap.entrySet()) {
+                        Integer key = entry.getKey();
+                        BigDecimal value = entry.getValue();
+                        CurrencyInfoVO currencyInfoVO = cidMap.get(Long.valueOf(key));
+                        minAmountFormat = value+" "+currencyInfoVO.getCurrencyCode();
                     }
-                    if(max.compareTo(unitPrice) == -1 ){ //max < amount
-                        max = unitPrice;
+                    for (Map.Entry<Integer, BigDecimal> entry : maxMap.entrySet()) {
+                        Integer key = entry.getKey();
+                        BigDecimal value = entry.getValue();
+                        CurrencyInfoVO currencyInfoVO = cidMap.get(Long.valueOf(key));
+                        maxAmountFormat = value+" "+currencyInfoVO.getCurrencyCode();
                     }
-                    minMap.put(cid, min);
-                    maxMap.put(cid, max);
+                    String amountRange = minAmountFormat+"~"+maxAmountFormat;
+                    offerInfoVO.setAmountRange(amountRange);
                 }
-                String minAmountFormat = "";
-                String maxAmountFormat = "";
-                for (Map.Entry<Integer, BigDecimal> entry : minMap.entrySet()) {
-                    Integer key = entry.getKey();
-                    BigDecimal value = entry.getValue();
-                    CurrencyInfoVO currencyInfoVO = cidMap.get(Long.valueOf(key));
-                    minAmountFormat = value+" "+currencyInfoVO.getCurrencyCode();
-                }
-                for (Map.Entry<Integer, BigDecimal> entry : maxMap.entrySet()) {
-                    Integer key = entry.getKey();
-                    BigDecimal value = entry.getValue();
-                    CurrencyInfoVO currencyInfoVO = cidMap.get(Long.valueOf(key));
-                    maxAmountFormat = value+" "+currencyInfoVO.getCurrencyCode();
-                }
-                String amountRange = minAmountFormat+"~"+maxAmountFormat;
-                offerInfoVO.setAmountRange(amountRange);
+
             });
         }
         return list;

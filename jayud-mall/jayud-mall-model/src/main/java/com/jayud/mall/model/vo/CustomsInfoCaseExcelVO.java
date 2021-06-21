@@ -18,4 +18,8 @@ public class CustomsInfoCaseExcelVO {
     @ApiModelProperty(value = "订单号(order_info order_no)")
     private String orderNo;
 
+
+
+
+
 }

@@ -78,7 +78,7 @@
         left join clearance_info_case t5 on t5.case_id = t.id
         where 1=1
         <if test="form.id != null">
-            and t5.b_id = #{id}
+            and t5.b_id = #{form.id}
         </if>
         order by t.id desc
     </select>

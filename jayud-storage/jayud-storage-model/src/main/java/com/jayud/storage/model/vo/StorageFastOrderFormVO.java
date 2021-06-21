@@ -221,12 +221,15 @@ public class StorageFastOrderFormVO {
             sb2.append(goods.getSku()).append(" ");
             sb3.append(goods.getSpecificationModel()).append(" ");
 
-            sb.append(goods.getName())
-                    .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
-                    .append(",").append(goods.getNumber()).append("件")
-                    .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
-                    .append(",").append("重量:").append(goods.getWeight() == null ? 0 : goods.getWeight()).append("KG")
-                    .append(";");
+            if(goods.getName()!= null){
+                sb.append(goods.getName())
+                        .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
+                        .append(",").append(goods.getNumber()== null ? 0 : goods.getNumber()).append("件")
+                        .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
+                        .append(",").append("重量:").append(goods.getWeight() == null ? 0 : goods.getWeight()).append("KG")
+                        .append(";");
+            }
+
 
             if(goods.getVolume()!=null){
                 this.volume = this.volume + goods.getVolume();

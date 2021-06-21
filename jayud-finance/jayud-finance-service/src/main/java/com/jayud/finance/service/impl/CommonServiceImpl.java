@@ -357,7 +357,7 @@ public class CommonServiceImpl implements CommonService {
                 String format = "YYYY-MM";
                 int count = this.orderReceivableBillService.getCountByMakeTime(DateUtils.LocalDateTime2Str(now, format), format);
                 //TODO 查询废错订单
-                
+
                 //当前数量+1
                 billNo.append(StringUtils.zeroComplement(4, count + 1));
                 break;

@@ -38,7 +38,7 @@ public class BillCustomsInfoForm extends BasePageForm{
     private List<TemplateUrlVO> templateUrls;
 
     @ApiModelProperty(value = "说明")
-    private String describe;
+    private String describes;
 
     @ApiModelProperty(value = "总箱数")
     private Integer cartons;

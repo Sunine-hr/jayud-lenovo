@@ -172,7 +172,8 @@
                t.status,
                t.user_id,
                t.user_name,
-               t.create_time
+               t.create_time,
+               t.type
         from bill_clearance_info t
         where t.bill_id = #{billId}
 
@@ -190,7 +191,8 @@
                t.status,
                t.user_id,
                t.user_name,
-               t.create_time
+               t.create_time,
+               t.type
         from bill_customs_info t
         where t.bill_id = #{billId}
 

@@ -55,8 +55,7 @@ public class QueryNotPaidBillForm extends BasePageForm {
     private String loginUserName;
 
     @ApiModelProperty(value = "展示维度(1:费用项展示,2:订单维度)", required = true)
-    @NotNull(message = "type is required")
-    private Integer type;
+    private Integer type = 1;
 
     @ApiModelProperty(value = "是否查询订单地址", required = true)
     @JsonIgnore

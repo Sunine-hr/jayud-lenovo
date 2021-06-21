@@ -1079,7 +1079,8 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
      *
      * @param billNo
      */
-    private void statisticsBill(String billNo) {
+    @Override
+    public void statisticsBill(String billNo) {
         List<OrderPaymentBillDetail> receivableBillDetails = this.getByCondition(new OrderPaymentBillDetail().setBillNo(billNo));
         //查询账单主键
         OrderPaymentBillDetail billDetail = receivableBillDetails.get(0);

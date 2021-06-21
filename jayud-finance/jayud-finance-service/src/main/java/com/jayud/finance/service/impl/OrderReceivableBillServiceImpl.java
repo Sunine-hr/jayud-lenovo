@@ -768,6 +768,35 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         return this.baseMapper.getCountByMakeTime(makeTime, format);
     }
 
+    /**
+     * 统计账单数据(根据账单id)
+     *
+     * @param billId
+     */
+    @Override
+    public void statisticsBill(Long billId) {
+        List<OrderReceivableBillDetail> list = this.receivableBillDetailService.getByCondition(new OrderReceivableBillDetail().setBillId(billId));
+        BigDecimal alreadyPaidAmount = new BigDecimal(0);
+        Set<String> orderNos = new HashSet<>();
+        Set<String> billNos = new HashSet<>();
+        for (OrderReceivableBillDetail receivableBillDetail : list) {
+            //统计已出账金额
+            if (receivableBillDetail.getLocalAmount() != null) {
+                alreadyPaidAmount = alreadyPaidAmount.add(receivableBillDetail.getLocalAmount());
+            }
+            //统计已出账订单数
+            orderNos.add(receivableBillDetail.getOrderNo());
+            //统计账单数
+            billNos.add(receivableBillDetail.getBillNo());
+        }
+        OrderReceivableBill orderReceivableBill = new OrderReceivableBill()
+                .setId(billId).setAlreadyPaidAmount(alreadyPaidAmount)
+                .setBillOrderNum(orderNos.size())
+                .setBillNum(billNos.size());
+
+        this.updateById(orderReceivableBill);
+    }
+
 
     private Map<String, Object> dynamicSQLFindReceiveBillByPageParam(Map<String, Object> map) {
         String cmd = MapUtil.getStr(map, "cmd");

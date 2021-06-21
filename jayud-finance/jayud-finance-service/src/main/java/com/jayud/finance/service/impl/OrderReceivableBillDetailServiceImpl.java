@@ -1141,7 +1141,8 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
      *
      * @param billNo
      */
-    private void statisticsBill(String billNo) {
+    @Override
+    public void statisticsBill(String billNo) {
         List<OrderReceivableBillDetail> receivableBillDetails = this.getByBillNo(billNo);
         //查询账单主键
         OrderReceivableBillDetail billDetail = receivableBillDetails.get(0);

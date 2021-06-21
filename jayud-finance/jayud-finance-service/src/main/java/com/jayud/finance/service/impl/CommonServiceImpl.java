@@ -15,6 +15,7 @@ import com.jayud.finance.feign.*;
 import com.jayud.finance.service.CommonService;
 import com.jayud.finance.service.IOrderPaymentBillService;
 import com.jayud.finance.service.IOrderReceivableBillService;
+import com.jayud.finance.service.IVoidBillingRecordsService;
 import com.jayud.finance.vo.InputGoodsVO;
 import com.jayud.finance.vo.SheetHeadVO;
 import com.jayud.finance.vo.template.order.AirOrderTemplate;
@@ -50,6 +51,8 @@ public class CommonServiceImpl implements CommonService {
     private IOrderReceivableBillService orderReceivableBillService;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private IVoidBillingRecordsService voidBillingRecordsService;
 
     /**
      * 获取空运明细
@@ -353,6 +356,8 @@ public class CommonServiceImpl implements CommonService {
                 //查询该日期订单数量
                 String format = "YYYY-MM";
                 int count = this.orderReceivableBillService.getCountByMakeTime(DateUtils.LocalDateTime2Str(now, format), format);
+                //TODO 查询废错订单
+                
                 //当前数量+1
                 billNo.append(StringUtils.zeroComplement(4, count + 1));
                 break;

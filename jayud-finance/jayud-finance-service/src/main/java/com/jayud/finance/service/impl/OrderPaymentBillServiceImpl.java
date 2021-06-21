@@ -604,6 +604,35 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         return sqlParam;
     }
 
+    /**
+     * 统计账单数据
+     *
+     * @param billId
+     */
+    @Override
+    public void statisticsBill(Long billId) {
+        List<OrderPaymentBillDetail> list = this.paymentBillDetailService.getByCondition(new OrderPaymentBillDetail().setBillId(billId));
+        BigDecimal alreadyPaidAmount = new BigDecimal(0);
+        Set<String> orderNos = new HashSet<>();
+        Set<String> billNos = new HashSet<>();
+        for (OrderPaymentBillDetail orderPaymentBillDetail : list) {
+            //统计已出账金额
+            if (orderPaymentBillDetail.getLocalAmount() != null) {
+                alreadyPaidAmount = alreadyPaidAmount.add(orderPaymentBillDetail.getLocalAmount());
+            }
+            //统计已出账订单数
+            orderNos.add(orderPaymentBillDetail.getOrderNo());
+            //统计账单数
+            billNos.add(orderPaymentBillDetail.getBillNo());
+        }
+        OrderPaymentBill paymentBill = new OrderPaymentBill()
+                .setId(billId).setAlreadyPaidAmount(alreadyPaidAmount)
+                .setBillOrderNum(orderNos.size())
+                .setBillNum(billNos.size());
+
+        this.updateById(paymentBill);
+    }
+
 
     private void tmsSpecialDataProcessing(ViewFBillForm form, ViewFBilToOrderVO viewBillToOrder) {
         //处理目的地:当有两条或两条以上时,则获取中转仓地址

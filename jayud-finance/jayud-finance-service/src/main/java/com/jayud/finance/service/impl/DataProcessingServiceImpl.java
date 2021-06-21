@@ -66,8 +66,9 @@ public class DataProcessingServiceImpl implements DataProcessingService {
             e.setHeXiaoAmount(money).setNotHeXiaoAmount(e.getPaymentAmount().subtract(money))
                     .setAuditComment(MapUtil.getStr(auditComment, e.getBillNo()))
                     .setSettlementCurrency(currencyInfoMap.get(e.getSettlementCurrency()))
-                    .totalCurrencyAmount(currencyAmounts,currencyInfoMap)
-                    .assemblyVerificationInfo(verificationMap);
+                    .totalCurrencyAmount(currencyAmounts, currencyInfoMap)
+                    .assemblyVerificationInfo(verificationMap)
+                    .setCostType(type);
         });
     }
 

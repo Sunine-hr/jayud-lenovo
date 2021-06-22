@@ -369,40 +369,9 @@ public class OceanBillController {
     @ApiOperationSupport(order = 30)
     @GetMapping(value = "/exportCustomsInfoCase")
     public void exportCustomsInfoCase(HttpServletResponse response, @RequestParam(value = "id",required=false) Long id) throws IOException {
-//        List<CustomsInfoCaseExcelVO> rows = billCustomsInfoService.findCustomsInfoCaseBybid(id);
-//        if(CollUtil.isNotEmpty(rows)){
-//            ExcelWriter writer = ExcelUtil.getWriter(true);
-//            writer.getStyleSet().setAlign(HorizontalAlignment.LEFT, VerticalAlignment.CENTER); //水平左对齐，垂直中间对齐
-//            writer.setColumnWidth(0, 40); //第1列40px宽
-//            writer.setColumnWidth(1, 15); //第2列15px 宽
-//            writer.setColumnWidth(2, 30); //第3列15px 宽
-//            writer.setColumnWidth(3, 30); //第4列15px 宽
-//
-//            //自定义标题别名
-//            writer.addHeaderAlias("bName", "文件名称");
-//            writer.addHeaderAlias("billNo", "提单号");
-//            writer.addHeaderAlias("cartonNo", "箱号");
-//            writer.addHeaderAlias("orderNo", "订单号");
-//            Field[] s = ClearanceInfoCaseExcelVO.class.getDeclaredFields();
-//            int lastColumn = s.length-1;
-//            // 合并单元格后的标题行，使用默认标题样式
-//            writer.merge(lastColumn, "导出清单-报关箱子");
-//            // 一次性写出内容，使用默认样式，强制输出标题
-//            writer.write(rows, true);
-//            //out为OutputStream，需要写出到的目标流
-//
-//            ServletOutputStream out=response.getOutputStream();
-//            String name = StringUtils.toUtf8String("导出清单-报关箱子");
-//            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
-//            response.setHeader("Content-Disposition","attachment;filename="+name+".xlsx");
-//            writer.flush(out);
-//            writer.close();
-//            IoUtil.close(out);
-//        }
-
-        CustomsListExcelVO counterListExcelVO = billCustomsInfoService.findCustomsListExcelById(id);
+        CustomsListExcelVO customsListExcelVO = billCustomsInfoService.findCustomsListExcelById(id);
         try {
-            String json = JSON.toJSONString(counterListExcelVO, SerializerFeature.DisableCircularReferenceDetect);
+            String json = JSON.toJSONString(customsListExcelVO, SerializerFeature.DisableCircularReferenceDetect);
             JSONObject jsonObject = JSONObject.parseObject(json);
             ClassPathResource classPathResource = new ClassPathResource("template/customs_info_case.xlsx");
             InputStream inputStream = classPathResource.getInputStream();
@@ -415,9 +384,7 @@ public class OceanBillController {
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
             templateWorkbook.write(outStream);
             ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
-
-            //# 装柜清单-提单号（billNo）-柜号（cntr_no）-装柜清单名称（fileName）
-            String fileName = "报关清单";
+            String fileName = "导出报关清单";
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
@@ -427,7 +394,7 @@ public class OceanBillController {
             FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
             for (int i = 0; i < templateWorkbook.getNumberOfSheets(); i++) {
                 WriteSheet sheet = EasyExcel.writerSheet(i).build();
-                JSONArray list1 = jsonObject.getJSONArray("counterOrderInfoExcelList");
+                JSONArray list1 = jsonObject.getJSONArray("customsGoodsExcelList");
                 // 如果有多个list 模板上必须有{前缀.} 这里的前缀就是 a，然后多个list必须用 FillWrapper包裹
                 excelWriter.fill(new FillWrapper("a", list1), fillConfig, sheet);
                 excelWriter.fill(jsonObject, sheet);

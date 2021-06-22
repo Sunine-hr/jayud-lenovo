@@ -6,6 +6,26 @@ import lombok.Data;
 @Data
 public class CustomsGoodsExcelVO {
 
+    @ApiModelProperty(value = "客户商品id")
+    private Integer goodId;
+
+    @ApiModelProperty(value = "箱子id")
+    private Long caseId;
+
+    @ApiModelProperty(value = "箱号")
+    private String cartonNo;
+
+    @ApiModelProperty(value = "箱子里面商品的数量")
+    private Integer quantity;
+
+    @ApiModelProperty(value = "报关文件名")
+    private String billCustomsInfoName;
+
+    @ApiModelProperty(value = "IDcode，报关ID", notes = "商品报关id，统计这里商品")
+    private String idCode;
+
+    //****//
+
     @ApiModelProperty(value = "序号")
     private String serialNumber;
 
@@ -57,6 +77,7 @@ public class CustomsGoodsExcelVO {
     @ApiModelProperty(value = "立方", notes = "order_case asn_volume")
     private String cbm;
 
+    //要计算的
     @ApiModelProperty(value = "总箱数")
     private String packages;
 

@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class CustomsListExcelVO {
 
-    @ApiModelProperty(value = "bill_customs_info id")
+    @ApiModelProperty(value = "(提单)报关信息表id(bill_customs_info id)")
     private Long billCustomsInfoId;
 
     @ApiModelProperty(value = "文件名称")

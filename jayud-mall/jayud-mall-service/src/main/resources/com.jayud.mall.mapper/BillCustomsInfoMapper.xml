@@ -56,6 +56,65 @@
         where 1=1
         and t.id = #{id}
     </select>
+    
+    <select id="findCustomsGoodsExcelByBillCustomsInfoId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CustomsGoodsExcelVO">
+        select t.id goodId,
+        t1.case_id,t1.carton_no,t1.quantity,
+        t2.asn_weight grossWeight,t2.asn_volume cbm,
+        t3.b_name billCustomsInfoName,
+        cd.id_code,cd.ch_name,cd.en_name,cd.hs_code,cd.texture,cd.uses,cd.declare_price,cd.suttle,cd.brand,cd.specification,cd.pic_url
+        from
+        customer_goods t
+        join order_case_shop t1 on t1.good_id = t.id
+        join order_case t2 on t2.id = t1.case_id
+        join customs_info_case t3 on t3.case_id = t2.id
+        join bill_customs_info t4 on t4.id = t3.b_id
+        join customs_data cd on cd.id_code = t.data_code
+        where 1=1
+        and t4.id = #{billCustomsInfoId}
+    </select>
 
+    <select id="findCustomsGoodsExcelTotalByParaMap" parameterType="java.util.Map" resultType="java.util.Map">
+        select id_code,count(case_id) packages,sum(quantity) qty,sum(grossWeight) grossWeight,sum(cbm) cbm
+        from (
+                 select t.id goodId,
+                        t1.case_id,t1.carton_no,t1.quantity,
+                        t2.asn_weight grossWeight,t2.asn_volume cbm,
+                        t3.b_name billCustomsInfoName,
+                        cd.id_code,cd.ch_name,cd.en_name,cd.hs_code,cd.texture,cd.uses,cd.declare_price,cd.suttle,cd.brand,cd.specification,cd.pic_url
+                 from
+                     customer_goods t
+                         join order_case_shop t1 on t1.good_id = t.id
+                         join order_case t2 on t2.id = t1.case_id
+                         join customs_info_case t3 on t3.case_id = t2.id
+                         join bill_customs_info t4 on t4.id = t3.b_id
+                         join customs_data cd on cd.id_code = t.data_code
+                 where 1=1
+                   and t4.id = #{paraMap.billCustomsInfoId}
+                   and cd.id_code = #{paraMap.idCode}
+             ) t
+        group by t.id_code
 
+    </select>
+
+    <select id="findCustomsListExcelTotalByParaMap" parameterType="java.util.Map" resultType="java.util.Map">
+        select count(case_id) packages, sum(grossWeight) grossWeight,sum(cbm) cbm from (
+        select
+        t1.case_id,
+        t2.asn_weight grossWeight,t2.asn_volume cbm
+        from
+        customer_goods t
+        join order_case_shop t1 on t1.good_id = t.id
+        join order_case t2 on t2.id = t1.case_id
+        join customs_info_case t3 on t3.case_id = t2.id
+        join bill_customs_info t4 on t4.id = t3.b_id
+        join customs_data cd on cd.id_code = t.data_code
+        where 1=1
+        and t4.id = #{paraMap.billCustomsInfoId}
+        group by t1.case_id
+        ) t
+    </select>
+    
+    
+    
 </mapper>

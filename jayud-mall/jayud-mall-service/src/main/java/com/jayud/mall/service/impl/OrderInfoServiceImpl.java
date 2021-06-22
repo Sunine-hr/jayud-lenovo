@@ -822,58 +822,40 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
         totalChargeWeight = caseVO.getTotalChargeWeight();//客户预报的总收费重 收费重
 
-//        /**
-//         * 根据箱子的收费重，自动选择一个订舱区间
-//         * 1.进行区间值的区间选择 根据报价的区间来匹配
-//         *     升级选择，
-//         *     降级选择;
-//         * 2.最小，数量判断，填区间最小值;
-//         * 3.最大，数量判断，填实际最大值。
-//         */
-//        List<String> district = new ArrayList<>();//满足范围的订舱区间
-//        Map<String, Object> minDistrict = new HashMap<>();//最小 订舱区间 范围值
-//        Map<String, Object> maxDistrict = new HashMap<>();//最大 订舱区间 范围值    这个最小 最大 范围不好确认，直接简单一点 序列号(最小值)为最小区间范围，序列号(最大值)为最大区间范围
-//        for (int i=0; i<oceanFeeList.size(); i++){
-//            TemplateCopeReceivableVO templateCopeReceivableVO = oceanFeeList.get(i);
-//            String specificationCode = templateCopeReceivableVO.getSpecificationCode();
-//            BigDecimal min = templateCopeReceivableVO.getMin() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMin();
-//            BigDecimal max = templateCopeReceivableVO.getMax() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMax();
-//
-//
-//            Map<String, Object> valMap = new HashMap<>();
-//            valMap.put("min",min);
-//            valMap.put("max",max);
-//            if(i==0){
-//                minDistrict.put(specificationCode, valMap);
-//            }
-//            if(i==(oceanFeeList.size() - 1)){
-//                maxDistrict.put(specificationCode, valMap);
-//            }
-//            if(totalChargeWeight.compareTo(min) >= 0 && totalChargeWeight.compareTo(max) <= 0){
-//                //区间 刚好满足区间 的 范围值
-//                //totalChargeWeight >= min  && totalChargeWeight <= max
-//                district.add(specificationCode);
-//            }
-//        }
-//
-//        String costCode = "";
-//        if(CollUtil.isNotEmpty(district)){
-//            //存在刚好满足范围的区间值
-//            for (int i = 0; i<district.size(); i++){
-//                String s = district.get(i);
-//                if(s.equals(reserveSize)){
-//                    costCode = reserveSize;
-//                }
-//            }
-//        }else{
-//            //不存在刚好满足范围的区间值
-//            //比较最小区间范围
-//        }
-
+        /**
+         * 根据箱子的收费重，自动选择一个订舱区间
+         * 整理思路：
+         * 1.先判断 客户实际收费重  满不满足当前选择的区间范围，
+         *      满足  ->  直接使用当前区间
+         *      不满足 ->  跳出循环，重新遍历
+         * 2.循环遍历
+         *      2.1只有一个区间时
+         *          判断 收费重 是否小于 最小区间的最小值，
+         *              小于 直接选择这个订舱区间，将区间最小值填入 收费重；  跳出循环
+         *              不小于 下一个判断
+         *          判断 收费重 是否大于 最小区间的最大值
+         *              大于 直接选择这个订舱区间，收费重 不变；
+         *      2.2从下标为0开始遍历，
+         *          当下标为0时，代表为最小区间
+         *              判断 收费重 是否小于 最小区间的最小值，
+         *                  小于 直接选择这个订舱区间，将区间最小值填入 收费重；
+         *                  不小于 下一个判断
+         *              判断 收费重 是否大于 最小区间的最大值
+         *                  不大于 选中 这个区间；    跳出循环
+         *                  大于  继续循环
+         *      2.3遍历到最后一个区间 代表为最大区间
+         *          判断  收费重 是否小于 最小区间的最小值，
+         *              小于 直接选择这个订舱区间，将区间最小值填入 收费重；  跳出循环
+         *              大于 下一个判断
+         *          判断  收费重 是否大于 最小区间的最大值
+         *              大于 直接选择这个订舱区间， 收费重 不变；  跳出循环
+         *              不大于 直接选择这个订舱区间 收费重 不变；  跳出循环
+         */
 
         for (int i = 0; i<oceanFeeList.size(); i++){
             TemplateCopeReceivableVO templateCopeReceivableVO = oceanFeeList.get(i);
             String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+
             //查看订舱区间，判断费用代码是否相等，相等则列入海运费 费用明细
             if(specificationCode.equals(reserveSize)){
 

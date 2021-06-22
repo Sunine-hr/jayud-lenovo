@@ -120,6 +120,9 @@ public class BillCustomsInfoServiceImpl extends ServiceImpl<BillCustomsInfoMappe
         BigDecimal jzBigDecimal = new BigDecimal("0");
         for (int i=0; i<excelVOList.size(); i++){
             CustomsGoodsExcelVO customsGoodsExcelVO = excelVOList.get(i);
+            int serialNumber = i + 1;
+            customsGoodsExcelVO.setSerialNumber(String.valueOf(serialNumber));
+
             String qty = customsGoodsExcelVO.getQty();
             String totalPrice = customsGoodsExcelVO.getTotalPrice();
             String jz = customsGoodsExcelVO.getJz();

@@ -404,7 +404,7 @@ public class OceanBillController {
         try {
             String json = JSON.toJSONString(counterListExcelVO, SerializerFeature.DisableCircularReferenceDetect);
             JSONObject jsonObject = JSONObject.parseObject(json);
-            ClassPathResource classPathResource = new ClassPathResource("template/counter_list.xlsx");
+            ClassPathResource classPathResource = new ClassPathResource("template/customs_info_case.xlsx");
             InputStream inputStream = classPathResource.getInputStream();
             XSSFWorkbook templateWorkbook = new XSSFWorkbook(inputStream);
             String sheetNamePrefix = "";
@@ -416,12 +416,7 @@ public class OceanBillController {
             templateWorkbook.write(outStream);
             ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
 
-
             //# 装柜清单-提单号（billNo）-柜号（cntr_no）-装柜清单名称（fileName）
-//            String billNo = counterListExcelVO.getBillNo();
-//            String cntrNo = counterListExcelVO.getCntrNo();
-//            String fileName1 = counterListExcelVO.getFileName();
-
             String fileName = "报关清单";
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");

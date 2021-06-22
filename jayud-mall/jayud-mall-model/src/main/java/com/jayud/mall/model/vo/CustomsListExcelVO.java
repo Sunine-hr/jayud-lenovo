@@ -8,6 +8,12 @@ import java.util.List;
 @Data
 public class CustomsListExcelVO {
 
+    @ApiModelProperty(value = "bill_customs_info id")
+    private Long billCustomsInfoId;
+
+    @ApiModelProperty(value = "文件名称")
+    private String fileName;
+
     //日期
     @ApiModelProperty(value = "日期")
     private String createTime;

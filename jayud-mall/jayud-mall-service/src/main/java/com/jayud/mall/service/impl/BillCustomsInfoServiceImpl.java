@@ -45,8 +45,8 @@ public class BillCustomsInfoServiceImpl extends ServiceImpl<BillCustomsInfoMappe
 
     @Override
     public CustomsListExcelVO findCustomsListExcelById(Long id) {
-        CustomsListExcelVO customsListExcelVO = new CustomsListExcelVO();
-        //TODO
+        CustomsListExcelVO customsListExcelVO = billCustomsInfoMapper.findCustomsListExcelById(id);
+
 
         return customsListExcelVO;
     }

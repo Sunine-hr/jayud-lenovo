@@ -48,5 +48,14 @@
 
     </select>
 
+    <select id="findCustomsListExcelById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CustomsListExcelVO">
+        select t.id billCustomsInfoId,
+        t.file_name,
+        DATE_FORMAT(t.create_time,'%Y-%m-%d') createTime
+        from bill_customs_info t
+        where 1=1
+        and t.id = #{id}
+    </select>
+
 
 </mapper>

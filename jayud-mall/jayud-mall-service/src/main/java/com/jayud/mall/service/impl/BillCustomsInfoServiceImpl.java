@@ -51,12 +51,12 @@ public class BillCustomsInfoServiceImpl extends ServiceImpl<BillCustomsInfoMappe
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "报关清单不存在");
         }
 
-        customsListExcelVO.setPackages("100");
-        customsListExcelVO.setQty("200");
-        customsListExcelVO.setTotalPrice("300");
-        customsListExcelVO.setJz("400");
-        customsListExcelVO.setGrossWeight("500");
-        customsListExcelVO.setCbm("600");
+        customsListExcelVO.setPackages("100");//总箱数
+        customsListExcelVO.setQty("200");//总数量
+        customsListExcelVO.setTotalPrice("300");//总价
+        customsListExcelVO.setJz("400");//总净重
+        customsListExcelVO.setGrossWeight("500");//总毛重
+        customsListExcelVO.setCbm("600");//总立方
 
         List<CustomsGoodsExcelVO> customsGoodsExcelList = new ArrayList<>();
         CustomsGoodsExcelVO customsGoodsExcelVO = new CustomsGoodsExcelVO();

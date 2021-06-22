@@ -59,6 +59,9 @@ public class OrderPaymentBillNumVO {
     @ApiModelProperty(value = "结算汇率")
     private String settlementRate;
 
+    @ApiModelProperty(value = "账单金额(结算金额)")
+    private String amountStr;
+
 
     public String getBillStatusDesc() {
         if (!StringUtil.isNullOrEmpty(this.billStatus)) {
@@ -73,6 +76,8 @@ public class OrderPaymentBillNumVO {
 
         Iterator<OrderBillCostTotal> iterator = costTotals.iterator();
         StringBuilder sb = new StringBuilder();
+        BigDecimal amount = new BigDecimal(0);
+        String currencyName = "";
         while (iterator.hasNext()) {
             OrderBillCostTotal next = iterator.next();
             if (this.billNo.equals(next.getBillNo())) {
@@ -83,11 +88,13 @@ public class OrderPaymentBillNumVO {
                         .append(outOfCurrency == null ? "" : outOfCurrency)
                         .append(" 汇率").append(next.getExchangeRate())
                         .append("<br/>");
+                amount = amount.add(next.getMoney());
+                currencyName = currencyMap.get(next.getCurrencyCode());
                 iterator.remove();
             }
         }
-
         this.settlementRate = sb.toString();
+        this.amountStr = amount.toString() + " " + currencyName;
     }
 
 }

@@ -59,7 +59,7 @@
         FROM
         order_receivable_bill_detail orbd
         left join
-        (select t.bill_no,max(t.make_time) make_time from order_receivable_bill_detail t group by t.bill_no) tt on
+        (select t.bill_no,max(t.make_time) make_time from order_receivable_bill_detail t where t.audit_status != 'edit_no_commit' group by t.bill_no) tt on
         orbd.bill_no = tt.bill_no
         LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
         where orbd.make_time = tt.make_time
@@ -262,14 +262,16 @@
         orc.cost_genre_id costGenreId,
         ct.code_name costTypeName,
         ci.`name` costName,
-        (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'CNY'
-        GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
-        (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'USD'
-        GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
-        (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'EUR'
-        GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
-        (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'HKD'
-        GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
+        orc.amount,
+        orc.currency_code,
+--         (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'CNY'
+--         GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
+--         (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'USD'
+--         GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
+--         (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'EUR'
+--         GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
+--         (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'HKD'
+--         GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
         orc.id costId,
         orc.is_bill isBill,
         ifnull(orc.change_amount,0) localAmount,

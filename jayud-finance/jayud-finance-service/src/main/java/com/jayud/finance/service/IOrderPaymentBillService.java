@@ -178,7 +178,7 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      * @param format
      * @return
      */
-    int getCountByMakeTime(@Param("makeTime") String makeTime, String format);
+    int getCountByMakeTime(String makeTime, String format);
 
     /**
      * 订单维度展示未出账单

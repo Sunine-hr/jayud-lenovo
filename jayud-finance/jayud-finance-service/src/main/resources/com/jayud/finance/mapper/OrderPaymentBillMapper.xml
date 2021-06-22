@@ -184,6 +184,7 @@
         opc.main_order_no orderNo,
         opc.order_no subOrderNo,
         pb.`name` bizCodeDesc,
+        oi.created_user createdUser,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         si.supplier_ch_name supplierChName,
         <choose>
@@ -319,7 +320,7 @@
             and date_format(temp.createdTimeStr,'%Y-%m-%d') >= date_format(#{form.beginCreatedTimeStr},'%Y-%m-%d')
         </if>
         <if test="form.userName !=null and form.userName !=''">
-            and oi.created_user =#{form.userName}
+            and temp.createdUser =#{form.userName}
         </if>
         <if test="form.operationTime != null and form.operationTime.size>0">
             and date_format(temp.operation_time,'%Y-%m-%d')
@@ -1075,7 +1076,7 @@
     </select>
     <select id="getCountByMakeTime" resultType="java.lang.Integer">
         select count(*) from order_payment_bill_detail
-        where  DATE_FORMAT( make_time, '%Y-%m')=#{makeTime}
+        where  DATE_FORMAT( make_time, #{format})=#{makeTime}
     </select>
 
 
@@ -1086,6 +1087,7 @@
         opc.order_no subOrderNo,
         pb.`name` bizCodeDesc,
         oi.operation_time,
+        oi.created_user createdUser,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr
         <choose>
             <when test="form.cmd == 'zgys'">
@@ -1144,7 +1146,7 @@
             and date_format(temp.createdTimeStr,'%Y-%m-%d') >= date_format(#{form.beginCreatedTimeStr},'%Y-%m-%d')
         </if>
         <if test="form.userName !=null and form.userName !=''">
-            and oi.created_user =#{form.userName}
+            and temp.createdUser =#{form.userName}
         </if>
         <if test="form.operationTime != null and form.operationTime.size>0">
             and date_format(temp.operation_time,'%Y-%m-%d')

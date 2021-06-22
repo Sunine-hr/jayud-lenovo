@@ -4,47 +4,99 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.finance.po.VoidBillingRecords">
-        <id column="id" property="id" />
-        <result column="main_order_no" property="mainOrderNo" />
-        <result column="order_no" property="orderNo" />
-        <result column="bill_id" property="billId" />
-        <result column="account_term" property="accountTerm" />
-        <result column="settlement_currency" property="settlementCurrency" />
-        <result column="bill_no" property="billNo" />
-        <result column="make_user" property="makeUser" />
-        <result column="make_time" property="makeTime" />
-        <result column="audit_user" property="auditUser" />
-        <result column="audit_time" property="auditTime" />
-        <result column="apply_status" property="applyStatus" />
-        <result column="invoice_amount" property="invoiceAmount" />
-        <result column="audit_status" property="auditStatus" />
-        <result column="created_order_time" property="createdOrderTime" />
-        <result column="cost_id" property="costId" />
-        <result column="local_amount" property="localAmount" />
-        <result column="remarks" property="remarks" />
-        <result column="created_user" property="createdUser" />
-        <result column="created_time" property="createdTime" />
-        <result column="updated_user" property="updatedUser" />
-        <result column="updated_time" property="updatedTime" />
-        <result column="cost_info_name" property="costInfoName" />
-        <result column="money" property="money" />
-        <result column="local_money_rate" property="localMoneyRate" />
-        <result column="cost_type" property="costType" />
-        <result column="current_currency_code" property="currentCurrencyCode" />
-        <result column="exchange_rate" property="exchangeRate" />
-        <result column="is_custom_exchange_rate" property="isCustomExchangeRate" />
-        <result column="operator" property="operator" />
-        <result column="operation_time" property="operationTime" />
-        <result column="legal_name" property="legalName" />
-        <result column="customer_name" property="customerName" />
-        <result column="amount" property="amount" />
-        <result column="sub_type" property="subType" />
-        <result column="is_sum_to_main" property="isSumToMain" />
+        <id column="id" property="id"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="bill_id" property="billId"/>
+        <result column="account_term" property="accountTerm"/>
+        <result column="settlement_currency" property="settlementCurrency"/>
+        <result column="bill_no" property="billNo"/>
+        <result column="make_user" property="makeUser"/>
+        <result column="make_time" property="makeTime"/>
+        <result column="audit_user" property="auditUser"/>
+        <result column="audit_time" property="auditTime"/>
+        <result column="apply_status" property="applyStatus"/>
+        <result column="invoice_amount" property="invoiceAmount"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="created_order_time" property="createdOrderTime"/>
+        <result column="cost_id" property="costId"/>
+        <result column="local_amount" property="localAmount"/>
+        <result column="remarks" property="remarks"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_user" property="updatedUser"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="cost_info_name" property="costInfoName"/>
+        <result column="money" property="money"/>
+        <result column="local_money_rate" property="localMoneyRate"/>
+        <result column="cost_type" property="costType"/>
+        <result column="current_currency_code" property="currentCurrencyCode"/>
+        <result column="exchange_rate" property="exchangeRate"/>
+        <result column="is_custom_exchange_rate" property="isCustomExchangeRate"/>
+        <result column="operator" property="operator"/>
+        <result column="operation_time" property="operationTime"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="customer_name" property="customerName"/>
+        <result column="amount" property="amount"/>
+        <result column="sub_type" property="subType"/>
+        <result column="is_sum_to_main" property="isSumToMain"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, main_order_no, order_no, bill_id, account_term, settlement_currency, bill_no, make_user, make_time, audit_user, audit_time, apply_status, invoice_amount, audit_status, created_order_time, cost_id, local_amount, remarks, created_user, created_time, updated_user, updated_time, cost_info_name, money, local_money_rate, cost_type, current_currency_code, exchange_rate, is_custom_exchange_rate, operator, operation_time, legal_name, customer_name, amount, sub_type, is_sum_to_main
     </sql>
+
+    <select id="getCountByMakeTime" resultType="java.lang.Integer">
+        select count(*) from void_billing_records
+        where  DATE_FORMAT( make_time, #{format})=#{makeTime} and cost_type=#{costType}
+    </select>
+
+
+    <select id="findVoidBillByPage" resultType="com.jayud.finance.vo.VoidBillingRecordsVO">
+    select id, main_order_no, order_no, bill_id,
+    account_term, settlement_currency, bill_no,
+    make_user, make_time, audit_user, audit_time,
+    apply_status, invoice_amount, audit_status,
+    created_order_time, cost_id, local_amount, remarks,
+    created_user, created_time, updated_user, updated_time,
+    cost_info_name, money, local_money_rate, cost_type,
+    current_currency_code, exchange_rate, is_custom_exchange_rate,
+    operator, operation_time, legal_name, customer_name, amount, sub_type,
+    is_sum_to_main
+    from void_billing_records
+    <where>
+        <if test="form.supplierChName != null and form.supplierChName != ''">
+            and supplier_ch_name like concat('%',#{form.supplierChName},'%')
+        </if>
+        <if test="form.legalName != null and form.legalName != ''">
+            and legal_name like concat('%',#{form.legalName},'%')
+        </if>
+        <if test="form.billNo != null and form.billNo != ''">
+            and opbd.bill_no like concat('%',#{form.billNo},'%')
+        </if>
+        <if test="form.accountTermStr != null and form.accountTermStr !=''">
+            and opbd.account_term = #{form.accountTermStr}
+        </if>
+        <if test="form.currencyCode != null and form.currencyCode !=''">
+            and settlement_currency = #{form.currencyCode}
+        </if>
+        <if test="form.auditStatus != null and form.auditStatus !=''">
+            and audit_status = #{form.auditStatus}
+        </if>
+        <if test="form.applyStatus != null and form.applyStatus !=''">
+            and apply_status = #{form.applyStatus}
+        </if>
+
+        <if test="data != null and data.size>0">
+            and legal_name in
+            <foreach collection="data" item="legalName" open="(" separator="," close=")">
+                #{legalName}
+            </foreach>
+        </if>
+
+    </where>
+
+    </select>
 
 </mapper>

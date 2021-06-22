@@ -75,7 +75,7 @@
         </foreach>
     </select>
 
-    <select id="totalCurrencyAmount" resultType="java.util.Map">
+     <select id="totalCurrencyAmount" resultType="java.util.Map">
         select bill_no billNo, currency_code currencyCode,money_type moneyType,sum(money) amount
         from order_bill_cost_total
         where
@@ -83,6 +83,7 @@
         <foreach collection="billNos" item="billNo" open="(" separator="," close=")">
             #{billNo}
         </foreach>
+        and currency_code is not null
         group by bill_no,currency_code
         -- (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='CNY')
         -- rmb,

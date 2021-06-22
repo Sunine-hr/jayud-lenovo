@@ -3,17 +3,21 @@ package com.jayud.finance.service.impl;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.BillTypeEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.finance.bo.QueryVoidBillingForm;
 import com.jayud.finance.bo.VoidBillForm;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.po.*;
 import com.jayud.finance.mapper.VoidBillingRecordsMapper;
 import com.jayud.finance.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.finance.vo.ReceiveNotPaidBillVO;
+import com.jayud.finance.vo.VoidBillingRecordsVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,7 +82,7 @@ public class VoidBillingRecordsServiceImpl extends ServiceImpl<VoidBillingRecord
      * @param type   0-应收,1-应付
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void voidBill(String billNo, Integer type, Integer costStatus) {
         //查询账单明细
         List<VoidBillingRecords> voidBillingRecords = this.assembleBillDetail(billNo, type);
@@ -91,19 +95,20 @@ public class VoidBillingRecordsServiceImpl extends ServiceImpl<VoidBillingRecord
         //增加作废记录
         this.saveBatch(voidBillingRecords);
         //清理账单数据
-        this.cleaningUpBillingData(billNo, voidBillingRecords.get(0).getBillId(),type, costStatus, costIds);
+        this.cleaningUpBillingData(billNo, voidBillingRecords.get(0).getBillId(), type, costStatus, costIds);
     }
 
     /**
      * 清理账单数据
-     *  @param billNo
+     *
+     * @param billNo
      * @param billId
      * @param type       0-应收,1-应付
      * @param costStatus
      * @param costIds
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void cleaningUpBillingData(String billNo, Long billId, Integer type, Integer costStatus, List<Long> costIds) {
         QueryWrapper condition = new QueryWrapper();
         condition.eq("bill_no", billNo);
@@ -117,7 +122,7 @@ public class VoidBillingRecordsServiceImpl extends ServiceImpl<VoidBillingRecord
             this.billCostTotalService.getBaseMapper().delete(condition);
             this.receivableBillService.statisticsBill(billId);
         } else {
-            this.receivableBillDetailService.getBaseMapper().delete(condition);
+            this.paymentBillDetailService.getBaseMapper().delete(condition);
             condition.eq("money_type", moneyType);
             this.billCostTotalService.getBaseMapper().delete(condition);
             this.paymentBillService.statisticsBill(billId);
@@ -132,6 +137,32 @@ public class VoidBillingRecordsServiceImpl extends ServiceImpl<VoidBillingRecord
             log.error("作废订单操作失败 msg={}", e.getMessage());
             throw new JayudBizException("作废订单操作失败");
         }
+    }
+
+    /**
+     * 查询废错订单
+     *
+     * @param makeTime
+     * @param format
+     * @param code
+     * @return
+     */
+    @Override
+    public int getCountByMakeTime(String makeTime, String format, Integer code) {
+        return this.baseMapper.getCountByMakeTime(makeTime, format, code);
+    }
+
+    /**
+     * 分页查询作废账单
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public List<VoidBillingRecordsVO> findVoidBillByPage(QueryVoidBillingForm form) {
+        //定义分页参数
+        Page<VoidBillingRecordsVO> page = new Page(form.getPageNum(), form.getPageSize());
+        return this.baseMapper.findVoidBillByPage(page, form);
     }
 
     /**

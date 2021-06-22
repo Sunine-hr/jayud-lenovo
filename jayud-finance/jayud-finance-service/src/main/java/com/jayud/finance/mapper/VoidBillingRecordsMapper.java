@@ -1,5 +1,6 @@
 package com.jayud.finance.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.finance.bo.QueryVoidBillingForm;
 import com.jayud.finance.po.VoidBillingRecords;
@@ -29,5 +30,6 @@ public interface VoidBillingRecordsMapper extends BaseMapper<VoidBillingRecords>
     public Integer getCountByMakeTime(@Param("makeTime") String makeTime,
                                       @Param("format") String format, @Param("costType") Integer costType);
 
-    List<VoidBillingRecordsVO> findVoidBillByPage(Page<VoidBillingRecordsVO> page, QueryVoidBillingForm form);
+    IPage<VoidBillingRecordsVO> findVoidBillByPage(Page<VoidBillingRecordsVO> page, @Param("form")  QueryVoidBillingForm form,
+                                                   @Param("legalNames") List<String> legalNames);
 }

@@ -57,9 +57,9 @@ public class VoidBillingRecordsController {
      */
     @ApiOperation(value = "作废账单")
     @PostMapping("/findVoidBillByPage")
-    public CommonResult findVoidBillByPage(@RequestBody @Valid QueryVoidBillingForm form) {
-        List<VoidBillingRecordsVO> list = this.voidBillingRecordsService.findVoidBillByPage(form);
-        return CommonResult.success(list);
+    public CommonResult<CommonPageResult<VoidBillingRecordsVO>> findVoidBillByPage(@RequestBody @Valid QueryVoidBillingForm form) {
+        IPage<VoidBillingRecordsVO> list = this.voidBillingRecordsService.findVoidBillByPage(form);
+        return CommonResult.success(new CommonPageResult<>(list));
     }
 }
 

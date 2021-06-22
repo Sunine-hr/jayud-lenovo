@@ -1,5 +1,6 @@
 package com.jayud.finance.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.finance.bo.QueryVoidBillingForm;
 import com.jayud.finance.bo.VoidBillForm;
 import com.jayud.finance.po.VoidBillingRecords;
@@ -59,5 +60,5 @@ public interface IVoidBillingRecordsService extends IService<VoidBillingRecords>
      * @param form
      * @return
      */
-    List<VoidBillingRecordsVO> findVoidBillByPage(QueryVoidBillingForm form);
+    IPage<VoidBillingRecordsVO> findVoidBillByPage(QueryVoidBillingForm form);
 }

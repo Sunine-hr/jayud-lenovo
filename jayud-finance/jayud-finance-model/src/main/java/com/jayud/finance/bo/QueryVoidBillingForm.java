@@ -2,6 +2,7 @@ package com.jayud.finance.bo;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jayud.common.enums.SubOrderSignEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -44,6 +45,10 @@ public class QueryVoidBillingForm extends BasePageForm {
     @ApiModelProperty(value = "子订单类型")
     private String subType;
 
+    @ApiModelProperty(value = "是否合并主订单")
+    @JsonIgnore
+    private Boolean isSumToMain;
+
     @ApiModelProperty(value = "当前登录用户名", required = true)
     private String loginUserName;
 
@@ -51,4 +56,12 @@ public class QueryVoidBillingForm extends BasePageForm {
 //        this.cmd = cmd;
 //        this.subType = cmd.split("_")[0];
 //    }
+
+    public void setSubType(String subType) {
+        this.subType = subType;
+        if (SubOrderSignEnum.MAIN.getSignOne().equals(subType)) {
+            this.isSumToMain = true;
+            this.subType = null;
+        }
+    }
 }

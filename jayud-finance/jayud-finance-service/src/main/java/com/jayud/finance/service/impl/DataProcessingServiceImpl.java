@@ -106,11 +106,11 @@ public class DataProcessingServiceImpl implements DataProcessingService {
         List<Map<String, Object>> currencyAmounts = this.costTotalService.totalCurrencyAmount(new ArrayList<>(billNos));
 
         //币种
-//        List<InitComboxStrVO> currencyInfo = omsClient.initCurrencyInfo().getData();
-//        Map<String, String> currencyInfoMap = currencyInfo.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+        List<InitComboxStrVO> currencyInfo = omsClient.initCurrencyInfo().getData();
+        Map<String, String> currencyInfoMap = currencyInfo.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
 
         list.forEach(e -> {
-            e.totalCurrencyAmount(currencyAmounts);
+            e.totalCurrencyAmount(currencyAmounts,currencyInfoMap);
         });
     }
 }

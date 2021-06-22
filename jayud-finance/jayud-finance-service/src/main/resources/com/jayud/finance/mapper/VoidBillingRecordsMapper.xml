@@ -54,16 +54,16 @@
 
 
     <select id="findVoidBillByPage" resultType="com.jayud.finance.vo.VoidBillingRecordsVO">
-    select id, main_order_no, order_no, bill_id,
+    select id, main_order_no, order_no,
     account_term, settlement_currency, bill_no,
     make_user, make_time, audit_user, audit_time,
     apply_status, invoice_amount, audit_status,
-    created_order_time, cost_id, local_amount, remarks,
+    created_order_time, cost_id, remarks,
     created_user, created_time, updated_user, updated_time,
-    cost_info_name, money, local_money_rate, cost_type,
-    current_currency_code, exchange_rate, is_custom_exchange_rate,
-    operator, operation_time, legal_name, customer_name, amount, sub_type,
-    is_sum_to_main
+    cost_type,
+    current_currency_code,
+    operator, operation_time, legal_name, customer_name, sub_type,
+    is_sum_to_main,sum(money) totalMoney
     from void_billing_records
     <where>
         <if test="form.supplierChName != null and form.supplierChName != ''">
@@ -87,16 +87,22 @@
         <if test="form.applyStatus != null and form.applyStatus !=''">
             and apply_status = #{form.applyStatus}
         </if>
+        <if test="form.subType != null and form.subType !=''">
+            and sub_type = #{form.subType}
+        </if>
+        <if test="form.isSumToMain != null and form.isSumToMain !=''">
+            and is_sum_to_main = #{form.isSumToMain}
+        </if>
 
-        <if test="data != null and data.size>0">
+        <if test="legalNames != null and legalNames.size>0">
             and legal_name in
-            <foreach collection="data" item="legalName" open="(" separator="," close=")">
+            <foreach collection="legalNames" item="legalName" open="(" separator="," close=")">
                 #{legalName}
             </foreach>
         </if>
 
     </where>
-
+    group by bill_no
     </select>
 
 </mapper>

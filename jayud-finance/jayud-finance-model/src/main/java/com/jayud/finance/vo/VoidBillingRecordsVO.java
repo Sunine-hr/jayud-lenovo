@@ -100,6 +100,7 @@ public class VoidBillingRecordsVO extends Model<VoidBillingRecordsVO> {
     @ApiModelProperty(value = "结算金额")
     private BigDecimal money;
 
+
     @ApiModelProperty(value = "本币汇率")
     private BigDecimal localMoneyRate;
 
@@ -127,7 +128,7 @@ public class VoidBillingRecordsVO extends Model<VoidBillingRecordsVO> {
     @ApiModelProperty(value = "结算单位/供应商名称")
     private String customerName;
 
-    @ApiModelProperty(value = "应收/应付金额")
+    @ApiModelProperty(value = "应收/应付金额(录用费用金额)")
     private BigDecimal amount;
 
     @ApiModelProperty(value = "如果是已子订单维度出账的,则记录具体的子订单类型")
@@ -136,6 +137,11 @@ public class VoidBillingRecordsVO extends Model<VoidBillingRecordsVO> {
     @ApiModelProperty(value = "是否汇总到主订单")
     private Boolean isSumToMain;
 
+    @ApiModelProperty(value = "合计结算金额")
+    private BigDecimal totalMoney;
+
+    @ApiModelProperty(value = "合计结算金额描述")
+    private String totalMoneyStr;
 
     @Override
     protected Serializable pkVal() {

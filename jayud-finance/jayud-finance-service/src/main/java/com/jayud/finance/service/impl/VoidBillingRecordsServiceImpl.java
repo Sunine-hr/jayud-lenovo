@@ -3,6 +3,7 @@ package com.jayud.finance.service.impl;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
@@ -11,11 +12,13 @@ import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.finance.bo.QueryVoidBillingForm;
 import com.jayud.finance.bo.VoidBillForm;
+import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.po.*;
 import com.jayud.finance.mapper.VoidBillingRecordsMapper;
 import com.jayud.finance.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.finance.vo.InitComboxStrVO;
 import com.jayud.finance.vo.ReceiveNotPaidBillVO;
 import com.jayud.finance.vo.VoidBillingRecordsVO;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +54,8 @@ public class VoidBillingRecordsServiceImpl extends ServiceImpl<VoidBillingRecord
     private IOrderReceivableBillService receivableBillService;
     @Autowired
     private OmsClient omsClient;
+    @Autowired
+    private OauthClient oauthClient;
 
     /**
      * 作废账单
@@ -159,10 +164,24 @@ public class VoidBillingRecordsServiceImpl extends ServiceImpl<VoidBillingRecord
      * @return
      */
     @Override
-    public List<VoidBillingRecordsVO> findVoidBillByPage(QueryVoidBillingForm form) {
+    public IPage<VoidBillingRecordsVO> findVoidBillByPage(QueryVoidBillingForm form) {
         //定义分页参数
         Page<VoidBillingRecordsVO> page = new Page(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findVoidBillByPage(page, form);
+
+        //获取当前用户法人主体名字
+        ApiResult legalNameBySystemName = oauthClient.getLegalNameBySystemName(form.getLoginUserName());
+        List<String> legalNames = (List<String>) legalNameBySystemName.getData();
+
+        IPage<VoidBillingRecordsVO> iPage = this.baseMapper.findVoidBillByPage(page, form, legalNames);
+        if (iPage.getRecords().size() == 0) {
+            return null;
+        }
+        //币种
+        List<InitComboxStrVO> currencyInfo = omsClient.initCurrencyInfo().getData();
+        Map<String, String> currencyInfoMap = currencyInfo.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+
+        iPage.getRecords().forEach(e -> e.setTotalMoneyStr(e.getTotalMoney().toPlainString() + " " + currencyInfoMap.get(e.getSettlementCurrency())));
+        return iPage;
     }
 
     /**

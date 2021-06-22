@@ -56,7 +56,7 @@
                 #{item}
             </foreach>
         </if>
-        order by t.id desc
+        order by t.carton_no asc
 
     </select>
 

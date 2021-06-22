@@ -593,6 +593,8 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                     }
                 }
             }
+
+            jsonObject.putOnce("num",i+1);
             newOrderList.add(viewBillToOrder);
             mainOrderNos.add(viewBillToOrder.getOrderNo());
 //            list.add(viewBillToOrder);

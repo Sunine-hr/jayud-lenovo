@@ -596,6 +596,8 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                     }
                 }
             }
+            //序号
+            jsonObject.putOnce("num",i+1);
             newOrderList.add(viewFBilToOrderVO);
             mainOrderNos.add(viewFBilToOrderVO.getOrderNo());
 //            list.add(viewBillToOrder);

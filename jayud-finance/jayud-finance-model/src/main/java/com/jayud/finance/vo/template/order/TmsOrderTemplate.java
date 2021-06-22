@@ -27,6 +27,9 @@ public class TmsOrderTemplate {
     @ApiModelProperty(value = "id")
     private Long id;
 
+    @ApiModelProperty(value = "序号", required = true)
+    private String num;
+
     @ApiModelProperty(value = "提货日期", required = true)
     @JsonFormat(pattern = "yyyy年MM月dd日")
     private String takeTimeStr;

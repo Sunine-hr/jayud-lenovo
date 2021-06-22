@@ -25,6 +25,9 @@ public class InlandTPTemplate {
     @ApiModelProperty(value = "内陆订单主键")
     private Long id;
 
+    @ApiModelProperty(value = "序号", required = true)
+    private String num;
+
     @ApiModelProperty(value = "提货时间", required = true)
     private String deliveryDate;
 

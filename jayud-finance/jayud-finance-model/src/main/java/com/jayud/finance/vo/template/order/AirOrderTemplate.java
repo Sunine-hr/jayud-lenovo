@@ -33,6 +33,9 @@ public class AirOrderTemplate{
     @ApiModelProperty(value = "空运订单主键")
     private Long id;
 
+    @ApiModelProperty(value = "序号", required = true)
+    private String num;
+
     @ApiModelProperty(value = "货好时间", required = true)
     private String goodTime;
 

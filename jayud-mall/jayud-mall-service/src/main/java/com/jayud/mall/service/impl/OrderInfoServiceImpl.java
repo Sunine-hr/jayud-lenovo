@@ -820,10 +820,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         /*订柜尺寸：海运费规格*/
         List<TemplateCopeReceivableVO> oceanFeeList =
                 templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
-        totalChargeWeight = caseVO.getTotalChargeWeight();//客户预报的总收费重 收费重
 
         /**
-         * 根据箱子的收费重，自动选择一个订舱区间
+         * 根据箱子计算的的 总收费重，自动选择一个订舱区间
          * 整理思路：
          * 1.先判断 客户实际收费重  满不满足当前选择的区间范围，
          *      满足  ->  直接使用当前区间
@@ -851,7 +850,87 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
          *              大于 直接选择这个订舱区间， 收费重 不变；  跳出循环
          *              不大于 直接选择这个订舱区间 收费重 不变；  跳出循环
          */
+        String selectCostCode = "";//选择的费用代码
+        totalChargeWeight = caseVO.getTotalChargeWeight();//客户预报的总收费重 收费重
+        for (int i=0; i<oceanFeeList.size(); i++){
+            TemplateCopeReceivableVO templateCopeReceivableVO = oceanFeeList.get(i);
+            String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+            BigDecimal min = templateCopeReceivableVO.getMin() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMin();
+            BigDecimal max = templateCopeReceivableVO.getMax() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMax();
+            if(specificationCode.equals(reserveSize)){
+                //1.先判断 客户实际收费重  满不满足当前选择的区间范围，
+                if(totalChargeWeight.compareTo(min) >= 0 && totalChargeWeight.compareTo(max) <= 0){
+                    //区间 刚好满足区间 的 范围值
+                    //totalChargeWeight >= min  && totalChargeWeight <= max
+                    selectCostCode = specificationCode;
+                    break;//跳出
+                }else{
+                    break;//跳出
+                }
+            }
+        }
+        if("".equals(selectCostCode)){//选中的区间不满足条件
+            if(oceanFeeList.size() == 1){
+                //2.1只有一个区间时
+                TemplateCopeReceivableVO templateCopeReceivableVO = oceanFeeList.get(0);
+                String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+                BigDecimal min = templateCopeReceivableVO.getMin() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMin();
+                BigDecimal max = templateCopeReceivableVO.getMax() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMax();
+                if(totalChargeWeight.compareTo(min) < 0){
+                    totalChargeWeight = min;
+                    selectCostCode = specificationCode;
+                }
+                if(totalChargeWeight.compareTo(min) >= 0 && totalChargeWeight.compareTo(max) <= 0){
+                    selectCostCode = specificationCode;
+                }
+                if(totalChargeWeight.compareTo(max) > 0){
+                    selectCostCode = specificationCode;
+                }
+            }else{
+                //2.2有多个区间时 从下标为0开始遍历
+                for (int i=0; i<oceanFeeList.size(); i++){
+                    TemplateCopeReceivableVO templateCopeReceivableVO = oceanFeeList.get(i);
+                    String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+                    BigDecimal min = templateCopeReceivableVO.getMin() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMin();
+                    BigDecimal max = templateCopeReceivableVO.getMax() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMax();
+                    //从下标为0开始遍历
+                    if(i==0){//当下标为0时，代表为最小区间
+                        if(totalChargeWeight.compareTo(min) < 0){
+                            totalChargeWeight = min;
+                            selectCostCode = specificationCode;
+                            break;
+                        }
+                        if(totalChargeWeight.compareTo(min) >= 0 && totalChargeWeight.compareTo(max) <= 0){
+                            selectCostCode = specificationCode;
+                            break;
+                        }
+                    }
 
+                    if(totalChargeWeight.compareTo(min) >= 0 && totalChargeWeight.compareTo(max) <= 0){
+                        selectCostCode = specificationCode;
+                        break;
+                    }
+
+                    if(i == (oceanFeeList.size() - 1)){//遍历到最后一个区间 代表为最大区间
+
+                        if(totalChargeWeight.compareTo(min) < 0){
+                            totalChargeWeight = min;
+                            selectCostCode = specificationCode;
+                            break;
+                        }
+                        if(totalChargeWeight.compareTo(max) > 0){
+                            selectCostCode = specificationCode;
+                            break;
+                        }
+                        if(totalChargeWeight.compareTo(min) >= 0 && totalChargeWeight.compareTo(max) <= 0){
+                            selectCostCode = specificationCode;
+                        }
+
+                    }
+                }
+            }
+        }
+        reserveSize = selectCostCode;//将选择过后的费用呢代码，重新设置值 为 新的 订舱区间 ； 收费重 在上面的选择过程中，已经重新赋值了
         for (int i = 0; i<oceanFeeList.size(); i++){
             TemplateCopeReceivableVO templateCopeReceivableVO = oceanFeeList.get(i);
             String specificationCode = templateCopeReceivableVO.getSpecificationCode();
@@ -861,10 +940,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
                 BigDecimal min = templateCopeReceivableVO.getMin() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMin();
                 BigDecimal max = templateCopeReceivableVO.getMax() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMax();
-
-//                if(totalChargeWeight.compareTo(min) == -1 || totalChargeWeight.compareTo(max) == 1){
-//                    Asserts.fail(ResultEnum.UNKNOWN_ERROR, "收费重超出或小于，订舱区间的所对应的数量范围");
-//                }
 
                 OrderCopeReceivable orderCopeReceivable = new OrderCopeReceivable();
                 orderCopeReceivable.setOrderId(orderId);//订单ID(order_info id)
@@ -1511,6 +1586,120 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         /*订柜尺寸：海运费规格*/
         List<TemplateCopeReceivableVO> oceanFeeList =
                 templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
+
+
+        /**
+         * 根据箱子计算的的 总收费重，自动选择一个订舱区间
+         * 整理思路：
+         * 1.先判断 客户实际收费重  满不满足当前选择的区间范围，
+         *      满足  ->  直接使用当前区间
+         *      不满足 ->  跳出循环，重新遍历
+         * 2.循环遍历
+         *      2.1只有一个区间时
+         *          判断 收费重 是否小于 最小区间的最小值，
+         *              小于 直接选择这个订舱区间，将区间最小值填入 收费重；  跳出循环
+         *              不小于 下一个判断
+         *          判断 收费重 是否大于 最小区间的最大值
+         *              大于 直接选择这个订舱区间，收费重 不变；
+         *      2.2从下标为0开始遍历，
+         *          当下标为0时，代表为最小区间
+         *              判断 收费重 是否小于 最小区间的最小值，
+         *                  小于 直接选择这个订舱区间，将区间最小值填入 收费重；
+         *                  不小于 下一个判断
+         *              判断 收费重 是否大于 最小区间的最大值
+         *                  不大于 选中 这个区间；    跳出循环
+         *                  大于  继续循环
+         *      2.3遍历到最后一个区间 代表为最大区间
+         *          判断  收费重 是否小于 最小区间的最小值，
+         *              小于 直接选择这个订舱区间，将区间最小值填入 收费重；  跳出循环
+         *              大于 下一个判断
+         *          判断  收费重 是否大于 最小区间的最大值
+         *              大于 直接选择这个订舱区间， 收费重 不变；  跳出循环
+         *              不大于 直接选择这个订舱区间 收费重 不变；  跳出循环
+         */
+        String selectCostCode = "";//选择的费用代码
+        totalChargeWeight = caseVO.getTotalChargeWeight();//客户预报的总收费重 收费重
+        for (int i=0; i<oceanFeeList.size(); i++){
+            TemplateCopeReceivableVO templateCopeReceivableVO = oceanFeeList.get(i);
+            String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+            BigDecimal min = templateCopeReceivableVO.getMin() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMin();
+            BigDecimal max = templateCopeReceivableVO.getMax() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMax();
+            if(specificationCode.equals(reserveSize)){
+                //1.先判断 客户实际收费重  满不满足当前选择的区间范围，
+                if(totalChargeWeight.compareTo(min) >= 0 && totalChargeWeight.compareTo(max) <= 0){
+                    //区间 刚好满足区间 的 范围值
+                    //totalChargeWeight >= min  && totalChargeWeight <= max
+                    selectCostCode = specificationCode;
+                    break;//跳出
+                }else{
+                    break;//跳出
+                }
+            }
+        }
+        if("".equals(selectCostCode)){//选中的区间不满足条件
+            if(oceanFeeList.size() == 1){
+                //2.1只有一个区间时
+                TemplateCopeReceivableVO templateCopeReceivableVO = oceanFeeList.get(0);
+                String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+                BigDecimal min = templateCopeReceivableVO.getMin() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMin();
+                BigDecimal max = templateCopeReceivableVO.getMax() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMax();
+                if(totalChargeWeight.compareTo(min) < 0){
+                    totalChargeWeight = min;
+                    selectCostCode = specificationCode;
+                }
+                if(totalChargeWeight.compareTo(min) >= 0 && totalChargeWeight.compareTo(max) <= 0){
+                    selectCostCode = specificationCode;
+                }
+                if(totalChargeWeight.compareTo(max) > 0){
+                    selectCostCode = specificationCode;
+                }
+            }else{
+                //2.2有多个区间时 从下标为0开始遍历
+                for (int i=0; i<oceanFeeList.size(); i++){
+                    TemplateCopeReceivableVO templateCopeReceivableVO = oceanFeeList.get(i);
+                    String specificationCode = templateCopeReceivableVO.getSpecificationCode();
+                    BigDecimal min = templateCopeReceivableVO.getMin() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMin();
+                    BigDecimal max = templateCopeReceivableVO.getMax() == null ? new BigDecimal("0") : templateCopeReceivableVO.getMax();
+                    //从下标为0开始遍历
+                    if(i==0){//当下标为0时，代表为最小区间
+                        if(totalChargeWeight.compareTo(min) < 0){
+                            totalChargeWeight = min;
+                            selectCostCode = specificationCode;
+                            break;
+                        }
+                        if(totalChargeWeight.compareTo(min) >= 0 && totalChargeWeight.compareTo(max) <= 0){
+                            selectCostCode = specificationCode;
+                            break;
+                        }
+                    }
+
+                    if(totalChargeWeight.compareTo(min) >= 0 && totalChargeWeight.compareTo(max) <= 0){
+                        selectCostCode = specificationCode;
+                        break;
+                    }
+
+                    if(i == (oceanFeeList.size() - 1)){//遍历到最后一个区间 代表为最大区间
+
+                        if(totalChargeWeight.compareTo(min) < 0){
+                            totalChargeWeight = min;
+                            selectCostCode = specificationCode;
+                            break;
+                        }
+                        if(totalChargeWeight.compareTo(max) > 0){
+                            selectCostCode = specificationCode;
+                            break;
+                        }
+                        if(totalChargeWeight.compareTo(min) >= 0 && totalChargeWeight.compareTo(max) <= 0){
+                            selectCostCode = specificationCode;
+                        }
+
+                    }
+                }
+            }
+        }
+        reserveSize = selectCostCode;//将选择过后的费用呢代码，重新设置值 为 新的 订舱区间 ； 收费重 在上面的选择过程中，已经重新赋值了
+
+
         for (int i = 0; i<oceanFeeList.size(); i++){
             TemplateCopeReceivableVO templateCopeReceivableVO = oceanFeeList.get(i);
             String specificationCode = templateCopeReceivableVO.getSpecificationCode();

@@ -49,7 +49,7 @@
         orb.legal_name legalName,
         orb.unit_account unitAccount,
         orbd.account_term accountTermStr,
-        orbd.invoice_amount,
+        orbd.invoice_amount paymentAmount,
         orbd.settlement_currency settlementCurrency,orbd.audit_status auditStatus,orbd.apply_status applyStatus,
         orbd.make_user makeUser,
         orbd.make_time makeTimeStr,

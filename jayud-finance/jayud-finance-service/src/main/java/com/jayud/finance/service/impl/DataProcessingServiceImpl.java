@@ -2,6 +2,7 @@ package com.jayud.finance.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.enums.BillTypeEnum;
 import com.jayud.common.utils.JDKUtils;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.po.CancelAfterVerification;
@@ -54,8 +55,11 @@ public class DataProcessingServiceImpl implements DataProcessingService {
         //币种
         List<InitComboxStrVO> currencyInfo = omsClient.initCurrencyInfo().getData();
         Map<String, String> currencyInfoMap = currencyInfo.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+        //   RECEIVABLE(0, "应收"),
+        //    PAYMENT(1, "应付"),
+        int oprType = type.equals(BillTypeEnum.RECEIVABLE.getCode()) ? 1 : 2;
         //核销金额
-        Map<String, BigDecimal> heXiaoAmountMap = this.makeInvoiceService.calculationAccounting(billNos, 2);
+        Map<String, BigDecimal> heXiaoAmountMap = this.makeInvoiceService.calculationAccounting(billNos, oprType);
         //核销用户
         List<CancelAfterVerification> verifications = cancelAfterVerificationService.getByBillNos(billNos);
         Map<String, List<CancelAfterVerification>> verificationMap = JDKUtils.getGroupMapByLastData(verifications,
@@ -110,7 +114,7 @@ public class DataProcessingServiceImpl implements DataProcessingService {
         Map<String, String> currencyInfoMap = currencyInfo.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
 
         list.forEach(e -> {
-            e.totalCurrencyAmount(currencyAmounts,currencyInfoMap);
+            e.totalCurrencyAmount(currencyAmounts, currencyInfoMap);
         });
     }
 }

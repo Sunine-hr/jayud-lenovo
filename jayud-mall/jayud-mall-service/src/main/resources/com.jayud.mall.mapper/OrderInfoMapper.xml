@@ -45,7 +45,8 @@
         t3.taskItems taskTodo,
         t4.group_name,
         t5.destination_port,
-        t6.state_code destinationCountryCode
+        t6.state_code destinationCountryCode,
+        t7.isAuditOrderStatusFlag
         from order_info t
         left join customer t1 on t1.id = t.customer_id
         left join offer_info t2 on t2.id = t.offer_info_id
@@ -62,6 +63,12 @@
         left join operation_team t4 on t4.id = t1.operation_team_id
         left join quotation_template t5 on t5.id = t2.id
         left join harbour_info t6 on t6.id_code = t5.destination_port
+        left join (
+        select oi.id orderId,IFNULL(ois.status_flag,2) isAuditOrderStatusFlag
+        from order_info oi
+        left join order_interior_status ois on ois.order_id = oi.id and ois.main_status_type = 'after' and ois.main_status_code = '10' and ois.interior_status_code = 'is_audit_order'
+        order by oi.id
+        ) t7 on t7.orderId = t.id
         WHERE
         1 = 1
         <if test="form.customerId != null">
@@ -78,6 +85,9 @@
         </if>
         <if test="form.afterStatusCode != null and form.afterStatusCode != ''">
             and t.after_status_code = #{form.afterStatusCode}
+        </if>
+        <if test="form.isAuditOrderStatusFlag != null and form.isAuditOrderStatusFlag != ''">
+            and t7.isAuditOrderStatusFlag = #{form.isAuditOrderStatusFlag}
         </if>
     </select>
 

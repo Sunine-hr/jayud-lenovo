@@ -45,6 +45,9 @@ public class QueryOrderInfoForm extends BasePageForm {
             "    已取消:-1")
     private String afterStatusCode;
 
+    @ApiModelProperty(value = "是否审核单据 1已审核 2未审核", notes = "OrderEnum.IS_AUDIT_ORDER")//是否审核单据(1已审单 2未审单)
+    private String isAuditOrderStatusFlag;
+
     @ApiModelProperty(value = "开船日期(offer_info.sail_time)")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sailTime;

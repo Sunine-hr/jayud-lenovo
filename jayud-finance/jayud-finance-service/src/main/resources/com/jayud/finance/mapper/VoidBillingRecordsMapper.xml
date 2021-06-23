@@ -93,6 +93,9 @@
             <if test="form.isSumToMain != null and form.isSumToMain !=''">
                 and is_sum_to_main = #{form.isSumToMain}
             </if>
+            <if test="form.costType != null">
+                and cost_type = #{form.costType}
+            </if>
 
             <if test="legalNames != null and legalNames.size>0">
                 and legal_name in

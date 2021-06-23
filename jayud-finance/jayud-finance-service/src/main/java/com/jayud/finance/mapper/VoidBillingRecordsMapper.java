@@ -30,6 +30,7 @@ public interface VoidBillingRecordsMapper extends BaseMapper<VoidBillingRecords>
     public Integer getCountByMakeTime(@Param("makeTime") String makeTime,
                                       @Param("format") String format, @Param("costType") Integer costType);
 
-    IPage<VoidBillingRecordsVO> findVoidBillByPage(Page<VoidBillingRecordsVO> page, @Param("form")  QueryVoidBillingForm form,
+    IPage<VoidBillingRecordsVO> findVoidBillByPage(Page<VoidBillingRecordsVO> page,
+                                                   @Param("form")  QueryVoidBillingForm form,
                                                    @Param("legalNames") List<String> legalNames);
 }

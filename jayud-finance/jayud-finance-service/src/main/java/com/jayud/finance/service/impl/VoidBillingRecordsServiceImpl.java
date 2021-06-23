@@ -155,7 +155,7 @@ public class VoidBillingRecordsServiceImpl extends ServiceImpl<VoidBillingRecord
     @Override
     public int getCountByMakeTime(String makeTime, String format, Integer code) {
         Integer count = this.baseMapper.getCountByMakeTime(makeTime, format, code);
-        return  count == null ? 0 : count;
+        return count == null ? 0 : count;
     }
 
     /**
@@ -175,7 +175,7 @@ public class VoidBillingRecordsServiceImpl extends ServiceImpl<VoidBillingRecord
 
         IPage<VoidBillingRecordsVO> iPage = this.baseMapper.findVoidBillByPage(page, form, legalNames);
         if (iPage.getRecords().size() == 0) {
-            return null;
+            return iPage;
         }
         //币种
         List<InitComboxStrVO> currencyInfo = omsClient.initCurrencyInfo().getData();

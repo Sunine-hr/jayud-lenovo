@@ -50,6 +50,7 @@
     <select id="getCountByMakeTime" resultType="java.lang.Integer">
         select count(*) from void_billing_records
         where  DATE_FORMAT( make_time, #{format})=#{makeTime} and cost_type=#{costType}
+        group by bill_no
     </select>
 
 

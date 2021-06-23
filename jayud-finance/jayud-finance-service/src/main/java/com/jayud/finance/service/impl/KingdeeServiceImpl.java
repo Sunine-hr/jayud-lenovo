@@ -285,7 +285,6 @@ public class KingdeeServiceImpl implements KingdeeService {
     }
 
 
-
     @Override
     public <T> CommonResult<T> getInvoice(String businessCode, Class<T> clz) {
         if (clz.isAssignableFrom(InvoiceBase.class)) {
@@ -1058,6 +1057,8 @@ public class KingdeeServiceImpl implements KingdeeService {
         detail.put("FSalQty", num);
         //销售基本数量，默认等于计价数量
         detail.put("FSalBaseQty", num);
+        //业务单号
+        detail.put("F_PCQE_Remarks", detailForm.getBusinessNo());
         //TODO 计价基本分母,销售基本分子,库存基本分子默认不修改
 
         return detail;

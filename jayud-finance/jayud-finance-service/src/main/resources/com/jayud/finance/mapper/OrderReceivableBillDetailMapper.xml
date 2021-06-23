@@ -59,7 +59,8 @@
         FROM
         order_receivable_bill_detail orbd
         left join
-        (select t.bill_no,max(t.make_time) make_time from order_receivable_bill_detail t where t.audit_status != 'edit_no_commit' group by t.bill_no) tt on
+        (select t.bill_no,max(t.make_time) make_time from order_receivable_bill_detail t where t.audit_status !=
+        'edit_no_commit' group by t.bill_no) tt on
         orbd.bill_no = tt.bill_no
         LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
         where orbd.make_time = tt.make_time
@@ -117,126 +118,126 @@
         group by orbd.bill_no
     </select>
 
-<!--    <select id="findReceiveBillDetailByPage" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO">-->
-<!--        SELECT-->
-<!--        orbd.bill_no billNo,-->
-<!--        orb.legal_name legalName,-->
-<!--        orb.unit_account unitAccount,-->
-<!--        orbd.account_term accountTermStr,-->
-<!--        orbd.invoice_amount,-->
-<!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='CNY') rmb,-->
-<!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='USD')-->
-<!--        &#45;&#45;         dollar,-->
-<!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='EUR')-->
-<!--        &#45;&#45;         euro,-->
-<!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='HKD')-->
-<!--        &#45;&#45;         hKDollar,-->
-<!--        &#45;&#45;         (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = orbd.bill_no and m.`status` =-->
-<!--        &#45;&#45;         '1') heXiaoAmount,-->
-<!--        &#45;&#45;         (orbd.invoice_amount - (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no =-->
-<!--        &#45;&#45;         orbd.bill_no and m.`status` = '1')) notHeXiaoAmount,-->
-<!--        &#45;&#45;         (select cur.currency_name from currency_info cur where cur.currency_code = orbd.settlement_currency)-->
-<!--        orbd.settlement_currency settlementCurrency,orbd.audit_status auditStatus,orbd.apply_status applyStatus,-->
-<!--        orbd.make_user makeUser,-->
-<!--        orbd.make_time makeTimeStr,-->
-<!--        orbd.audit_user auditUser,-->
-<!--        orbd.audit_time auditTimeStr,-->
-<!--        &#45;&#45;         (select ai.audit_comment from audit_info ai where ai.ext_unique_flag = orbd.bill_no and ai.audit_status in-->
-<!--        &#45;&#45;         ('B_2_1','B_4_1','B_6_1','B_7','B_8') order by ai.created_time desc limit 1) auditComment,-->
-<!--        &#45;&#45;         (select c.created_user from cancel_after_verification c where c.bill_no = orbd.bill_no order by c.created_time-->
-<!--        &#45;&#45;         desc limit 1) heXiaoUser,-->
-<!--        &#45;&#45;         (select c.real_receive_time from cancel_after_verification c where c.bill_no = orbd.bill_no order by-->
-<!--        &#45;&#45;         c.created_time desc limit 1) heXiaoTimeStr,-->
-<!--        orbd.push_kingdee_count pushKingdeeCount-->
-<!--        FROM-->
-<!--        order_receivable_bill_detail orbd-->
-<!--        left join-->
-<!--        (select t.bill_no,max(t.make_time) make_time from order_receivable_bill_detail t group by t.bill_no) tt on-->
-<!--        orbd.bill_no = tt.bill_no-->
-<!--        LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id-->
-<!--        where orbd.make_time = tt.make_time-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'main_statement'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and orb.is_main = 1&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'statement_audit'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and orb.is_main = 1 and orbd.audit_status in ('B_1','B_2')&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'cw_statement'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and (orbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or orbd.apply_status='4')&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--    <select id="findReceiveBillDetailByPage" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO">-->
+    <!--        SELECT-->
+    <!--        orbd.bill_no billNo,-->
+    <!--        orb.legal_name legalName,-->
+    <!--        orb.unit_account unitAccount,-->
+    <!--        orbd.account_term accountTermStr,-->
+    <!--        orbd.invoice_amount,-->
+    <!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='CNY') rmb,-->
+    <!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='USD')-->
+    <!--        &#45;&#45;         dollar,-->
+    <!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='EUR')-->
+    <!--        &#45;&#45;         euro,-->
+    <!--        &#45;&#45;         (select SUM(o.money) from order_bill_cost_total o where o.bill_no = orbd.bill_no and o.currency_code='HKD')-->
+    <!--        &#45;&#45;         hKDollar,-->
+    <!--        &#45;&#45;         (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no = orbd.bill_no and m.`status` =-->
+    <!--        &#45;&#45;         '1') heXiaoAmount,-->
+    <!--        &#45;&#45;         (orbd.invoice_amount - (select sum(m.money) from make_invoice m where m.opr_type = '2' and m.bill_no =-->
+    <!--        &#45;&#45;         orbd.bill_no and m.`status` = '1')) notHeXiaoAmount,-->
+    <!--        &#45;&#45;         (select cur.currency_name from currency_info cur where cur.currency_code = orbd.settlement_currency)-->
+    <!--        orbd.settlement_currency settlementCurrency,orbd.audit_status auditStatus,orbd.apply_status applyStatus,-->
+    <!--        orbd.make_user makeUser,-->
+    <!--        orbd.make_time makeTimeStr,-->
+    <!--        orbd.audit_user auditUser,-->
+    <!--        orbd.audit_time auditTimeStr,-->
+    <!--        &#45;&#45;         (select ai.audit_comment from audit_info ai where ai.ext_unique_flag = orbd.bill_no and ai.audit_status in-->
+    <!--        &#45;&#45;         ('B_2_1','B_4_1','B_6_1','B_7','B_8') order by ai.created_time desc limit 1) auditComment,-->
+    <!--        &#45;&#45;         (select c.created_user from cancel_after_verification c where c.bill_no = orbd.bill_no order by c.created_time-->
+    <!--        &#45;&#45;         desc limit 1) heXiaoUser,-->
+    <!--        &#45;&#45;         (select c.real_receive_time from cancel_after_verification c where c.bill_no = orbd.bill_no order by-->
+    <!--        &#45;&#45;         c.created_time desc limit 1) heXiaoTimeStr,-->
+    <!--        orbd.push_kingdee_count pushKingdeeCount-->
+    <!--        FROM-->
+    <!--        order_receivable_bill_detail orbd-->
+    <!--        left join-->
+    <!--        (select t.bill_no,max(t.make_time) make_time from order_receivable_bill_detail t group by t.bill_no) tt on-->
+    <!--        orbd.bill_no = tt.bill_no-->
+    <!--        LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id-->
+    <!--        where orbd.make_time = tt.make_time-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'main_statement'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and orb.is_main = 1&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'statement_audit'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and orb.is_main = 1 and orbd.audit_status in ('B_1','B_2')&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'cw_statement'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and (orbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or orbd.apply_status='4')&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
 
-<!--        &lt;!&ndash;        <if test="form.cmd == 'zgys_statement'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and orb.is_main = 0 and orb.sub_type = 'zgys'&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'zgys_statement_audit'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and orb.is_main = 0 and orb.sub_type = 'zgys' and orbd.audit_status in ('B_1','B_2')&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'bg_statement'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and orb.is_main = 0 and orb.sub_type = 'bg'&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'bg_statement_audit'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and orb.is_main = 0 and orb.sub_type = 'bg' and orbd.audit_status in ('B_1','B_2')&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'ky_statement'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and orb.is_main = 0 and orb.sub_type = 'ky'&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <if test="form.cmd == 'ky_statement_audit'">&ndash;&gt;-->
-<!--        &lt;!&ndash;            and orb.is_main = 0 and orb.sub_type = 'ky' and orbd.audit_status in ('B_1','B_2')&ndash;&gt;-->
-<!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'zgys_statement'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and orb.is_main = 0 and orb.sub_type = 'zgys'&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'zgys_statement_audit'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and orb.is_main = 0 and orb.sub_type = 'zgys' and orbd.audit_status in ('B_1','B_2')&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'bg_statement'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and orb.is_main = 0 and orb.sub_type = 'bg'&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'bg_statement_audit'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and orb.is_main = 0 and orb.sub_type = 'bg' and orbd.audit_status in ('B_1','B_2')&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'ky_statement'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and orb.is_main = 0 and orb.sub_type = 'ky'&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        &lt;!&ndash;        <if test="form.cmd == 'ky_statement_audit'">&ndash;&gt;-->
+    <!--        &lt;!&ndash;            and orb.is_main = 0 and orb.sub_type = 'ky' and orbd.audit_status in ('B_1','B_2')&ndash;&gt;-->
+    <!--        &lt;!&ndash;        </if>&ndash;&gt;-->
 
-<!--        <choose>-->
-<!--            <when test="form.cmd == 'main_statement'">-->
-<!--                and orb.is_main = 1-->
-<!--            </when>-->
-<!--            <when test="form.cmd == 'statement_audit'">-->
-<!--                and orb.is_main = 1 and orbd.audit_status in ('B_1','B_2')-->
-<!--            </when>-->
-<!--            <when test="form.cmd == 'cw_statement'">-->
-<!--                and (orbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or orbd.apply_status='4')-->
-<!--            </when>-->
-<!--            <otherwise>-->
-<!--                <choose>-->
-<!--                    <when test="form.cmd != null and form.cmd != '' and form.cmd.contains('statement_audit')">-->
-<!--                        and orb.is_main = 0 and orb.sub_type = #{form.subType} and orbd.audit_status in ('B_1','B_2')-->
-<!--                    </when>-->
-<!--                    <when test="form.cmd !=null and form.cmd !=''">-->
-<!--                        and orb.is_main = 0 and orb.sub_type = #{form.subType}-->
-<!--                    </when>-->
-<!--                </choose>-->
-<!--            </otherwise>-->
-<!--        </choose>-->
+    <!--        <choose>-->
+    <!--            <when test="form.cmd == 'main_statement'">-->
+    <!--                and orb.is_main = 1-->
+    <!--            </when>-->
+    <!--            <when test="form.cmd == 'statement_audit'">-->
+    <!--                and orb.is_main = 1 and orbd.audit_status in ('B_1','B_2')-->
+    <!--            </when>-->
+    <!--            <when test="form.cmd == 'cw_statement'">-->
+    <!--                and (orbd.audit_status in ('B_3','B_4','B_5','B_5_1','B_6') or orbd.apply_status='4')-->
+    <!--            </when>-->
+    <!--            <otherwise>-->
+    <!--                <choose>-->
+    <!--                    <when test="form.cmd != null and form.cmd != '' and form.cmd.contains('statement_audit')">-->
+    <!--                        and orb.is_main = 0 and orb.sub_type = #{form.subType} and orbd.audit_status in ('B_1','B_2')-->
+    <!--                    </when>-->
+    <!--                    <when test="form.cmd !=null and form.cmd !=''">-->
+    <!--                        and orb.is_main = 0 and orb.sub_type = #{form.subType}-->
+    <!--                    </when>-->
+    <!--                </choose>-->
+    <!--            </otherwise>-->
+    <!--        </choose>-->
 
 
-<!--        <if test="form.unitAccount != null and form.unitAccount != ''">-->
-<!--            and orb.unit_account like concat('%',#{form.unitAccount},'%')-->
-<!--        </if>-->
-<!--        <if test="form.legalName != null and form.legalName != ''">-->
-<!--            and orb.legal_name like concat('%',#{form.legalName},'%')-->
-<!--        </if>-->
-<!--        <if test="form.billNo != null and form.billNo != ''">-->
-<!--            and orbd.bill_no like concat('%',#{form.billNo},'%')-->
-<!--        </if>-->
-<!--        <if test="form.accountTermStr != null and form.accountTermStr !=''">-->
-<!--            and orbd.account_term = #{form.accountTermStr}-->
-<!--        </if>-->
-<!--        <if test="form.currencyCode != null and form.currencyCode !=''">-->
-<!--            and orbd.settlement_currency = #{form.currencyCode}-->
-<!--        </if>-->
-<!--        <if test="form.auditStatus != null and form.auditStatus !=''">-->
-<!--            and orbd.audit_status = #{form.auditStatus}-->
-<!--        </if>-->
-<!--        <if test="form.applyStatus != null and form.applyStatus !=''">-->
-<!--            and orbd.apply_status = #{form.applyStatus}-->
-<!--        </if>-->
+    <!--        <if test="form.unitAccount != null and form.unitAccount != ''">-->
+    <!--            and orb.unit_account like concat('%',#{form.unitAccount},'%')-->
+    <!--        </if>-->
+    <!--        <if test="form.legalName != null and form.legalName != ''">-->
+    <!--            and orb.legal_name like concat('%',#{form.legalName},'%')-->
+    <!--        </if>-->
+    <!--        <if test="form.billNo != null and form.billNo != ''">-->
+    <!--            and orbd.bill_no like concat('%',#{form.billNo},'%')-->
+    <!--        </if>-->
+    <!--        <if test="form.accountTermStr != null and form.accountTermStr !=''">-->
+    <!--            and orbd.account_term = #{form.accountTermStr}-->
+    <!--        </if>-->
+    <!--        <if test="form.currencyCode != null and form.currencyCode !=''">-->
+    <!--            and orbd.settlement_currency = #{form.currencyCode}-->
+    <!--        </if>-->
+    <!--        <if test="form.auditStatus != null and form.auditStatus !=''">-->
+    <!--            and orbd.audit_status = #{form.auditStatus}-->
+    <!--        </if>-->
+    <!--        <if test="form.applyStatus != null and form.applyStatus !=''">-->
+    <!--            and orbd.apply_status = #{form.applyStatus}-->
+    <!--        </if>-->
 
-<!--        <if test="data != null and data.size>0">-->
-<!--            and orb.legal_name in-->
-<!--            <foreach collection="data" item="legalName" open="(" separator="," close=")">-->
-<!--                #{legalName}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        group by orbd.bill_no-->
-<!--    </select>-->
+    <!--        <if test="data != null and data.size>0">-->
+    <!--            and orb.legal_name in-->
+    <!--            <foreach collection="data" item="legalName" open="(" separator="," close=")">-->
+    <!--                #{legalName}-->
+    <!--            </foreach>-->
+    <!--        </if>-->
+    <!--        group by orbd.bill_no-->
+    <!--    </select>-->
 
 
     <select id="findEditSBillByPage" parameterType="com.jayud.finance.bo.QueryEditBillForm"
@@ -264,14 +265,14 @@
         ci.`name` costName,
         orc.amount,
         orc.currency_code,
---         (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'CNY'
---         GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
---         (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'USD'
---         GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
---         (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'EUR'
---         GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
---         (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'HKD'
---         GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
+        -- (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'CNY'
+        -- GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
+        -- (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'USD'
+        -- GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
+        -- (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'EUR'
+        -- GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
+        -- (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'HKD'
+        -- GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
         orc.id costId,
         orc.is_bill isBill,
         ifnull(orc.change_amount,0) localAmount,
@@ -293,8 +294,8 @@
         left join sea_order so on so.order_no = orc.order_no
         left join order_inland_transport oit on oit.order_no = orc.order_no
         left join trailer_order tor on tor.order_no = orc.order_no
---         left join storage_input_order sio on sio.order_no = orc.order_no
---         left join storage_out_order soo on soo.order_no = orc.order_no
+        -- left join storage_input_order sio on sio.order_no = orc.order_no
+        -- left join storage_out_order soo on soo.order_no = orc.order_no
         WHERE
         ( orbd1.bill_no = #{form.billNo} )
         or
@@ -589,6 +590,7 @@
             ifnull(orc.number,0) priceQty,
 			ifnull(obct.money,0) taxPrice,
             ifnull(orbd.tax_rate,0) taxRate,
+            orbd.order_no businessNo,
             orc.unit costUnit
         FROM
             order_receivable_bill_detail orbd
@@ -622,7 +624,7 @@
             orbd.order_no = #{orderNo} and orb.sub_type = #{subType} and orb.legal_name = #{legalName} and orb.unit_account = #{unitAccount}
     </select>
 
-<!-- TODO 根据法人id和结算code-->
+    <!-- TODO 根据法人id和结算code-->
     <select id="getNowSOrderExistByLegalId" parameterType="java.util.Map"
             resultType="com.jayud.finance.po.OrderReceivableBillDetail">
          SELECT orbd.*

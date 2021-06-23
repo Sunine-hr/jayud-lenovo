@@ -65,6 +65,9 @@ public class APARDetailForm {
     @NotNull(message = "费用单位")
     private String costUnit;
 
+    @NotNull(message = "业务单号不允许为空")
+    private String businessNo;
+
     //todo 推送时要确认是否要以不含税价格进行计算
 
 

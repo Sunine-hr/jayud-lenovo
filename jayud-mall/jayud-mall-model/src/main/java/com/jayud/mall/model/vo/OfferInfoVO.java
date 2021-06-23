@@ -286,5 +286,11 @@ public class OfferInfoVO {
     @JSONField(ordinal = 52)
     private String amountRange;
 
+    @ApiModelProperty(value = "容量(数值) quotation_template volume")
+    private BigDecimal volume;
+
+    @ApiModelProperty(value = "容量单位(1KG 2CBM) quotation_template volume_unit")
+    private Integer volumeUnit;
+
 
 }

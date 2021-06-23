@@ -108,7 +108,7 @@
         t1.task_id,
         t1.remarks templateRemarks,
         t1.whole_time,
-        t1.design_formulas,
+        t1.design_formulas,t1.billing_weight_unit,t1.clearing_way,t1.volume,t1.volume_unit,
         t2.code_name sName,
         t3.code_name tName,
         t4.code_name startShipmentName,

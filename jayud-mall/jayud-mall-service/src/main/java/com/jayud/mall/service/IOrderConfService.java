@@ -9,6 +9,7 @@ import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.po.OrderConf;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.OceanBillVO;
+import com.jayud.mall.model.vo.OrderConfCasesVO;
 import com.jayud.mall.model.vo.OrderConfVO;
 
 import java.util.List;
@@ -114,4 +115,11 @@ public interface IOrderConfService extends IService<OrderConf> {
      * @param form
      */
     void cancelStatusVerify(OrderConfVerifyForm form);
+
+    /**
+     * 配载统计箱数(总箱数、未配载箱数)
+     * @param id
+     * @return
+     */
+    OrderConfCasesVO statisticsCases(Long id);
 }

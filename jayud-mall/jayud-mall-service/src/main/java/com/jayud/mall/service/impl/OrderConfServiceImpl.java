@@ -12,9 +12,7 @@ import com.jayud.common.enums.OrderConfStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.mapper.OceanCounterMapper;
-import com.jayud.mall.mapper.OrderConfMapper;
-import com.jayud.mall.mapper.OrderInfoMapper;
+import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.OrderConfForm;
 import com.jayud.mall.model.bo.OrderConfIdForm;
 import com.jayud.mall.model.bo.OrderConfVerifyForm;
@@ -47,18 +45,21 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
 
     @Autowired
     OrderConfMapper orderConfMapper;
-
     @Autowired
-    IOceanConfDetailService oceanConfDetailService;
+    OceanCounterMapper oceanCounterMapper;
+    @Autowired
+    OrderInfoMapper orderInfoMapper;
+    @Autowired
+    CounterCaseInfoMapper counterCaseInfoMapper;
+    @Autowired
+    OrderCaseMapper orderCaseMapper;
+
 
     @Autowired
     BaseService baseService;
-
     @Autowired
-    OceanCounterMapper oceanCounterMapper;
+    IOceanConfDetailService oceanConfDetailService;
 
-    @Autowired
-    OrderInfoMapper orderInfoMapper;
 
     @Override
     public IPage<OrderConfVO> findOrderConfByPage(QueryOrderConfForm form) {
@@ -381,5 +382,42 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         }
     }
 
+    /**
+     * 配载统计箱数(总箱数、未配载箱数)
+     * @param id
+     * @return
+     */
+    @Override
+    public OrderConfCasesVO statisticsCases(Long id) {
+        OrderConfVO orderConfVO = orderConfMapper.findOrderConfById(id);
+        if(ObjectUtil.isEmpty(orderConfVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "配载单不存在");
+        }
+        Long confId = orderConfVO.getId();
+        //运单(订单)信息list
+        List<OrderInfoVO> orderInfoList = orderInfoMapper.findOrderInfoByConfId(confId);
+        Integer allboxNumber = 0;//总箱数
+        Integer notboxNumber = 0;//未配载箱数
+        Integer hasboxNumber = 0;//已配箱数
+        if (CollUtil.isNotEmpty(orderInfoList)){
+            for (int i=0; i<orderInfoList.size(); i++){
+                OrderInfoVO orderInfoVO = orderInfoList.get(i);
+                Long orderId = orderInfoVO.getId();
+                List<OrderCaseVO> orderCaseList = orderCaseMapper.findOrderCaseByOrderId(orderId);
+                int allboxNumber1 = orderCaseList.size();//单条订单的总箱数
+                List<CounterCaseInfoVO> counterCaseInfoList = counterCaseInfoMapper.findCounterCaseInfoByOrderId(orderId);
+                int hasboxNumber1 = counterCaseInfoList.size();//单条订单的已配载箱数
+                int notboxNumber1 =  allboxNumber1 - hasboxNumber1;//单条订单的未配载箱数 = 单条订单的总箱数 - 单条订单的已配载箱数
+                allboxNumber += allboxNumber1;
+                notboxNumber += notboxNumber1;
+                hasboxNumber += hasboxNumber1;
+            }
+        }
+        OrderConfCasesVO orderConfCasesVO = new OrderConfCasesVO();
+        orderConfCasesVO.setAllboxNumber(allboxNumber);
+        orderConfCasesVO.setNotboxNumber(notboxNumber);
+        orderConfCasesVO.setHasboxNumber(hasboxNumber);
+        return orderConfCasesVO;
+    }
 
 }

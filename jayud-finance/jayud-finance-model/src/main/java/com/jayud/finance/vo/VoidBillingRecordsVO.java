@@ -1,6 +1,8 @@
 package com.jayud.finance.vo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.finance.enums.BillEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -23,13 +25,13 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="VoidBillingRecords对象", description="作废账单表")
+@ApiModel(value = "VoidBillingRecords对象", description = "作废账单表")
 public class VoidBillingRecordsVO extends Model<VoidBillingRecordsVO> {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键")
-      private Long id;
+    private Long id;
 
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
@@ -53,6 +55,7 @@ public class VoidBillingRecordsVO extends Model<VoidBillingRecordsVO> {
     private String makeUser;
 
     @ApiModelProperty(value = "生成账单时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime makeTime;
 
     @ApiModelProperty(value = "审核人")
@@ -64,11 +67,17 @@ public class VoidBillingRecordsVO extends Model<VoidBillingRecordsVO> {
     @ApiModelProperty(value = "开票状态 0-未申请  1-待审核 2-审核通过 3-审核驳回")
     private String applyStatus;
 
+    @ApiModelProperty(value = "开票状态 0-未申请  1-待审核 2-审核通过 3-审核驳回")
+    private String applyStatusDesc;
+
     @ApiModelProperty(value = "开票金额")
     private BigDecimal invoiceAmount;
 
     @ApiModelProperty(value = "审核状态")
     private String auditStatus;
+
+    @ApiModelProperty(value = "审核状态描述")
+    private String auditStatusDesc;
 
     @ApiModelProperty(value = "建单日期")
     private LocalDate createdOrderTime;
@@ -100,7 +109,6 @@ public class VoidBillingRecordsVO extends Model<VoidBillingRecordsVO> {
     @ApiModelProperty(value = "结算金额")
     private BigDecimal money;
 
-
     @ApiModelProperty(value = "本币汇率")
     private BigDecimal localMoneyRate;
 
@@ -120,6 +128,7 @@ public class VoidBillingRecordsVO extends Model<VoidBillingRecordsVO> {
     private String operator;
 
     @ApiModelProperty(value = "操作时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime operationTime;
 
     @ApiModelProperty(value = "法人主体姓名")
@@ -148,4 +157,14 @@ public class VoidBillingRecordsVO extends Model<VoidBillingRecordsVO> {
         return this.id;
     }
 
+
+    public void setApplyStatus(String applyStatus) {
+        this.applyStatus = applyStatus;
+        this.applyStatusDesc = BillEnum.getDesc(this.applyStatus);
+    }
+
+    public void setAuditStatus(String auditStatus) {
+        this.auditStatus = auditStatus;
+        this.auditStatusDesc= BillEnum.getDesc(this.auditStatus);
+    }
 }

@@ -2,6 +2,7 @@ package com.jayud.finance.bo;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jayud.common.enums.BillTypeEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -39,8 +40,10 @@ public class QueryVoidBillingForm extends BasePageForm {
     @ApiModelProperty(value = "付款申请/开票申请")
     private String applyStatus;
 
-//    @ApiModelProperty(value = "")
-//    private String cmd;
+    @ApiModelProperty(value = "操作指令 cmd=main_statement/zgys_statement/bg_statement/ky_statement对账单 " +
+            "or statement_audit/zgys_statement_audit/bg_statement_audit/ky_statement_audit对账单审核 or" +
+            " cw_statement财务对账单", required = true)
+    private String cmd;
 
     @ApiModelProperty(value = "子订单类型")
     private String subType;
@@ -52,10 +55,13 @@ public class QueryVoidBillingForm extends BasePageForm {
     @ApiModelProperty(value = "当前登录用户名", required = true)
     private String loginUserName;
 
-//    public void setCmd(String cmd) {
-//        this.cmd = cmd;
-//        this.subType = cmd.split("_")[0];
-//    }
+    @ApiModelProperty(value = "费用类型(0-应收, 1-应付)")
+    private Integer costType;
+
+    public void setCmd(String cmd) {
+        this.cmd = cmd;
+        setSubType(cmd.split("_")[0]);
+    }
 
     public void setSubType(String subType) {
         this.subType = subType;

@@ -1152,8 +1152,7 @@
     </select>
 
     <select id="getCountByMakeTime" resultType="java.lang.Integer">
-        select count(*) from order_receivable_bill_detail
+        select count(distinct bill_no) from order_receivable_bill_detail
         where  DATE_FORMAT( make_time, #{format})=#{makeTime}
-        group by bill_no
     </select>
 </mapper>

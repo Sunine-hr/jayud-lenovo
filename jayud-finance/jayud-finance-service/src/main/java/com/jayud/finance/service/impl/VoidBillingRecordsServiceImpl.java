@@ -154,7 +154,8 @@ public class VoidBillingRecordsServiceImpl extends ServiceImpl<VoidBillingRecord
      */
     @Override
     public int getCountByMakeTime(String makeTime, String format, Integer code) {
-        return this.baseMapper.getCountByMakeTime(makeTime, format, code);
+        Integer count = this.baseMapper.getCountByMakeTime(makeTime, format, code);
+        return  count == null ? 0 : count;
     }
 
     /**

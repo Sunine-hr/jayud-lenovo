@@ -204,7 +204,7 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
      * @param format
      * @return
      */
-    int getCountByMakeTime(@Param("makeTime") String makeTime, @Param("format") String format);
+    Integer getCountByMakeTime(@Param("makeTime") String makeTime, @Param("format") String format);
 
 
 //    List<Map<String, Object>> statisticsNotPaidBillInfo(@Param("isMain") Boolean isMain, @Param("customerCode") String customerCode,

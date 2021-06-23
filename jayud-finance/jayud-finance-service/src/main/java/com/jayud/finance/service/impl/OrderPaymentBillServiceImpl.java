@@ -784,7 +784,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
      */
     @Override
     public int getCountByMakeTime(String makeTime, String format) {
-        return this.baseMapper.getCountByMakeTime(makeTime, format);
+        Integer count = this.baseMapper.getCountByMakeTime(makeTime, format);
+        return count == null ? 0 : count;
     }
 
     /**

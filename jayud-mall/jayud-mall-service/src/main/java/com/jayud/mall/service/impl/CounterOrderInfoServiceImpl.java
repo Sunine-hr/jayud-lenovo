@@ -295,7 +295,7 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
                     BigDecimal weight1 = ObjectUtil.isEmpty(counterCaseInfoVO.getAsnWeight()) ? new BigDecimal("0") : counterCaseInfoVO.getAsnWeight();
                     BigDecimal volume1 = ObjectUtil.isEmpty(counterCaseInfoVO.getAsnVolume()) ? new BigDecimal("0") : counterCaseInfoVO.getAsnVolume();
                     String extensionNumber1 = counterCaseInfoVO.getExtensionNumber();
-                    weight = weight.add(volume1);
+                    weight = weight.add(weight1);
                     volume = volume.add(volume1);
                     extensionNumberSet.add(extensionNumber1);
                 }
@@ -329,8 +329,6 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
             counterOrderInfoVO.setVolume(volume);
 
         }
-
-
         return counterOrderInfoList;
     }
 

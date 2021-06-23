@@ -12,9 +12,7 @@ import com.jayud.mall.model.bo.BatchCounterOrderInfoForm;
 import com.jayud.mall.model.po.BillOrderRelevance;
 import com.jayud.mall.model.po.CounterOrderInfo;
 import com.jayud.mall.model.po.OrderInfo;
-import com.jayud.mall.model.vo.CounterListInfoVO;
-import com.jayud.mall.model.vo.CounterOrderInfoVO;
-import com.jayud.mall.model.vo.OrderInfoVO;
+import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.IBillOrderRelevanceService;
 import com.jayud.mall.service.ICounterOrderInfoService;
 import com.jayud.mall.service.IOceanBillService;
@@ -23,8 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * <p>
@@ -47,6 +45,13 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
     OceanBillMapper oceanBillMapper;
     @Autowired
     BillOrderRelevanceMapper billOrderRelevanceMapper;
+    @Autowired
+    CounterCaseInfoMapper counterCaseInfoMapper;
+    @Autowired
+    OrderPickMapper orderPickMapper;
+    @Autowired
+    OrderCaseMapper orderCaseMapper;
+
 
     @Autowired
     IOceanBillService oceanBillService;
@@ -251,11 +256,77 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
 
         for (int i=0; i<counterOrderInfoList.size(); i++){
             CounterOrderInfoVO counterOrderInfoVO = counterOrderInfoList.get(i);
-            Long orderId = counterOrderInfoVO.getOrderId();//订单id(order_info id)
             Long listInfoId = counterOrderInfoVO.getBId();//柜子清单信息表(counter_list_info id)
-            //TODO
+            Long orderId = counterOrderInfoVO.getOrderId();//订单id(order_info id)
 
 
+            String warehouseNo = "";//进仓单号，多个
+            String extensionNumber = "";//扩展单号,即FBA箱号，多个，去重
+            Integer hasboxNumber = 0;//已配箱数
+            Integer notboxNumber = 0;//未配箱数
+            BigDecimal weight = new BigDecimal("0");//重量
+            BigDecimal volume = new BigDecimal("0");//体积
+
+            OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(orderId);
+            Integer isPick = orderInfoVO.getIsPick();//是否上门提货(0否 1是,order_pick)
+            if(ObjectUtil.isNotEmpty(isPick) && isPick.equals(0)){
+                warehouseNo = orderInfoVO.getWarehouseNo();
+            }else if(ObjectUtil.isNotEmpty(isPick) && isPick.equals(1)){
+                List<OrderPickVO> orderPickList = orderPickMapper.findOrderPickByOrderId(orderId);
+                if(CollUtil.isNotEmpty(orderPickList)){
+
+                    for(int j=0; j<orderPickList.size(); j++){
+                        OrderPickVO orderPickVO = orderPickList.get(j);
+                        String warehouseNo1 = orderPickVO.getWarehouseNo();
+                        if(j==0){
+                            warehouseNo = warehouseNo1;
+                        }else{
+                            warehouseNo += ","+warehouseNo1;
+                        }
+                    }
+                }
+            }
+            Set<String> extensionNumberSet = new HashSet<>();//set去重
+
+            List<CounterCaseInfoVO> counterCaseInfoVOS = counterCaseInfoMapper.findCounterCaseInfoByBidAndOrderId(listInfoId, orderId);
+            if(CollUtil.isNotEmpty(counterCaseInfoVOS)){
+                for (int k=0; k<counterCaseInfoVOS.size(); k++){
+                    CounterCaseInfoVO counterCaseInfoVO = counterCaseInfoVOS.get(k);
+                    BigDecimal weight1 = ObjectUtil.isEmpty(counterCaseInfoVO.getAsnWeight()) ? new BigDecimal("0") : counterCaseInfoVO.getAsnWeight();
+                    BigDecimal volume1 = ObjectUtil.isEmpty(counterCaseInfoVO.getAsnVolume()) ? new BigDecimal("0") : counterCaseInfoVO.getAsnVolume();
+                    String extensionNumber1 = counterCaseInfoVO.getExtensionNumber();
+                    weight = weight.add(volume1);
+                    volume = volume.add(volume1);
+                    extensionNumberSet.add(extensionNumber1);
+                }
+            }
+
+            Iterator<String> it2 = extensionNumberSet.iterator();
+            int bb = 0;
+            while(it2.hasNext()){
+                String next = it2.next();
+                if(bb == 0){
+                    extensionNumber = next;
+                }else{
+                    extensionNumber += ","+next;
+                }
+                bb++;
+            }
+
+            hasboxNumber = counterCaseInfoVOS.size();//已配箱数   单指当前柜子下，清单下，运单下，的箱数
+            //未配箱数 = 订单全部箱数 - 订单全部已配箱数
+            List<OrderCaseVO> orderCaseList = orderCaseMapper.findOrderCaseByOrderId(orderId);
+            int allCount = orderCaseList.size();//订单全部箱数
+            List<CounterCaseInfoVO> counterCaseInfoList = counterCaseInfoMapper.findCounterCaseInfoByOrderId(orderId);
+            int yipei = counterCaseInfoList.size();//订单全部已配箱数
+            notboxNumber = allCount - yipei;//未配箱数 = 订单全部箱数 - 订单全部已配箱数
+
+            counterOrderInfoVO.setWarehouseNo(warehouseNo);
+            counterOrderInfoVO.setExtensionNumber(extensionNumber);
+            counterOrderInfoVO.setHasboxNumber(hasboxNumber);
+            counterOrderInfoVO.setNotboxNumber(notboxNumber);
+            counterOrderInfoVO.setWeight(weight);
+            counterOrderInfoVO.setVolume(volume);
 
         }
 

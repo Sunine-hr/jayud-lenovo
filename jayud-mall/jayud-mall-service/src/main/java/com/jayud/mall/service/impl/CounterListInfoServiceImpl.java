@@ -83,12 +83,29 @@ public class CounterListInfoServiceImpl extends ServiceImpl<CounterListInfoMappe
                 filterOrderIds.add(orderId);
             }
         }
-
         //2.查询未选择的订单list
         if(CollUtil.isNotEmpty(filterOrderIds)){
             form.setFilterOrderIds(filterOrderIds);
         }
         List<OrderInfoVO> orderInfoList = counterListInfoMapper.findUnselectedOrderInfo(form);
+        for(int i=0; i<orderInfoList.size(); i++){
+            OrderInfoVO orderInfoVO = orderInfoList.get(i);
+            Long orderId = orderInfoVO.getId();
+            List<OrderCaseVO> orderCaseList = orderCaseMapper.findOrderCaseByOrderId(orderId);
+            int casesTotal = orderCaseList.size();
+            BigDecimal casevolumeTotal = new BigDecimal("0");
+            BigDecimal caseWeightTotal = new BigDecimal("0");
+            for(int j=0; j<orderCaseList.size(); j++){
+                OrderCaseVO orderCaseVO = orderCaseList.get(j);
+                BigDecimal volume = orderCaseVO.getAsnVolume();
+                BigDecimal weight = orderCaseVO.getAsnWeight();
+                casevolumeTotal.add(volume);
+                caseWeightTotal.add(weight);
+            }
+            orderInfoVO.setCasesTotal(casesTotal);
+            orderInfoVO.setCasevolumeTotal(casevolumeTotal);
+            orderInfoVO.setCaseWeightTotal(caseWeightTotal);
+        }
         return orderInfoList;
     }
 
@@ -96,6 +113,24 @@ public class CounterListInfoServiceImpl extends ServiceImpl<CounterListInfoMappe
     public List<OrderInfoVO> findSelectedOrderInfo(OrderInfoQueryForm form) {
         //1.查询-已选择的订单(柜子清单-绑定订单)
         List<OrderInfoVO> orderInfoList = counterListInfoMapper.findSelectedOrderInfo(form);
+        for(int i=0; i<orderInfoList.size(); i++){
+            OrderInfoVO orderInfoVO = orderInfoList.get(i);
+            Long orderId = orderInfoVO.getId();
+            List<OrderCaseVO> orderCaseList = orderCaseMapper.findOrderCaseByOrderId(orderId);
+            int casesTotal = orderCaseList.size();
+            BigDecimal casevolumeTotal = new BigDecimal("0");
+            BigDecimal caseWeightTotal = new BigDecimal("0");
+            for(int j=0; j<orderCaseList.size(); j++){
+                OrderCaseVO orderCaseVO = orderCaseList.get(j);
+                BigDecimal volume = orderCaseVO.getAsnVolume();
+                BigDecimal weight = orderCaseVO.getAsnWeight();
+                casevolumeTotal.add(volume);
+                caseWeightTotal.add(weight);
+            }
+            orderInfoVO.setCasesTotal(casesTotal);
+            orderInfoVO.setCasevolumeTotal(casevolumeTotal);
+            orderInfoVO.setCaseWeightTotal(caseWeightTotal);
+        }
         return orderInfoList;
     }
 

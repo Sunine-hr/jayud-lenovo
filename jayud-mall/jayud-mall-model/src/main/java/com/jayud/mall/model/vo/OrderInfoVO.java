@@ -382,4 +382,16 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "报价服务名称")
     private String serviceName;
 
+
+    //配载 柜子选择运单
+    @ApiModelProperty(value = "订单箱数")
+    private Integer casesTotal;
+
+    @ApiModelProperty(value = "箱数体积合计")
+    private BigDecimal casevolumeTotal;
+
+    @ApiModelProperty(value = "箱数重量合计")
+    private BigDecimal caseWeightTotal;
+
+
 }

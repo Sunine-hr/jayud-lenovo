@@ -13,10 +13,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.*;
-import com.jayud.mall.model.bo.OrderConfForm;
-import com.jayud.mall.model.bo.OrderConfIdForm;
-import com.jayud.mall.model.bo.OrderConfVerifyForm;
-import com.jayud.mall.model.bo.QueryOrderConfForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.OceanConfDetail;
 import com.jayud.mall.model.po.OrderConf;
 import com.jayud.mall.model.vo.*;
@@ -418,6 +415,34 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         orderConfCasesVO.setNotboxNumber(notboxNumber);
         orderConfCasesVO.setHasboxNumber(hasboxNumber);
         return orderConfCasesVO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void relevanceOfferInfo(OrderConfOfferInfoForm form) {
+        Long confId = form.getConfId();
+        OrderConfVO orderConfVO = orderConfMapper.findOrderConfById(confId);
+        if(ObjectUtil.isEmpty(orderConfVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "配载信息不存在");
+        }
+        List<OfferInfoVO> offerInfoList = form.getOfferInfoList();
+        //配载的报价
+        List<OceanConfDetail> offerInfoDetailList = new ArrayList<>();
+        if(CollUtil.isNotEmpty(offerInfoList)){
+            offerInfoList.forEach(offerInfoVO -> {
+                Long offerInfoId = offerInfoVO.getId();//报价id
+                OceanConfDetail oceanConfDetail = new OceanConfDetail();
+                oceanConfDetail.setOrderId(confId);
+                oceanConfDetail.setIdCode(offerInfoId.intValue());
+                oceanConfDetail.setTypes(1);//1报价 2提单
+                oceanConfDetail.setStatus("1");//状态(0无效 1有效)
+                offerInfoDetailList.add(oceanConfDetail);
+            });
+        }
+        if(CollUtil.isNotEmpty(offerInfoDetailList)){
+            //3.保存配载的报价
+            oceanConfDetailService.saveOrUpdateBatch(offerInfoDetailList);
+        }
     }
 
 }

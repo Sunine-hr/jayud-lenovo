@@ -171,6 +171,14 @@ public class OrderConfController {
         return CommonResult.success(orderConfCasesVO);
     }
 
+    @ApiOperation(value = "配载关联报价信息(直接选中时进行关联)")
+    @ApiOperationSupport(order = 16)
+    @PostMapping(value = "/relevanceOfferInfo")
+    public CommonResult relevanceOfferInfo(@Valid @RequestBody OrderConfOfferInfoForm form){
+        orderConfService.relevanceOfferInfo(form);
+        return CommonResult.success("操作成功");
+    }
+
 
 
 }

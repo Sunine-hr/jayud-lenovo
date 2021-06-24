@@ -51,4 +51,39 @@
     </select>
 
 
+    <select id="findCounterOrderInfoByOrderId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterOrderInfoVO">
+        select
+        t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.order_id,t.order_no,t.create_time,t.order_type,
+        t1.destination_warehouse_code,t1.need_declare,t1.is_pick,
+        t2.company customerName,
+        t5.code_name serviceName
+        from counter_order_info t
+        join order_info t1 on t1.id = t.order_id
+        join customer t2 on t2.id = t1.customer_id
+        join offer_info t3 on t3.id = t1.offer_info_id
+        join quotation_template t4 on t4.id = t3.qie
+        join service_group t5 on t5.id = t4.sid
+        where 1=1
+        and t.order_id = #{orderId}
+    </select>
+
+    <select id="findCounterOrderInfoKeepWarehouseByOrderId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterOrderInfoVO">
+        select
+        t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.order_id,t.order_no,t.create_time,t.order_type,
+        t1.destination_warehouse_code,t1.need_declare,t1.is_pick,
+        t2.company customerName,
+        t5.code_name serviceName
+        from counter_order_info t
+        join order_info t1 on t1.id = t.order_id
+        join customer t2 on t2.id = t1.customer_id
+        join offer_info t3 on t3.id = t1.offer_info_id
+        join quotation_template t4 on t4.id = t3.qie
+        join service_group t5 on t5.id = t4.sid
+        join counter_order_info t6 on t6.order_id = t.order_id and t6.order_type = 2
+        where 1=1
+        and t.order_id = #{orderId}
+
+    </select>
+
+
 </mapper>

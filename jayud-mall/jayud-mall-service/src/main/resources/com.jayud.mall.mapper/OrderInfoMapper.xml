@@ -369,7 +369,8 @@
         t3.taskItems taskTodo,
         t4.group_name,
         t5.destination_port,
-        t6.state_code destinationCountryCode
+        t6.state_code destinationCountryCode,
+        t7.code_name serviceName
         from order_info t
         join customer t1 on t1.id = t.customer_id
         join offer_info t2 on t2.id = t.offer_info_id
@@ -388,6 +389,7 @@
         left join operation_team t4 on t4.id = t1.operation_team_id
         left join quotation_template t5 on t5.id = t2.id
         left join harbour_info t6 on t6.id_code = t5.destination_port
+        left join service_group t7 on t7.id = t5.sid
         WHERE
         1 = 1
         and oc.id = #{confId}

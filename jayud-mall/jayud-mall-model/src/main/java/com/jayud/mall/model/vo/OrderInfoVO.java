@@ -393,5 +393,18 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "箱数重量合计")
     private BigDecimal caseWeightTotal;
 
+    //配载订单展示
+    @ApiModelProperty(value = "箱数(总箱数)")
+    private Integer allboxNumber;
+
+    @ApiModelProperty(value = "已配载数量(已配箱数)")
+    private Integer hasboxNumber;
+
+    @ApiModelProperty(value = "未配载数量(未配载箱数)")
+    private Integer notboxNumber;
+
+    @ApiModelProperty(value = "留仓数量")
+    private Integer keepWarehouseNumber;
+
 
 }

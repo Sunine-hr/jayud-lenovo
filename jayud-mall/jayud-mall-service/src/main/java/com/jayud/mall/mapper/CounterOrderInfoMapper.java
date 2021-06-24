@@ -35,4 +35,18 @@ public interface CounterOrderInfoMapper extends BaseMapper<CounterOrderInfo> {
      * @return
      */
     List<CounterOrderInfoExcelVO> findCounterOrderInfoExcelBybid(@Param("bid") Long bid);
+
+    /**
+     * 根据orderId，查询
+     * @param orderId
+     * @return
+     */
+    List<CounterOrderInfoVO> findCounterOrderInfoByOrderId(@Param("orderId") Long orderId);
+
+    /**
+     * 根据orderId，查询留仓的箱子
+     * @param orderId
+     * @return
+     */
+    List<CounterOrderInfoVO> findCounterOrderInfoKeepWarehouseByOrderId(@Param("orderId") Long orderId);
 }

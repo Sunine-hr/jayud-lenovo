@@ -50,7 +50,8 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
     CounterCaseInfoMapper counterCaseInfoMapper;
     @Autowired
     OrderCaseMapper orderCaseMapper;
-
+    @Autowired
+    CounterOrderInfoMapper counterOrderInfoMapper;
 
     @Autowired
     BaseService baseService;
@@ -247,6 +248,19 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
                 }
                 ororderInfoVO.setConfInfo(confInfo);
             }
+
+            //箱数
+            List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderCaseByOrderId(orderId);
+            int allboxNumber = orderCaseVOList.size();
+            ororderInfoVO.setAllboxNumber(allboxNumber);//箱数(总箱数)
+            List<CounterOrderInfoVO> counterOrderInfoList = counterOrderInfoMapper.findCounterOrderInfoByOrderId(orderId);
+            int hasboxNumber = counterOrderInfoList.size();
+            ororderInfoVO.setHasboxNumber(hasboxNumber);//已配载数量(已配箱数)
+            int notboxNumber = allboxNumber - hasboxNumber;//未配载数量 = 箱数 - 已配载数量
+            ororderInfoVO.setNotboxNumber(notboxNumber);//未配载数量
+            List<CounterOrderInfoVO> counterOrderInfoKeepWarehouseList = counterOrderInfoMapper.findCounterOrderInfoKeepWarehouseByOrderId(orderId);
+            int keepWarehouseNumber = counterOrderInfoKeepWarehouseList.size();
+            ororderInfoVO.setKeepWarehouseNumber(keepWarehouseNumber);//留仓数量
         });
         orderConfVO.setOrderInfoVOList(orderInfoVOList);
         return orderConfVO;

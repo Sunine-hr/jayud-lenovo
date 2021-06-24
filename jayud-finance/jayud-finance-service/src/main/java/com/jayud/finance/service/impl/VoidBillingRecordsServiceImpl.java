@@ -96,7 +96,7 @@ public class VoidBillingRecordsServiceImpl extends ServiceImpl<VoidBillingRecord
         //费用统计维度
         this.assembleBillCostTotal(voidBillingRecords, billNo, type);
         LocalDateTime now = LocalDateTime.now();
-        voidBillingRecords.forEach(e -> e.setOperator(UserOperator.getToken()).setOperationTime(now));
+        voidBillingRecords.forEach(e -> e.setId(null).setOperator(UserOperator.getToken()).setOperationTime(now));
         //增加作废记录
         this.saveBatch(voidBillingRecords);
         //清理账单数据

@@ -12,6 +12,7 @@ import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.jayud.common.entity.InitChangeStatusVO;
+import com.jayud.common.utils.excel.style.History2014ExportCellWriteHandler;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -459,13 +460,13 @@ public class EasyExcelUtils {
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
             fileName = URLEncoder.encode(fileName, "utf-8");
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
-            excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+            excelWriter = EasyExcel.write(response.getOutputStream()).registerWriteHandler(new History2014ExportCellWriteHandler()).withTemplate(templateInputStream).build();
         } else {
             excelWriter = EasyExcel.write(outputPath).withTemplate(templateInputStream).build();
         }
         WriteSheet writeSheet = EasyExcel.writerSheet().build();
         // 这里注意 入参用了forceNewRow 代表在写入list的时候不管list下面有没有空行 都会创建一行，然后下面的数据往后移动。默认 是false，会直接使用下一行，如果没有则创建。但是这个就会把所有数据放到内存 会很耗内存
-//        FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
+        FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
         // 如果有多个list 模板上必须有{前缀.} 这里的前缀就是 data1，然后多个list必须用 FillWrapper包裹
         ExcelWriter finalExcelWriter = excelWriter;
         list.forEach((k, v) -> {

@@ -154,7 +154,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param form
      * @return
      */
-    CommonResult<OrderInfoVO> draftCancelOrderInfo(OrderInfoForm form);
+    CommonResult<OrderInfoVO> draftCancelOrderInfo(OrderInfoParaForm form);
 
     /**
      * 订单列表-查看订单详情(编辑用的)<br/>
@@ -333,4 +333,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     OrderInfoVO affirmReceived(Long id);
+
+    /**
+     * 订单-取消按钮前验证
+     * @param form
+     */
+    void cancelStatusVerify(OrderInfoCancelForm form);
 }

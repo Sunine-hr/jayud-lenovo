@@ -166,7 +166,7 @@ public class OrderInfoController {
     @ApiOperation(value = "订单列表-草稿-取消")
     @PostMapping("/draftCancelOrderInfo")
     @ApiOperationSupport(order = 5)
-    public CommonResult<OrderInfoVO> draftCancelOrderInfo(@RequestBody OrderInfoForm form){
+    public CommonResult<OrderInfoVO> draftCancelOrderInfo(@RequestBody OrderInfoParaForm form){
         return orderInfoService.draftCancelOrderInfo(form);
     }
 

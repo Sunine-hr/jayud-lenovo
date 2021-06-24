@@ -1317,6 +1317,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if(ObjectUtil.isEmpty(customerUser)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录。");
         }
+
+
+
         //保存-产品订单表：order_info
         OrderInfo orderInfo = ConvertUtil.convert(form, OrderInfo.class);
         Integer offerInfoId = orderInfo.getOfferInfoId();//报价id，运价id
@@ -1880,7 +1883,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     @Override
-    public CommonResult<OrderInfoVO> draftCancelOrderInfo(OrderInfoForm form) {
+    public CommonResult<OrderInfoVO> draftCancelOrderInfo(OrderInfoParaForm form) {
         Long id = form.getId();
         OrderInfo orderInfo = this.getById(id);
         if(orderInfo.getFrontStatusCode().equals(OrderEnum.FRONT_DRAFT.getCode())){
@@ -1889,7 +1892,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderInfo.setFrontStatusName(OrderEnum.FRONT_CANCEL.getName());
             orderInfo.setAfterStatusCode(OrderEnum.AFTER_CANCEL.getCode());
             orderInfo.setAfterStatusName(OrderEnum.AFTER_CANCEL.getName());
-
             this.saveOrUpdate(orderInfo);
         }else{
             return CommonResult.error(-1, "订单状态不正确，不能取消订单");
@@ -2926,6 +2928,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         this.saveOrUpdate(orderInfo);
         OrderInfoVO convert = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
         return convert;
+    }
+
+    @Override
+    public void cancelStatusVerify(OrderInfoCancelForm form) {
+        Long orderId = form.getId();
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfo(orderId);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "沒有找到订单");
+        }
+        String validatePassword = form.getValidatePassword();
+        if("jyd".equals(validatePassword)){
+            //取消时，输入jdy，确认后才能取消
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "取消时，输入jdy，确认后才能取消");
+        }
     }
 
     private String extracted(String url, Map<String, Object> requestMap) {

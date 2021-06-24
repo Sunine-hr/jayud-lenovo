@@ -337,7 +337,7 @@ public class OrderInfoController {
     @ApiOperation(value = "订单列表-草稿-取消")
     @ApiOperationSupport(order = 28)
     @PostMapping("/draftCancelOrderInfo")
-    public CommonResult<OrderInfoVO> draftCancelOrderInfo(@RequestBody OrderInfoForm form){
+    public CommonResult<OrderInfoVO> draftCancelOrderInfo(@RequestBody OrderInfoParaForm form){
         return orderInfoService.draftCancelOrderInfo(form);
     }
 
@@ -374,6 +374,14 @@ public class OrderInfoController {
         Long id = form.getId();
         OrderInfoVO orderInfoVO = orderInfoService.affirmReceived(id);
         return CommonResult.success(orderInfoVO);
+    }
+
+    @ApiOperation(value = "订单-取消按钮前验证")
+    @ApiOperationSupport(order = 33)
+    @PostMapping(value = "/cancelStatusVerify")
+    public CommonResult cancelStatusVerify(@Valid @RequestBody OrderInfoCancelForm form){
+        orderInfoService.cancelStatusVerify(form);
+        return CommonResult.success("验证成功");
     }
 
 

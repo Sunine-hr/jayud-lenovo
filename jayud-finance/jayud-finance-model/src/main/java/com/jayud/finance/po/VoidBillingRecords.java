@@ -1,10 +1,15 @@
 package com.jayud.finance.po;
 
 import java.math.BigDecimal;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,13 +27,14 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="VoidBillingRecords对象", description="作废账单表")
+@ApiModel(value = "VoidBillingRecords对象", description = "作废账单表")
 public class VoidBillingRecords extends Model<VoidBillingRecords> {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键")
-      private Long id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;

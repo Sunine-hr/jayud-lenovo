@@ -35,4 +35,11 @@ public interface ICounterDocumentInfoService extends IService<CounterDocumentInf
      * @return
      */
     List<CounterDocumentInfoVO> findCounterDocumentInfoByCounterId(Long counterId);
+
+    /**
+     * 根据id查询-(提单)柜子对应文件信息
+     * @param id
+     * @return
+     */
+    CounterDocumentInfoVO findCounterDocumentInfoById(Long id);
 }

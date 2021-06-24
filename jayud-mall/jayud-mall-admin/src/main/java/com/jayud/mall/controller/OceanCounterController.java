@@ -72,6 +72,15 @@ public class OceanCounterController {
         return CommonResult.success(counterDocumentInfoList);
     }
 
+    //根据id查询-(提单)柜子对应文件信息
+    @ApiOperation(value = "根据id查询-(提单)柜子对应文件信息")
+    @PostMapping(value = "/findCounterDocumentInfoById")
+    @ApiOperationSupport(order = 5)
+    public CommonResult<CounterDocumentInfoVO> findCounterDocumentInfoById(@Valid @RequestBody CounterDocumentInfoIdForm from){
+        Long id = from.getId();
+        CounterDocumentInfoVO counterDocumentInfoVO = counterDocumentInfoService.findCounterDocumentInfoById(id);
+        return CommonResult.success(counterDocumentInfoVO);
+    }
 
 
 

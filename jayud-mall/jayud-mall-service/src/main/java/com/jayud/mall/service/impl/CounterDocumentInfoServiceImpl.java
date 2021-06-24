@@ -2,7 +2,10 @@ package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
@@ -21,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -84,6 +88,65 @@ public class CounterDocumentInfoServiceImpl extends ServiceImpl<CounterDocumentI
     @Override
     public List<CounterDocumentInfoVO> findCounterDocumentInfoByCounterId(Long counterId) {
         List<CounterDocumentInfoVO> counterDocumentInfoList = counterDocumentInfoMapper.findCounterDocumentInfoByCounterId(counterId);
+        if(CollUtil.isNotEmpty(counterDocumentInfoList)){
+            counterDocumentInfoList.forEach(counterDocumentInfoVO -> {
+                //文件展示
+                String templateUrl = counterDocumentInfoVO.getTemplateUrl();
+                if(StrUtil.isNotEmpty(templateUrl)){
+                    try {
+                        List<TemplateUrlVO> templateUrls = JSON.parseObject(templateUrl, new TypeReference<List<TemplateUrlVO>>() {});
+                        counterDocumentInfoVO.setTemplateUrls(templateUrls);
+                        String showTemplateUrl = "";
+                        for (int i=0; i<templateUrls.size(); i++){
+                            TemplateUrlVO templateUrlVO = templateUrls.get(i);
+                            String fileName = templateUrlVO.getFileName();
+                            if(i==0){
+                                showTemplateUrl = fileName;
+                            }else{
+                                showTemplateUrl += "," + fileName;
+                            }
+                        }
+                        counterDocumentInfoVO.setTemplateUrl(showTemplateUrl);
+
+                    } catch (Exception e) {
+                        counterDocumentInfoVO.setTemplateUrls(new ArrayList<>());
+                    }
+                }else{
+                    counterDocumentInfoVO.setTemplateUrls(new ArrayList<>());
+                }
+            });
+        }
         return counterDocumentInfoList;
+    }
+
+    @Override
+    public CounterDocumentInfoVO findCounterDocumentInfoById(Long id) {
+
+        CounterDocumentInfoVO counterDocumentInfoVO = counterDocumentInfoMapper.findCounterDocumentInfoById(id);
+        //文件展示
+        String templateUrl = counterDocumentInfoVO.getTemplateUrl();
+        if(StrUtil.isNotEmpty(templateUrl)){
+            try {
+                List<TemplateUrlVO> templateUrls = JSON.parseObject(templateUrl, new TypeReference<List<TemplateUrlVO>>() {});
+                counterDocumentInfoVO.setTemplateUrls(templateUrls);
+                String showTemplateUrl = "";
+                for (int i=0; i<templateUrls.size(); i++){
+                    TemplateUrlVO templateUrlVO = templateUrls.get(i);
+                    String fileName = templateUrlVO.getFileName();
+                    if(i==0){
+                        showTemplateUrl = fileName;
+                    }else{
+                        showTemplateUrl += "," + fileName;
+                    }
+                }
+                counterDocumentInfoVO.setTemplateUrl(showTemplateUrl);
+
+            } catch (Exception e) {
+                counterDocumentInfoVO.setTemplateUrls(new ArrayList<>());
+            }
+        }else{
+            counterDocumentInfoVO.setTemplateUrls(new ArrayList<>());
+        }
+        return counterDocumentInfoVO;
     }
 }

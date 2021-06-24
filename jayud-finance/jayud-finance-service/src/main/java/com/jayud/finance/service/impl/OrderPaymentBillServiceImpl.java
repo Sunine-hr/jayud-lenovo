@@ -472,6 +472,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                     }
                 }
             }
+            jsonObject.putOnce("num", i + 1);
             mainOrderNos.add(viewBillToOrder.getOrderNo());
             newOrderList.add(viewBillToOrder);
         }

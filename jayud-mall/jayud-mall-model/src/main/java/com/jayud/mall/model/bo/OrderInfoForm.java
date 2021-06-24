@@ -160,6 +160,9 @@ public class OrderInfoForm {
     @ApiModelProperty(value = "进仓单号")
     private String warehouseNo;
 
+    @ApiModelProperty(value = "内部备注")
+    private String internalNote;
+
     /*订单对应箱号信息:order_case*/
     @ApiModelProperty(value = "订单对应箱号信息list", position = 25)
     @JSONField(ordinal = 25)

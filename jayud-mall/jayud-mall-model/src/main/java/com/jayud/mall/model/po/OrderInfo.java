@@ -175,6 +175,9 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "进仓单号")
     private String warehouseNo;
 
+    @ApiModelProperty(value = "内部备注")
+    private String internalNote;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

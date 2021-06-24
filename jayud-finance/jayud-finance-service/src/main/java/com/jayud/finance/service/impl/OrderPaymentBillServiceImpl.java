@@ -117,8 +117,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         //查询结算汇率
         List<String> billNos = resultList.stream().map(OrderPaymentBillNumVO::getBillNo).collect(Collectors.toList());
         List<OrderBillCostTotal> costTotals = this.costTotalService.getByBillNo(billNos, OrderBillCostTotalTypeEnum.PAYMENT.getCode());
-        costTotals = costTotals.stream().filter(e-> !StringUtils.isEmpty(e.getCurrencyCode())).collect(Collectors.collectingAndThen(
-                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(e -> e.getCurrencyCode() + ";" + e.getCurrentCurrencyCode()))), ArrayList::new));
+        costTotals = costTotals.stream().filter(e -> !StringUtils.isEmpty(e.getCurrencyCode())).collect(Collectors.collectingAndThen(
+                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(e -> e.getBillNo() + ";" + e.getCurrencyCode() + ";" + e.getCurrentCurrencyCode()))), ArrayList::new));
 
         //查询币种名称
         List<InitComboxStrVO> data = omsClient.initCurrencyInfo().getData();

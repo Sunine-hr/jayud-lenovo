@@ -108,7 +108,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         List<String> billNos = resultList.stream().map(OrderPaymentBillNumVO::getBillNo).collect(Collectors.toList());
         List<OrderBillCostTotal> costTotals = this.costTotalService.getByBillNo(billNos, OrderBillCostTotalTypeEnum.RECEIVABLE.getCode());
         costTotals = costTotals.stream().filter(e -> !StringUtils.isEmpty(e.getCurrencyCode())).collect(Collectors.collectingAndThen(
-                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(e -> e.getCurrencyCode() + ";" + e.getCurrentCurrencyCode()))), ArrayList::new));
+                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(e -> e.getBillNo() + ";" + e.getCurrencyCode() + ";" + e.getCurrentCurrencyCode()))), ArrayList::new));
         //查询币种名称
         List<InitComboxStrVO> data = omsClient.initCurrencyInfo().getData();
         Map<String, String> currencyMap = data.stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));

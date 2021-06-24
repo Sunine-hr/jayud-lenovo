@@ -45,7 +45,7 @@ public class OceanCounterController {
 
     //添加-(提单)柜子对应文件信息
     @ApiOperation(value = "添加-(提单)柜子对应文件信息")
-    @PostMapping(value = "/findOceanCounterById")
+    @PostMapping(value = "/addCounterDocumentInfo")
     @ApiOperationSupport(order = 2)
     public CommonResult addCounterDocumentInfo(@Valid @RequestBody CounterDocumentInfoForm form){
         counterDocumentInfoService.addCounterDocumentInfo(form);

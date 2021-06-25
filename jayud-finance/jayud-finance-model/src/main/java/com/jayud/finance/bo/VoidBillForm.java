@@ -85,6 +85,7 @@ public class VoidBillForm {
             throw new JayudBizException("没有这个费用类型");
         }
         if (!this.auditStatus.equals(BillEnum.B_1.getCode())
+                && !this.auditStatus.equals(BillEnum.B_7.getCode())
                 && !this.auditStatus.equals(BillEnum.B_2_1.getCode())) {
             throw new JayudBizException("只有待经理审核和审核不通过才能作废账单");
         }

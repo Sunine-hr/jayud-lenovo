@@ -265,14 +265,6 @@
         ci.`name` costName,
         orc.amount,
         orc.currency_code,
-        -- (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'CNY'
-        -- GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
-        -- (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'USD'
-        -- GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
-        -- (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'EUR'
-        -- GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
-        -- (SELECT sum( rmb.amount ) FROM order_receivable_cost rmb WHERE rmb.id = orc.id AND rmb.currency_code = 'HKD'
-        -- GROUP BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
         orc.id costId,
         orc.is_bill isBill,
         ifnull(orc.change_amount,0) localAmount,

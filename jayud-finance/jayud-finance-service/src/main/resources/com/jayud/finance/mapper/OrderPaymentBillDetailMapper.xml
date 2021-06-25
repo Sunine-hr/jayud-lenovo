@@ -147,14 +147,6 @@
         ci.`name` costName,
         opc.amount,
         opc.currency_code,
---         (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'CNY' GROUP
---         BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
---         (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'USD' GROUP
---         BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
---         (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'EUR' GROUP
---         BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
---         (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'HKD' GROUP
---         BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
         opc.id costId,
         opc.is_bill isBill,
         ifnull(opc.change_amount,0) localAmount,

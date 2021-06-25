@@ -402,7 +402,7 @@ public class OrderInfoController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         OrderInfo orderInfo = new OrderInfo().setId(form.getOrderId());
-        orderInfo.setOperationTime(DateUtils.str2LocalDateTime(form.getOperationTime(), DateUtils.DATE_PATTERN));
+        orderInfo.setOperationTime(DateUtils.str2LocalDateTime(form.getOperationTime(), DateUtils.DATE_TIME_PATTERN));
         this.orderInfoService.updateById(orderInfo);
         return CommonResult.success();
     }

@@ -530,6 +530,8 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                 orderCaseList.add(orderCase);
             }else{
                 OrderCase orderCase = ConvertUtil.convert(orderCaseVO, OrderCase.class);
+
+                // 客户预报 长、宽、高、重、体积
                 orderCase.setAsnLength(parcelsJsonObject.get("client_length", BigDecimal.class));//客户测量的长度，单位cm
                 orderCase.setAsnWidth(parcelsJsonObject.get("client_width", BigDecimal.class));//客户测量的宽度，单位cm
                 orderCase.setAsnHeight(parcelsJsonObject.get("client_height", BigDecimal.class));//客户测量的高度，单位cm
@@ -539,6 +541,17 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                 BigDecimal asnVolume = orderCase.getAsnLength().multiply(orderCase.getAsnWidth()).multiply(orderCase.getAsnHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
                 orderCase.setAsnVolume(asnVolume);
 
+                // 仓库测量 长、宽、高、重、体积
+                orderCase.setWmsLength(parcelsJsonObject.get("chargeable_length", BigDecimal.class));//仓库测量的长度，单位cm
+                orderCase.setWmsWidth(parcelsJsonObject.get("chargeable_width", BigDecimal.class));//仓库测量的宽度，单位cm
+                orderCase.setWmsHeight(parcelsJsonObject.get("chargeable_height", BigDecimal.class));//仓库测量的高度，单位cm
+                orderCase.setWmsVolume(parcelsJsonObject.get("chargeable_weight", BigDecimal.class));//仓库测量的重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal wmsVolume = orderCase.getWmsLength().multiply(orderCase.getWmsWidth()).multiply(orderCase.getWmsHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setWmsVolume(wmsVolume);
+
+                // 最终确认 长、宽、高、重、体积
                 orderCase.setConfirmLength(parcelsJsonObject.get("chargeable_length", BigDecimal.class));//最终确认长度，单位cm
                 orderCase.setConfirmWidth(parcelsJsonObject.get("chargeable_width", BigDecimal.class));//最终确认宽度，单位cm
                 orderCase.setConfirmHeight(parcelsJsonObject.get("chargeable_height", BigDecimal.class));//最终确认高度，单位cm

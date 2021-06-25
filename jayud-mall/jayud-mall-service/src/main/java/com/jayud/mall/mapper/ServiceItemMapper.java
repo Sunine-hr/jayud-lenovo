@@ -1,9 +1,14 @@
 package com.jayud.mall.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.bo.ServiceItemForm;
 import com.jayud.mall.model.po.ServiceItem;
+import com.jayud.mall.model.vo.ServiceItemVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +22,10 @@ import org.springframework.stereotype.Component;
 @Component
 public interface ServiceItemMapper extends BaseMapper<ServiceItem> {
 
+    /**
+     * 查询 服务项目 list
+     * @param form
+     * @return
+     */
+    List<ServiceItemVO> findServiceItem(@Param("form") ServiceItemForm form);
 }

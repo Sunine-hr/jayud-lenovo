@@ -19,4 +19,28 @@
         id, code, name, remark, status, user_id, user_name, create_time
     </sql>
 
+
+    <select id="findServiceItem" resultType="com.jayud.mall.model.bo.ServiceItemForm" parameterType="com.jayud.mall.model.vo.ServiceItemVO">
+        select
+        t.id,t.code,t.name,t.remark,t.status,t.user_id,t.user_name,t.create_time
+        from service_item t
+        where 1=1
+        <if test="form.id != null">
+            and t.id = #{form.id}
+        </if>
+        <if test="form.code != null and form.code != ''">
+            and t.code = #{form.code}
+        </if>
+        <if test="form.name != null and form.name != ''">
+            and t.name = #{form.name}
+        </if>
+        <if test="form.remark != null and form.remark != ''">
+            and t.remark = #{form.remark}
+        </if>
+        <if test="form.status != null and form.status != ''">
+            and t.status = #{form.status}
+        </if>
+
+    </select>
+
 </mapper>

@@ -4,20 +4,16 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
-import com.alibaba.excel.enums.WriteDirectionEnum;
 import com.alibaba.excel.util.WorkBookUtil;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.WriteWorkbook;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
-import com.jayud.common.entity.InitChangeStatusVO;
-import com.jayud.common.utils.excel.style.History2014ExportCellWriteHandler;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
@@ -32,7 +28,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.apache.poi.ss.usermodel.BorderStyle.THIN;
@@ -460,7 +459,7 @@ public class EasyExcelUtils {
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
             fileName = URLEncoder.encode(fileName, "utf-8");
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
-            excelWriter = EasyExcel.write(response.getOutputStream()).registerWriteHandler(new History2014ExportCellWriteHandler()).withTemplate(templateInputStream).build();
+            excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
         } else {
             excelWriter = EasyExcel.write(outputPath).withTemplate(templateInputStream).build();
         }

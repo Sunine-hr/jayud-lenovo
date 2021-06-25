@@ -217,7 +217,7 @@
                     left join order_customs oc on oc.order_no = opc.order_no
                 </when>
                 <otherwise>
-                    left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no
+                    left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
                 </otherwise>
             </choose>
         </if>
@@ -1103,7 +1103,7 @@
                     left join order_customs oc on oc.order_no = opc.order_no
                 </when>
                 <otherwise>
-                    left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no
+                    left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
                 </otherwise>
             </choose>
         </if>

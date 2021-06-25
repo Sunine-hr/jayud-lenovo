@@ -12,6 +12,7 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.StorageClient;
@@ -107,7 +108,6 @@ public class OrderInfoController {
                 return CommonResult.error(400, "待处理状态,无法进行操作");
             }
         }
-
 
 
         if (CommonConstant.SUBMIT.equals(form.getCmd())) {
@@ -238,7 +238,7 @@ public class OrderInfoController {
             if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) ||
                     inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) ||
                     inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode()) ||
-                    inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode()) ) {
+                    inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())) {
 //                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())) {
 //                    InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
 //                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
@@ -395,6 +395,19 @@ public class OrderInfoController {
     }
 
 
+    @ApiOperation(value = "修改主订单信息 mainOrderId=主订单id")
+    @PostMapping("/updateOrderInfo")
+    public CommonResult updateOrderInfo(@RequestBody InputMainOrderForm form) {
+        if (form.getOrderId() == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        OrderInfo orderInfo = new OrderInfo().setId(form.getOrderId());
+        orderInfo.setOperationTime(DateUtils.str2LocalDateTime(form.getOperationTime(), DateUtils.DATE_TIME_PATTERN));
+        this.orderInfoService.updateById(orderInfo);
+        return CommonResult.success();
+    }
+
+
     @ApiOperation(value = "获取主订单页面子订单信息")
     @PostMapping("/getSubOrderDetail")
     public CommonResult<OrderInfoTemplate> getSubOrderDetail(@RequestBody @Valid GetOrderDetailForm form) {
@@ -531,7 +544,7 @@ public class OrderInfoController {
         }
         //快进快出
         InputStorageFastOrderVO storageFastOrderForm = inputOrderVO.getStorageFastOrderForm();
-        if(storageFastOrderForm != null){
+        if (storageFastOrderForm != null) {
             StorageFastTemplate storageFastTemplate = ConvertUtil.convert(storageFastOrderForm, StorageFastTemplate.class);
             storageFastTemplate.setCost(this.orderInfoService.isCost(storageFastTemplate.getOrderNo(), 1));
 
@@ -589,15 +602,15 @@ public class OrderInfoController {
             orderServiceForm.copyOperationInfo();
         }
         InputStorageInputOrderVO storageInputOrderForm = inputOrderVO.getStorageInputOrderForm();
-        if(storageInputOrderForm != null){
+        if (storageInputOrderForm != null) {
             storageInputOrderForm.copyOperationInfo();
         }
         InputStorageOutOrderVO storageOutOrderForm = inputOrderVO.getStorageOutOrderForm();
-        if(storageOutOrderForm != null){
+        if (storageOutOrderForm != null) {
             storageOutOrderForm.copyOperationInfo();
         }
         InputStorageFastOrderVO storageFastOrderForm = inputOrderVO.getStorageFastOrderForm();
-        if(storageFastOrderForm != null){
+        if (storageFastOrderForm != null) {
             storageFastOrderForm.copyOperationInfo();
         }
         return CommonResult.success(inputOrderVO);

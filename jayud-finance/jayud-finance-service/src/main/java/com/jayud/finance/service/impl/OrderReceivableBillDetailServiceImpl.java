@@ -212,6 +212,16 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                 }
             }
         }
+
+        if (CollectionUtils.isEmpty(pageList)) {
+            return pageInfo;
+        }
+
+        //币种
+        Map<String, String> currencyMap = this.omsClient.initCurrencyInfo().getData().stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
+        pageInfo.getRecords().forEach(e -> {
+            e.assembleAmountStr(currencyMap.get(e.getCurrencyCode()));
+        });
         return pageInfo;
     }
 
@@ -583,6 +593,8 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                     }
                 }
             }
+
+            jsonObject.putOnce("num",i+1);
             newOrderList.add(viewBillToOrder);
             mainOrderNos.add(viewBillToOrder.getOrderNo());
 //            list.add(viewBillToOrder);
@@ -1141,7 +1153,8 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
      *
      * @param billNo
      */
-    private void statisticsBill(String billNo) {
+    @Override
+    public void statisticsBill(String billNo) {
         List<OrderReceivableBillDetail> receivableBillDetails = this.getByBillNo(billNo);
         //查询账单主键
         OrderReceivableBillDetail billDetail = receivableBillDetails.get(0);

@@ -5,6 +5,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.finance.vo.InitComboxStrVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -58,7 +59,7 @@ public class CreatePaymentBillForm {
 
     @ApiModelProperty(value = "展示维度(1:费用项展示,2:订单维度)", required = true)
     @NotNull(message = "type is required")
-    private Integer type=1;
+    private Integer type = 1;
 
     /**
      * 校验出账单参数
@@ -69,6 +70,12 @@ public class CreatePaymentBillForm {
         if (isCustomExchangeRate) {
             if (CollectionUtils.isEmpty(customExchangeRate)) {
                 throw new JayudBizException(400, "请配置自定义汇率");
+            } else {
+                for (InitComboxStrVO initComboxStrVO : customExchangeRate) {
+                    if (StringUtils.isEmpty(initComboxStrVO.getNote())) {
+                        throw new JayudBizException(400, "请配置自定义汇率");
+                    }
+                }
             }
         }
     }

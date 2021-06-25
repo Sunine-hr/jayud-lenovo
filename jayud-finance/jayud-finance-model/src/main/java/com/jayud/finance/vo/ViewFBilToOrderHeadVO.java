@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 public class ViewFBilToOrderHeadVO {
 
+    private String num = "序号";
+
     private String createdTimeStr = "创建日期";
 
     private String orderNo = "订单编号";

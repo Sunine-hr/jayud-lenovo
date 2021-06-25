@@ -130,29 +130,23 @@
         pb.`name` bizCodeDesc,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         si.supplier_ch_name supplierChName,
-        (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota WHERE ota.order_no = ot.order_no AND ota.opr_type =
-        '1' GROUP BY ot.order_no) goodsDesc,
-        (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
-        order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY
-        ot.order_no) startAddress,
-        (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
-        order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' GROUP BY
-        ot.order_no) endAddress,
-        concat( vi.plate_number,' ',vi.hk_number) licensePlate,
-        ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no =
-        oi.order_no ) yunCustomsNo,
+--         (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota WHERE ota.order_no = ot.order_no AND ota.opr_type =
+--         '1' GROUP BY ot.order_no) goodsDesc,
+--         (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
+--         order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY
+--         ot.order_no) startAddress,
+--         (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
+--         order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' GROUP BY
+--         ot.order_no) endAddress,
+--         concat( vi.plate_number,' ',vi.hk_number) licensePlate,
+--         ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no =
+--         oi.order_no ) yunCustomsNo,
         cg.`name` costGenreName,
         opc.cost_genre_id costGenreId,
         ct.code_name costTypeName,
         ci.`name` costName,
-        (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'CNY' GROUP
-        BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) rmb,
-        (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'USD' GROUP
-        BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) dollar,
-        (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'EUR' GROUP
-        BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) euro,
-        (SELECT sum( rmb.amount ) FROM order_payment_cost rmb WHERE rmb.id = opc.id AND rmb.currency_code = 'HKD' GROUP
-        BY rmb.cost_code,rmb.cost_genre_id,rmb.cost_type_id) hKDollar,
+        opc.amount,
+        opc.currency_code,
         opc.id costId,
         opc.is_bill isBill,
         ifnull(opc.change_amount,0) localAmount,
@@ -743,7 +737,7 @@
         FROM
         order_payment_bill_detail opbd
         left join
-        (select t.bill_no,max(t.make_time) make_time from order_payment_bill_detail t group by t.bill_no) tt on
+        (select t.bill_no,max(t.make_time) make_time from order_payment_bill_detail t where t.audit_status != 'edit_no_commit' group by t.bill_no) tt on
         opbd.bill_no = tt.bill_no
         LEFT JOIN order_payment_bill opb ON opbd.bill_id = opb.id
         where opbd.make_time = tt.make_time

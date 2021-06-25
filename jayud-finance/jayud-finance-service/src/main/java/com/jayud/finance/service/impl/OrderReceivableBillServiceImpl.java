@@ -17,6 +17,7 @@ import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
@@ -106,8 +107,8 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         //查询结算汇率
         List<String> billNos = resultList.stream().map(OrderPaymentBillNumVO::getBillNo).collect(Collectors.toList());
         List<OrderBillCostTotal> costTotals = this.costTotalService.getByBillNo(billNos, OrderBillCostTotalTypeEnum.RECEIVABLE.getCode());
-        costTotals = costTotals.stream().collect(Collectors.collectingAndThen(
-                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(e -> e.getCurrencyCode() + ";" + e.getCurrentCurrencyCode()))), ArrayList::new));
+        costTotals = costTotals.stream().filter(e -> !StringUtils.isEmpty(e.getCurrencyCode())).collect(Collectors.collectingAndThen(
+                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(e -> e.getBillNo() + ";" + e.getCurrencyCode() + ";" + e.getCurrentCurrencyCode()))), ArrayList::new));
         //查询币种名称
         List<InitComboxStrVO> data = omsClient.initCurrencyInfo().getData();
         Map<String, String> currencyMap = data.stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
@@ -468,6 +469,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
                     }
                 }
             }
+            jsonObject.putOnce("num", i + 1);
             newOrderList.add(viewBillToOrder);
             mainOrderNos.add(viewBillToOrder.getOrderNo());
 //            list.add(viewBillToOrder);
@@ -765,7 +767,37 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
      */
     @Override
     public int getCountByMakeTime(String makeTime, String format) {
-        return this.baseMapper.getCountByMakeTime(makeTime, format);
+        Integer count = this.baseMapper.getCountByMakeTime(makeTime, format);
+        return count == null ? 0 : count;
+    }
+
+    /**
+     * 统计账单数据(根据账单id)
+     *
+     * @param billId
+     */
+    @Override
+    public void statisticsBill(Long billId) {
+        List<OrderReceivableBillDetail> list = this.receivableBillDetailService.getByCondition(new OrderReceivableBillDetail().setBillId(billId));
+        BigDecimal alreadyPaidAmount = new BigDecimal(0);
+        Set<String> orderNos = new HashSet<>();
+        Set<String> billNos = new HashSet<>();
+        for (OrderReceivableBillDetail receivableBillDetail : list) {
+            //统计已出账金额
+            if (receivableBillDetail.getLocalAmount() != null) {
+                alreadyPaidAmount = alreadyPaidAmount.add(receivableBillDetail.getLocalAmount());
+            }
+            //统计已出账订单数
+            orderNos.add(receivableBillDetail.getOrderNo());
+            //统计账单数
+            billNos.add(receivableBillDetail.getBillNo());
+        }
+        OrderReceivableBill orderReceivableBill = new OrderReceivableBill()
+                .setId(billId).setAlreadyPaidAmount(alreadyPaidAmount)
+                .setBillOrderNum(orderNos.size())
+                .setBillNum(billNos.size());
+
+        this.updateById(orderReceivableBill);
     }
 
 

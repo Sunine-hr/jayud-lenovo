@@ -85,7 +85,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @param loginUserName
      * @return
      */
-    Boolean editBillSubmit(String billNo,String loginUserName);
+    Boolean editBillSubmit(String billNo, String loginUserName);
 
     /**
      * 对账单详情
@@ -103,7 +103,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @param cmd
      * @return
      */
-    public JSONArray viewBillDetailInfo(String billNo, String cmd,String templateCmd);
+    public JSONArray viewBillDetailInfo(String billNo, String cmd, String templateCmd);
 
     /**
      * 对账单详情表头
@@ -115,7 +115,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     /**
      * 对账单详情表头 TODO 增强版
      */
-    public List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg, String cmd, String templateCmd) ;
+    public List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg, String cmd, String templateCmd);
 
     /**
      * 对账单详情的全局数据部分
@@ -192,7 +192,8 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     CommonResult auditFInvoice(BillAuditForm form);
 
     /**
-     *编辑保存确定
+     * 编辑保存确定
+     *
      * @param costIds
      * @param form
      * @return
@@ -201,6 +202,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 编辑删除
+     *
      * @param costIds
      * @return
      */
@@ -208,6 +210,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 获取推送金蝶的应付数据
+     *
      * @param billNo
      * @return
      */
@@ -215,14 +218,16 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 获取推送金蝶的应付详细数据
+     *
      * @param billNo
      * @param orderNo
      * @return
      */
-    List<APARDetailForm> findPayableHeaderDetail(String billNo,String orderNo);
+    List<APARDetailForm> findPayableHeaderDetail(String billNo, String orderNo);
 
     /**
      * 开票和付款申请/开票和付款核销/核销界面展示的金额
+     *
      * @param billNo
      * @return
      */
@@ -230,6 +235,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 当前订单是否已经存在当前法人主体，结算单位，订单类型中,若存在则不做数量统计
+     *
      * @param legalName
      * @param supplierChName
      * @param subType
@@ -241,6 +247,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
 
     /**
      * 获取编辑账单数
+     *
      * @param billNo
      */
     int getEditBillNum(String billNo);
@@ -251,7 +258,14 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     public List<OrderPaymentBillDetail> getByCondition(OrderPaymentBillDetail orderPaymentBillDetail);
 
     List<OrderPaymentBillDetail> getNowFOrderExistByLegalId(@Param("legalEntityId") Long legalEntityId,
-                                                            @Param("supplierCode")String supplierCode,
-                                                            @Param("subType")String subType,
-                                                            @Param("orderNo")String orderNo);
+                                                            @Param("supplierCode") String supplierCode,
+                                                            @Param("subType") String subType,
+                                                            @Param("orderNo") String orderNo);
+
+    /**
+     * 统计账单数据
+     *
+     * @param billNo
+     */
+    public void statisticsBill(String billNo);
 }

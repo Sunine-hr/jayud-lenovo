@@ -174,6 +174,7 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
 
     /**
      * 根据条件查询信息
+     *
      * @param orderReceivableBill
      * @return
      */
@@ -181,6 +182,7 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
 
     /**
      * 订单维度展示未出账单
+     *
      * @param form
      * @return
      */
@@ -188,9 +190,17 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
 
     /**
      * 根据创建账单时间查询数量
+     *
      * @param makeTime
      * @param format
      * @return
      */
     int getCountByMakeTime(String makeTime, String format);
+
+    /**
+     * 统计账单数据(根据账单id)
+     *
+     * @param billId
+     */
+    public void statisticsBill(Long billId);
 }

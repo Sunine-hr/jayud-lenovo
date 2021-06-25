@@ -2,6 +2,7 @@ package com.jayud.finance.vo;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
+import com.jayud.common.enums.BillTypeEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.po.CancelAfterVerification;
@@ -97,6 +98,9 @@ public class OrderPaymentBillDetailVO {
 
     @ApiModelProperty(value = "费用金额")
     private String amountStr;
+
+    @ApiModelProperty(value = "费用类型(0-应收, 1-应付)")
+    private Integer costType;
 
     public String getAuditStatusDesc() {
         if (!StringUtil.isNullOrEmpty(this.auditStatus)) {

@@ -63,7 +63,7 @@ public class PaymentBillDetailController {
         String amount = this.commonService.calculatingCosts(amountStr);
         Map<String, Object> data = new HashMap<>();
         data.put("amountStr", amount == null ? "" : amount);
-        CommonPageResult<OrderPaymentBillDetailVO> pageVO = new CommonPageResult(pageList,data);
+        CommonPageResult<OrderPaymentBillDetailVO> pageVO = new CommonPageResult(pageList, data);
         return CommonResult.success(pageVO);
     }
 

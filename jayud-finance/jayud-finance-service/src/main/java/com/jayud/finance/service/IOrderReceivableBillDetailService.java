@@ -104,7 +104,7 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @param billNo
      * @return
      */
-    public JSONArray viewSBillDetailInfo(String billNo, String cmd,String templateCmd);
+    public JSONArray viewSBillDetailInfo(String billNo, String cmd, String templateCmd);
 
 
     /**
@@ -116,7 +116,7 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
 
 
     List<SheetHeadVO> findSSheetHeadInfo(String billNo, Map<String, Object> callbackArg,
-                                         String cmd,String templateCmd);
+                                         String cmd, String templateCmd);
 
     /**
      * 对账单详情的全局数据部分
@@ -256,4 +256,11 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * 根据条件查询账单详情信息
      */
     public List<OrderReceivableBillDetail> getByCondition(OrderReceivableBillDetail orderReceivableBillDetail);
+
+    /**
+     * 统计账单数据
+     *
+     * @param billNo
+     */
+    public void statisticsBill(String billNo);
 }

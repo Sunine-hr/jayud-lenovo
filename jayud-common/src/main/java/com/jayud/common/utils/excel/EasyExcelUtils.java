@@ -4,19 +4,16 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
-import com.alibaba.excel.enums.WriteDirectionEnum;
 import com.alibaba.excel.util.WorkBookUtil;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.WriteWorkbook;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
-import com.jayud.common.entity.InitChangeStatusVO;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
@@ -31,7 +28,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.apache.poi.ss.usermodel.BorderStyle.THIN;
@@ -465,7 +465,7 @@ public class EasyExcelUtils {
         }
         WriteSheet writeSheet = EasyExcel.writerSheet().build();
         // 这里注意 入参用了forceNewRow 代表在写入list的时候不管list下面有没有空行 都会创建一行，然后下面的数据往后移动。默认 是false，会直接使用下一行，如果没有则创建。但是这个就会把所有数据放到内存 会很耗内存
-//        FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
+        FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
         // 如果有多个list 模板上必须有{前缀.} 这里的前缀就是 data1，然后多个list必须用 FillWrapper包裹
         ExcelWriter finalExcelWriter = excelWriter;
         list.forEach((k, v) -> {

@@ -78,7 +78,7 @@
             or (opc.`status` in ('3') and opc.sub_type !='main' and opc.is_sum_to_main=true))
         </if>
         <if test="form.cmd == 'main_cost_audited'">
-            and ((opc.`status` in ('2','3') and opc.sub_type = 'main' and opc.is_bill='0')
+            and ((opc.`status` in ('3') and opc.sub_type = 'main' and opc.is_bill='0')
             or (opc.`status` in ('3') and opc.sub_type !='main' and opc.is_sum_to_main=true and opc.is_bill='0'))
         </if>
         <if test="form.cmd == 'sub_cost'">

@@ -184,6 +184,7 @@
         opc.main_order_no orderNo,
         opc.order_no subOrderNo,
         pb.`name` bizCodeDesc,
+        oi.created_user createdUser,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         si.supplier_ch_name supplierChName,
         <choose>
@@ -216,7 +217,7 @@
                     left join order_customs oc on oc.order_no = opc.order_no
                 </when>
                 <otherwise>
-                    left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no
+                    left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
                 </otherwise>
             </choose>
         </if>
@@ -319,7 +320,7 @@
             and date_format(temp.createdTimeStr,'%Y-%m-%d') >= date_format(#{form.beginCreatedTimeStr},'%Y-%m-%d')
         </if>
         <if test="form.userName !=null and form.userName !=''">
-            and oi.created_user =#{form.userName}
+            and temp.createdUser =#{form.userName}
         </if>
         <if test="form.operationTime != null and form.operationTime.size>0">
             and date_format(temp.operation_time,'%Y-%m-%d')
@@ -1074,8 +1075,8 @@
         AND opb.sub_type = #{subType}
     </select>
     <select id="getCountByMakeTime" resultType="java.lang.Integer">
-        select count(*) from order_payment_bill_detail
-        where  DATE_FORMAT( make_time, '%Y-%m')=#{makeTime}
+        select count(distinct bill_no) from order_payment_bill_detail
+        where  DATE_FORMAT( make_time, #{format})=#{makeTime}
     </select>
 
 
@@ -1086,14 +1087,8 @@
         opc.order_no subOrderNo,
         pb.`name` bizCodeDesc,
         oi.operation_time,
+        oi.created_user createdUser,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr
-        <choose>
-            <when test="form.cmd == 'zgys'">
-                <include refid="TmsInfo"/>
-            </when>
-            <when test="form.isQueryOrderAddress">
-            </when>
-        </choose>
         FROM
         order_payment_cost opc
         left join supplier_info si on si.supplier_code = opc.customer_code
@@ -1108,7 +1103,7 @@
                     left join order_customs oc on oc.order_no = opc.order_no
                 </when>
                 <otherwise>
-                    left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no
+                    left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
                 </otherwise>
             </choose>
         </if>
@@ -1144,7 +1139,7 @@
             and date_format(temp.createdTimeStr,'%Y-%m-%d') >= date_format(#{form.beginCreatedTimeStr},'%Y-%m-%d')
         </if>
         <if test="form.userName !=null and form.userName !=''">
-            and oi.created_user =#{form.userName}
+            and temp.createdUser =#{form.userName}
         </if>
         <if test="form.operationTime != null and form.operationTime.size>0">
             and date_format(temp.operation_time,'%Y-%m-%d')

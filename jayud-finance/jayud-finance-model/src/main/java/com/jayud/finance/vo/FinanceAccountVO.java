@@ -130,7 +130,7 @@ public class FinanceAccountVO {
         return "";
     }
 
-    public FinanceAccountVO totalCurrencyAmount(List<Map<String, Object>> currencyAmounts) {
+    public FinanceAccountVO totalCurrencyAmount(List<Map<String, Object>> currencyAmounts, Map<String, String> currencyInfoMap) {
         BigDecimal rmb = new BigDecimal(0), dollar = new BigDecimal(0), euro = new BigDecimal(0), hKDollar = new BigDecimal(0);
         for (Map<String, Object> currencyAmount : currencyAmounts) {
             Object moneyType = currencyAmount.get("moneyType");
@@ -153,6 +153,7 @@ public class FinanceAccountVO {
             if ("HKD".equals(currencyAmount.get("currencyCode"))) {
                 hKDollar = hKDollar.add((BigDecimal) currencyAmount.get(key));
             }
+
             switch (moneyType.toString()) {
                 case "1":
                     this.payRmb = rmb;

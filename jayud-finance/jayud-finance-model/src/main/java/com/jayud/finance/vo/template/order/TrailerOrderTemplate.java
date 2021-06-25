@@ -29,6 +29,9 @@ public class TrailerOrderTemplate {
     @ApiModelProperty(value = "主键id")
     private Long id;
 
+    @ApiModelProperty(value = "序号", required = true)
+    private String num;
+
     @ApiModelProperty(value = "提货日期", required = true)
     private String takeTimeStr;
 

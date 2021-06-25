@@ -165,6 +165,7 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
 
     /**
      * 根据条件查询账单
+     *
      * @param paymentBill
      * @return
      */
@@ -172,11 +173,12 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
 
     /**
      * 根据创建账单时间查询数量
+     *
      * @param makeTime
      * @param format
      * @return
      */
-    int getCountByMakeTime(@Param("makeTime") String makeTime, String format);
+    int getCountByMakeTime(String makeTime, String format);
 
     /**
      * 订单维度展示未出账单
@@ -185,4 +187,11 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      * @return
      */
     IPage<PaymentNotPaidBillVO> findNotPaidOrderBillByPage(QueryNotPaidBillForm form);
+
+    /**
+     * 统计账单数据
+     *
+     * @param billId
+     */
+    public void statisticsBill(Long billId);
 }

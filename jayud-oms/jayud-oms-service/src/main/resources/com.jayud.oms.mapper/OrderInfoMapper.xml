@@ -70,7 +70,8 @@
         oi.`customs_release` customsRelease,
         oi.unit_code unitCode,
         oi.reject_comment,
-        oi.is_rejected
+        oi.is_rejected,
+        oi.operation_time
         FROM
         order_info oi
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
@@ -163,7 +164,8 @@
         oi.`create_time` createdTimeStr,
         oi.`need_input_cost` needInputCost,
         oi.`customs_release` customsRelease,
-        oi.selected_server selectedServer
+        oi.selected_server selectedServer,
+        oi.operation_time
         FROM
         order_info oi
         <where>

@@ -201,7 +201,8 @@ public interface OrderPaymentBillMapper extends BaseMapper<OrderPaymentBill> {
      * @param format
      * @return
      */
-    int getCountByMakeTime(String makeTime, String format);
+    Integer getCountByMakeTime(@Param("makeTime") String makeTime,@Param("format") String format);
 
-    IPage<PaymentNotPaidBillVO> findNotPaidOrderBillByPage(Page<PaymentNotPaidBillVO> page, QueryNotPaidBillForm form, Map<String, Object> dynamicSqlParam);
+    IPage<PaymentNotPaidBillVO> findNotPaidOrderBillByPage(Page<PaymentNotPaidBillVO> page, @Param("form") QueryNotPaidBillForm form,
+                                                           @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
 }

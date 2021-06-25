@@ -15,12 +15,14 @@ import com.jayud.finance.feign.*;
 import com.jayud.finance.service.CommonService;
 import com.jayud.finance.service.IOrderPaymentBillService;
 import com.jayud.finance.service.IOrderReceivableBillService;
+import com.jayud.finance.service.IVoidBillingRecordsService;
 import com.jayud.finance.vo.InputGoodsVO;
 import com.jayud.finance.vo.SheetHeadVO;
 import com.jayud.finance.vo.template.order.AirOrderTemplate;
 import com.jayud.finance.vo.template.order.InlandTPTemplate;
 import com.jayud.finance.vo.template.order.TmsOrderTemplate;
 import com.jayud.finance.vo.template.order.TrailerOrderTemplate;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +52,8 @@ public class CommonServiceImpl implements CommonService {
     private IOrderReceivableBillService orderReceivableBillService;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private IVoidBillingRecordsService voidBillingRecordsService;
 
     /**
      * 获取空运明细
@@ -345,25 +349,30 @@ public class CommonServiceImpl implements CommonService {
         Object legalEntitys = this.oauthClient.getLegalEntityByLegalIds(Collections.singletonList(legalEntityId)).getData();
         JSONObject jsonObject = new JSONArray(legalEntitys).getJSONObject(0);
         String legalCode = jsonObject.getStr("legalCode");
+        //查询该日期订单数量
+        String format = "YYYY-MM";
+        String sqlFormat = "%Y-%m";
         StringBuilder billNo = new StringBuilder();
         switch (BillTypeEnum.getEnum(type)) {
             case RECEIVABLE:
                 billNo.append(OrderTypeEnum.AR.getCode())
                         .append(legalCode).append(date);
-                //查询该日期订单数量
-                String format = "YYYY-MM";
-                int count = this.orderReceivableBillService.getCountByMakeTime(DateUtils.LocalDateTime2Str(now, format), format);
+
+                int count = this.orderReceivableBillService.getCountByMakeTime(DateUtils.LocalDateTime2Str(now, format), sqlFormat);
+                //TODO 查询废错订单
+                int voidNum = this.voidBillingRecordsService.getCountByMakeTime(DateUtils.LocalDateTime2Str(now, format), sqlFormat, BillTypeEnum.RECEIVABLE.getCode());
                 //当前数量+1
-                billNo.append(StringUtils.zeroComplement(4, count + 1));
+                billNo.append(StringUtils.zeroComplement(4, count + voidNum + 1));
                 break;
             case PAYMENT:
                 billNo.append(OrderTypeEnum.AP.getCode())
                         .append(legalCode).append(date);
                 //查询该日期订单数量
-                format = "YYYY-MM";
-                count = this.orderPaymentBillService.getCountByMakeTime(DateUtils.LocalDateTime2Str(now, format), format);
+                count = this.orderPaymentBillService.getCountByMakeTime(DateUtils.LocalDateTime2Str(now, format), sqlFormat);
+                //TODO 查询废错订单
+                voidNum = this.voidBillingRecordsService.getCountByMakeTime(DateUtils.LocalDateTime2Str(now, format), sqlFormat, BillTypeEnum.PAYMENT.getCode());
                 //当前数量+1
-                billNo.append(StringUtils.zeroComplement(4, count + 1));
+                billNo.append(StringUtils.zeroComplement(4, count + voidNum + 1));
                 break;
         }
         return billNo.toString();
@@ -409,6 +418,9 @@ public class CommonServiceImpl implements CommonService {
     public String calculatingCosts(List<String> amountStrs) {
         Map<String, BigDecimal> cost = new HashMap<>();
         for (String amount : amountStrs) {
+            if (StringUtils.isEmpty(amount)) {
+                continue;
+            }
             if (amount.contains(",")) {
                 String[] split = amount.split(",");
                 for (int i = 0; i < split.length; i++) {

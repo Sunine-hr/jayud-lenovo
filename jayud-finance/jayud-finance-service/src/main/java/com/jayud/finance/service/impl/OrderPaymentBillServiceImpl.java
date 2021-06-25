@@ -18,6 +18,7 @@ import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
@@ -116,8 +117,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         //查询结算汇率
         List<String> billNos = resultList.stream().map(OrderPaymentBillNumVO::getBillNo).collect(Collectors.toList());
         List<OrderBillCostTotal> costTotals = this.costTotalService.getByBillNo(billNos, OrderBillCostTotalTypeEnum.PAYMENT.getCode());
-        costTotals = costTotals.stream().collect(Collectors.collectingAndThen(
-                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(e -> e.getCurrencyCode() + ";" + e.getCurrentCurrencyCode()))), ArrayList::new));
+        costTotals = costTotals.stream().filter(e -> !StringUtils.isEmpty(e.getCurrencyCode())).collect(Collectors.collectingAndThen(
+                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(e -> e.getBillNo() + ";" + e.getCurrencyCode() + ";" + e.getCurrentCurrencyCode()))), ArrayList::new));
 
         //查询币种名称
         List<InitComboxStrVO> data = omsClient.initCurrencyInfo().getData();
@@ -471,6 +472,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                     }
                 }
             }
+            jsonObject.putOnce("num", i + 1);
             mainOrderNos.add(viewBillToOrder.getOrderNo());
             newOrderList.add(viewBillToOrder);
         }
@@ -602,6 +604,35 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         String subOrderSign = SubOrderSignEnum.getSignOne2SignTwo(cmd);
         sqlParam.put("table", SubOrderSignEnum.MAIN.getSignTwo().equals(subOrderSign) ? "" : subOrderSign);
         return sqlParam;
+    }
+
+    /**
+     * 统计账单数据
+     *
+     * @param billId
+     */
+    @Override
+    public void statisticsBill(Long billId) {
+        List<OrderPaymentBillDetail> list = this.paymentBillDetailService.getByCondition(new OrderPaymentBillDetail().setBillId(billId));
+        BigDecimal alreadyPaidAmount = new BigDecimal(0);
+        Set<String> orderNos = new HashSet<>();
+        Set<String> billNos = new HashSet<>();
+        for (OrderPaymentBillDetail orderPaymentBillDetail : list) {
+            //统计已出账金额
+            if (orderPaymentBillDetail.getLocalAmount() != null) {
+                alreadyPaidAmount = alreadyPaidAmount.add(orderPaymentBillDetail.getLocalAmount());
+            }
+            //统计已出账订单数
+            orderNos.add(orderPaymentBillDetail.getOrderNo());
+            //统计账单数
+            billNos.add(orderPaymentBillDetail.getBillNo());
+        }
+        OrderPaymentBill paymentBill = new OrderPaymentBill()
+                .setId(billId).setAlreadyPaidAmount(alreadyPaidAmount)
+                .setBillOrderNum(orderNos.size())
+                .setBillNum(billNos.size());
+
+        this.updateById(paymentBill);
     }
 
 
@@ -754,7 +785,8 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
      */
     @Override
     public int getCountByMakeTime(String makeTime, String format) {
-        return this.baseMapper.getCountByMakeTime(makeTime, format);
+        Integer count = this.baseMapper.getCountByMakeTime(makeTime, format);
+        return count == null ? 0 : count;
     }
 
     /**

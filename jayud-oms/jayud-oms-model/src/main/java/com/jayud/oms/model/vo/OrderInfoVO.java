@@ -147,6 +147,10 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "利润状态(1:盈利,2:收支平衡,3:盈亏)")
     private Integer billingState;
 
+    @ApiModelProperty(value = "操作时间")
+    private String operationTime;
+
+
 //    @ApiModelProperty(value = "子订单状态描述")
 //    private String subOrderStatusDesc;
 //

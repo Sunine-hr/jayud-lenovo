@@ -223,6 +223,16 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 }
             }
         }
+
+        if (CollectionUtils.isEmpty(pageList)) {
+            return pageInfo;
+        }
+
+        //币种
+        Map<String, String> currencyMap = this.omsClient.initCurrencyInfo().getData().stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
+        pageInfo.getRecords().forEach(e -> {
+            e.assembleAmountStr(currencyMap.get(e.getCurrencyCode()));
+        });
         return pageInfo;
     }
 
@@ -586,6 +596,8 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                     }
                 }
             }
+            //序号
+            jsonObject.putOnce("num",i+1);
             newOrderList.add(viewFBilToOrderVO);
             mainOrderNos.add(viewFBilToOrderVO.getOrderNo());
 //            list.add(viewBillToOrder);
@@ -1079,7 +1091,8 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
      *
      * @param billNo
      */
-    private void statisticsBill(String billNo) {
+    @Override
+    public void statisticsBill(String billNo) {
         List<OrderPaymentBillDetail> receivableBillDetails = this.getByCondition(new OrderPaymentBillDetail().setBillNo(billNo));
         //查询账单主键
         OrderPaymentBillDetail billDetail = receivableBillDetails.get(0);

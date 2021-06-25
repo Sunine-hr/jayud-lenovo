@@ -679,7 +679,7 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
 
 
     /**
-     * 根据币种id，分组
+     * 根据商品id，分组
      * @param orderShopList 订单商品
      * @return
      */

@@ -14,10 +14,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSupport;
 import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -33,6 +31,7 @@ public class OrderInfoController {
     IOrderInfoService orderInfoService;
     @Autowired
     IOrderInteriorStatusService orderInteriorStatusService;
+
 
     @ApiOperation(value = "分页查询订单")
     @PostMapping("/findOrderInfoByPage")
@@ -383,6 +382,17 @@ public class OrderInfoController {
         orderInfoService.cancelStatusVerify(form);
         return CommonResult.success("验证成功");
     }
+
+    //使用新智慧Excel，修改订单箱子的数据
+    @ApiOperation(value = "使用新智慧Excel，修改订单箱子的数据")
+    @RequestMapping(value = "/importExcelUpdateCaseByNewWisdom", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperationSupport(order = 33)
+    public CommonResult<OrderInfoVO> importExcelUpdateCaseByNewWisdom(@RequestHeader(value = "orderId") Long orderId, @RequestParam("file") MultipartFile file){
+        OrderInfoVO orderInfoVO = orderInfoService.importExcelUpdateCaseByNewWisdom(orderId,file);
+        return CommonResult.success(orderInfoVO);
+    }
+
 
 
 }

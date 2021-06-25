@@ -2,8 +2,11 @@ package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
@@ -35,10 +38,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -133,6 +140,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     OrderCaseWmsMapper orderCaseWmsMapper;
     @Autowired
     OrderCaseShopMapper orderCaseShopMapper;
+    @Autowired
+    ShipmentMapper shipmentMapper;
+    @Autowired
+    NumberGeneratedMapper numberGeneratedMapper;
+    @Autowired
+    CustomerGoodsMapper customerGoodsMapper;
 
     @Autowired
     BaseService baseService;
@@ -168,7 +181,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     IOrderCaseWmsService orderCaseWmsService;
     @Autowired
     IOrderCaseShopService orderCaseShopService;
-
+    @Autowired
+    ICustomerGoodsService customerGoodsService;
 
     @Override
     public IPage<OrderInfoVO> findOrderInfoByPage(QueryOrderInfoForm form) {
@@ -2942,6 +2956,638 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             //取消时，输入jdy，确认后才能取消
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "取消时，输入jdy，确认后才能取消");
         }
+    }
+
+    //使用新智慧Excel，修改订单箱子的数据
+    @Override
+    public OrderInfoVO importExcelUpdateCaseByNewWisdom(Long orderId, MultipartFile file) {
+        if (file.isEmpty()) {
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "文件为空！");
+        }
+        String originalFilename = file.getOriginalFilename();
+        System.out.println(originalFilename);//运单 10001923.xls
+        //运单id 装货id，即是订单id
+        String shipment_id = originalFilename.substring("运单 ".length(), originalFilename.length() - ".xls".length());
+        if(ObjectUtil.isEmpty(orderId) || !orderId.equals(Long.valueOf(shipment_id))){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "新智慧上传的运单和当前运单不一致");
+        }
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(orderId);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单没有找到");
+        }
+        //导入新智慧运单excel
+        List<List<Object>> excelList = shipmentService.importExcelByNewWisdom(file);
+
+        //构造数据结构
+
+        //运单
+        Map shipment = new HashMap();
+        shipment.put("shipment_id", shipment_id);
+        //收货人
+        Map to_address = new HashMap();
+        //货箱编号 list parcels
+        List<Map> parcels = new ArrayList<>();
+        for (int i=0; i<excelList.size(); i++){
+            //服务*   0
+            if(i==0){
+                List<Object> o = excelList.get(i);
+                String service = String.valueOf(o.get(1));
+                shipment.put("service", service);
+            }
+            //收件人姓名*    2
+            if(i==2){
+                List<Object> o = excelList.get(i);
+                String name = String.valueOf(o.get(1));
+                to_address.put("name", name);
+            }
+            //收件人公司 3
+            if(i==3){
+                List<Object> o = excelList.get(i);
+                String company = String.valueOf(o.get(1));
+                to_address.put("company", company);
+            }
+            //收件人地址一*   4
+            if(i==4){
+                List<Object> o = excelList.get(i);
+                String address_1 = String.valueOf(o.get(1));
+                to_address.put("address_1", address_1);
+            }
+            //收件人地址二    5
+            if(i==5){
+                List<Object> o = excelList.get(i);
+                String address_2 = String.valueOf(o.get(1));
+                to_address.put("address_2", address_2);
+            }
+            //收件人地址三    6
+            if(i==6){
+                List<Object> o = excelList.get(i);
+                String address_3 = String.valueOf(o.get(1));
+                to_address.put("address_3", address_3);
+            }
+            //收件人城市*    7
+            if(i==7){
+                List<Object> o = excelList.get(i);
+                String city = String.valueOf(o.get(1));
+                to_address.put("city", city);
+            }
+            //收件人省份/州   8
+            if(i==8){
+                List<Object> o = excelList.get(i);
+                String state = String.valueOf(o.get(1));
+                to_address.put("state", state);
+            }
+            //收件人邮编*    9
+            if(i==9){
+                List<Object> o = excelList.get(i);
+                String postcode = String.valueOf(o.get(1));
+                to_address.put("postcode", postcode);
+            }
+            //收件人国家代码(二字代码)*    10
+            if(i==10){
+                List<Object> o = excelList.get(i);
+                String country = String.valueOf(o.get(1));
+                to_address.put("country", country);
+            }
+            //收件人电话 11
+            if(i==11){
+                List<Object> o = excelList.get(i);
+                String tel = String.valueOf(o.get(1));
+                to_address.put("tel", tel);
+            }
+            //客户订单号 12
+            if(i==12){
+                List<Object> o = excelList.get(i);
+                String client_reference = String.valueOf(o.get(1));
+                shipment.put("client_reference", client_reference);
+            }
+
+            //货箱编号+产品
+            Map parcel = new HashMap();
+            if(i>21){
+                List<Object> o = excelList.get(i);
+                //货箱编号*-number
+                String number = StrUtil.isEmpty(String.valueOf(o.get(0))) ? "" : String.valueOf(o.get(0));
+                parcel.put("number", number);
+                //客户货箱重量(KG)-client_weight
+                String client_weight = StrUtil.isEmpty(String.valueOf(o.get(1))) ? "" : String.valueOf(o.get(1));
+                parcel.put("client_weight", client_weight);
+                //客户货箱长度(CM)-client_length
+                String client_length = StrUtil.isEmpty(String.valueOf(o.get(2))) ? "" : String.valueOf(o.get(2));
+                parcel.put("client_length", client_length);
+                //客户货箱宽度(CM)-client_width
+                String client_width = StrUtil.isEmpty(String.valueOf(o.get(3))) ? "" : String.valueOf(o.get(3));
+                parcel.put("client_width", client_width);
+                //客户货箱高度(CM)-client_height
+                String client_height = StrUtil.isEmpty(String.valueOf(o.get(4))) ? "" : String.valueOf(o.get(4));
+                parcel.put("client_height", client_height);
+                //货箱重量(KG)-actual_weight
+                String actual_weight = StrUtil.isEmpty(String.valueOf(o.get(5))) ? "" : String.valueOf(o.get(5));
+                parcel.put("actual_weight", actual_weight);
+                //货箱长度(CM)-chargeable_length
+                String chargeable_length = StrUtil.isEmpty(String.valueOf(o.get(6))) ? "" : String.valueOf(o.get(6));
+                parcel.put("chargeable_length", chargeable_length);
+                //货箱宽度(CM)-chargeable_width
+                String chargeable_width = StrUtil.isEmpty(String.valueOf(o.get(7))) ? "" : String.valueOf(o.get(7));
+                parcel.put("chargeable_width", chargeable_width);
+                //货箱高度(CM)-chargeable_height
+                String chargeable_height = StrUtil.isEmpty(String.valueOf(o.get(8))) ? "" : String.valueOf(o.get(8));
+                parcel.put("chargeable_height", chargeable_height);
+
+                //declarations
+                //产品SKU-sku
+                String sku = StrUtil.isEmpty(String.valueOf(o.get(9))) ? "" : String.valueOf(o.get(9));
+                parcel.put("sku", sku);
+                //产品中文品名*-name_zh
+                String name_zh = StrUtil.isEmpty(String.valueOf(o.get(10))) ? "" : String.valueOf(o.get(10));
+                parcel.put("name_zh", name_zh);
+                //产品英文品名*-name_en
+                String name_en = StrUtil.isEmpty(String.valueOf(o.get(11))) ? "" : String.valueOf(o.get(11));
+                parcel.put("name_en", name_en);
+                //产品申报单价*-unit_value
+                String unit_value = StrUtil.isEmpty(String.valueOf(o.get(12))) ? "" : String.valueOf(o.get(12));
+                parcel.put("unit_value", unit_value);
+                //产品申报数量*-qty
+                String qty = StrUtil.isEmpty(String.valueOf(o.get(13))) ? "" : String.valueOf(o.get(13));
+                parcel.put("qty", qty);
+                //产品材质*-material
+                String material = StrUtil.isEmpty(String.valueOf(o.get(14))) ? "" : String.valueOf(o.get(14));
+                parcel.put("material", material);
+                //产品海关编码-hscode
+                String hscode = StrUtil.isEmpty(String.valueOf(o.get(15))) ? "" : String.valueOf(o.get(15));
+                parcel.put("hscode", hscode);
+                //产品用途-usage
+                String usage = StrUtil.isEmpty(String.valueOf(o.get(16))) ? "" : String.valueOf(o.get(16));
+                parcel.put("usage", usage);
+                //产品品牌-brand
+                String brand = StrUtil.isEmpty(String.valueOf(o.get(17))) ? "" : String.valueOf(o.get(17));
+                parcel.put("brand", brand);
+                //产品型号-size
+                String size = StrUtil.isEmpty(String.valueOf(o.get(18))) ? "" : String.valueOf(o.get(18));
+                parcel.put("size", size);
+                //产品销售链接-sale_url
+                String sale_url = StrUtil.isEmpty(String.valueOf(o.get(19))) ? "" : String.valueOf(o.get(19));
+                parcel.put("sale_url", sale_url);
+                //产品销售价格-sale_price
+                String sale_price = StrUtil.isEmpty(String.valueOf(o.get(20))) ? "" : String.valueOf(o.get(20));
+                parcel.put("sale_price", sale_price);
+                //产品图片链接-photos
+                String photos = StrUtil.isEmpty(String.valueOf(o.get(21))) ? "" : String.valueOf(o.get(21));
+                parcel.put("photos", photos);
+                //产品重量(kg)-weight
+                String weight = StrUtil.isEmpty(String.valueOf(o.get(22))) ? "" : String.valueOf(o.get(22));
+                parcel.put("weight", weight);
+                //产品ASIN-asin
+                String asin = StrUtil.isEmpty(String.valueOf(o.get(23))) ? "" : String.valueOf(o.get(23));
+                parcel.put("asin", asin);
+                //产品FNSKU-fnsku
+                String fnsku = StrUtil.isEmpty(String.valueOf(o.get(24))) ? "" : String.valueOf(o.get(24));
+                parcel.put("fnsku", fnsku);
+                //承运商 无字段
+                //跟踪号 无字段
+
+                parcels.add(parcel);
+            }
+        }
+
+        //根据 货箱编号*-number 分组，再次组装数据
+        Map<String, List<Map>> stringListMap = groupListByNumber(parcels);
+
+
+        parcels = new ArrayList<>();
+        for (Map.Entry<String, List<Map>> entry : stringListMap.entrySet()) {
+            //String number = entry.getKey();//货箱编号
+            List<Map> parcelsList = entry.getValue();//货箱编号 list
+            Map parcelObj = parcelsList.get(0);
+
+            Map parcel = new HashMap();
+            String number = MapUtil.getStr(parcelObj, "number");//货箱编号*-number
+            parcel.put("number", number);
+            String client_weight = MapUtil.getStr(parcelObj, "client_weight");//客户货箱重量(KG)-client_weight
+            parcel.put("client_weight", client_weight);
+            String client_length = MapUtil.getStr(parcelObj, "client_length");//客户货箱长度(CM)-client_length
+            parcel.put("client_length", client_length);
+            String client_width = MapUtil.getStr(parcelObj, "client_width");//客户货箱宽度(CM)-client_width
+            parcel.put("client_width", client_width);
+            String client_height = MapUtil.getStr(parcelObj, "client_height");//客户货箱高度(CM)-client_height
+            parcel.put("client_height", client_height);
+            String actual_weight = MapUtil.getStr(parcelObj, "actual_weight");//货箱重量(KG)-actual_weight
+            parcel.put("actual_weight", actual_weight);
+            String chargeable_length = MapUtil.getStr(parcelObj, "chargeable_length");//货箱长度(CM)-chargeable_length
+            parcel.put("chargeable_length", chargeable_length);
+            String chargeable_width = MapUtil.getStr(parcelObj, "chargeable_width");//货箱宽度(CM)-chargeable_width
+            parcel.put("chargeable_width", chargeable_width);
+            String chargeable_height = MapUtil.getStr(parcelObj, "chargeable_height");//货箱高度(CM)-chargeable_height
+            parcel.put("chargeable_height", chargeable_height);
+            //产品SKU list    declarations
+            List<Map> declarations = new ArrayList<>();
+            for (int i=0; i<parcelsList.size(); i++){
+                Map parcelMap = parcelsList.get(i);
+
+                Map declaration = new HashMap();
+                String sku = MapUtil.getStr(parcelMap, "sku");//产品SKU-sku
+                declaration.put("sku", sku);
+                String name_zh = MapUtil.getStr(parcelMap, "name_zh");//产品中文品名*-name_zh
+                declaration.put("name_zh", name_zh);
+                String name_en = MapUtil.getStr(parcelMap, "name_en");//产品英文品名*-name_en
+                declaration.put("name_en", name_en);
+                String unit_value = MapUtil.getStr(parcelMap, "unit_value");//产品申报单价*-unit_value
+                declaration.put("unit_value", unit_value);
+                String qty = MapUtil.getStr(parcelMap, "qty");//产品申报数量*-qty
+                declaration.put("qty", qty);
+                String material = MapUtil.getStr(parcelMap, "material");//产品材质*-material
+                declaration.put("material", material);
+                String hscode = MapUtil.getStr(parcelMap, "hscode");//产品海关编码-hscode
+                declaration.put("hscode", hscode);
+                String usage = MapUtil.getStr(parcelMap, "usage");//产品用途-usage
+                declaration.put("usage", usage);
+                String brand = MapUtil.getStr(parcelMap, "brand");//产品品牌-brand
+                declaration.put("brand", brand);
+                String size = MapUtil.getStr(parcelMap, "size");//产品型号-size
+                declaration.put("size", size);
+                String sale_url = MapUtil.getStr(parcelMap, "sale_url");//产品销售链接-sale_url
+                declaration.put("sale_url", sale_url);
+                String sale_price = MapUtil.getStr(parcelMap, "sale_price");//产品销售价格-sale_price
+                declaration.put("sale_price", sale_price);
+                String photos = MapUtil.getStr(parcelMap, "photos");//产品图片链接-photos
+                declaration.put("photos", photos);
+                String weight = MapUtil.getStr(parcelMap, "weight");//产品重量(kg)-weight
+                declaration.put("weight", weight);
+                String asin = MapUtil.getStr(parcelMap, "asin");//产品ASIN-asin
+                declaration.put("asin", asin);
+                String fnsku = MapUtil.getStr(parcelMap, "fnsku");//产品FNSKU-fnsku
+                declaration.put("fnsku", fnsku);
+
+                declarations.add(declaration);
+            }
+            parcel.put("declarations",declarations);
+            parcels.add(parcel);
+        }
+
+
+        shipment.put("to_address", to_address);//运单收货地址
+        shipment.put("parcels", parcels);//运单箱号，箱号对应的商品明细
+
+
+        Map data = MapUtil.newHashMap();
+        data.put("shipment", shipment);
+        ShipmentVO shipmentVO = MapUtil.get(data, "shipment", ShipmentVO.class);
+        String shipmentJson = JSONUtil.toJsonStr(shipmentVO);
+
+        //保存 更新 新智慧订单
+        //ShipmentVO saveShipment = shipmentService.saveShipment(shipmentVO);  更新时,不要用这个保存
+        ShipmentVO shipmentVO1 = shipmentMapper.findShipmentById(shipment_id);
+        Shipment shipment1 = ConvertUtil.convert(shipmentVO, Shipment.class);
+        LocalDateTime now = LocalDateTime.now();
+        if(ObjectUtil.isNotEmpty(shipmentVO.getPicking_time())){
+            long l = Long.valueOf(shipmentVO.getPicking_time())*1000L;//秒转为毫秒
+            LocalDateTime ldt = Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDateTime();
+            shipment1.setPicking_time(ldt);
+        }else{
+            shipment1.setPicking_time(now);
+        }
+        if(ObjectUtil.isNotEmpty(shipmentVO.getRates_time())){
+            long l = Long.valueOf(shipmentVO.getRates_time())*1000L;//秒转为毫秒
+            LocalDateTime ldt = Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDateTime();
+            shipment1.setRates_time(ldt);
+        }else{
+            shipment1.setRates_time(now);
+        }
+        if(ObjectUtil.isNotEmpty(shipmentVO.getCreat_time())){
+            long l = Long.valueOf(shipmentVO.getCreat_time())*1000L;//秒转为毫秒
+            LocalDateTime ldt = Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDateTime();
+            shipment1.setCreat_time(ldt);
+        }else{
+            shipment1.setRates_time(now);
+        }
+        shipment1.setShipmentJson(JSONUtil.toJsonStr(shipmentVO));
+        shipmentService.saveOrUpdate(shipment1);
+
+        //查询新智慧的运单
+        ShipmentVO shipmentVO2 = shipmentMapper.findShipmentById(shipment_id);
+        if(ObjectUtil.isEmpty(shipmentVO2)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "没有做找到新智慧对应的运单信息");
+        }
+        fit(shipmentVO2);//组装数据
+
+        //订单商品
+        List<OrderShop> orderShopList = new ArrayList<>();
+        //订单箱号
+        List<OrderCase> orderCaseList = new ArrayList<>();
+
+        //组装数据-构造订单箱号，构造订单商品
+        extractedShipment(shipmentVO, orderShopList, orderCaseList);
+
+        //仅获取Excel的箱子 和 订单的箱子 ，对比填值
+        List<OrderCase> orderCaseExcelList = orderCaseList;//从Excel中提取的订单箱子
+        Map<String, OrderCase> orderCaseExcelMap = orderCaseExcelList.stream().collect(Collectors.toMap(OrderCase::getFabNo, Function.identity()));
+
+        List<OrderCaseVO> orderCaseVOList = orderCaseMapper.findOrderCaseByOrderId(orderId);
+        orderCaseVOList.forEach(orderCaseVO -> {
+            String fabNo = orderCaseVO.getFabNo();
+            OrderCase orderCaseExcel = orderCaseExcelMap.get(fabNo);
+            if(ObjectUtil.isNotEmpty(orderCaseExcel)){
+                //仓库测量 长、宽、高、重、体积
+                BigDecimal wmsLength = orderCaseExcel.getWmsLength();
+                BigDecimal wmsWidth = orderCaseExcel.getWmsWidth();
+                BigDecimal wmsHeight = orderCaseExcel.getWmsHeight();
+                BigDecimal wmsWeight = orderCaseExcel.getWmsWeight();
+                BigDecimal wmsVolume = orderCaseExcel.getWmsVolume();
+
+                //最终确认 长、宽、高、重、体积
+                BigDecimal confirmLength = orderCaseExcel.getConfirmLength();
+                BigDecimal confirmWidth = orderCaseExcel.getConfirmWidth();
+                BigDecimal confirmHeight = orderCaseExcel.getConfirmHeight();
+                BigDecimal confirmWeight = orderCaseExcel.getConfirmWeight();
+                BigDecimal confirmVolume = orderCaseExcel.getConfirmVolume();
+
+                orderCaseVO.setWmsLength(wmsLength);
+                orderCaseVO.setWmsWidth(wmsWidth);
+                orderCaseVO.setWmsHeight(wmsHeight);
+                orderCaseVO.setWmsWeight(wmsWeight);
+                orderCaseVO.setWmsVolume(wmsVolume);
+
+                orderCaseVO.setConfirmLength(confirmLength);
+                orderCaseVO.setConfirmWidth(confirmWidth);
+                orderCaseVO.setConfirmHeight(confirmHeight);
+                orderCaseVO.setConfirmWeight(confirmWeight);
+                orderCaseVO.setConfirmVolume(confirmVolume);
+
+            }
+        });
+
+        List<OrderCase> orderCaseList1 = ConvertUtil.convertList(orderCaseVOList, OrderCase.class);
+        orderCaseService.saveOrUpdateBatch(orderCaseList1);
+
+        orderInfoVO.setOrderCaseVOList(orderCaseVOList);//订单箱子
+        return orderInfoVO;
+    }
+
+
+    /**
+     * 组装数据-构造订单箱号，构造订单商品
+     * @param shipmentVO 新智慧运单(订单)
+     * @param orderShopList 订单商品
+     * @param orderCaseList 订单箱号
+     */
+    private void extractedShipment(ShipmentVO shipmentVO, List<OrderShop> orderShopList, List<OrderCase> orderCaseList) {
+        cn.hutool.json.JSONObject shipmentJSONObject = JSONUtil.parseObj(shipmentVO);
+        Object parcels = shipmentJSONObject.get("parcels");
+        JSONArray objects = JSONUtil.parseArray(parcels);
+        for (int i = 0; i < objects.size(); i++) {
+            //订单箱号
+            cn.hutool.json.JSONObject parcelsJsonObject = objects.getJSONObject(i);
+            //String cartonNo = parcelsJsonObject.get("number",String.class);
+            //OrderCaseVO orderCaseVO = orderCaseMapper.findOrderCaseByCartonNo(cartonNo);
+            String fabNo = parcelsJsonObject.get("number",String.class);
+            OrderCaseVO orderCaseVO = orderCaseMapper.findOrderCaseByfabNo(fabNo);
+            if(ObjectUtil.isEmpty(orderCaseVO)){
+                //orderCaseVO 为null
+                OrderCase orderCase = new OrderCase();
+                //String cartonNOa = NumberGeneratedUtils.getOrderNoByCode2("case_number");
+                String cartonNO = numberGeneratedMapper.getOrderNoByCode("case_number");
+                orderCase.setCartonNo(cartonNO);//箱号
+                orderCase.setFabNo(fabNo);//FBA
+
+                // 客户预报 长、宽、高、重、体积
+                orderCase.setAsnLength(parcelsJsonObject.get("client_length", BigDecimal.class));//客户测量的长度，单位cm
+                orderCase.setAsnWidth(parcelsJsonObject.get("client_width", BigDecimal.class));//客户测量的宽度，单位cm
+                orderCase.setAsnHeight(parcelsJsonObject.get("client_height", BigDecimal.class));//客户测量的高度，单位cm
+                orderCase.setAsnWeight(parcelsJsonObject.get("client_weight", BigDecimal.class));//客户测量的重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal asnVolume = orderCase.getAsnLength().multiply(orderCase.getAsnWidth()).multiply(orderCase.getAsnHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setAsnVolume(asnVolume);
+
+                // 仓库测量 长、宽、高、重、体积
+                orderCase.setWmsLength(parcelsJsonObject.get("chargeable_length", BigDecimal.class));//仓库测量的长度，单位cm
+                orderCase.setWmsWidth(parcelsJsonObject.get("chargeable_width", BigDecimal.class));//仓库测量的宽度，单位cm
+                orderCase.setWmsHeight(parcelsJsonObject.get("chargeable_height", BigDecimal.class));//仓库测量的高度，单位cm
+                orderCase.setWmsWeight(parcelsJsonObject.get("actual_weight", BigDecimal.class));//仓库测量的重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal wmsVolume = orderCase.getWmsLength().multiply(orderCase.getWmsWidth()).multiply(orderCase.getWmsHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setWmsVolume(wmsVolume);
+
+                // 最终确认 长、宽、高、重、体积
+                orderCase.setConfirmLength(parcelsJsonObject.get("chargeable_length", BigDecimal.class));//最终确认长度，单位cm
+                orderCase.setConfirmWidth(parcelsJsonObject.get("chargeable_width", BigDecimal.class));//最终确认宽度，单位cm
+                orderCase.setConfirmHeight(parcelsJsonObject.get("chargeable_height", BigDecimal.class));//最终确认高度，单位cm
+                orderCase.setConfirmWeight(parcelsJsonObject.get("actual_weight", BigDecimal.class));//最终确认重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal confirmVolume = orderCase.getConfirmLength().multiply(orderCase.getConfirmWidth()).multiply(orderCase.getConfirmHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setConfirmVolume(confirmVolume);
+
+                Long picking_time = parcelsJsonObject.get("picking_time", Long.class);
+                if(ObjectUtil.isNotEmpty(picking_time)){
+                    long l = picking_time*1000L;//秒转为毫秒
+                    LocalDateTime confirmWeighDate = Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDateTime();
+                    log.info("confirmWeighDate:{}", confirmWeighDate);
+                    orderCase.setConfirmWeighDate(confirmWeighDate);
+                }
+                orderCase.setStatus(0);//是否已确认（0-未确认,1-已确认）
+                orderCase.setRemark("新智慧同步箱号");//备注
+                orderCaseList.add(orderCase);
+            }else{
+                OrderCase orderCase = ConvertUtil.convert(orderCaseVO, OrderCase.class);
+
+                // 客户预报 长、宽、高、重、体积
+                orderCase.setAsnLength(parcelsJsonObject.get("client_length", BigDecimal.class));//客户测量的长度，单位cm
+                orderCase.setAsnWidth(parcelsJsonObject.get("client_width", BigDecimal.class));//客户测量的宽度，单位cm
+                orderCase.setAsnHeight(parcelsJsonObject.get("client_height", BigDecimal.class));//客户测量的高度，单位cm
+                orderCase.setAsnWeight(parcelsJsonObject.get("client_weight", BigDecimal.class));//客户测量的重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal asnVolume = orderCase.getAsnLength().multiply(orderCase.getAsnWidth()).multiply(orderCase.getAsnHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setAsnVolume(asnVolume);
+
+                // 仓库测量 长、宽、高、重、体积
+                orderCase.setWmsLength(parcelsJsonObject.get("chargeable_length", BigDecimal.class));//仓库测量的长度，单位cm
+                orderCase.setWmsWidth(parcelsJsonObject.get("chargeable_width", BigDecimal.class));//仓库测量的宽度，单位cm
+                orderCase.setWmsHeight(parcelsJsonObject.get("chargeable_height", BigDecimal.class));//仓库测量的高度，单位cm
+                orderCase.setWmsWeight(parcelsJsonObject.get("actual_weight", BigDecimal.class));//仓库测量的重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal wmsVolume = orderCase.getWmsLength().multiply(orderCase.getWmsWidth()).multiply(orderCase.getWmsHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setWmsVolume(wmsVolume);
+
+                // 最终确认 长、宽、高、重、体积
+                orderCase.setConfirmLength(parcelsJsonObject.get("chargeable_length", BigDecimal.class));//最终确认长度，单位cm
+                orderCase.setConfirmWidth(parcelsJsonObject.get("chargeable_width", BigDecimal.class));//最终确认宽度，单位cm
+                orderCase.setConfirmHeight(parcelsJsonObject.get("chargeable_height", BigDecimal.class));//最终确认高度，单位cm
+                orderCase.setConfirmWeight(parcelsJsonObject.get("actual_weight", BigDecimal.class));//最终确认重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal confirmVolume = orderCase.getConfirmLength().multiply(orderCase.getConfirmWidth()).multiply(orderCase.getConfirmHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setConfirmVolume(confirmVolume);
+
+                Long picking_time = parcelsJsonObject.get("picking_time", Long.class);
+                if(ObjectUtil.isNotEmpty(picking_time)){
+                    long l = picking_time*1000L;//秒转为毫秒
+                    LocalDateTime confirmWeighDate = Instant.ofEpochMilli(l).atZone(ZoneId.systemDefault()).toLocalDateTime();
+                    log.info("confirmWeighDate:{}", confirmWeighDate);
+                    orderCase.setConfirmWeighDate(confirmWeighDate);
+                }
+                orderCase.setStatus(0);//是否已确认（0-未确认,1-已确认）
+                orderCase.setRemark("新智慧同步箱号");//备注
+                orderCaseList.add(orderCase);
+            }
+
+            //遍历，新智慧运单，箱号下的商品
+            Object declarations = parcelsJsonObject.get("declarations");
+            JSONArray declarationsJSONArray = JSONUtil.parseArray(declarations);
+            for (int j=0; j < declarationsJSONArray.size(); j++){
+                //订单商品
+                cn.hutool.json.JSONObject declarationsJsonObject = declarationsJSONArray.getJSONObject(j);
+                String sku = declarationsJsonObject.get("sku", String.class);
+                CustomerGoodsVO customerGoodsVO = null;
+                if(ObjectUtil.isNotEmpty(sku)){
+                    //新智慧商品 sku 不为空
+                    customerGoodsVO = customerGoodsMapper.findCustomerGoodsByCustomerIdAndsku(shipmentVO.getCustomerId(), sku);
+                }else{
+                    //新智慧商品 sku 为空
+                    /**
+                     * By查询：
+                     * 产品中文品名*-name_zh
+                     * 产品英文品名*-name_en
+                     * 产品材质*-material
+                     * 产品海关编码-hscode
+                     * 产品用途-usage
+                     */
+                    Integer customerId = shipmentVO.getCustomerId();//客户id
+                    String nameCn = declarationsJsonObject.get("name_zh", String.class);//中文名
+                    String nameEn = declarationsJsonObject.get("name_en", String.class);//英文名
+                    String materialQuality = declarationsJsonObject.get("material", String.class);//材质
+                    String hscode = declarationsJsonObject.get("hscode", String.class);//海关编码
+                    String purpose = declarationsJsonObject.get("usage", String.class);//用途
+
+                    Map<String, Object> newWisdomParam = new HashMap<>();
+                    newWisdomParam.put("customerId", customerId);
+                    newWisdomParam.put("nameCn", nameCn);
+                    newWisdomParam.put("nameEn", nameEn);
+                    newWisdomParam.put("materialQuality", materialQuality);
+                    newWisdomParam.put("hscode", hscode);
+                    newWisdomParam.put("purpose", purpose);
+                    customerGoodsVO = customerGoodsMapper.findCustomerGoodsByNewWisdomParam(newWisdomParam);
+                }
+
+                if(ObjectUtil.isEmpty(customerGoodsVO)){
+                    //customerGoodsVO 为null
+                    CustomerGoods customerGoods = new CustomerGoods();
+                    customerGoods.setCustomerId(shipmentVO.getCustomerId());//客户ID(customer id)
+                    customerGoods.setSku(IdUtil.simpleUUID());//SKU商品编码
+                    customerGoods.setNameCn(declarationsJsonObject.get("name_zh", String.class));//中文名
+                    customerGoods.setNameEn(declarationsJsonObject.get("name_en", String.class));//英文名
+                    customerGoods.setMaterialQuality(declarationsJsonObject.get("material", String.class));//材质
+                    customerGoods.setHsCode(declarationsJsonObject.get("hscode", String.class));//海关编码
+                    customerGoods.setPurpose(declarationsJsonObject.get("usage", String.class));//用途
+                    customerGoods.setImageUrl(declarationsJsonObject.get("photos", String.class));//图片地址
+                    customerGoods.setIsSensitive("0");//是否敏感货物，1是0否，默认为0
+                    customerGoods.setTypes(1);//商品类型(1普货 2特货)
+                    customerGoods.setStatus(0);//审核状态代码：1-审核通过，0-等待审核，-1-审核不通过
+                    customerGoods.setRemark("原系统同步商品");//备注
+                    customerGoodsService.saveOrUpdate(customerGoods);
+                    Integer goodId = customerGoods.getId();
+                    OrderShop orderShop = new OrderShop();
+                    orderShop.setGoodId(goodId);//商品编号(customer_goods id)
+                    orderShop.setQuantity(declarationsJsonObject.get("qty", Integer.class));//数量
+                    orderShopList.add(orderShop);
+                }else{
+                    //customerGoodsVO 不为null
+                    Integer goodId = customerGoodsVO.getId();
+                    OrderShop orderShop = new OrderShop();
+                    orderShop.setGoodId(goodId);//商品编号(customer_goods id)
+                    orderShop.setQuantity(declarationsJsonObject.get("qty", Integer.class));//数量
+                    orderShopList.add(orderShop);
+                }
+            }
+        }
+
+        //对商品进行合并,统计数量
+        Map<Integer, List<OrderShop>> integerListMap = groupListByGoodId(orderShopList);
+        orderShopList.clear();
+        // entrySet遍历，在键和值都需要时使用（最常用）
+        for (Map.Entry<Integer, List<OrderShop>> entry : integerListMap.entrySet()) {
+            Integer goodId = entry.getKey();//商品id
+            List<OrderShop> orderShops = entry.getValue();
+            Integer quantity = 0;
+            for (int i=0; i<orderShops.size(); i++){
+                OrderShop orderShop = orderShops.get(i);
+                quantity += orderShop.getQuantity();//数量
+            }
+            OrderShop shop = new OrderShop();
+            shop.setGoodId(goodId);//商品编号(customer_goods id)
+            shop.setQuantity(quantity);//数量
+            orderShopList.add(shop);
+        }
+        System.out.println(orderShopList);
+
+    }
+
+    /**
+     * 根据商品id，分组
+     * @param orderShopList 订单商品
+     * @return
+     */
+    private Map<Integer, List<OrderShop>> groupListByGoodId(List<OrderShop> orderShopList) {
+        Map<Integer, List<OrderShop>> map = new HashMap<>();
+        for (OrderShop orderShop : orderShopList) {
+            Integer key = orderShop.getGoodId();//商品id
+            List<OrderShop> tmpList = map.get(key);
+            if (CollUtil.isEmpty(tmpList)) {
+                tmpList = new ArrayList<>();
+                tmpList.add(orderShop);
+                map.put(key, tmpList);
+            } else {
+                tmpList.add(orderShop);
+            }
+        }
+        return map;
+    }
+
+    /**
+     * 组装数据
+     * @param shipmentVO
+     */
+    private void fit(ShipmentVO shipmentVO) {
+        String shipmentJson = shipmentVO.getShipmentJson();
+        if (StrUtil.isNotEmpty(shipmentJson)) {
+            ShipmentVO shipment = null;
+            try {
+                shipment = JSONUtil.toBean(shipmentJson, ShipmentVO.class);
+                shipmentVO.setAttrs(shipment.getAttrs());
+                shipmentVO.setTo_address(shipment.getTo_address());
+                shipmentVO.setFrom_address(shipment.getFrom_address());
+                shipmentVO.setCharge_list(shipment.getCharge_list());
+                shipmentVO.setParcels(shipment.getParcels());
+                shipmentVO.setPicking_time(shipment.getPicking_time());
+                shipmentVO.setRates_time(shipment.getRates_time());
+                shipmentVO.setCreat_time(shipment.getCreat_time());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 根据 货箱编号*-number 分组，再次组装数据
+     * @param parcels 货箱编号
+     * @return
+     */
+    private Map<String, List<Map>> groupListByNumber(List<Map> parcels) {
+        Map<String, List<Map>> map = new HashMap<>();
+        for (Map parcel : parcels) {
+            String key = MapUtil.getStr(parcel, "number");//货箱编号
+            List<Map> tmpList = map.get(key);
+            if (CollUtil.isEmpty(tmpList)) {
+                tmpList = new ArrayList<>();
+                tmpList.add(parcel);
+                map.put(key, tmpList);
+            } else {
+                tmpList.add(parcel);
+            }
+        }
+        return map;
     }
 
     private String extracted(String url, Map<String, Object> requestMap) {

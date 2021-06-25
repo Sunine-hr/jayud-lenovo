@@ -8,6 +8,7 @@ import com.jayud.mall.model.po.OrderClearanceFile;
 import com.jayud.mall.model.po.OrderCustomsFile;
 import com.jayud.mall.model.po.OrderInfo;
 import com.jayud.mall.model.vo.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -339,4 +340,12 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param form
      */
     void cancelStatusVerify(OrderInfoCancelForm form);
+
+    /**
+     * 使用新智慧Excel，修改订单箱子的数据
+     * @param orderId 订单id
+     * @param file 新智慧Excel
+     * @return
+     */
+    OrderInfoVO importExcelUpdateCaseByNewWisdom(Long orderId, MultipartFile file);
 }

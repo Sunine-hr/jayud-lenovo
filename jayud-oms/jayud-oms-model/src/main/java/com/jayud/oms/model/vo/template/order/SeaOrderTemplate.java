@@ -185,6 +185,27 @@ public class SeaOrderTemplate extends BaseOrderTemplate {
     @ApiModelProperty(value = "状态(S_0待接单,S_1海运接单,S_2订船,S_3订单入仓, S_4提交补料,S_5草稿提单,S_6放单确认,S_7确认离港,S_8确认到港,S_9海外代理S_10确认签收)")
     private String status;
 
+    @ApiModelProperty(value = "目的地")
+    private String destination;
+
+    @ApiModelProperty(value = "截关时间")
+    private String closingTime;
+
+    @ApiModelProperty(value = "SO")
+    private String so;
+
+    @ApiModelProperty(value = "截仓时间")
+    private String cutOffTime;
+
+//    @ApiModelProperty(value = "操作部门")
+//    private String departmentId;
+
+//    @ApiModelProperty(value = "操作部门")
+//    private String department;
+
+    @ApiModelProperty(value = "发货地")
+    private String placeOfDelivery;
+
 
 
     public void setStatus(String status) {

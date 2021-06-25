@@ -115,8 +115,8 @@ public class InputMainOrderForm {
             throw new JayudBizException(ResultEnum.PARAM_ERROR);
         }
 
-        if (StringUtils.isEmpty(this.operationTime)) {
-            throw new JayudBizException("请输入操作时间");
-        }
+//        if (StringUtils.isEmpty(this.operationTime)) {
+//            throw new JayudBizException("请输入操作时间");
+//        }
     }
 }

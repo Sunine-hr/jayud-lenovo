@@ -13,6 +13,7 @@ import com.jayud.oceanship.bo.AuditInfoForm;
 import com.jayud.oceanship.bo.SeaProcessOptForm;
 import com.jayud.oceanship.po.OrderFlowSheet;
 import com.jayud.oceanship.vo.GoodsVO;
+import com.jayud.oceanship.vo.InitComboxSVO;
 import com.jayud.oceanship.vo.OrderAddressVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -232,4 +233,11 @@ public interface OmsClient {
     ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
                                             @RequestParam("legalIds") List<Long> legalIds,
                                             @RequestParam("orderNos")List<String> orderNos);
+
+    /**
+     * 根据字典类型下拉选项字典
+     */
+    @RequestMapping(value = "/api/initDictNameByDictTypeCode")
+    public ApiResult<List<InitComboxSVO>> initDictNameByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode);
+
 }

@@ -18,21 +18,39 @@ import java.util.List;
  * @since
  */
 @Data
-public class QuerySeaOrderForm extends BasePageForm {
+public class QuerySeaBillForm extends BasePageForm {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "海运订单编号")
-    private String orderNo;
+    @ApiModelProperty(value = "提单编号")
+    private String billNo;
 
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 
-    @ApiModelProperty(value = "状态(k_0待接单,k_1空运接单,k_2订舱,k_3订单入仓, k_4确认提单,k_5确认离港,k_6确认到港,k_7海外代理k_8确认签收)")
-    private String status;
+    @ApiModelProperty(value = "进出口类型")
+    private Integer impAndExpType;
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;
+
+    @ApiModelProperty(value = "贸易方式(0:FOB,1:CIF,2:DAP,3:FAC,4:DDU,5:DDP)")
+    private Integer terms;
+
+    @ApiModelProperty(value = "创建人")
+    private String createUser;
+
+    @ApiModelProperty(value = "so")
+    private String so;
+
+    @ApiModelProperty(value = "截补料时间")
+    private String[] cutReplenishTime;
+
+    @ApiModelProperty(value = "开始截补料时间")
+    private String startCutReplenishTime;
+
+    @ApiModelProperty(value = "结束截补料时间")
+    private String endCutReplenishTime;
 
     @ApiModelProperty(value = "出发港口")
     private String portDeparture;
@@ -53,11 +71,8 @@ public class QuerySeaOrderForm extends BasePageForm {
     @JsonIgnore
     private List<String> mainOrderNos;
 
-    @ApiModelProperty(value = "流程状态")
-    private List<Integer> processStatusList;
-
-    @ApiModelProperty(value = "操作指令,cmd = costAudit 费用审核")
-    private String cmd;
+    @ApiModelProperty(value = "提单或者拼柜提单  bill or spellBill")
+    private String table;
 
     @ApiModelProperty(value = "当前登录用户,前台传")
     private String loginUserName;
@@ -75,6 +90,11 @@ public class QuerySeaOrderForm extends BasePageForm {
         if(time != null && time.length>0){
             this.startTime = time[0];
             this.endTime = time[1];
+        }
+        String[] time1 = this.cutReplenishTime;
+        if(time1 != null && time1.length>0){
+            this.startCutReplenishTime = time1[0];
+            this.endCutReplenishTime = time1[1];
         }
     }
 }

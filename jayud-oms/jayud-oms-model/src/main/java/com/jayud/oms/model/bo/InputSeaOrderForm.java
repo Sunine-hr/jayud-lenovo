@@ -2,6 +2,7 @@ package com.jayud.oms.model.bo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -114,11 +115,37 @@ public class InputSeaOrderForm {
     @ApiModelProperty(value = "货品信息")
     private List<AddGoodsForm> goodsForms;
 
-    @ApiModelProperty(value = "提单文件路径(多个逗号隔开)")
+    @ApiModelProperty(value = "附件集合信息")
+    private List<FileView> fileViews;
+
+    @ApiModelProperty(value = "文件路径(多个逗号隔开)")
     private String filePath;
 
-    @ApiModelProperty(value = "提单文件名称(多个逗号隔开)")
+    @ApiModelProperty(value = "文件名称(多个逗号隔开)")
     private String fileName;
+
+    @ApiModelProperty(value = "目的地")
+    private String destination;
+
+    @ApiModelProperty(value = "截关时间")
+    private String closingTime;
+
+    @ApiModelProperty(value = "SO")
+    private String so;
+
+    @ApiModelProperty(value = "截仓时间")
+    private String cutOffTime;
+
+    @ApiModelProperty(value = "代理人地址集合")
+    private List<AddOrderAddressForm> agentAddress;
+
+    @ApiModelProperty(value = "操作部门")
+    private Long departmentId;
+
+    @ApiModelProperty(value = "发货地")
+    private String placeOfDelivery;
+
+
 
     /**
      * 校验创建海运子订单参数
@@ -130,53 +157,53 @@ public class InputSeaOrderForm {
                 || this.impAndExpType == null || this.terms == null
                 || StringUtils.isEmpty(this.portDepartureCode)
                 || StringUtils.isEmpty(this.portDestinationCode)
-                || this.goodTime == null) {
+                || this.goodTime == null || this.closingTime == null) {
             message = "参数不正确";
         }
         // 发货/收货地址是必填项
-        if (CollectionUtil.isEmpty(this.deliveryAddress)) {
-            for (AddOrderAddressForm address : deliveryAddress) {
-                if(StringUtils.isEmpty(address.getAddress())){
-                    log.warn("发货地址不能为空");
-                    message = "发货地址不能为空";
-                }
-                if(StringUtils.isEmpty(address.getContacts())){
-                    log.warn("联系人不能为空");
-                    message = "联系人不能为空";
-                }
-            }
-            log.warn("发货地址信息不能为空");
-            message = "发货地址信息不能为空";
-        }
-        if (CollectionUtil.isEmpty(this.shippingAddress)) {
-            for (AddOrderAddressForm address : deliveryAddress) {
-                if(StringUtils.isEmpty(address.getPhone())){
-                    log.warn("电话号码不能为空");
-                    message = "电话号码不能为空";
-                }
-                if(StringUtils.isEmpty(address.getAddress())){
-                    log.warn("发货地址不能为空");
-                    message = "发货地址不能为空";
-                }
-                if(StringUtils.isEmpty(address.getContacts())){
-                    log.warn("联系人不能为空");
-                    message = "联系人不能为空";
-                }
-            }
-            log.warn("收货地址信息不能为空");
-            message = "收货地址信息不能为空";
-        }
-        if (this.notificationAddress.size() == 0 ||
-                StringUtils.isEmpty(this.notificationAddress.get(0).getAddress())) {
-            this.notificationAddress = null;
-        }
-
-        //货品信息
-        for (AddGoodsForm goodsForm : goodsForms) {
-            if (!goodsForm.checkCreateAirOrder()) {
-                message = "商品信息有缺失";
-            }
-        }
+//        if (CollectionUtil.isEmpty(this.deliveryAddress)) {
+//            for (AddOrderAddressForm address : deliveryAddress) {
+//                if(StringUtils.isEmpty(address.getAddress())){
+//                    message = "发货地址不能为空";
+//                    log.warn("发货地址不能为空");
+//                }
+//                if(StringUtils.isEmpty(address.getContacts())){
+//                    log.warn("联系人不能为空");
+//                    message = "联系人不能为空";
+//                }
+//            }
+//            log.warn("发货地址信息不能为空");
+//            message = "发货地址信息不能为空";
+//        }
+//        if (CollectionUtil.isEmpty(this.shippingAddress)) {
+//            for (AddOrderAddressForm address : deliveryAddress) {
+//                if(StringUtils.isEmpty(address.getPhone())){
+//                    log.warn("电话号码不能为空");
+//                    message = "电话号码不能为空";
+//                }
+//                if(StringUtils.isEmpty(address.getAddress())){
+//                    log.warn("发货地址不能为空");
+//                    message = "发货地址不能为空";
+//                }
+//                if(StringUtils.isEmpty(address.getContacts())){
+//                    log.warn("联系人不能为空");
+//                    message = "联系人不能为空";
+//                }
+//            }
+//            log.warn("收货地址信息不能为空");
+//            message = "收货地址信息不能为空";
+//        }
+//        if (this.notificationAddress.size() == 0 ||
+//                StringUtils.isEmpty(this.notificationAddress.get(0).getAddress())) {
+//            this.notificationAddress = null;
+//        }
+//
+//        //货品信息
+//        for (AddGoodsForm goodsForm : goodsForms) {
+//            if (!goodsForm.checkCreateAirOrder()) {
+//                message = "商品信息有缺失";
+//            }
+//        }
         if(this.cabinetType.equals(1)){
             if(CollectionUtil.isNotEmpty(this.cabinetSizeNumbers)){
                 for (AddCabinetSizeNumber cabinetSizeNumber : this.cabinetSizeNumbers) {
@@ -201,11 +228,40 @@ public class InputSeaOrderForm {
      */
     public void assemblyAddress() {
         this.orderAddressForms = new ArrayList<>();
-        this.orderAddressForms.addAll(this.deliveryAddress);
-        this.orderAddressForms.addAll(this.shippingAddress);
-        if (CollectionUtil.isNotEmpty(this.notificationAddress)
-                && StringUtils.isNotEmpty(this.notificationAddress.get(0).getAddress())) {
+        if(CollectionUtil.isNotEmpty(this.deliveryAddress)){
+            this.orderAddressForms.addAll(this.deliveryAddress);
+        }
+        if(CollectionUtil.isNotEmpty(this.shippingAddress)){
+            this.orderAddressForms.addAll(this.shippingAddress);
+        }
+
+        if (CollectionUtil.isNotEmpty(this.notificationAddress)) {
             this.orderAddressForms.addAll(this.notificationAddress);
+        }
+
+        if (CollectionUtil.isNotEmpty(this.agentAddress)) {
+            this.orderAddressForms.addAll(this.agentAddress);
+        }
+    }
+
+    public void assemblyUP() {
+        if(CollectionUtil.isNotEmpty(this.orderAddressForms)){
+            for (AddOrderAddressForm orderAddressForm : this.orderAddressForms) {
+                orderAddressForm.setAddress(orderAddressForm.getAddress().toUpperCase());
+            }
+        }
+        if(CollectionUtil.isNotEmpty(this.goodsForms)){
+            for (AddGoodsForm goodsForm : this.goodsForms) {
+                if(goodsForm.getName() != null){
+                    goodsForm.setName(goodsForm.getName().toUpperCase());
+                }
+                if(goodsForm.getLabel() != null){
+                    goodsForm.setLabel(goodsForm.getLabel().toUpperCase());
+                }
+            }
+        }
+        if(this.so != null){
+            this.so = this.so.toUpperCase();
         }
     }
 }

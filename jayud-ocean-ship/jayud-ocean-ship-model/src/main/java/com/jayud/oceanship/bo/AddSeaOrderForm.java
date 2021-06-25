@@ -125,7 +125,30 @@ public class AddSeaOrderForm {
     private String fileName;
 
     @ApiModelProperty(value = "附件集合")
-    private List<FileView> fileViewList = new ArrayList<>();
+    private List<FileView> fileViews;
+
+    @ApiModelProperty(value = "目的地")
+    private String destination;
+
+    @ApiModelProperty(value = "截关时间")
+    private String closingTime;
+
+    @ApiModelProperty(value = "SO")
+    private String so;
+
+    @ApiModelProperty(value = "截仓时间")
+    private String cutOffTime;
+
+    @ApiModelProperty(value = "代理人地址集合")
+    private List<AddOrderAddressForm> agentAddress;
+
+    @ApiModelProperty(value = "操作部门")
+    private Long departmentId;
+
+    @ApiModelProperty(value = "发货地")
+    private String placeOfDelivery;
+
+
 
 
     /**

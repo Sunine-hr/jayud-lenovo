@@ -137,6 +137,7 @@ public class StorageOutOrderController {
         List<String> mainOrder = new ArrayList<>();
         List<Long> entityIds = new ArrayList<>();
         List<String> subOrderNos = new ArrayList<>();
+        List<Long> departmentIds = new ArrayList<>();
 
         List<String> unitCodes = new ArrayList<>();
         for (StorageOutOrderFormVO record : records) {
@@ -145,12 +146,19 @@ public class StorageOutOrderController {
             entityIds.add(record.getLegalEntityId());
             unitCodes.add(record.getUnitCode());
             subOrderNos.add(record.getOrderNo());
+            departmentIds.add(record.getDepartmentId());
         }
 
         //查询法人主体
         ApiResult legalEntityResult = null;
         if (CollectionUtils.isNotEmpty(entityIds)) {
             legalEntityResult = this.oauthClient.getLegalEntityByLegalIds(entityIds);
+        }
+
+        //查询部门名称
+        ApiResult departmentResult = null;
+        if(CollectionUtils.isNotEmpty(departmentIds)){
+            departmentResult = this.oauthClient.getDepartmentByDepartment(departmentIds);
         }
 
         //获取结算单位信息
@@ -168,6 +176,8 @@ public class StorageOutOrderController {
             record.assemblyMainOrderData(result.getData());
             //组装法人名称
             record.assemblyLegalEntity(legalEntityResult);
+
+            record.assemblyDepartment(departmentResult);
 
             //拼装商品信息
             record.assemblyGoodsInfo(warehouseGoodsService.getList(record.getId(),record.getOrderNo(),2));

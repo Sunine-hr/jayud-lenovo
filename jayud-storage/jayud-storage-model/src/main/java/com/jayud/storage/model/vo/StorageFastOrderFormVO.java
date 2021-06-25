@@ -269,6 +269,29 @@ public class StorageFastOrderFormVO {
     }
 
     /**
+     * 组装部门名称
+     *
+     * @param departmentResult
+     */
+    public void assemblyDepartment(ApiResult departmentResult) {
+        if (departmentResult == null) {
+            return;
+        }
+        if (departmentResult.getCode() != HttpStatus.SC_OK) {
+            log.warn("请求法人主体信息失败");
+            return;
+        }
+        JSONArray legalEntitys = new JSONArray(departmentResult.getData());
+        for (int i = 0; i < legalEntitys.size(); i++) {
+            JSONObject json = legalEntitys.getJSONObject(i);
+            if (this.departmentId.equals(json.getLong("id"))) { //法人主体配对
+                this.departmentName = json.getStr("legalName");
+                break;
+            }
+        }
+    }
+
+    /**
      * 组装结算单位数据
      */
     public void assemblyUnitCodeInfo(ApiResult unitCodeInfo) {

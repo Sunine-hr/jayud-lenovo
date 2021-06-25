@@ -177,6 +177,32 @@ public class SeaOrderVO {
     @ApiModelProperty(value = "补料信息集合")
     private List<SeaReplenishmentVO> seaReplenishments;
 
+    @ApiModelProperty(value = "截关时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime closingTime;
+
+    @ApiModelProperty(value = "截仓时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime cutOffTime;
+
+    @ApiModelProperty(value = "目的地")
+    private String destination;
+
+    @ApiModelProperty(value = "SO")
+    private String so;
+
+    @ApiModelProperty(value = "代理人地址集合")
+    private List<OrderAddressVO> agentAddress;
+
+    @ApiModelProperty(value = "操作部门")
+    private Long departmentId;
+
+    @ApiModelProperty(value = "操作部门")
+    private String department;
+
+    @ApiModelProperty(value = "发货地")
+    private String placeOfDelivery;
+
     public void processingAddress(OrderAddressVO addressVO) {
         switch (addressVO.getType()) {
             case 0:
@@ -187,6 +213,9 @@ public class SeaOrderVO {
                 break;
             case 2:
                 this.notificationAddress = Collections.singletonList(addressVO);
+                break;
+            case 5:
+                this.agentAddress = Collections.singletonList(addressVO);
                 break;
         }
     }

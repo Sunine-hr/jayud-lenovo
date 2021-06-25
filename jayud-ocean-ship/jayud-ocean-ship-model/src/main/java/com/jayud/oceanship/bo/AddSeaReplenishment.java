@@ -1,8 +1,10 @@
 package com.jayud.oceanship.bo;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.utils.FileView;
 import com.jayud.oceanship.po.CabinetSizeNumber;
 import com.jayud.oceanship.po.SeaContainerInformation;
@@ -149,6 +151,49 @@ public class AddSeaReplenishment extends Model<AddSeaReplenishment> {
     @ApiModelProperty(value = "提单文件名称(多个逗号隔开)")
     private String fileName;
 
+    @ApiModelProperty(value = "目的地")
+    private String destination;
+
+    @ApiModelProperty(value = "SO")
+    private String so;
+
+    @ApiModelProperty(value = "截关时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private String closingTime;
+
+    @ApiModelProperty(value = "截仓时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private String cutOffTime;
+
+    @ApiModelProperty(value = "代理人地址集合")
+    private List<AddOrderAddressForm> agentAddress;
+
+    @ApiModelProperty(value = "发货地")
+    private String placeOfDelivery;
+
+    @ApiModelProperty(value = "运输条款")
+    private String transportClause;
+
+    @ApiModelProperty(value = "船名")
+    private String shipName;
+
+    @ApiModelProperty(value = "船次")
+    private String shipNumber;
+
+    @ApiModelProperty(value = "出单方式")
+    private String deliveryMode;
+
+    @ApiModelProperty(value = "附加服务")
+    private List<String> additionalServices;
+
+    @ApiModelProperty(value = "开船时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private String sailingTime;
+
+    @ApiModelProperty(value = "订柜信息")
+    private String orderingInformation;
+
+
     @ApiModelProperty(value = "附件集合")
     private List<FileView> fileViewList = new ArrayList<>();
 
@@ -162,11 +207,31 @@ public class AddSeaReplenishment extends Model<AddSeaReplenishment> {
      */
     public void assemblyAddress() {
         this.orderAddressForms = new ArrayList<>();
-        this.orderAddressForms.addAll(this.deliveryAddress);
-        this.orderAddressForms.addAll(this.shippingAddress);
-        if (CollectionUtils.isNotEmpty(this.notificationAddress)
-                && StringUtils.isNotEmpty(this.notificationAddress.get(0).getAddress())) {
+        if(CollectionUtil.isNotEmpty(this.deliveryAddress)){
+            this.orderAddressForms.addAll(this.deliveryAddress);
+        }
+        if(CollectionUtil.isNotEmpty(this.shippingAddress)){
+            this.orderAddressForms.addAll(this.shippingAddress);
+        }
+
+        if (CollectionUtil.isNotEmpty(this.notificationAddress)) {
             this.orderAddressForms.addAll(this.notificationAddress);
+        }
+
+        if (CollectionUtil.isNotEmpty(this.agentAddress)) {
+            this.orderAddressForms.addAll(this.agentAddress);
+        }
+    }
+
+    public void toUp(){
+        if(this.shipName != null){
+            this.shipName = this.shipName.toUpperCase();
+        }
+        if(this.shipNumber != null){
+            this.shipNumber = this.shipNumber.toUpperCase();
+        }
+        if(this.so != null){
+            this.so = this.so.toUpperCase();
         }
     }
 

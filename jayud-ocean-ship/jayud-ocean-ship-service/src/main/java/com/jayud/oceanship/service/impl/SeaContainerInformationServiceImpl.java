@@ -32,6 +32,15 @@ public class SeaContainerInformationServiceImpl extends ServiceImpl<SeaContainer
     }
 
     @Override
+    public List<SeaContainerInformationVO> getListBySeaRepNo(String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("sea_rep_no",orderNo);
+        List list = this.baseMapper.selectList(queryWrapper);
+        List list1 = ConvertUtil.convertList(list, SeaContainerInformationVO.class);
+        return list1;
+    }
+
+    @Override
     public int deleteSeaContainerInfo(List<String> orderNo) {
         return this.baseMapper.deleteSeaContainerInfo(orderNo);
     }

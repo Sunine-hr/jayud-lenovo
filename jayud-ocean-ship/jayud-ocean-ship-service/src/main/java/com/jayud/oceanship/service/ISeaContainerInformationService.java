@@ -18,5 +18,7 @@ public interface ISeaContainerInformationService extends IService<SeaContainerIn
 
     List<SeaContainerInformationVO> getList(Long id);
 
+    List<SeaContainerInformationVO> getListBySeaRepNo(String orderNo);
+
     int deleteSeaContainerInfo(List<String> orderNo);
 }

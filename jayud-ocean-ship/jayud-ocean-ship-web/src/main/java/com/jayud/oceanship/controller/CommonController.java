@@ -1,5 +1,6 @@
 package com.jayud.oceanship.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
@@ -10,6 +11,7 @@ import com.jayud.oceanship.service.ISeaPortService;
 import com.jayud.oceanship.service.ITermsService;
 import com.jayud.oceanship.po.CabinetType;
 import com.jayud.oceanship.vo.CabinetTypeVO;
+import com.jayud.oceanship.vo.InitComboxSVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +62,9 @@ public class CommonController {
         List<InitComboxStrVO> initComboxStrVOS = this.seaPortService.initSeaPort();
         List<InitComboxVO> initComboxVO = this.terms.initTerms();
         List<CabinetTypeVO> list = cabinetTypeService.initCabinetType();
+        List<InitComboxSVO> data = omsClient.initDictNameByDictTypeCode("transportClause").getData();
+        List<InitComboxSVO> data1 = omsClient.initDictNameByDictTypeCode("deliveryMode").getData();
+
 
         Map<String, Object> response = new HashMap<>();
         //空运港口下拉选项
@@ -69,6 +74,8 @@ public class CommonController {
 
         response.put("cabinetType",list);
         response.put("cabinetSize",list.get(0).getCabinetSizes());
+        response.put("transportClause",data);
+        response.put("deliveryMode",data1);
         return CommonResult.success(response);
     }
 

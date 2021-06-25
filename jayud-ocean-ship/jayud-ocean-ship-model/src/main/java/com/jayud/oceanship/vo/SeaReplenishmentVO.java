@@ -1,8 +1,10 @@
 package com.jayud.oceanship.vo;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.utils.FileView;
 import com.jayud.oceanship.bo.AddGoodsForm;
 import com.jayud.oceanship.bo.AddOrderAddressForm;
@@ -19,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -159,9 +162,60 @@ public class SeaReplenishmentVO extends Model<SeaReplenishmentVO> {
     @ApiModelProperty(value = "附件集合")
     private List<FileView> fileViewList = new ArrayList<>();
 
+    @ApiModelProperty(value = "目的地")
+    private String destination;
+
+    @ApiModelProperty(value = "SO")
+    private String so;
+
+    @ApiModelProperty(value = "截关时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime closingTime;
+
+    @ApiModelProperty(value = "截仓时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime cutOffTime;
+
+    @ApiModelProperty(value = "代理人地址集合")
+    private List<OrderAddressVO> agentAddress;
+
+    @ApiModelProperty(value = "发货地")
+    private String placeOfDelivery;
+
+    @ApiModelProperty(value = "运输条款")
+    private String transportClause;
+
+    @ApiModelProperty(value = "船名")
+    private String shipName;
+
+    @ApiModelProperty(value = "船次")
+    private String shipNumber;
+
+    @ApiModelProperty(value = "出单方式")
+    private String deliveryMode;
+
+    @ApiModelProperty(value = "附加服务")
+    private String additionalService;
+
+    @ApiModelProperty(value = "附加服务")
+    private List<String> additionalServices;
+
+    @ApiModelProperty(value = "开船时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime sailingTime;
+
+    @ApiModelProperty(value = "订柜信息")
+    private String orderingInformation;
 
     public void getFile(String path){
         this.fileViewList = com.jayud.common.utils.StringUtils.getFileViews(this.getFilePath(),this.getFileName(),path);
+    }
+
+    public void assemblyAdditionalServices(){
+        if(this.additionalService != null){
+            this.additionalServices = Arrays.asList(this.additionalService.split(";"));
+        }
+
     }
 
     /**
@@ -169,11 +223,19 @@ public class SeaReplenishmentVO extends Model<SeaReplenishmentVO> {
      */
     public void assemblyAddress() {
         this.orderAddressForms = new ArrayList<>();
-        this.orderAddressForms.addAll(this.deliveryAddress);
-        this.orderAddressForms.addAll(this.shippingAddress);
-        if (CollectionUtils.isNotEmpty(this.notificationAddress)
-                && StringUtils.isNotEmpty(this.notificationAddress.get(0).getAddress())) {
+        if(CollectionUtil.isNotEmpty(this.deliveryAddress)){
+            this.orderAddressForms.addAll(this.deliveryAddress);
+        }
+        if(CollectionUtil.isNotEmpty(this.shippingAddress)){
+            this.orderAddressForms.addAll(this.shippingAddress);
+        }
+
+        if (CollectionUtil.isNotEmpty(this.notificationAddress)) {
             this.orderAddressForms.addAll(this.notificationAddress);
+        }
+
+        if (CollectionUtil.isNotEmpty(this.agentAddress)) {
+            this.orderAddressForms.addAll(this.agentAddress);
         }
     }
 
@@ -188,7 +250,17 @@ public class SeaReplenishmentVO extends Model<SeaReplenishmentVO> {
             case 2:
                 this.notificationAddress = Collections.singletonList(addressVO);
                 break;
+            case 5:
+                this.agentAddress = Collections.singletonList(addressVO);
         }
+    }
+
+    public void assemblyCabinetInfo(List<CabinetSizeNumberVO> cabinetSizeNumberVOS) {
+        StringBuilder sb = new StringBuilder();
+        for (CabinetSizeNumberVO cabinetSizeNumberVO : cabinetSizeNumberVOS) {
+            sb.append(cabinetSizeNumberVO.getCabinetTypeSize()).append("/").append(cabinetSizeNumberVO.getNumber()).append(" ");
+        }
+        this.orderingInformation = sb.toString();
     }
 
 

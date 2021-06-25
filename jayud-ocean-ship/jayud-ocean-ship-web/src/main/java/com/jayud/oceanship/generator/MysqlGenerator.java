@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-ocean-ship\\jayud-ocean-ship-service",
                 "jayud-ocean-ship\\jayud-ocean-ship-web"};
         for (String model : models) {
-            shell(model,"sea_container_information");
+            shell(model,"sea_bill");
 
         }
     }
@@ -64,8 +64,8 @@ public class MysqlGenerator {
         dsc.setDbType(DbType.MYSQL);
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("1234");
-        dsc.setUrl("jdbc:mysql://113.100.140.251:6335/jayud_oms?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&autoReconnect=true");
+        dsc.setPassword("123456");
+        dsc.setUrl("jdbc:mysql://localhost:3306/jayud_oms?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&autoReconnect=true");
         mpg.setDataSource(dsc);
 
         // 策略配置

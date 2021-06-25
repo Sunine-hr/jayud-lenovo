@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oceanship.mapper.SeaBillMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oceanship.po.SeaBill">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="sea_order_id" property="seaOrderId" />
+        <result column="sea_order_no" property="seaOrderNo" />
+        <result column="cut_replenish_time" property="cutReplenishTime" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="imp_and_exp_type" property="impAndExpType" />
+        <result column="terms" property="terms" />
+        <result column="port_departure_code" property="portDepartureCode" />
+        <result column="port_destination_code" property="portDestinationCode" />
+        <result column="good_time" property="goodTime" />
+        <result column="is_freight_collect" property="isFreightCollect" />
+        <result column="is_other_expenses_paid" property="isOtherExpensesPaid" />
+        <result column="is_dangerous_goods" property="isDangerousGoods" />
+        <result column="is_charged" property="isCharged" />
+        <result column="transit_port_code" property="transitPortCode" />
+        <result column="cabinet_type" property="cabinetType" />
+        <result column="cabinet_type_name" property="cabinetTypeName" />
+        <result column="transport_clause" property="transportClause" />
+        <result column="ship_name" property="shipName" />
+        <result column="ship_number" property="shipNumber" />
+        <result column="delivery_mode" property="deliveryMode" />
+        <result column="additional_service" property="additionalService" />
+        <result column="destination" property="destination" />
+        <result column="place_of_delivery" property="placeOfDelivery" />
+        <result column="closing_time" property="closingTime" />
+        <result column="cut_off_time" property="cutOffTime" />
+        <result column="so" property="so" />
+        <result column="sailing_time" property="sailingTime" />
+        <result column="ordering_information" property="orderingInformation" />
+        <result column="shipper_information" property="shipperInformation" />
+        <result column="consignee_information" property="consigneeInformation" />
+        <result column="notifier_information" property="notifierInformation" />
+        <result column="agent_information" property="agentInformation" />
+        <result column="shipping_mark" property="shippingMark" />
+        <result column="good_name" property="goodName" />
+        <result column="board_number" property="boardNumber" />
+        <result column="plate_unit" property="plateUnit" />
+        <result column="number" property="number" />
+        <result column="number_unit" property="numberUnit" />
+        <result column="weight" property="weight" />
+        <result column="volume" property="volume" />
+        <result column="bill_no" property="billNo" />
+        <result column="delivery_wharf" property="deliveryWharf" />
+        <result column="voyage" property="voyage" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, sea_order_id, sea_order_no, cut_replenish_time, create_user, create_time, update_user, update_time, imp_and_exp_type, terms, port_departure_code, port_destination_code, good_time, is_freight_collect, is_other_expenses_paid, is_dangerous_goods, is_charged, transit_port_code, cabinet_type, cabinet_type_name, transport_clause, ship_name, ship_number, delivery_mode, additional_service, destination, place_of_delivery, closing_time, cut_off_time, so, 
+sailing_time, ordering_information, shipper_information, consignee_information, notifier_information, agent_information, shipping_mark, good_name, board_number, plate_unit, number, number_unit, weight, volume, bill_no, delivery_wharf, voyage
+    </sql>
+
+    <select id="findBillByPage" resultType="com.jayud.oceanship.vo.SeaBillFormVO">
+        select sb.id,sb.order_no orderNo,sea_order_id seaOrderId,sea_order_no seaOrderNo,
+        sb.cut_replenish_time cutReplenishTime,sb.create_user createUser,sb.create_time createTime,
+        sb.update_user updateUser,sb.update_time updateTime,
+        sb.imp_and_exp_type impAndExpType,sb.terms,
+        terms.name termsDesc,
+        sb.port_departure_code portDepartureCode,
+        sp.name portDepartureName,
+        sb.port_destination_code portDestinationCode,
+        sp1.name portDestinationName,
+        sb.good_time goodTime,sb.is_freight_collect isFreightCollect,
+        sb.is_other_expenses_paid isOtherExpensesPaid,
+        sb.is_dangerous_goods isDangerousGoods,sb.is_charged isCharged,
+        sb.transit_port_code transitPortCode,
+        sp2.name transitPort,
+        sb.cabinet_type cabinetType,
+        sb.cabinet_type_name cabinetTypeName,
+        sb.transport_clause transportClause,
+        sb.so so ,
+        sb.destination destination,
+        sb.closing_time closingTime,
+        sb.cut_off_time cutOffTime,
+        sb.place_of_delivery placeOfDelivery,
+        sb.ship_name shipName,
+        sb.ship_number shipNumber,
+        sb.delivery_mode deliveryMode,
+        sb.additional_service additionalService,
+        sb.sailing_time sailingTime,
+        sb.ordering_information orderingInformation,
+        sb.ordering_information orderingInformation, sb.shipper_information shipperInformation,
+        sb.consignee_information consigneeInformation, sb.notifier_information notifierInformation,
+        sb.agent_information agentInformation, sb.shipping_mark shippingMark, sb.good_name goodName,
+        sb.board_number boardNumber, sb.plate_unit plateUnit, sb.number number,
+        sb.number_unit numberUnit, sb.weight weight, sb.volume volume, sb.bill_no billNo,
+        sb.delivery_wharf deliveryWharf, sb.voyage voyage
+        from sea_bill sb
+        left join sea_port sp on sb.port_departure_code = sp.code
+        left join sea_port sp1 on sb.port_destination_code = sp1.code
+        left join sea_port sp2 on sb.transit_port_code = sp2.code
+        left join terms on sb.terms = terms.id
+        left join sea_order so on so.id = sb.sea_order_id
+        <where>
+            <if test="form.billNo !=null and form.billNo!=''">
+                and sb.bill_no like concat('%',#{form.billNo},'%')
+            </if>
+
+            <if test="form.impAndExpType !=null and form.impAndExpType!=''">
+                and sb.imp_and_exp_type like concat('%',#{form.impAndExpType},'%')
+            </if>
+            <if test="form.terms !=null and form.terms!=''">
+                and sb.terms like concat('%',#{form.terms},'%')
+            </if>
+            <if test="form.mainOrderNo !=null and form.mainOrderNo!=''">
+                and so.main_order_no like concat('%',#{form.mainOrderNo},'%')
+            </if>
+            <if test="form.portDeparture !=null and form.portDeparture!=''">
+                and sp.name like concat('%',#{form.portDeparture},'%')
+            </if>
+            <if test="form.portDestination !=null and form.portDestination!=''">
+                and sp1.name like concat('%',#{form.portDestination},'%')
+            </if>
+            <if test="form.table == 'bill'">
+                and sb.type = 1
+            </if>
+            <if test="form.table == 'spellBill'">
+                and sb.type = 2
+            </if>
+            <if test="form.mainOrderNos !=null and form.mainOrderNos.size > 0">
+                and so.main_order_no IN
+                <foreach collection="form.mainOrderNos" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.so !=null and form.so!=''">
+                and sb.so = #{form.so}
+            </if>
+            <if test="form.createUser !=null and form.createUser!=''">
+                and sb.create_user = #{form.createUser}
+            </if>
+            <if test="form.mainOrderNo !=null and form.mainOrderNo!=''">
+                and so.main_order_no = #{form.mainOrderNo}
+            </if>
+            <if test="form.startTime !=null and form.startTime!=''">
+                and sb.create_time <![CDATA[>= ]]> #{form.startTime}
+            </if>
+            <if test="form.endTime !=null and form.endTime!=''">
+                and sb.create_time <![CDATA[<= ]]> #{form.endTime}
+            </if>
+
+            <if test="form.startCutReplenishTime !=null and form.startCutReplenishTime!=''">
+                and sb.cut_replenish_time <![CDATA[>= ]]> #{form.startCutReplenishTime}
+            </if>
+            <if test="form.endCutReplenishTime !=null and form.endCutReplenishTime!=''">
+                and sb.cut_replenish_time <![CDATA[<= ]]> #{form.endCutReplenishTime}
+            </if>
+
+            <if test="legalIds != null and legalIds.size>0">
+                and so.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+        </where>
+        order by sb.id desc
+    </select>
+
+</mapper>

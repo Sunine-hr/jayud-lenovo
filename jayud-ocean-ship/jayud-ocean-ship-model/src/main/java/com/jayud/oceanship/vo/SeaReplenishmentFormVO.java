@@ -6,6 +6,8 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.ApiResult;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
@@ -18,10 +20,13 @@ import javassist.expr.NewArray;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.httpclient.HttpStatus;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,6 +40,7 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Slf4j
 @Accessors(chain = true)
 @ApiModel(value = "SeaReplenishment对象", description = "海运补料表")
 public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
@@ -204,6 +210,51 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     //@ApiModelProperty(value = "订单流程状态")
     private String statusDesc;
 
+    @ApiModelProperty(value = "目的地")
+    private String destination;
+
+    @ApiModelProperty(value = "SO")
+    private String so;
+
+    @ApiModelProperty(value = "截关时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime closingTime;
+
+    @ApiModelProperty(value = "截仓时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime cutOffTime;
+
+    @ApiModelProperty(value = "代理人地址集合")
+    private List<OrderAddressVO> agentAddress;
+
+    @ApiModelProperty(value = "发货地")
+    private String placeOfDelivery;
+
+    @ApiModelProperty(value = "运输条款")
+    private String transportClause;
+
+    @ApiModelProperty(value = "船名")
+    private String shipName;
+
+    @ApiModelProperty(value = "船次")
+    private String shipNumber;
+
+    @ApiModelProperty(value = "出单方式")
+    private String deliveryMode;
+
+    @ApiModelProperty(value = "附加服务")
+    private List<String> additionalServices;
+
+    @ApiModelProperty(value = "附加服务")
+    private String additionalService;
+
+    @ApiModelProperty(value = "开船时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime sailingTime;
+
+    @ApiModelProperty(value = "订柜信息")
+    private String orderingInformation;
+
     public void getFile(String path){
         this.fileViewList = StringUtils.getFileViews(this.getFilePath(),this.getFileName(),path);
     }
@@ -260,6 +311,8 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
             case 2:
                 this.notificationAddress = Collections.singletonList(addressVO);
                 break;
+            case 5:
+                this.agentAddress = Collections.singletonList(addressVO);
         }
     }
 
@@ -286,7 +339,9 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
         this.statusDesc = OrderStatusEnum.getDesc(status);
     }
 
-
+    public void assemblyAdditionalServices(){
+        this.additionalServices = Arrays.asList(additionalService.split(";"));
+    }
 
 
     @Override

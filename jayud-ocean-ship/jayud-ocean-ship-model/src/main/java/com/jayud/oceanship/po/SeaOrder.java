@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -138,6 +139,31 @@ public class SeaOrder extends Model<SeaOrder> {
     @ApiModelProperty(value = "审核状况 1为审核通过;2为审核不通过")
     private Integer auditStatus;
 
+    @ApiModelProperty(value = "目的地")
+    private String destination;
+
+    @ApiModelProperty(value = "文件路径(多个逗号隔开)")
+    private String filePath;
+
+    @ApiModelProperty(value = "文件名称(多个逗号隔开)")
+    private String fileName;
+
+    @ApiModelProperty(value = "SO")
+    private String so;
+
+    @ApiModelProperty(value = "截关时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime closingTime;
+
+    @ApiModelProperty(value = "截仓时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime cutOffTime;
+
+    @ApiModelProperty(value = "操作部门")
+    private Long departmentId;
+
+    @ApiModelProperty(value = "发货地")
+    private String placeOfDelivery;
     @Override
     protected Serializable pkVal() {
         return this.id;

@@ -1,36 +1,31 @@
-package com.jayud.oceanship.po;
+package com.jayud.oceanship.bo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
-
-import java.time.LocalDateTime;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.jayud.common.utils.FileView;
-import com.jayud.oceanship.vo.OrderAddressVO;
+import com.jayud.oceanship.po.SeaContainerInformation;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
- * 海运补料表
+ * 增加提单表单
  * </p>
  *
  * @author LLJ
- * @since 2021-03-18
+ * @since 2021-06-23
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value = "SeaReplenishment对象", description = "海运补料表")
-public class SeaReplenishment extends Model<SeaReplenishment> {
+@ApiModel(value="SeaBill对象", description="提单信息表")
+public class AddSeaBillForm extends Model<AddSeaBillForm> {
 
     private static final long serialVersionUID = 1L;
 
@@ -38,7 +33,7 @@ public class SeaReplenishment extends Model<SeaReplenishment> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "截补料单号")
+    @ApiModelProperty(value = "提单订单号")
     private String orderNo;
 
     @ApiModelProperty(value = "海运订单id")
@@ -48,13 +43,8 @@ public class SeaReplenishment extends Model<SeaReplenishment> {
     private String seaOrderNo;
 
     @ApiModelProperty(value = "截补料时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime cutReplenishTime;
-
-    @ApiModelProperty(value = "柜号")
-    private String cabinetNumber;
-
-    @ApiModelProperty(value = "封条")
-    private String paperStripSeal;
 
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;
@@ -70,12 +60,6 @@ public class SeaReplenishment extends Model<SeaReplenishment> {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
-    @ApiModelProperty(value = "是否已提单")
-    private Integer isBillOfLading;
-
-    @ApiModelProperty(value = "是否已放单")
-    private Integer isReleaseOrder;
-
     @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;
 
@@ -89,6 +73,7 @@ public class SeaReplenishment extends Model<SeaReplenishment> {
     private String portDestinationCode;
 
     @ApiModelProperty(value = "货好时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime goodTime;
 
     @ApiModelProperty(value = "运费是否到付(1代表true,0代表false)")
@@ -112,42 +97,10 @@ public class SeaReplenishment extends Model<SeaReplenishment> {
     @ApiModelProperty(value = "柜型类型名字")
     private String cabinetTypeName;
 
-    @ApiModelProperty(value = "主单号")
-    private String mainNo;
-
-    @ApiModelProperty(value = "分单号")
-    private String subNo;
-
-    @ApiModelProperty(value = "提单重量")
-    private Double billLadingWeight;
-
-    @ApiModelProperty(value = "提单文件路径(多个逗号隔开)")
-    private String filePath;
-
-    @ApiModelProperty(value = "提单文件名称(多个逗号隔开)")
-    private String fileName;
-
-    @ApiModelProperty(value = "目的地")
-    private String destination;
-
-    @ApiModelProperty(value = "SO")
-    private String so;
-
-    @ApiModelProperty(value = "截关时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime closingTime;
-
-    @ApiModelProperty(value = "截仓时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime cutOffTime;
-
-    @ApiModelProperty(value = "发货地")
-    private String placeOfDelivery;
-
-    @ApiModelProperty(value = "运输条款")
+    @ApiModelProperty(value = "运输方式")
     private String transportClause;
 
-    @ApiModelProperty(value = "船名")
+    @ApiModelProperty(value = "船名字")
     private String shipName;
 
     @ApiModelProperty(value = "船次")
@@ -159,6 +112,23 @@ public class SeaReplenishment extends Model<SeaReplenishment> {
     @ApiModelProperty(value = "附加服务")
     private String additionalService;
 
+    @ApiModelProperty(value = "目的地")
+    private String destination;
+
+    @ApiModelProperty(value = "收货地")
+    private String placeOfDelivery;
+
+    @ApiModelProperty(value = "截关时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime closingTime;
+
+    @ApiModelProperty(value = "截仓时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime cutOffTime;
+
+    @ApiModelProperty(value = "SO")
+    private String so;
+
     @ApiModelProperty(value = "开船时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sailingTime;
@@ -166,6 +136,62 @@ public class SeaReplenishment extends Model<SeaReplenishment> {
     @ApiModelProperty(value = "订柜信息")
     private String orderingInformation;
 
+    @ApiModelProperty(value = "发货人信息")
+    private String shipperInformation;
+
+    @ApiModelProperty(value = "收货人信息")
+    private String consigneeInformation;
+
+    @ApiModelProperty(value = "通知人信息")
+    private String notifierInformation;
+
+    @ApiModelProperty(value = "代理人信息")
+    private String agentInformation;
+
+    @ApiModelProperty(value = "唛头")
+    private String shippingMark;
+
+    @ApiModelProperty(value = "货物名称")
+    private String goodName;
+
+    @ApiModelProperty(value = "板数")
+    private Integer boardNumber;
+
+    @ApiModelProperty(value = "板数单位")
+    private String plateUnit;
+
+    @ApiModelProperty(value = "件数")
+    private Integer number;
+
+    @ApiModelProperty(value = "件数单位")
+    private String numberUnit;
+
+    @ApiModelProperty(value = "总重量")
+    private Double weight;
+
+    @ApiModelProperty(value = "体积")
+    private Double volume;
+
+    @ApiModelProperty(value = "提单号")
+    private String billNo;
+
+    @ApiModelProperty(value = "交仓码头")
+    private String deliveryWharf;
+
+    @ApiModelProperty(value = "航程")
+    private Integer voyage;
+
+    @ApiModelProperty(value = "提单类型")
+    private Integer type;
+
+    @ApiModelProperty(value = "是否拼柜(1代表true,0代表false)")
+    private Boolean isSpell;
+
+    @ApiModelProperty(value = "拼柜订单号集合")
+    private String spellOrderNo;
+
+    @ApiModelProperty(value = "货柜信息集合")
+    private List<SeaContainerInformation> seaContainerInformations;
 
     @Override
     protected Serializable pkVal() {

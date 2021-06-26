@@ -5,6 +5,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.OceanBillVO;
+import com.jayud.mall.model.vo.OrderCaseVO;
 import com.jayud.mall.model.vo.OrderConfCasesVO;
 import com.jayud.mall.model.vo.OrderConfVO;
 import com.jayud.mall.service.IOrderConfService;
@@ -177,6 +178,15 @@ public class OrderConfController {
     public CommonResult relevanceOfferInfo(@Valid @RequestBody OrderConfOfferInfoForm form){
         orderConfService.relevanceOfferInfo(form);
         return CommonResult.success("操作成功");
+    }
+
+    @ApiOperation(value = "查询配载订单下的箱子(配载 留仓)")
+    @ApiOperationSupport(order = 17)
+    @PostMapping(value = "/findOrderCaseByOrderId")
+    public CommonResult<List<OrderCaseVO>> findOrderCaseByOrderId(@Valid @RequestBody OrderInfoParaForm form){
+        Long orderId = form.getId();
+        List<OrderCaseVO> orderCaseList = orderConfService.findOrderCaseByOrderId(orderId);
+        return CommonResult.success(orderCaseList);
     }
 
 

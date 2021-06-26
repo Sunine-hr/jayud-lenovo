@@ -459,4 +459,10 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         }
     }
 
+    @Override
+    public List<OrderCaseVO> findOrderCaseByOrderId(Long orderId) {
+        List<OrderCaseVO> orderCaseVOList = orderConfMapper.findOrderCaseByOrderId(orderId);
+        return orderCaseVOList;
+    }
+
 }

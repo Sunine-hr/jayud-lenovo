@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.QueryOrderConfForm;
 import com.jayud.mall.model.po.OceanCounter;
 import com.jayud.mall.model.po.OrderConf;
-import com.jayud.mall.model.vo.OceanBillVO;
-import com.jayud.mall.model.vo.OceanCounterVO;
-import com.jayud.mall.model.vo.OfferInfoVO;
-import com.jayud.mall.model.vo.OrderConfVO;
+import com.jayud.mall.model.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -69,4 +66,11 @@ public interface OrderConfMapper extends BaseMapper<OrderConf> {
      * @return
      */
     List<OceanCounter> findOceanCounterByOfferInfoId(@Param("offerInfoId") Integer offerInfoId);
+
+    /**
+     * 查询配载订单下的箱子(配载 留仓)
+     * @param orderId
+     * @return
+     */
+    List<OrderCaseVO> findOrderCaseByOrderId(@Param("orderId") Long orderId);
 }

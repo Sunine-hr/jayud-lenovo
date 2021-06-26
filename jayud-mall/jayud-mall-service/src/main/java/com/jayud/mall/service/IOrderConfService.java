@@ -6,6 +6,7 @@ import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.OrderConf;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.OceanBillVO;
+import com.jayud.mall.model.vo.OrderCaseVO;
 import com.jayud.mall.model.vo.OrderConfCasesVO;
 import com.jayud.mall.model.vo.OrderConfVO;
 
@@ -121,4 +122,11 @@ public interface IOrderConfService extends IService<OrderConf> {
     OrderConfCasesVO statisticsCases(Long id);
 
     void relevanceOfferInfo(OrderConfOfferInfoForm form);
+
+    /**
+     * 查询配载订单下的箱子(配载 留仓)
+     * @param orderId
+     * @return
+     */
+    List<OrderCaseVO> findOrderCaseByOrderId(Long orderId);
 }

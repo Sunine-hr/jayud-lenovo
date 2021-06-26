@@ -172,4 +172,7 @@ public class OrderCaseVO {
     @ApiModelProperty(value = "收费重", position = 20)
     private BigDecimal chargeWeight;
 
+    @ApiModelProperty(value = "订单类型(1普通运单 2留仓运单)")
+    private Integer orderType;
+
 }

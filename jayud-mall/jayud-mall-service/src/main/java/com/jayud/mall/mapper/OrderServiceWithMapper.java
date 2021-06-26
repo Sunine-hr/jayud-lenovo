@@ -27,4 +27,12 @@ public interface OrderServiceWithMapper extends BaseMapper<OrderServiceWith> {
      * @return
      */
     List<OrderServiceWithVO> findOrderServiceWithByQie(@Param("qie") Long qie);
+
+    /**
+     * 查询被删除的ids
+     * @param qie 订单服务id(order_service id)
+     * @param reserveOrderServiceWithIds
+     * @return
+     */
+    List<Long> findOrderServiceWithByQieAndNotIds(@Param("qie") Long qie, @Param("reserveOrderServiceWithIds") List<Long> reserveOrderServiceWithIds);
 }

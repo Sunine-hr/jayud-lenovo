@@ -35,4 +35,20 @@
         and t.qie = #{qie}
     </select>
 
+    <select id="findOrderServiceWithByQieAndNotIds" resultType="java.lang.Long">
+        select
+        t.id
+        from order_service_with t
+        where 1=1
+        and t.qie = #{qie,jdbcType=BIGINT}
+        <if test="reserveOrderServiceWithIds != null and reserveOrderServiceWithIds.size>0">
+            and t.id not in
+            <foreach collection="reserveOrderServiceWithIds" item="orderServiceWithId" open="(" separator="," close=")">
+                #{orderServiceWithId}
+            </foreach>
+        </if>
+    </select>
+
+
+
 </mapper>

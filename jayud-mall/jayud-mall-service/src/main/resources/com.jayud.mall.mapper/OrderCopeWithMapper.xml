@@ -43,5 +43,13 @@
         and t.bill_id = #{billId, jdbcType=BIGINT}
     </select>
 
+    <select id="findOrderCopeWithByOrderServiceWithId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderCopeWithVO">
+        select
+        t.id,t.order_id,t.cost_code,t.cost_name,t.supplier_id,t.calculate_way,t.count,t.unit_price,t.amount,t.cid,t.remarks,t.bill_id,t.status,t.order_service_with_id
+        from order_cope_with t
+        where 1=1
+        and t.order_service_with_id = #{orderServiceWithId}
+    </select>
+    
 
 </mapper>

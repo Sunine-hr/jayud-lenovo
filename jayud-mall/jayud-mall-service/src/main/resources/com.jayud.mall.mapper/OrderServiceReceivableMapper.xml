@@ -35,5 +35,19 @@
         and t.qie = #{qie}
     </select>
 
+    <select id="findOrderServiceReceivableByQieAndNotIds" resultType="java.lang.Long">
+        select
+        t.id
+        from order_service_receivable t
+        where 1=1
+        and t.qie = #{qie,jdbcType=BIGINT}
+        <if test="reserveOrderServiceReceivableIds != null and reserveOrderServiceReceivableIds.size>0">
+            and t.id not in
+            <foreach collection="reserveOrderServiceReceivableIds" item="orderServiceReceivableId" open="(" separator="," close=")">
+                #{orderServiceReceivableId}
+            </foreach>
+        </if>
+    </select>
+
 
 </mapper>

@@ -27,4 +27,12 @@ public interface OrderServiceReceivableMapper extends BaseMapper<OrderServiceRec
      * @return
      */
     List<OrderServiceReceivableVO> findOrderServiceReceivableByQie(@Param("qie") Long qie);
+
+    /**
+     * 查询被删除的ids
+     * @param qie 订单服务id(order_service id)
+     * @param reserveOrderServiceReceivableIds  被保留的ids
+     * @return
+     */
+    List<Long> findOrderServiceReceivableByQieAndNotIds(@Param("qie") Long qie, @Param("reserveOrderServiceReceivableIds") List<Long> reserveOrderServiceReceivableIds);
 }

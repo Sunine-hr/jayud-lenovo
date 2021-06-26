@@ -75,6 +75,9 @@ public class OrderCopeReceivable extends Model<OrderCopeReceivable> {
     @JSONField(ordinal = 9)
     private Integer status;
 
+    @ApiModelProperty(value = "订单服务对应应收费用id(order_service_receivable id)")
+    private Long orderServiceReceivableId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

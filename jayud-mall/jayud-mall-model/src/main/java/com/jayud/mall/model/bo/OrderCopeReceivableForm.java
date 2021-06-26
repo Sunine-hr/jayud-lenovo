@@ -54,4 +54,8 @@ public class OrderCopeReceivableForm {
     @JSONField(ordinal = 9)
     private Integer status;
 
+    @ApiModelProperty(value = "订单服务对应应收费用id(order_service_receivable id)")
+    private Long orderServiceReceivableId;
+
+
 }

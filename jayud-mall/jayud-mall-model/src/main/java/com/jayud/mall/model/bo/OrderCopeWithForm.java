@@ -58,4 +58,7 @@ public class OrderCopeWithForm {
     @JSONField(ordinal = 10)
     private Integer status;
 
+    @ApiModelProperty(value = "订单服务对应应付费用id(order_service_with id)")
+    private Long orderServiceWithId;
+
 }

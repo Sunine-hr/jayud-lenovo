@@ -5,14 +5,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.mapper.OrderServiceMapper;
-import com.jayud.mall.mapper.OrderServiceReceivableMapper;
-import com.jayud.mall.mapper.OrderServiceWithMapper;
+import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.OrderServiceForm;
 import com.jayud.mall.model.po.OrderService;
 import com.jayud.mall.model.vo.OrderServiceReceivableVO;
 import com.jayud.mall.model.vo.OrderServiceVO;
 import com.jayud.mall.model.vo.OrderServiceWithVO;
+import com.jayud.mall.service.IOrderCopeReceivableService;
+import com.jayud.mall.service.IOrderCopeWithService;
 import com.jayud.mall.service.IOrderServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,12 +37,27 @@ public class OrderServiceServiceImpl extends ServiceImpl<OrderServiceMapper, Ord
     OrderServiceReceivableMapper orderServiceReceivableMapper;
     @Autowired
     OrderServiceWithMapper orderServiceWithMapper;
+    @Autowired
+    OrderCopeReceivableMapper orderCopeReceivableMapper;
+    @Autowired
+    OrderCopeWithMapper orderCopeWithMapper;
+
+    @Autowired
+    IOrderCopeReceivableService orderCopeReceivableService;
+    @Autowired
+    IOrderCopeWithService orderCopeWithService;
 
     @Override
     public List<OrderServiceVO> findOrderServiceByOrderId(Long orderId) {
         return orderServiceMapper.findOrderServiceByOrderId(orderId);
     }
 
+    /**
+     * 保存订单服务
+     * 1.服务下添加的应收、应付，要合并到订单应收、应付。
+     * 2.服务下的应收、应付，增删改之后，订单应收、应付也要改动。
+     * @param form
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveOrderService(OrderServiceForm form) {

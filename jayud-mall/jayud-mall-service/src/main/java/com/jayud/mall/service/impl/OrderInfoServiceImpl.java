@@ -2,7 +2,6 @@ package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
@@ -2968,7 +2967,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         System.out.println(originalFilename);//运单 10001923.xls
         //运单id 装货id，即是订单id
         String shipment_id = originalFilename.substring("运单 ".length(), originalFilename.length() - ".xls".length());
-        if(ObjectUtil.isEmpty(orderId) || !orderId.equals(Long.valueOf(shipment_id))){
+
+        if(ObjectUtil.isEmpty(orderId)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单id不能为空");
+        }
+        OrderInfoVO orderInfoVO1 = orderInfoMapper.lookOrderInfoById(orderId);
+        String orderNo = orderInfoVO1.getOrderNo();
+        if(!orderNo.equals(shipment_id)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "新智慧上传的运单和当前运单不一致");
         }
         OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(orderId);
@@ -3433,74 +3438,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderCaseList.add(orderCase);
             }
 
-            //遍历，新智慧运单，箱号下的商品
-            Object declarations = parcelsJsonObject.get("declarations");
-            JSONArray declarationsJSONArray = JSONUtil.parseArray(declarations);
-            for (int j=0; j < declarationsJSONArray.size(); j++){
-                //订单商品
-                cn.hutool.json.JSONObject declarationsJsonObject = declarationsJSONArray.getJSONObject(j);
-                String sku = declarationsJsonObject.get("sku", String.class);
-                CustomerGoodsVO customerGoodsVO = null;
-                if(ObjectUtil.isNotEmpty(sku)){
-                    //新智慧商品 sku 不为空
-                    customerGoodsVO = customerGoodsMapper.findCustomerGoodsByCustomerIdAndsku(shipmentVO.getCustomerId(), sku);
-                }else{
-                    //新智慧商品 sku 为空
-                    /**
-                     * By查询：
-                     * 产品中文品名*-name_zh
-                     * 产品英文品名*-name_en
-                     * 产品材质*-material
-                     * 产品海关编码-hscode
-                     * 产品用途-usage
-                     */
-                    Integer customerId = shipmentVO.getCustomerId();//客户id
-                    String nameCn = declarationsJsonObject.get("name_zh", String.class);//中文名
-                    String nameEn = declarationsJsonObject.get("name_en", String.class);//英文名
-                    String materialQuality = declarationsJsonObject.get("material", String.class);//材质
-                    String hscode = declarationsJsonObject.get("hscode", String.class);//海关编码
-                    String purpose = declarationsJsonObject.get("usage", String.class);//用途
 
-                    Map<String, Object> newWisdomParam = new HashMap<>();
-                    newWisdomParam.put("customerId", customerId);
-                    newWisdomParam.put("nameCn", nameCn);
-                    newWisdomParam.put("nameEn", nameEn);
-                    newWisdomParam.put("materialQuality", materialQuality);
-                    newWisdomParam.put("hscode", hscode);
-                    newWisdomParam.put("purpose", purpose);
-                    customerGoodsVO = customerGoodsMapper.findCustomerGoodsByNewWisdomParam(newWisdomParam);
-                }
-
-                if(ObjectUtil.isEmpty(customerGoodsVO)){
-                    //customerGoodsVO 为null
-                    CustomerGoods customerGoods = new CustomerGoods();
-                    customerGoods.setCustomerId(shipmentVO.getCustomerId());//客户ID(customer id)
-                    customerGoods.setSku(IdUtil.simpleUUID());//SKU商品编码
-                    customerGoods.setNameCn(declarationsJsonObject.get("name_zh", String.class));//中文名
-                    customerGoods.setNameEn(declarationsJsonObject.get("name_en", String.class));//英文名
-                    customerGoods.setMaterialQuality(declarationsJsonObject.get("material", String.class));//材质
-                    customerGoods.setHsCode(declarationsJsonObject.get("hscode", String.class));//海关编码
-                    customerGoods.setPurpose(declarationsJsonObject.get("usage", String.class));//用途
-                    customerGoods.setImageUrl(declarationsJsonObject.get("photos", String.class));//图片地址
-                    customerGoods.setIsSensitive("0");//是否敏感货物，1是0否，默认为0
-                    customerGoods.setTypes(1);//商品类型(1普货 2特货)
-                    customerGoods.setStatus(0);//审核状态代码：1-审核通过，0-等待审核，-1-审核不通过
-                    customerGoods.setRemark("原系统同步商品");//备注
-                    customerGoodsService.saveOrUpdate(customerGoods);
-                    Integer goodId = customerGoods.getId();
-                    OrderShop orderShop = new OrderShop();
-                    orderShop.setGoodId(goodId);//商品编号(customer_goods id)
-                    orderShop.setQuantity(declarationsJsonObject.get("qty", Integer.class));//数量
-                    orderShopList.add(orderShop);
-                }else{
-                    //customerGoodsVO 不为null
-                    Integer goodId = customerGoodsVO.getId();
-                    OrderShop orderShop = new OrderShop();
-                    orderShop.setGoodId(goodId);//商品编号(customer_goods id)
-                    orderShop.setQuantity(declarationsJsonObject.get("qty", Integer.class));//数量
-                    orderShopList.add(orderShop);
-                }
-            }
         }
 
         //对商品进行合并,统计数量

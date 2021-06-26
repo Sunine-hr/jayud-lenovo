@@ -1,33 +1,14 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.bo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-/**
- * <p>
- * 订单服务对应应付费用
- * </p>
- *
- * @author fachang.mao
- * @since 2021-06-25
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "OrderServiceWith对象", description = "订单服务对应应付费用")
-public class OrderServiceWith extends Model<OrderServiceWith> {
-
-    private static final long serialVersionUID = 1L;
+public class OrderServiceWithForm {
 
     @ApiModelProperty(value = "自增id")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "订单服务id(order_service id)")
@@ -68,11 +49,5 @@ public class OrderServiceWith extends Model<OrderServiceWith> {
 
     @ApiModelProperty(value = "描述")
     private String remarks;
-
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

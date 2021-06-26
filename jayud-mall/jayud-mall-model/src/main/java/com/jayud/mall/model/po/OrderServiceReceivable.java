@@ -1,14 +1,15 @@
 package com.jayud.mall.model.po;
 
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -20,13 +21,13 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="OrderServiceReceivable对象", description="订单服务对应应收费用")
+@ApiModel(value = "OrderServiceReceivable对象", description = "订单服务对应应收费用")
 public class OrderServiceReceivable extends Model<OrderServiceReceivable> {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "自增id")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "订单服务id(order_service id)")

@@ -1,34 +1,16 @@
-package com.jayud.mall.model.po;
+package com.jayud.mall.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
-/**
- * <p>
- * 订单服务表
- * </p>
- *
- * @author fachang.mao
- * @since 2021-06-25
- */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "OrderService对象", description = "订单服务表")
-public class OrderService extends Model<OrderService> {
-
-    private static final long serialVersionUID = 1L;
+public class OrderServiceVO {
 
     @ApiModelProperty(value = "主键id，自动增长")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "订单id(order_info id)")
@@ -47,10 +29,12 @@ public class OrderService extends Model<OrderService> {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    //订单服务对应应收费用
+    @ApiModelProperty(value = "订单服务对应应收费用 list")
+    private List<OrderServiceReceivableVO> orderServiceReceivableList;
 
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
+    //订单服务对应应付费用
+    @ApiModelProperty(value = "订单服务对应应付费用 list")
+    private List<OrderServiceWithVO> orderServiceWithList;
 
 }

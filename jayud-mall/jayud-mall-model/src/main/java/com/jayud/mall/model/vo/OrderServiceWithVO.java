@@ -1,7 +1,5 @@
 package com.jayud.mall.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -52,5 +50,14 @@ public class OrderServiceWithVO {
     @ApiModelProperty(value = "描述")
     private String remarks;
 
+    /*扩展字段*/
+
+    //供应商代码
+    @ApiModelProperty(value = "供应商代码")
+    private String supplierCode;
+
+    //供应商公司名称
+    @ApiModelProperty(value = "供应商公司名称")
+    private String supplierName;
 
 }

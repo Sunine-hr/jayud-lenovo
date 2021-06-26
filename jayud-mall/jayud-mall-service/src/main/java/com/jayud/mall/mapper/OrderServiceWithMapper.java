@@ -2,8 +2,12 @@ package com.jayud.mall.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.po.OrderServiceWith;
+import com.jayud.mall.model.vo.OrderServiceWithVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +21,10 @@ import org.springframework.stereotype.Component;
 @Component
 public interface OrderServiceWithMapper extends BaseMapper<OrderServiceWith> {
 
+    /**
+     * 根据qie，查询
+     * @param qie 订单服务id(order_service id)
+     * @return
+     */
+    List<OrderServiceWithVO> findOrderServiceWithByQie(@Param("qie") Long qie);
 }

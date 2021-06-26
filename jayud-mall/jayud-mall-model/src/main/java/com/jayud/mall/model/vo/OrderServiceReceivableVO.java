@@ -50,5 +50,13 @@ public class OrderServiceReceivableVO {
     @ApiModelProperty(value = "描述")
     private String remarks;
 
+    /*扩展字段*/
+    //币种代码
+    @ApiModelProperty(value = "币种代码")
+    private String currencyCode;
+
+    //币种名称
+    @ApiModelProperty(value = "币种名称")
+    private String currencyName;
 
 }

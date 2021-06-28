@@ -3,10 +3,7 @@ package com.jayud.mall.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.mall.model.bo.BillMasterForm;
-import com.jayud.mall.model.bo.PayBillForm;
-import com.jayud.mall.model.bo.PayBillMasterForm;
-import com.jayud.mall.model.bo.QueryPayBillMasterForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.PayBillMasterVO;
 import com.jayud.mall.service.IPayBillMasterService;
 import io.swagger.annotations.Api;
@@ -20,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/paybillmaster")
@@ -72,7 +70,15 @@ public class PayBillMasterController {
         return payBillMasterService.lookDetail(id);
     }
 
-
+    //根据订单id，查询应付账单list
+    @ApiOperation(value = "根据订单id，查询应付账单list")
+    @PostMapping("/findPayBillMasterByOrderId")
+    @ApiOperationSupport(order = 5)
+    public CommonResult<List<PayBillMasterVO>> findPayBillMasterByOrderId(@RequestBody OrderInfoParaForm form) {
+        Long orderId = form.getId();
+        List<PayBillMasterVO> payBillMasterList = payBillMasterService.findPayBillMasterByOrderId(orderId);
+        return CommonResult.success(payBillMasterList);
+    }
 
 
 }

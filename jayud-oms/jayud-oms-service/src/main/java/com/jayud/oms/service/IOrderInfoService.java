@@ -243,6 +243,13 @@ public interface IOrderInfoService extends IService<OrderInfo> {
     InputCostVO getSupplierAbnormalCostDetail(GetCostDetailForm form);
 
     /**
+     * 获取当前订单模块节点
+     * @param mainOrderId
+     * @return
+     */
+    List<ProductClassifyVO> getOrderModuleNode(Long mainOrderId);
+
+    /**
      * 查询供应商待处理操作
      * @param dataControl
      * @return

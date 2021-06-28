@@ -44,6 +44,9 @@ public class ProductClassifyVO extends Model<ProductClassifyVO> {
     @ApiModelProperty(value = "步骤描述集合")
     private String[] descs;
 
+    @ApiModelProperty(value = "是否已选模块(追加模块功能使用)")
+    private Boolean moduleSelected;
+
     @ApiModelProperty(value = "子集合")
     private List<ProductClassifyVO> productClassifyVOS = new ArrayList<>();
 

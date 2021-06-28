@@ -20,6 +20,7 @@ import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.OrderAttachment;
 import com.jayud.oms.model.po.OrderInfo;
+import com.jayud.oms.model.po.ProductClassify;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.model.vo.template.order.*;
 import com.jayud.oms.service.IAuditInfoService;
@@ -614,6 +615,18 @@ public class OrderInfoController {
             storageFastOrderForm.copyOperationInfo();
         }
         return CommonResult.success(inputOrderVO);
+    }
+
+
+    @ApiOperation(value = "获取订单模块节点")
+    @PostMapping("/getOrderModuleNode")
+    public CommonResult viewAddNewModule(@RequestBody @Valid Map<String, Object> map) {
+        Long mainOrderId = MapUtil.getLong(map, "mainOrderId");
+        if (mainOrderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        List<ProductClassifyVO> list = this.orderInfoService.getOrderModuleNode(mainOrderId);
+        return CommonResult.success(list);
     }
 
 }

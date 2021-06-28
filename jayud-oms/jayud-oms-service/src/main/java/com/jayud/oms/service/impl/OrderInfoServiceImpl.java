@@ -195,10 +195,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if (integer.equals(1)) {
                 preOrder = OrderTypeEnum.RK.getCode() + legalCode;
                 classCode = OrderTypeEnum.RK.getCode();
-            } else if(integer.equals(2)){
+            } else if (integer.equals(2)) {
                 preOrder = OrderTypeEnum.CK.getCode() + legalCode;
                 classCode = OrderTypeEnum.CK.getCode();
-            }else{
+            } else {
                 preOrder = OrderTypeEnum.IO.getCode() + legalCode;
                 classCode = OrderTypeEnum.IO.getCode();
             }
@@ -556,6 +556,36 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //计算费用,利润/合计币种
         this.calculateCost(inputCostVO);
         return inputCostVO;
+    }
+
+    @Override
+    public List<ProductClassifyVO> getOrderModuleNode(Long mainOrderId) {
+        //获取
+        OrderInfo orderInfo = this.getById(mainOrderId);
+        if (orderInfo == null) {
+            throw new JayudBizException("当前订单不存在");
+        }
+        String selectedServer = orderInfo.getSelectedServer();
+        Map<String, Boolean> map = new HashMap<>();
+        for (String code : selectedServer.split(",")) {
+            map.put(code, true);
+        }
+        //根据classCode获取信息
+        List<ProductClassify> classCode = this.productClassifyService.getIdCodes(Collections.singletonList(orderInfo.getClassCode()));
+        //查询子集模块
+        List<ProductClassify> subModule = this.productClassifyService.getByCondition(new ProductClassify().setFId(classCode.get(0).getId()).setStatus(StatusEnum.ENABLE.getCode().toString()));
+        List<ProductClassifyVO> list = new ArrayList<>();
+        subModule.forEach(e -> {
+            ProductClassifyVO productClassifyVO = new ProductClassifyVO();
+            productClassifyVO.setId(e.getId());
+            productClassifyVO.setIdCode(e.getIdCode());
+            productClassifyVO.setName(e.getName());
+            productClassifyVO.setDescs(e.getDescription().split(","));
+            productClassifyVO.setFId(e.getFId());
+            productClassifyVO.setModuleSelected(map.get(e.getIdCode()) != null);
+            list.add(productClassifyVO);
+        });
+        return list;
     }
 
 
@@ -1104,7 +1134,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
                 inputOrderVO.setStorageInputOrderForm(storageInputOrderVO);
             }
-            if(inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())){
+            if (inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())) {
                 InputStorageFastOrderVO inputStorageFastOrderVO = this.storageClient.getStorageFastOrderDetails(inputMainOrderVO.getOrderNo()).getData();
                 if (inputStorageFastOrderVO != null) {
                     //添加附件
@@ -1505,11 +1535,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
 
                 if (this.queryEditOrderCondition(storageInputOrderForm.getStatus(),
-                        inputMainOrderForm.getStatus(),SubOrderSignEnum.CCI.getSignOne(), form)) {
+                        inputMainOrderForm.getStatus(), SubOrderSignEnum.CCI.getSignOne(), form)) {
                     storageInputOrderForm.setMainOrderNo(mainOrderNo);
                     for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageInputOrderForm.getGoodsFormList()) {
-                         addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
-                         addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
+                        addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
+                        addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
                     }
                     Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
                             : ProcessStatusEnum.DRAFT.getCode();
@@ -1599,19 +1629,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 if (this.queryEditOrderCondition(storageFastOrderForm.getStatus(),
                         inputMainOrderForm.getStatus(), SubOrderSignEnum.CCF.getSignOne(), form)) {
                     storageFastOrderForm.setMainOrderNo(mainOrderNo);
-                    if(CollectionUtils.isNotEmpty(storageFastOrderForm.getInGoodsFormList())){
+                    if (CollectionUtils.isNotEmpty(storageFastOrderForm.getInGoodsFormList())) {
                         for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getInGoodsFormList()) {
                             addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
                             addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
                         }
                     }
-                    if(CollectionUtils.isNotEmpty(storageFastOrderForm.getOutGoodsFormList())){
+                    if (CollectionUtils.isNotEmpty(storageFastOrderForm.getOutGoodsFormList())) {
                         for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getOutGoodsFormList()) {
                             addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
                             addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
                         }
                     }
-                    if(CollectionUtils.isNotEmpty(storageFastOrderForm.getFastGoodsFormList())){
+                    if (CollectionUtils.isNotEmpty(storageFastOrderForm.getFastGoodsFormList())) {
                         for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getFastGoodsFormList()) {
                             addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
                             addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
@@ -1624,7 +1654,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     String subOrderNo = this.storageClient.createFastOrder(storageFastOrderForm).getData();
                     storageFastOrderForm.setOrderNo(subOrderNo);
 
-                    if(storageFastOrderForm.getIsWarehouse().equals(1)){
+                    if (storageFastOrderForm.getIsWarehouse().equals(1)) {
                         this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.CC,
                                 form, storageFastOrderForm.getId(), OrderStatusEnum.getFastStorageOrderProcess());
                     }

@@ -203,6 +203,15 @@ public class SeaOrderVO {
     @ApiModelProperty(value = "发货地")
     private String placeOfDelivery;
 
+    @ApiModelProperty(value = "文件路径(多个逗号隔开)")
+    private String filePath;
+
+    @ApiModelProperty(value = "文件名称(多个逗号隔开)")
+    private String fileName;
+
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViews;
+
     public void processingAddress(OrderAddressVO addressVO) {
         switch (addressVO.getType()) {
             case 0:

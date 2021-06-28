@@ -239,6 +239,11 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         if (resultOne.getCode() != HttpStatus.SC_OK) {
             log.warn("查询订单地址信息失败 seaOrderId={}");
         }
+        seaOrderVO.setFileViews(StringUtils.getFileViews(seaOrderVO.getFilePath(),seaOrderVO.getFileName(),prePath));
+        if(CollectionUtils.isEmpty(seaOrderVO.getFileViews())){
+            List<FileView> fileViews = new ArrayList<>();
+            seaOrderVO.setFileViews(fileViews);
+        }
         //处理地址信息
         for (OrderAddressVO address : resultOne.getData()) {
             address.getFile(prePath);

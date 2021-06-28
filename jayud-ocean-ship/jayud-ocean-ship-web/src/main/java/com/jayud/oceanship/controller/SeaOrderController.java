@@ -526,7 +526,7 @@ public class SeaOrderController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         SeaOrderVO seaOrderDetails = this.seaOrderService.getSeaOrderDetails(seaOrderId);
-        if (seaOrderDetails.getSeaReplenishments() == null || seaOrderDetails.getSeaReplenishments().size() <= 0 ||seaOrderDetails.getCabinetTypeName().equals("LCL")) {
+        if (seaOrderDetails.getSeaReplenishments() == null || seaOrderDetails.getSeaReplenishments().size() <= 0 ) {
             List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
             SeaReplenishmentVO convert = ConvertUtil.convert(seaOrderDetails, SeaReplenishmentVO.class);
             convert.setOrderNo(null);
@@ -888,7 +888,7 @@ public class SeaOrderController {
     }
 
 
-    @Value("${address.billAddress}")
+    @Value("${address.manifestAddress}")
     private String path;
 
     @ApiOperation(value = "导出订舱pdf或者excel")
@@ -961,8 +961,12 @@ public class SeaOrderController {
         //获取主订单信息
         ApiResult mainOrderByOrderNos = omsClient.getMainOrderByOrderNos(Collections.singletonList(seaOrder.getMainOrderNo()));
         if (mainOrderByOrderNos != null && mainOrderByOrderNos.getCode() == HttpStatus.SC_OK) {
-            JSONObject jsonObject = new JSONObject(mainOrderByOrderNos.getData());
-            resultMap.put("remarks",jsonObject.getStr("remarks"));
+            JSONArray legalEntitys = new JSONArray(mainOrderByOrderNos.getData());
+
+            JSONObject json = legalEntitys.getJSONObject(0);
+            resultMap.put("remarks",json.getStr("remarks"));
+
+
         }
         //获取订船信息
         SeaBookship enableBySeaOrderId = seaBookshipService.getEnableBySeaOrderId(seaOrder.getOrderId());

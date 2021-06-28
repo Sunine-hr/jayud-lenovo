@@ -70,4 +70,11 @@ public interface ReceivableBillMasterMapper extends BaseMapper<ReceivableBillMas
      * @return
      */
     List<ReceivableBillMasterVO> verifyReceivableBillMasterByAccountReceivableId(@Param("accountReceivableId") Long accountReceivableId);
+
+    /**
+     * 根据订单id，查询应收账单list
+     * @param orderId
+     * @return
+     */
+    List<ReceivableBillMasterVO> findReceivableBillMasterByOrderId(@Param("orderId") Long orderId);
 }

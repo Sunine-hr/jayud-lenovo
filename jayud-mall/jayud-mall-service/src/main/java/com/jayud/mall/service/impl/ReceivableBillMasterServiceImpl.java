@@ -368,7 +368,47 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
         return receivableBillExcelMasterVO;
     }
 
+    @Override
+    public List<ReceivableBillMasterVO> findReceivableBillMasterByOrderId(Long orderId) {
+        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
+        //将币种信息转换为map，城市cid为键，币种信息为值
+        Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
+        List<ReceivableBillMasterVO> receivableBillMasterList = receivableBillMasterMapper.findReceivableBillMasterByOrderId(orderId);
+        if(CollUtil.isNotEmpty(receivableBillMasterList)){
+            receivableBillMasterList.forEach(receivableBillMasterVO -> {
 
+                List<String> billAmountList = new ArrayList<>();//账单金额(bill_amount)
+                Long billMasterId = receivableBillMasterVO.getId();
+                List<ReceivableBillDetailVO> receivableBillDetailVOS = receivableBillDetailMapper.findReceivableBillDetailByBillMasterId(billMasterId);
+                Map<String, List<ReceivableBillDetailVO>> stringListMap = groupListByCid(receivableBillDetailVOS);
+                List<AmountVO> amountVOS = new ArrayList<>();//账单下的费用,根据币种分组，汇总金额
+                for (Map.Entry<String, List<ReceivableBillDetailVO>> entry : stringListMap.entrySet()) {
+                    String cid = entry.getKey();
+                    List<ReceivableBillDetailVO> receivableBillDetailVOList = entry.getValue();
+                    BigDecimal amountSum = new BigDecimal("0");
+                    for (int i=0; i<receivableBillDetailVOList.size(); i++){
+                        ReceivableBillDetailVO receivableBillDetailVO = receivableBillDetailVOList.get(i);
+                        BigDecimal amount = receivableBillDetailVO.getAmount();
+                        amountSum = amountSum.add(amount);
+                    }
+                    AmountVO amountVO = new AmountVO();
+                    amountVO.setAmount(amountSum);//金额
+                    amountVO.setCid(Integer.valueOf(cid));
+                    amountVOS.add(amountVO);
+                }
+                receivableBillMasterVO.setAmountVOS(amountVOS);
+
+                amountVOS.forEach(amountVO -> {
+                    Integer cid = amountVO.getCid();
+                    BigDecimal amount = amountVO.getAmount();
+                    String amountFormat = amount.toString() + " " + cidMap.get(Long.valueOf(cid)).getCurrencyName();
+                    billAmountList.add(amountFormat);
+                });
+                receivableBillMasterVO.setBillAmountList(billAmountList);//账单金额(bill_amount)
+            });
+        }
+        return receivableBillMasterList;
+    }
 
 
     /**

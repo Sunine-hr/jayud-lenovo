@@ -16,10 +16,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.mall.mapper.ReceivableBillMasterMapper;
-import com.jayud.mall.model.bo.BillMasterForm;
-import com.jayud.mall.model.bo.QueryReceivableBillMasterForm;
-import com.jayud.mall.model.bo.ReceivableBillForm;
-import com.jayud.mall.model.bo.ReceivableBillMasterForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.ReceivableBillExcelMasterVO;
 import com.jayud.mall.model.vo.ReceivableBillMasterVO;
 import com.jayud.mall.service.IReceivableBillMasterService;
@@ -150,6 +147,18 @@ public class ReceivableBillMasterController {
             e.printStackTrace();
         }
     }
+
+
+    //根据订单id，查询应收账单list
+    @ApiOperation(value = "根据订单id，查询应收账单list")
+    @ApiOperationSupport(order = 6)
+    @PostMapping("/findReceivableBillMasterByOrderId")
+    public CommonResult<List<ReceivableBillMasterVO>> findReceivableBillMasterByOrderId(@RequestBody OrderInfoParaForm form) {
+        Long orderId = form.getId();
+        List<ReceivableBillMasterVO> receivableBillMasterList = receivableBillMasterService.findReceivableBillMasterByOrderId(orderId);
+        return CommonResult.success(receivableBillMasterList);
+    }
+
 
 
 

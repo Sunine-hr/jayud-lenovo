@@ -172,7 +172,7 @@ public class OrderInfoController {
         return orderInfoService.findOceanCounterByTdId(tdId);
     }
 
-    //订单待生成账单-生成账单(根据 订单id 查询)
+    //根据订单id，查询待生成的账单（应收、应付）
     @ApiOperation(value = "订单待生成账单-生成账单(根据 订单id 查询)")
     @PostMapping("/findOrderBill")
     @ApiOperationSupport(order = 17)

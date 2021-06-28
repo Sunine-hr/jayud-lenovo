@@ -57,4 +57,11 @@ public interface IReceivableBillMasterService extends IService<ReceivableBillMas
      * @return
      */
     ReceivableBillExcelMasterVO downloadBills(Integer customerId, List<Long> ids);
+
+    /**
+     * 根据订单id，查询应收账单list
+     * @param orderId 订单id
+     * @return
+     */
+    List<ReceivableBillMasterVO> findReceivableBillMasterByOrderId(Long orderId);
 }

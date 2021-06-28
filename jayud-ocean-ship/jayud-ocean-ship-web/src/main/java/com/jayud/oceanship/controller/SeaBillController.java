@@ -23,6 +23,7 @@ import com.jayud.oceanship.service.ISeaBillService;
 import com.jayud.oceanship.service.ISeaContainerInformationService;
 import com.jayud.oceanship.service.ISeaOrderService;
 import com.jayud.oceanship.service.ISeaPortService;
+import com.jayud.oceanship.utils.DateUtil;
 import com.jayud.oceanship.utils.NumUtil;
 import com.jayud.oceanship.vo.*;
 import io.swagger.annotations.Api;
@@ -241,13 +242,10 @@ public class SeaBillController {
             resultMap.put("numberOfBl",seaBill.getNumberOfBl());
         }
         if(seaBill.getSailingTime() != null){
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.ENGLISH);
-            try {
-                resultMap.put("sailingTime",dateFormat.parse(seaBill.getSailingTime().toString().replaceAll("T"," ").substring(0,10)).toString());
-                resultMap.put("placeSailingTime","SEHNZHEN,"+dateFormat.parse(seaBill.getSailingTime().toString().replaceAll("T"," ").substring(0,10)).toString());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+
+            resultMap.put("sailingTime", DateUtil.dateToEnglish(seaBill.getSailingTime()));
+            resultMap.put("placeSailingTime","SEHNZHEN,"+ DateUtil.dateToEnglish(seaBill.getSailingTime()));
+
         }
 
 
@@ -262,7 +260,7 @@ public class SeaBillController {
                             .append(seaContainerInformationVO.getCabinetName()).append("/")
                             .append(seaContainerInformationVO.getPlatNumber()+seaContainerInformationVO.getPacking()).append("/")
                             .append(seaContainerInformationVO.getWeight()+"KGS").append("/")
-                            .append(seaContainerInformationVO.getVolume()+"CBM").append(" ");
+                            .append(seaContainerInformationVO.getVolume()+"CBM").append("    ");
                 }
                 str.append("ONE(1) × "+seaContainerInformationVO.getCabinetName()+" ONLY").append(" ");
 
@@ -288,10 +286,13 @@ public class SeaBillController {
         if(seaBill.getShipName() != null){
             resultMap.put("shipName",seaBill.getShipName() +" "+ seaBill.getShipNumber());
         }
+        if(seaBill.getTransportClause() != null){
+            resultMap.put("transportClause",seaBill.getTransportClause());
+        }
 
 
         //2.根据模板填充数据源
-        ByteArrayOutputStream pdf = createPdfStream(path, resultMap);
+        ByteArrayOutputStream pdf = createPdfStream(path, resultMap,"佳裕达");
 
 
         //3.输出填充后的文件
@@ -299,11 +300,11 @@ public class SeaBillController {
         ServletOutputStream out = null;
         try {
             out = response.getOutputStream();
-            response.setContentType("application/vnd.ms-excel");
+            response.setContentType("application/vnd.ms-pdf");
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
             String filename = URLEncoder.encode(fileName, "utf-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename );
 
             out.write(pdf.toByteArray());
             out.flush();

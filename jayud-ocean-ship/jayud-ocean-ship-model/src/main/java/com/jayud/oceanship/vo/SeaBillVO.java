@@ -189,4 +189,7 @@ public class SeaBillVO extends Model<SeaBillVO> {
     @ApiModelProperty(value = "货柜信息集合")
     private List<SeaContainerInformationVO> seaContainerInformations;
 
+    @ApiModelProperty(value = "提单份数")
+    private String numberOfBl;
+
 }

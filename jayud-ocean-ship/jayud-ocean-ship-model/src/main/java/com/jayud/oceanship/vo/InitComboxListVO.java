@@ -3,20 +3,16 @@ package com.jayud.oceanship.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 下拉选项
  */
 @Data
-public class InitComboxSVO {
+public class InitComboxListVO {
 
     @ApiModelProperty(value = "主键")
-    private Long id;
-
-    @ApiModelProperty(value = "键")
-    private String key;
-
-    @ApiModelProperty(value = "值")
-    private String value;
+    private List<InitComboxSVO> initComboxSVOList;
 
     @ApiModelProperty(value = "默认值")
     private String defaultValue;

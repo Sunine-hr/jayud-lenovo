@@ -3,6 +3,7 @@ package com.jayud.oceanship.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
@@ -29,11 +30,10 @@ import com.jayud.oceanship.bo.*;
 import com.jayud.oceanship.feign.FileClient;
 import com.jayud.oceanship.feign.OauthClient;
 import com.jayud.oceanship.feign.OmsClient;
-import com.jayud.oceanship.po.SeaBookship;
-import com.jayud.oceanship.po.SeaContainerInformation;
-import com.jayud.oceanship.po.SeaOrder;
-import com.jayud.oceanship.po.SeaReplenishment;
+import com.jayud.oceanship.po.*;
 import com.jayud.oceanship.service.*;
+import com.jayud.oceanship.utils.DateUtil;
+import com.jayud.oceanship.utils.NumUtil;
 import com.jayud.oceanship.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
@@ -49,6 +49,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.*;
@@ -57,6 +58,7 @@ import java.net.URLEncoder;
 import java.util.*;
 
 import static com.jayud.common.enums.OrderStatusEnum.SEA_S_2;
+import static com.jayud.oceanship.utils.PdfUtil.createPdfStream;
 
 /**
  * <p>
@@ -479,7 +481,10 @@ public class SeaOrderController {
         if (byId.getCabinetType().equals(1)) {
             List<CabinetSizeNumberVO> cabinetSizeNumberVOS = cabinetSizeNumberService.getList(byId.getId());
             seaReplenishmentVO.setCabinetSizeNumbers(cabinetSizeNumberVOS);
-            seaReplenishmentVO.assemblyCabinetInfo(cabinetSizeNumberVOS);
+            if(CollectionUtils.isNotEmpty(cabinetSizeNumberVOS)){
+                seaReplenishmentVO.assemblyCabinetInfo(cabinetSizeNumberVOS);
+            }
+
         }
         if (seaReplenishmentVO.getSeaContainerInformations() == null || seaReplenishmentVO.getSeaContainerInformations().size() < 0) {
             List<SeaContainerInformationVO> seaContainerInformations = new ArrayList<>();
@@ -527,7 +532,10 @@ public class SeaOrderController {
             convert.setOrderNo(null);
             convert.setSeaOrderId(seaOrderDetails.getOrderId());
             convert.setSeaOrderNo(seaOrderDetails.getOrderNo());
-            convert.assemblyCabinetInfo(seaOrderDetails.getCabinetSizeNumbers());
+            if(CollectionUtils.isNotEmpty(seaOrderDetails.getCabinetSizeNumbers())){
+                convert.assemblyCabinetInfo(seaOrderDetails.getCabinetSizeNumbers());
+            }
+
             if (convert.getSeaContainerInformations() == null || convert.getSeaContainerInformations().size() < 0) {
                 List<SeaContainerInformationVO> seaContainerInformations = new ArrayList<>();
                 seaContainerInformations.add(new SeaContainerInformationVO());
@@ -555,7 +563,10 @@ public class SeaOrderController {
             List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
             for (SeaReplenishmentVO seaReplenishment : seaReplenishments) {
                 seaReplenishment.setCabinetSizeNumbers(seaOrderDetails.getCabinetSizeNumbers());
-                seaReplenishment.assemblyCabinetInfo(seaOrderDetails.getCabinetSizeNumbers());
+                if(CollectionUtils.isNotEmpty(seaOrderDetails.getCabinetSizeNumbers())){
+                    seaReplenishment.assemblyCabinetInfo(seaOrderDetails.getCabinetSizeNumbers());
+                }
+
                 if (seaReplenishment.getSeaContainerInformations() == null || seaReplenishment.getSeaContainerInformations().size() < 0 || seaReplenishment.getCabinetTypeName().equals("LCL")) {
                     List<SeaContainerInformationVO> seaContainerInformations = new ArrayList<>();
                     seaContainerInformations.add(new SeaContainerInformationVO());
@@ -876,6 +887,130 @@ public class SeaOrderController {
 
     }
 
+
+    @Value("${address.billAddress}")
+    private String path;
+
+    @ApiOperation(value = "导出订舱pdf或者excel")
+    @GetMapping(value = "/uploadExcelManifest")
+    public void uploadExcelManifest(@RequestParam("id") Long id, HttpServletResponse response) {
+        //通过id获取订单信息
+        SeaOrderVO seaOrder = seaOrderService.getSeaOrderDetails(id);
+
+        List<OrderAddressVO> deliveryAddress = seaOrder.getDeliveryAddress();
+        List<OrderAddressVO> shippingAddress = seaOrder.getShippingAddress();
+        List<OrderAddressVO> notificationAddress = seaOrder.getNotificationAddress();
+        List<GoodsVO> goodsForms = seaOrder.getGoodsForms();
+
+        Map<String, String> resultMap=new HashMap<>();
+        if(CollectionUtils.isNotEmpty(deliveryAddress)){
+            if(deliveryAddress.get(0).getAddress() != null){
+                resultMap.put("shipperInformation",deliveryAddress.get(0).getAddress());
+            }
+        }
+        if(CollectionUtils.isNotEmpty(shippingAddress)){
+            if(shippingAddress.get(0).getAddress() != null){
+                resultMap.put("consigneeInformation",shippingAddress.get(0).getAddress());
+            }
+        }if(CollectionUtils.isNotEmpty(notificationAddress)){
+            if(notificationAddress.get(0).getAddress() != null){
+                resultMap.put("notifierInformation",notificationAddress.get(0).getAddress());
+            }
+        }
+
+        if(seaOrder.getDestination() != null){
+            resultMap.put("destination",seaOrder.getDestination());
+        }
+        if(seaOrder.getPortDepartureCode() != null){
+            resultMap.put("portDepartureCode",seaPortService.getPortName(seaOrder.getPortDepartureCode()));
+        }
+        if(seaOrder.getPortDestinationCode() != null){
+            //通过港口代码获取代码名称
+            resultMap.put("portDestinationCode",seaPortService.getPortName(seaOrder.getPortDestinationCode()));
+        }
+        if(CollectionUtils.isNotEmpty(goodsForms)){
+            if(goodsForms.get(0).getLabel() != null){
+                resultMap.put("shippingMark",goodsForms.get(0).getLabel());
+            }
+            if(goodsForms.get(0).getName() != null){
+                resultMap.put("goodName",goodsForms.get(0).getName());
+            }
+            if(goodsForms.get(0).getBulkCargoAmount() != null){
+                resultMap.put("number",goodsForms.get(0).getBulkCargoAmount()+goodsForms.get(0).getBulkCargoUnit());
+            }
+            if(goodsForms.get(0).getTotalWeight() != null){
+                resultMap.put("weight",goodsForms.get(0).getTotalWeight()+"KGS");
+            }
+            if(goodsForms.get(0).getVolume() != null){
+                resultMap.put("volume",goodsForms.get(0).getVolume()+"CBM");
+            }
+        }
+        if(seaOrder.getCreateTime() != null){
+            resultMap.put("createTime",seaOrder.getCreateTime().toString().replaceAll("T"," ").substring(0,10));
+        }
+        if(seaOrder.getCreateUser() != null){
+            resultMap.put("createUser",seaOrder.getCreateUser());
+        }
+        //通过创建用户，获取用户的信息
+        ApiResult systemUserByName = oauthClient.getSystemUserByName(seaOrder.getCreateUser());
+        if (systemUserByName != null && systemUserByName.getCode() == HttpStatus.SC_OK) {
+            JSONObject jsonObject = new JSONObject(systemUserByName.getData());
+            resultMap.put("phone",jsonObject.getStr("phone"));
+            resultMap.put("email",jsonObject.getStr("email"));
+        }
+        //获取主订单信息
+        ApiResult mainOrderByOrderNos = omsClient.getMainOrderByOrderNos(Collections.singletonList(seaOrder.getMainOrderNo()));
+        if (mainOrderByOrderNos != null && mainOrderByOrderNos.getCode() == HttpStatus.SC_OK) {
+            JSONObject jsonObject = new JSONObject(mainOrderByOrderNos.getData());
+            resultMap.put("remarks",jsonObject.getStr("remarks"));
+        }
+        //获取订船信息
+        SeaBookship enableBySeaOrderId = seaBookshipService.getEnableBySeaOrderId(seaOrder.getOrderId());
+        if(enableBySeaOrderId != null){
+            resultMap.put("ship",enableBySeaOrderId.getShipName()+"/"+enableBySeaOrderId.getShipNumber());
+        }
+        if(seaOrder.getCabinetType().equals(1)){
+            List<CabinetSizeNumberVO> list = cabinetSizeNumberService.getList(seaOrder.getOrderId());
+            if(CollectionUtils.isNotEmpty(list)){
+                StringBuffer stringBuffer = new StringBuffer();
+                for (CabinetSizeNumberVO cabinetSizeNumberVO : list) {
+                    stringBuffer.append(cabinetSizeNumberVO.getCabinetTypeSize()).append("×").append(cabinetSizeNumberVO.getNumber()).append("  ");
+                }
+                resultMap.put("cabinet",stringBuffer.toString());
+            }
+
+        }else{
+            resultMap.put("cabinet","CFS ( Y )");
+        }
+        resultMap.put("img","");
+
+
+
+        //2.根据模板填充数据源
+        ByteArrayOutputStream pdf = createPdfStream(path, resultMap,"佳裕达");
+
+
+        //3.输出填充后的文件
+        String fileName = "订舱.pdf";
+        ServletOutputStream out = null;
+        try {
+            out = response.getOutputStream();
+            response.setContentType("application/vnd.ms-pdf");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+            String filename = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename );
+
+            out.write(pdf.toByteArray());
+            out.flush();
+            out.close();
+            pdf.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+
+        }
+    }
 
 }
 

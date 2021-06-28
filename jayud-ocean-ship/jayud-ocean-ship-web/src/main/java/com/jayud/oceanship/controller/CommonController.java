@@ -1,5 +1,6 @@
 package com.jayud.oceanship.controller;
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
 import com.jayud.common.entity.InitComboxStrVO;
@@ -11,14 +12,14 @@ import com.jayud.oceanship.service.ISeaPortService;
 import com.jayud.oceanship.service.ITermsService;
 import com.jayud.oceanship.po.CabinetType;
 import com.jayud.oceanship.vo.CabinetTypeVO;
+import com.jayud.oceanship.vo.InitComboxListVO;
 import com.jayud.oceanship.vo.InitComboxSVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +59,7 @@ public class CommonController {
 
     @ApiOperation(value = "主订单下拉选项-船舶港口，贸易类型")
     @PostMapping(value = "/mainOrder/initSea")
-    public CommonResult<Map<String, Object>> initAir() {
+    public CommonResult<Map<String, Object>> initSea() {
         List<InitComboxStrVO> initComboxStrVOS = this.seaPortService.initSeaPort();
         List<InitComboxVO> initComboxVO = this.terms.initTerms();
         List<CabinetTypeVO> list = cabinetTypeService.initCabinetType();
@@ -76,8 +77,22 @@ public class CommonController {
         response.put("cabinetSize",list.get(0).getCabinetSizes());
         response.put("transportClause",data);
         response.put("deliveryMode",data1);
+
         return CommonResult.success(response);
     }
 
+
+    @ApiOperation(value = "主订单下拉选项-船舶港口，贸易类型")
+    @PostMapping(value = "/initCompany")
+    public CommonResult<Map<String, Object>> initCompany(@RequestBody Map<String,Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        List<InitComboxSVO> data2 = omsClient.initDictNameByDictTypeCode("company").getData();
+        InitComboxListVO initComboxListVO = new InitComboxListVO();
+        initComboxListVO.setInitComboxSVOList(data2);
+        initComboxListVO.setDefaultValue(data2.get(0).getValue());
+        Map<String, Object> response = new HashMap<>();
+        response.put("company",initComboxListVO);
+        return CommonResult.success(response);
+    }
 
 }

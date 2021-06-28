@@ -79,7 +79,7 @@ public class SeaBillServiceImpl extends ServiceImpl<SeaBillMapper, SeaBill> impl
             seaBill.setShippingMark(addGoodsForm.getLabel() != null ? addGoodsForm.getLabel() : null);
             seaBill.setGoodName(addGoodsForm.getName() != null ? addGoodsForm.getName() : null);
             seaBill.setBoardNumber(addGoodsForm.getPlateAmount() != null ? addGoodsForm.getPlateAmount() : null);
-            seaBill.setPlateUnit(addGoodsForm.getPlateUnit() != null ? addGoodsForm.getPlateUnit() : null);
+            seaBill.setPlateUnit(addGoodsForm.getPlateUnit() != null ? addGoodsForm.getPlateUnit() : "板");
             seaBill.setNumber(addGoodsForm.getBulkCargoAmount() != null ? addGoodsForm.getBulkCargoAmount() : null);
             seaBill.setNumberUnit(addGoodsForm.getBulkCargoUnit() != null ? addGoodsForm.getBulkCargoUnit() : null);
             seaBill.setWeight(addGoodsForm.getTotalWeight() != null ? addGoodsForm.getTotalWeight() : null);

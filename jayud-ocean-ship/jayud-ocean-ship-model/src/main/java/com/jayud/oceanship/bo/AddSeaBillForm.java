@@ -193,6 +193,9 @@ public class AddSeaBillForm extends Model<AddSeaBillForm> {
     @ApiModelProperty(value = "货柜信息集合")
     private List<SeaContainerInformation> seaContainerInformations;
 
+    @ApiModelProperty(value = "提单份数")
+    private String numberOfBl;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

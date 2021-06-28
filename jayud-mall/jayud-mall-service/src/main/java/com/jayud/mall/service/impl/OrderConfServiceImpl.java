@@ -387,7 +387,7 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "沒有找到配载单");
         }
         String verifyPassword = form.getVerifyPassword();
-        if("jyd".equals(verifyPassword)){
+        if(!"jyd".equals(verifyPassword)){
             //取消时，输入jdy，确认后才能取消
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "取消时，输入jdy，确认后才能取消");
         }

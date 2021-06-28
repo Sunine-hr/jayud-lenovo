@@ -2947,7 +2947,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "沒有找到订单");
         }
         String validatePassword = form.getValidatePassword();
-        if("jyd".equals(validatePassword)){
+        if(!"jyd".equals(validatePassword)){
             //取消时，输入jdy，确认后才能取消
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "取消时，输入jdy，确认后才能取消");
         }

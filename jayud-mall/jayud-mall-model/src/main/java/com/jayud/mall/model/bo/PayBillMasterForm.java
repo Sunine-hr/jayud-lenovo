@@ -28,7 +28,7 @@ public class PayBillMasterForm {
     @JSONField(ordinal = 3)
     private Long orderId;
 
-    @ApiModelProperty(value = "法人id(legal_person id)", position = 4)
+    @ApiModelProperty(value = "法人主体id(legal_entity id)", position = 4)
     @JSONField(ordinal = 4)
     @NotNull(message = "法人不能为空")
     private Long legalPersonId;

@@ -26,13 +26,13 @@
         select
         t.id,t.bill_code,t.order_id,t.legal_person_id,t.supplier_id,t.amount,t.cid,t.remarks,t.status,t.create_time,
         t1.order_no,
-        t2.legal_entity,
+        t2.legal_name,
         t3.company_name supplierName,
         t4.currency_code,t4.currency_name,
         CONCAT(t.amount, ' ', t4.currency_name) amountFormat
         from pay_bill_master t
         left join order_info t1 on t1.id = t.order_id
-        left join legal_person t2 on t2.id = t.legal_person_id
+        left join legal_entity t2 on t2.id = t.legal_person_id
         left join supplier_info t3 on t3.id = t.supplier_id
         left join currency_info t4 on t4.id = t.cid
         where 1=1
@@ -56,11 +56,11 @@
         select
         t.id,t.bill_code,t.order_id,t.legal_person_id,t.supplier_id,t.amount,t.cid,t.remarks,t.status,t.create_time,t.payer_id,t.payment_time,t.voucher_url,t.account_payable_id,
         t1.order_no,
-        t2.legal_entity,
+        t2.legal_name,
         t3.company_name supplierName
         from pay_bill_master t
         left join order_info t1 on t1.id = t.order_id
-        left join legal_person t2 on t2.id = t.legal_person_id
+        left join legal_entity t2 on t2.id = t.legal_person_id
         left join supplier_info t3 on t3.id = t.supplier_id
         where 1=1
         and t.id = 1
@@ -73,12 +73,12 @@
         select
         t.id,t.bill_code,t.order_id,t.legal_person_id,t.supplier_id,t.amount,t.cid,t.remarks,t.status,t.create_time,t.payer_id,t.payment_time,t.voucher_url,t.account_payable_id,
         t1.order_no,
-        t2.legal_entity,
+        t2.legal_name,
         t3.company_name supplierName,
         t4.name payerName
         from pay_bill_master t
         left join order_info t1 on t1.id = t.order_id
-        left join legal_person t2 on t2.id = t.legal_person_id
+        left join legal_entity t2 on t2.id = t.legal_person_id
         left join supplier_info t3 on t3.id = t.supplier_id
         left join system_user t4 on t4.id = t.payer_id
         where t.account_payable_id = #{accountPayableId}
@@ -108,13 +108,13 @@
         select
         t.id,t.bill_code,t.order_id,t.legal_person_id,t.supplier_id,t.amount,t.cid,t.remarks,t.status,t.create_time,t.payer_id,t.payment_time,t.voucher_url,t.account_payable_id,
         t1.order_no,
-        t2.legal_entity,
+        t2.legal_name,
         t3.company_name supplierName,
         t4.currency_code,t4.currency_name,
         CONCAT(t.amount, ' ', t4.currency_name) amountFormat
         from pay_bill_master t
         left join order_info t1 on t1.id = t.order_id
-        left join legal_person t2 on t2.id = t.legal_person_id
+        left join legal_entity t2 on t2.id = t.legal_person_id
         left join supplier_info t3 on t3.id = t.supplier_id
         left join currency_info t4 on t4.id = t.cid
         where 1=1

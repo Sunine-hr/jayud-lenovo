@@ -30,6 +30,7 @@ public class LegalPersonController {
     @ApiOperation(value = "查询法人主体list")
     @PostMapping("/findLegalPerson")
     @ApiOperationSupport(order = 1)
+    @Deprecated
     public CommonResult<List<LegalPersonVO>> findLegalPerson(@Valid @RequestBody LegalPersonForm form){
         return legalPersonService.findLegalPerson(form);
     }

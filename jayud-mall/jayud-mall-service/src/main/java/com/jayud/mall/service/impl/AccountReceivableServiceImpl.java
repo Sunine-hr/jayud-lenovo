@@ -415,7 +415,7 @@ public class AccountReceivableServiceImpl extends ServiceImpl<AccountReceivableM
             //1.保存应收对账单
             AccountReceivable accountReceivable = new AccountReceivable();
             accountReceivable.setDzdNo(dzdNo);//对账单编号
-            accountReceivable.setLegalPersonId(Long.valueOf(legalPersonId));//法人id(legal_person id)
+            accountReceivable.setLegalPersonId(Long.valueOf(legalPersonId));//法人主体id(legal_entity id)
             accountReceivable.setCustomerId(Integer.valueOf(customerId));//客户ID(customer id)
             accountReceivable.setPaymentDaysStart(firstday);//账期开始时间
             accountReceivable.setPaymentDaysEnd(lastDay);//账期结束时间

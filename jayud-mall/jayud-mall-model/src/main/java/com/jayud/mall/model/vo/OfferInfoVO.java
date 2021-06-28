@@ -84,6 +84,9 @@ public class OfferInfoVO {
     @ApiModelProperty(value = "特别说明")
     private String specialVersion;
 
+    @ApiModelProperty(value = "报价单号")
+    private String offerNo;
+
     /*航程*/
     @ApiModelProperty(value = "航程(预计到达时间estimated_time - 开船日期sail_time)", position = 15)
     @JSONField(ordinal = 15)

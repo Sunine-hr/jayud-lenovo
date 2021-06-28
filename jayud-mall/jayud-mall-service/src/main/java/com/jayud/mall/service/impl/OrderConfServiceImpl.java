@@ -389,7 +389,7 @@ public class OrderConfServiceImpl extends ServiceImpl<OrderConfMapper, OrderConf
         String verifyPassword = form.getVerifyPassword();
         if(!"jyd".equals(verifyPassword)){
             //取消时，输入jdy，确认后才能取消
-            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "取消时，输入jdy，确认后才能取消");
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "取消时，输入jyd，确认后才能取消");
         }
     }
 

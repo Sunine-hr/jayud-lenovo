@@ -92,6 +92,9 @@ public class OfferInfoForm {
     @ApiModelProperty(value = "特别说明")
     private String specialVersion;
 
+    @ApiModelProperty(value = "报价单号")
+    private String offerNo;
+
     //报价编辑报价模板的费用信息、文件信息
 
     /*报价对应应收费用明细list*/

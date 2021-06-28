@@ -18,6 +18,7 @@ import com.jayud.mall.model.po.*;
 import com.jayud.mall.model.vo.*;
 import com.jayud.mall.model.vo.domain.AuthUser;
 import com.jayud.mall.service.*;
+import com.jayud.mall.utils.SnowflakeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -141,10 +142,11 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             offerInfo.setUserId(user.getId().intValue());
             offerInfo.setUserName(user.getName());
             offerInfo.setCreateTime(LocalDateTime.now());
-        }else{
+
+            String offerNo = String.valueOf(SnowflakeUtils.getOrderNo());//雪花算法生成id
+            offerInfo.setOfferNo(offerNo);
 
         }
-
         // 获得报价模板数据
         QuotationTemplate quotationTemplate = quotationTemplateMapper.selectById(offerInfo.getQie());
         quotationTemplate.setId(null);

@@ -13,7 +13,7 @@ public class OrderConfVerifyForm {
     @NotNull(message = "配载单id不能为空")
     private Long id;
 
-    @ApiModelProperty(value = "验证密码", notes = "取消时，输入jdy，确认后才能取消")
+    @ApiModelProperty(value = "验证密码", notes = "取消时，输入jyd，确认后才能取消")
     @NotBlank(message = "验证密码不能为空")
     private String verifyPassword;
 

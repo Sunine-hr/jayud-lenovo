@@ -96,6 +96,9 @@ public class OfferInfo extends Model<OfferInfo> {
     @ApiModelProperty(value = "特别说明")
     private String specialVersion;
 
+    @ApiModelProperty(value = "报价单号")
+    private String offerNo;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

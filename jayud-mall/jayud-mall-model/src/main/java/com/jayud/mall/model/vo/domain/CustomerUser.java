@@ -106,7 +106,7 @@ public class CustomerUser {
     @JSONField(ordinal = 22)
     private String payPasswd;
 
-    @ApiModelProperty(value = "结算方式(1票结 2月结)", position = 23)
+    @ApiModelProperty(value = "结算方式id(clearing_way id)", position = 23)
     @JSONField(ordinal = 23)
     private Integer clearingWay;
 

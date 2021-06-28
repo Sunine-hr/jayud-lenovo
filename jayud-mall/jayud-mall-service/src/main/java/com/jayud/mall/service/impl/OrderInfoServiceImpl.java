@@ -584,18 +584,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         Integer offerInfoId = orderInfo.getOfferInfoId();//报价id，运价id
         OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(Long.valueOf(offerInfoId));
 
-        Integer clearingWay = offerInfoVO.getClearingWay();//结算方式(1票结 2按客户的结算方式(客户表customer clearing_way))
+        Integer clearingWay = offerInfoVO.getClearingWay();//结算方式id(clearing_way id)  1, '按客户的结算方式'
         if(ObjectUtil.isNotEmpty(clearingWay)){
-            if(clearingWay.equals("2")){
+            if(clearingWay.equals(1)){
                 Integer customerId = customerUser.getId();
                 CustomerVO customerVO = customerMapper.findCustomerById(customerId);
-                Integer clearingWay1 = customerVO.getClearingWay();//结算方式(1票结 2月结)
+                Integer clearingWay1 = customerVO.getClearingWay();//结算方式id(clearing_way id)
                 clearingWay = clearingWay1;
             }
-        }else{
-            clearingWay = 1;
         }
-        orderInfo.setClearingWay(clearingWay);//订单的结算方式  结算方式(1票结 2月结)
+        orderInfo.setClearingWay(clearingWay);//订单的结算方式
 
         //集货仓库代码 -> 集货仓库名称
         String storeGoodsWarehouseCode1 = orderInfo.getStoreGoodsWarehouseCode();
@@ -1338,18 +1336,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         Integer offerInfoId = orderInfo.getOfferInfoId();//报价id，运价id
 
         OfferInfoVO offerInfoVO = offerInfoMapper.lookOfferInfoFare(Long.valueOf(offerInfoId));
-        Integer clearingWay = offerInfoVO.getClearingWay();//结算方式(1票结 2按客户的结算方式(客户表customer clearing_way))
+        Integer clearingWay = offerInfoVO.getClearingWay();//结算方式id(clearing_way id)  1, '按客户的结算方式'
         if(ObjectUtil.isNotEmpty(clearingWay)){
-            if(clearingWay.equals("2")){
+            if(clearingWay.equals(1)){
                 Integer customerId = customerUser.getId();
                 CustomerVO customerVO = customerMapper.findCustomerById(customerId);
-                Integer clearingWay1 = customerVO.getClearingWay();//结算方式(1票结 2月结)
+                Integer clearingWay1 = customerVO.getClearingWay();//结算方式id(clearing_way id)
                 clearingWay = clearingWay1;
             }
-        }else{
-            clearingWay = 1;
         }
-        orderInfo.setClearingWay(clearingWay);//订单的结算方式  结算方式(1票结 2月结)
+        orderInfo.setClearingWay(clearingWay);//订单的结算方式
 
         //集货仓库代码 -> 集货仓库名称
         String storeGoodsWarehouseCode1 = orderInfo.getStoreGoodsWarehouseCode();

@@ -150,7 +150,7 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "后端状态名称")
     private String afterStatusName;
 
-    @ApiModelProperty(value = "结算方式(1票结 2月结)")
+    @ApiModelProperty(value = "结算方式id(clearing_way id)")
     private Integer clearingWay;
 
     @ApiModelProperty(value = "补充资料说明")

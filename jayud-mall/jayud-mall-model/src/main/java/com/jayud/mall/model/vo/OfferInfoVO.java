@@ -171,10 +171,10 @@ public class OfferInfoVO {
     @ApiModelProperty(value = "最低数量")
     private BigDecimal minimumQuantity;
 
-    @ApiModelProperty(value = "结算方式(1票结 2按客户的结算方式(客户表customer clearing_way))")
+    @ApiModelProperty(value = "结算方式id(clearing_way id)")
     private Integer clearingWay;
 
-    @ApiModelProperty(value = "下单页面显示结算方式(1票结 2月结)")
+    @ApiModelProperty(value = "下单页面显示 结算方式id(clearing_way id)")
     private Integer showClearingWay;
 
     /*报价服务组:service_group*/

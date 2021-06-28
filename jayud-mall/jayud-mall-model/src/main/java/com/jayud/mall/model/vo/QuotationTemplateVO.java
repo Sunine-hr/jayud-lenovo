@@ -175,7 +175,7 @@ public class QuotationTemplateVO {
     private Integer estimatedTimeCalc;
 
     //结算方式
-    @ApiModelProperty(value = "结算方式(1票结 2按客户的结算方式(客户表customer clearing_way))")
+    @ApiModelProperty(value = "结算方式id(clearing_way id)")
     private Integer clearingWay;
 
     @ApiModelProperty(value = "特别说明")

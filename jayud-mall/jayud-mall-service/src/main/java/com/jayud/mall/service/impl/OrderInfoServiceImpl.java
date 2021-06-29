@@ -2943,7 +2943,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 //        }
         orderInfo.setAfterStatusCode(OrderEnum.AFTER_RECEIVED.getCode());//AFTER_RECEIVED("20", "已收货"),
         orderInfo.setAfterStatusName(OrderEnum.AFTER_RECEIVED.getName());
+        orderInfo.setFrontStatusCode(OrderEnum.FRONT_RECEIVED.getCode());
+        orderInfo.setFrontStatusName(OrderEnum.FRONT_RECEIVED.getName());
+
+        //订单-确认收货
         this.saveOrUpdate(orderInfo);
+
+        //订单-确认收货，加物流轨迹
+        LogisticsTrack logisticsTrack = new LogisticsTrack();
+        logisticsTrack.setOrderId(orderInfo.getId().toString());
+        logisticsTrack.setStatus(1);
+        logisticsTrack.setStatusName("1");
+        logisticsTrack.setDescription("确认收货");
+        logisticsTrack.setCreateTime(LocalDateTime.now());
+        logisticsTrackService.saveOrUpdate(logisticsTrack);
+
         OrderInfoVO convert = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
         return convert;
     }

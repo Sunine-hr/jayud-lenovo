@@ -295,5 +295,7 @@ public class OfferInfoVO {
     @ApiModelProperty(value = "容量单位(1KG 2CBM) quotation_template volume_unit")
     private Integer volumeUnit;
 
+    @ApiModelProperty(value = "整体时效(quotation_template whole_time)")
+    private String wholeTime;
 
 }

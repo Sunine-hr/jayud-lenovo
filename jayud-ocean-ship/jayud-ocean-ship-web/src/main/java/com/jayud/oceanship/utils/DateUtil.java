@@ -12,44 +12,44 @@ public class DateUtil {
         StringBuffer str = new StringBuffer();
         switch (monthValue){
             case 1:
-                str.append(dayOfMonth).append(" ").append("January").append(" ").append(year);
+                str.append(dayOfMonth).append(" ").append("Jan").append(" ").append(year);
                 break;
             case 2:
-                str.append(dayOfMonth).append(" ").append("February").append(" ").append(year);
+                str.append(dayOfMonth).append(" ").append("Feb").append(" ").append(year);
                 break;
             case 3:
-                str.append(dayOfMonth).append(" ").append("March").append(" ").append(year);
+                str.append(dayOfMonth).append(" ").append("Mar").append(" ").append(year);
                 break;
             case 4:
-                str.append(dayOfMonth).append(" ").append("April").append(" ").append(year);
+                str.append(dayOfMonth).append(" ").append("Apr").append(" ").append(year);
                 break;
             case 5:
                 str.append(dayOfMonth).append(" ").append("May").append(" ").append(year);
                 break;
             case 6:
-                str.append(dayOfMonth).append(" ").append("June").append(" ").append(year);
+                str.append(dayOfMonth).append(" ").append("Jun").append(" ").append(year);
                 break;
             case 7:
-                str.append(dayOfMonth).append(" ").append("July").append(" ").append(year);
+                str.append(dayOfMonth).append(" ").append("Jul").append(" ").append(year);
                 break;
             case 8:
-                str.append(dayOfMonth).append(" ").append("August").append(" ").append(year);
+                str.append(dayOfMonth).append(" ").append("Aug").append(" ").append(year);
                 break;
             case 9:
-                str.append(dayOfMonth).append(" ").append("September").append(" ").append(year);
+                str.append(dayOfMonth).append(" ").append("Sep").append(" ").append(year);
                 break;
             case 10:
-                str.append(dayOfMonth).append(" ").append("October").append(" ").append(year);
+                str.append(dayOfMonth).append(" ").append("Oct").append(" ").append(year);
                 break;
             case 11:
-                str.append(dayOfMonth).append(" ").append("November").append(" ").append(year);
+                str.append(dayOfMonth).append(" ").append("Nov").append(" ").append(year);
                 break;
             case 12:
-                str.append(dayOfMonth).append(" ").append("December").append(" ").append(year);
+                str.append(dayOfMonth).append(" ").append("Dec").append(" ").append(year);
                 break;
 
         }
-        return str.toString();
+        return str.toString().toUpperCase();
     }
 
 

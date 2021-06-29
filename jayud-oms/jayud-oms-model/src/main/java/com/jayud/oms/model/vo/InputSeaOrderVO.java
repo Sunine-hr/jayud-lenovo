@@ -215,6 +215,15 @@ public class InputSeaOrderVO {
     @ApiModelProperty(value = "附件集合")
     private List<FileView> fileViews = new ArrayList<>();
 
+    @ApiModelProperty(value = "主单号")
+    private String mainNo;
+
+    @ApiModelProperty(value = "分单号")
+    private String subNo;
+
+    @ApiModelProperty(value = "提单重量")
+    private Double billLadingWeight;
+
 
     public void setUnitName(String unitName) {
         this.unitName = unitName;

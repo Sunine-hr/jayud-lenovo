@@ -32,6 +32,9 @@ public class SeaBillVO extends Model<SeaBillVO> {
     @ApiModelProperty(value = "提单订单号")
     private String orderNo;
 
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrderNo;
+
     @ApiModelProperty(value = "海运订单id")
     private Long seaOrderId;
 

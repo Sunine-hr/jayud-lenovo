@@ -23,9 +23,9 @@ import java.util.List;
 public class SeaContainerInformationServiceImpl extends ServiceImpl<SeaContainerInformationMapper, SeaContainerInformation> implements ISeaContainerInformationService {
 
     @Override
-    public List<SeaContainerInformationVO> getList(Long id) {
+    public List<SeaContainerInformationVO> getList(String orderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("sea_rep_id",id);
+        queryWrapper.eq("sea_rep_no",orderNo);
         List list = this.baseMapper.selectList(queryWrapper);
         List list1 = ConvertUtil.convertList(list, SeaContainerInformationVO.class);
         return list1;
@@ -43,5 +43,12 @@ public class SeaContainerInformationServiceImpl extends ServiceImpl<SeaContainer
     @Override
     public int deleteSeaContainerInfo(List<String> orderNo) {
         return this.baseMapper.deleteSeaContainerInfo(orderNo);
+    }
+
+    @Override
+    public boolean removeSeaContainerInformation(String orderNo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("sea_rep_no",orderNo);
+        return this.remove(queryWrapper);
     }
 }

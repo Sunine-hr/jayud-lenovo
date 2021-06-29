@@ -16,9 +16,11 @@ import java.util.List;
  */
 public interface ISeaContainerInformationService extends IService<SeaContainerInformation> {
 
-    List<SeaContainerInformationVO> getList(Long id);
+    List<SeaContainerInformationVO> getList(String orderNo);
 
     List<SeaContainerInformationVO> getListBySeaRepNo(String orderNo);
 
     int deleteSeaContainerInfo(List<String> orderNo);
+
+    boolean removeSeaContainerInformation(String orderNo);
 }

@@ -49,7 +49,7 @@ public class SeaBillFormVO extends Model<SeaBillFormVO> {
     private Long id;
 
 //    @ApiModelProperty(value = "提单单号")
-//    private String orderNo;
+    private String orderNo;
 
     //@ApiModelProperty(value = "海运订单id")
     private Long orderId;
@@ -81,7 +81,7 @@ public class SeaBillFormVO extends Model<SeaBillFormVO> {
     @ApiModelProperty(value = "进出口类型(1：进口，2：出口)")
     private Integer impAndExpType;
 
-    @ApiModelProperty(value = "贸易方式(0:FOB,1:CIF,2:DAP,3:FAC,4:DDU,5:DDP)")
+    @ApiModelProperty(value = "贸易方式")
     private Integer terms;
 
     @ApiModelProperty(value = "起运港代码")
@@ -94,16 +94,16 @@ public class SeaBillFormVO extends Model<SeaBillFormVO> {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime goodTime;
 
-    @ApiModelProperty(value = "运费是否到付(1代表true,0代表false)")
+    @ApiModelProperty(value = "运费是否到付")
     private Boolean isFreightCollect;
 
-    @ApiModelProperty(value = "其他费用是否到付(1代表true,0代表false)")
+    @ApiModelProperty(value = "其他费用是否到付")
     private Boolean isOtherExpensesPaid;
 
-    @ApiModelProperty(value = "是否危险品(1代表true,0代表false)")
+    @ApiModelProperty(value = "是否危险品")
     private Boolean isDangerousGoods;
 
-    @ApiModelProperty(value = "是否带电(1代表true,0代表false)")
+    @ApiModelProperty(value = "是否带电")
     private Boolean isCharged;
 
     @ApiModelProperty(value = "中转港")
@@ -259,7 +259,7 @@ public class SeaBillFormVO extends Model<SeaBillFormVO> {
     @ApiModelProperty(value = "提单类型")
     private Integer type;
 
-    @ApiModelProperty(value = "是否拼柜(1代表true,0代表false)")
+    @ApiModelProperty(value = "是否拼柜")
     private Boolean isSpell;
 
     @ApiModelProperty(value = "拼柜订单号集合")

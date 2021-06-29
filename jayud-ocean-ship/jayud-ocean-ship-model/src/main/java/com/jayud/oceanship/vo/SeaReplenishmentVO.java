@@ -55,7 +55,8 @@ public class SeaReplenishmentVO extends Model<SeaReplenishmentVO> {
     private String seaOrderNo;
 
     @ApiModelProperty(value = "截补料时间")
-    private String cutReplenishTime;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime cutReplenishTime;
 
     @ApiModelProperty(value = "柜号")
     private String cabinetNumber;
@@ -67,12 +68,14 @@ public class SeaReplenishmentVO extends Model<SeaReplenishmentVO> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "是否已提单")
@@ -112,6 +115,7 @@ public class SeaReplenishmentVO extends Model<SeaReplenishmentVO> {
     private String transitPort;
 
     @ApiModelProperty(value = "货好时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime goodTime;
 
     @ApiModelProperty(value = "运费是否到付(1代表true,0代表false)")
@@ -206,6 +210,15 @@ public class SeaReplenishmentVO extends Model<SeaReplenishmentVO> {
 
     @ApiModelProperty(value = "订柜信息")
     private String orderingInformation;
+
+    @ApiModelProperty(value = "主单号")
+    private String mainNo;
+
+    @ApiModelProperty(value = "分单号")
+    private String subNo;
+
+    @ApiModelProperty(value = "提单重量")
+    private Double billLadingWeight;
 
     public void getFile(String path){
         this.fileViewList = com.jayud.common.utils.StringUtils.getFileViews(this.getFilePath(),this.getFileName(),path);

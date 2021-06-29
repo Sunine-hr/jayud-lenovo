@@ -233,6 +233,28 @@ public class AddSeaReplenishment extends Model<AddSeaReplenishment> {
         if(this.so != null){
             this.so = this.so.toUpperCase();
         }
+        if(CollectionUtil.isNotEmpty(this.orderAddressForms)){
+            for (AddOrderAddressForm orderAddressForm : this.orderAddressForms) {
+                orderAddressForm.setAddress(orderAddressForm.getAddress().toUpperCase());
+            }
+        }
+        if(CollectionUtil.isNotEmpty(this.goodsForms)){
+            for (AddGoodsForm goodsForm : this.goodsForms) {
+                if(goodsForm.getName() != null){
+                    goodsForm.setName(goodsForm.getName().toUpperCase());
+                }
+                if(goodsForm.getLabel() != null){
+                    goodsForm.setLabel(goodsForm.getLabel().toUpperCase());
+                }
+            }
+        }
+        if(this.subNo != null){
+            this.subNo = subNo.toUpperCase();
+        }
+        if(this.mainNo != null){
+            this.mainNo = mainNo.toUpperCase();
+        }
+
     }
 
 

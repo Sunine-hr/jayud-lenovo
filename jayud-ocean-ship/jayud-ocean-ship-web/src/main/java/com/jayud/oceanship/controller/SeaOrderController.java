@@ -253,7 +253,7 @@ public class SeaOrderController {
                     //获取截补料中的柜型数量以及货柜信息
                     List<CabinetSizeNumberVO> list1 = cabinetSizeNumberService.getList(seaReplenishmentVO.getId());
                     seaReplenishmentVO.setCabinetSizeNumbers(list1);
-                    List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(seaReplenishmentVO.getId());
+                    List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(seaReplenishmentVO.getOrderNo());
                     seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
                 }
                 record.setSeaReplenishments(seaReplenishmentVOS);
@@ -362,7 +362,7 @@ public class SeaOrderController {
 //            }
             //获取货柜信息
             if (record.getCabinetType().equals(1)) {
-                List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(record.getId());
+                List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(record.getOrderNo());
                 record.setSeaContainerInformations(seaContainerInformations);
             }
         }
@@ -555,6 +555,9 @@ public class SeaOrderController {
             }
             if(enableBySeaOrderId.getShipNumber() != null){
                 convert.setShipNumber(enableBySeaOrderId.getShipNumber());
+            }
+            if(enableBySeaOrderId.getEtd() != null){
+                convert.setSailingTime(enableBySeaOrderId.getEtd());
             }
             seaReplenishmentVOS.add(convert);
             seaOrderDetails.setSeaReplenishments(seaReplenishmentVOS);
@@ -884,12 +887,14 @@ public class SeaOrderController {
         excelWriter.finish();
         outStream.close();
         inputStream.close();
-
     }
 
 
     @Value("${address.manifestAddress}")
     private String path;
+
+    @Value("${address.imgAddress}")
+    private String imgPath;
 
     @ApiOperation(value = "导出订舱pdf或者excel")
     @GetMapping(value = "/uploadExcelManifest")
@@ -936,7 +941,7 @@ public class SeaOrderController {
                 resultMap.put("goodName",goodsForms.get(0).getName());
             }
             if(goodsForms.get(0).getBulkCargoAmount() != null){
-                resultMap.put("number",goodsForms.get(0).getBulkCargoAmount()+goodsForms.get(0).getBulkCargoUnit());
+                resultMap.put("number",goodsForms.get(0).getBulkCargoAmount()+(goodsForms.get(0).getBulkCargoUnit()==null?"":goodsForms.get(0).getBulkCargoUnit()));
             }
             if(goodsForms.get(0).getTotalWeight() != null){
                 resultMap.put("weight",goodsForms.get(0).getTotalWeight()+"KGS");
@@ -971,7 +976,7 @@ public class SeaOrderController {
         //获取订船信息
         SeaBookship enableBySeaOrderId = seaBookshipService.getEnableBySeaOrderId(seaOrder.getOrderId());
         if(enableBySeaOrderId != null){
-            resultMap.put("ship",enableBySeaOrderId.getShipName()+"/"+enableBySeaOrderId.getShipNumber());
+            resultMap.put("ship",enableBySeaOrderId.getShipName()==null ?"":enableBySeaOrderId.getShipName()+"/"+enableBySeaOrderId.getShipNumber()==null?"":enableBySeaOrderId.getShipNumber());
         }
         if(seaOrder.getCabinetType().equals(1)){
             List<CabinetSizeNumberVO> list = cabinetSizeNumberService.getList(seaOrder.getOrderId());
@@ -986,12 +991,13 @@ public class SeaOrderController {
         }else{
             resultMap.put("cabinet","CFS ( Y )");
         }
-        resultMap.put("img","");
+        Map<String, String> imgMap=new HashMap<>();
+        imgMap.put("img",imgPath);
 
 
 
         //2.根据模板填充数据源
-        ByteArrayOutputStream pdf = createPdfStream(path, resultMap,"佳裕达");
+        ByteArrayOutputStream pdf = createPdfStream(path, resultMap,imgMap,null);
 
 
         //3.输出填充后的文件

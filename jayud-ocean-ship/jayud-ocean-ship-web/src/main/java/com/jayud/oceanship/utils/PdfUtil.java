@@ -1,8 +1,6 @@
 package com.jayud.oceanship.utils;
 
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
+import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -22,7 +20,7 @@ public class PdfUtil {
      * @return
      */
     public static ByteArrayOutputStream createPdfStream(String path,
-                                                        Map<String, String> resultMap,String waterMarkName) {
+                                                        Map<String, String> resultMap,Map<String, String> imgmap,String waterMarkName) {
 
         ByteArrayOutputStream ba = new ByteArrayOutputStream();
         try {
@@ -44,35 +42,58 @@ public class PdfUtil {
                 }
             }
 
+            if(imgmap != null){
+                for(String key : imgmap.keySet()) {
+                    String value = imgmap.get(key);
+                    String imgpath = value;
+                    int pageNo = form.getFieldPositions(key).get(0).page;
+                    Rectangle signRect = form.getFieldPositions(key).get(0).position;
+                    float x = signRect.getLeft();
+                    float y = signRect.getBottom();
+                    //根据路径读取图片
+                    Image image = Image.getInstance(imgpath);
+                    //获取图片页面
+                    PdfContentByte under = stamp.getOverContent(pageNo);
+                    //图片大小自适应
+                    image.scaleToFit(signRect.getWidth(), signRect.getHeight());
+                    //添加图片
+                    image.setAbsolutePosition(x, y);
+                    under.addImage(image);
+                }
+            }
+
             PdfGState gs = new PdfGState();
             //改透明度
-            gs.setFillOpacity(0.5f);
-            gs.setStrokeOpacity(0.4f);
+            gs.setFillOpacity(0.8f);
+            gs.setStrokeOpacity(0.8f);
             int total = reader.getNumberOfPages() + 1;
 
             JLabel label = new JLabel();
             label.setText(waterMarkName);
 
-            PdfContentByte under;
-            // 添加一个水印
-            for (int i = 1; i < total; i++) {
-                // 在内容上方加水印
-                under = stamp.getOverContent(i);
-                //在内容下方加水印
-                //under = stamper.getUnderContent(i);
-                gs.setFillOpacity(0.5f);
-                under.setGState(gs);
-                under.beginText();
-                //改变颜色
-                under.setColorFill(BaseColor.LIGHT_GRAY);
-                //改水印文字大小
-                under.setFontAndSize(bf, 150);
-                under.setTextMatrix(70, 200);
-                //后3个参数，x坐标，y坐标，角度
-                under.showTextAligned(Element.ALIGN_CENTER, waterMarkName, 300, 350, 55);
+            if(waterMarkName != null){
+                PdfContentByte under;
+                // 添加一个水印
+                for (int i = 1; i < total; i++) {
+                    // 在内容上方加水印
+                    under = stamp.getOverContent(i);
+                    //在内容下方加水印
+                    //under = stamper.getUnderContent(i);
+                    gs.setFillOpacity(0.5f);
+                    under.setGState(gs);
+                    under.beginText();
+                    //改变颜色
+                    under.setColorFill(BaseColor.LIGHT_GRAY);
+                    //改水印文字大小
+                    under.setFontAndSize(bf, 30);
+                    under.setTextMatrix(350, 50);
+                    //后3个参数，x坐标，y坐标，角度
+                    under.showTextAligned(Element.ALIGN_CENTER, waterMarkName, 400, 450, 55);
 
-                under.endText();
+                    under.endText();
+                }
             }
+
 
 
             stamp.setFormFlattening(true);//不能编辑

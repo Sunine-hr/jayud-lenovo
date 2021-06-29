@@ -162,30 +162,30 @@ public class InputSeaOrderForm {
             message = "参数不正确";
         }
         if(CollectionUtils.isNotEmpty(this.deliveryAddress)){
-            if(this.deliveryAddress.get(0).getAddress().length() > 1000){
+            if(this.deliveryAddress.get(0).getAddress() != null && this.deliveryAddress.get(0).getAddress().length() > 1000){
                 message = "发货人信息不超过1000个字符";
             }
         }
         if(CollectionUtils.isNotEmpty(this.shippingAddress)){
-            if(this.shippingAddress.get(0).getAddress().length() > 1000){
+            if(this.shippingAddress.get(0).getAddress() != null && this.shippingAddress.get(0).getAddress().length() > 1000){
                 message = "收货人信息不超过1000个字符";
             }
         }
         if(CollectionUtils.isNotEmpty(this.notificationAddress)){
-            if(notificationAddress.get(0).getAddress().length() > 1000){
+            if(this.notificationAddress.get(0).getAddress() != null && this.notificationAddress.get(0).getAddress().length() > 1000){
                 message = "通知人信息不超过1000个字符";
             }
         }
         if(CollectionUtils.isNotEmpty(this.agentAddress)){
-            if(agentAddress.get(0).getAddress().length() > 1000){
+            if(this.agentAddress.get(0).getAddress() != null && this.agentAddress.get(0).getAddress().length() > 1000){
                 message = "代理人信息不超过1000个字符";
             }
         }
         if(CollectionUtils.isNotEmpty(this.goodsForms)){
-            if(goodsForms.get(0).getLabel().length() > 1000){
+            if(this.goodsForms.get(0).getLabel() != null && this.goodsForms.get(0).getLabel().length() > 1000){
                 message = "唛头信息不超过1000个字符";
             }
-            if(goodsForms.get(0).getName().length() > 1000){
+            if(this.goodsForms.get(0).getName() != null && this.goodsForms.get(0).getName().length() > 1000){
                 message = "货物信息不超过1000个字符";
             }
         }

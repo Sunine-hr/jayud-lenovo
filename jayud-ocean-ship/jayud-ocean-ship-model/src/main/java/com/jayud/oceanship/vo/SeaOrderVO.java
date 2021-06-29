@@ -212,6 +212,15 @@ public class SeaOrderVO {
     @ApiModelProperty(value = "附件集合")
     private List<FileView> fileViews;
 
+    @ApiModelProperty(value = "主单号")
+    private String mainNo;
+
+    @ApiModelProperty(value = "分单号")
+    private String subNo;
+
+    @ApiModelProperty(value = "提单重量")
+    private Double billLadingWeight;
+
     public void processingAddress(OrderAddressVO addressVO) {
         switch (addressVO.getType()) {
             case 0:

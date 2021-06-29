@@ -2,7 +2,7 @@ package com.jayud.oceanship.utils;
 
 public class NumUtil {
      public static final String[] enNum = { // 基本数词表
-             "zero", "one", "tow", "three", "four", "five", "six", "seven", "eight",
+             "zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
              "nine", "ten", "eleven", "twelve", "thirteen", "fourteen",
              "fifteen", "sixteen", "seventeen", "eighteen", "nineteen",
              "twenty", "", "", "", "", "", "", "", "", "", "thirty", "", "", "",

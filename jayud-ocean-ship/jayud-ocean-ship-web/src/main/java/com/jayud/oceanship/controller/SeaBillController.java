@@ -149,7 +149,7 @@ public class SeaBillController {
 //            }
             //获取货柜信息
             if (record.getCabinetType().equals(1)) {
-                List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(record.getId());
+                List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(record.getOrderNo());
                 record.setSeaContainerInformations(seaContainerInformations);
             }
         }
@@ -161,6 +161,7 @@ public class SeaBillController {
     @ApiOperation("增加或修改提单信息")
     @PostMapping("/saveOrUpdateSeaBill")
     public CommonResult saveOrUpdateSeaBill(@RequestBody AddSeaBillForm form) {
+        form.toUp();
         boolean result = seaBillService.saveOrUpdateSeaBill(form);
         if(!result){
             return CommonResult.error(444,"修改失败");
@@ -188,7 +189,7 @@ public class SeaBillController {
 
     @ApiOperation("导出提单pdf")
     @GetMapping("/exportPdf")
-    public void exportPdf(@RequestParam("id") Long id , @RequestParam("company") String company , HttpServletResponse response) {
+    public void exportPdf(@RequestParam("id") Long id , @RequestParam("company") String company,@RequestParam("printing") String printing, HttpServletResponse response) {
         //通过id获取提单信息
         SeaBill seaBill = seaBillService.getById(id);
 
@@ -225,7 +226,7 @@ public class SeaBillController {
             resultMap.put("goodName",seaBill.getGoodName());
         }
         if(seaBill.getNumber() != null){
-            resultMap.put("number",seaBill.getNumber()+seaBill.getNumberUnit());
+            resultMap.put("number",seaBill.getNumber()+(seaBill.getNumberUnit()==null?"":seaBill.getNumberUnit()));
         }
         if(seaBill.getWeight() != null){
             resultMap.put("weight",seaBill.getWeight()+"KGS");
@@ -239,11 +240,11 @@ public class SeaBillController {
             resultMap.put("isFreightCollect","FREIGHT PREPAID");
         }
         if(seaBill.getNumberOfBl() != null){
-            resultMap.put("numberOfBl",seaBill.getNumberOfBl());
+            resultMap.put("numberOfBl",NumUtil.analyze(seaBill.getNumberOfBl()).toUpperCase()+"("+seaBill.getNumberOfBl()+")");
         }
         if(seaBill.getSailingTime() != null){
 
-            resultMap.put("sailingTime", DateUtil.dateToEnglish(seaBill.getSailingTime()));
+            resultMap.put("sailingTime", DateUtil.dateToEnglish(seaBill.getSailingTime()).toUpperCase());
             resultMap.put("placeSailingTime","SEHNZHEN,"+ DateUtil.dateToEnglish(seaBill.getSailingTime()));
 
         }
@@ -253,24 +254,30 @@ public class SeaBillController {
         StringBuffer str = new StringBuffer();
         if(CollectionUtils.isNotEmpty(list)){
             StringBuffer stringBuffer = new StringBuffer();
+            Map<String,Integer> map = new HashMap<>();
             for (SeaContainerInformationVO seaContainerInformationVO : list) {
-                if(seaContainerInformationVO.getCabinetNumber() != null){
-                    stringBuffer.append(seaContainerInformationVO.getCabinetNumber()).append("/")
-                            .append(seaContainerInformationVO.getPaperStripSeal()).append("/")
-                            .append(seaContainerInformationVO.getCabinetName()).append("/")
-                            .append(seaContainerInformationVO.getPlatNumber()+seaContainerInformationVO.getPacking()).append("/")
-                            .append(seaContainerInformationVO.getWeight()+"KGS").append("/")
-                            .append(seaContainerInformationVO.getVolume()+"CBM").append("    ");
+                stringBuffer.append(seaContainerInformationVO.getCabinetNumber()==null?" ":seaContainerInformationVO.getCabinetNumber()).append("/")
+                        .append(seaContainerInformationVO.getPaperStripSeal()==null?" ":seaContainerInformationVO.getPaperStripSeal()).append("/")
+                        .append(seaContainerInformationVO.getCabinetName()==null?" ":seaContainerInformationVO.getCabinetName()).append("/")
+                        .append(seaContainerInformationVO.getPlatNumber()==null?0:seaContainerInformationVO.getPlatNumber()+seaContainerInformationVO.getPacking()==null?" ":seaContainerInformationVO.getPacking()).append("/")
+                        .append(seaContainerInformationVO.getWeight()==null?0+"KGS":seaContainerInformationVO.getWeight()+"KGS").append("/")
+                        .append(seaContainerInformationVO.getVolume()==null?0+"CBM":seaContainerInformationVO.getVolume()+"CBM").append("    ");
+                if(map.get(seaContainerInformationVO.getCabinetName()) == null){
+                    map.put(seaContainerInformationVO.getCabinetName(),1);
+                }else{
+                    map.put(seaContainerInformationVO.getCabinetName() ,map.get(seaContainerInformationVO.getCabinetName())+1);
                 }
-                str.append("ONE(1) × "+seaContainerInformationVO.getCabinetName()+" ONLY").append(" ");
-
+            }
+            Set<String> set = map.keySet();
+            for (String s : set) {
+                str.append(NumUtil.analyze(map.get(s).toString()).toUpperCase()+"("+map.get(s)+")").append("×").append(s).append("  ");
             }
             resultMap.put("cabinet",stringBuffer.toString());
         }
-        if(seaBill.getCabinetTypeName().equals("LCL")){
+        if(seaBill.getCabinetType().equals(2)){
             Integer number = seaBill.getNumber();
 
-            resultMap.put("sayTotal", NumUtil.analyze(number.toString()).toUpperCase()+" "+seaBill.getNumberUnit()+" ONLY");
+            resultMap.put("sayTotal", NumUtil.analyze(number.toString()).toUpperCase()+" "+(seaBill.getNumberUnit()==null?"":seaBill.getNumberUnit())+" ONLY");
         }else{
             resultMap.put("sayTotal",str.toString()+" ONLY");
         }
@@ -292,7 +299,12 @@ public class SeaBillController {
 
 
         //2.根据模板填充数据源
-        ByteArrayOutputStream pdf = createPdfStream(path, resultMap,"佳裕达");
+        ByteArrayOutputStream pdf = null;
+        if(printing.equals("正本-套打")){
+            pdf = createPdfStream(path, resultMap,null,null);
+        }else{
+            pdf = createPdfStream(path, resultMap,null,"COPY NON-NEGOTIABLE");
+        }
 
 
         //3.输出填充后的文件

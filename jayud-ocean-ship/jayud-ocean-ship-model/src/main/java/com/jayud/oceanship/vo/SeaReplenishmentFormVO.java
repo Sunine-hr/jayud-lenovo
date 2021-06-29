@@ -64,6 +64,7 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     private String seaOrderNo;
 
     @ApiModelProperty(value = "截补料时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime cutReplenishTime;
 
     //@ApiModelProperty(value = "柜号")
@@ -76,12 +77,14 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     //@ApiModelProperty(value = "是否已提单")
@@ -121,6 +124,7 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     private String transitPort;
 
     @ApiModelProperty(value = "货好时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime goodTime;
 
     //@ApiModelProperty(value = "运费是否到付(1代表true,0代表false)")

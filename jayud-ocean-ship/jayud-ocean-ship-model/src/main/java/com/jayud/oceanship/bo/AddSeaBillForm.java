@@ -1,5 +1,6 @@
 package com.jayud.oceanship.bo;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
@@ -199,6 +200,37 @@ public class AddSeaBillForm extends Model<AddSeaBillForm> {
     @Override
     protected Serializable pkVal() {
         return this.id;
+    }
+
+    public void toUp(){
+        if(this.shipName != null){
+            this.shipName = this.shipName.toUpperCase();
+        }
+        if(this.shipNumber != null){
+            this.shipNumber = this.shipNumber.toUpperCase();
+        }
+        if(this.so != null){
+            this.so = this.so.toUpperCase();
+        }
+        if(this.shipperInformation != null){
+            this.shipperInformation = this.shipperInformation.toUpperCase();
+        }
+        if(this.consigneeInformation != null){
+            this.consigneeInformation = this.consigneeInformation.toUpperCase();
+        }
+        if(this.notifierInformation != null){
+            this.notifierInformation = this.notifierInformation.toUpperCase();
+        }
+        if(this.agentInformation != null){
+            this.agentInformation = this.agentInformation.toUpperCase();
+        }
+        if(this.shippingMark != null){
+            this.shippingMark = this.shippingMark.toUpperCase();
+        }
+        if(this.goodName != null){
+            this.goodName = this.goodName.toUpperCase();
+        }
+
     }
 
 }

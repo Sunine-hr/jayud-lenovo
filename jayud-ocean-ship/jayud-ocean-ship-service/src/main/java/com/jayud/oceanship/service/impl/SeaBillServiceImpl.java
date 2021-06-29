@@ -60,6 +60,7 @@ public class SeaBillServiceImpl extends ServiceImpl<SeaBillMapper, SeaBill> impl
         //创建提单
         SeaBill seaBill = ConvertUtil.convert(addSeaReplenishment, SeaBill.class);
         seaBill.setOrderNo(createOrderNo());
+        seaBill.setId(null);
         //获取发货人信息
         if(CollectionUtils.isNotEmpty(addSeaReplenishment.getDeliveryAddress())){
             seaBill.setShipperInformation(addSeaReplenishment.getDeliveryAddress().get(0).getAddress());
@@ -90,34 +91,34 @@ public class SeaBillServiceImpl extends ServiceImpl<SeaBillMapper, SeaBill> impl
         seaBill.setCreateUser(UserOperator.getToken());
         seaBill.setType(1);
         seaBill.setIsSpell(false);
+        seaBill.setNumberOfBl("3");
         if(seaBill.getBillNo() == null){
             SeaOrder byId = seaOrderService.getById(addSeaReplenishment.getSeaOrderId());
             seaBill.setBillNo(byId.getMainOrderNo());
         }
 
         boolean save = this.save(seaBill);
-        if(!save){
-            return false;
-        }
+
         //增加或修改货柜信息
-        if (seaBill.getCabinetType().equals(1)) {
+        if (save && seaBill.getCabinetType().equals(1)) {
             //修改或保存
             List<SeaContainerInformation> seaContainerInformations = addSeaReplenishment.getSeaContainerInformations();
             for (SeaContainerInformation seaContainerInformation : seaContainerInformations) {
                 seaContainerInformation.toUP();
+                seaContainerInformation.setId(null);
                 seaContainerInformation.setSeaRepId(seaBill.getId());
                 seaContainerInformation.setSeaRepNo(seaBill.getOrderNo());
 
                 seaContainerInformation.setCreateTime(LocalDateTime.now());
                 seaContainerInformation.setCreateUser(UserOperator.getToken());
-                boolean b = seaContainerInformationService.saveOrUpdate(seaContainerInformation);
+                boolean b = seaContainerInformationService.save(seaContainerInformation);
                 if (!b) {
                     log.warn("提单货柜信息添加失败");
                 }
             }
 
         }
-        return true;
+        return save;
     }
 
     //获取海运订单号
@@ -143,6 +144,11 @@ public class SeaBillServiceImpl extends ServiceImpl<SeaBillMapper, SeaBill> impl
         if(!update){
             return false;
         }
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("sea_rep_no",seaBill.getOrderNo());
+        seaContainerInformationService.remove(queryWrapper);
+
         //增加或修改货柜信息
         if (seaBill.getCabinetType().equals(1)) {
             //修改或保存
@@ -154,7 +160,7 @@ public class SeaBillServiceImpl extends ServiceImpl<SeaBillMapper, SeaBill> impl
                 seaContainerInformation.setSeaRepNo(seaBill.getOrderNo());
                 seaContainerInformation.setCreateTime(LocalDateTime.now());
                 seaContainerInformation.setCreateUser(UserOperator.getToken());
-                boolean b = seaContainerInformationService.saveOrUpdate(seaContainerInformation);
+                boolean b = seaContainerInformationService.save(seaContainerInformation);
                 if (!b) {
                     log.warn("提单货柜信息修改失败");
                 }
@@ -168,8 +174,10 @@ public class SeaBillServiceImpl extends ServiceImpl<SeaBillMapper, SeaBill> impl
     public SeaBillVO getSeaBillById(Long id) {
         SeaBill seaBill = this.getById(id);
         SeaBillVO seaBillVO = ConvertUtil.convert(seaBill, SeaBillVO.class);
+        SeaOrder byId = seaOrderService.getById(seaBill.getSeaOrderId());
+        seaBillVO.setMainOrderNo(byId.getMainOrderNo());
         if (seaBillVO.getCabinetType().equals(1)) {
-            List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(seaBillVO.getId());
+            List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(seaBillVO.getOrderNo());
             seaBillVO.setSeaContainerInformations(seaContainerInformations);
         }
         return seaBillVO;
@@ -204,6 +212,16 @@ public class SeaBillServiceImpl extends ServiceImpl<SeaBillMapper, SeaBill> impl
     public boolean deleteSeaBill(Long id) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("sea_order_id",id);
+        List<SeaBill> list = this.list(queryWrapper);
+        for (SeaBill seaBill : list) {
+            if(seaBill.getCabinetType().equals(1)){
+                boolean flag = seaContainerInformationService.removeSeaContainerInformation(seaBill.getOrderNo());
+                if(!flag){
+                    log.warn("删除货柜信息失败");
+                }
+            }
+
+        }
         boolean remove = this.remove(queryWrapper);
         return remove;
     }

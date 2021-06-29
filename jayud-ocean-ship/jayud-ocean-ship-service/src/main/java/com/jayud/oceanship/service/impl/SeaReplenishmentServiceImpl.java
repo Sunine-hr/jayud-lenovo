@@ -81,7 +81,7 @@ public class SeaReplenishmentServiceImpl extends ServiceImpl<SeaReplenishmentMap
         //海运订单信息
         SeaReplenishmentVO seaReplenishmentVO = this.baseMapper.getSeaRepOrderDetails(orderId);
         //获取截补料中的柜型数量以及货柜信息
-        List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(seaReplenishmentVO.getId());
+        List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(seaReplenishmentVO.getOrderNo());
         seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
 
         //查询商品信息

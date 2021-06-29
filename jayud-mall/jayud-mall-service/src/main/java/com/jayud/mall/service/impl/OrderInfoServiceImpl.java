@@ -2785,7 +2785,42 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderCaseWms.setWmsVolume(wmsVolume);
         orderCaseWms.setUserId(user.getId().intValue());
         orderCaseWms.setUserName(user.getName());
+        orderCaseWms.setOrderId(orderCaseVO.getOrderId());//订单id
         orderCaseWmsService.saveOrUpdate(orderCaseWms);
+
+        //3.判断订单箱子，是否全部被收货了 是 修改 订单状态为  已收货  状态
+        Integer orderId = orderCaseVO.getOrderId();
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(Long.valueOf(orderId));
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单不存在");
+        }
+        List<OrderCaseWmsVO> orderCaseWmsList = orderCaseWmsMapper.findOrderCaseWmsByOrderId(orderId);
+        List<OrderCaseVO> orderCaseList = orderCaseMapper.findOrderCaseByOrderId(Long.valueOf(orderId));
+        if(CollUtil.isNotEmpty(orderCaseList)){
+            if (orderCaseWmsList.size() == orderCaseList.size()){
+
+                OrderInfo orderInfo = ConvertUtil.convert(orderInfoVO, OrderInfo.class);
+                orderInfo.setAfterStatusCode(OrderEnum.AFTER_RECEIVED.getCode());//AFTER_RECEIVED("20", "已收货"),
+                orderInfo.setAfterStatusName(OrderEnum.AFTER_RECEIVED.getName());
+                orderInfo.setFrontStatusCode(OrderEnum.FRONT_RECEIVED.getCode());
+                orderInfo.setFrontStatusName(OrderEnum.FRONT_RECEIVED.getName());
+
+                //订单-确认收货
+                this.saveOrUpdate(orderInfo);
+
+                //订单-确认收货，加物流轨迹
+                LogisticsTrack logisticsTrack = new LogisticsTrack();
+                logisticsTrack.setOrderId(orderInfo.getId().toString());
+                logisticsTrack.setStatus(1);
+                logisticsTrack.setStatusName("1");
+                logisticsTrack.setDescription("确认收货");
+                logisticsTrack.setCreateTime(LocalDateTime.now());
+                logisticsTrackService.saveOrUpdate(logisticsTrack);
+
+            }
+        }
+
+
     }
 
     @Override

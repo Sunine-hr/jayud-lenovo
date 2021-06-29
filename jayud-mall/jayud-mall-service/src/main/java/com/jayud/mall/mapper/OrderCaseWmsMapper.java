@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
  * 订单装箱信息(仓库测量) Mapper 接口
@@ -36,4 +38,11 @@ public interface OrderCaseWmsMapper extends BaseMapper<OrderCaseWms> {
      * @return
      */
     IPage<OrderCaseWmsVO> findOrderCaseWmsPage(Page<OrderCaseWmsVO> page, @Param("form") QueryOrderCaseWmsForm form);
+
+    /**
+     * 根据订单id，查询收货的箱子
+     * @param orderId
+     * @return
+     */
+    List<OrderCaseWmsVO> findOrderCaseWmsByOrderId(@Param("orderId") Integer orderId);
 }

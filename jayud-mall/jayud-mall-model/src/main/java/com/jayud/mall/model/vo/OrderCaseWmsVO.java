@@ -38,4 +38,7 @@ public class OrderCaseWmsVO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "订单id(order_info id)")
+    private Integer orderId;
+
 }

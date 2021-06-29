@@ -23,7 +23,7 @@
 
     <select id="findOrderCaseWmsByCartonNo" parameterType="java.lang.String" resultType="com.jayud.mall.model.vo.OrderCaseWmsVO">
         select
-        t.carton_no,t.wms_length,t.wms_width,t.wms_height,t.wms_weight,t.wms_volume,t.user_id,t.user_name,t.create_time
+        t.carton_no,t.wms_length,t.wms_width,t.wms_height,t.wms_weight,t.wms_volume,t.user_id,t.user_name,t.create_time,t.order_id
         from order_case_wms t
         where 1=1
         and t.carton_no = #{cartonNo}
@@ -32,12 +32,20 @@
     <select id="findOrderCaseWmsPage" parameterType="com.jayud.mall.model.bo.QueryOrderCaseWmsForm"
             resultType="com.jayud.mall.model.vo.OrderCaseWmsVO">
         select
-            t.carton_no,t.wms_length,t.wms_width,t.wms_height,t.wms_weight,t.wms_volume,t.user_id,t.user_name,t.create_time
+            t.carton_no,t.wms_length,t.wms_width,t.wms_height,t.wms_weight,t.wms_volume,t.user_id,t.user_name,t.create_time,t.order_id
         from order_case_wms t
         where 1=1
         <if test="form.cartonNo != null and form.cartonNo != ''">
             and t.carton_no like concat('%',#{form.cartonNo},'%')
         </if>
+    </select>
+
+    <select id="findOrderCaseWmsByOrderId" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.OrderCaseWmsVO">
+        select
+        t.carton_no,t.wms_length,t.wms_width,t.wms_height,t.wms_weight,t.wms_volume,t.user_id,t.user_name,t.create_time,t.order_id
+        from order_case_wms t
+        where 1=1
+        and t.order_id = #{orderId}
     </select>
 
 </mapper>

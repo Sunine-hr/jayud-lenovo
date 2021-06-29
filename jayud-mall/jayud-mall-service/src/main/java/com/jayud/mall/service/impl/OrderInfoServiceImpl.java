@@ -640,6 +640,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         this.saveOrUpdate(orderInfo);
 
+        //订单下单-保存物流轨迹
+        LogisticsTrack logisticsTrack = new LogisticsTrack();
+        logisticsTrack.setOrderId(orderInfo.getId().toString());
+        logisticsTrack.setStatus(1);
+        logisticsTrack.setStatusName("1");
+        logisticsTrack.setDescription("已下单");
+        logisticsTrack.setCreateTime(LocalDateTime.now());
+        logisticsTrackService.saveOrUpdate(logisticsTrack);
+
         //保存-订单对应箱号信息:order_case
 //        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
         List<OrderCase> orderCaseList = ConvertUtil.convertList(orderCaseVOList, OrderCase.class);

@@ -139,4 +139,7 @@ public class CustomerVO {
     @ApiModelProperty(value = "展示字段(user_name + company)", position = 30)
     private String text;
 
+    @ApiModelProperty(value = "结算方式名称")
+    private String clearingWayName;
+
 }

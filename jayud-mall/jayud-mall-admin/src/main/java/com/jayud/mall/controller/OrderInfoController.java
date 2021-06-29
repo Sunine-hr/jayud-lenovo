@@ -393,7 +393,7 @@ public class OrderInfoController {
     @ApiOperation(value = "使用新智慧Excel，修改订单箱子的数据")
     @RequestMapping(value = "/importExcelUpdateCaseByNewWisdom", method = RequestMethod.POST)
     @ResponseBody
-    @ApiOperationSupport(order = 33)
+    @ApiOperationSupport(order = 34)
     public CommonResult<OrderInfoVO> importExcelUpdateCaseByNewWisdom(@RequestHeader(value = "orderId") Long orderId, @RequestParam("file") MultipartFile file){
         OrderInfoVO orderInfoVO = orderInfoService.importExcelUpdateCaseByNewWisdom(orderId,file);
         return CommonResult.success(orderInfoVO);
@@ -401,7 +401,7 @@ public class OrderInfoController {
 
     // 后台-订单确认
     @ApiOperation(value = "后台-订单签收")
-    @ApiOperationSupport(order = 25)
+    @ApiOperationSupport(order = 35)
     @PostMapping("/afterSigned")
     public CommonResult<OrderInfoVO> afterSigned(@Valid @RequestBody OrderInfoParaForm form){
         Long id = form.getId();
@@ -411,7 +411,7 @@ public class OrderInfoController {
 
     @ApiOperation(value = "下载Excel模板-订单箱号")
     @RequestMapping(value = "/downloadExcelTemplateByOrderCase", method = RequestMethod.GET)
-    @ApiOperationSupport(order = 26)
+    @ApiOperationSupport(order = 36)
     public void downloadExcelTemplateByOrderCase(HttpServletResponse response){
         new ExcelTemplateUtil().downloadExcel(response, "order_case_update.xlsx", "订单箱号模板.xlsx");
     }
@@ -420,7 +420,7 @@ public class OrderInfoController {
     @ApiOperation(value = "上传文件-导入订单箱号")
     @RequestMapping(value = "/importExcelByOrderCase", method = RequestMethod.POST)
     @ResponseBody
-    @ApiOperationSupport(order = 27)
+    @ApiOperationSupport(order = 37)
     public CommonResult<List<OrderCaseVO>> importExcelByOrderCase(@RequestParam("file") MultipartFile file){
         if (file.isEmpty()) {
             return CommonResult.error(-1, "文件为空！");
@@ -448,6 +448,17 @@ public class OrderInfoController {
         orderInfoService.importExcelByOrderCase(list);
 
         return CommonResult.success(list);
+    }
+
+
+    //订单详情-确认计费重信息
+    @ApiOperation(value = "查询-订单计费重确认状态")
+    @PostMapping("/findOrderIsConfirmBilling")
+    @ApiOperationSupport(order = 38)
+    public CommonResult<IsConfirmBillingVO> findOrderIsConfirmBilling(@RequestBody OrderInfoParaForm form){
+        Long orderId = form.getId();
+        IsConfirmBillingVO isConfirmBillingVO = orderInfoService.findOrderIsConfirmBilling(orderId);
+        return CommonResult.success(isConfirmBillingVO);
     }
 
 

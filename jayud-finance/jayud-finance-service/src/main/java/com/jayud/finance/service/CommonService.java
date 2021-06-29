@@ -24,16 +24,16 @@ public interface CommonService {
      */
     public Map<String, Object> getAirOrderTemplate(List<String> mainOrderNos, String cmd, BillTemplateEnum templateEnum);
 
-    /**
-     * 处理模板数据
-     *
-     * @param cmd
-     * @param array        原始数据
-     * @param mainOrderNos
-     * @param type         类型:应收:0,应付:1
-     * @return
-     */
-    public JSONArray templateDataProcessing(String cmd, JSONArray array, List<String> mainOrderNos, Integer type);
+//    /**
+//     * 处理模板数据
+//     *
+//     * @param cmd
+//     * @param array        原始数据
+//     * @param mainOrderNos
+//     * @param type         类型:应收:0,应付:1
+//     * @return
+//     */
+//    public JSONArray templateDataProcessing(String cmd, JSONArray array, List<String> mainOrderNos, Integer type);
 
 
     /**
@@ -62,12 +62,18 @@ public interface CommonService {
     /**
      * 动态头部合计费用
      */
-    public Map<String, Map<String, BigDecimal>>  totalDynamicHeadCost(int dynamicHeadCostIndex,
-                                                        List<SheetHeadVO> sheetHeadVOS,
-                                                        JSONArray datas);
+    public Map<String, Map<String, BigDecimal>> totalDynamicHeadCost(int dynamicHeadCostIndex,
+                                                                     List<SheetHeadVO> sheetHeadVOS,
+                                                                     JSONArray datas);
+
+    /**
+     * 获取内陆明细
+     */
+    public Map<String, Object> getSeaOrderTemplate(List<String> mainOrderNos, String cmd, BillTemplateEnum templateEnum);
 
     /**
      * 计算费用并且拼接
+     *
      * @param amountStrs
      * @return
      */

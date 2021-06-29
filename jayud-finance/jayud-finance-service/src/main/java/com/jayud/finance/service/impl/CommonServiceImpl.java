@@ -18,10 +18,7 @@ import com.jayud.finance.service.IOrderReceivableBillService;
 import com.jayud.finance.service.IVoidBillingRecordsService;
 import com.jayud.finance.vo.InputGoodsVO;
 import com.jayud.finance.vo.SheetHeadVO;
-import com.jayud.finance.vo.template.order.AirOrderTemplate;
-import com.jayud.finance.vo.template.order.InlandTPTemplate;
-import com.jayud.finance.vo.template.order.TmsOrderTemplate;
-import com.jayud.finance.vo.template.order.TrailerOrderTemplate;
+import com.jayud.finance.vo.template.order.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,6 +51,8 @@ public class CommonServiceImpl implements CommonService {
     private OauthClient oauthClient;
     @Autowired
     private IVoidBillingRecordsService voidBillingRecordsService;
+    @Autowired
+    private OceanShipClient oceanShipClient;
 
     /**
      * 获取空运明细
@@ -138,8 +137,35 @@ public class CommonServiceImpl implements CommonService {
         for (int i = 0; i < array.size(); i++) {
             JSONObject jsonObject = array.getJSONObject(i);
             switch (templateEnum) {
-                case NL_NORM:
+                case HY_NORM:
                     InlandTPTemplate template = ConvertUtil.convert(jsonObject, InlandTPTemplate.class);
+                    template.assembleData(jsonObject);
+                    //组装主订单信息
+                    template.assemblyMainOrderData(result.getData());
+                    map.put(cmd.equals("main") ? template.getMainOrderNo() : template.getSubOrderNo(), template);
+                    break;
+            }
+
+        }
+
+        return map;
+    }
+
+    /**
+     * 获取内陆明细
+     */
+    @Override
+    public Map<String, Object> getSeaOrderTemplate(List<String> mainOrderNos, String cmd, BillTemplateEnum templateEnum) {
+        Object data = this.oceanShipClient.getSeaOrderInfoByMainOrderNos(mainOrderNos).getData();
+        JSONArray array = new JSONArray(data);
+        Map<String, Object> map = new HashMap<>();
+        //查询主订单信息
+        ApiResult result = omsClient.getMainOrderByOrderNos(mainOrderNos);
+        for (int i = 0; i < array.size(); i++) {
+            JSONObject jsonObject = array.getJSONObject(i);
+            switch (templateEnum) {
+                case NL_NORM:
+                    SeaOrderTemplate template = ConvertUtil.convert(jsonObject, SeaOrderTemplate.class);
                     template.assembleData(jsonObject);
                     //组装主订单信息
                     template.assemblyMainOrderData(result.getData());
@@ -161,68 +187,68 @@ public class CommonServiceImpl implements CommonService {
      * @param type         类型:应收:0,应付:1
      * @return
      */
-    @Override
-    public JSONArray templateDataProcessing(String cmd, JSONArray array, List<String> mainOrderNos, Integer type) {
-        Map<String, Object> data = new HashMap<>();
-
-        BillTemplateEnum templateEnum = BillTemplateEnum.getTemplateEnum(cmd);
-        if (templateEnum != null) {
-            //空运
-            if (templateEnum.getCmd().equals(BillTemplateEnum.KY.getCmd())) {
-                data = this.getAirOrderTemplate(mainOrderNos, cmd, templateEnum);
-            }
-            //中港
-            if (templateEnum.getCmd().equals(BillTemplateEnum.ZGYS.getCmd())) {
-                data = this.getTmsOrderTemplate(mainOrderNos, cmd, templateEnum);
-            }
-            //拖车
-            if (templateEnum.getCmd().equals(BillTemplateEnum.TC.getCmd())) {
-                data = this.getTrailerOrderTemplate(mainOrderNos, cmd, templateEnum);
-            }
-            //拖车
-            if (templateEnum.getCmd().equals(BillTemplateEnum.NL.getCmd())) {
-                data = this.getTrailerOrderTemplate(mainOrderNos, cmd, templateEnum);
-            }
-        }
-
-
-        //TODO 中港地址截取6个字符
-        if (SubOrderSignEnum.ZGYS.getSignOne().equals(cmd)) {
-            for (int i = 0; i < array.size(); i++) {
-                JSONObject jsonObject = array.getJSONObject(i);
-                String startAddress = jsonObject.getStr("startAddress");
-                String endAddress = jsonObject.getStr("endAddress");
-                if (startAddress != null && startAddress.length() > 6) {
-                    jsonObject.put("startAddress", startAddress.substring(0, 6));
-                }
-                if (endAddress != null && endAddress.length() > 6) {
-                    jsonObject.put("endAddress", endAddress.substring(0, 6));
-                }
-            }
-        }
-
-
-        JSONArray jsonArray = new JSONArray();
-        for (int i = 0; i < array.size(); i++) {
-            if (data.size() == 0) {
-                break;
-            }
-            JSONObject jsonObject = array.getJSONObject(i);
-
-            String orderNosKey = cmd.equals(SubOrderSignEnum.MAIN.getSignOne()) ? "orderNo" : "subOrderNo";
-            JSONObject object = new JSONObject(data.get(jsonObject.getStr(orderNosKey)));
-            //客户字段 应收:结算单位 应付:供应商 TODO 产品核对过,直接取主订单客户名称
-//            if (type == 0) {
-//                object.put("customerName", jsonObject.getStr("unitAccount"));
-//            } else {
-//                object.put("customerName", jsonObject.getStr("supplierChName"));
+//    @Override
+//    public JSONArray templateDataProcessing(String cmd, JSONArray array, List<String> mainOrderNos, Integer type) {
+//        Map<String, Object> data = new HashMap<>();
+//
+//        BillTemplateEnum templateEnum = BillTemplateEnum.getTemplateEnum(cmd);
+//        if (templateEnum != null) {
+//            //空运
+//            if (templateEnum.getCmd().equals(BillTemplateEnum.KY.getCmd())) {
+//                data = this.getAirOrderTemplate(mainOrderNos, cmd, templateEnum);
 //            }
-
-            object.putAll(jsonObject);
-            jsonArray.add(object);
-        }
-        return jsonArray.size() == 0 ? array : jsonArray;
-    }
+//            //中港
+//            if (templateEnum.getCmd().equals(BillTemplateEnum.ZGYS.getCmd())) {
+//                data = this.getTmsOrderTemplate(mainOrderNos, cmd, templateEnum);
+//            }
+//            //拖车
+//            if (templateEnum.getCmd().equals(BillTemplateEnum.TC.getCmd())) {
+//                data = this.getTrailerOrderTemplate(mainOrderNos, cmd, templateEnum);
+//            }
+//            //内陆
+//            if (templateEnum.getCmd().equals(BillTemplateEnum.NL.getCmd())) {
+//                data = this.getTrailerOrderTemplate(mainOrderNos, cmd, templateEnum);
+//            }
+//        }
+//
+//
+//        //TODO 中港地址截取6个字符
+//        if (SubOrderSignEnum.ZGYS.getSignOne().equals(cmd)) {
+//            for (int i = 0; i < array.size(); i++) {
+//                JSONObject jsonObject = array.getJSONObject(i);
+//                String startAddress = jsonObject.getStr("startAddress");
+//                String endAddress = jsonObject.getStr("endAddress");
+//                if (startAddress != null && startAddress.length() > 6) {
+//                    jsonObject.put("startAddress", startAddress.substring(0, 6));
+//                }
+//                if (endAddress != null && endAddress.length() > 6) {
+//                    jsonObject.put("endAddress", endAddress.substring(0, 6));
+//                }
+//            }
+//        }
+//
+//
+//        JSONArray jsonArray = new JSONArray();
+//        for (int i = 0; i < array.size(); i++) {
+//            if (data.size() == 0) {
+//                break;
+//            }
+//            JSONObject jsonObject = array.getJSONObject(i);
+//
+//            String orderNosKey = cmd.equals(SubOrderSignEnum.MAIN.getSignOne()) ? "orderNo" : "subOrderNo";
+//            JSONObject object = new JSONObject(data.get(jsonObject.getStr(orderNosKey)));
+//            //客户字段 应收:结算单位 应付:供应商 TODO 产品核对过,直接取主订单客户名称
+////            if (type == 0) {
+////                object.put("customerName", jsonObject.getStr("unitAccount"));
+////            } else {
+////                object.put("customerName", jsonObject.getStr("supplierChName"));
+////            }
+//
+//            object.putAll(jsonObject);
+//            jsonArray.add(object);
+//        }
+//        return jsonArray.size() == 0 ? array : jsonArray;
+//    }
 
 
     /**
@@ -255,6 +281,10 @@ public class CommonServiceImpl implements CommonService {
             }
             //内陆
             if (tmp.equals(BillTemplateEnum.NL.getCmd())) {
+                data = this.getInlandOrderTemplate(mainOrderNos, cmd, templateEnum);
+            }
+            //海运
+            if (tmp.equals(BillTemplateEnum.HY.getCmd())) {
                 data = this.getInlandOrderTemplate(mainOrderNos, cmd, templateEnum);
             }
         }

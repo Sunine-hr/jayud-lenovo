@@ -3344,6 +3344,45 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return convert;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void importExcelByOrderCase(List<OrderCaseVO> list) {
+        List<OrderCase> orderCaseList = new ArrayList<>();
+        if(CollUtil.isNotEmpty(list)){
+            list.forEach(orderCaseVO -> {
+                String fabNo = orderCaseVO.getFabNo();
+
+                BigDecimal length = orderCaseVO.getWmsLength();
+                BigDecimal width = orderCaseVO.getWmsWidth();
+                BigDecimal height = orderCaseVO.getWmsHeight();
+                BigDecimal weight = orderCaseVO.getWmsWeight();
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal volume = length.multiply(width).multiply(height).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+
+                OrderCaseVO orderCaseVO1 = orderCaseMapper.findOrderCaseByfabNo(fabNo);
+                if(ObjectUtil.isNotEmpty(orderCaseVO1)){
+                    OrderCase orderCase = ConvertUtil.convert(orderCaseVO1, OrderCase.class);
+                    orderCase.setWmsLength(length);
+                    orderCase.setWmsWidth(width);
+                    orderCase.setWmsHeight(height);
+                    orderCase.setWmsWeight(weight);
+                    orderCase.setWmsVolume(volume);
+
+                    orderCase.setConfirmLength(length);
+                    orderCase.setConfirmWidth(width);
+                    orderCase.setConfirmHeight(height);
+                    orderCase.setConfirmWeight(weight);
+                    orderCase.setConfirmVolume(volume);
+                    orderCaseList.add(orderCase);
+                }
+            });
+        }
+        if(CollUtil.isNotEmpty(orderCaseList)){
+            orderCaseService.saveOrUpdateBatch(orderCaseList);
+        }
+
+    }
+
 
     /**
      * 组装数据-构造订单箱号，构造订单商品

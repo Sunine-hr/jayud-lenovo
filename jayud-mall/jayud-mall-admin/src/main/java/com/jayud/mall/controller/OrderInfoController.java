@@ -2,6 +2,8 @@ package com.jayud.mall.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageDraftResult;
 import com.jayud.common.CommonResult;
@@ -20,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -407,11 +411,44 @@ public class OrderInfoController {
 
     @ApiOperation(value = "下载Excel模板-订单箱号")
     @RequestMapping(value = "/downloadExcelTemplateByOrderCase", method = RequestMethod.GET)
-    @ApiOperationSupport(order = 3)
+    @ApiOperationSupport(order = 26)
     public void downloadExcelTemplateByOrderCase(HttpServletResponse response){
         new ExcelTemplateUtil().downloadExcel(response, "order_case_update.xlsx", "订单箱号模板.xlsx");
     }
 
+
+    @ApiOperation(value = "上传文件-导入订单箱号")
+    @RequestMapping(value = "/importExcelByOrderCase", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperationSupport(order = 27)
+    public CommonResult<List<OrderCaseVO>> importExcelByOrderCase(@RequestParam("file") MultipartFile file){
+        if (file.isEmpty()) {
+            return CommonResult.error(-1, "文件为空！");
+        }
+        // 1.获取上传文件输入流
+        InputStream inputStream = null;
+        try {
+            inputStream = file.getInputStream();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //调用用 hutool 方法读取数据 默认调用第一个sheet
+        ExcelReader excelReader = ExcelUtil.getReader(inputStream);
+        //配置别名
+        Map<String,String> aliasMap=new HashMap<>();
+        aliasMap.put("FBA箱号","fabNo");
+        aliasMap.put("货箱重量(KG)","wmsWeight");
+        aliasMap.put("货箱长度(CM)","wmsLength");
+        aliasMap.put("货箱宽度(CM)","wmsWidth");
+        aliasMap.put("货箱高度(CM)","wmsHeight");
+        excelReader.setHeaderAlias(aliasMap);
+        // 第一个参数是指表头所在行，第二个参数是指从哪一行开始读取
+        List<OrderCaseVO> list= excelReader.read(0, 1, OrderCaseVO.class);
+
+        orderInfoService.importExcelByOrderCase(list);
+
+        return CommonResult.success(list);
+    }
 
 
 }

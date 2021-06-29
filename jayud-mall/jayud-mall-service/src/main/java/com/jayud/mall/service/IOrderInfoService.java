@@ -355,4 +355,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     OrderInfoVO afterSigned(Long id);
+
+    /**
+     * 导入订单箱号,修改
+     * @param list
+     */
+    void importExcelByOrderCase(List<OrderCaseVO> list);
 }

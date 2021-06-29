@@ -9,6 +9,7 @@ import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.IOrderInfoService;
 import com.jayud.mall.service.IOrderInteriorStatusService;
+import com.jayud.mall.utils.ExcelTemplateUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSupport;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -402,6 +404,14 @@ public class OrderInfoController {
         OrderInfoVO orderInfoVO = orderInfoService.afterSigned(id);
         return CommonResult.success(orderInfoVO);
     }
+
+    @ApiOperation(value = "下载Excel模板-订单箱号")
+    @RequestMapping(value = "/downloadExcelTemplateByOrderCase", method = RequestMethod.GET)
+    @ApiOperationSupport(order = 3)
+    public void downloadExcelTemplateByOrderCase(HttpServletResponse response){
+        new ExcelTemplateUtil().downloadExcel(response, "order_case_update.xlsx", "订单箱号模板.xlsx");
+    }
+
 
 
 }

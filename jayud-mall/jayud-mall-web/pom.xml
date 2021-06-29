@@ -81,6 +81,7 @@
                     <include>**/*.yml</include>
                     <include>**/Dockerfile</include>
                     <include>**/*.xlsx</include>
+                    <include>**/*.pdf</include>
                 </includes>
                 <!--是否替换资源中的属性-->
                 <filtering>false</filtering>

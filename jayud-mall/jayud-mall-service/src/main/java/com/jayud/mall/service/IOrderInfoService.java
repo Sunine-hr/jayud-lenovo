@@ -348,4 +348,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     OrderInfoVO importExcelUpdateCaseByNewWisdom(Long orderId, MultipartFile file);
+
+    /**
+     * 后台-订单签收
+     * @param id
+     * @return
+     */
+    OrderInfoVO afterSigned(Long id);
 }

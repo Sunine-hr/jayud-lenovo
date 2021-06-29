@@ -393,6 +393,15 @@ public class OrderInfoController {
         return CommonResult.success(orderInfoVO);
     }
 
+    // 后台-订单确认
+    @ApiOperation(value = "后台-订单签收")
+    @ApiOperationSupport(order = 25)
+    @PostMapping("/afterSigned")
+    public CommonResult<OrderInfoVO> afterSigned(@Valid @RequestBody OrderInfoParaForm form){
+        Long id = form.getId();
+        OrderInfoVO orderInfoVO = orderInfoService.afterSigned(id);
+        return CommonResult.success(orderInfoVO);
+    }
 
 
 }

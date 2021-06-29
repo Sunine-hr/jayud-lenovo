@@ -3323,6 +3323,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return orderInfoVO;
     }
 
+    @Override
+    public OrderInfoVO afterSigned(Long id) {
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(id);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单不存在");
+        }
+        OrderInfo orderInfo = ConvertUtil.convert(orderInfoVO, OrderInfo.class);
+        String afterStatusCode = orderInfo.getAfterStatusCode();
+//        if(!afterStatusCode.equals(OrderEnum.AFTER_RECEIVED.getCode())){
+//            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单状态错误，不能确认");
+//        }
+        //订单签收
+        orderInfo.setAfterStatusCode(OrderEnum.AFTER_SIGNED.getCode());
+        orderInfo.setAfterStatusName(OrderEnum.AFTER_SIGNED.getName());
+        orderInfo.setFrontStatusCode(OrderEnum.FRONT_SIGNED.getCode());
+        orderInfo.setFrontStatusName(OrderEnum.FRONT_SIGNED.getName());
+        this.saveOrUpdate(orderInfo);
+        OrderInfoVO convert = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
+        return convert;
+    }
+
 
     /**
      * 组装数据-构造订单箱号，构造订单商品

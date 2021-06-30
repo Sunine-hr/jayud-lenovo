@@ -1,5 +1,7 @@
 package com.jayud.mall.controller;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.map.MapUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
@@ -8,6 +10,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.itextpdf.text.pdf.AcroFields;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OrderInfoParaForm;
 import com.jayud.mall.model.bo.OrderPickIdForm;
@@ -25,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -32,7 +39,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/orderpick")
@@ -247,6 +256,75 @@ public class OrderPickController {
             e.printStackTrace();
         }
     }
+
+    //订单-下载进仓单(1进仓单)pdf
+    @ApiOperation(value = "订单-下载进仓单(1进仓单)pdf")
+    @GetMapping("/downloadPdfWarehouseNoByOrderId1")
+    @ApiOperationSupport(order = 6)
+    public void downloadPdfWarehouseNoByOrderId1(@RequestParam(value = "id",required=false) Long id,
+                                              HttpServletRequest request, HttpServletResponse response) {
+
+        OrderWarehouseNoVO orderWarehouseNoVO = orderPickService.downloadWarehouseNoByOrderId(id);
+        String customerName = orderWarehouseNoVO.getCustomerName();//客户公司名称
+        String add = orderWarehouseNoVO.getAdd();//目的仓库代码
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        //cn.hutool.core.bean  obj-转->map
+        BeanUtil.copyProperties(orderWarehouseNoVO, resultMap);
+
+        try {
+            ClassPathResource classPathResource = new ClassPathResource("template/nanjing_warehouse_no.pdf");//获取pdf模板
+            InputStream inputStream = classPathResource.getInputStream();
+            System.out.println(inputStream);
+
+            ByteArrayOutputStream ba = new ByteArrayOutputStream();
+            PdfReader reader = new PdfReader(inputStream);
+            PdfStamper stamper = new PdfStamper(reader, ba);
+            //使用字体
+            BaseFont bf = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
+            /* 获取模版中的字段 */
+            AcroFields form = stamper.getAcroFields();
+            //填充pdf表单
+            if (MapUtil.isNotEmpty(resultMap)) {
+                //为字段赋值
+                for (Map.Entry<String, Object> entry : resultMap.entrySet()) {
+                    form.setFieldProperty(entry.getKey(), "textfont", bf, null);
+                    form.setField(entry.getKey(), entry.getValue().toString());
+                }
+            }
+            stamper.setFormFlattening(true);// 如果为false那么生成的PDF文件还能编辑，一定要设为true
+            stamper.close();//关闭 打印器
+            reader.close();//关闭 阅读器
+
+            String fileName = customerName+"_"+add+"_"+"进仓单"+ ".pdf";
+            ServletOutputStream out = response.getOutputStream();
+            response.setContentType("application/vnd.ms-pdf");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码
+            String filename = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename );
+
+            out.write(ba.toByteArray());
+            out.flush();
+            out.close();
+            ba.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+    //订单-下载进仓单(2箱唛)pdf
+    @ApiOperation(value = "订单-下载进仓单(2箱唛)pdf")
+    @GetMapping("/downloadPdfWarehouseNoByOrderId2")
+    @ApiOperationSupport(order = 7)
+    public void downloadPdfWarehouseNoByOrderId2(@RequestParam(value = "id",required=false) Long id,
+                                              HttpServletRequest request, HttpServletResponse response) {
+
+    }
+
 
 
 

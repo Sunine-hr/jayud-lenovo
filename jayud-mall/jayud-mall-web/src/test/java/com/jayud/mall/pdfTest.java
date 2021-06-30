@@ -1,28 +1,34 @@
 package com.jayud.mall;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.*;
-import lombok.extern.slf4j.Slf4j;
+import com.jayud.mall.model.vo.MarkVO;
+import com.jayud.mall.model.vo.OrderWarehouseNoVO;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * pdf测试
  */
-@SpringBootTest
-@RunWith(SpringRunner.class)
-@Slf4j
+//@SpringBootTest
+//@RunWith(SpringRunner.class)
+//@Slf4j
 public class pdfTest {
 
+    /**
+     * 测试导出pdf
+     */
     @Test
     public void test(){
         fillTemplate();
@@ -43,6 +49,31 @@ public class pdfTest {
         System.out.println(true);
     }
 
+    /**
+     * hutool
+     * BeanUtil测试Object 转 Map
+      */
+    @Test
+    public void objectConvertMap(){
+
+        OrderWarehouseNoVO vo = new OrderWarehouseNoVO();
+        vo.setWarehouseNo("1111");
+        vo.setSailTime("2020-11-11");
+        vo.setJcTime("2018-12-23");
+
+        List<MarkVO> markList = new ArrayList<>();
+        MarkVO markVO = new MarkVO();
+        markVO.setWarehouseNo("11112");
+        markVO.setCartonNo("ddddd");
+        markList.add(markVO);
+        vo.setMarkList(markList);
+
+        System.out.println("Object对象：" + vo);
+        Map<String, Object> map = new HashMap<String, Object>();
+        BeanUtil.copyProperties(vo, map);//cn.hutool.core.bean  obj-转->map
+        System.out.println("Map对象：" + map);
+
+    }
 
     // 利用模板生成pdf
     public static void fillTemplate() {

@@ -401,7 +401,7 @@ public class OrderPickController {
     }
 
     //提货地址-下载进仓单号(1进仓单)pdf
-    @ApiOperation(value = "提货地址-下载进仓单号(1进仓单)")
+    @ApiOperation(value = "提货地址-下载进仓单号(1进仓单)pdf")
     @GetMapping("/downloadPdfWarehouseNoByPickId1")
     @ApiOperationSupport(order = 10)
     public void downloadPdfWarehouseNoByPickId1(@RequestParam(value = "id",required=false) Long id,
@@ -460,7 +460,7 @@ public class OrderPickController {
     }
 
     //提货地址-下载进仓单号(2箱唛)pdf
-    @ApiOperation(value = "提货地址-下载进仓单号(2箱唛)")
+    @ApiOperation(value = "提货地址-下载进仓单号(2箱唛)pdf")
     @GetMapping("/downloadPdfWarehouseNoByPickId2")
     @ApiOperationSupport(order = 11)
     public void downloadPdfWarehouseNoByPickId2(@RequestParam(value = "id",required=false) Long id,

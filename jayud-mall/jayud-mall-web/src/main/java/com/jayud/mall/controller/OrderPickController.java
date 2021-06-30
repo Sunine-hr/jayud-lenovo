@@ -260,7 +260,7 @@ public class OrderPickController {
     //订单-下载进仓单(1进仓单)pdf
     @ApiOperation(value = "订单-下载进仓单(1进仓单)pdf")
     @GetMapping("/downloadPdfWarehouseNoByOrderId1")
-    @ApiOperationSupport(order = 6)
+    @ApiOperationSupport(order = 8)
     public void downloadPdfWarehouseNoByOrderId1(@RequestParam(value = "id",required=false) Long id,
                                               HttpServletRequest request, HttpServletResponse response) {
 
@@ -321,7 +321,7 @@ public class OrderPickController {
     //订单-下载进仓单(2箱唛)pdf
     @ApiOperation(value = "订单-下载进仓单(2箱唛)pdf")
     @GetMapping("/downloadPdfWarehouseNoByOrderId2")
-    @ApiOperationSupport(order = 7)
+    @ApiOperationSupport(order = 9)
     public void downloadPdfWarehouseNoByOrderId2(@RequestParam(value = "id",required=false) Long id,
                                               HttpServletRequest request, HttpServletResponse response) {
         OrderWarehouseNoVO orderWarehouseNoVO = orderPickService.downloadWarehouseNoByOrderId(id);
@@ -400,7 +400,146 @@ public class OrderPickController {
 
     }
 
+    //提货地址-下载进仓单号(1进仓单)pdf
+    @ApiOperation(value = "提货地址-下载进仓单号(1进仓单)")
+    @GetMapping("/downloadPdfWarehouseNoByPickId1")
+    @ApiOperationSupport(order = 10)
+    public void downloadPdfWarehouseNoByPickId1(@RequestParam(value = "id",required=false) Long id,
+                                             HttpServletRequest request, HttpServletResponse response) {
 
+        OrderWarehouseNoVO orderWarehouseNoVO = orderPickService.downloadWarehouseNoByPickId(id);
+        String customerName = orderWarehouseNoVO.getCustomerName();//客户公司名称
+        String add = orderWarehouseNoVO.getAdd();//目的仓库代码
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        BeanUtil.copyProperties(orderWarehouseNoVO, resultMap);
+
+        try {
+            ClassPathResource classPathResource = new ClassPathResource("template/nanjing_warehouse_no.pdf");//获取pdf模板
+            InputStream inputStream = classPathResource.getInputStream();
+
+            ByteArrayOutputStream ba = new ByteArrayOutputStream();
+            PdfReader reader = new PdfReader(inputStream);
+            PdfStamper stamper = new PdfStamper(reader, ba);
+            //使用字体
+            BaseFont bf = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
+            /* 获取模版中的字段 */
+            AcroFields form = stamper.getAcroFields();
+            //填充pdf表单
+            if (MapUtil.isNotEmpty(resultMap)) {
+                //为字段赋值
+                for (Map.Entry<String, Object> entry : resultMap.entrySet()) {
+                    form.setFieldProperty(entry.getKey(), "textfont", bf, null);
+                    if(ObjectUtil.isNotEmpty(entry.getValue())){
+                        form.setField(entry.getKey(), entry.getValue().toString());
+                    }
+
+                }
+            }
+            stamper.setFormFlattening(true);// 如果为false那么生成的PDF文件还能编辑，一定要设为true
+            stamper.close();//关闭 打印器
+            reader.close();//关闭 阅读器
+
+            String fileName = customerName+"_"+add+"_"+"进仓单"+ ".pdf";
+            ServletOutputStream out = response.getOutputStream();
+            response.setContentType("application/vnd.ms-pdf");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码
+            String filename = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename );
+
+            out.write(ba.toByteArray());
+            out.flush();
+            out.close();
+            ba.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    //提货地址-下载进仓单号(2箱唛)pdf
+    @ApiOperation(value = "提货地址-下载进仓单号(2箱唛)")
+    @GetMapping("/downloadPdfWarehouseNoByPickId2")
+    @ApiOperationSupport(order = 11)
+    public void downloadPdfWarehouseNoByPickId2(@RequestParam(value = "id",required=false) Long id,
+                                             HttpServletRequest request, HttpServletResponse response) {
+
+        OrderWarehouseNoVO orderWarehouseNoVO = orderPickService.downloadWarehouseNoByPickId(id);
+        String customerName = orderWarehouseNoVO.getCustomerName();//客户公司名称
+        String add = orderWarehouseNoVO.getAdd();//目的仓库代码
+        List<MarkVO> markList = orderWarehouseNoVO.getMarkList();
+
+        try {
+            List<PdfReader> list = new ArrayList();//每一条数据代表一页pdf
+            for (int i=0; i<markList.size(); i++){
+                MarkVO markVO = markList.get(i);
+                Map<String, Object> resultMap = new HashMap<String, Object>();
+                BeanUtil.copyProperties(markVO, resultMap);
+
+                PdfReader pdfReader = null;//输出的pdf
+
+                ClassPathResource classPathResource = new ClassPathResource("template/nanjing_carton_no.pdf");//获取pdf模板
+                InputStream inputStream = classPathResource.getInputStream();
+
+                ByteArrayOutputStream ba = new ByteArrayOutputStream();//输出流 pdf
+                PdfReader reader = new PdfReader(inputStream);//读取的pdf模板
+                PdfStamper stamper = new PdfStamper(reader, ba);
+                //使用字体
+                BaseFont bf = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
+                /* 获取模版中的字段 */
+                AcroFields form = stamper.getAcroFields();
+                //填充pdf表单
+                if (MapUtil.isNotEmpty(resultMap)) {
+                    //为字段赋值
+                    for (Map.Entry<String, Object> entry : resultMap.entrySet()) {
+                        form.setFieldProperty(entry.getKey(), "textfont", bf, null);
+                        if(ObjectUtil.isNotEmpty(entry.getValue())){
+                            form.setField(entry.getKey(), entry.getValue().toString());
+                        }
+                    }
+                }
+                stamper.setFormFlattening(true);// 如果为false那么生成的PDF文件还能编辑，一定要设为true
+                stamper.close();//关闭 打印器
+                reader.close();//关闭 阅读器
+
+                pdfReader = new PdfReader(ba.toByteArray());
+                list.add(pdfReader);
+
+            }
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();//构建字节输出流
+            //上面已经获得了pdf的每一页，这里我只需要合并成为一个pdf，然后返回
+            Document document = new Document();
+            PdfCopy copy = new PdfCopy(document, baos);
+            document.open();
+            for (int k = 0; k < list.size(); k++) {
+                PdfReader pdfReader = list.get(k);
+                document.newPage();
+                copy.addDocument(pdfReader);
+            }
+            copy.close();
+
+            String fileName = customerName+"_"+add+"_"+"箱唛"+ ".pdf";
+            ServletOutputStream out = response.getOutputStream();
+            response.setContentType("application/vnd.ms-pdf");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码
+            String filename = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename );
+
+            out.write(baos.toByteArray());
+            out.flush();
+            out.close();
+            baos.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
 
     private static void copyFirstSheet(XSSFWorkbook workbook, int times) {

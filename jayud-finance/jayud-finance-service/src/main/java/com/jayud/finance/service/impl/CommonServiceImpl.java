@@ -285,7 +285,7 @@ public class CommonServiceImpl implements CommonService {
             }
             //海运
             if (tmp.equals(BillTemplateEnum.HY.getCmd())) {
-                data = this.getInlandOrderTemplate(mainOrderNos, cmd, templateEnum);
+                data = this.getSeaOrderTemplate(mainOrderNos, cmd, templateEnum);
             }
         }
 

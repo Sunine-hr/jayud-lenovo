@@ -259,6 +259,9 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     @ApiModelProperty(value = "订柜信息")
     private String orderingInformation;
 
+    @ApiModelProperty(value = "是否录入费用")
+    private Boolean cost;
+
     public void getFile(String path){
         this.fileViewList = StringUtils.getFileViews(this.getFilePath(),this.getFileName(),path);
     }

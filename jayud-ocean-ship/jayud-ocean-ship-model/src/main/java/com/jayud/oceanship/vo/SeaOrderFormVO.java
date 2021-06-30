@@ -186,7 +186,7 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     @ApiModelProperty(value = "法人主体名称")
     private String subLegalName;
 
-    //@ApiModelProperty(value = "是否录用费用")
+    @ApiModelProperty(value = "是否录入费用")
     private Boolean cost;
 
     //@ApiModelProperty(value = "供应商id")

@@ -17,4 +17,17 @@
         id, code, name, create_time, create_user, status
     </sql>
 
+    <select id="findByPage" resultType="com.jayud.oceanship.vo.SeaPortVO">
+        select id, code, name, create_time createTime, create_user createUser, status ,country,route,chinese_name chineseName
+        form sea_port sp
+        where status = 1
+        <if test="form.code !=null and form.code!=''">
+            and sp.code like concat('%',#{form.code},'%')
+        </if>
+        <if test="form.name !=null and form.name!=''">
+            and sp.name like concat('%',#{form.name},'%')
+        </if>
+    </select>
+
+
 </mapper>

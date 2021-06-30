@@ -1,13 +1,22 @@
 package com.jayud.oceanship.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.UserOperator;
 import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.oceanship.bo.AddSeaPortForm;
+import com.jayud.oceanship.bo.QuerySeaPortForm;
 import com.jayud.oceanship.po.SeaPort;
 import com.jayud.oceanship.mapper.SeaPortMapper;
 import com.jayud.oceanship.service.ISeaPortService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.oceanship.vo.SeaOrderFormVO;
+import com.jayud.oceanship.vo.SeaPortVO;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,5 +52,52 @@ public class SeaPortServiceImpl extends ServiceImpl<SeaPortMapper, SeaPort> impl
         queryWrapper.eq("code",portDepartureCode);
         SeaPort one = this.getOne(queryWrapper);
         return one.getName();
+    }
+
+    @Override
+    public IPage<SeaPortVO> findByPage(QuerySeaPortForm form) {
+        Page<SeaPortVO> page = new Page<>(form.getPageNum(), form.getPageSize());
+        return this.baseMapper.findByPage(page, form);
+    }
+
+    @Override
+    public SeaPort isCodeExistence(String code) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("code",code);
+        return this.getOne(queryWrapper);
+    }
+
+    @Override
+    public SeaPort isNameExistence(String name) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("name",name);
+        return this.getOne(queryWrapper);
+    }
+
+    @Override
+    public boolean saveOrUpdateSeaPort(AddSeaPortForm form) {
+        SeaPort convert = ConvertUtil.convert(form, SeaPort.class);
+        convert.setCreateTime(LocalDateTime.now());
+        convert.setCreateUser(UserOperator.getToken());
+        convert.setStatus(1);
+        return this.saveOrUpdate(convert);
+    }
+
+    @Override
+    public boolean deleteSeaPort(Long id) {
+        SeaPort seaPort = this.getById(id);
+        seaPort.setStatus(0);
+        return this.saveOrUpdate(seaPort);
+    }
+
+    @Override
+    public boolean saveOrUpdateBatchSeaPort(List<AddSeaPortForm> list) {
+        List<SeaPort> seaPorts = ConvertUtil.convertList(list, SeaPort.class);
+        for (SeaPort seaPort : seaPorts) {
+            seaPort.setStatus(1);
+            seaPort.setCreateUser("admin");
+            seaPort.setCreateTime(LocalDateTime.now());
+        }
+        return this.saveOrUpdateBatch(seaPorts);
     }
 }

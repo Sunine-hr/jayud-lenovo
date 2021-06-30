@@ -18,10 +18,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.SqlConstant;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ProcessStatusEnum;
-import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
@@ -148,10 +145,12 @@ public class SeaOrderController {
         List<Long> supplierIds = new ArrayList<>();
         List<String> unitCodes = new ArrayList<>();
         List<Long> departmentIds = new ArrayList<>();
+        List<String> subOrderNos = new ArrayList<>();
         for (SeaOrderFormVO record : records) {
             seaOrderIds.add(record.getOrderNo());
             mainOrder.add(record.getMainOrderNo());
             entityIds.add(record.getLegalEntityId());
+            subOrderNos.add(record.getOrderNo());
             unitCodes.add(record.getUnitCode());
             if (record.getSeaBookShipForm().getAgentSupplierId() != null) {
                 supplierIds.add(record.getSeaBookShipForm().getAgentSupplierId());
@@ -190,6 +189,8 @@ public class SeaOrderController {
             unitCodeInfo = this.omsClient.getCustomerByUnitCode(unitCodes);
         }
 
+        Map<String, Object> data = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.CCI.getSignOne()).getData();
+
         //获取发货人信息
         ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusOrders(seaOrderIds, BusinessTypeEnum.HY.getCode());
         if (resultOne.getCode() != HttpStatus.SC_OK) {
@@ -216,6 +217,8 @@ public class SeaOrderController {
             record.assemblyLegalEntity(legalEntityResult);
 
             record.assemblyDepartment(departmentResult);
+
+            record.setCost(MapUtil.getBool(data, record.getOrderNo()));
 
             //拼装供应商
             record.assemblySupplierInfo(supplierInfo);
@@ -308,6 +311,7 @@ public class SeaOrderController {
         List<SeaReplenishmentFormVO> records = page.getRecords();
         List<String> seaOrderIds = new ArrayList<>();
         List<String> mainOrder = new ArrayList<>();
+        List<String> subOrderNos = new ArrayList<>();
         for (SeaReplenishmentFormVO record : records) {
             seaOrderIds.add(record.getOrderNo());
             //获取海运订单信息
@@ -316,6 +320,7 @@ public class SeaOrderController {
             record.setMainOrderNo(seaOrderByOrderNO.getMainOrderNo());
             record.setStatus(seaOrderByOrderNO.getStatus());
             record.setProcessStatus(seaOrderByOrderNO.getProcessStatus());
+            subOrderNos.add(seaOrderByOrderNO.getOrderNo());
         }
 
         //查询商品信息
@@ -329,6 +334,8 @@ public class SeaOrderController {
         if (resultOne.getCode() != HttpStatus.SC_OK) {
             log.warn("查询订单地址信息失败 seaOrderId={}", seaOrderIds);
         }
+
+        Map<String, Object> data = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.CCI.getSignOne()).getData();
 
         //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
@@ -344,6 +351,8 @@ public class SeaOrderController {
             record.setOrderId(record.getSeaOrderId());
             record.setGoodsVOS(goodsVOS);
             record.assemblyGoodsInfo(goods);
+
+            record.setCost(MapUtil.getBool(data, record.getOrderNo()));
             //拼装主订单信息
             record.assemblyMainOrderData(result.getData());
             //处理地址信息

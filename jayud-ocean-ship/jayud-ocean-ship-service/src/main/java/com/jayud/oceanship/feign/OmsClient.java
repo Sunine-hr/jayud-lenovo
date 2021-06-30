@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -239,5 +240,14 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/initDictNameByDictTypeCode")
     public ApiResult<List<InitComboxSVO>> initDictNameByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode);
+
+    /**
+     * 是否录用费用
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/isCost")
+    public ApiResult<Map<String, Object>> isCost(@RequestBody List<String> orderNos,
+                                                 @RequestParam("subType") String subType);
 
 }

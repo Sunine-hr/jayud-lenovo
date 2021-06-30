@@ -2,7 +2,10 @@ package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -312,9 +315,39 @@ public class CustomerGoodsServiceImpl extends ServiceImpl<CustomerGoodsMapper, C
         customerGoodsVO.setGoodsClearanceValueList(goodsClearanceValueList);
         //查询-商品报关文件列表
         List<GoodsCustomsFileVO> goodsCustomsFileList = goodsCustomsFileMapper.findGoodsCustomsFileByGoodId(goodId);
+        if(CollUtil.isNotEmpty(goodsCustomsFileList)){
+            goodsCustomsFileList.forEach(goodsCustomsFileVO -> {
+                String templateUrl = goodsCustomsFileVO.getTemplateUrl();
+                if(StrUtil.isNotEmpty(templateUrl)){
+                    try {
+                        List<TemplateUrlVO> templateUrls = JSON.parseObject(templateUrl, new TypeReference<List<TemplateUrlVO>>() {});
+                        goodsCustomsFileVO.setTemplateUrls(templateUrls);
+                    } catch (Exception e) {
+                        goodsCustomsFileVO.setTemplateUrls(new ArrayList<>());
+                    }
+                }else{
+                    goodsCustomsFileVO.setTemplateUrls(new ArrayList<>());
+                }
+            });
+        }
         customerGoodsVO.setGoodsCustomsFileList(goodsCustomsFileList);
         //查询-商品清关文件列表
         List<GoodsClearanceFileVO> goodsClearanceFileList = goodsClearanceFileMapper.findGoodsClearanceFileByGoodId(goodId);
+        if(CollUtil.isNotEmpty(goodsClearanceFileList)){
+            goodsClearanceFileList.forEach(goodsClearanceFileVO -> {
+                String templateUrl = goodsClearanceFileVO.getTemplateUrl();
+                if(StrUtil.isNotEmpty(templateUrl)){
+                    try {
+                        List<TemplateUrlVO> templateUrls = JSON.parseObject(templateUrl, new TypeReference<List<TemplateUrlVO>>() {});
+                        goodsClearanceFileVO.setTemplateUrls(templateUrls);
+                    } catch (Exception e) {
+                        goodsClearanceFileVO.setTemplateUrls(new ArrayList<>());
+                    }
+                }else{
+                    goodsClearanceFileVO.setTemplateUrls(new ArrayList<>());
+                }
+            });
+        }
         customerGoodsVO.setGoodsClearanceFileList(goodsClearanceFileList);
         return CommonResult.success(customerGoodsVO);
     }

@@ -2,6 +2,7 @@ package com.jayud.mall.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
@@ -274,7 +275,6 @@ public class OrderPickController {
         try {
             ClassPathResource classPathResource = new ClassPathResource("template/nanjing_warehouse_no.pdf");//获取pdf模板
             InputStream inputStream = classPathResource.getInputStream();
-            System.out.println(inputStream);
 
             ByteArrayOutputStream ba = new ByteArrayOutputStream();
             PdfReader reader = new PdfReader(inputStream);
@@ -288,7 +288,10 @@ public class OrderPickController {
                 //为字段赋值
                 for (Map.Entry<String, Object> entry : resultMap.entrySet()) {
                     form.setFieldProperty(entry.getKey(), "textfont", bf, null);
-                    form.setField(entry.getKey(), entry.getValue().toString());
+                    if(ObjectUtil.isNotEmpty(entry.getValue())){
+                        form.setField(entry.getKey(), entry.getValue().toString());
+                    }
+
                 }
             }
             stamper.setFormFlattening(true);// 如果为false那么生成的PDF文件还能编辑，一定要设为true
@@ -322,6 +325,61 @@ public class OrderPickController {
     @ApiOperationSupport(order = 7)
     public void downloadPdfWarehouseNoByOrderId2(@RequestParam(value = "id",required=false) Long id,
                                               HttpServletRequest request, HttpServletResponse response) {
+        OrderWarehouseNoVO orderWarehouseNoVO = orderPickService.downloadWarehouseNoByOrderId(id);
+        String customerName = orderWarehouseNoVO.getCustomerName();//客户公司名称
+        String add = orderWarehouseNoVO.getAdd();//目的仓库代码
+
+        //箱唛
+        List<MarkVO> markList = orderWarehouseNoVO.getMarkList();
+        MarkVO markVO = markList.get(0);
+
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        //cn.hutool.core.bean  obj-转->map
+        BeanUtil.copyProperties(markVO, resultMap);
+
+        try {
+            ClassPathResource classPathResource = new ClassPathResource("template/nanjing_carton_no.pdf");//获取pdf模板
+            InputStream inputStream = classPathResource.getInputStream();
+
+            ByteArrayOutputStream ba = new ByteArrayOutputStream();
+            PdfReader reader = new PdfReader(inputStream);
+            PdfStamper stamper = new PdfStamper(reader, ba);
+            //使用字体
+            BaseFont bf = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
+            /* 获取模版中的字段 */
+            AcroFields form = stamper.getAcroFields();
+            //填充pdf表单
+            if (MapUtil.isNotEmpty(resultMap)) {
+                //为字段赋值
+                for (Map.Entry<String, Object> entry : resultMap.entrySet()) {
+                    form.setFieldProperty(entry.getKey(), "textfont", bf, null);
+                    if(ObjectUtil.isNotEmpty(entry.getValue())){
+                        form.setField(entry.getKey(), entry.getValue().toString());
+                    }
+                }
+            }
+            stamper.setFormFlattening(true);// 如果为false那么生成的PDF文件还能编辑，一定要设为true
+            stamper.close();//关闭 打印器
+            reader.close();//关闭 阅读器
+
+            String fileName = customerName+"_"+add+"_"+"箱唛"+ ".pdf";
+            ServletOutputStream out = response.getOutputStream();
+            response.setContentType("application/vnd.ms-pdf");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码
+            String filename = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename );
+
+            out.write(ba.toByteArray());
+            out.flush();
+            out.close();
+            ba.close();
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

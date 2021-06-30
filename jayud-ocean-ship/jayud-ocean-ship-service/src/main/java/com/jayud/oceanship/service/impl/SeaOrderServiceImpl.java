@@ -4,13 +4,13 @@ import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxVO;
-import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
@@ -21,18 +21,19 @@ import com.jayud.oceanship.enums.SeaBookShipStatusEnum;
 import com.jayud.oceanship.feign.FileClient;
 import com.jayud.oceanship.feign.OauthClient;
 import com.jayud.oceanship.feign.OmsClient;
-import com.jayud.oceanship.po.*;
 import com.jayud.oceanship.mapper.SeaOrderMapper;
+import com.jayud.oceanship.po.*;
 import com.jayud.oceanship.service.*;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oceanship.vo.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -77,6 +78,9 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
     @Autowired
     private ICabinetTypeService cabinetTypeService;
+
+    @Autowired
+    private ISeaBillService seaBillService;
 
     @Override
     @Transactional
@@ -217,6 +221,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         Integer businessType = BusinessTypeEnum.HY.getCode();
         //海运订单信息
         SeaOrderVO seaOrderVO = this.baseMapper.getSeaOrder(id);
+//        System.out.println("seaOrderVO=================="+seaOrderVO);
         //查询商品信息
         ApiResult<List<GoodsVO>> result = this.omsClient.getGoodsByBusOrders(Collections.singletonList(seaOrderVO.getOrderNo()), businessType);
         if (result.getCode() != HttpStatus.SC_OK) {
@@ -227,6 +232,11 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusOrders(Collections.singletonList(seaOrderVO.getOrderNo()), businessType);
         if (resultOne.getCode() != HttpStatus.SC_OK) {
             log.warn("查询订单地址信息失败 seaOrderId={}");
+        }
+        seaOrderVO.setFileViews(StringUtils.getFileViews(seaOrderVO.getFilePath(),seaOrderVO.getFileName(),prePath));
+        if(CollectionUtils.isEmpty(seaOrderVO.getFileViews())){
+            List<FileView> fileViews = new ArrayList<>();
+            seaOrderVO.setFileViews(fileViews);
         }
         //处理地址信息
         for (OrderAddressVO address : resultOne.getData()) {
@@ -246,6 +256,62 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         SeaBookship seaBookship = this.seaBookshipService.getEnableBySeaOrderId(id);
         SeaBookshipVO seaBookshipVO = ConvertUtil.convert(seaBookship, SeaBookshipVO.class);
         seaOrderVO.setSeaBookshipVO(seaBookshipVO);
+
+        //获取截补料数据
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.like("sea_order_no", seaOrderVO.getOrderNo());
+        List<SeaReplenishment> list = seaReplenishmentService.list(queryWrapper);
+        List<SeaReplenishmentVO> seaReplenishmentVOS = ConvertUtil.convertList(list, SeaReplenishmentVO.class);
+        Set<String> set = new HashSet<>();
+        StringBuffer stringBuffer = new StringBuffer();
+        for (SeaReplenishmentVO seaReplenishmentVO : seaReplenishmentVOS) {
+            if(seaReplenishmentVO.getSubNo() != null){
+                stringBuffer.append(seaReplenishmentVO.getSubNo()).append("/");
+            }
+            if(seaReplenishmentVO.getMainNo() != null){
+                set.add(seaReplenishmentVO.getMainNo());
+            }
+
+            seaReplenishmentVO.assemblyAdditionalServices();
+            //获取截补料中的柜型数量以及货柜信息
+            List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(seaReplenishmentVO.getOrderNo());
+            seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
+
+            //查询商品信息
+            ApiResult<List<GoodsVO>> result1 = this.omsClient.getGoodsByBusOrders(Collections.singletonList(seaReplenishmentVO.getOrderNo()), businessType);
+            if (result1.getCode() != HttpStatus.SC_OK) {
+                log.warn("查询商品信息失败 seaOrderId={}", seaReplenishmentVO.getId());
+            }
+            seaReplenishmentVO.setGoodsForms(result1.getData());
+            //查询地址信息
+            ApiResult<List<OrderAddressVO>> resultOne1 = this.omsClient.getOrderAddressByBusOrders(Collections.singletonList(seaReplenishmentVO.getOrderNo()), businessType);
+            if (resultOne1.getCode() != HttpStatus.SC_OK) {
+                log.warn("查询订单地址信息失败 seaOrderId={}", seaReplenishmentVO.getId());
+            }
+            //处理地址信息
+            for (OrderAddressVO address : resultOne1.getData()) {
+                address.getFile(prePath);
+                seaReplenishmentVO.processingAddress(address);
+            }
+            //匹配港口信息
+            seaReplenishmentVO.setPortDepartureName(seaPortService.getPortName(seaReplenishmentVO.getPortDepartureCode()));
+            seaReplenishmentVO.setPortDestinationName(seaPortService.getPortName(seaReplenishmentVO.getPortDestinationCode()));
+        }
+        if(stringBuffer.length()>0){
+            seaOrderVO.setSubNo(stringBuffer.substring(0,stringBuffer.length()-1));
+        }
+        StringBuffer stringBuffer1 = new StringBuffer();
+        if(set.size()>0){
+            for (String s : set) {
+                stringBuffer1.append(s).append("/");
+            }
+        }
+        if(stringBuffer1.length()>0){
+            seaOrderVO.setMainNo(stringBuffer1.substring(0,stringBuffer.length()-1));
+        }
+
+        seaOrderVO.setSeaReplenishments(seaReplenishmentVOS);
+
         return seaOrderVO;
     }
 
@@ -276,6 +342,11 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         seaOrder.setUpdateTime(LocalDateTime.now());
         seaOrder.setUpdateUser(UserOperator.getToken());
         seaOrder.setStatus(form.getStatus());
+
+        if(form.getCutReplenishTime() != null){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            seaOrder.setCutReplenishTime(LocalDateTime.parse(form.getCutReplenishTime(), formatter));
+        }
 
         //更改流程节点完成状态
         //this.updateProcessStatusComplte(form);
@@ -365,6 +436,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
     @Transactional
     public void doSeaBookShipOpt(SeaProcessOptForm form) {
         AddSeaBookShipForm seaBookShipForm = form.getSeaBookShipForm();
+        seaBookShipForm.toUp();
         //查询订船是否存在,存在做更新操作
         SeaBookship oldSeaBookship = this.seaBookshipService.getEnableBySeaOrderId(form.getOrderId());
         seaBookShipForm.setId(oldSeaBookship != null ? oldSeaBookship.getId() : null);
@@ -446,7 +518,15 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 //完成订单状态
                 finishSeaOrderOpt(seaOrder);
             }
+            seaReplenishments.get(0).toUp();
             SeaReplenishment replenishment = ConvertUtil.convert(seaReplenishments.get(0), SeaReplenishment.class);
+            if(CollectionUtils.isNotEmpty(seaReplenishments.get(0).getAdditionalServices())){
+                StringBuffer stringBuffer1 = new StringBuffer();
+                for (String additionalService : seaReplenishments.get(0).getAdditionalServices()) {
+                    stringBuffer1.append(additionalService).append(";");
+                }
+                replenishment.setAdditionalService(stringBuffer1.toString().substring(0,stringBuffer1.length()-1));
+            }
             replenishment.setSeaOrderId(form.getOrderId());
             replenishment.setSeaOrderNo(stringBuffer.toString().substring(0, stringBuffer.length() - 1));
             replenishment.setOrderNo(blOrderNo);
@@ -458,23 +538,39 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 log.warn("合并补料信息添加失败");
             }
 
+            //获取货物信息数据,增加或修改货柜信息
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("sea_rep_id",replenishment.getId());
+            queryWrapper.eq("sea_rep_no",replenishment.getOrderNo());
+            seaContainerInformationService.remove(queryWrapper);
             //增加或修改货柜信息
             if (replenishment.getCabinetType().equals(1)) {
                 //修改或保存
                 List<SeaContainerInformation> seaContainerInformations = seaReplenishments.get(0).getSeaContainerInformations();
                 for (SeaContainerInformation seaContainerInformation : seaContainerInformations) {
-                    SeaContainerInformation convert = ConvertUtil.convert(seaContainerInformation, SeaContainerInformation.class);
-                    convert.setSeaRepId(replenishment.getId());
-                    convert.setSeaRepNo(replenishment.getOrderNo());
-                    convert.setCreateTime(LocalDateTime.now());
-                    convert.setCreateUser(UserOperator.getToken());
-                    boolean b = seaContainerInformationService.saveOrUpdate(convert);
+                    seaContainerInformation.toUP();
+                    seaContainerInformation.setSeaRepId(replenishment.getId());
+                    seaContainerInformation.setSeaRepNo(replenishment.getOrderNo());
+                    seaContainerInformation.setCreateTime(LocalDateTime.now());
+                    seaContainerInformation.setCreateUser(UserOperator.getToken());
+                    boolean b = seaContainerInformationService.save(seaContainerInformation);
                     if (!b) {
                         log.warn("合并货柜信息添加失败");
                     }
                 }
 
             }
+
+            //补料成功，生成提单信息
+            AddSeaReplenishment addSeaReplenishment = seaReplenishments.get(0);
+            addSeaReplenishment.setSeaOrderId(form.getOrderId());
+            addSeaReplenishment.setSeaOrderNo(stringBuffer.toString().substring(0,stringBuffer.length()-1));
+            boolean save1 = seaBillService.createSeaBill(addSeaReplenishment);
+            if(!save1){
+                log.warn("提单信息添加失败");
+            }
+
+
 
             //获取用户地址
             seaReplenishments.get(0).assemblyAddress();
@@ -512,12 +608,21 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 log.warn("合并补料：批量保存/修改商品信息失败,商品信息={}", new JSONArray(goodsForms));
             }
         }
+
         if (form.getType().equals(2)) {//分单，一个订单多个补料，订单号只有一个，补料信息有多个
             List<AddSeaOrderForm> seaOrderForms = form.getSeaOrderForms();
             List<AddSeaReplenishment> seaReplenishments = form.getSeaReplenishments();
             int count = 0;
             for (int i = 0; i < seaReplenishments.size(); i++) {
+                seaReplenishments.get(i).toUp();
                 SeaReplenishment replenishment = ConvertUtil.convert(seaReplenishments.get(i), SeaReplenishment.class);
+                if(CollectionUtils.isNotEmpty(seaReplenishments.get(i).getAdditionalServices())){
+                    StringBuffer stringBuffer1 = new StringBuffer();
+                    for (String additionalService : seaReplenishments.get(i).getAdditionalServices()) {
+                        stringBuffer1.append(additionalService).append(";");
+                    }
+                    replenishment.setAdditionalService(stringBuffer1.toString().substring(0,stringBuffer1.length()-1));
+                }
                 replenishment.setSeaOrderId(seaOrderForms.get(0).getId());
                 replenishment.setSeaOrderNo(seaOrderForms.get(0).getOrderNo());
                 replenishment.setOrderNo(getBLOrderNo(seaOrderForms.get(0).getOrderNo(), form.getType(), seaReplenishments.size(), i + 1));
@@ -528,6 +633,37 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 if (!save) {
                     log.warn("分单补料信息添加失败");
                 }
+
+                //获取货物信息数据,增加或修改货柜信息
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq("sea_rep_no",replenishment.getOrderNo());
+                seaContainerInformationService.remove(queryWrapper);
+                if (replenishment.getCabinetType().equals(1)) {
+                    //修改或保存
+                    List<SeaContainerInformation> seaContainerInformations = seaReplenishments.get(i).getSeaContainerInformations();
+                    for (SeaContainerInformation seaContainerInformation : seaContainerInformations) {
+                        seaContainerInformation.toUP();
+                        seaContainerInformation.setSeaRepId(replenishment.getId());
+                        seaContainerInformation.setSeaRepNo(replenishment.getOrderNo());
+                        seaContainerInformation.setCreateTime(LocalDateTime.now());
+                        seaContainerInformation.setCreateUser(UserOperator.getToken());
+                        boolean b = seaContainerInformationService.save(seaContainerInformation);
+                        if (!b) {
+                            log.warn("分单货柜信息添加失败");
+                        }
+                    }
+
+                }
+
+                //补料成功，生成提单信息
+                AddSeaReplenishment addSeaReplenishment = seaReplenishments.get(i);
+                addSeaReplenishment.setSeaOrderId(form.getOrderId());
+                addSeaReplenishment.setSeaOrderNo(seaOrderForms.get(0).getOrderNo());
+                boolean save1 = seaBillService.createSeaBill(addSeaReplenishment);
+                if(!save1){
+                    log.warn("提单信息添加失败");
+                }
+
 
                 //获取柜型数量
 //                if (seaOrderForms.get(0).getCabinetType().equals(1)) {
@@ -548,26 +684,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 //                    }
 //                }
 
-                //获取货物信息数据,增加或修改货柜信息
-                QueryWrapper queryWrapper = new QueryWrapper();
-                queryWrapper.eq("sea_rep_id", replenishment.getId());
-                queryWrapper.eq("sea_rep_no", replenishment.getOrderNo());
-                seaContainerInformationService.remove(queryWrapper);
-                if (replenishment.getCabinetType().equals(1)) {
-                    //修改或保存
-                    List<SeaContainerInformation> seaContainerInformations = seaReplenishments.get(i).getSeaContainerInformations();
-                    for (SeaContainerInformation seaContainerInformation : seaContainerInformations) {
-                        seaContainerInformation.setSeaRepId(replenishment.getId());
-                        seaContainerInformation.setSeaRepNo(replenishment.getOrderNo());
-                        seaContainerInformation.setCreateTime(LocalDateTime.now());
-                        seaContainerInformation.setCreateUser(UserOperator.getToken());
-                        boolean b = seaContainerInformationService.saveOrUpdate(seaContainerInformation);
-                        if (!b) {
-                            log.warn("分单货柜信息添加失败");
-                        }
-                    }
 
-                }
 
                 seaReplenishments.get(i).assemblyAddress();
                 //获取用户地址
@@ -690,9 +807,18 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         queryWrapper.like("sea_order_no", seaOrder.getOrderNo());
         List<SeaReplenishment> list = seaReplenishmentService.list(queryWrapper);
         List<SeaReplenishmentVO> seaReplenishmentVOS = ConvertUtil.convertList(list, SeaReplenishmentVO.class);
+        Set<String> set = new HashSet<>();
+        StringBuffer stringBuffer = new StringBuffer();
         for (SeaReplenishmentVO seaReplenishmentVO : seaReplenishmentVOS) {
+            if(seaReplenishmentVO.getSubNo() != null){
+                stringBuffer.append(seaReplenishmentVO.getSubNo()).append("/");
+            }
+            if(seaReplenishmentVO.getMainNo() != null){
+                set.add(seaReplenishmentVO.getMainNo());
+            }
+            seaReplenishmentVO.assemblyAdditionalServices();
             //获取截补料中的柜型数量以及货柜信息
-            List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(seaReplenishmentVO.getId());
+            List<SeaContainerInformationVO> seaContainerInformations = seaContainerInformationService.getList(seaReplenishmentVO.getOrderNo());
             seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
 
             //查询商品信息
@@ -714,6 +840,19 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             //匹配港口信息
             seaReplenishmentVO.setPortDepartureName(seaPortService.getPortName(seaReplenishmentVO.getPortDepartureCode()));
             seaReplenishmentVO.setPortDestinationName(seaPortService.getPortName(seaReplenishmentVO.getPortDestinationCode()));
+        }
+        if(stringBuffer.length()>0){
+            seaOrder.setSubNo(stringBuffer.substring(0,stringBuffer.length()-1));
+        }
+
+        StringBuffer stringBuffer1 = new StringBuffer();
+        if(set.size()>0){
+            for (String s : set) {
+                stringBuffer1.append(s).append("/");
+            }
+        }
+        if(stringBuffer1.length()>0){
+            seaOrder.setMainNo(stringBuffer1.substring(0,stringBuffer.length()-1));
         }
         seaOrder.setSeaReplenishments(seaReplenishmentVOS);
         return seaOrder;
@@ -836,6 +975,12 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
                 this.baseMapper.updateById(seaOrder);
                 //节点操作记录
                 this.seaProcessOptRecord(form);
+
+                //补料审核不通过，删除生成的提单数据
+                boolean delete = seaBillService.deleteSeaBill(seaOrder.getId());
+                if(!delete){
+                    log.warn("删除提单信息失败");
+                }
             }
         }
 
@@ -847,6 +992,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
 
         if (form.getStatus().equals(OrderStatusEnum.SEA_S_6.getCode())) {
             AddSeaReplenishment seaReplenishment = form.getSeaReplenishment();
+            seaReplenishment.toUp();
             SeaReplenishment convert = ConvertUtil.convert(seaReplenishment, SeaReplenishment.class);
             convert.setIsBillOfLading(1);
             boolean save = seaReplenishmentService.saveOrUpdate(convert);

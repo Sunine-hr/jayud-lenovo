@@ -1,15 +1,13 @@
-package com.jayud.oceanship.po;
+package com.jayud.oms.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import java.time.LocalDateTime;
-import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -20,10 +18,8 @@ import lombok.experimental.Accessors;
  * @since 2021-03-25
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
 @ApiModel(value="SeaContainerInformation对象", description="货柜信息表")
-public class SeaContainerInformation extends Model<SeaContainerInformation> {
+public class SeaContainerInformationVO extends Model<SeaContainerInformationVO> {
 
     private static final long serialVersionUID=1L;
 
@@ -58,31 +54,10 @@ public class SeaContainerInformation extends Model<SeaContainerInformation> {
     @ApiModelProperty(value = "包装")
     private String packing;
 
-    @ApiModelProperty(value = "创建人(登录用户)")
-    private String createUser;
-
-    @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "更新人")
-    private String updateUser;
-
-    @ApiModelProperty(value = "更新时间")
-    private String updateTime;
-
 
     @Override
     protected Serializable pkVal() {
         return this.id;
-    }
-
-    public void toUP(){
-        if(this.cabinetNumber != null){
-            this.cabinetNumber = this.cabinetNumber.toUpperCase();
-        }
-        if(this.paperStripSeal != null){
-            this.paperStripSeal = this.paperStripSeal.toUpperCase();
-        }
     }
 
 }

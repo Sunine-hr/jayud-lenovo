@@ -55,7 +55,19 @@
         sp2.name transitPort,
         sr.cabinet_type cabinetType,
         sr.cabinet_type_name cabinetTypeName,
-        sr.main_no,sr.sub_no,sr.bill_lading_weight
+        sr.main_no,sr.sub_no,sr.bill_lading_weight,
+        sr.transport_clause transportClause,
+        sr.so so ,
+        sr.destination destination,
+        sr.closing_time closingTime,
+        sr.cut_off_time cutOffTime,
+        sr.place_of_delivery placeOfDelivery,
+        sr.ship_name shipName,
+        sr.ship_number shipNumber,
+        sr.delivery_mode deliveryMode,
+        sr.additional_service additionalService,
+        sr.sailing_time sailingTime,
+        sr.ordering_information orderingInformation
         from sea_replenishment sr
         left join sea_port sp on sr.port_departure_code = sp.code
         left join sea_port sp1 on sr.port_destination_code = sp1.code
@@ -65,6 +77,9 @@
         <where>
         <if test="form.orderNo !=null and form.orderNo!=''">
             and so.order_no like concat('%',#{form.orderNo},'%')
+        </if>
+        <if test="form.mainOrderNo !=null and form.mainOrderNo!=''">
+            and so.main_order_no like concat('%',#{form.mainOrderNo},'%')
         </if>
         <if test="form.portDeparture !=null and form.portDeparture!=''">
             and sp.name like concat('%',#{form.portDeparture},'%')
@@ -130,7 +145,19 @@
         sp2.name transitPort,
         sr.cabinet_type cabinetType,
         sr.cabinet_type_name cabinetTypeName,
-        sr.main_no,sr.sub_no,sr.bill_lading_weight
+        sr.main_no,sr.sub_no,sr.bill_lading_weight,
+        sr.transport_clause transportClause,
+        sr.so so ,
+        sr.destination destination,
+        sr.closing_time closingTime,
+        sr.cut_off_time cutOffTime,
+        sr.place_of_delivery placeOfDelivery,
+        sr.ship_name shipName,
+        sr.ship_number shipNumber,
+        sr.delivery_mode deliveryMode,
+        sr.additional_service additionalService,
+        sr.sailing_time sailingTime,
+        sr.ordering_information orderingInformation
         from sea_replenishment sr
         left join sea_port sp on sr.port_departure_code = sp.code
         left join sea_port sp1 on sr.port_destination_code = sp1.code

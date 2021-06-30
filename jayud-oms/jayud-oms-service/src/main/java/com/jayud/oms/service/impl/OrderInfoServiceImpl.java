@@ -1721,6 +1721,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     inputMainOrderForm.getStatus(), SubOrderSignEnum.HY.getSignOne(), form)) {
                 //拼装地址信息
                 seaOrderForm.assemblyAddress();
+                seaOrderForm.assemblyUP();
+                seaOrderForm.setFileName(StringUtils.getFileNameStr(seaOrderForm.getFileViews()));
+                seaOrderForm.setFilePath(StringUtils.getFileStr(seaOrderForm.getFileViews()));
                 seaOrderForm.setMainOrderNo(mainOrderNo);
                 seaOrderForm.setCreateUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
                 Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()

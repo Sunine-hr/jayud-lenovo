@@ -221,12 +221,15 @@ public class StorageFastOrderFormVO {
             sb2.append(goods.getSku()).append(" ");
             sb3.append(goods.getSpecificationModel()).append(" ");
 
-            sb.append(goods.getName())
-                    .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
-                    .append(",").append(goods.getNumber()).append("件")
-                    .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
-                    .append(",").append("重量:").append(goods.getWeight() == null ? 0 : goods.getWeight()).append("KG")
-                    .append(";");
+            if(goods.getName()!= null){
+                sb.append(goods.getName())
+                        .append(" ").append(goods.getBoardNumber() == null ? 0 : goods.getBoardNumber()).append("板")
+                        .append(",").append(goods.getNumber()== null ? 0 : goods.getNumber()).append("件")
+                        .append(",").append(goods.getPcs()== null ? 0 : goods.getPcs()).append("pcs")
+                        .append(",").append("重量:").append(goods.getWeight() == null ? 0 : goods.getWeight()).append("KG")
+                        .append(";");
+            }
+
 
             if(goods.getVolume()!=null){
                 this.volume = this.volume + goods.getVolume();
@@ -263,6 +266,29 @@ public class StorageFastOrderFormVO {
             }
         }
 
+    }
+
+    /**
+     * 组装部门名称
+     *
+     * @param departmentResult
+     */
+    public void assemblyDepartment(ApiResult departmentResult) {
+        if (departmentResult == null) {
+            return;
+        }
+        if (departmentResult.getCode() != HttpStatus.SC_OK) {
+            log.warn("请求法人主体信息失败");
+            return;
+        }
+        JSONArray legalEntitys = new JSONArray(departmentResult.getData());
+        for (int i = 0; i < legalEntitys.size(); i++) {
+            JSONObject json = legalEntitys.getJSONObject(i);
+            if (this.departmentId.equals(json.getLong("id"))) { //法人主体配对
+                this.departmentName = json.getStr("legalName");
+                break;
+            }
+        }
     }
 
     /**

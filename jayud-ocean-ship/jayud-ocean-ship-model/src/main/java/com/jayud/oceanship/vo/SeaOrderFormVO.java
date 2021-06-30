@@ -269,6 +269,33 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
     //@ApiModelProperty(value = "审核状况 1为审核通过;2为审核不通过")
     private Integer auditStatus;
 
+    @ApiModelProperty(value = "目的地")
+    private String destination;
+
+    @ApiModelProperty(value = "SO")
+    private String so;
+
+    @ApiModelProperty(value = "截关时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime closingTime;
+
+    @ApiModelProperty(value = "截仓时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime cutOffTime;
+
+    @ApiModelProperty(value = "代理人地址集合")
+    private List<OrderAddressVO> agentAddress;
+
+    @ApiModelProperty(value = "操作部门")
+    private Long departmentId;
+
+    @ApiModelProperty(value = "操作部门")
+    private String departmentName;
+
+    @ApiModelProperty(value = "发货地")
+    private String placeOfDelivery;
+
+
     /**
      * 组装商品信息
      */
@@ -280,7 +307,7 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
                     && BusinessTypeEnum.HY.getCode().equals(goods.getBusinessType())) {
                 sb.append(goods.getName())
                         .append(" ").append(goods.getPlateAmount() == null ? 0 : goods.getPlateAmount()).append(goods.getPlateUnit())
-                        .append(",").append(goods.getBulkCargoAmount()).append(goods.getBulkCargoUnit())
+                        .append(",").append(goods.getBulkCargoAmount()== null ? 0 : goods.getBulkCargoAmount()).append(goods.getBulkCargoUnit())
                         .append(",").append("重量:").append(goods.getTotalWeight()).append("KG")
                         .append(";");
             }
@@ -311,6 +338,29 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
         }
 
     }
+    /**
+     * 组装部门名称
+     *
+     * @param departmentResult
+     */
+    public void assemblyDepartment(ApiResult departmentResult) {
+        if (departmentResult == null) {
+            return;
+        }
+        if (departmentResult.getCode() != HttpStatus.SC_OK) {
+            log.warn("请求部门信息失败");
+            return;
+        }
+        JSONArray legalEntitys = new JSONArray(departmentResult.getData());
+        for (int i = 0; i < legalEntitys.size(); i++) {
+            JSONObject json = legalEntitys.getJSONObject(i);
+            if (this.departmentId != null && this.departmentId.equals(json.getLong("id"))) { //法人主体配对
+                this.departmentName = json.getStr("name");
+                break;
+            }
+        }
+    }
+
 
     public void processingAddress(OrderAddressVO addressVO) {
         switch (addressVO.getType()) {
@@ -322,6 +372,9 @@ public class SeaOrderFormVO extends Model<SeaOrderFormVO> {
                 break;
             case 2:
                 this.notificationAddress = Collections.singletonList(addressVO);
+                break;
+            case 5:
+                this.agentAddress = Collections.singletonList(addressVO);
                 break;
         }
     }

@@ -170,7 +170,14 @@
         oi.contract_no contractNo,
         terms.name termsDesc,
         so.cabinet_size_name cabinetSizeName,
-        so.cabinet_type_name cabinetTypeName
+        so.cabinet_type_name cabinetTypeName,
+        so.cut_off_time cutOffTime,
+        so.department_id departmentId,
+        so.place_of_delivery placeOfDelivery,
+        so.cut_off_time cutOffTime,
+        so.closing_time closingTime,
+        so.so so,
+        so.destination destination
         from sea_order so
         left join sea_port sp on so.port_departure_code = sp.code
         left join sea_port sp1 on so.port_destination_code = sp1.code
@@ -220,6 +227,12 @@
         <result column="is_charged" property="isCharged"></result>
         <result column="audit_opinion" property="auditOpinion"></result>
         <result column="audit_status" property="auditStatus"></result>
+        <result column="so" property="so"></result>
+        <result column="departmentId" property="departmentId"></result>
+        <result column="placeOfDelivery" property="placeOfDelivery"></result>
+        <result column="cutOffTime" property="cutOffTime"></result>
+        <result column="closingTime" property="closingTime"></result>
+        <result column="destination" property="destination"></result>
 
         <association property="seaBookShipForm" javaType="com.jayud.oceanship.vo.SeaBookshipVO">
             <result column="sid" property="id"></result>
@@ -293,6 +306,12 @@
         so.cabinet_type_name,
         so.audit_opinion,
         so.audit_status,
+        so.department_id departmentId,
+        so.place_of_delivery placeOfDelivery,
+        so.cut_off_time cutOffTime,
+        so.closing_time closingTime,
+        so.so so,
+        so.destination destination,
         terms.name termsDesc,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = so.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = so.`order_no`)>0 THEN TRUE
@@ -307,6 +326,9 @@
         <where>
             <if test="form.orderNo !=null and form.orderNo!=''">
                 and so.order_no like concat('%',#{form.orderNo},'%')
+            </if>
+            <if test="form.mainOrderNo !=null and form.mainOrderNo!=''">
+                and so.main_order_no like concat('%',#{form.mainOrderNo},'%')
             </if>
             <if test="form.portDeparture !=null and form.portDeparture!=''">
                 and sp.name like concat('%',#{form.portDeparture},'%')

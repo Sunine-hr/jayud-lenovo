@@ -166,12 +166,20 @@ public class StorageInputOrderController {
         List<Long> entityIds = new ArrayList<>();
         List<String> subOrderNos = new ArrayList<>();
         List<String> unitCodes = new ArrayList<>();
+        List<Long> departmentIds = new ArrayList<>();
         for (StorageInputOrderFormVO record : records) {
             storageInputOrderIds.add(record.getId());
             mainOrder.add(record.getMainOrderNo());
             entityIds.add(record.getLegalEntityId());
             unitCodes.add(record.getUnitCode());
             subOrderNos.add(record.getOrderNo());
+            departmentIds.add(record.getDepartmentId());
+        }
+
+        //查询部门名称
+        ApiResult departmentResult = null;
+        if(CollectionUtils.isNotEmpty(departmentIds)){
+            departmentResult = this.oauthClient.getDepartmentByDepartment(departmentIds);
         }
 
         //查询法人主体
@@ -196,6 +204,8 @@ public class StorageInputOrderController {
             record.assemblyMainOrderData(result.getData());
             //组装法人名称
             record.assemblyLegalEntity(legalEntityResult);
+
+            record.assemblyDepartment(departmentResult);
 
             //拼装结算单位
             record.assemblyUnitCodeInfo(unitCodeInfo);

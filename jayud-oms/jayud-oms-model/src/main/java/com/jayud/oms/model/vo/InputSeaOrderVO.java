@@ -177,6 +177,53 @@ public class InputSeaOrderVO {
     @ApiModelProperty(value = "供应商名称")
     private String supplierName;
 
+    @ApiModelProperty(value = "目的地")
+    private String destination;
+
+    @ApiModelProperty(value = "截关时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime closingTime;
+
+    @ApiModelProperty(value = "截仓时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime cutOffTime;
+
+    @ApiModelProperty(value = "SO")
+    private String so;
+
+    @ApiModelProperty(value = "补料信息集合")
+    private List<SeaReplenishmentVO> seaReplenishments;
+
+    @ApiModelProperty(value = "代理人地址集合")
+    private List<InputOrderAddressVO> agentAddress;
+
+    @ApiModelProperty(value = "操作部门")
+    private Long departmentId;
+
+    @ApiModelProperty(value = "操作部门")
+    private String department;
+
+    @ApiModelProperty(value = "发货地")
+    private String placeOfDelivery;
+
+    @ApiModelProperty(value = "文件路径(多个逗号隔开)")
+    private String filePath;
+
+    @ApiModelProperty(value = "文件名称(多个逗号隔开)")
+    private String fileName;
+
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViews = new ArrayList<>();
+
+    @ApiModelProperty(value = "主单号")
+    private String mainNo;
+
+    @ApiModelProperty(value = "分单号")
+    private String subNo;
+
+    @ApiModelProperty(value = "提单重量")
+    private Double billLadingWeight;
+
 
     public void setUnitName(String unitName) {
         this.unitName = unitName;

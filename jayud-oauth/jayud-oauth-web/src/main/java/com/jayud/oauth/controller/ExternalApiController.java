@@ -420,6 +420,18 @@ public class ExternalApiController {
         return ApiResult.ok(list.size() > 0 ? list.get(0) : null);
     }
 
+    /**
+     * 根据部门id获取部门名称
+     * @param departmentIds
+     * @return
+     */
+    @RequestMapping(value = "/api/getDepartmentByDepartment")
+    ApiResult getDepartmentByDepartment(@RequestParam("departmentIds")List<Long> departmentIds){
+        System.out.println("departmentIds======================================="+departmentIds);
+        List<Department> departments = this.departmentService.getBaseMapper().selectBatchIds(departmentIds);
+        return ApiResult.ok(departments);
+    }
+
 }
 
 

@@ -197,4 +197,16 @@ public class AddSeaBookShipForm extends Model<AddSeaBookShipForm> {
         this.fileName = com.jayud.common.utils.StringUtils.getFileNameStr(fileViewList);
         this.filePath = com.jayud.common.utils.StringUtils.getFileStr(fileViewList);
     }
+
+    public void toUp(){
+        if(this.shipCompany != null){
+            this.shipCompany = this.shipCompany.toUpperCase();
+        }
+        if(this.shipName != null){
+            this.shipName = this.shipName.toUpperCase();
+        }
+        if(this.shipNumber != null){
+            this.shipNumber = this.shipNumber.toUpperCase();
+        }
+    }
 }

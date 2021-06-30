@@ -33,4 +33,7 @@ public interface OauthClient {
      */
     @RequestMapping(value = "/api/getLegalEntityCodeByLegalId")
     ApiResult getLegalEntityCodeByLegalId(@RequestParam("legalId") Long legalId);
+
+    @RequestMapping(value = "/api/getDepartmentByDepartment")
+    ApiResult getDepartmentByDepartment(@RequestParam("departmentIds")List<Long> departmentIds);
 }

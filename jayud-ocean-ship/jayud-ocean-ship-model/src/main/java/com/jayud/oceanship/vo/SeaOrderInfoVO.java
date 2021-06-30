@@ -180,6 +180,9 @@ public class SeaOrderInfoVO extends Model<SeaOrderInfoVO> {
     @ApiModelProperty(value = "补料信息集合")
     private List<SeaReplenishmentVO> seaReplenishments;
 
+    @ApiModelProperty(value = "提单信息")
+    private List<SeaBillVO> seaBills;
+
 
     @Override
     protected Serializable pkVal() {

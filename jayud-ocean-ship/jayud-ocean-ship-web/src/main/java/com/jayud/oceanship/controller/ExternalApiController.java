@@ -158,7 +158,7 @@ public class ExternalApiController {
      * @return
      */
     @RequestMapping(value = "/api/oceanship/getSeaOrderInfoByMainOrderNos")
-    ApiResult getSeaOrderInfoByMainOrderNos(@RequestBody List<String> mainOrderNoList) {
+    ApiResult getSeaOrderInfoByMainOrderNos(@RequestParam("mainOrderNos")  List<String> mainOrderNoList) {
         List<SeaOrderInfoVO> seaOrders = this.seaOrderService.getSeaOrderInfoByMainOrderNos(mainOrderNoList);
         return ApiResult.ok(seaOrders);
     }

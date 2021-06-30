@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.vo.InputGoodsVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -28,6 +29,8 @@ import java.util.List;
 @Accessors(chain = true)
 public class SeaOrderTemplate {
 
+    @ApiModelProperty(value = "序号")
+    private Integer num;
 
     @ApiModelProperty(value = "海运订单主键")
     private Long id;
@@ -294,7 +297,7 @@ public class SeaOrderTemplate {
         Double volume = 0.0;
         for (InputGoodsVO goods : goodsList) {
             if (this.id.equals(goods.getBusinessId())
-                    && BusinessTypeEnum.KY.getCode().equals(goods.getBusinessType())) {
+                    && BusinessTypeEnum.HY.getCode().equals(goods.getBusinessType())) {
                 sb.append(goods.getName());
                 totalNum += goods.getBulkCargoAmount() == null ? 0 : goods.getBulkCargoAmount();
             }
@@ -306,8 +309,29 @@ public class SeaOrderTemplate {
     public void assembleData(JSONObject jsonObject) {
         this.assemblySeaBookShip(jsonObject.getObj("seaBookShip"));
         this.assemblyCabinetSizeNumber(jsonObject.getObj("cabinetSizeNumbers"));
-        this.assemblyGoodsInfo(jsonObject.getBean("goodsVOS", List.class));
+        JSONArray goodsVOS = jsonObject.getJSONArray("goodsVOS");
+        this.assemblyGoodsInfo(goodsVOS.toList(InputGoodsVO.class));
         this.assemblyContainerInfo(jsonObject.getObj("seaContainerInfos"));
         this.assemblySeaReplenishments(jsonObject.getObj("seaReplenishments"));
+        this.assemblySeaBills(jsonObject.getObj("seaBills"));
+    }
+
+
+    private void assemblySeaBills(Object seaBills) {
+        if (seaBills == null) {
+            return;
+        }
+        StringBuilder billLadingNo = new StringBuilder();
+        JSONArray jsonArray = new JSONArray(seaBills);
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject json = jsonArray.getJSONObject(i);
+            billLadingNo.append(json.getStr("orderNo")).append(",");
+        }
+
+        this.billLadingNo = billLadingNo.toString();
+    }
+
+    public void setGoodTime(String goodTime) {
+        this.goodTime = DateUtils.format(goodTime, DateUtils.DATE_PATTERN);
     }
 }

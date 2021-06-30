@@ -138,6 +138,7 @@ public class CommonServiceImpl implements CommonService {
             JSONObject jsonObject = array.getJSONObject(i);
             switch (templateEnum) {
                 case NL_NORM:
+                case NL:
                     InlandTPTemplate template = ConvertUtil.convert(jsonObject, InlandTPTemplate.class);
                     template.assembleData(jsonObject);
                     //组装主订单信息
@@ -165,6 +166,7 @@ public class CommonServiceImpl implements CommonService {
             JSONObject jsonObject = array.getJSONObject(i);
             switch (templateEnum) {
                 case HY_NORM:
+                case HY:
                     SeaOrderTemplate template = ConvertUtil.convert(jsonObject, SeaOrderTemplate.class);
                     template.assembleData(jsonObject);
                     //组装主订单信息

@@ -172,7 +172,6 @@ public class OrderComboxController {
         return CommonResult.success(resultMap);
     }
 
-
     @ApiOperation(value = "二期优化3现有接口:创建订单-客户联动业务员和结算单位,idCode=客户CODE,必填")
     @PostMapping(value = "/initUnit")
     public CommonResult<Map<String, Object>> initUnit(@RequestBody Map<String, Object> param) {
@@ -597,6 +596,22 @@ public class OrderComboxController {
 
 
         return CommonResult.success(response);
+    }
+
+    @ApiOperation(value = "下拉业务类型")
+    @PostMapping(value = "/initBizService")
+    public CommonResult<List<InitComboxStrVO>> initBizService() {
+        //业务类型
+        List<ProductBiz> productBizs = productBizService.findProductBiz();
+        List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
+        for (ProductBiz productBiz : productBizs) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(productBiz.getIdCode());
+            comboxStrVO.setName(productBiz.getName());
+            comboxStrVOS.add(comboxStrVO);
+        }
+
+        return CommonResult.success(comboxStrVOS);
     }
 
 

@@ -202,7 +202,8 @@
         opc.change_amount localAmount,
         opc.id costId,
         opc.is_bill isBill,
-        oi.operation_time
+        oi.operation_time,
+        oi.biz_code bizCode
         FROM
         order_payment_cost opc
         left join supplier_info si on si.supplier_code = opc.customer_code
@@ -325,6 +326,9 @@
         <if test="form.operationTime != null and form.operationTime.size>0">
             and date_format(temp.operation_time,'%Y-%m-%d')
             BETWEEN #{form.operationTime[0]} AND #{form.operationTime[1]}
+        </if>
+        <if test="form.bizCode != null and form.bizCode!=''">
+            and temp.bizCode =#{form.bizCode}
         </if>
 
     </select>
@@ -1088,7 +1092,8 @@
         pb.`name` bizCodeDesc,
         oi.operation_time,
         oi.created_user createdUser,
-        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr
+        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
+        oi.biz_code bizCode
         FROM
         order_payment_cost opc
         left join supplier_info si on si.supplier_code = opc.customer_code
@@ -1144,6 +1149,9 @@
         <if test="form.operationTime != null and form.operationTime.size>0">
             and date_format(temp.operation_time,'%Y-%m-%d')
             BETWEEN #{form.operationTime[0]} AND #{form.operationTime[1]}
+        </if>
+        <if test="form.bizCode != null and form.bizCode!=''">
+            and temp.bizCode =#{form.bizCode}
         </if>
 
         group by temp.orderNo,temp.subOrderNo

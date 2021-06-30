@@ -11,10 +11,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.itextpdf.text.pdf.AcroFields;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfStamper;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.pdf.*;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OrderInfoParaForm;
 import com.jayud.mall.model.bo.OrderPickIdForm;
@@ -40,6 +38,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -331,36 +330,56 @@ public class OrderPickController {
 
         //箱唛
         List<MarkVO> markList = orderWarehouseNoVO.getMarkList();
-        MarkVO markVO = markList.get(0);
-
-        Map<String, Object> resultMap = new HashMap<String, Object>();
-        //cn.hutool.core.bean  obj-转->map
-        BeanUtil.copyProperties(markVO, resultMap);
 
         try {
-            ClassPathResource classPathResource = new ClassPathResource("template/nanjing_carton_no.pdf");//获取pdf模板
-            InputStream inputStream = classPathResource.getInputStream();
+            List<PdfReader> list = new ArrayList();//每一条数据代表一页pdf
+            for (int i=0; i<markList.size(); i++){
+                MarkVO markVO = markList.get(i);
+                Map<String, Object> resultMap = new HashMap<String, Object>();
+                BeanUtil.copyProperties(markVO, resultMap);
 
-            ByteArrayOutputStream ba = new ByteArrayOutputStream();
-            PdfReader reader = new PdfReader(inputStream);
-            PdfStamper stamper = new PdfStamper(reader, ba);
-            //使用字体
-            BaseFont bf = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
-            /* 获取模版中的字段 */
-            AcroFields form = stamper.getAcroFields();
-            //填充pdf表单
-            if (MapUtil.isNotEmpty(resultMap)) {
-                //为字段赋值
-                for (Map.Entry<String, Object> entry : resultMap.entrySet()) {
-                    form.setFieldProperty(entry.getKey(), "textfont", bf, null);
-                    if(ObjectUtil.isNotEmpty(entry.getValue())){
-                        form.setField(entry.getKey(), entry.getValue().toString());
+                PdfReader pdfReader = null;//输出的pdf
+
+                ClassPathResource classPathResource = new ClassPathResource("template/nanjing_carton_no.pdf");//获取pdf模板
+                InputStream inputStream = classPathResource.getInputStream();
+
+                ByteArrayOutputStream ba = new ByteArrayOutputStream();//输出流 pdf
+                PdfReader reader = new PdfReader(inputStream);//读取的pdf模板
+                PdfStamper stamper = new PdfStamper(reader, ba);
+                //使用字体
+                BaseFont bf = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
+                /* 获取模版中的字段 */
+                AcroFields form = stamper.getAcroFields();
+                //填充pdf表单
+                if (MapUtil.isNotEmpty(resultMap)) {
+                    //为字段赋值
+                    for (Map.Entry<String, Object> entry : resultMap.entrySet()) {
+                        form.setFieldProperty(entry.getKey(), "textfont", bf, null);
+                        if(ObjectUtil.isNotEmpty(entry.getValue())){
+                            form.setField(entry.getKey(), entry.getValue().toString());
+                        }
                     }
                 }
+                stamper.setFormFlattening(true);// 如果为false那么生成的PDF文件还能编辑，一定要设为true
+                stamper.close();//关闭 打印器
+                reader.close();//关闭 阅读器
+
+                pdfReader = new PdfReader(ba.toByteArray());
+                list.add(pdfReader);
+
             }
-            stamper.setFormFlattening(true);// 如果为false那么生成的PDF文件还能编辑，一定要设为true
-            stamper.close();//关闭 打印器
-            reader.close();//关闭 阅读器
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();//构建字节输出流
+            //上面已经获得了pdf的每一页，这里我只需要合并成为一个pdf，然后返回
+            Document document = new Document();
+            PdfCopy copy = new PdfCopy(document, baos);
+            document.open();
+            for (int k = 0; k < list.size(); k++) {
+                PdfReader pdfReader = list.get(k);
+                document.newPage();
+                copy.addDocument(pdfReader);
+            }
+            copy.close();
 
             String fileName = customerName+"_"+add+"_"+"箱唛"+ ".pdf";
             ServletOutputStream out = response.getOutputStream();
@@ -370,12 +389,10 @@ public class OrderPickController {
             String filename = URLEncoder.encode(fileName, "utf-8");
             response.setHeader("Content-disposition", "attachment;filename=" + filename );
 
-            out.write(ba.toByteArray());
+            out.write(baos.toByteArray());
             out.flush();
             out.close();
-            ba.close();
-
-
+            baos.close();
 
         } catch (Exception e) {
             e.printStackTrace();

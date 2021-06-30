@@ -580,12 +580,354 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             productClassifyVO.setId(e.getId());
             productClassifyVO.setIdCode(e.getIdCode());
             productClassifyVO.setName(e.getName());
-            productClassifyVO.setDescs(e.getDescription().split(","));
+            productClassifyVO.setDescs(e.getDescription().split(";"));
             productClassifyVO.setFId(e.getFId());
             productClassifyVO.setModuleSelected(map.get(e.getIdCode()) != null);
             list.add(productClassifyVO);
         });
         return list;
+    }
+
+    /**
+     * 追加订单模块节点
+     *
+     * @param form
+     */
+    @Override
+    @Transactional
+    public void addOrderModule(InputOrderForm form) {
+        //保存主订单
+        InputMainOrderForm inputMainOrderForm = form.getOrderForm();
+
+        //查询主单信息
+        OrderInfo orderInfo = this.getById(inputMainOrderForm.getOrderId());
+        this.updateById(new OrderInfo().setId(orderInfo.getId()).setIsDataAll(inputMainOrderForm.getIsDataAll()).setSelectedServer(orderInfo.getSelectedServer() + "," + inputMainOrderForm.getSelectedServer()));
+
+        String oldMainOrderNo = inputMainOrderForm.getOrderNo() != null ? inputMainOrderForm.getOrderNo() : null;
+
+        inputMainOrderForm.setCmd(form.getCmd());
+        String mainOrderNo = inputMainOrderForm.getOrderNo();
+
+        String classCode = inputMainOrderForm.getClassCode();//订单类型
+        String selectedServer = inputMainOrderForm.getSelectedServer();//所选服务
+
+        //中港运输并且并且订单状态为驳回或为空或为待接单
+        if (OrderStatusEnum.ZGYS.getCode().equals(classCode) ||
+                selectedServer.contains(OrderStatusEnum.ZGYSDD.getCode())) {
+            //创建中港订单信息
+            InputOrderTransportForm orderTransportForm = form.getOrderTransportForm();
+
+            //生成中港订单号
+            if (orderTransportForm.getId() == null) {
+                String orderNo = generationOrderNo(orderTransportForm.getLegalEntityId(), orderTransportForm.getGoodsType(), OrderStatusEnum.ZGYS.getCode());
+                orderTransportForm.setOrderNo(orderNo);
+            }
+
+            if (!selectedServer.contains(OrderStatusEnum.XGQG.getCode())) {
+                //若没有选择香港清关,则情况香港清关信息，避免信息有误
+                orderTransportForm.setHkLegalName(null);
+                orderTransportForm.setHkUnitCode(null);
+                orderTransportForm.setIsHkClear(null);
+            }
+            orderTransportForm.setMainOrderNo(mainOrderNo);
+            orderTransportForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
+
+            //根据主订单获取提货地址送货地址得客户ID
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("id_code", inputMainOrderForm.getCustomerCode());
+            CustomerInfo customerInfo = customerInfoService.getOne(queryWrapper);
+            List<InputOrderTakeAdrForm> takeAdrForms1 = orderTransportForm.getTakeAdrForms1();
+            List<InputOrderTakeAdrForm> takeAdrForms2 = orderTransportForm.getTakeAdrForms2();
+            for (InputOrderTakeAdrForm takeAdrForm1 : takeAdrForms1) {
+                takeAdrForm1.setCustomerId(customerInfo.getId());
+            }
+            for (InputOrderTakeAdrForm takeAdrForm2 : takeAdrForms2) {
+                takeAdrForm2.setCustomerId(customerInfo.getId());
+            }
+            //特殊处理(添加判断是否货物编辑,但是我只是修改状态)
+            orderTransportForm.setIsGoodsEdit(true);
+            tmsClient.createOrderTransport(orderTransportForm).getData();
+
+        }
+        //内陆运输
+        if (selectedServer.contains(OrderStatusEnum.NLDD.getCode())) {
+            InputOrderInlandTransportForm orderInlandTransportForm = form.getOrderInlandTransportForm();
+
+            //生成内陆订单号
+            if (orderInlandTransportForm.getId() == null) {
+                String orderNo = generationOrderNo(orderInlandTransportForm.getLegalEntityId(), null, OrderStatusEnum.NLYS.getCode());
+                orderInlandTransportForm.setOrderNo(orderNo);
+            }
+
+            Integer processStatus = orderInlandTransportForm.getProcessStatus() == null ? ProcessStatusEnum.PROCESSING.getCode()
+                    : orderInlandTransportForm.getProcessStatus();
+            //查询结算单位
+            String orderNo = orderInlandTransportForm.getOrderNo();
+            CustomerInfo unitName = this.customerInfoService.getByCode(orderInlandTransportForm.getUnitCode());
+            orderInlandTransportForm.setMainOrderNo(mainOrderNo);
+            orderInlandTransportForm.setOrderNo(orderNo);
+            orderInlandTransportForm.setCreateUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
+            orderInlandTransportForm.setProcessStatus(processStatus);
+            orderInlandTransportForm.setUnitName(unitName.getName());
+            String subOrderNo = this.inlandTpClient.createOrder(orderInlandTransportForm).getData();
+            orderInlandTransportForm.setOrderNo(subOrderNo);
+
+            this.initProcessNode(mainOrderNo, orderNo, OrderStatusEnum.NLYS,
+                    form, orderInlandTransportForm.getId(), OrderStatusEnum.getInlandTPProcess());
+
+        }
+
+        //空运
+        if (selectedServer.contains(OrderStatusEnum.KYDD.getCode())) {
+            InputAirOrderForm airOrderForm = form.getAirOrderForm();
+            //生成空运订单号
+            if (airOrderForm.getId() == null) {
+                String orderNo = generationOrderNo(airOrderForm.getLegalEntityId(), airOrderForm.getImpAndExpType(), OrderStatusEnum.KY.getCode());
+                airOrderForm.setOrderNo(orderNo);
+            }
+
+            //拼装地址信息
+            airOrderForm.assemblyAddress();
+            airOrderForm.setMainOrderNo(mainOrderNo);
+            airOrderForm.setCreateUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
+            Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                    : ProcessStatusEnum.DRAFT.getCode();
+            airOrderForm.setProcessStatus(processStatus);
+            this.freightAirClient.createOrder(airOrderForm);
+        }
+        //服务单
+//        if (OrderStatusEnum.FWD.getCode().equals(classCode)) {
+//            //创建服务单订单信息
+//            InputOrderServiceForm orderServiceForm = form.getOrderServiceForm();
+//            //生成服务订单号
+//            orderServiceForm.setMainOrderNo(mainOrderNo);
+//            orderServiceForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
+//            serviceOrderService.createOrder(orderServiceForm);
+//
+//        }
+        //海运
+        //System.out.println(OrderStatusEnum.HY.getCode().equals(classCode));
+        if (selectedServer.contains(OrderStatusEnum.HYDD.getCode())) {
+            InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
+            //生成海运订单号
+            if (seaOrderForm.getOrderId() == null) {
+                String orderNo = generationOrderNo(seaOrderForm.getLegalEntityId(), seaOrderForm.getImpAndExpType(), OrderStatusEnum.HY.getCode());
+                seaOrderForm.setOrderNo(orderNo);
+            }
+
+            //拼装地址信息
+            seaOrderForm.assemblyAddress();
+            seaOrderForm.setMainOrderNo(mainOrderNo);
+            seaOrderForm.setCreateUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
+            Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                    : ProcessStatusEnum.DRAFT.getCode();
+            seaOrderForm.setProcessStatus(processStatus);
+            String subOrderNo = this.oceanShipClient.createOrder(seaOrderForm).getData();
+            seaOrderForm.setOrderNo(subOrderNo);
+            this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.HY,
+                    form, seaOrderForm.getOrderId(), OrderStatusEnum.getSeaOrderProcess());
+        }
+        //拖车
+        if (selectedServer.contains(OrderStatusEnum.TCEDD.getCode())
+                || selectedServer.contains(OrderStatusEnum.TCIDD.getCode())) {
+            List<InputTrailerOrderFrom> trailerOrderFroms = form.getTrailerOrderFrom();
+
+            List<String> strings = new ArrayList<>();
+            strings.add("TT_1_1");
+            strings.add("TT_2_1");
+            strings.add("TT_3_1");
+            strings.add("TT_4_1");
+            boolean flag = false;
+            for (String string : strings) {
+                for (InputTrailerOrderFrom trailerOrderFrom : trailerOrderFroms) {
+                    if (trailerOrderFrom.getStatus() != null && string.equals(trailerOrderFrom.getStatus())) {
+                        flag = true;
+                    }
+                }
+            }
+            if (flag) {
+                for (InputTrailerOrderFrom trailerOrderFrom : trailerOrderFroms) {
+
+                    trailerOrderFrom.setMainOrderNo(mainOrderNo);
+                    trailerOrderFrom.setCreateUser(UserOperator.getToken());
+                    Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                            : ProcessStatusEnum.DRAFT.getCode();
+                    trailerOrderFrom.setProcessStatus(processStatus);
+                    String subOrderNo = this.trailerClient.createOrder(trailerOrderFrom).getData();
+                    trailerOrderFrom.setOrderNo(subOrderNo);
+
+                    this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.TC,
+                            form, trailerOrderFrom.getId(), OrderStatusEnum.getTrailerOrderProcess());
+                }
+            } else {
+
+                if (trailerOrderFroms.get(0).getMainOrderNo() != null) {
+                    List<String> data = trailerClient.getOrderNosByMainOrderNo(trailerOrderFroms.get(0).getMainOrderNo()).getData();
+                    if (data != null && data.size() > 0) {
+                        goodsService.deleteGoodsByBusOrders(data, BusinessTypeEnum.TC.getCode());
+                        orderAddressService.deleteOrderAddressByBusOrders(data, BusinessTypeEnum.TC.getCode());
+                        log.warn("删除商品和地址信息成功");
+                    }
+                }
+
+                if (form.getCmd().equals("submit") && trailerOrderFroms.get(0).getStatus() != null && trailerOrderFroms.get(0).getStatus().equals("TT_0")) {
+                    ApiResult result = trailerClient.deleteOrderByMainOrderNo(trailerOrderFroms.get(0).getMainOrderNo());
+                    if (result.getCode() != HttpStatus.SC_OK) {
+                        log.warn("删除订单信息失败");
+                    }
+                }
+
+                for (InputTrailerOrderFrom trailerOrderFrom : trailerOrderFroms) {
+
+                    //生成拖车订单号
+                    if (form.getCmd().equals("submit")) {//提交
+                        if (trailerOrderFrom.getId() == null && trailerOrderFrom.getStatus() == null) {
+                            String orderNo = generationOrderNo(trailerOrderFrom.getLegalEntityId(), trailerOrderFrom.getImpAndExpType(), OrderStatusEnum.TC.getCode());
+                            trailerOrderFrom.setOrderNo(orderNo);
+                        }
+
+                    }
+
+
+                    trailerOrderFrom.setMainOrderNo(mainOrderNo);
+                    trailerOrderFrom.setCreateUser(UserOperator.getToken());
+                    Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                            : ProcessStatusEnum.DRAFT.getCode();
+                    trailerOrderFrom.setProcessStatus(processStatus);
+                    String subOrderNo = this.trailerClient.createOrder(trailerOrderFrom).getData();
+                    trailerOrderFrom.setOrderNo(subOrderNo);
+
+                    this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.TC,
+                            form, trailerOrderFrom.getId(), OrderStatusEnum.getTrailerOrderProcess());
+                }
+
+
+            }
+
+
+        }
+
+        //仓储
+        if (selectedServer.contains(OrderStatusEnum.CCIDD.getCode())
+                || selectedServer.contains(OrderStatusEnum.CCEDD.getCode())
+                || selectedServer.contains(OrderStatusEnum.CCFDD.getCode())) {
+            if (selectedServer.contains(OrderStatusEnum.CCIDD.getCode())) {
+                InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
+                if (storageInputOrderForm.getId() == null) {
+                    String orderNo = generationOrderNo(storageInputOrderForm.getLegalEntityId(), 1, OrderStatusEnum.CC.getCode());
+                    storageInputOrderForm.setOrderNo(orderNo);
+                }
+
+                storageInputOrderForm.setMainOrderNo(mainOrderNo);
+                for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageInputOrderForm.getGoodsFormList()) {
+                    addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
+                    addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
+                }
+                Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                        : ProcessStatusEnum.DRAFT.getCode();
+                storageInputOrderForm.setProcessStatus(processStatus);
+                String subOrderNo = this.storageClient.createInOrder(storageInputOrderForm).getData();
+                storageInputOrderForm.setOrderNo(subOrderNo);
+
+                this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.CC,
+                        form, storageInputOrderForm.getId(), OrderStatusEnum.getInStorageOrderProcess());
+
+            }
+            if (selectedServer.contains(OrderStatusEnum.CCEDD.getCode())) {
+                InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
+                if (storageOutOrderForm.getId() == null) {
+                    String orderNo = generationOrderNo(storageOutOrderForm.getLegalEntityId(), 2, OrderStatusEnum.CC.getCode());
+                    storageOutOrderForm.setOrderNo(orderNo);
+
+                }
+
+                storageOutOrderForm.setMainOrderNo(mainOrderNo);
+                storageOutOrderForm.setCmd(form.getCmd());
+                for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageOutOrderForm.getGoodsFormList()) {
+                    addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
+                    addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
+                }
+                Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                        : ProcessStatusEnum.DRAFT.getCode();
+                storageOutOrderForm.setProcessStatus(processStatus);
+                String subOrderNo = this.storageClient.createOutOrder(storageOutOrderForm).getData();
+                storageOutOrderForm.setOrderNo(subOrderNo);
+
+                this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.CC,
+                        form, storageOutOrderForm.getId(), OrderStatusEnum.getOutStorageOrderProcess());
+            }
+            if (selectedServer.contains(OrderStatusEnum.CCFDD.getCode())) {
+                InputStorageFastOrderForm storageFastOrderForm = form.getStorageFastOrderForm();
+                if (storageFastOrderForm.getId() == null) {
+                    String orderNo = generationOrderNo(storageFastOrderForm.getLegalEntityId(), 3, OrderStatusEnum.CC.getCode());
+                    storageFastOrderForm.setOrderNo(orderNo);
+                }
+
+                storageFastOrderForm.setMainOrderNo(mainOrderNo);
+                if (CollectionUtils.isNotEmpty(storageFastOrderForm.getInGoodsFormList())) {
+                    for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getInGoodsFormList()) {
+                        addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
+                        addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
+                    }
+                }
+                if (CollectionUtils.isNotEmpty(storageFastOrderForm.getOutGoodsFormList())) {
+                    for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getOutGoodsFormList()) {
+                        addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
+                        addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
+                    }
+                }
+                if (CollectionUtils.isNotEmpty(storageFastOrderForm.getFastGoodsFormList())) {
+                    for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getFastGoodsFormList()) {
+                        addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
+                        addWarehouseGoodsForm.setFilePath(StringUtils.getFileStr(addWarehouseGoodsForm.getTakeFiles()));
+                    }
+                }
+
+                Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
+                        : ProcessStatusEnum.DRAFT.getCode();
+                storageFastOrderForm.setProcessStatus(processStatus);
+                String subOrderNo = this.storageClient.createFastOrder(storageFastOrderForm).getData();
+                storageFastOrderForm.setOrderNo(subOrderNo);
+
+                if (storageFastOrderForm.getIsWarehouse().equals(1)) {
+                    this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.CC,
+                            form, storageFastOrderForm.getId(), OrderStatusEnum.getFastStorageOrderProcess());
+                }
+
+            }
+        }
+
+        //纯报关和出口报关并且订单状态为驳回(C_1_1)或为空或为暂存待补全的待接单
+        if (selectedServer.contains(OrderStatusEnum.CKBG.getCode())) {
+            InputOrderCustomsForm orderCustomsForm = form.getOrderCustomsForm();
+            //生成报关订单号
+            if (CollectionUtil.isNotEmpty(orderCustomsForm.getSubOrders())) {
+                for (InputSubOrderCustomsForm subOrder : orderCustomsForm.getSubOrders()) {
+                    String orderNo = generationOrderNo(orderCustomsForm.getLegalEntityId(), orderCustomsForm.getGoodsType(), OrderStatusEnum.CBG.getCode());
+                    subOrder.setOrderNo(orderNo);
+                }
+            }
+
+            //如果没有生成子订单则不调用
+            if (orderCustomsForm.getSubOrders() != null) {
+
+                if (oldMainOrderNo != null) {
+                    orderCustomsForm.setOldMainOrderNo(oldMainOrderNo);
+                }
+
+                orderCustomsForm.setMainOrderNo(mainOrderNo);
+                if (OrderStatusEnum.CBG.getCode().equals(classCode)) {
+                    orderCustomsForm.setClassCode(OrderStatusEnum.CBG.getCode());
+                } else {
+                    orderCustomsForm.setClassCode(OrderStatusEnum.CKBG.getCode());
+                }
+                orderCustomsForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
+                orderCustomsForm.setMainOrderStatus(inputMainOrderForm.getNextStatus());
+                customsClient.createOrderCustoms(orderCustomsForm);
+
+            }
+        }
+
     }
 
 

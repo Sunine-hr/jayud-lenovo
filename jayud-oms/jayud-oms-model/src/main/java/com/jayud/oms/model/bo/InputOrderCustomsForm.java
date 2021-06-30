@@ -182,4 +182,16 @@ public class InputOrderCustomsForm {
             subOrderCustomsForm.checkSubOrderCustoms();
         }
     }
+
+    public void handleAttachmentInfo() {
+        //附件处理
+        this.setCntrPic(StringUtils.getFileStr(this.getCntrPics()));
+        this.setCntrPicName(StringUtils.getFileNameStr(this.getCntrPics()));
+        this.setEncodePic(StringUtils.getFileStr(this.getEncodePics()));
+        this.setEncodePicName(StringUtils.getFileNameStr(this.getEncodePics()));
+        this.setAirTransportPic(StringUtils.getFileStr(this.getAirTransportPics()));
+        this.setAirTransPicName(StringUtils.getFileNameStr(this.getAirTransportPics()));
+        this.setSeaTransportPic(StringUtils.getFileStr(this.getAirTransportPics()));
+        this.setSeaTransPicName(StringUtils.getFileNameStr(this.getAirTransportPics()));
+    }
 }

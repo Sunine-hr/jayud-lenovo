@@ -238,8 +238,6 @@ public interface OmsClient {
                                             @RequestParam("legalIds") List<Long> legalIds,
                                             @RequestParam("orderNos") List<String> orderNos);
 
-                                            @RequestParam("orderNos")List<String> orderNos);
-
     /**
      * 根据字典类型下拉选项字典
      */

@@ -116,6 +116,10 @@ ADD COLUMN `sailing_time` datetime NULL COMMENT '开船时间' AFTER `additional
 ALTER TABLE `sea_replenishment`
 ADD COLUMN `ordering_information` varchar(50) NULL COMMENT '订柜信息' AFTER `sailing_time`;
 
-alter table `order_address` MODIFY column `address` varcher(1000)
-alter table `goods` MODIFY column name varcher(3000)
-alter table `goods` MODIFY column label varcher(3000)
+
+ALTER TABLE `goods`
+MODIFY COLUMN `name` varchar(3000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL ;
+ALTER TABLE `goods`
+MODIFY COLUMN `label` varchar(3000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL ;
+ALTER TABLE `order_address`
+MODIFY COLUMN `address` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL ;

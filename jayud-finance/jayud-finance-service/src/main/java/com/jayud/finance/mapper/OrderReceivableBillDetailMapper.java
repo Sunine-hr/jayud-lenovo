@@ -10,10 +10,11 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author chuanmei
@@ -24,30 +25,35 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
 
     /**
      * 应收对账单分页查询
+     *
      * @param page
      * @param form
      * @param data
      * @return
      */
-    IPage<OrderPaymentBillDetailVO> findReceiveBillDetailByPage(Page page, @Param("form") QueryPaymentBillDetailForm form, @Param("data")List<String> data);
+    IPage<OrderPaymentBillDetailVO> findReceiveBillDetailByPage(Page page, @Param("form") QueryPaymentBillDetailForm form, @Param("data") List<String> data);
 
     /**
      * 导出应收对账单分页查询
+     *
      * @param form
      * @return
      */
-    List<OrderPaymentBillDetailVO> findReceiveBillDetailByPage(@Param("form") QueryPaymentBillDetailForm form, @Param("data")List<String> data);
+    List<OrderPaymentBillDetailVO> findReceiveBillDetailByPage(@Param("form") QueryPaymentBillDetailForm form, @Param("data") List<String> data);
 
     /**
      * 应收对账单分页查询
+     *
      * @param page
      * @param form
      * @return
      */
-    IPage<PaymentNotPaidBillVO> findEditSBillByPage(Page page, @Param("form") QueryEditBillForm form);
+    IPage<PaymentNotPaidBillVO> findEditSBillByPage(Page page, @Param("form") QueryEditBillForm form,
+                                                    @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
 
     /**
      * 预览账单表头
+     *
      * @param billNo
      * @return
      */
@@ -55,6 +61,7 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
 
     /**
      * 预览账单分页查询
+     *
      * @param billNo
      * @return
      */
@@ -62,6 +69,7 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
 
     /**
      * 查询账单明细
+     *
      * @param billNo
      * @return
      */
@@ -69,6 +77,7 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
 
     /**
      * 对账单详情的全局数据部分
+     *
      * @param billNo
      * @return
      */
@@ -76,14 +85,16 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
 
     /**
      * 应收对账单分页查询
+     *
      * @param page
      * @param form
      * @return
      */
-    IPage<PaymentNotPaidBillVO> findSBillAuditByPage(Page page,@Param("form") QueryFBillAuditForm form);
+    IPage<PaymentNotPaidBillVO> findSBillAuditByPage(Page page, @Param("form") QueryFBillAuditForm form);
 
     /**
      * 导出应收对账单分页查询
+     *
      * @param form
      * @return
      */
@@ -91,6 +102,7 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
 
     /**
      * 开票审核列表
+     *
      * @param billNo
      * @return
      */
@@ -98,6 +110,7 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
 
     /**
      * 获取推送金蝶的应收数据
+     *
      * @param billNo
      * @return
      */
@@ -105,14 +118,16 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
 
     /**
      * 获取推送金蝶的应收详情数据
+     *
      * @param billNo
      * @param orderNo
      * @return
      */
-    List<APARDetailForm> findReceivableHeaderDetail(@Param("billNo") String billNo,@Param("orderNo") String orderNo);
+    List<APARDetailForm> findReceivableHeaderDetail(@Param("billNo") String billNo, @Param("orderNo") String orderNo);
 
     /**
      * 应收:开票和付款申请/开票和付款核销/核销界面展示的金额
+     *
      * @param billNo
      * @return
      */
@@ -120,6 +135,7 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
 
     /**
      * 当前订单是否已经存在当前法人主体，结算单位，订单类型中,若存在则不做数量统计
+     *
      * @param legalName
      * @param unitAccount
      * @param subType
@@ -127,14 +143,15 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
      * @return
      */
     List<OrderReceivableBillDetail> getNowSOrderExist(@Param("legalName") String legalName, @Param("unitAccount") String unitAccount,
-                                                     @Param("subType") String subType,@Param("orderNo") String orderNo);
+                                                      @Param("subType") String subType, @Param("orderNo") String orderNo);
 
 
     /**
      * TODO 根据法人id和结算code
      * 当前订单是否已经存在当前法人主体，结算单位，订单类型中,若存在则不做数量统计
+     *
      * @return
      */
     List<OrderReceivableBillDetail> getNowSOrderExistByLegalId(@Param("legalId") Long legalId, @Param("unitCode") String unitCode,
-                                                      @Param("subType") String subType,@Param("orderNo") String orderNo);
+                                                               @Param("subType") String subType, @Param("orderNo") String orderNo);
 }

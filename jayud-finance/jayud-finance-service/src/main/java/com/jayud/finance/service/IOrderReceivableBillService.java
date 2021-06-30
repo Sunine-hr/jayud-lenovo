@@ -203,4 +203,12 @@ public interface IOrderReceivableBillService extends IService<OrderReceivableBil
      * @param billId
      */
     public void statisticsBill(Long billId);
+
+    /**
+     * 拼接动态sql
+     *
+     * @param map
+     * @return
+     */
+    public Map<String, Object> dynamicSQLFindReceiveBillByPageParam(Map<String, Object> map);
 }

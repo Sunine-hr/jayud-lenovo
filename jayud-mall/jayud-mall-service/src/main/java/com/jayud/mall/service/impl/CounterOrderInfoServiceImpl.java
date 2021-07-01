@@ -11,17 +11,16 @@ import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.BatchCounterOrderInfoForm;
 import com.jayud.mall.model.po.BillOrderRelevance;
 import com.jayud.mall.model.po.CounterOrderInfo;
+import com.jayud.mall.model.po.LogisticsTrack;
 import com.jayud.mall.model.po.OrderInfo;
 import com.jayud.mall.model.vo.*;
-import com.jayud.mall.service.IBillOrderRelevanceService;
-import com.jayud.mall.service.ICounterOrderInfoService;
-import com.jayud.mall.service.IOceanBillService;
-import com.jayud.mall.service.IOrderInfoService;
+import com.jayud.mall.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -59,6 +58,8 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
     IBillOrderRelevanceService billOrderRelevanceService;
     @Autowired
     IOrderInfoService orderInfoService;
+    @Autowired
+    ILogisticsTrackService logisticsTrackService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -164,10 +165,29 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
             if(CollUtil.isNotEmpty(orderInfoList)){
                 orderInfoList.forEach(orderInfo -> {
                     // 将订单状态 从 订单确认 改为 转运中
-                    orderInfo.setAfterStatusCode(OrderEnum.AFTER_TRANSIT.getCode());
+                    orderInfo.setAfterStatusCode(OrderEnum.AFTER_TRANSIT.getCode());//AFTER_TRANSIT("31", "转运中"),
                     orderInfo.setAfterStatusName(OrderEnum.AFTER_TRANSIT.getName());
+
+                    orderInfo.setFrontStatusCode(OrderEnum.FRONT_TRANSIT.getCode());//FRONT_TRANSIT("30", "转运中"),
+                    orderInfo.setFrontStatusName(OrderEnum.FRONT_TRANSIT.getName());
+
                 });
+
                 orderInfoService.saveOrUpdateBatch(orderInfoList);
+
+                //转运中，加物流轨迹
+                for(int k=0; k<orderInfoList.size(); k++){
+                    OrderInfo orderInfo = orderInfoList.get(k);
+                    LogisticsTrack logisticsTrack = new LogisticsTrack();
+                    logisticsTrack.setOrderId(orderInfo.getId().toString());
+                    logisticsTrack.setStatus(1);
+                    logisticsTrack.setStatusName("1");
+                    logisticsTrack.setDescription("转运中");
+                    logisticsTrack.setCreateTime(LocalDateTime.now());
+                    logisticsTrackService.saveOrUpdate(logisticsTrack);
+
+                }
+
             }
         }
     }

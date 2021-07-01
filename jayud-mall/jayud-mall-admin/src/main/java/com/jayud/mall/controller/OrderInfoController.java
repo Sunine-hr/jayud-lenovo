@@ -399,7 +399,7 @@ public class OrderInfoController {
         return CommonResult.success(orderInfoVO);
     }
 
-    // 后台-订单确认
+    // 后台-订单签收
     @ApiOperation(value = "后台-订单签收")
     @ApiOperationSupport(order = 35)
     @PostMapping("/afterSigned")

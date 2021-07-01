@@ -3398,6 +3398,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfo.setFrontStatusCode(OrderEnum.FRONT_SIGNED.getCode());
         orderInfo.setFrontStatusName(OrderEnum.FRONT_SIGNED.getName());
         this.saveOrUpdate(orderInfo);
+
+        //订单签收，加物流轨迹
+        LogisticsTrack logisticsTrack = new LogisticsTrack();
+        logisticsTrack.setOrderId(orderInfo.getId().toString());
+        logisticsTrack.setStatus(1);
+        logisticsTrack.setStatusName("1");
+        logisticsTrack.setDescription("订单签收");
+        logisticsTrack.setCreateTime(LocalDateTime.now());
+        logisticsTrackService.saveOrUpdate(logisticsTrack);
+
+
         OrderInfoVO convert = ConvertUtil.convert(orderInfo, OrderInfoVO.class);
         return convert;
     }

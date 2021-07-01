@@ -23,6 +23,8 @@ public class OrderInfoQueryForm {
     @ApiModelProperty(value = "订单号")
     private String orderNo;
 
+    @ApiModelProperty(value = "过滤的订单状态")
+    private List<String> filterAfterStatusCodes;
 
 
 }

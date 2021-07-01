@@ -3,6 +3,7 @@ package com.jayud.mall.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.enums.OrderEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.mall.mapper.*;
@@ -87,6 +88,14 @@ public class CounterListInfoServiceImpl extends ServiceImpl<CounterListInfoMappe
         if(CollUtil.isNotEmpty(filterOrderIds)){
             form.setFilterOrderIds(filterOrderIds);
         }
+
+        //3.过滤的订单状态
+        List<String> filterAfterStatusCodes = new ArrayList<>();
+        filterAfterStatusCodes.add(OrderEnum.AFTER_DRAFT.getCode());//AFTER_DRAFT("0", "草稿"),
+        filterAfterStatusCodes.add(OrderEnum.AFTER_CANCEL.getCode());//AFTER_CANCEL("-1", "已取消"),
+        filterAfterStatusCodes.add(OrderEnum.AFTER_IMPORT.getCode());//AFTER_IMPORT("-2", "旧系统导入"),
+        form.setFilterAfterStatusCodes(filterAfterStatusCodes);
+
         List<OrderInfoVO> orderInfoList = counterListInfoMapper.findUnselectedOrderInfo(form);
         for(int i=0; i<orderInfoList.size(); i++){
             OrderInfoVO orderInfoVO = orderInfoList.get(i);

@@ -81,6 +81,13 @@
         <if test="form.orderNo != null and form.orderNo != ''">
             and t.order_no like concat('%',#{form.orderNo},'%')
         </if>
+        <if test="form.filterAfterStatusCodes != null and form.filterAfterStatusCodes.size > 0">
+            and t.after_status_code not in
+            <foreach collection="form.filterAfterStatusCodes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
     </select>
 
     <select id="findSelectedOrderInfo" parameterType="com.jayud.mall.model.bo.OrderInfoQueryForm" resultType="com.jayud.mall.model.vo.OrderInfoVO">

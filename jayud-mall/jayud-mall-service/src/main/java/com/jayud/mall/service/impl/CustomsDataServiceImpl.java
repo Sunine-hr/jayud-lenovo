@@ -188,6 +188,8 @@ public class CustomsDataServiceImpl extends ServiceImpl<CustomsDataMapper, Custo
                 if(CollUtil.isNotEmpty(templateUrls)){
                     String json = JSONUtil.toJsonStr(templateUrls);
                     customsBaseFileForm.setTemplateUrl(json);//模版文件地址
+                }else{
+                    customsBaseFileForm.setTemplateUrl(null);//模版文件地址
                 }
             });
             List<CustomsBaseFile> customsBaseFiles = ConvertUtil.convertList(customsBaseFileList, CustomsBaseFile.class);

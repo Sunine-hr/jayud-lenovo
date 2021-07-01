@@ -49,4 +49,10 @@ public interface IQuotationTemplateService extends IService<QuotationTemplate> {
      * @return
      */
     CommonResult<QuotationTemplateVO> lookQuotationTemplate(Long id);
+
+    /**
+     * 验证权限-登录用户是否有权限编辑
+     * @param id
+     */
+    void verifyPermissions(Long id);
 }

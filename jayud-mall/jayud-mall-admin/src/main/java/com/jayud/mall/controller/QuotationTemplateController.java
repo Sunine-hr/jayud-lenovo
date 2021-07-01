@@ -68,5 +68,13 @@ public class QuotationTemplateController {
         return quotationTemplateService.lookQuotationTemplate(id);
     }
 
+    @ApiOperation(value = "验证权限-登录用户是否有权限编辑报价模板")
+    @PostMapping(value = "verifyPermissions")
+    @ApiOperationSupport(order = 5)
+    public CommonResult verifyPermissions(@Valid @RequestBody QuotationTemplateParaForm form){
+        Long id = form.getId();
+        quotationTemplateService.verifyPermissions(id);
+        return CommonResult.success("验证通过");
+    }
 
 }

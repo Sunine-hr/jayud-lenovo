@@ -2,6 +2,7 @@ package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -388,6 +389,21 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             quotationTemplateVO.setQidarr(qList);
         }
 
+        //权限用户
+        String permissionUsers = quotationTemplateVO.getPermissionUsers();
+        if(StrUtil.isNotEmpty(permissionUsers)){
+            String[] strArr = permissionUsers.split(",");
+            List<String> strList = Arrays.asList(strArr);
+            List<Long> permissionUsersArr = new ArrayList<>();
+            for (int i=0; i<strList.size(); i++){
+                String userId = strList.get(i);
+                permissionUsersArr.add(Long.valueOf(userId));
+            }
+            quotationTemplateVO.setPermissionUsersArr(permissionUsersArr);
+
+        }
+
+
         //报价对应应收费用明细list
         QueryWrapper<TemplateCopeReceivable> query1 = new QueryWrapper<>();
         query1.eq("qie", qie);
@@ -404,6 +420,24 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
         List<TemplateFileVO> templateFileVOList = templateFileMapper.findTemplateFileByQie(qie);
         quotationTemplateVO.setTemplateFileVOList(templateFileVOList);
         return CommonResult.success(quotationTemplateVO);
+    }
+
+    @Override
+    public void verifyPermissions(Long id) {
+        AuthUser user = baseService.getUser();
+        if(ObjectUtil.isEmpty(user)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录");
+        }
+        QuotationTemplateVO quotationTemplateVO = quotationTemplateMapper.lookQuotationTemplate(id);
+        if(ObjectUtil.isEmpty(quotationTemplateVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "报价模板不存在");
+        }
+        Long userId = user.getId();
+        Long quotationTemplateId = quotationTemplateVO.getId();
+        QuotationTemplateVO vo = quotationTemplateMapper.verifyPermissions(userId, quotationTemplateId);
+        if(ObjectUtil.isEmpty(vo)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "当前用户不能修改报价模板");
+        }
     }
 
 }

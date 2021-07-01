@@ -43,4 +43,12 @@ public interface QuotationTemplateMapper extends BaseMapper<QuotationTemplate> {
      * @return
      */
     QuotationTemplateVO lookQuotationTemplateById(@Param("id") Long id);
+
+    /**
+     * 验证用户id，是否可以修改报价模板
+     * @param userId    用户id
+     * @param quotationTemplateId   报价id
+     * @return
+     */
+    QuotationTemplateVO verifyPermissions(@Param("userId") Long userId, @Param("quotationTemplateId") Long quotationTemplateId);
 }

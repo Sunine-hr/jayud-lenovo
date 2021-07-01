@@ -1592,19 +1592,20 @@ public class ExternalApiController {
         Map<String, String> tmp = new HashMap<>();
         tmp.put("财务审核", "financialCheck");
         tmp.put("总经办审核", "managerCheck");
-        tmp.put("派车", "T_1");
-        tmp.put("提货", "T_4");
-        tmp.put("过磅", "T_5");
-        tmp.put("驳回", "T_3_1");
-        tmp.put("通关", "T_8");
-        tmp.put("派送", "T_13");
-        tmp.put("签收", "T_14");
+//        Map<String,String> supplierUser=new HashMap<>();
+//        supplierUser.put("派车", "T_1");
+//        supplierUser.put("提货", "T_4");
+//        supplierUser.put("过磅", "T_5");
+//        supplierUser.put("驳回", "T_3_1");
+//        supplierUser.put("通关", "T_8");
+//        supplierUser.put("派送", "T_13");
+//        supplierUser.put("签收", "T_14");
 
         List<Map<String, Object>> result = new ArrayList<>();
 
 //        ApiResult<List<Long>> legalEntityByLegalName = this.oauthClient.getLegalIdBySystemName(UserOperator.getToken());
 //        List<Long> legalIds = legalEntityByLegalName.getData();
-        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.SUPPLIER_TYPE.getCode()).getData();
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), null).getData();
         //中港待处理节点
         Map<String, Integer> tmsPendingNum = null;
         if (UserTypeEnum.SUPPLIER_TYPE.getCode().equals(dataControl.getAccountType())) {
@@ -1620,7 +1621,7 @@ public class ExternalApiController {
             } else {
                 String status = tmp.get(title);
                 if (status != null) {
-                    num = this.supplierInfoService.getNumByStatus(status, null);
+                    num = this.supplierInfoService.getNumByStatus(status, dataControl.getCompanyIds());
                 }
             }
             map.put("menusName", title);
@@ -1716,9 +1717,9 @@ public class ExternalApiController {
 
     @ApiOperation(value = "获取公司名称下拉列表")
     @RequestMapping(value = "/api/getCustomerInfo")
-    ApiResult getCustomerInfo(){
+    ApiResult getCustomerInfo() {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status",1);
+        queryWrapper.eq("status", 1);
         return ApiResult.ok(customerInfoService.list(queryWrapper));
     }
 }

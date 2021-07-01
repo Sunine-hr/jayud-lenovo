@@ -1,6 +1,7 @@
 package com.jayud.oms.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.utils.FileView;
 import com.jayud.oms.model.enums.AuditStatusEnum;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
@@ -115,6 +116,15 @@ public class SupplierInfoVO {
     @ApiModelProperty(value = "是否高级认证")
     private Boolean isAdvancedCertification;
 
+    @ApiModelProperty(value = "文件路径(多个逗号隔开)")
+    private String filePath;
+
+    @ApiModelProperty(value = "文件名称(多个逗号隔开)")
+    private String fileName;
+
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViews = new ArrayList<>();
+
 
     /**
      * 组装服务类型id集合
@@ -147,5 +157,10 @@ public class SupplierInfoVO {
             this.isEdit = false;
         }
         this.auditStatus = auditStatus;
+    }
+
+    public void assembleAccessories(Object url) {
+        if (url == null) return;
+        this.fileViews = com.jayud.common.utils.StringUtils.getFileViews(this.filePath, this.fileName, url.toString());
     }
 }

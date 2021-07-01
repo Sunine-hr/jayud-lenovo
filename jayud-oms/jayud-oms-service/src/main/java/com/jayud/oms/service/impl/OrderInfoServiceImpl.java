@@ -596,12 +596,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     @Transactional
     public void addOrderModule(InputOrderForm form) {
-        //保存主订单
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
-
-        //查询主单信息
-        OrderInfo orderInfo = this.getById(inputMainOrderForm.getOrderId());
-        this.updateById(new OrderInfo().setId(orderInfo.getId()).setIsDataAll(inputMainOrderForm.getIsDataAll()).setSelectedServer(orderInfo.getSelectedServer() + "," + inputMainOrderForm.getSelectedServer()));
 
         String oldMainOrderNo = inputMainOrderForm.getOrderNo() != null ? inputMainOrderForm.getOrderNo() : null;
 
@@ -628,6 +623,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderTransportForm.setHkLegalName(null);
                 orderTransportForm.setHkUnitCode(null);
                 orderTransportForm.setIsHkClear(null);
+            } else {
+                //选择香港清关配套中港服务,状态默认
+                orderTransportForm.setSubTmsStatus(OrderStatusEnum.TMS_T_0.getCode());
             }
             orderTransportForm.setMainOrderNo(mainOrderNo);
             orderTransportForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
@@ -646,6 +644,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
             //特殊处理(添加判断是否货物编辑,但是我只是修改状态)
             orderTransportForm.setIsGoodsEdit(true);
+            //
             tmsClient.createOrderTransport(orderTransportForm).getData();
 
         }
@@ -927,6 +926,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
             }
         }
+        //查询主单信息
+        OrderInfo orderInfo = this.getById(inputMainOrderForm.getOrderId());
+        this.updateById(new OrderInfo().setId(orderInfo.getId()).setIsDataAll(inputMainOrderForm.getIsDataAll()).setSelectedServer(orderInfo.getSelectedServer() + "," + inputMainOrderForm.getSelectedServer()));
+
 
     }
 

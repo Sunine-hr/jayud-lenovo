@@ -10,6 +10,7 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.config.ImportExcelUtil;
 import com.jayud.oms.config.LoadExcelUtil;
+import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.mapper.SupplierInfoMapper;
 import com.jayud.oms.model.bo.AddSupplierInfoForm;
@@ -55,12 +56,12 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     private IProductClassifyService productClassifyService;
     @Autowired
     private IAuditInfoService auditInfoService;
-
     @Autowired
     private OauthClient oauthClient;
-
     @Autowired
     private ISupplierRelaLegalService supplierRelaLegalServic;
+    @Autowired
+    private FileClient fileClient;
 
     /**
      * 列表分页查询
@@ -76,11 +77,14 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
+        Object url = fileClient.getBaseUrl().getData();
+
         IPage<SupplierInfoVO> iPage = this.baseMapper.findSupplierInfoByPage(page, form, legalIds);
         for (SupplierInfoVO record : iPage.getRecords()) {
             if (StringUtils.isEmpty(record.getProductClassify())) {
                 continue;
             }
+            record.assembleAccessories(url);
             String[] tmps = record.getProductClassify().split(",");
             List<Long> ids = new ArrayList<>();
             for (String tmp : tmps) {
@@ -122,6 +126,9 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         SupplierInfo supplierInfo = ConvertUtil.convert(form, SupplierInfo.class);
         supplierInfo.setProductClassifyIds(sb.substring(0, sb.length() - 1));
 
+        supplierInfo.setFilePath(com.jayud.common.utils.StringUtils.getFileStr(form.getFileViews()))
+                .setFileName(com.jayud.common.utils.StringUtils.getFileNameStr(form.getFileViews()));
+
         boolean isTrue;
         if (Objects.isNull(supplierInfo.getId())) {
             supplierInfo.setCreateTime(LocalDateTime.now())
@@ -159,10 +166,13 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         page.addOrder(OrderItem.desc("s.id"));
         form.setAuditTableDesc(AuditTypeDescEnum.ONE.getTable());
         IPage<SupplierInfoVO> iPage = this.baseMapper.findAuditSupplierInfoByPage(page, form);
+
+        Object url = fileClient.getBaseUrl().getData();
         for (SupplierInfoVO record : iPage.getRecords()) {
             if (StringUtils.isEmpty(record.getProductClassify())) {
                 continue;
             }
+            record.assembleAccessories(url);
             String[] tmps = record.getProductClassify().split(",");
             List<Long> ids = new ArrayList<>();
             for (String tmp : tmps) {

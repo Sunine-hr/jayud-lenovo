@@ -110,7 +110,8 @@
         ci.national_credit nationalCredit,
         ci.customs_credit customsCredit,
         ci.customs_credit_rating customsCreditRating,
-        ci.is_advanced_certification isAdvancedCertification
+        ci.is_advanced_certification isAdvancedCertification,
+        ci.file_path,ci.file_name
         FROM
         customer_info ci
         LEFT JOIN department d
@@ -369,7 +370,8 @@
         by ci.id) legalEntityIdStr,
         ci.national_credit nationalCredit,
         ci.customs_credit customsCredit,
-        ci.customs_credit_rating customsCreditRating
+        ci.customs_credit_rating customsCreditRating,
+        ci.file_path,ci.file_name
         FROM
         `customer_info` ci
         LEFT JOIN department d

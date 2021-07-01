@@ -13,6 +13,7 @@ import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.enums.AuditStatusEnum;
@@ -67,6 +68,8 @@ public class CustomerInfoController {
     private ICustomerRelaLegalService customerRelaLegalService;
     @Autowired
     private IBusinessDevEvaluationService businessDevEvaluationService;
+    @Autowired
+    private FileClient fileClient;
 
     @ApiOperation(value = "查询客户列表")
     @PostMapping(value = "/findCustomerInfoByPage")
@@ -102,7 +105,10 @@ public class CustomerInfoController {
         if (StringUtil.isNullOrEmpty(id)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        return CommonResult.success(customerInfoService.getCustomerInfoById(Long.valueOf(id)));
+        CustomerInfoVO customerInfo = customerInfoService.getCustomerInfoById(Long.valueOf(id));
+        Object url = fileClient.getBaseUrl().getData();
+        customerInfo.assembleAccessories(url);
+        return CommonResult.success(customerInfo);
     }
 
     @ApiOperation(value = "新增编辑客户")

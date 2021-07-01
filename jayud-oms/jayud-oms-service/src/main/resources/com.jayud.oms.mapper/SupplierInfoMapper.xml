@@ -123,7 +123,8 @@
         by s.id) legalEntityIdStr,
         s.national_credit nationalCredit,
         s.customs_credit customsCredit,
-        s.customs_credit_rating customsCreditRating
+        s.customs_credit_rating customsCreditRating,
+        s.file_path,s.file_name
         from
         supplier_info s
         LEFT JOIN `supplier_rela_legal` srl ON s.`id` = srl.`supplier_info_id`

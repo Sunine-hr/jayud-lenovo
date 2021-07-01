@@ -1,11 +1,13 @@
 package com.jayud.oms.model.bo;
 
 import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -83,12 +85,15 @@ public class AddSupplierInfoForm {
     @ApiModelProperty(value = "是否高级认证")
     private Boolean isAdvancedCertification;
 
-    public void checkAddr(){
-        if (this.nationalCredit==null) {
-            throw new JayudBizException(400,"请输入国家企业信用信息公示系统查询结果");
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViews = new ArrayList<>();
+
+    public void checkAddr() {
+        if (this.nationalCredit == null) {
+            throw new JayudBizException(400, "请输入国家企业信用信息公示系统查询结果");
         }
-        if (this.customsCredit==null) {
-            throw new JayudBizException(400,"请输入中国海关企业进出口信用公示平台查询结果");
+        if (this.customsCredit == null) {
+            throw new JayudBizException(400, "请输入中国海关企业进出口信用公示平台查询结果");
         }
 //        if (this.isAdvancedCertification == null) {
 //            throw new JayudBizException(400, "高级认证不能为空");

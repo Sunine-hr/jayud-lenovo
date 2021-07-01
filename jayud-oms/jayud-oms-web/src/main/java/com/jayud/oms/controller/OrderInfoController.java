@@ -600,6 +600,8 @@ public class OrderInfoController {
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
         inputMainOrderForm.checkCreateOrder();
         this.checkSubmitCreateOrder(form);
+        //特殊处理选择服务
+        inputMainOrderForm.specialTreatmentSelectedServer();
 
         inputMainOrderForm.setCmd("submit");
         //追加订单模块节点

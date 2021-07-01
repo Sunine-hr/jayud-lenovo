@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @ApiModel(value = "订单对应箱号信息VO")
@@ -174,5 +175,9 @@ public class OrderCaseVO {
 
     @ApiModelProperty(value = "订单类型(1普通运单 2留仓运单)")
     private Integer orderType;
+
+    //订单箱号对应商品信息
+    @ApiModelProperty(value = "订单箱号对应商品信息 list")
+    private List<OrderCaseShopVO> orderCaseShopList;
 
 }

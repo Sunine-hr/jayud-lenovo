@@ -361,4 +361,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param list
      */
     void importExcelByOrderCase(List<OrderCaseVO> list);
+
+    /**
+     * 查询订单商品装箱信息list
+     * @param orderId
+     * @return
+     */
+    List<OrderCaseVO> findOrderCaseByOrderId(Long orderId);
 }

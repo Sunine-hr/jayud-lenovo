@@ -3452,6 +3452,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     }
 
+    @Override
+    public List<OrderCaseVO> findOrderCaseByOrderId(Long orderId) {
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(orderId);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单不存在");
+        }
+        List<OrderCaseVO> orderCaseList = orderCaseMapper.findOrderCaseByOrderId(orderId);
+        if(ObjectUtil.isEmpty(orderCaseList)){
+            orderCaseList.forEach(orderCaseVO -> {
+                Long caseId = orderCaseVO.getId();
+                List<OrderCaseShopVO> orderCaseShopList = orderCaseShopMapper.findOrderCaseShopByCaseId(caseId);
+                orderCaseVO.setOrderCaseShopList(orderCaseShopList);
+            });
+        }
+        return orderCaseList;
+    }
+
 
     /**
      * 组装数据-构造订单箱号，构造订单商品

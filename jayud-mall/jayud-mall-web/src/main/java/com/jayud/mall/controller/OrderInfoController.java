@@ -668,11 +668,20 @@ public class OrderInfoController {
     @ApiOperation(value = "查询-订单计费重确认状态")
     @PostMapping("/findOrderIsConfirmBilling")
     @ApiOperationSupport(order = 19)
-    public CommonResult<IsConfirmBillingVO> findOrderIsConfirmBilling(@RequestBody OrderInfoParaForm form){
+    public CommonResult<IsConfirmBillingVO> findOrderIsConfirmBilling(@Valid @RequestBody OrderInfoParaForm form){
         Long orderId = form.getId();
         IsConfirmBillingVO isConfirmBillingVO = orderInfoService.findOrderIsConfirmBilling(orderId);
         return CommonResult.success(isConfirmBillingVO);
     }
 
+    //查询订单商品装箱信息list
+    @ApiOperation(value = "查询订单商品装箱信息list")
+    @PostMapping("/findOrderCaseByOrderId")
+    @ApiOperationSupport(order = 20)
+    public CommonResult<List<OrderCaseVO>> findOrderCaseByOrderId(@Valid @RequestBody OrderInfoParaForm form){
+        Long orderId = form.getId();
+        List<OrderCaseVO> orderCaseList = orderInfoService.findOrderCaseByOrderId(orderId);
+        return CommonResult.success(orderCaseList);
+    }
 
 }

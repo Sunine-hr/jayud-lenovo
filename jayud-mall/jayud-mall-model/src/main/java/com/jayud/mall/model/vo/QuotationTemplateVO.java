@@ -194,6 +194,14 @@ public class QuotationTemplateVO {
     @ApiModelProperty(value = "预计到达时间(后缀时分秒)")
     private String estimatedTimeCalcHms;
 
+
+    @ApiModelProperty(value = "权限用户id(system_user id,逗号分隔)")
+    private String permissionUsers;
+
+    @ApiModelProperty(value = "权限用户id arr数组")
+    private List<Long> permissionUsersArr;
+
+
     /*报价服务组:service_group*/
     @ApiModelProperty(value = "服务名称service_group.code_name", position = 30)
     @JSONField(ordinal = 30)

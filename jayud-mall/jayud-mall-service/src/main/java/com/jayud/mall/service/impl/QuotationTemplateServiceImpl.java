@@ -234,6 +234,21 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             }
             quotationTemplate.setQid(qid.toString());
         }
+        //权限用户id arr数组
+        List<Long> permissionUsersArr = form.getPermissionUsersArr();
+        if(CollUtil.isNotEmpty(permissionUsersArr)){
+            StringBuffer permissionUsers = new StringBuffer();
+            for (int i=0; i<permissionUsersArr.size(); i++){
+                Long userId = permissionUsersArr.get(i);
+                if(i==0){
+                    permissionUsers.append(userId);
+                }else{
+                    permissionUsers.append(",").append(userId);
+                }
+            }
+            quotationTemplate.setPermissionUsers(permissionUsers.toString());
+        }
+
 
         this.saveOrUpdate(quotationTemplate);
         //报价模板Id

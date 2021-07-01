@@ -221,6 +221,12 @@ public class QuotationTemplateForm {
     @ApiModelProperty(value = "预计到达时间(后缀时分秒)")
     private String estimatedTimeCalcHms;
 
+    @ApiModelProperty(value = "权限用户id(system_user id,逗号分隔)")
+    private String permissionUsers;
+
+    @ApiModelProperty(value = "权限用户id arr数组")
+    private List<Long> permissionUsersArr;
+
     /*应收费用明细List*/
     @ApiModelProperty(value = "应收费用明细List", position = 30)
     @JSONField(ordinal = 30)

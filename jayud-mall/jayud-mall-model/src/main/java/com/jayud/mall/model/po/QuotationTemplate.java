@@ -211,6 +211,8 @@ public class QuotationTemplate extends Model<QuotationTemplate> {
     @ApiModelProperty(value = "预计到达时间(后缀时分秒)")
     private String estimatedTimeCalcHms;
 
+    @ApiModelProperty(value = "权限用户id(system_user id,逗号分隔)")
+    private String permissionUsers;
 
     @Override
     protected Serializable pkVal() {

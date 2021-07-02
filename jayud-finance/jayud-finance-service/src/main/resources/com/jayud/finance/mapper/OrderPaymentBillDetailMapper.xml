@@ -772,6 +772,9 @@
         <if test="form.applyStatus != null and form.applyStatus !=''">
             and opbd.apply_status = #{form.applyStatus}
         </if>
+        <if test="form.makeUser != null and form.makeUser !=''">
+            and opbd.make_user like concat ('%',#{form.makeUser},'%')
+        </if>
 
         <if test="data != null and data.size>0">
             and opb.legal_name in

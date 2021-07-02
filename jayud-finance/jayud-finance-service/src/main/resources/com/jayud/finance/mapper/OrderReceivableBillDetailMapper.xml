@@ -108,6 +108,9 @@
         <if test="form.applyStatus != null and form.applyStatus !=''">
             and orbd.apply_status = #{form.applyStatus}
         </if>
+        <if test="form.makeUser != null and form.makeUser !=''">
+            and orbd.make_user like concat ('%',#{form.makeUser},'%')
+        </if>
 
         <if test="data != null and data.size>0">
             and orb.legal_name in
@@ -282,11 +285,9 @@
                 </otherwise>
             </choose>
         </if>
-
 --         LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
 --         LEFT JOIN order_send_cars osc ON ot.order_no = osc.order_no
 --         left join vehicle_info vi on vi.id = osc.vehicle_id
---
 --         left join order_customs oc on oc.order_no = orc.order_no
 --         left join air_order ao on ao.order_no = orc.order_no
 --         left join sea_order so on so.order_no = orc.order_no

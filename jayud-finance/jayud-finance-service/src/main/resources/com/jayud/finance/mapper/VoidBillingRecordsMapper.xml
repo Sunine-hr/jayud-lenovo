@@ -104,6 +104,10 @@
                 </foreach>
             </if>
 
+            <if test="form.makeUser != null and form.makeUser !=''">
+                and opbd.make_user like concat ('%',#{form.makeUser},'%')
+            </if>
+
         </where>
         group by bill_no
     </select>

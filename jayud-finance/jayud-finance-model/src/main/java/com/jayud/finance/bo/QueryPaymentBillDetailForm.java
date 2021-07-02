@@ -55,6 +55,10 @@ public class QueryPaymentBillDetailForm extends BasePageForm {
     @NotEmpty(message = "legalName is required")
     private String loginUserName;
 
+
+    @ApiModelProperty(value = "制单人", required = true)
+    private String makeUser;
+
     public void setCmd(String cmd) {
         this.cmd = cmd;
         this.subType = cmd.split("_")[0];

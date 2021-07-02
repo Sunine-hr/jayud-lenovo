@@ -311,7 +311,11 @@ public class OrderTransportVO {
             if (this.orderNo.equals(orderTakeAdr.getOrderNo())) {
                 if (1 == orderTakeAdr.getOprType()) {
                     //提货时间
-                    takeTimeStr.append(orderTakeAdr.getTakeTimeStr()).append(",");
+//                    if (this.takeTimeStr==null) {
+//                        takeTimeStr.append(orderTakeAdr.getTakeTimeStr()).append(",");
+//
+//                    }
+
 
                     takeFiles1.addAll(StringUtils.getFileViews(orderTakeAdr.getFile(), orderTakeAdr.getFileName(), prePath));
                     //商品名称
@@ -341,7 +345,7 @@ public class OrderTransportVO {
         this.totalWeight = totalWeight;
         this.entireAddress1 = pickUpAddr.toString();
         this.entireAddress2 = deliveryAddr.toString();
-        this.takeTimeStr = takeTimeStr.toString();
+//        this.takeTimeStr = takeTimeStr.toString();
     }
 
     public void assemblyCostStatus(Map<String, Object> costStatus) {

@@ -94,4 +94,7 @@ public class InputOrderTransportForm {
 
     @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
     private Integer createUserType;
+
+    @ApiModelProperty(value = "中港状态")
+    private String status;
 }

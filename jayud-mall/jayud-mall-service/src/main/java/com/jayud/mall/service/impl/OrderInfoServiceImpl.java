@@ -3470,6 +3470,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return orderCaseList;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void calcOrderCopeReceivableUpdataStatus(Long orderId) {
+        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfo(orderId);
+        if(ObjectUtil.isEmpty(orderInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "订单不存在");
+        }
+        OrderInfo orderInfo = ConvertUtil.convert(orderInfoVO, OrderInfo.class);
+        orderInfo.setFrontStatusCode(OrderEnum.FRONT_TRIALCOST.getCode());
+        orderInfo.setFrontStatusName(OrderEnum.FRONT_TRIALCOST.getName());
+        orderInfo.setAfterStatusCode(OrderEnum.AFTER_TRIALCOST.getCode());
+        orderInfo.setAfterStatusName(OrderEnum.AFTER_TRIALCOST.getName());
+        this.saveOrUpdate(orderInfo);
+    }
+
 
     /**
      * 组装数据-构造订单箱号，构造订单商品

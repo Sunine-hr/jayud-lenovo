@@ -22,6 +22,8 @@ public enum OrderEnum {
     FRONT_FINISH("50", "已完成"),
     FRONT_CANCEL("-1", "已取消"),
     FRONT_IMPORT("-2", "旧系统导入"),
+    FRONT_TRIALCOST("-3", "试算费用"),
+
 
     //订单后端主状态
     AFTER_DRAFT("0", "草稿"),
@@ -34,6 +36,7 @@ public enum OrderEnum {
     AFTER_FINISH("50", "已完成"),
     AFTER_CANCEL("-1", "已取消"),
     AFTER_IMPORT("-2", "旧系统导入"),
+    AFTER_TRIALCOST("-3", "试算费用"),
 
     //订单小状态，内部状态，非流程状态
     IS_AUDIT_ORDER("is_audit_order", "是否审核单据(1已审单 2未审单)"),

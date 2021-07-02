@@ -368,4 +368,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     List<OrderCaseVO> findOrderCaseByOrderId(Long orderId);
+
+    /**
+     * 试算费用，修改订单状态
+     * @param orderId
+     */
+    void calcOrderCopeReceivableUpdataStatus(Long orderId);
 }

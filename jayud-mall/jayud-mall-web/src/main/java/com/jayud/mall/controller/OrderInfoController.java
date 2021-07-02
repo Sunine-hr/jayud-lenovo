@@ -628,7 +628,9 @@ public class OrderInfoController {
         CommonResult<OrderInfoVO> orderInfoVOCommonResult = orderInfoService.temporaryStorageOrderInfo(form);
         OrderInfoVO orderInfoVO = orderInfoVOCommonResult.getData();
         Long orderId = orderInfoVO.getId();
-        //2.在查询费用
+        //2.改状态为试算费用
+        orderInfoService.calcOrderCopeReceivableUpdataStatus(orderId);
+        //3.在查询费用
         return orderInfoService.lookOrderInfoCost(orderId);
     }
 

@@ -1,10 +1,12 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.bo.BillClearanceInfoQueryForm;
 import com.jayud.mall.model.po.BillClearanceInfo;
 import com.jayud.mall.model.vo.BillClearanceInfoVO;
 import com.jayud.mall.model.vo.ClearanceInfoCaseExcelVO;
 import com.jayud.mall.model.vo.ClearanceInfoCaseVO;
+import com.jayud.mall.model.vo.OrderInfoVO;
 
 import java.util.List;
 
@@ -38,4 +40,11 @@ public interface IBillClearanceInfoService extends IService<BillClearanceInfo> {
      * @return
      */
     List<ClearanceInfoCaseExcelVO> findClearanceInfoCaseBybid(Long b_id);
+
+    /**
+     * 清关清单-查询关联的订单箱子以及订单清关文件(清关分为：买单 / 独立)
+     * @param form
+     * @return
+     */
+    List<OrderInfoVO> findSelectOrderInfoByClearance(BillClearanceInfoQueryForm form);
 }

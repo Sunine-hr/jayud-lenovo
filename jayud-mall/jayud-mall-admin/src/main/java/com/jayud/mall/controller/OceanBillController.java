@@ -641,5 +641,14 @@ public class OceanBillController {
         return CommonResult.success(orderInfoList);
     }
 
+    //清关清单-查询关联的订单箱子以及订单清关文件(清关分为：买单 / 独立)
+    @ApiOperation(value = "清关清单-查询关联的订单箱子以及订单清关文件(清关分为：买单 / 独立)")
+    @ApiOperationSupport(order = 51)
+    @PostMapping(value = "/findSelectOrderInfoByClearance")
+    public CommonResult<List<OrderInfoVO>> findSelectOrderInfoByClearance(@Valid @RequestBody BillClearanceInfoQueryForm form){
+        List<OrderInfoVO> orderInfoVOList = billClearanceInfoService.findSelectOrderInfoByClearance(form);
+        return CommonResult.success(orderInfoVOList);
+    }
+
 
 }

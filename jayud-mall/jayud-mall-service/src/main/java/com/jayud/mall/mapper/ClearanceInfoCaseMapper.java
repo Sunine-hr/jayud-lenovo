@@ -5,6 +5,7 @@ import com.jayud.mall.model.bo.BillClearanceInfoQueryForm;
 import com.jayud.mall.model.po.ClearanceInfoCase;
 import com.jayud.mall.model.vo.BillCaseVO;
 import com.jayud.mall.model.vo.ClearanceInfoCaseVO;
+import com.jayud.mall.model.vo.OrderInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -43,4 +44,20 @@ public interface ClearanceInfoCaseMapper extends BaseMapper<ClearanceInfoCase> {
      * @return
      */
     List<BillCaseVO> findSelectedBillCaseByClearance(@Param("form") BillClearanceInfoQueryForm form);
+
+    /**
+     * 买单清关
+     * 根据 清关清单 关联的 订单箱子，查询订单list
+     * @param billClearanceInfoId
+     * @return
+     */
+    List<OrderInfoVO> findOrderInfoByBillBillClearanceInfoId(@Param("billClearanceInfoId") Long billClearanceInfoId);
+
+    /**
+     * 独立清关
+     * 根据 清关清单 所属的 提单，查询订单list
+     * @param billId
+     * @return
+     */
+    List<OrderInfoVO> findOrderInfoByBillId(@Param("billId") Integer billId);
 }

@@ -10,7 +10,7 @@ import java.util.List;
 public class BillClearanceInfoQueryForm {
 
     @ApiModelProperty(value = "(提单)清关信息表id(bill_clearance_info id)")
-    @NotNull(message = "(提单)报关信息表id不能为空")
+    @NotNull(message = "(提单)清关信息表id不能为空")
     private Long id;
 
     @ApiModelProperty(value = "提单id(ocean_bill id)")

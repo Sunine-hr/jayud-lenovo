@@ -1,2 +1,0 @@
-ALTER TABLE `order_send_cars` MODIFY COLUMN `vehicle_size` varchar(5) NULL DEFAULT NULL COMMENT '车型(3T 5t 8T 10T)' AFTER `vehicle_type`;
-ALTER TABLE `order_transport` MODIFY COLUMN `vehicle_size` varchar(5) NULL DEFAULT NULL COMMENT '车型(3T 5t 8T 10T 12T 20GP 40GP 45GP)' AFTER `vehicle_type`;

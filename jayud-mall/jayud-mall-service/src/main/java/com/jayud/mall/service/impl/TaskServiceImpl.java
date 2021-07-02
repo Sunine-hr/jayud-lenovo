@@ -149,5 +149,17 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task> implements IT
         return CommonResult.success(taskVO);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void delTask(Long id) {
+        TaskVO taskVO = taskMapper.findTaskById(id);
+        if(ObjectUtil.isNull(taskVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "任务不存在");
+        }
+        Long taskId = taskVO.getId();
+        //删除
+        this.removeById(taskId);
+    }
+
 
 }

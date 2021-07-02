@@ -28,6 +28,10 @@
         <if test="form.taskName != null and form.taskName != ''">
             and t.task_name=#{form.taskName}
         </if>
+        <if test="form.types != null">
+            and t.types = #{form.types}
+        </if>
+
 
     </select>
 

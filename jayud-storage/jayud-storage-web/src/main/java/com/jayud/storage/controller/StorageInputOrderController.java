@@ -207,6 +207,9 @@ public class StorageInputOrderController {
 
             record.assemblyDepartment(departmentResult);
 
+            record.assembleCostStatus(record.getOrderNo(),
+                    this.omsClient.getCostStatus(null, Collections.singletonList(record.getOrderNo())).getData());
+
             //拼装结算单位
             record.assemblyUnitCodeInfo(unitCodeInfo);
 

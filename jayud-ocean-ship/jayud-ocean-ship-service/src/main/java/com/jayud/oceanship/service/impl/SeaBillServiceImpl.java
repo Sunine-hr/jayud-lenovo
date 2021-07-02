@@ -226,4 +226,11 @@ public class SeaBillServiceImpl extends ServiceImpl<SeaBillMapper, SeaBill> impl
         return remove;
     }
 
+    @Override
+    public List<SeaBill> getSeaBillBySeaOrderId(Long orderId) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("sea_order_id",orderId);
+        return this.list(queryWrapper);
+    }
+
 }

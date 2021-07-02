@@ -84,15 +84,25 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             trailerOrder.setCreateTime(now);
             trailerOrder.setCreateUser(UserOperator.getToken());
             trailerOrder.setStatus(OrderStatusEnum.TT_0.getCode());
-            this.save(trailerOrder);
-
+            boolean save = this.save(trailerOrder);
+            if(save){
+                log.warn(trailerOrder.getMainOrderNo()+"拖车单添加成功");
+            }else{
+                log.error(trailerOrder.getMainOrderNo()+"拖车单添加失败");
+            }
         } else {
             //修改拖车单
             trailerOrder.setId(addTrailerOrderFrom.getId());
             trailerOrder.setStatus(OrderStatusEnum.TT_0.getCode());
             trailerOrder.setUpdateTime(now);
             trailerOrder.setUpdateUser(UserOperator.getToken());
-            this.saveOrUpdate(trailerOrder);
+            boolean update = this.saveOrUpdate(trailerOrder);
+            boolean save = this.save(trailerOrder);
+            if(update){
+                log.warn(trailerOrder.getMainOrderNo()+"拖车单添加成功");
+            }else{
+                log.error(trailerOrder.getMainOrderNo()+"拖车单添加失败");
+            }
         }
         omsClient.deleteGoodsByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()), BusinessTypeEnum.TC.getCode());
         omsClient.deleteOrderAddressByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()), BusinessTypeEnum.TC.getCode());
@@ -154,7 +164,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     }
 
     /**
-     * 根据主订单号获取海运订单详情
+     * 根据主订单号获取拖车订单详情
      *
      * @param orderNo
      * @return

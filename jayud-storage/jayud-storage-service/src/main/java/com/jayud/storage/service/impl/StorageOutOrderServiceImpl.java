@@ -79,13 +79,23 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
             storageOutOrder.setCreateTime(LocalDateTime.now());
             storageOutOrder.setCreateUser(UserOperator.getToken());
             storageOutOrder.setStatus("CCE_0");
-            this.save(storageOutOrder);
+            boolean save = this.save(storageOutOrder);
+            if(save){
+                log.warn(storageOutOrder.getMainOrderNo()+"仓储出库单添加成功");
+            }else{
+                log.error(storageOutOrder.getMainOrderNo()+"仓储出库单添加失败");
+            }
         }else{
             storageOutOrder.setId(storageOutOrderForm.getId());
             storageOutOrder.setCreateTime(LocalDateTime.now());
             storageOutOrder.setCreateUser(UserOperator.getToken());
             storageOutOrder.setStatus("CCE_0");
-            this.updateById(storageOutOrder);
+            boolean update = this.updateById(storageOutOrder);
+            if(update){
+                log.warn(storageOutOrder.getMainOrderNo()+"仓储出库单添加成功");
+            }else{
+                log.error(storageOutOrder.getMainOrderNo()+"仓储出库单添加失败");
+            }
         }
         String orderNo = storageOutOrder.getOrderNo();
         if(CollectionUtils.isNotEmpty(storageOutOrderForm.getGoodsFormList())){

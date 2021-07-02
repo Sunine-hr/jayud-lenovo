@@ -1,19 +1,17 @@
-package com.jayud.oceanship.service.impl;
+package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.UserOperator;
-import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.oceanship.bo.AddSeaPortForm;
-import com.jayud.oceanship.bo.QuerySeaPortForm;
-import com.jayud.oceanship.po.SeaPort;
-import com.jayud.oceanship.mapper.SeaPortMapper;
-import com.jayud.oceanship.service.ISeaPortService;
+import com.jayud.oms.model.bo.AddSeaPortForm;
+import com.jayud.oms.model.bo.QuerySeaPortForm;
+import com.jayud.oms.model.po.SeaPort;
+import com.jayud.oms.mapper.SeaPortMapper;
+import com.jayud.oms.model.vo.SeaPortVO;
+import com.jayud.oms.service.ISeaPortService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.oceanship.vo.SeaOrderFormVO;
-import com.jayud.oceanship.vo.SeaPortVO;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,33 +24,10 @@ import java.util.List;
  * </p>
  *
  * @author LLJ
- * @since 2021-01-29
+ * @since 2021-06-30
  */
 @Service
 public class SeaPortServiceImpl extends ServiceImpl<SeaPortMapper, SeaPort> implements ISeaPortService {
-
-    @Override
-    public List<InitComboxStrVO> initSeaPort() {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("status",1);
-        List<SeaPort> list = baseMapper.selectList(queryWrapper);
-        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
-        for (SeaPort seaPort : list) {
-            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
-            initComboxStrVO.setCode(seaPort.getCode());
-            initComboxStrVO.setName(seaPort.getName());
-            initComboxStrVOS.add(initComboxStrVO);
-        }
-        return initComboxStrVOS;
-    }
-
-    @Override
-    public String getPortName(String portDepartureCode) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("code",portDepartureCode);
-        SeaPort one = this.getOne(queryWrapper);
-        return one.getName();
-    }
 
     @Override
     public IPage<SeaPortVO> findByPage(QuerySeaPortForm form) {
@@ -112,7 +87,6 @@ public class SeaPortServiceImpl extends ServiceImpl<SeaPortMapper, SeaPort> impl
                 }
             }
         }
-
         List<SeaPort> seaPorts = ConvertUtil.convertList(list, SeaPort.class);
         for (SeaPort seaPort : seaPorts) {
             seaPort.setStatus(1);
@@ -121,4 +95,5 @@ public class SeaPortServiceImpl extends ServiceImpl<SeaPortMapper, SeaPort> impl
         }
         return this.saveOrUpdateBatch(seaPorts);
     }
+
 }

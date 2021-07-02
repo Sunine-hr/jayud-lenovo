@@ -234,4 +234,11 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
         }
         return list;
     }
+
+    @Override
+    public String getCostNameByCostCode(String costCode) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id_code",costCode);
+        return this.getOne(queryWrapper).getName();
+    }
 }

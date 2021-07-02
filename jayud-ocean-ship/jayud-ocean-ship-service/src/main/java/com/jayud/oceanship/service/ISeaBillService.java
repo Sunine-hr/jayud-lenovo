@@ -33,4 +33,6 @@ public interface ISeaBillService extends IService<SeaBill> {
     List<SeaBillVO> getSeaBillByCondition(QueryBulkCargolForm form);
 
     boolean deleteSeaBill(Long id);
+
+    List<SeaBill> getSeaBillBySeaOrderId(Long orderId);
 }

@@ -1721,6 +1721,19 @@ public class ExternalApiController {
         queryWrapper.eq("status",1);
         return ApiResult.ok(customerInfoService.list(queryWrapper));
     }
+
+    @ApiOperation(value = "获取该订单所有应收费用")
+    @RequestMapping(value = "/api/getOrderReceivableCostByMainOrderNo")
+    ApiResult<List<OrderReceivableCostVO>> getOrderReceivableCostByMainOrderNo(@RequestParam("mainOrderNo") String mainOrderNo){
+        List<OrderReceivableCost> byMainOrderNo = receivableCostService.getOrderReceivableCostByMainOrderNo(mainOrderNo);
+        List<OrderReceivableCostVO> orderReceivableCostVOS = new ArrayList<>();
+        for (OrderReceivableCost orderReceivableCost : byMainOrderNo) {
+            OrderReceivableCostVO convert = ConvertUtil.convert(orderReceivableCost, OrderReceivableCostVO.class);
+            convert.setCostName(costInfoService.getCostNameByCostCode(convert.getCostCode()));
+            orderReceivableCostVOS.add(convert);
+        }
+        return ApiResult.ok(orderReceivableCostVOS);
+    }
 }
 
 

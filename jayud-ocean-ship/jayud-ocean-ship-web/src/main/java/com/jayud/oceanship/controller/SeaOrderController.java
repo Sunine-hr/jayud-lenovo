@@ -11,6 +11,7 @@ import com.alibaba.excel.enums.WriteDirectionEnum;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -51,7 +52,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.jayud.common.enums.OrderStatusEnum.SEA_S_2;
@@ -97,6 +101,9 @@ public class SeaOrderController {
 
     @Autowired
     private ISeaBookshipService seaBookshipService;
+
+    @Autowired
+    private ISeaBillService seaBillService;
 
     @ApiOperation("分页查询海运订单列表")
     @PostMapping("/findByPage")
@@ -189,7 +196,7 @@ public class SeaOrderController {
             unitCodeInfo = this.omsClient.getCustomerByUnitCode(unitCodes);
         }
 
-        Map<String, Object> data = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.CCI.getSignOne()).getData();
+        Map<String, Object> data = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.HY.getSignOne()).getData();
 
         //获取发货人信息
         ApiResult<List<OrderAddressVO>> resultOne = this.omsClient.getOrderAddressByBusOrders(seaOrderIds, BusinessTypeEnum.HY.getCode());
@@ -219,6 +226,9 @@ public class SeaOrderController {
             record.assemblyDepartment(departmentResult);
 
             record.setCost(MapUtil.getBool(data, record.getOrderNo()));
+
+            record.assembleCostStatus(record.getOrderNo(),
+                    this.omsClient.getCostStatus(null, Collections.singletonList(record.getOrderNo())).getData());
 
             //拼装供应商
             record.assemblySupplierInfo(supplierInfo);
@@ -335,7 +345,7 @@ public class SeaOrderController {
             log.warn("查询订单地址信息失败 seaOrderId={}", seaOrderIds);
         }
 
-        Map<String, Object> data = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.CCI.getSignOne()).getData();
+        Map<String, Object> data = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.HY.getSignOne()).getData();
 
         //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
@@ -1028,6 +1038,130 @@ public class SeaOrderController {
             e.printStackTrace();
         }finally {
 
+        }
+    }
+
+    @Value("${address.costAddress}")
+    private String costPath;
+
+    @ApiOperation(value = "导出电商费用")
+    @GetMapping(value = "/uploadCostExcel")
+    public void uploadCostExcel(@RequestParam("id") Long id, HttpServletResponse response) {
+        SeaOrderVO seaOrderDetails = seaOrderService.getSeaOrderDetails(id);
+
+        File file = new File(costPath);
+        String name = file.getName();
+//
+        try {
+//            InputStream inputStream = new FileInputStream(file);
+//
+//            Workbook templateWorkbook = null;
+//            String fileType = name.substring(name.lastIndexOf("."));
+//            if (".xls".equals(fileType)) {
+//                templateWorkbook = new HSSFWorkbook(inputStream); // 2003-
+//            } else if (".xlsx".equals(fileType)) {
+//                templateWorkbook = new XSSFWorkbook(inputStream); // 2007+
+//            } else {
+//
+//            }
+//            //HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
+//
+//            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+//            templateWorkbook.write(outStream);
+//            ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
+//
+            String fileName = seaOrderDetails.getMainOrderNo();
+//
+//            response.setContentType("application/vnd.ms-excel");
+//            response.setCharacterEncoding("utf-8");
+//            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+//            String filename = URLEncoder.encode(fileName, "utf-8");
+//            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
+//
+//            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+//
+//            WriteSheet writeSheet = EasyExcel.writerSheet().build();
+//
+//            FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
+
+//            FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.VERTICAL).build();
+            //将指定数据填充
+//            Map<String, Object> map = new HashMap<String, Object>();
+            JSONObject map = new JSONObject();
+
+            //根据主订单号获取所有应收费用
+            List<OrderReceivableCostVO> data = omsClient.getOrderReceivableCostByMainOrderNo(seaOrderDetails.getMainOrderNo()).getData();
+//            JSONArray mainOrders = new JSONArray(JSON.toJSONString(data));
+//            System.out.println(mainOrders);
+            if(CollectionUtils.isNotEmpty(data)){
+                map.put("unitCodeName",data.get(0).getCustomerName());
+                BigDecimal totalMoney = new BigDecimal(0.00);
+                for (OrderReceivableCostVO datum : data) {
+                    if(datum.getAmount() != null){
+                        totalMoney = totalMoney.add(datum.getAmount());
+                        System.out.println(totalMoney);
+                    }
+                }
+                map.put("totalUSDMoney",totalMoney);
+                map.put("totalRMBMoney",totalMoney);
+                map.put("changeUSDMoney",totalMoney);
+                map.put("changeRMBMoney",totalMoney);
+
+
+            }
+            map.put("mainOrderNo",seaOrderDetails.getMainOrderNo());
+
+            //获取提单信息
+            List<SeaBill> seaBills = seaBillService.getSeaBillBySeaOrderId(seaOrderDetails.getOrderId());
+            if(CollectionUtils.isNotEmpty(seaBills)){
+                SeaBill seaBill = seaBills.get(0);
+                if(seaBill.getSo() != null){
+                    map.put("so",seaBill.getSo() );
+                }
+                if(seaBill.getBillNo() != null){
+                    map.put("billNo",seaBill.getBillNo() );
+                }
+
+                map.put("mb","" );
+
+                map.put("ship",seaBill.getShipName()==null?"":seaBill.getShipName()+"/"+(seaBill.getShipNumber() == null ? "" : seaBill.getShipNumber()) );
+
+                map.put("portDepartureCode",seaBill.getPortDepartureCode() == null ? "" : seaBill.getPortDepartureCode());
+                map.put("portDestinationCode",seaBill.getPortDestinationCode() == null ? "" : seaBill.getPortDestinationCode());
+                map.put("sailingTime",seaBill.getSailingTime() == null ? "":seaBill.getSailingTime().toString().replaceAll("T"," ").substring(0,10) );
+                List<SeaContainerInformationVO> list = seaContainerInformationService.getList(seaBill.getOrderNo());
+                if(CollectionUtils.isNotEmpty(list)){
+                    StringBuffer stringBuffer = new StringBuffer();
+                    for (SeaContainerInformationVO seaContainerInformationVO : list) {
+                        if(seaContainerInformationVO.getCabinetNumber() != null){
+                            stringBuffer.append(seaContainerInformationVO.getCabinetNumber()).append("/");
+                        }
+                        if(seaContainerInformationVO.getCabinetName() != null){
+                            stringBuffer.append(seaContainerInformationVO.getCabinetName()).append("  ");
+                        }
+                    }
+                    map.put("cabinet",stringBuffer.toString());
+                }
+            }
+            SeaBookship enableBySeaOrderId = seaBookshipService.getEnableBySeaOrderId(seaOrderDetails.getOrderId());
+            if(enableBySeaOrderId != null){
+                if(enableBySeaOrderId.getShipCompany() != null){
+                    map.put("shipCompany",enableBySeaOrderId.getShipCompany());
+                }
+            }
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
+            map.put("createTime",df.format(LocalDateTime.now()));
+
+            Map<String,List<OrderReceivableCostVO>> map1 = new HashMap();
+            map1.put("orderReceivableCost",data);
+//            excelWriter.fill(map, writeSheet);
+//            excelWriter.fill(new FillWrapper("orderReceivableCost", data), fillConfig ,writeSheet);
+//            excelWriter.finish();
+//            outStream.close();
+//            inputStream.close();
+            EasyExcelUtils.fillTemplate2(map,map1,costPath,"D:\\test.xlsx",null);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

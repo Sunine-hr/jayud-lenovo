@@ -314,4 +314,11 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
         });
         return map;
     }
+
+    @Override
+    public List<OrderReceivableCost> getOrderReceivableCostByMainOrderNo(String mainOrderNo) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderReceivableCost::getMainOrderNo, mainOrderNo);
+        return this.baseMapper.selectList(condition);
+    }
 }

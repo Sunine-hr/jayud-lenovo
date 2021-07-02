@@ -15,6 +15,7 @@ import com.jayud.oceanship.po.OrderFlowSheet;
 import com.jayud.oceanship.vo.GoodsVO;
 import com.jayud.oceanship.vo.InitComboxSVO;
 import com.jayud.oceanship.vo.OrderAddressVO;
+import com.jayud.oceanship.vo.OrderReceivableCostVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -249,5 +250,18 @@ public interface OmsClient {
     @RequestMapping(value = "/api/isCost")
     public ApiResult<Map<String, Object>> isCost(@RequestBody List<String> orderNos,
                                                  @RequestParam("subType") String subType);
+
+    /**
+     * 应收/应付费用状态
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostStatus")
+    public ApiResult<Map<String, Object>> getCostStatus(@RequestParam(value = "mainOrderNos", required = false) List<String> mainOrderNos,
+                                                        @RequestParam(value = "orderNos", required = false) List<String> orderNos);
+
+    @ApiOperation(value = "获取公司名称下拉列表")
+    @RequestMapping(value = "/api/getOrderReceivableCostByMainOrderNo")
+    ApiResult<List<OrderReceivableCostVO>> getOrderReceivableCostByMainOrderNo(@RequestParam("mainOrderNo") String mainOrderNo);
 
 }

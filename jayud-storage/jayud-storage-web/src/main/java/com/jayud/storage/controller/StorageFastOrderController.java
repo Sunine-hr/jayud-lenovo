@@ -177,6 +177,9 @@ public class StorageFastOrderController {
 
             record.assemblyDepartment(departmentResult);
 
+            record.assembleCostStatus(record.getOrderNo(),
+                    this.omsClient.getCostStatus(null, Collections.singletonList(record.getOrderNo())).getData());
+
             //拼装商品信息
             if(record.getIsWarehouse().equals(0)){
                 record.assemblyGoodsInfo(warehouseGoodsService.getList(record.getId(),record.getOrderNo(),3));

@@ -179,7 +179,7 @@ public enum OrderStatusEnum {
 
     CCF_0("CCF_0","待接单"),
     CCF_1("CCF_1", "快进快出接单"),
-    CCF_1_1("CCI_1_1", "入库接单驳回"),
+    CCF_1_1("CCF_1_1", "入库接单驳回"),
     CCF_2("CCF_2","入库确认"),
     CCF_3("CCF_3","入库货物确认"),
     CCF_4("CCF_4","入库完结"),

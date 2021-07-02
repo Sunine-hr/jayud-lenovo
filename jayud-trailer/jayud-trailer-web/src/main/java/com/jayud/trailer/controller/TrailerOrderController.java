@@ -11,6 +11,7 @@ import com.alibaba.excel.enums.WriteDirectionEnum;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -40,6 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,6 +54,11 @@ import javax.validation.Valid;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.jayud.common.enums.OrderStatusEnum.TT_2;
@@ -490,7 +497,7 @@ public class TrailerOrderController {
     }
 
     /**
-     * 导出补料单
+     * 导出派车单
      */
     @Value("${address.trailerAddr}")
     private String filePath;
@@ -595,5 +602,122 @@ public class TrailerOrderController {
         TrailerOrderVO trailerOrderVO = trailerOrderService.getTrailerOrderByOrderNO(trailerOrder.getId());
         return CommonResult.success(trailerOrderVO);
     }
+
+
+    @Value("${address.driverAddress}")
+    private String driverPath;
+
+    @ApiOperation(value = "下载拖车-司机资料")
+    @GetMapping(value = "/uploadTrailerExcel")
+    public void uploadTrailerExcel(@RequestParam("orderId") Long orderId, HttpServletResponse response) {
+        TrailerOrderVO trailerOrderByOrderNO = trailerOrderService.getTrailerOrderByOrderNO(orderId);
+        TrailerDispatchVO trailerDispatchVO = trailerOrderByOrderNO.getTrailerDispatchVO();
+
+        File file = new File(driverPath);
+        String name = file.getName();
+
+        try {
+            InputStream inputStream = new FileInputStream(file);
+//            Workbook templateWorkbook = WorkbookFactory.create(inputStream);
+//            Workbook templateWorkbook = new XSSFWorkbook(inputStream);
+
+            Workbook templateWorkbook = null;
+            String fileType = name.substring(name.lastIndexOf("."));
+            if (".xls".equals(fileType)) {
+                templateWorkbook = new HSSFWorkbook(inputStream); // 2003-
+            } else if (".xlsx".equals(fileType)) {
+                templateWorkbook = new XSSFWorkbook(inputStream); // 2007+
+            } else {
+
+            }
+            //HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
+
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            templateWorkbook.write(outStream);
+            ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
+
+            String fileName = "拖车司机资料";
+
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+            String filename = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
+
+            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+
+            WriteSheet writeSheet = EasyExcel.writerSheet().build();
+            //将指定数据填充
+            Map<String, Object> map = new HashMap<String, Object>();
+
+            ApiResult mainOrderByOrderNos = omsClient.getMainOrderByOrderNos(Collections.singletonList(trailerOrderByOrderNO.getMainOrderNo()));
+            JSONArray mainOrders = new JSONArray(JSON.toJSONString(mainOrderByOrderNos.getData()));
+            JSONObject json = mainOrders.getJSONObject(0);
+            String customerName = json.getStr("customerName");
+            map.put("customerName",customerName);
+            if(trailerOrderByOrderNO.getSo() != null){
+                map.put("so",trailerOrderByOrderNO.getSo());
+            }
+            if(trailerOrderByOrderNO.getCabinetSizeName() != null){
+                map.put("cabinetSizeName",trailerOrderByOrderNO.getCabinetSizeName());
+            }
+            if(trailerOrderByOrderNO.getCabinetNumber() != null){
+                map.put("cabinetNumber",trailerOrderByOrderNO.getCabinetNumber());
+            }
+            if(trailerOrderByOrderNO.getPaperStripSeal() != null){
+                map.put("paperStripSeal",trailerOrderByOrderNO.getPaperStripSeal());
+            }
+            if(trailerDispatchVO.getPlateNumber() != null){
+                VehicleInfoLinkVO data = omsClient.initVehicleInfo(trailerDispatchVO.getPlateNumber()).getData();
+                trailerDispatchVO.setPlateNumberName(data.getPlateNumber());
+                for (DriverInfoVO driverInfo : data.getDriverInfos()) {
+                    if (trailerDispatchVO.getName().equals(driverInfo.getId())) {
+                        map.put("driverName",driverInfo.getName());
+                        map.put("phone",driverInfo.getPhone());
+                        map.put("idNo",driverInfo.getIdNo());
+                    }
+                }
+                map.put("plateNumberName",trailerDispatchVO.getPlateNumberName());
+            }
+            if(trailerDispatchVO.getCabinetWeight() != null){
+                map.put("cabinetWeight",trailerDispatchVO.getCabinetWeight());
+            }
+            if(trailerDispatchVO.getCabinetWeight() != null){
+                map.put("weighing",trailerDispatchVO.getWeighing());
+            }
+            List<TrailerOrderAddressVO> orderAddressForms = trailerOrderByOrderNO.getOrderAddressForms();
+            if(CollectionUtils.isNotEmpty(orderAddressForms)){
+                StringBuffer stringBuffer = new StringBuffer();
+                for (TrailerOrderAddressVO orderAddressForm : orderAddressForms) {
+                    if(orderAddressForm.getAddress() != null){
+                        stringBuffer.append(orderAddressForm.getAddress()).append("/");
+                    }
+                }
+                map.put("address",stringBuffer.toString().substring(0,stringBuffer.length()-1));
+            }
+            if(trailerDispatchVO.getCreateTime() != null){
+                DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
+                map.put("createTime",df.format(trailerDispatchVO.getCreateTime()).substring(5,8));
+            }
+            map.put("legalName",trailerOrderByOrderNO.getLegalName());
+
+            excelWriter.fill(map, writeSheet);
+
+            excelWriter.finish();
+            outStream.close();
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+//    public static void main(String[] args) {
+//        SimpleDateFormat sdf =   new SimpleDateFormat( "yyyy年MM月dd日 " );
+//        String str = sdf.format(new Date());
+//        System.out.println(str);
+//        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy年M月d日");
+//        System.out.println(df.format(LocalDateTime.now()));
+//    }
 }
 

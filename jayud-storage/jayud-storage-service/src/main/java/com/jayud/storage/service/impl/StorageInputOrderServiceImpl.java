@@ -88,13 +88,23 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
             storageInputOrder.setCreateTime(LocalDateTime.now());
             storageInputOrder.setCreateUser(UserOperator.getToken());
             storageInputOrder.setStatus("CCI_0");
-            this.save(storageInputOrder);
+            boolean save = this.save(storageInputOrder);
+            if(save){
+                log.warn(storageInputOrder.getMainOrderNo()+"仓储入库单添加成功");
+            }else{
+                log.error(storageInputOrder.getMainOrderNo()+"仓储入库单添加失败");
+            }
         }else{
             storageInputOrder.setId(storageInputOrderForm.getId());
             storageInputOrder.setCreateTime(LocalDateTime.now());
             storageInputOrder.setCreateUser(UserOperator.getToken());
             storageInputOrder.setStatus("CCI_0");
-            this.updateById(storageInputOrder);
+            boolean update = this.updateById(storageInputOrder);
+            if(update){
+                log.warn(storageInputOrder.getMainOrderNo()+"仓储入库单添加成功");
+            }else{
+                log.error(storageInputOrder.getMainOrderNo()+"仓储入库单添加失败");
+            }
         }
         String orderNo = storageInputOrder.getOrderNo();
         if(CollectionUtils.isNotEmpty(storageInputOrderForm.getGoodsFormList())){

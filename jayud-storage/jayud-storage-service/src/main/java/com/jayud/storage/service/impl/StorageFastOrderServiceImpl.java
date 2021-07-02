@@ -66,13 +66,23 @@ public class StorageFastOrderServiceImpl extends ServiceImpl<StorageFastOrderMap
             storageFastOrder.setCreateTime(LocalDateTime.now());
             storageFastOrder.setCreateUser(UserOperator.getToken());
             storageFastOrder.setStatus("CCF_0");
-            this.save(storageFastOrder);
+            boolean save = this.save(storageFastOrder);
+            if(save){
+                log.warn(storageFastOrder.getMainOrderNo()+"仓储快进快出单添加成功");
+            }else{
+                log.error(storageFastOrder.getMainOrderNo()+"仓储快进快出单添加失败");
+            }
         }else{
             storageFastOrder.setId(storageFastOrderForm.getId());
             storageFastOrder.setCreateTime(LocalDateTime.now());
             storageFastOrder.setCreateUser(UserOperator.getToken());
             storageFastOrder.setStatus("CCF_0");
-            this.updateById(storageFastOrder);
+            boolean update = this.updateById(storageFastOrder);
+            if(update){
+                log.warn(storageFastOrder.getMainOrderNo()+"仓储快进快出单添加成功");
+            }else{
+                log.error(storageFastOrder.getMainOrderNo()+"仓储快进快出单添加失败");
+            }
         }
         String orderNo = storageFastOrder.getOrderNo();
         if(storageFastOrder.getIsWarehouse().equals(0)){

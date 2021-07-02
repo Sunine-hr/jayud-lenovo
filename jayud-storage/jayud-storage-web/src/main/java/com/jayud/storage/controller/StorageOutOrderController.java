@@ -179,6 +179,9 @@ public class StorageOutOrderController {
 
             record.assemblyDepartment(departmentResult);
 
+            record.assembleCostStatus(record.getOrderNo(),
+                    this.omsClient.getCostStatus(null, Collections.singletonList(record.getOrderNo())).getData());
+
             //拼装商品信息
             record.assemblyGoodsInfo(warehouseGoodsService.getList(record.getId(),record.getOrderNo(),2));
             record.setGoodsFormList(warehouseGoodsService.getList(record.getId(),record.getOrderNo(),2));

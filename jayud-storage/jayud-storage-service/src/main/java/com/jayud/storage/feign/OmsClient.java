@@ -239,4 +239,13 @@ public interface OmsClient {
     @ApiOperation(value = "获取公司名称下拉列表")
     @RequestMapping(value = "/api/getCustomerInfo")
     ApiResult getCustomerInfo();
+
+    /**
+     * 应收/应付费用状态
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostStatus")
+    public ApiResult<Map<String, Object>> getCostStatus(@RequestParam(value = "mainOrderNos", required = false) List<String> mainOrderNos,
+                                                        @RequestParam(value = "orderNos", required = false) List<String> orderNos);
 }

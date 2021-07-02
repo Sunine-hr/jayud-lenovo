@@ -632,5 +632,14 @@ public class OceanBillController {
         return CommonResult.success("操作成功");
     }
 
+    //报关清单-查询关联的订单箱子以及订单报关文件(买单 / 独立)
+    @ApiOperation(value = "报关清单-查询关联的订单箱子以及订单报关文件(报关分为：买单 / 独立)")
+    @ApiOperationSupport(order = 50)
+    @PostMapping(value = "/findSelectOrderInfoByCustoms")
+    public CommonResult<List<OrderInfoVO>> findSelectOrderInfoByCustoms(@Valid @RequestBody BillCustomsInfoQueryForm form){
+        List<OrderInfoVO> orderInfoList = billCustomsInfoService.findSelectOrderInfoByCustoms(form);
+        return CommonResult.success(orderInfoList);
+    }
+
 
 }

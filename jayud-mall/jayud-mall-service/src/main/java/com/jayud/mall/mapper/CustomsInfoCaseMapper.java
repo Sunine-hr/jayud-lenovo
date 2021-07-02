@@ -5,6 +5,7 @@ import com.jayud.mall.model.bo.BillCustomsInfoQueryForm;
 import com.jayud.mall.model.po.CustomsInfoCase;
 import com.jayud.mall.model.vo.BillCaseVO;
 import com.jayud.mall.model.vo.CustomsInfoCaseVO;
+import com.jayud.mall.model.vo.OrderInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -43,4 +44,20 @@ public interface CustomsInfoCaseMapper extends BaseMapper<CustomsInfoCase> {
      * @return
      */
     List<BillCaseVO> findSelectedBillCaseByCustoms(@Param("form") BillCustomsInfoQueryForm form);
+
+    /**
+     * 买单报关
+     * 根据 报关清单 关联的 订单箱子，查询订单list
+     * @param billCustomsInfoId
+     * @return
+     */
+    List<OrderInfoVO> findOrderInfoByBillCustomsInfoId(@Param("billCustomsInfoId") Long billCustomsInfoId);
+
+    /**
+     * 独立报关
+     * 根据 报关清单 所属的 提单，查询订单list
+     * @param billId
+     * @return
+     */
+    List<OrderInfoVO> findOrderInfoByBillId(@Param("billId") Integer billId);
 }

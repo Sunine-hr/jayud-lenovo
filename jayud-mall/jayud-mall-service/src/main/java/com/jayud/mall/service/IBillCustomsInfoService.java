@@ -1,11 +1,9 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.bo.BillCustomsInfoQueryForm;
 import com.jayud.mall.model.po.BillCustomsInfo;
-import com.jayud.mall.model.vo.BillCustomsInfoVO;
-import com.jayud.mall.model.vo.CustomsInfoCaseExcelVO;
-import com.jayud.mall.model.vo.CustomsInfoCaseVO;
-import com.jayud.mall.model.vo.CustomsListExcelVO;
+import com.jayud.mall.model.vo.*;
 
 import java.util.List;
 
@@ -45,4 +43,10 @@ public interface IBillCustomsInfoService extends IService<BillCustomsInfo> {
      */
     CustomsListExcelVO findCustomsListExcelById(Long id);
 
+    /**
+     * 报关清单-查询关联的订单箱子以及订单报关文件(报关分为：买单 / 独立)
+     * @param form
+     * @return
+     */
+    List<OrderInfoVO> findSelectOrderInfoByCustoms(BillCustomsInfoQueryForm form);
 }

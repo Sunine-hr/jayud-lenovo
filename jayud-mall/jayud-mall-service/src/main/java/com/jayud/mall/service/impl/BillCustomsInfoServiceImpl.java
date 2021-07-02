@@ -3,11 +3,17 @@ package com.jayud.mall.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.BillCustomsInfoMapper;
+import com.jayud.mall.mapper.CustomsInfoCaseMapper;
+import com.jayud.mall.mapper.OrderCustomsFileMapper;
+import com.jayud.mall.model.bo.BillCustomsInfoQueryForm;
 import com.jayud.mall.model.po.BillCustomsInfo;
 import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.IBillCustomsInfoService;
@@ -33,6 +39,10 @@ public class BillCustomsInfoServiceImpl extends ServiceImpl<BillCustomsInfoMappe
 
     @Autowired
     BillCustomsInfoMapper billCustomsInfoMapper;
+    @Autowired
+    OrderCustomsFileMapper orderCustomsFileMapper;
+    @Autowired
+    CustomsInfoCaseMapper customsInfoCaseMapper;
 
     @Override
     public List<CustomsInfoCaseVO> findCustomsInfoCase(Long b_id) {
@@ -151,6 +161,55 @@ public class BillCustomsInfoServiceImpl extends ServiceImpl<BillCustomsInfoMappe
         customsListExcelVO.setCustomsGoodsExcelList(excelVOList);//报关商品Excel list
 
         return customsListExcelVO;
+    }
+
+    @Override
+    public List<OrderInfoVO> findSelectOrderInfoByCustoms(BillCustomsInfoQueryForm form) {
+        Long billCustomsInfoId = form.getId();//(提单)报关信息表id(bill_customs_info id)
+        BillCustomsInfoVO billCustomsInfoVO = billCustomsInfoMapper.findBillCustomsInfoById(billCustomsInfoId);
+        if(ObjectUtil.isEmpty(billCustomsInfoVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "(提单)报关信息不存在");
+        }
+        Integer billId = billCustomsInfoVO.getBillId();//提单id(ocean_bill id)
+        Integer type = billCustomsInfoVO.getType();//类型(0买单 1独立)
+        form.setBillId(billId);
+        form.setType(type);
+        List<OrderInfoVO> orderInfoVOList = new ArrayList<>();
+        if(type.equals(0)){
+            //买单报关
+            //根据 报关清单 关联的 订单箱子，查询订单list    need_declare = 0    0代表买单
+            orderInfoVOList = customsInfoCaseMapper.findOrderInfoByBillCustomsInfoId(billCustomsInfoId);
+        }else if(type.equals(1)){
+            //独立报关
+            //根据 报关清单 所属的 提单，查询订单list    need_declare = 1    1代表独立
+            orderInfoVOList = customsInfoCaseMapper.findOrderInfoByBillId(billId);
+        }
+        //订单报关文件
+        if(CollUtil.isNotEmpty(orderInfoVOList)){
+            orderInfoVOList.forEach(orderInfoVO -> {
+                Long orderId = orderInfoVO.getId();
+                List<OrderCustomsFileVO> orderCustomsFileList = orderCustomsFileMapper.findOrderCustomsFileByOrderId(orderId);
+                if(CollUtil.isNotEmpty(orderCustomsFileList)){
+                    orderCustomsFileList.forEach(orderCustomsFileVO -> {
+                        String templateUrl = orderCustomsFileVO.getTemplateUrl();
+                        if(templateUrl != null && templateUrl.length() > 0){
+                            String json = templateUrl;
+                            try {
+                                List<TemplateUrlVO> templateUrlVOS = JSON.parseObject(json, new TypeReference<List<TemplateUrlVO>>() {});
+                                orderCustomsFileVO.setTemplateUrlVOS(templateUrlVOS);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                orderCustomsFileVO.setTemplateUrlVOS(new ArrayList<>());
+                            }
+                        }else{
+                            orderCustomsFileVO.setTemplateUrlVOS(new ArrayList<>());
+                        }
+                    });
+                }
+                orderInfoVO.setOrderCustomsFileVOList(orderCustomsFileList);
+            });
+        }
+        return orderInfoVOList;
     }
 
     /**

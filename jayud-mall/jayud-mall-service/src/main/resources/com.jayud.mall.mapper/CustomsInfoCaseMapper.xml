@@ -82,4 +82,29 @@
         order by t.id desc
     </select>
 
+    <select id="findOrderInfoByBillCustomsInfoId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderInfoVO">
+        select
+        t.id,t.order_no,t.customer_id,t.offer_info_id,t.reserve_size,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,t.is_pick,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,t.amazon_reference_id,t.extension_number,t.sales_commission,t.front_status_code,t.front_status_name,t.after_status_code,t.after_status_name,t.clearing_way,t.fill_material_description,t.warehouse_no,t.internal_note
+        from order_info t
+        join order_case t1 on t1.order_id = t.id
+        join customs_info_case t2 on t2.case_id = t1.id
+        where 1=1
+        and t2.b_id = #{billCustomsInfoId}
+        and t.need_declare = 0
+        group by t.id;
+    </select>
+
+    <select id="findOrderInfoByBillId" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.OrderInfoVO">
+        select
+        t.id,t.order_no,t.customer_id,t.offer_info_id,t.reserve_size,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,t.is_pick,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,t.amazon_reference_id,t.extension_number,t.sales_commission,t.front_status_code,t.front_status_name,t.after_status_code,t.after_status_name,t.clearing_way,t.fill_material_description,t.warehouse_no,t.internal_note
+        from order_info t
+        join order_case t1 on t1.order_id = t.id
+        join counter_case_info t2 on t2.case_id = t1.id
+        where 1=1
+        and t2.bill_id = #{billId}
+        and t.need_declare = 1
+        group by t.id
+    </select>
+
+
 </mapper>

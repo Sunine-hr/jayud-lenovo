@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="CancelAfterVerification对象", description="")
+@ApiModel(value = "CancelAfterVerification对象", description = "")
 public class CancelAfterVerification extends Model<CancelAfterVerification> {
 
     private static final long serialVersionUID = 1L;
@@ -66,6 +66,8 @@ public class CancelAfterVerification extends Model<CancelAfterVerification> {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
+    @ApiModelProperty(value = "短款金额")
+    private BigDecimal shortAmount;
 
     @Override
     protected Serializable pkVal() {

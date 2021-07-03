@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.finance.vo.InputGoodsVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -240,8 +241,11 @@ public class SeaOrderTemplate {
         JSONArray jsonArray = new JSONArray(cabinetSizeNumbers);
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject json = jsonArray.getJSONObject(i);
-            cabinetSize.append(json.getStr("cabinetTypeSize")).append(",");
-            number += json.getInt("number");
+            String cabinetTypeSize = json.getStr("cabinetTypeSize");
+            if (!StringUtils.isEmpty(cabinetTypeSize)) {
+                cabinetSize.append(cabinetTypeSize).append(",");
+            }
+            number += json.getInt("number", 0);
         }
 
         this.cabinetTypeSize = cabinetSize.toString();
@@ -298,7 +302,10 @@ public class SeaOrderTemplate {
         for (InputGoodsVO goods : goodsList) {
             if (this.id.equals(goods.getBusinessId())
                     && BusinessTypeEnum.HY.getCode().equals(goods.getBusinessType())) {
-                sb.append(goods.getName());
+                if (!StringUtils.isEmpty(goods.getName())) {
+                    sb.append(goods.getName()).append(",");
+                }
+
                 totalNum += goods.getBulkCargoAmount() == null ? 0 : goods.getBulkCargoAmount();
             }
         }

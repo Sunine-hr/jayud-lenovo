@@ -23,7 +23,7 @@ public enum BillTemplateEnum {
     ZGYS_NORM("zgys-norm", TmsOrderTemplate.class, "中港", true),
     TC_NORM("tc-norm", TrailerOrderTemplate.class, "拖车", true),
     NL_NORM("nl-norm", InlandTPTemplate.class, "内陆", true),
-    HY_NORM("hy-norm", SeaOrderTemplate.class, "海运", true),
+    HY_NORM("hy-norm", SeaOrderTemplate.class, "海运", false),
 
 //    NL("nl", AirOrderTemplate.class, "内陆", true),
 //    ZGYS_ONE("zgys-one", TmsOrderTemplate.class, "中港-安克", true)

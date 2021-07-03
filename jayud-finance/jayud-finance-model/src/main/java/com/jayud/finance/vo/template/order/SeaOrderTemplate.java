@@ -240,8 +240,9 @@ public class SeaOrderTemplate {
         JSONArray jsonArray = new JSONArray(cabinetSizeNumbers);
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject json = jsonArray.getJSONObject(i);
+            if (json == null) continue;
             cabinetSize.append(json.getStr("cabinetTypeSize")).append(",");
-            number += json.getInt("number");
+            number += json.getInt("number", 0);
         }
 
         this.cabinetTypeSize = cabinetSize.toString();

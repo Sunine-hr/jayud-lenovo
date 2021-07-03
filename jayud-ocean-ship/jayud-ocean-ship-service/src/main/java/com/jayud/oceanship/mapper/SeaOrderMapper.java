@@ -49,5 +49,5 @@ public interface SeaOrderMapper extends BaseMapper<SeaOrder> {
      */
     public Integer getNumByStatus(@Param("status") String status, @Param("legalIds") List<Long> legalIds);
 
-    List<SeaOrderInfoVO> getSeaOrderInfoByMainOrderNos(List<String> mainOrderNos);
+    List<SeaOrderInfoVO> getSeaOrderInfoByMainOrderNos(@Param("mainOrderNos") List<String> mainOrderNos);
 }

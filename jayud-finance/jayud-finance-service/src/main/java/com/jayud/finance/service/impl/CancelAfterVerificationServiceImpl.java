@@ -90,7 +90,7 @@ public class CancelAfterVerificationServiceImpl extends ServiceImpl<CancelAfterV
                 exchangeRate = new BigDecimal(1);
             }
             if (exchangeRate == null) {
-                return CommonResult.error(10001, "请先配置原始货币:" + oCode + "兑换货币：CNY的汇率");
+                return CommonResult.error(10001, "请先配置当前月份原始货币:" + oCode + "兑换货币：CNY的汇率");
             }
             BigDecimal localMoney = cancelAfterVerification.getRealReceiveMoney().multiply(exchangeRate);
             cancelAfterVerification.setLocalMoney(localMoney);

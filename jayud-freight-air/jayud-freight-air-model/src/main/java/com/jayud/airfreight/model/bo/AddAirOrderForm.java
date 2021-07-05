@@ -108,4 +108,8 @@ public class AddAirOrderForm {
     @ApiModelProperty(value = "发票号(多个逗号隔开)")
     private String invoiceNo;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
+
 }

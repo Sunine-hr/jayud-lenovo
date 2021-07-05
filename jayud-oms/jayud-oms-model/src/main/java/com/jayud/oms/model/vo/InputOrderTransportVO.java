@@ -168,6 +168,9 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "指派供应车型尺寸")
     private String supplierVehicleSize;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
     public String getGoodsTypeDesc() {
         if (CommonConstant.VALUE_1.equals(this.goodsType)) {
             goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_1;

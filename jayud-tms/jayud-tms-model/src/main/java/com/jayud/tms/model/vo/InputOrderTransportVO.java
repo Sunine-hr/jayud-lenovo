@@ -156,6 +156,9 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "指派供应车型尺寸")
     private String supplierVehicleSize;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
     public String getSubTmsStatus() {
         return subTmsStatus = this.status;
     }

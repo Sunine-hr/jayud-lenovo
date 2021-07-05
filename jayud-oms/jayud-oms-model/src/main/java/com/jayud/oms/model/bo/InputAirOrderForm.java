@@ -107,6 +107,10 @@ public class InputAirOrderForm {
     @ApiModelProperty(value = "发票号(多个逗号隔开)")
     private String invoiceNo;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
+
     /**
      * 校验创建空运子订单参数
      */
@@ -131,6 +135,10 @@ public class InputAirOrderForm {
         }
         if (CollectionUtils.isEmpty(this.shippingAddress)) {
             log.warn("收货地址信息不能为空");
+            return false;
+        }
+        if (this.departmentId==null){
+            log.warn("操作部门不能为空");
             return false;
         }
         if (this.notificationAddress.size() == 0 ||

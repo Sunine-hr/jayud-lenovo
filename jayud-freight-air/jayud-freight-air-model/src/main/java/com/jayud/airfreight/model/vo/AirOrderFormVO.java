@@ -149,6 +149,9 @@ public class AirOrderFormVO {
     @ApiModelProperty(value = "分单号")
     private String subNo;
 
+    @ApiModelProperty(value = "操作部门")
+    private String departmentId;
+
     /**
      * 组装商品信息
      */

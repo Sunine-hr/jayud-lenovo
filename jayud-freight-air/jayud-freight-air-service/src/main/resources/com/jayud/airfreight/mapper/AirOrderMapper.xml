@@ -56,7 +56,8 @@
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = a.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = a.`order_no`)>0 THEN TRUE
         ELSE FALSE
-        END) cost
+        END) cost,
+        a.department_id
         FROM
         `air_order` a
         left join air_port ap on ap.`code`=a.port_departure_code
@@ -149,7 +150,8 @@
         ap1.name port_destination,
         a.create_user createUser, a.create_time createTime,
         a.order_taker, a.receiving_orders_date,
-        a.invoice_no invoiceNo
+        a.invoice_no invoiceNo,
+        a.department_id
         FROM
         `air_order` a
         left join air_port ap on ap.`code`=a.port_departure_code

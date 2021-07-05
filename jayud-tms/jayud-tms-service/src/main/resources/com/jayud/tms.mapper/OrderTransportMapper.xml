@@ -191,7 +191,8 @@
           ot.`hk_unit_code` hkUnitCode,
           ot.`is_hk_clear` isHkClear,
 		  ot.is_vehicle_weigh isVehicleWeigh,
-		  ot.supplier_vehicle_size
+		  ot.supplier_vehicle_size,
+		  ot.department_id
         FROM
           order_transport ot
           LEFT JOIN order_info oi
@@ -487,7 +488,8 @@
         os.driver_info_id driverInfoId,
         vi.plate_number plateNumber,
         ot.supplier_vehicle_size,
-        ota.take_time takeTimeStr
+        ota.take_time takeTimeStr,
+        ot.department_id
         FROM
         order_transport ot
         LEFT JOIN order_info oi

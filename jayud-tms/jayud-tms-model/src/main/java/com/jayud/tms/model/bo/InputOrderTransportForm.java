@@ -97,4 +97,7 @@ public class InputOrderTransportForm {
 
     @ApiModelProperty(value = "中港状态")
     private String status;
+
+    @ApiModelProperty(value = "操作部门id")
+    private Integer departmentId;
 }

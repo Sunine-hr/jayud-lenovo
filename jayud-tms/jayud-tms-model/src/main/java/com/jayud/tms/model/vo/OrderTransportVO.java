@@ -225,6 +225,8 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "指派供应商吨位")
     private String supplierVehicleSize;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
 
     /**
      * 组装商品信息

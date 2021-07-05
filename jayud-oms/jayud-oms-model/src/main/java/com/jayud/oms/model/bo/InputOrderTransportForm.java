@@ -104,7 +104,10 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
     private Integer createUserType;
 
-    public void cheackAddParam() {
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
+    public void checkAddParam() {
         if (StringUtil.isNullOrEmpty(this.getPortCode()) ||
                 this.getGoodsType() == null ||
                 this.getVehicleType() == null ||
@@ -117,6 +120,9 @@ public class InputOrderTransportForm {
         }
         if (this.isVehicleWeigh==null){
             throw new JayudBizException(400,"请选择是否车辆过磅");
+        }
+        if (this.departmentId==null){
+            throw new JayudBizException(400,"请选择操作部门");
         }
     }
 }

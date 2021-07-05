@@ -1285,6 +1285,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //获取主订单信息
         InputMainOrderVO inputMainOrderVO = getMainOrderById(form.getMainOrderId());
         inputOrderVO.setOrderForm(inputMainOrderVO);
+
         //获取纯报关和出口报关信息
         if (OrderStatusEnum.CBG.getCode().equals(form.getClassCode()) ||
                 inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {

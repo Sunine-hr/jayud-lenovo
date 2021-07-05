@@ -3,11 +3,9 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
-import com.jayud.common.aop.annotations.RepeatSubmitLimit;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.*;
@@ -21,7 +19,6 @@ import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.OrderAttachment;
 import com.jayud.oms.model.po.OrderInfo;
-import com.jayud.oms.model.po.ProductClassify;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.model.vo.template.order.*;
 import com.jayud.oms.service.IAuditInfoService;
@@ -631,14 +628,13 @@ public class OrderInfoController {
                 || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.ZGYSDD.getCode())) {
             //中港订单参数校验
             InputOrderTransportForm inputOrderTransportForm = form.getOrderTransportForm();
-            inputOrderTransportForm.cheackAddParam();
+            inputOrderTransportForm.checkAddParam();
 
             //中港订单提货收货信息参数校验
             List<InputOrderTakeAdrForm> takeAdrForms1 = inputOrderTransportForm.getTakeAdrForms1();//必填
             List<InputOrderTakeAdrForm> takeAdrForms2 = inputOrderTransportForm.getTakeAdrForms2();
             //提货地址必填
             if (takeAdrForms1 == null || takeAdrForms1.size() == 0) {
-//                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                 throw new JayudBizException(ResultEnum.PARAM_ERROR);
             }
             List<InputOrderTakeAdrForm> takeAdrForms = new ArrayList<>();
@@ -648,7 +644,6 @@ public class OrderInfoController {
                 if (inputOrderTakeAdr.getAddress() == null
                         || inputOrderTakeAdr.getTakeTimeStr() == null || inputOrderTakeAdr.getPieceAmount() == null
                         || inputOrderTakeAdr.getWeight() == null || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getGoodsDesc())) {
-//                        return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                     throw new JayudBizException(ResultEnum.PARAM_ERROR);
                 }
             }
@@ -658,7 +653,6 @@ public class OrderInfoController {
                         inputOrderTransportForm.getHkLegalId() == null ||
                         StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkUnitCode()) ||
                         StringUtil.isNullOrEmpty(inputOrderTransportForm.getIsHkClear())) {
-//                        return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                     throw new JayudBizException(ResultEnum.PARAM_ERROR);
                 }
             }
@@ -667,7 +661,6 @@ public class OrderInfoController {
         if (OrderStatusEnum.KY.getCode().equals(inputMainOrderForm.getClassCode())) {
             InputAirOrderForm airOrderForm = form.getAirOrderForm();
             if (!airOrderForm.checkCreateOrder()) {
-//                    return CommonResult.error(ResultEnum.PARAM_ERROR);
                 throw new JayudBizException(ResultEnum.PARAM_ERROR);
             }
         }
@@ -675,7 +668,6 @@ public class OrderInfoController {
         if (OrderStatusEnum.FWD.getCode().equals(inputMainOrderForm.getClassCode())) {
             InputOrderServiceForm orderServiceForm = form.getOrderServiceForm();
             if (orderServiceForm.getType() == null) {
-//                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
                 throw new JayudBizException(ResultEnum.PARAM_ERROR);
             }
         }
@@ -684,7 +676,6 @@ public class OrderInfoController {
             InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
             String s = seaOrderForm.checkCreateOrder();
             if (s != null) {
-//                    return CommonResult.error(1, s);
                 throw new JayudBizException(1, s);
             }
         }
@@ -695,7 +686,6 @@ public class OrderInfoController {
             List<InputTrailerOrderFrom> trailerOrderFrom = form.getTrailerOrderFrom();
             for (InputTrailerOrderFrom inputTrailerOrderFrom : trailerOrderFrom) {
                 if (!inputTrailerOrderFrom.checkCreateOrder()) {
-//                        return CommonResult.error(ResultEnum.PARAM_ERROR);
                     throw new JayudBizException(ResultEnum.PARAM_ERROR);
                 }
             }

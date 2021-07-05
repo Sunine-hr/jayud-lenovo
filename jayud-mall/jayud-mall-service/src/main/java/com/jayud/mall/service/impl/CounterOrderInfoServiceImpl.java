@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -74,7 +75,7 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
         if (CollUtil.isEmpty(orderIds)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "没有选择订单，不能操作");
         }
-        Integer orderType = form.getOrderType();
+        Integer orderType = form.getOrderType();//订单类型(1普通运单 2留仓运单)
         List<CounterOrderInfo> counterOrderInfoList = new ArrayList<>();
         for (int i=0; i<orderIds.size(); i++){
             Long orderId = orderIds.get(i);
@@ -97,6 +98,9 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
             //1.批量保存-柜子清单下的订单信息(1清单 -> N运单)
             this.saveOrUpdateBatch(counterOrderInfoList);
         }
+
+        //orderType 订单类型(1普通运单 2留仓运单)  留仓里增加的运单，默认不通知
+        Map<Long, Long> idsMap = orderIds.stream().collect(Collectors.toMap(Long::longValue, Long::longValue));// list -> map
 
 
         //2.保存-提单关联订单(任务通知表)
@@ -127,7 +131,19 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
                     Long db_orderId = billOrderRelevance.getOrderId();
                     if(new_billId.equals(db_billId) && new_orderId.equals(db_orderId) ){
                         billOrder.setId(billOrderRelevance.getId());//主键id 更新数据id
-                        billOrder.setIsInform(billOrderRelevance.getIsInform());
+
+                        //orderType 订单类型(1普通运单 2留仓运单)  留仓里增加的运单，默认不通知
+                        if(orderType.equals(2)){
+                            long l = new_orderId.longValue();
+                            Long aLong = idsMap.get(l);//订单存在， 并且值设置为 不通知
+                            if(ObjectUtil.isNotEmpty(aLong)){
+                                billOrder.setIsInform("2");//是否通知运单物流轨迹(1通知 2不通知)
+                            }else{
+                                billOrder.setIsInform(billOrderRelevance.getIsInform());
+                            }
+                        }else{
+                            billOrder.setIsInform(billOrderRelevance.getIsInform());
+                        }
                         billOrder.setCreateTime(billOrderRelevance.getCreateTime());
                         //不删除的数据
                         notDelIds.add(billOrderRelevance.getId());
@@ -156,6 +172,7 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
             //保存的数据
             billOrderRelevanceService.saveOrUpdateBatch(billOrderRelevances);
         }
+
 
         //3.保存-修改提单关联运单的订单状态 改为 转运中
         if(CollUtil.isNotEmpty(orderIds)){

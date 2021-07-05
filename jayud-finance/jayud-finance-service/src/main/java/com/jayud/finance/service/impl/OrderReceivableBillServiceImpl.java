@@ -800,8 +800,13 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         this.updateById(orderReceivableBill);
     }
 
-
-    private Map<String, Object> dynamicSQLFindReceiveBillByPageParam(Map<String, Object> map) {
+    /**
+     * 拼接动态sql
+     * @param map
+     * @return
+     */
+    @Override
+    public Map<String, Object> dynamicSQLFindReceiveBillByPageParam(Map<String, Object> map) {
         String cmd = MapUtil.getStr(map, "cmd");
         Map<String, Object> sqlParam = new HashMap<>();
         String subOrderSign = SubOrderSignEnum.getSignOne2SignTwo(cmd);

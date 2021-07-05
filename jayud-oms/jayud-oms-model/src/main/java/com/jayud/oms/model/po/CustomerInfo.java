@@ -109,6 +109,12 @@ public class CustomerInfo extends Model<CustomerInfo> {
     @ApiModelProperty(value = "是否高级认证")
     private Boolean isAdvancedCertification;
 
+    @ApiModelProperty(value = "文件路径(多个逗号隔开)")
+    private String filePath;
+
+    @ApiModelProperty(value = "文件名称(多个逗号隔开)")
+    private String fileName;
+
 
     @Override
     protected Serializable pkVal() {

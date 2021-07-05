@@ -1,6 +1,7 @@
 package com.jayud.oms.model.bo;
 
 import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -109,6 +110,9 @@ public class AddCustomerInfoForm {
 
     @ApiModelProperty(value = "是否高级认证")
     private Boolean isAdvancedCertification;
+
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViews = new ArrayList<>();
 
 
     public void checkAddr() {

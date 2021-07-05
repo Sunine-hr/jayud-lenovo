@@ -598,7 +598,14 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         return baseMapper.findSaveConfirmData(costIds);
     }
 
-    private Map<String, Object> dynamicSQLFindReceiveBillByPageParam(Map<String, Object> param) {
+
+    /**
+     * 拼接sql
+     * @param param
+     * @return
+     */
+    @Override
+    public Map<String, Object> dynamicSQLFindReceiveBillByPageParam(Map<String, Object> param) {
         String cmd = MapUtil.getStr(param, "cmd");
         Map<String, Object> sqlParam = new HashMap<>();
         String subOrderSign = SubOrderSignEnum.getSignOne2SignTwo(cmd);

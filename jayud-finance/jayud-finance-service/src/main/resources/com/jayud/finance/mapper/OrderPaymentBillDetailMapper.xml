@@ -130,17 +130,6 @@
         pb.`name` bizCodeDesc,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         si.supplier_ch_name supplierChName,
---         (SELECT GROUP_CONCAT(ota.goods_desc) FROM order_take_adr ota WHERE ota.order_no = ot.order_no AND ota.opr_type =
---         '1' GROUP BY ot.order_no) goodsDesc,
---         (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
---         order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '1' GROUP BY
---         ot.order_no) startAddress,
---         (SELECT GROUP_CONCAT(concat(ifnull(da.city_name,''), da.address )) FROM delivery_address da LEFT JOIN
---         order_take_adr ota ON da.id = ota.delivery_id WHERE ota.order_no = ot.order_no AND ota.opr_type = '2' GROUP BY
---         ot.order_no) endAddress,
---         concat( vi.plate_number,' ',vi.hk_number) licensePlate,
---         ( SELECT GROUP_CONCAT( oc.yun_customs_no SEPARATOR ',' ) FROM order_customs oc WHERE oc.main_order_no =
---         oi.order_no ) yunCustomsNo,
         cg.`name` costGenreName,
         opc.cost_genre_id costGenreId,
         ct.code_name costTypeName,
@@ -157,59 +146,57 @@
         left join supplier_info si on si.supplier_code = opc.customer_code
         LEFT JOIN order_info oi ON opc.main_order_no = oi.order_no
         LEFT JOIN product_biz pb ON pb.id_code = oi.biz_code
-        LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
-        LEFT JOIN order_send_cars osc ON ot.order_no = osc.order_no
-        left join vehicle_info vi on vi.id = osc.vehicle_id
         LEFT JOIN cost_genre cg ON opc.cost_genre_id = cg.id
         LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
         LEFT JOIN cost_info ci ON opc.cost_code = ci.id_code
-        left join order_customs oc on oc.order_no = opc.order_no
-        left join air_order ao on ao.order_no = opc.order_no
-        left join sea_order so on so.order_no = opc.order_no
-        left join order_inland_transport oit on oit.order_no = opc.order_no
-        left join trailer_order tor on tor.order_no = opc.order_no
-        -- left join storage_input_order sio on sio.order_no = opc.order_no
-        -- left join storage_out_order soo on soo.order_no = opc.order_no
+        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+            <choose>
+                <when test="form.cmd == 'zgys'">
+                    LEFT JOIN order_transport sub ON sub.main_order_no = oi.order_no
+                    LEFT JOIN order_send_cars osc ON sub.order_no = osc.order_no
+                    left join vehicle_info vi on vi.id = osc.vehicle_id
+                    left join order_customs oc on oc.order_no = opc.order_no
+                </when>
+                <otherwise>
+                    left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
+                </otherwise>
+            </choose>
+        </if>
+        INNER JOIN (
+        SELECT
+        tmp.cost_id id
+        FROM
+        order_payment_bill_detail tmp
         WHERE
-        (opbd1.bill_no = #{form.billNo} )
-        or
-        (opc.is_bill = 'save_confirm' and opc.tmp_bill_no = #{form.billNo}
-        and
+        tmp.bill_no = #{form.billNo} UNION
+        SELECT
+        tmp1.id
+        FROM
+        order_payment_cost tmp1
+        WHERE
+        tmp1.is_bill = 'save_confirm'
+        AND tmp1.tmp_bill_no = #{form.billNo}
+        ) tmp3 ON tmp3.id = opc.id
+        WHERE
         <if test="form.cmd == 'main'">
             oi.legal_name
         </if>
-        <if test="form.cmd == 'bg'">
-            oc.legal_name
-        </if>
-        <if test="form.cmd == 'zgys'">
-            ot.legal_name
-        </if>
-        <if test="form.cmd == 'ky'">
-            ao.legal_name
-        </if>
-        <if test="form.cmd == 'hy'">
-            so.legal_name
-        </if>
-        <if test="form.cmd == 'tc'">
-            tor.legal_name
-        </if>
-        <if test="form.cmd == 'nl'">
-            oit.legal_name
-        </if>
-        <if test="form.cmd == 'cci'">
-            opc.legal_name
-        </if>
-        <if test="form.cmd == 'cce'">
-            opc.legal_name
-        </if>
-        <if test="form.cmd == 'ccf'">
-            opc.legal_name
+        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+            <choose>
+                <when test="form.cmd == 'cce' or form.cmd == 'cci' or form.cmd='ccf'">
+                    opc.legal_name
+                </when>
+                <otherwise>
+                    sub.legal_name
+                </otherwise>
+            </choose>
         </if>
         = (select opb1.legal_name from order_payment_bill opb1 left join order_payment_bill_detail opbd1 on opb1.id =
         opbd1.bill_id where opbd1.bill_no = #{form.billNo} limit 1)
         and si.supplier_ch_name = (select opb1.supplier_ch_name from order_payment_bill opb1 left join
         order_payment_bill_detail opbd1 on opb1.id = opbd1.bill_id where opbd1.bill_no = #{form.billNo} limit 1)
-        )
+
+
     </select>
     <select id="findSheetHead" parameterType="java.lang.String" resultType="com.jayud.finance.vo.SheetHeadVO">
         SELECT
@@ -784,6 +771,9 @@
         </if>
         <if test="form.applyStatus != null and form.applyStatus !=''">
             and opbd.apply_status = #{form.applyStatus}
+        </if>
+        <if test="form.makeUser != null and form.makeUser !=''">
+            and opbd.make_user like concat ('%',#{form.makeUser},'%')
         </if>
 
         <if test="data != null and data.size>0">

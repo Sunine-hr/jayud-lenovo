@@ -474,10 +474,6 @@
         ot.`vehicle_type` vehicleType,
         ot.`vehicle_size` vehicleSize,
         ot.`cntr_no` cntrNo,
-        -- (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.main_order_no = oi.`order_no`) +
-        -- (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.main_order_no = oi.`order_no`)>0 THEN TRUE
-        -- ELSE FALSE
-        -- END) isCost,
         oi.`need_input_cost` needInputCost,
         ot.`status` subTmsStatus,
         oi.legal_name legalName,
@@ -490,21 +486,18 @@
         os.vehicle_id vehicleId,
         os.driver_info_id driverInfoId,
         vi.plate_number plateNumber,
-        ot.supplier_vehicle_size
+        ot.supplier_vehicle_size,
+        ota.take_time takeTimeStr
         FROM
         order_transport ot
         LEFT JOIN order_info oi
         ON ot.`main_order_no` = oi.`order_no`
-        LEFT JOIN port_info p
-        ON p.`id_code` = ot.`port_code`
-        LEFT JOIN product_classify pc
-        ON oi.`class_code` = pc.`id_code`
-        LEFT JOIN order_send_cars os
-        ON os.order_no = ot.order_no
-        LEFT JOIN vehicle_info vi
-        ON vi.id=os.vehicle_id
-        LEFT JOIN supplier_info si
-        ON si.id=vi.supplier_id
+        LEFT JOIN port_info p ON p.`id_code` = ot.`port_code`
+        LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code`
+        LEFT JOIN order_send_cars os ON os.order_no = ot.order_no
+        LEFT JOIN vehicle_info vi ON vi.id=os.vehicle_id
+        LEFT JOIN supplier_info si ON si.id=vi.supplier_id
+        left join (select tmp.order_no,tmp.take_time from order_take_adr tmp where tmp.opr_type=1 group by tmp.order_no) ota on ota.order_no = ot.order_no
         where 1 = 1
         <if test="form.orderNo != null and form.orderNo != ''">
             and ot.order_no like concat('%',#{form.orderNo},'%')
@@ -604,8 +597,10 @@
         <if test="form.cmd == 'costAudited'">
             and oi.`status` IN (1,3,4)
             AND ot.order_no in (
-            (SELECT opc.order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='zgys' and opc.is_bill='0'
-            union SELECT orc.order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and orc.sub_type='zgys' and orc.is_bill='0')
+            (SELECT opc.order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='zgys' and
+            opc.is_bill='0'
+            union SELECT orc.order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and orc.sub_type='zgys'
+            and orc.is_bill='0')
             )
         </if>
         <if test="form.customerName != null and form.customerName !=''">
@@ -632,6 +627,11 @@
                 #{companyId}
             </foreach>
         </if>
+        <if test="form.takeTimeStr != null and form.takeTimeStr.size>0">
+            and ota.take_time between #{form.takeTimeStr[0]} and #{form.takeTimeStr[1]}
+        </if>
+
+        order by ota.take_time desc
 
     </select>
 

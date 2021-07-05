@@ -400,4 +400,9 @@ public class DateUtils {
         LocalDateTime maxDateTime = localDateTime.with(LocalTime.MAX);
         return Date.from(maxDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
+
+    public static String strMaximumTime(String str) {
+        String[] split = str.split(" ");
+        return split[0] + " " + "23:59:59";
+    }
 }

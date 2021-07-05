@@ -14,6 +14,7 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.config.ImportExcelUtil;
 import com.jayud.oms.config.LoadExcelUtil;
 import com.jayud.oms.config.TypeUtils;
+import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.mapper.CustomerInfoMapper;
 import com.jayud.oms.model.bo.AddCustomerInfoForm;
@@ -49,14 +50,14 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
 
     @Autowired
     private OauthClient oauthClient;
-
     @Autowired
     private ICustomerRelaLegalService customerRelaLegalService;
-
     @Autowired
     private ICustomerInfoService customerInfoService;
     @Autowired
     private ICustomerRelaUnitService customerRelaUnitService;
+    @Autowired
+    private FileClient fileClient;
 
     @Override
     public IPage<CustomerInfoVO> findCustomerInfoByPage(QueryCustomerInfoForm form) {
@@ -69,6 +70,11 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
         IPage<CustomerInfoVO> pageInfo = baseMapper.findCustomerInfoByPage(page, form, legalIds);
+
+        Object url = fileClient.getBaseUrl().getData();
+        pageInfo.getRecords().forEach(e -> {
+            e.assembleAccessories(url);
+        });
         return pageInfo;
     }
 
@@ -385,6 +391,9 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     @Transactional
     public void saveOrUpdateCustomerInfo(AddCustomerInfoForm form, CustomerInfo customerInfo) {
         customerInfo.setIdCode(StringUtils.isEmpty(customerInfo.getIdCode()) ? null : customerInfo.getIdCode());
+
+        customerInfo.setFilePath(com.jayud.common.utils.StringUtils.getFileStr(form.getFileViews()))
+                .setFileName(com.jayud.common.utils.StringUtils.getFileNameStr(form.getFileViews()));
         if (customerInfo.getId() != null) {
             customerInfo.setUpdatedUser(UserOperator.getToken());
             customerInfo.setUpdatedTime(DateUtils.getNowTime());
@@ -440,7 +449,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     @Override
     public List<CustomerInfo> getByCustomerName(String customerName) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.like("name",customerName);
+        queryWrapper.like("name", customerName);
         return this.baseMapper.selectList(queryWrapper);
     }
 

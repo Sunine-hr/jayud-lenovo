@@ -14,6 +14,7 @@ import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.enums.*;
@@ -68,11 +69,12 @@ public class SupplierInfoController {
     private ISupplierInfoService supplierInfoService;
     @Autowired
     private IAuditInfoService auditInfoService;
-
     @Autowired
     private ISupplierRelaLegalService supplierRelaLegalService;
     @Autowired
     OauthClient oauthClient;
+    @Autowired
+    private FileClient fileClient;
 
     @ApiOperation(value = "分页查询供应商信息列表")
     @PostMapping(value = "/findSupplierInfoByPage")
@@ -130,9 +132,11 @@ public class SupplierInfoController {
         SupplierInfoVO supplierInfoVO = ConvertUtil.convert(supplierInfo, SupplierInfoVO.class);
         supplierInfoVO.packageProductClassifyId(supplierInfo.getProductClassifyIds());
         supplierInfoVO.setLegalEntityIds(longs);
+        supplierInfoVO.assembleAccessories(fileClient.getBaseUrl().getData());
         //审核意见
         AuditInfo auditInfo = this.auditInfoService.getAuditInfoLatestByExtId(supplierInfoVO.getId(), AuditTypeDescEnum.ONE.getTable());
         supplierInfoVO.setAuditComment(auditInfo.getAuditComment());
+
 
         return CommonResult.success(supplierInfoVO);
     }

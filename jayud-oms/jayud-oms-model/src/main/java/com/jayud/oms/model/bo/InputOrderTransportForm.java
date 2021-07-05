@@ -92,6 +92,9 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "审核状态")
     private String subTmsStatus;
 
+    @ApiModelProperty(value = "审核状态")
+    private String status;
+
     @ApiModelProperty(value = "是否车辆过磅")
     private Boolean isVehicleWeigh;
 

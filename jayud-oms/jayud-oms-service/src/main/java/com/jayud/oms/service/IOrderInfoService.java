@@ -225,22 +225,40 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
     /**
      * 供应商录入费用
+     *
      * @param form
      */
     void doSupplierEntryFee(InputCostForm form);
 
     /**
      * 供应商费用详情
+     *
      * @param form
      */
     InputCostVO getPayCostDetail(GetCostDetailForm form);
 
     /**
      * 查询供应商异常费用
+     *
      * @param form
      * @return
      */
     InputCostVO getSupplierAbnormalCostDetail(GetCostDetailForm form);
+
+    /**
+     * 获取当前订单模块节点
+     *
+     * @param mainOrderId
+     * @return
+     */
+    List<ProductClassifyVO> getOrderModuleNode(Long mainOrderId);
+
+    /**
+     * 追加订单模块节点
+     *
+     * @param form
+     */
+    void addOrderModule(InputOrderForm form);
 
     /**
      * 查询供应商待处理操作

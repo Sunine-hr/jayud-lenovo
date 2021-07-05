@@ -72,5 +72,17 @@ public class ProductClassifyServiceImpl extends ServiceImpl<ProductClassifyMappe
         return this.baseMapper.selectList(condition);
     }
 
+    /**
+     * 根据条件查询产品信息
+     *
+     * @param productClassify
+     * @return
+     */
+    @Override
+    public List<ProductClassify> getByCondition(ProductClassify productClassify) {
+        QueryWrapper<ProductClassify> condition = new QueryWrapper<>(productClassify);
+        return this.baseMapper.selectList(condition);
+    }
+
 
 }

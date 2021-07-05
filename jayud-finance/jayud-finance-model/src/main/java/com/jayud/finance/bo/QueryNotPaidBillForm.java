@@ -66,4 +66,7 @@ public class QueryNotPaidBillForm extends BasePageForm {
 
     @ApiModelProperty(value = "用户名")
     private String userName;
+
+    @ApiModelProperty(value = "业务类型code")
+    private String bizCode;
 }

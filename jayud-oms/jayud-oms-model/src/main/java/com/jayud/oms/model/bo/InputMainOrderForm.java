@@ -119,4 +119,11 @@ public class InputMainOrderForm {
 //            throw new JayudBizException("请输入操作时间");
 //        }
     }
+
+    public void specialTreatmentSelectedServer() {
+        if (selectedServer.contains(OrderStatusEnum.XGQG.getCode())) {
+            this.selectedServer = selectedServer + "," + OrderStatusEnum.ZGYSDD.getCode();
+        }
+    }
+
 }

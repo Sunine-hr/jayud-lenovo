@@ -5,6 +5,7 @@ import com.jayud.oceanship.bo.*;
 import com.jayud.oceanship.po.SeaOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oceanship.vo.SeaOrderFormVO;
+import com.jayud.oceanship.vo.SeaOrderInfoVO;
 import com.jayud.oceanship.vo.SeaOrderVO;
 
 import java.util.List;
@@ -151,4 +152,11 @@ public interface ISeaOrderService extends IService<SeaOrder> {
     Integer getNumByStatus(String status, List<Long> legalIds);
 
     List<SeaOrder> getByLegalEntityId(List<Long> legalIds);
+
+    /**
+     * 根据订单集合查询订单详情
+     * @param mainOrderNos
+     * @return
+     */
+    List<SeaOrderInfoVO> getSeaOrderInfoByMainOrderNos(List<String> mainOrderNos);
 }

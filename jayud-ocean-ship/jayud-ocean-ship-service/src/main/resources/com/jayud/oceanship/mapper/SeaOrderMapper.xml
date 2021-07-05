@@ -4,32 +4,129 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oceanship.po.SeaOrder">
-        <id column="id" property="orderId" />
-        <result column="main_order_no" property="mainOrderNo" />
-        <result column="order_no" property="orderNo" />
-        <result column="status" property="status" />
-        <result column="process_status" property="processStatus" />
-        <result column="unit_code" property="unitCode" />
-        <result column="legal_name" property="legalName" />
-        <result column="legal_entity_id" property="legalEntityId" />
-        <result column="imp_and_exp_type" property="impAndExpType" />
-        <result column="terms" property="terms" />
-        <result column="port_departure_code" property="portDepartureCode" />
-        <result column="port_destination_code" property="portDestinationCode" />
-        <result column="overseas_suppliers_id" property="overseasSuppliersId" />
-        <result column="proxy_service_type" property="proxyServiceType" />
-        <result column="good_time" property="goodTime" />
-        <result column="is_freight_collect" property="isFreightCollect" />
-        <result column="is_other_expenses_paid" property="isOtherExpensesPaid" />
-        <result column="is_dangerous_goods" property="isDangerousGoods" />
-        <result column="is_charged" property="isCharged" />
-        <result column="create_user" property="createUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="need_input_cost" property="needInputCost" />
-        <result column="order_taker" property="orderTaker" />
-        <result column="receiving_orders_date" property="receivingOrdersDate" />
+        <id column="id" property="orderId"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="status" property="status"/>
+        <result column="process_status" property="processStatus"/>
+        <result column="unit_code" property="unitCode"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="legal_entity_id" property="legalEntityId"/>
+        <result column="imp_and_exp_type" property="impAndExpType"/>
+        <result column="terms" property="terms"/>
+        <result column="port_departure_code" property="portDepartureCode"/>
+        <result column="port_destination_code" property="portDestinationCode"/>
+        <result column="overseas_suppliers_id" property="overseasSuppliersId"/>
+        <result column="proxy_service_type" property="proxyServiceType"/>
+        <result column="good_time" property="goodTime"/>
+        <result column="is_freight_collect" property="isFreightCollect"/>
+        <result column="is_other_expenses_paid" property="isOtherExpensesPaid"/>
+        <result column="is_dangerous_goods" property="isDangerousGoods"/>
+        <result column="is_charged" property="isCharged"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="need_input_cost" property="needInputCost"/>
+        <result column="order_taker" property="orderTaker"/>
+        <result column="receiving_orders_date" property="receivingOrdersDate"/>
+    </resultMap>
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="OrderInfoMap" type="com.jayud.oceanship.vo.SeaOrderInfoVO">
+        <id column="id" property="id"/>
+        <result column="mainOrderNo" property="mainOrderNo"/>
+        <result column="subOrderNo" property="subOrderNo"/>
+        <result column="status" property="status"/>
+        <result column="process_status" property="processStatus"/>
+        <result column="unit_code" property="unitCode"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="legal_entity_id" property="legalEntityId"/>
+        <result column="imp_and_exp_type" property="impAndExpType"/>
+        <result column="terms" property="terms"/>
+        <result column="termsDesc" property="termsDesc"/>
+        <result column="port_departure_code" property="portDepartureCode"/>
+        <result column="port_destination_code" property="portDestinationCode"/>
+        <result column="overseas_suppliers_id" property="overseasSuppliersId"/>
+        <result column="proxy_service_type" property="proxyServiceType"/>
+        <result column="good_time" property="goodTime"/>
+        <result column="is_freight_collect" property="isFreightCollect"/>
+        <result column="is_other_expenses_paid" property="isOtherExpensesPaid"/>
+        <result column="is_dangerous_goods" property="isDangerousGoods"/>
+        <result column="is_charged" property="isCharged"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="need_input_cost" property="needInputCost"/>
+        <result column="order_taker" property="orderTaker"/>
+        <result column="receiving_orders_date" property="receivingOrdersDate"/>
+        <association property="seaBookShip" javaType="com.jayud.oceanship.vo.SeaBookshipVO">
+            <id column="bId" property="id"/>
+            <result column="bStatus" property="status"/>
+            <result column="sea_order_no" property="seaOrderNo"/>
+            <result column="sea_order_id" property="seaOrderId"/>
+            <result column="agent_supplier_id" property="agentSupplierId"/>
+            <result column="warehousing_no" property="warehousingNo"/>
+            <result column="ship_company" property="shipCompany"/>
+            <result column="ship_name" property="shipName"/>
+            <result column="ship_number" property="shipNumber"/>
+            <result column="etd" property="etd"/>
+            <result column="atd" property="atd"/>
+            <result column="eta" property="eta"/>
+            <result column="ata" property="ata"/>
+            <result column="delivery_wharf" property="deliveryWharf"/>
+            <result column="file_path" property="filePath"/>
+            <result column="file_name" property="fileName"/>
+        </association>
+        <collection property="cabinetSizeNumbers" ofType="com.jayud.oceanship.vo.CabinetSizeNumberVO">
+            <id column="csnId" property="id"/>
+            <result column="sea_order_id" property="seaOrderId"/>
+            <result column="sea_order_no" property="seaOrderNo"/>
+            <result column="cabinet_type_size" property="cabinetTypeSize"/>
+            <result column="number" property="number"/>
+        </collection>
+        <collection property="seaContainerInfos" ofType="com.jayud.oceanship.vo.SeaContainerInformationVO">
+            <id column="sciId" property="id"/>
+            <result column="sea_rep_id" property="seaRepId"/>
+            <result column="sea_rep_no" property="seaRepNo"/>
+            <result column="cabinet_name" property="cabinetName"/>
+            <result column="cabinet_number" property="cabinetNumber"/>
+            <result column="paper_strip_seal" property="paperStripSeal"/>
+            <result column="weight" property="weight"/>
+            <result column="volume" property="volume"/>
+            <result column="plat_number" property="platNumber"/>
+            <result column="packing" property="packing"/>
+        </collection>
+        <collection property="seaReplenishments" ofType="com.jayud.oceanship.vo.SeaReplenishmentVO">
+            <id column="srId" property="id"/>
+            <result column="srOrderNo" property="orderNo"/>
+            <result column="sea_order_id" property="seaOrderId"/>
+            <result column="sea_order_no" property="seaOrderNo"/>
+            <result column="srCutReplenishTime" property="cutReplenishTime"/>
+            <result column="srCabinetNumber" property="cabinetNumber"/>
+            <result column="srPaperStripSeal" property="paperStripSeal"/>
+            <result column="is_bill_of_lading" property="isBillOfLading"/>
+            <result column="srImpAndExpType" property="impAndExpType"/>
+            <result column="srTerms" property="terms"/>
+            <result column="srPortDepartureCode" property="portDepartureCode"/>
+            <result column="srPortDestinationCode" property="portDestinationCode"/>
+            <result column="srGoodTime" property="goodTime"/>
+            <result column="srIsFreightCollect" property="isFreightCollect"/>
+            <result column="srIsOtherExpensesPaid" property="isOtherExpensesPaid"/>
+            <result column="srIsDangerousGoods" property="isDangerousGoods"/>
+            <result column="srIsCharged" property="isCharged"/>
+            <result column="srTransitPortCode" property="transitPortCode"/>
+            <result column="srCabinetType" property="cabinetType"/>
+            <result column="srCabinetTypeName" property="cabinetTypeName"/>
+            <result column="srMainNo" property="mainNo"/>
+            <result column="srSubNo" property="subNo"/>
+            <result column="srBillLadingWeight" property="billLadingWeight"/>
+        </collection>
+        <collection property="seaBills" ofType="com.jayud.oceanship.vo.SeaBillVO">
+            <id column="sblId" property="id"/>
+            <result column="sblOrderNo" property="orderNo"/>
+        </collection>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -37,7 +134,7 @@
         id, main_order_no, order_no, status, process_status, unit_code, legal_name, legal_entity_id, imp_and_exp_type, terms, port_departure_code, port_destination_code, overseas_suppliers_id, proxy_service_type, good_time, is_freight_collect, is_other_expenses_paid, is_dangerous_goods, is_charged, create_user, create_time, update_user, update_time, need_input_cost, order_taker, receiving_orders_date
     </sql>
 
-<!-- 根据订单ID获取订单信息-->
+    <!-- 根据订单ID获取订单信息-->
     <select id="getSeaOrder" parameterType="long" resultType="com.jayud.oceanship.vo.SeaOrderVO">
         select so.id orderId,so.main_order_no mainOrderNo,so.order_no orderNo,so.status,
         so.process_status processStatus,
@@ -162,8 +259,8 @@
 
     </resultMap>
 
-<!--  分页获取订单列表-->
-<!--    <select id="findByPage" resultType="com.jayud.oceanship.vo.SeaOrderFormVO">-->
+    <!--  分页获取订单列表-->
+    <!--    <select id="findByPage" resultType="com.jayud.oceanship.vo.SeaOrderFormVO">-->
 
     <select id="findByPage" resultMap="map1">
         select so.id,so.main_order_no mainOrderNo,so.order_no orderNo,so.status,
@@ -271,8 +368,10 @@
             </if>
             <if test="form.cmd == 'costAudited'">
                 AND so.order_no in (
-                (SELECT opc.order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='hy' and opc.is_bill='0'
-                union SELECT orc.order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and orc.sub_type='hy' and orc.is_bill='0')
+                (SELECT opc.order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='hy' and
+                opc.is_bill='0'
+                union SELECT orc.order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and orc.sub_type='hy'
+                and orc.is_bill='0')
                 )
             </if>
 
@@ -307,6 +406,64 @@
                 and so.`legal_entity_id` in
                 <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                     #{legalId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getSeaOrderInfoByMainOrderNos" resultMap="OrderInfoMap">
+        select so.id,so.main_order_no mainOrderNo,so.order_no subOrderNo,so.status,
+        so.process_status processStatus,so.unit_code unitCode,so.legal_name,
+        so.legal_entity_id,so.imp_and_exp_type,
+        so.terms,so.port_departure_code,so.port_destination_code,so.transit_port_code,
+        so.good_time,so.create_user,so.create_time,so.update_user,so.update_time,
+        so.need_input_cost,so.unit_code unitCode,so.unit_department_id,
+        so.cut_replenish_time,so.cabinet_size,so.cabinet_type,so.is_freight_collect,
+        so.is_other_expenses_paid,so.is_dangerous_goods,so.is_charged,so.cabinet_size_name,
+        so.cabinet_type_name, so.audit_opinion,so.audit_status,
+        t.name termsDesc,
+        -- 订舱
+        sb.id bId,
+        sb.sea_order_no,sb.status bStatus,sb.sea_order_id,sb.ship_company,sb.ship_name,
+        sb.ship_number,sb.eta,sb.etd,sb.ata,sb.atd,
+        sb.warehousing_no,sb.delivery_wharf,sb.agent_supplier_id,sb.file_path,
+        sb.file_name,sb.closing_time,
+        -- 柜型
+        csn.id csnId,
+        csn.sea_order_id,csn.sea_order_no,csn.cabinet_type_size,csn.number,
+        -- 柜号
+        sci.id sciId,
+        sci.sea_order_no,sci.sea_rep_id,sci.sea_rep_no,sci.cabinet_name,
+        sci.cabinet_number,sci.paper_strip_seal,sci.weight,sci.volume,
+        sci.plat_number,sci.packing,
+        -- 补料
+        sr.id srId,
+        sr.order_no srOrderNo, sr.sea_order_id, sr.sea_order_no,
+        sr.cut_replenish_time srCutReplenishTime, sr.cabinet_number srCabinetNumber,
+        sr.paper_strip_seal srPaperStripSeal, sr.is_bill_of_lading,
+        sr.imp_and_exp_type srImpAndExpType, sr.terms srTerms,
+        sr.port_departure_code srPortDepartureCode, sr.port_destination_code srPortDestinationCode,
+        sr.good_time srGoodTime, sr.is_freight_collect srIsFreightCollect,
+        sr.is_other_expenses_paid srIsOtherExpensesPaid, sr.is_dangerous_goods srIsDangerousGoods,
+        sr.is_charged srIsCharged, sr.transit_port_code srTransitPortCode, sr.cabinet_type srCabinetType,
+        sr.cabinet_type_name srCabinetTypeName,sr.main_no srMainNo,sr.sub_no srSubNo,
+        sr.bill_lading_weight srBillLadingWeight,sr.is_release_order srIsReleaseOrder,
+        -- 提单
+        sbl.id sblId,
+        sbl.order_no sblOrderNo
+        from sea_order so
+        left join sea_bookship sb on sb.sea_order_id = so.id
+        left join terms t on so.terms = t.id
+        left join cabinet_size_number csn on csn.sea_order_id=so.id
+        left join sea_replenishment sr on sr.sea_order_id = so.id
+        left join sea_container_information sci on sci.sea_rep_no=sr.order_no
+        left join sea_bill sbl on sr.sea_order_id = so.id
+        <where>
+            <if test="mainOrderNos!=null and mainOrderNos.size>0">
+                so.main_order_no in
+                <foreach collection="mainOrderNos" item="item" open="(" close=")" separator=",">
+                    #{item}
                 </foreach>
             </if>
         </where>

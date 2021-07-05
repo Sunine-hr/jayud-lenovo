@@ -12,6 +12,7 @@ import com.jayud.oceanship.service.ICabinetSizeNumberService;
 import com.jayud.oceanship.service.ISeaOrderService;
 import com.jayud.oceanship.service.ISeaReplenishmentService;
 import com.jayud.oceanship.vo.CabinetSizeNumberVO;
+import com.jayud.oceanship.vo.SeaOrderInfoVO;
 import com.jayud.oceanship.vo.SeaOrderVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
@@ -148,5 +149,45 @@ public class ExternalApiController {
         }
         return ApiResult.ok(result);
     }
+
+
+    /**
+     * 根据主订单号集合获取海运订单详情信息
+     *
+     * @param mainOrderNoList
+     * @return
+     */
+    @RequestMapping(value = "/api/oceanship/getSeaOrderInfoByMainOrderNos")
+    ApiResult getSeaOrderInfoByMainOrderNos(@RequestParam("mainOrderNos")  List<String> mainOrderNoList) {
+        List<SeaOrderInfoVO> seaOrders = this.seaOrderService.getSeaOrderInfoByMainOrderNos(mainOrderNoList);
+        return ApiResult.ok(seaOrders);
+    }
+
+    /**
+     * 根据主订单号集合查询中港详情信息
+     */
+//    @RequestMapping(value = "/api/getTmsOrderInfoByMainOrderNos")
+//    public ApiResult<List<SeaOrderInfoVO>> getSeaOrderInfoByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos) {
+//        List<SeaOrderInfoVO> list = this.seaOrderService.getSeaOrderInfoByMainOrderNos(mainOrderNos);
+//        List<String> orderNos = new ArrayList<>();
+//        List<Long> vehicleIds = new ArrayList<>();
+//        for (OrderTransportInfoVO orderTransportInfoVO : list) {
+//            orderNos.add(orderTransportInfoVO.getOrderNo());
+//            OrderSendCarsInfoVO orderSendCars = orderTransportInfoVO.getOrderSendCars();
+//            if (orderSendCars != null) {
+//                vehicleIds.add(orderSendCars.getVehicleId());
+//            }
+//        }
+//
+//        //查询送货/收货地址信息
+//        List<OrderTakeAdrInfoVO> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrInfos(orderNos, null);
+//
+//        //组装地址
+//        for (OrderTransportInfoVO orderTransportInfoVO : list) {
+//            orderTransportInfoVO.assemblyAddr(takeAdrsList);
+//            orderTransportInfoVO.assemblyVehicleInfos(vehicleInfos);
+//        }
+//        return ApiResult.ok(list);
+//    }
 
 }

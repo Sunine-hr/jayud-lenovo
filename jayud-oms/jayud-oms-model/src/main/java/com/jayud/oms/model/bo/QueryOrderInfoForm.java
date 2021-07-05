@@ -1,11 +1,15 @@
 package com.jayud.oms.model.bo;
 
+import cn.hutool.core.io.unit.DataUnit;
+import com.jayud.common.utils.DateUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -51,4 +55,14 @@ public class QueryOrderInfoForm extends BasePageForm {
 
     @ApiModelProperty(value = "主订单id集合")
     private List<Long> mainOrderIds;
+
+    @ApiModelProperty(value = "操作时间")
+    private List<String> operationTime;
+
+    public void setOperationTime(List<String> operationTime) {
+        if (CollectionUtils.isNotEmpty(operationTime) && operationTime.size() > 1) {
+            operationTime.set(1, DateUtils.strMaximumTime(operationTime.get(1)));
+        }
+        this.operationTime = operationTime;
+    }
 }

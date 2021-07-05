@@ -4,6 +4,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -148,6 +149,7 @@ public class OrderInfoVO {
     private Integer billingState;
 
     @ApiModelProperty(value = "操作时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private String operationTime;
 
 
@@ -337,5 +339,9 @@ public class OrderInfoVO {
 
         }
 
+    }
+
+    public void setOperationTime(String operationTime) {
+        this.operationTime = DateUtils.format(operationTime, DateUtils.DATE_PATTERN);
     }
 }

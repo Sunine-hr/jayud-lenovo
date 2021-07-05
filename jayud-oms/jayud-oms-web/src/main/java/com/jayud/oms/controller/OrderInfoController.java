@@ -11,6 +11,7 @@ import com.jayud.common.aop.annotations.RepeatSubmitLimit;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.*;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
@@ -20,6 +21,7 @@ import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.OrderAttachment;
 import com.jayud.oms.model.po.OrderInfo;
+import com.jayud.oms.model.po.ProductClassify;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.model.vo.template.order.*;
 import com.jayud.oms.service.IAuditInfoService;
@@ -108,164 +110,118 @@ public class OrderInfoController {
                 return CommonResult.error(400, "待处理状态,无法进行操作");
             }
         }
-
-
+        //检查提交提单信息
         if (CommonConstant.SUBMIT.equals(form.getCmd())) {
-            //1.报关资料是否齐全 1-齐全 0-不齐全 齐全时校验报关数据
-            //2.纯报关时校验数据
-            if (CommonConstant.VALUE_1.equals(inputMainOrderForm.getIsDataAll())) {
-                //报关订单参数校验
-                InputOrderCustomsForm inputOrderCustomsForm = form.getOrderCustomsForm();
-                form.checkCustomsParam();
-//                if (inputOrderCustomsForm == null ||
-//                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getPortCode()) ||
-//                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getPortName()) ||
-//                        inputOrderCustomsForm.getGoodsType() == null ||
-//                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getBizModel()) ||
-//                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getLegalName()) ||
-//                        inputOrderCustomsForm.getLegalEntityId() == null ||
-//                        StringUtil.isNullOrEmpty(inputOrderCustomsForm.getEncode()) ||//六联单号
-//                        inputOrderCustomsForm.getSubOrders() == null) {
+            this.checkSubmitCreateOrder(form);
+        }
+//        if (CommonConstant.SUBMIT.equals(form.getCmd())) {
+//            //1.报关资料是否齐全 1-齐全 0-不齐全 齐全时校验报关数据
+//            //2.纯报关时校验数据
+//            if (CommonConstant.VALUE_1.equals(inputMainOrderForm.getIsDataAll())) {
+//                //报关订单参数校验
+//                InputOrderCustomsForm inputOrderCustomsForm = form.getOrderCustomsForm();
+//                form.checkCustomsParam();
+//                inputOrderCustomsForm.handleAttachmentInfo();
+//            }
+//            //中港订单参数校验
+//            if (OrderStatusEnum.ZGYS.getCode().equals(inputMainOrderForm.getClassCode())
+//                    || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.KYDD.getCode())) {
+//                //中港订单参数校验
+//                InputOrderTransportForm inputOrderTransportForm = form.getOrderTransportForm();
+//                inputOrderTransportForm.cheackAddParam();
+//
+//                //中港订单提货收货信息参数校验
+//                List<InputOrderTakeAdrForm> takeAdrForms1 = inputOrderTransportForm.getTakeAdrForms1();//必填
+//                List<InputOrderTakeAdrForm> takeAdrForms2 = inputOrderTransportForm.getTakeAdrForms2();
+//                //提货地址必填
+//                if (takeAdrForms1 == null || takeAdrForms1.size() == 0) {
 //                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
 //                }
-//                //六联单号必须为13位的纯数字
-//                String encode = inputOrderCustomsForm.getEncode();
-//                if (!(encode.matches("[0-9]{1,}") && encode.length() == 13)) {
-//                    return CommonResult.error(ResultEnum.ENCODE_PURE_NUMBERS);
+//                List<InputOrderTakeAdrForm> takeAdrForms = new ArrayList<>();
+//                takeAdrForms.addAll(takeAdrForms1);
+//                takeAdrForms.addAll(takeAdrForms2);
+//                for (InputOrderTakeAdrForm inputOrderTakeAdr : takeAdrForms) {
+//                    if (inputOrderTakeAdr.getAddress() == null
+//                            || inputOrderTakeAdr.getTakeTimeStr() == null || inputOrderTakeAdr.getPieceAmount() == null
+//                            || inputOrderTakeAdr.getWeight() == null || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getGoodsDesc())) {
+//                        return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+//                    }
 //                }
-                //附件处理
-                inputOrderCustomsForm.setCntrPic(StringUtils.getFileStr(inputOrderCustomsForm.getCntrPics()));
-                inputOrderCustomsForm.setCntrPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getCntrPics()));
-                inputOrderCustomsForm.setEncodePic(StringUtils.getFileStr(inputOrderCustomsForm.getEncodePics()));
-                inputOrderCustomsForm.setEncodePicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getEncodePics()));
-                inputOrderCustomsForm.setAirTransportPic(StringUtils.getFileStr(inputOrderCustomsForm.getAirTransportPics()));
-                inputOrderCustomsForm.setAirTransPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getAirTransportPics()));
-                inputOrderCustomsForm.setSeaTransportPic(StringUtils.getFileStr(inputOrderCustomsForm.getAirTransportPics()));
-                inputOrderCustomsForm.setSeaTransPicName(StringUtils.getFileNameStr(inputOrderCustomsForm.getAirTransportPics()));
-                //报关订单中的子订单
-//                List<InputSubOrderCustomsForm> subOrders = inputOrderCustomsForm.getSubOrders();
-//                if (subOrders.size() == 0) {
+//                //清关参数校验
+//                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.XGQG.getCode())) {
+//                    if (StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkLegalName()) ||
+//                            inputOrderTransportForm.getHkLegalId() == null ||
+//                            StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkUnitCode()) ||
+//                            StringUtil.isNullOrEmpty(inputOrderTransportForm.getIsHkClear())) {
+//                        return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+//                    }
+//                }
+//            }
+//            //空运校验参数
+//            if (OrderStatusEnum.KY.getCode().equals(inputMainOrderForm.getClassCode())) {
+//                InputAirOrderForm airOrderForm = form.getAirOrderForm();
+//                if (!airOrderForm.checkCreateOrder()) {
 //                    return CommonResult.error(ResultEnum.PARAM_ERROR);
 //                }
-//                for (InputSubOrderCustomsForm subOrderCustomsForm : subOrders) {
-//                    if (StringUtil.isNullOrEmpty(subOrderCustomsForm.getOrderNo())
-//                            || StringUtil.isNullOrEmpty(subOrderCustomsForm.getTitle())
-//                            || StringUtil.isNullOrEmpty(subOrderCustomsForm.getUnitCode())
-//                            || StringUtil.isNullOrEmpty(subOrderCustomsForm.getIsTitle())) {
+//            }
+//            //服务单参数校验
+//            if (OrderStatusEnum.FWD.getCode().equals(inputMainOrderForm.getClassCode())) {
+//                InputOrderServiceForm orderServiceForm = form.getOrderServiceForm();
+//                if (orderServiceForm.getType() == null) {
+//                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+//                }
+//            }
+//            //海运校验参数
+//            if (OrderStatusEnum.HY.getCode().equals(inputMainOrderForm.getClassCode())) {
+//                InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
+//                String s = seaOrderForm.checkCreateOrder();
+//                if (s != null) {
+//                    return CommonResult.error(1, s);
+//                }
+//            }
+//            //拖车校验参数
+//            if (OrderStatusEnum.TC.getCode().equals(inputMainOrderForm.getClassCode())
+//                    || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.TCEDD.getCode())
+//                    || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.TCIDD.getCode())) {
+//                List<InputTrailerOrderFrom> trailerOrderFrom = form.getTrailerOrderFrom();
+//                for (InputTrailerOrderFrom inputTrailerOrderFrom : trailerOrderFrom) {
+//                    if (!inputTrailerOrderFrom.checkCreateOrder()) {
 //                        return CommonResult.error(ResultEnum.PARAM_ERROR);
 //                    }
 //                }
-            }
-            //中港订单参数校验
-            if (OrderStatusEnum.ZGYS.getCode().equals(inputMainOrderForm.getClassCode())) {
-                //中港订单参数校验
-                InputOrderTransportForm inputOrderTransportForm = form.getOrderTransportForm();
-                if (inputMainOrderForm == null) return CommonResult.error(ResultEnum.PARAM_ERROR);
-                inputOrderTransportForm.cheackAddParam();
-
-//                if (inputOrderTransportForm == null ||
-//                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getPortCode()) ||
-//                        inputOrderTransportForm.getGoodsType() == null ||
-//                        inputOrderTransportForm.getVehicleType() == null ||
-//                        inputOrderTransportForm.getVehicleSize() == null ||
-//                        inputOrderTransportForm.getWarehouseInfoId() == null ||
-//                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getLegalName()) ||
-//                        inputOrderTransportForm.getLegalEntityId() == null ||
-//                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getUnitCode())) {
-//                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
-//                }
-                //中港订单提货收货信息参数校验
-                List<InputOrderTakeAdrForm> takeAdrForms1 = inputOrderTransportForm.getTakeAdrForms1();//必填
-                List<InputOrderTakeAdrForm> takeAdrForms2 = inputOrderTransportForm.getTakeAdrForms2();
-                //提货地址必填
-                if (takeAdrForms1 == null || takeAdrForms1.size() == 0) {
-                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
-                }
-                List<InputOrderTakeAdrForm> takeAdrForms = new ArrayList<>();
-                takeAdrForms.addAll(takeAdrForms1);
-                takeAdrForms.addAll(takeAdrForms2);
-                for (InputOrderTakeAdrForm inputOrderTakeAdr : takeAdrForms) {
-                    if (inputOrderTakeAdr.getAddress() == null
-                            || inputOrderTakeAdr.getTakeTimeStr() == null || inputOrderTakeAdr.getPieceAmount() == null
-                            || inputOrderTakeAdr.getWeight() == null || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getGoodsDesc())) {
-                        return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
-                    }
-                }
-                //清关参数校验
-                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.XGQG.getCode())) {
-                    if (StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkLegalName()) ||
-                            inputOrderTransportForm.getHkLegalId() == null ||
-                            StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkUnitCode()) ||
-                            StringUtil.isNullOrEmpty(inputOrderTransportForm.getIsHkClear())) {
-                        return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
-                    }
-                }
-            }
-            //空运校验参数
-            if (OrderStatusEnum.KY.getCode().equals(inputMainOrderForm.getClassCode())) {
-                InputAirOrderForm airOrderForm = form.getAirOrderForm();
-                if (!airOrderForm.checkCreateOrder()) {
-                    return CommonResult.error(ResultEnum.PARAM_ERROR);
-                }
-            }
-            //服务单参数校验
-            if (OrderStatusEnum.FWD.getCode().equals(inputMainOrderForm.getClassCode())) {
-                InputOrderServiceForm orderServiceForm = form.getOrderServiceForm();
-                if (orderServiceForm.getType() == null) {
-                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
-                }
-            }
-            //海运校验参数
-            if (OrderStatusEnum.HY.getCode().equals(inputMainOrderForm.getClassCode())) {
-                InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
-                String s = seaOrderForm.checkCreateOrder();
-                if (s != null) {
-                    return CommonResult.error(1, s);
-                }
-            }
-            //拖车校验参数
-            if (OrderStatusEnum.TC.getCode().equals(inputMainOrderForm.getClassCode())
-                    || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.TCEDD.getCode())
-                    || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.TCIDD.getCode())) {
-                List<InputTrailerOrderFrom> trailerOrderFrom = form.getTrailerOrderFrom();
-                for (InputTrailerOrderFrom inputTrailerOrderFrom : trailerOrderFrom) {
-                    if (!inputTrailerOrderFrom.checkCreateOrder()) {
-                        return CommonResult.error(ResultEnum.PARAM_ERROR);
-                    }
-                }
-            }
-            //仓储校验参数
-            if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) ||
-                    inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) ||
-                    inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode()) ||
-                    inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())) {
-                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())) {
-                    InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
-                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
-                        return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
-                    }
-                    ApiResult result = storageClient.isEnough(storageOutOrderForm.getGoodsFormList());
-                    if(!result.isOk()){
-                        return CommonResult.error(result.getCode(),result.getMsg());
-                    }
-                    ApiResult stock = storageClient.isStock(storageOutOrderForm.getGoodsFormList());
-                    if(!stock.isOk()){
-                        return CommonResult.error(stock.getCode(),stock.getMsg());
-                    }
-
-                }
-//                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())) {
-//                    InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
-//                    ApiResult commodity = storageClient.isCommodity(storageInputOrderForm.getGoodsFormList());
-//                    if(!commodity.isOk()){
-//                        return CommonResult.error(commodity.getCode(),commodity.getMsg());
-//                    }
-//                }
-            }
-
-            //校验参数
-            form.checkCreateParam();
-        }
+//            }
+//            //仓储校验参数
+//            if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) ||
+//                    inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) ||
+//                    inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode()) ||
+//                    inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())) {
+////                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())) {
+////                    InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
+////                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
+////                        return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
+////                    }
+////                    ApiResult result = storageClient.isEnough(storageOutOrderForm.getGoodsFormList());
+////                    if(!result.isOk()){
+////                        return CommonResult.error(result.getCode(),result.getMsg());
+////                    }
+////                    ApiResult stock = storageClient.isStock(storageOutOrderForm.getGoodsFormList());
+////                    if(!stock.isOk()){
+////                        return CommonResult.error(stock.getCode(),stock.getMsg());
+////                    }
+////
+////                }
+////                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())) {
+////                    InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
+////                    ApiResult commodity = storageClient.isCommodity(storageInputOrderForm.getGoodsFormList());
+////                    if(!commodity.isOk()){
+////                        return CommonResult.error(commodity.getCode(),commodity.getMsg());
+////                    }
+////                }
+//            }
+//
+//            //校验参数
+//            form.checkCreateParam();
+//        }
 
         boolean result = orderInfoService.createOrder(form);
         if (!result) {
@@ -273,6 +229,7 @@ public class OrderInfoController {
         }
         return CommonResult.success();
     }
+
 
     @ApiOperation(value = "更改状态初始化订单下的子订单号")
     @PostMapping("/findSubOrderNo")
@@ -614,6 +571,165 @@ public class OrderInfoController {
             storageFastOrderForm.copyOperationInfo();
         }
         return CommonResult.success(inputOrderVO);
+    }
+
+
+    @ApiOperation(value = "获取订单模块节点")
+    @PostMapping("/getOrderModuleNode")
+    public CommonResult viewAddNewModule(@RequestBody @Valid Map<String, Object> map) {
+        Long mainOrderId = MapUtil.getLong(map, "mainOrderId");
+        if (mainOrderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        List<ProductClassifyVO> list = this.orderInfoService.getOrderModuleNode(mainOrderId);
+
+        return CommonResult.success(list);
+    }
+
+    @ApiOperation(value = "追加订单模块节点")
+    @PostMapping("/addOrderModule")
+    public CommonResult addOrderModule(@RequestBody InputOrderForm form) {
+        //通用参数校验
+        if (form == null || StringUtil.isNullOrEmpty(form.getCmd()) || form.getOrderForm() == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+        }
+        if (StringUtils.isEmpty(form.getOrderForm().getSelectedServer())) {
+            return CommonResult.error(400, "没有追加的新模块");
+        }
+        //主订单参数校验
+        InputMainOrderForm inputMainOrderForm = form.getOrderForm();
+        inputMainOrderForm.checkCreateOrder();
+        this.checkSubmitCreateOrder(form);
+        //特殊处理选择服务
+        inputMainOrderForm.specialTreatmentSelectedServer();
+        inputMainOrderForm.setCmd("submit");
+        //追加订单模块节点
+        this.orderInfoService.addOrderModule(form);
+
+        return CommonResult.success();
+    }
+
+    /**
+     * 检查提交提单信息
+     *
+     * @param form
+     */
+    private void checkSubmitCreateOrder(InputOrderForm form) {
+        InputMainOrderForm inputMainOrderForm = form.getOrderForm();
+
+        //1.报关资料是否齐全 1-齐全 0-不齐全 齐全时校验报关数据
+        //2.纯报关时校验数据
+        if (CommonConstant.VALUE_1.equals(inputMainOrderForm.getIsDataAll())) {
+            //报关订单参数校验
+            InputOrderCustomsForm inputOrderCustomsForm = form.getOrderCustomsForm();
+            form.checkCustomsParam();
+            //附件处理
+            inputOrderCustomsForm.handleAttachmentInfo();
+        }
+        //中港订单参数校验
+        if (OrderStatusEnum.ZGYS.getCode().equals(inputMainOrderForm.getClassCode())
+                || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.ZGYSDD.getCode())) {
+            //中港订单参数校验
+            InputOrderTransportForm inputOrderTransportForm = form.getOrderTransportForm();
+            inputOrderTransportForm.cheackAddParam();
+
+            //中港订单提货收货信息参数校验
+            List<InputOrderTakeAdrForm> takeAdrForms1 = inputOrderTransportForm.getTakeAdrForms1();//必填
+            List<InputOrderTakeAdrForm> takeAdrForms2 = inputOrderTransportForm.getTakeAdrForms2();
+            //提货地址必填
+            if (takeAdrForms1 == null || takeAdrForms1.size() == 0) {
+//                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                throw new JayudBizException(ResultEnum.PARAM_ERROR);
+            }
+            List<InputOrderTakeAdrForm> takeAdrForms = new ArrayList<>();
+            takeAdrForms.addAll(takeAdrForms1);
+            takeAdrForms.addAll(takeAdrForms2);
+            for (InputOrderTakeAdrForm inputOrderTakeAdr : takeAdrForms) {
+                if (inputOrderTakeAdr.getAddress() == null
+                        || inputOrderTakeAdr.getTakeTimeStr() == null || inputOrderTakeAdr.getPieceAmount() == null
+                        || inputOrderTakeAdr.getWeight() == null || StringUtil.isNullOrEmpty(inputOrderTakeAdr.getGoodsDesc())) {
+//                        return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                    throw new JayudBizException(ResultEnum.PARAM_ERROR);
+                }
+            }
+            //清关参数校验
+            if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.XGQG.getCode())) {
+                if (StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkLegalName()) ||
+                        inputOrderTransportForm.getHkLegalId() == null ||
+                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getHkUnitCode()) ||
+                        StringUtil.isNullOrEmpty(inputOrderTransportForm.getIsHkClear())) {
+//                        return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                    throw new JayudBizException(ResultEnum.PARAM_ERROR);
+                }
+            }
+        }
+        //空运校验参数
+        if (OrderStatusEnum.KY.getCode().equals(inputMainOrderForm.getClassCode())) {
+            InputAirOrderForm airOrderForm = form.getAirOrderForm();
+            if (!airOrderForm.checkCreateOrder()) {
+//                    return CommonResult.error(ResultEnum.PARAM_ERROR);
+                throw new JayudBizException(ResultEnum.PARAM_ERROR);
+            }
+        }
+        //服务单参数校验
+        if (OrderStatusEnum.FWD.getCode().equals(inputMainOrderForm.getClassCode())) {
+            InputOrderServiceForm orderServiceForm = form.getOrderServiceForm();
+            if (orderServiceForm.getType() == null) {
+//                    return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+                throw new JayudBizException(ResultEnum.PARAM_ERROR);
+            }
+        }
+        //海运校验参数
+        if (OrderStatusEnum.HY.getCode().equals(inputMainOrderForm.getClassCode())) {
+            InputSeaOrderForm seaOrderForm = form.getSeaOrderForm();
+            String s = seaOrderForm.checkCreateOrder();
+            if (s != null) {
+//                    return CommonResult.error(1, s);
+                throw new JayudBizException(1, s);
+            }
+        }
+        //拖车校验参数
+        if (OrderStatusEnum.TC.getCode().equals(inputMainOrderForm.getClassCode())
+                || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.TCEDD.getCode())
+                || inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.TCIDD.getCode())) {
+            List<InputTrailerOrderFrom> trailerOrderFrom = form.getTrailerOrderFrom();
+            for (InputTrailerOrderFrom inputTrailerOrderFrom : trailerOrderFrom) {
+                if (!inputTrailerOrderFrom.checkCreateOrder()) {
+//                        return CommonResult.error(ResultEnum.PARAM_ERROR);
+                    throw new JayudBizException(ResultEnum.PARAM_ERROR);
+                }
+            }
+        }
+        //仓储校验参数
+        if (OrderStatusEnum.CC.getCode().equals(inputMainOrderForm.getClassCode()) ||
+                inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) ||
+                inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode()) ||
+                inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())) {
+//                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())) {
+//                    InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
+//                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
+//                        return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
+//                    }
+//                    ApiResult result = storageClient.isEnough(storageOutOrderForm.getGoodsFormList());
+//                    if(!result.isOk()){
+//                        return CommonResult.error(result.getCode(),result.getMsg());
+//                    }
+//                    ApiResult stock = storageClient.isStock(storageOutOrderForm.getGoodsFormList());
+//                    if(!stock.isOk()){
+//                        return CommonResult.error(stock.getCode(),stock.getMsg());
+//                    }
+//
+//                }
+//                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())) {
+//                    InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
+//                    ApiResult commodity = storageClient.isCommodity(storageInputOrderForm.getGoodsFormList());
+//                    if(!commodity.isOk()){
+//                        return CommonResult.error(commodity.getCode(),commodity.getMsg());
+//                    }
+//                }
+        }
+        //校验参数
+        form.checkCreateParam();
     }
 
 }

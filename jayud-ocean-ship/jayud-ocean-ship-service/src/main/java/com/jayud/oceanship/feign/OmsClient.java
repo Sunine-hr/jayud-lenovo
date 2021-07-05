@@ -6,6 +6,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxVO;
+import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.utils.FileView;
 import com.jayud.oceanship.bo.AddGoodsForm;
 import com.jayud.oceanship.bo.AddOrderAddressForm;
@@ -142,18 +143,19 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getGoodsByBusOrders")
     public ApiResult<List<GoodsVO>> getGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
-                                                     @RequestParam("businessType") Integer businessType);
+                                                        @RequestParam("businessType") Integer businessType);
 
     /**
      * 根据业务号集合查询订单地址
      */
     @RequestMapping(value = "/api/getOrderAddressByBusOrders")
     public ApiResult<List<OrderAddressVO>> getOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
-                                                                   @RequestParam("businessType") Integer businessType);
+                                                                      @RequestParam("businessType") Integer businessType);
 
 
     /**
      * 根据供应商id集合查询供应商信息
+     *
      * @return
      */
     @RequestMapping(value = "/api/getSupplierInfoByIds")
@@ -173,6 +175,7 @@ public interface OmsClient {
 
     /**
      * 根据客户code集合查询客户信息
+     *
      * @return
      */
     @RequestMapping(value = "/api/getCustomerByUnitCode")
@@ -180,10 +183,11 @@ public interface OmsClient {
 
     /**
      * 获取订单号
+     *
      * @return
      */
     @RequestMapping(value = "/api/getOrderNo")
-    ApiResult getOrderNo(@RequestParam("preOrder") String preOrder , @RequestParam("classCode") String classCode);
+    ApiResult getOrderNo(@RequestParam("preOrder") String preOrder, @RequestParam("classCode") String classCode);
 
     /**
      * 批量新增/修改订单流程
@@ -210,21 +214,21 @@ public interface OmsClient {
 
     @ApiOperation(value = "获取订单id")
     @RequestMapping(value = "/api/getMainOrderByOrderNo")
-    ApiResult<Long> getMainOrderByOrderNo(@RequestParam("mainOrderNo")String mainOrderNo);
+    ApiResult<Long> getMainOrderByOrderNo(@RequestParam("mainOrderNo") String mainOrderNo);
 
     /**
      * 根据订单号集合删除商品信息
      */
     @RequestMapping(value = "/api/deleteGoodsByBusOrders")
     public ApiResult deleteGoodsByBusOrders(@RequestParam("orderNo") List<String> orderNo,
-                                                        @RequestParam("businessType") Integer businessType);
+                                            @RequestParam("businessType") Integer businessType);
 
     /**
      * 根据业务号集合删除订单地址
      */
     @RequestMapping(value = "/api/deleteOrderAddressByBusOrders")
     public ApiResult deleteOrderAddressByBusOrders(@RequestParam("orderNo") List<String> orderNo,
-                                                                      @RequestParam("businessType") Integer businessType);
+                                                   @RequestParam("businessType") Integer businessType);
 
     /**
      * 查询待审核费用订单数量
@@ -234,7 +238,7 @@ public interface OmsClient {
     @RequestMapping(value = "/api/auditPendingExpenses")
     ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
                                             @RequestParam("legalIds") List<Long> legalIds,
-                                            @RequestParam("orderNos")List<String> orderNos);
+                                            @RequestParam("orderNos") List<String> orderNos);
 
     /**
      * 根据字典类型下拉选项字典

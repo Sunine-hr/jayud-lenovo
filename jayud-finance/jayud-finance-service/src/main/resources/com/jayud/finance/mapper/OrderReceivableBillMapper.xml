@@ -48,14 +48,6 @@
         ob.account_term accountTermStr,
         ( SELECT count( DISTINCT orbd.order_no ) FROM order_receivable_bill_detail orbd WHERE ob.bill_no = orbd.bill_no
         ) billNum,
---         ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE ob.bill_no = obct.bill_no AND
---         obct.currency_code = 'CNY' ) rmb,
---         ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE ob.bill_no = obct.bill_no AND
---         obct.currency_code = 'USD' ) dollar,
---         ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE ob.bill_no = obct.bill_no AND
---         obct.currency_code = 'EUR' ) euro,
---         ( SELECT ifnull(sum( obct.money ),0) FROM order_bill_cost_total obct WHERE ob.bill_no = obct.bill_no AND
---         obct.currency_code = 'HKD' ) hKDollar,
         (select ifnull(sum(obct.local_money),0) from order_bill_cost_total obct where obct.bill_no = ob.bill_no)
         localAmount,
         (select ifnull(sum(cav.real_receive_money),0) from cancel_after_verification cav where cav.bill_no = ob.bill_no)
@@ -111,7 +103,8 @@
         orc.change_amount localAmount,
         orc.id costId,
         orc.is_bill isBill,
-        oi.operation_time
+        oi.operation_time,
+        oi.biz_code bizCode
         FROM
         order_receivable_cost orc
         LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
@@ -234,6 +227,10 @@
             and date_format(temp.operation_time,'%Y-%m-%d')
             BETWEEN #{form.operationTime[0]} AND #{form.operationTime[1]}
         </if>
+        <if test="form.bizCode != null and form.bizCode!=''">
+            and temp.bizCode =#{form.bizCode}
+        </if>
+
     </select>
 
 
@@ -247,7 +244,8 @@
         oi.operation_time,
         oi.created_user createdUser,
         -- orc.is_bill,
-        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr
+        DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
+        oi.biz_code bizCode
         FROM
         order_receivable_cost orc
         LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
@@ -293,6 +291,9 @@
         <if test="form.operationTime != null and form.operationTime.size>0">
             and date_format(temp.operation_time,'%Y-%m-%d')
             BETWEEN #{form.operationTime[0]} AND #{form.operationTime[1]}
+        </if>
+        <if test="form.bizCode != null and form.bizCode!=''">
+            and temp.bizCode =#{form.bizCode}
         </if>
         group by temp.orderNo,temp.subOrderNo
     </select>

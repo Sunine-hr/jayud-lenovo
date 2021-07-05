@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -47,7 +48,8 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
      * @param form
      * @return
      */
-    IPage<PaymentNotPaidBillVO> findEditBillByPage(Page page, @Param("form") QueryEditBillForm form);
+    IPage<PaymentNotPaidBillVO> findEditBillByPage(Page page, @Param("form") QueryEditBillForm form,
+                                                   @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
 
     /**
      * 预览账单表头

@@ -2,6 +2,8 @@ package com.jayud.oms.model.vo;
 
 import com.jayud.common.enums.CreditStatusEnum;
 import com.jayud.common.enums.CustomsCreditRatingEnum;
+import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
@@ -130,6 +132,15 @@ public class CustomerInfoVO {
     @ApiModelProperty(value = "是否高级认证")
     private Boolean isAdvancedCertification;
 
+    @ApiModelProperty(value = "文件路径(多个逗号隔开)")
+    private String filePath;
+
+    @ApiModelProperty(value = "文件名称(多个逗号隔开)")
+    private String fileName;
+
+    @ApiModelProperty(value = "附件集合")
+    private List<FileView> fileViews = new ArrayList<>();
+
 
     public List<Long> getLegalEntityIds() {
         if (!StringUtil.isNullOrEmpty(this.legalEntityIdStr)) {
@@ -167,5 +178,10 @@ public class CustomerInfoVO {
             return true;
         }
         return false;
+    }
+
+    public void assembleAccessories(Object url) {
+        if (url == null) return;
+        this.fileViews = StringUtils.getFileViews(this.filePath, this.fileName, url.toString());
     }
 }

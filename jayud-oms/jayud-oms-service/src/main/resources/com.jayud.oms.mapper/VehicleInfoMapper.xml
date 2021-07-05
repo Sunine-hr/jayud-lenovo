@@ -92,8 +92,8 @@
         w.update_time updateTime, w.update_user updateUser,
         stepping_code steppingCode, enterprise_code enterpriseCode,
         vehicle_tonnage vehicleTonnage,
-        files,
-        file_name fileName,
+        w.files,
+        w.file_name fileName,
         `type`
         from
         vehicle_info w left join supplier_info s on w.supplier_id=s.id

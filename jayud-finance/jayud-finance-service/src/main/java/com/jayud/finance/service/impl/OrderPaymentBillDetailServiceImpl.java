@@ -212,7 +212,11 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         Page<PaymentNotPaidBillVO> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
         page.addOrder(OrderItem.desc("opc.id"));
-        IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findEditBillByPage(page, form);
+        Map<String, Object> param = new HashMap<>();
+        param.put("cmd", form.getCmd());
+        Map<String, Object> dynamicSqlParam = this.orderPaymentBillService.dynamicSQLFindReceiveBillByPageParam(param);
+
+        IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findEditBillByPage(page, form, dynamicSqlParam);
         List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
         for (PaymentNotPaidBillVO paymentNotPaidBillVO : pageList) {
             //处理目的地:当有两条或两条以上时,则获取中转仓地址
@@ -597,7 +601,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                 }
             }
             //序号
-            jsonObject.putOnce("num",i+1);
+            jsonObject.putOnce("num", i + 1);
             newOrderList.add(viewFBilToOrderVO);
             mainOrderNos.add(viewFBilToOrderVO.getOrderNo());
 //            list.add(viewBillToOrder);

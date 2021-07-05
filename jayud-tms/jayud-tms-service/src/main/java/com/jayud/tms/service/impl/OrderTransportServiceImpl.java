@@ -217,18 +217,19 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public IPage<OrderTransportVO> findTransportOrderByPage(QueryOrderTmsForm form) {
         //检索提货时间
-        if (CollectionUtils.isNotEmpty(form.getTakeTimeStr())) {
-            Set<String> orderNos = this.orderTakeAdrService.getOrderNosByTakeTime(form.getTakeTimeStr(), OrderTakeAdrTypeEnum.ONE.getCode());
-            if (CollectionUtils.isEmpty(orderNos)) {
-                orderNos.add("-1");
-            }
-            form.setSubOrderNos(orderNos);
-        }
+//        if (CollectionUtils.isNotEmpty(form.getTakeTimeStr())) {
+//            Set<String> orderNos = this.orderTakeAdrService.getOrderNosByTakeTime(form.getTakeTimeStr(), OrderTakeAdrTypeEnum.ONE.getCode());
+//            if (CollectionUtils.isEmpty(orderNos)) {
+//                orderNos.add("-1");
+//            }
+//            if (orderNos.size() >= form.getPageSize()) {
+//                form.setSubOrderNos(orderNos.stream().limit(form.getPageSize()).collect(Collectors.toSet()));
+//            }
+//
+//        }
 
         //定义分页参数
-        Page<OrderTransportVO> page = new Page(form.getPageNum(), form.getPageSize());
-        //定义排序规则
-        page.addOrder(OrderItem.desc("ot.id"));
+        Page<OrderTransportVO> page = new Page<>(form.getPageNum(), form.getPageSize());
 
         //获取当前用户所属法人主体
         DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), form.getAccountType()).getData();

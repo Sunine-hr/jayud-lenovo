@@ -58,6 +58,9 @@ public class QueryVoidBillingForm extends BasePageForm {
     @ApiModelProperty(value = "费用类型(0-应收, 1-应付)")
     private Integer costType;
 
+    @ApiModelProperty(value = "制单人")
+    private String makeUser;
+
     public void setCmd(String cmd) {
         this.cmd = cmd;
         setSubType(cmd.split("_")[0]);

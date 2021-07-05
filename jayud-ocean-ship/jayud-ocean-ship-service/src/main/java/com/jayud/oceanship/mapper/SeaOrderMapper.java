@@ -6,6 +6,7 @@ import com.jayud.oceanship.bo.QuerySeaOrderForm;
 import com.jayud.oceanship.po.SeaOrder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oceanship.vo.SeaOrderFormVO;
+import com.jayud.oceanship.vo.SeaOrderInfoVO;
 import com.jayud.oceanship.vo.SeaOrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -48,4 +49,5 @@ public interface SeaOrderMapper extends BaseMapper<SeaOrder> {
      */
     public Integer getNumByStatus(@Param("status") String status, @Param("legalIds") List<Long> legalIds);
 
+    List<SeaOrderInfoVO> getSeaOrderInfoByMainOrderNos(@Param("mainOrderNos") List<String> mainOrderNos);
 }

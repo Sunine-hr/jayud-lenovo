@@ -38,4 +38,12 @@ public interface IProductClassifyService extends IService<ProductClassify> {
      * 根据产品编码集合查询产品
      */
     List<ProductClassify> getIdCodes(List<String> idCodes);
+
+    /**
+     * 根据条件查询产品信息
+     *
+     * @param productClassify
+     * @return
+     */
+    List<ProductClassify> getByCondition(ProductClassify productClassify);
 }

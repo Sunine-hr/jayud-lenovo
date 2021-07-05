@@ -194,4 +194,11 @@ public interface IOrderPaymentBillService extends IService<OrderPaymentBill> {
      * @param billId
      */
     public void statisticsBill(Long billId);
+
+    /**
+     * 拼接sql
+     * @param param
+     * @return
+     */
+    public Map<String, Object> dynamicSQLFindReceiveBillByPageParam(Map<String, Object> param);
 }

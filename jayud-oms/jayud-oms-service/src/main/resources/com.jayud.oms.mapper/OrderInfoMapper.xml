@@ -91,8 +91,10 @@
             <if test="form.cmd == 'costAudited'">
                 and oi.`status` IN (1,3,4)
                 AND oi.order_no in (
-                (SELECT opc.main_order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='main' and opc.is_bill='0'
-                union SELECT orc.main_order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and orc.sub_type='main' and orc.is_bill='0')
+                (SELECT opc.main_order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='main'
+                and opc.is_bill='0'
+                union SELECT orc.main_order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and
+                orc.sub_type='main' and orc.is_bill='0')
                 )
             </if>
             <if test="form.cmd == 'outCustomsRelease'">
@@ -132,6 +134,9 @@
             </if>
             <if test="form.createdUser != null and form.createdUser !=''">
                 and oi.created_user like concat('%',#{form.createdUser},'%')
+            </if>
+            <if test="form.operationTime !=null and form.operationTime.size > 0">
+                and oi.operation_time between #{form.operationTime[0]} and #{form.operationTime[1]}
             </if>
             <choose>
                 <when test="form.entrance == 'myOrder'">
@@ -205,96 +210,99 @@
             <if test="form.createdUser != null and form.createdUser !=''">
                 and oi.created_user like concat('%',#{form.createdUser},'%')
             </if>
+            <if test="form.operationTime !=null and form.operationTime>0">
+                and oi.operation_time between #{form.operationTime[0]} and #{form.operationTime[1]}
+            </if>
         </where>
         order by oi.id desc
     </select>
 
 
-<!--    <select id="findGoCustomsAuditByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm"-->
-<!--            resultType="com.jayud.oms.model.vo.OrderInfoVO">-->
-<!--        SELECT DISTINCT-->
-<!--        oi.id,-->
-<!--        oi.`remarks`,-->
-<!--        oi.`order_no` orderNo,-->
-<!--        ot.`goods_type` goodsType,-->
-<!--        ot.`port_code` portCode,-->
-<!--        oi.`status`,-->
-<!--        oi.`class_code` classCode,-->
-<!--        oi.`customer_name` customerName,-->
-<!--        oi.`customer_code` customerCode,-->
-<!--        oi.`legal_name` legalName,-->
+    <!--    <select id="findGoCustomsAuditByPage" parameterType="com.jayud.oms.model.bo.QueryOrderInfoForm"-->
+    <!--            resultType="com.jayud.oms.model.vo.OrderInfoVO">-->
+    <!--        SELECT DISTINCT-->
+    <!--        oi.id,-->
+    <!--        oi.`remarks`,-->
+    <!--        oi.`order_no` orderNo,-->
+    <!--        ot.`goods_type` goodsType,-->
+    <!--        ot.`port_code` portCode,-->
+    <!--        oi.`status`,-->
+    <!--        oi.`class_code` classCode,-->
+    <!--        oi.`customer_name` customerName,-->
+    <!--        oi.`customer_code` customerCode,-->
+    <!--        oi.`legal_name` legalName,-->
 
-<!--        ot.`status` subTmsStatus,-->
-<!--        oi.`created_user` createdUser,-->
-<!--        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,-->
+    <!--        ot.`status` subTmsStatus,-->
+    <!--        oi.`created_user` createdUser,-->
+    <!--        DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') createdTimeStr,-->
 
-<!--        oi.`need_input_cost` needInputCost,-->
-<!--        oi.`customs_release` customsRelease,-->
-<!--        oi.selected_server selectedServer-->
-<!--        FROM-->
-<!--        order_info oi LEFT JOIN order_transport ot ON-->
-<!--        oi.`order_no` = ot.`main_order_no`-->
+    <!--        oi.`need_input_cost` needInputCost,-->
+    <!--        oi.`customs_release` customsRelease,-->
+    <!--        oi.selected_server selectedServer-->
+    <!--        FROM-->
+    <!--        order_info oi LEFT JOIN order_transport ot ON-->
+    <!--        oi.`order_no` = ot.`main_order_no`-->
 
-<!--        <where>-->
-<!--            <choose>-->
-<!--                <when test="form.mainOrderIds !=null and form.mainOrderIds.size>0 ">-->
-<!--                    oi.`id` in-->
-<!--                    <foreach collection="form.mainOrderIds" item="item" open="(" separator="," close=")">-->
-<!--                        #{item}-->
-<!--                    </foreach>-->
-<!--                </when>-->
-<!--                <otherwise>-->
-<!--                    &#45;&#45; TODO 为空返回null值-->
-<!--                    oi.id=-1-->
-<!--                </otherwise>-->
-<!--            </choose>-->
+    <!--        <where>-->
+    <!--            <choose>-->
+    <!--                <when test="form.mainOrderIds !=null and form.mainOrderIds.size>0 ">-->
+    <!--                    oi.`id` in-->
+    <!--                    <foreach collection="form.mainOrderIds" item="item" open="(" separator="," close=")">-->
+    <!--                        #{item}-->
+    <!--                    </foreach>-->
+    <!--                </when>-->
+    <!--                <otherwise>-->
+    <!--                    &#45;&#45; TODO 为空返回null值-->
+    <!--                    oi.id=-1-->
+    <!--                </otherwise>-->
+    <!--            </choose>-->
 
 
-<!--            &#45;&#45; TODO 外部报关-->
-<!--            &#45;&#45; (oi.`class_code` = 'ZGYS' or oi.selected_server like concat('%','ZGYSDD','%'))-->
-<!--            &#45;&#45; AND (ot.`status` = 'T_6' or (ot.`status` = 'T_5' AND ot.is_vehicle_weigh = 0))-->
-<!--            &#45;&#45; AND (oi.`customs_release` = 1-->
-<!--            &#45;&#45; OR-->
-<!--            &#45;&#45; &#45;&#45; TODO 出口报关所有都放行才能进通关前审核-->
-<!--            &#45;&#45; ((SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') =-->
-<!--            &#45;&#45; (SELECT COUNT(1) FROM order_customs oc WHERE oc.`main_order_no` = oi.`order_no`)-->
-<!--            &#45;&#45; AND (SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') >-->
-<!--            &#45;&#45; 0)-->
-<!--            &#45;&#45; )-->
-<!--            <if test="form.orderNo != null and form.orderNo != ''">-->
-<!--                and oi.order_no = #{form.orderNo}-->
-<!--            </if>-->
-<!--            <if test="form.portCode != null and form.portCode != ''">-->
-<!--                and ot.port_code = #{form.portCode}-->
-<!--            </if>-->
-<!--            <if test="form.classCode != null and form.classCode !=''">-->
-<!--                and oi.class_code = #{form.classCode}-->
-<!--            </if>-->
-<!--            <if test="form.customerName != null and form.customerName !=''">-->
-<!--                and oi.customer_name like concat('%',#{form.customerName},'%')-->
-<!--            </if>-->
-<!--            <if test="form.legalName != null and form.legalName !=''">-->
-<!--                and oi.legal_name like concat('%',#{form.legalName},'%')-->
-<!--            </if>-->
-<!--            <if test="form.endCreateTimeStr != null and form.endCreateTimeStr !=''">-->
-<!--                and DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> #{form.endCreateTimeStr}-->
-<!--            </if>-->
-<!--            <if test="form.beginCreateTimeStr != null and form.beginCreateTimeStr !=''">-->
-<!--                and DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{form.beginCreateTimeStr}-->
-<!--            </if>-->
+    <!--            &#45;&#45; TODO 外部报关-->
+    <!--            &#45;&#45; (oi.`class_code` = 'ZGYS' or oi.selected_server like concat('%','ZGYSDD','%'))-->
+    <!--            &#45;&#45; AND (ot.`status` = 'T_6' or (ot.`status` = 'T_5' AND ot.is_vehicle_weigh = 0))-->
+    <!--            &#45;&#45; AND (oi.`customs_release` = 1-->
+    <!--            &#45;&#45; OR-->
+    <!--            &#45;&#45; &#45;&#45; TODO 出口报关所有都放行才能进通关前审核-->
+    <!--            &#45;&#45; ((SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') =-->
+    <!--            &#45;&#45; (SELECT COUNT(1) FROM order_customs oc WHERE oc.`main_order_no` = oi.`order_no`)-->
+    <!--            &#45;&#45; AND (SELECT COUNT(1) FROM logistics_track lt WHERE lt.`main_order_id` = oi.`id` AND lt.`status`='C_5') >-->
+    <!--            &#45;&#45; 0)-->
+    <!--            &#45;&#45; )-->
+    <!--            <if test="form.orderNo != null and form.orderNo != ''">-->
+    <!--                and oi.order_no = #{form.orderNo}-->
+    <!--            </if>-->
+    <!--            <if test="form.portCode != null and form.portCode != ''">-->
+    <!--                and ot.port_code = #{form.portCode}-->
+    <!--            </if>-->
+    <!--            <if test="form.classCode != null and form.classCode !=''">-->
+    <!--                and oi.class_code = #{form.classCode}-->
+    <!--            </if>-->
+    <!--            <if test="form.customerName != null and form.customerName !=''">-->
+    <!--                and oi.customer_name like concat('%',#{form.customerName},'%')-->
+    <!--            </if>-->
+    <!--            <if test="form.legalName != null and form.legalName !=''">-->
+    <!--                and oi.legal_name like concat('%',#{form.legalName},'%')-->
+    <!--            </if>-->
+    <!--            <if test="form.endCreateTimeStr != null and form.endCreateTimeStr !=''">-->
+    <!--                and DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> #{form.endCreateTimeStr}-->
+    <!--            </if>-->
+    <!--            <if test="form.beginCreateTimeStr != null and form.beginCreateTimeStr !=''">-->
+    <!--                and DATE_FORMAT(oi.`create_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{form.beginCreateTimeStr}-->
+    <!--            </if>-->
 
-<!--            <if test="form.createdUser != null and form.createdUser !=''">-->
-<!--                and oi.created_user like concat('%',#{form.createdUser},'%')-->
-<!--            </if>-->
+    <!--            <if test="form.createdUser != null and form.createdUser !=''">-->
+    <!--                and oi.created_user like concat('%',#{form.createdUser},'%')-->
+    <!--            </if>-->
 
-<!--            &lt;!&ndash;        <if test="legalIds != null and legalIds.size>0">&ndash;&gt;-->
-<!--            &lt;!&ndash;            and oi.`legal_entity_id` in&ndash;&gt;-->
-<!--            &lt;!&ndash;            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">&ndash;&gt;-->
-<!--            &lt;!&ndash;                #{legalId}&ndash;&gt;-->
-<!--            &lt;!&ndash;            </foreach>&ndash;&gt;-->
-<!--            &lt;!&ndash;        </if>&ndash;&gt;-->
-<!--        </where>-->
-<!--    </select>-->
+    <!--            &lt;!&ndash;        <if test="legalIds != null and legalIds.size>0">&ndash;&gt;-->
+    <!--            &lt;!&ndash;            and oi.`legal_entity_id` in&ndash;&gt;-->
+    <!--            &lt;!&ndash;            <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">&ndash;&gt;-->
+    <!--            &lt;!&ndash;                #{legalId}&ndash;&gt;-->
+    <!--            &lt;!&ndash;            </foreach>&ndash;&gt;-->
+    <!--            &lt;!&ndash;        </if>&ndash;&gt;-->
+    <!--        </where>-->
+    <!--    </select>-->
 
     <select id="getMainOrderById" parameterType="java.lang.Long" resultType="com.jayud.oms.model.vo.InputMainOrderVO">
         SELECT

@@ -335,4 +335,11 @@ public class StorageFastOrderServiceImpl extends ServiceImpl<StorageFastOrderMap
         this.baseMapper.updateById(storageFastOrder);
         this.storageProcessOptRecord(form);
     }
+
+    @Override
+    public StorageFastOrder getStorageFastOrderByOrderNO(String orderNo) {
+        QueryWrapper<StorageFastOrder> condition = new QueryWrapper<>();
+        condition.lambda().eq(StorageFastOrder::getOrderNo, orderNo);
+        return this.getOne(condition);
+    }
 }

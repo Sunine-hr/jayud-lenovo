@@ -35,4 +35,14 @@ public interface ICurrencyInfoService extends IService<CurrencyInfo> {
      * 查询下拉币种
      */
     public List<InitComboxStrVO> initCurrencyInfo();
+
+    /**
+     * 根据币种code获取币种信息
+     *
+     * @param code
+     * @param usd
+     * @param month
+     * @return
+     */
+    CurrencyInfoVO getCurrencyInfoByCode(String code, String usd, String month);
 }

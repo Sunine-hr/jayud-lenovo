@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -268,4 +269,7 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getOrderReceivableCostByMainOrderNo")
     ApiResult<List<OrderReceivableCostVO>> getOrderReceivableCostByMainOrderNo(@RequestParam("mainOrderNo") String mainOrderNo);
 
+    @ApiOperation(value = "获取该币种转换成美元的汇率")
+    @RequestMapping(value = "/api/getExchangeRateByCurrency")
+    ApiResult<BigDecimal> getExchangeRateByCurrency(@RequestParam("currencyCode")String currencyCode, @RequestParam("usd")String usd, @RequestParam("month")String month);
 }

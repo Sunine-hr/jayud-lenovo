@@ -72,4 +72,18 @@ public class CurrencyInfoServiceImpl extends ServiceImpl<CurrencyInfoMapper, Cur
         }
         return initComboxStrVOS;
     }
+
+    /**
+     * 根据币种code获取币种信息
+     *
+     * @param code
+     * @param usd
+     * @param month
+     * @return
+     */
+    @Override
+    public CurrencyInfoVO getCurrencyInfoByCode(String code, String usd, String month) {
+
+        return this.baseMapper.getCurrencyInfoByCode(code, usd, month);
+    }
 }

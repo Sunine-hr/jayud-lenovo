@@ -1725,7 +1725,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "获取该订单所有应收费用")
     @RequestMapping(value = "/api/getOrderReceivableCostByMainOrderNo")
-    ApiResult<List<OrderReceivableCostVO>> getOrderReceivableCostByMainOrderNo(@RequestParam("mainOrderNo") String mainOrderNo){
+    ApiResult<List<OrderReceivableCostVO>> getOrderReceivableCostByMainOrderNo(@RequestParam("mainOrderNo") String mainOrderNo) {
         List<OrderReceivableCost> byMainOrderNo = receivableCostService.getOrderReceivableCostByMainOrderNo(mainOrderNo);
         List<OrderReceivableCostVO> orderReceivableCostVOS = new ArrayList<>();
         for (OrderReceivableCost orderReceivableCost : byMainOrderNo) {
@@ -1734,6 +1734,23 @@ public class ExternalApiController {
             orderReceivableCostVOS.add(convert);
         }
         return ApiResult.ok(orderReceivableCostVOS);
+    }
+
+    @ApiOperation(value = "获取该币种转换成美元的汇率")
+    @RequestMapping(value = "/api/getExchangeRateByCurrency")
+    ApiResult<BigDecimal> getExchangeRateByCurrency(@RequestParam("currencyCode") String currencyCode, @RequestParam("usd") String usd, @RequestParam("month") String month) {
+        CurrencyInfoVO currencyInfo = currencyInfoService.getCurrencyInfoByCode(currencyCode, usd, month);
+        if (currencyInfo != null) {
+            return ApiResult.ok(currencyInfo.getExchangeRate());
+        } else {
+            CurrencyInfoVO currencyInfo1 = currencyInfoService.getCurrencyInfoByCode(usd, currencyCode, month);
+            if (currencyInfo1 != null) {
+                return ApiResult.ok(currencyInfo1.getExchangeRate());
+            } else {
+                return ApiResult.ok(new BigDecimal(0));
+            }
+        }
+
     }
 }
 

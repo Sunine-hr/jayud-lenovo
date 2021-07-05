@@ -4,12 +4,12 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.CurrencyInfo">
-        <id column="id" property="id" />
-        <result column="currency_code" property="currencyCode" />
-        <result column="currency_name" property="currencyName" />
-        <result column="status" property="status" />
-        <result column="create_user" property="createUser" />
-        <result column="create_time" property="createTime" />
+        <id column="id" property="id"/>
+        <result column="currency_code" property="currencyCode"/>
+        <result column="currency_name" property="currencyName"/>
+        <result column="status" property="status"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -17,7 +17,7 @@
         id, currency_code, currency_name, status, create_user, create_time
     </sql>
 
-    <select id="findCurrencyInfo"  resultType="com.jayud.oms.model.vo.CurrencyInfoVO" >
+    <select id="findCurrencyInfo" resultType="com.jayud.oms.model.vo.CurrencyInfoVO">
         SELECT
             ci.`currency_name` currencyName,
             ci.`currency_code` currencyCode,
@@ -31,5 +31,22 @@
             AND t1.`status` = 1
             and t1.`month` = #{createdTimeStr}
     </select>
+
+    <select id="getCurrencyInfoByCode" resultType="com.jayud.oms.model.vo.CurrencyInfoVO">
+        SELECT
+            ci.`currency_name` currencyName,
+            ci.`currency_code` currencyCode,
+            t1.exchange_rate exchangeRate
+        FROM
+            currency_info ci
+            LEFT JOIN currency_rate t1 ON ci.`id` = t1.`ocid`
+            AND t1.dcid = ( SELECT t.id FROM currency_info t WHERE t.currency_code = #{usd} )
+        WHERE
+            ci.`status` = 1
+            and ci.`currency_code` = #{code}
+            AND t1.`status` = 1
+            and t1.`month` = #{month}
+    </select>
+
 
 </mapper>

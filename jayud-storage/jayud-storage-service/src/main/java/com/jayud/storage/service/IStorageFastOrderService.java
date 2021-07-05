@@ -36,4 +36,6 @@ public interface IStorageFastOrderService extends IService<StorageFastOrder> {
 
     //快进快出接单
     void confirmReceipt(StorageFastProcessOptForm form);
+
+    StorageFastOrder getStorageFastOrderByOrderNO(String orderNo);
 }

@@ -51,7 +51,10 @@ public class SeaPortServiceImpl extends ServiceImpl<SeaPortMapper, SeaPort> impl
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("code",portDepartureCode);
         SeaPort one = this.getOne(queryWrapper);
-        return one.getName();
+        if(one != null){
+            return one.getName();
+        }
+        return portDepartureCode;
     }
 
     @Override

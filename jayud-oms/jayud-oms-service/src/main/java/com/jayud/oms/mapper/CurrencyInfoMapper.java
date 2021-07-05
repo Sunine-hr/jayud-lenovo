@@ -20,4 +20,6 @@ import java.util.List;
 public interface CurrencyInfoMapper extends BaseMapper<CurrencyInfo> {
 
     List<CurrencyInfoVO> findCurrencyInfo(@Param("createdTimeStr") String createdTimeStr);
+
+    CurrencyInfoVO getCurrencyInfoByCode(@Param("code")String code, @Param("usd")String usd, @Param("month")String month);
 }

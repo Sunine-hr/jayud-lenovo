@@ -23,6 +23,7 @@ import com.jayud.storage.model.po.StorageFastOrder;
 import com.jayud.storage.model.po.StorageInputOrder;
 import com.jayud.storage.model.po.StorageOutOrder;
 import com.jayud.storage.model.vo.StorageFastOrderFormVO;
+import com.jayud.storage.model.vo.StorageFastOrderVO;
 import com.jayud.storage.model.vo.StorageOutOrderFormVO;
 import com.jayud.storage.service.IStorageFastOrderService;
 import com.jayud.storage.service.IWarehouseGoodsService;
@@ -296,6 +297,22 @@ public class StorageFastOrderController {
         }
 
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "获取快进快出单详情")
+    @PostMapping(value = "/getStorageFastOrderDetails")
+    public CommonResult getStorageFastOrderDetails(@RequestBody Map<String,Object> map) {
+        String orderNo = MapUtil.getStr(map, "orderNo");
+        StorageFastOrder storageFastOrder = storageFastOrderService.getStorageFastOrderByOrderNO(orderNo);
+        StorageFastOrderVO storageFastOrderVOById = storageFastOrderService.getStorageFastOrderVOById(storageFastOrder.getId());
+        return CommonResult.success(storageFastOrderVOById);
+    }
+
+    @ApiOperation(value = "修改快进快出订单")
+    @PostMapping(value = "/createOrUpdateOrder")
+    public CommonResult createOrUpdateOrder(@RequestBody StorageFastOrderForm storageFastOrderForm) {
+        String order = storageFastOrderService.createOrder(storageFastOrderForm);
+        return CommonResult.success(order);
     }
 
 }

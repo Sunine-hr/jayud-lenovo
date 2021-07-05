@@ -164,7 +164,7 @@ public class SeaOrderController {
             }
 
             record.getSeaBookShipForm().getFile(prePath);
-            if(record.getDepartmentId() != null){
+            if (record.getDepartmentId() != null) {
                 departmentIds.add(record.getDepartmentId());
             }
 
@@ -175,7 +175,7 @@ public class SeaOrderController {
 
         //查询法人主体
         ApiResult legalEntityResult = null;
-        if (CollectionUtils.isNotEmpty(entityIds) ) {
+        if (CollectionUtils.isNotEmpty(entityIds)) {
             legalEntityResult = this.oauthClient.getLegalEntityByLegalIds(entityIds);
         }
         //查询供应商信息
@@ -186,7 +186,7 @@ public class SeaOrderController {
 
         //查询部门名称
         ApiResult departmentResult = null;
-        if(CollectionUtils.isNotEmpty(departmentIds) && departmentIds.size() > 0){
+        if (CollectionUtils.isNotEmpty(departmentIds) && departmentIds.size() > 0) {
             departmentResult = this.oauthClient.getDepartmentByDepartment(departmentIds);
         }
 
@@ -257,7 +257,7 @@ public class SeaOrderController {
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.like("sea_order_no", record.getOrderNo());
             List<SeaReplenishment> seaReplenishments = seaReplenishmentService.list(queryWrapper);
-            if(CollectionUtils.isNotEmpty(seaReplenishments)){
+            if (CollectionUtils.isNotEmpty(seaReplenishments)) {
                 StringBuffer stringBuffer = new StringBuffer();
                 List<SeaReplenishmentVO> seaReplenishmentVOS = ConvertUtil.convertList(seaReplenishments, SeaReplenishmentVO.class);
                 for (SeaReplenishmentVO seaReplenishmentVO : seaReplenishmentVOS) {
@@ -270,7 +270,7 @@ public class SeaOrderController {
                     seaReplenishmentVO.setSeaContainerInformations(seaContainerInformations);
                 }
                 record.setSeaReplenishments(seaReplenishmentVOS);
-                record.setRepOrderNo(stringBuffer.substring(0,stringBuffer.length()-1));
+                record.setRepOrderNo(stringBuffer.substring(0, stringBuffer.length() - 1));
             }
 
         }
@@ -361,6 +361,7 @@ public class SeaOrderController {
             record.setOrderId(record.getSeaOrderId());
             record.setGoodsVOS(goodsVOS);
             record.assemblyGoodsInfo(goods);
+            record.assemblySeaPort();
 
             record.setCost(MapUtil.getBool(data, record.getOrderNo()));
             //拼装主订单信息
@@ -500,7 +501,7 @@ public class SeaOrderController {
         if (byId.getCabinetType().equals(1)) {
             List<CabinetSizeNumberVO> cabinetSizeNumberVOS = cabinetSizeNumberService.getList(byId.getId());
             seaReplenishmentVO.setCabinetSizeNumbers(cabinetSizeNumberVOS);
-            if(CollectionUtils.isNotEmpty(cabinetSizeNumberVOS)){
+            if (CollectionUtils.isNotEmpty(cabinetSizeNumberVOS)) {
                 seaReplenishmentVO.assemblyCabinetInfo(cabinetSizeNumberVOS);
             }
 
@@ -545,13 +546,13 @@ public class SeaOrderController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         SeaOrderVO seaOrderDetails = this.seaOrderService.getSeaOrderDetails(seaOrderId);
-        if (seaOrderDetails.getSeaReplenishments() == null || seaOrderDetails.getSeaReplenishments().size() <= 0 ) {
+        if (seaOrderDetails.getSeaReplenishments() == null || seaOrderDetails.getSeaReplenishments().size() <= 0) {
             List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
             SeaReplenishmentVO convert = ConvertUtil.convert(seaOrderDetails, SeaReplenishmentVO.class);
             convert.setOrderNo(null);
             convert.setSeaOrderId(seaOrderDetails.getOrderId());
             convert.setSeaOrderNo(seaOrderDetails.getOrderNo());
-            if(CollectionUtils.isNotEmpty(seaOrderDetails.getCabinetSizeNumbers())){
+            if (CollectionUtils.isNotEmpty(seaOrderDetails.getCabinetSizeNumbers())) {
                 convert.assemblyCabinetInfo(seaOrderDetails.getCabinetSizeNumbers());
             }
 
@@ -569,13 +570,13 @@ public class SeaOrderController {
             }
             //获取订船信息
             SeaBookship enableBySeaOrderId = seaBookshipService.getEnableBySeaOrderId(seaOrderDetails.getOrderId());
-            if(enableBySeaOrderId.getShipName() != null){
+            if (enableBySeaOrderId.getShipName() != null) {
                 convert.setShipName(enableBySeaOrderId.getShipName());
             }
-            if(enableBySeaOrderId.getShipNumber() != null){
+            if (enableBySeaOrderId.getShipNumber() != null) {
                 convert.setShipNumber(enableBySeaOrderId.getShipNumber());
             }
-            if(enableBySeaOrderId.getEtd() != null){
+            if (enableBySeaOrderId.getEtd() != null) {
                 convert.setSailingTime(enableBySeaOrderId.getEtd());
             }
             seaReplenishmentVOS.add(convert);
@@ -585,7 +586,7 @@ public class SeaOrderController {
             List<SeaReplenishmentVO> seaReplenishmentVOS = new ArrayList<>();
             for (SeaReplenishmentVO seaReplenishment : seaReplenishments) {
                 seaReplenishment.setCabinetSizeNumbers(seaOrderDetails.getCabinetSizeNumbers());
-                if(CollectionUtils.isNotEmpty(seaOrderDetails.getCabinetSizeNumbers())){
+                if (CollectionUtils.isNotEmpty(seaOrderDetails.getCabinetSizeNumbers())) {
                     seaReplenishment.assemblyCabinetInfo(seaOrderDetails.getCabinetSizeNumbers());
                 }
 
@@ -603,10 +604,10 @@ public class SeaOrderController {
                 }
                 //获取订船信息
                 SeaBookship enableBySeaOrderId = seaBookshipService.getEnableBySeaOrderId(seaOrderDetails.getOrderId());
-                if(enableBySeaOrderId.getShipName() != null){
+                if (enableBySeaOrderId.getShipName() != null) {
                     seaReplenishment.setShipName(enableBySeaOrderId.getShipName());
                 }
-                if(enableBySeaOrderId.getShipNumber() != null){
+                if (enableBySeaOrderId.getShipNumber() != null) {
                     seaReplenishment.setShipNumber(enableBySeaOrderId.getShipNumber());
                 }
                 seaReplenishmentVOS.add(seaReplenishment);
@@ -682,7 +683,7 @@ public class SeaOrderController {
      */
     @ApiOperation(value = "判断订单能否放单")
     @PostMapping(value = "/isReleaseOrder")
-    public CommonResult isReleaseOrder(@RequestBody Map<String,Object> map){
+    public CommonResult isReleaseOrder(@RequestBody Map<String, Object> map) {
         Long orderId = MapUtil.getLong(map, "orderId");
         //根据补料单id获取截补料信息
         SeaReplenishment seaReplenishment = seaReplenishmentService.getById(orderId);
@@ -690,8 +691,8 @@ public class SeaOrderController {
         String[] split = seaOrderNo.split(",");
         for (String s : split) {
             SeaOrder byMainOrderNO = seaOrderService.getByOrderNO(s);
-            if(!byMainOrderNO.getStatus().equals("S_7")){
-                return CommonResult.error(444,"该补料单有订单未确认装船");
+            if (!byMainOrderNO.getStatus().equals("S_7")) {
+                return CommonResult.error(444, "该补料单有订单未确认装船");
             }
         }
         return CommonResult.success();
@@ -850,54 +851,54 @@ public class SeaOrderController {
             //HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
 
 
-                //将集合数据填充
-                excelWriter.fill(new FillWrapper("delivery", seaReplenishment.getDeliveryAddress()), fillConfig, writeSheet);
-                excelWriter.fill(new FillWrapper("shipping", seaReplenishment.getShippingAddress()), fillConfig, writeSheet);
-                if (seaReplenishment.getNotificationAddress() != null && seaReplenishment.getNotificationAddress().size() > 0) {
-                    excelWriter.fill(new FillWrapper("notification", seaReplenishment.getNotificationAddress()), fillConfig, writeSheet);
-                }
-                excelWriter.fill(new FillWrapper("goodone", seaReplenishment.getGoodsForms()), fillConfig, writeSheet);
-                excelWriter.fill(new FillWrapper("seaContainerInformation", seaReplenishment.getSeaContainerInformations()), writeSheet);
+            //将集合数据填充
+            excelWriter.fill(new FillWrapper("delivery", seaReplenishment.getDeliveryAddress()), fillConfig, writeSheet);
+            excelWriter.fill(new FillWrapper("shipping", seaReplenishment.getShippingAddress()), fillConfig, writeSheet);
+            if (seaReplenishment.getNotificationAddress() != null && seaReplenishment.getNotificationAddress().size() > 0) {
+                excelWriter.fill(new FillWrapper("notification", seaReplenishment.getNotificationAddress()), fillConfig, writeSheet);
+            }
+            excelWriter.fill(new FillWrapper("goodone", seaReplenishment.getGoodsForms()), fillConfig, writeSheet);
+            excelWriter.fill(new FillWrapper("seaContainerInformation", seaReplenishment.getSeaContainerInformations()), writeSheet);
 
-                //将指定数据填充
-                Map<String, Object> map = new HashMap<String, Object>();
-                map.put("shipCompany", seaOrderDetails.getSeaBookshipVO().getShipCompany());
-                map.put("shipNumber", seaOrderDetails.getSeaBookshipVO().getShipNumber());
-                map.put("portDeparture", seaReplenishment.getPortDepartureName());
-                map.put("portDestination", seaReplenishment.getPortDestinationName());
-                map.put("cabinetType", seaReplenishment.getCabinetTypeName());
-                if (seaReplenishment.getCabinetTypeName().equals("FCL")) {
-                    map.put("whether", "√");
-                } else {
-                    map.put("whether2", "√");
-                }
+            //将指定数据填充
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("shipCompany", seaOrderDetails.getSeaBookshipVO().getShipCompany());
+            map.put("shipNumber", seaOrderDetails.getSeaBookshipVO().getShipNumber());
+            map.put("portDeparture", seaReplenishment.getPortDepartureName());
+            map.put("portDestination", seaReplenishment.getPortDestinationName());
+            map.put("cabinetType", seaReplenishment.getCabinetTypeName());
+            if (seaReplenishment.getCabinetTypeName().equals("FCL")) {
+                map.put("whether", "√");
+            } else {
+                map.put("whether2", "√");
+            }
 
-                if(seaReplenishment.getCabinetTypeName().equals("FCL")){
-                    List<SeaContainerInformationVO> seaContainerInformations = seaReplenishment.getSeaContainerInformations();
-                    Integer totalBulkCargoAmount = 0;
-                    Double totalWeights = 0.0;
-                    Double totalvolume = 0.0;
-                    if(seaContainerInformations!=null || seaContainerInformations.size()>0){
-                        for (SeaContainerInformationVO seaContainerInformation : seaContainerInformations) {
-                            if(seaContainerInformation.getPlatNumber()!=null ){
-                                totalBulkCargoAmount = totalBulkCargoAmount + seaContainerInformation.getPlatNumber();
-                            }
-                            if(seaContainerInformation.getWeight()!=null){
-                                totalWeights = totalWeights + seaContainerInformation.getWeight();
-                            }
-                            if (seaContainerInformation.getVolume() != null) {
-                                totalvolume = totalvolume + seaContainerInformation.getVolume();
-                            }
-
+            if (seaReplenishment.getCabinetTypeName().equals("FCL")) {
+                List<SeaContainerInformationVO> seaContainerInformations = seaReplenishment.getSeaContainerInformations();
+                Integer totalBulkCargoAmount = 0;
+                Double totalWeights = 0.0;
+                Double totalvolume = 0.0;
+                if (seaContainerInformations != null || seaContainerInformations.size() > 0) {
+                    for (SeaContainerInformationVO seaContainerInformation : seaContainerInformations) {
+                        if (seaContainerInformation.getPlatNumber() != null) {
+                            totalBulkCargoAmount = totalBulkCargoAmount + seaContainerInformation.getPlatNumber();
                         }
-                    }
+                        if (seaContainerInformation.getWeight() != null) {
+                            totalWeights = totalWeights + seaContainerInformation.getWeight();
+                        }
+                        if (seaContainerInformation.getVolume() != null) {
+                            totalvolume = totalvolume + seaContainerInformation.getVolume();
+                        }
 
-                    map.put("totalBulkCargoAmount", totalBulkCargoAmount);
-                    map.put("totalWeights", totalWeights);
-                    map.put("totalvolume", totalvolume);
+                    }
                 }
 
-                excelWriter.fill(map, writeSheet);
+                map.put("totalBulkCargoAmount", totalBulkCargoAmount);
+                map.put("totalWeights", totalWeights);
+                map.put("totalvolume", totalvolume);
+            }
+
+            excelWriter.fill(map, writeSheet);
 
             ++count;
 
@@ -926,61 +927,62 @@ public class SeaOrderController {
         List<OrderAddressVO> notificationAddress = seaOrder.getNotificationAddress();
         List<GoodsVO> goodsForms = seaOrder.getGoodsForms();
 
-        Map<String, String> resultMap=new HashMap<>();
-        if(CollectionUtils.isNotEmpty(deliveryAddress)){
-            if(deliveryAddress.get(0).getAddress() != null){
-                resultMap.put("shipperInformation",deliveryAddress.get(0).getAddress());
+        Map<String, String> resultMap = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(deliveryAddress)) {
+            if (deliveryAddress.get(0).getAddress() != null) {
+                resultMap.put("shipperInformation", deliveryAddress.get(0).getAddress());
             }
         }
-        if(CollectionUtils.isNotEmpty(shippingAddress)){
-            if(shippingAddress.get(0).getAddress() != null){
-                resultMap.put("consigneeInformation",shippingAddress.get(0).getAddress());
+        if (CollectionUtils.isNotEmpty(shippingAddress)) {
+            if (shippingAddress.get(0).getAddress() != null) {
+                resultMap.put("consigneeInformation", shippingAddress.get(0).getAddress());
             }
-        }if(CollectionUtils.isNotEmpty(notificationAddress)){
-            if(notificationAddress.get(0).getAddress() != null){
-                resultMap.put("notifierInformation",notificationAddress.get(0).getAddress());
+        }
+        if (CollectionUtils.isNotEmpty(notificationAddress)) {
+            if (notificationAddress.get(0).getAddress() != null) {
+                resultMap.put("notifierInformation", notificationAddress.get(0).getAddress());
             }
         }
 
-        if(seaOrder.getDestination() != null){
-            resultMap.put("destination",seaOrder.getDestination());
+        if (seaOrder.getDestination() != null) {
+            resultMap.put("destination", seaOrder.getDestination());
         }
-        if(seaOrder.getPortDepartureCode() != null){
-            resultMap.put("portDepartureCode",seaPortService.getPortName(seaOrder.getPortDepartureCode()));
+        if (seaOrder.getPortDepartureCode() != null) {
+            resultMap.put("portDepartureCode", seaPortService.getPortName(seaOrder.getPortDepartureCode()));
         }
-        if(seaOrder.getPortDestinationCode() != null){
+        if (seaOrder.getPortDestinationCode() != null) {
             //通过港口代码获取代码名称
-            resultMap.put("portDestinationCode",seaPortService.getPortName(seaOrder.getPortDestinationCode()));
+            resultMap.put("portDestinationCode", seaPortService.getPortName(seaOrder.getPortDestinationCode()));
         }
-        if(CollectionUtils.isNotEmpty(goodsForms)){
-            if(goodsForms.get(0).getLabel() != null){
-                resultMap.put("shippingMark",goodsForms.get(0).getLabel());
+        if (CollectionUtils.isNotEmpty(goodsForms)) {
+            if (goodsForms.get(0).getLabel() != null) {
+                resultMap.put("shippingMark", goodsForms.get(0).getLabel());
             }
-            if(goodsForms.get(0).getName() != null){
-                resultMap.put("goodName",goodsForms.get(0).getName());
+            if (goodsForms.get(0).getName() != null) {
+                resultMap.put("goodName", goodsForms.get(0).getName());
             }
-            if(goodsForms.get(0).getBulkCargoAmount() != null){
-                resultMap.put("number",goodsForms.get(0).getBulkCargoAmount()+(goodsForms.get(0).getBulkCargoUnit()==null?"":goodsForms.get(0).getBulkCargoUnit()));
+            if (goodsForms.get(0).getBulkCargoAmount() != null) {
+                resultMap.put("number", goodsForms.get(0).getBulkCargoAmount() + (goodsForms.get(0).getBulkCargoUnit() == null ? "" : goodsForms.get(0).getBulkCargoUnit()));
             }
-            if(goodsForms.get(0).getTotalWeight() != null){
-                resultMap.put("weight",goodsForms.get(0).getTotalWeight()+"KGS");
+            if (goodsForms.get(0).getTotalWeight() != null) {
+                resultMap.put("weight", goodsForms.get(0).getTotalWeight() + "KGS");
             }
-            if(goodsForms.get(0).getVolume() != null){
-                resultMap.put("volume",goodsForms.get(0).getVolume()+"CBM");
+            if (goodsForms.get(0).getVolume() != null) {
+                resultMap.put("volume", goodsForms.get(0).getVolume() + "CBM");
             }
         }
-        if(seaOrder.getCreateTime() != null){
-            resultMap.put("createTime",seaOrder.getCreateTime().toString().replaceAll("T"," ").substring(0,10));
+        if (seaOrder.getCreateTime() != null) {
+            resultMap.put("createTime", seaOrder.getCreateTime().toString().replaceAll("T", " ").substring(0, 10));
         }
-        if(seaOrder.getCreateUser() != null){
-            resultMap.put("createUser",seaOrder.getCreateUser());
+        if (seaOrder.getCreateUser() != null) {
+            resultMap.put("createUser", seaOrder.getCreateUser());
         }
         //通过创建用户，获取用户的信息
         ApiResult systemUserByName = oauthClient.getSystemUserByName(seaOrder.getCreateUser());
         if (systemUserByName != null && systemUserByName.getCode() == HttpStatus.SC_OK) {
             JSONObject jsonObject = new JSONObject(systemUserByName.getData());
-            resultMap.put("phone",jsonObject.getStr("phone"));
-            resultMap.put("email",jsonObject.getStr("email"));
+            resultMap.put("phone", jsonObject.getStr("phone"));
+            resultMap.put("email", jsonObject.getStr("email"));
         }
         //获取主订单信息
         ApiResult mainOrderByOrderNos = omsClient.getMainOrderByOrderNos(Collections.singletonList(seaOrder.getMainOrderNo()));
@@ -988,35 +990,34 @@ public class SeaOrderController {
             JSONArray legalEntitys = new JSONArray(mainOrderByOrderNos.getData());
 
             JSONObject json = legalEntitys.getJSONObject(0);
-            resultMap.put("remarks",json.getStr("remarks"));
+            resultMap.put("remarks", json.getStr("remarks"));
 
 
         }
         //获取订船信息
         SeaBookship enableBySeaOrderId = seaBookshipService.getEnableBySeaOrderId(seaOrder.getOrderId());
-        if(enableBySeaOrderId != null){
-            resultMap.put("ship",enableBySeaOrderId.getShipName()==null ?"":enableBySeaOrderId.getShipName()+"/"+enableBySeaOrderId.getShipNumber()==null?"":enableBySeaOrderId.getShipNumber());
+        if (enableBySeaOrderId != null) {
+            resultMap.put("ship", enableBySeaOrderId.getShipName() == null ? "" : enableBySeaOrderId.getShipName() + "/" + enableBySeaOrderId.getShipNumber() == null ? "" : enableBySeaOrderId.getShipNumber());
         }
-        if(seaOrder.getCabinetType().equals(1)){
+        if (seaOrder.getCabinetType().equals(1)) {
             List<CabinetSizeNumberVO> list = cabinetSizeNumberService.getList(seaOrder.getOrderId());
-            if(CollectionUtils.isNotEmpty(list)){
+            if (CollectionUtils.isNotEmpty(list)) {
                 StringBuffer stringBuffer = new StringBuffer();
                 for (CabinetSizeNumberVO cabinetSizeNumberVO : list) {
                     stringBuffer.append(cabinetSizeNumberVO.getCabinetTypeSize()).append("×").append(cabinetSizeNumberVO.getNumber()).append("  ");
                 }
-                resultMap.put("cabinet",stringBuffer.toString());
+                resultMap.put("cabinet", stringBuffer.toString());
             }
 
-        }else{
-            resultMap.put("cabinet","CFS ( Y )");
+        } else {
+            resultMap.put("cabinet", "CFS ( Y )");
         }
-        Map<String, String> imgMap=new HashMap<>();
-        imgMap.put("img",imgPath);
-
+        Map<String, String> imgMap = new HashMap<>();
+        imgMap.put("img", imgPath);
 
 
         //2.根据模板填充数据源
-        ByteArrayOutputStream pdf = createPdfStream(path, resultMap,imgMap,null);
+        ByteArrayOutputStream pdf = createPdfStream(path, resultMap, imgMap, null);
 
 
         //3.输出填充后的文件
@@ -1028,7 +1029,7 @@ public class SeaOrderController {
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
             String filename = URLEncoder.encode(fileName, "utf-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + filename );
+            response.setHeader("Content-disposition", "attachment;filename=" + filename);
 
             out.write(pdf.toByteArray());
             out.flush();
@@ -1036,7 +1037,7 @@ public class SeaOrderController {
             pdf.close();
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
 
         }
     }
@@ -1093,66 +1094,101 @@ public class SeaOrderController {
             List<OrderReceivableCostVO> data = omsClient.getOrderReceivableCostByMainOrderNo(seaOrderDetails.getMainOrderNo()).getData();
 //            JSONArray mainOrders = new JSONArray(JSON.toJSONString(data));
 //            System.out.println(mainOrders);
-            if(CollectionUtils.isNotEmpty(data)){
-                map.put("unitCodeName",data.get(0).getCustomerName());
-                Set set = new HashSet();
+            if (CollectionUtils.isNotEmpty(data)) {
+                map.put("unitCodeName", data.get(0).getCustomerName());
                 BigDecimal totalMoney = new BigDecimal(0.00);
+                BigDecimal changeUSDMoney = new BigDecimal(0.00);
+                BigDecimal changeRMBMoney = new BigDecimal(0.00);
+                int count = 0;
+                Set set = new HashSet();
+
                 for (OrderReceivableCostVO datum : data) {
-                    if(datum.getAmount() != null){
+                    if (datum.getAmount() != null) {
                         totalMoney = totalMoney.add(datum.getAmount());
-                        System.out.println(totalMoney);
+
+                    }
+                    if (datum.getCurrencyCode().equals("USD")) {
+                        datum.setChangeUSDAmount(datum.getAmount());
+                    } else {
+                        //获取该币种转换成美元的汇率
+                        BigDecimal rate = omsClient.getExchangeRateByCurrency(datum.getCurrencyCode(), "USD", DateUtil.dateToYearMonth(seaOrderDetails.getCreateTime())).getData();
+                        datum.setChangeUSDAmount(datum.getAmount().multiply(rate));
                     }
 
+                    if (datum.getChangeAmount() != null) {
+                        changeRMBMoney = changeRMBMoney.add(datum.getChangeAmount());
+                    }
+                    if (datum.getChangeUSDAmount() != null) {
+                        changeUSDMoney = changeUSDMoney.add(datum.getChangeUSDAmount());
+                        System.out.println(datum.getChangeUSDAmount());
+                        if (datum.getChangeUSDAmount().equals(new BigDecimal(0).multiply(datum.getChangeUSDAmount()))) {
+                            count++;
+                        }
+                    }
+                    set.add(datum.getCurrencyCode());
                 }
-                map.put("totalUSDMoney",totalMoney);
-                map.put("totalRMBMoney",totalMoney);
-                map.put("changeUSDMoney",totalMoney);
-                map.put("changeRMBMoney",totalMoney);
+                StringBuffer stringBuffer = new StringBuffer();
+                for (Object o : set) {
+                    BigDecimal bigDecimal = new BigDecimal(0.00);
+                    for (OrderReceivableCostVO datum : data) {
+                        if(o.equals(datum.getCurrencyCode())){
+                            bigDecimal = bigDecimal.add(datum.getAmount());
+                        }
+                    }
+                    stringBuffer.append(o).append(" ").append(bigDecimal).append("  ");
+                }
+                map.put("totalMoney", stringBuffer.toString());
+                if (count > 0) {
+                    map.put("changeUSDMoney", "USD "+0);
+                } else {
+                    map.put("changeUSDMoney", "USD "+changeUSDMoney);
+                }
+                map.put("changeRMBMoney", "RMB "+changeRMBMoney);
 
 
             }
-            map.put("mainOrderNo",seaOrderDetails.getMainOrderNo());
+            map.put("mainOrderNo", seaOrderDetails.getMainOrderNo());
 
             //获取提单信息
             List<SeaBill> seaBills = seaBillService.getSeaBillBySeaOrderId(seaOrderDetails.getOrderId());
-            if(CollectionUtils.isNotEmpty(seaBills)){
+            if (CollectionUtils.isNotEmpty(seaBills)) {
                 SeaBill seaBill = seaBills.get(0);
-                if(seaBill.getSo() != null){
-                    map.put("so",seaBill.getSo() );
+                if (seaBill.getSo() != null) {
+                    map.put("so", seaBill.getSo());
                 }
-                if(seaBill.getBillNo() != null){
-                    map.put("billNo",seaBill.getBillNo() );
+                if (seaBill.getBillNo() != null) {
+                    map.put("billNo", seaBill.getBillNo());
                 }
 
-                map.put("mb","" );
+                map.put("mb", "");
 
-                map.put("ship",seaBill.getShipName()==null?"":seaBill.getShipName()+"/"+(seaBill.getShipNumber() == null ? "" : seaBill.getShipNumber()) );
+                map.put("ship", seaBill.getShipName() == null ? "" : seaBill.getShipName() + "/" + (seaBill.getShipNumber() == null ? "" : seaBill.getShipNumber()));
 
-                map.put("portDepartureCode",seaBill.getPortDepartureCode() == null ? "" : seaBill.getPortDepartureCode());
-                map.put("portDestinationCode",seaBill.getPortDestinationCode() == null ? "" : seaBill.getPortDestinationCode());
-                map.put("sailingTime",seaBill.getSailingTime() == null ? "":seaBill.getSailingTime().toString().replaceAll("T"," ").substring(0,10) );
+                map.put("portDepartureCode", seaBill.getPortDepartureCode() == null ? "" : seaBill.getPortDepartureCode());
+                map.put("portDestinationCode", seaBill.getPortDestinationCode() == null ? "" : seaBill.getPortDestinationCode());
+                map.put("sailingTime", seaBill.getSailingTime() == null ? "" : seaBill.getSailingTime().toString().replaceAll("T", " ").substring(0, 10));
                 List<SeaContainerInformationVO> list = seaContainerInformationService.getList(seaBill.getOrderNo());
-                if(CollectionUtils.isNotEmpty(list)){
+                if (CollectionUtils.isNotEmpty(list)) {
                     StringBuffer stringBuffer = new StringBuffer();
                     for (SeaContainerInformationVO seaContainerInformationVO : list) {
-                        if(seaContainerInformationVO.getCabinetNumber() != null){
+                        if (seaContainerInformationVO.getCabinetNumber() != null) {
                             stringBuffer.append(seaContainerInformationVO.getCabinetNumber()).append("/");
                         }
-                        if(seaContainerInformationVO.getCabinetName() != null){
+                        if (seaContainerInformationVO.getCabinetName() != null) {
                             stringBuffer.append(seaContainerInformationVO.getCabinetName()).append("  ");
                         }
                     }
-                    map.put("cabinet",stringBuffer.toString());
+                    map.put("cabinet", stringBuffer.toString());
                 }
             }
             SeaBookship enableBySeaOrderId = seaBookshipService.getEnableBySeaOrderId(seaOrderDetails.getOrderId());
-            if(enableBySeaOrderId != null){
-                if(enableBySeaOrderId.getShipCompany() != null){
-                    map.put("shipCompany",enableBySeaOrderId.getShipCompany());
+            if (enableBySeaOrderId != null) {
+                if (enableBySeaOrderId.getShipCompany() != null) {
+                    map.put("shipCompany", enableBySeaOrderId.getShipCompany());
                 }
             }
             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
-            map.put("createTime",df.format(LocalDateTime.now()));
+            map.put("createTime", df.format(LocalDateTime.now()));
 
             JSONArray jsonArray = new JSONArray(data);
             JSONObject jsonObject = new JSONObject();
@@ -1165,11 +1201,12 @@ public class SeaOrderController {
 //            excelWriter.finish();
 //            outStream.close();
 //            inputStream.close();
-            EasyExcelUtils.fillTemplate2(map,map1,costPath,fileName,response);
+            EasyExcelUtils.fillTemplate2(map, map1, costPath, fileName, response);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
 }
 

@@ -141,6 +141,8 @@ public class SeaBillController {
             record.assemblyMainOrderData(result.getData());
             //处理地址信息
 
+            record.assemblySeaPort();
+
             //获取柜型数量
 //            if (record.getCabinetType().equals(1)) {
 //                List<CabinetSizeNumberVO> cabinetSizeNumberVOS = cabinetSizeNumberService.getList(record.getId());

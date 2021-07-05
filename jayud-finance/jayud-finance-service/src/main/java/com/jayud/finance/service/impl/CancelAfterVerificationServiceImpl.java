@@ -63,7 +63,7 @@ public class CancelAfterVerificationServiceImpl extends ServiceImpl<CancelAfterV
         for (HeXiaoConfirmForm form : forms.getHeXiaoConfirmForms()) {
             if (form.getId() == null) {
                 addList.add(form);//只保存本次添加的数据
-                nowAddAmount = nowAddAmount.add(form.getDiscountMoney());
+                nowAddAmount = nowAddAmount.add(form.getDiscountMoney()).add(form.getShortAmount());
             }
         }
         if (costSAmountVO != null) {//说明本次是应收核销
@@ -86,6 +86,9 @@ public class CancelAfterVerificationServiceImpl extends ServiceImpl<CancelAfterV
             //计算本币金额
             String oCode = cancelAfterVerification.getCurrencyCode();//原始币种,即实收金额的币种
             BigDecimal exchangeRate = currencyRateService.getExchangeRate(oCode, "CNY");
+            if (oCode.equals("CNY") && exchangeRate == null) {
+                exchangeRate = new BigDecimal(1);
+            }
             if (exchangeRate == null) {
                 return CommonResult.error(10001, "请先配置原始货币:" + oCode + "兑换货币：CNY的汇率");
             }

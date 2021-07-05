@@ -684,7 +684,7 @@
             (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency limit 1) yfCurrency,
             ifnull((select sum(obct.money) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no
             and obct.cost_id in (SELECT opc.id FROM order_payment_cost opc , cost_type ct WHERE opc.cost_type_id = ct.id and is_pay_collection=0)
-            ),0)-ifnull((select sum(cav.discount_money) from cancel_after_verification cav where cav.bill_no = opbd.bill_no),0) dfAmount,
+            ),0)-ifnull((select sum(cav.discount_money) + sum(cav.short_amount) from cancel_after_verification cav where cav.bill_no = opbd.bill_no),0) dfAmount,
             (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency limit 1) dfCurrency
         FROM
             order_payment_bill_detail opbd

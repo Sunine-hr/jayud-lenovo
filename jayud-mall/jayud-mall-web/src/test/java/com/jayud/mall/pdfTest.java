@@ -3,16 +3,15 @@ package com.jayud.mall;
 import cn.hutool.core.bean.BeanUtil;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.*;
 import com.jayud.mall.model.vo.MarkVO;
 import com.jayud.mall.model.vo.OrderWarehouseNoVO;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +31,14 @@ public class pdfTest {
     @Test
     public void test(){
         fillTemplate();
+    }
+
+    /**
+     * 测试页面大小
+     */
+    @Test
+    public void testsize(){
+        fillSize();
     }
 
     /**
@@ -103,7 +110,8 @@ public class pdfTest {
             stamper.setFormFlattening(true);// 如果为false那么生成的PDF文件还能编辑，一定要设为true
             stamper.close();
 
-            Document doc = new Document();
+            Rectangle pageSize = new Rectangle(283.50F,283.50F); // 100mm*100mm
+            Document doc = new Document(pageSize,30,30,50,50);
             PdfCopy copy = new PdfCopy(doc, out);
             doc.open();
             PdfImportedPage importPage = copy.getImportedPage(new PdfReader(bos.toByteArray()), 1);
@@ -116,6 +124,29 @@ public class pdfTest {
             e.printStackTrace();
         } catch (DocumentException e) {
             System.out.println(2);
+        }
+
+    }
+
+    /**
+     * 设置页面大小
+     */
+    public static void fillSize() {
+        // 生成的新文件路径
+        String newPDFPath = "D:/pdf_model/ceshi—size.pdf";
+        FileOutputStream out = null;// 输出流
+        try {
+            out = new FileOutputStream(newPDFPath);
+            Rectangle pageSize = new Rectangle(283.50F,283.50F); // 100mm*100mm
+            Document doc = new Document(pageSize,30,30,50,50);//设置页面的大小
+            PdfWriter.getInstance(doc, out);
+            doc.open();
+            doc.add(new Paragraph("1"));//在文档上写“Hello World”
+            doc.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (DocumentException e) {
+            e.printStackTrace();
         }
 
     }

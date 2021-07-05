@@ -85,7 +85,7 @@ public class pdfTest {
     // 利用模板生成pdf
     public static void fillTemplate() {
         // 模板路径
-        String templatePath = "D:/pdf_model/pdf_model.pdf";
+        String templatePath = "D:/pdf_model/carton_no.pdf";
         // 生成的新文件路径
         String newPDFPath = "D:/pdf_model/ceshi.pdf";
         PdfReader reader;
@@ -99,7 +99,7 @@ public class pdfTest {
             stamper = new PdfStamper(reader, bos);
             AcroFields form = stamper.getAcroFields();
 
-            String[] str = { "123456789", "TOP__ONE", "男", "1991-01-01", "130222111133338888", "河北省保定市" };
+            String[] str = { "123456789", "TOP__ONE", "男", "1991-01-01", "130222111133338888", "河北省保定市","不变" };
             int i = 0;
             java.util.Iterator<String> it = form.getFields().keySet().iterator();
             while (it.hasNext()) {

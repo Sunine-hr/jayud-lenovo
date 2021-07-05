@@ -340,7 +340,8 @@ public class OrderPickController {
 
                 PdfReader pdfReader = null;//输出的pdf
 
-                ClassPathResource classPathResource = new ClassPathResource("template/nanjing_carton_no.pdf");//获取pdf模板
+                //ClassPathResource classPathResource = new ClassPathResource("template/nanjing_carton_no.pdf");//获取pdf模板
+                ClassPathResource classPathResource = new ClassPathResource("template/carton_no.pdf");//获取pdf模板  100mm*100mm
                 InputStream inputStream = classPathResource.getInputStream();
 
                 ByteArrayOutputStream ba = new ByteArrayOutputStream();//输出流 pdf
@@ -480,7 +481,8 @@ public class OrderPickController {
 
                 PdfReader pdfReader = null;//输出的pdf
 
-                ClassPathResource classPathResource = new ClassPathResource("template/nanjing_carton_no.pdf");//获取pdf模板
+                //ClassPathResource classPathResource = new ClassPathResource("template/nanjing_carton_no.pdf");//获取pdf模板
+                ClassPathResource classPathResource = new ClassPathResource("template/carton_no.pdf");//获取pdf模板  100mm*100mm
                 InputStream inputStream = classPathResource.getInputStream();
 
                 ByteArrayOutputStream ba = new ByteArrayOutputStream();//输出流 pdf

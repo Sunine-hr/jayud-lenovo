@@ -538,7 +538,7 @@ public class EasyExcelUtils {
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
             String filename = URLEncoder.encode("工作表", "utf-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xls");
+            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
             excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
         } else {
             excelWriter = EasyExcel.write(outputPath).withTemplate(templateInputStream).build();

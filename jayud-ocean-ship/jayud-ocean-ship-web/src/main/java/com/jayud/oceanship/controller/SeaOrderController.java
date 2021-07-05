@@ -1095,12 +1095,14 @@ public class SeaOrderController {
 //            System.out.println(mainOrders);
             if(CollectionUtils.isNotEmpty(data)){
                 map.put("unitCodeName",data.get(0).getCustomerName());
+                Set set = new HashSet();
                 BigDecimal totalMoney = new BigDecimal(0.00);
                 for (OrderReceivableCostVO datum : data) {
                     if(datum.getAmount() != null){
                         totalMoney = totalMoney.add(datum.getAmount());
                         System.out.println(totalMoney);
                     }
+
                 }
                 map.put("totalUSDMoney",totalMoney);
                 map.put("totalRMBMoney",totalMoney);
@@ -1152,14 +1154,18 @@ public class SeaOrderController {
             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
             map.put("createTime",df.format(LocalDateTime.now()));
 
-            Map<String,List<OrderReceivableCostVO>> map1 = new HashMap();
-            map1.put("orderReceivableCost",data);
+            JSONArray jsonArray = new JSONArray(data);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.putOnce("re", jsonArray);
+            Map<String, List<Object>> map1 = new HashMap();
+            map1.put("orderReceivableCost", jsonObject.get("re", List.class));
+
 //            excelWriter.fill(map, writeSheet);
 //            excelWriter.fill(new FillWrapper("orderReceivableCost", data), fillConfig ,writeSheet);
 //            excelWriter.finish();
 //            outStream.close();
 //            inputStream.close();
-            EasyExcelUtils.fillTemplate2(map,map1,costPath,"D:\\test.xlsx",null);
+            EasyExcelUtils.fillTemplate2(map,map1,costPath,fileName,response);
         } catch (Exception e) {
             e.printStackTrace();
         }

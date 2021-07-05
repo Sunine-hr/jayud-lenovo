@@ -159,7 +159,7 @@ public class OceanBillController {
     }
 
     // 查询
-    @ApiOperation(value = "配载，提单（4个窗口），查看-清关list")
+    @ApiOperation(value = "查看-清关清单list")
     @PostMapping("/findBillClearanceInfoByBillId")
     @ApiOperationSupport(order = 11)
     public CommonResult<List<BillClearanceInfoVO>> findBillClearanceInfoByBillId(@Valid @RequestBody OceanBillParaForm form){
@@ -168,7 +168,7 @@ public class OceanBillController {
         return CommonResult.success(billClearanceInfoVOS);
     }
 
-    @ApiOperation(value = "配载，提单（4个窗口），查看-报关list")
+    @ApiOperation(value = "查看-报关清单list")
     @PostMapping("/findBillCustomsInfoByBillId")
     @ApiOperationSupport(order = 12)
     public CommonResult<List<BillCustomsInfoVO>> findBillCustomsInfoByBillId(@Valid @RequestBody OceanBillParaForm form){
@@ -177,7 +177,7 @@ public class OceanBillController {
         return CommonResult.success(billCustomsInfoVOS);
     }
 
-    @ApiOperation(value = "配载，提单（4个窗口），查看-柜子list")
+    @ApiOperation(value = "查看-柜子list")
     @PostMapping("/findOceanCounterByObId")
     @ApiOperationSupport(order = 13)
     public CommonResult<List<OceanCounterVO>> findOceanCounterByObId(@Valid @RequestBody OceanBillParaForm form){
@@ -186,7 +186,7 @@ public class OceanBillController {
         return CommonResult.success(oceanCounterVOS);
     }
 
-    @ApiOperation(value = "配载，提单（4个窗口），查看-详情(包括费用)")
+    @ApiOperation(value = "查看-详情(包括费用)")
     @PostMapping("/findOceanBillById")
     @ApiOperationSupport(order = 14)
     public CommonResult<OceanBillVO> findOceanBillById(@Valid @RequestBody OceanBillParaForm form){

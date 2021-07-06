@@ -352,4 +352,16 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
         return this.baseMapper.selectList(condition);
     }
 
+    @Override
+    public void updateByOrderNo(String mainOrderNo, String subOrder, OrderPaymentCost orderPaymentCost) {
+        QueryWrapper<OrderPaymentCost> condition = new QueryWrapper<>();
+        if (StringUtils.isNotEmpty(mainOrderNo)) {
+            condition.lambda().eq(OrderPaymentCost::getMainOrderNo, mainOrderNo);
+        }
+        if (StringUtils.isNotEmpty(subOrder)) {
+            condition.lambda().eq(OrderPaymentCost::getOrderNo, subOrder);
+        }
+        this.update(orderPaymentCost, condition);
+    }
+
 }

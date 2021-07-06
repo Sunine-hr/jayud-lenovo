@@ -441,6 +441,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     orderPaymentCost.setOptName(UserOperator.getToken());
                     orderPaymentCost.setOptTime(LocalDateTime.now());
                     orderPaymentCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
+                    //操作部门
+                    orderPaymentCost.setDepartmentId(form.getDepartmentId() == null ? form.getBizBelongDepart() : form.getDepartmentId());
                 }
             }
 
@@ -479,13 +481,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     orderReceivableCost.setOptName(UserOperator.getToken());
                     orderReceivableCost.setOptTime(LocalDateTime.now());
                     orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
+                    //操作部门
+                    orderReceivableCost.setDepartmentId(form.getDepartmentId() == null ? form.getBizBelongDepart() : form.getDepartmentId());
                 }
             }
             if (orderPaymentCosts.size() > 0) {
                 paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
+                //批量更新
+                paymentCostService.updateByOrderNo(inputOrderVO.getOrderNo(), form.getOrderNo(), new OrderPaymentCost().setDepartmentId(orderPaymentCosts.get(0).getDepartmentId()));
+
             }
             if (orderReceivableCosts.size() > 0) {
                 receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
+                //批量更新
+                receivableCostService.updateByOrderNo(inputOrderVO.getOrderNo(), form.getOrderNo(), new OrderReceivableCost().setDepartmentId(orderReceivableCosts.get(0).getDepartmentId()));
             }
         } catch (Exception e) {
             e.printStackTrace();

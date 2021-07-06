@@ -289,6 +289,7 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
 
     /**
      * 统计应收费用合计
+     *
      * @param list
      * @param isMain
      * @return
@@ -313,5 +314,18 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
             map.put(k, costMap);
         });
         return map;
+    }
+
+    @Override
+    public void updateByOrderNo(String mainOrderNo, String subOrder, OrderReceivableCost orderReceivableCost) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        if (StringUtils.isNotEmpty(mainOrderNo)) {
+            condition.lambda().eq(OrderReceivableCost::getMainOrderNo, mainOrderNo);
+        }
+        if (StringUtils.isNotEmpty(subOrder)) {
+            condition.lambda().eq(OrderReceivableCost::getOrderNo, subOrder);
+        }
+        this.update(orderReceivableCost, condition);
+
     }
 }

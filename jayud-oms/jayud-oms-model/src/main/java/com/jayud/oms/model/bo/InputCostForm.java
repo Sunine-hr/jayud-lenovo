@@ -40,6 +40,12 @@ public class InputCostForm {
             "空运=ky 海运=hy 拖车=tc", required = true)
     private String subType;
 
+    @ApiModelProperty(value = "所属部门id")
+    private Long bizBelongDepart;
+
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
 
     /**
      * 检查供应商录用费用

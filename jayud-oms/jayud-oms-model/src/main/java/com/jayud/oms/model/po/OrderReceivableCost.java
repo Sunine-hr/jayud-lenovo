@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="OrderReceivableCost对象", description="订单对应应收费用明细")
+@ApiModel(value = "OrderReceivableCost对象", description = "订单对应应收费用明细")
 public class OrderReceivableCost extends Model<OrderReceivableCost> {
 
     private static final long serialVersionUID = 1L;
@@ -117,6 +117,12 @@ public class OrderReceivableCost extends Model<OrderReceivableCost> {
 
     @ApiModelProperty(value = "子订单法人主体id")
     private Long legalId;
+
+    @ApiModelProperty(value = "是否内部费用")
+    private Boolean isInternal;
+
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
 
     @Override
     protected Serializable pkVal() {

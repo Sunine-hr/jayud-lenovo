@@ -24,7 +24,7 @@ public class PayBillMasterVO {
     @JSONField(ordinal = 3)
     private Long orderId;
 
-    @ApiModelProperty(value = "法人id(legal_person id)", position = 4)
+    @ApiModelProperty(value = "法人主体id(legal_entity id)", position = 4)
     @JSONField(ordinal = 4)
     private Long legalPersonId;
 
@@ -67,7 +67,7 @@ public class PayBillMasterVO {
 
     @ApiModelProperty(value = "法人主体", position = 14)
     @JSONField(ordinal = 14)
-    private String legalEntity;
+    private String legalName;
 
     @ApiModelProperty(value = "币种代码", position = 15)
     @JSONField(ordinal = 15)

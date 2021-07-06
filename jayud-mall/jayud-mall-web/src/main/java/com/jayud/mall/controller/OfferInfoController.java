@@ -1,10 +1,15 @@
 package com.jayud.mall.controller;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
+import com.jayud.mall.mapper.CustomerMapper;
 import com.jayud.mall.model.bo.OfferInfoForm;
 import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
+import com.jayud.mall.model.vo.CustomerVO;
 import com.jayud.mall.model.vo.FabWarehouseVO;
 import com.jayud.mall.model.vo.OfferInfoVO;
 import com.jayud.mall.model.vo.domain.CustomerUser;
@@ -26,9 +31,13 @@ import java.util.List;
 public class OfferInfoController {
 
     @Autowired
+    CustomerMapper customerMapper;
+
+    @Autowired
     IOfferInfoService offerInfoService;
     @Autowired
     BaseService baseService;
+
 
     @ApiOperation(value = "分页查询报价(运价)")
     @PostMapping("/findOfferInfoFareByPage")
@@ -46,8 +55,23 @@ public class OfferInfoController {
     @PostMapping("/lookOfferInfoFare")
     @ApiOperationSupport(order = 2)
     public CommonResult<OfferInfoVO> lookOfferInfoFare(@RequestBody OfferInfoForm form) {
+        CustomerUser customerUser = baseService.getCustomerUser();
+        if(ObjectUtil.isEmpty(customerUser)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "客户失效，请重新登录");
+        }
         Long id = form.getId();
         OfferInfoVO offerInfoVO = offerInfoService.lookOfferInfoFare(id);
+
+        //showClearingWay 下单页面显示结算方式
+        Integer clearingWay = offerInfoVO.getClearingWay();
+        if(ObjectUtil.isNotEmpty(clearingWay) && clearingWay.equals(2)){
+            Integer customerId = customerUser.getId();
+            CustomerVO customer = customerMapper.findCustomerById(customerId);
+            offerInfoVO.setShowClearingWay(customer.getClearingWay());
+        }else{
+            offerInfoVO.setShowClearingWay(clearingWay);
+        }
+
         return CommonResult.success(offerInfoVO);
     }
 

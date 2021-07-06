@@ -7,7 +7,10 @@ import com.jayud.mall.model.bo.ReceivableBillForm;
 import com.jayud.mall.model.bo.ReceivableBillMasterForm;
 import com.jayud.mall.model.po.ReceivableBillMaster;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.ReceivableBillExcelMasterVO;
 import com.jayud.mall.model.vo.ReceivableBillMasterVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -46,4 +49,19 @@ public interface IReceivableBillMasterService extends IService<ReceivableBillMas
      * @return
      */
     CommonResult<ReceivableBillMasterVO> lookDetail(Long id);
+
+    /**
+     * 导出多个账单
+     * @param customerId 客户id
+     * @param ids 账单ids
+     * @return
+     */
+    ReceivableBillExcelMasterVO downloadBills(Integer customerId, List<Long> ids);
+
+    /**
+     * 根据订单id，查询应收账单list
+     * @param orderId 订单id
+     * @return
+     */
+    List<ReceivableBillMasterVO> findReceivableBillMasterByOrderId(Long orderId);
 }

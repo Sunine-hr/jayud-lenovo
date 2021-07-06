@@ -8,22 +8,24 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.QuotationDataTypeEnum;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.*;
-import com.jayud.mall.model.bo.OfferInfoForm;
-import com.jayud.mall.model.bo.PicUrlArrForm;
-import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
-import com.jayud.mall.model.bo.QueryOfferInfoForm;
+import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.*;
 import com.jayud.mall.model.vo.*;
 import com.jayud.mall.model.vo.domain.AuthUser;
-import com.jayud.mall.service.BaseService;
-import com.jayud.mall.service.IOfferInfoService;
+import com.jayud.mall.service.*;
+import com.jayud.mall.utils.SnowflakeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,48 +43,53 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
 
     @Autowired
     OfferInfoMapper offerInfoMapper;
-
     @Autowired
     ServiceGroupMapper serviceGroupMapper;
-
     @Autowired
     TransportWayMapper transportWayMapper;
-
     @Autowired
     FabWarehouseMapper fabWarehouseMapper;
-
     @Autowired
     CustomerMapper customerMapper;
-
     @Autowired
     GoodsTypeMapper goodsTypeMapper;
-
     @Autowired
     ShippingAreaMapper shippingAreaMapper;
-
     @Autowired
     QuotationTypeMapper quotationTypeMapper;
-
     @Autowired
     TaskGroupMapper taskGroupMapper;
-
     @Autowired
     CurrencyInfoMapper currencyInfoMapper;
-
     @Autowired
     TemplateCopeReceivableMapper templateCopeReceivableMapper;
-
     @Autowired
     TemplateCopeWithMapper templateCopeWithMapper;
-
     @Autowired
     TemplateFileMapper templateFileMapper;
-
     @Autowired
     OrderCaseMapper orderCaseMapper;
+    @Autowired
+    QuotationTemplateMapper quotationTemplateMapper;
+    @Autowired
+    OrderConfMapper orderConfMapper;
+    @Autowired
+    OceanConfDetailMapper oceanConfDetailMapper;
 
     @Autowired
     BaseService baseService;
+    @Autowired
+    ITemplateCopeReceivableService templateCopeReceivableService;
+    @Autowired
+    ITemplateCopeWithService templateCopeWithService;
+    @Autowired
+    ITemplateFileService templateFileService;
+    @Autowired
+    IQuotationTemplateService quotationTemplateService;
+    @Autowired
+    IOrderConfService orderConfService;
+    @Autowired
+    IOceanConfDetailService oceanConfDetailService;
 
     @Override
     public IPage<OfferInfoVO> findOfferInfoByPage(QueryOfferInfoForm form) {
@@ -109,6 +116,7 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult saveOfferInfo(OfferInfoForm form) {
         OfferInfo offerInfo = ConvertUtil.convert(form, OfferInfo.class);
         Long id = form.getId();
@@ -126,29 +134,117 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
             return CommonResult.error(-1, "日期验证不通过，验证规则：预计到达时间>=开船日期>=（截单日期、截仓日期、截亏仓日期）");
         }
         if(ObjectUtil.isEmpty(id)){
-            //id 为空 ，代表新增
-            QueryWrapper<OfferInfo> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("names", names);
-            List<OfferInfo> list = this.list(queryWrapper);
-            if(CollUtil.isNotEmpty(list)){
-                return CommonResult.error(-1, "["+names+"],名称已存在");
-            }
             AuthUser user = baseService.getUser();
+            if(ObjectUtil.isEmpty(user)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录。");
+            }
             offerInfo.setStatus("1");//状态(0无效 1有效)
             offerInfo.setUserId(user.getId().intValue());
             offerInfo.setUserName(user.getName());
             offerInfo.setCreateTime(LocalDateTime.now());
-        }else{
-            //id 不为空 ，代表新增
-            QueryWrapper<OfferInfo> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("names", names);
-            queryWrapper.ne("id", id);
-            List<OfferInfo> list = this.list(queryWrapper);
-            if(CollUtil.isNotEmpty(list)){
-                return CommonResult.error(-1, "["+names+"],名称已存在");
-            }
+
+            String offerNo = String.valueOf(SnowflakeUtils.getOrderNo());//雪花算法生成id
+            offerInfo.setOfferNo(offerNo);
+
         }
+        // 获得报价模板数据
+        QuotationTemplate quotationTemplate = quotationTemplateMapper.selectById(offerInfo.getQie());
+        quotationTemplate.setId(null);
+        quotationTemplate.setDataType(QuotationDataTypeEnum.MANAGEMENT.getCode());
+        // 1.复制报价模板 关联保存
+        quotationTemplateService.saveOrUpdate(quotationTemplate);
+
+        //报价模板id(quotation_template id)
+        Integer qie = quotationTemplate.getId().intValue();
+        offerInfo.setQie(qie);
+        //修改保存报价模板的费用、文件
+        List<TemplateCopeReceivableVO> templateCopeReceivableVOList = form.getTemplateCopeReceivableVOList();//报价对应应收费用明细list
+        List<TemplateCopeWithVO> templateCopeWithVOList = form.getTemplateCopeWithVOList();//报价对应应付费用明细list
+        List<TemplateFileVO> templateFileVOList = form.getTemplateFileVOList();//模板对应模块信息list，文件信息
+
+        /*应收费用明细List*/
+        List<TemplateCopeReceivableForm> templateCopeReceivableFormList = ConvertUtil.convertList(templateCopeReceivableVOList, TemplateCopeReceivableForm.class);
+        //刪除
+        QueryWrapper<TemplateCopeReceivable> queryWrapperTemplateCopeReceivable = new QueryWrapper<>();
+        queryWrapperTemplateCopeReceivable.eq("qie", qie);
+        templateCopeReceivableService.remove(queryWrapperTemplateCopeReceivable);
+
+        if(CollUtil.isNotEmpty(templateCopeReceivableFormList)){
+            List<TemplateCopeReceivable> list = new ArrayList<>();
+            templateCopeReceivableFormList.forEach(templateCopeReceivableForm -> {
+                TemplateCopeReceivable templateCopeReceivable = ConvertUtil.convert(templateCopeReceivableForm, TemplateCopeReceivable.class);
+                templateCopeReceivable.setId(null);
+                templateCopeReceivable.setQie(qie);
+                //计算 总金额=数量 * 单价
+                Integer c = templateCopeReceivable.getCount() == null ? 0 : templateCopeReceivable.getCount();//数量
+                BigDecimal count = new BigDecimal(c.toString());
+                BigDecimal unitPrice = templateCopeReceivable.getUnitPrice() == null ? new BigDecimal("0") : templateCopeReceivable.getUnitPrice();//单价
+                BigDecimal amount = count.multiply(unitPrice);
+                templateCopeReceivable.setAmount(amount);
+                list.add(templateCopeReceivable);
+            });
+            //保存
+            templateCopeReceivableService.saveOrUpdateBatch(list);
+        }
+
+        /*应付费用明细list*/
+        List<TemplateCopeWithForm> templateCopeWithFormList = ConvertUtil.convertList(templateCopeWithVOList, TemplateCopeWithForm.class);
+        //刪除
+        QueryWrapper<TemplateCopeWith> queryWrapperTemplateCopeWith = new QueryWrapper<>();
+        queryWrapperTemplateCopeWith.eq("qie", qie);
+        templateCopeWithService.remove(queryWrapperTemplateCopeWith);
+        if(CollUtil.isNotEmpty(templateCopeWithFormList)){
+            List<TemplateCopeWith> list = new ArrayList<>();
+            templateCopeWithFormList.forEach(templateCopeWithForm -> {
+                TemplateCopeWith templateCopeWith = ConvertUtil.convert(templateCopeWithForm, TemplateCopeWith.class);
+                templateCopeWith.setId(null);
+                templateCopeWith.setQie(qie);
+                //计算 总金额=数量 * 单价
+                Integer c = templateCopeWith.getCount() == null ? 0 : templateCopeWith.getCount();//数量
+                BigDecimal count = new BigDecimal(c.toString());
+                BigDecimal unitPrice = templateCopeWith.getUnitPrice() == null ? new BigDecimal("0") : templateCopeWith.getUnitPrice();//单价
+                BigDecimal amount = count.multiply(unitPrice);
+                templateCopeWith.setAmount(amount);
+                list.add(templateCopeWith);
+            });
+            //保存
+            templateCopeWithService.saveOrUpdateBatch(list);
+        }
+
+        /*文件信息明细list*/
+        List<TemplateFileForm> templateFileFormList = ConvertUtil.convertList(templateFileVOList, TemplateFileForm.class);
+        //刪除
+        QueryWrapper<TemplateFile> queryWrapperTemplateFile = new QueryWrapper<>();
+        queryWrapperTemplateFile.eq("qie", qie);
+        templateFileService.remove(queryWrapperTemplateFile);
+        if(CollUtil.isNotEmpty(templateFileFormList)){
+            List<TemplateFile> list = new ArrayList<>();
+            templateFileFormList.forEach(templateFileForm -> {
+                TemplateFile templateFile = ConvertUtil.convert(templateFileForm, TemplateFile.class);
+                templateFile.setId(null);
+                templateFile.setQie(qie);
+                list.add(templateFile);
+            });
+            //保存
+            templateFileService.saveOrUpdateBatch(list);
+        }
+        //2.保存报价
         this.saveOrUpdate(offerInfo);
+
+        //3.关联保存配载
+        Long confId = form.getConfId();
+        if(ObjectUtil.isNotEmpty(confId)){
+            OrderConfVO orderConfVO = orderConfMapper.findOrderConfById(confId);
+            if(ObjectUtil.isEmpty(orderConfVO)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "配载单没有找到，无法关联报价");
+            }
+            OceanConfDetail oceanConfDetail = new OceanConfDetail();
+            oceanConfDetail.setOrderId(orderConfVO.getId());//配载id(order_conf id)
+            oceanConfDetail.setIdCode(offerInfo.getId().intValue());//报价id(offer_info id)  报价/提单id(offer_info id  ocean_bill id)
+            oceanConfDetail.setTypes(1);//分类区分当前是报价或提单(1报价 2提单)
+            oceanConfDetail.setStatus("1");//状态(0无效 1有效)
+            oceanConfDetailService.saveOrUpdate(oceanConfDetail);
+        }
         return CommonResult.success("保存报价，成功！");
     }
 
@@ -286,6 +382,11 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
         List<TemplateCopeReceivableVO> inlandFeeList =
                 templateCopeReceivableMapper.findTemplateCopeReceivableInlandFeeListByQie(qie);
         offerInfoVO.setInlandFeeList(inlandFeeList);
+
+        /*报价其他应收费用*/
+        List<TemplateCopeReceivableVO> otherFeeList =
+                templateCopeReceivableMapper.findTemplateCopeReceivableOtherFeeListByQie(qie);
+        offerInfoVO.setOtherFeeList(otherFeeList);
 
         /*货物类型*/
         String gid = offerInfoVO.getGid();
@@ -467,45 +568,92 @@ public class OfferInfoServiceImpl extends ServiceImpl<OfferInfoMapper, OfferInfo
                 List<TemplateCopeReceivableVO> oceanFeeList = templateCopeReceivableMapper.findTemplateCopeReceivableOceanFeeByQie(qie);
                 offerInfoVO.setOceanFeeList(oceanFeeList);
 
-                Map<Integer, BigDecimal> minMap = new HashMap<>();
-                Map<Integer, BigDecimal> maxMap = new HashMap<>();
-                BigDecimal min = oceanFeeList.get(0).getAmount();//最小值
-                BigDecimal max = oceanFeeList.get(0).getAmount();//最大值
-                Integer cid = oceanFeeList.get(0).getCid();
-                for (int i =1; i<oceanFeeList.size(); i++){
-                    BigDecimal amount = oceanFeeList.get(i).getAmount();
-                    Integer cid2 = oceanFeeList.get(i).getCid();
-                    if(cid != cid2){
-                        cid = cid2;
+                if(CollUtil.isNotEmpty(oceanFeeList)){
+                    Map<Integer, BigDecimal> minMap = new HashMap<>();
+                    Map<Integer, BigDecimal> maxMap = new HashMap<>();
+                    BigDecimal min = oceanFeeList.get(0).getAmount();//最小值
+                    BigDecimal max = oceanFeeList.get(0).getAmount();//最大值
+                    Integer cid = oceanFeeList.get(0).getCid();
+                    for (int i =1; i<oceanFeeList.size(); i++){
+                        BigDecimal unitPrice = oceanFeeList.get(i).getUnitPrice();//最小值 最大值 用单价
+                        Integer cid2 = oceanFeeList.get(i).getCid();
+                        if(!cid.equals(cid2)){
+                            cid = cid2;
+                        }
+                        if(min.compareTo(unitPrice) == 1){ //min > amount
+                            min = unitPrice;
+                        }
+                        if(max.compareTo(unitPrice) == -1 ){ //max < amount
+                            max = unitPrice;
+                        }
+                        minMap.put(cid, min);
+                        maxMap.put(cid, max);
                     }
-                    if(min.compareTo(amount) == 1){ //min > amount
-                        min = amount;
+                    String minAmountFormat = "";
+                    String maxAmountFormat = "";
+                    for (Map.Entry<Integer, BigDecimal> entry : minMap.entrySet()) {
+                        Integer key = entry.getKey();
+                        BigDecimal value = entry.getValue();
+                        CurrencyInfoVO currencyInfoVO = cidMap.get(Long.valueOf(key));
+                        minAmountFormat = value+" "+currencyInfoVO.getCurrencyCode();
                     }
-                    if(max.compareTo(amount) == -1 ){ //max < amount
-                        max = amount;
+                    for (Map.Entry<Integer, BigDecimal> entry : maxMap.entrySet()) {
+                        Integer key = entry.getKey();
+                        BigDecimal value = entry.getValue();
+                        CurrencyInfoVO currencyInfoVO = cidMap.get(Long.valueOf(key));
+                        maxAmountFormat = value+" "+currencyInfoVO.getCurrencyCode();
                     }
-                    minMap.put(cid, min);
-                    maxMap.put(cid, max);
+                    String amountRange = minAmountFormat+"~"+maxAmountFormat;
+                    offerInfoVO.setAmountRange(amountRange);
                 }
-                String minAmountFormat = "";
-                String maxAmountFormat = "";
-                for (Map.Entry<Integer, BigDecimal> entry : minMap.entrySet()) {
-                    Integer key = entry.getKey();
-                    BigDecimal value = entry.getValue();
-                    CurrencyInfoVO currencyInfoVO = cidMap.get(Long.valueOf(key));
-                    minAmountFormat = value+" "+currencyInfoVO.getCurrencyCode();
-                }
-                for (Map.Entry<Integer, BigDecimal> entry : maxMap.entrySet()) {
-                    Integer key = entry.getKey();
-                    BigDecimal value = entry.getValue();
-                    CurrencyInfoVO currencyInfoVO = cidMap.get(Long.valueOf(key));
-                    maxAmountFormat = value+" "+currencyInfoVO.getCurrencyCode();
-                }
-                String amountRange = minAmountFormat+"~"+maxAmountFormat;
-                offerInfoVO.setAmountRange(amountRange);
+
             });
         }
         return list;
+    }
+
+    @Override
+    public OfferInfoDateVO calcOtherDate(OfferInfoForm form) {
+        Integer qie = form.getQie();//报价模板id
+        LocalDateTime sailTime = form.getSailTime();
+        QuotationTemplateVO quotationTemplateVO = quotationTemplateMapper.lookQuotationTemplateById(Long.valueOf(qie));
+        if (ObjectUtil.isEmpty(quotationTemplateVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "没有找到报价模板");
+        }
+        Integer cutOffTimeCalc = quotationTemplateVO.getCutOffTimeCalc() == null ? 0 : quotationTemplateVO.getCutOffTimeCalc();
+        Integer jcTimeCalc = quotationTemplateVO.getJcTimeCalc() == null ? 0 : quotationTemplateVO.getJcTimeCalc();
+        Integer jkcTimeCalc = quotationTemplateVO.getJkcTimeCalc() == null ? 0 : quotationTemplateVO.getJkcTimeCalc();
+        Integer estimatedTimeCalc = quotationTemplateVO.getEstimatedTimeCalc() == null ? 0 : quotationTemplateVO.getEstimatedTimeCalc();
+
+        String cutOffTimeCalcHms = quotationTemplateVO.getCutOffTimeCalcHms() == null ? "00:00:00" : quotationTemplateVO.getCutOffTimeCalcHms();
+        String jcTimeCalcHms = quotationTemplateVO.getJcTimeCalcHms() == null ? "00:00:00" : quotationTemplateVO.getJcTimeCalcHms();
+        String jkcTimeCalcHms = quotationTemplateVO.getJkcTimeCalcHms() == null ? "00:00:00" : quotationTemplateVO.getJkcTimeCalcHms();
+        String estimatedTimeCalcHms = quotationTemplateVO.getEstimatedTimeCalcHms() == null ? "00:00:00" : quotationTemplateVO.getEstimatedTimeCalcHms();
+
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        OfferInfoDateVO offerInfoDateVO = new OfferInfoDateVO();
+        offerInfoDateVO.setId(form.getId());
+        offerInfoDateVO.setQie(qie);
+        offerInfoDateVO.setSailTime(sailTime);
+
+        offerInfoDateVO.setCutOffTime(LocalDateTime.parse(dtf.format(sailTime.plusDays(cutOffTimeCalc))+" "+cutOffTimeCalcHms,df));//计算截单日期
+        offerInfoDateVO.setJcTime(LocalDateTime.parse(dtf.format(sailTime.plusDays(jcTimeCalc))+" "+jcTimeCalcHms,df));
+        offerInfoDateVO.setJkcTime(LocalDateTime.parse(dtf.format(sailTime.plusDays(jkcTimeCalc))+" "+jkcTimeCalcHms,df));
+        offerInfoDateVO.setEstimatedTime(LocalDateTime.parse(dtf.format(sailTime.plusDays(estimatedTimeCalc))+" "+estimatedTimeCalcHms,df));
+        return offerInfoDateVO;
+    }
+
+    @Override
+    public IPage<OfferInfoVO> findOfferInfoPageByConf(QueryOfferInfoForm form) {
+        //定义分页参数
+        Page<OfferInfoVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.desc("t.id"));
+        IPage<OfferInfoVO> pageInfo = offerInfoMapper.findOfferInfoPageByConf(page, form);
+        return pageInfo;
     }
 
 }

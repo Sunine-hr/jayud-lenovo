@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CustomsBaseFileMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.CustomsBaseFile">
+        <id column="id" property="id" />
+        <result column="type" property="type" />
+        <result column="customs_id" property="customsId" />
+        <result column="country_code" property="countryCode" />
+        <result column="country_name" property="countryName" />
+        <result column="file_name" property="fileName" />
+        <result column="template_url" property="templateUrl" />
+        <result column="describe" property="describe" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, type, customs_id, country_code, country_name, file_name, template_url, describe
+    </sql>
+
+    <select id="findCustomsBaseFileByParaMap" parameterType="java.util.Map" resultType="com.jayud.mall.model.vo.CustomsBaseFileVO">
+        select
+        t.id,t.type,t.customs_id,t.country_code,t.country_name,t.file_name,t.template_url,t.`describe`
+        from customs_base_file t
+        where 1=1
+        and t.type = #{paraMap.type}
+        and t.customs_id = #{paraMap.customs_id}
+    </select>
+
+</mapper>

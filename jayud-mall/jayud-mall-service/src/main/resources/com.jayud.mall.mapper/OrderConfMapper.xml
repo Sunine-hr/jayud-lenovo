@@ -7,7 +7,6 @@
         <id column="id" property="id" />
         <result column="order_no" property="orderNo" />
         <result column="tid" property="tid" />
-        <result column="status" property="status" />
         <result column="user_id" property="userId" />
         <result column="user_name" property="userName" />
         <result column="create_time" property="createTime" />
@@ -15,13 +14,13 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, tid, destination_country_code, status, user_id, user_name, create_time
+        id, order_no, tid, destination_country_code, user_id, user_name, create_time
     </sql>
 
     <select id="findOrderConfByPage" parameterType="com.jayud.mall.model.bo.QueryOrderConfForm"
             resultType="com.jayud.mall.model.vo.OrderConfVO" >
         select
-        t.id,t.order_no,t.tid,t.destination_country_code,t.status,t.user_id,t.user_name,t.create_time,
+        t.id,t.order_no,t.tid,t.destination_country_code,t.user_id,t.user_name,t.create_time,t.conf_name,t.remark,t.status_code,t.status_name,
         t1.code_name tname,
         t2.name destinationCountryName
         from order_conf t
@@ -34,12 +33,15 @@
         <if test="form.destinationCountryCode != null and form.destinationCountryCode != ''">
             and t.destination_country_code = #{form.destinationCountryCode}
         </if>
+        <if test="form.statusCode != null and form.statusCode != ''">
+            and t.status_code = #{form.statusCode}
+        </if>
     </select>
 
     <select id="findOrderConfById" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OrderConfVO" >
         select
-        t.id,t.order_no,t.tid,t.destination_country_code,t.status,t.user_id,t.user_name,t.create_time,
+        t.id,t.order_no,t.tid,t.destination_country_code,t.user_id,t.user_name,t.create_time,t.conf_name,t.remark,t.status_code,t.status_name,
         t1.code_name tname,
         t2.name destinationCountryName
         from order_conf t
@@ -52,7 +54,7 @@
     <select id="findOfferInfoVOByOrderId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OfferInfoVO" >
         select
-        t.id,t.qie,t.names,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,
+        t.id,t.qie,t.names,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,t.sail_time_remark,
         CONCat(t4.code_name,'-',t5.code_name) route
         from offer_info t
         JOIN ocean_conf_detail t1 on t1.id_code = t.id and t1.types=1
@@ -80,7 +82,7 @@
     <select id="findOceanBillVOByOrderId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OceanBillVO">
         select
-        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,
+        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,t.bill_name,t.bill_remark,
         t3.code_name    tname,
         t4.company_name supplierName,
         t5.code_name    startName,
@@ -118,6 +120,22 @@
         left join (
         select id, cntr_no, cabinet_code, volume, cost, cid, status, ob_id, create_time from ocean_counter
         ) t4 on t4.ob_id = t3.tdId
+    </select>
+
+
+    <select id="findOrderCaseByOrderId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderCaseVO">
+        select
+        t.id,t.order_id,t.carton_no,t.fab_no,
+        t.asn_length,t.asn_width,t.asn_height,t.asn_weight,t.asn_volume,t.asn_weigh_date,
+        t.wms_length,t.wms_height,t.wms_width,t.wms_weight,t.wms_volume,t.wms_weigh_date,
+        t.confirm_length,t.confirm_height,t.confirm_width,t.confirm_weight,t.confirm_volume,t.confirm_weigh_date,
+        t.`status`,t.remark,amazon_reference_id,extension_number,
+        t2.order_type
+        from order_case t
+        left join counter_case_info t1 on t1.case_id = t.id
+        left join counter_order_info t2 on t2.order_id = t1.order_id
+        where 1=1
+        and t.order_id = #{orderId}
     </select>
 
 

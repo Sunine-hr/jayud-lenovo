@@ -111,5 +111,11 @@ public class OrderCaseForm {
     @JSONField(ordinal = 23)
     private String remark;
 
+    @ApiModelProperty(value = "Amazon Reference ID(亚马逊引用ID)")
+    private String amazonReferenceId;
+
+    @ApiModelProperty(value = "扩展单号")
+    private String extensionNumber;
+
 
 }

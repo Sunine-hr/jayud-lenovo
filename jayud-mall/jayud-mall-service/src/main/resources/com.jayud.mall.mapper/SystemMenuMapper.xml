@@ -18,7 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, parent_id, create_time, `name`, `level`, sort, `key`, icon, hidden, router
+        id, parent_id, create_time, title, `name`, `level`, sort, `key`, icon, hidden, router
     </sql>
 
     <select id="findAllMenuVO" resultType="com.jayud.mall.model.vo.SystemMenuVO">
@@ -27,5 +27,45 @@
         FROM system_menu
     </select>
 
+    <!--UNION 只有菜单子集，没有服务，需要单独查询子集的父集，合并展示-->
+    <select id="findSystemMenuByUserId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.SystemMenuVO">
+        select
+        t1.id,t1.parent_id,t1.create_time,t1.title,t1.name,t1.level,t1.sort,t1.`key`,t1.icon,t1.hidden,t1.router
+        from (
+        select
+        t.id
+        from system_menu t
+        join system_role_menu_relation t1 on t1.menu_id = t.id
+        join system_user_role_relation t2 on t2.role_id = t1.role_id
+        join system_user t3 on t3.id = t2.user_id
+        where 1=1
+        and t3.id = #{userId}
+        group by t.id
+
+        UNION
+
+        select
+        m.id
+        from (
+        select
+        DISTINCT substring_index( substring_index(t1.parent,',',t2.id + 1), ',' ,-1 ) as parent
+        from (
+        select
+        t.id,getMenuParentList(t.id) parent
+        from system_menu t
+        join system_role_menu_relation t1 on t1.menu_id = t.id
+        join system_user_role_relation t2 on t2.role_id = t1.role_id
+        join system_user t3 on t3.id = t2.user_id
+        where 1=1
+        and t3.id = #{userId}
+        group by t.id
+        ) t1
+        join help_index t2 on t2.id   <![CDATA[ < ]]>    (length(t1.parent) - length(REPLACE(t1.parent,',','')) + 1 )
+        ) t
+        join system_menu m on m.id = t.parent
+        ) t
+        join system_menu t1 on t1.id = t.id
+        order by t1.level asc , t1.sort asc
+    </select>
 
 </mapper>

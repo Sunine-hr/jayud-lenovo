@@ -2,6 +2,7 @@ package com.jayud.mall.mapper;
 
 import com.jayud.mall.model.po.ReceivableBillDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.vo.ReceivableBillDetailExcelVO;
 import com.jayud.mall.model.vo.ReceivableBillDetailVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -27,4 +28,11 @@ public interface ReceivableBillDetailMapper extends BaseMapper<ReceivableBillDet
      * @return
      */
     List<ReceivableBillDetailVO> findReceivableBillDetailByBillMasterId(@Param("billMasterId") Long billMasterId);
+
+    /**
+     *
+     * @param billMasterId
+     * @return
+     */
+    List<ReceivableBillDetailExcelVO> findReceivableBillDetailExcelByBillMasterId(@Param("billMasterId") Long billMasterId);
 }

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CounterListInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.CounterListInfo">
+        <id column="id" property="id" />
+        <result column="counter_id" property="counterId" />
+        <result column="cntr_no" property="cntrNo" />
+        <result column="file_name" property="fileName" />
+        <result column="template_url" property="templateUrl" />
+        <result column="describes" property="describes" />
+        <result column="cartons" property="cartons" />
+        <result column="status" property="status" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, counter_id, cntr_no, file_name, template_url, describes, cartons, status, user_id, user_name, create_time
+    </sql>
+
+    <select id="findCounterListInfoById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterListInfoVO">
+        select
+            t.id,t.counter_id,t.cntr_no,t.file_name,t.template_url,t.describes,t.cartons,t.status,t.user_id,t.user_name,t.create_time,
+            t2.id billId, t2.order_id billNo
+        from counter_list_info t
+        left join ocean_counter t1 on t1.id = t.counter_id
+        left join ocean_bill t2 on t2.id = t1.ob_id
+        where t.id = #{id}
+
+    </select>
+
+    <select id="findCounterCaseInfo" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterCaseInfoVO">
+        select
+            t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.case_id,t.carton_no,t.create_time,t.order_no
+        from counter_case_info t
+        where t.b_id = #{b_id}
+    </select>
+
+    <select id="findCounterListInfoByCounterId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterListInfoVO">
+        select
+            t.id,t.counter_id,t.cntr_no,t.file_name,t.template_url,t.describes,t.cartons,t.status,t.user_id,t.user_name,t.create_time
+        from counter_list_info t
+        where t.counter_id = #{counterId}
+    </select>
+
+    <select id="findCounterCaseInfoTotalBybid" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select count(*) total from counter_case_info where b_id=#{b_id}
+    </select>
+
+    <select id="findUnselectedOrderInfo" parameterType="com.jayud.mall.model.bo.OrderInfoQueryForm" resultType="com.jayud.mall.model.vo.OrderInfoVO">
+        select
+        t.id,t.order_no,t.customer_id,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,
+        t.is_pick,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,
+        t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,t.amazon_reference_id,t.extension_number,t.sales_commission,t.front_status_code,t.front_status_name,t.after_status_code,t.after_status_name,t.clearing_way,t.fill_material_description,t.warehouse_no,
+        t1.company,
+        t2.names,t2.sail_time,t2.cut_off_time,
+        t4.code_name serviceName,
+        oc.id confId
+        from order_info t
+        join customer t1 on t1.id = t.customer_id
+        join offer_info t2 on t2.id = t.offer_info_id
+        join quotation_template t3 on t3.id = t2.qie
+        join service_group t4 on t4.id = t3.sid
+        JOIN ocean_conf_detail ocd on ocd.id_code = t2.id and ocd.types=1
+        JOIN order_conf oc on oc.id = ocd.order_id
+        WHERE
+        1 = 1
+        <if test="form.orderConfId != null">
+            and oc.id = #{form.orderConfId}
+        </if>
+        <if test="form.filterOrderIds != null and form.filterOrderIds.size > 0">
+            and t.id not in
+            <foreach collection="form.filterOrderIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="form.orderNo != null and form.orderNo != ''">
+            and t.order_no like concat('%',#{form.orderNo},'%')
+        </if>
+        <if test="form.filterAfterStatusCodes != null and form.filterAfterStatusCodes.size > 0">
+            and t.after_status_code not in
+            <foreach collection="form.filterAfterStatusCodes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+    </select>
+
+    <select id="findSelectedOrderInfo" parameterType="com.jayud.mall.model.bo.OrderInfoQueryForm" resultType="com.jayud.mall.model.vo.OrderInfoVO">
+        select
+        t.id,t.order_no,t.customer_id,t.store_goods_warehouse_code,t.store_goods_warehouse_name,t.destination_warehouse_code,t.destination_warehouse_name,
+        t.is_pick,t.create_time,t.create_user_id,t.create_user_name,t.order_origin,t.bol_no,t.need_declare,t.need_clearance,t.remark,
+        t.charge_weight,t.volume_weight,t.actual_weight,t.actual_volume,t.total_cartons,t.amazon_reference_id,t.extension_number,t.sales_commission,t.front_status_code,t.front_status_name,t.after_status_code,t.after_status_name,t.clearing_way,t.fill_material_description,t.warehouse_no,
+        t1.company,
+        t2.names,t2.sail_time,t2.cut_off_time,
+        t4.code_name serviceName
+        from order_info t
+        join customer t1 on t1.id = t.customer_id
+        join offer_info t2 on t2.id = t.offer_info_id
+        join quotation_template t3 on t3.id = t2.qie
+        join service_group t4 on t4.id = t3.sid
+        join counter_order_info coi on coi.order_id = t.id
+        where 1=1
+        <if test="form.counterListInfoId != null">
+            and coi.b_id = #{form.counterListInfoId}
+        </if>
+        <if test="form.orderNo != null and form.orderNo != null">
+            and t.order_no like concat('%',#{form.orderNo},'%')
+        </if>
+
+    </select>
+
+
+    <select id="findCounterListExcelById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterListExcelVO">
+        select
+        t.id listInfoId,t.file_name,
+        t1.id counterId,t1.cabinet_code,t1.cntr_no,DATE_FORMAT(t1.create_time, '%Y-%m-%d') create_time,
+        t2.id billId,t2.order_id billNo,DATE_FORMAT(t2.sail_time, '%Y-%m-%d') sail_time
+        from counter_list_info t
+        join ocean_counter t1 on t1.id = t.counter_id
+        join ocean_bill t2 on t2.id = t1.ob_id
+        where 1=1
+        and t.id = #{listInfoId}
+    </select>
+
+
+    <select id="findCounterListInfoByBillId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterListInfoVO">
+        select
+        t.id,t.counter_id,t.cntr_no,t.file_name,t.template_url,t.describes,t.cartons,t.status,t.user_id,t.user_name,t.create_time
+        from counter_list_info t
+        join ocean_counter t1 on t1.id = t.counter_id
+        where 1 = 1
+        and t1.ob_id = #{billId}
+    </select>
+
+</mapper>

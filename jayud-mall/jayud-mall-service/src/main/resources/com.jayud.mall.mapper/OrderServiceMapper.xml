@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OrderServiceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OrderService">
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="order_no" property="orderNo" />
+        <result column="service_id" property="serviceId" />
+        <result column="service_name" property="serviceName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_id, order_no, service_id, service_name, create_time
+    </sql>
+
+    <select id="findOrderServiceByOrderId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderServiceVO">
+        select
+            t.id,t.order_id,t.order_no,t.service_id,t.service_name,t.create_time
+        from order_service t
+        where 1=1
+          and t.order_id = #{orderId}
+    </select>
+
+    <select id="findOrderServiceById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderServiceVO">
+        select
+            t.id,t.order_id,t.order_no,t.service_id,t.service_name,t.create_time
+        from order_service t
+        where 1=1
+          and  t.id = #{id}
+    </select>
+
+
+</mapper>

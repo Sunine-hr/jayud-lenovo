@@ -25,7 +25,7 @@ public class SystemUserVO {
     @ApiModelProperty(value = "密码", position = 3)
     private String password;
 
-    @ApiModelProperty(value = "用户姓名", position = 4)
+    @ApiModelProperty(value = "用户姓名(中文名)", position = 4)
     private String userName;
 
     @ApiModelProperty(value = "英文名", position = 5)

@@ -2,6 +2,8 @@ package com.jayud.mall.controller;
 
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.QuotedFileForm;
+import com.jayud.mall.model.bo.QuotedFileIdForm;
+import com.jayud.mall.model.bo.QuotedFileStatusForm;
 import com.jayud.mall.model.po.QuotedFile;
 import com.jayud.mall.model.vo.QuotedFileReturnVO;
 import com.jayud.mall.service.IQuotedFileService;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -42,6 +45,29 @@ public class QuotedFileController {
         return CommonResult.success(quotedFileReturnVOS);
     }
 
+    @ApiOperation(value = "保存-报价对应的文件表")
+    @PostMapping("/saveQuotedFile")
+    @ApiOperationSupport(order = 3)
+    public CommonResult saveQuotedFile(@Valid @RequestBody QuotedFileForm form){
+        quotedFileService.saveQuotedFile(form);
+        return CommonResult.success("保存成功");
+    }
 
+    @ApiOperation(value = "根据id查询，报价对应的文件表")
+    @ApiOperationSupport(order = 4)
+    @PostMapping("/findQuotedFileById")
+    public CommonResult<QuotedFile> findQuotedFileById(@Valid @RequestBody QuotedFileIdForm form){
+        Long id = form.getId();
+        QuotedFile quotedFile = quotedFileService.findQuotedFileById(id);
+        return CommonResult.success(quotedFile);
+    }
+
+    @ApiOperation(value = "报价文件-停用启用")
+    @ApiOperationSupport(order = 5)
+    @PostMapping("/stopOrEnabled")
+    public CommonResult stopOrEnabled(@Valid @RequestBody QuotedFileStatusForm form){
+        quotedFileService.stopOrEnabled(form);
+        return CommonResult.success("操作成功");
+    }
 
 }

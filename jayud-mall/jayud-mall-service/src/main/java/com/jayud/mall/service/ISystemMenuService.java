@@ -17,4 +17,6 @@ import java.util.List;
 public interface ISystemMenuService extends IService<SystemMenu> {
 
     List<SystemMenuVO> findAllMenuVO();
+
+    List<SystemMenuVO> loginUserMenu();
 }

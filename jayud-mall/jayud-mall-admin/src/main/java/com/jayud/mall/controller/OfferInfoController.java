@@ -6,6 +6,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.OfferInfoForm;
 import com.jayud.mall.model.bo.OfferInfoParaForm;
 import com.jayud.mall.model.bo.QueryOfferInfoForm;
+import com.jayud.mall.model.vo.OfferInfoDateVO;
 import com.jayud.mall.model.vo.OfferInfoVO;
 import com.jayud.mall.service.IOfferInfoService;
 import io.swagger.annotations.Api;
@@ -69,6 +70,25 @@ public class OfferInfoController {
     public CommonResult<OfferInfoVO> lookOfferInfo(@Valid @RequestBody OfferInfoParaForm form){
         Long id = form.getId();
         return offerInfoService.lookOfferInfo(id);
+    }
+
+    //根据开船日期，计算其他日期
+    @ApiOperation(value = "根据开船日期，计算其他日期")
+    @ApiOperationSupport(order = 6)
+    @PostMapping(value = "calcOtherDate")
+    public CommonResult<OfferInfoDateVO> calcOtherDate(@RequestBody OfferInfoForm form){
+        OfferInfoDateVO offerInfoDateVO = offerInfoService.calcOtherDate(form);
+        return CommonResult.success(offerInfoDateVO);
+    }
+
+
+    @ApiOperation(value = "分页查询报价(给配载查询报价使用)")
+    @PostMapping("/findOfferInfoPageByConf")
+    @ApiOperationSupport(order = 7)
+    public CommonResult<CommonPageResult<OfferInfoVO>> findOfferInfoPageByConf(@RequestBody QueryOfferInfoForm form) {
+        IPage<OfferInfoVO> pageList = offerInfoService.findOfferInfoPageByConf(form);
+        CommonPageResult<OfferInfoVO> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
     }
 
 

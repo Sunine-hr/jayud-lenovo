@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.CustomerGoodsAuditForm;
 import com.jayud.mall.model.bo.CustomerGoodsForm;
+import com.jayud.mall.model.bo.CustomerGoodsIsValidForm;
 import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
 import com.jayud.mall.model.po.CustomerGoods;
 import com.jayud.mall.model.vo.CustomerGoodsVO;
@@ -54,4 +55,17 @@ public interface ICustomerGoodsService extends IService<CustomerGoods> {
      * @return
      */
     CommonResult<CustomerGoodsVO> findCustomerGoodsById(Integer id);
+
+    /**
+     * 根据商品id，查看商品，及其商品服务费用
+     * @param id
+     * @return
+     */
+    CustomerGoodsVO findCustomerGoodsCostById(Integer id);
+
+    /**
+     * 客户商品，停用启用
+     * @param form
+     */
+    void stopOrEnabled(CustomerGoodsIsValidForm form);
 }

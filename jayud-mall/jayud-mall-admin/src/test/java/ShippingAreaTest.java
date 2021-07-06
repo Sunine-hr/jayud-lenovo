@@ -25,7 +25,7 @@ public class ShippingAreaTest {
         QueryShippingAreaForm form = new QueryShippingAreaForm();
         form.setWarehouseCode("SZ");
         form.setWarehouseName("苏州仓");
-        form.setStateCode("CN");
+//        form.setStateCode("CN");
         ObjectMapperPrint(form);
 
     }

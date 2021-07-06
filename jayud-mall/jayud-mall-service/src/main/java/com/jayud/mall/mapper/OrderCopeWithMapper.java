@@ -38,5 +38,10 @@ public interface OrderCopeWithMapper extends BaseMapper<OrderCopeWith> {
     List<OrderCopeWithVO> findOrderCopeWithByOrderIdAndBillId(@Param("orderId") Long orderId, @Param("billId") Long billId);
 
 
-
+    /**
+     * 根据orderServiceWithId，查询
+     * @param orderServiceWithId
+     * @return
+     */
+    OrderCopeWithVO findOrderCopeWithByOrderServiceWithId(@Param("orderServiceWithId") Long orderServiceWithId);
 }

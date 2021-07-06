@@ -28,4 +28,11 @@ public interface QuotedFileMapper extends BaseMapper<QuotedFile> {
      * @return
      */
     List<QuotedFileReturnVO> findQuotedFileBy(@Param("form") QuotedFileForm form);
+
+    /**
+     * 根据id，查询
+     * @param id
+     * @return
+     */
+    QuotedFile findQuotedFileById(@Param("id") Long id);
 }

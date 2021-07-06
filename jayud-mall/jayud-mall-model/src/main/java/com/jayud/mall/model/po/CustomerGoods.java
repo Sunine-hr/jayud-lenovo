@@ -142,6 +142,24 @@ public class CustomerGoods extends Model<CustomerGoods> {
     @JSONField(ordinal = 28)
     private String remark;
 
+    @ApiModelProperty(value = "品牌")
+    private String brand;
+
+    @ApiModelProperty(value = "丢货赔偿金额")
+    private BigDecimal lossCompensationAmount;
+
+    @ApiModelProperty(value = "丢货赔偿金额币种(currency_info id)")
+    private Integer lcaCid;
+
+    @ApiModelProperty(value = "是否有效(0无效 1有效)")
+    private Integer isValid;
+
+    @ApiModelProperty(value = "出口国家(country code)")
+    private String exportCountry;
+
+    @ApiModelProperty(value = "规格型号")
+    private String specification;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

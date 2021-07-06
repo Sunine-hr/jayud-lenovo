@@ -141,6 +141,67 @@ public class QuotationTemplateVO {
     @JSONField(ordinal = 29, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
+    @ApiModelProperty(value = "计费重单位(1柜 2KG 3CBM 4车)")
+    private Integer billingWeightUnit;
+
+    @ApiModelProperty(value = "整体时效")
+    private String wholeTime;
+
+    @ApiModelProperty(value = "计算公式\n" +
+            "1材积->重量：长*高*宽/计泡系数(单位KG)\n" +
+            "2重量->材积：实重/计泡系数(单位CBM)")
+    private Integer designFormulas;
+
+    @ApiModelProperty(value = "容量(数值)")
+    private BigDecimal volume;
+
+    @ApiModelProperty(value = "容量单位(1KG 2CBM)")
+    private Integer volumeUnit;
+
+    @ApiModelProperty(value = "最低数量")
+    private BigDecimal minimumQuantity;
+
+    //计算天数
+    @ApiModelProperty(value = "截单日期(计算天数)")
+    private Integer cutOffTimeCalc;
+
+    @ApiModelProperty(value = "截仓日期(计算天数)")
+    private Integer jcTimeCalc;
+
+    @ApiModelProperty(value = "截亏仓日期(计算天数)")
+    private Integer jkcTimeCalc;
+
+    @ApiModelProperty(value = "预计到达时间(计算天数)")
+    private Integer estimatedTimeCalc;
+
+    //结算方式
+    @ApiModelProperty(value = "结算方式id(clearing_way id)")
+    private Integer clearingWay;
+
+    @ApiModelProperty(value = "特别说明")
+    private String specialVersion;
+
+    //add field
+    @ApiModelProperty(value = "截单日期(后缀时分秒)")
+    private String cutOffTimeCalcHms;
+
+    @ApiModelProperty(value = "截仓日期(后缀时分秒)")
+    private String jcTimeCalcHms;
+
+    @ApiModelProperty(value = "截亏仓日期(后缀时分秒)")
+    private String jkcTimeCalcHms;
+
+    @ApiModelProperty(value = "预计到达时间(后缀时分秒)")
+    private String estimatedTimeCalcHms;
+
+
+    @ApiModelProperty(value = "权限用户id(system_user id,逗号分隔)")
+    private String permissionUsers;
+
+    @ApiModelProperty(value = "权限用户id arr数组")
+    private List<Long> permissionUsersArr;
+
+
     /*报价服务组:service_group*/
     @ApiModelProperty(value = "服务名称service_group.code_name", position = 30)
     @JSONField(ordinal = 30)

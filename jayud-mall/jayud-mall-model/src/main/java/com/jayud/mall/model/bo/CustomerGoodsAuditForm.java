@@ -1,6 +1,7 @@
 package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.jayud.mall.model.po.GoodsServiceCost;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -26,5 +27,9 @@ public class CustomerGoodsAuditForm {
     @ApiModelProperty(value = "清关编码(customs_clearance id_code)", position = 4)
     @JSONField(ordinal = 4)
     private String clearanceCode;
+
+    //商品服务费用
+    @ApiModelProperty(value = "商品服务费用list")
+    private List<GoodsServiceCost> goodsServiceCostList;
 
 }

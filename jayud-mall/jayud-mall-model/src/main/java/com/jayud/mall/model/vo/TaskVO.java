@@ -4,10 +4,12 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.mall.model.po.TaskExecutionRule;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class TaskVO {
@@ -49,5 +51,11 @@ public class TaskVO {
     @ApiModelProperty(value = "任务描述(任务名称+任务备注)", position = 11)
     @JSONField(ordinal = 11)
     private String taskDescribe;
+
+    @ApiModelProperty(value = "类型(1提单任务 2运单任务)")
+    private Integer types;
+
+    @ApiModelProperty(value = "任务执行规则表(from where to where) list")
+    private List<TaskExecutionRule> taskExecutionRuleList;
 
 }

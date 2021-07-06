@@ -1,5 +1,6 @@
 package com.jayud.mall.model.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +16,7 @@ import java.util.List;
 @Data
 public class SystemMenuVO {
 
-    @ApiModelProperty(value = "ID", position = 1)
+    @ApiModelProperty(value = "主键id", position = 1)
     private Integer id;
 
     @ApiModelProperty(value = "父级ID", position = 2)
@@ -24,6 +25,9 @@ public class SystemMenuVO {
     @ApiModelProperty(value = "创建时间", position = 3)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "菜单标题")
+    private String title;
 
     @ApiModelProperty(value = "菜单名称", position = 4)
     private String name;
@@ -35,6 +39,7 @@ public class SystemMenuVO {
     private Integer sort;
 
     @ApiModelProperty(value = "前端名称", position = 7)
+    @TableField("`key`")
     private String key;
 
     @ApiModelProperty(value = "前端图标", position = 8)

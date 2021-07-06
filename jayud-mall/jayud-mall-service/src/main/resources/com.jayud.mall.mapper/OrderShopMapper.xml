@@ -21,12 +21,17 @@
         resultType="com.jayud.mall.model.vo.OrderShopVO" >
         select
         t.id,t.order_id,t.good_id,t.quantity,t.create_time,
-        t2.sku,t2.hs_code,t2.name_cn,t2.declared_value,t2.declared_currency
+        t2.sku,t2.hs_code,t2.name_cn,t2.declared_value,t2.declared_currency,
+        IFNULL(t6.unit_price,0) unit_price, t6.cid, t6.unit, t6.status, t6.remark, t6.service_name, t6.customer_name
         from order_shop t
-        LEFT JOIN order_info t1 on t1.id = t.order_id
-        LEFT JOIN customer_goods t2 on t2.id = t.good_id
+        left JOIN order_info t1 on t1.id = t.order_id
+        left JOIN customer_goods t2 on t2.id = t.good_id
+        left join offer_info t3 on t3.id = t1.offer_info_id
+        left join quotation_template t4 on t4.id = t3.qie
+        left join service_group t5 on t5.id = t4.sid
+        left join goods_service_cost t6 on t6.service_id = t5.id and t6.good_id = t.good_id
         WHERE t1.id = #{orderId}
-        ORDER BY t1.id
+        ORDER BY t.id;
     </select>
 
 

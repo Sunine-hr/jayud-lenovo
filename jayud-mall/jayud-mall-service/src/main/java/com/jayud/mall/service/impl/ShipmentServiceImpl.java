@@ -175,13 +175,6 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
         JSONObject to_addressJsonObject = JSONUtil.parseObj(to_address);
         String destinationWarehouseCode = to_addressJsonObject.get("name", String.class);//目的仓库代码,例如：ONT8
         FabWarehouseVO fabWarehouseVO = fabWarehouseMapper.findFabWarehouseByWarehouseCode(destinationWarehouseCode);
-//        if(ObjectUtil.isEmpty(fabWarehouseVO)){
-//            //fabWarehouseVO 为 null
-//            FabWarehouse fabWarehouse = new FabWarehouse();
-//            fabWarehouse.setWarehouseCode(destinationWarehouseCode);
-//            fabWarehouse.setWarehouseName(destinationWarehouseCode);
-//            fabWarehouseService.saveOrUpdate(fabWarehouse);
-//        }
 
         //1.保存订单
         String orderNo = shipmentVO.getShipment_id();
@@ -201,8 +194,12 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                 orderInfo.setDestinationWarehouseName(fabWarehouseVO.getWarehouseName());//目的仓库名称,根据报价选择
             }
             orderInfo.setIsPick(0);//是否上门提货(0否 1是),默认为否
-            orderInfo.setStatus(OrderEnum.DRAFT.getCode());//状态码,默认为草稿状态
-            orderInfo.setStatusName(OrderEnum.DRAFT.getName());//状态名称
+
+            //状态码,默认为 旧系统导入 状态
+            orderInfo.setFrontStatusCode(OrderEnum.FRONT_IMPORT.getCode());
+            orderInfo.setFrontStatusName(OrderEnum.FRONT_IMPORT.getName());
+            orderInfo.setAfterStatusCode(OrderEnum.AFTER_IMPORT.getCode());
+            orderInfo.setAfterStatusName(OrderEnum.AFTER_IMPORT.getName());
 
             orderInfo.setNeedDeclare(0);//是否需要报关0-否，1-是 (订单对应报关文件:order_customs_file)
             orderInfo.setNeedClearance(0);//是否需要清关0-否，1-是 (订单对应清关文件:order_clearance_file)
@@ -212,7 +209,7 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             orderInfo.setCreateUserName(shipmentVO.getCustomerUserName());//创建人名称(customer user_name)
             orderInfo.setOrderOrigin("2");//订单来源(1web端 2新智慧同步)
 
-            orderInfo.setRemark("新智慧同步订单");
+            orderInfo.setRemark("旧系统同步订单");
             if(ObjectUtil.isNotEmpty(shipmentVO.getChargeable_weight())){
                 orderInfo.setChargeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//收费重(KG)
                 orderInfo.setVolumeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//材积重(KG),默认等于 收费重(KG)
@@ -255,15 +252,19 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
             }
 
             orderInfo.setIsPick(0);//是否上门提货(0否 1是),默认为否
-            orderInfo.setStatus(OrderEnum.DRAFT.getCode());//状态码,默认为草稿状态
-            orderInfo.setStatusName(OrderEnum.DRAFT.getName());//状态名称
+
+//            //状态码,默认为草稿状态  不改状态
+//            orderInfo.setFrontStatusCode(OrderEnum.FRONT_DRAFT.getCode());
+//            orderInfo.setFrontStatusName(OrderEnum.FRONT_DRAFT.getName());
+//            orderInfo.setAfterStatusCode(OrderEnum.AFTER_DRAFT.getCode());
+//            orderInfo.setAfterStatusName(OrderEnum.AFTER_DRAFT.getName());
 
             orderInfo.setCreateTime(shipmentVO.getCreatTime());//创建日期,新智慧的下单日期
             orderInfo.setCreateUserId(shipmentVO.getCustomerId());//创建人ID(customer id)
             orderInfo.setCreateUserName(shipmentVO.getCustomerUserName());//创建人名称(customer user_name)
             orderInfo.setOrderOrigin("2");//订单来源(1web端 2新智慧同步)
 
-            orderInfo.setRemark("新智慧同步订单");
+            orderInfo.setRemark("旧系统同步订单");
             if(ObjectUtil.isNotEmpty(shipmentVO.getChargeable_weight())){
                 orderInfo.setChargeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//收费重(KG)
                 orderInfo.setVolumeWeight(new BigDecimal(shipmentVO.getChargeable_weight()));//材积重(KG),默认等于 收费重(KG)
@@ -499,14 +500,37 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                 String cartonNO = numberGeneratedMapper.getOrderNoByCode("case_number");
                 orderCase.setCartonNo(cartonNO);//箱号
                 orderCase.setFabNo(fabNo);//FBA
+
+                // 客户预报 长、宽、高、重、体积
                 orderCase.setAsnLength(parcelsJsonObject.get("client_length", BigDecimal.class));//客户测量的长度，单位cm
                 orderCase.setAsnWidth(parcelsJsonObject.get("client_width", BigDecimal.class));//客户测量的宽度，单位cm
                 orderCase.setAsnHeight(parcelsJsonObject.get("client_height", BigDecimal.class));//客户测量的高度，单位cm
                 orderCase.setAsnWeight(parcelsJsonObject.get("client_weight", BigDecimal.class));//客户测量的重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal asnVolume = orderCase.getAsnLength().multiply(orderCase.getAsnWidth()).multiply(orderCase.getAsnHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setAsnVolume(asnVolume);
+
+                // 仓库测量 长、宽、高、重、体积
+                orderCase.setWmsLength(parcelsJsonObject.get("chargeable_length", BigDecimal.class));//仓库测量的长度，单位cm
+                orderCase.setWmsWidth(parcelsJsonObject.get("chargeable_width", BigDecimal.class));//仓库测量的宽度，单位cm
+                orderCase.setWmsHeight(parcelsJsonObject.get("chargeable_height", BigDecimal.class));//仓库测量的高度，单位cm
+                orderCase.setWmsWeight(parcelsJsonObject.get("actual_weight", BigDecimal.class));//仓库测量的重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal wmsVolume = orderCase.getWmsLength().multiply(orderCase.getWmsWidth()).multiply(orderCase.getWmsHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setWmsVolume(wmsVolume);
+
+                // 最终确认 长、宽、高、重、体积
                 orderCase.setConfirmLength(parcelsJsonObject.get("chargeable_length", BigDecimal.class));//最终确认长度，单位cm
                 orderCase.setConfirmWidth(parcelsJsonObject.get("chargeable_width", BigDecimal.class));//最终确认宽度，单位cm
                 orderCase.setConfirmHeight(parcelsJsonObject.get("chargeable_height", BigDecimal.class));//最终确认高度，单位cm
-                orderCase.setConfirmWeight(parcelsJsonObject.get("chargeable_weight", BigDecimal.class));//最终确认重量，单位kg
+                orderCase.setConfirmWeight(parcelsJsonObject.get("actual_weight", BigDecimal.class));//最终确认重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal confirmVolume = orderCase.getConfirmLength().multiply(orderCase.getConfirmWidth()).multiply(orderCase.getConfirmHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setConfirmVolume(confirmVolume);
+
                 Long picking_time = parcelsJsonObject.get("picking_time", Long.class);
                 if(ObjectUtil.isNotEmpty(picking_time)){
                     long l = picking_time*1000L;//秒转为毫秒
@@ -519,14 +543,37 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                 orderCaseList.add(orderCase);
             }else{
                 OrderCase orderCase = ConvertUtil.convert(orderCaseVO, OrderCase.class);
+
+                // 客户预报 长、宽、高、重、体积
                 orderCase.setAsnLength(parcelsJsonObject.get("client_length", BigDecimal.class));//客户测量的长度，单位cm
                 orderCase.setAsnWidth(parcelsJsonObject.get("client_width", BigDecimal.class));//客户测量的宽度，单位cm
                 orderCase.setAsnHeight(parcelsJsonObject.get("client_height", BigDecimal.class));//客户测量的高度，单位cm
                 orderCase.setAsnWeight(parcelsJsonObject.get("client_weight", BigDecimal.class));//客户测量的重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal asnVolume = orderCase.getAsnLength().multiply(orderCase.getAsnWidth()).multiply(orderCase.getAsnHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setAsnVolume(asnVolume);
+
+                // 仓库测量 长、宽、高、重、体积
+                orderCase.setWmsLength(parcelsJsonObject.get("chargeable_length", BigDecimal.class));//仓库测量的长度，单位cm
+                orderCase.setWmsWidth(parcelsJsonObject.get("chargeable_width", BigDecimal.class));//仓库测量的宽度，单位cm
+                orderCase.setWmsHeight(parcelsJsonObject.get("chargeable_height", BigDecimal.class));//仓库测量的高度，单位cm
+                orderCase.setWmsWeight(parcelsJsonObject.get("actual_weight", BigDecimal.class));//仓库测量的重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal wmsVolume = orderCase.getWmsLength().multiply(orderCase.getWmsWidth()).multiply(orderCase.getWmsHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setWmsVolume(wmsVolume);
+
+                // 最终确认 长、宽、高、重、体积
                 orderCase.setConfirmLength(parcelsJsonObject.get("chargeable_length", BigDecimal.class));//最终确认长度，单位cm
                 orderCase.setConfirmWidth(parcelsJsonObject.get("chargeable_width", BigDecimal.class));//最终确认宽度，单位cm
                 orderCase.setConfirmHeight(parcelsJsonObject.get("chargeable_height", BigDecimal.class));//最终确认高度，单位cm
-                orderCase.setConfirmWeight(parcelsJsonObject.get("chargeable_weight", BigDecimal.class));//最终确认重量，单位kg
+                orderCase.setConfirmWeight(parcelsJsonObject.get("actual_weight", BigDecimal.class));//最终确认重量，单位kg
+                //计算体积
+                //体积(m3) = (长cm * 宽cm * 高cm) / 1000000
+                BigDecimal confirmVolume = orderCase.getConfirmLength().multiply(orderCase.getConfirmWidth()).multiply(orderCase.getConfirmHeight()).divide(new BigDecimal("1000000"),3, BigDecimal.ROUND_HALF_UP);
+                orderCase.setConfirmVolume(confirmVolume);
+
                 Long picking_time = parcelsJsonObject.get("picking_time", Long.class);
                 if(ObjectUtil.isNotEmpty(picking_time)){
                     long l = picking_time*1000L;//秒转为毫秒
@@ -591,7 +638,7 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
                     customerGoods.setIsSensitive("0");//是否敏感货物，1是0否，默认为0
                     customerGoods.setTypes(1);//商品类型(1普货 2特货)
                     customerGoods.setStatus(0);//审核状态代码：1-审核通过，0-等待审核，-1-审核不通过
-                    customerGoods.setRemark("新智慧同步商品");//备注
+                    customerGoods.setRemark("原系统同步商品");//备注
                     customerGoodsService.saveOrUpdate(customerGoods);
                     Integer goodId = customerGoods.getId();
                     OrderShop orderShop = new OrderShop();
@@ -632,7 +679,7 @@ public class ShipmentServiceImpl extends ServiceImpl<ShipmentMapper, Shipment> i
 
 
     /**
-     * 根据币种id，分组
+     * 根据商品id，分组
      * @param orderShopList 订单商品
      * @return
      */

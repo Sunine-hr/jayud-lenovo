@@ -2,7 +2,9 @@ package com.jayud.mall.mapper;
 
 import com.jayud.mall.model.po.Country;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.vo.CountryVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,4 +19,5 @@ import org.springframework.stereotype.Component;
 @Component
 public interface CountryMapper extends BaseMapper<Country> {
 
+    CountryVO findCountryByCode(@Param("code") String code);
 }

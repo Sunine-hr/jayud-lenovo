@@ -376,7 +376,7 @@ public class AccountPayableServiceImpl extends ServiceImpl<AccountPayableMapper,
             //1.创建并保存应付对账单
             AccountPayable accountPayable = new AccountPayable();
             accountPayable.setDzdNo(dzdNo);//对账单编号
-            accountPayable.setLegalPersonId(Long.valueOf(legalPersonId));//法人id(legal_person id)
+            accountPayable.setLegalPersonId(Long.valueOf(legalPersonId));//法人主体id(legal_entity id)
             accountPayable.setSupplierId(Integer.valueOf(supplierId));//供应商id(supplier_info id)
             accountPayable.setPaymentDaysStart(firstday);//账期开始时间
             accountPayable.setPaymentDaysEnd(lastDay);//账期结束时间

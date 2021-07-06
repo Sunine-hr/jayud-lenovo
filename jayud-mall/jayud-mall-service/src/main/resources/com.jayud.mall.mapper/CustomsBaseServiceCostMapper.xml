@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CustomsBaseServiceCostMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.CustomsBaseServiceCost">
+        <id column="id" property="id" />
+        <result column="type" property="type" />
+        <result column="customs_id" property="customsId" />
+        <result column="service_id" property="serviceId" />
+        <result column="unit_price" property="unitPrice" />
+        <result column="cid" property="cid" />
+        <result column="unit" property="unit" />
+        <result column="status" property="status" />
+        <result column="remark" property="remark" />
+        <result column="service_name" property="serviceName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, type, customs_id, service_id, unit_price, cid, unit, status, remark, service_name
+    </sql>
+    <select id="findCustomsBaseServiceCostByParaMap" parameterType="java.util.Map"
+            resultType="com.jayud.mall.model.vo.CustomsBaseServiceCostVO">
+        select
+        t.id,t.type,t.customs_id,t.service_id,t.unit_price,t.cid,t.unit,t.status,t.remark,t.service_name
+        from customs_base_service_cost t
+        where 1=1
+        and t.type = #{paraMap.type}
+        and t.customs_id = #{paraMap.customs_id}
+    </select>
+
+</mapper>

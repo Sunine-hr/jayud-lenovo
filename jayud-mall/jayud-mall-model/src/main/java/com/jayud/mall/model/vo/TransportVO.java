@@ -63,4 +63,10 @@ public class TransportVO {
     @JSONField(ordinal = 13)
     private String supplierName;
 
+    @ApiModelProperty(value = "币种代码(currency_info currency_code)")
+    private String currencyCode;
+
+    @ApiModelProperty(value = "币种名称(currency_info currency_name)")
+    private String currencyName;
+
 }

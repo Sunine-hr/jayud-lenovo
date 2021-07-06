@@ -3,6 +3,8 @@ import com.jayud.mall.utils.TestUtils;
 import org.junit.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.LocalDateTime;
+
 public class CountryTest {
 
     /**
@@ -31,6 +33,18 @@ public class CountryTest {
         for (int i = 0; i<10; i++){
             System.out.println(i);
         }
+    }
+
+    @Test
+    public void test4(){
+        LocalDateTime startTime =  LocalDateTime.now();
+
+        LocalDateTime localDateTime = startTime.plusDays(0);
+        System.out.println(startTime);
+        System.out.println(localDateTime);
+
+        LocalDateTime localDateTime2 = startTime.plusDays(-2);
+        System.out.println(localDateTime2);
     }
 
 }

@@ -15,5 +15,10 @@ public class ShipmentIdVO {
     @ApiModelProperty(value = "目的仓库id(FBA仓库 fab_warehouse id)")
     private Integer warehouseId;
 
+    @ApiModelProperty(value = "服务*")
+    private String service;
+
+    @ApiModelProperty(value = "收件人邮编")
+    private String postcode;
 
 }

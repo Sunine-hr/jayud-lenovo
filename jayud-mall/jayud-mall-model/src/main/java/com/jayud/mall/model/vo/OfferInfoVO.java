@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,22 +29,22 @@ public class OfferInfoVO {
     private String names;
 
     @ApiModelProperty(value = "报价-开船日期", position = 4)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @JSONField(ordinal = 4)
     private LocalDateTime sailTime;
 
     @ApiModelProperty(value = "报价-截单日期", position = 5)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @JSONField(ordinal = 5)
     private LocalDateTime cutOffTime;
 
     @ApiModelProperty(value = "报价-截仓日期", position = 6)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @JSONField(ordinal = 6)
     private LocalDateTime jcTime;
 
     @ApiModelProperty(value = "报价-截亏仓日期", position = 7)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @JSONField(ordinal = 7)
     private LocalDateTime jkcTime;
 
@@ -64,18 +65,27 @@ public class OfferInfoVO {
     private String userName;
 
     @ApiModelProperty(value = "报价-创建时间", position = 12)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @JSONField(ordinal = 12)
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "预计到达时间", position = 13)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @JSONField(ordinal = 13)
     private LocalDateTime estimatedTime;
 
     @ApiModelProperty(value = "操作信息", position = 14)
     @JSONField(ordinal = 14)
     private String remarks;
+
+    @ApiModelProperty(value = "开船日期备注")
+    private String sailTimeRemark;
+
+    @ApiModelProperty(value = "特别说明")
+    private String specialVersion;
+
+    @ApiModelProperty(value = "报价单号")
+    private String offerNo;
 
     /*航程*/
     @ApiModelProperty(value = "航程(预计到达时间estimated_time - 开船日期sail_time)", position = 15)
@@ -148,6 +158,27 @@ public class OfferInfoVO {
     @ApiModelProperty(value = "操作信息", position = 31)
     @JSONField(ordinal = 31)
     private String templateRemarks;
+
+    @ApiModelProperty(value = "计泡系数(默认6000)", position = 23)
+    @JSONField(ordinal = 23)
+    private BigDecimal bubbleCoefficient;
+
+    @ApiModelProperty(value = "计费重单位(1柜 2KG 3CBM 4车)")
+    private Integer billingWeightUnit;
+
+    @ApiModelProperty(value = "计算公式\n" +
+            "1材积->重量：长*高*宽/计泡系数(单位KG)\n" +
+            "2重量->材积：实重/计泡系数(单位CBM)")
+    private Integer designFormulas;
+
+    @ApiModelProperty(value = "最低数量")
+    private BigDecimal minimumQuantity;
+
+    @ApiModelProperty(value = "结算方式id(clearing_way id)")
+    private Integer clearingWay;
+
+    @ApiModelProperty(value = "下单页面显示 结算方式id(clearing_way id)")
+    private Integer showClearingWay;
 
     /*报价服务组:service_group*/
     @ApiModelProperty(value = "服务名称service_group.code_name", position = 32)
@@ -231,7 +262,9 @@ public class OfferInfoVO {
     private List<TemplateCopeReceivableVO> inlandFeeList;
 
     //rec3.其他应收费用
-    //TODO
+    @ApiModelProperty(value = "其他费用：其他(应收费用明细)", position = 47)
+    @JSONField(ordinal = 47)
+    private List<TemplateCopeReceivableVO> otherFeeList;
 
     //图片
     @ApiModelProperty(value = "图片", position = 48)
@@ -256,5 +289,13 @@ public class OfferInfoVO {
     @JSONField(ordinal = 52)
     private String amountRange;
 
+    @ApiModelProperty(value = "容量(数值) quotation_template volume")
+    private BigDecimal volume;
+
+    @ApiModelProperty(value = "容量单位(1KG 2CBM) quotation_template volume_unit")
+    private Integer volumeUnit;
+
+    @ApiModelProperty(value = "整体时效(quotation_template whole_time)")
+    private String wholeTime;
 
 }

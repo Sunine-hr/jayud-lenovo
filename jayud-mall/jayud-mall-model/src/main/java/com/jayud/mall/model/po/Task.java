@@ -64,6 +64,9 @@ public class Task extends Model<Task> {
     @JSONField(ordinal = 10, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "类型(1提单任务 2运单任务)")
+    private Integer types;
+
 
     @Override
     protected Serializable pkVal() {

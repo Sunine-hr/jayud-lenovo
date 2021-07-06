@@ -53,4 +53,11 @@ public interface OrderPickMapper extends BaseMapper<OrderPick> {
      * @return
      */
     List<PickStatusVO> findPickStatusByOrderId(@Param("orderId") Long orderId);
+
+    /**
+     * 根据id查询
+     * @param id
+     * @return
+     */
+    OrderPickVO findOrderPickById(@Param("id") Long id);
 }

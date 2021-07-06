@@ -61,15 +61,21 @@ swagger:
 secure:
   ignored:
     urls: #安全路径白名单
+      - /doc.html
       - /swagger-ui.html
       - /swagger-resources/**
       - /swagger/**
+      - /images/**
+      - /webjars/**
+      - /v2/api-docs
+      - /v2/api-docs-ext
+      - /configuration/ui
+      - /configuration/security
       - /**/v2/api-docs
       - /**/*.js
       - /**/*.css
       - /**/*.png
       - /**/*.ico
-      - /doc.html
       - /webjars/springfox-swagger-ui/**
       - /actuator/**
       - /druid/**

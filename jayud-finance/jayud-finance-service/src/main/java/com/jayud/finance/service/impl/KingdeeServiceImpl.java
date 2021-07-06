@@ -285,6 +285,7 @@ public class KingdeeServiceImpl implements KingdeeService {
     }
 
 
+
     @Override
     public <T> CommonResult<T> getInvoice(String businessCode, Class<T> clz) {
         if (clz.isAssignableFrom(InvoiceBase.class)) {

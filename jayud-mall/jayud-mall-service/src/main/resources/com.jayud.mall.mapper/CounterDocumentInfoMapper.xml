@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CounterDocumentInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.CounterDocumentInfo">
+        <id column="id" property="id" />
+        <result column="counter_id" property="counterId" />
+        <result column="cntr_no" property="cntrNo" />
+        <result column="file_name" property="fileName" />
+        <result column="template_url" property="templateUrl" />
+        <result column="describes" property="describes" />
+        <result column="status" property="status" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, counter_id, cntr_no, file_name, template_url, describes, status, user_id, user_name, create_time
+    </sql>
+
+    <select id="findCounterDocumentInfoById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterDocumentInfoVO">
+        select
+            t.id,t.counter_id,t.cntr_no,t.file_name,t.template_url,t.describes,t.status,t.user_id,t.user_name,t.create_time
+        from counter_document_info t
+        where 1=1
+          and t.id = #{id}
+    </select>
+
+    <select id="findCounterDocumentInfoByCounterId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterDocumentInfoVO">
+        select
+            t.id,t.counter_id,t.cntr_no,t.file_name,t.template_url,t.describes,t.status,t.user_id,t.user_name,t.create_time
+        from counter_document_info t
+        where 1=1
+          and t.counter_id = #{counterId}
+    </select>
+
+
+</mapper>

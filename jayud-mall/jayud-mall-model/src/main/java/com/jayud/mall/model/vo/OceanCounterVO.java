@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @ApiModel(value = "提单的柜号信息")
@@ -84,5 +85,8 @@ public class OceanCounterVO {
     @ApiModelProperty(value = "供应商信息-供应商名称(中)", position = 16)
     @JSONField(ordinal = 16)
     private String supplierChName;
+
+    @ApiModelProperty(value = "费用信息")
+    private List<FeeCopeWithVO> feeCopeWithList;
 
 }

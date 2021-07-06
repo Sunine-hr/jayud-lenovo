@@ -1,3 +1,4 @@
+import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -313,6 +314,66 @@ public class Test {
         String json = JSONObject.toJSONString(form);
         System.out.println(json);
 
+    }
+
+
+    @org.junit.Test
+    public void test15(){
+        //随机字符选取的样本
+        String baseString = RandomUtil.BASE_CHAR_NUMBER + "@&";
+        int i = 0;
+        while (i<1000){
+            //获得一个随机的字符串 8位
+            String s1 = RandomUtil.randomString(baseString, 8);
+            System.out.println(s1);
+            i++;
+        }
+    }
+
+    @org.junit.Test
+    public void test16(){
+        LocalDateTime time=LocalDateTime.now();
+        System.out.println(time);
+        DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String strDate2 = dtf2.format(time);
+        System.out.println(strDate2);
+    }
+
+    @org.junit.Test
+    public void test17(){
+
+        LocalDateTime time=LocalDateTime.now();
+        System.out.println(time);
+
+        LocalDateTime localDateTime = time.plusDays(3);
+
+        LocalDateTime of = LocalDateTime.of(localDateTime.getYear(), localDateTime.getMonth(), localDateTime.getDayOfMonth(), 15, 25, 00);
+        System.out.println(of);
+
+    }
+
+    @org.junit.Test
+    public void test18(){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime time = LocalDateTime.now();
+
+        String localTime = df.format(time);
+        LocalDateTime ldt = LocalDateTime.parse(dtf.format(time)+" 17:07:05",df);
+        System.out.println("LocalDateTime转成String类型的时间："+localTime);
+        System.out.println("String类型的时间转成LocalDateTime："+ldt);
+
+
+    }
+
+
+    @org.junit.Test
+    public void test19(){
+        int a = -2;
+        int b = 3;
+
+        System.out.println("a % b = "+(a % b));
+        System.out.println("a / b = "+(a / b));
     }
 
 

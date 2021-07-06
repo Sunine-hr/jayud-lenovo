@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.CustomerGoodsForm;
+import com.jayud.mall.model.bo.CustomerGoodsIsValidForm;
 import com.jayud.mall.model.bo.CustomerGoodsParaForm;
 import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
 import com.jayud.mall.model.vo.CustomerGoodsVO;
@@ -125,6 +126,14 @@ public class CustomerGoodsController {
     public CommonResult<CustomerGoodsVO> findCustomerGoodsById(@Valid @RequestBody CustomerGoodsParaForm form){
         Integer goodId = form.getGoodId();
         return customerGoodsService.findCustomerGoodsById(goodId);
+    }
+
+    @ApiOperation(value = "客户商品-停用启用")
+    @PostMapping(value = "/stopOrEnabled")
+    @ApiOperationSupport(order = 7)
+    public CommonResult stopOrEnabled(@Valid @RequestBody CustomerGoodsIsValidForm form){
+        customerGoodsService.stopOrEnabled(form);
+        return CommonResult.success("操作成功");
     }
 
 

@@ -29,6 +29,9 @@ public class SaveSystemUserForm {
     @JSONField(ordinal = 4)
     private String wkno;
 
+    @ApiModelProperty(value = "用户姓名(中文名)", position = 4)
+    private String userName;
+
     @ApiModelProperty(value = "英文名", position = 5)
     @JSONField(ordinal = 5)
     private String enUserName;

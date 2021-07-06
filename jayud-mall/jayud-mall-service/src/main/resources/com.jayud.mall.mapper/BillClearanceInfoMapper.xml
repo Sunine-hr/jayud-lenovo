@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.BillClearanceInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.BillClearanceInfo">
+        <id column="id" property="id" />
+        <result column="bill_id" property="billId" />
+        <result column="bill_no" property="billNo" />
+        <result column="file_name" property="fileName" />
+        <result column="template_url" property="templateUrl" />
+        <result column="describe" property="describe" />
+        <result column="cartons" property="cartons" />
+        <result column="status" property="status" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, bill_id, bill_no, file_name, template_url, describe, cartons, status, user_id, user_name, create_time
+    </sql>
+    <!--获取对应数据结合-->
+    <select id="findBillClearanceInfoByPage" resultType="com.jayud.mall.model.vo.BillClearanceInfoVO">
+        select
+        <include refid="Base_Column_List"/>
+        from bill_clearance_info
+    </select>
+
+    <!--插入用户-->
+    <insert id="insertBillClearanceInfo" parameterType="com.jayud.mall.model.bo.BillClearanceInfoForm">
+        INSERT INTO bill_clearance_info (bill_id, bill_no, file_name, template_url, describes,status,user_id,user_name,create_time)
+        VALUES (#{billId}, #{billNo}, #{fileName}, #{templateUrl}, #{describes},1,#{userId},#{userName},now())
+    </insert>
+
+    <!--修改用户-->
+    <update id="updateBillClearanceInfo" parameterType="com.jayud.mall.model.bo.BillClearanceInfoForm">
+        UPDATE bill_clearance_info
+        SET
+            bill_id = #{billId},bill_no = #{billNo},file_name = #{fileName},
+            template_url = #{templateUrl},describes = #{describes},status = #{status},user_id=#{userId},user_name=#{userName},create_time=now()
+        where id = #{id}
+    </update>
+
+    <!--删除用户-->
+    <delete id="deleteBillClearanceInfo" parameterType="Long">
+        delete from bill_clearance_info where id = #{id}
+    </delete>
+
+    <select id="findClearanceInfoCase" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.ClearanceInfoCaseVO">
+        select
+            t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.case_id,t.carton_no,t.create_time,t.order_no
+        from clearance_info_case t
+        where b_id= #{b_id}
+    </select>
+
+    <select id="findBillClearanceInfoById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.BillClearanceInfoVO">
+        select
+            t.id,t.bill_id,t.bill_no,t.file_name,t.template_url,t.describes,t.cartons,t.status,t.user_id,t.user_name,t.create_time,t.type
+        from bill_clearance_info t
+        where t.id = #{id}
+    </select>
+
+    <select id="findClearanceInfoCaseTotalBybid" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select count(*) total from clearance_info_case where b_id = #{b_id}
+    </select>
+
+    <select id="findClearanceInfoCaseBybid" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.ClearanceInfoCaseExcelVO">
+        select
+            t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.case_id,t.carton_no,t.create_time,t.order_no
+        from clearance_info_case t
+        where b_id = #{b_id}
+    </select>
+
+
+
+
+</mapper>

@@ -1179,4 +1179,10 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     public List<BillLogisticsTrackVO> findBillLogisticsTrackByBillId(Long billId) {
         return billLogisticsTrackMapper.findBillLogisticsTrackByBillId(billId);
     }
+
+    @Override
+    public List<CounterListInfoVO> findCounterListInfoByBillId(Long billId) {
+        List<CounterListInfoVO> counterListInfoList = counterListInfoMapper.findCounterListInfoByBillId(billId);
+        return counterListInfoList;
+    }
 }

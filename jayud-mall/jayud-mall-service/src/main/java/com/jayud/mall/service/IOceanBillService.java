@@ -219,4 +219,11 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @return
      */
     List<BillLogisticsTrackVO> findBillLogisticsTrackByBillId(Long billId);
+
+    /**
+     * 根据提单id，查询提单下的装柜清单
+     * @param billId
+     * @return
+     */
+    List<CounterListInfoVO> findCounterListInfoByBillId(Long billId);
 }

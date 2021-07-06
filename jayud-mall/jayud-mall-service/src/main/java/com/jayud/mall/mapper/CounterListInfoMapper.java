@@ -73,4 +73,11 @@ public interface CounterListInfoMapper extends BaseMapper<CounterListInfo> {
      * @return
      */
     CounterListExcelVO findCounterListExcelById(@Param("listInfoId") Long listInfoId);
+
+    /**
+     * 根据提单id，查询提单下的装柜清单
+     * @param billId
+     * @return
+     */
+    List<CounterListInfoVO> findCounterListInfoByBillId(@Param("billId") Long billId);
 }

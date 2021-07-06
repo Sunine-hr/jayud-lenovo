@@ -650,5 +650,17 @@ public class OceanBillController {
         return CommonResult.success(orderInfoVOList);
     }
 
+    //根据当前提单id，选择装柜清单列表
+    @ApiOperation(value = "根据当前提单id，选择装柜清单列表")
+    @ApiOperationSupport(order = 52)
+    @PostMapping(value = "/findCounterListInfoByBillId")
+    public CommonResult<List<CounterListInfoVO>> findCounterListInfoByBillId(@Valid @RequestBody OceanBillParaForm form){
+        Long billId = form.getId();//提单id(ocean_bill id)
+        List<CounterListInfoVO> counterListInfoList = oceanBillService.findCounterListInfoByBillId(billId);
+        return CommonResult.success(counterListInfoList);
+    }
+
+
+
 
 }

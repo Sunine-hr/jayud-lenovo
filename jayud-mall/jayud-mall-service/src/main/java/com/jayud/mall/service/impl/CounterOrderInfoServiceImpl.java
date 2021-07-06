@@ -9,10 +9,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.BatchCounterOrderInfoForm;
-import com.jayud.mall.model.po.BillOrderRelevance;
-import com.jayud.mall.model.po.CounterOrderInfo;
-import com.jayud.mall.model.po.LogisticsTrack;
-import com.jayud.mall.model.po.OrderInfo;
+import com.jayud.mall.model.po.*;
 import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +58,8 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
     IOrderInfoService orderInfoService;
     @Autowired
     ILogisticsTrackService logisticsTrackService;
+    @Autowired
+    ICounterCaseInfoService counterCaseInfoService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -224,8 +223,15 @@ public class CounterOrderInfoServiceImpl extends ServiceImpl<CounterOrderInfoMap
         QueryWrapper<CounterOrderInfo> counterOrderInfoQueryWrapper = new QueryWrapper<>();
         counterOrderInfoQueryWrapper.eq("b_id", bId);
         counterOrderInfoQueryWrapper.in("order_id", orderIds);
-        //1.批量移除-柜子清单下的订单信息(1清单 -> N运单)
+        //1.1批量移除-柜子清单下的订单信息(1清单 -> N运单)
         this.remove(counterOrderInfoQueryWrapper);
+
+        QueryWrapper<CounterCaseInfo> counterCaseInfoQueryWrapper = new QueryWrapper<>();
+        counterCaseInfoQueryWrapper.eq("b_id", bId);
+        counterCaseInfoQueryWrapper.in("order_id", orderIds);
+        //1.2批量移除-柜子(订单)箱号信息(1运单 -> N箱号)
+        counterCaseInfoService.remove(counterCaseInfoQueryWrapper);
+
 
         //2.保存-提单关联订单(任务通知表)
         Long billId = counterListInfoVO.getBillId();

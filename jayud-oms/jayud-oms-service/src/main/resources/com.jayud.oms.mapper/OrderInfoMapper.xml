@@ -71,7 +71,8 @@
         oi.unit_code unitCode,
         oi.reject_comment,
         oi.is_rejected,
-        oi.operation_time
+        oi.operation_time,
+        oi.biz_belong_depart
         FROM
         order_info oi
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`

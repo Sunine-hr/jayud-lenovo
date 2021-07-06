@@ -152,6 +152,11 @@ public class OrderInfoVO {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private String operationTime;
 
+    @ApiModelProperty(value = "所属部门id")
+    private Long bizBelongDepart;
+
+
+
 
 //    @ApiModelProperty(value = "子订单状态描述")
 //    private String subOrderStatusDesc;

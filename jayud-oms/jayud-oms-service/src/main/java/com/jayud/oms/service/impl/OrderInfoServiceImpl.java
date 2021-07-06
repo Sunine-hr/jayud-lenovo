@@ -488,13 +488,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if (orderPaymentCosts.size() > 0) {
                 paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
                 //批量更新
-                paymentCostService.updateByOrderNo(inputOrderVO.getOrderNo(), form.getOrderNo(), new OrderPaymentCost().setDepartmentId(orderPaymentCosts.get(0).getDepartmentId()));
+                if (form.getDepartmentId() != null && ("submit_main".equals(form.getCmd()) || "submit_sub".equals(form.getCmd()))) {
+                    paymentCostService.updateByOrderNo(inputOrderVO.getOrderNo(), form.getOrderNo(), new OrderPaymentCost().setDepartmentId(orderPaymentCosts.get(0).getDepartmentId()));
+                }
+
 
             }
             if (orderReceivableCosts.size() > 0) {
                 receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
                 //批量更新
-                receivableCostService.updateByOrderNo(inputOrderVO.getOrderNo(), form.getOrderNo(), new OrderReceivableCost().setDepartmentId(orderReceivableCosts.get(0).getDepartmentId()));
+                if (form.getDepartmentId() != null && ("submit_main".equals(form.getCmd()) || "submit_sub".equals(form.getCmd()))) {
+                    receivableCostService.updateByOrderNo(inputOrderVO.getOrderNo(), form.getOrderNo(), new OrderReceivableCost().setDepartmentId(orderReceivableCosts.get(0).getDepartmentId()));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -2881,6 +2886,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
 
+    /**
+     * 内部往来
+     *
+     * @param form
+     */
     private void costMergeOpt(AuditCostForm form) {
         if (form.getSubUnitCode() == null || form.getReceivableCosts().size() == 0) {
             return;
@@ -2917,8 +2927,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         SupplierInfo supplierInfo = this.supplierInfoService.getByName(form.getSubLegalName());
 
         for (OrderReceivableCost receivableCost : orderReceivableCostList) {
+
             OrderPaymentCost bind = oldBinds.remove(receivableCost.getId());
             OrderPaymentCost convert = ConvertUtil.convert(receivableCost, OrderPaymentCost.class);
+            //内部往来
+            receivableCost.setIsInternal(true);
+            convert.setIsInternal(true);
             if (bind != null) {
                 if (!bind.getStatus().toString().equals(OrderStatusEnum.COST_1.getCode())) {
                     //只同步草稿状态

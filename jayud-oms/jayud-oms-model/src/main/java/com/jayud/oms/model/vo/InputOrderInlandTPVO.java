@@ -110,6 +110,9 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
     @ApiModelProperty(value = "所有附件信息")
     private List<FileView> allPics = new ArrayList<>();
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

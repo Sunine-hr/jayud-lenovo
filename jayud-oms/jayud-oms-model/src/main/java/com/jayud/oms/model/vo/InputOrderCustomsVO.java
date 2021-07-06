@@ -81,6 +81,9 @@ public class InputOrderCustomsVO {
     @ApiModelProperty(value = "订单备注")
     private String orderRemarks;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
 
     public void setSubCustomsStatus(String subCustomsStatus) {
         this.subCustomsStatus = subCustomsStatus;

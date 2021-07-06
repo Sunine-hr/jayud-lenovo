@@ -81,7 +81,8 @@
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = i.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = i.`order_no`)>0 THEN TRUE
         ELSE FALSE
-        END) cost
+        END) cost,
+        i.department_id
         FROM
         order_inland_transport i
         left join order_inland_send_cars ic on i.order_no=ic.order_no

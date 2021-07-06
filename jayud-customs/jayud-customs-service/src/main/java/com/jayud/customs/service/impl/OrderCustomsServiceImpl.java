@@ -126,6 +126,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 customs.setSeaTransportPic(StringUtils.getFileStr(form.getSeaTransportPics()));
                 customs.setSeaTransPicName(StringUtils.getFileNameStr(form.getSeaTransportPics()));
                 customs.setOrderRemarks(form.getOrderRemarks());
+                customs.setDepartmentId(form.getDepartmentId());
                 orderCustomsList.add(customs);
             }
             if (!orderCustomsList.isEmpty()) {
@@ -361,6 +362,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
             //为了控制驳回编辑子订单之间互不影响,报关中驳回时所有子订单都应驳回
             inputOrderCustomsVO.setSubCustomsStatus(orderCustomsVO.getStatus());
             inputOrderCustomsVO.setOrderRemarks(orderCustomsVO.getOrderRemarks());
+            inputOrderCustomsVO.setDepartmentId(orderCustomsVO.getDepartmentId());
             //处理子订单部分
             List<InputSubOrderCustomsVO> subOrderCustomsVOS = new ArrayList<>();
             for (OrderCustomsVO orderCustoms : orderCustomsVOS) {
@@ -376,6 +378,7 @@ public class OrderCustomsServiceImpl extends ServiceImpl<OrderCustomsMapper, Ord
                 subOrderCustomsVO.setYunCustomsNo(orderCustoms.getYunCustomsNo());
                 subOrderCustomsVO.setSupervisionMode(orderCustoms.getSupervisionMode());
                 subOrderCustomsVO.setOrderRemarks(orderCustoms.getOrderRemarks());
+                subOrderCustomsVO.setDepartmentId(orderCustoms.getDepartmentId());
                 //处理子订单附件信息
                 String fileStr = orderCustoms.getFileStr();
                 String fileNameStr = orderCustoms.getFileNameStr();

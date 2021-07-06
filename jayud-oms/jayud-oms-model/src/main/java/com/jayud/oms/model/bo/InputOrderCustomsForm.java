@@ -117,6 +117,9 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "子订单状态")
     private Integer mainOrderStatus;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
 
     public void checkCustomsInfoParam() {
         String title = "报关:";

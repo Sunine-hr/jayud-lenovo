@@ -49,4 +49,7 @@ public class InputSubOrderCustomsForm {
     @NotEmpty(message = "fileViews is required")
     private List<FileView> fileViews = new ArrayList<>();
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
 }

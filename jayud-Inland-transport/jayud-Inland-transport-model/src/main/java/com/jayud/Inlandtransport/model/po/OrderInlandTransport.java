@@ -82,6 +82,9 @@ public class OrderInlandTransport extends Model<OrderInlandTransport> {
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
 
     @Override
     protected Serializable pkVal() {

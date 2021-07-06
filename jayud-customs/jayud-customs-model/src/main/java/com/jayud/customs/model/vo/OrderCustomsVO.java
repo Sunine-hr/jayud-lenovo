@@ -112,6 +112,11 @@ public class OrderCustomsVO {
     @ApiModelProperty(value = "订单备注")
     private String orderRemarks;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
+
+
     public void setStatusDesc(String status) {
         this.status = status;
         this.statusDesc = OrderStatusEnum.getDesc(status);

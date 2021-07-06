@@ -84,6 +84,9 @@ public class InputOrderInlandTransportForm extends Model<InputOrderInlandTranspo
     private List<OrderDeliveryAddress> orderDeliveryAddressList;
 
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

@@ -96,6 +96,9 @@ public class OrderInlandTransportDetails extends Model<OrderInlandTransportDetai
     @ApiModelProperty("送货文件")
     private List<FileView> deliveryFile;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

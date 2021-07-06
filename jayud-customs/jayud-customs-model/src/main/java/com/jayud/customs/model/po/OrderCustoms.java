@@ -158,6 +158,9 @@ public class OrderCustoms extends Model<OrderCustoms> {
     @ApiModelProperty(value = "订单备注")
     private String orderRemarks;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

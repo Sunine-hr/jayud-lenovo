@@ -625,7 +625,7 @@ public class OrderComboxController {
 
     @ApiOperation(value = "默认部门")
     @PostMapping(value = "/getDefaultDepartment")
-    public CommonResult getDefaultDepartment(Map<String, Object> map) {
+    public CommonResult getDefaultDepartment(@RequestBody Map<String, Object> map) {
         //业务所属部门
         String type = MapUtil.getStr(map, "type");
         SubOrderSignEnum orderSignEnum = SubOrderSignEnum.getEnum(type);
@@ -640,7 +640,7 @@ public class OrderComboxController {
             return CommonResult.error(400, "不存在操作部门");
         }
         Map<String, Long> response = new HashMap<>();
-        response.put("defaultDepartmentId", Long.valueOf(departmentId.toString()));
+        response.put("departmentId", Long.valueOf(departmentId.toString()));
         return CommonResult.success(response);
     }
 }

@@ -47,6 +47,9 @@ public class InputSubOrderCustomsForm {
     @ApiModelProperty(value = "附件", required = true)
     private List<FileView> fileViews = new ArrayList<>();
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
     public void checkSubOrderCustoms() {
         if (StringUtil.isNullOrEmpty(this.getOrderNo())
                 || StringUtil.isNullOrEmpty(this.getTitle())

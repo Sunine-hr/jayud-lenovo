@@ -109,4 +109,7 @@ public class InputOrderCustomsForm {
     @ApiModelProperty(value = "主订单状态")
     private String mainOrderStatus;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
 }

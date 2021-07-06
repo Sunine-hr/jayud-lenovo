@@ -158,6 +158,9 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
     @ApiModelProperty(value = "标识")
     private String mark = SubOrderSignEnum.NL.getSignOne();
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

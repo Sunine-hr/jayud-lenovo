@@ -1,7 +1,11 @@
 package com.jayud.mall.service;
 
+import com.jayud.mall.model.bo.BillCustomsCounterListForm;
 import com.jayud.mall.model.po.BillCustomsCounterList;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.mall.model.vo.BillCustomsCounterListVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IBillCustomsCounterListService extends IService<BillCustomsCounterList> {
 
+    /**
+     * 查询已选的装柜清单列表
+     * @param form
+     * @return
+     */
+    List<BillCustomsCounterListVO> findBillCustomsCounterListByTypeAndCustomsId(BillCustomsCounterListForm form);
 }

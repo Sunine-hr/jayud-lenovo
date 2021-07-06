@@ -68,6 +68,8 @@ public class OceanBillController {
     ICustomsInfoCaseService customsInfoCaseService;
     @Autowired
     IClearanceInfoCaseService clearanceInfoCaseService;
+    @Autowired
+    IBillCustomsCounterListService billCustomsCounterListService;
 
 
     @ApiOperation(value = "分页查询提单信息")
@@ -650,6 +652,13 @@ public class OceanBillController {
         return CommonResult.success(orderInfoVOList);
     }
 
+    /*
+    * 选择装柜清单
+    *   根据当前提单id，选择装柜清单列表
+    *   确认选择的装柜清单列表
+    *   查询已选的装柜清单列表
+    * */
+
     //根据当前提单id，选择装柜清单列表
     @ApiOperation(value = "根据当前提单id，选择装柜清单列表")
     @ApiOperationSupport(order = 52)
@@ -667,6 +676,15 @@ public class OceanBillController {
     public CommonResult affirmCounterListInfo(@Valid @RequestBody BillCustomsCounterListForm form){
         oceanBillService.affirmCounterListInfo(form);
         return CommonResult.success("操作成功");
+    }
+
+    //查询已选的装柜清单列表
+    @ApiOperation(value = "查询已选的装柜清单列表")
+    @ApiOperationSupport(order = 54)
+    @PostMapping(value = "/findBillCustomsCounterListByTypeAndCustomsId")
+    public CommonResult<List<BillCustomsCounterListVO>> findBillCustomsCounterListByTypeAndCustomsId(@Valid @RequestBody BillCustomsCounterListForm form){
+        List<BillCustomsCounterListVO> billCustomsCounterListList = billCustomsCounterListService.findBillCustomsCounterListByTypeAndCustomsId(form);
+        return CommonResult.success(billCustomsCounterListList);
     }
 
 

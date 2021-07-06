@@ -16,4 +16,22 @@
         id, type, customs_id, counter_list_id, create_time
     </sql>
 
+
+    <select id="findBillCustomsCounterListByTypeAndCustomsId" parameterType="com.jayud.mall.model.bo.BillCustomsCounterListForm"
+            resultType="com.jayud.mall.model.vo.BillCustomsCounterListVO">
+        select
+        t.id,t.type,t.customs_id,t.counter_list_id,t.create_time,
+        t1.counter_id,t1.cntr_no,t1.file_name,t1.template_url,t1.describes,t1.cartons,t1.status
+        from bill_customs_counter_list t
+        left join counter_list_info t1 on t1.id = t.counter_list_id
+        where 1=1
+        <if test="form.type != null">
+            and t.type = #{form.type}
+        </if>
+        <if test="form.customsId != null">
+            and t.customs_id = #{form.customsId}
+        </if>
+
+    </select>
+
 </mapper>

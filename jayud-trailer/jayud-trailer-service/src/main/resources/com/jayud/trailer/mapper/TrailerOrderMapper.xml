@@ -142,7 +142,8 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
         is_weighed isWeighed,is_make_up isMakeUp,create_user createUser,create_time createTime,update_user updateUser,
         update_time updateTime,need_input_cost needInputCost,order_taker orderTaker,
         receiving_orders_date receivingOrdersDate,
-         is_info_complete isInfoComplete
+         is_info_complete isInfoComplete,
+         tor.department_id
         from trailer_order tor where tor.id = #{id}
     </select>
 
@@ -175,7 +176,8 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = tor.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = tor.`order_no`)>0 THEN TRUE
         ELSE FALSE
-        END) cost
+        END) cost,
+        tor.department_id
         from trailer_order tor
         <where>
             <if test="form.orderNo !=null and form.orderNo!=''">

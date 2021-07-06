@@ -198,6 +198,9 @@ public class InputTrailerOrderVO {
     @ApiModelProperty(value = "是否资料齐全")
     private Boolean isInfoComplete;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
 
     public void setUnitName(String unitName) {
         this.unitName = unitName;

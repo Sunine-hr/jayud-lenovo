@@ -83,7 +83,6 @@ public class InputOrderInlandTransportForm extends Model<InputOrderInlandTranspo
     @ApiModelProperty("送货地址")
     private List<OrderDeliveryAddress> orderDeliveryAddressList;
 
-
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
 

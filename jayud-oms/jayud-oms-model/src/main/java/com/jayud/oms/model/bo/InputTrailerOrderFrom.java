@@ -170,6 +170,8 @@ public class InputTrailerOrderFrom {
     @ApiModelProperty(value = "是否资料齐全")
     private Boolean isInfoComplete=true;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
 
     /**
      * 校验创建拖车子订单参数

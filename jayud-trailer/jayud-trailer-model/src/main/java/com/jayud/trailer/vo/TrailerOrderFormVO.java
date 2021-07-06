@@ -272,6 +272,10 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "应付费用状态")
     private String paymentCostStatus;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
+
 
     /**
      * 组装商品信息

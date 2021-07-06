@@ -226,4 +226,10 @@ public interface IOceanBillService extends IService<OceanBill> {
      * @return
      */
     List<CounterListInfoVO> findCounterListInfoByBillId(Long billId);
+
+    /**
+     * 确认选择的装柜清单列表
+     * @param form
+     */
+    void affirmCounterListInfo(BillCustomsCounterListForm form);
 }

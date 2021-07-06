@@ -660,6 +660,14 @@ public class OceanBillController {
         return CommonResult.success(counterListInfoList);
     }
 
+    //确认选择的装柜清单列表
+    @ApiOperation(value = "确认选择的装柜清单列表")
+    @ApiOperationSupport(order = 53)
+    @PostMapping(value = "/affirmCounterListInfo")
+    public CommonResult affirmCounterListInfo(@Valid @RequestBody BillCustomsCounterListForm form){
+        oceanBillService.affirmCounterListInfo(form);
+        return CommonResult.success("操作成功");
+    }
 
 
 

@@ -74,6 +74,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     BillLogisticsTrackMapper billLogisticsTrackMapper;
     @Autowired
     LogisticsTrackMapper logisticsTrackMapper;
+    @Autowired
+    BillCustomsCounterListMapper billCustomsCounterListMapper;
 
     @Autowired
     BaseService baseService;
@@ -111,6 +113,8 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     ILogisticsTrackService logisticsTrackService;
     @Autowired
     IOrderInfoService orderInfoService;
+    @Autowired
+    IBillCustomsCounterListService billCustomsCounterListService;
 
     @Override
     public IPage<OceanBillVO> findOceanBillByPage(QueryOceanBillForm form) {
@@ -1184,5 +1188,49 @@ public class OceanBillServiceImpl extends ServiceImpl<OceanBillMapper, OceanBill
     public List<CounterListInfoVO> findCounterListInfoByBillId(Long billId) {
         List<CounterListInfoVO> counterListInfoList = counterListInfoMapper.findCounterListInfoByBillId(billId);
         return counterListInfoList;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void affirmCounterListInfo(BillCustomsCounterListForm form) {
+        Integer type = form.getType();//类型(1 报关 2清关)
+        Long customsId = form.getCustomsId();//报关、清关id(报关bill_customs_info id 清关bill_clearance_info id)
+        List<CounterListInfoVO> counterListInfoList = form.getCounterListInfoList();//装柜清单列表list
+        if(CollUtil.isEmpty(counterListInfoList)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "装柜清单列表不能为空");
+        }
+        if(type.equals(1)){
+            //提单报关
+            BillCustomsInfoVO billCustomsInfoVO = billCustomsInfoMapper.findBillCustomsInfoById(customsId);
+            if(ObjectUtil.isEmpty(billCustomsInfoVO)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "(提单)报关清单不存在");
+            }
+        }else if(type.equals(2)){
+            //提前清关
+            BillClearanceInfoVO billClearanceInfoVO = billClearanceInfoMapper.findBillClearanceInfoById(customsId);
+            if(ObjectUtil.isEmpty(billClearanceInfoVO)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "(提单)清关清单不存在");
+            }
+        }
+
+        //1.先删除
+        QueryWrapper<BillCustomsCounterList> billCustomsCounterListQueryWrapper = new QueryWrapper<>();
+        billCustomsCounterListQueryWrapper.eq("type", type);
+        billCustomsCounterListQueryWrapper.eq("customs_id", customsId);
+        billCustomsCounterListService.remove(billCustomsCounterListQueryWrapper);
+        //2.再保存
+        List<BillCustomsCounterList> billCustomsCounterLists = new ArrayList<>();
+        counterListInfoList.forEach(counterListInfoVO -> {
+            Long counterListId = counterListInfoVO.getId();
+            BillCustomsCounterList billCustomsCounterList = new BillCustomsCounterList();
+            billCustomsCounterList.setType(type);
+            billCustomsCounterList.setCustomsId(customsId);
+            billCustomsCounterList.setCounterListId(counterListId);
+            billCustomsCounterLists.add(billCustomsCounterList);
+        });
+        if(CollUtil.isNotEmpty(billCustomsCounterLists)){
+            billCustomsCounterListService.saveOrUpdateBatch(billCustomsCounterLists);
+        }
+
     }
 }

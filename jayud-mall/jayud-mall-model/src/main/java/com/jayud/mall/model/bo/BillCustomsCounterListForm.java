@@ -1,12 +1,12 @@
 package com.jayud.mall.model.bo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.mall.model.vo.CounterListInfoVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class BillCustomsCounterListForm {
@@ -26,6 +26,9 @@ public class BillCustomsCounterListForm {
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "装柜清单列表list")
+    private List<CounterListInfoVO> counterListInfoList;
 
 
 }

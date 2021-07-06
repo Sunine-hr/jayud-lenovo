@@ -1,7 +1,9 @@
 package com.jayud.mall.mapper;
 
-import com.jayud.mall.model.po.BillCustomsCounterList;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.po.BillCustomsCounterList;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>
@@ -11,6 +13,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author fachang.mao
  * @since 2021-07-06
  */
+@Mapper
+@Component
 public interface BillCustomsCounterListMapper extends BaseMapper<BillCustomsCounterList> {
 
 }

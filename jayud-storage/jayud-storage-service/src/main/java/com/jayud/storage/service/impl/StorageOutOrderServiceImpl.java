@@ -113,14 +113,14 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
                 warehouseGoods.add(convert);
 
 //                出库订单创建成功，锁定库存  如果暂存，不锁定库存
-                if(storageOutOrderForm.getCmd().equals("submit")){
-                    if(convert.getNumber() != null || convert.getPcs() != null){
-                        boolean result = stockService.lockInInventory(convert);
-                        if(!result){
-                            log.warn(convert.getName() + "锁定库存失败");
-                        }
-                    }
-                }
+//                if(storageOutOrderForm.getCmd().equals("submit")){
+//                    if(convert.getNumber() != null || convert.getPcs() != null){
+//                        boolean result = stockService.lockInInventory(convert);
+//                        if(!result){
+//                            log.warn(convert.getName() + "锁定库存失败");
+//                        }
+//                    }
+//                }
             }
             warehouseGoodsService.saveOrUpdateBatch(warehouseGoods);
         }
@@ -226,10 +226,10 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
         omsClient.saveAuditInfo(auditInfoForm);
         this.updateById(tmp);
         //订单驳回，释放锁定库存，增加库存信息
-        boolean result = stockService.changeInventory(storageOutOrder.getOrderNo(),storageOutOrder.getId());
-        if(!result){
-            log.warn("库存变更失败");
-        }
+//        boolean result = stockService.changeInventory(storageOutOrder.getOrderNo(),storageOutOrder.getId());
+//        if(!result){
+//            log.warn("库存变更失败");
+//        }
     }
 
     //入库接单

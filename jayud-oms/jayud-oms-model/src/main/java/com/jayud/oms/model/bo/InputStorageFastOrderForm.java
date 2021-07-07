@@ -101,4 +101,7 @@ public class InputStorageFastOrderForm  {
     @ApiModelProperty(value = "出库商品对象集合")
     private List<AddWarehouseGoodsForm> outGoodsFormList;
 
+    @ApiModelProperty(value = "是否快进快出修改")
+    private Boolean isKJKC;
+
 }

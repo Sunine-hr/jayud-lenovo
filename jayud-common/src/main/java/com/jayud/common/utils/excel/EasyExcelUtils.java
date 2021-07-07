@@ -518,7 +518,7 @@ public class EasyExcelUtils {
 
     @SneakyThrows
     public static <T> void fillTemplate2(JSONObject json, Map<String, List<T>> list,
-                                        String templateFilePath, String outputPath, HttpServletResponse response) {
+                                        String templateFilePath, String outputPath,String fileName, HttpServletResponse response) {
         // 模板注意 用{} 来表示你要用的变量 如果本来就有"{","}" 特殊字符 用"\{","\}"代替
         // {} 代表普通变量 {.} 代表是list的变量 {前缀.} 前缀可以区分不同的list
 
@@ -537,7 +537,7 @@ public class EasyExcelUtils {
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
-            String filename = URLEncoder.encode("工作表", "utf-8");
+            String filename = URLEncoder.encode(fileName, "utf-8");
             response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
             excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
         } else {

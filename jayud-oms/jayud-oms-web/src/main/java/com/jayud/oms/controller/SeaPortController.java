@@ -61,10 +61,10 @@ public class SeaPortController {
             //判断代码是否存在，判断名称是否存在
             SeaPort seaPort = seaPortService.isCodeExistence(form.getCode());
             SeaPort seaPort1 = seaPortService.isNameExistence(form.getName());
-            if(seaPort != null && seaPort.getId().equals(form.getId())){
+            if(seaPort != null && !seaPort.getId().equals(form.getId())){
                 return CommonResult.error(444,"港口代码已存在");
             }
-            if(seaPort1 != null && seaPort1.getId().equals(form.getId())){
+            if(seaPort1 != null && !seaPort1.getId().equals(form.getId())){
                 return CommonResult.error(444,"港口名称已存在");
             }
         }else{

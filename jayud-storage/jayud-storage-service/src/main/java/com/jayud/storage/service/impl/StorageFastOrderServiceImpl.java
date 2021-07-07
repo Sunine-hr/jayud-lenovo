@@ -57,36 +57,46 @@ public class StorageFastOrderServiceImpl extends ServiceImpl<StorageFastOrderMap
     @Override
     public String createOrder(StorageFastOrderForm storageFastOrderForm) {
         //无论驳回还是草稿在提交，都先删除原来的商品信息
-        if(storageFastOrderForm.getId()!=null){
+        if (storageFastOrderForm.getId() != null) {
             warehouseGoodsService.deleteWarehouseGoodsFormsByOrderId(storageFastOrderForm.getId());
         }
         //创建
         StorageFastOrder storageFastOrder = ConvertUtil.convert(storageFastOrderForm, StorageFastOrder.class);
-        if(storageFastOrder.getId() == null){
+        if (storageFastOrderForm.getIsKJKC() != null && storageFastOrderForm.getIsKJKC()) {
+            storageFastOrder.setId(storageFastOrderForm.getId());
+            storageFastOrder.setUpdateTime(LocalDateTime.now());
+            storageFastOrder.setUpdateUser(UserOperator.getToken());
+            boolean update = this.updateById(storageFastOrder);
+            if (update) {
+                log.warn(storageFastOrder.getMainOrderNo() + "仓储快进快出修改成功");
+            } else {
+                log.error(storageFastOrder.getMainOrderNo() + "仓储快进快出修改失败");
+            }
+        } else if (storageFastOrder.getId() == null) {
             storageFastOrder.setCreateTime(LocalDateTime.now());
             storageFastOrder.setCreateUser(UserOperator.getToken());
             storageFastOrder.setStatus("CCF_0");
             boolean save = this.save(storageFastOrder);
-            if(save){
-                log.warn(storageFastOrder.getMainOrderNo()+"仓储快进快出单添加成功");
-            }else{
-                log.error(storageFastOrder.getMainOrderNo()+"仓储快进快出单添加失败");
+            if (save) {
+                log.warn(storageFastOrder.getMainOrderNo() + "仓储快进快出单添加成功");
+            } else {
+                log.error(storageFastOrder.getMainOrderNo() + "仓储快进快出单添加失败");
             }
-        }else{
+        } else {
             storageFastOrder.setId(storageFastOrderForm.getId());
-            storageFastOrder.setCreateTime(LocalDateTime.now());
-            storageFastOrder.setCreateUser(UserOperator.getToken());
+            storageFastOrder.setUpdateTime(LocalDateTime.now());
+            storageFastOrder.setUpdateUser(UserOperator.getToken());
             storageFastOrder.setStatus("CCF_0");
             boolean update = this.updateById(storageFastOrder);
-            if(update){
-                log.warn(storageFastOrder.getMainOrderNo()+"仓储快进快出单添加成功");
-            }else{
-                log.error(storageFastOrder.getMainOrderNo()+"仓储快进快出单添加失败");
+            if (update) {
+                log.warn(storageFastOrder.getMainOrderNo() + "仓储快进快出单修改成功");
+            } else {
+                log.error(storageFastOrder.getMainOrderNo() + "仓储快进快出单修改失败");
             }
         }
         String orderNo = storageFastOrder.getOrderNo();
-        if(storageFastOrder.getIsWarehouse().equals(0)){
-            if(CollectionUtils.isNotEmpty(storageFastOrderForm.getFastGoodsFormList())){
+        if (storageFastOrder.getIsWarehouse().equals(0)) {
+            if (CollectionUtils.isNotEmpty(storageFastOrderForm.getFastGoodsFormList())) {
                 List<WarehouseGoodsForm> goodsFormList = storageFastOrderForm.getFastGoodsFormList();
                 List<WarehouseGoods> warehouseGoods = new ArrayList<>();
                 for (WarehouseGoodsForm warehouseGood : goodsFormList) {
@@ -103,8 +113,8 @@ public class StorageFastOrderServiceImpl extends ServiceImpl<StorageFastOrderMap
                 }
                 warehouseGoodsService.saveOrUpdateBatch(warehouseGoods);
             }
-        }else{
-            if(CollectionUtils.isNotEmpty(storageFastOrderForm.getInGoodsFormList())){
+        } else {
+            if (CollectionUtils.isNotEmpty(storageFastOrderForm.getInGoodsFormList())) {
                 List<WarehouseGoodsForm> goodsFormList = storageFastOrderForm.getInGoodsFormList();
                 List<WarehouseGoods> warehouseGoods = new ArrayList<>();
                 for (WarehouseGoodsForm warehouseGood : goodsFormList) {
@@ -121,7 +131,7 @@ public class StorageFastOrderServiceImpl extends ServiceImpl<StorageFastOrderMap
                 }
                 warehouseGoodsService.saveOrUpdateBatch(warehouseGoods);
             }
-            if(CollectionUtils.isNotEmpty(storageFastOrderForm.getOutGoodsFormList())){
+            if (CollectionUtils.isNotEmpty(storageFastOrderForm.getOutGoodsFormList())) {
                 List<WarehouseGoodsForm> goodsFormList = storageFastOrderForm.getOutGoodsFormList();
                 List<WarehouseGoods> warehouseGoods = new ArrayList<>();
                 for (WarehouseGoodsForm warehouseGood : goodsFormList) {
@@ -146,7 +156,7 @@ public class StorageFastOrderServiceImpl extends ServiceImpl<StorageFastOrderMap
     @Override
     public StorageFastOrder getStorageFastOrderByMainOrderNO(String orderNo) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("main_order_no",orderNo);
+        queryWrapper.eq("main_order_no", orderNo);
         return this.baseMapper.selectOne(queryWrapper);
     }
 
@@ -158,77 +168,77 @@ public class StorageFastOrderServiceImpl extends ServiceImpl<StorageFastOrderMap
         StorageFastOrder storageFastOrder = this.baseMapper.selectById(id);
         StorageFastOrderVO storageFastOrderVO = ConvertUtil.convert(storageFastOrder, StorageFastOrderVO.class);
         //获取商品信息
-        if(storageFastOrder.getIsWarehouse().equals(0)){
-            List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList(storageFastOrderVO.getId(),storageFastOrderVO.getOrderNo(),3);
-            if(CollectionUtils.isEmpty(warehouseGoods)){
+        if (storageFastOrder.getIsWarehouse().equals(0)) {
+            List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList(storageFastOrderVO.getId(), storageFastOrderVO.getOrderNo(), 3);
+            if (CollectionUtils.isEmpty(warehouseGoods)) {
                 warehouseGoods.add(new WarehouseGoodsVO());
                 storageFastOrderVO.setTotalNumberStr("0板0件0pcs");
                 storageFastOrderVO.setTotalWeightStr("0KG");
 
-            }else{
+            } else {
                 double totalWeight = 0.0;
                 Integer borderNumber = 0;
                 Integer number = 0;
                 Integer pcs = 0;
                 for (WarehouseGoodsVO warehouseGood : warehouseGoods) {
-                    if(warehouseGood.getWeight()!=null){
+                    if (warehouseGood.getWeight() != null) {
                         totalWeight = totalWeight + warehouseGood.getWeight();
                     }
-                    if(warehouseGood.getBoardNumber()!=null){
+                    if (warehouseGood.getBoardNumber() != null) {
                         borderNumber = borderNumber + warehouseGood.getBoardNumber();
                     }
-                    if(warehouseGood.getNumber()!=null){
+                    if (warehouseGood.getNumber() != null) {
                         number = number + warehouseGood.getNumber();
                     }
-                    if(warehouseGood.getPcs()!=null){
+                    if (warehouseGood.getPcs() != null) {
                         pcs = pcs + warehouseGood.getPcs();
                     }
-                    warehouseGood.setTakeFiles(StringUtils.getFileViews(warehouseGood.getFilePath(),warehouseGood.getFileName(),prePath));
+                    warehouseGood.setTakeFiles(StringUtils.getFileViews(warehouseGood.getFilePath(), warehouseGood.getFileName(), prePath));
                 }
-                storageFastOrderVO.setTotalNumberStr(borderNumber+"板"+number+"件"+pcs+"pcs");
-                storageFastOrderVO.setTotalWeightStr(totalWeight+"KG");
+                storageFastOrderVO.setTotalNumberStr(borderNumber + "板" + number + "件" + pcs + "pcs");
+                storageFastOrderVO.setTotalWeightStr(totalWeight + "KG");
             }
             storageFastOrderVO.setFastGoodsFormList(warehouseGoods);
 
-        }else{
-            List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList(storageFastOrderVO.getId(),storageFastOrderVO.getOrderNo(),3);
-            if(CollectionUtils.isEmpty(warehouseGoods)){
+        } else {
+            List<WarehouseGoodsVO> warehouseGoods = warehouseGoodsService.getList(storageFastOrderVO.getId(), storageFastOrderVO.getOrderNo(), 3);
+            if (CollectionUtils.isEmpty(warehouseGoods)) {
                 warehouseGoods.add(new WarehouseGoodsVO());
                 storageFastOrderVO.setTotalNumberStr("0板0件0pcs");
                 storageFastOrderVO.setTotalWeightStr("0KG");
 
-            }else{
+            } else {
                 double totalWeight = 0.0;
                 Integer borderNumber = 0;
                 Integer number = 0;
                 Integer pcs = 0;
                 for (WarehouseGoodsVO warehouseGood : warehouseGoods) {
-                    if(warehouseGood.getWeight()!=null){
+                    if (warehouseGood.getWeight() != null) {
                         totalWeight = totalWeight + warehouseGood.getWeight();
                     }
-                    if(warehouseGood.getBoardNumber()!=null){
+                    if (warehouseGood.getBoardNumber() != null) {
                         borderNumber = borderNumber + warehouseGood.getBoardNumber();
                     }
-                    if(warehouseGood.getNumber()!=null){
+                    if (warehouseGood.getNumber() != null) {
                         number = number + warehouseGood.getNumber();
                     }
-                    if(warehouseGood.getPcs()!=null){
+                    if (warehouseGood.getPcs() != null) {
                         pcs = pcs + warehouseGood.getPcs();
                     }
-                    warehouseGood.setTakeFiles(StringUtils.getFileViews(warehouseGood.getFilePath(),warehouseGood.getFileName(),prePath));
+                    warehouseGood.setTakeFiles(StringUtils.getFileViews(warehouseGood.getFilePath(), warehouseGood.getFileName(), prePath));
                 }
-                storageFastOrderVO.setTotalNumberStr(borderNumber+"板"+number+"件"+pcs+"pcs");
-                storageFastOrderVO.setTotalWeightStr(totalWeight+"KG");
+                storageFastOrderVO.setTotalNumberStr(borderNumber + "板" + number + "件" + pcs + "pcs");
+                storageFastOrderVO.setTotalWeightStr(totalWeight + "KG");
             }
             storageFastOrderVO.setInGoodsFormList(warehouseGoods);
 
-            List<WarehouseGoodsVO> warehouseGoodsVOS = warehouseGoodsService.getList(storageFastOrderVO.getId(),storageFastOrderVO.getOrderNo(),4);
-            if(CollectionUtils.isEmpty(warehouseGoodsVOS)){
+            List<WarehouseGoodsVO> warehouseGoodsVOS = warehouseGoodsService.getList(storageFastOrderVO.getId(), storageFastOrderVO.getOrderNo(), 4);
+            if (CollectionUtils.isEmpty(warehouseGoodsVOS)) {
                 warehouseGoodsVOS.add(new WarehouseGoodsVO());
             }
             //获取附件信息
             for (WarehouseGoodsVO warehouseGood : warehouseGoodsVOS) {
-                warehouseGood.setTakeFiles(StringUtils.getFileViews(warehouseGood.getFilePath(),warehouseGood.getFileName(),prePath));
+                warehouseGood.setTakeFiles(StringUtils.getFileViews(warehouseGood.getFilePath(), warehouseGood.getFileName(), prePath));
             }
             storageFastOrderVO.setOutGoodsFormList(warehouseGoodsVOS);
         }
@@ -237,9 +247,9 @@ public class StorageFastOrderServiceImpl extends ServiceImpl<StorageFastOrderMap
 
     @Override
     public IPage<StorageFastOrderFormVO> findByPage(QueryStorageFastOrderForm form) {
-        if(form.getProcessStatus() !=null ){
+        if (form.getProcessStatus() != null) {
             form.setProcessStatusList(Collections.singletonList(form.getProcessStatus()));
-        }else{
+        } else {
             if (StringUtils.isEmpty(form.getStatus())) { //订单列表
                 form.setProcessStatusList(Arrays.asList(ProcessStatusEnum.PROCESSING.getCode()
                         , ProcessStatusEnum.COMPLETE.getCode(), ProcessStatusEnum.CLOSE.getCode()));
@@ -254,7 +264,7 @@ public class StorageFastOrderServiceImpl extends ServiceImpl<StorageFastOrderMap
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
         Page<StorageOutOrderFormVO> page = new Page<>(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findByPage(page, form,legalIds);
+        return this.baseMapper.findByPage(page, form, legalIds);
     }
 
     @Override
@@ -341,5 +351,83 @@ public class StorageFastOrderServiceImpl extends ServiceImpl<StorageFastOrderMap
         QueryWrapper<StorageFastOrder> condition = new QueryWrapper<>();
         condition.lambda().eq(StorageFastOrder::getOrderNo, orderNo);
         return this.getOne(condition);
+    }
+
+    @Override
+    public String createOrUpdateOrder(StorageFastOrderForm storageFastOrderForm) {
+        //无论驳回还是草稿在提交，都先删除原来的商品信息
+        if (storageFastOrderForm.getId() != null) {
+            warehouseGoodsService.deleteWarehouseGoodsFormsByOrderId(storageFastOrderForm.getId());
+        }
+        //创建
+        StorageFastOrder storageFastOrder = ConvertUtil.convert(storageFastOrderForm, StorageFastOrder.class);
+
+        storageFastOrder.setId(storageFastOrderForm.getId());
+        storageFastOrder.setUpdateTime(LocalDateTime.now());
+        storageFastOrder.setUpdateUser(UserOperator.getToken());
+        boolean update = this.updateById(storageFastOrder);
+        if (update) {
+            log.warn(storageFastOrder.getMainOrderNo() + "仓储快进快出单修改成功");
+        } else {
+            log.error(storageFastOrder.getMainOrderNo() + "仓储快进快出单修改失败");
+        }
+
+        String orderNo = storageFastOrder.getOrderNo();
+        if (storageFastOrder.getIsWarehouse().equals(0)) {
+            if (CollectionUtils.isNotEmpty(storageFastOrderForm.getFastGoodsFormList())) {
+                List<WarehouseGoodsForm> goodsFormList = storageFastOrderForm.getFastGoodsFormList();
+                List<WarehouseGoods> warehouseGoods = new ArrayList<>();
+                for (WarehouseGoodsForm warehouseGood : goodsFormList) {
+
+                    WarehouseGoods convert = ConvertUtil.convert(warehouseGood, WarehouseGoods.class);
+                    convert.setOrderId(storageFastOrder.getId());
+                    convert.setOrderNo(storageFastOrder.getOrderNo());
+                    convert.setType(3);
+                    convert.setCreateTime(LocalDateTime.now());
+                    convert.setCreateUser(UserOperator.getToken());
+                    convert.setFileName(StringUtils.getFileNameStr(warehouseGood.getTakeFiles()));
+                    convert.setFilePath(StringUtils.getFileStr(warehouseGood.getTakeFiles()));
+                    warehouseGoods.add(convert);
+                }
+                warehouseGoodsService.saveOrUpdateBatch(warehouseGoods);
+            }
+        } else {
+            if (CollectionUtils.isNotEmpty(storageFastOrderForm.getInGoodsFormList())) {
+                List<WarehouseGoodsForm> goodsFormList = storageFastOrderForm.getInGoodsFormList();
+                List<WarehouseGoods> warehouseGoods = new ArrayList<>();
+                for (WarehouseGoodsForm warehouseGood : goodsFormList) {
+
+                    WarehouseGoods convert = ConvertUtil.convert(warehouseGood, WarehouseGoods.class);
+                    convert.setOrderId(storageFastOrder.getId());
+                    convert.setOrderNo(storageFastOrder.getOrderNo());
+                    convert.setType(4);
+                    convert.setCreateTime(LocalDateTime.now());
+                    convert.setCreateUser(UserOperator.getToken());
+                    convert.setFileName(StringUtils.getFileNameStr(warehouseGood.getTakeFiles()));
+                    convert.setFilePath(StringUtils.getFileStr(warehouseGood.getTakeFiles()));
+                    warehouseGoods.add(convert);
+                }
+                warehouseGoodsService.saveOrUpdateBatch(warehouseGoods);
+            }
+            if (CollectionUtils.isNotEmpty(storageFastOrderForm.getOutGoodsFormList())) {
+                List<WarehouseGoodsForm> goodsFormList = storageFastOrderForm.getOutGoodsFormList();
+                List<WarehouseGoods> warehouseGoods = new ArrayList<>();
+                for (WarehouseGoodsForm warehouseGood : goodsFormList) {
+
+                    WarehouseGoods convert = ConvertUtil.convert(warehouseGood, WarehouseGoods.class);
+                    convert.setOrderId(storageFastOrder.getId());
+                    convert.setOrderNo(storageFastOrder.getOrderNo());
+                    convert.setType(5);
+                    convert.setCreateTime(LocalDateTime.now());
+                    convert.setCreateUser(UserOperator.getToken());
+                    convert.setFileName(StringUtils.getFileNameStr(warehouseGood.getTakeFiles()));
+                    convert.setFilePath(StringUtils.getFileStr(warehouseGood.getTakeFiles()));
+                    warehouseGoods.add(convert);
+                }
+                warehouseGoodsService.saveOrUpdateBatch(warehouseGoods);
+            }
+        }
+
+        return orderNo;
     }
 }

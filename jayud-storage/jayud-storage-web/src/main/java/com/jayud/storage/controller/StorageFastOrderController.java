@@ -53,7 +53,7 @@ import java.util.*;
  * @since 2021-06-10
  */
 @RestController
-@Api("快进快出订单")
+@Api(tags ="快进快出订单")
 @RequestMapping("/storageFastOrder")
 @Slf4j
 public class StorageFastOrderController {
@@ -311,7 +311,7 @@ public class StorageFastOrderController {
     @ApiOperation(value = "修改快进快出订单")
     @PostMapping(value = "/createOrUpdateOrder")
     public CommonResult createOrUpdateOrder(@RequestBody StorageFastOrderForm storageFastOrderForm) {
-        String order = storageFastOrderService.createOrder(storageFastOrderForm);
+        String order = storageFastOrderService.createOrUpdateOrder(storageFastOrderForm);
         return CommonResult.success(order);
     }
 

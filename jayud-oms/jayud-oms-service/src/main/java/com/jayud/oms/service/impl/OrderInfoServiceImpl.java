@@ -2687,6 +2687,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
 
         }
+        //快进快出编辑
+        if (SubOrderSignEnum.CCF.getSignOne().equals(orderType)) {
+            return true;
+
+        }
         //只有中港的货物编辑,驳回可以编辑
         if (SubOrderSignEnum.ZGYS.getSignOne().equals(orderType)) {
             if (OrderStatusEnum.getRejectionStatus(orderStatus, orderType) != null) {

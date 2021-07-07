@@ -697,7 +697,7 @@ public class TrailerOrderController {
             }
             if(trailerDispatchVO.getCreateTime() != null){
                 DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
-                map.put("createTime",df.format(trailerDispatchVO.getCreateTime()).substring(5,8));
+                map.put("createTime",df.format(trailerDispatchVO.getCreateTime()).substring(5,11));
             }
             map.put("legalName",trailerOrderByOrderNO.getLegalName());
 
@@ -716,8 +716,8 @@ public class TrailerOrderController {
 //        SimpleDateFormat sdf =   new SimpleDateFormat( "yyyy年MM月dd日 " );
 //        String str = sdf.format(new Date());
 //        System.out.println(str);
-//        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy年M月d日");
-//        System.out.println(df.format(LocalDateTime.now()));
+//        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
+//        System.out.println(df.format(LocalDateTime.now()).substring(5,11));
 //    }
 }
 

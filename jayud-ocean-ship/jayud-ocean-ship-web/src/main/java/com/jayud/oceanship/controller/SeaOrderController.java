@@ -1047,8 +1047,9 @@ public class SeaOrderController {
 
     @ApiOperation(value = "导出电商费用")
     @GetMapping(value = "/uploadCostExcel")
-    public void uploadCostExcel(@RequestParam("id") Long id, HttpServletResponse response) {
-        SeaOrderVO seaOrderDetails = seaOrderService.getSeaOrderDetails(id);
+    public void uploadCostExcel(@RequestParam("orderNo") String orderNo, HttpServletResponse response) {
+        SeaOrder byMainOrderNO = seaOrderService.getByMainOrderNO(orderNo);
+        SeaOrderVO seaOrderDetails = seaOrderService.getSeaOrderDetails(byMainOrderNO.getId());
 
         File file = new File(costPath);
         String name = file.getName();
@@ -1120,7 +1121,7 @@ public class SeaOrderController {
                     }
                     if (datum.getChangeUSDAmount() != null) {
                         changeUSDMoney = changeUSDMoney.add(datum.getChangeUSDAmount());
-                        System.out.println(datum.getChangeUSDAmount());
+//                        System.out.println(datum.getChangeUSDAmount());
                         if (datum.getChangeUSDAmount().equals(new BigDecimal(0).multiply(datum.getChangeUSDAmount()))) {
                             count++;
                         }
@@ -1141,9 +1142,9 @@ public class SeaOrderController {
                 if (count > 0) {
                     map.put("changeUSDMoney", "USD "+0);
                 } else {
-                    map.put("changeUSDMoney", "USD "+changeUSDMoney);
+                    map.put("changeUSDMoney", "USD "+changeUSDMoney.setScale(4, BigDecimal.ROUND_HALF_UP));
                 }
-                map.put("changeRMBMoney", "RMB "+changeRMBMoney);
+                map.put("changeRMBMoney", "RMB "+changeRMBMoney.setScale(2, BigDecimal.ROUND_HALF_UP));
 
 
             }
@@ -1201,7 +1202,7 @@ public class SeaOrderController {
 //            excelWriter.finish();
 //            outStream.close();
 //            inputStream.close();
-            EasyExcelUtils.fillTemplate2(map, map1, costPath, fileName, response);
+            EasyExcelUtils.fillTemplate2(map, map1, costPath,null ,fileName, response);
         } catch (Exception e) {
             e.printStackTrace();
         }

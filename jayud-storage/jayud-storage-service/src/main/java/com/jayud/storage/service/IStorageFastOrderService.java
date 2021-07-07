@@ -38,4 +38,7 @@ public interface IStorageFastOrderService extends IService<StorageFastOrder> {
     void confirmReceipt(StorageFastProcessOptForm form);
 
     StorageFastOrder getStorageFastOrderByOrderNO(String orderNo);
+
+    String createOrUpdateOrder(StorageFastOrderForm storageFastOrderForm);
+
 }

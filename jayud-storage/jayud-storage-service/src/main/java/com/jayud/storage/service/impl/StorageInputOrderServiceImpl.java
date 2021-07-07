@@ -96,14 +96,14 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
             }
         }else{
             storageInputOrder.setId(storageInputOrderForm.getId());
-            storageInputOrder.setCreateTime(LocalDateTime.now());
-            storageInputOrder.setCreateUser(UserOperator.getToken());
+            storageInputOrder.setUpdateTime(LocalDateTime.now());
+            storageInputOrder.setUpdateUser(UserOperator.getToken());
             storageInputOrder.setStatus("CCI_0");
             boolean update = this.updateById(storageInputOrder);
             if(update){
-                log.warn(storageInputOrder.getMainOrderNo()+"仓储入库单添加成功");
+                log.warn(storageInputOrder.getMainOrderNo()+"仓储入库单修改成功");
             }else{
-                log.error(storageInputOrder.getMainOrderNo()+"仓储入库单添加失败");
+                log.error(storageInputOrder.getMainOrderNo()+"仓储入库单修改失败");
             }
         }
         String orderNo = storageInputOrder.getOrderNo();

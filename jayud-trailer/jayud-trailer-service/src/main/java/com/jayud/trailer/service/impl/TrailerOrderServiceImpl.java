@@ -97,11 +97,10 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             trailerOrder.setUpdateTime(now);
             trailerOrder.setUpdateUser(UserOperator.getToken());
             boolean update = this.saveOrUpdate(trailerOrder);
-            boolean save = this.save(trailerOrder);
             if(update){
-                log.warn(trailerOrder.getMainOrderNo()+"拖车单添加成功");
+                log.warn(trailerOrder.getMainOrderNo()+"拖车单修改成功");
             }else{
-                log.error(trailerOrder.getMainOrderNo()+"拖车单添加失败");
+                log.error(trailerOrder.getMainOrderNo()+"拖车单修改失败");
             }
         }
         omsClient.deleteGoodsByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()), BusinessTypeEnum.TC.getCode());

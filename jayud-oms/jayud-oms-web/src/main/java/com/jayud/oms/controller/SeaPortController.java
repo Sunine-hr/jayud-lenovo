@@ -1,19 +1,15 @@
-package com.jayud.oceanship.controller;
+package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonResult;
-import com.jayud.oceanship.bo.AddSeaPortForm;
-import com.jayud.oceanship.bo.QuerySeaPortForm;
-import com.jayud.oceanship.po.SeaPort;
-import com.jayud.oceanship.service.ISeaPortService;
-import com.jayud.oceanship.vo.SeaPortVO;
+import com.jayud.oms.model.bo.AddSeaPortForm;
+import com.jayud.oms.model.bo.QuerySeaPortForm;
+import com.jayud.oms.model.po.SeaPort;
+import com.jayud.oms.model.vo.SeaPortVO;
+import com.jayud.oms.service.ISeaPortService;
 import io.swagger.annotations.ApiOperation;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -41,7 +37,7 @@ import static rx.internal.operators.NotificationLite.getValue;
  * </p>
  *
  * @author LLJ
- * @since 2021-01-29
+ * @since 2021-06-30
  */
 @RestController
 @RequestMapping("/seaPort")
@@ -61,14 +57,14 @@ public class SeaPortController {
     @ApiOperation("增加或修改港口信息")
     @PostMapping("/saveOrUpdateSeaPort")
     public CommonResult saveOrUpdateSeaPort(@RequestBody AddSeaPortForm form) {
+        //判断代码是否存在，判断名称是否存在
+        SeaPort seaPort = seaPortService.isCodeExistence(form.getCode());
+        SeaPort seaPort1 = seaPortService.isNameExistence(form.getName());
         if(form.getId() != null){
-            //判断代码是否存在，判断名称是否存在
-            SeaPort seaPort = seaPortService.isCodeExistence(form.getCode());
-            SeaPort seaPort1 = seaPortService.isNameExistence(form.getName());
-            if(seaPort != null && seaPort.getId().equals(form.getId())){
+            if(seaPort != null && !seaPort.getId().equals(form.getId())){
                 return CommonResult.error(444,"港口代码已存在");
             }
-            if(seaPort1 != null && seaPort1.getId().equals(form.getId())){
+            if(seaPort1 != null && !seaPort1.getId().equals(form.getId())){
                 return CommonResult.error(444,"港口名称已存在");
             }
         }else{
@@ -77,6 +73,12 @@ public class SeaPortController {
             }
             if(form.getName() == null){
                 return CommonResult.error(444,"港口名称不能为空");
+            }
+            if(seaPort != null ){
+                return CommonResult.error(444,"港口代码已存在");
+            }
+            if(seaPort1 != null ){
+                return CommonResult.error(444,"港口名称已存在");
             }
         }
         boolean flag = seaPortService.saveOrUpdateSeaPort(form);
@@ -149,5 +151,6 @@ public class SeaPortController {
         }
         return CommonResult.success();
     }
+
 }
 

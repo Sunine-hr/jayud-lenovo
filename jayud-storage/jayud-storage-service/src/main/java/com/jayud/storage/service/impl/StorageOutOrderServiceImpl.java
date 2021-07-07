@@ -79,13 +79,23 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
             storageOutOrder.setCreateTime(LocalDateTime.now());
             storageOutOrder.setCreateUser(UserOperator.getToken());
             storageOutOrder.setStatus("CCE_0");
-            this.save(storageOutOrder);
+            boolean save = this.save(storageOutOrder);
+            if(save){
+                log.warn(storageOutOrder.getMainOrderNo()+"仓储出库单添加成功");
+            }else{
+                log.error(storageOutOrder.getMainOrderNo()+"仓储出库单添加失败");
+            }
         }else{
             storageOutOrder.setId(storageOutOrderForm.getId());
-            storageOutOrder.setCreateTime(LocalDateTime.now());
-            storageOutOrder.setCreateUser(UserOperator.getToken());
+            storageOutOrder.setUpdateTime(LocalDateTime.now());
+            storageOutOrder.setUpdateUser(UserOperator.getToken());
             storageOutOrder.setStatus("CCE_0");
-            this.updateById(storageOutOrder);
+            boolean update = this.updateById(storageOutOrder);
+            if(update){
+                log.warn(storageOutOrder.getMainOrderNo()+"仓储出库单修改成功");
+            }else{
+                log.error(storageOutOrder.getMainOrderNo()+"仓储出库单修改失败");
+            }
         }
         String orderNo = storageOutOrder.getOrderNo();
         if(CollectionUtils.isNotEmpty(storageOutOrderForm.getGoodsFormList())){
@@ -102,7 +112,7 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
                 convert.setFilePath(StringUtils.getFileStr(warehouseGood.getTakeFiles()));
                 warehouseGoods.add(convert);
 
-                //出库订单创建成功，锁定库存  如果暂存，不锁定库存
+//                出库订单创建成功，锁定库存  如果暂存，不锁定库存
 //                if(storageOutOrderForm.getCmd().equals("submit")){
 //                    if(convert.getNumber() != null || convert.getPcs() != null){
 //                        boolean result = stockService.lockInInventory(convert);
@@ -216,10 +226,10 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
         omsClient.saveAuditInfo(auditInfoForm);
         this.updateById(tmp);
         //订单驳回，释放锁定库存，增加库存信息
-        boolean result = stockService.changeInventory(storageOutOrder.getOrderNo(),storageOutOrder.getId());
-        if(!result){
-            log.warn("库存变更失败");
-        }
+//        boolean result = stockService.changeInventory(storageOutOrder.getOrderNo(),storageOutOrder.getId());
+//        if(!result){
+//            log.warn("库存变更失败");
+//        }
     }
 
     //入库接单

@@ -259,6 +259,18 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
     @ApiModelProperty(value = "订柜信息")
     private String orderingInformation;
 
+    @ApiModelProperty(value = "是否录入费用")
+    private Boolean cost;
+
+    @ApiModelProperty(value = "业务员")
+    private String bizUname;
+
+    //@ApiModelProperty(value = "对应业务类型")
+    private String bizCode;
+
+    //@ApiModelProperty(value = "订单类别")
+    private String classCode;
+
     public void getFile(String path){
         this.fileViewList = StringUtils.getFileViews(this.getFilePath(),this.getFileName(),path);
     }
@@ -277,9 +289,30 @@ public class SeaReplenishmentFormVO extends Model<SeaReplenishmentFormVO> {
                 this.customerName = json.getStr("customerName");
                 this.mainOrderId = json.getStr("id");
                 this.customerCode = json.getStr("customerCode");
+                this.bizUname = json.getStr("bizUname");
+                this.bizCode = json.getStr("bizCode");
+                this.classCode = json.getStr("classCode");
                 break;
             }
         }
+
+    }
+
+    /**
+     *
+     */
+    public void assemblySeaPort() {
+        if(this.portDepartureName == null){
+            this.portDepartureName = this.portDepartureCode;
+        }
+
+        if(this.portDestinationName == null){
+            this.portDestinationName = this.portDestinationCode;
+        }
+        if(this.transitPort == null){
+            this.transitPort = this.transitPortCode;
+        }
+
 
     }
 

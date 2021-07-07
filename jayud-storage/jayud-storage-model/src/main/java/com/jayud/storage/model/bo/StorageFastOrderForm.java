@@ -98,6 +98,8 @@ public class StorageFastOrderForm extends Model<StorageFastOrderForm> {
     @ApiModelProperty(value = "出库商品对象集合")
     private List<WarehouseGoodsForm> outGoodsFormList;
 
+    @ApiModelProperty(value = "是否快进快出修改")
+    private Boolean isKJKC;
 
     @Override
     protected Serializable pkVal() {

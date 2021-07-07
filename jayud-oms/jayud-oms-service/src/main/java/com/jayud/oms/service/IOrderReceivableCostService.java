@@ -111,6 +111,13 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
     public Map<String, Map<String, BigDecimal>> statisticalReCostByOrderNos(List<OrderReceivableCost> list, Boolean isMain);
 
     /**
+     * 根据主订单号获取应收费用
+     * @param mainOrderNo
+     * @return
+     */
+    List<OrderReceivableCost> getOrderReceivableCostByMainOrderNo(String mainOrderNo);
+
+    /**
      * 根据订单号修改
      *
      * @param mainOrderNo

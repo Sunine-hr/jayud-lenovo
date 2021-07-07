@@ -87,4 +87,11 @@ public interface ICostInfoService extends IService<CostInfo> {
      * @return
      */
     public List<InitComboxStrVO> getCostInfoByCostType(List<CostType> costTypes);
+
+    /**
+     * 根据code获取费用名称
+     * @param costCode
+     * @return
+     */
+    String getCostNameByCostCode(String costCode);
 }

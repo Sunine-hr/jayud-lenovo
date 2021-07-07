@@ -289,6 +289,21 @@ public class SeaBillFormVO extends Model<SeaBillFormVO> {
 
     }
 
+    public void assemblySeaPort() {
+        if(this.portDepartureName == null){
+            this.portDepartureName = this.portDepartureCode;
+        }
+
+        if(this.portDestinationName == null){
+            this.portDestinationName = this.portDestinationCode;
+        }
+        if(this.transitPort == null){
+            this.transitPort = this.transitPortCode;
+        }
+
+
+    }
+
 
     public void setImpAndExpType(Integer impAndExpType) {
         this.impAndExpType = impAndExpType;

@@ -16,13 +16,16 @@ import com.jayud.oceanship.po.OrderFlowSheet;
 import com.jayud.oceanship.vo.GoodsVO;
 import com.jayud.oceanship.vo.InitComboxSVO;
 import com.jayud.oceanship.vo.OrderAddressVO;
+import com.jayud.oceanship.vo.OrderReceivableCostVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -244,4 +247,29 @@ public interface OmsClient {
     @RequestMapping(value = "/api/initDictNameByDictTypeCode")
     public ApiResult<List<InitComboxSVO>> initDictNameByDictTypeCode(@RequestParam("dictTypeCode") String dictTypeCode);
 
+    /**
+     * 是否录用费用
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/isCost")
+    public ApiResult<Map<String, Object>> isCost(@RequestBody List<String> orderNos,
+                                                 @RequestParam("subType") String subType);
+
+    /**
+     * 应收/应付费用状态
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostStatus")
+    public ApiResult<Map<String, Object>> getCostStatus(@RequestParam(value = "mainOrderNos", required = false) List<String> mainOrderNos,
+                                                        @RequestParam(value = "orderNos", required = false) List<String> orderNos);
+
+    @ApiOperation(value = "获取公司名称下拉列表")
+    @RequestMapping(value = "/api/getOrderReceivableCostByMainOrderNo")
+    ApiResult<List<OrderReceivableCostVO>> getOrderReceivableCostByMainOrderNo(@RequestParam("mainOrderNo") String mainOrderNo);
+
+    @ApiOperation(value = "获取该币种转换成美元的汇率")
+    @RequestMapping(value = "/api/getExchangeRateByCurrency")
+    ApiResult<BigDecimal> getExchangeRateByCurrency(@RequestParam("currencyCode")String currencyCode, @RequestParam("usd")String usd, @RequestParam("month")String month);
 }

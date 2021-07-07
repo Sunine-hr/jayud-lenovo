@@ -1,6 +1,7 @@
 package com.jayud.oceanship.utils;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class DateUtil {
 
@@ -52,9 +53,15 @@ public class DateUtil {
         return str.toString().toUpperCase();
     }
 
+    //获取当前时间的年月
+    public static String dateToYearMonth(LocalDateTime dateTime) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String format = df.format(dateTime);
+        return format.substring(0,7);
+    }
 
-//    public static void main(String[] args) {
-//        LocalDateTime now = LocalDateTime.now();
+    public static void main(String[] args) {
+        LocalDateTime now = LocalDateTime.now();
 //        int monthValue = now.getMonthValue();
 //        int year = now.getYear();
 //        int dayOfMonth = now.getDayOfMonth();
@@ -62,5 +69,6 @@ public class DateUtil {
 //        System.out.println(monthValue);
 //        System.out.println(year);
 //        System.out.println(dayOfMonth);
-//    }
+        System.out.println(dateToYearMonth(now));
+    }
 }

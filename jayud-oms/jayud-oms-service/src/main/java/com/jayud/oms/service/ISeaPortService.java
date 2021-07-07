@@ -1,13 +1,11 @@
-package com.jayud.oceanship.service;
+package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.common.entity.InitComboxStrVO;
-import com.jayud.oceanship.bo.AddSeaPortForm;
-import com.jayud.oceanship.bo.QuerySeaPortForm;
-import com.jayud.oceanship.po.SeaPort;
+import com.jayud.oms.model.bo.AddSeaPortForm;
+import com.jayud.oms.model.bo.QuerySeaPortForm;
+import com.jayud.oms.model.po.SeaPort;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.oceanship.vo.SeaOrderFormVO;
-import com.jayud.oceanship.vo.SeaPortVO;
+import com.jayud.oms.model.vo.SeaPortVO;
 
 import java.util.List;
 
@@ -17,17 +15,9 @@ import java.util.List;
  * </p>
  *
  * @author LLJ
- * @since 2021-01-29
+ * @since 2021-06-30
  */
 public interface ISeaPortService extends IService<SeaPort> {
-
-    /**
-     * 获取港口列表
-     * @return
-     */
-    List<InitComboxStrVO> initSeaPort();
-
-    String getPortName(String portDepartureCode);
 
     IPage<SeaPortVO> findByPage(QuerySeaPortForm form);
 
@@ -40,4 +30,5 @@ public interface ISeaPortService extends IService<SeaPort> {
     boolean deleteSeaPort(Long id);
 
     boolean saveOrUpdateBatchSeaPort(List<AddSeaPortForm> list);
+
 }

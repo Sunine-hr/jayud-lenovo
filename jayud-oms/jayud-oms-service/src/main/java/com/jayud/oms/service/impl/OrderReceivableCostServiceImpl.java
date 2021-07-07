@@ -317,6 +317,13 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
     }
 
     @Override
+    public List<OrderReceivableCost> getOrderReceivableCostByMainOrderNo(String mainOrderNo) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderReceivableCost::getMainOrderNo, mainOrderNo);
+        return this.baseMapper.selectList(condition);
+    }
+
+    @Override
     public void updateByOrderNo(String mainOrderNo, String subOrder, OrderReceivableCost orderReceivableCost) {
         QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(mainOrderNo)) {

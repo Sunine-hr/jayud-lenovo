@@ -7,6 +7,8 @@ import com.jayud.common.utils.FileView;
 import com.jayud.oms.model.vo.WarehouseGoodsVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -22,16 +24,18 @@ import java.util.List;
  * @since 2021-06-10
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class StorageFastTemplate extends BaseOrderTemplate {
+
 
     @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "入库订单号")
+    @ApiModelProperty(value = "快进快出订单号", required = true)
     private String orderNo;
 
-    @ApiModelProperty(value = "主订单号")
+    @ApiModelProperty(value = "主订单号", required = true)
     private String mainOrderNo;
 
     @ApiModelProperty(value = "状态()")
@@ -50,10 +54,10 @@ public class StorageFastTemplate extends BaseOrderTemplate {
     @NotNull(message = "结算单位不为空")
     private String unitCode;
 
-    @ApiModelProperty(value = "结算单位姓名")
+    @ApiModelProperty(value = "结算单位", required = true)
     private String unitCodeName;
 
-    @ApiModelProperty(value = "接单法人名称")
+    @ApiModelProperty(value = "接单法人", required = true)
     private String legalName;
 
     @ApiModelProperty(value = "接单法人id")
@@ -64,23 +68,23 @@ public class StorageFastTemplate extends BaseOrderTemplate {
     @NotNull(message = "操作部门不为空")
     private Long departmentId;
 
-    @ApiModelProperty(value = "操作部门")
+    @ApiModelProperty(value = "操作部门", required = true)
     private String departmentName;
 
-    @ApiModelProperty(value = "运单号")
+    @ApiModelProperty(value = "运单号", required = true)
     private String waybillNo;
 
-    @ApiModelProperty(value = "入库车牌号")
+    @ApiModelProperty(value = "入库车牌号", required = true)
     private String inPlateNumber;
 
-    @ApiModelProperty(value = "入仓号")
+    @ApiModelProperty(value = "入仓号", required = true)
     @NotNull(message = "入仓号不为空")
     private String inWarehouseNumber;
 
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;
 
-    @ApiModelProperty(value = "创建时间")
+    @ApiModelProperty(value = "创建时间", required = true)
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "更新人")
@@ -98,16 +102,16 @@ public class StorageFastTemplate extends BaseOrderTemplate {
     @ApiModelProperty(value = "接单日期")
     private String receivingOrdersDate;
 
-    @ApiModelProperty(value = "预计到达时间")
+    @ApiModelProperty(value = "预计到达时间", required = true)
     private String estimatedArrivalTime;
 
-    @ApiModelProperty(value = "预计出库时间")
+    @ApiModelProperty(value = "预计出库时间", required = true)
     private String expectedDeliveryTime;
 
-    @ApiModelProperty(value = "出库车牌号")
+    @ApiModelProperty(value = "出库车牌号", required = true)
     private String outPlateNumber;
 
-    @ApiModelProperty(value = "出仓号")
+    @ApiModelProperty(value = "出仓号", required = true)
     @NotNull(message = "出仓号不为空")
     private String outWarehouseNumber;
 
@@ -140,5 +144,4 @@ public class StorageFastTemplate extends BaseOrderTemplate {
         this.status = status;
         this.statusDesc = OrderStatusEnum.getDesc(status);
     }
-
 }

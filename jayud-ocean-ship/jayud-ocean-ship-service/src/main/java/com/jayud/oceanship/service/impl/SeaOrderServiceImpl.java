@@ -96,14 +96,24 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             seaOrder.setCreateTime(now);
             seaOrder.setCreateUser(UserOperator.getToken());
             seaOrder.setStatus(OrderStatusEnum.SEA_S_0.getCode());
-            this.save(seaOrder);
+            boolean save = this.save(seaOrder);
+            if(save){
+                log.warn(seaOrder.getMainOrderNo()+"海运单添加成功");
+            }else{
+                log.error(seaOrder.getMainOrderNo()+"海运单添加失败");
+            }
         } else {
             //修改海运单
             seaOrder.setId(addSeaOrderForm.getOrderId());
             seaOrder.setStatus(OrderStatusEnum.SEA_S_0.getCode());
             seaOrder.setUpdateTime(now);
             seaOrder.setUpdateUser(UserOperator.getToken());
-            this.updateById(seaOrder);
+            boolean update = this.updateById(seaOrder);
+            if(update){
+                log.warn(seaOrder.getMainOrderNo()+"海运单修改成功");
+            }else{
+                log.error(seaOrder.getMainOrderNo()+"海运单修改失败");
+            }
         }
         //获取柜型数量
         //先删除原来的柜型
@@ -307,7 +317,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             }
         }
         if(stringBuffer1.length()>0){
-            seaOrderVO.setMainNo(stringBuffer1.substring(0,stringBuffer.length()-1));
+            seaOrderVO.setMainNo(stringBuffer1.substring(0,stringBuffer1.length()-1));
         }
 
         seaOrderVO.setSeaReplenishments(seaReplenishmentVOS);
@@ -852,7 +862,7 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
             }
         }
         if(stringBuffer1.length()>0){
-            seaOrder.setMainNo(stringBuffer1.substring(0,stringBuffer.length()-1));
+            seaOrder.setMainNo(stringBuffer1.substring(0,stringBuffer1.length()-1));
         }
         seaOrder.setSeaReplenishments(seaReplenishmentVOS);
         return seaOrder;

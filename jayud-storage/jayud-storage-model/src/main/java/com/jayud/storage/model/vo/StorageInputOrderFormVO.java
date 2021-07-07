@@ -1,5 +1,6 @@
 package com.jayud.storage.model.vo;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSON;
@@ -10,17 +11,18 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.TradeTypeEnum;
 import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.storage.model.po.InGoodsOperationRecord;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.lang.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -167,6 +169,39 @@ public class StorageInputOrderFormVO {
 
     @ApiModelProperty(value = "子订单结算单位")
     private String defaultUnitCode;
+
+
+    @ApiModelProperty(value = "应收费用状态", required = true)
+    private String receivableCostStatus;
+
+    @ApiModelProperty(value = "应付费用状态", required = true)
+    private String paymentCostStatus;
+
+    /**
+     * 重组费用状态
+     */
+    public void assembleCostStatus(String tmpOrderNo, Map<String, Object> costStatus) {
+        Map<String, Object> receivableCostStatus = (Map<String, Object>) costStatus.get("receivableCostStatus");
+        Map<String, Object> paymentCostStatus = (Map<String, Object>) costStatus.get("paymentCostStatus");
+
+        String receivableStatusDesc = MapUtil.getStr(receivableCostStatus, tmpOrderNo);
+        String paymentStatusDesc = MapUtil.getStr(paymentCostStatus, tmpOrderNo);
+
+        if (!com.jayud.common.utils.StringUtils.isEmpty(receivableStatusDesc)) {
+            String[] split = receivableStatusDesc.split("-");
+            this.receivableCostStatus = split[0];
+        } else {
+            this.receivableCostStatus = "未录入";
+        }
+
+        if (!StringUtils.isEmpty(paymentStatusDesc)) {
+            String[] split = paymentStatusDesc.split("-");
+            this.paymentCostStatus = split[0];
+        } else {
+            this.paymentCostStatus = "未录入";
+        }
+    }
+
 
 
     /**

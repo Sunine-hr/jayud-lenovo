@@ -57,10 +57,10 @@ public class SeaPortController {
     @ApiOperation("增加或修改港口信息")
     @PostMapping("/saveOrUpdateSeaPort")
     public CommonResult saveOrUpdateSeaPort(@RequestBody AddSeaPortForm form) {
+        //判断代码是否存在，判断名称是否存在
+        SeaPort seaPort = seaPortService.isCodeExistence(form.getCode());
+        SeaPort seaPort1 = seaPortService.isNameExistence(form.getName());
         if(form.getId() != null){
-            //判断代码是否存在，判断名称是否存在
-            SeaPort seaPort = seaPortService.isCodeExistence(form.getCode());
-            SeaPort seaPort1 = seaPortService.isNameExistence(form.getName());
             if(seaPort != null && !seaPort.getId().equals(form.getId())){
                 return CommonResult.error(444,"港口代码已存在");
             }
@@ -73,6 +73,12 @@ public class SeaPortController {
             }
             if(form.getName() == null){
                 return CommonResult.error(444,"港口名称不能为空");
+            }
+            if(seaPort != null ){
+                return CommonResult.error(444,"港口代码已存在");
+            }
+            if(seaPort1 != null ){
+                return CommonResult.error(444,"港口名称已存在");
             }
         }
         boolean flag = seaPortService.saveOrUpdateSeaPort(form);

@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @ApiModel(value = "查询集货仓Form")
 public class QueryShippingAreaForm extends BasePageForm{
@@ -17,8 +19,7 @@ public class QueryShippingAreaForm extends BasePageForm{
     @JSONField(ordinal = 2)
     private String warehouseName;
 
-    @ApiModelProperty(value = "国家代码", position = 3)
-    @JSONField(ordinal = 3)
-    private String stateCode;
+    @ApiModelProperty(value = "过滤的仓库ids")
+    private List<Integer> filterIds;
 
 }

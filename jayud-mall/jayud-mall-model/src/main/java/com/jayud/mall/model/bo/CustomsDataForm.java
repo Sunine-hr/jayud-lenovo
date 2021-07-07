@@ -1,11 +1,13 @@
 package com.jayud.mall.model.bo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.jayud.mall.model.vo.TemplateUrlVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class CustomsDataForm {
@@ -83,6 +85,9 @@ public class CustomsDataForm {
     @JSONField(ordinal = 18)
     private String picUrl;
 
+    @ApiModelProperty(value = "图片文件上传")
+    private TemplateUrlVO picUrls;
+
     @ApiModelProperty(value = "申报要素", position = 19)
     @JSONField(ordinal = 19)
     private String declareElements;
@@ -98,5 +103,33 @@ public class CustomsDataForm {
     @ApiModelProperty(value = "杂税", position = 22)
     @JSONField(ordinal = 22)
     private BigDecimal sundryTax;
+
+    @ApiModelProperty(value = "品牌")
+    private String brand;
+
+    @ApiModelProperty(value = "规格型号")
+    private String specification;
+
+    @ApiModelProperty(value = "审核状态(0待审核 1已审核 2已取消)")
+    private Integer auditStatus;
+
+    @ApiModelProperty(value = "审核用户id(system_user id)")
+    private Integer auditUserId;
+
+    @ApiModelProperty(value = "审核用户名(system_user name)")
+    private String auditUserName;
+
+    //服务费用
+    @ApiModelProperty(value = "服务费用list")
+    private List<CustomsBaseServiceCostForm> customsBaseServiceCostList;
+
+    //申报价值
+    @ApiModelProperty(value = "申报价值list")
+    private List<CustomsBaseValueForm> customsBaseValueList;
+
+    //申报文件
+    @ApiModelProperty(value = "申报文件list")
+    private List<CustomsBaseFileForm> customsBaseFileList;
+
 
 }

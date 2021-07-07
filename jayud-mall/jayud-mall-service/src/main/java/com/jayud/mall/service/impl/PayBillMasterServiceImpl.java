@@ -245,6 +245,48 @@ public class PayBillMasterServiceImpl extends ServiceImpl<PayBillMasterMapper, P
         return CommonResult.success(payBillMasterVO);
     }
 
+    @Override
+    public List<PayBillMasterVO> findPayBillMasterByOrderId(Long orderId) {
+        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
+        //将币种信息转换为map，城市cid为键，币种信息为值
+        Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
+        List<PayBillMasterVO> payBillMasterList = payBillMasterMapper.findPayBillMasterByOrderId(orderId);
+        if(CollUtil.isNotEmpty(payBillMasterList)){
+            payBillMasterList.forEach(payBillMasterVO -> {
+                Long billMasterId = payBillMasterVO.getId();
+                List<PayBillDetailVO> payBillDetailVOS = payBillDetailMapper.findPayBillDetailByBillMasterId(billMasterId);
+                List<String> billAmount = new ArrayList<>();//账单金额(bill_amount)
+                List<AmountVO> amountVOS = new ArrayList<>();//账单下的费用,根据币种分组，汇总金额
+                //根据 币种id，分组
+                Map<String, List<PayBillDetailVO>> stringListMap = groupListByCid(payBillDetailVOS);
+                for (Map.Entry<String, List<PayBillDetailVO>> entry : stringListMap.entrySet()) {
+                    String cid = entry.getKey();//币种id
+                    List<PayBillDetailVO> payBillDetailVOList = entry.getValue();
+                    BigDecimal amountSum = new BigDecimal("0");
+                    for (int i=0; i<payBillDetailVOList.size(); i++){
+                        PayBillDetailVO payBillDetailVO = payBillDetailVOList.get(i);
+                        BigDecimal amount = payBillDetailVO.getAmount();
+                        amountSum = amountSum.add(amount);
+                    }
+                    AmountVO amountVO = new AmountVO();
+                    amountVO.setAmount(amountSum);//金额
+                    amountVO.setCid(Integer.valueOf(cid));
+                    amountVOS.add(amountVO);
+                }
+                payBillMasterVO.setAmountVOS(amountVOS);
+
+                amountVOS.forEach(amountVO -> {
+                    Integer cid = amountVO.getCid();
+                    BigDecimal amount = amountVO.getAmount();
+                    String amountFormat = amount.toString() + " " + cidMap.get(Long.valueOf(cid)).getCurrencyName();
+                    billAmount.add(amountFormat);
+                });
+                payBillMasterVO.setBillAmount(billAmount);//账单金额(bill_amount)
+            });
+        }
+        return payBillMasterList;
+    }
+
     /**
      * 根据币种id，分组
      * @param payBillDetailVOS 应付费用明细

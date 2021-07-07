@@ -33,4 +33,29 @@
         where t3.id = #{obId}
     </select>
 
+    <select id="findCounterCaseInfoIdByCounterId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select t.id from counter_case_info t
+        JOIN counter_list_info t1 on t1.id = t.b_id
+        JOIN ocean_counter t2 on t2.id = t1.counter_id
+        WHERE t2.id = #{counterId}
+    </select>
+
+    <select id="findCounterListInfoIdByCounterId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select t.id from counter_list_info t
+        join ocean_counter t1 on t1.id = t.counter_id
+        where t1.id = #{counterId}
+    </select>
+
+    <select id="findOceanCounterIdById" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select t.id from ocean_counter t where t.id = #{counterId}
+    </select>
+
+    <select id="findOceanCounterById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OceanCounterVO">
+        select
+        t.id,t.cntr_no,t.cabinet_code,t.volume,t.cost,t.cid,t.status,t.ob_id,t.create_time
+        from ocean_counter t
+        where 1=1
+        and t.id = #{id}
+    </select>
+
 </mapper>

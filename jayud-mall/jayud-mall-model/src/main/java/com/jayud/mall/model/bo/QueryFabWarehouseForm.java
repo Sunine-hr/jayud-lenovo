@@ -4,6 +4,8 @@ import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class QueryFabWarehouseForm extends BasePageForm{
 
@@ -15,11 +17,14 @@ public class QueryFabWarehouseForm extends BasePageForm{
     @JSONField(ordinal = 2)
     private String warehouseName;
 
-    @ApiModelProperty(value = "国家代码", position = 3)
-    @JSONField(ordinal = 3)
-    private String stateCode;
-
     @ApiModelProperty(value = "区域分组", position = 4)
     @JSONField(ordinal = 4)
     private String areaGroup;
+
+    @ApiModelProperty(value = "过滤的仓库ids")
+    private List<Integer> filterIds;
+
+    @ApiModelProperty(value = "审核状态(0待审核 1审核通过 2审核不通过)")
+    private Integer auditStatus;
+
 }

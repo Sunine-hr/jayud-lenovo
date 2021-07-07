@@ -1,8 +1,6 @@
 package com.jayud.mall.model.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -52,7 +50,7 @@ public class BillTaskVO {
     @JSONField(ordinal = 10)
     private Integer score;
 
-    @ApiModelProperty(value = "描述", position = 11)
+    @ApiModelProperty(value = "物流轨迹通知描述", position = 11)
     @JSONField(ordinal = 11)
     private String remarks;
 
@@ -72,6 +70,9 @@ public class BillTaskVO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     @JSONField(ordinal = 15, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "激活开关(0未激活 1已激活)")
+    private String activationSwitch;
 
     /*任务分组:task_group*/
     @ApiModelProperty(value = "分组名称", position = 16)

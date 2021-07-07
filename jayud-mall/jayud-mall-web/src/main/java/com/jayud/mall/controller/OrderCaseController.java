@@ -28,8 +28,6 @@ public class OrderCaseController {
     @Autowired
     IOrderCaseService orderCaseService;
 
-
-    //批量添加箱号
     @ApiOperation(value = "批量添加箱号(根据总箱数添加)")
     @PostMapping("/createOrderCaseList")
     @ApiOperationSupport(order = 1)
@@ -55,41 +53,102 @@ public class OrderCaseController {
         if(height.compareTo(zore) == -1){
             return CommonResult.error(-1, "高不能小于或等于零");
         }
-        List<OrderCaseVO> orderCaseVOList = orderCaseService.createOrderCaseList(form);
 
+        //历史添加箱子list
+//        List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
+//        if(CollUtil.isEmpty(orderCaseVOList)){
+//            orderCaseVOList = new ArrayList<>();
+//        }
+
+        //历史添加箱子list 参数改动，重新计算。
+        List<OrderCaseVO> orderCaseVOList = orderCaseService.calcOrderCaseList(form);
+        //批量添加箱子
+        List<OrderCaseVO> orderCaseVOList1 = orderCaseService.createOrderCaseList(form);
 
         //fba箱号-生成规则
+        String amazonReferenceId = form.getAmazonReferenceId();
         String extensionNumber = form.getExtensionNumber();
+        String beginNumberPrefix = form.getBeginNumberPrefix() == null ? "U" : form.getBeginNumberPrefix();
         String beginNumber = form.getBeginNumber();
         Integer bNumber = Integer.valueOf(beginNumber);
-        for (int i = 0; i<orderCaseVOList.size(); i++){
-            OrderCaseVO orderCaseVO = orderCaseVOList.get(i);
+        for (int i = 0; i<orderCaseVOList1.size(); i++){
+            OrderCaseVO orderCaseVO = orderCaseVOList1.get(i);
             if(i != 0){
                 bNumber = bNumber + 1;
             }
             //数字转字符串,前面自动补0的实现,补4位数的零
-            String fabNo = extensionNumber+"U"+String.format("%0"+beginNumber.length()+"d", bNumber);
+            String fabNo = extensionNumber+beginNumberPrefix+String.format("%0"+beginNumber.length()+"d", bNumber);
             orderCaseVO.setFabNo(fabNo);
+            orderCaseVO.setAmazonReferenceId(amazonReferenceId);
+            orderCaseVO.setExtensionNumber(extensionNumber);
         }
+        orderCaseVOList.addAll(orderCaseVOList1);
 
         CaseVO caseVO = new CaseVO();
-        //(客户预报)总重量
+        //(客户预报)总重量 实际重
         BigDecimal totalAsnWeight = new BigDecimal("0");
+        //客户预报总的材积重 材积重
+        BigDecimal totalVolumeWeight = new BigDecimal("0");
+        //客户预报总的收费重 收费重
+        BigDecimal totalChargeWeight = new BigDecimal("0");
         //(客户预报)总体积
         BigDecimal totalAsnVolume = new BigDecimal("0");
 
         for (int i = 0; i<orderCaseVOList.size(); i++){
             BigDecimal asnWeight = orderCaseVOList.get(i).getAsnWeight();
+            BigDecimal volumeWeight = orderCaseVOList.get(i).getVolumeWeight();
+            BigDecimal chargeWeight = orderCaseVOList.get(i).getChargeWeight();
             BigDecimal asnVolume = orderCaseVOList.get(i).getAsnVolume();
             totalAsnWeight = totalAsnWeight.add(asnWeight);
+            totalVolumeWeight = totalVolumeWeight.add(volumeWeight);
+            totalChargeWeight = totalChargeWeight.add(chargeWeight);
             totalAsnVolume = totalAsnVolume.add(asnVolume);
         }
         caseVO.setTotalAsnWeight(totalAsnWeight);
+        caseVO.setTotalVolumeWeight(totalVolumeWeight);
+        caseVO.setTotalChargeWeight(totalChargeWeight);
         caseVO.setTotalAsnVolume(totalAsnVolume);
         caseVO.setTotalCase(orderCaseVOList.size());
         caseVO.setOrderCaseVOList(orderCaseVOList);
         return CommonResult.success(caseVO);
     }
+
+    @ApiOperation(value = "计算订单箱号汇总数据")
+    @PostMapping("/calcOrderCaseList")
+    @ApiOperationSupport(order = 2)
+    public CommonResult<CaseVO> calcOrderCaseList(@RequestBody CreateOrderCaseForm form) {
+        List<OrderCaseVO> orderCaseVOList = orderCaseService.calcOrderCaseList(form);
+
+        CaseVO caseVO = new CaseVO();
+        //(客户预报)总重量 实际重
+        BigDecimal totalAsnWeight = new BigDecimal("0");
+        //客户预报总的材积重 材积重
+        BigDecimal totalVolumeWeight = new BigDecimal("0");
+        //客户预报总的收费重 收费重
+        BigDecimal totalChargeWeight = new BigDecimal("0");
+        //(客户预报)总体积
+        BigDecimal totalAsnVolume = new BigDecimal("0");
+
+        for (int i = 0; i<orderCaseVOList.size(); i++){
+            BigDecimal asnWeight = orderCaseVOList.get(i).getAsnWeight();
+            BigDecimal volumeWeight = orderCaseVOList.get(i).getVolumeWeight();
+            BigDecimal chargeWeight = orderCaseVOList.get(i).getChargeWeight();
+            BigDecimal asnVolume = orderCaseVOList.get(i).getAsnVolume();
+            totalAsnWeight = totalAsnWeight.add(asnWeight);
+            totalVolumeWeight = totalVolumeWeight.add(volumeWeight);
+            totalChargeWeight = totalChargeWeight.add(chargeWeight);
+            totalAsnVolume = totalAsnVolume.add(asnVolume);
+        }
+        caseVO.setTotalAsnWeight(totalAsnWeight);
+        caseVO.setTotalVolumeWeight(totalVolumeWeight);
+        caseVO.setTotalChargeWeight(totalChargeWeight);
+        caseVO.setTotalAsnVolume(totalAsnVolume);
+        caseVO.setTotalCase(orderCaseVOList.size());
+        caseVO.setOrderCaseVOList(orderCaseVOList);
+        return CommonResult.success(caseVO);
+
+    }
+
 
 
 }

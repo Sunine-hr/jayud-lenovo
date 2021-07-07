@@ -32,4 +32,11 @@ public interface IOrderCaseService extends IService<OrderCase> {
      * @return
      */
     List<OrderCaseVO> createOrderCaseList(CreateOrderCaseForm form);
+
+    /**
+     * 计算箱号汇总数据
+     * @param form
+     * @return
+     */
+    List<OrderCaseVO> calcOrderCaseList(CreateOrderCaseForm form);
 }

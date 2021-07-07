@@ -8,6 +8,7 @@ import com.jayud.mall.model.bo.QueryOfferInfoFareForm;
 import com.jayud.mall.model.bo.QueryOfferInfoForm;
 import com.jayud.mall.model.po.OfferInfo;
 import com.jayud.mall.model.vo.FabWarehouseVO;
+import com.jayud.mall.model.vo.OfferInfoDateVO;
 import com.jayud.mall.model.vo.OfferInfoVO;
 
 import java.util.List;
@@ -89,4 +90,18 @@ public interface IOfferInfoService extends IService<OfferInfo> {
      * @return
      */
     List<OfferInfoVO> findOfferInfoFareTop4(QueryOfferInfoFareForm form);
+
+    /**
+     * 计算其他日期
+     * @param form
+     * @return
+     */
+    OfferInfoDateVO calcOtherDate(OfferInfoForm form);
+
+    /**
+     * 分页查询报价(给配载查询报价使用)
+     * @param form
+     * @return
+     */
+    IPage<OfferInfoVO> findOfferInfoPageByConf(QueryOfferInfoForm form);
 }

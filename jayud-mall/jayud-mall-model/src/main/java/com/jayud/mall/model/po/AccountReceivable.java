@@ -39,7 +39,7 @@ public class AccountReceivable extends Model<AccountReceivable> {
     @JSONField(ordinal = 2)
     private String dzdNo;
 
-    @ApiModelProperty(value = "法人id(legal_person id)", position = 3)
+    @ApiModelProperty(value = "法人主体id(legal_entity id)", position = 3)
     @JSONField(ordinal = 3)
     private Long legalPersonId;
 

@@ -5,6 +5,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.CustomerGoodsAuditForm;
 import com.jayud.mall.model.bo.CustomerGoodsForm;
+import com.jayud.mall.model.bo.CustomerGoodsIdForm;
 import com.jayud.mall.model.bo.QueryCustomerGoodsForm;
 import com.jayud.mall.model.vo.CustomerGoodsVO;
 import com.jayud.mall.service.ICustomerGoodsService;
@@ -50,6 +51,15 @@ public class CustomerGoodsController {
     @ApiOperationSupport(order = 3)
     public CommonResult<CustomerGoodsVO> saveCustomerGoods(@Valid @RequestBody CustomerGoodsForm form){
         CustomerGoodsVO customerGoodsVO = customerGoodsService.saveCustomerGoods(form);
+        return CommonResult.success(customerGoodsVO);
+    }
+
+    @ApiOperation(value = "根据商品id，查看商品，及其商品服务费用")
+    @PostMapping("/findCustomerGoodsCostById")
+    @ApiOperationSupport(order = 3)
+    public CommonResult<CustomerGoodsVO> findCustomerGoodsCostById(@Valid @RequestBody CustomerGoodsIdForm form){
+        Integer id = form.getId();
+        CustomerGoodsVO customerGoodsVO = customerGoodsService.findCustomerGoodsCostById(id);
         return CommonResult.success(customerGoodsVO);
     }
 

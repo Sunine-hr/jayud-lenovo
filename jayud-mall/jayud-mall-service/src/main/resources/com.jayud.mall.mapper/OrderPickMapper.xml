@@ -24,12 +24,17 @@
     <select id="findOrderPickByOrderId" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OrderPickVO">
         select
-        t.id,t.order_id,t.pick_no,t.warehouse_no,t.pick_time,t.weight,t.volume,t.total_carton,t.address_id,t.create_time,
-        t1.contacts,t1.phone,t1.country_code,t1.country_name,t1.state_code,t1.state_name,t1.city_code,t1.city_name,t1.address
+            t.id,t.order_id,t.pick_no,t.pick_status,t.warehouse_no,t.pick_time,t.assign_pick_time,t.weight,t.volume,t.total_carton,t.remark,t.address_id,t.create_time,t.transport_id,t.from_country,t.from_province,t.from_city,t.from_region,t.to_country,t.to_province,t.to_city,t.to_region,t.unit_price,t.cid,t.unit,t.status,t.count,t.amount,t.fee_remark,
+            t1.contacts,t1.phone,t1.country_code,t1.country_name,t1.state_code,t1.state_name,t1.city_code,t1.city_name,t1.region_code,t1.region_name,t1.address,
+            t1.address pickupAddress,
+            t2.order_no,
+            t3.address_first deliveryAddress
         from order_pick t
-        LEFT JOIN delivery_address t1 on t1.id = t.address_id
+        JOIN delivery_address t1 on t1.id = t.address_id
+        join order_info t2 on t2.id = t.order_id
+        join shipping_area t3 on t3.warehouse_code = t2.store_goods_warehouse_code
         where order_id = #{orderId}
-
+        order by t.warehouse_no asc
     </select>
 
     <select id="findOrderPickByPage" parameterType="com.jayud.mall.model.bo.QueryOrderPickForm"
@@ -152,6 +157,14 @@
         where order_id = #{orderId}
     </select>
 
+    
+    <select id="findOrderPickById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderPickVO">
+        select
+            t.id,t.order_id,t.pick_no,t.pick_status,t.warehouse_no,t.pick_time,t.assign_pick_time,t.weight,t.volume,t.total_carton,t.remark,t.address_id,t.create_time,t.transport_id,t.from_country,t.from_province,t.from_city,t.from_region,t.to_country,t.to_province,t.to_city,t.to_region,t.unit_price,t.cid,t.unit,t.status,t.count,t.amount,t.fee_remark
+        from order_pick t
+        where t.id = #{id}
+
+    </select>
 
 
 </mapper>

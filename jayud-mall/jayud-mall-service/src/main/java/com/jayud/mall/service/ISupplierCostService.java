@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.bo.SupplierCostForm;
 import com.jayud.mall.model.po.SupplierCost;
 import com.jayud.mall.model.vo.SupplierCostVO;
+import com.jayud.mall.model.vo.SupplierServeVO;
 
 import java.util.List;
 
@@ -25,4 +26,10 @@ public interface ISupplierCostService extends IService<SupplierCost> {
      */
     List<SupplierCostVO> findSupplierCost(SupplierCostForm form);
 
+    /**
+     * 根据供应商id，查询
+     * @param supplierInfoId
+     * @return
+     */
+    List<SupplierServeVO> findSupplierServeBySupplierInfoId(Long supplierInfoId);
 }

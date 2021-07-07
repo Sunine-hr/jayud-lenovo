@@ -1,15 +1,18 @@
 package com.jayud.mall.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -27,13 +30,19 @@ public class SystemMenu extends Model<SystemMenu> {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     @ApiModelProperty(value = "父级ID")
     private Integer parentId;
 
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "菜单标题")
+    private String title;
 
     @ApiModelProperty(value = "菜单名称")
     private String name;
@@ -45,6 +54,7 @@ public class SystemMenu extends Model<SystemMenu> {
     private Integer sort;
 
     @ApiModelProperty(value = "前端名称")
+    @TableField("`key`")
     private String key;
 
     @ApiModelProperty(value = "前端图标")

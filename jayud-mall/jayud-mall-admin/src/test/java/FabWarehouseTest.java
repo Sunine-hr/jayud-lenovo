@@ -9,7 +9,7 @@ public class FabWarehouseTest {
         QueryFabWarehouseForm form = new QueryFabWarehouseForm();
         form.setWarehouseCode("ONT8");
         form.setWarehouseName("ONT8");
-        form.setStateCode("US");
+//        form.setStateCode("US");
         String json = JSONObject.toJSONString(form);
         System.err.println(json);
     }

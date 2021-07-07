@@ -1,9 +1,9 @@
 package com.jayud.mall.service.impl;
 
 import com.jayud.common.CommonResult;
+import com.jayud.common.RedisUtils;
 import com.jayud.mall.model.bo.PhoneForm;
 import com.jayud.mall.service.IPhoneMessagesService;
-import com.jayud.mall.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

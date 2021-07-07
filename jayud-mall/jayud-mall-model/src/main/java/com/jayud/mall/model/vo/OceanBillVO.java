@@ -65,7 +65,7 @@ public class OceanBillVO {
 
     @ApiModelProperty(value = "运营(服务)小组id(operation_team id)", position = 12)
     @JSONField(ordinal = 12)
-    private Integer operationTeamId;
+    private String operationTeamId;
 
     @ApiModelProperty(value = "创建用户id(system_user id)", position = 13)
     @JSONField(ordinal = 13)
@@ -74,6 +74,12 @@ public class OceanBillVO {
     @ApiModelProperty(value = "创建用户名(system_user name)", position = 14)
     @JSONField(ordinal = 14)
     private String userName;
+
+    @ApiModelProperty(value = "提单名称")
+    private String billName;
+
+    @ApiModelProperty(value = "提单备注")
+    private String billRemark;
 
     /*关联信息*/
     @ApiModelProperty(value = "运输方式名称", position = 15)
@@ -133,5 +139,11 @@ public class OceanBillVO {
     @ApiModelProperty(value = "提单对应的运营组、任务组、任务", position = 28)
     @JSONField(ordinal = 29)
     private List<BillTaskRelevanceVO> billTaskRelevanceVOS;
+
+    @ApiModelProperty(value = "费用信息list")
+    private List<FeeCopeWithVO> feeCopeWithList;
+
+    @ApiModelProperty(value = "任务信息list")
+    private List<BillTaskRelevanceVO> billTaskRelevanceList;
 
 }

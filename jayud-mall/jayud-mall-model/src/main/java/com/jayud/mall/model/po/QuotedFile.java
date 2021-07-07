@@ -36,11 +36,14 @@ public class QuotedFile extends Model<QuotedFile> {
     @JSONField(ordinal = 1)
     private Long id;
 
-    @ApiModelProperty(value = "文件分组代码", position = 2)
+    @ApiModelProperty(value = "类型(1报关服务 2清关服务)")
+    private String types;
+
+    @ApiModelProperty(value = "文件分组代码(1买单 2独立)", position = 2)
     @JSONField(ordinal = 2)
     private String groupCode;
 
-    @ApiModelProperty(value = "文件分组名称", position = 3)
+    @ApiModelProperty(value = "文件分组名称(1买单 2独立)", position = 3)
     @JSONField(ordinal = 3)
     private String groupName;
 
@@ -79,10 +82,6 @@ public class QuotedFile extends Model<QuotedFile> {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     @JSONField(ordinal = 11, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "类型 1报关服务 2清关服务", position = 12)
-    @JSONField(ordinal = 12)
-    private String types;
 
 
     @Override

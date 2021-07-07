@@ -1,17 +1,17 @@
 package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.mall.mapper.CurrencyInfoMapper;
-import com.jayud.mall.mapper.OrderInfoMapper;
-import com.jayud.mall.mapper.ReceivableBillDetailMapper;
-import com.jayud.mall.mapper.ReceivableBillMasterMapper;
+import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.QueryReceivableBillMasterForm;
 import com.jayud.mall.model.bo.ReceivableBillForm;
 import com.jayud.mall.model.bo.ReceivableBillMasterForm;
@@ -19,9 +19,7 @@ import com.jayud.mall.model.po.OrderCopeReceivable;
 import com.jayud.mall.model.po.ReceivableBillDetail;
 import com.jayud.mall.model.po.ReceivableBillMaster;
 import com.jayud.mall.model.vo.*;
-import com.jayud.mall.service.IOrderCopeReceivableService;
-import com.jayud.mall.service.IReceivableBillDetailService;
-import com.jayud.mall.service.IReceivableBillMasterService;
+import com.jayud.mall.service.*;
 import com.jayud.mall.utils.NumberGeneratedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,9 +52,28 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
     @Autowired
     CurrencyInfoMapper currencyInfoMapper;
     @Autowired
+    CustomerMapper customerMapper;
+    @Autowired
+    LegalEntityMapper legalEntityMapper;
+    @Autowired
+    OrderPickMapper orderPickMapper;
+    @Autowired
+    OrderCaseMapper orderCaseMapper;
+
+    @Autowired
+    BaseService baseService;
+    @Autowired
     IReceivableBillDetailService receivableBillDetailService;
     @Autowired
     IOrderCopeReceivableService orderCopeReceivableService;
+    @Autowired
+    ICustomerService customerService;
+    @Autowired
+    ILegalEntityService legalEntityService;
+    @Autowired
+    IOrderPickService orderPickService;
+    @Autowired
+    IOrderCaseService orderCaseService;
 
     @Override
     public CommonResult<ReceivableBillMasterVO> createReceivableBill(ReceivableBillForm form) {
@@ -225,6 +242,174 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
         return CommonResult.success(receivableBillMasterVO);
     }
 
+    @Override
+    public ReceivableBillExcelMasterVO downloadBills(Integer customerId, List<Long> ids) {
+        CustomerVO customer = customerMapper.findCustomerById(customerId);
+        if(ObjectUtil.isEmpty(customer)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "客户不存在");
+        }
+        Long legalEntityId = customer.getLegalEntityId();
+        String legalName = "";
+        String legalEnName = "";
+        String bankAccountName = "";
+        String accountOpen = "";
+        String bank = "";
+        if(ObjectUtil.isNotEmpty(legalEntityId)){
+            LegalEntityVO legalEntityVO = legalEntityMapper.findLegalEntityById(legalEntityId);
+            legalName = legalEntityVO.getLegalName();
+            legalEnName = legalEntityVO.getLegalEnName();
+            bankAccountName = legalEntityVO.getLegalName();
+            accountOpen = legalEntityVO.getAccountOpen();
+            bank = legalEntityVO.getBank();
+        }
+
+        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
+        //将币种信息转换为map，城市cid为键，币种信息为值
+        Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
+
+        String company = customer.getCompany();//客户公司名称
+        String billCodes = "";//账单编号(多个)
+        List<ReceivableBillDetailExcelVO> receivableBillDetailList = new ArrayList<>();
+        if(ObjectUtil.isNotEmpty(ids)){
+            for (int i=0; i<ids.size(); i++){
+                Long billMasterId = ids.get(i);
+                ReceivableBillMasterVO receivableBillMasterVO = receivableBillMasterMapper.findReceivableBillById(billMasterId);
+                String billCode = receivableBillMasterVO.getBillCode();
+                if(i==0){
+                    billCodes = billCode;
+                }else{
+                    billCodes += ","+billCode;
+                }
+                //明细
+                List<ReceivableBillDetailExcelVO> receivableBillDetailExcelList = receivableBillDetailMapper.findReceivableBillDetailExcelByBillMasterId(billMasterId);
+
+                if (CollUtil.isNotEmpty(receivableBillDetailExcelList)){
+                    for (int k=0; k<receivableBillDetailExcelList.size(); k++){
+                        ReceivableBillDetailExcelVO receivableBillDetailExcelVO = receivableBillDetailExcelList.get(k);
+                        String orderId = receivableBillDetailExcelVO.getOrderId();
+                        OrderInfoVO orderInfoVO = orderInfoMapper.lookOrderInfoById(Long.valueOf(orderId));
+                        String warehouseNo = "";
+                        Integer isPick = orderInfoVO.getIsPick();//是否上门提货(0否 1是,order_pick)
+                        if(ObjectUtil.isNotEmpty(isPick) && isPick.equals(0)){
+                            warehouseNo = orderInfoVO.getWarehouseNo();
+                        }else if(ObjectUtil.isNotEmpty(isPick) && isPick.equals(1)){
+                            List<OrderPickVO> orderPickList = orderPickMapper.findOrderPickByOrderId(Long.valueOf(orderId));
+                            for(int j=0; j<orderPickList.size(); j++){
+                                OrderPickVO orderPickVO = orderPickList.get(j);
+                                String warehouseNo1 = orderPickVO.getWarehouseNo();
+                                if(j==0){
+                                    warehouseNo = warehouseNo1;
+                                }else{
+                                    warehouseNo += ","+warehouseNo1;
+                                }
+                            }
+                        }
+
+                        String fabNo = "";
+                        List<OrderCaseVO> orderCaseList = orderCaseMapper.findOrderCaseByOrderId(Long.valueOf(orderId));
+                        for(int l=0; l<orderCaseList.size(); l++){
+                            OrderCaseVO orderCaseVO = orderCaseList.get(l);
+                            String fabNo1 = orderCaseVO.getFabNo();
+                            if(l==0){
+                                fabNo = fabNo1;
+                            }else{
+                                fabNo += ","+fabNo1;
+                            }
+                        }
+                        receivableBillDetailExcelVO.setWarehouseNo(warehouseNo);//客户运单号-》进仓编号  order_info.warehouse_no  / order_info.is_pick 1是  -> order_pick.warehouse_no
+                        receivableBillDetailExcelVO.setFabNo(fabNo);//FBA号 order_info  -> order_case.fab_no
+                    }
+                }
+
+
+                receivableBillDetailList.addAll(receivableBillDetailExcelList);
+            }
+        }
+        ReceivableBillExcelMasterVO receivableBillExcelMasterVO = new ReceivableBillExcelMasterVO();
+        receivableBillExcelMasterVO.setLegalName(legalName);
+        receivableBillExcelMasterVO.setLegalEnName(legalEnName);
+        receivableBillExcelMasterVO.setBillCodes(billCodes);
+        receivableBillExcelMasterVO.setCustomerName(company);
+        if(CollUtil.isNotEmpty(receivableBillDetailList)){
+            for (int i=0; i<receivableBillDetailList.size(); i++){
+                ReceivableBillDetailExcelVO receivableBillDetailExcelVO = receivableBillDetailList.get(i);
+                Integer sequenceNumber = i+1;
+                receivableBillDetailExcelVO.setSequenceNumber(sequenceNumber.toString());
+            }
+            receivableBillExcelMasterVO.setReceivableBillDetailList(receivableBillDetailList);
+
+            //计算汇总 分币种
+            Map<String, List<ReceivableBillDetailExcelVO>> stringListMap = groupListByCid2(receivableBillDetailList);
+            List<BillAmountTotalVO> billAmountTotalList = new ArrayList<>();
+            for (Map.Entry<String, List<ReceivableBillDetailExcelVO>> entry : stringListMap.entrySet()) {
+                String cid = entry.getKey();
+                List<ReceivableBillDetailExcelVO> receivableBillDetailExcelVOS = entry.getValue();
+                BigDecimal amountSum = new BigDecimal("0");
+                for (int i=0; i<receivableBillDetailExcelVOS.size(); i++){
+                    ReceivableBillDetailExcelVO receivableBillDetailExcelVO = receivableBillDetailExcelVOS.get(i);
+                    BigDecimal amount = new BigDecimal(receivableBillDetailExcelVO.getAmount());
+                    amountSum = amountSum.add(amount);
+                }
+
+                BillAmountTotalVO billAmountTotalVO = new BillAmountTotalVO();
+
+                String currencyName = cidMap.get(Long.valueOf(cid)).getCurrencyName();//币种名称
+                billAmountTotalVO.setCurrency(currencyName);//币种
+                billAmountTotalVO.setTotal(amountSum.toString());//汇总金额
+                billAmountTotalList.add(billAmountTotalVO);
+            }
+            receivableBillExcelMasterVO.setBillAmountTotalList(billAmountTotalList);
+        }
+
+        receivableBillExcelMasterVO.setBankAccountName(bankAccountName);
+        receivableBillExcelMasterVO.setAccountOpen(accountOpen);
+        receivableBillExcelMasterVO.setBank(bank);
+
+        return receivableBillExcelMasterVO;
+    }
+
+    @Override
+    public List<ReceivableBillMasterVO> findReceivableBillMasterByOrderId(Long orderId) {
+        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
+        //将币种信息转换为map，城市cid为键，币种信息为值
+        Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
+        List<ReceivableBillMasterVO> receivableBillMasterList = receivableBillMasterMapper.findReceivableBillMasterByOrderId(orderId);
+        if(CollUtil.isNotEmpty(receivableBillMasterList)){
+            receivableBillMasterList.forEach(receivableBillMasterVO -> {
+
+                List<String> billAmountList = new ArrayList<>();//账单金额(bill_amount)
+                Long billMasterId = receivableBillMasterVO.getId();
+                List<ReceivableBillDetailVO> receivableBillDetailVOS = receivableBillDetailMapper.findReceivableBillDetailByBillMasterId(billMasterId);
+                Map<String, List<ReceivableBillDetailVO>> stringListMap = groupListByCid(receivableBillDetailVOS);
+                List<AmountVO> amountVOS = new ArrayList<>();//账单下的费用,根据币种分组，汇总金额
+                for (Map.Entry<String, List<ReceivableBillDetailVO>> entry : stringListMap.entrySet()) {
+                    String cid = entry.getKey();
+                    List<ReceivableBillDetailVO> receivableBillDetailVOList = entry.getValue();
+                    BigDecimal amountSum = new BigDecimal("0");
+                    for (int i=0; i<receivableBillDetailVOList.size(); i++){
+                        ReceivableBillDetailVO receivableBillDetailVO = receivableBillDetailVOList.get(i);
+                        BigDecimal amount = receivableBillDetailVO.getAmount();
+                        amountSum = amountSum.add(amount);
+                    }
+                    AmountVO amountVO = new AmountVO();
+                    amountVO.setAmount(amountSum);//金额
+                    amountVO.setCid(Integer.valueOf(cid));
+                    amountVOS.add(amountVO);
+                }
+                receivableBillMasterVO.setAmountVOS(amountVOS);
+
+                amountVOS.forEach(amountVO -> {
+                    Integer cid = amountVO.getCid();
+                    BigDecimal amount = amountVO.getAmount();
+                    String amountFormat = amount.toString() + " " + cidMap.get(Long.valueOf(cid)).getCurrencyName();
+                    billAmountList.add(amountFormat);
+                });
+                receivableBillMasterVO.setBillAmountList(billAmountList);//账单金额(bill_amount)
+            });
+        }
+        return receivableBillMasterList;
+    }
+
 
     /**
      * 根据币种id，对应收账单费用进行分组
@@ -242,6 +427,27 @@ public class ReceivableBillMasterServiceImpl extends ServiceImpl<ReceivableBillM
                 map.put(key, tmpList);
             } else {
                 tmpList.add(receivableBillDetailVO);
+            }
+        }
+        return map;
+    }
+
+    /**
+     * 根据币种id，对应收账单费用进行分组
+     * @param receivableBillDetailList
+     * @return
+     */
+    private Map<String, List<ReceivableBillDetailExcelVO>> groupListByCid2(List<ReceivableBillDetailExcelVO> receivableBillDetailList) {
+        Map<String, List<ReceivableBillDetailExcelVO>> map = new HashMap<>();
+        for (ReceivableBillDetailExcelVO receivableBillDetailExcelVO : receivableBillDetailList) {
+            String key = receivableBillDetailExcelVO.getCid().toString();
+            List<ReceivableBillDetailExcelVO> tmpList = map.get(key);
+            if (CollUtil.isEmpty(tmpList)) {
+                tmpList = new ArrayList<>();
+                tmpList.add(receivableBillDetailExcelVO);
+                map.put(key, tmpList);
+            } else {
+                tmpList.add(receivableBillDetailExcelVO);
             }
         }
         return map;

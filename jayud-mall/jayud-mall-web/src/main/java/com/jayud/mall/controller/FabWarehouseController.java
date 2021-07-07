@@ -2,6 +2,7 @@ package com.jayud.mall.controller;
 
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.FabWarehouseArgsForm;
+import com.jayud.mall.model.bo.FabWarehouseWarehouseCodeForm;
 import com.jayud.mall.model.vo.FabWarehouseVO;
 import com.jayud.mall.service.IFabWarehouseService;
 import io.swagger.annotations.Api;
@@ -26,10 +27,21 @@ public class FabWarehouseController {
     IFabWarehouseService fabWarehouseService;
 
     @ApiOperation(value = "查询应收FBA仓库list(目的仓库)")
-    @PostMapping("/findfabWarehouse")
     @ApiOperationSupport(order = 1)
+    @PostMapping("/findfabWarehouse")
     public CommonResult<List<FabWarehouseVO>> findfabWarehouse(@RequestBody FabWarehouseArgsForm form) {
         List<FabWarehouseVO> list = fabWarehouseService.findfabWarehouse(form);
         return CommonResult.success(list);
     }
+
+    @ApiOperation(value = "根据代码，查询应收FBA仓库(目的仓库)")
+    @ApiOperationSupport(order = 2)
+    @PostMapping("/findfabWarehouseByWarehouseCode")
+    public CommonResult<FabWarehouseVO> findfabWarehouseByWarehouseCode(@RequestBody FabWarehouseWarehouseCodeForm form) {
+        String warehouseCode = form.getWarehouseCode();
+        FabWarehouseVO fabWarehouseVO = fabWarehouseService.findfabWarehouseByWarehouseCode(warehouseCode);
+        return CommonResult.success(fabWarehouseVO);
+    }
+
+
 }

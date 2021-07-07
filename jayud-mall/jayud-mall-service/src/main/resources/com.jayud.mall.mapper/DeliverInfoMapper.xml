@@ -34,7 +34,7 @@
                t.warehouse_name,
                t.contacts,
                t.contact_phone,
-               CONCAT(t1.pname,' ',t1.cname,' ',t1.address_first) deliveryAddress
+               CONCAT(t1.country_name,' ',t1.city_name,' ',t1.address_first) deliveryAddress
         from deliver_info t
         left join shipping_area t1 on t1.warehouse_code = t.warehouse_code
         where t.transport_id = #{transportId}

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OrderCaseShopMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OrderCaseShop">
+        <id column="id" property="id" />
+        <result column="case_id" property="caseId" />
+        <result column="carton_no" property="cartonNo" />
+        <result column="order_id" property="orderId" />
+        <result column="order_no" property="orderNo" />
+        <result column="good_id" property="goodId" />
+        <result column="quantity" property="quantity" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, case_id, carton_no, order_id, order_no, good_id, quantity, create_time
+    </sql>
+
+    <select id="findOrderCaseShopByCaseId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderCaseShopVO">
+        select
+            t.id,t.case_id,t.carton_no,t.order_id,t.order_no,t.good_id,t.quantity,t.create_time,
+            t1.customer_id,t1.sku,t1.name_cn,t1.name_en,t1.image_url,t1.barcode,t1.weight,t1.length,t1.width,t1.height,t1.is_sensitive,t1.types,t1.declared_value,t1.declared_currency,t1.material_quality,t1.purpose,t1.declare_elements,t1.hs_code,t1.data_code,t1.clearance_code,t1.sales_link,t1.sales_price,t1.sales_price_currency,t1.description,t1.status,t1.status_name,t1.remark,t1.brand,t1.loss_compensation_amount,t1.lca_cid,t1.is_valid,t1.export_country,t1.specification
+        from order_case_shop t
+                 join customer_goods t1 on t1.id = t.good_id
+        where
+            1=1
+          and t.case_id = #{caseId}
+    </select>
+
+</mapper>

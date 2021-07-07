@@ -7,7 +7,6 @@
         <id column="id" property="id" />
         <result column="warehouse_code" property="warehouseCode" />
         <result column="warehouse_name" property="warehouseName" />
-        <result column="state_code" property="stateCode" />
         <result column="contacts" property="contacts" />
         <result column="company_name" property="companyName" />
         <result column="contact_number" property="contactNumber" />
@@ -15,10 +14,6 @@
         <result column="address_first" property="addressFirst" />
         <result column="address_second" property="addressSecond" />
         <result column="address_thirdly" property="addressThirdly" />
-        <result column="pid" property="pid" />
-        <result column="pname" property="pname" />
-        <result column="cid" property="cid" />
-        <result column="cname" property="cname" />
         <result column="zip_code" property="zipCode" />
         <result column="status" property="status" />
         <result column="user_id" property="userId" />
@@ -35,85 +30,56 @@
     <select id="findFabWarehouseByPage" parameterType="com.jayud.mall.model.bo.QueryFabWarehouseForm"
             resultType="com.jayud.mall.model.vo.FabWarehouseVO" >
         select
-        t.id,
-        t.warehouse_code,
-        t.warehouse_name,
-        t.state_code,
-        t.contacts,
-        t.company_name,
-        t.contact_number,
-        t.contact_phone,
-        t.address_first,
-        t.address_second,
-        t.address_thirdly,
-        t.pid,
-        t.pname,
-        t.cid,
-        t.cname,
-        t.zip_code,
-        t.`status`,
-        t.user_id,
-        t.user_name,
-        t.create_time,
-        t.area_group
+        t.id,t.warehouse_code,t.warehouse_name,t.contacts,t.company_name,t.contact_number,t.contact_phone,t.address_first,t.address_second,t.address_thirdly,t.zip_code,t.status,t.user_id,t.user_name,t.create_time,t.area_group,t.country_code,t.country_name,t.state_code,t.state_name,t.city_code,t.city_name,t.region_code,t.region_name,t.audit_status,t.audit_user_id,t.audit_user_name
         from fab_warehouse t
-        WHERE
-        1 = 1
-        /*仓库代码*/
+        where 1=1
         <if test="form.warehouseCode != null and form.warehouseCode != ''">
             AND t.warehouse_code LIKE concat('%',#{form.warehouseCode},'%')
         </if>
         <if test="form.warehouseName != null and form.warehouseName != ''">
             AND t.warehouse_name LIKE concat('%',#{form.warehouseName},'%')
         </if>
-        <if test="form.stateCode != null and form.stateCode != ''">
-            AND t.state_code LIKE concat('%',#{form.stateCode},'%')
-        </if>
         <if test="form.areaGroup != null and form.areaGroup != ''">
             AND t.area_group LIKE concat('%',#{form.areaGroup},'%')
+        </if>
+        <if test="form.filterIds != null and form.filterIds.size() > 0">
+            AND t.id not in
+            <foreach collection="form.filterIds"  item="item" open="(" separator="," close=")"  >
+                #{item}
+            </foreach>
+        </if>
+        <if test="form.auditStatus != null">
+            and t.audit_status = #{form.auditStatus}
         </if>
     </select>
 
     <select id="findFabWarehouseByqie" parameterType="java.lang.Integer"
             resultType="com.jayud.mall.model.vo.FabWarehouseVO">
         select
-        t1.id,t1.warehouse_code,t1.warehouse_name,t1.state_code,t1.contacts,t1.company_name,t1.contact_number,t1.contact_phone,t1.address_first,t1.address_second,t1.address_thirdly,t1.pid,t1.pname,t1.cid,t1.cname,t1.zip_code,t1.status,t1.user_id,t1.user_name,t1.create_time
+            t1.id,t1.warehouse_code,t1.warehouse_name,t1.contacts,t1.company_name,t1.contact_number,t1.contact_phone,t1.address_first,t1.address_second,t1.address_thirdly,t1.zip_code,t1.status,t1.user_id,t1.user_name,t1.create_time,t1.area_group,t1.country_code,t1.country_name,t1.state_code,t1.state_name,t1.city_code,t1.city_name,t1.region_code,t1.region_name,t1.audit_status,t1.audit_user_id,t1.audit_user_name
         from (
         select
         DISTINCT t1.id,substring_index( substring_index(t1.warehouseId,',',t2.id + 1), ',' ,-1 ) as warehouseId
         from (select id,arrive_warehouse warehouseId from quotation_template where id = #{qie}) t1 join help_index t2 on t2.id <![CDATA[ < ]]> (length(t1.warehouseId) - length(REPLACE(t1.warehouseId,',','')) + 1 )
         ) t
         left join fab_warehouse t1 on t1.id = t.warehouseId;
-
     </select>
-
 
     <select id="findFabWarehouseByWarehouseCode" parameterType="java.lang.String" resultType="com.jayud.mall.model.vo.FabWarehouseVO">
-        select t.id,
-               t.warehouse_code,
-               t.warehouse_name,
-               t.state_code,
-               t.contacts,
-               t.company_name,
-               t.contact_number,
-               t.contact_phone,
-               t.address_first,
-               t.address_second,
-               t.address_thirdly,
-               t.pid,
-               t.pname,
-               t.cid,
-               t.cname,
-               t.zip_code,
-               t.status,
-               t.user_id,
-               t.user_name,
-               t.create_time
+        select
+            t.id,t.warehouse_code,t.warehouse_name,t.contacts,t.company_name,t.contact_number,t.contact_phone,t.address_first,t.address_second,t.address_thirdly,t.zip_code,t.status,t.user_id,t.user_name,t.create_time,t.area_group,t.country_code,t.country_name,t.state_code,t.state_name,t.city_code,t.city_name,t.region_code,t.region_name,t.audit_status,t.audit_user_id,t.audit_user_name
         from fab_warehouse t
         where t.warehouse_code = #{warehouseCode}
+        limit 1
     </select>
 
-
+    <select id="findFabWarehouseById" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.FabWarehouseVO">
+        select
+        t.id,t.warehouse_code,t.warehouse_name,t.contacts,t.company_name,t.contact_number,t.contact_phone,t.address_first,t.address_second,t.address_thirdly,t.zip_code,t.status,t.user_id,t.user_name,t.create_time,t.area_group,t.country_code,t.country_name,t.state_code,t.state_name,t.city_code,t.city_name,t.region_code,t.region_name,t.audit_status,t.audit_user_id,t.audit_user_name
+        from fab_warehouse t
+        where 1=1
+        and t.id = #{id}
+    </select>
 
 
 </mapper>

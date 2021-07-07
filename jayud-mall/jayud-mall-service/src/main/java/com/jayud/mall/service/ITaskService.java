@@ -49,7 +49,9 @@ public interface ITaskService extends IService<Task> {
      */
     CommonResult<TaskVO> findTaskById(Long id);
 
-
-
-
+    /**
+     * 删除任务
+      * @param id
+     */
+    void delTask(Long id);
 }

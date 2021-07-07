@@ -67,6 +67,15 @@ public class TaskController {
         return taskService.findTaskById(id);
     }
 
+    //删除任务
+    @ApiOperation(value = "删除任务")
+    @PostMapping("/delTask")
+    @ApiOperationSupport(order = 5)
+    public CommonResult delTask(@Valid @RequestBody TaskParaForm form){
+        Long id = form.getId();
+        taskService.delTask(id);
+        return CommonResult.success("删除成功");
+    }
 
 
 }

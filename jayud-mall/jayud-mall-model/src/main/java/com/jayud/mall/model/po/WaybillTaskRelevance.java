@@ -71,11 +71,11 @@ public class WaybillTaskRelevance extends Model<WaybillTaskRelevance> {
     @JSONField(ordinal = 10)
     private Integer score;
 
-    @ApiModelProperty(value = "描述", position = 11)
+    @ApiModelProperty(value = "物流轨迹通知描述", position = 11)
     @JSONField(ordinal = 11)
     private String remarks;
 
-    @ApiModelProperty(value = "状态(0未激活 1已激活 2异常 3已完成)", position = 12)
+    @ApiModelProperty(value = "状态(0未激活 1已激活,未完成 2已完成)", position = 12)
     @JSONField(ordinal = 12)
     private String status;
 
@@ -100,6 +100,10 @@ public class WaybillTaskRelevance extends Model<WaybillTaskRelevance> {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     @JSONField(ordinal = 17, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "任务最后完成时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime taskLastTime;
 
     @Override
     protected Serializable pkVal() {

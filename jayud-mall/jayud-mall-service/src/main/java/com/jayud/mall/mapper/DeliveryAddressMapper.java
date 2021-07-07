@@ -29,4 +29,11 @@ public interface DeliveryAddressMapper extends BaseMapper<DeliveryAddress> {
      * @return
      */
     IPage<DeliveryAddressVO> findDeliveryAddressByPage(Page<DeliveryAddressVO> page,@Param("form") QueryDeliveryAddressForm form);
+
+    /**
+     * 根据id，查询地址
+     * @param id
+     * @return
+     */
+    DeliveryAddressVO findDeliveryAddressById(@Param("id") Integer id);
 }

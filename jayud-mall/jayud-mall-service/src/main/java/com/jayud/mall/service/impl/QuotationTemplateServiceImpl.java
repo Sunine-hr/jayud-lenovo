@@ -2,12 +2,16 @@ package com.jayud.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.QuotationDataTypeEnum;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.*;
 import com.jayud.mall.model.bo.*;
@@ -125,6 +129,9 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
                 return CommonResult.error(-1, "["+names+"]"+",名称已存在");
             }
             AuthUser user = baseService.getUser();
+            if(ObjectUtil.isEmpty(user)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "当前用户失效，请重新登录。");
+            }
             quotationTemplate.setUserId(user.getId().intValue());
             quotationTemplate.setUserName(user.getName());
             quotationTemplate.setCreateTime(LocalDateTime.now());
@@ -132,7 +139,7 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
 
             //状态(0无效 1有效)
             quotationTemplate.setStatus("1");
-
+            quotationTemplate.setDataType(QuotationDataTypeEnum.TEMPLATE.getCode());
         }
 
         //模板类型
@@ -143,10 +150,13 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             StringBuffer picUrl = new StringBuffer();
             for(int i=0; i<picUrlarr.size(); i++) {
                 PicUrlArrForm picUrlArrForm = picUrlarr.get(i);
-                if(i==0){
-                    picUrl.append(picUrlArrForm.getFilePath());
-                }else{
-                    picUrl.append(",").append(picUrlArrForm.getFilePath());
+                //解决磁盘满了，上传文件为空
+                if(ObjectUtil.isNotEmpty(picUrlArrForm)){
+                    if(i==0){
+                        picUrl.append(picUrlArrForm.getFilePath());
+                    }else{
+                        picUrl.append(",").append(picUrlArrForm.getFilePath());
+                    }
                 }
             }
             quotationTemplate.setPicUrl(picUrl.toString());
@@ -225,6 +235,21 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             }
             quotationTemplate.setQid(qid.toString());
         }
+        //权限用户id arr数组
+        List<Long> permissionUsersArr = form.getPermissionUsersArr();
+        if(CollUtil.isNotEmpty(permissionUsersArr)){
+            StringBuffer permissionUsers = new StringBuffer();
+            for (int i=0; i<permissionUsersArr.size(); i++){
+                Long userId = permissionUsersArr.get(i);
+                if(i==0){
+                    permissionUsers.append(userId);
+                }else{
+                    permissionUsers.append(",").append(userId);
+                }
+            }
+            quotationTemplate.setPermissionUsers(permissionUsers.toString());
+        }
+
 
         this.saveOrUpdate(quotationTemplate);
         //报价模板Id
@@ -364,6 +389,21 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
             quotationTemplateVO.setQidarr(qList);
         }
 
+        //权限用户
+        String permissionUsers = quotationTemplateVO.getPermissionUsers();
+        if(StrUtil.isNotEmpty(permissionUsers)){
+            String[] strArr = permissionUsers.split(",");
+            List<String> strList = Arrays.asList(strArr);
+            List<Long> permissionUsersArr = new ArrayList<>();
+            for (int i=0; i<strList.size(); i++){
+                String userId = strList.get(i);
+                permissionUsersArr.add(Long.valueOf(userId));
+            }
+            quotationTemplateVO.setPermissionUsersArr(permissionUsersArr);
+
+        }
+
+
         //报价对应应收费用明细list
         QueryWrapper<TemplateCopeReceivable> query1 = new QueryWrapper<>();
         query1.eq("qie", qie);
@@ -380,6 +420,24 @@ public class QuotationTemplateServiceImpl extends ServiceImpl<QuotationTemplateM
         List<TemplateFileVO> templateFileVOList = templateFileMapper.findTemplateFileByQie(qie);
         quotationTemplateVO.setTemplateFileVOList(templateFileVOList);
         return CommonResult.success(quotationTemplateVO);
+    }
+
+    @Override
+    public void verifyPermissions(Long id) {
+        AuthUser user = baseService.getUser();
+        if(ObjectUtil.isEmpty(user)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录");
+        }
+        QuotationTemplateVO quotationTemplateVO = quotationTemplateMapper.lookQuotationTemplate(id);
+        if(ObjectUtil.isEmpty(quotationTemplateVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "报价模板不存在");
+        }
+        Long userId = user.getId();
+        Long quotationTemplateId = quotationTemplateVO.getId();
+        QuotationTemplateVO vo = quotationTemplateMapper.verifyPermissions(userId, quotationTemplateId);
+        if(ObjectUtil.isEmpty(vo)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "当前用户不能修改报价模板");
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 package com.jayud.mall.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -38,10 +39,10 @@ public class WaybillTaskRelevanceForm {
     @ApiModelProperty(value = "完成这个任务的考核得分")
     private Integer score;
 
-    @ApiModelProperty(value = "描述")
+    @ApiModelProperty(value = "物流轨迹通知描述")
     private String remarks;
 
-    @ApiModelProperty(value = "状态(0未激活 1已激活 2异常 3已完成)")
+    @ApiModelProperty(value = "状态(0未激活 1已激活,未完成 2已完成)")
     private String status;
 
     @ApiModelProperty(value = "延期原因")
@@ -58,5 +59,9 @@ public class WaybillTaskRelevanceForm {
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "任务最后完成时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime taskLastTime;
 
 }

@@ -36,4 +36,10 @@ public interface OrderCopeReceivableMapper extends BaseMapper<OrderCopeReceivabl
      */
     List<OrderCopeReceivableVO> findOrderCopeReceivableByOrderIdAndBillId(@Param("orderId") Long orderId, @Param("billId") Long billId);
 
+    /**
+     * 根据应收服务费用id，查询 订单费用
+     * @param orderServiceReceivableId
+     * @return
+     */
+    OrderCopeReceivableVO findOrderCopeReceivableByOrderServiceReceivableId(@Param("orderServiceReceivableId") Long orderServiceReceivableId);
 }

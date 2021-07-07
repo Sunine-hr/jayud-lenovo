@@ -31,6 +31,9 @@ public class TemplateCopeWithForm {
     @JSONField(ordinal = 4)
     private Integer supplierId;
 
+    @ApiModelProperty(value = "服务id(supplier_serve id)")
+    private Integer serviceId;
+
     @ApiModelProperty(value = "计算方式(1自动 2手动)", position = 5)
     @JSONField(ordinal = 5)
     private Integer calculateWay;
@@ -62,5 +65,6 @@ public class TemplateCopeWithForm {
     @ApiModelProperty(value = "描述", position = 12)
     @JSONField(ordinal = 12)
     private String remarks;
+
 
 }

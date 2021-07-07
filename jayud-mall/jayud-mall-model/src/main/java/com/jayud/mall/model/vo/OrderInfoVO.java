@@ -54,24 +54,6 @@ public class OrderInfoVO {
     @JSONField(ordinal = 9)
     private Integer isPick;
 
-    @ApiModelProperty(value = "状态码" +
-            "n枚举: -1,0,10,20,30,40,50" +
-            "枚举备注: " +
-            "-1 已取消 查看详情 " +
-            "0 草稿-----提交、取消、查看订单详情（后台不记录数据） " +
-            "10 已下单：编辑、查看订单详情 " +
-            "20 已收货：编辑、查看订单详情 " +
-            "30 订单确认：确认计柜重（不可修改订单信息） " +
-            "40 转运中：查看订单详情 " +
-            "50 已签收：账单确认、查看订单详情", position = 10
-    )
-    @JSONField(ordinal = 10)
-    private Integer status;
-
-    @ApiModelProperty(value = "状态名称", position = 11)
-    @JSONField(ordinal = 11)
-    private String statusName;
-
     @ApiModelProperty(value = "创建日期", position = 12)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     @JSONField(ordinal = 12, format="yyyy-MM-dd HH:mm:ss")
@@ -134,6 +116,52 @@ public class OrderInfoVO {
     @JSONField(ordinal = 24)
     private String extensionNumber;
 
+    @ApiModelProperty(value = "销售提成")
+    private BigDecimal salesCommission;
+
+    @ApiModelProperty(value = "前端状态代码\n" +
+            "    草稿:0\n" +
+            "    补资料:9\n" +
+            "    已下单:10\n" +
+            "    已收货:20\n" +
+            "    转运中:30\n" +
+            "    已签收:40\n" +
+            "    已完成:50\n" +
+            "    已取消:-1")
+    private String frontStatusCode;
+
+    @ApiModelProperty(value = "前端状态名称")
+    private String frontStatusName;
+
+    @ApiModelProperty(value = "后端状态代码\n" +
+            "    草稿:0\n" +
+            "    补资料:9\n" +
+            "    已下单:10\n" +
+            "        -- 内部小状态，这个不是流程状态\n" +
+            "        -- 已审单\n" +
+            "        -- 未审单\n" +
+            "    已收货:20\n" +
+            "    订单确认:30\n" +
+            "    已签收:40\n" +
+            "    已完成:50\n" +
+            "    已取消:-1")
+    private String afterStatusCode;
+
+    @ApiModelProperty(value = "后端状态名称")
+    private String afterStatusName;
+
+    @ApiModelProperty(value = "结算方式id(clearing_way id)")
+    private Integer clearingWay;
+
+    @ApiModelProperty(value = "补充资料说明")
+    private String fillMaterialDescription;
+
+    @ApiModelProperty(value = "进仓单号")
+    private String warehouseNo;
+
+    @ApiModelProperty(value = "内部备注")
+    private String internalNote;
+
     /*订单对应报关文件：order_customs_file*/
     @ApiModelProperty(value = "订单对应报关文件list", position = 25)
     @JSONField(ordinal = 25)
@@ -154,6 +182,10 @@ public class OrderInfoVO {
     @JSONField(ordinal = 28)
     private List<OrderCaseVO> orderCaseVOList;
 
+    //caseVO
+    @ApiModelProperty(value = "订单箱号汇总计算")
+    private CaseVO caseVO;
+
     /*订单对应箱号配载信息:order_case、order_conf*/
     @ApiModelProperty(value = "订单对应箱号配载信息list", position = 29)
     @JSONField(ordinal = 29)
@@ -164,10 +196,16 @@ public class OrderInfoVO {
     @JSONField(ordinal = 30)
     private List<OrderCopeReceivableVO> orderCopeReceivableVOList;
 
+    @ApiModelProperty(value = "订单对应应收费用汇总ist")
+    private List<AggregateAmountVO> orderCopeReceivableAggregate;
+
     /*订单对应应付费用明细:order_cope_with*/
     @ApiModelProperty(value = "订单对应应付费用明细list", position = 31)
     @JSONField(ordinal = 31)
     private List<OrderCopeWithVO> orderCopeWithVOList;
+
+    @ApiModelProperty(value = "订单对应应付费用汇总list")
+    private List<AggregateAmountVO> orderCopeWithAggregate;
 
     /*订单对应提货信息表：order_pick*/
     @ApiModelProperty(value = "订单对应提货信息表list", position = 32)
@@ -340,6 +378,36 @@ public class OrderInfoVO {
     @ApiModelProperty(value = "订单，提货状态", position = 69)
     @JSONField(ordinal = 69)
     private List<PickStatusVO> pickStatusVOList;
+
+    @ApiModelProperty(value = "状态标志-是否确认计费重(1已确认 2未确认)")
+    private String isConfirmBilling;
+
+    @ApiModelProperty(value = "报价服务名称")
+    private String serviceName;
+
+
+    //配载 柜子选择运单
+    @ApiModelProperty(value = "订单箱数")
+    private Integer casesTotal;
+
+    @ApiModelProperty(value = "箱数体积合计")
+    private BigDecimal casevolumeTotal;
+
+    @ApiModelProperty(value = "箱数重量合计")
+    private BigDecimal caseWeightTotal;
+
+    //配载订单展示
+    @ApiModelProperty(value = "箱数(总箱数)")
+    private Integer allboxNumber;
+
+    @ApiModelProperty(value = "已配载数量(已配箱数)")
+    private Integer hasboxNumber;
+
+    @ApiModelProperty(value = "未配载数量(未配载箱数)")
+    private Integer notboxNumber;
+
+    @ApiModelProperty(value = "留仓数量")
+    private Integer keepWarehouseNumber;
 
 
 }

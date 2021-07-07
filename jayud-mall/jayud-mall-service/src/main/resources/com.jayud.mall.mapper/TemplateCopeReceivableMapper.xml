@@ -29,7 +29,9 @@
             select
             t2.id,t2.qie,t2.cost_code,t2.cost_name,t2.specification_code,t2.specification_name,t2.calculate_way,t2.count,t2.unit,t2.source,t2.unit_price,t2.cid,t2.amount,t2.remarks,
             t3.currency_code,
-            CONCAT(t2.amount,' ',t3.currency_code) amountFormat
+            CONCAT(t2.amount,' ',t3.currency_code) amountFormat,
+            CONCAT(t2.unit_price,' ',t3.currency_code) unitPriceFormat,
+            t1.min,t1.max
             from (
             select
             DISTINCT t1.id,substring_index( substring_index(t1.qid,',',t2.id + 1), ',' ,-1 ) as qid
@@ -46,7 +48,8 @@
         select
         t2.id,t2.qie,t2.cost_code,t2.cost_name,t2.specification_code,t2.specification_name,t2.calculate_way,t2.count,t2.unit,t2.source,t2.unit_price,t2.cid,t2.amount,t2.remarks,
         t3.currency_code,
-        CONCAT(t2.amount,' ',t3.currency_code) amountFormat
+        CONCAT(t2.amount,' ',t3.currency_code) amountFormat,
+        CONCAT(t2.unit_price,' ',t3.currency_code) unitPriceFormat
         from (
         select
         DISTINCT t1.id,substring_index( substring_index(t1.area_id,',',t2.id + 1), ',' ,-1 ) as area_id
@@ -63,7 +66,8 @@
         select
         t.id,t.qie,t.cost_code,t.cost_name,t.specification_code,t.specification_name,t.calculate_way,t.count,t.unit,t.source,t.unit_price,t.cid,t.amount,t.remarks,
         t1.currency_code,
-        CONCAT(t.amount,' ',t1.currency_code) amountFormat
+        CONCAT(t.amount,' ',t1.currency_code) amountFormat,
+        CONCAT(t.unit_price,' ',t1.currency_code) unitPriceFormat
         from template_cope_receivable t
         LEFT JOIN currency_info t1 on t1.id = t.cid
         where t.qie=#{qie}
@@ -90,6 +94,16 @@
         from template_cope_receivable t
                  left join currency_info t1 on t1.id = t.cid
         where t.qie = #{qie}
+
+    </select>
+
+    <select id="findTemplateCopeReceivableByQieAndSpecificationCode" resultType="com.jayud.mall.model.vo.TemplateCopeReceivableVO">
+        select
+            t.id,t.qie,t.cost_code,t.cost_name,t.specification_code,t.specification_name,t.calculate_way,t.count,t.unit,t.source,t.unit_price,t.cid,t.amount,t.remarks
+        from template_cope_receivable t
+        where 1=1
+        and t.qie=#{qie, jdbcType=INTEGER}
+        and t.specification_code = #{specification_code, jdbcType=VARCHAR}
 
     </select>
 

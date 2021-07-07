@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,4 +54,11 @@ public interface CustomerGoodsMapper extends BaseMapper<CustomerGoods> {
      * @return
      */
     CustomerGoodsVO findCustomerGoodsByNewWisdomParam(@Param("newWisdomParam") Map<String, Object> newWisdomParam);
+
+    /**
+     * 查询客户商品list
+     * @param ids
+     * @return
+     */
+    List<CustomerGoodsVO> findCustomerGoodsByIds(@Param("ids") List<Integer> ids);
 }

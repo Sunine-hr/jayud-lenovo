@@ -30,7 +30,7 @@ public class CustomerForm {
     @ApiModelProperty(value = "营业执照url")
     private String businessLicenseUrl;
 
-    @ApiModelProperty(value = "结算方式(1票结 2月结)")
+    @ApiModelProperty(value = "结算方式id(clearing_way id)")
     private Integer clearingWay;
 
     @ApiModelProperty(value = "结算日期")
@@ -50,7 +50,7 @@ public class CustomerForm {
     private Integer salesmanId;
 
     @ApiModelProperty(value = "运营(服务)小组id(operation_team id)")
-    private Long operationTeamId;
+    private String operationTeamId;
 
     @ApiModelProperty(value = "备注")
     private String remark;

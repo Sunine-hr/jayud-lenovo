@@ -1,6 +1,9 @@
 package com.jayud.mall.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.mall.model.bo.CostItemSupForm;
+import com.jayud.mall.model.bo.QueryCostItemForm;
 import com.jayud.mall.model.po.CostItem;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.CostItemVO;
@@ -35,4 +38,26 @@ public interface CostItemMapper extends BaseMapper<CostItem> {
      * @return
      */
     CostItemVO findCostItemByCostCode(@Param("costCode") String costCode);
+
+    /**
+     * 分页
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<CostItemVO> findCostItemByPage(Page<CostItemVO> page, @Param("form") QueryCostItemForm form);
+
+    /**
+     * 根据id查询
+     * @param id
+     * @return
+     */
+    CostItemVO findCostItemById(@Param("id") Long id);
+
+    /**
+     * 根据供应商服务id，获取供应商费用（应付费用信息）
+     * @param serviceId
+     * @return
+     */
+    List<CostItemVO> findCostItemByServiceId(@Param("serviceId") Long serviceId);
 }

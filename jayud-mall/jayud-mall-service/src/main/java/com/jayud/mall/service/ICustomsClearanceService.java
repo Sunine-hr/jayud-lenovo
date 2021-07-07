@@ -3,6 +3,7 @@ package com.jayud.mall.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.AuditCustomsClearanceForm;
 import com.jayud.mall.model.bo.CustomsClearanceForm;
 import com.jayud.mall.model.bo.QueryCustomsClearanceForm;
 import com.jayud.mall.model.po.CustomsClearance;
@@ -39,4 +40,17 @@ public interface ICustomsClearanceService extends IService<CustomsClearance> {
      * @return
      */
     List<CustomsClearanceVO> findCustomsClearance();
+
+    /**
+     * 审核-清关资料
+     * @param form
+     */
+    void auditCustomsClearance(AuditCustomsClearanceForm form);
+
+    /**
+     * 查询
+     * @param id
+     * @return
+     */
+    CustomsClearanceVO findCustomsClearanceById(Long id);
 }

@@ -42,7 +42,7 @@
         select
         t.id,t.types,t.sid,t.`names`,t.pic_url,t.tid,t.start_shipment,t.destination_port,
         t.arrive_warehouse,t.visible_customer,t.visible_uid,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.estimated_time,t.gidtype,t.gid,t.area_id,t.qidtype,t.qid,t.task_id,t.bubble_coefficient,
-        t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,t.update_time,
+        t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,t.update_time,t.billing_weight_unit,t.whole_time,t.design_formulas,t.volume,t.volume_unit,t.minimum_quantity,t.cut_off_time_calc,t.jc_time_calc,t.jkc_time_calc,t.estimated_time_calc,t.clearing_way,t.special_version,t.cut_off_time_calc_hms,t.jc_time_calc_hms,t.jkc_time_calc_hms,t.estimated_time_calc_hms,t.permission_users,
         t1.code_name sname,
         t2.code_name tname,
         t3.code_name startShipmentName,
@@ -58,6 +58,7 @@
         left join country t6 on t6.code = t4.state_code
         WHERE
         1 = 1
+        and t.data_type = 1
         <if test="form.names != null and form.names != ''">
             AND t.`names` LIKE concat('%',#{form.names},'%')
         </if>
@@ -82,7 +83,7 @@
         select
         t.id,t.types,t.sid,t.`names`,t.pic_url,t.tid,t.start_shipment,t.destination_port,
         t.arrive_warehouse,t.visible_customer,t.visible_uid,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.estimated_time,t.gidtype,t.gid,t.area_id,t.qidtype,t.qid,t.task_id,t.bubble_coefficient,
-        t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,t.update_time,
+        t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,t.update_time,t.billing_weight_unit,t.whole_time,t.design_formulas,t.volume,t.volume_unit,t.minimum_quantity,t.data_type,t.cut_off_time_calc,t.jc_time_calc,t.jkc_time_calc,t.estimated_time_calc,t.clearing_way,t.special_version,t.cut_off_time_calc_hms,t.jc_time_calc_hms,t.jkc_time_calc_hms,t.estimated_time_calc_hms,t.permission_users,
         t1.code_name sname,
         t2.code_name tname,
         t3.code_name startShipmentName,
@@ -94,7 +95,39 @@
         LEFT JOIN harbour_info t3 on t3.id_code = t.start_shipment
         LEFT JOIN harbour_info t4 on t4.id_code = t.destination_port
         LEFT JOIN task_group t5 on t5.id = t.task_id
-        where t.id = #{id}
+        where t.data_type = 1
+        and t.id = #{id}
+    </select>
+
+    <select id="lookQuotationTemplateById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.QuotationTemplateVO">
+        select
+        t.id,t.types,t.sid,t.`names`,t.pic_url,t.tid,t.start_shipment,t.destination_port,
+        t.arrive_warehouse,t.visible_customer,t.visible_uid,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.estimated_time,t.gidtype,t.gid,t.area_id,t.qidtype,t.qid,t.task_id,t.bubble_coefficient,
+        t.remarks,t.`status`,t.user_id,t.user_name,t.create_time,t.update_time,t.billing_weight_unit,t.whole_time,t.design_formulas,t.volume,t.volume_unit,t.minimum_quantity,t.data_type,t.cut_off_time_calc,t.jc_time_calc,t.jkc_time_calc,t.estimated_time_calc,t.clearing_way,t.special_version,t.cut_off_time_calc_hms,t.jc_time_calc_hms,t.jkc_time_calc_hms,t.estimated_time_calc_hms,t.permission_users,
+        t1.code_name sname,
+        t2.code_name tname,
+        t3.code_name startShipmentName,
+        t4.code_name destinationPortName,
+        t5.group_name taskName
+        from quotation_template t
+        LEFT JOIN service_group t1 on t1.id = t.sid
+        LEFT JOIN transport_way t2 on t2.id = t.tid
+        LEFT JOIN harbour_info t3 on t3.id_code = t.start_shipment
+        LEFT JOIN harbour_info t4 on t4.id_code = t.destination_port
+        LEFT JOIN task_group t5 on t5.id = t.task_id
+        where 1=1
+        and t.id = #{id}
+    </select>
+
+
+    <select id="verifyPermissions" resultType="com.jayud.mall.model.vo.QuotationTemplateVO">
+        select id from (
+        select
+        DISTINCT t1.id,substring_index( substring_index(t1.permission_users,',',t2.id + 1), ',' ,-1 ) as permission_user_id
+        from (select id,permission_users from quotation_template where id= #{quotationTemplateId,jdbcType=BIGINT} ) t1 join help_index t2 on t2.id <![CDATA[ < ]]>  (length(t1.permission_users) - length(REPLACE(t1.permission_users,',','')) + 1 )
+        ) t
+        where t.permission_user_id = #{userId,jdbcType=BIGINT}
+
     </select>
 
 

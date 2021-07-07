@@ -9,6 +9,8 @@ import com.jayud.mall.model.bo.SupplierServeStatusForm;
 import com.jayud.mall.model.po.SupplierServe;
 import com.jayud.mall.model.vo.SupplierServeVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 供应商服务 服务类
@@ -45,4 +47,11 @@ public interface ISupplierServeService extends IService<SupplierServe> {
      * @param form
      */
     void disableEnabledSupplierServe(SupplierServeStatusForm form);
+
+    /**
+     * 根据供应商id，查询
+     * @param supplierInfoId
+     * @return
+     */
+    List<SupplierServeVO> findSupplierServeBySupplierInfoId(Long supplierInfoId);
 }

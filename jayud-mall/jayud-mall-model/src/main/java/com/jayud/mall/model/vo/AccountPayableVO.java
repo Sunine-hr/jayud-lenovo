@@ -22,7 +22,7 @@ public class AccountPayableVO {
     @JSONField(ordinal = 2)
     private String dzdNo;
 
-    @ApiModelProperty(value = "法人id(legal_person id)", position = 2)
+    @ApiModelProperty(value = "法人主体id(legal_entity id)", position = 2)
     @JSONField(ordinal = 2)
     private Long legalPersonId;
 

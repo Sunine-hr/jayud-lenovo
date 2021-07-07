@@ -30,13 +30,20 @@ public class SystemMenuController {
 
 
     @ApiOperation(value = "查询所有菜单")
-    @PostMapping(value = "/findAllMenuVO")
     @ApiOperationSupport(order = 1)
+    @PostMapping(value = "/findAllMenuVO")
     public CommonResult<List<SystemMenuVO>> findAllMenuVO(){
         List<SystemMenuVO> menuVOList = menuService.findAllMenuVO();
         return CommonResult.success(menuVOList);
     }
 
+    @ApiOperation(value = "查询当前登录用户的菜单")
+    @ApiOperationSupport(order = 2)
+    @PostMapping(value = "/loginUserMenu")
+    public CommonResult<List<SystemMenuVO>> loginUserMenu(){
+        List<SystemMenuVO> menuVOList = menuService.loginUserMenu();
+        return CommonResult.success(menuVOList);
+    }
 
 
 }

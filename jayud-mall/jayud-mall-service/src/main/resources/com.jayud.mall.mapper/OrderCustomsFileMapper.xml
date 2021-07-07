@@ -19,4 +19,11 @@
         id, order_id, id_code, file_name, options, is_check, template_url, describe
     </sql>
 
+    <select id="findOrderCustomsFileByOrderId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderCustomsFileVO">
+        select
+            t.id,t.order_id,t.id_code,t.file_name,t.options,t.is_check,t.template_url,t.`describe`,t.audit_status
+        from order_customs_file t
+        where order_id = #{orderId}
+    </select>
+
 </mapper>

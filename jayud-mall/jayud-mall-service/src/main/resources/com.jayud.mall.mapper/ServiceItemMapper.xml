@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.ServiceItemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.ServiceItem">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="remark" property="remark" />
+        <result column="status" property="status" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, code, name, remark, status, user_id, user_name, create_time
+    </sql>
+
+
+    <select id="findServiceItem" resultType="com.jayud.mall.model.bo.ServiceItemForm" parameterType="com.jayud.mall.model.vo.ServiceItemVO">
+        select
+        t.id,t.code,t.name,t.remark,t.status,t.user_id,t.user_name,t.create_time
+        from service_item t
+        where 1=1
+        <if test="form.id != null">
+            and t.id = #{form.id}
+        </if>
+        <if test="form.code != null and form.code != ''">
+            and t.code = #{form.code}
+        </if>
+        <if test="form.name != null and form.name != ''">
+            and t.name = #{form.name}
+        </if>
+        <if test="form.remark != null and form.remark != ''">
+            and t.remark = #{form.remark}
+        </if>
+        <if test="form.status != null and form.status != ''">
+            and t.status = #{form.status}
+        </if>
+
+    </select>
+
+</mapper>

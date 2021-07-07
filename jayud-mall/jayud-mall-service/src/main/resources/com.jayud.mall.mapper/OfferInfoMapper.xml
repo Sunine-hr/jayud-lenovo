@@ -39,6 +39,9 @@
         t.user_id,
         t.user_name,
         t.create_time,
+        t.estimated_time,
+        t.remarks,
+        t.sail_time_remark,t.special_version,t.offer_no,
         t1.start_shipment,
         t1.destination_port,
         t1.gidtype,
@@ -53,15 +56,15 @@
         LEFT JOIN harbour_info t3 on t3.id_code = t1.destination_port
         left join country t4 on t4.code = t3.state_code
         join (
-        select DISTINCT id from (
-        select
-        DISTINCT t1.id,substring_index( substring_index(t1.arrive_warehouse,',',t2.id + 1), ',' ,-1 ) as arrive_warehouse_id
-        from (select id,arrive_warehouse from quotation_template) t1 join help_index t2 on t2.id <![CDATA[ < ]]>  (length(t1.arrive_warehouse) - length(REPLACE(t1.arrive_warehouse,',','')) + 1 )
-        ) t
-        where 1=1
-        <if test="form.arriveWarehouseId != null">
-            and t.arrive_warehouse_id = #{form.arriveWarehouseId}
-        </if>
+            select DISTINCT id from (
+            select
+            DISTINCT t1.id,substring_index( substring_index(t1.arrive_warehouse,',',t2.id + 1), ',' ,-1 ) as arrive_warehouse_id
+            from (select id,arrive_warehouse from quotation_template) t1 join help_index t2 on t2.id <![CDATA[ < ]]>  (length(t1.arrive_warehouse) - length(REPLACE(t1.arrive_warehouse,',','')) + 1 )
+            ) t
+            where 1=1
+            <if test="form.arriveWarehouseId != null">
+                and t.arrive_warehouse_id = #{form.arriveWarehouseId}
+            </if>
         ) arrware on arrware.id = t.qie
         WHERE
         1 = 1
@@ -87,7 +90,8 @@
     <select id="selectOfferInfoVO" parameterType="java.lang.Long"
             resultType="com.jayud.mall.model.vo.OfferInfoVO" >
         select
-        t.id,t.qie,t.names,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,datediff(t.estimated_time,t.sail_time) voyage_day,
+        t.id,t.qie,t.names,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,t.sail_time_remark,t.special_version,t.offer_no,
+        datediff(t.estimated_time,t.sail_time) voyage_day,
         t1.sid,
         t1.pic_url,
         t1.tid,
@@ -103,6 +107,8 @@
         t1.qid,
         t1.task_id,
         t1.remarks templateRemarks,
+        t1.whole_time,
+        t1.design_formulas,t1.billing_weight_unit,t1.clearing_way,t1.volume,t1.volume_unit,
         t2.code_name sName,
         t3.code_name tName,
         t4.code_name startShipmentName,
@@ -122,7 +128,7 @@
     <select id="findOfferInfoFareByPage" parameterType="com.jayud.mall.model.bo.QueryOfferInfoFareForm"
             resultType="com.jayud.mall.model.vo.OfferInfoVO">
         select
-        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,
+        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,t.sail_time_remark,t.special_version,t.offer_no,
         t1.start_shipment,t1.destination_port,
         t3.code_name startShipmentName,
         t4.code_name destinationPortName,
@@ -184,7 +190,7 @@
 
     <select id="lookOfferInfoFare" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OfferInfoVO">
         select
-        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.`status`,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,
+        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.`status`,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,t.sail_time_remark,t.special_version,t.offer_no,
         datediff(t.estimated_time,t.sail_time) voyage_day,
         t1.sid,
         t1.pic_url,
@@ -201,6 +207,11 @@
         t1.qid,
         t1.task_id,
         t1.remarks templateRemarks,
+        t1.bubble_coefficient,
+        t1.billing_weight_unit,
+        t1.design_formulas,
+        t1.minimum_quantity,
+        t1.clearing_way,
         t2.code_name sname,
         t3.code_name tname,
         t4.code_name startShipmentName,
@@ -220,7 +231,7 @@
             resultType="com.jayud.mall.model.vo.OfferInfoVO">
 
         select
-        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,
+        t.id,t.qie,t.`names`,t.sail_time,t.cut_off_time,t.jc_time,t.jkc_time,t.types,t.status,t.user_id,t.user_name,t.create_time,t.estimated_time,t.remarks,t.sail_time_remark,t.special_version,t.offer_no,
         t1.start_shipment,t1.destination_port,t1.pic_url,
         t3.code_name startShipmentName,
         t4.code_name destinationPortName,
@@ -270,6 +281,61 @@
         1 = 1
         order by t.create_time desc
         limit 4
+    </select>
+
+
+    <select id="findOfferInfoPageByConf" parameterType="com.jayud.mall.model.bo.QueryOfferInfoForm" resultType="com.jayud.mall.model.vo.OfferInfoVO">
+        select
+        t.id,
+        t.qie,
+        t.`names`,
+        t.sail_time,
+        t.cut_off_time,
+        t.jc_time,
+        t.jkc_time,
+        t.types,
+        t.`status`,
+        t.user_id,
+        t.user_name,
+        t.create_time,
+        t.estimated_time,
+        t.remarks,
+        t.sail_time_remark,t.special_version,t.offer_no,
+        t1.start_shipment,
+        t1.destination_port,
+        t1.gidtype,
+        t1.qidtype,
+        t2.code_name startShipmentName,
+        t3.code_name destinationPortName,
+        t4.name destinationCountryName
+        from
+        offer_info t
+        LEFT JOIN quotation_template t1 ON t1.id = t.qie
+        LEFT JOIN harbour_info t2 on t2.id_code = t1.start_shipment
+        LEFT JOIN harbour_info t3 on t3.id_code = t1.destination_port
+        left join country t4 on t4.code = t3.state_code
+        where 1=1
+        and t.id not in(select id_code offerInfoId from ocean_conf_detail where types = 1 group by id_code)
+        and t.jc_time >= now()
+        and t.status = 1
+        <if test="form.names != null and form.names != ''">
+            AND t.`names` LIKE concat('%',#{form.names},'%')
+        </if>
+        <if test="form.sailTime != null">
+            and t.sail_time <![CDATA[ >= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 00:00:00') AND t.sail_time <![CDATA[ <= ]]> concat(date_format(#{form.sailTime}, '%Y-%m-%d'), ' 23:59:59')
+        </if>
+        <if test="form.cutOffTime != null">
+            and t.cut_off_time <![CDATA[ >= ]]> concat(date_format(#{form.cutOffTime}, '%Y-%m-%d'), ' 00:00:00') AND t.cut_off_time <![CDATA[ <= ]]> concat(date_format(#{form.cutOffTime}, '%Y-%m-%d'), ' 23:59:59')
+        </if>
+        <if test="form.countryCode != null and form.countryCode != ''">
+            and t4.code = #{form.countryCode}
+        </if>
+        <if test="form.status != null and form.status != ''">
+            and t.`status` = #{form.status}
+        </if>
+        <if test="form.offerNo != null and form.offerNo != ''">
+            and t.offer_no LIKE concat('%',#{form.offerNo},'%')
+        </if>
     </select>
 
 </mapper>

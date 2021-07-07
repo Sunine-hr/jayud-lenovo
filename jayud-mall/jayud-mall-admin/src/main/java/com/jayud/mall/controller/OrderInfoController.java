@@ -2,24 +2,30 @@ package com.jayud.mall.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.common.CommonPageResult;
+import com.jayud.common.CommonPageDraftResult;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.vo.*;
 import com.jayud.mall.service.IOrderInfoService;
+import com.jayud.mall.service.IOrderInteriorStatusService;
+import com.jayud.mall.utils.ExcelTemplateUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSupport;
 import io.swagger.annotations.ApiSort;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/orderinfo")
@@ -29,14 +35,18 @@ public class OrderInfoController {
 
     @Autowired
     IOrderInfoService orderInfoService;
+    @Autowired
+    IOrderInteriorStatusService orderInteriorStatusService;
+
 
     @ApiOperation(value = "分页查询订单")
     @PostMapping("/findOrderInfoByPage")
     @ApiOperationSupport(order = 1)
-    public CommonResult<CommonPageResult<OrderInfoVO>> findOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
+    public CommonResult<CommonPageDraftResult<OrderInfoVO>> findOrderInfoByPage(@RequestBody QueryOrderInfoForm form) {
         IPage<OrderInfoVO> pageList = orderInfoService.findOrderInfoByPage(form);
-        CommonPageResult<OrderInfoVO> pageVO = new CommonPageResult(pageList);
-        return CommonResult.success(pageVO);
+        Map<String,Long> totalMap = orderInfoService.findOrderInfoAfterCount(form);
+        CommonPageDraftResult<OrderInfoVO> draftResult = new CommonPageDraftResult(pageList, totalMap);
+        return CommonResult.success(draftResult);
     }
 
     @ApiOperation(value = "订单管理-查看审核文件")
@@ -168,7 +178,7 @@ public class OrderInfoController {
         return orderInfoService.findOceanCounterByTdId(tdId);
     }
 
-    //订单待生成账单-生成账单(根据 订单id 查询)
+    //根据订单id，查询待生成的账单（应收、应付）
     @ApiOperation(value = "订单待生成账单-生成账单(根据 订单id 查询)")
     @PostMapping("/findOrderBill")
     @ApiOperationSupport(order = 17)
@@ -261,8 +271,8 @@ public class OrderInfoController {
 
     //订单下单-提交订单
     @ApiOperation(value = "订单下单-提交订单(新智慧订单)")
-    @PostMapping("/submitOrderInfo")
     @ApiOperationSupport(order = 24)
+    @PostMapping("/submitOrderInfo")
     public CommonResult<OrderInfoVO> submitOrderInfo(@Valid @RequestBody OrderInfoForm form){
         //订单对应箱号信息:order_case
         List<OrderCaseVO> orderCaseVOList = form.getOrderCaseVOList();
@@ -298,7 +308,158 @@ public class OrderInfoController {
         return orderInfoService.submitOrderInfo(form);
     }
 
+    // 后台-订单确认
+    @ApiOperation(value = "后台-订单确认")
+    @ApiOperationSupport(order = 25)
+    @PostMapping("/afterAffirm")
+    public CommonResult<OrderInfoVO> afterAffirm(@Valid @RequestBody OrderInfoParaForm form){
+        Long id = form.getId();
+        OrderInfoVO orderInfoVO = orderInfoService.afterAffirm(id);
+        return CommonResult.success(orderInfoVO);
+    }
 
+    // 查询订单内部状态，
+    // IS_AUDIT_ORDER("is_audit_order", "是否审核单据(1已审单 2未审单)")
+    // 订单已下单-内部状态审核(已审单 未审单)
+    @ApiOperation(value = "查询-订单是否审核单据状态")
+    @ApiOperationSupport(order = 26)
+    @PostMapping("/findOrderIsAuditOrder")
+    public CommonResult<IsAuditOrderVO> findOrderIsAuditOrder(@Valid @RequestBody OrderInfoParaForm form){
+        Long orderId = form.getId();
+        IsAuditOrderVO isAuditOrderVO = orderInfoService.findOrderIsAuditOrder(orderId);
+        return CommonResult.success(isAuditOrderVO);
+    }
+
+    @ApiOperation(value = "审核-订单内部状态(是否审核单据)")
+    @ApiOperationSupport(order = 27)
+    @PostMapping("/auditOrderIsAuditOrder")
+    public CommonResult auditOrderIsAuditOrder(@Valid @RequestBody IsAuditOrderForm form){
+        orderInfoService.auditOrderIsAuditOrder(form);
+        return CommonResult.success("操作成功");
+    }
+
+    //订单列表-草稿-取消
+    @ApiOperation(value = "订单列表-草稿-取消")
+    @ApiOperationSupport(order = 28)
+    @PostMapping("/draftCancelOrderInfo")
+    public CommonResult<OrderInfoVO> draftCancelOrderInfo(@RequestBody OrderInfoParaForm form){
+        return orderInfoService.draftCancelOrderInfo(form);
+    }
+
+    //补资料操作
+    @ApiOperation(value = "补资料操作")
+    @ApiOperationSupport(order = 29)
+    @PostMapping("/fillMaterial")
+    public CommonResult fillMaterial(@Valid @RequestBody OrderInfoFillForm form){
+        orderInfoService.fillMaterial(form);
+        return CommonResult.success("操作成功");
+    }
+
+    //订单-仓库收货(订单箱号收货)
+    @ApiOperation(value = "订单-仓库收货(订单箱号收货)")
+    @ApiOperationSupport(order = 30)
+    @PostMapping("/orderCaseReceipt")
+    public CommonResult orderCaseReceipt(@Valid @RequestBody OrderCaseReceiptForm form){
+        orderInfoService.orderCaseReceipt(form);
+        return CommonResult.success("操作成功");
+    }
+
+    @ApiOperation(value = "运单-保存轨迹通知")
+    @ApiOperationSupport(order = 31)
+    @PostMapping(value = "/saveTrackNotice")
+    public CommonResult saveTrackNotice(@Valid @RequestBody OrderTrackNoticeForm form){
+        orderInfoService.saveTrackNotice(form);
+        return CommonResult.success("操作成功");
+    }
+
+    @ApiOperation(value = "后台-确认收货")
+    @ApiOperationSupport(order = 32)
+    @PostMapping("/affirmReceived")
+    public CommonResult<OrderInfoVO> affirmReceived(@Valid @RequestBody OrderInfoParaForm form){
+        Long id = form.getId();
+        OrderInfoVO orderInfoVO = orderInfoService.affirmReceived(id);
+        return CommonResult.success(orderInfoVO);
+    }
+
+    @ApiOperation(value = "订单-取消按钮前验证")
+    @ApiOperationSupport(order = 33)
+    @PostMapping(value = "/cancelStatusVerify")
+    public CommonResult cancelStatusVerify(@Valid @RequestBody OrderInfoCancelForm form){
+        orderInfoService.cancelStatusVerify(form);
+        return CommonResult.success("验证成功");
+    }
+
+    //使用新智慧Excel，修改订单箱子的数据
+    @ApiOperation(value = "使用新智慧Excel，修改订单箱子的数据")
+    @RequestMapping(value = "/importExcelUpdateCaseByNewWisdom", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperationSupport(order = 34)
+    public CommonResult<OrderInfoVO> importExcelUpdateCaseByNewWisdom(@RequestHeader(value = "orderId") Long orderId, @RequestParam("file") MultipartFile file){
+        OrderInfoVO orderInfoVO = orderInfoService.importExcelUpdateCaseByNewWisdom(orderId,file);
+        return CommonResult.success(orderInfoVO);
+    }
+
+    // 后台-订单签收
+    @ApiOperation(value = "后台-订单签收")
+    @ApiOperationSupport(order = 35)
+    @PostMapping("/afterSigned")
+    public CommonResult<OrderInfoVO> afterSigned(@Valid @RequestBody OrderInfoParaForm form){
+        Long id = form.getId();
+        OrderInfoVO orderInfoVO = orderInfoService.afterSigned(id);
+        return CommonResult.success(orderInfoVO);
+    }
+
+    @ApiOperation(value = "下载Excel模板-订单箱号")
+    @RequestMapping(value = "/downloadExcelTemplateByOrderCase", method = RequestMethod.GET)
+    @ApiOperationSupport(order = 36)
+    public void downloadExcelTemplateByOrderCase(HttpServletResponse response){
+        new ExcelTemplateUtil().downloadExcel(response, "order_case_update.xlsx", "订单箱号模板.xlsx");
+    }
+
+
+    @ApiOperation(value = "上传文件-导入订单箱号")
+    @RequestMapping(value = "/importExcelByOrderCase", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperationSupport(order = 37)
+    public CommonResult<List<OrderCaseVO>> importExcelByOrderCase(@RequestParam("file") MultipartFile file){
+        if (file.isEmpty()) {
+            return CommonResult.error(-1, "文件为空！");
+        }
+        // 1.获取上传文件输入流
+        InputStream inputStream = null;
+        try {
+            inputStream = file.getInputStream();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //调用用 hutool 方法读取数据 默认调用第一个sheet
+        ExcelReader excelReader = ExcelUtil.getReader(inputStream);
+        //配置别名
+        Map<String,String> aliasMap=new HashMap<>();
+        aliasMap.put("FBA箱号","fabNo");
+        aliasMap.put("货箱重量(KG)","wmsWeight");
+        aliasMap.put("货箱长度(CM)","wmsLength");
+        aliasMap.put("货箱宽度(CM)","wmsWidth");
+        aliasMap.put("货箱高度(CM)","wmsHeight");
+        excelReader.setHeaderAlias(aliasMap);
+        // 第一个参数是指表头所在行，第二个参数是指从哪一行开始读取
+        List<OrderCaseVO> list= excelReader.read(0, 1, OrderCaseVO.class);
+
+        orderInfoService.importExcelByOrderCase(list);
+
+        return CommonResult.success(list);
+    }
+
+
+    //订单详情-确认计费重信息
+    @ApiOperation(value = "查询-订单计费重确认状态")
+    @PostMapping("/findOrderIsConfirmBilling")
+    @ApiOperationSupport(order = 38)
+    public CommonResult<IsConfirmBillingVO> findOrderIsConfirmBilling(@RequestBody OrderInfoParaForm form){
+        Long orderId = form.getId();
+        IsConfirmBillingVO isConfirmBillingVO = orderInfoService.findOrderIsConfirmBilling(orderId);
+        return CommonResult.success(isConfirmBillingVO);
+    }
 
 
 }

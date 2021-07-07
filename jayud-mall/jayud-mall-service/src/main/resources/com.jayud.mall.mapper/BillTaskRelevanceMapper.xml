@@ -30,33 +30,85 @@
     
     <select id="findBillTaskByObId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.BillTaskVO">
         select
-            t.task_code, t.task_name, t.sort, t.days, t.day_flag, t.minutes, t.score, t.remarks, t.status,
-            t1.userName operators, t1.member_user_id userId, t1.userName userName
+        t.task_code, t.task_name, t.sort, t.days, t.day_flag, t.minutes, t.score, t.remarks, t.status, t.activation_switch,
+        t1.userName operators, t1.member_user_id userId, t1.userName userName
         from (
-                 select
-                     t.id orderId,t.task_id,
-                     t3.group_code,t3.group_name,
-                     t4.task_code,t4.task_name,t4.sort,t4.days,t4.day_flag,t4.minutes,t4.score,t4.remarks,t4.status
-                 from (select id,task_id from ocean_bill where id=#{obId}) t
-                          left join task_group t3 on t3.id = t.task_id
-                          left join bill_task t4 on t4.group_code = t3.group_code
-             ) t
-                 left join (
             select
-                t.id orderId,t.operation_team_id,
-                t2.group_code,t2.group_name,
-                t3.member_user_id,t3.task_id,
-                t4.name userName,
-                t5.task_code,t5.task_name
-            from (select id,operation_team_id from ocean_bill where id=#{obId}) t
-                     left join operation_team t2 on t2.id = t.operation_team_id
-                     left join operation_team_member t3 on t3.operation_team_id = t2.id
-                     left join system_user t4 on t4.id = t3.member_user_id
-                     left join task t5 on t5.id = t3.task_id
+            t.id orderId,t.task_id,
+            t3.group_code,t3.group_name,
+            t4.task_code,t4.task_name,t4.sort,t4.days,t4.day_flag,t4.minutes,t4.score,t4.remarks,t4.status,t4.activation_switch
+            from (select id,task_id from ocean_bill where id=#{obId}) t
+            left join task_group t3 on t3.id = t.task_id
+            left join bill_task t4 on t4.group_code = t3.group_code
+        ) t
+        left join (
+            select
+            t.id orderId,t.operation_team_id,
+            t2.group_code,t2.group_name,
+            t3.member_user_id,t3.task_id,
+            t4.name userName,
+            t5.task_code,t5.task_name
+            from (
+            select
+            DISTINCT t1.id,substring_index( substring_index(t1.operation_team_id,',',t2.id + 1), ',' ,-1 ) as operation_team_id
+            from (select id,operation_team_id from ocean_bill where id=#{obId}) t1
+            join help_index t2 on t2.id <![CDATA[ < ]]> (length(t1.operation_team_id) - length(REPLACE(t1.operation_team_id,',','')) + 1 )
+            ) t
+            join operation_team t2 on t2.id = t.operation_team_id
+            join operation_team_member t3 on t3.operation_team_id = t2.id
+            join system_user t4 on t4.id = t3.member_user_id
+            join task t5 on t5.id = t3.task_id
+        ) t1 on t1.task_code = t.task_code and t1.task_name = t.task_name;
 
-        ) t1 on t1.task_code = t.task_code and t1.task_name = t.task_name
+
+
+    </select>
+
+    <select id="findBillTaskRelevance" parameterType="com.jayud.mall.model.bo.BillTaskRelevanceQueryForm" resultType="com.jayud.mall.model.vo.BillTaskRelevanceVO">
+        select
+        t.id,t.ocean_bill_id,t.task_code,t.task_name,t.sort,t.days,t.day_flag,t.operators,t.minutes,t.score,t.remarks,t.status,t.reason,t.up_time,t.user_id,t.user_name,t.create_time,t.task_last_time,
+        t1.order_id oceanBillNo
+        from bill_task_relevance t
+        join ocean_bill t1 on t1.id = t.ocean_bill_id
+        where 1=1
+        <if test="form.userId != null">
+            and t.user_id = #{form.userId}
+        </if>
+        order by t.ocean_bill_id asc ,t.sort asc
 
     </select>
     
+    <select id="findBillTaskRelevanceById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.BillTaskRelevanceVO">
+        select
+            t.id,t.ocean_bill_id,t.task_code,t.task_name,t.sort,t.days,t.day_flag,t.operators,t.minutes,t.score,t.remarks,t.status,t.reason,t.up_time,t.user_id,t.user_name,t.create_time,t.task_last_time,
+            t1.order_id oceanBillNo
+        from bill_task_relevance t
+                 join ocean_bill t1 on t1.id = t.ocean_bill_id
+        where t.id = #{id}
+    </select>
+
+    <select id="findBillTaskRelevanceByParaMap" parameterType="java.util.Map"
+            resultType="com.jayud.mall.model.po.BillTaskRelevance">
+        select
+            t.id,t.ocean_bill_id,t.task_code,t.task_name,t.sort,t.days,t.day_flag,t.operators,t.minutes,t.score,t.remarks,t.status,t.reason,t.up_time,t.user_id,t.user_name,t.create_time,t.task_last_time
+        from bill_task_relevance t
+                 left join task_execution_rule t1 on t1.to_task_code = t.task_code
+        where 1=1
+          and t.ocean_bill_id = #{paraMap.ocean_bill_id}
+          and t1.from_task_code = #{paraMap.from_task_code}
+    </select>
+
+    <select id="findBillTaskRelevanceByobId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.BillTaskRelevanceVO">
+        select
+        t.id,t.ocean_bill_id,t.task_code,t.task_name,t.sort,t.days,t.day_flag,t.operators,t.minutes,t.score,t.remarks,t.status,t.reason,t.up_time,t.user_id,t.user_name,t.create_time,t.task_last_time,
+        t1.order_id oceanBillNo
+        from bill_task_relevance t
+        join ocean_bill t1 on t1.id = t.ocean_bill_id
+        where 1=1
+        and t.ocean_bill_id = #{obId}
+        order by t.ocean_bill_id asc ,t.sort asc
+    </select>
+
+
 
 </mapper>

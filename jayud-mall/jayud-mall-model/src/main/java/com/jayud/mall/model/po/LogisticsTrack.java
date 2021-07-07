@@ -64,6 +64,9 @@ public class LogisticsTrack extends Model<LogisticsTrack> {
     @JSONField(ordinal = 8)
     private String operatorName;
 
+    @ApiModelProperty(value = "备注")
+    private String remark;
+
 
     @Override
     protected Serializable pkVal() {

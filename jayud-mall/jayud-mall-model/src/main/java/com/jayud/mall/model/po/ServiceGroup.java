@@ -79,6 +79,8 @@ public class ServiceGroup extends Model<ServiceGroup> {
     @JSONField(ordinal = 11, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "是否需要附加费(1需要 2不需要)")
+    private String isNeedFee;
 
     @Override
     protected Serializable pkVal() {

@@ -40,7 +40,6 @@
         t.id,
         t.warehouse_code,
         t.warehouse_name,
-        t.state_code,
         t.contacts,
         t.company_name,
         t.contact_number,
@@ -48,10 +47,7 @@
         t.address_first,
         t.address_second,
         t.address_thirdly,
-        t.pid,
-        t.pname,
-        t.cid,
-        t.cname,
+        t.country_code, t.country_name, t.state_code, t.state_name, t.city_code, t.city_name, t.region_code, t.region_name,
         t.zip_code,
         t.delivery_note,
         t.shipping_mark,
@@ -69,8 +65,11 @@
         <if test="form.warehouseName != null and form.warehouseName != ''">
             AND t.warehouse_name LIKE concat('%',#{form.warehouseName},'%')
         </if>
-        <if test="form.stateCode != null and form.stateCode != ''">
-            AND t.state_code LIKE concat('%',#{form.stateCode},'%')
+        <if test="form.filterIds != null and form.filterIds.size() > 0">
+            AND t.id not in
+            <foreach collection="form.filterIds"  item="item" open="(" separator="," close=")"  >
+                #{item}
+            </foreach>
         </if>
     </select>
 
@@ -78,7 +77,6 @@
         select t.id,
                t.warehouse_code,
                t.warehouse_name,
-               t.state_code,
                t.contacts,
                t.company_name,
                t.contact_number,
@@ -86,10 +84,7 @@
                t.address_first,
                t.address_second,
                t.address_thirdly,
-               t.pid,
-               t.pname,
-               t.cid,
-               t.cname,
+               t.country_code, t.country_name, t.state_code, t.state_name, t.city_code, t.city_name, t.region_code, t.region_name,
                t.zip_code,
                t.delivery_note,
                t.shipping_mark,

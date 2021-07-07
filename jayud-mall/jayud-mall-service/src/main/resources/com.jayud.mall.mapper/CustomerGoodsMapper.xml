@@ -43,10 +43,32 @@
         select
         t.id,t.customer_id,t.sku,t.name_cn,t.name_en,t.image_url,t.barcode,t.weight,t.length,t.width,t.height,t.is_sensitive,t.types,
         t.declared_value,t.declared_currency,t.material_quality,t.purpose,t.declare_elements,t.hs_code,t.data_code,t.clearance_code,t.sales_link,
-        t.sales_price,t.sales_price_currency,t.description,t.`status`,t.status_name,t.remark,
-        t1.company customerName
+        t.sales_price,t.sales_price_currency,t.description,t.`status`,t.status_name,t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid,t.export_country,t.specification,
+        t1.company customerName,
+        (
+        select tt3.is_need_fee
+        from offer_info tt1
+        join quotation_template tt2 on tt2.id = tt1.qie
+        join service_group tt3 on tt3.id = tt2.sid
+        where 1=1
+        <if test="form.offerInfoId != null">
+            and tt1.id = #{form.offerInfoId}
+        </if>
+        ) is_need_fee,
+        t2.unit_price serviceUnitPrice,t2.cid serviceCid,t2.unit serviceUnit
         from customer_goods t
         left join customer t1 on t1.id = t.customer_id
+        left join (
+        select tt4.service_id,tt4.good_id,tt4.unit_price,tt4.cid,tt4.unit
+        from offer_info tt1
+        join quotation_template tt2 on tt2.id = tt1.qie
+        join service_group tt3 on tt3.id = tt2.sid
+        join goods_service_cost tt4 on tt4.service_id = tt3.id
+        where 1=1
+        <if test="form.offerInfoId != null">
+            and tt1.id = #{form.offerInfoId}
+        </if>
+        ) t2 on t2.good_id = t.id
         WHERE
         1 = 1
         <if test="form.customerId != null">
@@ -100,8 +122,10 @@
                t.description,
                t.status,
                t.status_name,
-               t.remark
+               t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid,t.export_country,t.specification,
+               t1.company customerName
         from customer_goods t
+        join customer t1 on t1.id = t.customer_id
         where t.id = #{id}
     </select>
 
@@ -133,7 +157,7 @@
                t.description,
                t.status,
                t.status_name,
-               t.remark
+               t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid,t.export_country,t.specification
         from customer_goods t
         where
             t.customer_id = #{customerId, jdbcType=INTEGER}
@@ -170,7 +194,7 @@
                t.description,
                t.status,
                t.status_name,
-               t.remark
+               t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid,t.export_country,t.specification
         from customer_goods t
         where 1=1
         and t.customer_id = #{newWisdomParam.customerId}
@@ -179,6 +203,46 @@
         and t.material_quality = #{newWisdomParam.materialQuality}
         and t.hs_code = #{newWisdomParam.hscode}
         and t.purpose = #{newWisdomParam.purpose}
+    </select>
+
+
+    <select id="findCustomerGoodsByIds" parameterType="java.util.List" resultType="com.jayud.mall.model.vo.CustomerGoodsVO">
+        select t.id,
+               t.customer_id,
+               t.sku,
+               t.name_cn,
+               t.name_en,
+               t.image_url,
+               t.barcode,
+               t.weight,
+               t.length,
+               t.width,
+               t.height,
+               t.is_sensitive,
+               t.types,
+               t.declared_value,
+               t.declared_currency,
+               t.material_quality,
+               t.purpose,
+               t.declare_elements,
+               t.hs_code,
+               t.data_code,
+               t.clearance_code,
+               t.sales_link,
+               t.sales_price,
+               t.sales_price_currency,
+               t.description,
+               t.status,
+               t.status_name,
+               t.remark,t.brand,t.loss_compensation_amount,t.lca_cid,t.is_valid,t.export_country,t.specification,
+               t1.company customerName
+        from customer_goods t
+        join customer t1 on t1.id = t.customer_id
+        where 1=1
+        and t.id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")"  >
+            #{id}
+        </foreach>
     </select>
 
 

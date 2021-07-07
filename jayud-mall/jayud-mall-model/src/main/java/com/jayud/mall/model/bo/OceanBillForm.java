@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +15,9 @@ import java.util.List;
 @Data
 @ApiModel(value = "提单")
 public class OceanBillForm {
+
+    @ApiModelProperty("配载id(order_conf id)")
+    private Long orderConfId;
 
     @ApiModelProperty(value = "自增加id", position = 1)
     @TableId(value = "id", type = IdType.AUTO)
@@ -29,7 +31,7 @@ public class OceanBillForm {
 
     @ApiModelProperty(value = "供应商id(supplier_info id)", position = 3)
     @JSONField(ordinal = 3)
-    @NotNull(message = "供应商必填")
+//    @NotNull(message = "供应商必填")
     private Integer supplierId;
 
     @ApiModelProperty(value = "提单号(供应商提供)", position = 4)
@@ -73,10 +75,10 @@ public class OceanBillForm {
     @NotNull(message = "任务分组必填")
     private Integer taskId;
 
-    @ApiModelProperty(value = "运营(服务)小组id(operation_team id)", position = 12)
+    @ApiModelProperty(value = "运营(服务)小组id(operation_team id),多个用逗号分隔", position = 12)
     @JSONField(ordinal = 12)
     @NotNull(message = "运营小组必填")
-    private Integer operationTeamId;
+    private List<Integer> operationTeamId;
 
     @ApiModelProperty(value = "创建用户id(system_user id)", position = 13)
     @JSONField(ordinal = 13)
@@ -86,10 +88,20 @@ public class OceanBillForm {
     @JSONField(ordinal = 14)
     private String userName;
 
+    @ApiModelProperty(value = "提单名称")
+    private String billName;
+
+    @ApiModelProperty(value = "提单备注")
+    private String billRemark;
+
     //1提单对应1货柜，(PS:之前是1提单对应N货柜，现在还是用list，不改了，限制list的大小为1)
     @ApiModelProperty(value = "提单对应货柜信息list(PS:之前是1提单对应N货柜，现在还是用list，不改了，限制list的大小为1)", position = 15, required = true)
     @JSONField(ordinal = 15)
-    @NotEmpty(message = "提单对应货柜信息list必填")
+    //@NotEmpty(message = "提单对应货柜信息list必填") 非必填
     private List<OceanCounterForm> oceanCounterForms;
+
+
+    @ApiModelProperty(value = "费用信息")
+    private List<FeeCopeWithForm> feeCopeWithList;
 
 }

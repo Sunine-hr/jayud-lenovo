@@ -65,11 +65,18 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
     IPage<OrderInfoVO> findWebOrderInfoByPage(Page<OrderInfoVO> page, @Param("form") QueryOrderInfoForm form);
 
     /**
-     * web端分页查询订单列表(统计草稿)
+     * web端分页查询订单列表 前端统计状态
      * @param form
      * @return
      */
     Long findOrderInfoDraftCount(@Param("form") QueryOrderInfoForm form);
+
+    /**
+     * 后端统计状态
+     * @param form
+     * @return
+     */
+    Long findOrderInfoAfterCount(@Param("form") QueryOrderInfoForm form);
 
     /**
      * 根据订单id，查询订单配载信息
@@ -119,4 +126,11 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return
      */
     OrderInfoVO findOrderInfoByOrderNo(@Param("orderNo") String orderNo);
+
+    /**
+     * 根据配载id，查询订单
+     * @param confId
+     * @return
+     */
+    List<OrderInfoVO> findOrderInfoByConfId(@Param("confId") Long confId);
 }

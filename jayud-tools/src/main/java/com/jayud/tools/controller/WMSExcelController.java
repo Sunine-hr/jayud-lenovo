@@ -207,16 +207,28 @@ public class WMSExcelController {
     @ApiOperation(value = "WMS，easyexcel导出，excel")
     @GetMapping("/exportExcel2")
     @ApiOperationSupport(order = 3)
-    public void exportExcel2(@RequestParam(value = "userId",required=false) Long userId, HttpServletRequest request, HttpServletResponse response) {
+    public void exportExcel2(
+            @RequestParam(value = "userId",required=false) Long userId,
+            @RequestParam(value = "selectCompany",required=false) Long selectCompany,
+            HttpServletRequest request, HttpServletResponse response) {
         try {
-            userId = (userId != null) ? userId : 1;//userId,不存在，设置为1
+            userId = (userId != null) ? userId : 1L;//userId,不存在，设置为1
+            selectCompany = (selectCompany != null) ? selectCompany : 1L;//选择公司1 鸿隆汇  2 博亚通
+
+            //公司名称
+            String companyName = "";
+            if(selectCompany.equals(1L)){
+                //1 鸿隆汇
+                companyName = "深圳鸿隆汇供应链管理有限公司";
+            }else if(selectCompany.equals(2L)){
+                //2 博亚通
+                companyName = "深圳博亚通供应链管理有限公司";
+            }
+
             //导出的数据
             String json = redisUtils.get(EXPORTWMSDATALIST+"_"+userId);
 
             JSONArray jsonArray = JSONArray.parseArray(json);
-
-            //String templateFileName = URLDecoder.decode(this.getClass().getClassLoader().getResource("template_data/model2.xlsx").getPath(), "utf-8");
-            //XSSFWorkbook templateWorkbook = new XSSFWorkbook(new FileInputStream(templateFileName));
 
             ClassPathResource classPathResource = new ClassPathResource("template_data/model2.xlsx");
             InputStream inputStream = classPathResource.getInputStream();
@@ -247,6 +259,10 @@ public class WMSExcelController {
             for (int i = 0; i < templateWorkbook.getNumberOfSheets(); i++) {
                 WriteSheet sheet = EasyExcel.writerSheet(i).build();
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                //设置 公司名称
+                jsonObject.put("companyName",companyName);
+
                 excelWriter.fill(jsonObject.getJSONArray("details"), fillConfig, sheet);
                 excelWriter.fill(jsonObject, sheet);
             }

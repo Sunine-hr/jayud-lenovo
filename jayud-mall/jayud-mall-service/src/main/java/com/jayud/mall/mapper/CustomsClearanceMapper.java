@@ -29,4 +29,11 @@ public interface CustomsClearanceMapper extends BaseMapper<CustomsClearance> {
      * @return
      */
     IPage<CustomsClearanceVO> findCustomsClearanceByPage(Page<CustomsClearanceVO> page,@Param("form") QueryCustomsClearanceForm form);
+
+    /**
+     * 根据id，查询
+     * @param id
+     * @return
+     */
+    CustomsClearanceVO findCustomsClearanceById(@Param("id") Long id);
 }

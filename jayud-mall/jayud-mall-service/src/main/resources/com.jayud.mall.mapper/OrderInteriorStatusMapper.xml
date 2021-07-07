@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OrderInteriorStatusMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OrderInteriorStatus">
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="order_no" property="orderNo" />
+        <result column="main_status_type" property="mainStatusType" />
+        <result column="main_status_code" property="mainStatusCode" />
+        <result column="main_status_name" property="mainStatusName" />
+        <result column="interior_status_code" property="interiorStatusCode" />
+        <result column="interior_status_name" property="interiorStatusName" />
+        <result column="status_flag" property="statusFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_id, order_no, main_status_type, main_status_code, main_status_name, interior_status_code, interior_status_name, status_flag
+    </sql>
+
+    <select id="findOrderInteriorStatusByMapParm" parameterType="java.util.Map" resultType="com.jayud.mall.model.vo.OrderInteriorStatusVO">
+        select
+        t.id,t.order_id,t.order_no,t.main_status_type,t.main_status_code,t.main_status_name,t.interior_status_code,t.interior_status_name,t.status_flag
+        from order_interior_status t
+        where 1=1
+        and t.order_id = #{mapParm.order_id}
+        and t.order_no = #{mapParm.order_no}
+        and t.main_status_type = #{mapParm.main_status_type}
+        and t.main_status_code = #{mapParm.main_status_code}
+        and t.interior_status_code = #{mapParm.interior_status_code}
+    </select>
+
+    <select id="findOrderInteriorStatusByOrderIdAndCode" parameterType="com.jayud.mall.model.bo.OrderInteriorStatusQueryForm"
+            resultType="com.jayud.mall.model.vo.OrderInteriorStatusVO">
+        select
+            t.id,t.order_id,t.order_no,t.main_status_type,t.main_status_code,t.main_status_name,t.interior_status_code,t.interior_status_name,t.status_flag
+        from order_interior_status t
+        where 1=1
+        <if test="form.orderId != null">
+            and t.order_id = #{form.orderId}
+        </if>
+        <if test="form.interiorStatusCode != null and form.interiorStatusCode != ''">
+            and t.interior_status_code = #{form.interiorStatusCode}
+        </if>
+    </select>
+
+    <select id="findOrderInteriorStatusById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderInteriorStatusVO">
+        select
+            t.id,t.order_id,t.order_no,t.main_status_type,t.main_status_code,t.main_status_name,t.interior_status_code,t.interior_status_name,t.status_flag
+        from order_interior_status t
+        where 1=1
+        and t.id = #{id}
+    </select>
+
+</mapper>

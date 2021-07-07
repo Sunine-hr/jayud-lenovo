@@ -37,4 +37,11 @@
         where status = 1
     </select>
 
+    <select id="findQuotedFileById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.po.QuotedFile">
+        select
+            t.id,t.types,t.group_code,t.group_name,t.id_code,t.file_name,t.options,t.is_check,t.template_url,t.`describe`,t.status,t.create_time
+        from quoted_file t
+        where t.id = #{id}
+    </select>
+
 </mapper>

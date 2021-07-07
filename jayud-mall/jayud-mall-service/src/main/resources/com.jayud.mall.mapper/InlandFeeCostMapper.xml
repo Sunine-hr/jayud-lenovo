@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.InlandFeeCostMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.InlandFeeCost">
+        <id column="id" property="id" />
+        <result column="cost_code" property="costCode" />
+        <result column="cost_name" property="costName" />
+        <result column="from_country" property="fromCountry" />
+        <result column="from_province" property="fromProvince" />
+        <result column="from_city" property="fromCity" />
+        <result column="from_region" property="fromRegion" />
+        <result column="to_country" property="toCountry" />
+        <result column="to_province" property="toProvince" />
+        <result column="to_city" property="toCity" />
+        <result column="to_region" property="toRegion" />
+        <result column="unit_price" property="unitPrice" />
+        <result column="cid" property="cid" />
+        <result column="unit" property="unit" />
+        <result column="status" property="status" />
+        <result column="remark" property="remark" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, cost_code, cost_name, from_country, from_province, from_city, from_region, to_country, to_province, to_city, to_region, unit_price, cid, unit, status, remark
+    </sql>
+
+    <select id="findInlandFeeCostByPage" parameterType="com.jayud.mall.model.bo.QueryInlandFeeCostForm" resultType="com.jayud.mall.model.vo.InlandFeeCostVO">
+        select
+        t.id,t.cost_code,t.cost_name,t.from_country,t.from_province,t.from_city,t.from_region,t.to_country,t.to_province,t.to_city,t.to_region,t.unit_price,t.cid,t.unit,t.status,t.remark
+        from inland_fee_cost t
+        where 1=1
+        <if test="form.costCode != null and form.costCode != ''">
+            and t.cost_code = #{form.costCode}
+        </if>
+        <if test="form.costName != null and form.costName != ''">
+            and t.cost_name = #{form.costName}
+        </if>
+        <if test="form.fromCountry != null and form.fromCountry != ''">
+            and t.from_country = #{form.fromCountry}
+        </if>
+        <if test="form.fromProvince != null and form.fromProvince != ''">
+            and t.from_province = #{form.fromProvince}
+        </if>
+        <if test="form.fromCity != null and form.fromCity != ''">
+            and t.from_city = #{form.fromCity}
+        </if>
+        <if test="form.fromRegion != null and form.fromRegion != ''">
+            and t.from_region = #{form.fromRegion}
+        </if>
+        <if test="form.toCountry != null and form.toCountry != ''">
+            and t.to_country = #{form.toCountry}
+        </if>
+        <if test="form.toProvince != null and form.toProvince != ''">
+            and t.to_province = #{form.toProvince}
+        </if>
+        <if test="form.toCity != null and form.toCity != ''">
+            and t.to_city = #{form.toCity}
+        </if>
+        <if test="form.toRegion != null and form.toRegion != ''">
+            and t.to_region = #{form.toRegion}
+        </if>
+    </select>
+
+    <select id="findInlandFeeCostById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.InlandFeeCostVO">
+        select
+            t.id,t.cost_code,t.cost_name,t.from_country,t.from_province,t.from_city,t.from_region,t.to_country,t.to_province,t.to_city,t.to_region,t.unit_price,t.cid,t.unit,t.status,t.remark
+        from inland_fee_cost t
+        where 1=1
+          and t.id = #{id}
+    </select>
+
+    <select id="findInlandFeeCostByPara" parameterType="java.util.Map" resultType="com.jayud.mall.model.vo.InlandFeeCostVO">
+        select
+            id, cost_code, cost_name, from_country, from_province, from_city, from_region, to_country, to_province, to_city, to_region, unit_price, cid, unit, status, remark
+        from inland_fee_cost
+        where 1=1
+          and from_country = #{paraMap.from_country}
+          and from_province = #{paraMap.from_province}
+          and from_city = #{paraMap.from_city}
+          and from_region = #{paraMap.from_region}
+          and to_country= #{paraMap.to_country}
+          and to_province = #{paraMap.to_province}
+          and to_city = #{paraMap.to_city}
+          and to_region = #{paraMap.to_region}
+          and unit = #{paraMap.unit}
+    </select>
+
+
+</mapper>

@@ -71,8 +71,8 @@ public class AccountReceivableServiceImpl extends ServiceImpl<AccountReceivableM
         page.addOrder(OrderItem.desc("t.id"));
         IPage<AccountReceivableVO> pageInfo = accountReceivableMapper.findAccountReceivableByPage(page, form);
 
-        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
         //将币种信息转换为map，城市cid为键，币种信息为值
+        List<CurrencyInfoVO> currencyInfoVOList = currencyInfoMapper.allCurrencyInfo();
         Map<Long, CurrencyInfoVO> cidMap = currencyInfoVOList.stream().collect(Collectors.toMap(CurrencyInfoVO::getId, c -> c));
 
         List<AccountReceivableVO> records = pageInfo.getRecords();
@@ -415,7 +415,7 @@ public class AccountReceivableServiceImpl extends ServiceImpl<AccountReceivableM
             //1.保存应收对账单
             AccountReceivable accountReceivable = new AccountReceivable();
             accountReceivable.setDzdNo(dzdNo);//对账单编号
-            accountReceivable.setLegalPersonId(Long.valueOf(legalPersonId));//法人id(legal_person id)
+            accountReceivable.setLegalPersonId(Long.valueOf(legalPersonId));//法人主体id(legal_entity id)
             accountReceivable.setCustomerId(Integer.valueOf(customerId));//客户ID(customer id)
             accountReceivable.setPaymentDaysStart(firstday);//账期开始时间
             accountReceivable.setPaymentDaysEnd(lastDay);//账期结束时间

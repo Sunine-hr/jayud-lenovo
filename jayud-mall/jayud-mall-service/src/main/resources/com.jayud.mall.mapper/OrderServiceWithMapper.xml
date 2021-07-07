@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.OrderServiceWithMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.OrderServiceWith">
+        <id column="id" property="id" />
+        <result column="qie" property="qie" />
+        <result column="cost_code" property="costCode" />
+        <result column="cost_name" property="costName" />
+        <result column="supplier_id" property="supplierId" />
+        <result column="service_id" property="serviceId" />
+        <result column="calculate_way" property="calculateWay" />
+        <result column="count" property="count" />
+        <result column="unit" property="unit" />
+        <result column="source" property="source" />
+        <result column="unit_price" property="unitPrice" />
+        <result column="cid" property="cid" />
+        <result column="amount" property="amount" />
+        <result column="remarks" property="remarks" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, qie, cost_code, cost_name, supplier_id, service_id, calculate_way, count, unit, source, unit_price, cid, amount, remarks
+    </sql>
+
+    <select id="findOrderServiceWithByQie" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderServiceWithVO">
+        select
+        t.id,t.qie,t.cost_code,t.cost_name,t.supplier_id,t.service_id,t.calculate_way,t.count,t.unit,t.source,t.unit_price,t.cid,t.amount,t.remarks,
+        t1.supplier_code supplierCode,t1.company_name supplierName
+        from order_service_with t
+        left join supplier_info t1 on t1.id = t.supplier_id
+        where 1=1
+        and t.qie = #{qie}
+    </select>
+
+    <select id="findOrderServiceWithByQieAndNotIds" resultType="java.lang.Long">
+        select
+        t.id
+        from order_service_with t
+        where 1=1
+        and t.qie = #{qie,jdbcType=BIGINT}
+        <if test="reserveOrderServiceWithIds != null and reserveOrderServiceWithIds.size>0">
+            and t.id not in
+            <foreach collection="reserveOrderServiceWithIds" item="orderServiceWithId" open="(" separator="," close=")">
+                #{orderServiceWithId}
+            </foreach>
+        </if>
+    </select>
+
+
+
+</mapper>

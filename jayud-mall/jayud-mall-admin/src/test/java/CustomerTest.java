@@ -21,7 +21,7 @@ public class CustomerTest {
         form.setId(1);
         form.setAuditStatus(1);
         form.setSalesmanId(149);
-        form.setOperationTeamId(1L);
+//        form.setOperationTeamId(1L);
         form.setRemark("这个是我`吴提柜`审核的哈~");
         TestUtils.JSONObjectPrint(form);
     }
@@ -32,7 +32,7 @@ public class CustomerTest {
         form.setId(3);
         form.setAuditStatus(1);//1审核通过
         form.setSalesmanId(1);
-        form.setOperationTeamId(1L);
+//        form.setOperationTeamId(1L);
         form.setRemark("审核备注A");
         TestUtils.JSONObjectPrint(form);
     }

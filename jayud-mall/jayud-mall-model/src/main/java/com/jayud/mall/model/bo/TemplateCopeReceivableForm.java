@@ -67,4 +67,5 @@ public class TemplateCopeReceivableForm {
     @JSONField(ordinal = 12)
     private String remarks;
 
+
 }

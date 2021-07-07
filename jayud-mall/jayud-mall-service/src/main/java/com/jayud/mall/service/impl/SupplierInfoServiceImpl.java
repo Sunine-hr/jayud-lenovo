@@ -1,5 +1,6 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -7,6 +8,8 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.SupplierInfoMapper;
 import com.jayud.mall.mapper.SupplierServeMapper;
@@ -82,6 +85,8 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     @Transactional(rollbackFor = Exception.class)
     public CommonResult saveSupplierInfo(SupplierInfoForm form) {
         SupplierInfo supplierInfo = ConvertUtil.convert(form, SupplierInfo.class);
+        String companyName = form.getCompanyName();
+
         Long id = form.getId();
         if(id == null){
             //新增
@@ -93,6 +98,22 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             supplierInfo.setUserId(user.getId().intValue());
             supplierInfo.setUserName(user.getName());
             supplierInfo.setCreateTime(LocalDateTime.now());
+
+            QueryWrapper<SupplierInfo> qw = new QueryWrapper<>();
+            qw.eq("company_name", companyName);
+            List<SupplierInfo> list = this.list(qw);
+            if(CollUtil.isNotEmpty(list)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "公司名称不能重复");
+            }
+
+        }else{
+            QueryWrapper<SupplierInfo> qw = new QueryWrapper<>();
+            qw.ne("id", id);
+            qw.eq("company_name", companyName);
+            List<SupplierInfo> list = this.list(qw);
+            if(CollUtil.isNotEmpty(list)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "公司名称不能重复");
+            }
         }
         //1.保存供应商
         this.saveOrUpdate(supplierInfo);

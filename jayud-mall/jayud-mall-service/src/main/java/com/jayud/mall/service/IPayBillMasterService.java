@@ -9,6 +9,8 @@ import com.jayud.mall.model.bo.QueryPayBillMasterForm;
 import com.jayud.mall.model.po.PayBillMaster;
 import com.jayud.mall.model.vo.PayBillMasterVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 应付账单主单 服务类
@@ -46,4 +48,11 @@ public interface IPayBillMasterService extends IService<PayBillMaster> {
      * @return
      */
     CommonResult<PayBillMasterVO> lookDetail(Long id);
+
+    /**
+     * 根据订单id，查询应付账单list
+     * @param orderId
+     * @return
+     */
+    List<PayBillMasterVO> findPayBillMasterByOrderId(Long orderId);
 }

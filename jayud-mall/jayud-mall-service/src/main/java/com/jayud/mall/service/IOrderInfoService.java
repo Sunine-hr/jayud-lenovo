@@ -1,13 +1,17 @@
 package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.mall.model.bo.*;
+import com.jayud.mall.model.po.OrderClearanceFile;
+import com.jayud.mall.model.po.OrderCustomsFile;
 import com.jayud.mall.model.po.OrderInfo;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.mall.model.vo.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -117,6 +121,22 @@ public interface IOrderInfoService extends IService<OrderInfo> {
     CommonResult<OrderInfoVO> lookOrderInfoDetails(Long id);
 
     /**
+     * 获取订单报关文件list
+     * @param orderInfo
+     * @param offerInfoId
+     * @return
+     */
+    List<OrderCustomsFile> getOrderCustomsFiles(OrderInfo orderInfo, Integer offerInfoId);
+
+    /**
+     * 获取订单清关文件list
+     * @param orderInfo
+     * @param offerInfoId
+     * @return
+     */
+    List<OrderClearanceFile> getOrderClearanceFiles(OrderInfo orderInfo, Integer offerInfoId);
+
+    /**
      * 订单下单-暂存订单
      * @param form
      * @return
@@ -135,7 +155,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param form
      * @return
      */
-    CommonResult<OrderInfoVO> draftCancelOrderInfo(OrderInfoForm form);
+    CommonResult<OrderInfoVO> draftCancelOrderInfo(OrderInfoParaForm form);
 
     /**
      * 订单列表-查看订单详情(编辑用的)<br/>
@@ -163,11 +183,18 @@ public interface IOrderInfoService extends IService<OrderInfo> {
     IPage<OrderInfoVO> findWebOrderInfoByPage(QueryOrderInfoForm form);
 
     /**
-     * web端分页查询订单列表(统计草稿)
+     * web端分页查询订单列表 前端状态统计
      * @param form
      * @return
      */
-    Long findOrderInfoDraftCount(QueryOrderInfoForm form);
+    Map<String,Long> findOrderInfoDraftCount(QueryOrderInfoForm form);
+
+    /**
+     * 后端统计状态数据
+     * @param form
+     * @return
+     */
+    Map<String,Long> findOrderInfoAfterCount(QueryOrderInfoForm form);
 
     /**
      * 订单详情-打印唛头（打印订单箱号）
@@ -249,4 +276,102 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     CommonResult<OrderInfoVO> newEditOrderInfo(OrderInfoNewForm form);
+
+    /**
+     * 后台-订单确认
+     * @param id
+     * @return
+     */
+    OrderInfoVO afterAffirm(Long id);
+
+    /**
+     * 补充资料操作
+     * @param form
+     */
+    void fillMaterial(OrderInfoFillForm form);
+
+    /**
+     * 订单-仓库收货(订单箱号收货)
+     * @param form
+     */
+    void orderCaseReceipt(OrderCaseReceiptForm form);
+
+    /**
+     * 订单 - 保存物流轨迹
+     * @param form
+     */
+    void saveTrackNotice(OrderTrackNoticeForm form);
+
+    /**
+     * 确认计费重信息
+     * @param form
+     */
+    void affirmCounterWeightInfo(IsConfirmBillingForm form);
+
+    /**
+     * 查询订单计费重状态
+     * @param orderId
+     * @return
+     */
+    IsConfirmBillingVO findOrderIsConfirmBilling(Long orderId);
+
+    /**
+     * 查询，订单是否审核单据状态
+     * @param orderId
+     * @return
+     */
+    IsAuditOrderVO findOrderIsAuditOrder(Long orderId);
+
+    /**
+     * 审核，订单内部状态(是否审核单据)
+     * @param form
+     */
+    void auditOrderIsAuditOrder(IsAuditOrderForm form);
+
+    /**
+     * 后台-确认收货
+     * @param id
+     * @return
+     */
+    OrderInfoVO affirmReceived(Long id);
+
+    /**
+     * 订单-取消按钮前验证
+     * @param form
+     */
+    void cancelStatusVerify(OrderInfoCancelForm form);
+
+    /**
+     * 使用新智慧Excel，修改订单箱子的数据
+     * @param orderId 订单id
+     * @param file 新智慧Excel
+     * @return
+     */
+    OrderInfoVO importExcelUpdateCaseByNewWisdom(Long orderId, MultipartFile file);
+
+    /**
+     * 后台-订单签收
+     * @param id
+     * @return
+     */
+    OrderInfoVO afterSigned(Long id);
+
+    /**
+     * 导入订单箱号,修改
+     * @param list
+     */
+    void importExcelByOrderCase(List<OrderCaseVO> list);
+
+    /**
+     * 查询订单商品装箱信息list
+     * @param orderId
+     * @return
+     */
+    List<OrderCaseVO> findOrderCaseByOrderId(Long orderId);
+
+    /**
+     * 试算费用，修改订单状态
+     * @param orderId
+     */
+    void calcOrderCopeReceivableUpdataStatus(Long orderId);
 }

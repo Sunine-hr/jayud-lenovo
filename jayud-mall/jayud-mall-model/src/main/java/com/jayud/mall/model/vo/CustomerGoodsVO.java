@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class CustomerGoodsVO {
@@ -124,6 +125,24 @@ public class CustomerGoodsVO {
     @JSONField(ordinal = 28)
     private String remark;
 
+    @ApiModelProperty(value = "品牌")
+    private String brand;
+
+    @ApiModelProperty(value = "丢货赔偿金额")
+    private BigDecimal lossCompensationAmount;
+
+    @ApiModelProperty(value = "丢货赔偿金额币种(currency_info id)")
+    private Integer lcaCid;
+
+    @ApiModelProperty(value = "是否有效(0无效 1有效)")
+    private Integer isValid;
+
+    @ApiModelProperty(value = "出口国家(country code)")
+    private String exportCountry;
+
+    @ApiModelProperty(value = "规格型号")
+    private String specification;
+
     /*客户名称*/
     @ApiModelProperty(value = "客户名称", position = 29)
     @JSONField(ordinal = 29)
@@ -133,4 +152,40 @@ public class CustomerGoodsVO {
     @ApiModelProperty(value = "商品类型名称", position = 30)
     @JSONField(ordinal = 30)
     private String typesName;
+
+    //商品服务费用
+    @ApiModelProperty(value = "商品服务费用list")
+    private List<GoodsServiceCostVO> goodsServiceCostList;
+
+    @ApiModelProperty(value = "是否需要附加费(1需要 2不需要)")
+    private String isNeedFee;
+
+    @ApiModelProperty(value = "商品服务的单价,附加费")
+    private String serviceUnitPrice;
+
+    @ApiModelProperty(value = "商品服务的币种(currency_info id)")
+    private Integer serviceCid;
+
+    @ApiModelProperty(value = "商品服务的单位(1公斤 2方 3票 4柜)")
+    private Integer serviceUnit;
+
+
+    //商品关联信息
+    //商品报关申报价值
+    @ApiModelProperty(value = "商品报关申报价值")
+    private List<GoodsCustomsValueVO> goodsCustomsValueList;
+
+    //商品清关申报价值
+    @ApiModelProperty(value = "商品清关申报价值")
+    private List<GoodsClearanceValueVO> goodsClearanceValueList;
+
+    //商品报关文件列表
+    @ApiModelProperty(value = "商品报关文件列表")
+    private List<GoodsCustomsFileVO> goodsCustomsFileList;
+
+    //商品清关文件列表
+    @ApiModelProperty(value = "商品清关文件列表")
+    private List<GoodsClearanceFileVO> goodsClearanceFileList;
+
+
 }

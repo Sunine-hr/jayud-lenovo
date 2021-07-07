@@ -1,22 +1,28 @@
 package com.jayud.mall.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
+import com.jayud.common.RedisUtils;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.mall.mapper.CustomerMapper;
 import com.jayud.mall.model.bo.*;
 import com.jayud.mall.model.po.Customer;
 import com.jayud.mall.model.vo.CustomerVO;
 import com.jayud.mall.model.vo.domain.AuthUser;
+import com.jayud.mall.model.vo.domain.CustomerUser;
 import com.jayud.mall.service.BaseService;
 import com.jayud.mall.service.ICustomerService;
 import com.jayud.mall.service.INumberGeneratedService;
 import com.jayud.mall.utils.NumberGeneratedUtils;
-import com.jayud.mall.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -52,6 +58,17 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         //定义排序规则
         page.addOrder(OrderItem.asc("t.id"));
         IPage<CustomerVO> pageInfo = customerMapper.findCustomerByPage(page, form);
+        return pageInfo;
+
+    }
+
+    @Override
+    public IPage<CustomerVO> findAuthCustomerByPage(QueryCustomerForm form) {
+        //定义分页参数
+        Page<CustomerVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        page.addOrder(OrderItem.asc("t.id"));
+        IPage<CustomerVO> pageInfo = customerMapper.findAuthCustomerByPage(page, form);
         return pageInfo;
 
     }
@@ -93,6 +110,21 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Transactional(rollbackFor = Exception.class)
     public CommonResult<CustomerVO> auditCustomer(CustomerAuditForm form) {
         Customer customer = ConvertUtil.convert(form, Customer.class);
+
+        List<Long> operationTeamIds = form.getOperationTeamId();
+        String operationTeamId = "";
+        if(CollUtil.isNotEmpty(operationTeamIds)){
+            for(int i=0; i<operationTeamIds.size(); i++){
+                Long id = operationTeamIds.get(i);
+                if(i==0){
+                    operationTeamId = id.toString();
+                }else{
+                    operationTeamId += ","+id.toString();
+                }
+            }
+        }
+        customer.setOperationTeamId(operationTeamId);
+
         AuthUser user = baseService.getUser();
         customer.setAuditUserId(user.getId().intValue());//审核人
         customer.setAuditTime(LocalDateTime.now());//审核时间
@@ -234,6 +266,59 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     public CustomerVO customerLogin(CustomerLoginForm form) {
         CustomerVO customerVO = customerMapper.customerLogin(form);
         return customerVO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String resetPasswords(CustomerParaForm form) {
+        //随机字符选取的样本
+        String baseString = RandomUtil.BASE_CHAR_NUMBER + "@&";
+        //获得一个随机的字符串 8位
+        String random = RandomUtil.randomString(baseString, 8);
+
+        Integer id = form.getId();
+        CustomerVO customerVO = customerMapper.findCustomerById(id);
+        if(ObjectUtil.isEmpty(customerVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "客户不存在");
+        }
+        Customer customer = ConvertUtil.convert(customerVO, Customer.class);
+
+        //BCryptPasswordEncoder 加密
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        String password = bcryptPasswordEncoder.encode(random.trim());
+        customer.setPasswd(password);
+        this.saveOrUpdate(customer);
+
+        return random;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updatePasswords(CustomerUpdatePwdForm form) {
+        CustomerUser customerUser = baseService.getCustomerUser();
+        if(ObjectUtil.isEmpty(customerUser)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "客户失效，请重新登录。");
+        }
+        Integer id = customerUser.getId();
+        CustomerVO customerVO = customerMapper.findCustomerById(id);
+        if(ObjectUtil.isEmpty(customerVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "没有找到这个客户。");
+        }
+        String passwd = form.getPasswd();
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        //判断条件
+        if (!bcryptPasswordEncoder.matches(passwd,customerVO.getPasswd())){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "旧密码输入错误");
+        }
+        String newPasswd = form.getNewPasswd();
+        String affirmPasswd = form.getAffirmPasswd();
+        if(!newPasswd.equals(affirmPasswd)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "两次的输入的密码不一致");
+        }
+        String passwordCode = bcryptPasswordEncoder.encode(newPasswd);
+        Customer customer = ConvertUtil.convert(customerVO, Customer.class);
+        customer.setPasswd(passwordCode);
+        this.saveOrUpdate(customer);
     }
 
 

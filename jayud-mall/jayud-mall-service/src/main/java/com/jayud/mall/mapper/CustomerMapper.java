@@ -34,6 +34,14 @@ public interface CustomerMapper extends BaseMapper<Customer> {
     IPage<CustomerVO> findCustomerByPage(Page<CustomerVO> page, @Param("form") QueryCustomerForm form);
 
     /**
+     *
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<CustomerVO> findAuthCustomerByPage(Page<CustomerVO> page, @Param("form") QueryCustomerForm form);
+
+    /**
      * 客户登录
      * @param form
      * @return

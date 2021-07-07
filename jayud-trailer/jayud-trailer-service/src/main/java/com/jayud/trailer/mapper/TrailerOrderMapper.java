@@ -48,4 +48,5 @@ public interface TrailerOrderMapper extends BaseMapper<TrailerOrder> {
     List<TrailerOrderInfoVO> getTrailerInfoByMainOrderNos(@Param("mainOrderNos") List<String> mainOrderNos);
 
     Integer getNumByStatus(@Param("status") String status, @Param("legalIds") List<Long> legalIds);
+
 }

@@ -24,7 +24,7 @@
     <select id="findOceanBillByPage" parameterType="com.jayud.mall.model.bo.QueryOceanBillForm"
             resultType="com.jayud.mall.model.vo.OceanBillVO" >
         select
-        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,
+        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,t.bill_name,t.bill_remark,
         t1.code_name tname,
         t2.company_name supplierName,
         t3.code_name startName,
@@ -65,7 +65,7 @@
 
     <select id="billLadingCost" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OceanBillVO">
         select
-            t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,
+            t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,t.bill_name,t.bill_remark,
             t1.code_name tname,
             t2.company_name supplierName,
             t3.code_name startName,
@@ -110,7 +110,7 @@
 
     <select id="findOceanBillById" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OceanBillVO">
         select
-        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,
+        t.id,t.tid,t.supplier_id,t.order_id,t.start_code,t.end_code,t.sail_time,t.voyage_day,t.unit,t.create_time,t.task_id,t.operation_team_id,t.user_id,t.user_name,t.bill_name,t.bill_remark,
         t1.code_name tname,
         t2.company_name supplierName,
         t3.code_name startName,
@@ -159,6 +159,102 @@
         ) t
         order by t.up_time desc
 
+    </select>
+
+    <select id="findBillClearanceInfoByBillId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.BillClearanceInfoVO">
+        select t.id,
+               t.bill_id,
+               t.bill_no,
+               t.file_name,
+               t.template_url,
+               t.describes,
+               t.cartons,
+               t.status,
+               t.user_id,
+               t.user_name,
+               t.create_time,
+               t.type
+        from bill_clearance_info t
+        where t.bill_id = #{billId}
+
+    </select>
+
+
+    <select id="findBillCustomsInfoByBillId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.BillCustomsInfoVO">
+        select t.id,
+               t.bill_id,
+               t.bill_no,
+               t.file_name,
+               t.template_url,
+               t.describes,
+               t.cartons,
+               t.status,
+               t.user_id,
+               t.user_name,
+               t.create_time,
+               t.type
+        from bill_customs_info t
+        where t.bill_id = #{billId}
+
+    </select>
+
+    <select id="findOceanCounterByObId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OceanCounterVO">
+        select t.id,
+               t.cntr_no,
+               t.cabinet_code,
+               t.volume,
+               t.cost,
+               t.cid,
+               t.status,
+               t.ob_id,
+               t.create_time
+        from ocean_counter t
+        where t.ob_id = #{obId}
+    </select>
+
+    <select id="findConfCaseByPage" parameterType="com.jayud.mall.model.bo.ConfCaseForm" resultType="com.jayud.mall.model.vo.ConfCaseVO">
+        select
+            t.id as case_id,t.carton_no,t.asn_weight,t.asn_volume,
+            t1.order_no,t1.need_declare,t1.need_clearance,t1.customer_id,
+            t2.company as customerName
+        from order_case t
+        join order_info t1 on t1.id = t.order_id
+        join customer t2 on t2.id = t1.customer_id
+        join offer_info t3 on t3.id = t1.offer_info_id
+        join ocean_conf_detail t4 on t4.id_code = t3.id and t4.types = 1
+        join order_conf t5 on t5.id = t4.order_id
+        where t5.id = #{form.confId}
+        <if test="form.cartonNo != null and form.cartonNo != ''">
+            and t.carton_no = #{form.cartonNo}
+        </if>
+        <if test="form.orderNo != null and form.orderNo != ''">
+            and t1.order_no = #{form.orderNo}
+        </if>
+    </select>
+
+    <select id="findOrderConfByBillId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.OrderConfVO">
+        select
+        t.id,t.order_no,t.tid,t.destination_country_code,t.user_id,t.user_name,t.create_time,t.conf_name,t.remark,t.status_code,t.status_name
+        from order_conf t
+        join ocean_conf_detail t1 on t1.order_id = t.id and t1.types = 2
+        where t1.id_code = #{billId}
+
+    </select>
+
+    <select id="findBillOrderByBillId" parameterType="java.lang.Long"
+            resultType="com.jayud.mall.model.po.BillOrderRelevance">
+        select
+        distinct bill_id,bill_no,order_id,order_no
+        from (
+            select
+            t.id, t1.cntr_no, t1.cabinet_code,t2.file_name,t3.order_id,t3.order_no,t3.bill_id,t3.bill_no
+            from ocean_bill t
+            left join ocean_counter t1 on t1.ob_id = t.id
+            left join counter_list_info t2 on t2.counter_id = t1.id
+            left join counter_order_info t3 on t3.b_id = t2.id
+            where 1=1
+            and t3.bill_id = #{billId}
+        ) temp
     </select>
 
 

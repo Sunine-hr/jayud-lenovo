@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.CounterCaseInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.CounterCaseInfo">
+        <id column="id" property="id" />
+        <result column="b_id" property="bId" />
+        <result column="b_name" property="bName" />
+        <result column="bill_id" property="billId" />
+        <result column="bill_no" property="billNo" />
+        <result column="case_id" property="caseId" />
+        <result column="carton_no" property="cartonNo" />
+        <result column="create_time" property="createTime" />
+        <result column="order_no" property="orderNo" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, b_id, b_name, bill_id, bill_no, case_id, carton_no, create_time, order_no
+    </sql>
+
+    <select id="findCounterCaseInfoByBidAndOrderId" resultType="com.jayud.mall.model.vo.CounterCaseInfoVO">
+        select
+        t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.order_id,t.order_no,t.case_id,t.carton_no,t.create_time,
+        t1.fab_no,t1.asn_weight,t1.asn_volume,t1.amazon_reference_id,t1.extension_number
+        from counter_case_info t
+        join order_case t1 on t1.id = t.case_id
+        where 1=1
+        and t.b_id = #{bId,jdbcType=BIGINT}
+        and t.order_id = #{orderId,jdbcType=BIGINT}
+
+    </select>
+
+
+    <select id="findUnselectedOrderCase" parameterType="com.jayud.mall.model.bo.OrderCaseQueryForm" resultType="com.jayud.mall.model.vo.OrderCaseVO">
+        select
+        t.id,t.order_id,t.carton_no,t.fab_no,
+        t.asn_length,t.asn_width,t.asn_height,t.asn_weight,t.asn_volume,t.asn_weigh_date,
+        t.wms_length,t.wms_height,t.wms_width,t.wms_weight,t.wms_volume,t.wms_weigh_date,
+        t.confirm_length,t.confirm_height,t.confirm_width,t.confirm_weight,t.confirm_volume,t.confirm_weigh_date,
+        t.`status`,t.remark,
+        CONCAT(t.asn_length,'*',t.asn_width,'*',t.asn_height) asn_lwg
+        from order_case t
+        where 1=1
+        <if test="form.orderId != null">
+            and t.order_id = #{form.orderId}
+        </if>
+        <if test="form.filterCaseIds !=null and form.filterCaseIds.size > 0">
+            and t.id not in
+            <foreach collection="form.filterCaseIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="form.cartonNo != null and form.cartonNo != ''">
+            and t.carton_no like concat('%',#{form.cartonNo},'%')
+        </if>
+        order by t.carton_no asc
+    </select>
+
+    <select id="findSelectedOrderCase" parameterType="com.jayud.mall.model.bo.OrderCaseQueryForm" resultType="com.jayud.mall.model.vo.OrderCaseVO">
+        select
+        t.id,t.order_id,t.carton_no,t.fab_no,
+        t.asn_length,t.asn_width,t.asn_height,t.asn_weight,t.asn_volume,t.asn_weigh_date,
+        t.wms_length,t.wms_height,t.wms_width,t.wms_weight,t.wms_volume,t.wms_weigh_date,
+        t.confirm_length,t.confirm_height,t.confirm_width,t.confirm_weight,t.confirm_volume,t.confirm_weigh_date,
+        t.`status`,t.remark,
+        CONCAT(t.asn_length,'*',t.asn_width,'*',t.asn_height) asn_lwg
+        from order_case t
+        join counter_case_info cci on cci.order_id = t.order_id and cci.case_id = t.id
+        where 1=1
+        <if test="form.counterListInfoId != null">
+            and cci.b_id = #{form.counterListInfoId}
+        </if>
+        <if test="form.orderId != null">
+            and cci.order_id = #{form.orderId}
+        </if>
+        <if test="form.cartonNo != null and form.cartonNo != ''">
+            and t.carton_no like concat('%',#{form.cartonNo},'%')
+        </if>
+        order by t.carton_no asc
+
+    </select>
+
+
+    <select id="findCounterCaseInfoByOrderId" parameterType="java.lang.Long" resultType="com.jayud.mall.model.vo.CounterCaseInfoVO">
+        select
+        t.id,t.b_id,t.b_name,t.bill_id,t.bill_no,t.order_id,t.order_no,t.case_id,t.carton_no,t.create_time,
+        t1.fab_no,t1.asn_weight,t1.asn_volume
+        from counter_case_info t
+        join order_case t1 on t1.id = t.case_id
+        where 1=1
+        and t.order_id = #{orderId}
+    </select>
+
+
+</mapper>

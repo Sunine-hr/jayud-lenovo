@@ -25,4 +25,11 @@ public class QueryCustomerForm extends BasePageForm{
     @JSONField(ordinal = 4)
     private String keyword;
 
+    @ApiModelProperty(value = "审核状态(0待审核1审核通过2审核不通过，默认为0）")
+    private Integer auditStatus;
+
+    @ApiModelProperty(value = "用户成员（当前登录人员）")
+    private Long memberUserId;
+
+
 }

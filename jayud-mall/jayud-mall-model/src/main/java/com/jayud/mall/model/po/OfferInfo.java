@@ -90,6 +90,15 @@ public class OfferInfo extends Model<OfferInfo> {
     @JSONField(ordinal = 14)
     private String remarks;
 
+    @ApiModelProperty(value = "开船日期备注")
+    private String sailTimeRemark;
+
+    @ApiModelProperty(value = "特别说明")
+    private String specialVersion;
+
+    @ApiModelProperty(value = "报价单号")
+    private String offerNo;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

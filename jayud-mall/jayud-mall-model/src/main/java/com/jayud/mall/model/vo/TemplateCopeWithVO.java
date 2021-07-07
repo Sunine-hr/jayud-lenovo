@@ -29,6 +29,9 @@ public class TemplateCopeWithVO {
     @JSONField(ordinal = 4)
     private Integer supplierId;
 
+    @ApiModelProperty(value = "服务id(supplier_serve id)")
+    private Integer serviceId;
+
     @ApiModelProperty(value = "计算方式(1自动 2手动)", position = 5)
     @JSONField(ordinal = 5)
     private Integer calculateWay;
@@ -61,12 +64,11 @@ public class TemplateCopeWithVO {
     @JSONField(ordinal = 12)
     private String remarks;
 
-    //供应商代码
+    //扩展查询//
     @ApiModelProperty(value = "供应商代码", position = 13)
     @JSONField(ordinal = 13)
     private String supplierCode;
 
-    //供应商名称
     @ApiModelProperty(value = "供应商名称", position = 14)
     @JSONField(ordinal = 14)
     private String supplierName;
@@ -78,6 +80,8 @@ public class TemplateCopeWithVO {
     @ApiModelProperty(value = "币种名称", position = 16)
     @JSONField(ordinal = 16)
     private String currencyName;
+
+
 
 
 

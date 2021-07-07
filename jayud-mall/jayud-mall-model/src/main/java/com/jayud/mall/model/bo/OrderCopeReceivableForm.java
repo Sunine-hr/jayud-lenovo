@@ -25,6 +25,15 @@ public class OrderCopeReceivableForm {
     @JSONField(ordinal = 4)
     private String costName;
 
+    @ApiModelProperty(value = "计算方式(1自动 2手动)")
+    private Integer calculateWay;
+
+    @ApiModelProperty(value = "数量")
+    private BigDecimal count;
+
+    @ApiModelProperty(value = "单价")
+    private BigDecimal unitPrice;
+
     @ApiModelProperty(value = "金额", position = 5)
     @JSONField(ordinal = 5)
     private BigDecimal amount;
@@ -44,5 +53,9 @@ public class OrderCopeReceivableForm {
     @ApiModelProperty(value = "状态(0未生成账单 1已生成账单)", position = 9)
     @JSONField(ordinal = 9)
     private Integer status;
+
+    @ApiModelProperty(value = "订单服务对应应收费用id(order_service_receivable id)")
+    private Long orderServiceReceivableId;
+
 
 }

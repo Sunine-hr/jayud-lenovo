@@ -26,7 +26,7 @@ public class OrderConfTest {
         form.setOrderNo("PZ202006SEA001");
         form.setTid(1);
         //form.setHarbourCode("NY");
-        form.setStatus("1");
+//        form.setStatus("1");
         form.setUserId(1);
         form.setUserName("admin");
         form.setCreateTime(LocalDateTime.now());

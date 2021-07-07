@@ -28,4 +28,31 @@ public interface OceanCounterMapper extends BaseMapper<OceanCounter> {
      */
     List<OceanCounterVO> findOceanCounterVOByObId(@Param("obId") Long obId);
 
+    /**
+     * 查询柜子下，所有的，柜子箱号信息 id
+     * @param counterId
+     * @return
+     */
+    List<Long> findCounterCaseInfoIdByCounterId(@Param("counterId") Long counterId);
+
+    /**
+     * 查询柜子下，所有的，柜子清单信息 id
+     * @param counterId
+     * @return
+     */
+    List<Long> findCounterListInfoIdByCounterId(@Param("counterId") Long counterId);
+
+    /**
+     * 查询柜子 id
+     * @param counterId
+     * @return
+     */
+    Long findOceanCounterIdById(@Param("counterId") Long counterId);
+
+    /**
+     * 根据id，查询柜子
+     * @param id
+     * @return
+     */
+    OceanCounterVO findOceanCounterById(@Param("id") Long id);
 }

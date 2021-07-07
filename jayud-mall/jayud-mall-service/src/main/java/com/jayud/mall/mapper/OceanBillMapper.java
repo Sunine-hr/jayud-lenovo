@@ -3,11 +3,11 @@ package com.jayud.mall.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.mall.model.bo.ConfCaseForm;
 import com.jayud.mall.model.bo.QueryOceanBillForm;
+import com.jayud.mall.model.po.BillOrderRelevance;
 import com.jayud.mall.model.po.OceanBill;
-import com.jayud.mall.model.vo.BillOrderCostInfoVO;
-import com.jayud.mall.model.vo.BillTaskRelevanceVO;
-import com.jayud.mall.model.vo.OceanBillVO;
+import com.jayud.mall.model.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -68,4 +68,47 @@ public interface OceanBillMapper extends BaseMapper<OceanBill> {
      * @return
      */
     List<BillTaskRelevanceVO> lookOperateLog(@Param("id") Long id);
+
+    /**
+     * 配载，提单（4个窗口），查看-清关
+     * @param billId
+     * @return
+     */
+    List<BillClearanceInfoVO> findBillClearanceInfoByBillId(@Param("billId") Long billId);
+
+    /**
+     * 配载，提单（4个窗口），查看-报关
+     * @param billId
+     * @return
+     */
+    List<BillCustomsInfoVO> findBillCustomsInfoByBillId(@Param("billId") Long billId);
+
+    /**
+     * 配载，提单（4个窗口），查看-柜子
+     * @param obId
+     * @return
+     */
+    List<OceanCounterVO> findOceanCounterByObId(@Param("obId") Long obId);
+
+    /**
+     * 提单，选择配载的箱子(配载，报价，订单，箱号 -> 展示 箱号) 分页
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<ConfCaseVO> findConfCaseByPage(Page<ConfCaseVO> page, @Param("form") ConfCaseForm form);
+
+    /**
+     * 根据提单id，查询配载
+     * @param billId
+     * @return
+     */
+    OrderConfVO findOrderConfByBillId(@Param("billId") Long billId);
+
+    /**
+     * 根据提单id，查询提单管理的订单信息
+     * @param billId
+     * @return
+     */
+    List<BillOrderRelevance> findBillOrderByBillId(@Param("billId") Long billId);
 }

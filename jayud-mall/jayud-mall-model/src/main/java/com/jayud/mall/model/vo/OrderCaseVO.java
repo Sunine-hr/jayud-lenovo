@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @ApiModel(value = "订单对应箱号信息VO")
@@ -35,7 +36,7 @@ public class OrderCaseVO {
     @JSONField(ordinal = 5)
     private BigDecimal asnLength;
 
-    @ApiModelProperty(value = "客户测量的宽度，单位kg", position = 6)
+    @ApiModelProperty(value = "客户测量的宽度，单位cm", position = 6)
     @JSONField(ordinal = 6)
     private BigDecimal asnWidth;
 
@@ -43,7 +44,7 @@ public class OrderCaseVO {
     @JSONField(ordinal = 7)
     private BigDecimal asnHeight;
 
-    @ApiModelProperty(value = "客户测量的重量，单位kg", position = 8)
+    @ApiModelProperty(value = "客户测量的重量，单位kg 实际重", position = 8)
     @JSONField(ordinal = 8)
     private BigDecimal asnWeight;
 
@@ -114,6 +115,12 @@ public class OrderCaseVO {
     @JSONField(ordinal = 23)
     private String remark;
 
+    @ApiModelProperty(value = "Amazon Reference ID(亚马逊引用ID)")
+    private String amazonReferenceId;
+
+    @ApiModelProperty(value = "扩展单号")
+    private String extensionNumber;
+
     /*客户预报长宽高*/
     @ApiModelProperty(value = "客户预报长宽高", position = 24)
     @JSONField(ordinal = 24)
@@ -158,5 +165,19 @@ public class OrderCaseVO {
     @JSONField(ordinal = 32)
     private String orderConfNo;
 
+    /*材积重 = (长cm * 宽cm * 高cm) / 计泡系数 */
+    @ApiModelProperty(value = "材积重", position = 33)
+    private BigDecimal volumeWeight;
+
+    /* 收费重，谁大取谁 */
+    @ApiModelProperty(value = "收费重", position = 20)
+    private BigDecimal chargeWeight;
+
+    @ApiModelProperty(value = "订单类型(1普通运单 2留仓运单)")
+    private Integer orderType;
+
+    //订单箱号对应商品信息
+    @ApiModelProperty(value = "订单箱号对应商品信息 list")
+    private List<OrderCaseShopVO> orderCaseShopList;
 
 }

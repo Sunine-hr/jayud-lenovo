@@ -57,9 +57,12 @@
                t.cid,
                t.transport_status,
                t.create_time,
-               t1.company_name supplierName
+               t1.company_name supplierName,
+               t2.currency_code,
+               t2.currency_name
         from transport t
         left join supplier_info t1 on t1.id = t.supplier_id
+        left join currency_info t2 on t2.id = t.cid
         where t.id = #{id}
     </select>
 

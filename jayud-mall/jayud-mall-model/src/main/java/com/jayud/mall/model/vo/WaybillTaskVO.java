@@ -51,7 +51,7 @@ public class WaybillTaskVO {
     @JSONField(ordinal = 10)
     private Integer score;
 
-    @ApiModelProperty(value = "描述", position = 11)
+    @ApiModelProperty(value = "物流轨迹通知描述", position = 11)
     @JSONField(ordinal = 11)
     private String remarks;
 
@@ -72,6 +72,8 @@ public class WaybillTaskVO {
     @JSONField(ordinal = 15, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "激活开关(0未激活 1已激活)")
+    private String activationSwitch;
 
     /*任务分组:task_group*/
     @ApiModelProperty(value = "分组名称", position = 16)

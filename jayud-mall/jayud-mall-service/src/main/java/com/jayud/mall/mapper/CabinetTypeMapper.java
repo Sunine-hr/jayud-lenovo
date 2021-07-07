@@ -1,7 +1,9 @@
 package com.jayud.mall.mapper;
 
-import com.jayud.mall.model.po.CabinetType;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.mall.model.po.CabinetType;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>
@@ -11,6 +13,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author fachang.mao
  * @since 2021-01-07
  */
+@Mapper
+@Component
 public interface CabinetTypeMapper extends BaseMapper<CabinetType> {
 
 }

@@ -4,6 +4,7 @@ import com.jayud.mall.model.bo.SupplierCostForm;
 import com.jayud.mall.model.po.SupplierCost;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.mall.model.vo.SupplierCostVO;
+import com.jayud.mall.model.vo.SupplierServeVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -28,4 +29,11 @@ public interface SupplierCostMapper extends BaseMapper<SupplierCost> {
      * @return
      */
     List<SupplierCostVO> findSupplierCost(@Param("form") SupplierCostForm form);
+
+    /**
+     * 根据供应商id，查询
+     * @param supplierInfoId
+     * @return
+     */
+    List<SupplierServeVO> findSupplierServeBySupplierInfoId(@Param("supplierInfoId") Long supplierInfoId);
 }

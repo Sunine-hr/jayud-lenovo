@@ -27,6 +27,13 @@ public interface ICustomerService extends IService<Customer> {
     IPage<CustomerVO> findCustomerByPage(QueryCustomerForm form);
 
     /**
+     * 账户审核查询-客户列表
+     * @param form
+     * @return
+     */
+    IPage<CustomerVO> findAuthCustomerByPage(QueryCustomerForm form);
+
+    /**
      * 保存
      * @param form
      * @return
@@ -87,4 +94,17 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     CustomerVO customerLogin(CustomerLoginForm form);
+
+    /**
+     * 重置密码-随机8位数(字母+@&+数字)
+     * @param form
+     * @return
+     */
+    String resetPasswords(CustomerParaForm form);
+
+    /**
+     * 客户-修改密码
+     * @param form
+     */
+    void updatePasswords(CustomerUpdatePwdForm form);
 }

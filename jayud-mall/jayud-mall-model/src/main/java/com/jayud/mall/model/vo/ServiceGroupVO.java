@@ -61,6 +61,9 @@ public class ServiceGroupVO {
     @JSONField(ordinal = 11, format="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "是否需要附加费(1需要 2不需要)")
+    private String isNeedFee;
+
     /*运输方式:transport_way.code_name*/
     @ApiModelProperty(value = "运输方式名称", position = 12)
     @JSONField(ordinal = 12)

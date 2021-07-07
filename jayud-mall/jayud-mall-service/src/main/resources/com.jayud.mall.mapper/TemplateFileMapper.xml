@@ -45,6 +45,7 @@
         left join quotation_template t2 on t2.id = t.qie
         left join offer_info t3 on t3.qie = t2.id
         where 1=1
+        and t1.types = #{form.types}
         and t1.group_code = #{form.groupCode}
         and t3.id = #{form.offerInfoId}
     </select>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.mall.mapper.GoodsClearanceFileMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.mall.model.po.GoodsClearanceFile">
+        <id column="id" property="id" />
+        <result column="good_id" property="goodId" />
+        <result column="type" property="type" />
+        <result column="country_code" property="countryCode" />
+        <result column="country_name" property="countryName" />
+        <result column="file_name" property="fileName" />
+        <result column="template_url" property="templateUrl" />
+        <result column="describe" property="describe" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, good_id, type, country_code, country_name, file_name, template_url, describe
+    </sql>
+
+    <select id="findGoodsClearanceFileByGoodId" parameterType="java.lang.Integer" resultType="com.jayud.mall.model.vo.GoodsClearanceFileVO">
+        select
+        t.id,t.good_id,t.type,t.country_code,t.country_name,t.file_name,t.template_url,t.`describe`
+        from goods_clearance_file t
+        where 1=1
+        and t.good_id = #{goodId}
+    </select>
+
+</mapper>

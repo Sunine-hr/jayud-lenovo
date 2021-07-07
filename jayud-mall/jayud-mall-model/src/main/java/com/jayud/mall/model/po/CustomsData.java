@@ -137,6 +137,21 @@ public class CustomsData extends Model<CustomsData> {
     @JSONField(ordinal = 26)
     private BigDecimal sundryTax;
 
+    @ApiModelProperty(value = "品牌")
+    private String brand;
+
+    @ApiModelProperty(value = "规格型号")
+    private String specification;
+
+    @ApiModelProperty(value = "审核状态(0待审核 1已审核 2已取消)")
+    private Integer auditStatus;
+
+    @ApiModelProperty(value = "审核用户id(system_user id)")
+    private Integer auditUserId;
+
+    @ApiModelProperty(value = "审核用户名(system_user name)")
+    private String auditUserName;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

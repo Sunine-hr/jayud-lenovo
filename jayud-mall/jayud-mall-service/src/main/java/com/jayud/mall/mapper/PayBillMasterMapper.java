@@ -63,11 +63,17 @@ public interface PayBillMasterMapper extends BaseMapper<PayBillMaster> {
      */
     List<PayBillMaster> findPayBillMasterByCreateTime(@Param("firstday") LocalDateTime firstday, @Param("lastDay") LocalDateTime lastDay);
 
-
     /**
      * 验证应付账单，是否全部已经付款
      * @param accountPayableId 应付对账单id
      * @return
      */
     List<PayBillMasterVO> verifyPayBillMasterByAccountPayableId(@Param("accountPayableId") Long accountPayableId);
+
+    /**
+     * 根据订单id，查询应付账单list
+     * @param orderId
+     * @return
+     */
+    List<PayBillMasterVO> findPayBillMasterByOrderId(@Param("orderId") Long orderId);
 }

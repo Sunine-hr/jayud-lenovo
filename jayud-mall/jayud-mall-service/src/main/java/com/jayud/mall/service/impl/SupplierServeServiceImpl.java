@@ -150,4 +150,10 @@ public class SupplierServeServiceImpl extends ServiceImpl<SupplierServeMapper, S
         }
         this.saveOrUpdate(supplierServe);
     }
+
+    @Override
+    public List<SupplierServeVO> findSupplierServeBySupplierInfoId(Long supplierInfoId) {
+        List<SupplierServeVO> supplierServeVOS = supplierCostService.findSupplierServeBySupplierInfoId(supplierInfoId);
+        return supplierServeVOS;
+    }
 }

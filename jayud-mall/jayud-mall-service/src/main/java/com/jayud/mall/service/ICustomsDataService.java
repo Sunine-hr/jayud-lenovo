@@ -2,6 +2,7 @@ package com.jayud.mall.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonResult;
+import com.jayud.mall.model.bo.AuditCustomsDataForm;
 import com.jayud.mall.model.bo.CustomsDataForm;
 import com.jayud.mall.model.bo.QueryCustomsDataForm;
 import com.jayud.mall.model.po.CustomsData;
@@ -39,4 +40,17 @@ public interface ICustomsDataService extends IService<CustomsData> {
      * @return
      */
     List<CustomsDataVO> findCustomsData();
+
+    /**
+     * 审核报关商品资料
+     * @param form
+     */
+    void auditCustomsData(AuditCustomsDataForm form);
+
+    /**
+     * 查看
+     * @param id
+     * @return
+     */
+    CustomsDataVO findCustomsDataById(Long id);
 }

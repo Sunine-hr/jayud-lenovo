@@ -75,4 +75,10 @@ public class InputReceivableCostVO {
     @ApiModelProperty(value = "卸货地址")
     private String unloadingAddress;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
+    @ApiModelProperty(value = "是否录用费用")
+    private Boolean isInternal;
+
 }

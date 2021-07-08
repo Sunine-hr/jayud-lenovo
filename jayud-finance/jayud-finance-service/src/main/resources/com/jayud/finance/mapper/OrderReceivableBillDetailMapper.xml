@@ -285,14 +285,14 @@
                 </otherwise>
             </choose>
         </if>
---         LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
---         LEFT JOIN order_send_cars osc ON ot.order_no = osc.order_no
---         left join vehicle_info vi on vi.id = osc.vehicle_id
---         left join order_customs oc on oc.order_no = orc.order_no
---         left join air_order ao on ao.order_no = orc.order_no
---         left join sea_order so on so.order_no = orc.order_no
---         left join order_inland_transport oit on oit.order_no = orc.order_no
---         left join trailer_order tor on tor.order_no = orc.order_no
+        -- LEFT JOIN order_transport ot ON ot.main_order_no = oi.order_no
+        -- LEFT JOIN order_send_cars osc ON ot.order_no = osc.order_no
+        -- left join vehicle_info vi on vi.id = osc.vehicle_id
+        -- left join order_customs oc on oc.order_no = orc.order_no
+        -- left join air_order ao on ao.order_no = orc.order_no
+        -- left join sea_order so on so.order_no = orc.order_no
+        -- left join order_inland_transport oit on oit.order_no = orc.order_no
+        -- left join trailer_order tor on tor.order_no = orc.order_no
         INNER JOIN (
         SELECT
         tmp.cost_id id
@@ -330,35 +330,35 @@
 
 
         <!--        <if test="form.cmd == 'main'">-->
-<!--            oi.legal_name-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'bg'">-->
-<!--            oc.legal_name-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'zgys'">-->
-<!--            ot.legal_name-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ky'">-->
-<!--            ao.legal_name-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'hy'">-->
-<!--            so.legal_name-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'tc'">-->
-<!--            tor.legal_name-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'nl'">-->
-<!--            oit.legal_name-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'cci'">-->
-<!--            orc.legal_name-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'cce'">-->
-<!--            orc.legal_name-->
-<!--        </if>-->
-<!--        <if test="form.cmd == 'ccf'">-->
-<!--            orc.legal_name-->
-<!--        </if>-->
+        <!--            oi.legal_name-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'bg'">-->
+        <!--            oc.legal_name-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'zgys'">-->
+        <!--            ot.legal_name-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'ky'">-->
+        <!--            ao.legal_name-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'hy'">-->
+        <!--            so.legal_name-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'tc'">-->
+        <!--            tor.legal_name-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'nl'">-->
+        <!--            oit.legal_name-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'cci'">-->
+        <!--            orc.legal_name-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'cce'">-->
+        <!--            orc.legal_name-->
+        <!--        </if>-->
+        <!--        <if test="form.cmd == 'ccf'">-->
+        <!--            orc.legal_name-->
+        <!--        </if>-->
 
     </select>
     <select id="findSSheetHead" parameterType="java.lang.String" resultType="com.jayud.finance.vo.SheetHeadVO">
@@ -443,11 +443,13 @@
         (select GROUP_CONCAT(ota.goods_desc) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where ot.main_order_no = oi.order_no and ota.opr_type = '1' group by ota.order_no) goodsDesc,
         (select oc.yun_customs_no from order_customs oc where oc.main_order_no = oi.order_no limit 1) yunCustomsNo,
         orbd.settlement_currency settlementCurrencyCode,
-        (select currency_name from currency_info ci where ci.currency_code=orbd.settlement_currency) settlementCurrency
+        (select currency_name from currency_info ci where ci.currency_code=orbd.settlement_currency) settlementCurrency,
+        orc.department_id,orc.is_internal,oi.biz_belong_depart
         FROM
         order_info oi
 		left join order_receivable_bill_detail orbd on orbd.order_no = oi.order_no
 		left join order_receivable_bill orb on orb.id = orbd.bill_id
+		left join order_receivable_cost orc on orc.id = orbd.cost_id
         where orbd.bill_no = #{billNo}
         group by oi.order_no,subOrderNo
     </select>

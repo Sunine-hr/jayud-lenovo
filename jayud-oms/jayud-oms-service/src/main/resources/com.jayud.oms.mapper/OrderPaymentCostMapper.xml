@@ -65,7 +65,8 @@
         opc.`remarks`,
         opc.`status`,
         opc.unloading_address unloadingAddress,
-        opc.supplier_id
+        opc.supplier_id,opc.department_id,opc.is_internal
+
         FROM
         order_payment_cost opc
         where opc.`main_order_no` = #{form.mainOrderNo}

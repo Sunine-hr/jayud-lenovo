@@ -78,4 +78,10 @@ public class InputPaymentCostVO {
     @ApiModelProperty(value = "供应商指派id")
     private String supplierId;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
+    @ApiModelProperty(value = "是否录用费用")
+    private Boolean isInternal;
+
 }

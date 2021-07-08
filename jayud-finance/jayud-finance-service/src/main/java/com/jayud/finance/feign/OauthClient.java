@@ -31,4 +31,13 @@ public interface OauthClient {
     @ApiOperation("根据法人主体姓名查询法人主体信息")
     @RequestMapping(value = "/api/getAllLegalEntityByLegalName")
     public ApiResult getAllLegalEntityByLegalName(@RequestParam("name") String name);
+
+    /**
+     * 根据部门id获取部门名称
+     *
+     * @param departmentIds
+     * @return
+     */
+    @RequestMapping(value = "/api/getDepartmentByDepartment")
+    ApiResult getDepartmentByDepartment(@RequestParam("departmentIds") List<Long> departmentIds);
 }

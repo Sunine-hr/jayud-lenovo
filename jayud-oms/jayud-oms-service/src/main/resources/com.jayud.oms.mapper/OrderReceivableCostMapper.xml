@@ -61,7 +61,8 @@
         orc.`exchange_rate` exchangeRate,
         orc.`remarks`,
         orc.`status`,
-        orc.unloading_address unloadingAddress
+        orc.unloading_address unloadingAddress,
+        orc.department_id,orc.is_internal
         FROM
         order_receivable_cost orc
         left join customer_info ci on orc.customer_code = ci.id_code

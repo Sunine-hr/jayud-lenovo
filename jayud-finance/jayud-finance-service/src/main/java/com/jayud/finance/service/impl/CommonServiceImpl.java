@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 公共处理类
@@ -471,6 +472,30 @@ public class CommonServiceImpl implements CommonService {
         cost.forEach((k, v) -> sb.append(v).append(" ").append(k).append(","));
 
         return sb.toString();
+    }
+
+
+    @Override
+    public List<String> getInternalSettlementRelationship(JSONArray datas) {
+        List<String> list = new ArrayList<>(2);
+        list.add("");
+        list.add("");
+        if (datas == null && datas.size() == 0) {
+            return list;
+        }
+        //根据账单获取
+        JSONObject data = datas.getJSONObject(0);
+        Long departmentId = data.getLong("departmentId");
+        Long bizBelongDepart = data.getLong("bizBelongDepart");
+        Long internalDepartmentId = data.getLong("internalDepartmentId");
+
+        Object departments = this.oauthClient.getDepartmentByDepartment(Arrays.asList(departmentId, bizBelongDepart, internalDepartmentId)).getData();
+        Map<Long, String> departmentMap = new JSONArray(departments).stream().collect(Collectors.toMap(e -> ((JSONObject) e).getLong("id"), e -> ((JSONObject) e).getStr("name")));
+        if (data.getBool("isInternal")) {
+            list.set(0, "(" + departmentMap.get(departmentId) + ")");
+            list.set(1, "(" + departmentMap.get(internalDepartmentId == null ? bizBelongDepart : internalDepartmentId) + ")");
+        }
+        return list;
     }
 
 

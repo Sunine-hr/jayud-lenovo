@@ -141,6 +141,9 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
     @ApiModelProperty(value = "是否内部费用")
     private Boolean isInternal;
 
+    @ApiModelProperty(value = "内部部门id")
+    private Long internalDepartmentId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

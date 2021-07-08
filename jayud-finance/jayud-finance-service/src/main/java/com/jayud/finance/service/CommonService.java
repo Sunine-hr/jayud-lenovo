@@ -78,4 +78,11 @@ public interface CommonService {
      * @return
      */
     String calculatingCosts(List<String> amountStrs);
+
+    /**
+     * 获取结算关系
+     * @param datas
+     * @return
+     */
+    List<String> getInternalSettlementRelationship(JSONArray datas);
 }

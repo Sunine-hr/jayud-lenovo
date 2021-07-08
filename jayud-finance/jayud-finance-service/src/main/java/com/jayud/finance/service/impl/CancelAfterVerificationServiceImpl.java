@@ -85,15 +85,16 @@ public class CancelAfterVerificationServiceImpl extends ServiceImpl<CancelAfterV
             cancelAfterVerification.setCreatedUser(forms.getLoginUserName());
             //计算本币金额
             String oCode = cancelAfterVerification.getCurrencyCode();//原始币种,即实收金额的币种
-            BigDecimal exchangeRate = currencyRateService.getExchangeRate(oCode, "CNY");
-            if (oCode.equals("CNY") && exchangeRate == null) {
-                exchangeRate = new BigDecimal(1);
-            }
-            if (exchangeRate == null) {
-                return CommonResult.error(10001, "请先配置当前月份原始货币:" + oCode + "兑换货币：CNY的汇率");
-            }
-            BigDecimal localMoney = cancelAfterVerification.getRealReceiveMoney().multiply(exchangeRate);
-            cancelAfterVerification.setLocalMoney(localMoney);
+            //TODO 不知道有什么用
+//            BigDecimal exchangeRate = currencyRateService.getExchangeRate(oCode, "CNY");
+//            if (oCode.equals("CNY") && exchangeRate == null) {
+//                exchangeRate = new BigDecimal(1);
+//            }
+//            if (exchangeRate == null) {
+//                return CommonResult.error(10001, "请先配置当前月份原始货币:" + oCode + "兑换货币：CNY的汇率");
+//            }
+//            BigDecimal localMoney = cancelAfterVerification.getRealReceiveMoney().multiply(exchangeRate);
+//            cancelAfterVerification.setLocalMoney(localMoney);
             list.add(cancelAfterVerification);
         }
         Boolean result = saveBatch(list);

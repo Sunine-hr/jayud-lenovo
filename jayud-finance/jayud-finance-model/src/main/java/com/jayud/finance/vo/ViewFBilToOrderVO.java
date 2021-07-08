@@ -53,6 +53,18 @@ public class ViewFBilToOrderVO {
     @ApiModelProperty(value = "结算币种")
     private String settlementCurrency;
 
+    @ApiModelProperty(value = "操作部门")
+    private Long departmentId;
+
+    @ApiModelProperty(value = "主订单所属部门")
+    private Long bizBelongDepart;
+
+    @ApiModelProperty(value = "是否内部费用")
+    private Boolean isInternal;
+
+    @ApiModelProperty(value = "内部部门id")
+    private Long internalDepartmentId;
+
     public void interceptAddress() {
         String startAddress=this.startAddress;
         if (this.startAddress != null && this.startAddress.length() > 6) {

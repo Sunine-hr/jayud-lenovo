@@ -285,6 +285,9 @@ public class PaymentBillDetailController {
             }
         }
 
+        //内部往来关系
+        List<String> settlementRelationship = this.commonService.getInternalSettlementRelationship(datas);
+
         //计算结算币种
         this.orderBillCostTotalService.exportSettlementCurrency(cmd, headMap, dynamicHead, datas, "1");
 
@@ -305,9 +308,10 @@ public class PaymentBillDetailController {
         entity.setTitle(titles);
         //组装台头
         List<String> stageHeads = new ArrayList<>();
-        stageHeads.add("TO:" + viewBillVO.getCustomerName());
+        stageHeads.add("TO:" + viewBillVO.getCustomerName() + settlementRelationship.get(1));
         sb = new StringBuilder();
-        stageHeads.add(sb.append("FR:").append(viewBillVO.getLegalName()).append(EasyExcelUtils.SPLIT_SYMBOL)
+        stageHeads.add(sb.append("FR:").append(viewBillVO.getLegalName()).append(settlementRelationship.get(0))
+                .append(EasyExcelUtils.SPLIT_SYMBOL)
                 .append("账单编号:").append(viewBillVO.getBillNo()).toString());
         entity.setStageHead(stageHeads);
         //组装表头信息

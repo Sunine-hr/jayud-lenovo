@@ -2917,8 +2917,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             mainOrderNo = form.getReceivableCosts().get(0).getMainOrderNo();
         }
         List<OrderInfo> mainOrders = this.getByOrderNos(Collections.singletonList(mainOrderNo));
+        OrderInfo orderInfo = mainOrders.get(0);
         //子订单结算单位和主订单操作主体匹配
-        if (!mainOrders.get(0).getLegalName().equals(customerInfo.getName())) {
+        if (!orderInfo.getLegalName().equals(customerInfo.getName())) {
             return;
         }
         //根据主订单号查询主订单应付费用并且是绑定应收id
@@ -2943,7 +2944,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     //只同步草稿状态
                     continue;
                 }
-                convert.setId(bind.getId()).setReceivableId(receivableCost.getId());
+                convert.setId(bind.getId()).setReceivableId(receivableCost.getId())
+                        .setInternalDepartmentId(receivableCost.getDepartmentId())
+                        .setDepartmentId(Long.valueOf(orderInfo.getBizBelongDepart()));
             } else {
                 convert.setId(null).setReceivableId(receivableCost.getId())
                         .setCreatedTime(LocalDateTime.now()).setCreatedUser(UserOperator.getToken());

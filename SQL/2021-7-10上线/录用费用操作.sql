@@ -14,3 +14,6 @@ MODIFY COLUMN `is_internal` tinyint(2) NULL DEFAULT 0 COMMENT '是否内部往�
 
 ALTER TABLE `order_payment_cost`
 MODIFY COLUMN `is_internal` tinyint(2) NULL DEFAULT 0 COMMENT '是否内部往来费用' AFTER `department_id`;
+
+ALTER TABLE `order_payment_cost`
+ADD COLUMN `internal_department_id` bigint(20) NULL COMMENT '内部部门id' AFTER `is_internal`;

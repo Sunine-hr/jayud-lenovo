@@ -293,6 +293,8 @@ public class ReceiveBillDetailController {
                 .getLegalEntityByLegalIds(Collections.singletonList(viewBillVO.getLegalEntityId())).getData());
         cn.hutool.json.JSONObject legalEntityJson = tmp.getJSONObject(0);
 
+        //内部往来关系
+        List<String> settlementRelationship=this.commonService.getInternalSettlementRelationship(datas);
 
         EasyExcelEntity entity = new EasyExcelEntity();
         entity.setSheetName("客户应收对账单");
@@ -305,9 +307,10 @@ public class ReceiveBillDetailController {
         entity.setTitle(titles);
         //组装台头
         List<String> stageHeads = new ArrayList<>();
-        stageHeads.add("TO:" + viewBillVO.getCustomerName());
+        //内部往来
+        stageHeads.add("TO:" + viewBillVO.getCustomerName()+settlementRelationship.get(1));
         sb = new StringBuilder();
-        stageHeads.add(sb.append("FR:").append(viewBillVO.getLegalName())
+        stageHeads.add(sb.append("FR:").append(viewBillVO.getLegalName()).append(settlementRelationship.get(0))
                 .append(EasyExcelUtils.SPLIT_SYMBOL)
                 .append("账单编号:").append(viewBillVO.getBillNo()).toString());
         entity.setStageHead(stageHeads);

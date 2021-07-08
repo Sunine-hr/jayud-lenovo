@@ -121,6 +121,9 @@
                     left join order_customs oc on oc.order_no = orc.order_no
                     left join vehicle_info vi on vi.id = osc.vehicle_id
                 </when>
+                <when test="form.cmd == 'cce' or form.cmd == 'cci' or form.cmd == 'ccf'">
+
+                </when>
                 <otherwise>
                     left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no
                 </otherwise>

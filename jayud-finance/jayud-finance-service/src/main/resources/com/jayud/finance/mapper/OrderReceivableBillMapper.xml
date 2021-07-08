@@ -104,7 +104,7 @@
         orc.id costId,
         orc.is_bill isBill,
         oi.operation_time,
-        oi.biz_code bizCode
+        oi.biz_code bizCode,oi.biz_belong_depart,orc.is_internal
         FROM
         order_receivable_cost orc
         LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no

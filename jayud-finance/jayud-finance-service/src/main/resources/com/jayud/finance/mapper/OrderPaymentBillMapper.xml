@@ -203,7 +203,7 @@
         opc.id costId,
         opc.is_bill isBill,
         oi.operation_time,
-        oi.biz_code bizCode
+        oi.biz_code bizCode,opc.internal_department_id,opc.is_internal
         FROM
         order_payment_cost opc
         left join supplier_info si on si.supplier_code = opc.customer_code

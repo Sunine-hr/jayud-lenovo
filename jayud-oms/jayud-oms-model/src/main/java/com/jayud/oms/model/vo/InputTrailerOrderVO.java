@@ -201,6 +201,9 @@ public class InputTrailerOrderVO {
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
 
+    @ApiModelProperty(value = "操作部门")
+    private String department;
+
 
     public void setUnitName(String unitName) {
         this.unitName = unitName;

@@ -408,7 +408,7 @@ public class CustomerInfoController {
     @ApiOperation(value = "客户列表-新增-接单部门")
     @PostMapping(value = "/initDepartment")
     public CommonResult<List<InitComboxVO>> initDepartment() {
-        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findDepartment().getData();
+        List<InitComboxVO> initComboxVOS =  oauthClient.findDepartment().getData();
         return CommonResult.success(initComboxVOS);
     }
 

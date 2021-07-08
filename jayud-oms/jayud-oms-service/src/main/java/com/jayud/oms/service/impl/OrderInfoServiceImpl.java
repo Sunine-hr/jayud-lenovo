@@ -1300,6 +1300,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         InputMainOrderVO inputMainOrderVO = getMainOrderById(form.getMainOrderId());
         inputOrderVO.setOrderForm(inputMainOrderVO);
 
+        Map<Long, String> departmentMap = this.oauthClient.findDepartment().getData().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
+
         //获取纯报关和出口报关信息
         if (OrderStatusEnum.CBG.getCode().equals(form.getClassCode()) ||
                 inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {
@@ -1331,7 +1333,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
                 }
                 inputOrderCustomsVO.setAllPics(allPics);
-
+                inputOrderCustomsVO.setDepartment(departmentMap.get(inputOrderCustomsVO.getDepartmentId()));
 
                 //循环处理接单人和接单时间
                 List<InputSubOrderCustomsVO> inputSubOrderCustomsVOS = inputOrderCustomsVO.getSubOrders();
@@ -1379,6 +1381,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 for (InputOrderTakeAdrVO inputOrderTakeAdr2 : orderTakeAdrForms2) {
                     inputOrderTakeAdr2.setCustomerName(inputMainOrderVO.getCustomerName());
                 }
+                inputOrderTransportVO.setDepartment(departmentMap.get(inputOrderTransportVO.getDepartmentId()));
                 inputOrderVO.setOrderTransportForm(inputOrderTransportVO);
             }
         }
@@ -1391,6 +1394,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 List<FileView> attachments = this.logisticsTrackService.getAttachments(inlandTPVO.getId()
                         , BusinessTypeEnum.NL.getCode(), prePath);
                 inlandTPVO.setAllPics(attachments);
+                inlandTPVO.setDepartment(departmentMap.get(inlandTPVO.getDepartmentId()));
                 inputOrderVO.setOrderInlandTransportForm(inlandTPVO);
             }
         }
@@ -1414,7 +1418,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 if (customerInfo != null) {
                     airOrderVO.setUnitName(customerInfo.getName());
                 }
-
+                airOrderVO.setDepartment(departmentMap.get(airOrderVO.getDepartmentId()));
                 inputOrderVO.setAirOrderForm(airOrderVO);
             }
         }
@@ -1445,6 +1449,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 if (customerInfo != null) {
                     seaOrderVO.setUnitName(customerInfo.getName());
                 }
+                seaOrderVO.setDepartment(departmentMap.get(seaOrderVO.getDepartmentId()));
                 inputOrderVO.setSeaOrderForm(seaOrderVO);
             }
         }
@@ -1470,6 +1475,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         trailerOrderVO.setUnitName(customerInfo.getName());
                     }
                 }
+                trailerOrderVO.setDepartment(departmentMap.get(trailerOrderVO.getDepartmentId()));
             }
             inputOrderVO.setTrailerOrderForm(trailerOrderVOs);
 
@@ -1489,6 +1495,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     if (customerInfo != null) {
                         storageOutOrderVO.setUnitCodeName(customerInfo.getName());
                     }
+                    storageOutOrderVO.setDepartment(departmentMap.get(storageOutOrderVO.getDepartmentId()));
                 }
                 inputOrderVO.setStorageOutOrderForm(storageOutOrderVO);
             }
@@ -1504,6 +1511,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     if (customerInfo != null) {
                         storageInputOrderVO.setUnitCodeName(customerInfo.getName());
                     }
+                    storageInputOrderVO.setDepartment(departmentMap.get(storageInputOrderVO.getDepartmentId()));
                 }
                 inputOrderVO.setStorageInputOrderForm(storageInputOrderVO);
             }
@@ -1519,6 +1527,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     if (customerInfo != null) {
                         inputStorageFastOrderVO.setUnitCodeName(customerInfo.getName());
                     }
+                    inputStorageFastOrderVO.setDepartment(departmentMap.get(inputStorageFastOrderVO.getDepartmentId()));
                 }
                 inputOrderVO.setStorageFastOrderForm(inputStorageFastOrderVO);
             }
@@ -2944,16 +2953,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     //只同步草稿状态
                     continue;
                 }
-                convert.setId(bind.getId()).setReceivableId(receivableCost.getId())
-                        .setInternalDepartmentId(receivableCost.getDepartmentId())
-                        .setDepartmentId(Long.valueOf(orderInfo.getBizBelongDepart()));
+                convert.setId(bind.getId()).setReceivableId(receivableCost.getId());
             } else {
                 convert.setId(null).setReceivableId(receivableCost.getId())
                         .setCreatedTime(LocalDateTime.now()).setCreatedUser(UserOperator.getToken());
             }
             convert.setOrderNo(null).setLegalName(null).setLegalId(null).setCustomerCode(null).setCustomerName(null)
                     .setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()))
-                    .setIsSumToMain(true).setIsBill("0").setSubType("main");
+                    .setIsSumToMain(true).setIsBill("0").setSubType("main")
+                    .setInternalDepartmentId(receivableCost.getDepartmentId())
+                    .setDepartmentId(Long.valueOf(orderInfo.getBizBelongDepart()));
             if (supplierInfo != null) {
                 convert.setCustomerName(supplierInfo.getSupplierChName()).setCustomerCode(supplierInfo.getSupplierCode());
             }

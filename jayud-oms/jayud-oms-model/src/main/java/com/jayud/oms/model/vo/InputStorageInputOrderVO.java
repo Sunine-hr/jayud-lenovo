@@ -65,7 +65,7 @@ public class InputStorageInputOrderVO extends Model<InputStorageInputOrderVO> {
     private Long departmentId;
 
     @ApiModelProperty(value = "操作部门")
-    private String departmentName;
+    private String department;
 
     @ApiModelProperty(value = "运单号")
     private String waybillNo;

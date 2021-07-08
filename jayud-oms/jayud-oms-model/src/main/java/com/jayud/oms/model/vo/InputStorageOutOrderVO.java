@@ -62,7 +62,7 @@ public class InputStorageOutOrderVO {
     private Long departmentId;
 
     @ApiModelProperty(value = "操作部门")
-    private String departmentName;
+    private String department;
 
     @ApiModelProperty(value = "车牌信息")
     private String plateInformation;

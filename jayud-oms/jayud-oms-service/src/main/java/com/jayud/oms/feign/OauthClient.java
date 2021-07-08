@@ -23,7 +23,7 @@ public interface OauthClient {
      * @return
      */
     @RequestMapping(value = "/api/findDepartment")
-    ApiResult findDepartment();
+    ApiResult<List<InitComboxVO>> findDepartment();
 
     /**
      * 获取接单业务员和接单客服

@@ -59,6 +59,9 @@ public class QueryOrderTmsForm extends BasePageForm {
     @ApiModelProperty(value = "子订单号")
     private Set<String> subOrderNos = new HashSet<>();
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
 
     public void setTakeTimeStr(List<String> takeTimeStr) {
         this.takeTimeStr = takeTimeStr;

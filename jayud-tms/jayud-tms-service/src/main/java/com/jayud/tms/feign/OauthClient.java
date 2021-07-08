@@ -3,6 +3,7 @@ package com.jayud.tms.feign;
 
 import com.jayud.common.ApiResult;
 import com.jayud.common.entity.DataControl;
+import com.jayud.common.entity.InitComboxVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,4 +27,20 @@ public interface OauthClient {
     public ApiResult<DataControl> getDataPermission(@RequestParam("loginName") String loginName,
                                                     @RequestParam(value = "UserType") String userType);
 
+    /**
+     * 根据部门id获取部门名称
+     *
+     * @param departmentId
+     * @return
+     */
+    @RequestMapping(value = "/api/getDepartmentNameById")
+    ApiResult getDepartmentNameById(@RequestParam("departmentId") Long departmentId);
+
+    /**
+     * 获取接单部门
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/findDepartment")
+    ApiResult<List<InitComboxVO>> findDepartment();
 }

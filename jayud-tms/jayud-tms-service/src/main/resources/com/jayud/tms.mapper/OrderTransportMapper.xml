@@ -632,7 +632,9 @@
         <if test="form.takeTimeStr != null and form.takeTimeStr.size>0">
             and ota.take_time between #{form.takeTimeStr[0]} and #{form.takeTimeStr[1]}
         </if>
-
+        <if test="form.departmentId != null ">
+            and ot.department_id = #{form.departmentId}
+        </if>
         order by ota.take_time desc
 
     </select>

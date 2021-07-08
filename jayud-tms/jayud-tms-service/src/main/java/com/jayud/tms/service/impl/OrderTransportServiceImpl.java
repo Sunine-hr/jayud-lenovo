@@ -254,7 +254,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Map<String, Object> costStatus = omsClient.getCostStatus(null, subOrderNos).getData();
         //批量查询中转仓库
         Map<Long, Map<String, Object>> warehouseMap = this.omsClient.getWarehouseMapByIds(warehouseIds).getData();
-
+        //部门
+        Map<Long, String> departmentMap = this.oauthClient.findDepartment().getData().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
         for (OrderTransportVO orderTransportVO : pageInfo.getRecords()) {
 //            orderTransportVO.assemblyGoodsInfo(orderTakeAdrs);
 //            orderTransportVO.assemblyTakeFiles(takeAdrsList, prePath);
@@ -263,6 +264,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTransportVO.assemblyCostStatus(costStatus);
             orderTransportVO.assemblyWarehouse(warehouseMap);
             orderTransportVO.doFilterData(dataControl.getAccountType());
+            orderTransportVO.setDepartment(departmentMap.get(orderTransportVO.getDepartmentId()));
         }
 
         return pageInfo;

@@ -1,6 +1,7 @@
 package com.jayud.oms.service;
 
 import com.jayud.common.entity.OrderDeliveryAddress;
+import com.jayud.oms.model.bo.AddTrailerOrderAddressForm;
 import com.jayud.oms.model.po.OrderAddress;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -67,4 +68,11 @@ public interface IOrderAddressService extends IService<OrderAddress> {
      * @return
      */
     Set<String> getOrderNosByTakeTime(String[] takeTimeStr, Integer code);
+
+    /**
+     * 添加/修改订单提货地址
+     *
+     * @param orderAddressForms
+     */
+    void saveOrUpdateOrderAddressAndGoodsBatch(List<AddTrailerOrderAddressForm> orderAddressForms);
 }

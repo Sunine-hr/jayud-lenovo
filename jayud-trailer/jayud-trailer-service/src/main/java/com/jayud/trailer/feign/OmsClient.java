@@ -8,10 +8,7 @@ import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
 import com.jayud.common.entity.OrderDeliveryAddress;
-import com.jayud.trailer.bo.AddGoodsForm;
-import com.jayud.trailer.bo.AddOrderAddressForm;
-import com.jayud.trailer.bo.AuditInfoForm;
-import com.jayud.trailer.bo.TrailerProcessOptForm;
+import com.jayud.trailer.bo.*;
 import com.jayud.trailer.po.OrderFlowSheet;
 import com.jayud.trailer.vo.GoodsVO;
 import com.jayud.trailer.vo.OrderAddressVO;
@@ -202,7 +199,7 @@ public interface OmsClient {
 
     @ApiOperation(value = "单个存储商品信息")
     @RequestMapping(value = "api/saveOrUpdateGood")
-    ApiResult saveOrUpdateGood(@RequestBody AddGoodsForm goodsForm);
+    ApiResult saveOrUpdateGood(@RequestBody List<AddGoodsForm> goodsForm);
 
     @ApiOperation(value = "单个商品信息获取")
     @RequestMapping(value = "api/getGoodById")
@@ -275,4 +272,12 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getCostStatus")
     public ApiResult<Map<String, Object>> getCostStatus(@RequestParam("mainOrderNos") List<String> mainOrderNos,
                                                         @RequestParam("orderNos") List<String> orderNos);
+
+    /**
+     * 批量保存拖车地址和商品信息
+     * @param orderAddressForms
+     * @return
+     */
+    @RequestMapping(value = "/api/saveOrUpdateOrderAddressAndGoodsBatch")
+    ApiResult saveOrUpdateOrderAddressAndGoodsBatch(@RequestBody List<AddTrailerOrderAddressForm> orderAddressForms);
 }

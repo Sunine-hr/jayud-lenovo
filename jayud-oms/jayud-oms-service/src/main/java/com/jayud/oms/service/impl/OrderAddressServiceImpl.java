@@ -5,6 +5,7 @@ import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.FileClient;
+import com.jayud.oms.model.bo.AddTrailerOrderAddressForm;
 import com.jayud.oms.model.po.Goods;
 import com.jayud.oms.model.po.OrderAddress;
 import com.jayud.oms.mapper.OrderAddressMapper;
@@ -208,6 +209,50 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
             condition.lambda().eq(OrderAddress::getBusinessType , code);
         }
         return this.baseMapper.selectList(condition).stream().map(OrderAddress::getOrderNo).collect(Collectors.toSet());
+    }
+
+    @Override
+    public void saveOrUpdateOrderAddressAndGoodsBatch(List<AddTrailerOrderAddressForm> orderAddressForms) {
+        //循环地址
+        List<OrderAddress> list = new ArrayList<>();
+
+        AddTrailerOrderAddressForm orderDeliveryAddress = orderAddressForms.get(0);
+        //先清除旧的数据
+        this.goodsService.removeByBusinessId(orderDeliveryAddress.getBusinessId(), orderDeliveryAddress.getBusinessType());
+        this.removeByBusinessId(orderDeliveryAddress.getBusinessId(), orderDeliveryAddress.getBusinessType());
+        for (AddTrailerOrderAddressForm deliveryAddress : orderAddressForms) {
+            //绑定商品信息
+            Goods goods = new Goods()
+                    .setBusinessId(deliveryAddress.getBusinessId())
+                    .setBusinessType(deliveryAddress.getBusinessType())
+                    .setName(deliveryAddress.getName())
+                    .setBulkCargoAmount(deliveryAddress.getBulkCargoAmount())
+                    .setBulkCargoUnit(deliveryAddress.getBulkCargoUnit())
+                    .setTotalWeight(deliveryAddress.getTotalWeight())
+                    .setSize(deliveryAddress.getSize())
+                    .setOrderNo(deliveryAddress.getOrderNo())
+                    .setCreateTime(LocalDateTime.now());
+            this.goodsService.saveOrUpdate(goods);
+
+            //订单地址
+            OrderAddress orderAddress = new OrderAddress();
+            orderAddress.setContacts(deliveryAddress.getContacts());
+            orderAddress.setPhone(deliveryAddress.getPhone());
+            orderAddress.setAddress(deliveryAddress.getAddress());
+            orderAddress.setDeliveryDate(DateUtils.str2LocalDateTime(deliveryAddress.getDeliveryDate(), null));
+            orderAddress.setBindGoodsId(goods.getId());
+            orderAddress.setBusinessId(deliveryAddress.getBusinessId());
+            orderAddress.setBusinessType(deliveryAddress.getBusinessType());
+            orderAddress.setFileName(StringUtils.getFileNameStr(deliveryAddress.getTakeFiles()));
+            orderAddress.setFilePath(StringUtils.getFileStr(deliveryAddress.getTakeFiles()));
+            orderAddress.setType(deliveryAddress.getType());
+            orderAddress.setOrderNo(deliveryAddress.getOrderNo());
+            if (orderAddress.getId() == null) {
+                orderAddress.setCreateTime(LocalDateTime.now());
+            }
+            list.add(orderAddress);
+        }
+        this.saveOrUpdateBatch(list);
     }
 
     /**

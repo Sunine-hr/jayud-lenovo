@@ -1796,6 +1796,17 @@ public class ExternalApiController {
 
         return ApiResult.ok(seaOrderProfitVOS);
     }
+
+    /**
+     * 批量保存拖车地址和商品信息
+     * @param orderAddressForms
+     * @return
+     */
+    @RequestMapping(value = "/api/saveOrUpdateOrderAddressAndGoodsBatch")
+    ApiResult saveOrUpdateOrderAddressAndGoodsBatch(@RequestBody List<AddTrailerOrderAddressForm> orderAddressForms){
+        this.orderAddressService.saveOrUpdateOrderAddressAndGoodsBatch(orderAddressForms);
+        return ApiResult.ok();
+    }
 }
 
 

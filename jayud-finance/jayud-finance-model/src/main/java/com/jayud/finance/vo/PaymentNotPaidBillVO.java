@@ -158,6 +158,16 @@ public class PaymentNotPaidBillVO {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private LocalDateTime operationTime;
 
+    @ApiModelProperty(value = "内部操作部门id")
+    private Long internalDepartmentId;
+
+    @ApiModelProperty(value = "是否内部费用")
+    private Boolean isInternal;
+
+    @ApiModelProperty(value = "部门")
+    private String department;
+
+
     public void setAuditStatus(String auditStatus) {
         this.auditStatus = auditStatus;
         this.isDelete = auditStatus.equals(BillEnum.EDIT_DEL.getCode());
@@ -223,5 +233,11 @@ public class PaymentNotPaidBillVO {
             }
         }
         this.costIds = list;
+    }
+
+    public void assemblyInternalContacts(Map<Long, String> departmentMap) {
+        if (isInternal) {
+            this.department = departmentMap.get(this.internalDepartmentId);
+        }
     }
 }

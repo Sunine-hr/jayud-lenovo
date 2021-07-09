@@ -228,6 +228,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
 
+    @ApiModelProperty(value = "操作部门")
+    private String department;
+
     /**
      * 组装商品信息
      */

@@ -398,7 +398,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             Boolean isSumToMain = true;//1
             if ("preSubmit_main".equals(form.getCmd())) {//入主订单费用
                 form.setOrderNo(null);//表中是通过有没有子订单来判断这条数据是主订单的费用还是子订单的费用
-            } else if ("preSubmit_sub".equals(form.getCmd())) {//入子订单费用
+            } else if ("preSubmit_sub".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())) {//入子订单费用
                 if (!(inputOrderVO.getLegalName().equals(form.getSubLegalName()) && inputOrderVO.getUnitCode().equals(form.getSubUnitCode()))) {
                     isSumToMain = false;//0-主，子订单的法人主体和结算单位不一致则不能汇总到主订单
                 }
@@ -421,14 +421,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     orderPaymentCost.setCustomerName(supplierName);
                 }
 
-
-                //新增
+                Long departmentId;
                 if (isSumToMain) {
                     orderPaymentCost.setLegalName(inputOrderVO.getLegalName());
                     orderPaymentCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData().toString()));
+                    departmentId = inputOrderVO.getBizBelongDepart();
                 } else {
                     orderPaymentCost.setLegalName(form.getSubLegalName());
                     orderPaymentCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData().toString()));
+                    departmentId = form.getDepartmentId();
                 }
 
 
@@ -442,7 +443,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     orderPaymentCost.setOptTime(LocalDateTime.now());
                     orderPaymentCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
                     //操作部门
-                    orderPaymentCost.setDepartmentId(form.getDepartmentId() == null ? form.getBizBelongDepart() : form.getDepartmentId());
+                    orderPaymentCost.setDepartmentId(departmentId);
                 }
             }
 
@@ -463,13 +464,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     orderReceivableCost.setCustomerName(customerName);
                 }
 
+                Long departmentId;
                 //新增
                 if (isSumToMain) {
                     orderReceivableCost.setLegalName(inputOrderVO.getLegalName());
                     orderReceivableCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData().toString()));
+                    departmentId = inputOrderVO.getBizBelongDepart();
                 } else {
                     orderReceivableCost.setLegalName(form.getSubLegalName());
                     orderReceivableCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData().toString()));
+                    departmentId = form.getDepartmentId();
                 }
 
                 if ("preSubmit_main".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
@@ -482,7 +486,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     orderReceivableCost.setOptTime(LocalDateTime.now());
                     orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode()));
                     //操作部门
-                    orderReceivableCost.setDepartmentId(form.getDepartmentId() == null ? form.getBizBelongDepart() : form.getDepartmentId());
+                    orderReceivableCost.setDepartmentId(departmentId);
                 }
             }
             if (orderPaymentCosts.size() > 0) {
@@ -1300,6 +1304,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         InputMainOrderVO inputMainOrderVO = getMainOrderById(form.getMainOrderId());
         inputOrderVO.setOrderForm(inputMainOrderVO);
 
+        Map<Long, String> departmentMap = this.oauthClient.findDepartment().getData().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
+
         //获取纯报关和出口报关信息
         if (OrderStatusEnum.CBG.getCode().equals(form.getClassCode()) ||
                 inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CKBG.getCode())) {
@@ -1331,7 +1337,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
                 }
                 inputOrderCustomsVO.setAllPics(allPics);
-
+                inputOrderCustomsVO.setDepartment(departmentMap.get(inputOrderCustomsVO.getDepartmentId()));
 
                 //循环处理接单人和接单时间
                 List<InputSubOrderCustomsVO> inputSubOrderCustomsVOS = inputOrderCustomsVO.getSubOrders();
@@ -1379,6 +1385,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 for (InputOrderTakeAdrVO inputOrderTakeAdr2 : orderTakeAdrForms2) {
                     inputOrderTakeAdr2.setCustomerName(inputMainOrderVO.getCustomerName());
                 }
+                inputOrderTransportVO.setDepartment(departmentMap.get(inputOrderTransportVO.getDepartmentId()));
                 inputOrderVO.setOrderTransportForm(inputOrderTransportVO);
             }
         }
@@ -1391,6 +1398,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 List<FileView> attachments = this.logisticsTrackService.getAttachments(inlandTPVO.getId()
                         , BusinessTypeEnum.NL.getCode(), prePath);
                 inlandTPVO.setAllPics(attachments);
+                inlandTPVO.setDepartment(departmentMap.get(inlandTPVO.getDepartmentId()));
                 inputOrderVO.setOrderInlandTransportForm(inlandTPVO);
             }
         }
@@ -1414,7 +1422,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 if (customerInfo != null) {
                     airOrderVO.setUnitName(customerInfo.getName());
                 }
-
+                airOrderVO.setDepartment(departmentMap.get(airOrderVO.getDepartmentId()));
                 inputOrderVO.setAirOrderForm(airOrderVO);
             }
         }
@@ -1445,6 +1453,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 if (customerInfo != null) {
                     seaOrderVO.setUnitName(customerInfo.getName());
                 }
+                seaOrderVO.setDepartment(departmentMap.get(seaOrderVO.getDepartmentId()));
                 inputOrderVO.setSeaOrderForm(seaOrderVO);
             }
         }
@@ -1470,6 +1479,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         trailerOrderVO.setUnitName(customerInfo.getName());
                     }
                 }
+                trailerOrderVO.setDepartment(departmentMap.get(trailerOrderVO.getDepartmentId()));
             }
             inputOrderVO.setTrailerOrderForm(trailerOrderVOs);
 
@@ -1489,6 +1499,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     if (customerInfo != null) {
                         storageOutOrderVO.setUnitCodeName(customerInfo.getName());
                     }
+                    storageOutOrderVO.setDepartment(departmentMap.get(storageOutOrderVO.getDepartmentId()));
                 }
                 inputOrderVO.setStorageOutOrderForm(storageOutOrderVO);
             }
@@ -1504,6 +1515,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     if (customerInfo != null) {
                         storageInputOrderVO.setUnitCodeName(customerInfo.getName());
                     }
+                    storageInputOrderVO.setDepartment(departmentMap.get(storageInputOrderVO.getDepartmentId()));
                 }
                 inputOrderVO.setStorageInputOrderForm(storageInputOrderVO);
             }
@@ -1519,6 +1531,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     if (customerInfo != null) {
                         inputStorageFastOrderVO.setUnitCodeName(customerInfo.getName());
                     }
+                    inputStorageFastOrderVO.setDepartment(departmentMap.get(inputStorageFastOrderVO.getDepartmentId()));
                 }
                 inputOrderVO.setStorageFastOrderForm(inputStorageFastOrderVO);
             }
@@ -1529,6 +1542,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
 
     @Override
+    @Transactional
     public boolean createOrder(InputOrderForm form) {
         //保存主订单
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
@@ -1546,6 +1560,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         String classCode = inputMainOrderForm.getClassCode();//订单类型
         String selectedServer = inputMainOrderForm.getSelectedServer();//所选服务
+        //提交所有子订单号
+        Map<String, Object> submitOrderMap = new HashMap<>();
 
         //中港运输并且并且订单状态为驳回或为空或为待接单
         if (OrderStatusEnum.ZGYS.getCode().equals(classCode) ||
@@ -1587,6 +1603,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     orderTransportForm.setHkUnitCode(null);
                     orderTransportForm.setIsHkClear(null);
                 }
+                Map<String, Object> subOrderMap = new HashMap<>();
+                submitOrderMap.put(orderTransportForm.getOrderNo(),
+                        subOrderMap.put("departmentId", orderTransportForm.getDepartmentId()));
+
                 orderTransportForm.setMainOrderNo(mainOrderNo);
                 orderTransportForm.setLoginUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
 
@@ -1643,6 +1663,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     inputMainOrderForm.getStatus(), SubOrderSignEnum.NL.getSignOne(), form)) {
                 Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
                         : ProcessStatusEnum.DRAFT.getCode();
+
+                Map<String, Object> subOrderMap = new HashMap<>();
+                submitOrderMap.put(orderInlandTransportForm.getOrderNo(),
+                        subOrderMap.put("departmentId", orderInlandTransportForm.getDepartmentId()));
+
                 //查询结算单位
                 String orderNo = orderInlandTransportForm.getOrderNo();
                 CustomerInfo unitName = this.customerInfoService.getByCode(orderInlandTransportForm.getUnitCode());
@@ -1692,6 +1717,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
             if (this.queryEditOrderCondition(airOrderForm.getStatus(),
                     inputMainOrderForm.getStatus(), SubOrderSignEnum.KY.getSignOne(), form)) {
+
+                Map<String, Object> subOrderMap = new HashMap<>();
+                submitOrderMap.put(airOrderForm.getOrderNo(),
+                        subOrderMap.put("departmentId", airOrderForm.getDepartmentId()));
+
                 //拼装地址信息
                 airOrderForm.assemblyAddress();
                 airOrderForm.setMainOrderNo(mainOrderNo);
@@ -1747,9 +1777,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 seaOrderForm.setOrderNo(orderNo);
             }
 
-
             if (this.queryEditOrderCondition(seaOrderForm.getStatus(),
                     inputMainOrderForm.getStatus(), SubOrderSignEnum.HY.getSignOne(), form)) {
+
+                Map<String, Object> subOrderMap = new HashMap<>();
+                submitOrderMap.put(seaOrderForm.getOrderNo(),
+                        subOrderMap.put("departmentId", seaOrderForm.getDepartmentId()));
+
                 //拼装地址信息
                 seaOrderForm.assemblyAddress();
                 seaOrderForm.assemblyUP();
@@ -1788,6 +1822,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
                     if (this.queryEditOrderCondition(trailerOrderFrom.getStatus(),
                             inputMainOrderForm.getStatus(), SubOrderSignEnum.TC.getSignOne(), form)) {
+                        Map<String, Object> subOrderMap = new HashMap<>();
+                        submitOrderMap.put(trailerOrderFrom.getOrderNo(),
+                                subOrderMap.put("departmentId", trailerOrderFrom.getDepartmentId()));
+
                         trailerOrderFrom.setMainOrderNo(mainOrderNo);
                         trailerOrderFrom.setCreateUser(UserOperator.getToken());
                         Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
@@ -1803,6 +1841,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             } else {
                 if (this.queryEditOrderCondition(trailerOrderFroms.get(0).getStatus(),
                         inputMainOrderForm.getStatus(), SubOrderSignEnum.TC.getSignOne(), form)) {
+
                     if (trailerOrderFroms.get(0).getMainOrderNo() != null) {
                         List<String> data = trailerClient.getOrderNosByMainOrderNo(trailerOrderFroms.get(0).getMainOrderNo()).getData();
                         if (data != null && data.size() > 0) {
@@ -1861,6 +1900,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
                         if (this.queryEditOrderCondition(trailerOrderFrom.getStatus(),
                                 inputMainOrderForm.getStatus(), SubOrderSignEnum.TC.getSignOne(), form)) {
+
+                            Map<String, Object> subOrderMap = new HashMap<>();
+                            submitOrderMap.put(trailerOrderFrom.getOrderNo(),
+                                    subOrderMap.put("departmentId", trailerOrderFrom.getDepartmentId()));
+
                             trailerOrderFrom.setMainOrderNo(mainOrderNo);
                             trailerOrderFrom.setCreateUser(UserOperator.getToken());
                             Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
@@ -1912,6 +1956,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
                 if (this.queryEditOrderCondition(storageInputOrderForm.getStatus(),
                         inputMainOrderForm.getStatus(), SubOrderSignEnum.CCI.getSignOne(), form)) {
+
+                    Map<String, Object> subOrderMap = new HashMap<>();
+                    submitOrderMap.put(storageInputOrderForm.getOrderNo(),
+                            subOrderMap.put("departmentId", storageInputOrderForm.getDepartmentId()));
+
                     storageInputOrderForm.setMainOrderNo(mainOrderNo);
                     for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageInputOrderForm.getGoodsFormList()) {
                         addWarehouseGoodsForm.setFileName(StringUtils.getFileNameStr(addWarehouseGoodsForm.getTakeFiles()));
@@ -1958,6 +2007,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
                 if (this.queryEditOrderCondition(storageOutOrderForm.getStatus(),
                         inputMainOrderForm.getStatus(), SubOrderSignEnum.CCE.getSignOne(), form)) {
+
+                    Map<String, Object> subOrderMap = new HashMap<>();
+                    submitOrderMap.put(storageOutOrderForm.getOrderNo(),
+                            subOrderMap.put("departmentId", storageOutOrderForm.getDepartmentId()));
+
                     storageOutOrderForm.setMainOrderNo(mainOrderNo);
                     storageOutOrderForm.setCmd(form.getCmd());
                     for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageOutOrderForm.getGoodsFormList()) {
@@ -2004,6 +2058,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
                 if (this.queryEditOrderCondition(storageFastOrderForm.getStatus(),
                         inputMainOrderForm.getStatus(), SubOrderSignEnum.CCF.getSignOne(), form)) {
+
+                    Map<String, Object> subOrderMap = new HashMap<>();
+                    submitOrderMap.put(storageFastOrderForm.getOrderNo(),
+                            subOrderMap.put("departmentId", storageFastOrderForm.getDepartmentId()));
+
                     storageFastOrderForm.setMainOrderNo(mainOrderNo);
                     if (CollectionUtils.isNotEmpty(storageFastOrderForm.getInGoodsFormList())) {
                         for (AddWarehouseGoodsForm addWarehouseGoodsForm : storageFastOrderForm.getInGoodsFormList()) {
@@ -2068,6 +2127,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 //如果没有生成子订单则不调用
                 if (orderCustomsForm.getSubOrders() != null && orderCustomsForm.getSubOrders().size() >= 0) {
 
+                    orderCustomsForm.getSubOrders().forEach(e -> {
+                        Map<String, Object> subOrderMap = new HashMap<>();
+                        submitOrderMap.put(e.getOrderNo(),
+                                subOrderMap.put("departmentId", e.getDepartmentId()));
+                    });
+
                     if (oldMainOrderNo != null) {
                         orderCustomsForm.setOldMainOrderNo(oldMainOrderNo);
                     }
@@ -2087,6 +2152,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             }
         }
+        //批量操作
+        this.orderBatchOperation(form, submitOrderMap);
         return true;
     }
 
@@ -2944,16 +3011,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     //只同步草稿状态
                     continue;
                 }
-                convert.setId(bind.getId()).setReceivableId(receivableCost.getId())
-                        .setInternalDepartmentId(receivableCost.getDepartmentId())
-                        .setDepartmentId(Long.valueOf(orderInfo.getBizBelongDepart()));
+                convert.setId(bind.getId()).setReceivableId(receivableCost.getId());
             } else {
                 convert.setId(null).setReceivableId(receivableCost.getId())
                         .setCreatedTime(LocalDateTime.now()).setCreatedUser(UserOperator.getToken());
             }
             convert.setOrderNo(null).setLegalName(null).setLegalId(null).setCustomerCode(null).setCustomerName(null)
                     .setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()))
-                    .setIsSumToMain(true).setIsBill("0").setSubType("main");
+                    .setIsSumToMain(true).setIsBill("0").setSubType("main")
+                    .setInternalDepartmentId(receivableCost.getDepartmentId())
+                    .setDepartmentId(Long.valueOf(orderInfo.getBizBelongDepart()));
             if (supplierInfo != null) {
                 convert.setCustomerName(supplierInfo.getSupplierChName()).setCustomerCode(supplierInfo.getSupplierCode());
             }
@@ -2971,8 +3038,29 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     }
 
-    public static void main(String[] args) {
 
-        System.out.println("21321");
+    private void orderBatchOperation(InputOrderForm form, Map<String, Object> submitOrderMap) {
+        if ("submit".equals(form.getCmd())) {
+            //同步更新费用
+            this.synchronousUpdateFee(submitOrderMap);
+        }
     }
+
+    /**
+     * 同步更新费用
+     *
+     * @param submitOrderMap
+     */
+    private void synchronousUpdateFee(Map<String, Object> submitOrderMap) {
+        submitOrderMap.forEach((k, v) -> {
+            if (v != null) {
+                Map<String, Object> map = (Map<String, Object>) v;
+                Object departmentId = map.get("departmentId");
+
+            }
+
+        });
+    }
+
+
 }

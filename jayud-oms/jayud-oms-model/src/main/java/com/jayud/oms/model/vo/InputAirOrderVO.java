@@ -129,6 +129,9 @@ public class InputAirOrderVO {
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
 
+    @ApiModelProperty(value = "操作部门")
+    private String department;
+
     public void copyOperationInfo() {
         this.id = null;
         this.allPics = new ArrayList<>();

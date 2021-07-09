@@ -145,7 +145,7 @@ public class OrderComboxController {
         resultMap.put(CommonConstant.CONTRACTS, comboxStrVOS);
 
         //业务所属部门
-        initComboxVOS = (List<InitComboxVO>) oauthClient.findDepartment().getData();
+        initComboxVOS =  oauthClient.findDepartment().getData();
         resultMap.put(CommonConstant.DEPARTMENTS, initComboxVOS);
 
         //通关口岸
@@ -555,7 +555,7 @@ public class OrderComboxController {
     public CommonResult initStorageUnit() {
         //获取操作主体下拉列表
         List<InitComboxVO> legals = oauthClient.findLegalEntity().getData();
-        List<InitComboxVO> departments = (List<InitComboxVO>) oauthClient.findDepartment().getData();
+        List<InitComboxVO> departments = oauthClient.findDepartment().getData();
         Map map = new HashMap();
         map.put("legalEntitys", legals);
         map.put("departments", departments);
@@ -619,7 +619,7 @@ public class OrderComboxController {
     @PostMapping(value = "/initDepartment")
     public CommonResult<List<InitComboxVO>> initDepartment(Map<String, Object> map) {
         //业务所属部门
-        List<InitComboxVO> initComboxVOS = (List<InitComboxVO>) oauthClient.findDepartment().getData();
+        List<InitComboxVO> initComboxVOS = oauthClient.findDepartment().getData();
         return CommonResult.success(initComboxVOS);
     }
 

@@ -176,11 +176,12 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                 }
             }
         }
-
+        Map<Long, String> departmentMap = this.oauthClient.findDepartment().getData().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
         //币种
         Map<String, String> currencyMap = this.omsClient.initCurrencyInfo().getData().stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
         pageInfo.getRecords().forEach(e -> {
             e.assembleAmountStr(currencyMap.get(e.getCurrencyCode()));
+            e.assemblyInternalContacts(departmentMap);
         });
         return pageInfo;
     }
@@ -601,6 +602,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
 
     /**
      * 拼接sql
+     *
      * @param param
      * @return
      */

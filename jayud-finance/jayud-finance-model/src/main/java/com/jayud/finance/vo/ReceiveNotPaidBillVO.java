@@ -118,6 +118,15 @@ public class ReceiveNotPaidBillVO {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private LocalDateTime operationTime;
 
+    @ApiModelProperty(value = "所属部门id")
+    private Long bizBelongDepart;
+
+    @ApiModelProperty(value = "是否内部费用")
+    private Boolean isInternal;
+
+    @ApiModelProperty(value = "部门")
+    private String department;
+
     public void assembleInlandTPData(List<OrderInlandTransportDetails> dataList) {
         if (CollectionUtils.isEmpty(dataList)) {
             return;
@@ -169,5 +178,11 @@ public class ReceiveNotPaidBillVO {
         }
         this.costIds = list;
 
+    }
+
+    public void assemblyInternalContacts(Map<Long, String> departmentMap) {
+        if (isInternal) {
+            this.department = departmentMap.get(this.bizBelongDepart);
+        }
     }
 }

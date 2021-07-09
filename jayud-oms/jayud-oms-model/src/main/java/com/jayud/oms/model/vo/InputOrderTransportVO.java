@@ -171,6 +171,9 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
 
+    @ApiModelProperty(value = "操作部门")
+    private String department;
+
     public String getGoodsTypeDesc() {
         if (CommonConstant.VALUE_1.equals(this.goodsType)) {
             goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_1;

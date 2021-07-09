@@ -17,9 +17,9 @@ public class InputOrderVO {
     @ApiModelProperty(value = "报关单")
     private InputOrderCustomsVO orderCustomsForm;
 
+
     @ApiModelProperty(value = "中港单")
     private InputOrderTransportVO orderTransportForm;
-
     @ApiModelProperty(value = "空运单")
     private InputAirOrderVO airOrderForm;
 

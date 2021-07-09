@@ -2,6 +2,7 @@ package com.jayud.finance.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.entity.InitComboxVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,4 +41,12 @@ public interface OauthClient {
      */
     @RequestMapping(value = "/api/getDepartmentByDepartment")
     ApiResult getDepartmentByDepartment(@RequestParam("departmentIds") List<Long> departmentIds);
+
+    /**
+     * 获取接单部门
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/findDepartment")
+    ApiResult<List<InitComboxVO>> findDepartment();
 }

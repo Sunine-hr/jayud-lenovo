@@ -1827,8 +1827,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         submitOrderMap.put(trailerOrderFrom.getOrderNo(),
                                 subOrderMap.put("departmentId", trailerOrderFrom.getDepartmentId()));
 
-                        LegalEntityVO data = (LegalEntityVO)oauthClient.getLegalEntityByLegalId(trailerOrderFrom.getLegalEntityId()).getData();
-                        trailerOrderFrom.setLegalName(data.getLegalName());
+//                        trailerOrderFrom.setLegalName(oauthClient.getLegalNameByLegalId(trailerOrderFrom.getLegalEntityId()).getData());
 
                         trailerOrderFrom.setMainOrderNo(mainOrderNo);
                         trailerOrderFrom.setCreateUser(UserOperator.getToken());
@@ -1909,8 +1908,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                             submitOrderMap.put(trailerOrderFrom.getOrderNo(),
                                     subOrderMap.put("departmentId", trailerOrderFrom.getDepartmentId()));
 
-                            LegalEntityVO legalEntityVO = (LegalEntityVO)oauthClient.getLegalEntityByLegalId(trailerOrderFrom.getLegalEntityId()).getData();
-                            trailerOrderFrom.setLegalName(legalEntityVO.getLegalName());
+//                            LegalEntityVO legalEntityVO = (LegalEntityVO)oauthClient.getLegalEntityByLegalId(trailerOrderFrom.getLegalEntityId()).getData();
+                            trailerOrderFrom.setLegalName(oauthClient.getLegalNameByLegalId(trailerOrderFrom.getLegalEntityId()).getData());
 
                             trailerOrderFrom.setMainOrderNo(mainOrderNo);
                             trailerOrderFrom.setCreateUser(UserOperator.getToken());

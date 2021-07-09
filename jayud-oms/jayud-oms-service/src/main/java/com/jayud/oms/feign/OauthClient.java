@@ -7,6 +7,7 @@ import com.jayud.oms.model.bo.AddCusAccountForm;
 import com.jayud.oms.model.bo.QueryAccountForm;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.model.vo.SystemUserVO;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -111,6 +112,12 @@ public interface OauthClient {
      */
     @RequestMapping(value = "/api/getLegalEntityByLegalId")
     public ApiResult getLegalEntityByLegalId(@RequestParam("legalId") Long legalId);
+
+    /**
+     * 根据法人主体id查询法人主体名称
+     */
+    @RequestMapping(value = "/api/getLegalNameByLegalId")
+    public ApiResult<String> getLegalNameByLegalId(@RequestParam("legalId") Long legalId);
 
     /**
      * 根据部门名称查询部门id

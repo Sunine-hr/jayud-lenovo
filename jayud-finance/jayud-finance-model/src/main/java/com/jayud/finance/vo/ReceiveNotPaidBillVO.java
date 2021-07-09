@@ -181,7 +181,7 @@ public class ReceiveNotPaidBillVO {
     }
 
     public void assemblyInternalContacts(Map<Long, String> departmentMap) {
-        if (isInternal) {
+        if (isInternal != null && isInternal) {
             this.department = departmentMap.get(this.bizBelongDepart);
         }
     }

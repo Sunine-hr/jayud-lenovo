@@ -79,6 +79,8 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     InputCostVO getCostDetail(GetCostDetailForm form);
 
+    void calculateCost(InputCostVO inputCostVO);
+
     /**
      * 审核费用
      *

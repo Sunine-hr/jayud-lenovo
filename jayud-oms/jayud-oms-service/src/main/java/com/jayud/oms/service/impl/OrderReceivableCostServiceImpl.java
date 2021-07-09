@@ -321,4 +321,17 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
         condition.lambda().eq(OrderReceivableCost::getMainOrderNo, mainOrderNo);
         return this.baseMapper.selectList(condition);
     }
+
+    /**
+     * 根据主订单号集合获取应收费用
+     * @param mainOrderNos
+     * @return
+     */
+    @Override
+    public List<OrderReceivableCost> getOrderReceivableCostByMainOrderNos(List<String> mainOrderNos) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderReceivableCost::getMainOrderNo, mainOrderNos);
+        condition.lambda().in(OrderReceivableCost::getIsSumToMain, true);
+        return this.baseMapper.selectList(condition);
+    }
 }

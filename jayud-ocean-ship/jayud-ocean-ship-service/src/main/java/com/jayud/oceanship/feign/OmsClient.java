@@ -13,10 +13,7 @@ import com.jayud.oceanship.bo.AddOrderAddressForm;
 import com.jayud.oceanship.bo.AuditInfoForm;
 import com.jayud.oceanship.bo.SeaProcessOptForm;
 import com.jayud.oceanship.po.OrderFlowSheet;
-import com.jayud.oceanship.vo.GoodsVO;
-import com.jayud.oceanship.vo.InitComboxSVO;
-import com.jayud.oceanship.vo.OrderAddressVO;
-import com.jayud.oceanship.vo.OrderReceivableCostVO;
+import com.jayud.oceanship.vo.*;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -272,4 +269,8 @@ public interface OmsClient {
     @ApiOperation(value = "获取该币种转换成美元的汇率")
     @RequestMapping(value = "/api/getExchangeRateByCurrency")
     ApiResult<BigDecimal> getExchangeRateByCurrency(@RequestParam("currencyCode")String currencyCode, @RequestParam("usd")String usd, @RequestParam("month")String month);
+
+    @ApiOperation(value = "根据主订单号集合获取订单利润")
+    @RequestMapping(value = "/api/getOrderCostByMainOrderNos")
+    ApiResult<List<SeaOrderProfitVO>> getOrderCostByMainOrderNos(@RequestBody List<String> mainOrderNos);
 }

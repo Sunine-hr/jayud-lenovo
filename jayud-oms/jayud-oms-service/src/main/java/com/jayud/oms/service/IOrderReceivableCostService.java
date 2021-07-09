@@ -115,4 +115,11 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
      * @return
      */
     List<OrderReceivableCost> getOrderReceivableCostByMainOrderNo(String mainOrderNo);
+
+    /**
+     * 根据主订单号集合获取应收费用
+     * @param mainOrderNos
+     * @return
+     */
+    List<OrderReceivableCost> getOrderReceivableCostByMainOrderNos(List<String> mainOrderNos);
 }

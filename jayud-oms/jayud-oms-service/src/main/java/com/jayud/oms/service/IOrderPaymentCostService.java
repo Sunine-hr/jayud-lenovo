@@ -145,4 +145,11 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
      * @return
      */
     List<OrderPaymentCost> getSubCostByMainOrderNo(OrderPaymentCost paymentCost, List<String> exclusionStatus);
+
+    /**
+     * 根据主订单号集合获取应付费用
+     * @param mainOrderNos
+     * @return
+     */
+    List<OrderPaymentCost> getOrderPaymentCostByMainOrderNos(List<String> mainOrderNos);
 }

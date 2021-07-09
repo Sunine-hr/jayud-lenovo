@@ -1,5 +1,8 @@
 package com.jayud.oceanship.vo;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -38,7 +41,7 @@ public class SeaOrderVO {
     private String mainOrderNo;
 
     @ApiModelProperty(value = "主订单编号")
-    private Long mainOrderId;
+    private String mainOrderId;
 
     @ApiModelProperty(value = "海运订单编号")
     private String orderNo;
@@ -221,6 +224,16 @@ public class SeaOrderVO {
     @ApiModelProperty(value = "提单重量")
     private Double billLadingWeight;
 
+    @ApiModelProperty(value = "业务员")
+    private String bizUname;
+
+    //@ApiModelProperty(value = "对应业务类型")
+    private String bizCode;
+
+    //@ApiModelProperty(value = "订单类别")
+    private String classCode;
+
+
     public void processingAddress(OrderAddressVO addressVO) {
         switch (addressVO.getType()) {
             case 0:
@@ -247,4 +260,27 @@ public class SeaOrderVO {
         this.processStatus = processStatus;
         this.processStatusDesc = ProcessStatusEnum.getDesc(processStatus);
     }
+
+    /**
+     * @param mainOrderObjs 远程客户对象集合
+     */
+    public void assemblyMainOrderData(Object mainOrderObjs) {
+        if (mainOrderObjs == null) {
+            return;
+        }
+        JSONArray mainOrders = new JSONArray(JSON.toJSONString(mainOrderObjs));
+        for (int i = 0; i < mainOrders.size(); i++) {
+            JSONObject json = mainOrders.getJSONObject(i);
+            if (this.mainOrderNo.equals(json.getStr("orderNo"))) { //主订单配对
+                this.customerName = json.getStr("customerName");
+                this.mainOrderId = json.getStr("id");
+                this.bizUname = json.getStr("bizUname");
+                this.bizCode = json.getStr("bizCode");
+                this.classCode = json.getStr("classCode");
+                break;
+            }
+        }
+
+    }
+
 }

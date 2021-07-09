@@ -973,7 +973,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      *
      * @param inputCostVO
      */
-    private void calculateCost(InputCostVO inputCostVO) {
+    @Override
+    public void calculateCost(InputCostVO inputCostVO) {
         Map<String, BigDecimal> receivableCost = new HashMap<>();//应收币种
         Map<String, BigDecimal> paymentCost = new HashMap<>();//应付币种
         //应付总本币

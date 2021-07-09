@@ -19,6 +19,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
@@ -1208,6 +1209,96 @@ public class SeaOrderController {
         }
     }
 
+    @Value("${address.retAddress}")
+    private String retAddress;
+
+    @ApiOperation(value = "导出电商货量利润统计表")
+    @GetMapping(value = "/uploadRetailersExcel")
+    public void uploadRetailersExcel( HttpServletResponse response) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("legal_name","深圳市佳裕达电商科技有限公司");
+//        queryWrapper.eq("main_order_no","JYD81221070243");
+        List<SeaOrder> list = seaOrderService.list(queryWrapper);
+        List<String> mainOrderNos = new ArrayList<>();
+        for (SeaOrder seaOrder : list) {
+            mainOrderNos.add(seaOrder.getMainOrderNo());
+        }
+        List<SeaOrderProfitVO> seaOrderProfitVOS = omsClient.getOrderCostByMainOrderNos(mainOrderNos).getData();
+        for (SeaOrderProfitVO seaOrderProfitVO : seaOrderProfitVOS) {
+            SeaOrder byMainOrderNO = seaOrderService.getByMainOrderNO(seaOrderProfitVO.getMainOrderNo());
+            SeaOrderVO seaOrderDetails = seaOrderService.getSeaOrderDetails(byMainOrderNO.getId());
+            seaOrderProfitVO.setBizName(seaOrderDetails.getBizUname());
+            if(seaOrderDetails.getSeaBookshipVO().getClosingTime() != null){
+                seaOrderProfitVO.setCreateTime(seaOrderDetails.getSeaBookshipVO().getCreateTime().toString().replaceAll("T"," "));
+                seaOrderProfitVO.setEta(seaOrderDetails.getSeaBookshipVO().getEta().toString().replaceAll("T"," "));
+                seaOrderProfitVO.setEtd(seaOrderDetails.getSeaBookshipVO().getEtd().toString().replaceAll("T"," "));
+            }
+            seaOrderProfitVO.setCustomerName(seaOrderDetails.getCustomerName());
+            seaOrderProfitVO.setPortDeparture(seaOrderDetails.getPortDeparture());
+            seaOrderProfitVO.setPortDestination(seaOrderDetails.getPortDestination());
+            seaOrderProfitVO.setCabinetTypeName(seaOrderDetails.getCabinetTypeName());
+            if(CollectionUtils.isNotEmpty(seaOrderDetails.getGoodsForms())){
+                List<GoodsVO> goodsForms = seaOrderDetails.getGoodsForms();
+                GoodsVO goodsVO = goodsForms.get(0);
+                seaOrderProfitVO.setBulkCargoAmount((goodsVO.getBulkCargoAmount()==null ? 0:goodsVO.getBulkCargoAmount())+(goodsVO.getBulkCargoUnit()==null?"":goodsVO.getBulkCargoUnit()));
+                seaOrderProfitVO.setTotalWeight(goodsVO.getTotalWeight());
+                seaOrderProfitVO.setVolume(goodsVO.getVolume());
+            }
+
+        }
+        try {
+//            File file = new File(retAddress);
+//            String name = file.getName();
+//            InputStream inputStream = new FileInputStream(file);
+//
+//            Workbook templateWorkbook = null;
+//            String fileType = name.substring(name.lastIndexOf("."));
+//            if (".xls".equals(fileType)) {
+//                templateWorkbook = new HSSFWorkbook(inputStream); // 2003-
+//            } else if (".xlsx".equals(fileType)) {
+//                templateWorkbook = new XSSFWorkbook(inputStream); // 2007+
+//            } else {
+//
+//            }
+//            //HSSFWorkbook templateWorkbook = new HSSFWorkbook(inputStream);
+//
+//            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+//            templateWorkbook.write(outStream);
+//            ByteArrayInputStream templateInputStream = new ByteArrayInputStream(outStream.toByteArray());
+//
+//            String fileName = "电商需求货量利润统计表";
+//
+//            response.setContentType("application/vnd.ms-excel");
+//            response.setCharacterEncoding("utf-8");
+//            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+//            String filename = URLEncoder.encode(fileName, "utf-8");
+//            response.setHeader("Content-disposition", "attachment;filename=" + filename + ".xlsx");
+//
+//            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateInputStream).build();
+//
+//            WriteSheet writeSheet = EasyExcel.writerSheet().build();
+//
+//            FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
+
+//            FillConfig fillConfig = FillConfig.builder().direction(WriteDirectionEnum.VERTICAL).build();
+//            将指定数据填充
+            Map<String, Object> map = new HashMap<String, Object>();
+            JSONArray jsonArray = new JSONArray(seaOrderProfitVOS);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.putOnce("re", jsonArray);
+            Map<String, List<Object>> map1 = new HashMap();
+            map1.put("seaOrderProfitVO", jsonObject.get("re", List.class));
+//
+            EasyExcelUtils.fillTemplate2(new JSONObject(), map1, retAddress,null ,"电商需求货量利润统计表", response);
+//            excelWriter.fill(new FillWrapper("orderReceivableCost", seaOrderProfitVOS), fillConfig ,writeSheet);
+//            excelWriter.finish();
+//            outStream.close();
+//            inputStream.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
 
 }
 

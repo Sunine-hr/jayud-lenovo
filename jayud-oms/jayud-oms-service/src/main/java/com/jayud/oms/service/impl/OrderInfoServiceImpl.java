@@ -1909,6 +1909,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                             submitOrderMap.put(trailerOrderFrom.getOrderNo(),
                                     subOrderMap.put("departmentId", trailerOrderFrom.getDepartmentId()));
 
+                            LegalEntityVO legalEntityVO = (LegalEntityVO)oauthClient.getLegalEntityByLegalId(trailerOrderFrom.getLegalEntityId()).getData();
+                            trailerOrderFrom.setLegalName(legalEntityVO.getLegalName());
+
                             trailerOrderFrom.setMainOrderNo(mainOrderNo);
                             trailerOrderFrom.setCreateUser(UserOperator.getToken());
                             Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()

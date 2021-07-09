@@ -364,4 +364,12 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
         this.update(orderPaymentCost, condition);
     }
 
+    @Override
+    public List<OrderPaymentCost> getOrderPaymentCostByMainOrderNos(List<String> mainOrderNos) {
+        QueryWrapper<OrderPaymentCost> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderPaymentCost::getMainOrderNo, mainOrderNos);
+        condition.lambda().in(OrderPaymentCost::getIsSumToMain, true);
+        return this.baseMapper.selectList(condition);
+    }
+
 }

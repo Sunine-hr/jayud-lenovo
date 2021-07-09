@@ -2153,7 +2153,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
         //批量操作
-        this.orderBatchOperation(form, submitOrderMap);
+//        this.orderBatchOperation(form, submitOrderMap);
         return true;
     }
 
@@ -3055,10 +3055,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         submitOrderMap.forEach((k, v) -> {
             if (v != null) {
                 Map<String, Object> map = (Map<String, Object>) v;
-                Object departmentId = map.get("departmentId");
-
+                Long departmentId = (Long) map.get("departmentId");
+                this.receivableCostService.updateByOrderNo(null, k,
+                        new OrderReceivableCost().setDepartmentId(departmentId));
             }
-
         });
     }
 

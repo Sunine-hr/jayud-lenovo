@@ -209,19 +209,25 @@
         left join supplier_info si on si.supplier_code = opc.customer_code
         LEFT JOIN order_info oi ON opc.main_order_no = oi.order_no
         LEFT JOIN product_biz pb ON oi.biz_code = pb.id_code
-        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
-            <choose>
-                <when test="form.cmd == 'zgys'">
-                    LEFT JOIN order_transport sub ON sub.main_order_no = oi.order_no
-                    LEFT JOIN order_send_cars osc ON sub.order_no = osc.order_no
-                    left join vehicle_info vi on vi.id = osc.vehicle_id
-                    left join order_customs oc on oc.order_no = opc.order_no
-                </when>
-                <otherwise>
-                    left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
-                </otherwise>
-            </choose>
-        </if>
+        <choose>
+            <when test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                <choose>
+                    <when test="form.cmd == 'zgys'">
+                        LEFT JOIN order_transport sub ON sub.main_order_no = oi.order_no
+                        LEFT JOIN order_send_cars osc ON sub.order_no = osc.order_no
+                        left join vehicle_info vi on vi.id = osc.vehicle_id
+                        left join order_customs oc on oc.order_no = opc.order_no
+                    </when>
+                    <when test="form.cmd == 'cce' or form.cmd == 'cci' or form.cmd == 'ccf'">
+
+                    </when>
+                    <otherwise>
+                        left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
+                    </otherwise>
+                </choose>
+            </when>
+        </choose>
+
 
         LEFT JOIN cost_genre cg ON opc.cost_genre_id = cg.id
         LEFT JOIN cost_type ct ON opc.cost_type_id = ct.id
@@ -245,7 +251,7 @@
 
         <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
             <choose>
-                <when test="form.cmd == 'cce' or form.cmd == 'cci'">
+                <when test="form.cmd == 'cce' or form.cmd == 'cci' or form.cmd == 'ccf'">
                     and opc.legal_name = #{form.legalName}
                     and opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd}
                 </when>
@@ -329,6 +335,9 @@
         </if>
         <if test="form.bizCode != null and form.bizCode!=''">
             and temp.bizCode =#{form.bizCode}
+        </if>
+        <if test="form.internalDepartmentId != null">
+            and temp.internal_department_id =#{form.departmentId}
         </if>
 
     </select>
@@ -1099,19 +1108,25 @@
         left join supplier_info si on si.supplier_code = opc.customer_code
         LEFT JOIN order_info oi ON opc.main_order_no = oi.order_no
         LEFT JOIN product_biz pb ON oi.biz_code = pb.id_code
-        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
-            <choose>
-                <when test="form.cmd == 'zgys'">
-                    LEFT JOIN order_transport sub ON sub.main_order_no = oi.order_no
-                    LEFT JOIN order_send_cars osc ON sub.order_no = osc.order_no
-                    left join vehicle_info vi on vi.id = osc.vehicle_id
-                    left join order_customs oc on oc.order_no = opc.order_no
-                </when>
-                <otherwise>
-                    left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
-                </otherwise>
-            </choose>
-        </if>
+        <choose>
+            <when test="form.cmd == 'cce' or form.cmd == 'cci' or form.cmd == 'ccf'">
+
+            </when>
+            <when test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                <choose>
+                    <when test="form.cmd == 'zgys'">
+                        LEFT JOIN order_transport sub ON sub.main_order_no = oi.order_no
+                        LEFT JOIN order_send_cars osc ON sub.order_no = osc.order_no
+                        left join vehicle_info vi on vi.id = osc.vehicle_id
+                        left join order_customs oc on oc.order_no = opc.order_no
+                    </when>
+                    <otherwise>
+                        left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
+                    </otherwise>
+                </choose>
+            </when>
+        </choose>
+
         WHERE
         opc.id NOT IN ( SELECT opbd.cost_id FROM order_payment_bill_detail opbd )
         and (opc.is_bill != '2' and opc.is_bill != 'save_confirm')
@@ -1123,7 +1138,7 @@
         </if>
         <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
             <choose>
-                <when test="form.cmd == 'cce' or form.cmd == 'cci'">
+                <when test="form.cmd == 'cce' or form.cmd == 'cci' or form.cmd == 'ccf'">
                     and opc.legal_name = #{form.legalName}
                     and opc.is_sum_to_main = 0 and opc.sub_type = #{form.cmd}
                 </when>

@@ -233,7 +233,9 @@
         <if test="form.bizCode != null and form.bizCode!=''">
             and temp.bizCode =#{form.bizCode}
         </if>
-
+        <if test="form.departmentId != null">
+            and temp.biz_belong_depart =#{form.departmentId}
+        </if>
     </select>
 
 
@@ -254,9 +256,15 @@
         LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no
         left join customer_info c on c.id_code = orc.customer_code
         LEFT JOIN product_biz pb ON pb.id_code = oi.biz_code
-        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
-            left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no
-        </if>
+        <choose>
+            <when test="form.cmd == 'cce' or form.cmd == 'cci' or form.cmd == 'ccf'">
+
+            </when>
+            <when test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
+                left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no
+            </when>
+        </choose>
+
         WHERE
         orc.id NOT IN ( SELECT orbd.cost_id FROM order_receivable_bill_detail orbd where orbd.audit_status!='edit_del')
         and (orc.is_bill != '2' and orc.is_bill!='save_confirm')
@@ -268,7 +276,7 @@
         </if>
         <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
             <choose>
-                <when test="form.cmd == 'cce' or form.cmd == 'cci'">
+                <when test="form.cmd == 'cce' or form.cmd == 'cci' or form.cmd == 'ccf'">
                     and orc.legal_name = #{form.legalName}
                     and orc.is_sum_to_main = 0 and orc.sub_type = #{form.cmd}
                 </when>

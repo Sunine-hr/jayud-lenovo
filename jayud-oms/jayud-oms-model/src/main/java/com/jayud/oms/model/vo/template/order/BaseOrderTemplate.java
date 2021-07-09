@@ -38,14 +38,14 @@ public class BaseOrderTemplate {
         String paymentStatusDesc = MapUtil.getStr(paymentCostStatus, tmpOrderNo);
 
         if (!StringUtils.isEmpty(receivableStatusDesc)) {
-            String[] split = receivableStatusDesc.split("-");
+            String[] split = receivableStatusDesc.split("-",2);
             this.receivableCostStatus = split[0];
         } else {
             this.receivableCostStatus = "未录入";
         }
 
         if (!StringUtils.isEmpty(paymentStatusDesc)) {
-            String[] split = paymentStatusDesc.split("-");
+            String[] split = paymentStatusDesc.split("-",2);
             this.paymentCostStatus = split[0];
         } else {
             this.paymentCostStatus = "未录入";

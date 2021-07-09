@@ -306,7 +306,7 @@ public class OrderInfoVO {
         BigDecimal paymentCost = new BigDecimal(0);
 
         if (!StringUtils.isEmpty(receivableStatusDesc)) {
-            String[] split = receivableStatusDesc.split("-");
+            String[] split = receivableStatusDesc.split("-",2);
             this.receivableCostStatus = split[0];
             receivableCost = new BigDecimal(split[1]);
         } else {
@@ -314,7 +314,7 @@ public class OrderInfoVO {
         }
 
         if (!StringUtils.isEmpty(paymentStatusDesc)) {
-            String[] split = paymentStatusDesc.split("-");
+            String[] split = paymentStatusDesc.split("-",2);
             this.paymentCostStatus = split[0];
             paymentCost = new BigDecimal(split[1]);
         } else {

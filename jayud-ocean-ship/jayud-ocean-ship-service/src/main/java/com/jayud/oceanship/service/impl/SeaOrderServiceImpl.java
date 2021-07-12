@@ -802,6 +802,10 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         convert.getFile(prePath);
         seaOrder.setSeaBookshipVO(convert);
 
+        //查询主订单信息
+        ApiResult mainOrderByOrderNos = omsClient.getMainOrderByOrderNos(Collections.singletonList(seaOrder.getMainOrderNo()));
+        seaOrder.assemblyMainOrderData(mainOrderByOrderNos.getData());
+
 //        System.out.println("status========================"+seaOrder.getStatus());
         if (seaOrder.getStatus() != OrderStatusEnum.SEA_S_0.getCode() || seaOrder.getStatus() != OrderStatusEnum.SEA_S_1.getCode()) {
             CommonResult<List<InitComboxVO>> initSupplierInfo = omsClient.initSupplierInfo();

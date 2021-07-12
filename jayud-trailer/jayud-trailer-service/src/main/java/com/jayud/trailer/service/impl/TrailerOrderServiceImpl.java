@@ -103,49 +103,24 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
                 log.error(trailerOrder.getMainOrderNo()+"拖车单修改失败");
             }
         }
-        omsClient.deleteGoodsByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()), BusinessTypeEnum.TC.getCode());
-        omsClient.deleteOrderAddressByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()), BusinessTypeEnum.TC.getCode());
+//        omsClient.deleteGoodsByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()), BusinessTypeEnum.TC.getCode());
+//        omsClient.deleteOrderAddressByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()), BusinessTypeEnum.TC.getCode());
         if (addTrailerOrderFrom.getOrderAddressForms() != null && addTrailerOrderFrom.getOrderAddressForms().size() > 0) {
             //获取用户地址
             List<AddTrailerOrderAddressForm> orderAddressForms = addTrailerOrderFrom.getOrderAddressForms();
-            List<AddOrderAddressForm> orderAddressForms1 = new ArrayList<>();
             for (AddTrailerOrderAddressForm addTrailerOrderAddressForm : orderAddressForms) {
 
-                AddGoodsForm goodsForm = new AddGoodsForm();
-                goodsForm.setId(addTrailerOrderAddressForm.getBindGoodsId());
-                goodsForm.setOrderNo(trailerOrder.getOrderNo());
-                goodsForm.setId(addTrailerOrderAddressForm.getBindGoodsId());
-                goodsForm.setBusinessId(trailerOrder.getId());
-                goodsForm.setBusinessType(BusinessTypeEnum.TC.getCode());
-                goodsForm.setName(addTrailerOrderAddressForm.getName());
-                goodsForm.setSize(addTrailerOrderAddressForm.getSize());
-                goodsForm.setBulkCargoAmount(addTrailerOrderAddressForm.getBulkCargoAmount());
-                goodsForm.setBulkCargoUnit(addTrailerOrderAddressForm.getBulkCargoUnit());
-                goodsForm.setTotalWeight(addTrailerOrderAddressForm.getTotalWeight());
-                goodsForm.setVolume(addTrailerOrderAddressForm.getVolume());
+                addTrailerOrderAddressForm.setOrderNo(trailerOrder.getOrderNo());
+                addTrailerOrderAddressForm.setBusinessId(trailerOrder.getId());
+                addTrailerOrderAddressForm.setBusinessType(BusinessTypeEnum.TC.getCode());
+                addTrailerOrderAddressForm.setType(3);
 
-                //批量保存货物信息
-                ApiResult result = this.omsClient.saveOrUpdateGood(goodsForm);
-                if (result.getCode() != HttpStatus.SC_OK) {
-                    log.warn("批量保存/修改商品信息失败,商品信息={}", new JSONArray(goodsForm));
-                }
-
-                AddOrderAddressForm orderAddressForm = ConvertUtil.convert(addTrailerOrderAddressForm, AddOrderAddressForm.class);
-                orderAddressForm.setOrderNo(trailerOrder.getOrderNo());
-                orderAddressForm.setBusinessType(BusinessTypeEnum.TC.getCode());
-                orderAddressForm.setBusinessId(trailerOrder.getId());
-                orderAddressForm.setCreateTime(LocalDateTime.now());
-                orderAddressForm.setFileName(StringUtils.getFileNameStr(orderAddressForm.getTakeFiles()));
-                orderAddressForm.setFilePath(StringUtils.getFileStr(orderAddressForm.getTakeFiles()));
-
-                orderAddressForm.setBindGoodsId(Long.parseLong(result.getData().toString()));
-
-                orderAddressForms1.add(orderAddressForm);
             }
+
             //批量保存用户地址
-            ApiResult result = this.omsClient.saveOrUpdateOrderAddressBatch(orderAddressForms1);
+            ApiResult result = this.omsClient.saveOrUpdateOrderAddressAndGoodsBatch(orderAddressForms);
             if (result.getCode() != HttpStatus.SC_OK) {
-                log.warn("批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(orderAddressForms1));
+                log.warn("批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(orderAddressForms));
             }
 
         }

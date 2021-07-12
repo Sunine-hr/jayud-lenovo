@@ -336,7 +336,7 @@
         <if test="form.bizCode != null and form.bizCode!=''">
             and temp.bizCode =#{form.bizCode}
         </if>
-        <if test="form.internalDepartmentId != null">
+        <if test="form.departmentId != null">
             and temp.internal_department_id =#{form.departmentId}
         </if>
 

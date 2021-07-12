@@ -1752,6 +1752,61 @@ public class ExternalApiController {
         }
 
     }
+
+    @ApiOperation(value = "根据主订单号集合获取订单利润")
+    @RequestMapping(value = "/api/getOrderCostByMainOrderNos")
+    ApiResult<List<SeaOrderProfitVO>> getOrderCostByMainOrderNos(@RequestBody List<String> mainOrderNos){
+        List<OrderReceivableCost> receivableCosts = receivableCostService.getOrderReceivableCostByMainOrderNos(mainOrderNos);
+        List<OrderPaymentCost> paymentCosts = paymentCostService.getOrderPaymentCostByMainOrderNos(mainOrderNos);
+        List<InputPaymentCostVO> inputPaymentCostVOS = ConvertUtil.convertList(paymentCosts, InputPaymentCostVO.class);
+        List<InputReceivableCostVO> inputReceivableCostVOS = ConvertUtil.convertList(receivableCosts, InputReceivableCostVO.class);
+        Map<String,List<InputPaymentCostVO>> map = new HashMap<>();
+        Map<String,List<InputReceivableCostVO>> map1 = new HashMap<>();
+        for (String mainOrderNo : mainOrderNos) {
+
+            List<InputReceivableCostVO> orderReceivableCosts = new ArrayList<>();
+            List<InputPaymentCostVO> orderPaymentCosts = new ArrayList<>();
+
+            for (InputReceivableCostVO receivableCost : inputReceivableCostVOS) {
+                if(receivableCost.getMainOrderNo().equals(mainOrderNo)){
+                    orderReceivableCosts.add(receivableCost);
+                }
+            }
+            for (InputPaymentCostVO paymentCost : inputPaymentCostVOS) {
+                if(paymentCost.getMainOrderNo().equals(mainOrderNo)){
+                    orderPaymentCosts.add(paymentCost);
+                }
+            }
+            map.put(mainOrderNo,orderPaymentCosts);
+            map1.put(mainOrderNo,orderReceivableCosts);
+        }
+
+        List<SeaOrderProfitVO> seaOrderProfitVOS = new ArrayList<>();
+        for (String mainOrderNo : mainOrderNos) {
+            InputCostVO inputCostVO = new InputCostVO();
+            inputCostVO.setPaymentCostList(map.get(mainOrderNo));
+            inputCostVO.setReceivableCostList(map1.get(mainOrderNo));
+            orderInfoService.calculateCost(inputCostVO);
+
+            SeaOrderProfitVO seaOrderProfitVO = new SeaOrderProfitVO();
+            seaOrderProfitVO.setMainOrderNo(mainOrderNo);
+            seaOrderProfitVO.setProfit(inputCostVO.getProfit());
+            seaOrderProfitVOS.add(seaOrderProfitVO);
+        }
+
+        return ApiResult.ok(seaOrderProfitVOS);
+    }
+
+    /**
+     * 批量保存拖车地址和商品信息
+     * @param orderAddressForms
+     * @return
+     */
+    @RequestMapping(value = "/api/saveOrUpdateOrderAddressAndGoodsBatch")
+    ApiResult saveOrUpdateOrderAddressAndGoodsBatch(@RequestBody List<AddTrailerOrderAddressForm> orderAddressForms){
+        this.orderAddressService.saveOrUpdateOrderAddressAndGoodsBatch(orderAddressForms);
+        return ApiResult.ok();
+    }
 }
 
 

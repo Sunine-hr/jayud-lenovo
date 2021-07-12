@@ -272,9 +272,16 @@ public class ExternalApiController {
 
     @ApiOperation("根据法人主体id查询法人主体信息")
     @RequestMapping(value = "/api/getLegalEntityByLegalId")
-    public ApiResult getLegalEntityByLegalId(@RequestParam("legalId") Long legalId) {
+    public ApiResult<LegalEntity> getLegalEntityByLegalId(@RequestParam("legalId") Long legalId) {
         LegalEntity legalEntity = this.legalEntityService.getById(legalId);
         return ApiResult.ok(legalEntity);
+    }
+
+    @ApiOperation("根据法人主体id查询法人主体名称")
+    @RequestMapping(value = "/api/getLegalNameByLegalId")
+    public ApiResult<String> getLegalNameByLegalId(@RequestParam("legalId") Long legalId) {
+        LegalEntity legalEntity = this.legalEntityService.getById(legalId);
+        return ApiResult.ok(legalEntity.getLegalName());
     }
 
 

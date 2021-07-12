@@ -991,7 +991,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      *
      * @param inputCostVO
      */
-    private void calculateCost(InputCostVO inputCostVO) {
+    @Override
+    public void calculateCost(InputCostVO inputCostVO) {
         Map<String, BigDecimal> receivableCost = new HashMap<>();//应收币种
         Map<String, BigDecimal> paymentCost = new HashMap<>();//应付币种
         //应付总本币
@@ -1542,7 +1543,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
 
     @Override
-    @Transactional
+//    @Transactional
     public boolean createOrder(InputOrderForm form) {
         //保存主订单
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();
@@ -1826,6 +1827,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         submitOrderMap.put(trailerOrderFrom.getOrderNo(),
                                 subOrderMap.put("departmentId", trailerOrderFrom.getDepartmentId()));
 
+//                        trailerOrderFrom.setLegalName(oauthClient.getLegalNameByLegalId(trailerOrderFrom.getLegalEntityId()).getData());
+
                         trailerOrderFrom.setMainOrderNo(mainOrderNo);
                         trailerOrderFrom.setCreateUser(UserOperator.getToken());
                         Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
@@ -1904,6 +1907,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                             Map<String, Object> subOrderMap = new HashMap<>();
                             submitOrderMap.put(trailerOrderFrom.getOrderNo(),
                                     subOrderMap.put("departmentId", trailerOrderFrom.getDepartmentId()));
+
+//                            LegalEntityVO legalEntityVO = (LegalEntityVO)oauthClient.getLegalEntityByLegalId(trailerOrderFrom.getLegalEntityId()).getData();
+                            trailerOrderFrom.setLegalName(oauthClient.getLegalNameByLegalId(trailerOrderFrom.getLegalEntityId()).getData());
 
                             trailerOrderFrom.setMainOrderNo(mainOrderNo);
                             trailerOrderFrom.setCreateUser(UserOperator.getToken());

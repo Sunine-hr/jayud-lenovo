@@ -158,4 +158,7 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      * @return
      */
     Integer getNumByStatus(String status, List<Long> legalIds);
+
+    Map<String, String> getCustomerName();
+
 }

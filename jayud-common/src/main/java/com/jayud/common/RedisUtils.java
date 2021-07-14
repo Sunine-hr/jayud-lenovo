@@ -1,10 +1,13 @@
 package com.jayud.common;
 
+import com.alibaba.fastjson.JSONArray;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -73,6 +76,19 @@ public class RedisUtils {
         return get(key, clazz, NOT_EXPIRE);
     }
 
+
+    public <T> List<T> getList(String key, Class<T> clazz) {
+        return getList(key, clazz, NOT_EXPIRE);
+    }
+
+    public <T> List<T> getList(String key, Class<T> clazz, long expire) {
+        String value = valueOperations.get(key);
+        if (expire != NOT_EXPIRE) {
+            redisTemplate.expire(key, expire, TimeUnit.SECONDS);
+        }
+        return value == null ? null : JSONArray.parseArray(value, clazz);
+    }
+
     public String get(String key, long expire) {
         String value = valueOperations.get(key);
         if (expire != NOT_EXPIRE) {
@@ -80,6 +96,7 @@ public class RedisUtils {
         }
         return value == null ? null : value;
     }
+
 
     public String get(String key) {
         return get(key, NOT_EXPIRE);
@@ -143,7 +160,6 @@ public class RedisUtils {
     }
 
     /**
-     *
      * @param key
      * @param hashKey
      * @param value

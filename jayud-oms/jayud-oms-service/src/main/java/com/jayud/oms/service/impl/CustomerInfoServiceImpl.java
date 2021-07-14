@@ -466,4 +466,11 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         return num == null ? 0 : num;
     }
 
+    @Override
+    public Map<String, String> getCustomerName() {
+        QueryWrapper<CustomerInfo> condition = new QueryWrapper<>();
+        condition.lambda().isNotNull(CustomerInfo::getIdCode);
+        return this.baseMapper.selectList(condition).stream().collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName()));
+    }
+
 }

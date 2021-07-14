@@ -106,6 +106,8 @@ public class ExternalApiController {
     private ICostInfoService costInfoService;
     @Autowired
     private TmsClient tmsClient;
+    @Autowired
+    private IProductBizService productBizService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -1146,6 +1148,18 @@ public class ExternalApiController {
     }
 
     /**
+     * 查询所有客户名称
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCustomerName")
+    ApiResult<Map<String, String>> getCustomerName() {
+        List<CustomerInfo> list = this.customerInfoService.list();
+        Map<String, String> map = this.customerInfoService.getCustomerName();
+        return ApiResult.ok(map);
+    }
+
+    /**
      * 获取订单号
      *
      * @return
@@ -1755,30 +1769,30 @@ public class ExternalApiController {
 
     @ApiOperation(value = "根据主订单号集合获取订单利润")
     @RequestMapping(value = "/api/getOrderCostByMainOrderNos")
-    ApiResult<List<SeaOrderProfitVO>> getOrderCostByMainOrderNos(@RequestBody List<String> mainOrderNos){
+    ApiResult<List<SeaOrderProfitVO>> getOrderCostByMainOrderNos(@RequestBody List<String> mainOrderNos) {
         List<OrderReceivableCost> receivableCosts = receivableCostService.getOrderReceivableCostByMainOrderNos(mainOrderNos);
         List<OrderPaymentCost> paymentCosts = paymentCostService.getOrderPaymentCostByMainOrderNos(mainOrderNos);
         List<InputPaymentCostVO> inputPaymentCostVOS = ConvertUtil.convertList(paymentCosts, InputPaymentCostVO.class);
         List<InputReceivableCostVO> inputReceivableCostVOS = ConvertUtil.convertList(receivableCosts, InputReceivableCostVO.class);
-        Map<String,List<InputPaymentCostVO>> map = new HashMap<>();
-        Map<String,List<InputReceivableCostVO>> map1 = new HashMap<>();
+        Map<String, List<InputPaymentCostVO>> map = new HashMap<>();
+        Map<String, List<InputReceivableCostVO>> map1 = new HashMap<>();
         for (String mainOrderNo : mainOrderNos) {
 
             List<InputReceivableCostVO> orderReceivableCosts = new ArrayList<>();
             List<InputPaymentCostVO> orderPaymentCosts = new ArrayList<>();
 
             for (InputReceivableCostVO receivableCost : inputReceivableCostVOS) {
-                if(receivableCost.getMainOrderNo().equals(mainOrderNo)){
+                if (receivableCost.getMainOrderNo().equals(mainOrderNo)) {
                     orderReceivableCosts.add(receivableCost);
                 }
             }
             for (InputPaymentCostVO paymentCost : inputPaymentCostVOS) {
-                if(paymentCost.getMainOrderNo().equals(mainOrderNo)){
+                if (paymentCost.getMainOrderNo().equals(mainOrderNo)) {
                     orderPaymentCosts.add(paymentCost);
                 }
             }
-            map.put(mainOrderNo,orderPaymentCosts);
-            map1.put(mainOrderNo,orderReceivableCosts);
+            map.put(mainOrderNo, orderPaymentCosts);
+            map1.put(mainOrderNo, orderReceivableCosts);
         }
 
         List<SeaOrderProfitVO> seaOrderProfitVOS = new ArrayList<>();
@@ -1799,13 +1813,30 @@ public class ExternalApiController {
 
     /**
      * 批量保存拖车地址和商品信息
+     *
      * @param orderAddressForms
      * @return
      */
     @RequestMapping(value = "/api/saveOrUpdateOrderAddressAndGoodsBatch")
-    ApiResult saveOrUpdateOrderAddressAndGoodsBatch(@RequestBody List<AddTrailerOrderAddressForm> orderAddressForms){
+    ApiResult saveOrUpdateOrderAddressAndGoodsBatch(@RequestBody List<AddTrailerOrderAddressForm> orderAddressForms) {
         this.orderAddressService.saveOrUpdateOrderAddressAndGoodsBatch(orderAddressForms);
         return ApiResult.ok();
+    }
+
+    @ApiOperation(value = "下拉业务类型")
+    @PostMapping(value = "/initBizService")
+    public CommonResult<List<InitComboxStrVO>> initBizService() {
+        //业务类型
+        List<ProductBiz> productBizs = productBizService.findProductBiz();
+        List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
+        for (ProductBiz productBiz : productBizs) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(productBiz.getIdCode());
+            comboxStrVO.setName(productBiz.getName());
+            comboxStrVOS.add(comboxStrVO);
+        }
+
+        return CommonResult.success(comboxStrVOS);
     }
 }
 

@@ -2,12 +2,14 @@ package com.jayud.finance.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.AuditInfoForm;
 import com.jayud.finance.bo.OprCostBillForm;
 import com.jayud.finance.bo.OrderCostForm;
 import com.jayud.finance.vo.*;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -191,4 +193,16 @@ public interface OmsClient {
     public ApiResult getNoBillCost(@RequestParam("orderNos") List<String> orderNos,
                                    @RequestParam("isMain") Boolean isMain,
                                    @RequestParam("type") Integer type);
+
+    /**
+     * 查询所有客户名称
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCustomerName")
+    ApiResult<Map<String, String>> getCustomerName();
+
+    @ApiOperation(value = "下拉业务类型")
+    @PostMapping(value = "/initBizService")
+    public CommonResult<List<InitComboxStrVO>> initBizService();
 }

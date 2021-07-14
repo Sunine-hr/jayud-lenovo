@@ -212,4 +212,6 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
 //                                                        @Param("legalNames") List<String> legalNames,
 //                                                        @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
 
+
+
 }

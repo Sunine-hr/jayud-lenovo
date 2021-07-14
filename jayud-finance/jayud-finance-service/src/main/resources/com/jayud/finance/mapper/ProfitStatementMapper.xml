@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.finance.mapper.ProfitStatementMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.finance.po.ProfitStatement">
+        <id column="id" property="id"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="is_main" property="isMain"/>
+        <result column="biz_type" property="bizType"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="legal_id" property="legalId"/>
+        <result column="department" property="department"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="customer_name" property="customerName"/>
+        <result column="unit_code" property="unitCode"/>
+        <result column="unit_name" property="unitName"/>
+        <result column="biz_uname" property="bizUname"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="re_amount" property="reAmount"/>
+        <result column="re_equivalent_amount" property="reEquivalentAmount"/>
+        <result column="pay_amount" property="payAmount"/>
+        <result column="pay_equivalent_amount" property="payEquivalentAmount"/>
+        <result column="profit" property="profit"/>
+        <result column="re_in_amount" property="reInAmount"/>
+        <result column="re_in_equivalent_amount" property="reInEquivalentAmount"/>
+        <result column="pay_in_amount" property="payInAmount"/>
+        <result column="pay_in_equivalent_amount" property="payInEquivalentAmount"/>
+        <result column="in_profit" property="inProfit"/>
+        <result column="sync_time" property="syncTime"/>
+        <result column="re_cost_ids" property="reCostIds"/>
+        <result column="pay_cost_ids" property="payCostIds"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, main_order_no, order_no, is_main, biz_type, legal_name, legal_id, department, department_id, customer_name, unit_code, unit_name, biz_uname, create_user, create_time, re_amount, re_equivalent_amount, pay_amount, pay_equivalent_amount, profit, re_in_amount, re_in_equivalent_amount, pay_in_amount, pay_in_equivalent_amount, in_profit, sync_time, re_cost_ids, pay_cost_ids
+    </sql>
+    <select id="getBasicDataOfProfitStatement" resultType="com.jayud.finance.vo.ProfitStatementBasicData">
+        SELECT * FROM(
+        SELECT
+            tmp1.id costId,
+            tmp1.main_order_no,
+            tmp1.order_no,
+            tmp1.amount,
+            tmp1.currency_code,
+            tmp1.change_amount,
+            obct.local_money,
+            tmp1.legal_name,
+            tmp1.legal_id,
+            tmp1.customer_code unit_code,
+            tmp1.customer_name unit_name,
+            tmp1.sub_type,
+            tmp1.is_sum_to_main,
+            tmp1.department_id,
+            tmp1.is_internal,
+            oi.customer_name,
+            oi.biz_code,
+            oi.biz_uname,
+            oi.created_user createUser,
+            oi.create_time,
+            obct.money_type,
+            IFNULL(NULL, 2) AS type
+        FROM
+            order_receivable_cost tmp1
+            LEFT JOIN order_info oi ON oi.order_no = tmp1.main_order_no
+            left join order_bill_cost_total obct on obct.cost_id=tmp1.id and obct.money_type=2
+            where tmp1.status !=1
+         UNION all
+        SELECT
+            tmp1.id costId,
+            tmp1.main_order_no,
+            tmp1.order_no,
+            tmp1.amount,
+            tmp1.currency_code,
+            tmp1.change_amount,
+            obct.local_money,
+            tmp1.legal_name,
+            tmp1.legal_id,
+            tmp1.customer_code unit_code,
+            tmp1.customer_name unit_name,
+            tmp1.sub_type,
+            tmp1.is_sum_to_main,
+            tmp1.department_id,
+            tmp1.is_internal,
+            oi.customer_name,
+            oi.biz_code,
+            oi.biz_uname,
+            oi.created_user createUser,
+            oi.create_time,
+            obct.money_type,
+            IFNULL(NULL, 1) AS type
+        FROM
+            order_payment_cost tmp1
+        LEFT JOIN order_info oi ON oi.order_no = tmp1.main_order_no
+        left join order_bill_cost_total obct on obct.cost_id=tmp1.id and obct.money_type=1
+        where tmp1.status !=1
+        ) tmp
+    </select>
+    <select id="list" resultType="com.jayud.finance.vo.ProfitStatementVO">
+        select
+        id, main_order_no, order_no, is_main, biz_type, legal_name, legal_id,
+        department, department_id, customer_name, unit_code, unit_name, biz_uname,
+        create_user, create_time, re_amount, re_equivalent_amount, pay_amount,
+        pay_equivalent_amount, profit, re_in_amount, re_in_equivalent_amount, pay_in_amount,
+        pay_in_equivalent_amount, in_profit, sync_time, re_cost_ids, pay_cost_ids
+        from
+        profit_statement
+        <where>
+            <if test="form.mainOrderNo!=null and form.mainOrderNo!=''">
+                main_order_no like concat('%',#{form.mainOrderNo},'%')
+            </if>
+            <if test="form.orderNo!=null and form.orderNo!=''">
+                order_no like concat('%',#{form.orderNo},'%')
+            </if>
+            <if test="form.bizType!=null and form.bizType!=''">
+                biz_type =#{form.bizType}
+            </if>
+            <if test="form.legalName!=null and form.legalName!=''">
+                legal_name =#{form.legalName}
+            </if>
+            <if test="form.departmentIds!=null and form.departmentIds.size>0">
+                department_id in
+                <foreach collection="form.departmentIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.customerName!=null and form.customerName!=''">
+                customer_name like concat('%',#{form.customerName},'%')
+            </if>
+            <if test="form.unitName!=null and form.unitName!=''">
+                unit_name like concat('%',#{form.unitName},'%')
+            </if>
+            <if test="form.bizUname!=null and form.bizUname!=''">
+                biz_uname like concat('%',#{form.bizUname},'%')
+            </if>
+            <if test="form.createUser!=null and form.createUser!=''">
+                create_user like concat('%',#{form.createUser},'%')
+            </if>
+            <if test="form.createTime!=null and form.createTime.size>0">
+                DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) between #{form.createTime[0]} and #{form.createTime[1]}
+            </if>
+            <if test="form.statisticalType!=null and form.statisticalType!=''">
+                is_main = #{form.statisticalType}
+            </if>
+        </where>
+    </select>
+</mapper>

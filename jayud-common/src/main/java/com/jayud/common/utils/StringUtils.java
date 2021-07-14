@@ -464,17 +464,16 @@ public class StringUtils {
     }
 
 
-
-
     /**
      * String类型，转换为 utf-8
      * 下载或者导出excel，设置中文名称有用到
+     *
      * @param s
      * @return
      */
     public static String toUtf8String(String s) {
         StringBuffer sb = new StringBuffer();
-        for (int i=0;i<s.length();i++) {
+        for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c >= 0 && c <= 255) {
                 sb.append(c);
@@ -500,4 +499,11 @@ public class StringUtils {
     }
 
 
+    public static String add(String def, String... params) {
+        StringBuilder str = new StringBuilder();
+        for (String param : params) {
+            str.append(param == null ? def : param);
+        }
+        return str.toString();
+    }
 }

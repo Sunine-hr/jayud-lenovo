@@ -169,4 +169,10 @@ public interface OauthClient {
      */
     @RequestMapping(value = "/api/getLegalEntityByCode")
     ApiResult getLegalEntityByCode(@RequestParam("code") String code);
+
+    /**
+     * 获取所有业务员
+     */
+    @RequestMapping(value = "/api/getSystemUserList")
+    ApiResult<List<SystemUserVO>> getSystemUserList();
 }

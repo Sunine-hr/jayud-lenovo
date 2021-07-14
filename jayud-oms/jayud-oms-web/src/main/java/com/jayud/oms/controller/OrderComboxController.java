@@ -227,19 +227,23 @@ public class OrderComboxController {
         resultMap.put("supplierInfos", supplierStrVOS);//下拉供应商
 
         //根据客户获取业务员
-        List<InitComboxVO> yws = new ArrayList<>();
-        List<Long> ids = new ArrayList<>();
-        ids.add(customer.getYwId());
-        if (ids.size() > 0) {
-            List<SystemUserVO> userVOS = oauthClient.getUsersByIds(ids).getData();
-            for (SystemUserVO systemUserVO : userVOS) {
-                InitComboxVO comboxVO = new InitComboxVO();
-                comboxVO.setId(systemUserVO.getId());
-                comboxVO.setName(systemUserVO.getUserName());
-                yws.add(comboxVO);
-            }
-        }
-        resultMap.put("yws", yws);
+        //设置业务员默认值
+        resultMap.put("ywId",customer.getYwId());
+//        List<InitComboxVO> yws = new ArrayList<>();
+//        List<Long> ids = new ArrayList<>();
+//        ids.add(customer.getYwId());
+//        if (ids.size() > 0) {
+//            List<SystemUserVO> userVOS = oauthClient.getUsersByIds(ids).getData();
+//            for (SystemUserVO systemUserVO : userVOS) {
+//                InitComboxVO comboxVO = new InitComboxVO();
+//                comboxVO.setId(systemUserVO.getId());
+//                comboxVO.setName(systemUserVO.getUserName());
+//                yws.add(comboxVO);
+//            }
+//        }
+        //获取所有业务员下拉框
+        List<SystemUserVO> systemUserVOS = oauthClient.getSystemUserList().getData();
+        resultMap.put("yws", systemUserVOS);
 
         //根据客户获取业务员部门
         resultMap.put("departmentId", customer.getDepartmentId());

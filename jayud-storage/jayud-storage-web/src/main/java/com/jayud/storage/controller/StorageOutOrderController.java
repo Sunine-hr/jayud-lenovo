@@ -243,6 +243,19 @@ public class StorageOutOrderController {
             List<OutWarehouseGoodsForm> outWarehouseGoodsForms = form.getOutWarehouseGoodsForms();
             for (OutWarehouseGoodsForm outWarehouseGoodsForm : outWarehouseGoodsForms) {
                 List<GoodsLocationRecordFormVO> goodsLocationRecordForms = outWarehouseGoodsForm.getGoodsLocationRecordForms();
+
+                for (int i = 0; i < goodsLocationRecordForms.size(); i++) {
+                    for (int j = i+1; j < goodsLocationRecordForms.size(); j++) {
+                        if(goodsLocationRecordForms.get(i).getKuCode().equals(goodsLocationRecordForms.get(j).getKuCode())){
+                            goodsLocationRecordForms.get(i).setNumber(goodsLocationRecordForms.get(i).getNumber()+goodsLocationRecordForms.get(j).getNumber());
+                            GoodsLocationRecord goodsLocationRecordBySkuAndKuCode = goodsLocationRecordService.getGoodsLocationRecordBySkuAndKuCode(goodsLocationRecordForms.get(i).getKuCode(), outWarehouseGoodsForm.getWarehousingBatchNo(), outWarehouseGoodsForm.getSku());
+                            if(goodsLocationRecordForms.get(i).getUnDeliveredQuantity()>goodsLocationRecordBySkuAndKuCode.getNumber()){
+                                return CommonResult.error(400, "该库位商品不足，"+goodsLocationRecordForms.get(i).getKuCode()+"的该商品最大数量为"+goodsLocationRecordBySkuAndKuCode.getUnDeliveredQuantity());
+                            }
+                        }
+                    }
+                }
+
                 Integer number = 0;
                 for (GoodsLocationRecordFormVO goodsLocationRecordForm : goodsLocationRecordForms) {
                     if(goodsLocationRecordForm.getNumber() != null){

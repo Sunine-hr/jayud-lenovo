@@ -168,11 +168,11 @@ public class WarehouseAreaShelvesLocationServiceImpl extends ServiceImpl<Warehou
     }
 
     @Override
-    public WarehouseAreaShelvesLocation getLocationByShelvesLine(Integer shelvesLine, Long shelvesId) {
+    public List<WarehouseAreaShelvesLocation> getLocationByShelvesLine(Integer shelvesLine, Long shelvesId) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("shelves_line",shelvesLine);
         queryWrapper.eq("shelves_id",shelvesId);
-        return this.baseMapper.selectOne(queryWrapper);
+        return this.baseMapper.selectList(queryWrapper);
     }
 
 

@@ -47,5 +47,5 @@ public interface IWarehouseAreaShelvesLocationService extends IService<Warehouse
 
     WarehouseAreaShelvesLocation getLocation(Integer shelvesLine, Long shelvesId, Long shelvesType);
 
-    WarehouseAreaShelvesLocation getLocationByShelvesLine(Integer shelvesLine, Long shelvesId);
+    List<WarehouseAreaShelvesLocation> getLocationByShelvesLine(Integer shelvesLine, Long shelvesId);
 }

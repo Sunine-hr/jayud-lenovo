@@ -618,11 +618,14 @@ public class StorageInputOrderController {
             for (InGoodsOperationRecordForm inGoodsOperationRecord : form.getInGoodsOperationRecords()) {
                 totalNumber = totalNumber + inGoodsOperationRecord.getNumber();
                 List<GoodsLocationRecordForm> goodsLocationRecordForms = inGoodsOperationRecord.getGoodsLocationRecordForms();
-                for (GoodsLocationRecordForm goodsLocationRecordForm : goodsLocationRecordForms) {
-                    if(goodsLocationRecordForm.getNumber() != null && goodsLocationRecordForm.getKuCode() != null){
-                        totalNumber1 = totalNumber1 + goodsLocationRecordForm.getNumber();
+                if(CollectionUtils.isNotEmpty(goodsLocationRecordForms)){
+                    for (GoodsLocationRecordForm goodsLocationRecordForm : goodsLocationRecordForms) {
+                        if(goodsLocationRecordForm.getNumber() != null && goodsLocationRecordForm.getKuCode() != null){
+                            totalNumber1 = totalNumber1 + goodsLocationRecordForm.getNumber();
+                        }
                     }
                 }
+
             }
         }
 

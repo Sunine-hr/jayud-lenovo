@@ -415,6 +415,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     public List<SystemUserVO> getSystemUserList() {
         QueryWrapper<SystemUser> condition = new QueryWrapper<>();
         condition.lambda().eq(SystemUser::getStatus, SystemUserStatusEnum.ON.getCode());
+        condition.lambda().eq(SystemUser::getUserType, 1);
         return ConvertUtil.convertList(this.baseMapper.selectList(condition),SystemUserVO.class);
     }
 

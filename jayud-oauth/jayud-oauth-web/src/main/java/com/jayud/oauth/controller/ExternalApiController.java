@@ -451,6 +451,14 @@ public class ExternalApiController {
     ApiResult getDepartmentNameById(@RequestParam("departmentId") Long departmentId) {
         return ApiResult.ok(this.departmentService.getById(departmentId));
     }
+
+    /**
+     * 获取所有业务员
+     */
+    @RequestMapping(value = "/api/getSystemUserList")
+    ApiResult<List<SystemUserVO>> getSystemUserList(){
+        return ApiResult.ok(this.userService.getSystemUserList());
+    }
 }
 
 

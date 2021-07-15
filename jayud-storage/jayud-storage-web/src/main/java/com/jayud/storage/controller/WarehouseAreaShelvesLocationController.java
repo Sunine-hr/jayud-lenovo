@@ -128,19 +128,22 @@ public class WarehouseAreaShelvesLocationController {
                     }
                 }
 
-                WarehouseAreaShelvesLocation warehouseAreaShelvesLocation = warehouseAreaShelvesLocationService.getLocationByShelvesLine(warehouseAreaShelvesLocationForm.getShelvesLine(),warehouseAreaShelvesLocationForm.getShelvesId());
-                if(warehouseAreaShelvesLocation != null){
-                    if(warehouseAreaShelvesLocation.getShelvesType().equals("AB面")){
-                        return CommonResult.error(444,warehouseAreaShelvesLocation.getShelvesLine()+"层没有多余面");
+                List<WarehouseAreaShelvesLocation> warehouseAreaShelvesLocation = warehouseAreaShelvesLocationService.getLocationByShelvesLine(warehouseAreaShelvesLocationForm.getShelvesLine(),warehouseAreaShelvesLocationForm.getShelvesId());
+                if(CollectionUtils.isNotEmpty(warehouseAreaShelvesLocation)){
+                    if(warehouseAreaShelvesLocation.size()>1){
+                        return CommonResult.error(444,warehouseAreaShelvesLocation.get(0).getShelvesLine()+"层没有多余面");
                     }
-                    if(warehouseAreaShelvesLocation.getShelvesType().equals(warehouseAreaShelvesLocationForm.getShelvesType())){
+                    if(warehouseAreaShelvesLocation.get(0).getShelvesType().equals("AB面")){
+                        return CommonResult.error(444,warehouseAreaShelvesLocation.get(0).getShelvesLine()+"层没有多余面");
+                    }
+                    if(warehouseAreaShelvesLocation.get(0).getShelvesType().equals(warehouseAreaShelvesLocationForm.getShelvesType())){
                         String shelvesTypeName = null;
                         for (InitComboxSVO datum : data) {
                             if(datum.getId().equals(warehouseAreaShelvesLocationForm.getShelvesType())){
                                 shelvesTypeName = datum.getValue();
                             }
                         }
-                        return CommonResult.error(444,warehouseAreaShelvesLocation.getShelvesLine()+"层"+shelvesTypeName+"已存在");
+                        return CommonResult.error(444,warehouseAreaShelvesLocation.get(0).getShelvesLine()+"层"+shelvesTypeName+"已存在");
                     }
                 }
 

@@ -148,4 +148,6 @@ public interface ISystemUserService extends IService<SystemUser> {
     List<SystemUser> getByDepartmentIds(Set<String> departmentIds);
 
     List<SystemUser> getByCondition(SystemUser setUserType);
+
+    List<SystemUserVO> getSystemUserList();
 }

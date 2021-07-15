@@ -105,45 +105,46 @@
         department, department_id, customer_name, unit_code, unit_name, biz_uname,
         create_user, create_time, re_amount, re_equivalent_amount, pay_amount,
         pay_equivalent_amount, profit, re_in_amount, re_in_equivalent_amount, pay_in_amount,
-        pay_in_equivalent_amount, in_profit, sync_time, re_cost_ids, pay_cost_ids
+        pay_in_equivalent_amount, in_profit, sync_time,
+        re_cost_ids, pay_cost_ids,re_in_cost_ids, pay_in_cost_ids
         from
         profit_statement
         <where>
             <if test="form.mainOrderNo!=null and form.mainOrderNo!=''">
-                main_order_no like concat('%',#{form.mainOrderNo},'%')
+                and main_order_no like concat('%',#{form.mainOrderNo},'%')
             </if>
             <if test="form.orderNo!=null and form.orderNo!=''">
-                order_no like concat('%',#{form.orderNo},'%')
+                and order_no like concat('%',#{form.orderNo},'%')
             </if>
             <if test="form.bizType!=null and form.bizType!=''">
-                biz_type =#{form.bizType}
+                and biz_type =#{form.bizType}
             </if>
             <if test="form.legalName!=null and form.legalName!=''">
-                legal_name =#{form.legalName}
+                and legal_name =#{form.legalName}
             </if>
             <if test="form.departmentIds!=null and form.departmentIds.size>0">
-                department_id in
+                and department_id in
                 <foreach collection="form.departmentIds" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
             <if test="form.customerName!=null and form.customerName!=''">
-                customer_name like concat('%',#{form.customerName},'%')
+                and customer_name like concat('%',#{form.customerName},'%')
             </if>
             <if test="form.unitName!=null and form.unitName!=''">
-                unit_name like concat('%',#{form.unitName},'%')
+                and unit_name like concat('%',#{form.unitName},'%')
             </if>
             <if test="form.bizUname!=null and form.bizUname!=''">
-                biz_uname like concat('%',#{form.bizUname},'%')
+                and biz_uname like concat('%',#{form.bizUname},'%')
             </if>
             <if test="form.createUser!=null and form.createUser!=''">
-                create_user like concat('%',#{form.createUser},'%')
+                and create_user like concat('%',#{form.createUser},'%')
             </if>
             <if test="form.createTime!=null and form.createTime.size>0">
-                DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) between #{form.createTime[0]} and #{form.createTime[1]}
+                and DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) between #{form.createTime[0]} and #{form.createTime[1]}
             </if>
-            <if test="form.statisticalType!=null and form.statisticalType!=''">
-                is_main = #{form.statisticalType}
+            <if test="form.statisticalType!=null">
+                and is_main = #{form.statisticalType}
             </if>
         </where>
     </select>

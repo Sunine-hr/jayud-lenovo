@@ -124,6 +124,9 @@ public class ProfitStatementVO extends Model<ProfitStatementVO> {
     @ApiModelProperty(value = "应付费用id集合(多个逗号隔开)(内部)")
     private String payInCostIds;
 
+    @ApiModelProperty(value = "是否打开内部往来费用")
+    private Boolean isOpenInternal = false;
+
     public static void main(String[] args) {
         Utilities.printFieldsInfo(QueryProfitStatementForm.class);
     }
@@ -134,11 +137,18 @@ public class ProfitStatementVO extends Model<ProfitStatementVO> {
     }
 
     public void totalInternalExpenses(Boolean isOpenInternal) {
-        if (isOpenInternal) {
-            this.reAmount += this.reInAmount;
-            this.payAmount += this.payInAmount;
-            this.reEquivalentAmount = BigDecimalUtil.add(this.reEquivalentAmount, this.reInEquivalentAmount);
-            this.payEquivalentAmount = BigDecimalUtil.add(this.payEquivalentAmount, this.payInEquivalentAmount);
-        }
+//        if (isOpenInternal) {
+//            this.reAmount += this.reInAmount;
+//            this.payAmount += this.payInAmount;
+//            this.reEquivalentAmount = BigDecimalUtil.add(this.reEquivalentAmount, this.reInEquivalentAmount);
+//            this.payEquivalentAmount = BigDecimalUtil.add(this.payEquivalentAmount, this.payInEquivalentAmount);
+        this.reInAmount = StringUtils.add("", this.reAmount, this.reInAmount);
+        this.payInAmount = StringUtils.add("", this.payAmount, this.payInAmount);
+        this.reInEquivalentAmount = BigDecimalUtil.add(this.reEquivalentAmount, this.reInEquivalentAmount);
+        this.payInEquivalentAmount = BigDecimalUtil.add(this.payEquivalentAmount, this.payInEquivalentAmount);
+        this.reInCostIds = StringUtils.add("", this.reCostIds, this.reInCostIds);
+        this.payInCostIds = StringUtils.add("", this.payCostIds, this.payInCostIds);
+        this.inProfit = BigDecimalUtil.add(this.profit, this.inProfit);
+//        }
     }
 }

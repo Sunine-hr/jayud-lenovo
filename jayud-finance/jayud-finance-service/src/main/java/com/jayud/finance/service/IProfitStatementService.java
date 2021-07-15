@@ -6,6 +6,7 @@ import com.jayud.finance.po.ProfitStatement;
 import com.jayud.finance.vo.ProfitStatementVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -32,7 +33,11 @@ public interface IProfitStatementService extends IService<ProfitStatement> {
     /**
      * 利润报表查询
      * @param form
+     * @param rollCallback
      * @return
      */
-    List<ProfitStatementVO> list(QueryProfitStatementForm form);
+    List<ProfitStatementVO> list(QueryProfitStatementForm form, Map<String, Object> rollCallback);
+
+
+    List<ProfitStatementVO> getProfitStatementBill(List<String> reCostIds, List<String> payCostIds);
 }

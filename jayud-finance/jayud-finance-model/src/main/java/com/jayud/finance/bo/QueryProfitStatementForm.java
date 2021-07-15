@@ -18,7 +18,7 @@ import java.util.List;
 @Data
 public class QueryProfitStatementForm extends BasePageForm {
 
-    @ApiModelProperty(value = "订单号")
+    @ApiModelProperty(value = "主订单号")
     private String mainOrderNo;
 
     @ApiModelProperty(value = "订单号")
@@ -54,7 +54,11 @@ public class QueryProfitStatementForm extends BasePageForm {
     @ApiModelProperty(value = "是否打开内部往来费用")
     private Boolean isOpenInternal = false;
 
-//    public void setCreateTime(List<String> createTime) {
+    public void setStatisticalType(Integer statisticalType) {
+        this.statisticalType = statisticalType == 1 ? 1 : 0;
+    }
+
+    //    public void setCreateTime(List<String> createTime) {
 //        this.createTime = createTime;
 //        if (createTime != null && createTime.size() > 1) {
 //            createTime.set(1, DateUtils.strMaximumTime(createTime.get(1)));

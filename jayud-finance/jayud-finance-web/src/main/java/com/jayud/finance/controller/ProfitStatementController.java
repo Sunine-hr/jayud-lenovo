@@ -2,6 +2,7 @@ package com.jayud.finance.controller;
 
 
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.finance.bo.QueryProfitStatementForm;
 import com.jayud.finance.po.ProfitStatement;
 import com.jayud.finance.service.IProfitStatementService;
@@ -14,7 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -33,9 +37,27 @@ public class ProfitStatementController {
 
     @ApiOperation(value = "利润报表查询")
     @PostMapping("list")
-    private CommonResult<List<ProfitStatementVO>> list(@RequestBody QueryProfitStatementForm form) {
-        List<ProfitStatementVO> list = this.profitStatementService.list(form);
-        return CommonResult.success(list);
+    private CommonResult<Map<String, Object>> list(@RequestBody QueryProfitStatementForm form) {
+        Map<String, Object> rollCallback = new HashMap<>();
+        List<ProfitStatementVO> list = this.profitStatementService.list(form, rollCallback);
+        rollCallback.put("list", list);
+        return CommonResult.success(rollCallback);
     }
+
+
+    @ApiOperation(value = "查询账单")
+    @PostMapping("getProfitStatementBill")
+    private CommonResult<Map<String, Object>> getProfitStatementBill(@RequestBody ProfitStatementVO form) {
+        String reCostIdStr = form.getIsOpenInternal() ? form.getReInCostIds() : form.getReCostIds();
+        String payCostIdStr = form.getIsOpenInternal() ? form.getPayInCostIds() : form.getPayCostIds();
+        if (StringUtils.isEmpty(reCostIdStr) || StringUtils.isEmpty(payCostIdStr)) {
+            return CommonResult.error(400, "没有找到对应账单");
+        }
+        String[] reCostIds = reCostIdStr.split(",");
+        String[] payCostIds = payCostIdStr.split(",");
+        List<ProfitStatementVO> list = this.profitStatementService.getProfitStatementBill(Arrays.asList(reCostIds), Arrays.asList(payCostIds));
+        return CommonResult.success();
+    }
+
 }
 

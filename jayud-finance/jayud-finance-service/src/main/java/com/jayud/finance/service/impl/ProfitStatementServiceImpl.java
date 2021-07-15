@@ -11,6 +11,7 @@ import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.ProfitStatementMapper;
 import com.jayud.finance.po.ProfitStatement;
+import com.jayud.finance.service.CommonService;
 import com.jayud.finance.service.IProfitStatementService;
 import com.jayud.finance.vo.ProfitStatementBasicData;
 import com.jayud.finance.vo.ProfitStatementVO;
@@ -42,14 +43,9 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
     private OmsClient omsClient;
     @Autowired
     private RedisUtils redisUtils;
+    @Autowired
+    private CommonService commonService;
 
-    public static void main(String[] args) {
-        Map<String, BigDecimal> map = new HashMap<>(3);
-        map.put("CNY", new BigDecimal(2));
-        map.put("RMB", new BigDecimal(3));
-        map.merge("GB", new BigDecimal(3), BigDecimal::add);
-        System.out.println(new JSONObject(map));
-    }
 
     @Override
     public List<ProfitStatement> statisticalProfitReport() {
@@ -150,6 +146,14 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
         this.redisUtils.set("profit_statement", com.alibaba.fastjson.JSONArray.toJSONString(datas));
     }
 
+    public static void main(String[] args) {
+        Map<String, BigDecimal> map = new HashMap<>(3);
+        map.put("CNY", new BigDecimal(2));
+        map.put("RMB", new BigDecimal(3));
+        map.merge("GB", new BigDecimal(3), BigDecimal::add);
+        System.out.println(new JSONObject(map));
+    }
+
     /**
      * 查询利润报表数据
      *
@@ -157,11 +161,38 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
      * @return
      */
     @Override
-    public List<ProfitStatementVO> list(QueryProfitStatementForm form) {
+    public List<ProfitStatementVO> list(QueryProfitStatementForm form, Map<String, Object> rollCallback) {
         List<ProfitStatementVO> list = this.baseMapper.list(form);
-        list.forEach(e -> {
-            e.totalInternalExpenses(form.getIsOpenInternal());
-        });
+        List<String> reAmounts = new ArrayList<>();
+        List<String> payAmounts = new ArrayList<>();
+        BigDecimal reEquivalentAmount = new BigDecimal(0);
+        BigDecimal payEquivalentAmount = new BigDecimal(0);
+        List<String> reInAmounts = new ArrayList<>();
+        List<String> payInAmounts = new ArrayList<>();
+        BigDecimal reInEquivalentAmount = new BigDecimal(0);
+        BigDecimal payInEquivalentAmount = new BigDecimal(0);
+        for (ProfitStatementVO profitStatementVO : list) {
+            profitStatementVO.totalInternalExpenses(form.getIsOpenInternal());
+            reAmounts.add(profitStatementVO.getReAmount());
+            payAmounts.add(profitStatementVO.getPayAmount());
+            reEquivalentAmount = BigDecimalUtil.add(reEquivalentAmount, profitStatementVO.getReEquivalentAmount());
+            payEquivalentAmount = BigDecimalUtil.add(payEquivalentAmount, profitStatementVO.getPayEquivalentAmount());
+
+            reInAmounts.add(profitStatementVO.getReInAmount());
+            payInAmounts.add(profitStatementVO.getPayInAmount());
+            reInEquivalentAmount = BigDecimalUtil.add(reInEquivalentAmount, profitStatementVO.getReInEquivalentAmount());
+            payInEquivalentAmount = BigDecimalUtil.add(payInEquivalentAmount, profitStatementVO.getPayInEquivalentAmount());
+        }
+        rollCallback.put("totalReAmount", this.commonService.calculatingCosts(reAmounts));
+        rollCallback.put("totalPayAmounts", this.commonService.calculatingCosts(payAmounts));
+        rollCallback.put("totalReEqAmount", reEquivalentAmount);
+        rollCallback.put("totalPayEqAmount", payEquivalentAmount);
+        rollCallback.put("totalProfit", reEquivalentAmount.subtract(payEquivalentAmount));
+        rollCallback.put("totalReInAmount", this.commonService.calculatingCosts(reInAmounts));
+        rollCallback.put("totalPayInAmounts", this.commonService.calculatingCosts(payInAmounts));
+        rollCallback.put("totalReInEqAmount", reInEquivalentAmount);
+        rollCallback.put("totalPayInEqAmount", payInEquivalentAmount);
+        rollCallback.put("totalInProfit", reInEquivalentAmount.subtract(payInEquivalentAmount));
         return list;
     }
 
@@ -244,4 +275,8 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
         return profitStatement;
     }
 
+    @Override
+    public List<ProfitStatementVO> getProfitStatementBill(List<String> reCostIds, List<String> payCostIds) {
+        return null;
+    }
 }

@@ -134,8 +134,8 @@ public class OrderInTransportController {
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_6.getDesc());
         } else if (CommonConstant.HK_CLEAR_CUSTOMS.equals(form.getCmd())) {//香港清关
             //参数校验
-            if (form.getDriverInfoId() == null || StringUtil.isNullOrEmpty(form.getSeamlessNo()) ||
-                    StringUtil.isNullOrEmpty(form.getClearCustomsNo()) || form.getVehicleId() == null) {
+            if (form.getDriverInfoId() == null || StringUtil.isNullOrEmpty(form.getSeamlessNo())
+                    || form.getVehicleId() == null) {
                 return CommonResult.error(ResultEnum.PARAM_ERROR);
             }
             orderTransport.setDriverInfoId(form.getDriverInfoId());

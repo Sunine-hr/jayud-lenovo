@@ -23,6 +23,6 @@ public class InputCostVO {
     @ApiModelProperty(value = "应收币种")
     private String currencyReceivable;
 
-    @ApiModelProperty(value = "应收币种")
+    @ApiModelProperty(value = "应付币种")
     private String currencyPayable;
 }

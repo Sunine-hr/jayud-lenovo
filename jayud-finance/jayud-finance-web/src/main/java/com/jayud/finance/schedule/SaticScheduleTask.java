@@ -1,5 +1,7 @@
 package com.jayud.finance.schedule;
 
+import cn.hutool.core.date.StopWatch;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.po.ProfitStatement;
 import com.jayud.finance.service.IProfitStatementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +26,17 @@ public class SaticScheduleTask {
      */
     @Scheduled(cron = "0 0/1 * * * ?")
     private void statisticalProfitReport() {
-        System.out.println("执行静态定时任务时间: " + LocalDateTime.now());
+        System.out.println("开始同步利润报表数据: " + DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN));
+        StopWatch stopWatch = new StopWatch();
+        // 开始时间
+        stopWatch.start();
         //获取统计数据
         List<ProfitStatement> list = this.profitStatementService.statisticalProfitReport();
         //同步数据
         this.profitStatementService.synchronizeData(list);
+        // 结束时间
+        stopWatch.stop();
+        System.out.println("同步完成利润报表数据用时(单位:秒): " + stopWatch.getTotalTimeSeconds()+" 秒.");
 
     }
 }

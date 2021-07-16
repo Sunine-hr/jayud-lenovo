@@ -1838,6 +1838,21 @@ public class ExternalApiController {
 
         return CommonResult.success(comboxStrVOS);
     }
+
+    /**
+     * 根据费用id查询所有费用并且统计
+     *
+     * @param reCostIds
+     * @param payCostIds
+     * @return
+     */
+    @ApiOperation(value = "根据费用id查询所有费用并且统计")
+    @PostMapping(value = "/getCostDetailByCostIds")
+    public ApiResult<InputCostVO> getCostDetailByCostIds(@RequestParam(value = "reCostIds") List<Long> reCostIds,
+                                                         @RequestParam(value = "payCostIds") List<Long> payCostIds) {
+
+        return ApiResult.ok(this.orderInfoService.getCostDetailByCostIds(reCostIds, payCostIds));
+    }
 }
 
 

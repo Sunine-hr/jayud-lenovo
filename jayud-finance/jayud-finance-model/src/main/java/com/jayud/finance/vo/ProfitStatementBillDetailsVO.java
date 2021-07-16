@@ -46,14 +46,17 @@ public class ProfitStatementBillDetailsVO extends Model<ProfitStatementBillDetai
     @ApiModelProperty(value = "核销状态")
     private String heXiaoStatus;
 
-    public void setShortAmount(BigDecimal shortAmount) {
-        this.shortAmount = shortAmount;
+
+    public void setMoney(BigDecimal money) {
+        this.money = money;
         heXiaoStatus = this.money.compareTo(BigDecimalUtil.add(this.discountMoney, this.shortAmount)) == 0 ? "已核销" : "未核销";
     }
 
     public void setAuditStatus(String auditStatus) {
         this.auditStatus = BillEnum.getDesc(auditStatus);
     }
+
+
 
 
 }

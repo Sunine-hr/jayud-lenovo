@@ -17,6 +17,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -84,11 +85,17 @@ public class ProfitStatementVO extends Model<ProfitStatementVO> {
     @ApiModelProperty(value = "应收金额(不包含内部)")
     private String reAmount;
 
+//    @ApiModelProperty(value = "应收金额(不包含内部)")
+//    private List<String> reAmounts;
+
     @ApiModelProperty(value = "应收折合金额(RMB)(不包含内部)")
     private BigDecimal reEquivalentAmount;
 
     @ApiModelProperty(value = "应付金额(不包含内部)")
     private String payAmount;
+
+//    @ApiModelProperty(value = "应付金额(不包含内部)")
+//    private List<String> payAmounts;
 
     @ApiModelProperty(value = "应付折合金额(RMB)(不包含内部)")
     private BigDecimal payEquivalentAmount;
@@ -99,11 +106,17 @@ public class ProfitStatementVO extends Model<ProfitStatementVO> {
     @ApiModelProperty(value = "应收金额(包含内部)")
     private String reInAmount;
 
+//    @ApiModelProperty(value = "应收金额(包含内部)")
+//    private List<String> reInAmounts;
+
     @ApiModelProperty(value = "应收折合金额(RMB)(内部)")
     private BigDecimal reInEquivalentAmount;
 
     @ApiModelProperty(value = "应付金额(内部)")
     private String payInAmount;
+
+//    @ApiModelProperty(value = "应付金额(内部)")
+//    private List<String> payInAmounts;
 
     @ApiModelProperty(value = "应付折合金额(RMB)(内部)")
     private BigDecimal payInEquivalentAmount;
@@ -140,6 +153,12 @@ public class ProfitStatementVO extends Model<ProfitStatementVO> {
 
     @ApiModelProperty(value = "是否打开内部往来费用")
     private Boolean isOpenInternal = false;
+
+    @ApiModelProperty(value = "主订单id")
+    private Long mainOrderId;
+
+    @ApiModelProperty(value = "订单类别(product_classify表)")
+    private String classCode;
 
     public static void main(String[] args) {
         Utilities.printFieldsInfo(QueryProfitStatementForm.class);

@@ -558,7 +558,7 @@
             AND ot.`status` in ('T_8','T_9_1','T_9_2')
         </if>
         <if test="form.cmd == 'clearCustoms'">
-            AND ot.`is_hk_clear` = '1' and ot.clear_customs_no is null
+            AND ot.`is_hk_clear` = '1' and ot.seamless_no is null
             AND oi.`status` in ('1','4')
             <if test="dataControl.accountType==1 and dataControl.companyIds != null and dataControl.companyIds.size>0">
                 and ot.`hk_legal_id` in
@@ -748,7 +748,7 @@
                     AND ot.`status` in ('T_8','T_9_1','T_9_2')
                 </when>
                 <when test="status == 'HK_C_1'">
-                    AND ot.`is_hk_clear` = '1' and ot.clear_customs_no is null
+                    AND ot.`is_hk_clear` = '1' and ot.seamless_no is null
                     AND oi.`status` in ('1','4')
                     <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
                         and ot.`hk_legal_id` in

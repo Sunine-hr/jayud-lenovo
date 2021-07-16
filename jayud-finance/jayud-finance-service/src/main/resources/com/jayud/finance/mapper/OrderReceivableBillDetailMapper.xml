@@ -667,10 +667,10 @@
         orbd.bill_no,
         orbd.account_term,
         orbd.audit_status,
-        sum(obct.money) money,
         obct.money_type,
         sum(cav.discount_money) discountMoney,
-        sum(cav.short_amount) shortAmount
+        sum(cav.short_amount) shortAmount,
+        sum(obct.money) money
         from
         order_receivable_bill_detail orbd
         left join order_bill_cost_total obct on orbd.bill_no=obct.bill_no

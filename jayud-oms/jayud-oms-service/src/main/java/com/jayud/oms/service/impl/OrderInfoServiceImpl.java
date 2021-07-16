@@ -104,6 +104,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private IOrderAddressService orderAddressService;
     @Autowired
     private FinanceClient financeClient;
+    @Autowired
+    private ICostGenreService costGenreService;
 
 
     private final String[] KEY_SUBORDER = {SubOrderSignEnum.ZGYS.getSignOne(),
@@ -992,24 +994,58 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return inputCostVO;
     }
 
-//    @Override
-//    public InputCostVO getCostDetailByCostIds(List<Long> reCostIds, List<Long> payCostIds) {
-//        List<OrderReceivableCost> receivableCosts = this.orderReceivableCostService.listByIds(reCostIds);
-//
-//
-//
-////        List<OrderPaymentCost> paymentCosts = this.orderPaymentCostService.list(payCostIds);
-//
-//        //供应商过滤
-//
-//        InputCostVO inputCostVO = new InputCostVO();
-////        inputCostVO.setPaymentCostList(payCost);
-////        inputCostVO.setReceivableCostList(inputReceivableCostVOS);
-//        //计算费用,利润/合计币种
-//        this.calculateCost(inputCostVO);
-//
-//        return inputCostVO;
-//    }
+    /**
+     * 根据费用id查询所有费用并且统计
+     *
+     * @param reCostIds
+     * @param payCostIds
+     * @return
+     */
+    @Override
+    public InputCostVO getCostDetailByCostIds(List<Long> reCostIds, List<Long> payCostIds) {
+        List<OrderReceivableCost> receivableCosts = new ArrayList<>();
+        List<OrderPaymentCost> paymentCosts = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(reCostIds)) {
+            receivableCosts = this.orderReceivableCostService.listByIds(reCostIds);
+        }
+        if (!CollectionUtils.isEmpty(payCostIds)) {
+            paymentCosts = this.orderPaymentCostService.listByIds(payCostIds);
+        }
+
+        //费用名称
+        Map<String, String> costInfoMap = this.costInfoService.list().stream().collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName()));
+        //费用类别(作业环节)
+        Map<Long, String> costTypeMap = this.costTypeService.list().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getCodeName()));
+        //费用类型
+        Map<Long, String> costGenreMap = this.costGenreService.list().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
+        //币种
+        Map<String, String> currencyMap = this.currencyInfoService.initCurrencyInfo().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+
+        List<InputReceivableCostVO> reCosts = ConvertUtil.convertList(receivableCosts, InputReceivableCostVO.class);
+        List<InputPaymentCostVO> payCosts = ConvertUtil.convertList(paymentCosts, InputPaymentCostVO.class);
+
+        reCosts.forEach(e -> {
+            e.setCostName(costInfoMap.get(e.getCostCode()));
+            e.setCostType(costTypeMap.get(e.getCostTypeId()));
+            e.setCostGenre(costGenreMap.get(e.getCostGenreId()));
+            e.setCurrencyName(currencyMap.get(e.getCurrencyCode()));
+        });
+
+        payCosts.forEach(e -> {
+            e.setCostName(costInfoMap.get(e.getCostCode()));
+            e.setCostType(costTypeMap.get(e.getCostTypeId()));
+            e.setCostGenre(costGenreMap.get(e.getCostGenreId()));
+            e.setCurrencyName(currencyMap.get(e.getCurrencyCode()));
+        });
+
+        InputCostVO inputCostVO = new InputCostVO();
+        inputCostVO.setPaymentCostList(payCosts);
+        inputCostVO.setReceivableCostList(reCosts);
+        //计算费用,利润/合计币种
+        this.calculateCost(inputCostVO);
+
+        return inputCostVO;
+    }
 
     /**
      * 计算费用,利润/合计币种

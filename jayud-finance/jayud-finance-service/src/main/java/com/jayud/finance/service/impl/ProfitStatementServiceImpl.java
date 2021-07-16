@@ -24,10 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -163,24 +161,33 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
             Long finalMainLegalId = mainLegalId;
             String finalMainLegalName = mainLegalName;
             Long finalBizBelongDepartId = bizBelongDepartId;
+            Map<String, ProfitStatement> tmpProfitStatement = new HashMap<>(map);
             map.forEach((k1, v1) -> {
+                ProfitStatement value = tmpProfitStatement.get(k1);
                 Map<String, Map<String, BigDecimal>> reCostMap = reCost.get(k1);
                 Map<String, Map<String, BigDecimal>> payCostMap = payCost.get(k1);
-                if (reCostMap != null && payCostMap != null) { //追加是没有这个
-                    v1.setReAmount(this.assemblyCost(reCostMap.get("cost")))
-                            .setReInAmount(this.assemblyCost(reCost.get(k1).get("inCost")))
-                            .setPayAmount(this.assemblyCost(payCost.get(k1).get("cost")))
-                            .setPayInAmount(this.assemblyCost(payCost.get(k1).get("inCost")));
+//                if (reCostMap != null && payCostMap != null) { //追加是没有这个
+//                    v1.setReAmount(this.assemblyCost(reCostMap.get("cost")))
+//                            .setReInAmount(this.assemblyCost(reCost.get(k1).get("inCost")))
+//                            .setPayAmount(this.assemblyCost(payCost.get(k1).get("cost")))
+//                            .setPayInAmount(this.assemblyCost(payCost.get(k1).get("inCost")));
+//                }
+
+                if (reCostMap != null && payCostMap != null) { //
+                    value.setReAmount(this.assemblyCost(reCostMap.get("cost")))
+                            .setReInAmount(this.assemblyCost(reCostMap.get("inCost")))
+                            .setPayAmount(this.assemblyCost(payCostMap.get("cost")))
+                            .setPayInAmount(this.assemblyCost(payCostMap.get("inCost")));
                 }
 
                 //主订单(针对主订单):内部往来取子订单应付费用
-                this.internalTransactionProcessing(mainOrderNo, k1, v1, map,
-                        departmentMap,
+                this.internalTransactionProcessing(mainOrderNo, k1, value,
+                        map, tmpProfitStatement, departmentMap,
                         finalMainLegalId, finalMainLegalName, finalBizBelongDepartId);
 
 
             });
-            list.addAll(new ArrayList<>(map.values()));
+            list.addAll(new ArrayList<>(tmpProfitStatement.values()));
         });
 
         return list;
@@ -203,8 +210,13 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
         List<String> payInAmounts = new ArrayList<>();
         BigDecimal reInEquivalentAmount = new BigDecimal(0);
         BigDecimal payInEquivalentAmount = new BigDecimal(0);
+
         for (ProfitStatementVO profitStatementVO : list) {
             profitStatementVO.totalInternalExpenses(form.getIsOpenInternal());
+            profitStatementVO.setReAmount(this.commonService.calculatingCosts(Arrays.asList(profitStatementVO.getReAmount())));
+            profitStatementVO.setReInAmount(this.commonService.calculatingCosts(Arrays.asList(profitStatementVO.getReInAmount())));
+            profitStatementVO.setPayAmount(this.commonService.calculatingCosts(Arrays.asList(profitStatementVO.getPayAmount())));
+            profitStatementVO.setPayInAmount(this.commonService.calculatingCosts(Arrays.asList(profitStatementVO.getPayInAmount())));
             reAmounts.add(profitStatementVO.getReAmount());
             payAmounts.add(profitStatementVO.getPayAmount());
             reEquivalentAmount = BigDecimalUtil.add(reEquivalentAmount, profitStatementVO.getReEquivalentAmount());
@@ -251,8 +263,9 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
             reCostMap = new HashMap<>();
             payCostMap = new HashMap<>();
             profitStatement = data.convert(ProfitStatement.class);
-            profitStatement.setDepartment(data.getDepartment());
         }
+        profitStatement.setDepartment(data.getDepartment());
+        profitStatement.setCustomerName(data.getMainOrderCustomerName());
         profitStatement = this.calculateAmount(profitStatement, data, reCostMap, payCostMap);
         map.put(orderNo, profitStatement);
         reCost.put(orderNo, reCostMap);
@@ -316,18 +329,22 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 
 
     private void internalTransactionProcessing(String mainOrderNo, String orderNo, ProfitStatement profitStatement,
-                                               Map<String, ProfitStatement> map, Map<Long, String> departmentMap, Long finalMainLegalId, String finalMainLegalName, Long finalBizBelongDepartId) {
-        if (!profitStatement.getIsMain() && !StringUtils.isEmpty(profitStatement.getReInCostIds())) {
-            ProfitStatement tmpMain = map.get(mainOrderNo);
+                                               Map<String, ProfitStatement> map, Map<String, ProfitStatement> tmpProfitStatement,
+                                               Map<Long, String> departmentMap, Long finalMainLegalId,
+                                               String finalMainLegalName, Long finalBizBelongDepartId) {
+        if (!profitStatement.getIsMain() &&
+                (!StringUtils.isEmpty(profitStatement.getReInCostIds())) || !StringUtils.isEmpty(profitStatement.getPayInCostIds())) {
+            ProfitStatement tmpMain = tmpProfitStatement.get(mainOrderNo);
             if (tmpMain == null) {
                 ProfitStatement tmp = new ProfitStatement().setMainOrderId(profitStatement.getMainOrderId())
                         .setClassCode(profitStatement.getClassCode()).setMainOrderNo(profitStatement.getMainOrderNo())
                         .setIsMain(true).setBizType(profitStatement.getBizType()).setLegalName(finalMainLegalName)
                         .setLegalId(finalMainLegalId).setDepartment(departmentMap.get(finalBizBelongDepartId)).setDepartmentId(finalBizBelongDepartId)
                         .setCustomerName(profitStatement.getCustomerName()).setBizUname(profitStatement.getBizUname())
-                        .setCreateTime(profitStatement.getCreateTime()).setPaySubCostIds(profitStatement.getPayCostIds())
-                        .setPaySubAmount(profitStatement.getPayAmount()).setPaySubEquivalentAmount(profitStatement.getPayEquivalentAmount())
-                        .setSubProfit(profitStatement.getPaySubEquivalentAmount());
+                        .setCreateTime(profitStatement.getCreateTime()).setPaySubCostIds(profitStatement.getPayInCostIds())
+                        .setPaySubAmount(profitStatement.getPayInAmount()).setPaySubEquivalentAmount(profitStatement.getPayInEquivalentAmount())
+                        .setSubProfit(profitStatement.getPayInEquivalentAmount())
+                        .setCreateUser(profitStatement.getCreateUser());
 
 //                ProfitStatement convert = ConvertUtil.convert(profitStatement, ProfitStatement.class);
 //                convert.setOrderNo(null).setIsMain(true).setLegalName(finalMainLegalName).setLegalId(finalMainLegalId)
@@ -336,12 +353,12 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 //                        .setPayAmount(null).setPayEquivalentAmount(null).setProfit(null)
 
 
-                map.put(tmp.getMainOrderNo(), tmp);
+                tmpProfitStatement.put(tmp.getMainOrderNo(), tmp);
             } else {
-                tmpMain.setPaySubCostIds(StringUtils.add(tmpMain.getPaySubCostIds(), profitStatement.getPayCostIds()))
-                        .setPaySubAmount(StringUtils.add(tmpMain.getPaySubAmount(), profitStatement.getPayAmount()))
-                        .setPaySubEquivalentAmount(BigDecimalUtil.add(tmpMain.getPaySubEquivalentAmount(), tmpMain.getPayEquivalentAmount()))
-                        .setSubProfit(BigDecimalUtil.add(tmpMain.getSubProfit(), profitStatement.getPayEquivalentAmount()));
+                tmpMain.setPaySubCostIds(StringUtils.add(tmpMain.getPaySubCostIds(), profitStatement.getPayInCostIds()))
+                        .setPaySubAmount(StringUtils.add(tmpMain.getPaySubAmount(), profitStatement.getPayInAmount()))
+                        .setPaySubEquivalentAmount(BigDecimalUtil.add(tmpMain.getPaySubEquivalentAmount(), profitStatement.getPayInEquivalentAmount()))
+                        .setSubProfit(BigDecimalUtil.add(tmpMain.getSubProfit(), profitStatement.getPayInEquivalentAmount()));
             }
 
 

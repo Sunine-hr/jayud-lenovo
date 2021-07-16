@@ -49,7 +49,7 @@ public class OrderReceivableCost extends Model<OrderReceivableCost> {
     @ApiModelProperty(value = "客户名(customer_info name)")
     private String customerName;
 
-    @ApiModelProperty(value = "费用类型ID")
+    @ApiModelProperty(value = "费用类别ID")
     private Long costTypeId;
 
     @ApiModelProperty(value = "费用类型")

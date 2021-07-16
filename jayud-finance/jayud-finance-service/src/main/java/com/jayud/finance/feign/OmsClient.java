@@ -205,4 +205,16 @@ public interface OmsClient {
     @ApiOperation(value = "下拉业务类型")
     @PostMapping(value = "/initBizService")
     public CommonResult<List<InitComboxStrVO>> initBizService();
+
+    /**
+     * 根据费用id查询所有费用并且统计
+     *
+     * @param reCostIds
+     * @param payCostIds
+     * @return
+     */
+    @ApiOperation(value = "根据费用id查询所有费用并且统计")
+    @PostMapping(value = "/getCostDetailByCostIds")
+    public ApiResult getCostDetailByCostIds(@RequestParam(value = "reCostIds") List<Long> reCostIds,
+                                            @RequestParam(value = "payCostIds") List<Long> payCostIds);
 }

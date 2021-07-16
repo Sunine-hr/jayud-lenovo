@@ -268,4 +268,13 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
 //    List<Map<String, Object>> getSupplyPendingOpt(DataControl dataControl);
+
+    /**
+     * 根据费用id查询所有费用并且统计
+     *
+     * @param reCostIds
+     * @param payCostIds
+     * @return
+     */
+    public InputCostVO getCostDetailByCostIds(List<Long> reCostIds, List<Long> payCostIds);
 }

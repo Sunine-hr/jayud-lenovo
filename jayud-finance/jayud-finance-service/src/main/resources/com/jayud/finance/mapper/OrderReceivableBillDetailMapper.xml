@@ -43,6 +43,7 @@
         push_kingdee_count
     </sql>
 
+
     <select id="findReceiveBillDetailByPage" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO">
         SELECT
         orbd.bill_no billNo,
@@ -659,5 +660,28 @@
             LEFT JOIN order_receivable_bill orb ON orbd.bill_id = orb.id
         WHERE
             orbd.order_no = #{orderNo} and orb.sub_type = #{subType} and orb.legal_entity_id = #{legalId} and orb.unit_code = #{unitCode}
+    </select>
+
+    <select id="statisticsBillByCostIds" resultType="com.jayud.finance.vo.ProfitStatementBillDetailsVO">
+        select
+        orbd.bill_no,
+        orbd.account_term,
+        orbd.audit_status,
+        sum(obct.money) money,
+        obct.money_type,
+        sum(cav.discount_money) discountMoney,
+        sum(cav.short_amount) shortAmount
+        from
+        order_receivable_bill_detail orbd
+        left join order_bill_cost_total obct on orbd.bill_no=obct.bill_no
+        left join cancel_after_verification cav on orbd.bill_no=cav.bill_no
+        <where>
+            and obct.money_type=2
+            and obct.cost_id in
+            <foreach collection="reCostIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+        group by orbd.bill_no
     </select>
 </mapper>

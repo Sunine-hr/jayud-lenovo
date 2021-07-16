@@ -1184,6 +1184,17 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         this.receivableBillService.updateById(orderReceivableBill);
     }
 
+    /**
+     * 根据费用明细id统计账单
+     *
+     * @param reCostIds
+     * @return
+     */
+    @Override
+    public List<ProfitStatementBillDetailsVO> statisticsBillByCostIds(List<String> reCostIds) {
+        return this.baseMapper.statisticsBillByCostIds(reCostIds);
+    }
+
 
     private void tmsSpecialDataProcessing(String cmd, ViewBilToOrderVO viewBillToOrder) {
         //中港运输 处理目的地:当有两条或两条以上时,则获取中转仓地址

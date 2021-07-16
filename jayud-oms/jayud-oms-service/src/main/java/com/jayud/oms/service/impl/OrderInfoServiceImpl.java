@@ -404,6 +404,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             }
 
+            Map<String, String> customerNameMap = this.customerInfoService.getCustomerName();
+
             Map<String, String> supplierInfoMap = new HashMap<>();
             for (OrderPaymentCost orderPaymentCost : orderPaymentCosts) {//应付费用
                 orderPaymentCost.setMainOrderNo(inputOrderVO.getOrderNo());
@@ -425,10 +427,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 if (isSumToMain) {
                     orderPaymentCost.setLegalName(inputOrderVO.getLegalName());
                     orderPaymentCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData().toString()));
+                    orderPaymentCost.setUnitCode(inputOrderVO.getUnitCode()).setUnitName(customerNameMap.get(inputOrderVO.getUnitCode()));
                     departmentId = inputOrderVO.getBizBelongDepart();
                 } else {
                     orderPaymentCost.setLegalName(form.getSubLegalName());
                     orderPaymentCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData().toString()));
+                    orderPaymentCost.setUnitCode(form.getSubUnitCode()).setUnitName(customerNameMap.get(form.getSubUnitCode()));
                     departmentId = form.getDepartmentId();
                 }
 
@@ -469,10 +473,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 if (isSumToMain) {
                     orderReceivableCost.setLegalName(inputOrderVO.getLegalName());
                     orderReceivableCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(inputOrderVO.getLegalName()).getData().toString()));
+                    orderReceivableCost.setUnitCode(inputOrderVO.getUnitCode()).setUnitName(customerNameMap.get(inputOrderVO.getUnitCode()));
                     departmentId = inputOrderVO.getBizBelongDepart();
                 } else {
                     orderReceivableCost.setLegalName(form.getSubLegalName());
                     orderReceivableCost.setLegalId(Long.parseLong(oauthClient.getLegalEntityByLegalName(form.getSubLegalName()).getData().toString()));
+                    orderReceivableCost.setUnitCode(form.getSubUnitCode()).setUnitName(customerNameMap.get(form.getSubUnitCode()));
                     departmentId = form.getDepartmentId();
                 }
 
@@ -985,6 +991,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         return inputCostVO;
     }
+
+//    @Override
+//    public InputCostVO getCostDetailByCostIds(List<Long> reCostIds, List<Long> payCostIds) {
+//        List<OrderReceivableCost> receivableCosts = this.orderReceivableCostService.listByIds(reCostIds);
+//
+//
+//
+////        List<OrderPaymentCost> paymentCosts = this.orderPaymentCostService.list(payCostIds);
+//
+//        //供应商过滤
+//
+//        InputCostVO inputCostVO = new InputCostVO();
+////        inputCostVO.setPaymentCostList(payCost);
+////        inputCostVO.setReceivableCostList(inputReceivableCostVOS);
+//        //计算费用,利润/合计币种
+//        this.calculateCost(inputCostVO);
+//
+//        return inputCostVO;
+//    }
 
     /**
      * 计算费用,利润/合计币种

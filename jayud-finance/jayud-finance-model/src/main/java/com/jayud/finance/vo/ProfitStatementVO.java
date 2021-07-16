@@ -3,6 +3,7 @@ package com.jayud.finance.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.utils.BigDecimalUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
@@ -77,6 +78,7 @@ public class ProfitStatementVO extends Model<ProfitStatementVO> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "应收金额(不包含内部)")
@@ -109,8 +111,8 @@ public class ProfitStatementVO extends Model<ProfitStatementVO> {
     @ApiModelProperty(value = "利润(内部)")
     private BigDecimal inProfit;
 
-    @ApiModelProperty(value = "同步时间")
-    private LocalDateTime syncTime;
+//    @ApiModelProperty(value = "同步时间")
+//    private LocalDateTime syncTime;
 
     @ApiModelProperty(value = "应收费用id集合(多个逗号隔开)")
     private String reCostIds;
@@ -123,6 +125,18 @@ public class ProfitStatementVO extends Model<ProfitStatementVO> {
 
     @ApiModelProperty(value = "应付费用id集合(多个逗号隔开)(内部)")
     private String payInCostIds;
+
+    @ApiModelProperty(value = "应付子订单金额(内部结算统计子订单金额)")
+    private String paySubAmount = "";
+
+    @ApiModelProperty(value = "应付子订单折合金额(RMB)(内部结算统计子订单金额)")
+    private BigDecimal paySubEquivalentAmount = new BigDecimal(0);
+
+    @ApiModelProperty(value = "应付子订单费用id集合(内部结算统计子订单金额)")
+    private String paySubCostIds = "";
+
+    @ApiModelProperty(value = "利润(内部结算统计子订单金额)")
+    private BigDecimal subProfit = new BigDecimal(0);
 
     @ApiModelProperty(value = "是否打开内部往来费用")
     private Boolean isOpenInternal = false;
@@ -137,18 +151,47 @@ public class ProfitStatementVO extends Model<ProfitStatementVO> {
     }
 
     public void totalInternalExpenses(Boolean isOpenInternal) {
-//        if (isOpenInternal) {
+        if (this.isMain) {
+            //所属部门
+            String payCostIds = this.payCostIds;
+            String payAmount = this.payAmount;
+            BigDecimal payEquivalentAmount = this.payEquivalentAmount;
+            BigDecimal profit = this.profit;
+            //不包内部结算(内部结算不是录用费用那个内部往里)
+            this.reAmount = StringUtils.add("", this.reAmount, this.reInAmount);
+            this.payAmount = StringUtils.add("", this.payAmount, this.payInAmount);
+            this.reEquivalentAmount = BigDecimalUtil.add(this.reEquivalentAmount, this.reInEquivalentAmount);
+            this.payEquivalentAmount = BigDecimalUtil.add(this.payEquivalentAmount, this.payInEquivalentAmount);
+            this.reCostIds = StringUtils.add("", this.reCostIds, this.reInCostIds);
+            this.payCostIds = StringUtils.add("", this.payCostIds, this.payInCostIds);
+            this.profit = BigDecimalUtil.add(this.profit, this.inProfit);
+            //内部结算(内部结算不是录用费用那个内部往里)
+            this.payInAmount = StringUtils.add("", payAmount, this.paySubAmount);
+            this.payInEquivalentAmount = BigDecimalUtil.add(payEquivalentAmount, this.paySubEquivalentAmount);
+            this.payInCostIds = StringUtils.add("", payCostIds, this.paySubCostIds);
+            this.inProfit = BigDecimalUtil.subtract(profit, this.subProfit);
+
+            this.reInAmount =this.reAmount;
+            this.reInEquivalentAmount = this.reEquivalentAmount;
+            this.reInCostIds =this.reCostIds;
+
+        } else {
+            //操作部门
+            this.reAmount = StringUtils.add("", this.reAmount, this.reInAmount);
+            this.payAmount = StringUtils.add("", this.payAmount, this.payInAmount);
+            this.reEquivalentAmount = BigDecimalUtil.add(this.reEquivalentAmount, this.reInEquivalentAmount);
+            this.payEquivalentAmount = BigDecimalUtil.add(this.payEquivalentAmount, this.payInEquivalentAmount);
+            this.reCostIds = StringUtils.add("", this.reCostIds, this.reInCostIds);
+            this.payCostIds = StringUtils.add("", this.payCostIds, this.payInCostIds);
+            this.profit = BigDecimalUtil.add(this.profit, this.inProfit);
+        }
+
+        //        if (isOpenInternal) {
 //            this.reAmount += this.reInAmount;
 //            this.payAmount += this.payInAmount;
 //            this.reEquivalentAmount = BigDecimalUtil.add(this.reEquivalentAmount, this.reInEquivalentAmount);
 //            this.payEquivalentAmount = BigDecimalUtil.add(this.payEquivalentAmount, this.payInEquivalentAmount);
-        this.reInAmount = StringUtils.add("", this.reAmount, this.reInAmount);
-        this.payInAmount = StringUtils.add("", this.payAmount, this.payInAmount);
-        this.reInEquivalentAmount = BigDecimalUtil.add(this.reEquivalentAmount, this.reInEquivalentAmount);
-        this.payInEquivalentAmount = BigDecimalUtil.add(this.payEquivalentAmount, this.payInEquivalentAmount);
-        this.reInCostIds = StringUtils.add("", this.reCostIds, this.reInCostIds);
-        this.payInCostIds = StringUtils.add("", this.payCostIds, this.payInCostIds);
-        this.inProfit = BigDecimalUtil.add(this.profit, this.inProfit);
+
 //        }
     }
 }

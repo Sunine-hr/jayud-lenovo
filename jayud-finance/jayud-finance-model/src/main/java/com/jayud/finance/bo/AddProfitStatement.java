@@ -1,4 +1,4 @@
-package com.jayud.finance.po;
+package com.jayud.finance.bo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value = "ProfitStatement对象", description = "利润报表")
-public class ProfitStatement extends Model<ProfitStatement> {
+public class AddProfitStatement extends Model<AddProfitStatement> {
 
     private static final long serialVersionUID = 1L;
 
@@ -128,15 +128,6 @@ public class ProfitStatement extends Model<ProfitStatement> {
 
     @ApiModelProperty(value = "应付子订单折合金额(RMB)(内部结算统计子订单金额)")
     private BigDecimal paySubEquivalentAmount = new BigDecimal(0);
-
-    @ApiModelProperty(value = "利润(内部结算统计子订单金额)")
-    private BigDecimal subProfit = new BigDecimal(0);
-
-    @ApiModelProperty(value = "主订单id")
-    private Long mainOrderId;
-
-    @ApiModelProperty(value = "订单类别(product_classify表)")
-    private String classCode;
 
 
     @Override

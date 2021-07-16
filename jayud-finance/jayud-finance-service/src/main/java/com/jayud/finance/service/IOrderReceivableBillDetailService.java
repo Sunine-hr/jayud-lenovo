@@ -263,4 +263,11 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @param billNo
      */
     public void statisticsBill(String billNo);
+
+    /**
+     * 根据费用明细id统计账单
+     * @param reCostIds
+     * @return
+     */
+    List<ProfitStatementBillDetailsVO> statisticsBillByCostIds(List<String> reCostIds);
 }

@@ -154,4 +154,6 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
      */
     List<OrderReceivableBillDetail> getNowSOrderExistByLegalId(@Param("legalId") Long legalId, @Param("unitCode") String unitCode,
                                                                @Param("subType") String subType, @Param("orderNo") String orderNo);
+
+    List<ProfitStatementBillDetailsVO> statisticsBillByCostIds(@Param("reCostIds") List<String> reCostIds);
 }

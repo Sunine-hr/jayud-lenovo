@@ -3,6 +3,7 @@ package com.jayud.finance.service;
 import com.jayud.finance.bo.QueryProfitStatementForm;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.finance.po.ProfitStatement;
+import com.jayud.finance.vo.ProfitStatementBillVO;
 import com.jayud.finance.vo.ProfitStatementVO;
 
 import java.util.List;
@@ -39,5 +40,7 @@ public interface IProfitStatementService extends IService<ProfitStatement> {
     List<ProfitStatementVO> list(QueryProfitStatementForm form, Map<String, Object> rollCallback);
 
 
-    List<ProfitStatementVO> getProfitStatementBill(List<String> reCostIds, List<String> payCostIds);
+    ProfitStatementBillVO getProfitStatementBill(List<String> reCostIds, List<String> payCostIds);
+
+    ProfitStatementBillVO getCostDetails(List<String> reCostIds, List<String> payCostIds);
 }

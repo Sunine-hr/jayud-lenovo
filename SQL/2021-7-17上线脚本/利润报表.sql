@@ -24,10 +24,16 @@ CREATE TABLE `profit_statement` (
   `pay_in_amount` varchar(255) DEFAULT NULL COMMENT '应付金额(内部)',
   `pay_in_equivalent_amount` decimal(50,4) DEFAULT NULL COMMENT '应付折合金额(RMB)(内部)',
   `in_profit` decimal(50,4) DEFAULT NULL COMMENT '利润(包含内部)',
+  `pay_sub_amount` varchar(255) DEFAULT NULL COMMENT '应付子订单金额(内部结算统计子订单金额)',
+  `pay_sub_equivalent_amount` decimal(50,4) DEFAULT NULL COMMENT '应付子订单折合金额(RMB)(内部结算统计子订单金额)',
+  `sub_profit` decimal(50,4) DEFAULT NULL COMMENT '利润(内部结算统计子订单金额)',
   `sync_time` datetime DEFAULT NULL COMMENT '同步时间',
   `re_cost_ids` varchar(500) DEFAULT NULL COMMENT '应收费用id集合(多个逗号隔开)',
   `pay_cost_ids` varchar(500) DEFAULT NULL COMMENT '应付费用id集合(多个逗号隔开)',
   `re_in_cost_ids` varchar(500) DEFAULT NULL COMMENT '应收费用id集合(多个逗号隔开)(内部)',
   `pay_in_cost_ids` varchar(500) DEFAULT NULL COMMENT '应付费用id集合(多个逗号隔开)(内部)',
+  `pay_sub_cost_ids` varchar(500) DEFAULT NULL COMMENT '应付子订单费用id集合(内部结算统计子订单金额)',
+  `main_order_id` bigint(20) DEFAULT NULL COMMENT '主订单id',
+  `class_code` varchar(100) DEFAULT NULL COMMENT '订单类别(product_classify表)',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COMMENT='利润报表';
+) ENGINE=InnoDB AUTO_INCREMENT=3058 DEFAULT CHARSET=utf8mb4 COMMENT='利润报表';

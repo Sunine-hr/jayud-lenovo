@@ -144,6 +144,12 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
     @ApiModelProperty(value = "内部部门id")
     private Long internalDepartmentId;
 
+    @ApiModelProperty(value = "订单结算单位code")
+    private String unitCode;
+
+    @ApiModelProperty(value = "订单结算单位")
+    private String unitName;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

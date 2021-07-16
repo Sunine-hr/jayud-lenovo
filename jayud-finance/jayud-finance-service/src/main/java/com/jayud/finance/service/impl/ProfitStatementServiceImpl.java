@@ -5,15 +5,18 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.utils.BigDecimalUtil;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.finance.bo.QueryProfitStatementForm;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.ProfitStatementMapper;
+import com.jayud.finance.po.OrderReceivableBill;
 import com.jayud.finance.po.ProfitStatement;
-import com.jayud.finance.service.CommonService;
-import com.jayud.finance.service.IProfitStatementService;
+import com.jayud.finance.service.*;
 import com.jayud.finance.vo.ProfitStatementBasicData;
+import com.jayud.finance.vo.ProfitStatementBillDetailsVO;
+import com.jayud.finance.vo.ProfitStatementBillVO;
 import com.jayud.finance.vo.ProfitStatementVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,59 +48,20 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
     private RedisUtils redisUtils;
     @Autowired
     private CommonService commonService;
+    @Autowired
+    private IOrderReceivableBillDetailService receivableBillDetailService;
+    @Autowired
+    private IOrderPaymentBillDetailService paymentBillDetailService;
 
-
-    @Override
-    public List<ProfitStatement> statisticalProfitReport() {
-        List<ProfitStatementBasicData> basicDatas = this.baseMapper.getBasicDataOfProfitStatement();
-
-        Map<String, List<ProfitStatementBasicData>> basicDateMap = basicDatas.stream().collect(Collectors.groupingBy(ProfitStatementBasicData::getMainOrderNo));
-        //部门
-        Map<Long, String> departmentMap = oauthClient.findDepartment().getData().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
-        //币种
-        Map<String, String> currencyMap = this.omsClient.initCurrencyInfo().getData().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
-        //结算单位
-        Map<String, String> customerMap = this.omsClient.getCustomerName().getData();
-        //业务类型
-        Map<String, String> bizService = this.omsClient.initBizService().getData().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
-
-        List<ProfitStatement> list = new ArrayList<>();
-        basicDateMap.forEach((k, v) -> {
-            Map<String, ProfitStatement> map = new HashMap<>();
-//            Map<String, Map<String, BigDecimal>> internalCost = new HashMap<>();
-//            Map<String, Map<String, BigDecimal>> reCost = new HashMap<>();
-//            Map<String, Map<String, BigDecimal>> payCost = new HashMap<>();
-//            Map<String, Map<String, BigDecimal>> reInCost = new HashMap<>();// 包含内部往来
-//            Map<String, Map<String, BigDecimal>> payInCost = new HashMap<>();// 包含内部往来
-
-            Map<String, Map<String, Map<String, BigDecimal>>> reCost = new HashMap<>();
-            Map<String, Map<String, Map<String, BigDecimal>>> payCost = new HashMap<>();
-
-            for (ProfitStatementBasicData data : v) {
-                data.setCurrencyName(currencyMap.get(data.getCurrencyCode()));
-                data.setDepartment(departmentMap.get(data.getDepartmentId()));
-                data.setUnitName(customerMap.get(data.getUnitCode()));
-                data.setBizType(bizService.get(data.getBizCode()));
-
-                //主订单统计维度
-                if (data.getIsSumToMain()) {
-                    this.doStatisticalProfitReport(data.getMainOrderNo(), data, map, reCost, payCost);
-                } else {
-                    //子订单统计维度
-                    this.doStatisticalProfitReport(data.getOrderNo(), data, map, reCost, payCost);
-                }
-            }
-            map.forEach((k1, v1) -> {
-                v1.setReAmount(this.assemblyCost(reCost.get(k1).get("cost")))
-                        .setReInAmount(this.assemblyCost(reCost.get(k1).get("inCost")))
-                        .setPayAmount(this.assemblyCost(payCost.get(k1).get("cost")))
-                        .setPayInAmount(this.assemblyCost(payCost.get(k1).get("inCost")));
-            });
-            list.addAll(new ArrayList<>(map.values()));
-        });
-
-        return list;
+    public static void main(String[] args) {
+        Map<String, BigDecimal> map = new HashMap<>();
+//        map.put("CNY", new BigDecimal(2));
+//        map.put("RMB", new BigDecimal(3));
+//        map.merge("GB", new BigDecimal(3), BigDecimal::add);
+        System.out.println(map.get(null));
+//        System.out.println(new JSONObject(map));
     }
+
 
     /**
      * 同步数据
@@ -146,12 +110,80 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
         this.redisUtils.set("profit_statement", com.alibaba.fastjson.JSONArray.toJSONString(datas));
     }
 
-    public static void main(String[] args) {
-        Map<String, BigDecimal> map = new HashMap<>(3);
-        map.put("CNY", new BigDecimal(2));
-        map.put("RMB", new BigDecimal(3));
-        map.merge("GB", new BigDecimal(3), BigDecimal::add);
-        System.out.println(new JSONObject(map));
+    @Override
+    public List<ProfitStatement> statisticalProfitReport() {
+        List<ProfitStatementBasicData> basicDatas = this.baseMapper.getBasicDataOfProfitStatement();
+
+        Map<String, List<ProfitStatementBasicData>> basicDateMap = basicDatas.stream().collect(Collectors.groupingBy(ProfitStatementBasicData::getMainOrderNo));
+        //部门
+        Map<Long, String> departmentMap = oauthClient.findDepartment().getData().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
+        //币种
+        Map<String, String> currencyMap = this.omsClient.initCurrencyInfo().getData().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+        //结算单位
+//        Map<String, String> customerMap = this.omsClient.getCustomerName().getData();
+        //业务类型
+        Map<String, String> bizService = this.omsClient.initBizService().getData().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+
+        List<ProfitStatement> list = new ArrayList<>();
+        basicDateMap.forEach((k, v) -> {
+            Map<String, ProfitStatement> map = new HashMap<>();
+//            Map<String, Map<String, BigDecimal>> internalCost = new HashMap<>();
+//            Map<String, Map<String, BigDecimal>> reCost = new HashMap<>();
+//            Map<String, Map<String, BigDecimal>> payCost = new HashMap<>();
+//            Map<String, Map<String, BigDecimal>> reInCost = new HashMap<>();// 包含内部往来
+//            Map<String, Map<String, BigDecimal>> payInCost = new HashMap<>();// 包含内部往来
+
+            Map<String, Map<String, Map<String, BigDecimal>>> reCost = new HashMap<>();
+            Map<String, Map<String, Map<String, BigDecimal>>> payCost = new HashMap<>();
+
+            String tmp = null;
+            Long bizBelongDepartId = null;
+            Long mainLegalId = null;
+            String mainLegalName = null;
+            for (ProfitStatementBasicData data : v) {
+                bizBelongDepartId = data.getBizBelongDepart();
+                mainLegalName = data.getMainLegalName();
+                mainLegalId = data.getMainLegalId();
+                data.setCurrencyName(currencyMap.get(data.getCurrencyCode()));
+                data.setDepartment(departmentMap.get(data.getDepartmentId()));
+                data.setBizType(bizService.get(data.getBizCode()));
+
+                //主订单统计维度
+                if (data.getIsSumToMain()) {
+                    tmp = data.getMainOrderNo();
+                    this.doStatisticalProfitReport(data.getMainOrderNo(), data, map, reCost, payCost);
+                } else {
+                    data.setIsInternal(data.getMainLegalName().equals(data.getUnitName()));
+                    //子订单统计维度
+                    this.doStatisticalProfitReport(data.getOrderNo(), data, map, reCost, payCost);
+                }
+            }
+
+            String mainOrderNo = tmp;
+            Long finalMainLegalId = mainLegalId;
+            String finalMainLegalName = mainLegalName;
+            Long finalBizBelongDepartId = bizBelongDepartId;
+            map.forEach((k1, v1) -> {
+                Map<String, Map<String, BigDecimal>> reCostMap = reCost.get(k1);
+                Map<String, Map<String, BigDecimal>> payCostMap = payCost.get(k1);
+                if (reCostMap != null && payCostMap != null) { //追加是没有这个
+                    v1.setReAmount(this.assemblyCost(reCostMap.get("cost")))
+                            .setReInAmount(this.assemblyCost(reCost.get(k1).get("inCost")))
+                            .setPayAmount(this.assemblyCost(payCost.get(k1).get("cost")))
+                            .setPayInAmount(this.assemblyCost(payCost.get(k1).get("inCost")));
+                }
+
+                //主订单(针对主订单):内部往来取子订单应付费用
+                this.internalTransactionProcessing(mainOrderNo, k1, v1, map,
+                        departmentMap,
+                        finalMainLegalId, finalMainLegalName, finalBizBelongDepartId);
+
+
+            });
+            list.addAll(new ArrayList<>(map.values()));
+        });
+
+        return list;
     }
 
     /**
@@ -276,7 +308,57 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
     }
 
     @Override
-    public List<ProfitStatementVO> getProfitStatementBill(List<String> reCostIds, List<String> payCostIds) {
+    public ProfitStatementBillVO getProfitStatementBill(List<String> reCostIds, List<String> payCostIds) {
+        List<ProfitStatementBillDetailsVO> reBills = this.receivableBillDetailService.statisticsBillByCostIds(reCostIds);
+        List<ProfitStatementBillDetailsVO> payBills = this.paymentBillDetailService.statisticsBillByCostIds(payCostIds);
+        return new ProfitStatementBillVO().setReBills(reBills).setPayBills(payBills);
+    }
+
+
+    private void internalTransactionProcessing(String mainOrderNo, String orderNo, ProfitStatement profitStatement,
+                                               Map<String, ProfitStatement> map, Map<Long, String> departmentMap, Long finalMainLegalId, String finalMainLegalName, Long finalBizBelongDepartId) {
+        if (!profitStatement.getIsMain() && !StringUtils.isEmpty(profitStatement.getReInCostIds())) {
+            ProfitStatement tmpMain = map.get(mainOrderNo);
+            if (tmpMain == null) {
+                ProfitStatement tmp = new ProfitStatement().setMainOrderId(profitStatement.getMainOrderId())
+                        .setClassCode(profitStatement.getClassCode()).setMainOrderNo(profitStatement.getMainOrderNo())
+                        .setIsMain(true).setBizType(profitStatement.getBizType()).setLegalName(finalMainLegalName)
+                        .setLegalId(finalMainLegalId).setDepartment(departmentMap.get(finalBizBelongDepartId)).setDepartmentId(finalBizBelongDepartId)
+                        .setCustomerName(profitStatement.getCustomerName()).setBizUname(profitStatement.getBizUname())
+                        .setCreateTime(profitStatement.getCreateTime()).setPaySubCostIds(profitStatement.getPayCostIds())
+                        .setPaySubAmount(profitStatement.getPayAmount()).setPaySubEquivalentAmount(profitStatement.getPayEquivalentAmount())
+                        .setSubProfit(profitStatement.getPaySubEquivalentAmount());
+
+//                ProfitStatement convert = ConvertUtil.convert(profitStatement, ProfitStatement.class);
+//                convert.setOrderNo(null).setIsMain(true).setLegalName(finalMainLegalName).setLegalId(finalMainLegalId)
+//                        .setDepartment(departmentMap.get(finalBizBelongDepartId)).setDepartmentId(finalBizBelongDepartId)
+//                        .setUnitName(null).setUnitCode(null).setReAmount(null).setReEquivalentAmount(null)
+//                        .setPayAmount(null).setPayEquivalentAmount(null).setProfit(null)
+
+
+                map.put(tmp.getMainOrderNo(), tmp);
+            } else {
+                tmpMain.setPaySubCostIds(StringUtils.add(tmpMain.getPaySubCostIds(), profitStatement.getPayCostIds()))
+                        .setPaySubAmount(StringUtils.add(tmpMain.getPaySubAmount(), profitStatement.getPayAmount()))
+                        .setPaySubEquivalentAmount(BigDecimalUtil.add(tmpMain.getPaySubEquivalentAmount(), tmpMain.getPayEquivalentAmount()))
+                        .setSubProfit(BigDecimalUtil.add(tmpMain.getSubProfit(), profitStatement.getPayEquivalentAmount()));
+            }
+
+
+        }
+
+    }
+
+
+    /**
+     * 获取费用明细
+     *
+     * @param reCostIds
+     * @param payCostIds
+     * @return
+     */
+    @Override
+    public ProfitStatementBillVO getCostDetails(List<String> reCostIds, List<String> payCostIds) {
         return null;
     }
 }

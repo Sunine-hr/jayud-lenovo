@@ -124,6 +124,12 @@ public class OrderReceivableCost extends Model<OrderReceivableCost> {
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
 
+    @ApiModelProperty(value = "订单结算单位code")
+    private String unitCode;
+
+    @ApiModelProperty(value = "订单结算单位")
+    private String unitName;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

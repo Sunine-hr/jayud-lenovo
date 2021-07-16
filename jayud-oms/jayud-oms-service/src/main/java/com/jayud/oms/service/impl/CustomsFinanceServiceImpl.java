@@ -31,30 +31,24 @@ import java.util.stream.Collectors;
 public class CustomsFinanceServiceImpl implements CustomsFinanceService {
     @Autowired
     CustomsClient customsClient;
-
     @Autowired
     FinanceClient financeClient;
-
     @Autowired
     OauthClient oauthClient;
-
     @Autowired
     IOrderReceivableCostService receivableCostService;
-
     @Autowired
     ICostInfoService costInfoService;
-
     @Autowired
     ICostTypeService costTypeService;
-
     @Autowired
     ICostGenreService costGenreService;
-
     @Autowired
     IOrderInfoService orderInfoService;
-
     @Autowired
     IProductBizService productBizService;
+    @Autowired
+    private ICustomerInfoService customerInfoService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -87,6 +81,9 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
             if (Objects.isNull(productBiz)) {
                 return false;
             }
+
+            //客户
+            Map<String, String> customerNameMap = this.customerInfoService.getCustomerName();
 
             //写入费用项
             log.info("OMS开始处理应收费用明细...");
@@ -170,9 +167,11 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                     if (orderReceivableCost.getIsSumToMain()) {
                         orderReceivableCost.setLegalName(orderInfo.getLegalName());
                         orderReceivableCost.setLegalId(Long.parseLong((oauthClient.getLegalEntityByLegalName(orderInfo.getLegalName()).getData().toString())));
+                        orderReceivableCost.setUnitCode(orderInfo.getUnitCode()).setUnitName(customerNameMap.get(orderInfo.getUnitCode()));
                     } else {
                         orderReceivableCost.setLegalName(subOrderCustoms.getLegalName());
                         orderReceivableCost.setLegalId(Long.parseLong((oauthClient.getLegalEntityByLegalName(subOrderCustoms.getLegalName()).getData().toString())));
+                        orderReceivableCost.setUnitCode(subOrderCustoms.getUnitCode()).setUnitName(customerNameMap.get(subOrderCustoms.getUnitCode()));
                     }
 
                     orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_3.getCode()));

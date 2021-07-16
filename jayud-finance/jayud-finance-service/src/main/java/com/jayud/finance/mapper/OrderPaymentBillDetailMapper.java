@@ -170,4 +170,7 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
                                                             @Param("supplierCode")String supplierCode,
                                                             @Param("subType")String subType,
                                                             @Param("orderNo")String orderNo);
+
+
+    List<ProfitStatementBillDetailsVO> statisticsBillByCostIds(@Param("payCostIds")List<String> payCostIds);
 }

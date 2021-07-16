@@ -268,4 +268,11 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @param billNo
      */
     public void statisticsBill(String billNo);
+
+    /**
+     * 根据费用明细id统计
+     * @param payCostIds
+     * @return
+     */
+    List<ProfitStatementBillDetailsVO> statisticsBillByCostIds(List<String> payCostIds);
 }

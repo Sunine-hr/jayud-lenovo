@@ -50,17 +50,23 @@ public class ProfitStatementBasicData extends Model<ProfitStatementBasicData> {
     @ApiModelProperty(value = "出账本币金额")
     private BigDecimal localMoney;
 
+    @ApiModelProperty(value = "主订单法人名称")
+    private String mainLegalName;
+
+    @ApiModelProperty(value = "主订单法人名称Id")
+    private Long mainLegalId;
+
     @ApiModelProperty(value = "法人名称")
     private String legalName;
 
     @ApiModelProperty(value = "法人id")
     private Long legalId;
 
-    @ApiModelProperty(value = "结算单位code")
-    private String unitCode;
+    @ApiModelProperty(value = "录用费用选择供应商/结算单位")
+    private String customerCode;
 
-    @ApiModelProperty(value = "结算单位名称")
-    private String unitName;
+    @ApiModelProperty(value = "录用费用选择供应商/结算单位")
+    private String customerName;
 
     @ApiModelProperty(value = "子订单费用类型")
     private String subType;
@@ -78,7 +84,7 @@ public class ProfitStatementBasicData extends Model<ProfitStatementBasicData> {
     private Boolean isInternal;
 
     @ApiModelProperty(value = "客户名称")
-    private String customerName;
+    private String mainOrderCustomerName;
 
     @ApiModelProperty(value = "业务类型code")
     private String bizCode;
@@ -87,7 +93,7 @@ public class ProfitStatementBasicData extends Model<ProfitStatementBasicData> {
     private String bizType;
 
     @ApiModelProperty(value = "业务员名称")
-    private String  bizUname;
+    private String bizUname;
 
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;
@@ -97,6 +103,27 @@ public class ProfitStatementBasicData extends Model<ProfitStatementBasicData> {
 
     @ApiModelProperty(value = "费用类型(1:应付,2:应收)")
     private Integer type;
+
+    @ApiModelProperty(value = "主订单id")
+    private Long mainOrderId;
+
+    @ApiModelProperty(value = "订单类别(product_classify表)")
+    private String classCode;
+
+    @ApiModelProperty(value = "所属部门id")
+    private Long bizBelongDepart;
+
+    @ApiModelProperty(value = "主订单结算单位")
+    private String mainUnitCode;
+
+    @ApiModelProperty(value = "主订单结算单位名称")
+    private String mainUnitName;
+
+    @ApiModelProperty(value = "订单结算单位")
+    private String unitCode;
+
+    @ApiModelProperty(value = "订单结算单位名称")
+    private String unitName;
 
 
     public ProfitStatement convert(Class<ProfitStatement> clazz) {

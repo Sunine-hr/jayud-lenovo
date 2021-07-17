@@ -24,7 +24,7 @@ public class SaticScheduleTask {
     /**
      * 统计利润报表
      */
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0 0,13 * * ?")
     private void statisticalProfitReport() {
         System.out.println("开始同步利润报表数据: " + DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN));
         StopWatch stopWatch = new StopWatch();

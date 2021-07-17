@@ -3102,7 +3102,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 oldBinds.remove(deleteBind.getReceivableId());
             }
         }
-        this.paymentCostService.removeByIds(oldBinds.keySet());
+        List<Long> deletePayIds=new ArrayList<>();
+        oldBinds.forEach((k,v)->{
+            deletePayIds.add(v.getId());
+        });
+        this.paymentCostService.removeByIds(deletePayIds);
         this.paymentCostService.saveOrUpdateBatch(addOrUpdate);
 
     }

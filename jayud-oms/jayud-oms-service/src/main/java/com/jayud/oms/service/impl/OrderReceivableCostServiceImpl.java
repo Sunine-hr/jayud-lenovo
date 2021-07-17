@@ -86,6 +86,21 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
     }
 
     /**
+     * 根据主订单查询子订单内部往来费用
+     */
+    @Override
+    public List<OrderReceivableCost> getSubInternalCostByMainOrderNo(String mainOrderNo, List<Long> excludeIds) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        condition.lambda().eq(OrderReceivableCost::getMainOrderNo, mainOrderNo);
+        condition.lambda().eq(OrderReceivableCost::getStatus, 3);
+        condition.lambda().eq(OrderReceivableCost::getIsSumToMain, false);
+        if (CollectionUtils.isNotEmpty(excludeIds)) {
+            condition.lambda().notIn(OrderReceivableCost::getId, excludeIds);
+        }
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
      * 获取审核通过费用数目
      */
     @Override
@@ -338,6 +353,7 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
 
     /**
      * 根据主订单号集合获取应收费用
+     *
      * @param mainOrderNos
      * @return
      */

@@ -52,6 +52,11 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
     public List<OrderReceivableCost> getSubOrderApprovalFee(String subOrderNo, List<Long> excludeIds);
 
     /**
+     * 根据主订单查询子订单内部往来费用
+     */
+    public List<OrderReceivableCost> getSubInternalCostByMainOrderNo(String mainOrderNo, List<Long> excludeIds);
+
+    /**
      * 获取审核通过费用数目
      */
     public Integer getApprovalFeeCount(String mainOrder);
@@ -112,6 +117,7 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
 
     /**
      * 根据主订单号获取应收费用
+     *
      * @param mainOrderNo
      * @return
      */
@@ -128,6 +134,7 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
 
     /**
      * 根据主订单号集合获取应收费用
+     *
      * @param mainOrderNos
      * @return
      */

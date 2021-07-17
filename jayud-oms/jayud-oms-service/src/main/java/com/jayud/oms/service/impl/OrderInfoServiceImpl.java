@@ -3034,7 +3034,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (form.getSubUnitCode() == null || form.getReceivableCosts().size() == 0) {
             return;
         }
-        List<OrderReceivableCost> orderReceivableCostList = this.orderReceivableCostService.getSubOrderApprovalFee(form.getSubOrderNo(), null);
+        String tmp = form.getReceivableCosts().get(0).getMainOrderNo();
+        List<OrderReceivableCost> orderReceivableCostList = this.orderReceivableCostService.getSubInternalCostByMainOrderNo(tmp, null);
 
         orderReceivableCostList.addAll(form.getReceivableCosts());
         //过滤相同数据
@@ -3057,10 +3058,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (!orderInfo.getLegalName().equals(customerInfo.getName())) {
             return;
         }
-        String subType = orderReceivableCostList.get(0).getSubType();
         //根据主订单号查询主订单应付费用并且是绑定应收id
         List<OrderPaymentCost> paymentCost = this.paymentCostService.getReceivableBinding(new OrderPaymentCost()
-                .setMainOrderNo(mainOrderNo).setIsSumToMain(true).setSubType(subType));
+                .setMainOrderNo(mainOrderNo).setIsSumToMain(true));
         //合拼操作
         ConcurrentMap<Long, OrderPaymentCost> oldBinds = paymentCost.stream().collect(Collectors.toConcurrentMap(OrderPaymentCost::getReceivableId, e -> e));
         //添加/修改

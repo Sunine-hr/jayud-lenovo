@@ -925,12 +925,13 @@
         opbd.account_term,
         opbd.audit_status,
         obct.money_type,
+        obct.currency_code,
         sum(cav.discount_money) discountMoney,
         sum(cav.short_amount) shortAmount,
-        sum(obct.money) money
+        sum(obct.money) settlementAmount
         from
         order_payment_bill_detail opbd
-        left join order_bill_cost_total obct on opbd.bill_no=obct.bill_no
+        left join order_bill_cost_total obct  ON opbd.cost_id = obct.cost_id
         left join cancel_after_verification cav on opbd.bill_no=cav.bill_no
         <where>
             and obct.money_type=1

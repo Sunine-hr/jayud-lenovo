@@ -31,8 +31,11 @@ public class ProfitStatementBillDetailsVO extends Model<ProfitStatementBillDetai
     @ApiModelProperty(value = "核算期")
     private String accountTerm;
 
+    @ApiModelProperty(value = "结算金额字符串")
+    private String money;
+
     @ApiModelProperty(value = "结算金额")
-    private BigDecimal money;
+    private BigDecimal settlementAmount;
 
     @ApiModelProperty(value = "账单状态")
     private String auditStatus;
@@ -46,11 +49,18 @@ public class ProfitStatementBillDetailsVO extends Model<ProfitStatementBillDetai
     @ApiModelProperty(value = "核销状态")
     private String heXiaoStatus;
 
+    @ApiModelProperty(value = "结算币种code")
+    private String currencyCode;
 
-    public void setMoney(BigDecimal money) {
-        this.money = money;
-        heXiaoStatus = this.money.compareTo(BigDecimalUtil.add(this.discountMoney, this.shortAmount)) == 0 ? "已核销" : "未核销";
+    @ApiModelProperty(value = "结算币种")
+    private String currencyName;
+
+
+    public void setSettlementAmount(BigDecimal settlementAmount) {
+        this.settlementAmount = settlementAmount;
+        heXiaoStatus = this.settlementAmount.compareTo(BigDecimalUtil.add(this.discountMoney, this.shortAmount)) == 0 ? "已核销" : "未核销";
     }
+
 
     public void setAuditStatus(String auditStatus) {
         this.auditStatus = BillEnum.getDesc(auditStatus);

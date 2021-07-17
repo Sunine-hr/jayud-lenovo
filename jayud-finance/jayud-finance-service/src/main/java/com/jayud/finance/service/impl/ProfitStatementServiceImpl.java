@@ -1,12 +1,15 @@
 package com.jayud.finance.service.impl;
 
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.utils.BigDecimalUtil;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.HttpUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.excel.EasyExcelUtils;
 import com.jayud.finance.bo.QueryProfitStatementForm;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
@@ -19,6 +22,7 @@ import com.jayud.finance.vo.ProfitStatementBillDetailsVO;
 import com.jayud.finance.vo.ProfitStatementBillVO;
 import com.jayud.finance.vo.ProfitStatementVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,15 +54,11 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
     private IOrderReceivableBillDetailService receivableBillDetailService;
     @Autowired
     private IOrderPaymentBillDetailService paymentBillDetailService;
+    @Value("${proStatement.depart}")
+    private String depart;
+    @Value("${proStatement.oprDepart}")
+    private String oprDepart;
 
-    public static void main(String[] args) {
-        Map<String, BigDecimal> map = new HashMap<>();
-//        map.put("CNY", new BigDecimal(2));
-//        map.put("RMB", new BigDecimal(3));
-//        map.merge("GB", new BigDecimal(3), BigDecimal::add);
-        System.out.println(map.get(null));
-//        System.out.println(new JSONObject(map));
-    }
 
 
     /**
@@ -324,6 +324,9 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
     public ProfitStatementBillVO getProfitStatementBill(List<String> reCostIds, List<String> payCostIds) {
         List<ProfitStatementBillDetailsVO> reBills = this.receivableBillDetailService.statisticsBillByCostIds(reCostIds);
         List<ProfitStatementBillDetailsVO> payBills = this.paymentBillDetailService.statisticsBillByCostIds(payCostIds);
+        Map<String, String> currencyMap = this.omsClient.initCurrencyInfo().getData().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+        reBills.forEach(e -> e.setMoney(e.getSettlementAmount() + " " + currencyMap.get(e.getCurrencyCode())));
+        payBills.forEach(e -> e.setMoney(e.getSettlementAmount() + " " + currencyMap.get(e.getCurrencyCode())));
         return new ProfitStatementBillVO().setReBills(reBills).setPayBills(payBills);
     }
 
@@ -335,7 +338,7 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
         if (!profitStatement.getIsMain() &&
                 (!StringUtils.isEmpty(profitStatement.getReInCostIds())) || !StringUtils.isEmpty(profitStatement.getPayInCostIds())) {
             ProfitStatement tmpMain = tmpProfitStatement.get(mainOrderNo);
-            if (tmpMain == null) {
+            if (tmpMain == null && !StringUtils.isEmpty(profitStatement.getPayInCostIds())) {
                 ProfitStatement tmp = new ProfitStatement().setMainOrderId(profitStatement.getMainOrderId())
                         .setClassCode(profitStatement.getClassCode()).setMainOrderNo(profitStatement.getMainOrderNo())
                         .setIsMain(true).setBizType(profitStatement.getBizType()).setLegalName(finalMainLegalName)
@@ -354,7 +357,7 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 
 
                 tmpProfitStatement.put(tmp.getMainOrderNo(), tmp);
-            } else {
+            } else if (tmpMain != null) {
                 tmpMain.setPaySubCostIds(StringUtils.add(tmpMain.getPaySubCostIds(), profitStatement.getPayInCostIds()))
                         .setPaySubAmount(StringUtils.add(tmpMain.getPaySubAmount(), profitStatement.getPayInAmount()))
                         .setPaySubEquivalentAmount(BigDecimalUtil.add(tmpMain.getPaySubEquivalentAmount(), profitStatement.getPayInEquivalentAmount()))
@@ -367,15 +370,57 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
     }
 
 
-    /**
-     * 获取费用明细
-     *
-     * @param reCostIds
-     * @param payCostIds
-     * @return
-     */
     @Override
-    public ProfitStatementBillVO getCostDetails(List<String> reCostIds, List<String> payCostIds) {
-        return null;
+    public void exportData(JSONArray jsonArray, Boolean isOpenInternal) {
+        if (jsonArray.size() == 0) {
+            return;
+        }
+        List<String> reAmounts = new ArrayList<>();
+        List<String> payAmounts = new ArrayList<>();
+        BigDecimal reEquivalentAmount = new BigDecimal(0);
+        BigDecimal payEquivalentAmount = new BigDecimal(0);
+        BigDecimal profit = new BigDecimal(0);
+        Boolean isMain = jsonArray.getJSONObject(0).getBool("isMain");
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            reAmounts.add(jsonObject.getStr("reAmount"));
+            payAmounts.add(jsonObject.getStr("payAmount"));
+            if (isMain && isOpenInternal) {
+                reEquivalentAmount = BigDecimalUtil.add(reEquivalentAmount, jsonObject.getBigDecimal("reInEquivalentAmount"));
+                payEquivalentAmount = BigDecimalUtil.add(profit, jsonObject.getBigDecimal("payInEquivalentAmount"));
+                jsonObject.putOnce("reEquivalentAmount", jsonObject.getBigDecimal("reInEquivalentAmount"));
+                jsonObject.putOnce("payEquivalentAmount", jsonObject.getBigDecimal("payInEquivalentAmount"));
+                jsonObject.putOnce("profit", jsonObject.getBigDecimal("inProfit"));
+            } else {
+                reEquivalentAmount = BigDecimalUtil.add(reEquivalentAmount, jsonObject.getBigDecimal("reEquivalentAmount"));
+                payEquivalentAmount = BigDecimalUtil.add(payEquivalentAmount, jsonObject.getBigDecimal("payEquivalentAmount"));
+            }
+            profit = BigDecimalUtil.add(profit, jsonObject.getBigDecimal("profit"));
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.putOnce("re", jsonArray);
+        Map<String, List<Object>> response = new HashMap<>();
+        response.put("pro", jsonObject.get("re", List.class));
+        JSONObject json = new JSONObject();
+
+        json.putOnce("totalReAmount", this.commonService.calculatingCosts(reAmounts));
+        json.putOnce("totalReEquivalentAmount", reEquivalentAmount);
+        json.putOnce("totalPayAmount", this.commonService.calculatingCosts(payAmounts));
+        json.putOnce("totalPayEquivalentAmount", payEquivalentAmount);
+        json.putOnce("totalProfit", profit);
+
+        String path;
+        String fileName;
+        if (isMain) {
+            path = depart;
+            fileName = "所属部门利润报表";
+        } else {
+            path = oprDepart;
+            fileName = "操作部门利润报表";
+        }
+        EasyExcelUtils.fillTemplate1(json, response, path,
+                null, fileName, HttpUtils.getHttpResponseServletContext());
+
     }
 }

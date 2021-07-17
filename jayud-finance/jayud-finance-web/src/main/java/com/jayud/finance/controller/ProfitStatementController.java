@@ -1,8 +1,13 @@
 package com.jayud.finance.controller;
 
 
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.HttpUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.excel.EasyExcelUtils;
 import com.jayud.finance.bo.QueryProfitStatementForm;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.po.ProfitStatement;
@@ -11,11 +16,8 @@ import com.jayud.finance.vo.ProfitStatementBillVO;
 import com.jayud.finance.vo.ProfitStatementVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -27,7 +29,7 @@ import java.util.*;
  * @author chuanmei
  * @since 2021-07-13
  */
-@RestController
+@Controller
 @RequestMapping("/profitStatement")
 public class ProfitStatementController {
 
@@ -38,6 +40,7 @@ public class ProfitStatementController {
 
     @ApiOperation(value = "利润报表查询")
     @PostMapping("list")
+    @ResponseBody
     private CommonResult<Map<String, Object>> list(@RequestBody QueryProfitStatementForm form) {
         Map<String, Object> rollCallback = new HashMap<>();
         List<ProfitStatementVO> list = this.profitStatementService.list(form, rollCallback);
@@ -48,6 +51,7 @@ public class ProfitStatementController {
 
     @ApiOperation(value = "查询账单")
     @PostMapping("getProfitStatementBill")
+    @ResponseBody
     private CommonResult<ProfitStatementBillVO> getProfitStatementBill(@RequestBody ProfitStatementVO form) {
         String reCostIdStr = form.getIsMain() && form.getIsOpenInternal() ? form.getReInCostIds() : form.getReCostIds();
         String payCostIdStr = form.getIsMain() && form.getIsOpenInternal() ? form.getPayInCostIds() : form.getPayCostIds();
@@ -62,6 +66,7 @@ public class ProfitStatementController {
 
     @ApiOperation(value = "查询费用明细")
     @PostMapping("getCostDetails")
+    @ResponseBody
     private CommonResult getCostDetails(@RequestBody ProfitStatementVO form) {
         String reCostIdStr = form.getIsMain() && form.getIsOpenInternal() ? form.getReInCostIds() : form.getReCostIds();
         String payCostIdStr = form.getIsMain() && form.getIsOpenInternal() ? form.getPayInCostIds() : form.getPayCostIds();
@@ -80,7 +85,15 @@ public class ProfitStatementController {
 
     @ApiOperation(value = "导出利润报表")
     @PostMapping("exportData")
-    private CommonResult exportData(@RequestBody Map<String, Object> form) {
+    private CommonResult exportData(@RequestBody Map<String, Object> map) {
+        Object templateDataObj = map.get("templateData");
+        Boolean isOpenInternal = MapUtil.getBool(map, "isOpenInternal", false);
+        if (templateDataObj == null) {
+            return CommonResult.success("请选择导出的数据");
+
+        }
+        JSONArray jsonArray = new JSONArray(templateDataObj);
+        this.profitStatementService.exportData(jsonArray, isOpenInternal);
 
         return CommonResult.success();
     }

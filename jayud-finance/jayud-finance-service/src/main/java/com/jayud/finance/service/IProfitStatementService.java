@@ -1,5 +1,6 @@
 package com.jayud.finance.service;
 
+import cn.hutool.json.JSONArray;
 import com.jayud.finance.bo.QueryProfitStatementForm;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.finance.po.ProfitStatement;
@@ -42,5 +43,11 @@ public interface IProfitStatementService extends IService<ProfitStatement> {
 
     ProfitStatementBillVO getProfitStatementBill(List<String> reCostIds, List<String> payCostIds);
 
-    ProfitStatementBillVO getCostDetails(List<String> reCostIds, List<String> payCostIds);
+
+    /**
+     * 导出利润报表
+     * @param jsonArray
+     * @param isOpenInternal
+     */
+    void exportData(JSONArray jsonArray, Boolean isOpenInternal);
 }

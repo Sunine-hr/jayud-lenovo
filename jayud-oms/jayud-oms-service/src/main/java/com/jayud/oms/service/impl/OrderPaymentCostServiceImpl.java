@@ -262,6 +262,9 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
         condition.lambda().eq(OrderPaymentCost::getMainOrderNo, paymentCost.getMainOrderNo())
                 .eq(OrderPaymentCost::getIsSumToMain, paymentCost.getIsSumToMain())
                 .isNotNull(OrderPaymentCost::getReceivableId);
+        if (paymentCost.getSubType() != null) {
+            condition.lambda().eq(OrderPaymentCost::getSubType, paymentCost.getSubType());
+        }
         return this.baseMapper.selectList(condition);
     }
 

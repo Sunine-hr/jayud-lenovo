@@ -336,7 +336,7 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
                                                Map<Long, String> departmentMap, Long finalMainLegalId,
                                                String finalMainLegalName, Long finalBizBelongDepartId) {
         if (!profitStatement.getIsMain() &&
-                (!StringUtils.isEmpty(profitStatement.getReInCostIds())) || !StringUtils.isEmpty(profitStatement.getPayInCostIds())) {
+                !StringUtils.isEmpty(profitStatement.getPayInCostIds())) {
             ProfitStatement tmpMain = tmpProfitStatement.get(mainOrderNo);
             if (tmpMain == null && !StringUtils.isEmpty(profitStatement.getPayInCostIds())) {
                 ProfitStatement tmp = new ProfitStatement().setMainOrderId(profitStatement.getMainOrderId())
@@ -383,32 +383,36 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
         Boolean isMain = jsonArray.getJSONObject(0).getBool("isMain");
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
-            reAmounts.add(jsonObject.getStr("reAmount"));
-            payAmounts.add(jsonObject.getStr("payAmount"));
+
             if (isMain && isOpenInternal) {
+                jsonObject.put("reEquivalentAmount", jsonObject.getBigDecimal("reInEquivalentAmount"));
+                jsonObject.put("payEquivalentAmount", jsonObject.getBigDecimal("payInEquivalentAmount"));
                 reEquivalentAmount = BigDecimalUtil.add(reEquivalentAmount, jsonObject.getBigDecimal("reInEquivalentAmount"));
-                payEquivalentAmount = BigDecimalUtil.add(profit, jsonObject.getBigDecimal("payInEquivalentAmount"));
-                jsonObject.putOnce("reEquivalentAmount", jsonObject.getBigDecimal("reInEquivalentAmount"));
-                jsonObject.putOnce("payEquivalentAmount", jsonObject.getBigDecimal("payInEquivalentAmount"));
-                jsonObject.putOnce("profit", jsonObject.getBigDecimal("inProfit"));
+                payEquivalentAmount = BigDecimalUtil.add(payEquivalentAmount, jsonObject.getBigDecimal("payInEquivalentAmount"));
+
+                jsonObject.put("profit", jsonObject.getBigDecimal("inProfit"));
+                jsonObject.put("reAmount", jsonObject.getStr("reInAmount"));
+                jsonObject.put("payAmount", jsonObject.getStr("payInAmount"));
             } else {
                 reEquivalentAmount = BigDecimalUtil.add(reEquivalentAmount, jsonObject.getBigDecimal("reEquivalentAmount"));
                 payEquivalentAmount = BigDecimalUtil.add(payEquivalentAmount, jsonObject.getBigDecimal("payEquivalentAmount"));
             }
             profit = BigDecimalUtil.add(profit, jsonObject.getBigDecimal("profit"));
+            reAmounts.add(jsonObject.getStr("reAmount"));
+            payAmounts.add(jsonObject.getStr("payAmount"));
         }
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.putOnce("re", jsonArray);
+        jsonObject.put("re", jsonArray);
         Map<String, List<Object>> response = new HashMap<>();
         response.put("pro", jsonObject.get("re", List.class));
         JSONObject json = new JSONObject();
 
-        json.putOnce("totalReAmount", this.commonService.calculatingCosts(reAmounts));
-        json.putOnce("totalReEquivalentAmount", reEquivalentAmount);
-        json.putOnce("totalPayAmount", this.commonService.calculatingCosts(payAmounts));
-        json.putOnce("totalPayEquivalentAmount", payEquivalentAmount);
-        json.putOnce("totalProfit", profit);
+        json.put("totalReAmount", this.commonService.calculatingCosts(reAmounts));
+        json.put("totalReEquivalentAmount", reEquivalentAmount);
+        json.put("totalPayAmount", this.commonService.calculatingCosts(payAmounts));
+        json.put("totalPayEquivalentAmount", payEquivalentAmount);
+        json.put("totalProfit", profit);
 
         String path;
         String fileName;

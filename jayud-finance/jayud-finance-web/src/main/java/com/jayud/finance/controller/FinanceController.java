@@ -460,12 +460,15 @@ public class FinanceController {
         //检查是否能推金蝶
         financeService.isPushKingdee(receivableBillDetails, 2);
 
+        //删除返回信息
+        Map<String, String> deleteErr = new HashMap<>();
+
         for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
             //查询结算币种的币种管理汇率(结算币种兑换人民币汇率)
             Map<String, BigDecimal> exchangeRate = this.currencyRateService.getExchangeRates("CNY", receivableBillDetail.getAccountTerm());
 
             List<ReceivableHeaderForm> reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
-            CommonResult result = null;
+            CommonResult result = new CommonResult();
             for (ReceivableHeaderForm tempReqForm : reqForm) {
                 //设置汇率
                 tempReqForm.setExchangeRate(exchangeRate.get(tempReqForm.getCurrency()));
@@ -473,10 +476,17 @@ public class FinanceController {
                 tempReqForm.setEntityDetail(entityDetail);
 
                 //如果本次推送没有应付数据，需要查看是否存在本单号的应收，如有，要删去
-                this.kingdeeService.deleteOrder(tempReqForm.getBusinessNo(), 0);
+                Map<String, String> error = this.kingdeeService.deleteOrder(tempReqForm.getBillNo(), 0);
+                deleteErr.putAll(error);
+                if (error.size() > 0) {
+                    continue;
+                }
                 logger.info("推送金蝶传参:" + reqForm);
                 result = service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), tempReqForm);
             }
+
+            if (result.getCode() == null) continue;
+
             if (result.getCode() == 0) {
                 OrderReceivableBillDetail tempObject = new OrderReceivableBillDetail();
                 Integer num = receivableBillDetail.getPushKingdeeCount() == null ? 0 : receivableBillDetail.getPushKingdeeCount();
@@ -487,6 +497,13 @@ public class FinanceController {
             } else {
                 return CommonResult.error(400, result.getMsg());
             }
+        }
+
+        if (deleteErr.size() > 0) {
+            StringBuilder msg = new StringBuilder();
+            deleteErr.forEach((k, v) -> msg.append(v).append("\n"));
+            System.out.println(msg.toString());
+            return CommonResult.error(400, msg.toString());
         }
         return CommonResult.success();
     }
@@ -530,13 +547,15 @@ public class FinanceController {
         List<OrderPaymentBillDetail> paymentBillDetailList = paymentBillDetailService.list(queryWrapper);
         financeService.isPushKingdee(paymentBillDetailList, 1);
 
+        //删除返回信息
+        Map<String, String> deleteErr = new HashMap<>();
 
         for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
             //查询结算币种的币种管理汇率
             Map<String, BigDecimal> exchangeRate = this.currencyRateService.getExchangeRates("CNY", paymentBillDetail.getAccountTerm());
 
             List<PayableHeaderForm> reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
-            CommonResult result = null;
+            CommonResult result = new CommonResult();
             for (PayableHeaderForm tempReqForm : reqForm) {
                 //设置汇率
                 tempReqForm.setExchangeRate(exchangeRate.get(tempReqForm.getCurrency()));
@@ -544,9 +563,17 @@ public class FinanceController {
                 tempReqForm.setEntityDetail(entityDetail);
                 logger.info("推送金蝶传参:" + reqForm);
                 //如果本次推送没有应付数据，需要查看是否存在本单号的应付，如有，要删去
-                this.kingdeeService.deleteOrder(tempReqForm.getBusinessNo(), 1);
+                Map<String, String> error = this.kingdeeService.deleteOrder(tempReqForm.getBillNo(), 1);
+                deleteErr.putAll(error);
+                if (error.size() > 0) {
+                    continue;
+                }
+
                 result = service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), tempReqForm);
             }
+
+            if (result.getCode() == null) continue;
+
             if (result.getCode() == 0) {
                 OrderPaymentBillDetail tempObject = new OrderPaymentBillDetail();
                 tempObject.setPushKingdeeCount(paymentBillDetail.getPushKingdeeCount() + 1);
@@ -556,6 +583,12 @@ public class FinanceController {
             } else {
                 return CommonResult.error(400, result.getMsg());
             }
+        }
+
+        if (deleteErr.size() > 0) {
+            StringBuilder msg = new StringBuilder();
+            deleteErr.forEach((k, v) -> msg.append(v).append("\n"));
+            return CommonResult.error(400, msg.toString());
         }
         return CommonResult.success();
     }

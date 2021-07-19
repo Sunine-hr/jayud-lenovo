@@ -26,6 +26,10 @@ public class PushProperties {
      */
     private Map<FormIDEnum, List<String>> unRemovableOrders;
     /**
+     * 无法删除的订单描述
+     */
+    private Map<String, String> unRemovableOrdersMsg;
+    /**
      * 无法删除的订单对应的公司（客户或供应商抬头）名称
      */
     private Map<FormIDEnum, List<String>> unRemovableCompName;

@@ -285,7 +285,6 @@ public class KingdeeServiceImpl implements KingdeeService {
     }
 
 
-
     @Override
     public <T> CommonResult<T> getInvoice(String businessCode, Class<T> clz) {
         if (clz.isAssignableFrom(InvoiceBase.class)) {
@@ -1218,34 +1217,39 @@ public class KingdeeServiceImpl implements KingdeeService {
     /**
      * 删除金蝶已存在应收/应付订单
      *
-     * @param orderNo 订单号
-     * @param type    0应收,1应付
+     * @param billNo 订单号
+     * @param type   0应收,1应付
      */
     @Override
-    public void deleteOrder(String orderNo, int type) {
-        if (StringUtils.isEmpty(orderNo)) {
-            return;
+    public Map<String, String> deleteOrder(String billNo, int type) {
+        if (StringUtils.isEmpty(billNo)) {
+            return new HashMap<>();
         }
         Map<FormIDEnum, List<String>> existingMap = null;
         FormIDEnum formId;
         if (type == 0) {
-            existingMap = checkForReceivableDuplicateOrder(orderNo);
+            existingMap = getReceivableBillOrder(billNo, ReceivableOne.class);
             formId = FormIDEnum.RECEIVABLE;
         } else {
-            existingMap = checkForPayableDuplicateOrder(orderNo);
+            existingMap = getPayableBillOrder(billNo, PayableOne.class);
             formId = FormIDEnum.PAYABLE;
         }
 
         if (CollectionUtil.isNotEmpty(existingMap)) {
-            log.info("应收/应付单{}已经存在，但允许删单重推，尝试删除旧数据...", orderNo);
+            log.info("应收/应付单{}已经存在，但允许删单重推，尝试删除旧数据...", billNo);
             PushProperties properties = new PushProperties();
-            properties.setApplyNo(orderNo);
+            properties.setApplyNo(billNo);
             properties.setExistingOrders(existingMap);
             properties = this.removeSpecifiedInvoice(properties);
-            if (!properties.ifAllowPush(formId)) {
-                log.warn("{}应收/应付单所在状态已经无法删除", orderNo);
+            if (properties.getUnRemovableOrdersMsg().size() > 0) {
+                properties.getUnRemovableOrdersMsg().forEach((k, v) -> {
+                    log.warn("订单号:{} 错误信息:{}", k, v);
+                });
+                return properties.getUnRemovableOrdersMsg();
             }
+
         }
+        return new HashMap<>();
     }
 
 
@@ -1270,15 +1274,16 @@ public class KingdeeServiceImpl implements KingdeeService {
                 String result = KingdeeHttpUtil.httpPost(k3CloudConfig.getDelete(), header, content);
                 log.debug("删除订单尝试：{}", result);
                 //如果推送失败，返回推送失败的订单号列表
-                List<String> failedOrders = KingdeeHttpUtil.ifSucceed(result, orderList);
-
+                Map<String, String> failedOrders = KingdeeHttpUtil.ifSucceedOne(result, orderList);
                 //装载删除失败的订单列表
                 if (CollectionUtil.isNotEmpty(properties.getUnRemovableOrders())) {
-                    properties.getUnRemovableOrders().put(existingEntries.getKey(), failedOrders);
+                    properties.getUnRemovableOrders().put(existingEntries.getKey(), new ArrayList<>(failedOrders.keySet()));
+                    properties.getUnRemovableOrdersMsg().putAll(failedOrders);
                 } else {
                     Map<FormIDEnum, List<String>> failedOrdersMap = new HashMap<>();
-                    failedOrdersMap.put(existingEntries.getKey(), failedOrders);
+                    failedOrdersMap.put(existingEntries.getKey(), new ArrayList<>(failedOrders.keySet()));
                     properties.setUnRemovableOrders(failedOrdersMap);
+                    properties.setUnRemovableOrdersMsg(failedOrders);
                 }
             }
 
@@ -1290,19 +1295,19 @@ public class KingdeeServiceImpl implements KingdeeService {
      * 校验应收订单存在
      * 返回已存在的订单
      *
-     * @param applyNo
+     * @param condition
      * @return
      */
-    private Map<FormIDEnum, List<String>> checkForReceivableDuplicateOrder(String applyNo) {
-        List<String> existingReceivable = ((List<InvoiceBase>) baseService.query(applyNo, Receivable.class)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
-        List<String> existingReceivableOther = ((List<InvoiceBase>) baseService.query(applyNo, ReceivableOther.class)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
+    private Map<FormIDEnum, List<String>> getReceivableBillOrder(String condition, Class<?> clzz) {
+        List<String> existingReceivable = ((List<InvoiceBase>) baseService.query(condition, clzz)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
+//        List<String> existingReceivableOther = ((List<InvoiceBase>) baseService.query(condition, clzz)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
         Map<FormIDEnum, List<String>> result = new HashMap<>();
         if (CollectionUtil.isNotEmpty(existingReceivable)) {
             result.put(FormIDEnum.RECEIVABLE, existingReceivable);
         }
-        if (CollectionUtil.isNotEmpty(existingReceivableOther)) {
-            result.put(FormIDEnum.RECEIVABLE_OTHER, existingReceivableOther);
-        }
+//        if (CollectionUtil.isNotEmpty(existingReceivableOther)) {
+//            result.put(FormIDEnum.RECEIVABLE_OTHER, existingReceivableOther);
+//        }
         return result;
     }
 
@@ -1311,18 +1316,19 @@ public class KingdeeServiceImpl implements KingdeeService {
      * 返回已存在的订单
      *
      * @param applyNo
+     * @param clazz
      * @return
      */
-    private Map<FormIDEnum, List<String>> checkForPayableDuplicateOrder(String applyNo) {
-        List<String> existingPayable = ((List<InvoiceBase>) baseService.query(applyNo, Payable.class)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
-        List<String> existingPayableOther = ((List<InvoiceBase>) baseService.query(applyNo, PayableOther.class)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
+    private Map<FormIDEnum, List<String>> getPayableBillOrder(String applyNo, Class<?> clazz) {
+        List<String> existingPayable = ((List<InvoiceBase>) baseService.query(applyNo, clazz)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
+//        List<String> existingPayableOther = ((List<InvoiceBase>) baseService.query(applyNo, PayableOther.class)).stream().map(InvoiceBase::getFBillNo).collect(Collectors.toList());
         Map<FormIDEnum, List<String>> result = new HashMap<>();
         if (CollectionUtil.isNotEmpty(existingPayable)) {
             result.put(FormIDEnum.PAYABLE, existingPayable);
         }
-        if (CollectionUtil.isNotEmpty(existingPayableOther)) {
-            result.put(FormIDEnum.PAYABLE_OTHER, existingPayableOther);
-        }
+//        if (CollectionUtil.isNotEmpty(existingPayableOther)) {
+//            result.put(FormIDEnum.PAYABLE_OTHER, existingPayableOther);
+//        }
         return result;
     }
 }

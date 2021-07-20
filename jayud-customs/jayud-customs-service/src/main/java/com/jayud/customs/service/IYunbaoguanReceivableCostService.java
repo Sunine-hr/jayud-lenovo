@@ -17,6 +17,7 @@ import java.util.List;
 public interface IYunbaoguanReceivableCostService extends IService<YunbaoguanReceivableCost> {
 
 
+
     List<YunbaoguanReceivableCost> getByCondition(YunbaoguanReceivableCost receivableCost);
 
     List<YunbaoguanReceivableCostVO> getIncompleteData();

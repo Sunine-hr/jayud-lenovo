@@ -20,6 +20,7 @@ import lombok.experimental.Accessors;
  * @since 2021-05-19
  */
 @Data
+@Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="YunbaoguanReceivableCost对象", description="云报关应收费用信息")

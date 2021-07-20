@@ -16,6 +16,6 @@ import java.util.List;
  */
 public interface YunbaoguanReceivableCostMapper extends BaseMapper<YunbaoguanReceivableCost> {
 
-
     List<YunbaoguanReceivableCostVO> getIncompleteData();
+
 }

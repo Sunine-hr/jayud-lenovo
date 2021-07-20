@@ -16,6 +16,15 @@
     <sql id="Base_Column_List">
         id, apply_no, uid, receivable_cost_data, created_time, updated_time
     </sql>
+    <select id="getIncompleteData" resultType="com.jayud.customs.model.vo.YunbaoguanReceivableCostVO">
+        select
+        y.*
+        from yunbaoguan_receivable_cost y
+        inner join order_customs oc on y.apply_no=oc.yun_customs_no
+        <where>
+            y.is_complete=false
+        </where>
+    </select>
 
     <select id="getIncompleteData" resultType="com.jayud.customs.model.vo.YunbaoguanReceivableCostVO">
         select

@@ -236,13 +236,13 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
         //获取当前用户所属法人主体
         DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), form.getAccountType()).getData();
-        StopWatch stopWatch = new StopWatch();
+//        StopWatch stopWatch = new StopWatch();
         // 开始时间
-        stopWatch.start();
+//        stopWatch.start();
         IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form, dataControl);
         // 结束时间
-        stopWatch.stop();
-        System.out.println("同步完成利润报表数据用时(单位:秒): " + stopWatch.getTotalTimeSeconds() + " 秒.");
+//        stopWatch.stop();
+//        System.out.println("同步完成利润报表数据用时(单位:秒): " + stopWatch.getTotalTimeSeconds() + " 秒.");
 
         if (pageInfo.getRecords().size() == 0) {
             return pageInfo;

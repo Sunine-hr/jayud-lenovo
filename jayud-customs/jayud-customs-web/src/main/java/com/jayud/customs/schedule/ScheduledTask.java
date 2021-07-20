@@ -101,7 +101,7 @@ public class ScheduledTask {
      * 0/7 * * * * ?        代表每7秒执行一次
      * 0 0 4 1 * ?          每月1号凌晨4点触发
      */
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 0/10 * * * ?")
     public void synchronizationYBGCost() {
         log.info("*********   定时同步云报关报关单应收费用开始   **************");
         List<YunbaoguanReceivableCostVO> receivableCosts = this.yunbaoguanReceivableCostService.getIncompleteData();

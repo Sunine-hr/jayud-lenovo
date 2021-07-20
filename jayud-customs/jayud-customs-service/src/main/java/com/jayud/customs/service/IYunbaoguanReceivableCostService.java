@@ -2,6 +2,9 @@ package com.jayud.customs.service;
 
 import com.jayud.customs.model.po.YunbaoguanReceivableCost;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.customs.model.vo.YunbaoguanReceivableCostVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2021-05-19
  */
 public interface IYunbaoguanReceivableCostService extends IService<YunbaoguanReceivableCost> {
+
+    List<YunbaoguanReceivableCostVO> getIncompleteData();
 
 }

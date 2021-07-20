@@ -9,6 +9,7 @@ import com.jayud.customs.model.po.OrderCustoms;
 import com.jayud.customs.model.po.YunbaoguanReceivableCost;
 import com.jayud.customs.model.vo.DclarationProcessStepVO;
 import com.jayud.customs.model.vo.DeclarationOPDetailVO;
+import com.jayud.customs.model.vo.YunbaoguanReceivableCostVO;
 import com.jayud.customs.service.ICustomsApiService;
 import com.jayud.customs.service.IOrderCustomsService;
 import com.jayud.customs.service.IYunbaoguanReceivableCostService;
@@ -74,23 +75,44 @@ public class ScheduledTask {
                     continue;
                 }
 
-                if (Objects.equals(BGOrderStatusEnum.CUSTOMS_C_10.getCode(), bgOrderStatusEnum.getCode())) {
-                    orderCustoms.setYunCustomsNo(processStep.getHead().getCustom_apply_no());
-                    // 判断是否有云报关审核应收费用
-                    YunbaoguanReceivableCost receivableCost = yunbaoguanReceivableCostService.getOne(
-                            Wrappers.<YunbaoguanReceivableCost>lambdaQuery()
-                                    .eq(YunbaoguanReceivableCost::getApplyNo, orderCustoms.getYunCustomsNo()));
-                    if (Objects.nonNull(receivableCost)) {
-                        Map<String, String> msg = new HashMap<>();
-                        msg.put("msg", receivableCost.getReceivableCostData());
-                        omsClient.saveReceivableBill(JSONObject.toJSONString(msg));
-                    }
-                }
+//                if (Objects.equals(BGOrderStatusEnum.CUSTOMS_C_10.getCode(), bgOrderStatusEnum.getCode())) {
+//                    orderCustoms.setYunCustomsNo(processStep.getHead().getCustom_apply_no());
+//                    // 判断是否有云报关审核应收费用
+//                    YunbaoguanReceivableCost receivableCost = yunbaoguanReceivableCostService.getOne(
+//                            Wrappers.<YunbaoguanReceivableCost>lambdaQuery()
+//                                    .eq(YunbaoguanReceivableCost::getApplyNo, orderCustoms.getYunCustomsNo()));
+//                    if (Objects.nonNull(receivableCost)) {
+//                        Map<String, String> msg = new HashMap<>();
+//                        msg.put("msg", receivableCost.getReceivableCostData());
+//                        omsClient.saveReceivableBill(JSONObject.toJSONString(msg));
+//                    }
+//                }
 
                 bgOrderStatusEnum.updateProcessStatus(orderCustoms,
                         e -> orderCustomsService.updateProcessStatus(orderCustoms, declarationOPDetailVO.getP_name(), declarationOPDetailVO.getProcess_dt()));
             }
         }
         log.info("*********   定时同步云报关报关单进程信息到OMS任务执行结束   **************");
+    }
+
+    /**
+     * 同步云报关应收费用
+     * corn表达式格式：秒 分 时 日 月 星期 年（可选）
+     * 0/7 * * * * ?        代表每7秒执行一次
+     * 0 0 4 1 * ?          每月1号凌晨4点触发
+     */
+    @Scheduled(cron = "0 0/5 * * * ?")
+    public void synchronizationYBGCost() {
+        log.info("*********   定时同步云报关报关单应收费用开始   **************");
+        List<YunbaoguanReceivableCostVO> receivableCosts = this.yunbaoguanReceivableCostService.getIncompleteData();
+        for (YunbaoguanReceivableCostVO receivableCost : receivableCosts) {
+            Map<String, String> msg = new HashMap<>(1);
+            msg.put("msg", receivableCost.getReceivableCostData());
+            if (this.omsClient.saveReceivableBill(JSONObject.toJSONString(msg))) {
+                YunbaoguanReceivableCost tmp = new YunbaoguanReceivableCost().setId(receivableCost.getId()).setIsComplete(true);
+                this.yunbaoguanReceivableCostService.updateById(tmp);
+            }
+        }
+        log.info("*********   定时同步云报关报关单应收费用执行结束   **************");
     }
 }

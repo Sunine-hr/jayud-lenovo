@@ -121,10 +121,10 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
     public PushOrderVO pushOrder(PushOrderForm form) {
         Gson gson = new Gson();
         String requestStr = gson.toJson(form);
-        System.out.println("requestStr=================================="+requestStr);
+        System.out.println("requestStr==================================" + requestStr);
         //请求
         String feedback = doPost(requestStr, trustsUrl);
-        System.out.println("feedback====================================="+feedback);
+        System.out.println("feedback=====================================" + feedback);
 
         PushOrderVO result = null;
         try {
@@ -308,7 +308,8 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
                         Wrappers.<YunbaoguanReceivableCost>lambdaQuery()
                                 .eq(YunbaoguanReceivableCost::getApplyNo, form.getApplyNo()));
                 YunbaoguanReceivableCost yunbaoguanReceivableCost = new YunbaoguanReceivableCost();
-                if (Objects.isNull(receivableCost)) {
+                receivableCost.setIsComplete(false);
+                if (receivableCost.getId() == null) {
                     yunbaoguanReceivableCost.setApplyNo(form.getApplyNo());
                     yunbaoguanReceivableCost.setUid(form.getUid());
                     yunbaoguanReceivableCost.setReceivableCostData(JSONUtil.toJsonStr(receivable));

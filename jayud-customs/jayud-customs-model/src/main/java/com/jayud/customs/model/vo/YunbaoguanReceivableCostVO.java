@@ -1,15 +1,16 @@
-package com.jayud.customs.model.po;
+package com.jayud.customs.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -23,7 +24,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="YunbaoguanReceivableCost对象", description="云报关应收费用信息")
-public class YunbaoguanReceivableCost extends Model<YunbaoguanReceivableCost> {
+public class YunbaoguanReceivableCostVO extends Model<YunbaoguanReceivableCostVO> {
 
     private static final long serialVersionUID = 1L;
 

@@ -2,6 +2,9 @@ package com.jayud.customs.mapper;
 
 import com.jayud.customs.model.po.YunbaoguanReceivableCost;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.customs.model.vo.YunbaoguanReceivableCostVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface YunbaoguanReceivableCostMapper extends BaseMapper<YunbaoguanReceivableCost> {
 
+
+    List<YunbaoguanReceivableCostVO> getIncompleteData();
 }

@@ -4,12 +4,12 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.customs.model.po.YunbaoguanReceivableCost">
-        <id column="id" property="id" />
-        <result column="apply_no" property="applyNo" />
-        <result column="uid" property="uid" />
-        <result column="receivable_cost_data" property="receivableCostData" />
-        <result column="created_time" property="createdTime" />
-        <result column="updated_time" property="updatedTime" />
+        <id column="id" property="id"/>
+        <result column="apply_no" property="applyNo"/>
+        <result column="uid" property="uid"/>
+        <result column="receivable_cost_data" property="receivableCostData"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -17,4 +17,13 @@
         id, apply_no, uid, receivable_cost_data, created_time, updated_time
     </sql>
 
+    <select id="getIncompleteData" resultType="com.jayud.customs.model.vo.YunbaoguanReceivableCostVO">
+        select
+        y.*
+        from yunbaoguan_receivable_cost y
+        inner join order_customs oc on y.apply_no=oc.yun_customs_no
+        <where>
+            y.is_complete=false
+        </where>
+    </select>
 </mapper>

@@ -108,6 +108,8 @@ public class ExternalApiController {
     private TmsClient tmsClient;
     @Autowired
     private IProductBizService productBizService;
+    @Autowired
+    private IProductClassifyService productClassifyService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -1853,6 +1855,15 @@ public class ExternalApiController {
 
         return ApiResult.ok(this.orderInfoService.getCostDetailByCostIds(reCostIds, payCostIds));
     }
+
+    /**
+     *
+     */
+    @RequestMapping(value = "/api/getPortInfoALL")
+    public ApiResult<Map<String, String>> getPortInfoALL() {
+        return ApiResult.ok(this.portInfoService.list().stream().collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName())));
+    }
+
 }
 
 

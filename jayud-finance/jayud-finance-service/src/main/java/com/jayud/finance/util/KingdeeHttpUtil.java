@@ -209,6 +209,28 @@ public class KingdeeHttpUtil {
         return result;
     }
 
+    /**
+     * 删除订单时使用，返回报错信息中能够匹配入参列表的订单号，即返回操作异常的单号列表
+     *
+     * @param responseJsonStr
+     * @param targetOrders
+     * @return
+     */
+    public static Map<String, String> ifSucceedOne(String responseJsonStr, List<String> targetOrders) {
+        String errorCode = findByTargetFromJson(responseJsonStr, "IsSuccess");
+        String message = findByTargetFromJson(responseJsonStr, "Message");
+        if (Boolean.valueOf(errorCode) == true) {
+            return new HashMap<>();
+        }
+        Map<String, String> result = new HashMap<>();
+        for (String targetOrder : targetOrders) {
+            if (message.contains(targetOrder)) {
+                result.put(targetOrder, message);
+            }
+        }
+        return result;
+    }
+
     private static String findByTargetFromJson(String jsonStr, String target) {
         StringBuilder result = new StringBuilder();
         extractJsonAndGetObject(JSONObject.parseObject(jsonStr), target, result);

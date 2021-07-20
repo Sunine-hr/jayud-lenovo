@@ -1,5 +1,6 @@
 package com.jayud.tms.service.impl;
 
+import cn.hutool.core.date.StopWatch;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -9,6 +10,7 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
@@ -45,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -233,8 +236,14 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
         //获取当前用户所属法人主体
         DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), form.getAccountType()).getData();
-
+        StopWatch stopWatch = new StopWatch();
+        // 开始时间
+        stopWatch.start();
         IPage<OrderTransportVO> pageInfo = baseMapper.findTransportOrderByPage(page, form, dataControl);
+        // 结束时间
+        stopWatch.stop();
+        System.out.println("同步完成利润报表数据用时(单位:秒): " + stopWatch.getTotalTimeSeconds() + " 秒.");
+
         if (pageInfo.getRecords().size() == 0) {
             return pageInfo;
         }
@@ -248,6 +257,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             warehouseIds.add(record.getWarehouseInfoId());
         }
 
+        //口岸
+        Map<String, String> portInfoMap = this.omsClient.getPortInfoALL().getData();
         List<OrderTakeAdrInfoVO> takeAdrsList = this.orderTakeAdrService.getOrderTakeAdrInfos(subOrderNos, null);
         //是否录用费用
         Map<String, Object> data = this.omsClient.isCost(subOrderNos, SubOrderSignEnum.ZGYS.getSignOne()).getData();
@@ -257,8 +268,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         //部门
         Map<Long, String> departmentMap = this.oauthClient.findDepartment().getData().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
         for (OrderTransportVO orderTransportVO : pageInfo.getRecords()) {
-//            orderTransportVO.assemblyGoodsInfo(orderTakeAdrs);
-//            orderTransportVO.assemblyTakeFiles(takeAdrsList, prePath);
+            orderTransportVO.setPortName(portInfoMap.get(orderTransportVO.getPortCode()));
             orderTransportVO.setCost(MapUtil.getBool(data, orderTransportVO.getOrderNo()));
             orderTransportVO.assemblyTakeAdrInfos(takeAdrsList, prePath);
             orderTransportVO.assemblyCostStatus(costStatus);

@@ -113,7 +113,7 @@ public interface OmsClient {
      */
     @RequestMapping(value = "api/initVehicleBySupplier")
     public ApiResult<List<InitComboxStrVO>> initVehicleBySupplier(@RequestParam("supplierId") Long supplierId,
-                                                               @RequestParam("type") Integer type);
+                                                                  @RequestParam("type") Integer type);
 
 //    /**
 //     * 司机下拉框联动车辆供应商，大陆车牌，香港车牌，司机电话
@@ -290,4 +290,17 @@ public interface OmsClient {
     @PostMapping(value = "/getSupplierPayCostByOrderNos")
     public ApiResult<Map<String, Map<String, BigDecimal>>> statisticalSupplierPayCostByOrderNos(@RequestParam("supplierId") Long supplierId,
                                                                                                 @RequestParam("orderNos") List<String> subOrderNos);
+
+    /**
+     * 下拉获取口岸名称
+     */
+    @RequestMapping(value = "/api/getPortInfoALL")
+    public ApiResult<Map<String, String>> getPortInfoALL();
+
+    /**
+     * 下拉业务类型
+     */
+    @PostMapping(value = "/initBizService")
+    public CommonResult<List<InitComboxStrVO>> initBizService();
+
 }

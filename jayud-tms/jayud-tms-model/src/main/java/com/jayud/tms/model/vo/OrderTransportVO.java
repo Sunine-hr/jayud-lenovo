@@ -40,6 +40,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "子订单号")
     private String orderNo;
 
+    @ApiModelProperty(value = "通关口岸code")
+    private String portCode;
+
     @ApiModelProperty(value = "通关口岸")
     private String portName;
 

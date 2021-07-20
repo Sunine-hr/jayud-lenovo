@@ -461,11 +461,10 @@
         oi.`order_no` mainOrderNo,
         oi.`biz_code` bizCode,
         ot.`order_no` orderNo,
-        p.`name` portName,
+        ot.port_code,
         ot.`goods_type` goodsType,
         oi.`status`,
         oi.`class_code` classCode,
-        pc.`name` classCodeDesc,
         oi.`customer_name` customerName,
         oi.`customer_code` customerCode,
         oi.`remarks` mainOrderRemarks,
@@ -494,8 +493,6 @@
         order_transport ot
         LEFT JOIN order_info oi
         ON ot.`main_order_no` = oi.`order_no`
-        LEFT JOIN port_info p ON p.`id_code` = ot.`port_code`
-        LEFT JOIN product_classify pc ON oi.`class_code` = pc.`id_code`
         LEFT JOIN order_send_cars os ON os.order_no = ot.order_no
         LEFT JOIN vehicle_info vi ON vi.id=os.vehicle_id
         LEFT JOIN supplier_info si ON si.id=vi.supplier_id

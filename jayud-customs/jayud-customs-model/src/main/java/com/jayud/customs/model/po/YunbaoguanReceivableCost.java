@@ -22,7 +22,6 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
 @ApiModel(value="YunbaoguanReceivableCost对象", description="云报关应收费用信息")
 public class YunbaoguanReceivableCost extends Model<YunbaoguanReceivableCost> {
 

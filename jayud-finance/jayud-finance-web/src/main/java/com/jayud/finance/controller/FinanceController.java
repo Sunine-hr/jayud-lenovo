@@ -466,6 +466,12 @@ public class FinanceController {
         for (OrderReceivableBillDetail receivableBillDetail : receivableBillDetails) {
             //查询结算币种的币种管理汇率(结算币种兑换人民币汇率)
             Map<String, BigDecimal> exchangeRate = this.currencyRateService.getExchangeRates("CNY", receivableBillDetail.getAccountTerm());
+            //如果本次推送没有应付数据，需要查看是否存在本单号的应收，如有，要删去
+            Map<String, String> error = this.kingdeeService.deleteOrder(receivableBillDetail.getBillNo(), 0);
+            deleteErr.putAll(error);
+            if (error.size() > 0) {
+                continue;
+            }
 
             List<ReceivableHeaderForm> reqForm = receivableBillDetailService.getReceivableHeaderForm(receivableBillDetail.getBillNo());
             CommonResult result = new CommonResult();
@@ -474,13 +480,6 @@ public class FinanceController {
                 tempReqForm.setExchangeRate(exchangeRate.get(tempReqForm.getCurrency()));
                 List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
                 tempReqForm.setEntityDetail(entityDetail);
-
-                //如果本次推送没有应付数据，需要查看是否存在本单号的应收，如有，要删去
-                Map<String, String> error = this.kingdeeService.deleteOrder(tempReqForm.getBillNo(), 0);
-                deleteErr.putAll(error);
-                if (error.size() > 0) {
-                    continue;
-                }
                 logger.info("推送金蝶传参:" + reqForm);
                 result = service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), tempReqForm);
             }
@@ -553,6 +552,12 @@ public class FinanceController {
         for (OrderPaymentBillDetail paymentBillDetail : paymentBillDetailList) {
             //查询结算币种的币种管理汇率
             Map<String, BigDecimal> exchangeRate = this.currencyRateService.getExchangeRates("CNY", paymentBillDetail.getAccountTerm());
+            //如果本次推送没有应付数据，需要查看是否存在本单号的应付，如有，要删去
+            Map<String, String> error = this.kingdeeService.deleteOrder(paymentBillDetail.getBillNo(), 1);
+            deleteErr.putAll(error);
+            if (error.size() > 0) {
+                continue;
+            }
 
             List<PayableHeaderForm> reqForm = paymentBillDetailService.getPayableHeaderForm(paymentBillDetail.getBillNo());
             CommonResult result = new CommonResult();
@@ -562,12 +567,6 @@ public class FinanceController {
                 List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
                 tempReqForm.setEntityDetail(entityDetail);
                 logger.info("推送金蝶传参:" + reqForm);
-                //如果本次推送没有应付数据，需要查看是否存在本单号的应付，如有，要删去
-                Map<String, String> error = this.kingdeeService.deleteOrder(tempReqForm.getBillNo(), 1);
-                deleteErr.putAll(error);
-                if (error.size() > 0) {
-                    continue;
-                }
 
                 result = service.savePayableBill(FormIDEnum.PAYABLE.getFormid(), tempReqForm);
             }

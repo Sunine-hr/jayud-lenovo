@@ -90,7 +90,8 @@ public class ReceiveBillDetailController {
         //自定义标题别名
         writer.addHeaderAlias("billNo", "账单编号");
         writer.addHeaderAlias("legalName", "法人主体");
-        writer.addHeaderAlias("customerName", "客服");
+        writer.addHeaderAlias("unitAccount", "结算单位");
+//        writer.addHeaderAlias("customerName", "客服");
         writer.addHeaderAlias("accountTermStr", "核算期");
         writer.addHeaderAlias("rmb", "人民币");
         writer.addHeaderAlias("dollar", "美元");

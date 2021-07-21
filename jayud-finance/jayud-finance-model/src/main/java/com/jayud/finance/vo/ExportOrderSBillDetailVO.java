@@ -17,8 +17,11 @@ public class ExportOrderSBillDetailVO {
     @ApiModelProperty(value = "法人主体")
     private String legalName;
 
-    @ApiModelProperty(value = "客户,应收时取值")
-    private String customerName;
+    @ApiModelProperty(value = "结算单位")
+    private String unitAccount;
+
+//    @ApiModelProperty(value = "客户,应收时取值")
+//    private String customerName;
 
     @ApiModelProperty(value = "核算期 年月")
     private String accountTermStr;

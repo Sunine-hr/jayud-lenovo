@@ -59,6 +59,12 @@ public class QueryPaymentBillDetailForm extends BasePageForm {
     @ApiModelProperty(value = "制单人", required = true)
     private String makeUser;
 
+    @ApiModelProperty(value = "开始时间")
+    private String beginAccountTerm;
+
+    @ApiModelProperty(value = "结算时间")
+    private String endAccountTerm;
+
     public void setCmd(String cmd) {
         this.cmd = cmd;
         this.subType = cmd.split("_")[0];

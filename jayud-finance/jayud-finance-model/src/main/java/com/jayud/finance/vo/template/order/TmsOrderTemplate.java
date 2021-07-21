@@ -76,8 +76,8 @@ public class TmsOrderTemplate {
     @ApiModelProperty(value = "无缝清关号",required = true)
     private String seamlessNo;
 
-    @ApiModelProperty(value = "报关单号", required = true)
-    private String yunCustomsNo;
+//    @ApiModelProperty(value = "报关单号", required = true)
+//    private String yunCustomsNo;
 
     @ApiModelProperty(value = "货物信息", required = false)
     private String goodsInfo;

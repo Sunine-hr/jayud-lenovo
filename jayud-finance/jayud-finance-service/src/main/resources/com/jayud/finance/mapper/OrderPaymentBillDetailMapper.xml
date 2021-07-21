@@ -763,9 +763,14 @@
         <if test="form.billNo != null and form.billNo != ''">
             and opbd.bill_no like concat('%',#{form.billNo},'%')
         </if>
-        <if test="form.accountTermStr != null and form.accountTermStr !=''">
-            and opbd.account_term = #{form.accountTermStr}
+<!--        <if test="form.accountTermStr != null and form.accountTermStr !=''">-->
+<!--            and opbd.account_term = #{form.accountTermStr}-->
+<!--        </if>-->
+
+        <if test="form.beginAccountTerm != null and form.beginAccountTerm !=''">-->
+            and opbd.account_term between DATE_FORMAT(#{form.beginAccountTerm},'%Y-%m') and DATE_FORMAT(#{form.endAccountTerm},'%Y-%m')
         </if>
+
         <if test="form.currencyCode != null and form.currencyCode !=''">
             and opbd.settlement_currency = #{form.currencyCode}
         </if>

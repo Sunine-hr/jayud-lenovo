@@ -48,7 +48,8 @@
         ob.account_term accountTermStr,
         ( SELECT count( DISTINCT orbd.order_no ) FROM order_receivable_bill_detail orbd WHERE ob.bill_no = orbd.bill_no
         ) billNum,
-        (select ifnull(sum(obct.local_money),0) from order_bill_cost_total obct where obct.cost_id = ob.cost_id and obct.money_type=2 )
+        (select ifnull(sum(obct.local_money),0) from order_bill_cost_total obct where obct.cost_id = ob.cost_id and
+        obct.money_type=2 )
         localAmount,
         (select ifnull(sum(cav.real_receive_money),0) from cancel_after_verification cav where cav.bill_no = ob.bill_no)
         heXiaoAmount,
@@ -1167,4 +1168,46 @@
         select count(distinct bill_no) from order_receivable_bill_detail
         where  DATE_FORMAT( make_time, #{format})=#{makeTime}
     </select>
+
+<!--    <select id="getUnpaidData" resultType="null">-->
+<!--&lt;!&ndash;        SELECT DISTINCT&ndash;&gt;-->
+<!--&lt;!&ndash;        orc.main_order_no orderNo,&ndash;&gt;-->
+<!--&lt;!&ndash;        orc.order_no subOrderNo,&ndash;&gt;-->
+<!--&lt;!&ndash;        pb.`name` bizCodeDesc,&ndash;&gt;-->
+<!--&lt;!&ndash;        c.`name` unitAccount,&ndash;&gt;-->
+<!--&lt;!&ndash;        orc.amount,&ndash;&gt;-->
+<!--&lt;!&ndash;        orc.currency_code,&ndash;&gt;-->
+<!--&lt;!&ndash;        orc.change_amount localAmount,&ndash;&gt;-->
+<!--&lt;!&ndash;        sub.&ndash;&gt;-->
+<!--&lt;!&ndash;        FROM&ndash;&gt;-->
+<!--&lt;!&ndash;        order_receivable_cost orc&ndash;&gt;-->
+<!--&lt;!&ndash;        <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">&ndash;&gt;-->
+<!--&lt;!&ndash;            <choose>&ndash;&gt;-->
+<!--&lt;!&ndash;                <when test="form.cmd == 'cce' or form.cmd == 'cci' or form.cmd == 'ccf'">&ndash;&gt;-->
+
+<!--&lt;!&ndash;                </when>&ndash;&gt;-->
+<!--&lt;!&ndash;                <otherwise>&ndash;&gt;-->
+<!--&lt;!&ndash;                    left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no&ndash;&gt;-->
+<!--&lt;!&ndash;                </otherwise>&ndash;&gt;-->
+<!--&lt;!&ndash;            </choose>&ndash;&gt;-->
+<!--&lt;!&ndash;        </if>&ndash;&gt;-->
+<!--&lt;!&ndash;        <where>&ndash;&gt;-->
+<!--&lt;!&ndash;            orc.id NOT IN (SELECT orbd.cost_id FROM order_receivable_bill_detail orbd where orbd.audit_status!='edit_del')&ndash;&gt;-->
+<!--&lt;!&ndash;            and (orc.is_bill != '2' and orc.is_bill!='save_confirm')&ndash;&gt;-->
+<!--&lt;!&ndash;            and orc.`status` = '3'&ndash;&gt;-->
+<!--&lt;!&ndash;            and orc.customer_code = #{form.customerCode}&ndash;&gt;-->
+<!--&lt;!&ndash;            <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">&ndash;&gt;-->
+<!--&lt;!&ndash;                <choose>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <when test="form.cmd == 'cce' or form.cmd == 'cci' or form.cmd == 'ccf'">&ndash;&gt;-->
+<!--&lt;!&ndash;                        and orc.id=-1&ndash;&gt;-->
+<!--&lt;!&ndash;                    </when>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <otherwise>&ndash;&gt;-->
+<!--&lt;!&ndash;                        and sub.legal_name in #{form.legalName}&ndash;&gt;-->
+<!--&lt;!&ndash;                        and orc.is_sum_to_main = 0 and orc.sub_type = #{form.cmd}&ndash;&gt;-->
+<!--&lt;!&ndash;                    </otherwise>&ndash;&gt;-->
+<!--&lt;!&ndash;                </choose>&ndash;&gt;-->
+<!--&lt;!&ndash;            </if>&ndash;&gt;-->
+<!--&lt;!&ndash;        </where>&ndash;&gt;-->
+
+<!--    </select>-->
 </mapper>

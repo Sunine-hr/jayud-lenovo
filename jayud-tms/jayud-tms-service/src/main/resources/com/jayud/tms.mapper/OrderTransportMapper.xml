@@ -62,6 +62,7 @@
         <result column="main_order_no" property="mainOrderNo"/>
         <result column="order_no" property="orderNo"/>
         <result column="status" property="status"/>
+        <result column="seamless_no" property="seamlessNo"/>
         <association property="orderSendCars" javaType="com.jayud.tms.model.vo.OrderSendCarsInfoVO">
             <id column="id" property="id"/>
             <result column="transport_no" property="transportNo"/>
@@ -496,144 +497,148 @@
         LEFT JOIN order_send_cars os ON os.order_no = ot.order_no
         LEFT JOIN vehicle_info vi ON vi.id=os.vehicle_id
         LEFT JOIN supplier_info si ON si.id=vi.supplier_id
-        left join (select tmp.order_no,tmp.take_time from order_take_adr tmp where tmp.opr_type=1 group by tmp.order_no) ota on ota.order_no = ot.order_no
-        where 1 = 1
-        <if test="form.orderNo != null and form.orderNo != ''">
-            and ot.order_no like concat('%',#{form.orderNo},'%')
-        </if>
-        <if test="form.subOrderNos != null and form.subOrderNos.size>0">
-            and ot.order_no in
-            <foreach collection="form.subOrderNos" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-
-        <if test="form.mainOrderNo != null and form.mainOrderNo != ''">
-            and ot.main_order_no like concat('%',#{form.mainOrderNo},'%')
-        </if>
-        <if test="form.portCode != null and form.portCode != ''">
-            and ot.port_code = #{form.portCode}
-        </if>
-        <if test="form.classCode != null and form.classCode !=''">
-            and oi.class_code = #{form.classCode}
-        </if>
-
-        <if test="form.legalName != null and form.legalName !=''">
-            and ot.legal_name like concat('%',#{form.legalName},'%')
-        </if>
-        <if test="form.endCreatedTime != null and form.endCreatedTime !=''">
-            and DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> #{form.endCreatedTime}
-        </if>
-        <if test="form.beginCreatedTime != null and form.beginCreatedTime !=''">
-            and DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{form.beginCreatedTime}
-        </if>
-        <if test="form.cmd == 'T_1'">
-            AND ot.`status` = 'T_0' AND oi.`status` in ('1','4')
-        </if>
-        <if test="form.cmd == 'T_2'">
-            AND ot.`status` = 'T_1'
-        </if>
-        <if test="form.cmd == 'T_3'">
-            and ot.`status` = 'T_2'
-        </if>
-        <if test="form.cmd == 'T_3_1'">
-            AND ot.`status` = 'T_3_1'
-        </if>
-        <if test="form.cmd == 'T_4'">
-            AND ot.`status` = 'T_3'
-        </if>
-        <if test="form.cmd == 'T_5'">
-            AND ot.`status` = 'T_4'
-        </if>
-        <if test="form.cmd == 'T_6'">
-            AND ot.`status` = 'T_5' and ot.is_vehicle_weigh = '1'
-        </if>
-        <if test="form.cmd == 'T_8'">
-            AND ot.`status` = 'T_7'
-        </if>
-        <if test="form.cmd == 'T_9'">
-            AND ot.`status` in ('T_8','T_9_1','T_9_2')
-        </if>
-        <if test="form.cmd == 'clearCustoms'">
-            AND ot.`is_hk_clear` = '1' and ot.seamless_no is null
-            AND oi.`status` in ('1','4')
-            <if test="dataControl.accountType==1 and dataControl.companyIds != null and dataControl.companyIds.size>0">
-                and ot.`hk_legal_id` in
-                <foreach collection="dataControl.companyIds" item="legalId" open="(" separator="," close=")">
-                    #{legalId}
+        left join (select tmp.order_no,tmp.take_time from order_take_adr tmp where tmp.opr_type=1 group by tmp.order_no)
+        ota on ota.order_no = ot.order_no
+        <where>
+            <if test="form.orderNo != null and form.orderNo != ''">
+                and ot.order_no like concat('%',#{form.orderNo},'%')
+            </if>
+            <if test="form.subOrderNos != null and form.subOrderNos.size>0">
+                and ot.order_no in
+                <foreach collection="form.subOrderNos" item="item" open="(" separator="," close=")">
+                    #{item}
                 </foreach>
             </if>
-        </if>
-        <if test="form.cmd == 'T_10'">
-            AND ot.`status` = 'T_9'
-        </if>
-        <if test="form.cmd == 'T_13'">
-            AND ot.`status` = 'T_10'
-        </if>
-        <if test="form.cmd == 'T_14'">
-            AND ot.`status` = 'T_13'
-        </if>
-        <if test="form.cmd == 'T_15'">
-            AND ot.`status` = 'T_14'
-        </if>
-        <if test="form.cmd == 'list'">
-            AND (oi.`status` in (1,3,4))
-        </if>
 
-        <if test="form.subOrderIds !=null and form.subOrderIds.size>0">
-            AND ot.id in
-            <foreach collection="form.subOrderIds" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        <if test="form.cmd == 'costAudit'">
-            and oi.`status` IN (1,3,4)
-            AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND opc.`status` =
-            '2' and opc.sub_type = 'zgys')
-            OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND orc.`status`
-            = '2' and orc.sub_type = 'zgys'))
-        </if>
-        <if test="form.cmd == 'costAudited'">
-            and oi.`status` IN (1,3,4)
-            AND ot.order_no in (
-            (SELECT opc.order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='zgys' and
-            opc.is_bill='0'
-            union SELECT orc.order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and orc.sub_type='zgys'
-            and orc.is_bill='0')
-            )
-        </if>
-        <if test="form.customerName != null and form.customerName !=''">
-            <choose>
-                <when test="dataControl.accountType!=null and dataControl.accountType==3">
-                    and ot.legal_name like concat('%',#{form.customerName},'%')
-                </when>
-                <otherwise>
-                    and oi.customer_name like concat('%',#{form.customerName},'%')
-                </otherwise>
-            </choose>
-        </if>
+            <if test="form.mainOrderNo != null and form.mainOrderNo != ''">
+                and ot.main_order_no like concat('%',#{form.mainOrderNo},'%')
+            </if>
+            <if test="form.portCode != null and form.portCode != ''">
+                and ot.port_code = #{form.portCode}
+            </if>
+            <if test="form.classCode != null and form.classCode !=''">
+                and oi.class_code = #{form.classCode}
+            </if>
 
-        <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
-            <choose>
-                <when test="dataControl.accountType!=null and dataControl.accountType==3">
-                    and ot.`supplier_id` in
-                </when>
-                <otherwise>
-                    and ot.`legal_entity_id` in
-                </otherwise>
-            </choose>
-            <foreach collection="dataControl.companyIds" item="companyId" open="(" separator="," close=")">
-                #{companyId}
-            </foreach>
-        </if>
-        <if test="form.takeTimeStr != null and form.takeTimeStr.size>0">
-            and ota.take_time between #{form.takeTimeStr[0]} and #{form.takeTimeStr[1]}
-        </if>
-        <if test="form.departmentId != null ">
-            and ot.department_id = #{form.departmentId}
-        </if>
-        order by ota.take_time desc
+            <if test="form.legalName != null and form.legalName !=''">
+                and ot.legal_name like concat('%',#{form.legalName},'%')
+            </if>
+            <if test="form.endCreatedTime != null and form.endCreatedTime !=''">
+                and DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> #{form.endCreatedTime}
+            </if>
+            <if test="form.beginCreatedTime != null and form.beginCreatedTime !=''">
+                and DATE_FORMAT(ot.`created_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{form.beginCreatedTime}
+            </if>
+            <if test="form.cmd == 'T_1'">
+                AND ot.`status` = 'T_0' AND oi.`status` in ('1','4')
+            </if>
+            <if test="form.cmd == 'T_2'">
+                AND ot.`status` = 'T_1'
+            </if>
+            <if test="form.cmd == 'T_3'">
+                and ot.`status` = 'T_2'
+            </if>
+            <if test="form.cmd == 'T_3_1'">
+                AND ot.`status` = 'T_3_1'
+            </if>
+            <if test="form.cmd == 'T_4'">
+                AND ot.`status` = 'T_3'
+            </if>
+            <if test="form.cmd == 'T_5'">
+                AND ot.`status` = 'T_4'
+            </if>
+            <if test="form.cmd == 'T_6'">
+                AND ot.`status` = 'T_5' and ot.is_vehicle_weigh = '1'
+            </if>
+            <if test="form.cmd == 'T_8'">
+                AND ot.`status` = 'T_7'
+            </if>
+            <if test="form.cmd == 'T_9'">
+                AND ot.`status` in ('T_8','T_9_1','T_9_2')
+            </if>
+            <if test="form.cmd == 'clearCustoms'">
+                AND ot.`is_hk_clear` = '1' and ot.seamless_no is null
+                AND oi.`status` in ('1','4')
+                <if test="dataControl.accountType==1 and dataControl.companyIds != null and dataControl.companyIds.size>0">
+                    and ot.`hk_legal_id` in
+                    <foreach collection="dataControl.companyIds" item="legalId" open="(" separator="," close=")">
+                        #{legalId}
+                    </foreach>
+                </if>
+            </if>
+            <if test="form.cmd == 'T_10'">
+                AND ot.`status` = 'T_9'
+            </if>
+            <if test="form.cmd == 'T_13'">
+                AND ot.`status` = 'T_10'
+            </if>
+            <if test="form.cmd == 'T_14'">
+                AND ot.`status` = 'T_13'
+            </if>
+            <if test="form.cmd == 'T_15'">
+                AND ot.`status` = 'T_14'
+            </if>
+            <if test="form.cmd == 'list'">
+                AND (oi.`status` in (1,3,4))
+            </if>
 
+            <if test="form.subOrderIds !=null and form.subOrderIds.size>0">
+                AND ot.id in
+                <foreach collection="form.subOrderIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="form.cmd == 'costAudit'">
+                and oi.`status` IN (1,3,4)
+                AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND
+                opc.`status` =
+                '2' and opc.sub_type = 'zgys')
+                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND
+                orc.`status`
+                = '2' and orc.sub_type = 'zgys'))
+            </if>
+            <if test="form.cmd == 'costAudited'">
+                and oi.`status` IN (1,3,4)
+                AND ot.order_no in (
+                (SELECT opc.order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='zgys' and
+                opc.is_bill='0'
+                union SELECT orc.order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and
+                orc.sub_type='zgys'
+                and orc.is_bill='0')
+                )
+            </if>
+            <if test="form.customerName != null and form.customerName !=''">
+                <choose>
+                    <when test="dataControl.accountType!=null and dataControl.accountType==3">
+                        and ot.legal_name like concat('%',#{form.customerName},'%')
+                    </when>
+                    <otherwise>
+                        and oi.customer_name like concat('%',#{form.customerName},'%')
+                    </otherwise>
+                </choose>
+            </if>
+
+            <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
+                <choose>
+                    <when test="dataControl.accountType!=null and dataControl.accountType==3">
+                        and ot.`supplier_id` in
+                    </when>
+                    <otherwise>
+                        and ot.`legal_entity_id` in
+                    </otherwise>
+                </choose>
+                <foreach collection="dataControl.companyIds" item="companyId" open="(" separator="," close=")">
+                    #{companyId}
+                </foreach>
+            </if>
+            <if test="form.takeTimeStr != null and form.takeTimeStr.size>0">
+                and ota.take_time between #{form.takeTimeStr[0]} and #{form.takeTimeStr[1]}
+            </if>
+            <if test="form.departmentId != null ">
+                and ot.department_id = #{form.departmentId}
+            </if>
+            order by ota.take_time desc
+        </where>
     </select>
 
 
@@ -799,7 +804,7 @@
         oc.id, oc.transport_no, oc.order_no,oc.vehicle_type, oc.vehicle_size, oc.cntr_no, oc.cntr_pic,
         oc.cntr_pic_name, oc.driver_info_id,
         oc.vehicle_id,oc.remarks, oc.describes, oc.status, oc.updated_time, oc.updated_user, oc.created_user,
-        oc.created_time,oc.jockey_id,oc.jockey
+        oc.created_time,oc.jockey_id,oc.jockey,ot.seamless_no
         from
         order_transport ot left join order_send_cars oc on ot.order_no=oc.order_no
         <where>

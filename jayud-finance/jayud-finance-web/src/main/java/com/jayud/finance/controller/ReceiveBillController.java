@@ -103,7 +103,10 @@ public class ReceiveBillController {
                     orderNos.add(e.getSubOrderNo());
                 }
             });
-            Object reCost = this.omsClient.getNoBillCost(orderNos, isMain, BillTypeEnum.RECEIVABLE.getCode()).getData();
+            OrderReceiveBillForm receiveBillForm = form.getReceiveBillForm();
+            Object reCost = this.omsClient.getNoBillCost(orderNos, isMain,
+                    receiveBillForm.getLegalEntityId(), receiveBillForm.getUnitCode(),
+                    BillTypeEnum.RECEIVABLE.getCode()).getData();
             form.assemblyOrderDimensionData(reCost, isMain);
         }
         return billService.createReceiveBill(form);
@@ -149,7 +152,7 @@ public class ReceiveBillController {
         resultMap.put(CommonConstant.LIST, jsonArray);//分页数据
 //        List<SheetHeadVO> sheetHeadVOS = billService.findSheetHead(costIds);
         Map<String, Object> callbackArg = new HashMap<>();
-        List<SheetHeadVO> sheetHeadVOS = billService.findSheetHeadInfo(costIds,callbackArg, form.getCmd());
+        List<SheetHeadVO> sheetHeadVOS = billService.findSheetHeadInfo(costIds, callbackArg, form.getCmd());
         int index = Integer.parseInt(callbackArg.get("fixHeadIndex").toString()) - 1;
         //合计费用
         Map<String, Map<String, BigDecimal>> cost = this.commonService.totalDynamicHeadCost(index, sheetHeadVOS, jsonArray);

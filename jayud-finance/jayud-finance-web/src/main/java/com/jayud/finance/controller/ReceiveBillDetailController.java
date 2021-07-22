@@ -66,7 +66,7 @@ public class ReceiveBillDetailController {
         String amount = this.commonService.calculatingCosts(amountStr);
         Map<String, Object> data = new HashMap<>();
         data.put("amountStr", amount == null ? "" : amount);
-        CommonPageResult<OrderPaymentBillDetailVO> pageVO = new CommonPageResult(pageList,data);
+        CommonPageResult<OrderPaymentBillDetailVO> pageVO = new CommonPageResult(pageList, data);
         return CommonResult.success(pageVO);
     }
 
@@ -84,7 +84,7 @@ public class ReceiveBillDetailController {
         //获取数据
         List<OrderPaymentBillDetailVO> initList = billDetailService.findReceiveBillDetail(form);
         List<ExportOrderSBillDetailVO> list = ConvertUtil.convertList(initList, ExportOrderSBillDetailVO.class);
-
+        list.stream().sorted(Comparator.comparing(ExportOrderSBillDetailVO::getId).reversed());
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
         //自定义标题别名
@@ -295,7 +295,7 @@ public class ReceiveBillDetailController {
         cn.hutool.json.JSONObject legalEntityJson = tmp.getJSONObject(0);
 
         //内部往来关系
-        List<String> settlementRelationship=this.commonService.getInternalSettlementRelationship(datas);
+        List<String> settlementRelationship = this.commonService.getInternalSettlementRelationship(datas);
 
         EasyExcelEntity entity = new EasyExcelEntity();
         entity.setSheetName("客户应收对账单");
@@ -309,7 +309,7 @@ public class ReceiveBillDetailController {
         //组装台头
         List<String> stageHeads = new ArrayList<>();
         //内部往来
-        stageHeads.add("TO:" + viewBillVO.getCustomerName()+settlementRelationship.get(1));
+        stageHeads.add("TO:" + viewBillVO.getCustomerName() + settlementRelationship.get(1));
         sb = new StringBuilder();
         stageHeads.add(sb.append("FR:").append(viewBillVO.getLegalName()).append(settlementRelationship.get(0))
                 .append(EasyExcelUtils.SPLIT_SYMBOL)

@@ -822,12 +822,15 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         for (PaymentNotPaidBillVO tmp : pageList) {
             orderNos.add(isMain ? tmp.getOrderNo() : tmp.getSubOrderNo());
         }
+        PaymentNotPaidBillVO paymentNotPaidBillVO = pageList.get(0);
         //查询费用合计金额
         Map<String, Map<String, BigDecimal>> costAmountMap = this.omsClient.statisticalCostByOrderNos(orderNos, isMain,
-                pageList.get(0).getLegalId(), pageList.get(0).getCustomerCode(),
+                paymentNotPaidBillVO.getLegalId(), paymentNotPaidBillVO.getCustomerCode(),
                 BillTypeEnum.PAYMENT.getCode()).getData();
         //查询所有费用详情
-        Object reCostInfo = this.omsClient.getNoBillCost(orderNos, isMain, BillTypeEnum.PAYMENT.getCode()).getData();
+        Object reCostInfo = this.omsClient.getNoBillCost(orderNos, isMain,
+                paymentNotPaidBillVO.getLegalId(), paymentNotPaidBillVO.getCustomerCode(),
+                BillTypeEnum.PAYMENT.getCode()).getData();
         //币种
         pageInfo.getRecords().forEach(e -> {
             e.assemblyCost(costAmountMap, isMain);

@@ -91,7 +91,10 @@ public class PaymentBillController {
                     orderNos.add(e.getSubOrderNo());
                 }
             });
-            Object payCost = this.omsClient.getNoBillCost(orderNos, isMain, BillTypeEnum.PAYMENT.getCode()).getData();
+            OrderPaymentBillForm paymentBillForm = form.getPaymentBillForm();
+            Object payCost = this.omsClient.getNoBillCost(orderNos, isMain,
+                    paymentBillForm.getLegalEntityId(),paymentBillForm.getSupplierCode()
+                    ,BillTypeEnum.PAYMENT.getCode()).getData();
             form.assemblyOrderDimensionData(payCost, isMain);
         }
 

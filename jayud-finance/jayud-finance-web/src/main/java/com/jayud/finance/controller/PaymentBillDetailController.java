@@ -81,7 +81,7 @@ public class PaymentBillDetailController {
         //获取数据
         List<OrderPaymentBillDetailVO> initList = billDetailService.findPaymentBillDetail(form);
         List<ExportOrderFBillDetailVO> list = ConvertUtil.convertList(initList, ExportOrderFBillDetailVO.class);
-
+        list.stream().sorted(Comparator.comparing(ExportOrderFBillDetailVO::getId).reversed());
         ExcelWriter writer = ExcelUtil.getWriter(true);
 
         //自定义标题别名

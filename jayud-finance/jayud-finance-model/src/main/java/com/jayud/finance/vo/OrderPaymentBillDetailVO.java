@@ -24,6 +24,9 @@ import java.util.Map;
 @Accessors(chain = true)
 public class OrderPaymentBillDetailVO {
 
+    @ApiModelProperty(value = "主键用于排序")
+    private Long id;
+
     @ApiModelProperty(value = "账单编号")
     private String billNo;
 

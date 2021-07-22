@@ -194,6 +194,8 @@ public interface OmsClient {
     @RequestMapping(value = "/api/getNoBillCost")
     public ApiResult getNoBillCost(@RequestParam("orderNos") List<String> orderNos,
                                    @RequestParam("isMain") Boolean isMain,
+                                   @RequestParam("legalId") Long legalId,
+                                   @RequestParam("customerCode") String customerCode,
                                    @RequestParam("type") Integer type);
 
     /**

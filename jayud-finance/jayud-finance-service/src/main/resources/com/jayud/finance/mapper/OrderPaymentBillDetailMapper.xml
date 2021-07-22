@@ -707,6 +707,7 @@
 
     <select id="findPaymentBillDetailByPage" resultType="com.jayud.finance.vo.OrderPaymentBillDetailVO">
         SELECT distinct
+        opbd.id,
         opbd.bill_no billNo,
         opb.legal_name legalName,
         opb.supplier_ch_name supplierChName,

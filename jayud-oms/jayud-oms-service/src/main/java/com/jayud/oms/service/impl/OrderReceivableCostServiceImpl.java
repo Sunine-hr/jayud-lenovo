@@ -312,11 +312,13 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
     @Override
     public Map<String, Map<String, BigDecimal>> statisticalReCostByOrderNos(List<OrderReceivableCost> list, Boolean isMain) {
         Map<String, List<OrderReceivableCost>> group = null;
-        if (isMain) {
-            group = list.stream().collect(Collectors.groupingBy(OrderReceivableCost::getMainOrderNo));
-        } else {
-            group = list.stream().collect(Collectors.groupingBy(OrderReceivableCost::getOrderNo));
-        }
+//        if (isMain) {
+//
+//        } else {
+//            group = list.stream().collect(Collectors.groupingBy(OrderReceivableCost::getOrderNo));
+//        }
+        group = list.stream().collect(Collectors.groupingBy(e -> e.getMainOrderNo() + "~" + e.getOrderNo()));
+
         List<CurrencyInfo> currencyInfos = currencyInfoService.list();
         Map<String, String> currencyMap = currencyInfos.stream().collect(Collectors.toMap(CurrencyInfo::getCurrencyCode, CurrencyInfo::getCurrencyName));
         Map<String, Map<String, BigDecimal>> map = new HashMap<>();

@@ -167,6 +167,12 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "部门")
     private String department;
 
+    @ApiModelProperty(value = "法人主体id")
+    private Long legalId;
+
+    @ApiModelProperty(value = "结算单位code")
+    private String customerCode;
+
 
     public void setAuditStatus(String auditStatus) {
         this.auditStatus = auditStatus;
@@ -209,8 +215,9 @@ public class PaymentNotPaidBillVO {
         if (costMap == null) {
             return;
         }
-        String orderNo = isMain ? this.orderNo : this.subOrderNo;
-        Map<String, BigDecimal> tmp = costMap.get(orderNo);
+//        String orderNo = isMain ? this.orderNo : this.subOrderNo;
+
+        Map<String, BigDecimal> tmp = costMap.get(this.orderNo + "~" + this.subOrderNo);
         if (tmp == null) return;
         StringBuilder sb = new StringBuilder();
         tmp.forEach((k, v) -> {

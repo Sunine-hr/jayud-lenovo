@@ -747,7 +747,9 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
             orderNos.add(isMain ? tmp.getOrderNo() : tmp.getSubOrderNo());
         }
         //查询费用合计金额
-        Map<String, Map<String, BigDecimal>> costAmountMap = this.omsClient.statisticalCostByOrderNos(orderNos, isMain, BillTypeEnum.RECEIVABLE.getCode()).getData();
+        Map<String, Map<String, BigDecimal>> costAmountMap = this.omsClient.statisticalCostByOrderNos(orderNos, isMain,
+                pageList.get(0).getLegalId(), pageList.get(0).getCustomerCode(),
+                BillTypeEnum.RECEIVABLE.getCode()).getData();
         //查询所有费用详情
         Object reCostInfo = this.omsClient.getNoBillCost(orderNos, isMain, BillTypeEnum.RECEIVABLE.getCode()).getData();
         //币种

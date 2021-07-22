@@ -127,6 +127,12 @@ public class ReceiveNotPaidBillVO {
     @ApiModelProperty(value = "部门")
     private String department;
 
+    @ApiModelProperty(value = "法人主体id")
+    private Long legalId;
+
+    @ApiModelProperty(value = "结算单位code")
+    private String customerCode;
+
     public void assembleInlandTPData(List<OrderInlandTransportDetails> dataList) {
         if (CollectionUtils.isEmpty(dataList)) {
             return;

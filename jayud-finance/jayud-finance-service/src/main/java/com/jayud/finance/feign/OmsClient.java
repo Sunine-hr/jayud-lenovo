@@ -181,6 +181,8 @@ public interface OmsClient {
     @RequestMapping(value = "/api/statisticalCostByOrderNos")
     public ApiResult<Map<String, Map<String, BigDecimal>>> statisticalCostByOrderNos(@RequestParam("orderNos") List<String> orderNos,
                                                                                      @RequestParam("isMain") Boolean isMain,
+                                                                                     @RequestParam("legalId") Long legalId,
+                                                                                     @RequestParam("customerCode") String customerCode,
                                                                                      @RequestParam("type") Integer type);
 
     /**

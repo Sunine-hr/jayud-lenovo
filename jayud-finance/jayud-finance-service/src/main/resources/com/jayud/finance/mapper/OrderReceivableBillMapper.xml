@@ -251,7 +251,9 @@
         oi.created_user createdUser,
         -- orc.is_bill,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
-        oi.biz_code bizCode
+        oi.biz_code bizCode,
+        orc.legal_id,
+        orc.customer_code
         FROM
         order_receivable_cost orc
         LEFT JOIN order_info oi ON orc.main_order_no = oi.order_no

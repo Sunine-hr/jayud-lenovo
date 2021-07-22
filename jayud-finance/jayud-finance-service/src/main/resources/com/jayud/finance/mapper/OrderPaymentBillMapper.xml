@@ -1260,7 +1260,9 @@
         oi.operation_time,
         oi.created_user createdUser,
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
-        oi.biz_code bizCode
+        oi.biz_code bizCode,
+        opc.legal_id,
+        opc.customer_code
         FROM
         order_payment_cost opc
         left join supplier_info si on si.supplier_code = opc.customer_code

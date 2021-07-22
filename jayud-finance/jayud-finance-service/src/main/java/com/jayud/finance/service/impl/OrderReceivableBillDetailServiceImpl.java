@@ -886,10 +886,9 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         pageMap.setSize(page.getSize());
         pageMap.setTotal(page.getTotal());
 
-        if (pageInfo.getSize() == 0) {
+        if (pageInfo.getTotal() == 0) {
             return pageMap;
         }
-
 
         //获取所有币种
         Map<String, String> currencyMap = this.omsClient.initCurrencyInfo().getData()
@@ -902,6 +901,9 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         //所有的费用类型
         List<InitComboxVO> initComboxVOS = omsClient.findEnableCostGenre().getData();
         List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
+        if (pageList.size() == 0) {
+            return pageMap;
+        }
         List<String> mainOrderNos = new ArrayList<>();
         for (PaymentNotPaidBillVO paymentNotPaidBill : pageList) {
             List<InitComboxVO> haveCostGenre = new ArrayList<>();
@@ -926,7 +928,9 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             mainOrderNos.add(paymentNotPaidBill.getOrderNo());
             paymentNotPaidBill.assemblyCostInfo(costInfo, currencyMap);
         }
+
         JSONArray array = new JSONArray(pageList);
+
         array = this.commonService.templateDataProcessing(pageList.get(0).getSubType(), pageList.get(0).getSubType(), array, mainOrderNos, 0);
         List<LinkedHashMap> maps = Utilities.obj2List(array, LinkedHashMap.class);
         pageMap.setRecords(maps);

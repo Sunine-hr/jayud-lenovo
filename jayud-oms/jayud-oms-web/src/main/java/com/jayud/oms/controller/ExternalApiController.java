@@ -1025,6 +1025,8 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/statisticalCostByOrderNos")
     public ApiResult<Map<String, Map<String, BigDecimal>>> statisticalCostByOrderNos(@RequestParam("orderNos") List<String> orderNos,
                                                                                      @RequestParam("isMain") Boolean isMain,
+                                                                                     @RequestParam("legalId") Long legalId,
+                                                                                     @RequestParam("customerCode") String customerCode,
                                                                                      @RequestParam("type") Integer type) {
         QueryWrapper codition = new QueryWrapper<>();
         if (isMain) {
@@ -1035,6 +1037,8 @@ public class ExternalApiController {
         codition.notIn("is_bill", "2", "save_confirm");
         codition.eq("is_sum_to_main", isMain);
         codition.eq("status", 3);
+        codition.eq("legal_id", legalId);
+        codition.eq("customer_code", customerCode);
         switch (type) {
             case 0: //应收
                 List<OrderReceivableCost> orderReceivableCosts = this.orderReceivableCostService.getBaseMapper().selectList(codition);

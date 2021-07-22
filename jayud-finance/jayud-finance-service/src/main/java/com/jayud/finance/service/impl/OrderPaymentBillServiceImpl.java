@@ -16,10 +16,7 @@ import com.jayud.common.enums.BillTypeEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
-import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.DateUtils;
-import com.jayud.common.utils.StringUtils;
-import com.jayud.common.utils.Utilities;
+import com.jayud.common.utils.*;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.enums.BillTemplateEnum;
@@ -102,9 +99,11 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             param.put("cmd", form.getCmd());
             Map<String, Object> sqlParam = this.dynamicSQLFindReceiveBillByPageParam(param);
             pageInfo = baseMapper.findPaymentSubBillByPage(page, form, sqlParam, legalIds);//法人主体/供应商/子订单费用的维度统计
+            this.statisticsNoBills(pageInfo.getRecords(), form.getCmd());
         }
         return pageInfo;
     }
+
 
     @Override
     public Map<String, Object> findPaymentBillNum(QueryPaymentBillNumForm form) {
@@ -833,5 +832,32 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
             e.assemblyCostInfo(reCostInfo, isMain);
         });
         return pageInfo;
+    }
+
+    private void statisticsNoBills(List<OrderPaymentBillVO> records, String cmd) {
+        if (CollectionUtils.isEmpty(records)) {
+            return;
+        }
+        List<Long> legalEntityIds = new ArrayList<>();
+        List<String> unitCodes = new ArrayList<>();
+        records.forEach(e -> {
+            legalEntityIds.add(e.getLegalEntityId());
+            unitCodes.add(e.getSupplierCode());
+        });
+        Map<String, List<UnbilledVO>> tmp = this.baseMapper.getUnpaidData(legalEntityIds, unitCodes, cmd)
+                .stream().collect(Collectors.groupingBy(e -> e.getLegalId() + "~" + e.getCustomerCode()));
+        records.forEach(e -> {
+            List<UnbilledVO> unbilledVOS = tmp.get(e.getLegalEntityId() + "~" + e.getSupplierCode());
+            Set<String> orderNum = new HashSet<>();
+            BigDecimal totalAmount = new BigDecimal(0);
+            if (CollectionUtils.isNotEmpty(unbilledVOS)) {
+                unbilledVOS.forEach(unbilledVO -> {
+                    orderNum.add(unbilledVO.getMainOrderNo());
+                    BigDecimalUtil.add(totalAmount, unbilledVO.getChangeAmount());
+                });
+            }
+            e.setNotPaidOrderNum(orderNum.size());
+            e.setNotPaidAmount(totalAmount.toPlainString());
+        });
     }
 }

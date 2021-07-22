@@ -211,6 +211,7 @@ public class PaymentNotPaidBillVO {
         }
         String orderNo = isMain ? this.orderNo : this.subOrderNo;
         Map<String, BigDecimal> tmp = costMap.get(orderNo);
+        if (tmp == null) return;
         StringBuilder sb = new StringBuilder();
         tmp.forEach((k, v) -> {
             sb.append(v).append(" ").append(k).append(",");

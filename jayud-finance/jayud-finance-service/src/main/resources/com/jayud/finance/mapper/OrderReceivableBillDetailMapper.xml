@@ -279,10 +279,10 @@
                     LEFT JOIN order_transport sub ON sub.main_order_no = oi.order_no
                     LEFT JOIN order_send_cars osc ON sub.order_no = osc.order_no
                     left join vehicle_info vi on vi.id = osc.vehicle_id
-                    left join order_customs oc on oc.order_no = opc.order_no
+                    left join order_customs oc on oc.order_no = orc.order_no
                 </when>
                 <otherwise>
-                    left join ${dynamicSqlParam.table} sub on sub.order_no = opc.order_no
+                    left join ${dynamicSqlParam.table} sub on sub.order_no = orc.order_no
                 </otherwise>
             </choose>
         </if>

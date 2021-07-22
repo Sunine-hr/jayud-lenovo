@@ -19,7 +19,7 @@ import com.jayud.finance.service.IVoidBillingRecordsService;
 import com.jayud.finance.vo.InputGoodsVO;
 import com.jayud.finance.vo.SheetHeadVO;
 import com.jayud.finance.vo.template.order.*;
-import org.apache.commons.collections.CollectionUtils;
+import com.jayud.finance.vo.template.pay.InlandTPPayTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -78,7 +78,7 @@ public class CommonServiceImpl implements CommonService {
             JSONObject jsonObject = array.getJSONObject(i);
             switch (templateEnum) {
                 case KY:
-                case KY_NORM:
+                case KY_NORM_RE:
                     AirOrderTemplate airOrderTemplate = ConvertUtil.convert(jsonObject, AirOrderTemplate.class);
                     //组装商品信息
                     airOrderTemplate.assemblyGoodsInfo(goods);
@@ -108,7 +108,7 @@ public class CommonServiceImpl implements CommonService {
             JSONObject jsonObject = array.getJSONObject(i);
             switch (templateEnum) {
                 case ZGYS:
-                case ZGYS_NORM:
+                case ZGYS_NORM_RE:
                     TmsOrderTemplate tmsOrderTemplate = ConvertUtil.convert(jsonObject, TmsOrderTemplate.class);
                     tmsOrderTemplate.assembleData(jsonObject);
                     //组装主订单信息
@@ -138,9 +138,23 @@ public class CommonServiceImpl implements CommonService {
         for (int i = 0; i < array.size(); i++) {
             JSONObject jsonObject = array.getJSONObject(i);
             switch (templateEnum) {
-                case NL_NORM:
-                case NL:
+                case NL_NORM_RE:
                     InlandTPTemplate template = ConvertUtil.convert(jsonObject, InlandTPTemplate.class);
+                    template.assembleData(jsonObject);
+                    //组装主订单信息
+                    template.assemblyMainOrderData(result.getData());
+                    map.put(cmd.equals("main") ? template.getMainOrderNo() : template.getSubOrderNo(), template);
+                    break;
+                case NL_NORM_PAY:
+                    InlandTPPayTemplate templateOne = ConvertUtil.convert(jsonObject, InlandTPPayTemplate.class);
+                    templateOne.assembleData(jsonObject);
+                    //组装主订单信息
+                    templateOne.assemblyMainOrderData(result.getData());
+                    templateOne.setCustomerName("佳裕达");
+                    map.put(cmd.equals("main") ? templateOne.getMainOrderNo() : templateOne.getSubOrderNo(), templateOne);
+                    break;
+                case NL:
+                    template = ConvertUtil.convert(jsonObject, InlandTPTemplate.class);
                     template.assembleData(jsonObject);
                     //组装主订单信息
                     template.assemblyMainOrderData(result.getData());
@@ -166,7 +180,7 @@ public class CommonServiceImpl implements CommonService {
         for (int i = 0; i < array.size(); i++) {
             JSONObject jsonObject = array.getJSONObject(i);
             switch (templateEnum) {
-                case HY_NORM:
+                case HY_NORM_RE:
                 case HY:
                     SeaOrderTemplate template = ConvertUtil.convert(jsonObject, SeaOrderTemplate.class);
                     template.assembleData(jsonObject);
@@ -351,7 +365,7 @@ public class CommonServiceImpl implements CommonService {
             JSONObject jsonObject = array.getJSONObject(i);
             switch (templateEnum) {
                 case TC:
-                case TC_NORM:
+                case TC_NORM_RE:
                     TrailerOrderTemplate trailerOrderTemplate = ConvertUtil.convert(jsonObject, TrailerOrderTemplate.class);
                     trailerOrderTemplate.assembleData(jsonObject);
                     //组装主订单信息

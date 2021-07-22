@@ -139,6 +139,6 @@ public class KingdeeController {
 //            jsonObject.getStr("subType");
 //        }
 
-        return CommonResult.success(BillTemplateEnum.initBillTemplate());
+        return CommonResult.success(BillTemplateEnum.initBillTemplate(MapUtil.getInt(map, "type")));
     }
 }

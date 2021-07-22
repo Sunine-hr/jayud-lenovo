@@ -93,7 +93,7 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
 //            BigDecimal money = orderBillCostTotals.stream().map(OrderBillCostTotal::getMoney).reduce(BigDecimal.ZERO, BigDecimal::add);
             String orderNo;
             if (SubOrderSignEnum.MAIN.getSignOne().equals(cmd)) {
-                orderNo = "1".equals(moneyType) ? object.getStr("orderNo") : object.getStr("mainOrderNo");
+                orderNo = object.getStr("mainOrderNo");
             } else {
                 orderNo = object.getStr("subOrderNo");
             }

@@ -251,22 +251,6 @@ public class PaymentBillDetailController {
                                  @RequestParam(value = "templateCmd", required = false) String templateCmd,
                                  HttpServletResponse response) throws IOException {
 
-
-//        List<ViewFBilToOrderVO> list = billDetailService.viewBillDetail(billNo);
-        //地址只展示6个字符
-//        list.stream().forEach(e -> {
-//            if (e.getStartAddress() != null && e.getStartAddress().length() > 6) {
-//                e.setStartAddress(e.getStartAddress().substring(0, 6));
-//            }
-//            if (e.getEndAddress() != null && e.getEndAddress().length() > 6) {
-//                e.setEndAddress(e.getEndAddress().substring(0, 6));
-//            }
-//        });
-
-//        TypeUtils.compatibleWithJavaBean = true;
-//
-//        JSONArray datas = new JSONArray(list);
-
         JSONArray datas = this.billDetailService.viewBillDetailInfo(billNo, cmd, templateCmd);
 
         ViewBillVO viewBillVO = billDetailService.getViewBill(billNo);

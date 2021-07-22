@@ -69,6 +69,9 @@ public class InputSubOrderCustomsVO {
     @ApiModelProperty(value = "法人名称id")
     private Long legalEntityId;
 
+    @ApiModelProperty(value = "操作部门id")
+    private Long departmentId;
+
     public void copyOperationInfo() {
         this.subOrderId = null;
         this.fileViews = null;

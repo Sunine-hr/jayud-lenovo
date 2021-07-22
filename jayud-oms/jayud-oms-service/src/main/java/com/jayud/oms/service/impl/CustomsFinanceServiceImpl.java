@@ -168,10 +168,12 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                         orderReceivableCost.setLegalName(orderInfo.getLegalName());
                         orderReceivableCost.setLegalId(Long.parseLong((oauthClient.getLegalEntityByLegalName(orderInfo.getLegalName()).getData().toString())));
                         orderReceivableCost.setUnitCode(orderInfo.getUnitCode()).setUnitName(customerNameMap.get(orderInfo.getUnitCode()));
+                        orderReceivableCost.setDepartmentId(Long.valueOf(orderInfo.getBizBelongDepart()));
                     } else {
                         orderReceivableCost.setLegalName(subOrderCustoms.getLegalName());
                         orderReceivableCost.setLegalId(Long.parseLong((oauthClient.getLegalEntityByLegalName(subOrderCustoms.getLegalName()).getData().toString())));
                         orderReceivableCost.setUnitCode(subOrderCustoms.getUnitCode()).setUnitName(customerNameMap.get(subOrderCustoms.getUnitCode()));
+                        orderReceivableCost.setDepartmentId(subOrderCustoms.getDepartmentId());
                     }
 
                     orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_3.getCode()));

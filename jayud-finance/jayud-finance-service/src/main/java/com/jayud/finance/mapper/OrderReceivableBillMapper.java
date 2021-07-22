@@ -176,7 +176,9 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
      * @param form
      * @return
      */
-    IPage<OrderReceiveBillVO> findReceiveSubBillByPage(Page<OrderReceiveBillVO> page, @Param("form") QueryReceiveBillForm form, @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam, @Param("legalIds") List<Long> legalIds);
+    IPage<OrderReceiveBillVO> findReceiveSubBillByPage(Page<OrderReceiveBillVO> page, @Param("form") QueryReceiveBillForm form,
+                                                       @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam,
+                                                       @Param("legalIds") List<Long> legalIds);
 
 
     /**
@@ -206,12 +208,15 @@ public interface OrderReceivableBillMapper extends BaseMapper<OrderReceivableBil
      */
     Integer getCountByMakeTime(@Param("makeTime") String makeTime, @Param("format") String format);
 
+    List<UnbilledVO> getUnpaidData(@Param("legalIds") List<Long> legalIds,
+                                   @Param("customerCodes") List<String> customerCodes,
+                                   @Param("cmd")String cmd);
+
 
 //    List<Map<String, Object>> statisticsNotPaidBillInfo(@Param("isMain") Boolean isMain, @Param("customerCode") String customerCode,
 //                                                        @Param("legalEntityIds") List<Long> legalEntityIds,
 //                                                        @Param("legalNames") List<String> legalNames,
 //                                                        @Param("dynamicSqlParam") Map<String, Object> dynamicSqlParam);
-
 
 
 }

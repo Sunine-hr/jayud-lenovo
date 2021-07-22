@@ -159,8 +159,8 @@ public class ReceiveNotPaidBillVO {
         if (costMap == null) {
             return;
         }
-        String orderNo = isMain ? this.orderNo : this.subOrderNo;
-        Map<String, BigDecimal> tmp = costMap.get(orderNo);
+//        String orderNo = isMain ? this.orderNo : this.subOrderNo;
+        Map<String, BigDecimal> tmp = costMap.get(orderNo + "~" + subOrderNo);
         StringBuilder sb = new StringBuilder();
         tmp.forEach((k, v) -> {
             sb.append(v).append(" ").append(k).append(",");

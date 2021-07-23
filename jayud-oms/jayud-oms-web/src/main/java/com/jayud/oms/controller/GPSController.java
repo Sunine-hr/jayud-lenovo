@@ -18,6 +18,7 @@ import com.jayud.oms.service.ILogisticsTrackService;
 import com.jayud.oms.service.IOrderInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.SneakyThrows;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -426,10 +427,11 @@ public class GPSController {
     /**
      * 高德地图通过地址获取经纬度
      */
-    public static String httpURLConectionGET(String address) {
+    @SneakyThrows
+    public static String httpURLConectionGET(String address)  {
         //"http://restapi.amap.com/v3/geocode/geo?address=上海市东方明珠&output=JSON&key=xxxxxxxxx";
 //        5daef797f2a3134241fd7dee3ba06566
-        String geturl = "http://restapi.amap.com/v3/geocode/geo?key=026b5609481d2fb3e1ef6790a69e961b&address="+address;
+        String geturl = "http://restapi.amap.com/v3/geocode/geo?key=026b5609481d2fb3e1ef6790a69e961b&address="+URLEncoder.encode(address,"utf-8");
         String location = "";
         try {
             URL url = new URL(geturl);    // 把字符串转换为URL请求地址

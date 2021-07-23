@@ -48,18 +48,8 @@ public class TrailerOrderPayTemplate {
     @ApiModelProperty(value = "柜号", required = true)
     private String cabinetNumber;
 
-
-
-
-
-    @ApiModelProperty(value = "启运地", required = true)
-    private String portDeparture;
-
-    @ApiModelProperty(value = "目的地", required = true)
-    private String portDestination;
-
-    @ApiModelProperty(value = "报关单号", required = true)
-    private String yunCustomsNo;
+    @ApiModelProperty(value = "封号", required = true)
+    private String paperStripSeal;
 
     @ApiModelProperty(value = "车牌号", required = true)
     private String plateNumber;
@@ -67,11 +57,24 @@ public class TrailerOrderPayTemplate {
     @ApiModelProperty(value = "车型尺寸", required = true)
     private String cabinetSize;
 
-    @ApiModelProperty(value = "件数", required = true)
-    private Integer totalPieceAmount;
+    @ApiModelProperty(value = "提柜地", required = true)
+    private String portDeparture;
 
-    @ApiModelProperty(value = "毛重(KGS)", required = true)
-    private Double totalWeight;
+    @ApiModelProperty(value = "卸货地", required = true)
+    private String pickUpAddress;
+
+    @ApiModelProperty(value = "还柜地", required = true)
+    private String portDestination;
+
+//    @ApiModelProperty(value = "报关单号", required = true)
+//    private String yunCustomsNo;
+
+
+//    @ApiModelProperty(value = "件数", required = true)
+//    private Integer totalPieceAmount;
+//
+//    @ApiModelProperty(value = "毛重(KGS)", required = true)
+//    private Double totalWeight;
 
 
 //    @ApiModelProperty(value = "操作主体", required = true)
@@ -190,19 +193,21 @@ public class TrailerOrderPayTemplate {
 
         //进口：起运地是港口---目的地是送货地址
         //出口：起运地是客户地址---目的地是港口
-        if (this.impAndExpType.equals(1)) { //进口
-            this.portDeparture = this.portName;
-            this.portDestination = addrs.toString();
-        } else {
-            this.portDeparture = addrs.toString();
-            this.portDestination = this.portName;
-        }
+//        if (this.impAndExpType.equals(1)) { //进口
+//            this.portDeparture = this.portName;
+//            this.portDestination = addrs.toString();
+//        } else {
+//            this.portDeparture = addrs.toString();
+//            this.portDestination = this.portName;
+//        }
+        this.portDeparture = this.portName;
+        this.portDestination = this.portName;
 
 //        this.goodsInfo = goodsInfo.toString();
-//        this.pickUpAddress = addrs.length() > 6 ? addrs.substring(0, 6) : addrs.toString();
+        this.pickUpAddress = addrs.length() > 6 ? addrs.substring(0, 6) : addrs.toString();
         this.takeTimeStr = DateUtils.format(deliveryAddresses.get(0).getDeliveryDate(), "yyyy-MM-dd");
-        this.totalPieceAmount = totalPieceAmount;
-        this.totalWeight = totalWeight;
+//        this.totalPieceAmount = totalPieceAmount;
+//        this.totalWeight = totalWeight;
     }
 
     public void setOrderNo(String orderNo) {

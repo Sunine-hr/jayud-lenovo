@@ -20,6 +20,7 @@ import com.jayud.finance.vo.InputGoodsVO;
 import com.jayud.finance.vo.SheetHeadVO;
 import com.jayud.finance.vo.template.order.*;
 import com.jayud.finance.vo.template.pay.InlandTPPayTemplate;
+import com.jayud.finance.vo.template.pay.TrailerOrderPayTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -364,16 +365,28 @@ public class CommonServiceImpl implements CommonService {
         for (int i = 0; i < array.size(); i++) {
             JSONObject jsonObject = array.getJSONObject(i);
             switch (templateEnum) {
+                case TC_NORM_PAY:
+                    TrailerOrderPayTemplate payTemplate = ConvertUtil.convert(jsonObject, TrailerOrderPayTemplate.class);
+                    payTemplate.assembleData(jsonObject);
+                    //组装主订单信息
+                    payTemplate.assemblyMainOrderData(result.getData());
+                    payTemplate.setCustomerName("佳裕达");
+                    map.put(cmd.equals("main") ? payTemplate.getMainOrderNo() : payTemplate.getOrderNo(), payTemplate);
+                    break;
                 case TC:
-                case TC_NORM_RE:
                     TrailerOrderTemplate trailerOrderTemplate = ConvertUtil.convert(jsonObject, TrailerOrderTemplate.class);
                     trailerOrderTemplate.assembleData(jsonObject);
                     //组装主订单信息
                     trailerOrderTemplate.assemblyMainOrderData(result.getData());
                     map.put(cmd.equals("main") ? trailerOrderTemplate.getMainOrderNo() : trailerOrderTemplate.getOrderNo(), trailerOrderTemplate);
                     break;
-//                case ZGYS_ONE:
-//                    break;
+                case TC_NORM_RE:
+                    trailerOrderTemplate = ConvertUtil.convert(jsonObject, TrailerOrderTemplate.class);
+                    trailerOrderTemplate.assembleData(jsonObject);
+                    //组装主订单信息
+                    trailerOrderTemplate.assemblyMainOrderData(result.getData());
+                    map.put(cmd.equals("main") ? trailerOrderTemplate.getMainOrderNo() : trailerOrderTemplate.getOrderNo(), trailerOrderTemplate);
+                    break;
 
             }
 

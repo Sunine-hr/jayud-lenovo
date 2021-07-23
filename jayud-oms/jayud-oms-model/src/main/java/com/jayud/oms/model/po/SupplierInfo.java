@@ -133,6 +133,12 @@ public class SupplierInfo extends Model<SupplierInfo> {
     @ApiModelProperty(value = "文件名称(多个逗号隔开)")
     private String fileName;
 
+    @ApiModelProperty(value = "对接GPS所需要的key值")
+    private String appKey;
+
+    @ApiModelProperty(value = "对接GPS公用路径前缀")
+    private String gpsAddress;
+
 
 
     @Override

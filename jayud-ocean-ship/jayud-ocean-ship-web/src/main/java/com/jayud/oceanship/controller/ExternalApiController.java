@@ -3,6 +3,10 @@ package com.jayud.oceanship.controller;
 import cn.hutool.core.collection.CollectionUtil;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.entity.InitChangeStatusVO;
+import com.jayud.common.entity.SubOrderCloseOpt;
+import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oceanship.bo.AddSeaOrderForm;
 import com.jayud.oceanship.feign.OauthClient;
@@ -16,6 +20,7 @@ import com.jayud.oceanship.vo.SeaOrderInfoVO;
 import com.jayud.oceanship.vo.SeaOrderVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -24,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -189,5 +195,47 @@ public class ExternalApiController {
 //        }
 //        return ApiResult.ok(list);
 //    }
+
+    @ApiOperation(value = "获取海运订单号")
+    @RequestMapping(value = "/api/oceanship/getOrderNo")
+    public ApiResult<InitChangeStatusVO> getSeaOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo) {
+        InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
+        List<SeaOrder> list = this.seaOrderService.getByCondition(new SeaOrder().setMainOrderNo(mainOrderNo));
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(list)) {
+            SeaOrder tmp = list.get(0);
+            initChangeStatusVO.setId(tmp.getId());
+            initChangeStatusVO.setOrderNo(tmp.getOrderNo());
+            initChangeStatusVO.setOrderType(CommonConstant.HY);
+            initChangeStatusVO.setOrderTypeDesc(CommonConstant.HY_DESC);
+            initChangeStatusVO.setStatus(tmp.getProcessStatus() + "");
+            initChangeStatusVO.setNeedInputCost(tmp.getNeedInputCost());
+            return ApiResult.ok(initChangeStatusVO);
+        }
+        return ApiResult.error();
+    }
+
+    /**
+     * 关闭订单
+     */
+    @RequestMapping(value = "/api/closeOrder")
+    public ApiResult closeOrder(@RequestBody List<SubOrderCloseOpt> form){
+        List<String> orderNos = form.stream().map(SubOrderCloseOpt::getOrderNo).collect(Collectors.toList());
+        List<SeaOrder> list = this.seaOrderService.getOrdersByOrderNos(orderNos);
+        Map<String, SeaOrder> map = list.stream().collect(Collectors.toMap(SeaOrder::getOrderNo, e -> e));
+
+        for (SubOrderCloseOpt subOrderCloseOpt : form) {
+            SeaOrder tmp = map.get(subOrderCloseOpt.getOrderNo());
+            SeaOrder seaOrder = new SeaOrder();
+            seaOrder.setId(tmp.getId());
+            seaOrder.setProcessStatus(ProcessStatusEnum.CLOSE.getCode());
+            seaOrder.setNeedInputCost(subOrderCloseOpt.getNeedInputCost());
+            seaOrder.setUpdateUser(subOrderCloseOpt.getLoginUser());
+            seaOrder.setUpdateTime(LocalDateTime.now());
+
+            this.seaOrderService.updateById(seaOrder);
+
+        }
+        return ApiResult.ok();
+    }
 
 }

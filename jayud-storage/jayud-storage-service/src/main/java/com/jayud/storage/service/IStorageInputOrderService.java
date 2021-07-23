@@ -99,4 +99,8 @@ public interface IStorageInputOrderService extends IService<StorageInputOrder> {
      * @return
      */
     List<OnShelfOrderVO> getListByQueryForm(QueryPutGoodForm form);
+
+    List<StorageInputOrder> getByCondition(StorageInputOrder setMainOrderNo);
+
+    List<StorageInputOrder> getOrdersByOrderNos(List<String> orderNos);
 }

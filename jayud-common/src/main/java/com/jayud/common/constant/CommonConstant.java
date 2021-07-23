@@ -175,6 +175,20 @@ public abstract class CommonConstant {
     public static final String NLYS = "NLYS";
     public static final String NLYS_DESC = "内陆运输";
 
+    public static final String HY = "HY";
+    public static final String HY_DESC = "海运订单";
+
+    public static final String TC_DESC = "拖车订单";
+
+    public static final String CCI = "CCI";
+    public static final String CCI_DESC = "入库订单";
+
+    public static final String CCE = "CCE";
+    public static final String CCE_DESC = "出库订单";
+
+    public static final String CCF = "CCF";
+    public static final String CCF_DESC = "快进快出订单";
+
     public static final String PAGE_LIST = "pageList";
 
     public static final String PRE_SUBMIT_COUNT = "preSubmitCount";

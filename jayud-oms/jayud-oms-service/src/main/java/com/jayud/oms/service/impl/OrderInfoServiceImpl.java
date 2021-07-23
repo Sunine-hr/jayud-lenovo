@@ -2254,6 +2254,37 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             InitChangeStatusVO initChangeStatusVO = this.freightAirClient.getAirOrderNo(inputMainOrderVO.getOrderNo()).getData();
             changeStatusVOS.add(initChangeStatusVO);
         }
+        //海运
+        if (OrderStatusEnum.HY.getCode().equals(form.getClassCode()) ||
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.HYDD.getCode())) {
+            InitChangeStatusVO initChangeStatusVO = this.oceanShipClient.getSeaOrderNo(inputMainOrderVO.getOrderNo()).getData();
+            changeStatusVOS.add(initChangeStatusVO);
+        }
+        //拖车
+        if (OrderStatusEnum.TC.getCode().equals(form.getClassCode()) ||
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.TCEDD.getCode()) ||
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.TCIDD.getCode())) {
+            List<InitChangeStatusVO> initChangeStatusVO = this.trailerClient.getTrailerOrderNo(inputMainOrderVO.getOrderNo()).getData();
+            changeStatusVOS.addAll(initChangeStatusVO);
+        }
+        //仓储
+        if (OrderStatusEnum.CC.getCode().equals(form.getClassCode()) ||
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) ||
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode()) ||
+        inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())) {
+            if(inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())){
+                InitChangeStatusVO initChangeStatusVO = this.storageClient.getStorageOutOrderNo(inputMainOrderVO.getOrderNo()).getData();
+                changeStatusVOS.add(initChangeStatusVO);
+            }
+            if(inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())){
+                InitChangeStatusVO initChangeStatusVO = this.storageClient.getStorageInOrderNo(inputMainOrderVO.getOrderNo()).getData();
+                changeStatusVOS.add(initChangeStatusVO);
+            }
+            if(inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())){
+                InitChangeStatusVO initChangeStatusVO = this.storageClient.getStorageFastOrderNo(inputMainOrderVO.getOrderNo()).getData();
+                changeStatusVOS.add(initChangeStatusVO);
+            }
+        }
         return changeStatusVOS;
     }
 
@@ -2264,6 +2295,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<TmsChangeStatusForm> zgys = new ArrayList<>();
         List<SubOrderCloseOpt> airs = new ArrayList<>();
         List<SubOrderCloseOpt> inlands = new ArrayList<>();
+        List<SubOrderCloseOpt> seas = new ArrayList<>();
+        List<SubOrderCloseOpt> trailers = new ArrayList<>();
+        List<SubOrderCloseOpt> storageIn = new ArrayList<>();
+        List<SubOrderCloseOpt> storageOut = new ArrayList<>();
+        List<SubOrderCloseOpt> storageFast = new ArrayList<>();
         //全勾修改主订单状态
         if (form.getCheckAll()) {
             //循环处理,判断主订单是否需要录入费用
@@ -2312,6 +2348,41 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 //                air.setStatus(form.getStatus());
                 closeOpt.setLoginUser(UserOperator.getToken());
                 inlands.add(closeOpt);
+            } else if (CommonConstant.HY.equals(confirmChangeStatusForm.getOrderType())) {
+                SubOrderCloseOpt closeOpt = new SubOrderCloseOpt();
+                closeOpt.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
+                closeOpt.setOrderNo(confirmChangeStatusForm.getOrderNo());
+//                air.setStatus(form.getStatus());
+                closeOpt.setLoginUser(UserOperator.getToken());
+                seas.add(closeOpt);
+            }else if (CommonConstant.TC.equals(confirmChangeStatusForm.getOrderType())) {
+                SubOrderCloseOpt closeOpt = new SubOrderCloseOpt();
+                closeOpt.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
+                closeOpt.setOrderNo(confirmChangeStatusForm.getOrderNo());
+//                air.setStatus(form.getStatus());
+                closeOpt.setLoginUser(UserOperator.getToken());
+                trailers.add(closeOpt);
+            }else if (CommonConstant.CCI.equals(confirmChangeStatusForm.getOrderType())) {
+                SubOrderCloseOpt closeOpt = new SubOrderCloseOpt();
+                closeOpt.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
+                closeOpt.setOrderNo(confirmChangeStatusForm.getOrderNo());
+//                air.setStatus(form.getStatus());
+                closeOpt.setLoginUser(UserOperator.getToken());
+                storageIn.add(closeOpt);
+            }else if (CommonConstant.CCE.equals(confirmChangeStatusForm.getOrderType())) {
+                SubOrderCloseOpt closeOpt = new SubOrderCloseOpt();
+                closeOpt.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
+                closeOpt.setOrderNo(confirmChangeStatusForm.getOrderNo());
+//                air.setStatus(form.getStatus());
+                closeOpt.setLoginUser(UserOperator.getToken());
+                storageOut.add(closeOpt);
+            } else if (CommonConstant.CCF.equals(confirmChangeStatusForm.getOrderType())) {
+                SubOrderCloseOpt closeOpt = new SubOrderCloseOpt();
+                closeOpt.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
+                closeOpt.setOrderNo(confirmChangeStatusForm.getOrderNo());
+//                air.setStatus(form.getStatus());
+                closeOpt.setLoginUser(UserOperator.getToken());
+                storageFast.add(closeOpt);
             }
 
         }
@@ -2327,6 +2398,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         if (inlands.size() > 0) {
             inlandTpClient.closeOrder(inlands).getData();
+        }
+        if (seas.size() > 0) {
+            oceanShipClient.closeOrder(seas).getData();
+        }
+        if (trailers.size() > 0) {
+            trailerClient.closeOrder(trailers).getData();
+        }
+        if (storageIn.size() > 0) {
+            storageClient.closeInOrder(storageIn).getData();
+        }
+        if (storageOut.size() > 0) {
+            storageClient.closeOutOrder(storageOut).getData();
+        }
+        if (storageFast.size() > 0) {
+            storageClient.closeFastOrder(storageFast).getData();
         }
         return true;
     }

@@ -519,4 +519,23 @@ public class  StorageOutOrderServiceImpl extends ServiceImpl<StorageOutOrderMapp
         }
 
     }
+
+    @Override
+    public List<StorageOutOrder> getByCondition(StorageOutOrder storageOutOrder) {
+        QueryWrapper<StorageOutOrder> condition = new QueryWrapper<>(storageOutOrder);
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 根据子订单号集合查询子订单
+     *
+     * @param orderNos
+     * @return
+     */
+    @Override
+    public List<StorageOutOrder> getOrdersByOrderNos(List<String> orderNos) {
+        QueryWrapper<StorageOutOrder> condition = new QueryWrapper<>();
+        condition.lambda().in(StorageOutOrder::getOrderNo, orderNos);
+        return this.baseMapper.selectList(condition);
+    }
 }

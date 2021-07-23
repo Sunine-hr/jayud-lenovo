@@ -563,6 +563,7 @@ public class OrderComboxController {
         Map map = new HashMap();
         map.put("legalEntitys", legals);
         map.put("departments", departments);
+        map.put("defaultDepartments", "仓储部");
         return CommonResult.success(map);
     }
 

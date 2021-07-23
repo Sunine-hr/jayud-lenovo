@@ -105,4 +105,8 @@ public interface IStorageOutOrderService extends IService<StorageOutOrder> {
 
 
     List<OnShelfOrderVO> getListByQueryForm(QueryPutGoodForm form);
+
+    List<StorageOutOrder> getByCondition(StorageOutOrder setMainOrderNo);
+
+    List<StorageOutOrder> getOrdersByOrderNos(List<String> orderNos);
 }

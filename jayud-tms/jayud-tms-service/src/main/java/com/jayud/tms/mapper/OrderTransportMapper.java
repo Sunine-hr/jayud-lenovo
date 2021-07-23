@@ -81,7 +81,7 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
     /**
      * 分页查询
      *
-     * @param legalIds
+     * @param dataControl
      * @param page
      * @param form
      * @return
@@ -93,7 +93,7 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
      * 查询订单状态数量
      *
      * @param status
-     * @param legalIds
+     * @param dataControl
      * @return
      */
     public Integer getNumByStatus(@Param("status") String status,
@@ -103,8 +103,8 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
      * 大屏幕展示订单数据(分页查询)
      *
      * @param page
-     * @param form
-     * @param legalIds
+     * @param legalNames
+     * @param
      * @return
      */
     IPage<TVOrderTransportVO> findTVShowOrderByPage(Page<TVOrderTransportVO> page,

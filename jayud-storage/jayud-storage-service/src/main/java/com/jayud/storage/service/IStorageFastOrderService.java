@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.storage.model.vo.StorageFastOrderFormVO;
 import com.jayud.storage.model.vo.StorageFastOrderVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 快进快出订单表 服务类
@@ -41,4 +43,7 @@ public interface IStorageFastOrderService extends IService<StorageFastOrder> {
 
     String createOrUpdateOrder(StorageFastOrderForm storageFastOrderForm);
 
+    List<StorageFastOrder> getByCondition(StorageFastOrder setMainOrderNo);
+
+    List<StorageFastOrder> getOrdersByOrderNos(List<String> orderNos);
 }

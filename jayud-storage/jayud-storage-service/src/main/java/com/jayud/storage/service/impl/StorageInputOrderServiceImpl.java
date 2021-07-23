@@ -563,4 +563,23 @@ public class StorageInputOrderServiceImpl extends ServiceImpl<StorageInputOrderM
         }
 
     }
+
+    @Override
+    public List<StorageInputOrder> getByCondition(StorageInputOrder storageInputOrder) {
+        QueryWrapper<StorageInputOrder> condition = new QueryWrapper<>(storageInputOrder);
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 根据子订单号集合查询子订单
+     *
+     * @param orderNos
+     * @return
+     */
+    @Override
+    public List<StorageInputOrder> getOrdersByOrderNos(List<String> orderNos) {
+        QueryWrapper<StorageInputOrder> condition = new QueryWrapper<>();
+        condition.lambda().in(StorageInputOrder::getOrderNo, orderNos);
+        return this.baseMapper.selectList(condition);
+    }
 }

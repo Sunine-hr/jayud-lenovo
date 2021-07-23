@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * <p>
@@ -19,6 +20,7 @@ import lombok.EqualsAndHashCode;
  * @since 2021-04-19
  */
 @Data
+@Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 @ApiModel(value="StorageInputOrder对象", description="入库订单表")
 public class StorageInputOrder extends Model<StorageInputOrder> {
@@ -88,6 +90,9 @@ public class StorageInputOrder extends Model<StorageInputOrder> {
 
     @ApiModelProperty(value = "入库时间")
     private LocalDateTime storageTime;
+
+    @ApiModelProperty(value = "是否需要录入费用(0:false,1:true)")
+    private Boolean needInputCost;
 
     @Override
     protected Serializable pkVal() {

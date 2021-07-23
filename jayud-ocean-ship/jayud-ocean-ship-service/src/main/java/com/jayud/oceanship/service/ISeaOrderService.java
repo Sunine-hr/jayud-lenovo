@@ -159,4 +159,8 @@ public interface ISeaOrderService extends IService<SeaOrder> {
      * @return
      */
     List<SeaOrderInfoVO> getSeaOrderInfoByMainOrderNos(List<String> mainOrderNos);
+
+    List<SeaOrder> getByCondition(SeaOrder orderInlandTransport);
+
+    List<SeaOrder> getOrdersByOrderNos(List<String> orderNos);
 }

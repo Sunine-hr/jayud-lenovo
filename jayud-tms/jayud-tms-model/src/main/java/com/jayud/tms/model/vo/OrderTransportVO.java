@@ -231,6 +231,12 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "操作部门")
     private String department;
 
+    @ApiModelProperty(value = "对接GPS所需要的key值")
+    private String appKey;
+
+    @ApiModelProperty(value = "对接GPS公用路径前缀")
+    private String gpsAddress;
+
     /**
      * 组装商品信息
      */

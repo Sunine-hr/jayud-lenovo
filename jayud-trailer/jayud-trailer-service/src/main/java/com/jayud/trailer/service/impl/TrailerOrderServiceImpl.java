@@ -492,4 +492,23 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         return num == null ? 0 : num;
     }
 
+    @Override
+    public List<TrailerOrder> getByCondition(TrailerOrder trailerOrder) {
+        QueryWrapper<TrailerOrder> condition = new QueryWrapper<>(trailerOrder);
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 根据子订单号集合查询子订单
+     *
+     * @param orderNos
+     * @return
+     */
+    @Override
+    public List<TrailerOrder> getOrdersByOrderNos(List<String> orderNos) {
+        QueryWrapper<TrailerOrder> condition = new QueryWrapper<>();
+        condition.lambda().in(TrailerOrder::getOrderNo, orderNos);
+        return this.baseMapper.selectList(condition);
+    }
+
 }

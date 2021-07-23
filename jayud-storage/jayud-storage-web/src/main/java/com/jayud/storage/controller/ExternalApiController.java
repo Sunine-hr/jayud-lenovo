@@ -3,6 +3,10 @@ package com.jayud.storage.controller;
 
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.entity.InitChangeStatusVO;
+import com.jayud.common.entity.SubOrderCloseOpt;
+import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.storage.model.bo.StorageFastOrderForm;
 import com.jayud.storage.model.bo.StorageInputOrderForm;
 import com.jayud.storage.model.bo.StorageOutOrderForm;
@@ -21,7 +25,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 被外部模块调用的处理接口
@@ -158,5 +165,137 @@ public class ExternalApiController {
         StorageFastOrder storageFastOrder = storageFastOrderService.getStorageFastOrderByMainOrderNO(orderNo);
         StorageFastOrderVO storageFastOrderVO = storageFastOrderService.getStorageFastOrderVOById(storageFastOrder.getId());
         return ApiResult.ok(storageFastOrderVO);
+    }
+
+    /**
+     * 获取仓储出库订单号
+     */
+    @RequestMapping(value = "/api/storage/getStorageOutOrderNo")
+    public ApiResult<InitChangeStatusVO> getStorageOutOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo){
+        InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
+        List<StorageOutOrder> list = this.storageOutOrderService.getByCondition(new StorageOutOrder().setMainOrderNo(mainOrderNo));
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(list)) {
+            StorageOutOrder tmp = list.get(0);
+            initChangeStatusVO.setId(tmp.getId());
+            initChangeStatusVO.setOrderNo(tmp.getOrderNo());
+            initChangeStatusVO.setOrderType(CommonConstant.CCE);
+            initChangeStatusVO.setOrderTypeDesc(CommonConstant.CCE_DESC);
+            initChangeStatusVO.setStatus(tmp.getProcessStatus() + "");
+            initChangeStatusVO.setNeedInputCost(tmp.getNeedInputCost());
+            return ApiResult.ok(initChangeStatusVO);
+        }
+        return ApiResult.error();
+    }
+
+    /**
+     * 获取仓储入库订单号
+     */
+    @RequestMapping(value = "/api/storage/getStorageInOrderNo")
+    public ApiResult<InitChangeStatusVO> getStorageInOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo){
+        InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
+        List<StorageInputOrder> list = this.storageInputOrderService.getByCondition(new StorageInputOrder().setMainOrderNo(mainOrderNo));
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(list)) {
+            StorageInputOrder tmp = list.get(0);
+            initChangeStatusVO.setId(tmp.getId());
+            initChangeStatusVO.setOrderNo(tmp.getOrderNo());
+            initChangeStatusVO.setOrderType(CommonConstant.CCI);
+            initChangeStatusVO.setOrderTypeDesc(CommonConstant.CCI_DESC);
+            initChangeStatusVO.setStatus(tmp.getProcessStatus() + "");
+            initChangeStatusVO.setNeedInputCost(tmp.getNeedInputCost());
+            return ApiResult.ok(initChangeStatusVO);
+        }
+        return ApiResult.error();
+    }
+
+    /**
+     * 获取仓储快进快出订单号
+     */
+    @RequestMapping(value = "/api/storage/getStorageFastOrderNo")
+    public ApiResult<InitChangeStatusVO> getStorageFastOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo){
+        InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
+        List<StorageFastOrder> list = this.storageFastOrderService.getByCondition(new StorageFastOrder().setMainOrderNo(mainOrderNo));
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(list)) {
+            StorageFastOrder tmp = list.get(0);
+            initChangeStatusVO.setId(tmp.getId());
+            initChangeStatusVO.setOrderNo(tmp.getOrderNo());
+            initChangeStatusVO.setOrderType(CommonConstant.CCF);
+            initChangeStatusVO.setOrderTypeDesc(CommonConstant.CCF_DESC);
+            initChangeStatusVO.setStatus(tmp.getProcessStatus() + "");
+            initChangeStatusVO.setNeedInputCost(tmp.getNeedInputCost());
+            return ApiResult.ok(initChangeStatusVO);
+        }
+        return ApiResult.error();
+    }
+
+    /**
+     * 关闭订单
+     */
+    @RequestMapping(value = "/api/storage/closeInOrder")
+    public ApiResult closeInOrder(@RequestBody List<SubOrderCloseOpt> form){
+        List<String> orderNos = form.stream().map(SubOrderCloseOpt::getOrderNo).collect(Collectors.toList());
+        List<StorageInputOrder> list = this.storageInputOrderService.getOrdersByOrderNos(orderNos);
+        Map<String, StorageInputOrder> map = list.stream().collect(Collectors.toMap(StorageInputOrder::getOrderNo, e -> e));
+
+        for (SubOrderCloseOpt subOrderCloseOpt : form) {
+            StorageInputOrder tmp = map.get(subOrderCloseOpt.getOrderNo());
+            StorageInputOrder storageInputOrder = new StorageInputOrder();
+            storageInputOrder.setId(tmp.getId());
+            storageInputOrder.setProcessStatus(ProcessStatusEnum.CLOSE.getCode());
+            storageInputOrder.setNeedInputCost(subOrderCloseOpt.getNeedInputCost());
+            storageInputOrder.setUpdateUser(subOrderCloseOpt.getLoginUser());
+            storageInputOrder.setUpdateTime(LocalDateTime.now());
+
+            this.storageInputOrderService.updateById(storageInputOrder);
+
+        }
+        return ApiResult.ok();
+    }
+
+    /**
+     * 关闭订单
+     */
+    @RequestMapping(value = "/api/storage/closeOutOrder")
+    public ApiResult closeOutOrder(@RequestBody List<SubOrderCloseOpt> form){
+        List<String> orderNos = form.stream().map(SubOrderCloseOpt::getOrderNo).collect(Collectors.toList());
+        List<StorageOutOrder> list = this.storageOutOrderService.getOrdersByOrderNos(orderNos);
+        Map<String, StorageOutOrder> map = list.stream().collect(Collectors.toMap(StorageOutOrder::getOrderNo, e -> e));
+
+        for (SubOrderCloseOpt subOrderCloseOpt : form) {
+            StorageOutOrder tmp = map.get(subOrderCloseOpt.getOrderNo());
+            StorageOutOrder storageOutOrder = new StorageOutOrder();
+            storageOutOrder.setId(tmp.getId());
+            storageOutOrder.setProcessStatus(ProcessStatusEnum.CLOSE.getCode());
+            storageOutOrder.setNeedInputCost(subOrderCloseOpt.getNeedInputCost());
+            storageOutOrder.setUpdateUser(subOrderCloseOpt.getLoginUser());
+            storageOutOrder.setUpdateTime(LocalDateTime.now());
+
+            this.storageOutOrderService.updateById(storageOutOrder);
+
+        }
+        return ApiResult.ok();
+    }
+
+    /**
+     * 关闭订单
+     */
+    @RequestMapping(value = "/api/storage/closeFastOrder")
+    public ApiResult closeFastOrder(@RequestBody List<SubOrderCloseOpt> form){
+        List<String> orderNos = form.stream().map(SubOrderCloseOpt::getOrderNo).collect(Collectors.toList());
+        List<StorageFastOrder> list = this.storageFastOrderService.getOrdersByOrderNos(orderNos);
+        Map<String, StorageFastOrder> map = list.stream().collect(Collectors.toMap(StorageFastOrder::getOrderNo, e -> e));
+
+        for (SubOrderCloseOpt subOrderCloseOpt : form) {
+            StorageFastOrder tmp = map.get(subOrderCloseOpt.getOrderNo());
+            StorageFastOrder storageFastOrder = new StorageFastOrder();
+            storageFastOrder.setId(tmp.getId());
+            storageFastOrder.setProcessStatus(ProcessStatusEnum.CLOSE.getCode());
+            storageFastOrder.setNeedInputCost(subOrderCloseOpt.getNeedInputCost());
+            storageFastOrder.setUpdateUser(subOrderCloseOpt.getLoginUser());
+            storageFastOrder.setUpdateTime(LocalDateTime.now());
+
+            this.storageFastOrderService.updateById(storageFastOrder);
+
+        }
+        return ApiResult.ok();
     }
 }

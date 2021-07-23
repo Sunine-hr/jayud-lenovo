@@ -1,11 +1,9 @@
 package com.jayud.oms.feign;
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.oms.model.bo.*;
-import com.jayud.oms.model.vo.InputStorageFastOrderVO;
-import com.jayud.oms.model.vo.InputStorageInputOrderVO;
-import com.jayud.oms.model.vo.InputStorageOutOrderVO;
-import com.jayud.oms.model.vo.InputTrailerOrderVO;
+import com.jayud.oms.model.vo.*;
 import com.jayud.oms.model.vo.template.order.StorageInputTemplate;
 import com.jayud.oms.model.vo.template.order.StorageOutTemplate;
 import io.swagger.annotations.ApiOperation;
@@ -70,4 +68,40 @@ public interface StorageClient {
     @ApiOperation(value = "判断出库商品数量是否小于等于该商品库存")
     @PostMapping(value = "/isEnough")
     public ApiResult isEnough(@RequestBody List<AddWarehouseGoodsForm> goodsFormList);
+
+    /**
+     * 获取仓储出库订单号
+     */
+    @RequestMapping(value = "/api/storage/getStorageOutOrderNo")
+    public ApiResult<InitChangeStatusVO> getStorageOutOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo);
+
+    /**
+     * 获取仓储入库订单号
+     */
+    @RequestMapping(value = "/api/storage/getStorageInOrderNo")
+    public ApiResult<InitChangeStatusVO> getStorageInOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo);
+
+    /**
+     * 获取仓储快进快出订单号
+     */
+    @RequestMapping(value = "/api/storage/getStorageFastOrderNo")
+    public ApiResult<InitChangeStatusVO> getStorageFastOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo);
+
+    /**
+     * 关闭订单
+     */
+    @RequestMapping(value = "/api/storage/closeInOrder")
+    public ApiResult closeInOrder(@RequestBody List<SubOrderCloseOpt> form);
+
+    /**
+     * 关闭订单
+     */
+    @RequestMapping(value = "/api/storage/closeOutOrder")
+    public ApiResult closeOutOrder(@RequestBody List<SubOrderCloseOpt> form);
+
+    /**
+     * 关闭订单
+     */
+    @RequestMapping(value = "/api/storage/closeFastOrder")
+    public ApiResult closeFastOrder(@RequestBody List<SubOrderCloseOpt> form);
 }

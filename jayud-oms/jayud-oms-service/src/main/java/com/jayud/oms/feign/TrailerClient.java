@@ -1,8 +1,10 @@
 package com.jayud.oms.feign;
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.oms.model.bo.InputSeaOrderForm;
 import com.jayud.oms.model.bo.InputTrailerOrderFrom;
+import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputSeaOrderVO;
 import com.jayud.oms.model.vo.InputTrailerOrderVO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -53,4 +55,16 @@ public interface TrailerClient {
      */
     @RequestMapping(value = "/api/trailer/getOrderNosByMainOrderNo")
     ApiResult<List<String>> getOrderNosByMainOrderNo(@RequestParam("mainOrderNo") String mainOrderNo);
+
+    /**
+     * 获取拖车订单号
+     */
+    @RequestMapping(value = "/api/trailer/getOrderNo")
+    public ApiResult<List<InitChangeStatusVO>> getTrailerOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo);
+
+    /**
+     * 关闭订单
+     */
+    @RequestMapping(value = "/api/closeOrder")
+    public ApiResult closeOrder(@RequestBody List<SubOrderCloseOpt> form);
 }

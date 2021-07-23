@@ -107,4 +107,8 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
     List<TrailerOrderInfoVO> getInfo(List<String> mainOrderNos);
 
     Integer getNumByStatus(String status, List<Long> legalIds);
+
+    List<TrailerOrder> getByCondition(TrailerOrder setMainOrderNo);
+
+    List<TrailerOrder> getOrdersByOrderNos(List<String> orderNos);
 }

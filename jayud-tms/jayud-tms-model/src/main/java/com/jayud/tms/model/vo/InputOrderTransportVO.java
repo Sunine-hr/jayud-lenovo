@@ -159,6 +159,16 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
 
+    @ApiModelProperty(value = "对接GPS所需要的key值")
+    private String appKey;
+
+    @ApiModelProperty(value = "对接GPS公用路径前缀")
+    private String gpsAddress;
+
+    @ApiModelProperty(value = "供应商代码")
+    private String defaultSupplierCode;
+
+
     public String getSubTmsStatus() {
         return subTmsStatus = this.status;
     }

@@ -28,6 +28,7 @@ import com.jayud.oceanship.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.kafka.common.security.authenticator.SaslServerAuthenticator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -1160,9 +1161,28 @@ public class SeaOrderServiceImpl extends ServiceImpl<SeaOrderMapper, SeaOrder> i
         return list;
     }
 
+    @Override
+    public List<SeaOrder> getByCondition(SeaOrder seaOrder) {
+        QueryWrapper<SeaOrder> condition = new QueryWrapper<>(seaOrder);
+        return this.baseMapper.selectList(condition);
+    }
+
 
 //    private void handleLadingBillFile(SeaBookship seaBookship, SeaProcessOptForm form) {
 //        seaBookship.setFilePath(StringUtils.getFileStr(form.getFileViewList()));
 //        seaBookship.setFileName(StringUtils.getFileNameStr(form.getFileViewList()));
 //    }
+
+    /**
+     * 根据子订单号集合查询子订单
+     *
+     * @param orderNos
+     * @return
+     */
+    @Override
+    public List<SeaOrder> getOrdersByOrderNos(List<String> orderNos) {
+        QueryWrapper<SeaOrder> condition = new QueryWrapper<>();
+        condition.lambda().in(SeaOrder::getOrderNo, orderNos);
+        return this.baseMapper.selectList(condition);
+    }
 }

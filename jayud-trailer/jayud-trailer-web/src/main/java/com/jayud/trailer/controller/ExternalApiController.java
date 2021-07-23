@@ -4,8 +4,12 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.entity.InitChangeStatusVO;
 import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.trailer.bo.AddTrailerOrderFrom;
 import com.jayud.trailer.feign.OauthClient;
 import com.jayud.trailer.feign.OmsClient;
@@ -15,6 +19,7 @@ import com.jayud.trailer.vo.TrailerOrderInfoVO;
 import com.jayud.trailer.vo.TrailerOrderVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +28,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 被外部模块调用的处理接口
@@ -169,4 +176,45 @@ public class ExternalApiController {
         return ApiResult.ok(result);
     }
 
+    @ApiOperation(value = "获取拖车订单号")
+    @RequestMapping(value = "/api/trailer/getOrderNo")
+    public ApiResult<List<InitChangeStatusVO>> getTrailerOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo) {
+        InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
+        List<TrailerOrder> list = this.trailerOrderService.getByCondition(new TrailerOrder().setMainOrderNo(mainOrderNo));
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(list)) {
+            TrailerOrder tmp = list.get(0);
+            initChangeStatusVO.setId(tmp.getId());
+            initChangeStatusVO.setOrderNo(tmp.getOrderNo());
+            initChangeStatusVO.setOrderType(CommonConstant.TC);
+            initChangeStatusVO.setOrderTypeDesc(CommonConstant.TC_DESC);
+            initChangeStatusVO.setStatus(tmp.getProcessStatus() + "");
+            initChangeStatusVO.setNeedInputCost(tmp.getNeedInputCost());
+            return ApiResult.ok(initChangeStatusVO);
+        }
+        return ApiResult.error();
+    }
+
+    /**
+     * 关闭订单
+     */
+    @RequestMapping(value = "/api/closeOrder")
+    public ApiResult closeOrder(@RequestBody List<SubOrderCloseOpt> form){
+        List<String> orderNos = form.stream().map(SubOrderCloseOpt::getOrderNo).collect(Collectors.toList());
+        List<TrailerOrder> list = this.trailerOrderService.getOrdersByOrderNos(orderNos);
+        Map<String, TrailerOrder> map = list.stream().collect(Collectors.toMap(TrailerOrder::getOrderNo, e -> e));
+
+        for (SubOrderCloseOpt subOrderCloseOpt : form) {
+            TrailerOrder tmp = map.get(subOrderCloseOpt.getOrderNo());
+            TrailerOrder trailerOrder = new TrailerOrder();
+            trailerOrder.setId(tmp.getId());
+            trailerOrder.setProcessStatus(ProcessStatusEnum.CLOSE.getCode());
+            trailerOrder.setNeedInputCost(subOrderCloseOpt.getNeedInputCost());
+            trailerOrder.setUpdateUser(subOrderCloseOpt.getLoginUser());
+            trailerOrder.setUpdateTime(LocalDateTime.now());
+
+            this.trailerOrderService.updateById(trailerOrder);
+
+        }
+        return ApiResult.ok();
+    }
 }

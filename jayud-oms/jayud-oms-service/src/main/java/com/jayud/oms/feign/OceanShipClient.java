@@ -1,7 +1,9 @@
 package com.jayud.oms.feign;
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.oms.model.bo.InputSeaOrderForm;
+import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputSeaOrderVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,4 +37,16 @@ public interface OceanShipClient {
      */
     @RequestMapping(value = "/api/oceanship/getSeaOrderByMainOrderNos")
     ApiResult getSeaOrderByMainOrderNos(@RequestBody List<String> mainOrderNoList);
+
+    /**
+     * 获取海运订单号
+     */
+    @RequestMapping(value = "/api/oceanship/getOrderNo")
+    public ApiResult<InitChangeStatusVO> getSeaOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo);
+
+    /**
+     * 关闭订单
+     */
+    @RequestMapping(value = "/api/closeOrder")
+    public ApiResult closeOrder(@RequestBody List<SubOrderCloseOpt> form);
 }

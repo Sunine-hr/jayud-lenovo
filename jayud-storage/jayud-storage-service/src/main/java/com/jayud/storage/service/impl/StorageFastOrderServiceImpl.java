@@ -430,4 +430,23 @@ public class StorageFastOrderServiceImpl extends ServiceImpl<StorageFastOrderMap
 
         return orderNo;
     }
+
+    @Override
+    public List<StorageFastOrder> getByCondition(StorageFastOrder storageFastOrder) {
+        QueryWrapper<StorageFastOrder> condition = new QueryWrapper<>(storageFastOrder);
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 根据子订单号集合查询子订单
+     *
+     * @param orderNos
+     * @return
+     */
+    @Override
+    public List<StorageFastOrder> getOrdersByOrderNos(List<String> orderNos) {
+        QueryWrapper<StorageFastOrder> condition = new QueryWrapper<>();
+        condition.lambda().in(StorageFastOrder::getOrderNo, orderNos);
+        return this.baseMapper.selectList(condition);
+    }
 }

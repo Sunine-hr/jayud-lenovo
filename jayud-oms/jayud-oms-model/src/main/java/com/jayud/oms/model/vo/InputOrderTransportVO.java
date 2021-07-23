@@ -174,6 +174,15 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "操作部门")
     private String department;
 
+    @ApiModelProperty(value = "对接GPS所需要的key值")
+    private String appKey;
+
+    @ApiModelProperty(value = "对接GPS公用路径前缀")
+    private String gpsAddress;
+
+    @ApiModelProperty(value = "供应商代码")
+    private String defaultSupplierCode;
+
     public String getGoodsTypeDesc() {
         if (CommonConstant.VALUE_1.equals(this.goodsType)) {
             goodsTypeDesc = CommonConstant.GOODS_TYPE_DESC_1;

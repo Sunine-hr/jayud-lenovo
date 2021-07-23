@@ -52,4 +52,13 @@ public interface ILogisticsTrackService extends IService<LogisticsTrack> {
      * @return
      */
     public List<LogisticsTrack>  getLogisticsTrackByType(List<Long> subOrderIds,Integer type);
+
+    /**
+     * 根据子订单id和订单状态以及子订单类型获取历史轨迹
+     * @param id
+     * @param status
+     * @param type
+     * @return
+     */
+    LogisticsTrack getLogisticsTrackByOrderIdAndStatusAndType(Long id, String status, int type);
 }

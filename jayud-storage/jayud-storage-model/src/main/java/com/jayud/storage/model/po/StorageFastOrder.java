@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * <p>
@@ -19,6 +20,7 @@ import lombok.EqualsAndHashCode;
  * @since 2021-06-15
  */
 @Data
+@Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 @ApiModel(value="StorageFastOrder对象", description="快进快出订单表")
 public class StorageFastOrder extends Model<StorageFastOrder> {
@@ -97,6 +99,9 @@ public class StorageFastOrder extends Model<StorageFastOrder> {
 
     @ApiModelProperty(value = "是否入库（1为入库，0为不入库）")
     private Integer isWarehouse;
+
+    @ApiModelProperty(value = "是否需要录入费用(0:false,1:true)")
+    private Boolean needInputCost;
 
 
     @Override

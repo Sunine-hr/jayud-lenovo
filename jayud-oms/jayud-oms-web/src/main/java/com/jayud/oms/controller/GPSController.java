@@ -175,11 +175,7 @@ public class GPSController {
             return CommonResult.error(444,"该订单还没有确认派车");
         }
 
-        String endTime = LocalDateTime.now().toString().replace("T"," ");
-        if(orderTransportForm.getStatus().equals(OrderStatusEnum.TMS_T_15)){
-            LogisticsTrack logisticsTrack = logisticsTrackService.getLogisticsTrackByOrderIdAndStatusAndType(orderTransportForm.getId(),orderTransportForm.getStatus(),2);
-            endTime = logisticsTrack.getOperatorTime().toString().replace("T"," ");
-        }
+
 
         String url = orderTransportForm.getGpsAddress();
         String urlParam = "";
@@ -266,7 +262,7 @@ public class GPSController {
      * @return
      * @throws UnsupportedEncodingException
      */
-    public static JSONObject getJsonObjectParam(String urlParam,InputOrderVO orderDetail) throws UnsupportedEncodingException {
+    public JSONObject getJsonObjectParam(String urlParam,InputOrderVO orderDetail) throws UnsupportedEncodingException {
         JSONObject params = new JSONObject();
         InputOrderTransportVO orderTransportForm = orderDetail.getOrderTransportForm();
         if(urlParam.equals("VEN00050_GetPosition")){
@@ -277,12 +273,18 @@ public class GPSController {
 
         }
         if(urlParam.equals("VEN00050_GetHistory")){
+            LogisticsTrack logisticsTrackByOrderIdAndStatusAndType = this.logisticsTrackService.getLogisticsTrackByOrderIdAndStatusAndType(orderTransportForm.getId(), orderTransportForm.getStatus(), 2);
+            String endTime = LocalDateTime.now().toString().replace("T"," ");
+            if(orderTransportForm.getStatus().equals(OrderStatusEnum.TMS_T_15)){
+                LogisticsTrack logisticsTrack = this.logisticsTrackService.getLogisticsTrackByOrderIdAndStatusAndType(orderTransportForm.getId(),orderTransportForm.getStatus(),2);
+                endTime = logisticsTrack.getOperatorTime().toString().replace("T"," ");
+            }
             params.put("AccessToken", orderTransportForm.getAppKey());
             params.put("LicenceNumber",new String (orderTransportForm.getLicensePlate().getBytes(),"ISO-8859-1"));
-//            params.put("Begin",logisticsTrackByOrderIdAndStatusAndType.getOperatorTime().toString().replace("T"," "));
-//            params.put("End",endTime);
-            params.put("Begin","2021-07-08 00:00:00");
-            params.put("End","2021-07-10 23:59:59");
+            params.put("Begin",logisticsTrackByOrderIdAndStatusAndType.getOperatorTime().toString().replace("T"," "));
+            params.put("End",endTime);
+//            params.put("Begin","2021-07-08 00:00:00");
+//            params.put("End","2021-07-10 23:59:59");
         }
         return params;
     }

@@ -451,7 +451,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         for (TrailerOrderInfoVO trailerOrder : trailerOrders) {
             orderIds.add(trailerOrder.getId());
             TrailerDispatchInfoVO dispatchInfoVO = trailerOrder.getTrailerDispatchInfoVO();
-            if (dispatchInfoVO != null) {
+            if (dispatchInfoVO != null && !StringUtils.isEmpty(dispatchInfoVO.getPlateNumber())) {
                 vehicleIds.add(Long.valueOf(dispatchInfoVO.getPlateNumber()));
             }
         }

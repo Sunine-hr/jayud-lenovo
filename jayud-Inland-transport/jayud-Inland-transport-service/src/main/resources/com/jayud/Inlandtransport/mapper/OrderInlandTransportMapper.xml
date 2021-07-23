@@ -90,6 +90,9 @@
             <if test="form.orderNo !=null and form.orderNo!=''">
                 and i.order_no like concat('%',#{form.orderNo},'%')
             </if>
+            <if test="form.mainOrderNo !=null and form.mainOrderNos !=''">
+                and i.main_order_no like concat('%',#{form.mainOrderNo},'%')
+            </if>
             <if test="form.mainOrderNos !=null and form.mainOrderNos.size > 0">
                 and i.main_order_no IN
                 <foreach collection="form.mainOrderNos" index="index" item="item" open="(" separator="," close=")">
@@ -129,8 +132,10 @@
             </if>
             <if test="form.cmd == 'costAudited'">
                 AND i.order_no in (
-                (SELECT opc.order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='nl' and opc.is_bill='0'
-                union SELECT orc.order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and orc.sub_type='nl' and orc.is_bill='0')
+                (SELECT opc.order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='nl' and
+                opc.is_bill='0'
+                union SELECT orc.order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and orc.sub_type='nl'
+                and orc.is_bill='0')
                 )
             </if>
 

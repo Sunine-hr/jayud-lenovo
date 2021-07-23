@@ -24,6 +24,9 @@ public class QueryOrderForm extends BasePageForm {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrderNo;
+
     @ApiModelProperty(value = "子订单编号")
     private String orderNo;
 
@@ -39,7 +42,7 @@ public class QueryOrderForm extends BasePageForm {
 //    @ApiModelProperty(value = "创建时间")
 //    private String createTime;
 
-    @ApiModelProperty(value = "主订单号")
+    @ApiModelProperty(value = "主订单号集合")
     @JsonIgnore
     private List<String> mainOrderNos;
 

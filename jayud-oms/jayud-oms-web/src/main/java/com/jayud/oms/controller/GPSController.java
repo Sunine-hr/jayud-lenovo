@@ -573,11 +573,11 @@ public class GPSController {
 //                e.printStackTrace();
 //            }
 //        }
-//        String location = httpURLConectionGET("深圳市罗湖区北京大厦");
-//        System.out.println(location);
+        String location = httpURLConectionGET("深圳市龙岗区南湾街道下李朗社区联李东路6号信利康供应链服务产业园二号楼1楼（佳裕达仓）");
+        System.out.println(location);
 //        String location1 = httpURLConvertGET("114.22229,22.33366");
 //        System.out.println(location1);
-        double[] doubles = GPSUtil.gps84_To_Gcj02(22.33366,114.22229);
-        System.out.println(doubles[0]+","+doubles[1]);
+//        double[] doubles = GPSUtil.gps84_To_Gcj02(22.33366,114.22229);
+//        System.out.println(doubles[0]+","+doubles[1]);
     }
 }

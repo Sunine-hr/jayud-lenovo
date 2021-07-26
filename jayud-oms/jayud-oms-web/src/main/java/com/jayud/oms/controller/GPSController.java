@@ -19,6 +19,7 @@ import com.jayud.oms.service.IOrderInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -54,6 +55,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/GPS")
 @Api(tags = "GPS管理")
+@Slf4j
 public class GPSController {
 
     @Value("${address.positionAddress}")
@@ -99,6 +101,10 @@ public class GPSController {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+
+        log.warn("请求地址"+url);
+        log.warn("请求参数"+params);
+
         String post = Post(url, params);
         JSONObject jsonObject = JSON.parseObject(post);
 
@@ -177,7 +183,6 @@ public class GPSController {
         }
 
 
-
         String url = orderTransportForm.getGpsAddress();
         String urlParam = "";
         String[] split = historyAddress.split(",");
@@ -201,6 +206,10 @@ public class GPSController {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+
+        log.warn("请求地址"+url);
+        log.warn("请求参数"+params);
+
         String post = Post(url, params);
         JSONObject jsonObject = JSON.parseObject(post);
 

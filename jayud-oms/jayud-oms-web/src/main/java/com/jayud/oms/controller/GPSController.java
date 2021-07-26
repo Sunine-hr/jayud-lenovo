@@ -18,6 +18,7 @@ import com.jayud.oms.service.ILogisticsTrackService;
 import com.jayud.oms.service.IOrderInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.SneakyThrows;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -175,11 +176,7 @@ public class GPSController {
             return CommonResult.error(444,"该订单还没有确认派车");
         }
 
-        String endTime = LocalDateTime.now().toString().replace("T"," ");
-        if(orderTransportForm.getStatus().equals(OrderStatusEnum.TMS_T_15)){
-            LogisticsTrack logisticsTrack = logisticsTrackService.getLogisticsTrackByOrderIdAndStatusAndType(orderTransportForm.getId(),orderTransportForm.getStatus(),2);
-            endTime = logisticsTrack.getOperatorTime().toString().replace("T"," ");
-        }
+
 
         String url = orderTransportForm.getGpsAddress();
         String urlParam = "";
@@ -266,7 +263,7 @@ public class GPSController {
      * @return
      * @throws UnsupportedEncodingException
      */
-    public static JSONObject getJsonObjectParam(String urlParam,InputOrderVO orderDetail) throws UnsupportedEncodingException {
+    public JSONObject getJsonObjectParam(String urlParam,InputOrderVO orderDetail) throws UnsupportedEncodingException {
         JSONObject params = new JSONObject();
         InputOrderTransportVO orderTransportForm = orderDetail.getOrderTransportForm();
         if(urlParam.equals("VEN00050_GetPosition")){
@@ -277,12 +274,18 @@ public class GPSController {
 
         }
         if(urlParam.equals("VEN00050_GetHistory")){
+            LogisticsTrack logisticsTrackByOrderIdAndStatusAndType = this.logisticsTrackService.getLogisticsTrackByOrderIdAndStatusAndType(orderTransportForm.getId(), orderTransportForm.getStatus(), 2);
+            String endTime = LocalDateTime.now().toString().replace("T"," ");
+            if(orderTransportForm.getStatus().equals(OrderStatusEnum.TMS_T_15)){
+                LogisticsTrack logisticsTrack = this.logisticsTrackService.getLogisticsTrackByOrderIdAndStatusAndType(orderTransportForm.getId(),orderTransportForm.getStatus(),2);
+                endTime = logisticsTrack.getOperatorTime().toString().replace("T"," ");
+            }
             params.put("AccessToken", orderTransportForm.getAppKey());
             params.put("LicenceNumber",new String (orderTransportForm.getLicensePlate().getBytes(),"ISO-8859-1"));
-//            params.put("Begin",logisticsTrackByOrderIdAndStatusAndType.getOperatorTime().toString().replace("T"," "));
-//            params.put("End",endTime);
-            params.put("Begin","2021-07-08 00:00:00");
-            params.put("End","2021-07-10 23:59:59");
+            params.put("Begin",logisticsTrackByOrderIdAndStatusAndType.getOperatorTime().toString().replace("T"," "));
+            params.put("End",endTime);
+//            params.put("Begin","2021-07-08 00:00:00");
+//            params.put("End","2021-07-10 23:59:59");
         }
         return params;
     }
@@ -424,10 +427,11 @@ public class GPSController {
     /**
      * 高德地图通过地址获取经纬度
      */
-    public static String httpURLConectionGET(String address) {
+    @SneakyThrows
+    public static String httpURLConectionGET(String address)  {
         //"http://restapi.amap.com/v3/geocode/geo?address=上海市东方明珠&output=JSON&key=xxxxxxxxx";
 //        5daef797f2a3134241fd7dee3ba06566
-        String geturl = "http://restapi.amap.com/v3/geocode/geo?key=026b5609481d2fb3e1ef6790a69e961b&address="+address;
+        String geturl = "http://restapi.amap.com/v3/geocode/geo?key=026b5609481d2fb3e1ef6790a69e961b&address="+URLEncoder.encode(address,"utf-8");
         String location = "";
         try {
             URL url = new URL(geturl);    // 把字符串转换为URL请求地址
@@ -569,11 +573,11 @@ public class GPSController {
 //                e.printStackTrace();
 //            }
 //        }
-//        String location = httpURLConectionGET("深圳市罗湖区北京大厦");
-//        System.out.println(location);
+        String location = httpURLConectionGET("深圳市龙岗区南湾街道下李朗社区联李东路6号信利康供应链服务产业园二号楼1楼（佳裕达仓）");
+        System.out.println(location);
 //        String location1 = httpURLConvertGET("114.22229,22.33366");
 //        System.out.println(location1);
-        double[] doubles = GPSUtil.gps84_To_Gcj02(22.33366,114.22229);
-        System.out.println(doubles[0]+","+doubles[1]);
+//        double[] doubles = GPSUtil.gps84_To_Gcj02(22.33366,114.22229);
+//        System.out.println(doubles[0]+","+doubles[1]);
     }
 }

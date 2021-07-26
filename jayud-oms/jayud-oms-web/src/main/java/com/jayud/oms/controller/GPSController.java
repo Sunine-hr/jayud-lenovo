@@ -102,8 +102,9 @@ public class GPSController {
             e.printStackTrace();
         }
 
-        log.warn("请求地址"+url);
-        log.warn("请求参数"+params);
+        log.warn("订单数据："+orderDetail);
+        log.warn("请求地址："+url);
+        log.warn("请求参数："+params);
 
         String post = Post(url, params);
         JSONObject jsonObject = JSON.parseObject(post);
@@ -207,8 +208,9 @@ public class GPSController {
             e.printStackTrace();
         }
 
-        log.warn("请求地址"+url);
-        log.warn("请求参数"+params);
+        log.warn("订单数据："+orderDetail);
+        log.warn("请求地址："+url);
+        log.warn("请求参数："+params);
 
         String post = Post(url, params);
         JSONObject jsonObject = JSON.parseObject(post);

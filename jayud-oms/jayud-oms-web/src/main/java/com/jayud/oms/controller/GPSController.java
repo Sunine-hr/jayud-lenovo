@@ -278,14 +278,15 @@ public class GPSController {
     public JSONObject getJsonObjectParam(String urlParam,InputOrderVO orderDetail) throws UnsupportedEncodingException {
         JSONObject params = new JSONObject();
         InputOrderTransportVO orderTransportForm = orderDetail.getOrderTransportForm();
-        if(urlParam.equals("VEN00050_GetPosition")){
+        String[] s = urlParam.split("_");
+        if(s[0].equals(orderTransportForm.getDefaultSupplierCode())&&s[1].equals("GetPosition")){
             params.put("AccessToken", orderTransportForm.getAppKey());
             params.put("LicenceNumber",new String (orderTransportForm.getLicensePlate().getBytes(),"ISO-8859-1"));
         }
-        if(urlParam.equals("VEN00050_GetPositions")){
+        if(s[0].equals(orderTransportForm.getDefaultSupplierCode())&&s[1].equals("GetPositions")){
 
         }
-        if(urlParam.equals("VEN00050_GetHistory")){
+        if(s[0].equals(orderTransportForm.getDefaultSupplierCode())&&s[1].equals("GetHistory")){
             LogisticsTrack logisticsTrackByOrderIdAndStatusAndType = this.logisticsTrackService.getLogisticsTrackByOrderIdAndStatusAndType(orderTransportForm.getId(), orderTransportForm.getStatus(), 2);
             String endTime = LocalDateTime.now().toString().replace("T"," ");
             if(orderTransportForm.getStatus().equals(OrderStatusEnum.TMS_T_15)){
@@ -312,7 +313,8 @@ public class GPSController {
     public static PositionVO getPositionResult(String urlParam,InputOrderVO orderDetail,JSONObject jsonObject) {
         PositionVO positionVO = new PositionVO();
         InputOrderTransportVO orderTransportForm = orderDetail.getOrderTransportForm();
-        if(urlParam.equals("VEN00050_GetPosition")){
+        String[] s = urlParam.split("_");
+        if(s[0].equals(orderTransportForm.getDefaultSupplierCode())&&s[1].equals("GetPosition")){
             positionVO = ConvertUtil.convert(orderTransportForm, PositionVO.class);
             positionVO.setAccState(jsonObject.getInteger("AccState"));
             positionVO.setDirection(jsonObject.getInteger("Direction") == null ? 0 : jsonObject.getInteger("Direction"));
@@ -351,7 +353,8 @@ public class GPSController {
     public static HistoryPositionVO getHistoryResult(String urlParam,InputOrderVO orderDetail,JSONObject jsonObject) {
         HistoryPositionVO historyPositionVO = new HistoryPositionVO();
         InputOrderTransportVO orderTransportForm = orderDetail.getOrderTransportForm();
-        if(urlParam.equals("VEN00050_GetHistory")){
+        String[] s1 = urlParam.split("_");
+        if(s1[0].equals(orderTransportForm.getDefaultSupplierCode())&&s1[1].equals("GetHistory")){
             JSONArray data = jsonObject.getJSONArray("Data");
 
             List<HistoryVO> historyVOS = new ArrayList<>();

@@ -122,6 +122,9 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "柜号上传附件地址,前台忽略")
     private String cntrPic;
 
+    @ApiModelProperty(value = "柜号上传附件地址集合")
+    private List<FileView> cntrPics;
+
     @ApiModelProperty(value = "柜号上传附件地址名称,前台忽略")
     private String cntrPicName;
 

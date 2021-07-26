@@ -517,4 +517,73 @@
         </if>
     </select>
 
+
+    <select id="getAllCostNum" resultType="java.lang.Integer">
+        select count(1)
+        from
+        (
+        select main_order_no,order_no from order_receivable_cost
+        <where>
+            <if test="legalIds != null and legalIds.size>0">
+                and `legal_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+            <choose>
+                <when test="subType=='main'">
+                    and is_sum_to_main=true
+                    group by main_order_no
+                </when>
+                <otherwise>
+                    and sub_type=#{subType}
+                    group by main_order_no,tmp.order_no
+                </otherwise>
+            </choose>
+        </where>
+        union
+        select main_order_no,order_no from order_payment_cost
+        <where>
+<!--            <if test="subType!=null and subType !=''">-->
+<!--                sub_type=#{subType}-->
+<!--            </if>-->
+            <if test="legalIds != null and legalIds.size>0">
+                and `legal_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+            <choose>
+                <when test="subType=='main'">
+                    and is_sum_to_main=true
+                    group by main_order_no
+                </when>
+                <otherwise>
+                    and sub_type=#{subType}
+                    group by main_order_no,tmp.order_no
+                </otherwise>
+            </choose>
+        </where>
+        ) tmp
+
+    </select>
+
+    <select id="getMainOrderSummary" resultType="java.util.Map">
+        select
+        legal_name name,count(1) `value`
+        from order_info
+        <where>
+            <if test="form.timeInterval != null and form.timeInterval.size>0">
+                date_format(create_time,#{form.sqlFormat}) between #{form.timeInterval[0]} and #{form.timeInterval[1]}
+            </if>
+            <if test="legalIds != null and legalIds.size>0">
+                and `legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+        </where>
+        group by legal_entity_id
+    </select>
+
 </mapper>

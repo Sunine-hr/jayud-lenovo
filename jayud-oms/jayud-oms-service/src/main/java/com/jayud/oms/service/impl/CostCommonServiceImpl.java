@@ -1,6 +1,8 @@
 package com.jayud.oms.service.impl;
 
 import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.oms.mapper.OrderInfoMapper;
+import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.service.ICostCommonService;
 import com.jayud.oms.service.IOrderPaymentCostService;
 import com.jayud.oms.service.IOrderReceivableCostService;
@@ -21,6 +23,8 @@ public class CostCommonServiceImpl implements ICostCommonService {
     private IOrderReceivableCostService orderReceivableCostService;
     @Autowired
     private IOrderPaymentCostService orderPaymentCostService;
+    @Autowired
+    private OrderInfoMapper orderInfoMapper;
 
     /**
      * 统计应收/应付待处理费用审核
@@ -36,5 +40,19 @@ public class CostCommonServiceImpl implements ICostCommonService {
         paymentCostMap.stream().filter(e -> e.get(key) != null).forEach(e -> orderNosSet.add(e.get(key).toString()));
         receivableCostMap.stream().filter(e -> e.get(key) != null).forEach(e -> orderNosSet.add(e.get(key).toString()));
         return orderNosSet.size();
+    }
+
+    /**
+     * 查询所有未录用费用订单数量
+     *
+     * @param list
+     * @param legalIds
+     * @param subType
+     * @return
+     */
+    @Override
+    public Integer allUnemployedFeesNum(List<OrderInfo> list, List<Long> legalIds, String subType) {
+        Integer num = this.orderInfoMapper.getAllCostNum(legalIds,subType);
+        return list.size() - num;
     }
 }

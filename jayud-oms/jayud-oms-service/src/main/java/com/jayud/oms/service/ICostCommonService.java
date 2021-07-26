@@ -1,5 +1,7 @@
 package com.jayud.oms.service;
 
+import com.jayud.oms.model.po.OrderInfo;
+
 import java.util.List;
 
 /**
@@ -16,4 +18,13 @@ public interface ICostCommonService {
      * 统计应收/应付待处理费用审核
      */
     public Integer auditPendingExpenses(String subType, List<Long> legalIds,List<String> orderNos);
+
+    /**
+     * 查询所有未录用费用订单数量
+     * @param list
+     * @param legalIds
+     * @param subType
+     * @return
+     */
+    Integer allUnemployedFeesNum(List<OrderInfo> list, List<Long> legalIds, String subType);
 }

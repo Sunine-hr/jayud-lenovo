@@ -277,4 +277,19 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     public InputCostVO getCostDetailByCostIds(List<Long> reCostIds, List<Long> payCostIds);
+
+    /**
+     * 根据法人主体ids查询订单
+     * @param legalIds
+     * @return
+     */
+    List<OrderInfo> getByLegalEntityIds(List<Long> legalIds);
+
+    /**
+     * 主订单汇总
+     * @param form
+     * @param legalIds
+     * @return
+     */
+    List<Map<String, Integer>> getMainOrderSummary(QueryStatisticalReport form, List<Long> legalIds);
 }

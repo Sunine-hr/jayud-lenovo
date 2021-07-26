@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.oms.model.bo.InitGoCustomsAuditForm;
 import com.jayud.oms.model.bo.QueryOrderInfoForm;
+import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.InitGoCustomsAuditVO;
 import com.jayud.oms.model.vo.InputMainOrderVO;
@@ -14,6 +15,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -99,4 +101,14 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
 
     Integer pendingGoCustomsAuditNum(@Param("legalIds") List<Long> legalIds);
 
+    /**
+     * 获取所有费用统计数
+     *
+     * @param legalIds
+     * @param subType
+     * @return
+     */
+    Integer getAllCostNum(@Param("legalIds") List<Long> legalIds, @Param("subType") String subType);
+
+    List<Map<String, Integer>> getMainOrderSummary(@Param("form") QueryStatisticalReport form, @Param("legalIds") List<Long> legalIds);
 }

@@ -398,7 +398,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
             //当录入的是子订单费用,且主/子订单的法人主体和结算单位不相等时,不可汇总到主订单
             Boolean isSumToMain = true;//1
-            if ("preSubmit_main".equals(form.getCmd())||"submit_main".equals(form.getCmd())) {//入主订单费用
+            if ("preSubmit_main".equals(form.getCmd()) || "submit_main".equals(form.getCmd())) {//入主订单费用
                 form.setOrderNo(null);//表中是通过有没有子订单来判断这条数据是主订单的费用还是子订单的费用
             } else if ("preSubmit_sub".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())) {//入子订单费用
                 if (!(inputOrderVO.getLegalName().equals(form.getSubLegalName()) && inputOrderVO.getUnitCode().equals(form.getSubUnitCode()))) {
@@ -1048,6 +1048,24 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     /**
+     * 根据法人主体ids查询订单
+     *
+     * @param legalIds
+     * @return
+     */
+    @Override
+    public List<OrderInfo> getByLegalEntityIds(List<Long> legalIds) {
+        QueryWrapper<OrderInfo> condition = new QueryWrapper<>();
+        condition.lambda().in(OrderInfo::getLegalEntityId, legalIds);
+        return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public List<Map<String, Integer>> getMainOrderSummary(QueryStatisticalReport form, List<Long> legalIds) {
+        return this.baseMapper.getMainOrderSummary(form, legalIds);
+    }
+
+    /**
      * 计算费用,利润/合计币种
      *
      * @param inputCostVO
@@ -1430,9 +1448,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 if (customerInfo != null) {
                     inputOrderTransportVO.setUnitName(customerInfo.getName());
                 }
+                List<FileView> cntrPics = StringUtils.getFileViews(inputOrderTransportVO.getCntrPic(), inputOrderTransportVO.getCntrPicName(), prePath);
+                inputOrderTransportVO.setCntrPics(cntrPics);
 
                 //附件信息
-                List<FileView> allPics = new ArrayList<>(StringUtils.getFileViews(inputOrderTransportVO.getCntrPic(), inputOrderTransportVO.getCntrPicName(), prePath));
+                List<FileView> allPics = new ArrayList<>(cntrPics);
                 //获取反馈操作人时上传的附件
                 List<FileView> attachments = this.logisticsTrackService.getAttachments(inputOrderTransportVO.getId()
                         , BusinessTypeEnum.ZGYS.getCode(), prePath);
@@ -2271,16 +2291,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (OrderStatusEnum.CC.getCode().equals(form.getClassCode()) ||
                 inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) ||
                 inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode()) ||
-        inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())) {
-            if(inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())){
+                inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())) {
+            if (inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())) {
                 InitChangeStatusVO initChangeStatusVO = this.storageClient.getStorageOutOrderNo(inputMainOrderVO.getOrderNo()).getData();
                 changeStatusVOS.add(initChangeStatusVO);
             }
-            if(inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())){
+            if (inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())) {
                 InitChangeStatusVO initChangeStatusVO = this.storageClient.getStorageInOrderNo(inputMainOrderVO.getOrderNo()).getData();
                 changeStatusVOS.add(initChangeStatusVO);
             }
-            if(inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())){
+            if (inputMainOrderVO.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())) {
                 InitChangeStatusVO initChangeStatusVO = this.storageClient.getStorageFastOrderNo(inputMainOrderVO.getOrderNo()).getData();
                 changeStatusVOS.add(initChangeStatusVO);
             }
@@ -2355,21 +2375,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 //                air.setStatus(form.getStatus());
                 closeOpt.setLoginUser(UserOperator.getToken());
                 seas.add(closeOpt);
-            }else if (CommonConstant.TC.equals(confirmChangeStatusForm.getOrderType())) {
+            } else if (CommonConstant.TC.equals(confirmChangeStatusForm.getOrderType())) {
                 SubOrderCloseOpt closeOpt = new SubOrderCloseOpt();
                 closeOpt.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
                 closeOpt.setOrderNo(confirmChangeStatusForm.getOrderNo());
 //                air.setStatus(form.getStatus());
                 closeOpt.setLoginUser(UserOperator.getToken());
                 trailers.add(closeOpt);
-            }else if (CommonConstant.CCI.equals(confirmChangeStatusForm.getOrderType())) {
+            } else if (CommonConstant.CCI.equals(confirmChangeStatusForm.getOrderType())) {
                 SubOrderCloseOpt closeOpt = new SubOrderCloseOpt();
                 closeOpt.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
                 closeOpt.setOrderNo(confirmChangeStatusForm.getOrderNo());
 //                air.setStatus(form.getStatus());
                 closeOpt.setLoginUser(UserOperator.getToken());
                 storageIn.add(closeOpt);
-            }else if (CommonConstant.CCE.equals(confirmChangeStatusForm.getOrderType())) {
+            } else if (CommonConstant.CCE.equals(confirmChangeStatusForm.getOrderType())) {
                 SubOrderCloseOpt closeOpt = new SubOrderCloseOpt();
                 closeOpt.setNeedInputCost(confirmChangeStatusForm.getNeedInputCost());
                 closeOpt.setOrderNo(confirmChangeStatusForm.getOrderNo());
@@ -3188,8 +3208,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 oldBinds.remove(deleteBind.getReceivableId());
             }
         }
-        List<Long> deletePayIds=new ArrayList<>();
-        oldBinds.forEach((k,v)->{
+        List<Long> deletePayIds = new ArrayList<>();
+        oldBinds.forEach((k, v) -> {
             deletePayIds.add(v.getId());
         });
         this.paymentCostService.removeByIds(deletePayIds);

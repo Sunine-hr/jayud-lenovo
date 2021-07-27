@@ -102,9 +102,9 @@ public class GPSController {
             e.printStackTrace();
         }
 
-        log.warn("订单数据："+orderDetail);
+        log.warn("订单信息："+orderDetail);
         log.warn("请求地址："+url);
-        log.warn("请求参数："+params);
+        log.warn("请求数据："+params);
 
         String post = Post(url, params);
         JSONObject jsonObject = JSON.parseObject(post);
@@ -208,9 +208,9 @@ public class GPSController {
             e.printStackTrace();
         }
 
-        log.warn("订单数据："+orderDetail);
+        log.warn("订单信息："+orderDetail);
         log.warn("请求地址："+url);
-        log.warn("请求参数："+params);
+        log.warn("请求数据："+params);
 
         String post = Post(url, params);
         JSONObject jsonObject = JSON.parseObject(post);
@@ -263,6 +263,7 @@ public class GPSController {
 //        historyPositionVO.setOrderTakeAdrForms2(orderTakeAdrVOS1);
 
         HistoryPositionVO historyPositionVO = this.getHistoryResult(urlParam,orderDetail,jsonObject);
+        log.warn("响应数据："+jsonObject);
 
         return CommonResult.success(historyPositionVO);
     }
@@ -277,14 +278,15 @@ public class GPSController {
     public JSONObject getJsonObjectParam(String urlParam,InputOrderVO orderDetail) throws UnsupportedEncodingException {
         JSONObject params = new JSONObject();
         InputOrderTransportVO orderTransportForm = orderDetail.getOrderTransportForm();
-        if(urlParam.equals("VEN00050_GetPosition")){
+        String[] s = urlParam.split("_");
+        if(s[0].equals(orderTransportForm.getDefaultSupplierCode())&&s[1].equals("GetPosition")){
             params.put("AccessToken", orderTransportForm.getAppKey());
             params.put("LicenceNumber",new String (orderTransportForm.getLicensePlate().getBytes(),"ISO-8859-1"));
         }
-        if(urlParam.equals("VEN00050_GetPositions")){
+        if(s[0].equals(orderTransportForm.getDefaultSupplierCode())&&s[1].equals("GetPositions")){
 
         }
-        if(urlParam.equals("VEN00050_GetHistory")){
+        if(s[0].equals(orderTransportForm.getDefaultSupplierCode())&&s[1].equals("GetHistory")){
             LogisticsTrack logisticsTrackByOrderIdAndStatusAndType = this.logisticsTrackService.getLogisticsTrackByOrderIdAndStatusAndType(orderTransportForm.getId(), orderTransportForm.getStatus(), 2);
             String endTime = LocalDateTime.now().toString().replace("T"," ");
             if(orderTransportForm.getStatus().equals(OrderStatusEnum.TMS_T_15)){
@@ -311,7 +313,8 @@ public class GPSController {
     public static PositionVO getPositionResult(String urlParam,InputOrderVO orderDetail,JSONObject jsonObject) {
         PositionVO positionVO = new PositionVO();
         InputOrderTransportVO orderTransportForm = orderDetail.getOrderTransportForm();
-        if(urlParam.equals("VEN00050_GetPosition")){
+        String[] s = urlParam.split("_");
+        if(s[0].equals(orderTransportForm.getDefaultSupplierCode())&&s[1].equals("GetPosition")){
             positionVO = ConvertUtil.convert(orderTransportForm, PositionVO.class);
             positionVO.setAccState(jsonObject.getInteger("AccState"));
             positionVO.setDirection(jsonObject.getInteger("Direction") == null ? 0 : jsonObject.getInteger("Direction"));
@@ -350,7 +353,8 @@ public class GPSController {
     public static HistoryPositionVO getHistoryResult(String urlParam,InputOrderVO orderDetail,JSONObject jsonObject) {
         HistoryPositionVO historyPositionVO = new HistoryPositionVO();
         InputOrderTransportVO orderTransportForm = orderDetail.getOrderTransportForm();
-        if(urlParam.equals("VEN00050_GetHistory")){
+        String[] s1 = urlParam.split("_");
+        if(s1[0].equals(orderTransportForm.getDefaultSupplierCode())&&s1[1].equals("GetHistory")){
             JSONArray data = jsonObject.getJSONArray("Data");
 
             List<HistoryVO> historyVOS = new ArrayList<>();
@@ -462,8 +466,10 @@ public class GPSController {
 //            System.out.println(a.get("geocodes"));
             JSONArray sddressArr = JSON.parseArray(a.get("geocodes").toString());
 //            System.out.println(sddressArr.get(0));
-            JSONObject c = JSON.parseObject(sddressArr.get(0).toString());
-            location = c.get("location").toString();
+            if(sddressArr.get(0) != null){
+                JSONObject c = JSON.parseObject(sddressArr.get(0).toString());
+                location = c.get("location").toString();
+            }
 //            System.out.println(location);
         } catch (Exception e) {
             e.printStackTrace();
@@ -584,7 +590,7 @@ public class GPSController {
 //                e.printStackTrace();
 //            }
 //        }
-        String location = httpURLConectionGET("深圳市龙岗区南湾街道下李朗社区联李东路6号信利康供应链服务产业园二号楼1楼（佳裕达仓）");
+        String location = httpURLConectionGET("新界粉岭安居街18号安兴工贸中心307室,陈生 : 852-54226755");
         System.out.println(location);
 //        String location1 = httpURLConvertGET("114.22229,22.33366");
 //        System.out.println(location1);

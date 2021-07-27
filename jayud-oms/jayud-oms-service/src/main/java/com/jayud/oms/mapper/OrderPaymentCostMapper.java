@@ -2,6 +2,7 @@ package com.jayud.oms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
+import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
@@ -41,4 +42,13 @@ public interface OrderPaymentCostMapper extends BaseMapper<OrderPaymentCost> {
      * @return
      */
     List<InputPaymentCostVO> getSupplierAbnormalCostDetail(GetCostDetailForm form);
+
+    /**
+     * 统计主订单费用
+     * @param form
+     * @param legalIds
+     * @param status
+     * @return
+     */
+    List<Map<String, Object>> statisticsMainOrderCost(@Param("form") QueryStatisticalReport form, @Param("legalIds") List<Long> legalIds, @Param("status") List<String> status);
 }

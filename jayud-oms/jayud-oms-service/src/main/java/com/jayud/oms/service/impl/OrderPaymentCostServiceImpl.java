@@ -6,6 +6,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.mapper.OrderPaymentCostMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
+import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.CurrencyInfo;
 import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.po.OrderReceivableCost;
@@ -371,6 +372,19 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
         condition.lambda().in(OrderPaymentCost::getMainOrderNo, mainOrderNos);
         condition.lambda().in(OrderPaymentCost::getIsSumToMain, true);
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 统计主订单费用
+     *
+     * @param form
+     * @param legalIds
+     * @param status
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> statisticsMainOrderCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
+        return this.baseMapper.statisticsMainOrderCost(form,legalIds, status);
     }
 
 }

@@ -519,7 +519,17 @@
 
 
     <select id="getAllCostNum" resultType="java.lang.Integer">
-        select count(1)
+        select count(
+        distinct
+        <choose>
+            <when test="subType=='main'">
+                main_order_no
+            </when>
+            <otherwise>
+                main_order_no,order_no
+            </otherwise>
+        </choose>
+        )
         from
         (
         select main_order_no,order_no from order_receivable_cost
@@ -544,9 +554,9 @@
         union
         select main_order_no,order_no from order_payment_cost
         <where>
-<!--            <if test="subType!=null and subType !=''">-->
-<!--                sub_type=#{subType}-->
-<!--            </if>-->
+            <!--            <if test="subType!=null and subType !=''">-->
+            <!--                sub_type=#{subType}-->
+            <!--            </if>-->
             <if test="legalIds != null and legalIds.size>0">
                 and `legal_id` in
                 <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
@@ -584,6 +594,22 @@
             </if>
         </where>
         group by legal_entity_id
+    </select>
+    <select id="getBasicStatistics" resultType="com.jayud.oms.model.po.OrderInfo">
+        select
+        order_no,legal_entity_id,created_user,create_time
+        from order_info
+        <where>
+            <if test="form.timeInterval != null and form.timeInterval.size>0">
+                date_format(create_time,#{form.sqlFormat}) between #{form.timeInterval[0]} and #{form.timeInterval[1]}
+            </if>
+            <if test="legalIds != null and legalIds.size>0">
+                and `legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+        </where>
     </select>
 
 </mapper>

@@ -2,7 +2,7 @@ package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.GetCostDetailForm;
-import com.jayud.oms.model.po.OrderPaymentCost;
+import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
 
@@ -139,4 +139,22 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
      * @return
      */
     List<OrderReceivableCost> getOrderReceivableCostByMainOrderNos(List<String> mainOrderNos);
+
+    /**
+     * 统计应收金额
+     * @param orderNos
+     * @param subType
+     * @param status
+     * @return
+     */
+    List<Map<String, Object>> statisticsOrderAmount(List<String> orderNos, String subType, List<String> status);
+
+    /**
+     * 统计主订单费用
+     * @param form
+     * @param legalIds
+     * @param status
+     * @return
+     */
+    List<Map<String, Object>> statisticsMainOrderCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status);
 }

@@ -5,22 +5,21 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.BigDecimalUtil;
+import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.Utilities;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderInfo;
-import com.jayud.oms.model.po.OrderStatus;
-import com.jayud.oms.service.ICostCommonService;
-import com.jayud.oms.service.IOrderInfoService;
-import com.jayud.oms.service.StatisticalReportService;
+import com.jayud.oms.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +34,10 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
     private IOrderInfoService orderInfoService;
     @Autowired
     private ICostCommonService costCommonService;
-
+    @Autowired
+    private IOrderReceivableCostService receivableCostService;
+    @Autowired
+    private IOrderPaymentCostService paymentCostService;
 
     @Override
     public List<Map<String, Object>> getCSPendingNum() {
@@ -94,7 +96,8 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
                         num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null);
                         break;
                     case "pending":
-                        num = (int) orderInfos.get().stream().filter(e -> e.getIsRejected() || OrderStatusEnum.MAIN_6.getCode().equals(e.getStatus().toString())).count();
+                        num = (int) orderInfos.get().stream().filter(e -> (e.getIsRejected() != null && e.getIsRejected())
+                                || OrderStatusEnum.MAIN_6.getCode().equals(e.getStatus().toString())).count();
                         break;
                 }
 
@@ -127,4 +130,98 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
 //        });
         return results;
     }
+
+    /**
+     * 订单排行榜
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> getOrderRanking(QueryStatisticalReport form) {
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        List<OrderInfo> orderInfos = this.orderInfoService.getBasicStatistics(form, legalIds, new OrderInfo());
+
+        Map<String, List<OrderInfo>> group = orderInfos.stream().filter(e -> !StringUtils.isEmpty(e.getCreatedUser())).collect(Collectors.groupingBy(OrderInfo::getCreatedUser));
+
+        List<String> orderNos = orderInfos.stream().map(OrderInfo::getOrderNo).collect(Collectors.toList());
+
+//        Map<String, Map<String, Integer>> mainOrder = new HashMap<>();
+//        orderInfos.forEach(e -> {
+//            Map<String, Integer> orderNum = mainOrder.get(e.getOrderNo());
+//            if (orderNum == null) {
+//                orderNum = new HashMap<>();
+//                orderNum.put(e.getCreatedUser(), 1);
+//                mainOrder.put(e.getOrderNo(), orderNum);
+//            } else {
+//                orderNum.put(e.getCreatedUser(), orderNum.getOrDefault(e.getCreatedUser(), 0) + 1);
+//            }
+//        });
+        List<String> status = new ArrayList<>();
+        status.add(OrderStatusEnum.COST_0.getCode());
+        status.add(OrderStatusEnum.COST_2.getCode());
+        status.add(OrderStatusEnum.COST_3.getCode());
+        //统计应收金额
+        Map<String, Object> orderAmounts = this.receivableCostService.statisticsOrderAmount(orderNos, SubOrderSignEnum.MAIN.getSignOne(), status)
+                .stream().collect(Collectors.toMap(e -> e.get("mainOrderNo").toString(), e -> e.get("changeAmount")));
+        List<Map<String, Object>> results = new ArrayList<>();
+        group.forEach((k, v) -> {
+            Map<String, Object> map = new HashMap<>();
+            v.forEach(e -> {
+                Object amount = orderAmounts.getOrDefault(e.getOrderNo(), new BigDecimal(0));
+                map.put("amount", amount);
+            });
+            map.put("name", k);
+            map.put("orderNum", v.size());
+            results.add(map);
+        });
+        //根据金额排序
+        results.sort(new Utilities.MapComparatorBigDesc("amount")
+                .thenComparing(new Utilities.MapComparatorIntDesc("orderNum")));
+        return results;
+    }
+
+    /**
+     * 营业额统计
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public Map<String, Object> getTurnoverStatistics(QueryStatisticalReport form) {
+
+        List<String> status = new ArrayList<>();
+        status.add(OrderStatusEnum.COST_0.getCode());
+        status.add(OrderStatusEnum.COST_2.getCode());
+        status.add(OrderStatusEnum.COST_3.getCode());
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+
+        Map<String, BigDecimal> reCostMap = this.receivableCostService.statisticsMainOrderCost(form, legalIds, status)
+                .stream().filter(e -> e.get("createTime") != null).collect(Collectors.toMap(e -> e.get("createTime").toString(), e -> (BigDecimal) e.get("changeAmount")));
+        Map<String, BigDecimal> payCostMap = this.paymentCostService.statisticsMainOrderCost(form, legalIds, status)
+                .stream().filter(e -> e.get("createTime") != null).collect(Collectors.toMap(e -> e.get("createTime").toString(), e -> (BigDecimal) e.get("changeAmount")));
+
+        List<BigDecimal> reCosts = new ArrayList<>();
+        List<BigDecimal> payCosts = new ArrayList<>();
+        List<BigDecimal> profits = new ArrayList<>();
+        for (String suppleTimeDatum : form.getSuppleTimeData()) {
+            BigDecimal reCost = reCostMap.getOrDefault(suppleTimeDatum, new BigDecimal(0));
+            BigDecimal payCost = payCostMap.getOrDefault(suppleTimeDatum, new BigDecimal(0));
+            BigDecimal profit = BigDecimalUtil.subtract(reCost, payCost);
+            reCosts.add(reCost);
+            payCosts.add(payCost);
+            profits.add(profit);
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("date", form.getSuppleTimeData());
+        map.put("reCosts", reCosts);
+        map.put("payCosts", payCosts);
+        map.put("profits", profits);
+        map.put("timeUnit", form.getTimeUnit());
+        return map;
+    }
+
+
 }

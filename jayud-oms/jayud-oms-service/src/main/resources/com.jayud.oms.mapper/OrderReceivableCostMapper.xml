@@ -173,4 +173,67 @@
             </otherwise>
         </choose>
     </select>
+
+    <select id="statisticsOrderAmount" resultType="java.util.Map">
+        select
+        main_order_no mainOrderNo,order_no orderNo,sum(change_amount) changeAmount
+        from order_receivable_cost
+        <where>
+            <if test="status!=null and status.size>0">
+                and status in
+                <foreach collection="status" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        <choose>
+            <when test="subType=='main'">
+                and is_sum_to_main = true
+                <if test="orderNos!=null and orderNos.size>0">
+                    and main_order_no in
+                    <foreach collection="orderNos" item="orderNo" open="(" separator="," close=")">
+                        #{orderNo}
+                    </foreach>
+                </if>
+                group by main_order_no
+            </when>
+            <otherwise>
+                and sub_type=#{subType}
+                <if test="orderNos!=null and orderNos.size>0">
+                   and order_no in
+                    <foreach collection="orderNos" item="orderNo" open="(" separator="," close=")">
+                        #{orderNo}
+                    </foreach>
+                </if>
+                group by main_order_no,tmp.order_no
+            </otherwise>
+        </choose>
+        </where>
+    </select>
+    <select id="statisticsMainOrderCost" resultType="java.util.Map">
+        select
+        date_format(oi.create_time,#{form.sqlFormat}) createTime,sum(ifnull(orc.change_amount,0)) changeAmount
+        from order_info oi
+        left join order_receivable_cost orc on orc.main_order_no=oi.order_no
+        <where>
+            and orc.is_sum_to_main = true
+            <if test="form.timeInterval != null and form.timeInterval.size>0">
+                and date_format(oi.create_time,#{form.sqlFormat}) between #{form.timeInterval[0]} and #{form.timeInterval[1]}
+            </if>
+            <if test="status!=null and status.size>0">
+                and orc.status in
+                <foreach collection="status" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="legalIds != null and legalIds.size>0">
+                and oi.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+            group by date_format(oi.create_time,#{form.sqlFormat})
+            order by date_format(oi.create_time,#{form.sqlFormat})
+        </where>
+
+    </select>
 </mapper>

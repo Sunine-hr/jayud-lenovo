@@ -15,4 +15,18 @@ public interface StatisticalReportService {
      * @return
      */
     List<Map<String, Integer>> getMainOrderSummary(QueryStatisticalReport form);
+
+    /**
+     * 订单排行榜
+     * @param form
+     * @return
+     */
+    List<Map<String, Object>> getOrderRanking(QueryStatisticalReport form);
+
+    /**
+     * 营业额统计
+     * @param form
+     * @return
+     */
+    Map<String, Object> getTurnoverStatistics(QueryStatisticalReport form);
 }

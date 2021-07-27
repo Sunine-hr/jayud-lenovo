@@ -2,6 +2,7 @@ package com.jayud.oms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
+import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -31,4 +32,23 @@ public interface OrderReceivableCostMapper extends BaseMapper<OrderReceivableCos
     List<Map<String, Object>> getPendingExpenseApproval(@Param("subType") String subType,
                                                         @Param("orderNos") List<String> orderNos,
                                                         @Param("legalIds") List<Long> legalIds);
+
+    /**
+     * 统计应收金额
+     * @param orderNos
+     * @param subType
+     * @param status
+     * @return
+     */
+    List<Map<String, Object>> statisticsOrderAmount(@Param("orderNos") List<String> orderNos,
+                                                    @Param("subType") String subType,@Param("status") List<String> status);
+
+    /**
+     * 统计主订单费用
+     * @param form
+     * @param legalIds
+     * @param status
+     * @return
+     */
+    List<Map<String, Object>> statisticsMainOrderCost(@Param("form") QueryStatisticalReport form, @Param("legalIds") List<Long> legalIds, @Param("status") List<String> status);
 }

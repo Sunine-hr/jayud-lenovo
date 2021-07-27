@@ -292,4 +292,13 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     List<Map<String, Integer>> getMainOrderSummary(QueryStatisticalReport form, List<Long> legalIds);
+
+    /**
+     * 获取统计基础数据
+     * @param form
+     * @param legalIds
+     * @param orderInfo
+     * @return
+     */
+    List<OrderInfo> getBasicStatistics(QueryStatisticalReport form, List<Long> legalIds, OrderInfo orderInfo);
 }

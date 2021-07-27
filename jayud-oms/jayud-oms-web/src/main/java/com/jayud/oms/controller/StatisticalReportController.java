@@ -48,4 +48,30 @@ public class StatisticalReportController {
         return CommonResult.success(list);
     }
 
+
+    @ApiOperation("订单排行榜")
+    @PostMapping("/getOrderRanking")
+    public CommonResult<List<Map<String, Object>>> getOrderRanking(@RequestBody QueryStatisticalReport form) {
+        form.assemblyTime();
+        List<Map<String, Object>> list = this.statisticalReportService.getOrderRanking(form);
+        return CommonResult.success(list);
+    }
+
+    @ApiOperation("营业额统计")
+    @PostMapping("/getTurnoverStatistics")
+    public CommonResult<Map<String, Object>> getTurnoverStatistics(@RequestBody QueryStatisticalReport form) {
+        form.assemblyTime();
+        form.supplementaryTimeData();
+        Map<String, Object> map = this.statisticalReportService.getTurnoverStatistics(form);
+        return CommonResult.success(map);
+    }
+
+    @ApiOperation("汇款情况")
+    @PostMapping("/remittanceStatus")
+    public CommonResult<Map<String, Object>> remittanceStatus(@RequestBody QueryStatisticalReport form) {
+        form.assemblyTime();
+        form.supplementaryTimeData();
+        Map<String, Object> map = this.statisticalReportService.getTurnoverStatistics(form);
+        return CommonResult.success(map);
+    }
 }

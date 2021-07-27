@@ -1066,6 +1066,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     /**
+     * 获取统计基础数据
+     * @param form
+     * @param legalIds
+     * @param orderInfo
+     * @return
+     */
+    @Override
+    public List<OrderInfo> getBasicStatistics(QueryStatisticalReport form, List<Long> legalIds, OrderInfo orderInfo) {
+        return this.baseMapper.getBasicStatistics(form,orderInfo,legalIds);
+    }
+
+    /**
      * 计算费用,利润/合计币种
      *
      * @param inputCostVO

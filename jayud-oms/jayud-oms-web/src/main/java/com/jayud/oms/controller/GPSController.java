@@ -264,6 +264,7 @@ public class GPSController {
 //        historyPositionVO.setOrderTakeAdrForms2(orderTakeAdrVOS1);
 
         HistoryPositionVO historyPositionVO = this.getHistoryResult(urlParam,orderDetail,jsonObject);
+        log.warn("响应数据："+jsonObject);
 
         return CommonResult.success(historyPositionVO);
     }
@@ -466,8 +467,10 @@ public class GPSController {
 //            System.out.println(a.get("geocodes"));
             JSONArray sddressArr = JSON.parseArray(a.get("geocodes").toString());
 //            System.out.println(sddressArr.get(0));
-            JSONObject c = JSON.parseObject(sddressArr.get(0).toString());
-            location = c.get("location").toString();
+            if(sddressArr.get(0) != null){
+                JSONObject c = JSON.parseObject(sddressArr.get(0).toString());
+                location = c.get("location").toString();
+            }
 //            System.out.println(location);
         } catch (Exception e) {
             e.printStackTrace();
@@ -588,7 +591,7 @@ public class GPSController {
 //                e.printStackTrace();
 //            }
 //        }
-        String location = httpURLConectionGET("深圳市龙岗区南湾街道下李朗社区联李东路6号信利康供应链服务产业园二号楼1楼（佳裕达仓）");
+        String location = httpURLConectionGET("新界粉岭安居街18号安兴工贸中心307室,陈生 : 852-54226755");
         System.out.println(location);
 //        String location1 = httpURLConvertGET("114.22229,22.33366");
 //        System.out.println(location1);

@@ -43,6 +43,7 @@ public class StatisticalReportController {
     @ApiOperation("主订单汇总")
     @PostMapping("/getMainOrderSummary")
     public CommonResult<List<Map<String, Integer>>> getMainOrderSummary(@RequestBody QueryStatisticalReport form) {
+        form.assemblyTime();
         List<Map<String, Integer>> list = this.statisticalReportService.getMainOrderSummary(form);
         return CommonResult.success(list);
     }

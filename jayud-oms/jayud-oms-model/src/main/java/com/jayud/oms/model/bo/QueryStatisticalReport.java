@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,8 +53,9 @@ public class QueryStatisticalReport {
         }
     }
 
-    private void assemblyTime() {
+    public void assemblyTime() {
         if (!StringUtils.isEmpty(this.startTime) && !StringUtils.isEmpty(this.endTime)) {
+            timeInterval=new ArrayList<>();
             timeInterval.add(startTime);
             timeInterval.add(endTime);
         }

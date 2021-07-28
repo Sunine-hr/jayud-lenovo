@@ -6,17 +6,21 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.BigDecimalUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderInfo;
+import com.jayud.oms.model.po.OrderReceivableCost;
+import com.jayud.oms.model.vo.StatisticsOrderBaseCost;
 import com.jayud.oms.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -198,10 +202,19 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
-        Map<String, BigDecimal> reCostMap = this.receivableCostService.statisticsMainOrderCost(form, legalIds, status)
-                .stream().filter(e -> e.get("createTime") != null).collect(Collectors.toMap(e -> e.get("createTime").toString(), e -> (BigDecimal) e.get("changeAmount")));
-        Map<String, BigDecimal> payCostMap = this.paymentCostService.statisticsMainOrderCost(form, legalIds, status)
-                .stream().filter(e -> e.get("createTime") != null).collect(Collectors.toMap(e -> e.get("createTime").toString(), e -> (BigDecimal) e.get("changeAmount")));
+        Map<String, BigDecimal> reCostMap = this.receivableCostService.getBaseStatisticsAllCost(form, legalIds, status).stream()
+                .collect(Collectors.groupingBy(StatisticsOrderBaseCost::getOrderCreatedTime, Collectors.mapping(StatisticsOrderBaseCost::getChangeAmount,
+                        Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))));
+
+//                .filter(e -> e.getCreatedTime() != null).collect().collect(Collectors.toMap(e -> DateUtils.LocalDateTime2Str(e.getCreatedTime()), e -> e.getChangeAmount()));
+
+//        Map<String, BigDecimal> reCostMap = this.receivableCostService.statisticsMainOrderCost(form, legalIds, status)
+//                .stream().filter(e -> e.get("createTime") != null).collect(Collectors.toMap(e -> e.get("createTime").toString(), e -> (BigDecimal) e.get("changeAmount")));
+//        Map<String, BigDecimal> payCostMap = this.paymentCostService.statisticsMainOrderCost(form, legalIds, status)
+//                .stream().filter(e -> e.get("createTime") != null).collect(Collectors.toMap(e -> e.get("createTime").toString(), e -> (BigDecimal) e.get("changeAmount")));
+        Map<String, BigDecimal> payCostMap = this.paymentCostService.getBaseStatisticsAllCost(form, legalIds, status).stream()
+                .collect(Collectors.groupingBy(StatisticsOrderBaseCost::getOrderCreatedTime, Collectors.mapping(StatisticsOrderBaseCost::getChangeAmount,
+                        Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))));
 
         List<BigDecimal> reCosts = new ArrayList<>();
         List<BigDecimal> payCosts = new ArrayList<>();

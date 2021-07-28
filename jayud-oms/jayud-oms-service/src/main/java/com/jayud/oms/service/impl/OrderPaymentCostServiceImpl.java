@@ -13,6 +13,7 @@ import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
+import com.jayud.oms.model.vo.StatisticsOrderBaseCost;
 import com.jayud.oms.service.ICurrencyInfoService;
 import com.jayud.oms.service.IOrderPaymentCostService;
 import com.jayud.oms.service.ISupplierInfoService;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -385,6 +387,25 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
     @Override
     public List<Map<String, Object>> statisticsMainOrderCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
         return this.baseMapper.statisticsMainOrderCost(form,legalIds, status);
+    }
+
+    @Override
+    public List<StatisticsOrderBaseCost> getBaseStatisticsAllCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
+        List<StatisticsOrderBaseCost> costs = this.baseMapper.getBaseStatisticsAllCost(form, legalIds, status);
+        Map<String, List<StatisticsOrderBaseCost>> map = costs.stream().collect(Collectors.groupingBy(StatisticsOrderBaseCost::getMainOrderNo));
+
+        List<StatisticsOrderBaseCost> tmps = new ArrayList<>();
+        map.forEach((k, v) -> {
+            v.forEach(e -> {
+                if (e.getIsSumToMain()) {
+                    tmps.add(e);
+                } else if (e.getIsInternal()||!e.getIsInternal()) {
+                    tmps.add(e);
+                }
+            });
+
+        });
+        return tmps;
     }
 
 }

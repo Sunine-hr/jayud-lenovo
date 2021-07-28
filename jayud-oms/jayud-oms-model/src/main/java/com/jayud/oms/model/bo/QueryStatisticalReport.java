@@ -62,11 +62,11 @@ public class QueryStatisticalReport {
         switch (timeType) {
             case 1:
                 sqlFormat = "%Y";
-                timeUnit="年";
+                timeUnit = "年";
                 break;
             case 2:
                 sqlFormat = "%Y-%m";
-                timeUnit="月";
+                timeUnit = "月";
                 break;
         }
     }
@@ -99,7 +99,7 @@ public class QueryStatisticalReport {
                 suppleTimeData.add(startYear + "-" + month);
                 suppleTimeDataShort.add(startYear + "-" + month);
             }
-            if (endYear != null) {
+            if (endYear != null && !startYear.equals(endYear)) {
                 for (int i = 1; i <= 12; i++) {
                     String month = i >= 10 ? i + "" : "0" + i;
                     suppleTimeData.add(endYear + "-" + month);
@@ -108,14 +108,14 @@ public class QueryStatisticalReport {
             }
             //默认本年月份
             if (isDefault) {
-                timeInterval=new ArrayList<>();
+                timeInterval = new ArrayList<>();
                 timeInterval.add(suppleTimeData.get(0));
                 timeInterval.add(suppleTimeData.get(suppleTimeData.size() - 1));
             }
         } else {
             if (CollectionUtils.isNotEmpty(timeInterval)) {
-                int interval = Integer.parseInt(timeInterval.get(0)) - Integer.parseInt(timeInterval.get(1));
-                for (int i = 1; i <= interval; i++) {
+                int interval = Integer.parseInt(timeInterval.get(1)) - Integer.parseInt(timeInterval.get(0));
+                for (int i = 0; i <= interval; i++) {
                     suppleTimeData.add(Integer.parseInt(timeInterval.get(0)) + i + "");
                     suppleTimeDataShort.add(Integer.parseInt(timeInterval.get(0)) + i + "");
                 }

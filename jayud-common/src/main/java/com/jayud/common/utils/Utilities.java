@@ -12,6 +12,7 @@ import java.awt.datatransfer.Transferable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.*;
 
@@ -137,5 +138,52 @@ public class Utilities {
         // 修改属性值
         memberValuesValue.putAll(annotationParam);
         return clazz;
+    }
+
+    /**
+     * 降序
+     */
+    public static class MapComparatorBigDesc implements Comparator<Map<String, Object>> {
+
+        private String sort;
+
+        public MapComparatorBigDesc() {
+        }
+
+        public MapComparatorBigDesc(String sort) {
+            this.sort = sort;
+        }
+
+        @Override
+        public int compare(Map<String, Object> m1, Map<String, Object> m2) {
+            BigDecimal v1 = new BigDecimal(m1.get(sort).toString());
+            BigDecimal v2 = new BigDecimal(m2.get(sort).toString());
+            if (v2 != null) {
+                return v2.compareTo(v1);
+            }
+            return 0;
+        }
+    }
+
+    public static class MapComparatorIntDesc implements Comparator<Map<String, Object>> {
+
+        private String sort;
+
+        public MapComparatorIntDesc() {
+        }
+
+        public MapComparatorIntDesc(String sort) {
+            this.sort = sort;
+        }
+
+        @Override
+        public int compare(Map<String, Object> m1, Map<String, Object> m2) {
+            Integer v1 = Integer.parseInt(m1.get(sort).toString());
+            Integer v2 = Integer.parseInt(m2.get(sort).toString());
+            if (v2 != null) {
+                return v2.compareTo(v1);
+            }
+            return 0;
+        }
     }
 }

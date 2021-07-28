@@ -110,6 +110,7 @@ public class CommonServiceImpl implements CommonService {
             switch (templateEnum) {
                 case ZGYS:
                 case ZGYS_NORM_RE:
+                case ZGYS_NORM_PAY:
                     TmsOrderTemplate tmsOrderTemplate = ConvertUtil.convert(jsonObject, TmsOrderTemplate.class);
                     tmsOrderTemplate.assembleData(jsonObject);
                     //组装主订单信息

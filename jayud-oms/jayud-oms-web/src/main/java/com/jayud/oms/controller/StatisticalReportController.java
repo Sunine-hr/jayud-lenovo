@@ -71,7 +71,7 @@ public class StatisticalReportController {
     public CommonResult<Map<String, Object>> remittanceStatus(@RequestBody QueryStatisticalReport form) {
         form.assemblyTime();
         form.supplementaryTimeData();
-        Map<String, Object> map = this.statisticalReportService.getTurnoverStatistics(form);
+        Map<String, Object> map = this.statisticalReportService.remittanceStatus(form);
         return CommonResult.success(map);
     }
 }

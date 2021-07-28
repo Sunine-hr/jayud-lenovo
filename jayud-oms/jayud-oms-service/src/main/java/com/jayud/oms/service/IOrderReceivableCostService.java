@@ -5,7 +5,8 @@ import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
-import com.jayud.oms.model.vo.StatisticsOrderBaseCost;
+import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
+import com.jayud.oms.model.vo.StatisticsOrderBillDetailsVO;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -161,5 +162,7 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
      */
     List<Map<String, Object>> statisticsMainOrderCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status);
 
-    public List<StatisticsOrderBaseCost> getBaseStatisticsAllCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status);
+    public List<StatisticsOrderBaseCostVO> getBaseStatisticsAllCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status);
+
+    List<StatisticsOrderBillDetailsVO> statisticalMainOrderBillDetails(QueryStatisticalReport form, List<Long> legalIds, List<String> status);
 }

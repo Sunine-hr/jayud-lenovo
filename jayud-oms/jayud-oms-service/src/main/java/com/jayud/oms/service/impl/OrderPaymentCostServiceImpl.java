@@ -9,11 +9,10 @@ import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.CurrencyInfo;
 import com.jayud.oms.model.po.OrderPaymentCost;
-import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
-import com.jayud.oms.model.vo.StatisticsOrderBaseCost;
+import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
 import com.jayud.oms.service.ICurrencyInfoService;
 import com.jayud.oms.service.IOrderPaymentCostService;
 import com.jayud.oms.service.ISupplierInfoService;
@@ -27,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Condition;
 import java.util.stream.Collectors;
 
 /**
@@ -390,11 +388,11 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
     }
 
     @Override
-    public List<StatisticsOrderBaseCost> getBaseStatisticsAllCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
-        List<StatisticsOrderBaseCost> costs = this.baseMapper.getBaseStatisticsAllCost(form, legalIds, status);
-        Map<String, List<StatisticsOrderBaseCost>> map = costs.stream().collect(Collectors.groupingBy(StatisticsOrderBaseCost::getMainOrderNo));
+    public List<StatisticsOrderBaseCostVO> getBaseStatisticsAllCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
+        List<StatisticsOrderBaseCostVO> costs = this.baseMapper.getBaseStatisticsAllCost(form, legalIds, status);
+        Map<String, List<StatisticsOrderBaseCostVO>> map = costs.stream().collect(Collectors.groupingBy(StatisticsOrderBaseCostVO::getMainOrderNo));
 
-        List<StatisticsOrderBaseCost> tmps = new ArrayList<>();
+        List<StatisticsOrderBaseCostVO> tmps = new ArrayList<>();
         map.forEach((k, v) -> {
             v.forEach(e -> {
                 if (e.getIsSumToMain()) {

@@ -29,4 +29,11 @@ public interface StatisticalReportService {
      * @return
      */
     Map<String, Object> getTurnoverStatistics(QueryStatisticalReport form);
+
+    /**
+     * 汇款情况
+     * @param form
+     * @return
+     */
+    Map<String, Object> remittanceStatus(QueryStatisticalReport form);
 }

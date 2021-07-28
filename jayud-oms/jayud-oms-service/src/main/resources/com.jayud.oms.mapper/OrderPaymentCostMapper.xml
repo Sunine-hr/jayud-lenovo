@@ -278,7 +278,7 @@
         </where>
 
     </select>
-    <select id="getBaseStatisticsAllCost" resultType="com.jayud.oms.model.vo.StatisticsOrderBaseCost">
+    <select id="getBaseStatisticsAllCost" resultType="com.jayud.oms.model.vo.StatisticsOrderBaseCostVO">
         select
         opc.main_order_no,opc.order_no,opc.change_amount,opc.status,opc.is_internal,opc.is_sum_to_main,
         date_format(oi.create_time,#{form.sqlFormat}) orderCreatedTime

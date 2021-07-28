@@ -6,21 +6,20 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.BigDecimalUtil;
-import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderInfo;
-import com.jayud.oms.model.po.OrderReceivableCost;
-import com.jayud.oms.model.vo.StatisticsOrderBaseCost;
+import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
+import com.jayud.oms.model.vo.StatisticsOrderBillDetailsVO;
 import com.jayud.oms.service.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -203,7 +202,7 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
         Map<String, BigDecimal> reCostMap = this.receivableCostService.getBaseStatisticsAllCost(form, legalIds, status).stream()
-                .collect(Collectors.groupingBy(StatisticsOrderBaseCost::getOrderCreatedTime, Collectors.mapping(StatisticsOrderBaseCost::getChangeAmount,
+                .collect(Collectors.groupingBy(StatisticsOrderBaseCostVO::getOrderCreatedTime, Collectors.mapping(StatisticsOrderBaseCostVO::getChangeAmount,
                         Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))));
 
 //                .filter(e -> e.getCreatedTime() != null).collect().collect(Collectors.toMap(e -> DateUtils.LocalDateTime2Str(e.getCreatedTime()), e -> e.getChangeAmount()));
@@ -213,7 +212,7 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
 //        Map<String, BigDecimal> payCostMap = this.paymentCostService.statisticsMainOrderCost(form, legalIds, status)
 //                .stream().filter(e -> e.get("createTime") != null).collect(Collectors.toMap(e -> e.get("createTime").toString(), e -> (BigDecimal) e.get("changeAmount")));
         Map<String, BigDecimal> payCostMap = this.paymentCostService.getBaseStatisticsAllCost(form, legalIds, status).stream()
-                .collect(Collectors.groupingBy(StatisticsOrderBaseCost::getOrderCreatedTime, Collectors.mapping(StatisticsOrderBaseCost::getChangeAmount,
+                .collect(Collectors.groupingBy(StatisticsOrderBaseCostVO::getOrderCreatedTime, Collectors.mapping(StatisticsOrderBaseCostVO::getChangeAmount,
                         Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))));
 
         List<BigDecimal> reCosts = new ArrayList<>();
@@ -232,6 +231,54 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
         map.put("reCosts", reCosts);
         map.put("payCosts", payCosts);
         map.put("profits", profits);
+        map.put("timeUnit", form.getTimeUnit());
+        return map;
+    }
+
+    /**
+     * 汇款情况
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public Map<String, Object> remittanceStatus(QueryStatisticalReport form) {
+        List<String> status = new ArrayList<>();
+        status.add(OrderStatusEnum.COST_0.getCode());
+        status.add(OrderStatusEnum.COST_2.getCode());
+        status.add(OrderStatusEnum.COST_3.getCode());
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+
+//        List<StatisticsOrderBaseCostVO> reCosts = this.receivableCostService.getBaseStatisticsAllCost(form, legalIds, status);
+
+        Map<String, List<StatisticsOrderBillDetailsVO>> group = this.receivableCostService.statisticalMainOrderBillDetails(form, legalIds, status)
+                .stream().collect(Collectors.groupingBy(StatisticsOrderBillDetailsVO::getCreateTime));
+
+        List<BigDecimal> totalAmounts = new ArrayList<>();
+        List<BigDecimal> amountReceiveds = new ArrayList<>();
+        List<BigDecimal> uncollectedAmounts = new ArrayList<>();
+        for (String suppleTimeDatum : form.getSuppleTimeData()) {
+            List<StatisticsOrderBillDetailsVO> list = group.get(suppleTimeDatum);
+            if (CollectionUtils.isEmpty(list)) {
+                continue;
+            }
+            BigDecimal totalAmount = new BigDecimal(0);
+            BigDecimal amountReceived = new BigDecimal(0);
+            for (StatisticsOrderBillDetailsVO billCost : list) {
+                totalAmount = BigDecimalUtil.add(billCost.getLocalMoney(), totalAmount);
+                amountReceived = BigDecimalUtil.add(billCost.getHeiXiaoAmount(), amountReceived);
+            }
+            totalAmounts.add(totalAmount);
+            amountReceiveds.add(amountReceived);
+            uncollectedAmounts.add(BigDecimalUtil.subtract(totalAmount, amountReceived));
+
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("date", form.getSuppleTimeData());
+        map.put("totalAmounts", totalAmounts);
+        map.put("amountReceiveds", amountReceiveds);
+        map.put("uncollectedAmounts", uncollectedAmounts);
         map.put("timeUnit", form.getTimeUnit());
         return map;
     }

@@ -6,7 +6,7 @@ import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
-import com.jayud.oms.model.vo.StatisticsOrderBaseCost;
+import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -175,5 +175,5 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
     public List<Map<String, Object>> statisticsMainOrderCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status);
 
 
-    List<StatisticsOrderBaseCost> getBaseStatisticsAllCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status);
+    List<StatisticsOrderBaseCostVO> getBaseStatisticsAllCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status);
 }

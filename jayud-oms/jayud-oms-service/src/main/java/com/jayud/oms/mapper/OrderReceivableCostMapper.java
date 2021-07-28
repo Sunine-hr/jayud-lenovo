@@ -5,7 +5,8 @@ import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
-import com.jayud.oms.model.vo.StatisticsOrderBaseCost;
+import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
+import com.jayud.oms.model.vo.StatisticsOrderBillDetailsVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -55,7 +56,11 @@ public interface OrderReceivableCostMapper extends BaseMapper<OrderReceivableCos
      */
     List<Map<String, Object>> statisticsMainOrderCost(@Param("form") QueryStatisticalReport form, @Param("legalIds") List<Long> legalIds, @Param("status") List<String> status);
 
-    List<StatisticsOrderBaseCost> getBaseStatisticsAllCost(@Param("form") QueryStatisticalReport form,
-                                                           @Param("legalIds") List<Long> legalIds,
-                                                           @Param("status") List<String> status);
+    List<StatisticsOrderBaseCostVO> getBaseStatisticsAllCost(@Param("form") QueryStatisticalReport form,
+                                                             @Param("legalIds") List<Long> legalIds,
+                                                             @Param("status") List<String> status);
+
+    List<StatisticsOrderBillDetailsVO> statisticalMainOrderBillDetails(@Param("form") QueryStatisticalReport form,
+                                                                       @Param("legalIds") List<Long> legalIds,
+                                                                       @Param("status") List<String> status);
 }

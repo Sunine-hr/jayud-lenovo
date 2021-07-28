@@ -9,7 +9,8 @@ import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
-import com.jayud.oms.model.vo.StatisticsOrderBaseCost;
+import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
+import com.jayud.oms.model.vo.StatisticsOrderBillDetailsVO;
 import com.jayud.oms.service.ICurrencyInfoService;
 import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.oms.service.IOrderReceivableCostService;
@@ -398,11 +399,11 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
 
 
     @Override
-    public List<StatisticsOrderBaseCost> getBaseStatisticsAllCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
-        List<StatisticsOrderBaseCost> costs = this.baseMapper.getBaseStatisticsAllCost(form, legalIds, status);
-        Map<String, List<StatisticsOrderBaseCost>> map = costs.stream().collect(Collectors.groupingBy(StatisticsOrderBaseCost::getMainOrderNo));
+    public List<StatisticsOrderBaseCostVO> getBaseStatisticsAllCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
+        List<StatisticsOrderBaseCostVO> costs = this.baseMapper.getBaseStatisticsAllCost(form, legalIds, status);
+        Map<String, List<StatisticsOrderBaseCostVO>> map = costs.stream().collect(Collectors.groupingBy(StatisticsOrderBaseCostVO::getMainOrderNo));
 
-        List<StatisticsOrderBaseCost> tmps = new ArrayList<>();
+        List<StatisticsOrderBaseCostVO> tmps = new ArrayList<>();
         map.forEach((k, v) -> {
             v.forEach(e -> {
                 if (e.getIsSumToMain()) {
@@ -414,5 +415,10 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
 
         });
         return tmps;
+    }
+
+    @Override
+    public List<StatisticsOrderBillDetailsVO> statisticalMainOrderBillDetails(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
+        return this.baseMapper.statisticalMainOrderBillDetails(form,legalIds,status);
     }
 }

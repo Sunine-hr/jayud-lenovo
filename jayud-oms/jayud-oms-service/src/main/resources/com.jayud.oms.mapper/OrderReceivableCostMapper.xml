@@ -243,7 +243,7 @@
     </select>
 
 
-    <select id="getBaseStatisticsAllCost" resultType="com.jayud.oms.model.vo.StatisticsOrderBaseCost">
+    <select id="getBaseStatisticsAllCost" resultType="com.jayud.oms.model.vo.StatisticsOrderBaseCostVO">
         select
         orc.main_order_no,orc.order_no,orc.change_amount,orc.status,orc.is_internal,orc.is_sum_to_main,
         date_format(oi.create_time,#{form.sqlFormat}) orderCreatedTime
@@ -268,6 +268,55 @@
             </if>
             order by date_format(oi.create_time,#{form.sqlFormat})
         </where>
+
+    </select>
+    <select id="statisticalMainOrderBillDetails" resultType="com.jayud.oms.model.vo.StatisticsOrderBillDetailsVO">
+        SELECT
+        tmp.*,
+        sum(IFNULL( cav.local_money, 0 )) heiXiaoAmount,
+        sum(IFNULL( cav.short_amount, 0 )) shortAmount
+        FROM
+        (
+        SELECT
+        date_format(oi.create_time,#{form.sqlFormat}) createTime,
+        orc.customer_name,
+        orc.customer_code,
+        orc.legal_id,
+        orc.legal_name,
+        sum( obct.local_money ) localMoney,
+        obct.bill_no
+        FROM
+        order_info oi
+        INNER JOIN order_receivable_cost orc ON orc.main_order_no = oi.order_no
+        INNER JOIN order_bill_cost_total obct ON orc.id = obct.cost_id
+        AND obct.money_type = 2
+        <where>
+            orc.is_bill = 2
+            AND orc.is_sum_to_main = TRUE
+            <if test="form.timeInterval != null and form.timeInterval.size>0">
+                and date_format(oi.create_time,#{form.sqlFormat}) between #{form.timeInterval[0]} and
+                #{form.timeInterval[1]}
+            </if>
+            <if test="status!=null and status.size>0">
+                and orc.status in
+                <foreach collection="status" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="legalIds != null and legalIds.size>0">
+                and oi.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY
+        obct.bill_no
+        ORDER BY
+        oi.create_time
+        ) tmp
+        LEFT JOIN cancel_after_verification cav ON cav.bill_no = tmp.bill_no
+        GROUP BY tmp.bill_no
 
     </select>
 </mapper>

@@ -6,7 +6,7 @@ import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
-import com.jayud.oms.model.vo.StatisticsOrderBaseCost;
+import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -53,7 +53,7 @@ public interface OrderPaymentCostMapper extends BaseMapper<OrderPaymentCost> {
      */
     List<Map<String, Object>> statisticsMainOrderCost(@Param("form") QueryStatisticalReport form, @Param("legalIds") List<Long> legalIds, @Param("status") List<String> status);
 
-    List<StatisticsOrderBaseCost> getBaseStatisticsAllCost(@Param("form") QueryStatisticalReport form,
-                                                           @Param("legalIds") List<Long> legalIds,
-                                                           @Param("status") List<String> status);
+    List<StatisticsOrderBaseCostVO> getBaseStatisticsAllCost(@Param("form") QueryStatisticalReport form,
+                                                             @Param("legalIds") List<Long> legalIds,
+                                                             @Param("status") List<String> status);
 }

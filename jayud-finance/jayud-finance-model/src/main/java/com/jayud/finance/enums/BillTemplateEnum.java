@@ -30,7 +30,7 @@ public enum BillTemplateEnum {
 
     //导出应付模板(标准)
 //    KY_NORM_PAY("ky-norm-pay", AirOrderTemplate.class, "空运", true, 1),
-//    ZGYS_NORM_PAY("zgys-norm-pay", TmsOrderTemplate.class, "中港", true, 1),
+    ZGYS_NORM_PAY("zgys-norm-pay", TmsOrderTemplate.class, "中港", true, 1),
     TC_NORM_PAY("tc-norm-pay", TrailerOrderPayTemplate.class, "拖车", true, 1),
     NL_NORM_PAY("nl-norm-pay", InlandTPPayTemplate.class, "内陆", true, 1),
 //    HY_NORM_PAY("hy-norm-pay", SeaOrderTemplate.class, "海运", false, 1),

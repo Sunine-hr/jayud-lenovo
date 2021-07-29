@@ -36,4 +36,11 @@ public interface StatisticalReportService {
      * @return
      */
     Map<String, Object> remittanceStatus(QueryStatisticalReport form);
+
+    /**
+     * 客户未回款
+     * @param form
+     * @return
+     */
+    List<Map<String, Object>> customerUncollectedPay(QueryStatisticalReport form);
 }

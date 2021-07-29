@@ -52,11 +52,13 @@ public interface ICurrencyRateService extends IService<CurrencyRate> {
     /**
      * 根据原始币种和兑换币种获取汇率
      *
+     *
+     * @param code
      * @param oCode
      * @param dCode
      * @return
      */
-    BigDecimal getExchangeRate(String oCode, String dCode);
+    BigDecimal getExchangeRate(String oCode, String dCode,String accountTerm);
 
     /**
      * 根据币种CODE查名称描述

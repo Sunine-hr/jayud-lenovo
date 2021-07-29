@@ -273,8 +273,8 @@
     <select id="statisticalMainOrderBillDetails" resultType="com.jayud.oms.model.vo.StatisticsOrderBillDetailsVO">
         SELECT
         tmp.*,
-        sum(IFNULL( cav.local_money, 0 )) heiXiaoAmount,
-        sum(IFNULL( cav.short_amount, 0 )) shortAmount
+        sum(IFNULL( cav.local_money, 0 )) heiXiaoLocalAmount,
+        sum(IFNULL( cav.short_local_amount, 0 )) shortLocalAmount
         FROM
         (
         SELECT

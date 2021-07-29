@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.BigDecimalUtil;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.HeXiaoConfirmForm;
@@ -58,6 +59,7 @@ public class CancelAfterVerificationServiceImpl extends ServiceImpl<CancelAfterV
         CostAmountVO costSAmountVO = receivableBillDetailService.getSCostAmountView(forms.getBillNo());//应收核销
         BigDecimal wsAmount = new BigDecimal("0");//未收金额
         BigDecimal dfAmount = new BigDecimal("0");//待付金额
+        String accountTerm = null;
         BigDecimal nowAddAmount = new BigDecimal("0");//本次添加的金额
         List<HeXiaoConfirmForm> addList = new ArrayList<>();
         for (HeXiaoConfirmForm form : forms.getHeXiaoConfirmForms()) {
@@ -68,12 +70,14 @@ public class CancelAfterVerificationServiceImpl extends ServiceImpl<CancelAfterV
         }
         if (costSAmountVO != null) {//说明本次是应收核销
             wsAmount = costSAmountVO.getWsAmount();
+            accountTerm = costSAmountVO.getAccountTerm();
             if (nowAddAmount.compareTo(wsAmount) == 1) {
                 return CommonResult.error(10001, "本次添加的金额超过未收金额");
             }
         }
         if (costFAmountVO != null) {//说明本次是应付核销
             dfAmount = costFAmountVO.getDfAmount();
+            accountTerm = costFAmountVO.getAccountTerm();
             if (nowAddAmount.compareTo(dfAmount) == 1) {
                 return CommonResult.error(10001, "本次添加的金额超过待付金额");
             }
@@ -86,15 +90,17 @@ public class CancelAfterVerificationServiceImpl extends ServiceImpl<CancelAfterV
             //计算本币金额
             String oCode = cancelAfterVerification.getCurrencyCode();//原始币种,即实收金额的币种
             //TODO 不知道有什么用
-//            BigDecimal exchangeRate = currencyRateService.getExchangeRate(oCode, "CNY");
-//            if (oCode.equals("CNY") && exchangeRate == null) {
-//                exchangeRate = new BigDecimal(1);
-//            }
-//            if (exchangeRate == null) {
-//                return CommonResult.error(10001, "请先配置当前月份原始货币:" + oCode + "兑换货币：CNY的汇率");
-//            }
-//            BigDecimal localMoney = cancelAfterVerification.getRealReceiveMoney().multiply(exchangeRate);
-//            cancelAfterVerification.setLocalMoney(localMoney);
+            BigDecimal exchangeRate = currencyRateService.getExchangeRate(oCode, "CNY", accountTerm);
+            if (oCode.equals("CNY") && exchangeRate == null) {
+                exchangeRate = new BigDecimal(1);
+            }
+            if (exchangeRate == null) {
+                return CommonResult.error(10001, "请先配置原始货币:" + oCode + "兑换货币：CNY的汇率");
+            }
+            BigDecimal localMoney = cancelAfterVerification.getRealReceiveMoney().multiply(exchangeRate);
+            cancelAfterVerification.setLocalMoney(localMoney);
+            cancelAfterVerification.setLocalExchangeRate(exchangeRate);
+            cancelAfterVerification.setShortLocalAmount(BigDecimalUtil.multiply(exchangeRate, cancelAfterVerification.getShortAmount()));
             list.add(cancelAfterVerification);
         }
         Boolean result = saveBatch(list);

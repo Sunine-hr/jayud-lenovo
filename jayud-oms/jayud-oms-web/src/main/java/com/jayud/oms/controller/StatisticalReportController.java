@@ -74,4 +74,15 @@ public class StatisticalReportController {
         Map<String, Object> map = this.statisticalReportService.remittanceStatus(form);
         return CommonResult.success(map);
     }
+
+
+
+    @ApiOperation("客户未回款")
+    @PostMapping("/customerUncollectedPay")
+    public CommonResult<List<Map<String, Object>>> customerUncollectedPay(@RequestBody QueryStatisticalReport form) {
+        form.assemblyTime();
+        form.supplementaryTimeData();
+        List<Map<String, Object>> list = this.statisticalReportService.customerUncollectedPay(form);
+        return CommonResult.success(list);
+    }
 }

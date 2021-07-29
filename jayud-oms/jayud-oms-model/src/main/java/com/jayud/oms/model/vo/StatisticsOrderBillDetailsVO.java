@@ -41,17 +41,17 @@ public class StatisticsOrderBillDetailsVO extends Model<StatisticsOrderBillDetai
     @ApiModelProperty(value = "法人主体名称")
     private String legalName;
 
-    @ApiModelProperty(value = "结算币种本币汇率")
+    @ApiModelProperty(value = "结算币种本币金额")
     private BigDecimal localMoney;
 
     @ApiModelProperty(value = "账单编号")
     private String billNo;
 
     @ApiModelProperty(value = "总计核销金额")
-    private BigDecimal heiXiaoAmount;
+    private BigDecimal heiXiaoLocalAmount;
 
     @ApiModelProperty(value = "总计短款金额")
-    private BigDecimal shortAmount;
+    private BigDecimal shortLocalAmount;
 
 
 }

@@ -37,9 +37,11 @@ public interface CurrencyRateMapper extends BaseMapper<CurrencyRate> {
      * 根据原始币种和兑换币种获取汇率
      * @param oCode
      * @param dCode
+     * @param accountTerm
      * @return
      */
-    BigDecimal getExchangeRate(@Param("oCode") String oCode,@Param("dCode")String dCode);
+    BigDecimal getExchangeRate(@Param("oCode") String oCode, @Param("dCode") String dCode,
+                               @Param("accountTerm") String accountTerm);
 
     /**
      * 根据币种CODE查名称描述

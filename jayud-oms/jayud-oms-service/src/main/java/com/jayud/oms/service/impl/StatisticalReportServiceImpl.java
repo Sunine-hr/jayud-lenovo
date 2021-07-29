@@ -15,7 +15,6 @@ import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
 import com.jayud.oms.model.vo.StatisticsOrderBillDetailsVO;
 import com.jayud.oms.service.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -259,15 +258,14 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
         List<BigDecimal> amountReceiveds = new ArrayList<>();
         List<BigDecimal> uncollectedAmounts = new ArrayList<>();
         for (String suppleTimeDatum : form.getSuppleTimeData()) {
-            List<StatisticsOrderBillDetailsVO> list = group.get(suppleTimeDatum);
-            if (CollectionUtils.isEmpty(list)) {
-                continue;
-            }
+            List<StatisticsOrderBillDetailsVO> list = group.getOrDefault(suppleTimeDatum, new ArrayList<>());
+
             BigDecimal totalAmount = new BigDecimal(0);
             BigDecimal amountReceived = new BigDecimal(0);
             for (StatisticsOrderBillDetailsVO billCost : list) {
+                BigDecimal heiXiaoAmount = BigDecimalUtil.add(billCost.getHeiXiaoLocalAmount(), billCost.getShortLocalAmount());
                 totalAmount = BigDecimalUtil.add(billCost.getLocalMoney(), totalAmount);
-                amountReceived = BigDecimalUtil.add(billCost.getHeiXiaoAmount(), amountReceived);
+                amountReceived = BigDecimalUtil.add(heiXiaoAmount, amountReceived);
             }
             totalAmounts.add(totalAmount);
             amountReceiveds.add(amountReceived);
@@ -281,6 +279,52 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
         map.put("uncollectedAmounts", uncollectedAmounts);
         map.put("timeUnit", form.getTimeUnit());
         return map;
+    }
+
+    /**
+     * 客户未回款
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> customerUncollectedPay(QueryStatisticalReport form) {
+        List<String> status = new ArrayList<>();
+        status.add(OrderStatusEnum.COST_0.getCode());
+        status.add(OrderStatusEnum.COST_2.getCode());
+        status.add(OrderStatusEnum.COST_3.getCode());
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+
+//        List<StatisticsOrderBaseCostVO> reCosts = this.receivableCostService.getBaseStatisticsAllCost(form, legalIds, status);
+
+        Map<String, List<StatisticsOrderBillDetailsVO>> group = this.receivableCostService.statisticalMainOrderBillDetails(form, legalIds, status)
+                .stream().collect(Collectors.groupingBy(e -> e.getLegalName() + "~" + e.getCustomerName()));
+
+        List<Map<String, Object>> list = new ArrayList<>();
+
+        group.forEach((k, v) -> {
+            String customerName = k.split("~")[0];
+            BigDecimal totalAmount = new BigDecimal(0);
+            BigDecimal amountReceived = new BigDecimal(0);
+            Map<String, Object> map = new HashMap<>();
+            List<String> billNos = new ArrayList<>(v.size());
+            for (StatisticsOrderBillDetailsVO billCost : v) {
+                BigDecimal heiXiaoAmount = BigDecimalUtil.add(billCost.getHeiXiaoLocalAmount(), billCost.getShortLocalAmount());
+                totalAmount = BigDecimalUtil.add(billCost.getLocalMoney(), totalAmount);
+                amountReceived = BigDecimalUtil.add(heiXiaoAmount, amountReceived);
+                billNos.add(billCost.getBillNo());
+            }
+            map.put("customerName", customerName);
+            map.put("totalAmount", totalAmount);
+            map.put("uncollectedAmount", BigDecimalUtil.subtract(totalAmount, amountReceived));
+            map.put("billNos", billNos);
+            list.add(map);
+        });
+
+        //根据金额排序
+        list.sort(new Utilities.MapComparatorBigDesc("totalAmount"));
+        return list;
     }
 
 

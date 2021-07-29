@@ -90,7 +90,7 @@ public class CancelAfterVerificationServiceImpl extends ServiceImpl<CancelAfterV
             //计算本币金额
             String oCode = cancelAfterVerification.getCurrencyCode();//原始币种,即实收金额的币种
             //TODO 不知道有什么用
-            BigDecimal exchangeRate = currencyRateService.getExchangeRate(oCode, "CNY", accountTerm);
+            BigDecimal exchangeRate = currencyRateService.getExchangeRate(oCode, "CNY", DateUtils.format(heXiaoConfirmForm.getRealReceiveTimeStr(),"YYYY-MM"));
             if (oCode.equals("CNY") && exchangeRate == null) {
                 exchangeRate = new BigDecimal(1);
             }

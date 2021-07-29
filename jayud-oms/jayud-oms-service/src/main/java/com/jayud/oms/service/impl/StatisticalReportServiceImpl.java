@@ -171,12 +171,14 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
         List<Map<String, Object>> results = new ArrayList<>();
         group.forEach((k, v) -> {
             Map<String, Object> map = new HashMap<>();
-            v.forEach(e -> {
-                Object amount = orderAmounts.getOrDefault(e.getOrderNo(), new BigDecimal(0));
-                map.put("amount", amount);
-            });
+            BigDecimal totalAmount = new BigDecimal(0);
+            for (OrderInfo orderInfo : v) {
+                Object amount = orderAmounts.getOrDefault(orderInfo.getOrderNo(), new BigDecimal(0));
+                totalAmount = BigDecimalUtil.add(totalAmount, (BigDecimal) amount);
+            }
             map.put("name", k);
             map.put("orderNum", v.size());
+            map.put("amount", totalAmount);
             results.add(map);
         });
         //根据金额排序

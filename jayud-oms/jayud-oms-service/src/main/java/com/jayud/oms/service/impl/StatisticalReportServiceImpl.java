@@ -6,6 +6,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.BigDecimalUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
 import com.jayud.oms.feign.OauthClient;
@@ -325,6 +326,57 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
         //根据金额排序
         list.sort(new Utilities.MapComparatorBigDesc("totalAmount"));
         return list;
+    }
+
+    /**
+     * 主订单统计
+     *
+     * @param form
+     * @return
+     */
+    @Override
+    public Map<String, Object> statisticsMainOrder(QueryStatisticalReport form) {
+        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        List<OrderInfo> orderInfos = this.orderInfoService.getBasicStatistics(form, legalIds, new OrderInfo());
+
+        Map<String, List<OrderInfo>> group = orderInfos.stream().filter(e -> e.getCreateTime() != null)
+                .collect(Collectors.groupingBy(e -> DateUtils.LocalDateTime2Str(e.getCreateTime(), "YYYY-MM")));
+
+        List<Integer> totalExecutingNums = new ArrayList<>();
+        List<Integer> totalCompleteNums = new ArrayList<>();
+        List<Integer> totalAbnormalNums = new ArrayList<>();
+        for (String suppleTimeDatum : form.getSuppleTimeData()) {
+            List<OrderInfo> list = group.getOrDefault(suppleTimeDatum, new ArrayList<>());
+
+            Integer executingNum = 0;//执行中数量
+            Integer completeNum = 0;//完成数量
+            Integer abnormal = 0;//异常数量
+            for (OrderInfo orderInfo : list) {
+                if (OrderStatusEnum.MAIN_1.getCode().equals(orderInfo.getStatus().toString())
+                        && (orderInfo.getIsRejected() == null || !orderInfo.getIsRejected())) {
+                    ++executingNum;
+                    continue;
+                }
+                if (OrderStatusEnum.MAIN_3.getCode().equals(orderInfo.getStatus().toString())
+                        || (orderInfo.getIsRejected() != null && orderInfo.getIsRejected())) {
+                    ++abnormal;
+                    continue;
+                }
+
+            }
+            totalExecutingNums.add(executingNum);
+            totalCompleteNums.add(completeNum);
+            totalAbnormalNums.add(abnormal);
+
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("date", form.getSuppleTimeData());
+        map.put("totalExecutingNums", totalExecutingNums);
+        map.put("totalCompleteNums", totalCompleteNums);
+        map.put("totalAbnormalNums", totalAbnormalNums);
+        map.put("timeUnit", form.getTimeUnit());
+        return map;
     }
 
 

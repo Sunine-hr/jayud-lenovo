@@ -43,4 +43,11 @@ public interface StatisticalReportService {
      * @return
      */
     List<Map<String, Object>> customerUncollectedPay(QueryStatisticalReport form);
+
+    /**
+     * 主订单统计
+     * @param form
+     * @return
+     */
+    Map<String, Object> statisticsMainOrder(QueryStatisticalReport form);
 }

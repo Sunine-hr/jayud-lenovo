@@ -54,7 +54,7 @@ public class QueryStatisticalReport {
     private String timeUnit;
 
     public static void main(String[] args) {
-        System.out.println(Utilities.printFieldsInfo(QueryStatisticalReport.class));
+        System.out.println(Integer.parseInt("09"));
     }
 
     public void setTimeType(Integer timeType) {
@@ -84,23 +84,30 @@ public class QueryStatisticalReport {
         if (timeType == null || timeType == 2) {
             String startYear = null;
             String endYear = null;
+            Integer startMonth = 1;
+            Integer endMonth = 1;
             boolean isDefault = false;
             if (CollectionUtils.isEmpty(timeInterval)) {
                 startYear = DateUtils.LocalDateTime2Str(LocalDateTime.now(), "YYYY");
                 this.setTimeType(2);
                 isDefault = true;
             } else {
-                startYear = timeInterval.get(0).split("-")[0];
-                endYear = timeInterval.get(1).split("-")[0];
+                String[] startSplit = timeInterval.get(0).split("-");
+                String[] endYearSplit = timeInterval.get(1).split("-");
+                startYear = startSplit[0];
+                endYear = endYearSplit[0];
+                startMonth = Integer.parseInt(startSplit[1]);
+                endMonth = Integer.parseInt(endYearSplit[1]);
+
             }
 
-            for (int i = 1; i <= 12; i++) {
+            for (int i = startMonth; i <= (startYear.equals(endYear) ? endMonth : 12); i++) {
                 String month = i >= 10 ? i + "" : "0" + i;
                 suppleTimeData.add(startYear + "-" + month);
                 suppleTimeDataShort.add(startYear + "-" + month);
             }
             if (endYear != null && !startYear.equals(endYear)) {
-                for (int i = 1; i <= 12; i++) {
+                for (int i = 1; i <= endMonth; i++) {
                     String month = i >= 10 ? i + "" : "0" + i;
                     suppleTimeData.add(endYear + "-" + month);
                     suppleTimeDataShort.add(endYear + "-" + month);
@@ -122,4 +129,6 @@ public class QueryStatisticalReport {
             }
         }
     }
+
+
 }

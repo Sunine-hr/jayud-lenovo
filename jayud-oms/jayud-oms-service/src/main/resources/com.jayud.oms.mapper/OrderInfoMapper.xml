@@ -597,7 +597,7 @@
     </select>
     <select id="getBasicStatistics" resultType="com.jayud.oms.model.po.OrderInfo">
         select
-        order_no,legal_entity_id,created_user,create_time
+        order_no,legal_entity_id,created_user,create_time,status,is_rejected
         from order_info
         <where>
             <if test="form.timeInterval != null and form.timeInterval.size>0">

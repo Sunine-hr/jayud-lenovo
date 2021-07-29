@@ -48,6 +48,14 @@ public class StatisticalReportController {
         return CommonResult.success(list);
     }
 
+    @ApiOperation("主订单统计")
+    @PostMapping("/statisticsMainOrder")
+    public CommonResult<Map<String, Object>> statisticsMainOrder(@RequestBody QueryStatisticalReport form) {
+        form.assemblyTime();
+        form.supplementaryTimeData();
+        Map<String, Object> list = this.statisticalReportService.statisticsMainOrder(form);
+        return CommonResult.success(list);
+    }
 
     @ApiOperation("订单排行榜")
     @PostMapping("/getOrderRanking")

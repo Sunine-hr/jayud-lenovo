@@ -9,6 +9,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.finance.bo.HeXiaoConfirmForm;
 import com.jayud.finance.bo.HeXiaoConfirmListForm;
+import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.CancelAfterVerificationMapper;
 import com.jayud.finance.po.CancelAfterVerification;
 import com.jayud.finance.service.ICancelAfterVerificationService;
@@ -17,12 +18,15 @@ import com.jayud.finance.service.IOrderPaymentBillDetailService;
 import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.vo.CostAmountVO;
 import com.jayud.finance.vo.HeXiaoListVO;
+import com.jayud.finance.vo.InitComboxStrVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -37,12 +41,12 @@ public class CancelAfterVerificationServiceImpl extends ServiceImpl<CancelAfterV
 
     @Autowired
     ICurrencyRateService currencyRateService;
-
     @Autowired
     IOrderPaymentBillDetailService paymentBillDetailService;
-
     @Autowired
     IOrderReceivableBillDetailService receivableBillDetailService;
+    @Autowired
+    private OmsClient omsClient;
 
     @Override
     public List<HeXiaoListVO> heXiaoList(String billNo) {
@@ -82,6 +86,10 @@ public class CancelAfterVerificationServiceImpl extends ServiceImpl<CancelAfterV
                 return CommonResult.error(10001, "本次添加的金额超过待付金额");
             }
         }
+
+        Map<String, String> currencyMap = this.omsClient.initCurrencyInfo().getData().stream()
+                .collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
+
         List<CancelAfterVerification> list = new ArrayList<>();
         for (HeXiaoConfirmForm heXiaoConfirmForm : addList) {
             CancelAfterVerification cancelAfterVerification = ConvertUtil.convert(heXiaoConfirmForm, CancelAfterVerification.class);
@@ -90,12 +98,12 @@ public class CancelAfterVerificationServiceImpl extends ServiceImpl<CancelAfterV
             //计算本币金额
             String oCode = cancelAfterVerification.getCurrencyCode();//原始币种,即实收金额的币种
             //TODO 不知道有什么用
-            BigDecimal exchangeRate = currencyRateService.getExchangeRate(oCode, "CNY", DateUtils.format(heXiaoConfirmForm.getRealReceiveTimeStr(),"YYYY-MM"));
+            BigDecimal exchangeRate = currencyRateService.getExchangeRate(oCode, "CNY", DateUtils.format(heXiaoConfirmForm.getRealReceiveTimeStr(), "YYYY-MM"));
             if (oCode.equals("CNY") && exchangeRate == null) {
                 exchangeRate = new BigDecimal(1);
             }
             if (exchangeRate == null) {
-                return CommonResult.error(10001, "请先配置原始货币:" + oCode + "兑换货币：CNY的汇率");
+                return CommonResult.error(10001, "请先配置原始货币:" + currencyMap.get(oCode) + "兑换货币：人民币的汇率");
             }
             BigDecimal localMoney = cancelAfterVerification.getRealReceiveMoney().multiply(exchangeRate);
             cancelAfterVerification.setLocalMoney(localMoney);

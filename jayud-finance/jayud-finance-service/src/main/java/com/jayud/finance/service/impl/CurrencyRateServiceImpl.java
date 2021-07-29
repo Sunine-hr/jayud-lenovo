@@ -160,8 +160,8 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
     }
 
     @Override
-    public BigDecimal getExchangeRate(String oCode, String dCode,String accountTerm) {
-        return baseMapper.getExchangeRate(oCode, dCode,accountTerm);
+    public BigDecimal getExchangeRate(String oCode, String dCode,String date) {
+        return baseMapper.getExchangeRate(oCode, dCode, date);
     }
 
     @Override

@@ -50,8 +50,8 @@
         cr.ocid = (select c2.id from currency_info c2 where c2.currency_code = #{oCode})
 				and cr.`month` =
 				<choose>
-                    <when test="accountTerm ==null and accountTerm!=''">
-                        #{accountTerm}
+                    <when test="date !=null and date!=''">
+                        #{date}
                     </when>
                     <otherwise>
                         DATE_FORMAT(now() , '%Y-%m' )

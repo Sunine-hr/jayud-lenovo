@@ -242,8 +242,9 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
     @Override
     public boolean reviewCommodities(AddReviewCommodityForm form) {
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+        List<CommodityFollow> commodityFollows = new ArrayList<>();
 
-        //先删除原来的申报要素
+
         List<Commodity> commodities = ConvertUtil.convertList(form.getAddCommodityDetailForms(), Commodity.class);
         for (Commodity commodity : commodities) {
             List<CommodityEntryVO> commodityEntry = commodityEntryService.getCommodityEntry(commodity.getId());
@@ -282,10 +283,14 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
             commodity.setStateFlag(form.getStateFlag());
             commodity.setClassBy(systemUser.getId().intValue());
             commodity.setCassByName(UserOperator.getToken());
-            commodity.setClassByDtm(LocalDateTime.now()
-            );
+            commodity.setClassByDtm(LocalDateTime.now());
 
-
+            boolean update = this.saveOrUpdate(commodity);
+            if(!update){
+                log.warn("商品归类失败,商品id为"+commodity.getId());
+                return false;
+            }
+            log.warn("商品添加或修改成功："+commodities);
 
             if(CollectionUtils.isNotEmpty(addCommodityEntryForms)){
                 List<CommodityEntry> commodityEntries = ConvertUtil.convertList(addCommodityEntryForms, CommodityEntry.class);
@@ -301,6 +306,18 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
                     return false;
                 }
             }
+            CommodityFollow commodityFollow = new CommodityFollow();
+            commodityFollow.setSType(OperationEnum.UPDATE.getCode());
+            commodityFollow.setFollowContext("商品归类"+commodity.getId());
+            commodityFollow.setCrtBy(commodity.getId().intValue());
+            commodityFollow.setCrtByDtm(LocalDateTime.now());
+            commodityFollow.setCrtByName(systemUser.getName());
+            commodityFollows.add(commodityFollow);
+        }
+
+        boolean b = commodityFollowService.saveBatch(commodityFollows);
+        if(!b){
+            log.warn("商品日志操作添加失败："+commodityFollows);
         }
 
         return true;

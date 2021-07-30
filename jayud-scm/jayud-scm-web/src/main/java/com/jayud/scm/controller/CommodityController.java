@@ -149,7 +149,7 @@ public class CommodityController {
     }
 
     /**
-     * 导出入库商品模板
+     * 导出商品模板
      */
     @ApiOperation(value = "导出商品模板")
     @GetMapping(value = "/exportCommodityTemplate")

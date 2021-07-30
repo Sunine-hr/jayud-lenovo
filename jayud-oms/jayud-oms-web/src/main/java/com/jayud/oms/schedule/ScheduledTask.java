@@ -54,67 +54,72 @@ public class ScheduledTask {
             form.setMainOrderId(orderInfo.getId());
             form.setClassCode(orderInfo.getClassCode());
             InputOrderVO orderDetail = this.orderInfoService.getOrderDetail(form);
-            boolean isComplete = true;
-            if (OrderStatusEnum.CBG.getCode().equals(form.getClassCode())) {
-                //纯报关所有通关确认
-                List<InputSubOrderCustomsVO> subOrders = orderDetail.getOrderCustomsForm().getSubOrders();
-                long count = subOrders.stream().filter(e -> OrderStatusEnum.CUSTOMS_C_6.getDesc().equals(e.getStatusDesc())).count();
-                if (count != subOrders.size()) {
-                    isComplete = false;
+            try {
+                boolean isComplete = true;
+                if (OrderStatusEnum.CBG.getCode().equals(form.getClassCode())) {
+                    //纯报关所有通关确认
+                    List<InputSubOrderCustomsVO> subOrders = orderDetail.getOrderCustomsForm().getSubOrders();
+                    long count = subOrders.stream().filter(e -> OrderStatusEnum.CUSTOMS_C_6.getDesc().equals(e.getStatusDesc())).count();
+                    if (count != subOrders.size()) {
+                        isComplete = false;
+                    }
                 }
+                long count = 0;
+                //报关是放行审核
+                InputOrderCustomsVO orderCustomsForm = orderDetail.getOrderCustomsForm();
+                if (!OrderStatusEnum.CBG.getCode().equals(form.getClassCode()) && orderCustomsForm != null) {
+                    List<InputSubOrderCustomsVO> subOrders = orderDetail.getOrderCustomsForm().getSubOrders();
+                    count = subOrders.stream().filter(e -> OrderStatusEnum.CUSTOMS_C_5.getDesc().equals(e.getStatusDesc())).count();
+                    if (subOrders.size() != count) isComplete = false;
+                }
+                //中港是确认签收
+                InputOrderTransportVO orderTransportForm = orderDetail.getOrderTransportForm();
+                if (orderTransportForm != null) {
+                    if (!OrderStatusEnum.TMS_T_15.getCode().equals(orderTransportForm.getStatus())) isComplete = false;
+                }
+                //空运是确认签收
+                InputAirOrderVO airOrderForm = orderDetail.getAirOrderForm();
+                if (airOrderForm != null) {
+                    if (airOrderForm.getProcessStatus() != 1) isComplete = false;
+                }
+                //海运单订单
+                InputSeaOrderVO seaOrderForm = orderDetail.getSeaOrderForm();
+                if (seaOrderForm != null) {
+                    if (seaOrderForm.getProcessStatus() != 1) isComplete = false;
+                }
+                //内陆订单
+                InputOrderInlandTPVO inlandTransportForm = orderDetail.getOrderInlandTransportForm();
+                if (inlandTransportForm != null) {
+                    if (inlandTransportForm.getProcessStatus() != 1) isComplete = false;
+                }
+                //拖车单
+                List<InputTrailerOrderVO> trailerOrderForms = orderDetail.getTrailerOrderForm();
+                if (!CollectionUtils.isEmpty(trailerOrderForms)) {
+                    count = trailerOrderForms.stream().filter(e -> e.getProcessStatus() == 1).count();
+                    if (count != trailerOrderForms.size()) isComplete = false;
+                }
+                //入库订单
+                InputStorageInputOrderVO storageInputOrderForms = orderDetail.getStorageInputOrderForm();
+                if (storageInputOrderForms != null) {
+                    if (storageInputOrderForms.getProcessStatus() != 1) isComplete = false;
+                }
+                //出库订单
+                InputStorageOutOrderVO storageOutOrderForms = orderDetail.getStorageOutOrderForm();
+                if (storageOutOrderForms != null) {
+                    if (storageOutOrderForms.getProcessStatus() != 1) isComplete = false;
+                }
+                //快进快出订单
+                InputStorageFastOrderVO storageFastOrderForms = orderDetail.getStorageFastOrderForm();
+                if (storageFastOrderForms != null) {
+                    if (storageFastOrderForms.getProcessStatus() != 1) isComplete = false;
+                }
+                if (isComplete) {
+                    updates.add(new OrderInfo().setId(orderInfo.getId()).setIsComplete(true));
+                }
+            } catch (Exception e) {
+                log.warn("主订单同步失败 订单号:{} msg:{}", orderInfo.getOrderNo(), e.getMessage());
             }
-            long count = 0;
-            //报关是放行审核
-            InputOrderCustomsVO orderCustomsForm = orderDetail.getOrderCustomsForm();
-            if (orderCustomsForm != null) {
-                List<InputSubOrderCustomsVO> subOrders = orderDetail.getOrderCustomsForm().getSubOrders();
-                count = subOrders.stream().filter(e -> OrderStatusEnum.CUSTOMS_C_5.getDesc().equals(e.getStatusDesc())).count();
-                if (subOrders.size() != count) isComplete = false;
-            }
-            //中港是确认签收
-            InputOrderTransportVO orderTransportForm = orderDetail.getOrderTransportForm();
-            if (orderTransportForm != null) {
-                if (!OrderStatusEnum.TMS_T_15.getCode().equals(orderTransportForm.getStatus())) isComplete = false;
-            }
-            //空运是确认签收
-            InputAirOrderVO airOrderForm = orderDetail.getAirOrderForm();
-            if (airOrderForm != null) {
-                if (airOrderForm.getProcessStatus() != 1) isComplete = false;
-            }
-            //海运单订单
-            InputSeaOrderVO seaOrderForm = orderDetail.getSeaOrderForm();
-            if (seaOrderForm != null) {
-                if (seaOrderForm.getProcessStatus() != 1) isComplete = false;
-            }
-            //内陆订单
-            InputOrderInlandTPVO inlandTransportForm = orderDetail.getOrderInlandTransportForm();
-            if (inlandTransportForm != null) {
-                if (inlandTransportForm.getProcessStatus() != 1) isComplete = false;
-            }
-            //拖车单
-            List<InputTrailerOrderVO> trailerOrderForms = orderDetail.getTrailerOrderForm();
-            if (!CollectionUtils.isEmpty(trailerOrderForms)) {
-                count = trailerOrderForms.stream().filter(e -> e.getProcessStatus() == 1).count();
-                if (count != trailerOrderForms.size()) isComplete = false;
-            }
-            //入库订单
-            InputStorageInputOrderVO storageInputOrderForms = orderDetail.getStorageInputOrderForm();
-            if (storageInputOrderForms != null) {
-                if (storageInputOrderForms.getProcessStatus() != 1) isComplete = false;
-            }
-            //出库订单
-            InputStorageOutOrderVO storageOutOrderForms = orderDetail.getStorageOutOrderForm();
-            if (storageOutOrderForms != null) {
-                if (storageOutOrderForms.getProcessStatus() != 1) isComplete = false;
-            }
-            //快进快出订单
-            InputStorageFastOrderVO storageFastOrderForms = orderDetail.getStorageFastOrderForm();
-            if (storageFastOrderForms != null) {
-                if (storageFastOrderForms.getProcessStatus() != 1) isComplete = false;
-            }
-            if (isComplete) {
-                updates.add(new OrderInfo().setId(orderInfo.getId()).setIsComplete(true));
-            }
+
         }
         if (CollectionUtils.isNotEmpty(updates)) {
             this.orderInfoService.updateBatchById(updates);

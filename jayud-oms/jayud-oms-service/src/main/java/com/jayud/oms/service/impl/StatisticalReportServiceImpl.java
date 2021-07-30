@@ -68,7 +68,6 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
                 //统计未录用订单数量
                 Integer num = this.costCommonService.allUnemployedFeesNum(list, legalIds, SubOrderSignEnum.MAIN.getSignOne());
                 unemployedFeesMap.put("pendingFees", num);
-                System.out.println(Thread.currentThread().getName() + ":使用lambda表达式创建线程");
                 countDownLatch.countDown();
             } catch (Exception e) {
                 log.warn("获取未录用费用数量线程报错", e);
@@ -99,8 +98,10 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
                         num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null);
                         break;
                     case "pending":
-                        num = (int) orderInfos.get().stream().filter(e -> (e.getIsRejected() != null && e.getIsRejected())
-                                || OrderStatusEnum.MAIN_6.getCode().equals(e.getStatus().toString())).count();
+                        if (orderInfos.get() != null) {
+                            num = (int) orderInfos.get().stream().filter(e -> (e.getIsRejected() != null && e.getIsRejected())
+                                    || OrderStatusEnum.MAIN_6.getCode().equals(e.getStatus().toString())).count();
+                        }
                         break;
                 }
 

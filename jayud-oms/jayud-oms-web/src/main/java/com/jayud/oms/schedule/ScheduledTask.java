@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.oms.model.bo.GetOrderDetailForm;
 import com.jayud.oms.model.po.OrderInfo;
-import com.jayud.oms.model.vo.InputOrderCustomsVO;
-import com.jayud.oms.model.vo.InputOrderTransportVO;
-import com.jayud.oms.model.vo.InputOrderVO;
-import com.jayud.oms.model.vo.InputSubOrderCustomsVO;
+import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.IOrderInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +63,18 @@ public class ScheduledTask {
             if (orderTransportForm != null) {
                 if (!OrderStatusEnum.TMS_T_15.getCode().equals(orderTransportForm.getStatus())) isComplete = false;
             }
+            //空运是确认签收
+            InputAirOrderVO airOrderForm = orderDetail.getAirOrderForm();
+            if (airOrderForm != null) {
+                if (airOrderForm.getProcessStatus() != 1) isComplete = false;
+            }
+            //海运单订单
+            InputSeaOrderVO seaOrderForm = orderDetail.getSeaOrderForm();
+            if (seaOrderForm != null) {
+                if (seaOrderForm.getProcessStatus() != 1) isComplete = false;
+            }
+
+
         }
 
 

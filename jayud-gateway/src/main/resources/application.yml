@@ -153,3 +153,10 @@ spring:
           filters:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor
+        - id: route-jayud-scm      #供应链系统web
+          uri: lb://jayud-scm-web  # uri以lb://开头（后面接的服务名称)
+          predicates:
+            - Path=/jayudScm/**
+          filters:
+            - StripPrefix=1
+            - IgnoreGlobalFilterFactor

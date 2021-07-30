@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.SystemUserRoleRelationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.SystemUserRoleRelation">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="role_id" property="roleId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, role_id
+    </sql>
+
+
+    <select id="getEnabledRolesByUserId" resultType="com.jayud.scm.model.po.SystemRole">
+        select enabledRole.* from system_user_role_relation as relations
+         left join system_role as enabledRole
+         on enabledRole.id=relations.role_id
+         where relations.user_id=#{id} and enabledRole.status=1
+    </select>
+
+    <delete id="removeRelationByRoleId"  parameterType = "java.util.List">
+        delete from system_user_role_relation where 1>2
+        or role_id in
+        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="removeRelationByUserId"  parameterType = "java.util.List">
+        delete from system_user_role_relation where 1>2
+        or user_id in
+        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="isExistUserRelation" resultType="com.jayud.scm.model.po.SystemUserRoleRelation" parameterType = "java.util.List">
+        select * from system_user_role_relation where 1 > 2
+        or role_id in
+        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </select>
+</mapper>

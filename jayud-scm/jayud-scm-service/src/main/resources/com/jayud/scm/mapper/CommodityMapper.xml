@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.CommodityMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.Commodity">
+        <id column="id" property="id" />
+        <result column="sku_no" property="skuNo" />
+        <result column="sku_model" property="skuModel" />
+        <result column="sku_name" property="skuName" />
+        <result column="sku_name_hs" property="skuNameHs" />
+        <result column="sku_unit" property="skuUnit" />
+        <result column="sku_brand" property="skuBrand" />
+        <result column="sku_origin" property="skuOrigin" />
+        <result column="sku_notes" property="skuNotes" />
+        <result column="accessories" property="accessories" />
+        <result column="hs_code_no" property="hsCodeNo" />
+        <result column="hk_code_no" property="hkCodeNo" />
+        <result column="hk_code_name" property="hkCodeName" />
+        <result column="hk_control" property="hkControl" />
+        <result column="unit_nw" property="unitNw" />
+        <result column="reference_price" property="referencePrice" />
+        <result column="max_price" property="maxPrice" />
+        <result column="min_price" property="minPrice" />
+        <result column="avg_price" property="avgPrice" />
+        <result column="item_no" property="itemNo" />
+        <result column="tax_code" property="taxCode" />
+        <result column="tax_code_name" property="taxCodeName" />
+        <result column="tax_code_date" property="taxCodeDate" />
+        <result column="sku_elements" property="skuElements" />
+        <result column="state_flag" property="stateFlag" />
+        <result column="class_by" property="classBy" />
+        <result column="cass_by_name" property="cassByName" />
+        <result column="class_by_dtm" property="classByDtm" />
+        <result column="is_mark" property="isMark" />
+        <result column="remark" property="remark" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_by_dtm" property="crtByDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_by_dtm" property="mdyByDtm" />
+        <result column="voided" property="voided" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_by_dtm" property="voidedByDtm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sku_no, sku_model, sku_name, sku_name_hs, sku_unit, sku_brand, sku_origin, sku_notes, accessories, hs_code_no, hk_code_no, hk_code_name, hk_control, unit_nw, reference_price, max_price, min_price, avg_price, item_no, tax_code, tax_code_name, tax_code_date, sku_elements, state_flag, class_by, cass_by_name, class_by_dtm, is_mark, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
+    </sql>
+
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.CommodityFormVO">
+        select co.id, sku_no skuNo,
+        sku_model skuModel,
+        sku_name skuName,
+        sku_name_hs skuNameHs,
+        sku_unit skuUnit,
+        sku_brand skuBrand,
+        sku_origin skuOrigin,
+        sku_notes skuNotes,
+        accessories,
+        hs_code_no hsCodeNo,
+        hk_code_no hkCodeNo,
+        hk_code_name hkCodeName,
+        hk_control hkControl,
+        unit_nw unitNw,
+        reference_price referencePrice,
+        max_price maxPrice, min_price minPrice,
+        avg_price avgPrice, item_no itemNo,
+        tax_code taxCode,
+        tax_code_name taxCodeName,
+        tax_code_date taxCodeDate, sku_elements skuElements,
+        state_flag stateFlag, class_by classBy, cass_by_name cassByName,
+        class_by_dtm classByDtm,
+        is_mark isMark, co.remark, co.crt_by_name crtByName,
+        co.crt_by_dtm crtByDtm, co.mdy_by_name mdyByName,
+        co.mdy_by_dtm mdyByDtm,
+        hc.out_rate outRate,
+        hc.tax_rate taxRate,hc.tsl_rate tslRate,hc.control_ma controlMa,hc.control_ciq controlCiq
+        from commodity co
+        left join hs_code hc on co.hs_code_no = hc.code_no
+        where co.voided = 0
+        <if test="form.key !=null and form.key!=''">
+            and co.#{form.key} like concat('%',#{form.condition},'%')
+        </if>
+        <if test="form.auditStatus !=null">
+            and co.state_flag = #{form.auditStatus}
+        </if>
+        <if test="form.startTime !=null and form.startTime!=''">
+            and co.create_time <![CDATA[>= ]]> #{form.startTime}
+        </if>
+        <if test="form.endTime !=null and form.endTime!=''">
+            and co.create_time <![CDATA[<= ]]> #{form.endTime}
+        </if>
+    </select>
+
+    <select id="" resultType="String">
+        SELECT up_get_no(#{code},#{date}) FROM dual
+    </select>
+
+</mapper>

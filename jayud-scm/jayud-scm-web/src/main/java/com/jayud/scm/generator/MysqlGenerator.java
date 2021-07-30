@@ -1,4 +1,4 @@
-package com.jayud.oauth.generator;
+package com.jayud.scm.generator;
 
 
 import com.baomidou.mybatisplus.annotation.DbType;
@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-scm\\jayud-scm-service",
                 "jayud-scm\\jayud-scm-web"};
         for (String model : models) {
-            shell(model,"b_public_files");
+            shell(model,"b_tax_class_code");
         }
     }
 

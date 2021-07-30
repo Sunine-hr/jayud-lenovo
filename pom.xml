@@ -34,13 +34,16 @@
         <module>jayud-storage</module>
 
         <module>jayud-email</module>
+        <module>jayud-scm</module>
 
     </modules>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.1.9.RELEASE</version>
     </parent>
+
     <properties>
         <spring-cloud.version>Greenwich.SR2</spring-cloud.version>
         <spring-cloud-alibaba.version>0.9.0.RELEASE</spring-cloud-alibaba.version>

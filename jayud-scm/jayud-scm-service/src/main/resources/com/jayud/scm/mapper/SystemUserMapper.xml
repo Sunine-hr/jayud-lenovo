@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.SystemUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.SystemUser">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="password" property="password"/>
+        <result column="user_name" property="userName"/>
+        <result column="en_user_name" property="enUserName"/>
+        <result column="phone" property="phone"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="work_id" property="workId"/>
+        <result column="work_name" property="workName"/>
+        <result column="company_id" property="companyId"/>
+        <result column="superior_id" property="superiorId"/>
+        <result column="login_time" property="loginTime"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="status" property="status"/>
+        <result column="note" property="note"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_user" property="updatedUser"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMap2" type="com.jayud.scm.model.vo.SystemUserVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="password" property="password"/>
+        <result column="userName" property="userName"/>
+        <result column="enUserName" property="enUserName"/>
+        <result column="phone" property="phone"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="work_id" property="workId"/>
+        <result column="workName" property="workName"/>
+        <result column="roleId" property="roleId"/>
+        <result column="roleName" property="roleName"/>
+        <result column="company_id" property="companyId"/>
+        <result column="superior_id" property="superiorId"/>
+        <result column="superiorName" property="superiorName"/>
+        <result column="login_time" property="loginTime"/>
+        <result column="auditStatusDesc" property="auditStatusDesc"/>
+        <result column="status" property="status"/>
+        <result column="note" property="note"/>
+        <result column="createdTime" property="createdTime"/>
+        <result column="createdUser" property="createdUser"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_user" property="updatedUser"/>
+        <collection property="legalEntities" ofType="com.jayud.oauth.model.po.LegalEntity" column="id" select="getLegalEntity">
+            <result column="lid" property="id"></result>
+            <result column="legalName" property="legalName"></result>
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        system_user.id,
+        system_user.name,
+        system_user.password,
+        system_user.user_name,
+        system_user.en_user_name,
+        system_user.phone,
+        system_user.department_id,
+        system_user.work_id,
+        system_user.company_id,
+        system_user.superior_id,
+        system_user.audit_status,
+        system_user.status,
+        system_user.login_time,
+        system_user.note
+    </sql>
+
+    <select id="getPageList" parameterType="com.jayud.scm.model.bo.QuerySystemUserForm"
+            resultMap="BaseResultMap2">
+        SELECT
+        su.id,
+        su.name,
+        su.phone,
+        su.email,
+        su.user_name userName,
+        su.en_user_name enUserName,
+        (
+        CASE
+        su.`audit_status`
+        WHEN '1'
+        THEN '待审核'
+        WHEN '2'
+        THEN '审核通过'
+        WHEN '0'
+        THEN '审核拒绝'
+        END
+        ) auditStatusDesc,
+        sr.`name` roleName,
+--         c.`company_name` companyName,
+        su.`created_time` createdTime,
+        DATE_FORMAT(su.`created_time`,'%Y-%m-%d %H:%i:%S') strCreatedTime,
+        su.`created_user` createdUser,
+        (SELECT
+        t.user_name
+        FROM
+        `system_user` t
+        WHERE t.id = su.`superior_id`) superiorName,
+        su.`work_name` workName,
+        sr.`id` roleId,
+        su.note,
+        su.`audit_status` auditStatus
+--         le.`id` lid,
+--         le.`legal_name` legalName
+
+        FROM
+        `system_user` su
+        LEFT JOIN system_user_role_relation surr
+        ON surr.`user_id` = su.`id`
+        LEFT JOIN system_role sr
+        ON sr.`id` = surr.`role_id`
+--         LEFT JOIN company c
+--         ON su.`company_id` = c.`id`
+--         LEFT JOIN system_user_legal sul
+--         ON su.`id` = sul.`system_user_id`
+--         LEFT JOIN legal_entity le
+--         ON le.`id` = sul.`legal_id`
+        LEFT JOIN department dt
+        ON dt.`id` = su.`department_id`
+        WHERE su.user_type = '1'
+        <if test="form.cmd == 'isAccount' or form.cmd == 'isAudit'">
+            and su.`status` = 1
+            <if test="form.name != null and form.name != ''">
+                and su.name like concat('%',#{form.name},'%')
+            </if>
+            <if test="form.cmd == 'isAudit'">
+                and su.`audit_status` = '1'
+            </if>
+            <if test="form.companyId != null and form.companyId !=''">
+                and (select GROUP_CONCAT(sul.legal_id) from system_user_legal sul where sul.system_user_id = su.id group by su.id) like concat('%',#{form.companyId},'%')
+            </if>
+            <if test="form.auditStatus != null and form.auditStatus != ''">
+                and su.audit_status = #{form.auditStatus}
+            </if>
+        </if>
+        <if test="form.cmd == 'byDepartmentId'">
+            <if test="form.userName != null and form.userName != ''">
+                and su.user_name like concat('%',#{form.userName},'%')
+            </if>
+            <if test="form.departmentId != null">
+                and su.department_id in
+                <foreach collection="form.departmentIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </if>
+    </select>
+    
+    <select id="getLegalEntity" resultType="com.jayud.scm.model.po.LegalEntity">
+        select le.`id` id,le.`legal_name` legalName from  legal_entity le LEFT JOIN system_user_legal sul on le.`id` = sul.`legal_id` where sul.`system_user_id` = #{id}
+    </select>
+
+    <select id="findOrgStructureCharge" resultType="com.jayud.scm.model.vo.DepartmentChargeVO">
+        SELECT
+          su.id,
+          su.user_name userName,
+          su.en_user_name enUserName,
+          su.phone,
+          w.`work_name` workName,
+          (SELECT COUNT(1) FROM `system_user` t WHERE t.`department_id` = su.`department_id` AND t.`is_department_charge` = '0') countUser
+        FROM
+          `system_user` su
+          LEFT JOIN `work` w
+            ON su.`work_id` = w.`id`
+            WHERE su.`department_id` = #{departmentId}
+            AND su.`is_department_charge` = '1'
+    </select>
+
+    <select id="findUserByRoleId" resultType="java.util.Map">
+        SELECT
+          su.id,
+          su.user_name userName
+        FROM
+          `system_user` su
+        WHERE su.`role_id` = #{roleId}
+    </select>
+
+    <select id="getSystemUser" resultType="com.jayud.scm.model.vo.UpdateSystemUserVO">
+        SELECT
+          su.id,
+          su.`name`,
+          su.user_name userName,
+          su.`en_user_name` enUserName,
+          su.`department_id` departmentId,
+          d.`name` departmentName,
+          su.`work_id` workId,
+          su.`work_name` workName,
+          sr.`id` roleId,
+          sr.`name` roleName,
+          (SELECT
+            c.company_name
+          FROM
+            company c
+          WHERE c.id = su.`company_id`) companyName,
+          su.`company_id` companyId,
+          su.`superior_id` superiorId,
+          (SELECT
+            t.user_name
+          FROM
+            `system_user` t
+          WHERE t.id = su.`superior_id`) superiorName,
+           su.`phone`,
+           su.`email`,
+           su.`is_department_charge` isDepartmentCharge
+        FROM
+          `system_user` su
+          LEFT JOIN department d
+            ON su.`department_id` = d.`id`
+          LEFT JOIN system_user_role_relation surr
+            ON su.`id` = surr.`user_id`
+          LEFT JOIN system_role sr
+            ON sr.`id` = surr.`role_id`
+        WHERE su.`id` = #{id}
+    </select>
+
+
+    <select id="findEachModuleAccountByPage" parameterType="com.jayud.scm.model.bo.QueryAccountForm"
+            resultType = "com.jayud.scm.model.vo.SystemUserVO">
+        SELECT
+        su.id,
+        su.name,
+        su.`en_user_name` enUserName,
+        su.`user_name` userName,
+        sr.`name` roleName,
+        -- sr.`id` roleId,
+        c.`company_name` companyName,
+        -- ci.id companyId,
+        (SELECT
+        t.user_name
+        FROM
+        `system_user` t
+        WHERE t.id = su.`superior_id`) superiorName,
+        su.`created_time` createdTime,
+        su.`created_user` createdUser,
+        su.status
+        FROM
+        `system_user` su
+        LEFT JOIN system_user_role_relation surr
+        ON su.`id` = surr.`user_id`
+        LEFT JOIN system_role sr
+        ON surr.`role_id` = sr.`id`
+        LEFT JOIN company c
+        ON su.`company_id` = c.`id`
+        <where>
+            <if test="form.companyId != null and form.companyId != ''">
+                and c.id = #{form.companyId}
+            </if>
+            <if test="form.status != null">
+                and su.status = #{form.status}
+            </if>
+            <if test="form.name != null and form.name != ''">
+                and su.name like concat('%',#{form.name},'%')
+            </if>
+            <if test="form.userType !=null and form.userType!=''">
+                and su.user_type=#{form.userType}
+            </if>
+        </where>
+    </select>
+
+</mapper>

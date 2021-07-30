@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.QueryForm;
+import com.jayud.scm.model.enums.CorrespondEnum;
 import com.jayud.scm.model.vo.BCountryVO;
 import com.jayud.scm.model.vo.BTaxClassCodeVO;
 import com.jayud.scm.model.vo.HsCodeFormVO;
@@ -39,6 +40,12 @@ public class BTaxClassCodeController {
     @ApiOperation(value = "海关编码列表")
     @PostMapping(value = "/findByPage")
     public CommonResult findByPage(@Valid @RequestBody QueryForm form) {
+
+        if(form.getKey() != null && CorrespondEnum.getName(form.getKey()) == null){
+            return CommonResult.error(444,"该条件无法搜索");
+        }
+        form.setKey(CorrespondEnum.getName(form.getKey()));
+
         IPage<BTaxClassCodeVO> page = this.ibTaxClassCodeService.findByPage(form);
         CommonPageResult<BTaxClassCodeVO> pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);

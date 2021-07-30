@@ -61,10 +61,12 @@ public enum CorrespondEnum {
     NOTE_S("noteS","note_s","描述"),
     TEMP_IN_RATE("tempInRate","temp_in_rate","暂定进口税率"),
     TEMP_OUT_RATE("tempOutRate","temp_out_rate","暂定出口税率"),
-    ELEMENTS("elements","elements","申报要素");
+    ELEMENTS("elements","elements","申报要素"),
 
-
-
+  //b_tax_class_code
+    TAX_CODE1("taxCode","tax_code","分类代码"),
+    TAX_ITEM_NAME("taxItemName","tax_item_name","分类名称"),
+    TAX_CLASS_NAME("taxClassName","tax_class_name","类型名称");
 
     private String code;
     private String name;

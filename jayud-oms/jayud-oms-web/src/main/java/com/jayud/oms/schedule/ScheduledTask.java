@@ -7,10 +7,13 @@ import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.IOrderInfoService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +21,7 @@ import java.util.List;
  */
 @Component
 @Slf4j
+@EnableScheduling
 public class ScheduledTask {
 
     @Autowired
@@ -35,6 +39,8 @@ public class ScheduledTask {
         QueryWrapper<OrderInfo> condition = new QueryWrapper<>();
         condition.lambda().select(OrderInfo::getId, OrderInfo::getClassCode).eq(OrderInfo::getIsComplete, true);
         List<OrderInfo> orderInfos = this.orderInfoService.getBaseMapper().selectList(condition);
+
+        List<OrderInfo> updates = new ArrayList<>();
 
         for (OrderInfo orderInfo : orderInfos) {
             GetOrderDetailForm form = new GetOrderDetailForm();
@@ -73,13 +79,38 @@ public class ScheduledTask {
             if (seaOrderForm != null) {
                 if (seaOrderForm.getProcessStatus() != 1) isComplete = false;
             }
-
-
+            //内陆订单
+            InputOrderInlandTPVO inlandTransportForm = orderDetail.getOrderInlandTransportForm();
+            if (inlandTransportForm != null) {
+                if (inlandTransportForm.getProcessStatus() != 1) isComplete = false;
+            }
+            //拖车单
+            List<InputTrailerOrderVO> trailerOrderForms = orderDetail.getTrailerOrderForm();
+            if (!CollectionUtils.isEmpty(trailerOrderForms)) {
+                count = trailerOrderForms.stream().filter(e -> e.getProcessStatus() == 1).count();
+                if (count != trailerOrderForms.size()) isComplete = false;
+            }
+            //入库订单
+            InputStorageInputOrderVO storageInputOrderForms = orderDetail.getStorageInputOrderForm();
+            if (storageInputOrderForms != null) {
+                if (storageInputOrderForms.getProcessStatus() != 1) isComplete = false;
+            }
+            //出库订单
+            InputStorageOutOrderVO storageOutOrderForms = orderDetail.getStorageOutOrderForm();
+            if (storageOutOrderForms != null) {
+                if (storageOutOrderForms.getProcessStatus() != 1) isComplete = false;
+            }
+            //快进快出订单
+            InputStorageFastOrderVO storageFastOrderForms = orderDetail.getStorageFastOrderForm();
+            if (storageFastOrderForms != null) {
+                if (storageFastOrderForms.getProcessStatus() != 1) isComplete = false;
+            }
+            if (isComplete) {
+                updates.add(new OrderInfo().setId(orderInfo.getId()).setIsComplete(true));
+            }
         }
-
-
+        this.orderInfoService.updateBatchById(updates);
         log.info("*********   定时同步主订单数据任务结束   **************");
     }
-
 
 }

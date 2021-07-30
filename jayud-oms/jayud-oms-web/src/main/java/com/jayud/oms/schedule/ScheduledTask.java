@@ -1,7 +1,9 @@
 package com.jayud.oms.schedule;
 
+import cn.hutool.core.date.StopWatch;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.model.bo.GetOrderDetailForm;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.*;
@@ -13,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,11 +36,15 @@ public class ScheduledTask {
      * 0/7 * * * * ?        代表每7秒执行一次
      * 0 0 4 1 * ?          每月1号凌晨4点触发
      */
-    @Scheduled(cron = "0/30 * * * * ?")
+    @Scheduled(cron = "0/50 * * * * ?")
     public void syncMainOrderData() {
-        log.info("*********   定时同步主订单数据任务执行   **************");
+        log.info("*********   定时同步主订单数据任务执行 :" + DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN) + "  **************");
+        StopWatch stopWatch = new StopWatch();
+        // 开始时间
+        stopWatch.start();
         QueryWrapper<OrderInfo> condition = new QueryWrapper<>();
-        condition.lambda().select(OrderInfo::getId, OrderInfo::getClassCode).eq(OrderInfo::getIsComplete, true);
+        condition.lambda().select(OrderInfo::getId, OrderInfo::getClassCode).ne(OrderInfo::getStatus, OrderStatusEnum.MAIN_2.getCode())
+                .eq(OrderInfo::getIsComplete, false);
         List<OrderInfo> orderInfos = this.orderInfoService.getBaseMapper().selectList(condition);
 
         List<OrderInfo> updates = new ArrayList<>();
@@ -109,8 +116,12 @@ public class ScheduledTask {
                 updates.add(new OrderInfo().setId(orderInfo.getId()).setIsComplete(true));
             }
         }
-        this.orderInfoService.updateBatchById(updates);
-        log.info("*********   定时同步主订单数据任务结束   **************");
+        if (CollectionUtils.isNotEmpty(updates)) {
+            this.orderInfoService.updateBatchById(updates);
+        }
+        // 结束时间
+        stopWatch.stop();
+        log.info("********* 定时同步主订单数据任务结束 (单位:秒): " + stopWatch.getTotalTimeSeconds() + " 秒. **************");
     }
 
 }

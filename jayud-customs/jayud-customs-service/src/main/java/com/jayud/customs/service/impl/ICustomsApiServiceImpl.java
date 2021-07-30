@@ -308,14 +308,16 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
                         Wrappers.<YunbaoguanReceivableCost>lambdaQuery()
                                 .eq(YunbaoguanReceivableCost::getApplyNo, form.getApplyNo()));
                 YunbaoguanReceivableCost yunbaoguanReceivableCost = new YunbaoguanReceivableCost();
-                receivableCost.setIsComplete(false);
+
                 if (receivableCost.getId() == null) {
                     yunbaoguanReceivableCost.setApplyNo(form.getApplyNo());
                     yunbaoguanReceivableCost.setUid(form.getUid());
                     yunbaoguanReceivableCost.setReceivableCostData(JSONUtil.toJsonStr(receivable));
                     yunbaoguanReceivableCost.setCreatedTime(LocalDateTime.now());
                     yunbaoguanReceivableCost.setUpdatedTime(LocalDateTime.now());
+                    yunbaoguanReceivableCost.setIsComplete(false);
                 } else {
+                    receivableCost.setIsComplete(false);
                     receivableCost.setReceivableCostData(JSONUtil.toJsonStr(receivable));
                     receivableCost.setUpdatedTime(LocalDateTime.now());
                     yunbaoguanReceivableCost = receivableCost;

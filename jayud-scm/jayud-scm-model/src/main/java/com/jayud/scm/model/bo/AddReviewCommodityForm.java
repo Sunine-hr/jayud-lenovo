@@ -91,7 +91,7 @@ public class AddReviewCommodityForm {
     private String taxCodeName;
 
     @ApiModelProperty(value = "税务归类日期")
-    private LocalDateTime taxCodeDate;
+    private String taxCodeDate;
 
     @ApiModelProperty(value = "申报要素")
     private String skuElements;
@@ -106,7 +106,7 @@ public class AddReviewCommodityForm {
     private String cassByName;
 
     @ApiModelProperty(value = "归类时间")
-    private LocalDateTime classByDtm;
+    private String classByDtm;
 
     @ApiModelProperty(value = "标记，0未标记，1已标记（不能报关）")
     private Integer isMark;
@@ -121,7 +121,7 @@ public class AddReviewCommodityForm {
     private String crtByName;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime crtByDtm;
+    private String crtByDtm;
 
     @ApiModelProperty(value = "申报要素集合")
     private List<AddCommodityEntryForm> addCommodityEntryForms;

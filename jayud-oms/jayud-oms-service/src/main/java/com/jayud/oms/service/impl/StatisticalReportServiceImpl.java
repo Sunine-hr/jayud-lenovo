@@ -240,7 +240,7 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
     }
 
     /**
-     * 汇款情况
+     * 回款情况
      *
      * @param form
      * @return
@@ -345,7 +345,7 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
         List<OrderInfoVO> orderInfos = this.orderInfoService.getBasicStatistics(form, legalIds, new OrderInfo());
 
         Map<String, List<OrderInfoVO>> group = orderInfos.stream().filter(e -> e.getCreatedTimeStr() != null)
-                .collect(Collectors.groupingBy(e -> e.getCreatedTimeStr()));
+                .collect(Collectors.groupingBy(OrderInfoVO::getCreatedTimeStr));
 
         List<Integer> totalExecutingNums = new ArrayList<>();
         List<Integer> totalCompleteNums = new ArrayList<>();

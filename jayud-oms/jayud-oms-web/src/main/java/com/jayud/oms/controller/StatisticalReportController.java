@@ -44,6 +44,7 @@ public class StatisticalReportController {
     @PostMapping("/getMainOrderSummary")
     public CommonResult<List<Map<String, Integer>>> getMainOrderSummary(@RequestBody QueryStatisticalReport form) {
         form.assemblyTime();
+        form.supplementaryTimeData();
         List<Map<String, Integer>> list = this.statisticalReportService.getMainOrderSummary(form);
         return CommonResult.success(list);
     }
@@ -61,6 +62,7 @@ public class StatisticalReportController {
     @PostMapping("/getOrderRanking")
     public CommonResult<List<Map<String, Object>>> getOrderRanking(@RequestBody QueryStatisticalReport form) {
         form.assemblyTime();
+        form.supplementaryTimeData();
         List<Map<String, Object>> list = this.statisticalReportService.getOrderRanking(form);
         return CommonResult.success(list);
     }

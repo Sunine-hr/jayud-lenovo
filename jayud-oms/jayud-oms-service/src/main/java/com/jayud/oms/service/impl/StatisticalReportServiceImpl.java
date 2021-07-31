@@ -12,6 +12,7 @@ import com.jayud.common.utils.Utilities;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderInfo;
+import com.jayud.oms.model.vo.OrderInfoVO;
 import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
 import com.jayud.oms.model.vo.StatisticsOrderBillDetailsVO;
 import com.jayud.oms.service.*;
@@ -145,11 +146,11 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
     public List<Map<String, Object>> getOrderRanking(QueryStatisticalReport form) {
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
-        List<OrderInfo> orderInfos = this.orderInfoService.getBasicStatistics(form, legalIds, new OrderInfo());
+        List<OrderInfoVO> orderInfos = this.orderInfoService.getBasicStatistics(form, legalIds, new OrderInfo());
 
-        Map<String, List<OrderInfo>> group = orderInfos.stream().filter(e -> !StringUtils.isEmpty(e.getCreatedUser())).collect(Collectors.groupingBy(OrderInfo::getCreatedUser));
+        Map<String, List<OrderInfoVO>> group = orderInfos.stream().filter(e -> !StringUtils.isEmpty(e.getCreatedUser())).collect(Collectors.groupingBy(OrderInfoVO::getCreatedUser));
 
-        List<String> orderNos = orderInfos.stream().map(OrderInfo::getOrderNo).collect(Collectors.toList());
+        List<String> orderNos = orderInfos.stream().map(OrderInfoVO::getOrderNo).collect(Collectors.toList());
 
 //        Map<String, Map<String, Integer>> mainOrder = new HashMap<>();
 //        orderInfos.forEach(e -> {
@@ -173,7 +174,7 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
         group.forEach((k, v) -> {
             Map<String, Object> map = new HashMap<>();
             BigDecimal totalAmount = new BigDecimal(0);
-            for (OrderInfo orderInfo : v) {
+            for (OrderInfoVO orderInfo : v) {
                 Object amount = orderAmounts.getOrDefault(orderInfo.getOrderNo(), new BigDecimal(0));
                 totalAmount = BigDecimalUtil.add(totalAmount, (BigDecimal) amount);
             }
@@ -308,7 +309,7 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
         List<Map<String, Object>> list = new ArrayList<>();
 
         group.forEach((k, v) -> {
-            String customerName = k.split("~")[0];
+            String customerName = k.split("~")[1];
             BigDecimal totalAmount = new BigDecimal(0);
             BigDecimal amountReceived = new BigDecimal(0);
             Map<String, Object> map = new HashMap<>();
@@ -341,21 +342,21 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
     public Map<String, Object> statisticsMainOrder(QueryStatisticalReport form) {
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
-        List<OrderInfo> orderInfos = this.orderInfoService.getBasicStatistics(form, legalIds, new OrderInfo());
+        List<OrderInfoVO> orderInfos = this.orderInfoService.getBasicStatistics(form, legalIds, new OrderInfo());
 
-        Map<String, List<OrderInfo>> group = orderInfos.stream().filter(e -> e.getCreateTime() != null)
-                .collect(Collectors.groupingBy(e -> DateUtils.LocalDateTime2Str(e.getCreateTime(), "YYYY-MM")));
+        Map<String, List<OrderInfoVO>> group = orderInfos.stream().filter(e -> e.getCreatedTimeStr() != null)
+                .collect(Collectors.groupingBy(e -> e.getCreatedTimeStr()));
 
         List<Integer> totalExecutingNums = new ArrayList<>();
         List<Integer> totalCompleteNums = new ArrayList<>();
         List<Integer> totalAbnormalNums = new ArrayList<>();
         for (String suppleTimeDatum : form.getSuppleTimeData()) {
-            List<OrderInfo> list = group.getOrDefault(suppleTimeDatum, new ArrayList<>());
+            List<OrderInfoVO> list = group.getOrDefault(suppleTimeDatum, new ArrayList<>());
 
             Integer executingNum = 0;//执行中数量
             Integer completeNum = 0;//完成数量
             Integer abnormal = 0;//异常数量
-            for (OrderInfo orderInfo : list) {
+            for (OrderInfoVO orderInfo : list) {
                 if (OrderStatusEnum.MAIN_1.getCode().equals(orderInfo.getStatus().toString())
                         && (orderInfo.getIsRejected() == null || !orderInfo.getIsRejected())) {
                     ++executingNum;

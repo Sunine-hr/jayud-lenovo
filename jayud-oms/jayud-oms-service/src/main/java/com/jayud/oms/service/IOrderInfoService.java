@@ -300,5 +300,5 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param orderInfo
      * @return
      */
-    List<OrderInfo> getBasicStatistics(QueryStatisticalReport form, List<Long> legalIds, OrderInfo orderInfo);
+    List<OrderInfoVO> getBasicStatistics(QueryStatisticalReport form, List<Long> legalIds, OrderInfo orderInfo);
 }

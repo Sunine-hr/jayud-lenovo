@@ -120,12 +120,17 @@ public class QueryStatisticalReport {
                 timeInterval.add(suppleTimeData.get(suppleTimeData.size() - 1));
             }
         } else {
+
             if (CollectionUtils.isNotEmpty(timeInterval)) {
                 int interval = Integer.parseInt(timeInterval.get(1)) - Integer.parseInt(timeInterval.get(0));
                 for (int i = 0; i <= interval; i++) {
                     suppleTimeData.add(Integer.parseInt(timeInterval.get(0)) + i + "");
                     suppleTimeDataShort.add(Integer.parseInt(timeInterval.get(0)) + i + "");
                 }
+            }else {
+                String startYear = DateUtils.LocalDateTime2Str(LocalDateTime.now(), "YYYY");
+                suppleTimeData.add(startYear);
+                suppleTimeDataShort.add(startYear);
             }
         }
     }

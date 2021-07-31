@@ -1073,7 +1073,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      * @return
      */
     @Override
-    public List<OrderInfo> getBasicStatistics(QueryStatisticalReport form, List<Long> legalIds, OrderInfo orderInfo) {
+    public List<OrderInfoVO> getBasicStatistics(QueryStatisticalReport form, List<Long> legalIds, OrderInfo orderInfo) {
         return this.baseMapper.getBasicStatistics(form,orderInfo,legalIds);
     }
 

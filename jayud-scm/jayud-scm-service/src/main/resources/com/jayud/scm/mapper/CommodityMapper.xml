@@ -83,21 +83,33 @@
         left join hs_code hc on co.hs_code_no = hc.code_no
         where co.voided = 0
         <if test="form.key !=null and form.key!=''">
-            and co.#{form.key} like concat('%',#{form.condition},'%')
+            and ${form.key} like concat('%',#{form.condition},'%') ESCAPE '/'
         </if>
-        <if test="form.auditStatus !=null">
+        <if test="form.auditStatus !=null and form.auditStatus!=''">
             and co.state_flag = #{form.auditStatus}
         </if>
         <if test="form.startTime !=null and form.startTime!=''">
-            and co.create_time <![CDATA[>= ]]> #{form.startTime}
+            and co.crt_by_dtm <![CDATA[>= ]]> #{form.startTime}
         </if>
         <if test="form.endTime !=null and form.endTime!=''">
-            and co.create_time <![CDATA[<= ]]> #{form.endTime}
+            and co.crt_by_dtm <![CDATA[<= ]]> #{form.endTime}
         </if>
     </select>
 
-    <select id="" resultType="String">
-        SELECT up_get_no(#{code},#{date}) FROM dual
+<!--    <resultMap type="java.util.HashMap" id="cursorMap">-->
+<!--       <result column="i_code" property="code"/>-->
+<!--       <result column="i_date" property="date"/>-->
+<!--        <result column="o_no" property="orderNo"/>-->
+<!--    </resultMap>-->
+
+    <select id="getOrderNo" parameterType="map" statementType="CALLABLE" resultType="java.util.HashMap">
+        {
+        call up_get_no(
+        #{i_code,mode=IN},
+        #{i_date,mode=IN},
+        #{o_no,mode=OUT,jdbcType=VARCHAR}
+        )
+        }
     </select>
 
 </mapper>

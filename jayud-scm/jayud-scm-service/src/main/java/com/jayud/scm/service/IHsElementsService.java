@@ -1,6 +1,7 @@
 package com.jayud.scm.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.HsElements;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.CodeElementsVO;
@@ -17,5 +18,5 @@ import java.util.List;
  */
 public interface IHsElementsService extends IService<HsElements> {
 
-    IPage<CodeElementsVO> findElements(String name);
+    IPage<CodeElementsVO> findElements(QueryCommonForm form);
 }

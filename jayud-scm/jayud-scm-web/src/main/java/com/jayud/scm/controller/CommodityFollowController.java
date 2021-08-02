@@ -1,10 +1,14 @@
 package com.jayud.scm.controller;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddCommodityFollowForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.Commodity;
 import com.jayud.scm.model.po.CommodityFollow;
+import com.jayud.scm.model.vo.BCountryVO;
 import com.jayud.scm.model.vo.CommodityFollowVO;
 import com.jayud.scm.service.ICommodityFollowService;
 import io.swagger.annotations.Api;
@@ -32,9 +36,10 @@ public class CommodityFollowController {
 
     @ApiOperation(value = "根据商品id获取商品操作日志")
     @PostMapping(value = "/findListByCommodityId")
-    public CommonResult findListByCommodityId(@RequestParam("id") Integer id) {
-        List<CommodityFollowVO> commodityFollowVOS = commodityFollowService.findListByCommodityId(id);
-        return CommonResult.success(commodityFollowVOS);
+    public CommonResult findListByCommodityId(@RequestBody QueryCommonForm form) {
+        IPage<CommodityFollowVO> page = this.commodityFollowService.findListByCommodityId(form);
+        CommonPageResult<CommodityFollowVO> pageVO = new CommonPageResult(page);
+        return CommonResult.success(pageVO);
     }
 
     @ApiOperation(value = "新增操作信息")

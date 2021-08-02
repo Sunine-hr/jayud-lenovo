@@ -42,5 +42,14 @@ public class CommodityEntryVO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @ApiModelProperty(value = "要素名称")
+    private String elementsName;
+
+    @ApiModelProperty(value = "要素值")
+    private String defaultValue;
+
+    @ApiModelProperty(value = "排序")
+    private Integer sortIndex;
+
 
 }

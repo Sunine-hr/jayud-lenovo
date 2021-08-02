@@ -70,6 +70,7 @@ secure:
       - /oss/upload
       - /api/**
       - /commodity/exportCommodityTemplate
+      - /common/getOrderNo
 feign:
   httpclient:
     connection-timeout: 5000

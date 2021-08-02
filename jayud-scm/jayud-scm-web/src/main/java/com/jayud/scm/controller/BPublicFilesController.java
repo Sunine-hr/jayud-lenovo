@@ -1,6 +1,7 @@
 package com.jayud.scm.controller;
 
 
+import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddBPublicFilesForm;
 import com.jayud.scm.model.vo.BPublicFilesVO;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -31,7 +33,9 @@ public class BPublicFilesController {
 
     @ApiOperation(value = "通过类型和订单id查询所有附件")
     @PostMapping(value = "/findPublicFile")
-    public CommonResult findPublicFile(@RequestParam("fileModel") Integer fileModel,@RequestParam("businessId") Integer businessId) {
+    public CommonResult findPublicFile(@RequestBody Map<String,Object> map) {
+        Integer fileModel = MapUtil.getInt(map,"fileModel");
+        Integer businessId = MapUtil.getInt(map, "businessId");
         List<BPublicFilesVO> bPublicFilesVOS = bPublicFilesService.getPublicFileList(fileModel,businessId);
         return CommonResult.success(bPublicFilesVOS);
     }

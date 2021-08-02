@@ -1,13 +1,17 @@
 package com.jayud.scm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddCommodityFollowForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.CommodityFollow;
 import com.jayud.scm.mapper.CommodityFollowMapper;
 import com.jayud.scm.model.po.SystemUser;
+import com.jayud.scm.model.vo.BCountryVO;
 import com.jayud.scm.model.vo.CommodityFollowVO;
 import com.jayud.scm.service.ICommodityFollowService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -34,15 +38,13 @@ public class CommodityFollowServiceImpl extends ServiceImpl<CommodityFollowMappe
 
     /**
      * 根据商品id获取商品操作日志记录
-     * @param id
+     * @param form
      * @return
      */
     @Override
-    public List<CommodityFollowVO> findListByCommodityId(Integer id) {
-        QueryWrapper<CommodityFollow> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(CommodityFollow::getCommodityId,id);
-        List<CommodityFollow> list = this.list(queryWrapper);
-        return ConvertUtil.convertList(list,CommodityFollowVO.class);
+    public IPage<CommodityFollowVO> findListByCommodityId(QueryCommonForm form) {
+        Page<BCountryVO> page = new Page<>(form.getPageNum(),form.getPageSize() );
+        return this.baseMapper.findListByCommodityId(form,page);
     }
 
     @Override

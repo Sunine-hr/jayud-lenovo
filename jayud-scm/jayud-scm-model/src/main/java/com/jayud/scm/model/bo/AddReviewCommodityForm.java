@@ -2,6 +2,7 @@ package com.jayud.scm.model.bo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.jayud.scm.model.vo.HsCodeVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -128,5 +129,8 @@ public class AddReviewCommodityForm {
 
     @ApiModelProperty(value = "审核商品集合")
     private List<AddCommodityDetailForm> addCommodityDetailForms;
+
+    @ApiModelProperty(value = "海关编码对象")
+    private HsCodeVO hsCodeVO;
 
 }

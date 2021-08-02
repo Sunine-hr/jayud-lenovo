@@ -143,7 +143,7 @@ public class CommodityDetailVO {
     @ApiModelProperty(value = "海关编码信息")
     private HsCodeVO hsCodeVO;
 
-    @ApiModelProperty(value = "海关编码信息")
+    @ApiModelProperty(value = "要素信息")
     private List<CommodityEntryVO> commodityEntryVOS;
 
     public void setIsMark(Integer isMark) {

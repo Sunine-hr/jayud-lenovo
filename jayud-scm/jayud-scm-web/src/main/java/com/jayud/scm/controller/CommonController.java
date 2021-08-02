@@ -11,6 +11,7 @@ import com.jayud.common.UserOperator;
 import com.jayud.scm.model.bo.AddCommodityModelForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.QueryCommodityForm;
+import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.po.Commodity;
 import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.service.*;
@@ -86,8 +87,9 @@ public class CommonController {
 
         if(result){
             return CommonResult.success();
+        }else{
+            return CommonResult.error(444,"商品删除失败");
         }
-        return CommonResult.error(444,"商品删除失败");
     }
 
     @ApiOperation(value = "添加或修改商品下拉列表框")
@@ -175,9 +177,16 @@ public class CommonController {
         excelReader.setHeaderAlias(aliasMap);
 
         // 第一个参数是指表头所在行，第二个参数是指从哪一行开始读取
-        List<AddCommodityModelForm> list= excelReader.read(0, 1, AddCommodityModelForm.class);
+        List<AddCommodityModelForm> list = excelReader.read(0, 1, AddCommodityModelForm.class);
 
         return CommonResult.success(list);
+    }
+
+    @ApiOperation(value = "获取编号")
+    @PostMapping(value = "/getOrderNo")
+    public CommonResult getOrderNo() {
+        String orderNo = this.commodityService.getOrderNo(NoCodeEnum.COMMODITY.getCode(), LocalDateTime.now());
+        return CommonResult.success(orderNo);
     }
 
 }

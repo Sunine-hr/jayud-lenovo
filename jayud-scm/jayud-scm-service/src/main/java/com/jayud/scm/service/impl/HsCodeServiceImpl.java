@@ -83,20 +83,25 @@ public class HsCodeServiceImpl extends ServiceImpl<HsCodeMapper, HsCode> impleme
 
         StringBuffer stringBuffer = new StringBuffer();
 
-        if(CollectionUtils.isNotEmpty(form.getHsCodeElementsForms())){
-            for (AddHsCodeElementsForm hsCodeElementsForm : form.getHsCodeElementsForms()) {
+        if(CollectionUtils.isNotEmpty(form.getHsCodeElementsVOS())){
+            for (AddHsCodeElementsForm hsCodeElementsForm : form.getHsCodeElementsVOS()) {
                 stringBuffer.append(hsCodeElementsForm.getElementsName()).append("|");
             }
         }
 
         if(form.getId() != null){ //修改
             HsCode byId = this.getById(form.getId());
-            //删除修改前的要素
-            boolean result = hsCodeElementsService.deleteCodeElementsByCodeNo(byId.getCodeNo());
-            if(!result){
-                log.warn("要素信息删除失败"+byId.getCodeNo());
-                return false;
+
+            List<HsCodeElementsVO> codeElementsByCodeNo = hsCodeElementsService.getCodeElementsByCodeNo(byId.getCodeNo());
+            if(CollectionUtils.isNotEmpty(codeElementsByCodeNo)){
+                boolean result = hsCodeElementsService.deleteCodeElementsByCodeNo(byId.getCodeNo());
+                if(!result){
+                    log.warn("要素信息删除失败"+byId.getCodeNo());
+                    return false;
+                }
             }
+            //删除修改前的要素
+
             hsCode.setMdyBy(systemUser.getId().intValue());
             hsCode.setMdyByDtm(LocalDateTime.now());
             hsCode.setMdyByName(systemUser.getName());
@@ -114,9 +119,10 @@ public class HsCodeServiceImpl extends ServiceImpl<HsCodeMapper, HsCode> impleme
         log.warn("海关编码添加或修改成功"+hsCode.getCodeNo());
 
         //添加要素
-        if(CollectionUtils.isNotEmpty(form.getHsCodeElementsForms())){
-            List<HsCodeElements> hsCodeElements = ConvertUtil.convertList(form.getHsCodeElementsForms(), HsCodeElements.class);
+        if(CollectionUtils.isNotEmpty(form.getHsCodeElementsVOS())){
+            List<HsCodeElements> hsCodeElements = ConvertUtil.convertList(form.getHsCodeElementsVOS(), HsCodeElements.class);
             for (HsCodeElements hsCodeElement : hsCodeElements) {
+                hsCodeElement.setId(null);
                 hsCodeElement.setCrtBy(systemUser.getId().intValue());
                 hsCodeElement.setCrtByDtm(LocalDateTime.now());
                 hsCodeElement.setCrtByName(systemUser.getName());

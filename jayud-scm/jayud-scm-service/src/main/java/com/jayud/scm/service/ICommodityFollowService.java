@@ -1,6 +1,8 @@
 package com.jayud.scm.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.scm.model.bo.AddCommodityFollowForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.CommodityFollow;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.CommodityFollowVO;
@@ -17,7 +19,7 @@ import java.util.List;
  */
 public interface ICommodityFollowService extends IService<CommodityFollow> {
 
-    List<CommodityFollowVO> findListByCommodityId(Integer id);
+    IPage<CommodityFollowVO> findListByCommodityId(QueryCommonForm form);
 
     boolean AddCommodityFollow(AddCommodityFollowForm followForm);
 }

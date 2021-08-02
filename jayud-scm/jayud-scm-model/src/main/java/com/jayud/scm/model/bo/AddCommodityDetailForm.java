@@ -108,7 +108,7 @@ public class AddCommodityDetailForm {
     private String cassByName;
 
     @ApiModelProperty(value = "归类时间")
-    private LocalDateTime classByDtm;
+    private String classByDtm;
 
     @ApiModelProperty(value = "标记，0未标记，1已标记（不能报关）")
     private Integer isMark;
@@ -123,7 +123,7 @@ public class AddCommodityDetailForm {
     private String crtByName;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime crtByDtm;
+    private String crtByDtm;
 
 
 }

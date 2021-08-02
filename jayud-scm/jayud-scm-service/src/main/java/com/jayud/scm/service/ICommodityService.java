@@ -8,6 +8,7 @@ import com.jayud.scm.model.vo.CommodityDetailVO;
 import com.jayud.scm.model.vo.CommodityFormVO;
 import com.jayud.scm.model.vo.CommodityVO;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -26,6 +27,8 @@ public interface ICommodityService extends IService<Commodity> {
 
     boolean saveOrUpdateCommodity(AddCommodityForm form);
 
+    String getOrderNo(String code, LocalDateTime date);
+
     CommodityVO findCommodityById(Integer id);
 
     CommodityDetailVO findCommodityDetailById(Integer id);
@@ -37,4 +40,6 @@ public interface ICommodityService extends IService<Commodity> {
     boolean reviewCommodities(AddReviewCommodityForm form);
 
     boolean addCommodity(List<AddCommodityModelForm> list);
+
+    Commodity getCommodityBySkuModelAndSkuBrand(String skuModel, String skuBrand);
 }

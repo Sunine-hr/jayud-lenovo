@@ -12,6 +12,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.CorrespondEnum;
+import com.jayud.scm.model.po.Commodity;
 import com.jayud.scm.model.vo.BCountryVO;
 import com.jayud.scm.model.vo.CommodityDetailVO;
 import com.jayud.scm.model.vo.CommodityFormVO;
@@ -95,6 +96,12 @@ public class CommodityController {
     @ApiOperation(value = "增加或修改商品")
     @PostMapping(value = "/saveOrUpdateCommodity")
     public CommonResult saveOrUpdateCommodity(@Valid @RequestBody AddCommodityForm form) {
+
+        Commodity commodity = commodityService.getCommodityBySkuModelAndSkuBrand(form.getSkuModel(),form.getSkuBrand());
+        if(commodity != null){
+            return CommonResult.error(444,"商品型号和品牌已存在");
+        }
+
         boolean result = this.commodityService.saveOrUpdateCommodity(form);
         if(result){
             return CommonResult.success();
@@ -219,6 +226,23 @@ public class CommodityController {
         List<AddCommodityModelForm> list= excelReader.read(0, 1, AddCommodityModelForm.class);
 
         log.warn("导入的数据"+list);
+
+        for (AddCommodityModelForm addCommodityModelForm : list) {
+            Commodity commodityBySkuModelAndSkuBrand = commodityService.getCommodityBySkuModelAndSkuBrand(addCommodityModelForm.getSkuModel(), addCommodityModelForm.getSkuBrand());
+            if(commodityBySkuModelAndSkuBrand != null){
+                return CommonResult.error(444,addCommodityModelForm.getSkuModel()+":"+addCommodityModelForm.getSkuBrand()+"商品型号和品牌已存在");
+            }
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = i; j < list.size(); j++) {
+                if(list.get(i).getSkuBrand().equals(list.get(j).getSkuBrand())){
+                    if(list.get(i).getSkuModel().equals(list.get(j).getSkuModel())){
+                        return CommonResult.error(444,"excel中存在同品牌同型号的商品，插入失败");
+                    }
+                }
+            }
+        }
 
         boolean result = commodityService.addCommodity(list);
         if(result){

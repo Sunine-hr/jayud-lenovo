@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.scm.model.bo.BasePageForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.HsElements;
 import com.jayud.scm.mapper.HsElementsMapper;
 import com.jayud.scm.model.vo.BCountryVO;
@@ -26,9 +27,9 @@ import java.util.List;
 public class HsElementsServiceImpl extends ServiceImpl<HsElementsMapper, HsElements> implements IHsElementsService {
 
     @Override
-    public IPage<CodeElementsVO> findElements(String name) {
-        BasePageForm basePageForm = new BasePageForm();
-        Page<CodeElementsVO> page = new Page<>(basePageForm.getPageNum(),basePageForm.getPageSize() );
-        return this.baseMapper.findElements(name,page);
+    public IPage<CodeElementsVO> findElements(QueryCommonForm form) {
+
+        Page<CodeElementsVO> page = new Page<>(form.getPageNum(),form.getPageSize() );
+        return this.baseMapper.findElements(form,page);
     }
 }

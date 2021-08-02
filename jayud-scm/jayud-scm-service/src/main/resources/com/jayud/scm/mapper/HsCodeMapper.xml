@@ -53,7 +53,7 @@
         from hs_code hc
         where hc.voided = 0
         <if test="form.key !=null and form.key!=''">
-            and co.#{form.key} like concat('%',#{form.condition},'%')
+            and ${form.key} like concat('%',#{form.condition},'%') ESCAPE '/'
         </if>
     </select>
 

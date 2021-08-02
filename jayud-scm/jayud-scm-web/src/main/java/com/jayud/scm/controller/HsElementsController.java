@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddHsCodeForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.HsElements;
 import com.jayud.scm.model.vo.CodeElementsVO;
 import com.jayud.scm.service.IHsElementsService;
@@ -37,9 +38,9 @@ public class HsElementsController {
 
     @ApiOperation(value = "查询所有申报要素")
     @PostMapping(value = "/findElements")
-    public CommonResult findElements(@RequestBody Map<String,Object> map) {
-        String name = MapUtil.getStr(map, "name");
-        IPage<CodeElementsVO> page = hsElementsService.findElements(name);
+    public CommonResult findElements(@RequestBody QueryCommonForm form) {
+
+        IPage<CodeElementsVO> page = hsElementsService.findElements(form);
         CommonPageResult pageResult = new CommonPageResult(page);
         return CommonResult.success(pageResult);
     }

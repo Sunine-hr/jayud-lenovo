@@ -31,6 +31,15 @@ public class AddCommodityEntryForm {
     private Integer elementId;
 
     @ApiModelProperty(value = "要素名称")
+    private String elementsName;
+
+    @ApiModelProperty(value = "要素值")
+    private String defaultValue;
+
+    @ApiModelProperty(value = "排序")
+    private Integer sortIndex;
+
+    @ApiModelProperty(value = "要素名称")
     private String elementName;
 
     @ApiModelProperty(value = "要素值")

@@ -25,9 +25,9 @@
     </sql>
 
     <select id="findElements" resultType="com.jayud.scm.model.vo.CodeElementsVO">
-        select id, elements_name elementsName, remark from hs_elements he where
-        <if test="name != null and name != ''">
-            elements_name like concat('%',#{name},'%')
+        select id, elements_name elementsName, remark from hs_elements he where voided = 0
+        <if test="form.name != null and form.name != ''">
+            and elements_name like concat('%',#{form.name},'%')
         </if>
     </select>
 

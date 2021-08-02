@@ -98,6 +98,6 @@ public class AddHsCodeForm {
     private String remark;
 
     @ApiModelProperty(value = "海关申报要素")
-    private List<AddHsCodeElementsForm> hsCodeElementsForms;
+    private List<AddHsCodeElementsForm> hsCodeElementsVOS;
 
 }

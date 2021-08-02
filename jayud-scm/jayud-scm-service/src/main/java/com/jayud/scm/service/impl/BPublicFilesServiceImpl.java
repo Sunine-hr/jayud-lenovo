@@ -56,6 +56,7 @@ public class BPublicFilesServiceImpl extends ServiceImpl<BPublicFilesMapper, BPu
         QueryWrapper<BPublicFiles> queryWrapper = new QueryWrapper();
         queryWrapper.lambda().eq(BPublicFiles::getFileModel,fileModel);
         queryWrapper.lambda().eq(BPublicFiles::getBusinessId,businessId);
+        queryWrapper.lambda().eq(BPublicFiles::getVoided,0);
         List<BPublicFiles> list = this.list(queryWrapper);
         List<BPublicFilesVO> bPublicFilesVOS = ConvertUtil.convertList(list, BPublicFilesVO.class);
         for (BPublicFilesVO bPublicFilesVO : bPublicFilesVOS) {

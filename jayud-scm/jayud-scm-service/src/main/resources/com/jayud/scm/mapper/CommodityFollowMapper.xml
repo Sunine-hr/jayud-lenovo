@@ -26,4 +26,12 @@
         id, commodity_id, s_type, follow_context, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
 
+    <select id="findListByCommodityId" resultType="com.jayud.scm.model.vo.CommodityFollowVO">
+        select id, commodity_id commodityId, s_type sType, follow_context followContext, remark, crt_by_name crtByName, crt_by_dtm crtByDtm
+        from commodity_follow where voided = 0
+        <if test="form.id != null and form.id != ''">
+            and id = #{form.id}
+        </if>
+    </select>
+
 </mapper>

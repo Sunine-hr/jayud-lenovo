@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-scm\\jayud-scm-service",
                 "jayud-scm\\jayud-scm-web"};
         for (String model : models) {
-            shell(model,"b_tax_class_code");
+            shell(model,"system_role_action_data");
         }
     }
 

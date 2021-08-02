@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import cn.hutool.db.ActiveEntity;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -100,7 +102,6 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
         CommodityFollow commodityFollow = new CommodityFollow();
 
         if(form.getId() != null){//id不为空，修改
-            commodity.setSkuNo(getOrderNo(NoCodeEnum.COMMODITY.getCode(), DateUtil.dateToYearMonth(LocalDateTime.now())));
             commodity.setMdyBy(systemUser.getId().intValue());
             commodity.setMdyByDtm(LocalDateTime.now());
             commodity.setMdyByName(systemUser.getName());
@@ -108,6 +109,7 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
             commodityFollow.setSType(OperationEnum.UPDATE.getCode());
             commodityFollow.setFollowContext(OperationEnum.UPDATE.getDesc());
         }else{//添加
+            commodity.setSkuNo(getOrderNo(NoCodeEnum.COMMODITY.getCode(), LocalDateTime.now()));
             commodity.setCrtBy(systemUser.getId().intValue());
             commodity.setCrtByDtm(LocalDateTime.now());
             commodity.setCrtByName(systemUser.getName());
@@ -115,7 +117,7 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
             commodityFollow.setFollowContext(OperationEnum.INSERT.getDesc());
         }
 
-        boolean save = this.save(commodity);
+        boolean save = this.saveOrUpdate(commodity);
 
         if(save){
             log.warn("商品添加或修改成功："+commodity);
@@ -137,8 +139,13 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
      * @param date
      * @return
      */
-    public String getOrderNo(String code,String date) {
-        return this.baseMapper.getOrderNo(code,date);
+    @Override
+    public String getOrderNo(String code,LocalDateTime date) {
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("i_code",code);
+        map.put("i_date",date);
+        this.baseMapper.getOrderNo(map);
+        return (String)map.get("o_no");
     }
 
     @Override
@@ -154,6 +161,11 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
         if(commodityDetailVO.getHsCodeNo() != null){
             HsCodeVO hsCodeVO = hsCodeService.getHsCodeByCodeNo(commodityDetailVO.getHsCodeNo());
             List<CommodityEntryVO> commodityEntryVOS = commodityEntryService.getCommodityEntry(commodityDetailVO.getId());
+            for (CommodityEntryVO commodityEntryVO : commodityEntryVOS) {
+                commodityEntryVO.setDefaultValue(commodityEntryVO.getElementValue());
+                commodityEntryVO.setElementSort(commodityEntryVO.getSortIndex());
+                commodityEntryVO.setElementsName(commodityEntryVO.getElementName());
+            }
             commodityDetailVO.setHsCodeVO(hsCodeVO);
             commodityDetailVO.setCommodityEntryVOS(commodityEntryVOS);
         }
@@ -202,6 +214,10 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
         //审核商品信息
         if(CollectionUtils.isNotEmpty(form.getAddCommodityEntryForms())){
             for (AddCommodityEntryForm addCommodityEntryForm : form.getAddCommodityEntryForms()) {
+                addCommodityEntryForm.setElementName(addCommodityEntryForm.getElementsName());
+                addCommodityEntryForm.setElementValue(addCommodityEntryForm.getDefaultValue());
+                addCommodityEntryForm.setElementSort(addCommodityEntryForm.getSortIndex());
+
                 if(addCommodityEntryForm.getElementName().equals("型号")){
                     stringBuffer.append(addCommodityEntryForm.getElementValue()+"型").append("|");
                 }
@@ -259,6 +275,11 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
             List<AddCommodityEntryForm> addCommodityEntryForms = form.getAddCommodityEntryForms();
             if(CollectionUtils.isNotEmpty(form.getAddCommodityEntryForms())){ //品牌（中文及外文名称）	型号
                 for (AddCommodityEntryForm addCommodityEntryForm : addCommodityEntryForms) {
+
+                    addCommodityEntryForm.setElementName(addCommodityEntryForm.getElementsName());
+                    addCommodityEntryForm.setElementValue(addCommodityEntryForm.getDefaultValue());
+                    addCommodityEntryForm.setElementSort(addCommodityEntryForm.getSortIndex());
+
                     if(addCommodityEntryForm.getElementName().equals("品牌（中文及外文名称")){
                         addCommodityEntryForm.setElementValue(commodity.getSkuBrand());
                     }
@@ -306,9 +327,10 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
                 }
             }
             CommodityFollow commodityFollow = new CommodityFollow();
+            commodityFollow.setCommodityId(commodity.getId());
             commodityFollow.setSType(OperationEnum.UPDATE.getCode());
             commodityFollow.setFollowContext("商品归类"+commodity.getId());
-            commodityFollow.setCrtBy(commodity.getId().intValue());
+            commodityFollow.setCrtBy(systemUser.getId().intValue());
             commodityFollow.setCrtByDtm(LocalDateTime.now());
             commodityFollow.setCrtByName(systemUser.getName());
             commodityFollows.add(commodityFollow);
@@ -333,12 +355,13 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
 
         for (Commodity commodity : commodities) {
             CommodityFollow commodityFollow = new CommodityFollow();
+            commodity.setSkuNo(getOrderNo(NoCodeEnum.COMMODITY.getCode(),LocalDateTime.now()));
             commodity.setCrtBy(systemUser.getId().intValue());
             commodity.setCrtByDtm(LocalDateTime.now());
             commodity.setCrtByName(systemUser.getName());
             commodityFollow.setSType(OperationEnum.INSERT.getCode());
             commodityFollow.setFollowContext(OperationEnum.INSERT.getDesc()+commodity.getId());
-            commodityFollow.setCrtBy(commodity.getId().intValue());
+            commodityFollow.setCrtBy(systemUser.getId().intValue());
             commodityFollow.setCrtByDtm(LocalDateTime.now());
             commodityFollow.setCrtByName(systemUser.getName());
             commodityFollows.add(commodityFollow);
@@ -357,5 +380,13 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
         log.warn("商品添加或修改成功："+commodities);
         log.warn("商品日志操作添加成功："+commodityFollows);
         return true;
+    }
+
+    @Override
+    public Commodity getCommodityBySkuModelAndSkuBrand(String skuModel, String skuBrand) {
+        QueryWrapper<Commodity> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(Commodity::getSkuModel,skuModel);
+        queryWrapper.lambda().eq(Commodity::getSkuBrand,skuBrand);
+        return this.getOne(queryWrapper);
     }
 }

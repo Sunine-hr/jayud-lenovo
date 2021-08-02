@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jayud.scm.mapper.BTaxClassCodeMapper">
+<mapper namespace="com.jayud.scm.mapper.SystemRoleActionDataMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.BTaxClassCode">
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.SystemRoleActionData">
         <id column="id" property="id" />
-        <result column="tax_code" property="taxCode" />
-        <result column="tax_item_name" property="taxItemName" />
-        <result column="tax_class_name" property="taxClassName" />
+        <result column="role_id" property="roleId" />
+        <result column="action_id" property="actionId" />
+        <result column="action_code" property="actionCode" />
+        <result column="menu_code" property="menuCode" />
+        <result column="date_type" property="dateType" />
         <result column="remark" property="remark" />
         <result column="crt_by" property="crtBy" />
         <result column="crt_by_name" property="crtByName" />
@@ -23,16 +25,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, tax_code, tax_item_name, tax_class_name, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
+        id, role_id, action_id, action_code, menu_code, date_type, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
-
-    <select id="findByPage" resultType="com.jayud.scm.model.vo.BTaxClassCodeVO">
-        select id, tax_code taxCode, tax_item_name taxItemName, tax_class_name taxClassName, remark
-        from b_tax_class_code bt
-        where bt.voided = 0
-        <if test="form.key !=null and form.key!=''">
-            and bt.#{form.key} like concat('%',#{form.condition},'%')  ESCAPE '/'
-        </if>
-    </select>
 
 </mapper>

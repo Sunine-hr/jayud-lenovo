@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.MessagePushTemplateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.MessagePushTemplate">
+        <id column="id" property="id" />
+        <result column="num" property="num" />
+        <result column="msg_name" property="msgName" />
+        <result column="type" property="type" />
+        <result column="sub_type" property="subType" />
+        <result column="trigger_status" property="triggerStatus" />
+        <result column="send_time_type" property="sendTimeType" />
+        <result column="send_time" property="sendTime" />
+        <result column="time_unit" property="timeUnit" />
+        <result column="template_content" property="templateContent" />
+        <result column="content" property="content" />
+        <result column="rep_param" property="repParam" />
+        <result column="sql_select" property="sqlSelect" />
+        <result column="template_title" property="templateTitle" />
+        <result column="title" property="title" />
+        <result column="post" property="post" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, num, msg_name, type, sub_type, trigger_status, send_time_type, send_time, time_unit, template_content, content, rep_param, sql_select, template_title, title, post
+    </sql>
+    <select id="executeTemplateSQL" resultType="java.util.Map">
+        ${sqlSelect}
+    </select>
+
+</mapper>

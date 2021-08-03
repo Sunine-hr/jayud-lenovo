@@ -8,6 +8,7 @@ import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
+import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.AddMessagePushTemplateForm;
 import com.jayud.oms.model.po.MessagePushTemplate;
 import com.jayud.oms.mapper.MessagePushTemplateMapper;
@@ -39,6 +40,9 @@ public class MessagePushTemplateServiceImpl extends ServiceImpl<MessagePushTempl
     private IMsgPushListService msgPushListService;
     @Autowired
     private IBindingMsgTemplateService bindingMsgTemplateService;
+    @Autowired
+    private OauthClient oauthClient;
+
 
     @Override
     @Transactional
@@ -57,8 +61,9 @@ public class MessagePushTemplateServiceImpl extends ServiceImpl<MessagePushTempl
         this.saveOrUpdate(convert);
 
         //操作人类型,根据岗位获取所有人,并且创建消息
-        if (form.getType() == 1) {
+        if (form.getType() == 1 && form.getId() == null && !StringUtils.isEmpty(form.getPost())) {
             //根据岗位查询消息列表,根据岗位追加模板
+
             //相同状态不进行操作
         }
     }

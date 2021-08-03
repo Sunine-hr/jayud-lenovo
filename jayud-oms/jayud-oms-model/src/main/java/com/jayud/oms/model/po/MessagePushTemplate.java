@@ -54,8 +54,8 @@ public class MessagePushTemplate extends Model<MessagePushTemplate> {
     @ApiModelProperty(value = "延迟天数")
     private Integer sendTime;
 
-    @ApiModelProperty(value = "时间单位(1:天,2:时,3:分)")
-    private Integer timeUnit;
+    @ApiModelProperty(value = "时间单位")
+    private String timeUnit;
 
     @ApiModelProperty(value = "发送模板内容")
     private String templateContent;

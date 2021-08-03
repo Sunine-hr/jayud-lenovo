@@ -1,23 +1,25 @@
 package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.jayud.common.CommonResult;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.StatusEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
-import com.jayud.common.utils.Utilities;
 import com.jayud.oms.feign.OauthClient;
+import com.jayud.oms.mapper.MessagePushTemplateMapper;
 import com.jayud.oms.model.bo.AddMessagePushTemplateForm;
+import com.jayud.oms.model.bo.QueryMessagePushTemplateForm;
 import com.jayud.oms.model.po.BindingMsgTemplate;
 import com.jayud.oms.model.po.MessagePushTemplate;
-import com.jayud.oms.mapper.MessagePushTemplateMapper;
 import com.jayud.oms.model.po.MsgPushList;
+import com.jayud.oms.model.vo.MessagePushTemplateVO;
 import com.jayud.oms.model.vo.SystemUserVO;
 import com.jayud.oms.service.IBindingMsgTemplateService;
 import com.jayud.oms.service.IMessagePushTemplateService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oms.service.IMsgPushListService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,5 +133,34 @@ public class MessagePushTemplateServiceImpl extends ServiceImpl<MessagePushTempl
         }
         MessagePushTemplate messagePushTemplate = list.get(0);
         return messagePushTemplate.getId().equals(form.getId());
+    }
+
+    @Override
+    public IPage<MessagePushTemplateVO> findByPage(QueryMessagePushTemplateForm form) {
+        //定义分页参数
+        Page<MessagePushTemplateVO> page = new Page(form.getPageNum(), form.getPageSize());
+        IPage<MessagePushTemplateVO> iPage = this.baseMapper.findByPage(page, form);
+        return iPage;
+    }
+
+    /**
+     * 更改启用/禁用状态
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public boolean enableOrDisable(Long id) {
+        //查询当前状态
+        QueryWrapper<MessagePushTemplate> condition = new QueryWrapper<>();
+        condition.lambda().select(MessagePushTemplate::getStatus).eq(MessagePushTemplate::getId, id);
+        MessagePushTemplate tmp = this.baseMapper.selectOne(condition);
+
+        Integer status = 1 == tmp.getStatus() ? StatusEnum.DISABLE.getCode() : StatusEnum.ENABLE.getCode();
+
+        MessagePushTemplate update = new MessagePushTemplate().setId(id).setStatus(status)
+                .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
+
+        return this.updateById(update);
     }
 }

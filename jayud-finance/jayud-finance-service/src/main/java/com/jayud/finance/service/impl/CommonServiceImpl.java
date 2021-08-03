@@ -115,7 +115,7 @@ public class CommonServiceImpl implements CommonService {
                     tmsOrderTemplate.assembleData(jsonObject);
                     //组装主订单信息
                     tmsOrderTemplate.assemblyMainOrderData(result.getData());
-                    map.put(cmd.equals("main") ? tmsOrderTemplate.getMainOrderNo() : tmsOrderTemplate.getOrderNo(), tmsOrderTemplate);
+                    map.put(cmd.equals("main") ? tmsOrderTemplate.getMainOrderNo() : tmsOrderTemplate.getSubOrderNo(), tmsOrderTemplate);
                     break;
 //                case ZGYS_ONE:
 //                    break;

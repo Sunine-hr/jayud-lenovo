@@ -3,12 +3,15 @@ package com.jayud.oms.model.po;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * <p>
@@ -20,13 +23,14 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="MsgPushList对象", description="消息推送列表")
+@Accessors(chain = true)
+@ApiModel(value = "MsgPushList对象", description = "消息推送列表")
 public class MsgPushList extends Model<MsgPushList> {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty(value = "接收人名称")
@@ -34,6 +38,9 @@ public class MsgPushList extends Model<MsgPushList> {
 
     @ApiModelProperty(value = "接收人id")
     private Long recipientId;
+
+    @ApiModelProperty(value = "消息类型(1:操作状态,2:客户状态)")
+    private Integer type;
 
     @ApiModelProperty(value = "岗位")
     private String post;

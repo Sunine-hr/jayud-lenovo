@@ -10,8 +10,11 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.AddMessagePushTemplateForm;
+import com.jayud.oms.model.po.BindingMsgTemplate;
 import com.jayud.oms.model.po.MessagePushTemplate;
 import com.jayud.oms.mapper.MessagePushTemplateMapper;
+import com.jayud.oms.model.po.MsgPushList;
+import com.jayud.oms.model.vo.SystemUserVO;
 import com.jayud.oms.service.IBindingMsgTemplateService;
 import com.jayud.oms.service.IMessagePushTemplateService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -22,8 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -62,9 +67,44 @@ public class MessagePushTemplateServiceImpl extends ServiceImpl<MessagePushTempl
 
         //操作人类型,根据岗位获取所有人,并且创建消息
         if (form.getType() == 1 && form.getId() == null && !StringUtils.isEmpty(form.getPost())) {
-            //根据岗位查询消息列表,根据岗位追加模板
+            Map<String, MsgPushList> msgPushLists = this.msgPushListService.getByCondition(new MsgPushList().setType(form.getType()))
+                    .stream().collect(Collectors.toMap(e -> e.getRecipientId() + "~" + e.getPost(), e -> e));
 
-            //相同状态不进行操作
+            //根据岗位查询消息列表,根据岗位追加模板
+            List<MsgPushList> addOpt = new ArrayList<>();
+            List<BindingMsgTemplate> update = new ArrayList<>();
+            for (String post : form.getPosts()) {
+                List<SystemUserVO> users = this.oauthClient.getEnableUserByWorkName(post).getData();
+                if (CollectionUtils.isEmpty(users)) {
+                    continue;
+                }
+                //根据岗位+用户id查询消息列表消息
+                users.forEach(e -> {
+                    MsgPushList msgPushList = msgPushLists.get(e.getId() + "~" + post);
+                    if (msgPushList == null) {
+                        MsgPushList tmp = new MsgPushList().setCreateTime(LocalDateTime.now())
+                                .setCreateUser(UserOperator.getToken()).setPost(post).setRecipientName(e.getUserName())
+                                .setRecipientId(e.getId()).setType(form.getType());
+                        addOpt.add(tmp);
+                    } else {
+                        //存在消息列表追加,在绑定模板追加
+                        BindingMsgTemplate bindingMsgTemplate = new BindingMsgTemplate().setMsgListId(msgPushList.getId())
+                                .setTemplateId(convert.getId()).setPost(post).setType(form.getType())
+                                .setCreateTime(LocalDateTime.now()).setCreateUser(UserOperator.getToken());
+                        update.add(bindingMsgTemplate);
+                    }
+                });
+            }
+            if (CollectionUtils.isNotEmpty(addOpt)) {
+                this.msgPushListService.saveBatch(addOpt);
+                addOpt.forEach(e -> {
+                    BindingMsgTemplate bindingMsgTemplate = new BindingMsgTemplate().setMsgListId(e.getId())
+                            .setTemplateId(convert.getId()).setPost(e.getPost()).setType(form.getType())
+                            .setCreateTime(LocalDateTime.now()).setCreateUser(UserOperator.getToken());
+                    update.add(bindingMsgTemplate);
+                });
+            }
+            this.bindingMsgTemplateService.saveBatch(update);
         }
     }
 

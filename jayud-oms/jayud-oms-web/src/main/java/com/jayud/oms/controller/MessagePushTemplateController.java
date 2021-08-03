@@ -2,6 +2,7 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.beetl.BeetlUtils;
 import com.jayud.common.entity.InitComboxStrVO;
@@ -9,6 +10,7 @@ import com.jayud.common.enums.MsgTempTriggerStatusEnum;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.AddMessagePushTemplateForm;
 import com.jayud.oms.model.po.MessagePushTemplate;
+import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.service.IMessagePushTemplateService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +65,7 @@ public class MessagePushTemplateController {
 
 //    @ApiOperation(value = "分页查询消息模板")
 //    @PostMapping("/saveOrUpdate")
-//    public CommonResult saveOrUpdate(@RequestBody @Valid AddMessagePushTemplateForm form) throws Exception {
+//    public CommonResult<CommonPageResult<MessagePushTemplate>> saveOrUpdate(@RequestBody @Valid AddMessagePushTemplateForm form) throws Exception {
 //        form.checkSql();
 //        Map<String, Object> queryParam = this.messagePushTemplateService.executeTemplateSQL(form.getSqlSelect());
 //        String content = BeetlUtils.strTemplate(form.getTemplateContent(), queryParam);

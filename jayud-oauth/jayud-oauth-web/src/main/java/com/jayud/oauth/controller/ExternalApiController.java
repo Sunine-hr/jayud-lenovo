@@ -456,8 +456,17 @@ public class ExternalApiController {
      * 获取所有业务员
      */
     @RequestMapping(value = "/api/getSystemUserList")
-    ApiResult<List<SystemUserVO>> getSystemUserList(){
+    ApiResult<List<SystemUserVO>> getSystemUserList() {
         return ApiResult.ok(this.userService.getSystemUserList());
+    }
+
+
+    /**
+     * 根据岗位获取启用用户
+     */
+    @RequestMapping(value = "/api/getEnableUserByWorkName")
+    ApiResult<List<SystemUserVO>> getEnableUserByWorkName(@RequestParam(value = "workName") String workName) {
+        return ApiResult.ok(this.userService.getByCondition(new SystemUser().setWorkName(workName).setStatus(1)));
     }
 }
 

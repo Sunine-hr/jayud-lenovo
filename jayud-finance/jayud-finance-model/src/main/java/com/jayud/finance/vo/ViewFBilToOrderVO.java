@@ -17,6 +17,9 @@ public class ViewFBilToOrderVO {
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
 
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrderNo;
+
     @ApiModelProperty(value = "子订单编号")
     private String subOrderNo;
 
@@ -76,5 +79,10 @@ public class ViewFBilToOrderVO {
         }
         this.startAddress=startAddress;
         this.endAddress=endAddress;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+        this.mainOrderNo = orderNo;
     }
 }

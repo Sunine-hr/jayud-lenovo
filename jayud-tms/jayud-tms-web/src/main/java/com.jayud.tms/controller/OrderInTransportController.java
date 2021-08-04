@@ -3,19 +3,19 @@ package com.jayud.tms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.*;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DelOprStatusForm;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.feign.FreightAirApiClient;
+import com.jayud.tms.feign.MsgClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.feign.OmsMiniClient;
 import com.jayud.tms.model.bo.*;
@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,22 +52,20 @@ public class OrderInTransportController {
 
     @Autowired
     IOrderTransportService orderTransportService;
-
     @Autowired
     RedisUtils redisUtils;
-
     @Autowired
     OmsClient omsClient;
-
     @Autowired
     OmsMiniClient omsMiniClient;
-
     @Autowired
     IOrderSendCarsService orderSendCarsService;
     @Autowired
     private FreightAirApiClient freightAirApiClient;
     @Autowired
     private IDeliveryAddressService deliveryAddressService;
+    @Autowired
+    private MsgClient msgClient;
 
 
     /**
@@ -210,6 +209,7 @@ public class OrderInTransportController {
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
+        this.msgPush(orderTransport);
         return CommonResult.success();
     }
 
@@ -797,6 +797,24 @@ public class OrderInTransportController {
         return CommonResult.success(inputOrderTransportVO);
     }
 
+
+    private void msgPush(OrderTransport orderTransport) {
+        Map<String, String> request = new HashMap<>();
+        request.put("topic", KafkaMsgEnums.MESSAGE_PUSH_TASK.getTopic());
+        request.put("key", KafkaMsgEnums.MESSAGE_PUSH_TASK.getKey());
+        Map<String, Object> msg = new HashMap<>();
+        msg.put("triggerStatus", orderTransport.getStatus());
+        Map<String, Object> sqlParam = new HashMap<>();
+        sqlParam.put("recordId", orderTransport.getId());
+        msg.put("sqlParam", sqlParam);
+        msg.put("now", LocalDateTime.now());
+        msg.put("cmd", "order");
+        msg.put("subType", SubOrderSignEnum.ZGYS.getSignOne());
+        msg.put("mainOrderNo", orderTransport.getMainOrderNo());
+        msg.put("orderNo", orderTransport.getOrderNo());
+        request.put("msg", JSONUtil.toJsonStr(msg));
+        this.msgClient.consume(request);
+    }
 
 }
 

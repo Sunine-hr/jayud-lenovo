@@ -1,39 +1,24 @@
 package com.jayud.common.enums;
 
-import com.jayud.common.entity.InitComboxStrVO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
- * 消息推送渠道
+ * 账单类型
  */
 @Getter
 @AllArgsConstructor
-public enum MsgChannelTypeEnum {
+public enum MsgPushInstructionEnum {
 
-    MAIL(1, "邮件"),
-    WECHAT(2, "微信"),
+    CMD1("order", "订单"),
     ;
-    private Integer code;
+    private String code;
     private String desc;
 
-    public static List<InitComboxStrVO> initComboxStrVO() {
-        List<InitComboxStrVO> list = new ArrayList<>();
-        for (MsgChannelTypeEnum value : values()) {
-            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
-            initComboxStrVO.setName(value.getDesc());
-            initComboxStrVO.setId(value.getCode().longValue());
-            list.add(initComboxStrVO);
-        }
-        return list;
-    }
-
     public static String getDesc(String code) {
-        for (MsgChannelTypeEnum value : values()) {
+        for (MsgPushInstructionEnum value : values()) {
             if (Objects.equals(code, value.getCode())) {
                 return value.getDesc();
             }
@@ -41,8 +26,8 @@ public enum MsgChannelTypeEnum {
         return "";
     }
 
-    public static MsgChannelTypeEnum getEnum(Integer code) {
-        for (MsgChannelTypeEnum value : values()) {
+    public static MsgPushInstructionEnum getEnum(String code) {
+        for (MsgPushInstructionEnum value : values()) {
             if (Objects.equals(code, value.getCode())) {
                 return value;
             }
@@ -50,13 +35,13 @@ public enum MsgChannelTypeEnum {
         return null;
     }
 
-    public static Integer getCode(String desc) {
-        for (MsgChannelTypeEnum value : values()) {
+    public static String getCode(String desc) {
+        for (MsgPushInstructionEnum value : values()) {
             if (Objects.equals(desc, value.getDesc())) {
                 return value.getCode();
             }
         }
-        return -1;
+        return null;
     }
 
 

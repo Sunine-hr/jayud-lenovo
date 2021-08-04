@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-oms\\jayud-oms-service",
                 "jayud-oms\\jayud-oms-web"};
         for (String model : models) {
-            shell(model,"binding_msg_template");
+            shell(model,"system_conf");
 
         }
     }

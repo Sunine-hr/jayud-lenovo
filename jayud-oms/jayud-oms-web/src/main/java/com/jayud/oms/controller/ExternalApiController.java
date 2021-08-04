@@ -1877,11 +1877,11 @@ public class ExternalApiController {
 
     @ApiOperation(value = "查询字典")
     @PostMapping(value = "/api/findDict")
-    public CommonResult<List<Dict>> findDictType(@RequestParam("dictTypeCode") String dictTypeCode) {
+    public ApiResult<List<Dict>> findDictType(@RequestParam("dictTypeCode") String dictTypeCode) {
         QueryWrapper<Dict> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(Dict::getDictTypeCode, dictTypeCode);
         List<Dict> dictList = this.dictService.list(queryWrapper);
-        return CommonResult.success(dictList);
+        return ApiResult.ok(dictList);
     }
 
     /**
@@ -1889,13 +1889,25 @@ public class ExternalApiController {
      */
     @ApiOperation(value = "创建消息推送任务")
     @PostMapping(value = "/api/createPushTask")
-    public void createPushTask(@RequestBody String msg) {
+    public ApiResult createPushTask(@RequestBody String msg) {
         JSONObject jsonObject = new JSONObject(msg);
         String triggerStatus = jsonObject.getStr("triggerStatus");
         Map<String, Object> sqlParam = jsonObject.get("sqlParam", Map.class);
         LocalDateTime now = DateUtils.str2LocalDateTime(jsonObject.getStr("now"), DateUtils.DATE_TIME_PATTERN);
-        Map<String, Object> otherParam = jsonObject.get("otherParam", Map.class);
+        Map<String, Object> otherParam = new HashMap<>();
+        String cmd = jsonObject.getStr("cmd");
+        MsgPushInstructionEnum cmdEnum = MsgPushInstructionEnum.getEnum(cmd);
+        if (cmdEnum != null) {
+            switch (cmdEnum) {
+                case CMD1:
+                    List<Long> associatedUserId = new ArrayList<>();
+                    otherParam.put("associatedUserId", associatedUserId);
+                    break;
+            }
+        }
+
         this.msgPushRecordService.createPushTask(triggerStatus, sqlParam, now, otherParam);
+        return ApiResult.ok();
     }
 
 }

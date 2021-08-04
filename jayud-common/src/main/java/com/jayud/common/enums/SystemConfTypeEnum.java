@@ -1,39 +1,26 @@
 package com.jayud.common.enums;
 
-import com.jayud.common.entity.InitComboxStrVO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
- * 消息推送渠道
+ * 账单类型
  */
 @Getter
 @AllArgsConstructor
-public enum MsgChannelTypeEnum {
+public enum SystemConfTypeEnum {
 
-    MAIL(1, "邮件"),
-    WECHAT(2, "微信"),
+    ONE(1,"email", "邮箱配置"),
+    TWO(2, "",""),
     ;
     private Integer code;
+    private String key;
     private String desc;
 
-    public static List<InitComboxStrVO> initComboxStrVO() {
-        List<InitComboxStrVO> list = new ArrayList<>();
-        for (MsgChannelTypeEnum value : values()) {
-            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
-            initComboxStrVO.setName(value.getDesc());
-            initComboxStrVO.setId(value.getCode().longValue());
-            list.add(initComboxStrVO);
-        }
-        return list;
-    }
-
     public static String getDesc(String code) {
-        for (MsgChannelTypeEnum value : values()) {
+        for (SystemConfTypeEnum value : values()) {
             if (Objects.equals(code, value.getCode())) {
                 return value.getDesc();
             }
@@ -41,8 +28,8 @@ public enum MsgChannelTypeEnum {
         return "";
     }
 
-    public static MsgChannelTypeEnum getEnum(Integer code) {
-        for (MsgChannelTypeEnum value : values()) {
+    public static SystemConfTypeEnum getEnum(Integer code) {
+        for (SystemConfTypeEnum value : values()) {
             if (Objects.equals(code, value.getCode())) {
                 return value;
             }
@@ -51,7 +38,7 @@ public enum MsgChannelTypeEnum {
     }
 
     public static Integer getCode(String desc) {
-        for (MsgChannelTypeEnum value : values()) {
+        for (SystemConfTypeEnum value : values()) {
             if (Objects.equals(desc, value.getDesc())) {
                 return value.getCode();
             }

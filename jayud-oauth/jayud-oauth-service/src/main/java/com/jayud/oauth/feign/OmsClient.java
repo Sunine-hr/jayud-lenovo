@@ -48,6 +48,6 @@ public interface OmsClient {
 
     @ApiOperation(value = "查询字典")
     @PostMapping(value = "/api/findDict")
-    public CommonResult<List<Object>> findDictType(@RequestParam("dictTypeCode") String dictTypeCode);
+    public ApiResult<List<Object>> findDictType(@RequestParam("dictTypeCode") String dictTypeCode);
 
 }

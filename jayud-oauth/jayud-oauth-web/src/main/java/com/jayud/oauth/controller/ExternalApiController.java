@@ -55,6 +55,8 @@ public class ExternalApiController {
     ISystemUserLegalService systemUserLegalService;
     @Autowired
     private ISystemMenuService systemMenuService;
+    @Autowired
+    private IMsgUserChannelService msgUserChannelService;
 
 
     @ApiOperation(value = "获取所有部门")
@@ -467,6 +469,14 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/getEnableUserByWorkName")
     ApiResult<List<SystemUserVO>> getEnableUserByWorkName(@RequestParam(value = "workName") String workName) {
         return ApiResult.ok(this.userService.getByCondition(new SystemUser().setWorkName(workName).setStatus(1)));
+    }
+
+    /**
+     * 根据用户集合查询用户消息渠道
+     */
+    @RequestMapping(value = "/api/getMsgUserChannelByUserIds")
+    ApiResult<List<MsgUserChannel>> getMsgUserChannelByUserIds(@RequestParam(value = "userIds") List<Long> userIds) {
+        return ApiResult.ok(this.msgUserChannelService.getByUserIds(userIds));
     }
 }
 

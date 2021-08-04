@@ -17,12 +17,15 @@ import java.util.Map;
 public class BeetlUtils {
 
     public static String strTemplate(String template, Map<String, Object> map) throws Exception {
+
         StringTemplateResourceLoader resourceLoader = new StringTemplateResourceLoader();
         Configuration cfg = Configuration.defaultConfiguration();
         GroupTemplate gt = new GroupTemplate(resourceLoader, cfg);
         //获取模板
         Template t = gt.getTemplate(template);
-        t.fastBinding(map);
+        if (map != null) {
+            t.fastBinding(map);
+        }
         BeetlException ex = gt.validateScript(template);
         if (ex != null) {
             ErrorInfo info = new ErrorInfo(ex);

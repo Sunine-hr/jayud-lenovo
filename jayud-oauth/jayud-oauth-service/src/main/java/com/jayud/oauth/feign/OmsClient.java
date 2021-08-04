@@ -2,12 +2,16 @@ package com.jayud.oauth.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.oauth.model.po.SystemMenu;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
@@ -41,5 +45,9 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getSupplierMenuPendingNum")
     public ApiResult getSupplierMenuPendingNum(@RequestBody List<SystemMenu> menusList);
+
+    @ApiOperation(value = "查询字典")
+    @PostMapping(value = "/api/findDict")
+    public CommonResult<List<Object>> findDictType(@RequestParam("dictTypeCode") String dictTypeCode);
 
 }

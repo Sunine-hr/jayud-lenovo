@@ -4,16 +4,46 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.MsgPushList">
-        <id column="id" property="id" />
-        <result column="recipient_name" property="recipientName" />
-        <result column="recipient_id" property="recipientId" />
-        <result column="post" property="post" />
-        <result column="receiving_status" property="receivingStatus" />
-        <result column="create_user" property="createUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="status" property="status" />
+        <id column="id" property="id"/>
+        <result column="recipient_name" property="recipientName"/>
+        <result column="recipient_id" property="recipientId"/>
+        <result column="post" property="post"/>
+        <result column="receiving_status" property="receivingStatus"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="oneResultMap" type="com.jayud.oms.model.po.MsgPushListInfoVO">
+        <id column="id" property="id"/>
+        <result column="recipient_name" property="recipientName"/>
+        <result column="recipient_id" property="recipientId"/>
+        <result column="type" property="type"/>
+        <result column="post" property="post"/>
+        <result column="receiving_status" property="receivingStatus"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <collection property="bindingMsgTemplates" ofType="com.jayud.oms.model.po.BindingMsgTemplateInfoVO">
+            <id column="bindId" property="id"/>
+            <result column="msg_list_id" property="msgListId"/>
+            <result column="post" property="post"/>
+            <result column="template_id" property="templateId"/>
+            <result column="bindType" property="type"/>
+            <result column="receiving_mode" property="receivingMode"/>
+            <result column="receiving_account" property="receivingAccount"/>
+            <!--            <result column="create_user" property="createUser"/>-->
+            <!--            <result column="create_time" property="createTime"/>-->
+            <!--            <result column="update_user" property="updateUser"/>-->
+            <!--            <result column="update_time" property="updateTime"/>-->
+            <result column="status" property="status"/>
+            <result column="self_regarding" property="selfRegarding"/>
+        </collection>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -21,4 +51,22 @@
         id, recipient_name, recipient_id, post, receiving_status, create_user, create_time, update_user, update_time, status
     </sql>
 
+    <select id="getDetailsList" resultMap="oneResultMap">
+        select
+        m.id, m.recipient_name, m.recipient_id, m.post, m.receiving_status,
+        m.create_user, m.create_time, m.update_user, m.update_time, m.status,m.type,
+        b.id bindId, b.msg_list_id, b.post, b.template_id, b.`type` bindType,
+        b.receiving_mode, b.receiving_account,
+        b.create_user, b.create_time, b.update_user, b.update_time, b.status, b.self_regarding
+        from msg_push_list m
+        left join binding_msg_template b
+        <where>
+            <if test="condition.templateIds!=null and condition.templateIds.size>0">
+               and b.template_id in
+               <foreach collection="condition.templateIds" item="item" open="(" separator="," close=")">
+                   #{item}
+               </foreach>
+            </if>
+        </where>
+    </select>
 </mapper>

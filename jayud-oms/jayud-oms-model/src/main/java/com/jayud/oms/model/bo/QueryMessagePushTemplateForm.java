@@ -1,6 +1,8 @@
 package com.jayud.oms.model.bo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.jayud.common.utils.Utilities;
+import com.jayud.oms.model.vo.MessagePushTemplateVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -30,7 +32,7 @@ public class QueryMessagePushTemplateForm extends BasePageForm {
     @ApiModelProperty(value = "主键")
     private Long id;
 
-    @ApiModelProperty(value = "消息编号(规则MT+4位数序列号)")
+    @ApiModelProperty(value = "消息编号")
     private String num;
 
     @ApiModelProperty(value = "消息名称")
@@ -45,12 +47,14 @@ public class QueryMessagePushTemplateForm extends BasePageForm {
     @ApiModelProperty(value = "提醒状态")
     private String triggerStatus;
 
-    @ApiModelProperty(value = "提醒状态集合")
+    @ApiModelProperty(value = "岗位集合")
     private List<String> posts;
 
     @ApiModelProperty(value = "状态(0禁用 1启用)")
     private Integer status;
 
 
-
+    public static void main(String[] args) {
+        System.out.println(Utilities.printFieldsInfo(AddMessagePushTemplateForm.class));
+    }
 }

@@ -26,6 +26,7 @@ import com.jayud.oauth.model.vo.*;
 import com.jayud.oauth.service.*;
 import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -85,6 +83,8 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 
     @Autowired
     ILegalEntityService legalEntityService;
+    @Autowired
+    private IMsgUserChannelService msgUserChannelService;
 
 
     @Override
@@ -213,6 +213,10 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         UpdateSystemUserVO updateSystemUserVO = baseMapper.getSystemUser(id);
         List<Long> legalId = systemUserLegalService.getLegalId(id);
         updateSystemUserVO.setLegalEntityIds(legalId);
+        List<MsgUserChannel> msgUserChannels = this.msgUserChannelService.getByUserIds(Arrays.asList(updateSystemUserVO.getId()));
+        if (CollectionUtils.isNotEmpty(msgUserChannels)) {
+            updateSystemUserVO.setMsgUserChannelList(msgUserChannels);
+        }
         return updateSystemUserVO;
     }
 
@@ -416,7 +420,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         QueryWrapper<SystemUser> condition = new QueryWrapper<>();
         condition.lambda().eq(SystemUser::getStatus, SystemUserStatusEnum.ON.getCode());
         condition.lambda().eq(SystemUser::getUserType, 1);
-        return ConvertUtil.convertList(this.baseMapper.selectList(condition),SystemUserVO.class);
+        return ConvertUtil.convertList(this.baseMapper.selectList(condition), SystemUserVO.class);
     }
 
     /**

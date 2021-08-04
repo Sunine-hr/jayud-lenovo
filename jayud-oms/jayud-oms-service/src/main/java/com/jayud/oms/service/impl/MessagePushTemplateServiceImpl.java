@@ -59,7 +59,7 @@ public class MessagePushTemplateServiceImpl extends ServiceImpl<MessagePushTempl
         if (convert.getId() == null) {
             String prefix = form.getType() == 2 ? "CMT" : "OMT";
             //订单规则
-            Integer count = this.baseMapper.selectCount(new QueryWrapper(new MessagePushTemplate().setType(form.getType())));
+            Integer count = this.baseMapper.selectCount(new QueryWrapper<>(new MessagePushTemplate().setType(form.getType())));
             convert.setNum(prefix + StringUtils.zeroComplement(4, count + 1));
             convert.setCreateTime(LocalDateTime.now()).setCreateUser(UserOperator.getToken());
         } else {

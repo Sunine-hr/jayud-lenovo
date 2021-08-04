@@ -1,10 +1,14 @@
 package com.jayud.oauth.controller;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.*;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.enums.MsgChannelTypeEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.enums.UserTypeEnum;
@@ -17,6 +21,7 @@ import com.jayud.oauth.model.vo.*;
 import com.jayud.oauth.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,6 +75,8 @@ public class SystemUserController {
     private InlandTpClient inlandTpClient;
     @Autowired
     private TrailerClient trailerClient;
+    @Autowired
+    private IMsgUserChannelService msgUserChannelService;
 
     /**
      * 登录接口
@@ -345,6 +352,12 @@ public class SystemUserController {
             systemUser.setCreatedUser(loginUser);
         }
         userService.saveOrUpdateSystemUser(systemUser);
+        if (CollectionUtils.isNotEmpty(form.getMsgUserChannelList())) {
+            List<MsgUserChannel> msgUserChannelList = form.getMsgUserChannelList();
+            msgUserChannelList.forEach(e -> e.setUserId(systemUser.getId()));
+            msgUserChannelService.saveOrUpdateBatch(form.getMsgUserChannelList());
+        }
+
         return CommonResult.success();
     }
 
@@ -689,6 +702,23 @@ public class SystemUserController {
             result.put(SubOrderSignEnum.TC.getSignOne(), this.trailerClient.getMenuPendingNum(systemMenus).getData());
         }
         return CommonResult.success(result);
+    }
+
+
+    @ApiOperation(value = "初始化岗位")
+    @PostMapping(value = "/initPost")
+    public CommonResult<List<InitComboxStrVO>> initPost() {
+        List<Object> post = omsClient.findDictType("post").getData();
+        List<InitComboxStrVO> list = new ArrayList<>();
+        JSONArray jsonArray = new JSONArray(post);
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setCode(jsonObject.getStr("code"));
+            initComboxStrVO.setName(jsonObject.getStr("value"));
+            list.add(initComboxStrVO);
+        }
+        return CommonResult.success(list);
     }
 
 

@@ -1,5 +1,6 @@
 package com.jayud.oauth.model.vo;
 
+import com.jayud.oauth.model.po.MsgUserChannel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -70,5 +71,7 @@ public class UpdateSystemUserVO {
     @ApiModelProperty(value = "是否部门负责人 1-是 0-否")
     private String isDepartmentCharge;
 
+    @ApiModelProperty(value = "消息渠道集合")
+    private List<MsgUserChannel> msgUserChannelList;
 }
 

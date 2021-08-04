@@ -1,7 +1,12 @@
 package com.jayud.oms.mapper;
 
+import com.jayud.oms.model.bo.QueryMsgPushListCondition;
 import com.jayud.oms.model.po.MsgPushList;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.oms.model.po.MsgPushListInfoVO;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +18,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface MsgPushListMapper extends BaseMapper<MsgPushList> {
 
+    List<MsgPushListInfoVO> getDetailsList(@Param("condition") QueryMsgPushListCondition condition);
 }

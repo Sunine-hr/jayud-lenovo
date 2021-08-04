@@ -58,10 +58,10 @@ public class MessagePushTemplateController {
             return CommonResult.error(400, "消息名称重复");
         }
 
-        Map<String, Object> queryParam = this.messagePushTemplateService.executeTemplateSQL(form.getSqlSelect());
-        String content = BeetlUtils.strTemplate(form.getTemplateContent(), queryParam);
-        String title = BeetlUtils.strTemplate(form.getTemplateTitle(), queryParam);
-        form.setContent(content).setTitle(title);
+//        Map<String, Object> queryParam = this.messagePushTemplateService.executeTemplateSQL(form.getSqlSelect());
+//        String content = BeetlUtils.strTemplate(form.getTemplateContent(), queryParam);
+//        String title = BeetlUtils.strTemplate(form.getTemplateTitle(), queryParam);
+//        form.setContent(content).setTitle(title);
         this.messagePushTemplateService.saveOrUpdate(form);
         return CommonResult.success();
     }
@@ -104,7 +104,7 @@ public class MessagePushTemplateController {
     @ApiOperation(value = "查询模块提醒状态")
     @PostMapping("/getReminderStatus")
     public CommonResult<List<InitComboxStrVO>> getReminderStatus(@RequestBody Map<String, Object> map) {
-        String mark = MapUtil.getStr(map, "mark");
+        String mark = MapUtil.getStr(map, "code");
         if (StringUtils.isEmpty(mark)) {
             return CommonResult.error(400, "请选择模块");
         }

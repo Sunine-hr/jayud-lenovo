@@ -2,6 +2,7 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -110,6 +111,8 @@ public class ExternalApiController {
     private IProductBizService productBizService;
     @Autowired
     private IProductClassifyService productClassifyService;
+    @Autowired
+    private IMsgPushRecordService msgPushRecordService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -1870,6 +1873,29 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/getPortInfoALL")
     public ApiResult<Map<String, String>> getPortInfoALL() {
         return ApiResult.ok(this.portInfoService.list().stream().collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName())));
+    }
+
+    @ApiOperation(value = "查询字典")
+    @PostMapping(value = "/api/findDict")
+    public CommonResult<List<Dict>> findDictType(@RequestParam("dictTypeCode") String dictTypeCode) {
+        QueryWrapper<Dict> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Dict::getDictTypeCode, dictTypeCode);
+        List<Dict> dictList = this.dictService.list(queryWrapper);
+        return CommonResult.success(dictList);
+    }
+
+    /**
+     * 创建消息推送任务
+     */
+    @ApiOperation(value = "创建消息推送任务")
+    @PostMapping(value = "/api/createPushTask")
+    public void createPushTask(@RequestBody String msg) {
+        JSONObject jsonObject = new JSONObject(msg);
+        String triggerStatus = jsonObject.getStr("triggerStatus");
+        Map<String, Object> sqlParam = jsonObject.get("sqlParam", Map.class);
+        LocalDateTime now = DateUtils.str2LocalDateTime(jsonObject.getStr("now"), DateUtils.DATE_TIME_PATTERN);
+        Map<String, Object> otherParam = jsonObject.get("otherParam", Map.class);
+        this.msgPushRecordService.createPushTask(triggerStatus, sqlParam, now, otherParam);
     }
 
 }

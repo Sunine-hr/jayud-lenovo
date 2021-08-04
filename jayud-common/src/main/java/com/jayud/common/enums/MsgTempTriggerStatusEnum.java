@@ -4,9 +4,7 @@ import com.jayud.common.entity.InitComboxStrVO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 账单类型
@@ -49,6 +47,7 @@ public enum MsgTempTriggerStatusEnum {
 
     public static List<InitComboxStrVO> initComboxStrVO(String mark) {
         List<InitComboxStrVO> list = new ArrayList<>();
+
         for (MsgTempTriggerStatusEnum value : values()) {
             if (Objects.equals(mark, value.getMark())) {
                 InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
@@ -72,12 +71,16 @@ public enum MsgTempTriggerStatusEnum {
 
     public static List<InitComboxStrVO> getModules() {
         List<InitComboxStrVO> list = new ArrayList<>();
+        Map<String,Object> map=new HashMap<>();
         for (MsgTempTriggerStatusEnum value : values()) {
-            SubOrderSignEnum subOrderSignEnum = SubOrderSignEnum.getEnum(value.getMark());
-            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
-            initComboxStrVO.setName(subOrderSignEnum.getDesc());
-            initComboxStrVO.setCode(subOrderSignEnum.getSignOne());
-            list.add(initComboxStrVO);
+            if (map.get(value.getMark())==null) {
+                SubOrderSignEnum subOrderSignEnum = SubOrderSignEnum.getEnum(value.getMark());
+                InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+                initComboxStrVO.setName(subOrderSignEnum.getDesc());
+                initComboxStrVO.setCode(subOrderSignEnum.getSignOne());
+                list.add(initComboxStrVO);
+                map.put(value.getMark(),value.getMark());
+            }
         }
         return list;
     }

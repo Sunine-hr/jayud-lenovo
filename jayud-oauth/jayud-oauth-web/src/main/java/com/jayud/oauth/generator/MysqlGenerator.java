@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-oauth\\jayud-oauth-service",
                 "jayud-oauth\\jayud-oauth-web"};
         for (String model : models) {
-            shell(model,"training_management");
+            shell(model,"msg_user_channel");
         }
     }
 
@@ -63,7 +63,7 @@ public class MysqlGenerator {
         dsc.setDbType(DbType.MYSQL);
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("Root!!2020");
+        dsc.setPassword("Jayud2021!@#");
         dsc.setUrl("jdbc:mysql://113.100.140.250:8097/jayud_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
         mpg.setDataSource(dsc);
 

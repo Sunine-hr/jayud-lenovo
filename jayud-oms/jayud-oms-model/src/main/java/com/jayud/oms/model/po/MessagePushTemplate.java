@@ -39,7 +39,7 @@ public class MessagePushTemplate extends Model<MessagePushTemplate> {
     @ApiModelProperty(value = "消息名称")
     private String msgName;
 
-    @ApiModelProperty(value = "消息类型")
+    @ApiModelProperty(value = "消息类型(1:操作状态,2:客户状态)")
     private Integer type;
 
     @ApiModelProperty(value = "业务模块")

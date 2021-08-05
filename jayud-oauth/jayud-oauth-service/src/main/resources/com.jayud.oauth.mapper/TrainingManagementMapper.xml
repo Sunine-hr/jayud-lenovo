@@ -20,7 +20,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, subject, training_start_time, training_end_time, training_location, trainees, file_path, file_name, create_user, create_time, update_user, update_time
+        id
+        , subject, training_start_time, training_end_time, training_location, trainees, file_path, file_name, create_user, create_time, update_user, update_time
     </sql>
     <select id="findByPage" resultType="com.jayud.oauth.model.vo.TrainingManagementVO">
         select
@@ -29,6 +30,11 @@
         from
         training_management
         <where>
+            <if test="form.trainees != null and form.trainees != ''">
+                <foreach item="item" collection="form.trainees" separator="," open="trainees in(" close=")">
+                    #{item}
+                </foreach>
+            </if>
             <if test="form.subject != null and form.subject != ''">
                 and subject like concat('%',#{form.subject},'%')
             </if>
@@ -42,7 +48,7 @@
                 and training_end_time <![CDATA[<=]]> #{form.trainingEndTime}
             </if>
         </where>
-        order by id desc
+        order by training_start_time desc
     </select>
 
     <select id="getInfoLastWeek" resultType="com.jayud.oauth.model.vo.TrainingManagementVO">

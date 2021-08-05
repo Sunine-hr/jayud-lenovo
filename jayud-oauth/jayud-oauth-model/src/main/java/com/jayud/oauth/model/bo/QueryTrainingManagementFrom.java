@@ -49,7 +49,8 @@ public class QueryTrainingManagementFrom extends BasePageForm{
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;
 
-
+    @ApiModelProperty(value = "培训对象)")
+    private List<Integer> trainees;
 
 
 

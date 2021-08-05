@@ -107,6 +107,9 @@ public class InputOrderTransportForm {
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
 
+    @ApiModelProperty(value = "指令")
+    private String cmd;
+
     public void checkAddParam() {
         if (StringUtil.isNullOrEmpty(this.getPortCode()) ||
                 this.getGoodsType() == null ||

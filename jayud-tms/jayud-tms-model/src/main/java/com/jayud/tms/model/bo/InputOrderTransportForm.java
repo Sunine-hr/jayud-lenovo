@@ -100,4 +100,7 @@ public class InputOrderTransportForm {
 
     @ApiModelProperty(value = "操作部门id")
     private Integer departmentId;
+
+    @ApiModelProperty(value = "指令")
+    private String cmd;
 }

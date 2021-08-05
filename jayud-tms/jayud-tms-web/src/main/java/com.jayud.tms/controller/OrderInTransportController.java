@@ -209,7 +209,7 @@ public class OrderInTransportController {
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
-        this.msgPush(orderTransport);
+        this.orderTransportService.msgPush(orderTransport);
         return CommonResult.success();
     }
 
@@ -314,7 +314,7 @@ public class OrderInTransportController {
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
-        this.msgPush(orderTransport);
+        this.orderTransportService.msgPush(orderTransport);
         return CommonResult.success();
     }
 
@@ -506,7 +506,7 @@ public class OrderInTransportController {
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
-        this.msgPush(orderTransport);
+        this.orderTransportService.msgPush(orderTransport);
         return CommonResult.success();
     }
 
@@ -685,7 +685,7 @@ public class OrderInTransportController {
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
-        this.msgPush(orderTransport);
+        this.orderTransportService.msgPush(orderTransport);
         return CommonResult.success();
     }
 
@@ -726,7 +726,7 @@ public class OrderInTransportController {
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
-        this.msgPush(orderTransport);
+        this.orderTransportService.msgPush(orderTransport);
         return CommonResult.success();
     }
 
@@ -803,21 +803,7 @@ public class OrderInTransportController {
 
 
     private void msgPush(OrderTransport orderTransport) {
-        Map<String, String> request = new HashMap<>();
-        request.put("topic", KafkaMsgEnums.MESSAGE_PUSH_TASK.getTopic());
-        request.put("key", KafkaMsgEnums.MESSAGE_PUSH_TASK.getKey());
-        Map<String, Object> msg = new HashMap<>();
-        msg.put("triggerStatus", orderTransport.getStatus());
-        Map<String, Object> sqlParam = new HashMap<>();
-        sqlParam.put("recordId", orderTransport.getId());
-        msg.put("sqlParam", sqlParam);
-        msg.put("now", DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN));
-        msg.put("cmd", "order");
-        msg.put("subType", SubOrderSignEnum.ZGYS.getSignOne());
-        msg.put("mainOrderNo", orderTransport.getMainOrderNo());
-        msg.put("orderNo", orderTransport.getOrderNo());
-        request.put("msg", JSONUtil.toJsonStr(msg));
-        this.msgClient.consume(request);
+
     }
 
 }

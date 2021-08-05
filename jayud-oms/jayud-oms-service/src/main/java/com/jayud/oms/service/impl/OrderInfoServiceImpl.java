@@ -1067,6 +1067,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 获取统计基础数据
+     *
      * @param form
      * @param legalIds
      * @param orderInfo
@@ -1074,7 +1075,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      */
     @Override
     public List<OrderInfoVO> getBasicStatistics(QueryStatisticalReport form, List<Long> legalIds, OrderInfo orderInfo) {
-        return this.baseMapper.getBasicStatistics(form,orderInfo,legalIds);
+        return this.baseMapper.getBasicStatistics(form, orderInfo, legalIds);
     }
 
     /**
@@ -1716,6 +1717,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 for (InputOrderTakeAdrForm takeAdrForm2 : takeAdrForms2) {
                     takeAdrForm2.setCustomerId(customerInfo.getId());
                 }
+                orderTransportForm.setCmd(form.getCmd());
                 Boolean result = tmsClient.createOrderTransport(orderTransportForm).getData();
                 if (!result) {//调用失败
                     return false;

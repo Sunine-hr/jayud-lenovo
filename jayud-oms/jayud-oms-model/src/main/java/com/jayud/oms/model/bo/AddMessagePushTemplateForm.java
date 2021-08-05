@@ -81,7 +81,7 @@ public class AddMessagePushTemplateForm extends Model<AddMessagePushTemplateForm
     private String sqlSelect;
 
     @ApiModelProperty(value = "模板标题")
-    @NotEmpty(message = "模板标题必填")
+//    @NotEmpty(message = "模板标题必填")
     private String templateTitle;
 
     @ApiModelProperty(value = "标题")

@@ -19,6 +19,7 @@ import com.jayud.oms.service.IMsgPushListService;
 import com.jayud.oms.service.IMsgPushRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oms.service.ISystemConfService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
  * @since 2021-08-03
  */
 @Service
+@Slf4j
 public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, MsgPushRecord> implements IMsgPushRecordService {
 
     @Autowired
@@ -100,9 +102,11 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
             }
             //填充模板
             try {
-                this.messagePushTemplateService.fillTemplate(msgPushRecord);
+                if (StringUtils.isEmpty(msgPushRecord.getReceiveContent())) {
+                    this.messagePushTemplateService.fillTemplate(msgPushRecord);
+                }
             } catch (Exception e) {
-                String msg = "动态生成发送内陆失败 msg:" + e.getMessage();
+                String msg = "动态生成发送内容失败 msg:" + e.getMessage();
                 log.warn(msg);
                 this.errMsg(msgPushRecord.getId(), msg, SendStatusTypeEnum.FAIL.getCode());
                 continue;
@@ -110,23 +114,39 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
 
             switch (channelTypeEnum) {
                 case MAIL://邮件发送
-                    String sysConfStr = sysConfMap.get(SystemConfTypeEnum.ONE.getCode());
-                    if (StringUtils.isEmpty(sysConfStr)) {
-                        log.warn("请配置消息推送配置");
-                        this.updateById(new MsgPushRecord().setId(msgPushRecord.getId()).setErrMsg("请配置消息推送配置"));
-                        continue;
-                    }
-                    EmailSysConf emailSysConf = JSONUtil.toBean(sysConfStr, EmailSysConf.class);
-                    Email email = new Email().setHost(emailSysConf.getUrl()).setFrom(emailSysConf.getAccount())
-                            .setPassword(emailSysConf.getPwd()).setSubject(msgPushRecord.getTitle()).setText(msgPushRecord.getReceiveContent())
-                            .setTo(msgPushRecord.getReceivingAccount());
-
-                    if (!this.emailClient.sendEmail(email).getCode().equals(0)) {
-                        this.sendFailProcessing(msgPushRecord, "发送邮件失败");
-                    }
+                    this.sendEmail(msgPushRecord, sysConfMap);
                     break;
             }
         }
+    }
+
+
+    private void sendEmail(MsgPushRecord msgPushRecord, Map<Integer, String> sysConfMap) {
+        String sysConfStr = sysConfMap.get(SystemConfTypeEnum.ONE.getCode());
+        if (StringUtils.isEmpty(sysConfStr)) {
+            log.warn("请配置消息推送配置");
+            this.updateById(new MsgPushRecord().setId(msgPushRecord.getId()).setErrMsg("请配置消息推送配置"));
+            return;
+        }
+        EmailSysConf emailSysConf = JSONUtil.toBean(sysConfStr, EmailSysConf.class);
+        Email email = new Email().setHost(emailSysConf.getUrl()).setFrom(emailSysConf.getAccount())
+                .setPassword(emailSysConf.getPwd()).setSubject(msgPushRecord.getTitle()).setText(msgPushRecord.getReceiveContent())
+                .setTo(msgPushRecord.getReceivingAccount());
+        try {
+            if (!this.emailClient.sendEmail(email).getCode().equals(0)) {
+                this.sendFailProcessing(msgPushRecord, "发送邮件失败");
+            } else {
+                this.sendSuccess(msgPushRecord);
+            }
+        } catch (Exception e) {
+            log.warn("发送邮件系统错误 msg:" + e.getMessage());
+            this.errMsg(msgPushRecord.getId(), "发送邮件失败,系统错误", msgPushRecord.getStatus());
+        }
+    }
+
+    private void sendSuccess(MsgPushRecord msgPushRecord) {
+        this.updateById(new MsgPushRecord().setErrMsg(" ").setId(msgPushRecord.getId()).setReceiveContent(msgPushRecord.getReceiveContent())
+                .setTitle(msgPushRecord.getTitle()).setStatus(SendStatusTypeEnum.SUCCESS.getCode()));
     }
 
     private void sendFailProcessing(MsgPushRecord msgPushRecord, String msg) {
@@ -136,7 +156,8 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
             return;
         }
         LocalDateTime dateTime = msgPushRecord.getSendTime().plusMinutes(5);
-        this.updateById(new MsgPushRecord().setId(msgPushRecord.getId())
+        this.updateById(new MsgPushRecord().setId(msgPushRecord.getId()).setReceiveContent(msgPushRecord.getReceiveContent())
+                .setTitle(msgPushRecord.getTitle())
                 .setErrMsg(msg).setSendTime(dateTime).setNum(msgPushRecord.getNum() - 1));
     }
 

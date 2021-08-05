@@ -31,8 +31,6 @@ public class MailServiceImpl implements MailService {
     private JavaMailSender mailSender;
     @Autowired
     private MailProperties mailProperties;
-    @Autowired
-    private JavaMailSenderImpl javaMailSender;
 
     @Override
     public Boolean sendMailWithAttachments(Email emailForm) {
@@ -77,6 +75,7 @@ public class MailServiceImpl implements MailService {
     @Override
     public Boolean send(com.jayud.common.entity.Email email) {
         try {
+            JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
             javaMailSender.setHost(email.getHost());
             javaMailSender.setUsername(email.getFrom());
             javaMailSender.setPassword(email.getPassword());

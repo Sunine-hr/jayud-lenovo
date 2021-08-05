@@ -52,15 +52,14 @@ public class SystemConfController {
         Integer type = MapUtil.getInt(map, "type");
         Integer id = MapUtil.getInt(map, "id");
         SystemConf systemConf = new SystemConf();
-
-        if (id == null) {
+        systemConf.setId(id);
+        if (systemConf.getId() == null) {
             systemConf.setCreateTime(LocalDateTime.now());
             systemConf.setCreateUser(UserOperator.getToken());
         } else {
             systemConf.setUpdateTime(LocalDateTime.now());
             systemConf.setUpdateUser(UserOperator.getToken());
         }
-        map.put("id", id);
         systemConf.setConfData(new JSONObject(map).toString());
         systemConf.setType(type);
         this.systemConfService.saveOrUpdate(systemConf);
@@ -76,6 +75,7 @@ public class SystemConfController {
         list.forEach(e -> {
             JSONObject jsonObject = new JSONObject(e);
             JSONObject confData = jsonObject.getJSONObject("confData");
+            confData.put("id", e.getId());
             tmp.put(SystemConfTypeEnum.getEnum(e.getType()).getKey(), confData);
         });
         return CommonResult.success(tmp);

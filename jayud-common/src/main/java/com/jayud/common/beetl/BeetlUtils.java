@@ -17,7 +17,9 @@ import java.util.Map;
 public class BeetlUtils {
 
     public static String strTemplate(String template, Map<String, Object> map) throws Exception {
-
+        if (template == null) {
+            return null;
+        }
         StringTemplateResourceLoader resourceLoader = new StringTemplateResourceLoader();
         Configuration cfg = Configuration.defaultConfiguration();
         GroupTemplate gt = new GroupTemplate(resourceLoader, cfg);
@@ -29,7 +31,6 @@ public class BeetlUtils {
         BeetlException ex = gt.validateScript(template);
         if (ex != null) {
             ErrorInfo info = new ErrorInfo(ex);
-            System.out.println(info.toString());
             throw new JayudBizException(info.getMsg());
         }
         //渲染结果

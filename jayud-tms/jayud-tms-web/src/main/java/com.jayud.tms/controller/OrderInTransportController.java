@@ -314,6 +314,7 @@ public class OrderInTransportController {
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
+        this.msgPush(orderTransport);
         return CommonResult.success();
     }
 
@@ -505,6 +506,7 @@ public class OrderInTransportController {
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
+        this.msgPush(orderTransport);
         return CommonResult.success();
     }
 

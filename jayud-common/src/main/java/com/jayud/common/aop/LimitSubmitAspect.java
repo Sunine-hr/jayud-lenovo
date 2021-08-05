@@ -45,7 +45,12 @@ public class LimitSubmitAspect {
         JSONArray jsonArray = new JSONArray(joinPoint.getArgs());
         JSONObject jsonObject = new JSONObject();
         jsonObject.putOnce("obj", jsonArray);
-        Long loginUserId = jsonArray.getJSONArray(0).getJSONObject(0).getLong("loginUserId");
+        Long loginUserId = null;
+        if (jsonArray.get(0) instanceof JSONObject) {
+            loginUserId = jsonArray.getJSONObject(0).getLong("loginUserId");
+        } else {
+            loginUserId = jsonArray.getJSONArray(0).getJSONObject(0).getLong("loginUserId");
+        }
         String dedupMD5 = new ReqDedupHelper().dedupParamMD5(jsonObject.toString());//计算请求参数摘要，其中剔除里面请求时间的干扰
         String KEY = "dedup:U=" + loginUserId.toString() + "M=" + request.getRequestURI() + "P=" + dedupMD5;
 

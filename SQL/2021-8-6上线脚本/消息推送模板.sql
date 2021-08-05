@@ -56,7 +56,7 @@ CREATE TABLE `msg_push_record` (
   `time_unit` varchar(20) DEFAULT NULL COMMENT '时间单位',
   `send_time` datetime DEFAULT NULL COMMENT '发送时间',
   `status` tinyint(10) DEFAULT NULL COMMENT '发送状态(1:发送成功,2:发送失败,3:待发送)',
-  `err_msg` varchar(255) DEFAULT NULL COMMENT '错误信息',
+  `err_msg` text COMMENT '错误信息',
   `msg_channel_type` int(20) DEFAULT NULL COMMENT '消息渠道类型(1邮件)',
   `template_content` varchar(500) NOT NULL COMMENT '发送模板内容',
   `sql_select` text NOT NULL COMMENT 'sql查询语句',

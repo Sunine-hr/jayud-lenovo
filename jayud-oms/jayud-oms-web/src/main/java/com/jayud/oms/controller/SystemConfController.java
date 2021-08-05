@@ -5,6 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONObject;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.aop.annotations.RepeatSubmitLimit;
 import com.jayud.common.enums.SystemConfTypeEnum;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.po.SystemConf;
@@ -40,6 +41,7 @@ public class SystemConfController {
 
     @ApiOperation("添加配置")
     @PostMapping("/saveOrUpdate")
+    @RepeatSubmitLimit
     public CommonResult saveOrUpdate(@RequestBody Map<String, Object> map) {
         if (map == null) {
             return CommonResult.error(400, "请配置属性");

@@ -1,24 +1,25 @@
 package com.jayud.oms.service.impl;
 
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.beetl.BeetlUtils;
-import com.jayud.common.enums.SendStatusTypeEnum;
-import com.jayud.common.enums.StatusEnum;
+import com.jayud.common.entity.Email;
+import com.jayud.common.entity.EmailSysConf;
+import com.jayud.common.enums.*;
+import com.jayud.common.utils.StringUtils;
+import com.jayud.oms.feign.EmailClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.QueryMsgPushListCondition;
-import com.jayud.oms.model.po.BindingMsgTemplateInfoVO;
-import com.jayud.oms.model.po.MessagePushTemplate;
-import com.jayud.oms.model.po.MsgPushListInfoVO;
-import com.jayud.oms.model.po.MsgPushRecord;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.mapper.MsgPushRecordMapper;
 import com.jayud.oms.service.IMessagePushTemplateService;
 import com.jayud.oms.service.IMsgPushListService;
 import com.jayud.oms.service.IMsgPushRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.oms.service.ISystemConfService;
 import org.apache.commons.collections.CollectionUtils;
-import org.beetl.core.misc.BeetlUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,10 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
     private IMsgPushListService msgPushListService;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private EmailClient emailClient;
+    @Autowired
+    private ISystemConfService systemConfService;
 
     /**
      * 推送任务
@@ -67,6 +72,81 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
 
     }
 
+    @Override
+    public List<MsgPushRecord> getTasksPerformed(LocalDateTime now) {
+        QueryWrapper<MsgPushRecord> condition = new QueryWrapper<>();
+        condition.lambda().le(MsgPushRecord::getSendTime, now)
+                .eq(MsgPushRecord::getStatus, SendStatusTypeEnum.WAIT.getCode());
+        return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public void messagePush() {
+        List<MsgPushRecord> list = this.getTasksPerformed(LocalDateTime.now());
+        List<Integer> channelIds = new ArrayList<>();
+        for (SystemConfTypeEnum value : SystemConfTypeEnum.values()) {
+            channelIds.add(value.getCode());
+        }
+
+        QueryWrapper<SystemConf> condition = new QueryWrapper<>();
+        condition.lambda().in(SystemConf::getType, channelIds);
+        Map<Integer, String> sysConfMap = systemConfService.getBaseMapper().selectList(condition).stream().collect(Collectors.toMap(SystemConf::getType, SystemConf::getConfData));
+
+        for (MsgPushRecord msgPushRecord : list) {
+            MsgChannelTypeEnum channelTypeEnum = MsgChannelTypeEnum.getEnum(msgPushRecord.getMsgChannelType());
+            if (channelTypeEnum == null) {
+                this.errMsg(msgPushRecord.getId(), "暂不支持" + msgPushRecord.getReceivingMode() + "消息推送模式", SendStatusTypeEnum.FAIL.getCode());
+                continue;
+            }
+            //填充模板
+            try {
+                this.messagePushTemplateService.fillTemplate(msgPushRecord);
+            } catch (Exception e) {
+                String msg = "动态生成发送内陆失败 msg:" + e.getMessage();
+                log.warn(msg);
+                this.errMsg(msgPushRecord.getId(), msg, SendStatusTypeEnum.FAIL.getCode());
+                continue;
+            }
+
+            switch (channelTypeEnum) {
+                case MAIL://邮件发送
+                    String sysConfStr = sysConfMap.get(SystemConfTypeEnum.ONE.getCode());
+                    if (StringUtils.isEmpty(sysConfStr)) {
+                        log.warn("请配置消息推送配置");
+                        this.updateById(new MsgPushRecord().setId(msgPushRecord.getId()).setErrMsg("请配置消息推送配置"));
+                        continue;
+                    }
+                    EmailSysConf emailSysConf = JSONUtil.toBean(sysConfStr, EmailSysConf.class);
+                    Email email = new Email().setHost(emailSysConf.getUrl()).setFrom(emailSysConf.getAccount())
+                            .setPassword(emailSysConf.getPwd()).setSubject(msgPushRecord.getTitle()).setText(msgPushRecord.getReceiveContent())
+                            .setTo(msgPushRecord.getReceivingAccount());
+
+                    if (!this.emailClient.sendEmail(email).getCode().equals(0)) {
+                        this.sendFailProcessing(msgPushRecord, "发送邮件失败");
+                    }
+                    break;
+            }
+        }
+    }
+
+    private void sendFailProcessing(MsgPushRecord msgPushRecord, String msg) {
+        MsgPushRecord tmp = new MsgPushRecord();
+        if (msgPushRecord.getNum() - 1 < 0) {
+            tmp.setId(msgPushRecord.getId()).setErrMsg("重试次数已用完").setStatus(SendStatusTypeEnum.FAIL.getCode());
+            return;
+        }
+        LocalDateTime dateTime = msgPushRecord.getSendTime().plusMinutes(5);
+        this.updateById(new MsgPushRecord().setId(msgPushRecord.getId())
+                .setErrMsg(msg).setSendTime(dateTime).setNum(msgPushRecord.getNum() - 1));
+    }
+
+    private boolean errMsg(Long id, String msg, Integer status) {
+        this.updateById(new MsgPushRecord().setId(id).setErrMsg(msg)
+                .setStatus(status));
+        return true;
+    }
+
+
     private void processOptInfo(List<MessagePushTemplate> list, Map<String, Object> map,
                                 LocalDateTime date, Map<String, Object> otherParam) {
         if (CollectionUtils.isEmpty(list)) {
@@ -84,11 +164,12 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
         //获取用户id
         List<Long> userIds = detailsList.stream().map(MsgPushListInfoVO::getRecipientId).collect(Collectors.toList());
         //获取用户渠道
-        List<Object> msgChannelResult = this.oauthClient.getMsgUserChannelByUserIds(userIds).getData();
+        List<Object> msgChannelResult = this.oauthClient.getEnableMsgUserChannelByUserIds(userIds).getData();
         if (CollectionUtils.isEmpty(msgChannelResult)) {
             return;
         }
-        Map<Long, List<Object>> msgChannelMap = msgChannelResult.stream().collect(Collectors.groupingBy(e -> Long.valueOf(((Map<String, Object>) e).get("userId").toString())));
+        Map<Long, List<Object>> msgChannelMap = msgChannelResult.stream().filter(e -> ((Map<String, Object>) e).get("userId") != null).
+                collect(Collectors.groupingBy(e -> Long.valueOf(((Map<String, Object>) e).get("userId").toString())));
         List<MsgPushRecord> msgPushRecords = new ArrayList<>();
         for (MsgPushListInfoVO msgPushListInfoVO : detailsList) {
             JSONArray msgChannelJsonArr = new JSONArray(msgChannelMap.get(msgPushListInfoVO.getRecipientId()));

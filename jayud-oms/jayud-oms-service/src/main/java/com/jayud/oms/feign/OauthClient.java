@@ -186,6 +186,6 @@ public interface OauthClient {
     /**
      * 根据用户集合查询用户消息渠道
      */
-    @RequestMapping(value = "/api/getMsgUserChannelByUserIds")
-    ApiResult<List<Object>> getMsgUserChannelByUserIds(@RequestParam(value = "userIds") List<Long> userIds);
+    @RequestMapping(value = "/api/getEnableMsgUserChannelByUserIds")
+    ApiResult<List<Object>> getEnableMsgUserChannelByUserIds(@RequestParam(value = "userIds") List<Long> userIds);
 }

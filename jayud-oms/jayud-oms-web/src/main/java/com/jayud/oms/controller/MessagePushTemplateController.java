@@ -59,9 +59,9 @@ public class MessagePushTemplateController {
         }
 
 //        Map<String, Object> queryParam = this.messagePushTemplateService.executeTemplateSQL(form.getSqlSelect());
-//        String content = BeetlUtils.strTemplate(form.getTemplateContent(), queryParam);
-//        String title = BeetlUtils.strTemplate(form.getTemplateTitle(), queryParam);
-//        form.setContent(content).setTitle(title);
+        String content = BeetlUtils.strTemplate(form.getTemplateContent(), null);
+        String title = BeetlUtils.strTemplate(form.getTemplateTitle(), null);
+        form.setContent(content).setTitle(title);
         this.messagePushTemplateService.saveOrUpdate(form);
         return CommonResult.success();
     }

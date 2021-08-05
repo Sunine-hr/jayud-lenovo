@@ -5,6 +5,7 @@ import com.jayud.oms.model.bo.AddMessagePushTemplateForm;
 import com.jayud.oms.model.bo.QueryMessagePushTemplateForm;
 import com.jayud.oms.model.po.MessagePushTemplate;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.model.po.MsgPushRecord;
 import com.jayud.oms.model.vo.MessagePushTemplateVO;
 
 import java.util.List;
@@ -33,4 +34,6 @@ public interface IMessagePushTemplateService extends IService<MessagePushTemplat
     IPage<MessagePushTemplateVO> findByPage(QueryMessagePushTemplateForm form);
 
     boolean enableOrDisable(Long id);
+
+    void fillTemplate(MsgPushRecord msgPushRecord) throws Exception;
 }

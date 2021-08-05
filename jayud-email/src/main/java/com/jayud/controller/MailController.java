@@ -9,11 +9,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.mail.internet.MimeMessage;
 import java.util.Map;
 
 @Slf4j
@@ -38,6 +40,14 @@ public class MailController {
         CommonResult.success();
         Boolean result = mailService.sendMailWithAttachments(emailForm);
 
+        return result ? CommonResult.success() : CommonResult.error(-1, "邮件发送失败");
+    }
+
+
+    @ApiOperation(value = "发送电子邮件")
+    @RequestMapping(path = "/sendEmail", method = RequestMethod.POST)
+    public CommonResult sendEmail(@RequestBody com.jayud.common.entity.Email email) {
+        Boolean result = mailService.send(email);
         return result ? CommonResult.success() : CommonResult.error(-1, "邮件发送失败");
     }
 }

@@ -2,11 +2,15 @@ package com.jayud.oms.schedule;
 
 import cn.hutool.core.date.StopWatch;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.enums.MsgChannelTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.SendStatusTypeEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.model.bo.GetOrderDetailForm;
+import com.jayud.oms.model.po.MsgPushRecord;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.*;
+import com.jayud.oms.service.IMsgPushRecordService;
 import com.jayud.oms.service.IOrderInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -29,6 +33,8 @@ public class ScheduledTask {
 
     @Autowired
     private IOrderInfoService orderInfoService;
+    @Autowired
+    private IMsgPushRecordService msgPushRecordService;
 
     /**
      * 同步主订单数据
@@ -127,6 +133,14 @@ public class ScheduledTask {
         // 结束时间
         stopWatch.stop();
         log.info("********* 定时同步主订单数据任务结束 (单位:秒): " + stopWatch.getTotalTimeSeconds() + " 秒. **************");
+    }
+
+    /**
+     * 消息推送
+     */
+    @Scheduled(cron = "0 0/2 * * * ?")
+    public void messagePush() {
+        msgPushRecordService.messagePush();
     }
 
 }

@@ -1888,7 +1888,7 @@ public class ExternalApiController {
      * 创建消息推送任务
      */
     @ApiOperation(value = "创建消息推送任务")
-    @PostMapping(value = "/api/createPushTask")
+    @RequestMapping(value = "/api/createPushTask")
     public ApiResult createPushTask(@RequestBody String msg) {
         JSONObject jsonObject = new JSONObject(msg);
         String triggerStatus = jsonObject.getStr("triggerStatus");

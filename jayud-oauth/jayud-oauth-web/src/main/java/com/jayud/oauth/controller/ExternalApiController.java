@@ -14,7 +14,6 @@ import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oauth.model.bo.AddCusAccountForm;
-import com.jayud.oauth.model.bo.AuditSystemUserForm;
 import com.jayud.oauth.model.bo.OprSystemUserForm;
 import com.jayud.oauth.model.bo.QueryAccountForm;
 import com.jayud.oauth.model.enums.StatusEnum;
@@ -474,9 +473,9 @@ public class ExternalApiController {
     /**
      * 根据用户集合查询用户消息渠道
      */
-    @RequestMapping(value = "/api/getMsgUserChannelByUserIds")
-    ApiResult<List<MsgUserChannel>> getMsgUserChannelByUserIds(@RequestParam(value = "userIds") List<Long> userIds) {
-        return ApiResult.ok(this.msgUserChannelService.getByUserIds(userIds));
+    @RequestMapping(value = "/api/getEnableMsgUserChannelByUserIds")
+    ApiResult<List<MsgUserChannel>> getEnableMsgUserChannelByUserIds(@RequestParam(value = "userIds") List<Long> userIds) {
+        return ApiResult.ok(this.msgUserChannelService.getEnableByUserIds(userIds));
     }
 }
 

@@ -4,6 +4,7 @@ import com.jayud.oms.model.po.MsgPushRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,5 +22,10 @@ public interface IMsgPushRecordService extends IService<MsgPushRecord> {
      */
     public void createPushTask(String triggerStatus, Map<String, Object> sqlParam,
                                LocalDateTime now, Map<String, Object> otherParam);
+
+
+    List<MsgPushRecord> getTasksPerformed(LocalDateTime now);
+
+    void messagePush();
 
 }

@@ -807,7 +807,7 @@ public class OrderInTransportController {
         Map<String, Object> sqlParam = new HashMap<>();
         sqlParam.put("recordId", orderTransport.getId());
         msg.put("sqlParam", sqlParam);
-        msg.put("now", LocalDateTime.now());
+        msg.put("now", DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN));
         msg.put("cmd", "order");
         msg.put("subType", SubOrderSignEnum.ZGYS.getSignOne());
         msg.put("mainOrderNo", orderTransport.getMainOrderNo());

@@ -21,6 +21,14 @@ import java.util.List;
 public class MsgUserChannelServiceImpl extends ServiceImpl<MsgUserChannelMapper, MsgUserChannel> implements IMsgUserChannelService {
 
     @Override
+    public List<MsgUserChannel> getEnableByUserIds(List<Long> userIds) {
+        QueryWrapper<MsgUserChannel> condition = new QueryWrapper<>();
+        condition.lambda().in(MsgUserChannel::getUserId, userIds)
+                .eq(MsgUserChannel::getIsSelect, true);
+        return this.baseMapper.selectList(condition);
+    }
+
+    @Override
     public List<MsgUserChannel> getByUserIds(List<Long> userIds) {
         QueryWrapper<MsgUserChannel> condition = new QueryWrapper<>();
         condition.lambda().in(MsgUserChannel::getUserId, userIds);

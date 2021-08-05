@@ -59,7 +59,7 @@
         b.receiving_mode, b.receiving_account,
         b.create_user, b.create_time, b.update_user, b.update_time, b.status, b.self_regarding
         from msg_push_list m
-        left join binding_msg_template b
+        left join binding_msg_template b on m.id=b.msg_list_id
         <where>
             <if test="condition.templateIds!=null and condition.templateIds.size>0">
                and b.template_id in

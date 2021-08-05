@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
+import com.jayud.common.beetl.BeetlUtils;
 import com.jayud.common.enums.StatusEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
@@ -16,6 +17,7 @@ import com.jayud.oms.model.bo.QueryMessagePushTemplateForm;
 import com.jayud.oms.model.po.BindingMsgTemplate;
 import com.jayud.oms.model.po.MessagePushTemplate;
 import com.jayud.oms.model.po.MsgPushList;
+import com.jayud.oms.model.po.MsgPushRecord;
 import com.jayud.oms.model.vo.MessagePushTemplateVO;
 import com.jayud.oms.model.vo.SystemUserVO;
 import com.jayud.oms.service.IBindingMsgTemplateService;
@@ -162,5 +164,13 @@ public class MessagePushTemplateServiceImpl extends ServiceImpl<MessagePushTempl
                 .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
 
         return this.updateById(update);
+    }
+
+    @Override
+    public void fillTemplate(MsgPushRecord msgPushRecord) throws Exception {
+        Map<String, Object> queryParam = this.executeTemplateSQL(msgPushRecord.getSqlSelect());
+        String content = BeetlUtils.strTemplate(msgPushRecord.getTemplateContent(), queryParam);
+        String title = BeetlUtils.strTemplate(msgPushRecord.getTemplateTitle(), queryParam);
+        msgPushRecord.setReceiveContent(content).setTitle(title);
     }
 }

@@ -253,7 +253,7 @@ public class RawDataListener {
 
 
     /**
-     * 空运消息推送给vivo
+     * 消息推送
      */
     @KafkaListener(topics = {"${kafka.consumer.topic.msgPushTask}"}, groupId = "${kafka.consumer.group.id}")
     public void msgPushListener(ConsumerRecord<?, ?> record) {

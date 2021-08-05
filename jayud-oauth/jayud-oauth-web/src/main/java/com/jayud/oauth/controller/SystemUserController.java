@@ -321,6 +321,14 @@ public class SystemUserController {
     public CommonResult saveOrUpdatedSystemUser(@RequestBody AddSystemUserForm form) {
         SystemUser systemUser = ConvertUtil.convert(form, SystemUser.class);
         String loginUser = getLoginName();
+        List<MsgUserChannel> tmps = form.getMsgUserChannelList();
+        if (CollectionUtils.isNotEmpty(tmps)) {
+            for (MsgUserChannel tmp : tmps) {
+                if (tmp.getIsSelect() && StringUtils.isEmpty(tmp.getAccount())){
+                    return CommonResult.error(400,"已勾选消息提醒,请输入相应的内容");
+                }
+            }
+        }
         //如果新增编辑传的是我是负责人,则把历史负责人改为员工
         if ("1".equals(form.getIsDepartmentCharge())) {
             userService.updateIsCharge(form.getDepartmentId());

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,10 +59,14 @@ public class MessagePushTemplateController {
             return CommonResult.error(400, "消息名称重复");
         }
 
-//        Map<String, Object> queryParam = this.messagePushTemplateService.executeTemplateSQL(form.getSqlSelect());
-        String content = BeetlUtils.strTemplate(form.getTemplateContent(), null);
-        String title = BeetlUtils.strTemplate(form.getTemplateTitle(), null);
-        form.setContent(content).setTitle(title);
+        Map<String, Object> map = new HashMap<>();
+        map.put("recordId", "-1");
+        String sql=BeetlUtils.strTemplate(form.getSqlSelect(), map);
+        this.messagePushTemplateService.executeTemplateSQL(sql);
+        BeetlUtils.strTemplate(form.getTemplateContent(), null);
+        if (!StringUtils.isEmpty(form.getTemplateTitle())) {
+            BeetlUtils.strTemplate(form.getTemplateTitle(), null);
+        }
         this.messagePushTemplateService.saveOrUpdate(form);
         return CommonResult.success();
     }

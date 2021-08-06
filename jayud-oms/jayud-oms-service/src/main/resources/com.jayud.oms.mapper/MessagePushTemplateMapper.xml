@@ -33,7 +33,7 @@
 
     <select id="findByPage" resultType="com.jayud.oms.model.vo.MessagePushTemplateVO">
         select id, num, msg_name, `type`, sub_type, trigger_status, send_time,
-        time_unit, content, rep_param, title, post,
+        time_unit, content, rep_param, title, post,template_content,
         create_time,create_user,update_user,update_time,status,
         send_time_type
         from message_push_template

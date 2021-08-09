@@ -94,6 +94,17 @@
         <if test="form.endTime !=null and form.endTime!=''">
             and co.crt_by_dtm <![CDATA[<= ]]> #{form.endTime}
         </if>
+        <if test="form.classify != null and form.classify != ''">
+            <choose>
+                <when test="form.classify == 'true'">
+                    and co.hs_code_no is not null
+                </when>
+                <otherwise>
+                    and co.hs_code_no is null
+                </otherwise>
+            </choose>
+        </if>
+        order by co.id desc
     </select>
 
 <!--    <resultMap type="java.util.HashMap" id="cursorMap">-->
@@ -111,5 +122,18 @@
         )
         }
     </select>
+
+    <update id="commonDelete">
+         update #{form.table} co set voided = 1,voided_by = #{form.id}, voided_by_name = #{form.name},, voided_by_dtm = #{form.deleteTime}
+         <where>
+             <if test="legalIds != null and legalIds.size>0">
+                 and co.`id` in
+                 <foreach collection="form.ids" item="id" open="(" separator="," close=")">
+                     #{id}
+                 </foreach>
+             </if>
+         </where>
+
+    </update>
 
 </mapper>

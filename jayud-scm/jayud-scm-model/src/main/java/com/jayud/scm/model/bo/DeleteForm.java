@@ -28,4 +28,7 @@ public class DeleteForm {
 
     @ApiModelProperty(value = "与前端约定所删除的表")
     private Integer key;
+
+    @ApiModelProperty(value = "表名", required = true)
+    private String table;
 }

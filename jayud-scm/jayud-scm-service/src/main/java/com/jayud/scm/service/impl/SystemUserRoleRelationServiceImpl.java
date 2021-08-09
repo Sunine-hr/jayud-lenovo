@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.scm.mapper.SystemUserRoleRelationMapper;
 import com.jayud.scm.model.po.SystemRole;
 import com.jayud.scm.model.po.SystemUserRoleRelation;
+import com.jayud.scm.model.vo.SystemUserSimpleVO;
 import com.jayud.scm.service.ISystemUserRoleRelationService;
 import org.springframework.stereotype.Service;
 
@@ -56,6 +57,11 @@ public class SystemUserRoleRelationServiceImpl extends ServiceImpl<SystemUserRol
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<SystemUserSimpleVO> getSystemUserSimpleByRoleId(Long id) {
+        return baseMapper.getSystemUserSimpleByRoleId(id);
     }
 
 

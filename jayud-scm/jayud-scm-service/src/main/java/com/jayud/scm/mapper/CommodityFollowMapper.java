@@ -21,5 +21,5 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface CommodityFollowMapper extends BaseMapper<CommodityFollow> {
 
-    IPage<CommodityFollowVO> findListByCommodityId(@Param("form") QueryCommonForm form, @Param("page")Page<BCountryVO> page);
+    IPage<CommodityFollowVO> findListByCommodityId(@Param("form") QueryCommonForm form, @Param("page")Page<CommodityFollowVO> page);
 }

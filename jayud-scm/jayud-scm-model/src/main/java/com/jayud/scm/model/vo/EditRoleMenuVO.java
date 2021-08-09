@@ -22,7 +22,7 @@ public class EditRoleMenuVO {
     private String webFlag;
 
     @ApiModelProperty(value = "菜单树")
-    private List<Long> menuIds;
+    private List<String> menuIds;
 
 }
 

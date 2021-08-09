@@ -4,12 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.jayud.scm.mapper.SystemRoleMenuRelationMapper;
+import com.jayud.scm.model.po.SystemMenu;
 import com.jayud.scm.model.po.SystemRole;
 import com.jayud.scm.model.po.SystemRoleMenuRelation;
+import com.jayud.scm.service.ISystemMenuService;
 import com.jayud.scm.service.ISystemRoleMenuRelationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -21,6 +25,9 @@ import java.util.List;
  */
 @Service
 public class SystemRoleMenuRelationServiceImpl extends ServiceImpl<SystemRoleMenuRelationMapper, SystemRoleMenuRelation> implements ISystemRoleMenuRelationService {
+
+    @Autowired
+    private ISystemMenuService systemMenuService;
 
     /**
      * 根据角色ID查询关联菜单
@@ -40,12 +47,16 @@ public class SystemRoleMenuRelationServiceImpl extends ServiceImpl<SystemRoleMen
      * @param menuIds
      */
     @Override
-    public void createRelation(SystemRole role, List<Long> menuIds){
+    public void createRelation(SystemRole role, List<String> menuIds){
         menuIds.forEach(m -> {
-            SystemRoleMenuRelation relation = new SystemRoleMenuRelation();
-            relation.setRoleId(role.getId());
-            relation.setMenuId(m);
-            relation.insert();
+            SystemMenu systemMenu = systemMenuService.getSystemMenuByActionCode(m);
+            if(systemMenu != null){
+                SystemRoleMenuRelation relation = new SystemRoleMenuRelation();
+                relation.setRoleId(role.getId());
+                relation.setMenuId(systemMenu.getId());
+                relation.insert();
+            }
+
         });
 
     }

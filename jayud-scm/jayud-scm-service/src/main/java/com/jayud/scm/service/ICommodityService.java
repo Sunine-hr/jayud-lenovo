@@ -42,4 +42,6 @@ public interface ICommodityService extends IService<Commodity> {
     boolean addCommodity(List<AddCommodityModelForm> list);
 
     Commodity getCommodityBySkuModelAndSkuBrand(String skuModel, String skuBrand);
+
+    boolean commonDelete(DeleteForm deleteForm);
 }

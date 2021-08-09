@@ -1,8 +1,14 @@
 package com.jayud.scm.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.scm.model.bo.QueryCustomerForm;
 import com.jayud.scm.model.po.Customer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.scm.model.vo.CommodityFormVO;
+import com.jayud.scm.model.vo.CustomerFormVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -10,9 +16,10 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author LLJ
- * @since 2021-07-27
+ * @since 2021-08-04
  */
 @Mapper
 public interface CustomerMapper extends BaseMapper<Customer> {
 
+    IPage<CustomerFormVO> findByPage(@Param("page") Page<CommodityFormVO> page, @Param("form") QueryCustomerForm form);
 }

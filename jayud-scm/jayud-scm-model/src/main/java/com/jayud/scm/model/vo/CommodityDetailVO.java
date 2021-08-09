@@ -49,6 +49,9 @@ public class CommodityDetailVO {
     @ApiModelProperty(value = "品牌")
     private String skuBrand;
 
+    @ApiModelProperty(value = "中文加英文品牌")
+    private String allName;
+
     @ApiModelProperty(value = "产地")
     private String skuOrigin;
 

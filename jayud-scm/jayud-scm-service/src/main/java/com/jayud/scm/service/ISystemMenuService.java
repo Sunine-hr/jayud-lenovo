@@ -45,4 +45,5 @@ public interface ISystemMenuService extends IService<SystemMenu> {
      */
     public List<SystemMenu> getUserMenusByType(String type);
 
+    SystemMenu getSystemMenuByActionCode(String m);
 }

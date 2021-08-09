@@ -66,7 +66,13 @@ public enum CorrespondEnum {
   //b_tax_class_code
     TAX_CODE1("taxCode","tax_code","分类代码"),
     TAX_ITEM_NAME("taxItemName","tax_item_name","分类名称"),
-    TAX_CLASS_NAME("taxClassName","tax_class_name","类型名称");
+    TAX_CLASS_NAME("taxClassName","tax_class_name","类型名称"),
+
+    //system_role_action
+    TITLE("title","title","父级菜单"),
+    ACTION_NAME("actionName","action_name","权限名称"),
+    ACTION_CODE("actionCode","action_code","权限code"),
+    NAME("name","name","角色");
 
     private String code;
     private String name;

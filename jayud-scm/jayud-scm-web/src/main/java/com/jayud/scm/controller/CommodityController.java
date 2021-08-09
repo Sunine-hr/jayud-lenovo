@@ -97,10 +97,13 @@ public class CommodityController {
     @PostMapping(value = "/saveOrUpdateCommodity")
     public CommonResult saveOrUpdateCommodity(@Valid @RequestBody AddCommodityForm form) {
 
-        Commodity commodity = commodityService.getCommodityBySkuModelAndSkuBrand(form.getSkuModel(),form.getSkuBrand());
-        if(commodity != null){
-            return CommonResult.error(444,"商品型号和品牌已存在");
+        if(!form.getSkuModel().equals("无型号")){
+            Commodity commodity = commodityService.getCommodityBySkuModelAndSkuBrand(form.getSkuModel(),form.getSkuBrand());
+            if(commodity != null){
+                return CommonResult.error(444,"商品型号和品牌已存在");
+            }
         }
+
 
         boolean result = this.commodityService.saveOrUpdateCommodity(form);
         if(result){
@@ -116,7 +119,7 @@ public class CommodityController {
         return CommonResult.success(commodityService.findCommodityById(id));
     }
 
-    @ApiOperation(value = "根据id获取商品信息")
+    @ApiOperation(value = "根据id获取商品详细信息")
     @PostMapping(value = "/findCommodityDetailById")
     public CommonResult<CommodityDetailVO> findCommodityDetailById(@RequestBody Map<String,Object> map) {
         Integer id = MapUtil.getInt(map, "id");

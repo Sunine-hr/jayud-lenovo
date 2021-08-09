@@ -25,6 +25,9 @@ QueryCommodityForm extends BasePageForm{
     @JsonIgnore
     private String endTime;
 
+    @ApiModelProperty("是否归类")
+    private Boolean classify;
+
 //    @ApiModelProperty("是否归类")
 //    private String isClassification;
 

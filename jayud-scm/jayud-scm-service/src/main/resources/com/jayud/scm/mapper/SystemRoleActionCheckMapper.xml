@@ -28,4 +28,28 @@
         id, role_id, action_id, action_code, check_level, check_money, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
 
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.SystemRoleActionCheckVO">
+        select srac.id ,sa.action_name actionName ,
+        srac.action_code actionCode,
+        sm.title title,sr.name name,
+        srac.check_level checkLevel,
+        srac.check_money checkMoney,
+        srac.crt_by_name crtByName,
+        srac.crt_by_dtm crtByDtm
+        from system_role_action_check srac
+        left join system_action sa on srac.action_id = sa.id
+        left join system_role sr on srac.role_id = sr.id
+        left join system_menu sm on sa.parent_id = sm.id
+        where srac.voided = 0
+        <if test="form.key != null and form.key != ''">
+            and
+            <if test="form.key == 'action_code' ">
+                srac.action_code = #{form.condition}
+            </if>
+            <if test="form.key == 'name' ">
+                sr.name = #{form.condition}
+            </if>
+        </if>
+    </select>
+
 </mapper>

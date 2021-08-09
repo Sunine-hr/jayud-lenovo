@@ -3,6 +3,7 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
@@ -695,28 +696,27 @@ public class OrderInfoController {
                 inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode()) ||
                 inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode()) ||
                 inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCFDD.getCode())) {
-//                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())) {
-//                    InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
-//                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
-//                        return CommonResult.error(1, storageOutOrderForm.checkCreateOrder());
-//                    }
-//                    ApiResult result = storageClient.isEnough(storageOutOrderForm.getGoodsFormList());
-//                    if(!result.isOk()){
-//                        return CommonResult.error(result.getCode(),result.getMsg());
-//                    }
-//                    ApiResult stock = storageClient.isStock(storageOutOrderForm.getGoodsFormList());
-//                    if(!stock.isOk()){
-//                        return CommonResult.error(stock.getCode(),stock.getMsg());
-//                    }
-//
-//                }
-//                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())) {
-//                    InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
-//                    ApiResult commodity = storageClient.isCommodity(storageInputOrderForm.getGoodsFormList());
-//                    if(!commodity.isOk()){
-//                        return CommonResult.error(commodity.getCode(),commodity.getMsg());
-//                    }
-//                }
+                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCEDD.getCode())) {
+                    InputStorageOutOrderForm storageOutOrderForm = form.getStorageOutOrderForm();
+                    if (!storageOutOrderForm.checkCreateOrder().equals("pass")) {
+                        throw new JayudBizException(1, storageOutOrderForm.checkCreateOrder());
+                    }
+                    ApiResult result = storageClient.isEnough(storageOutOrderForm.getGoodsFormList());
+                    if(!result.isOk()){
+                        throw new JayudBizException(1, result.getMsg());
+                    }
+                    ApiResult stock = storageClient.isStock(storageOutOrderForm.getGoodsFormList());
+                    if(!stock.isOk()){
+                        throw new JayudBizException(1, stock.getMsg());
+                    }
+                }
+                if (inputMainOrderForm.getSelectedServer().contains(OrderStatusEnum.CCIDD.getCode())) {
+                    InputStorageInputOrderForm storageInputOrderForm = form.getStorageInputOrderForm();
+                    ApiResult commodity = storageClient.isCommodity(storageInputOrderForm.getGoodsFormList());
+                    if(!commodity.isOk()){
+                        throw new JayudBizException(1, commodity.getMsg());
+                    }
+                }
         }
         //校验参数
         form.checkCreateParam();

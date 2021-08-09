@@ -21,6 +21,7 @@ import com.jayud.scm.model.vo.*;
 import com.jayud.scm.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import javafx.scene.effect.SepiaTone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,10 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 
@@ -63,6 +61,12 @@ public class SystemUserController {
     private RedisUtils redisUtils;
     @Autowired
     ISystemUserLegalService systemUserLegalService;
+
+    @Autowired
+    private ISystemActionService systemActionService;
+
+    @Autowired
+    private ISystemRoleActionService systemRoleActionService;
 
     /**
      * 登录接口
@@ -119,6 +123,27 @@ public class SystemUserController {
     @PostMapping(value = "/findAllMenuNode")
     public CommonResult<List<QueryMenuStructureVO>> findAllMenuNode() {
         List<QueryMenuStructureVO> menuStructureVOS = menuService.findAllMenuNode();
+
+        for (QueryMenuStructureVO menuStructureVO : menuStructureVOS) {
+            for (QueryMenuStructureVO child : menuStructureVO.getChildren()) {
+                //获取菜单下按钮
+                List<SystemAction> systemActions = systemActionService.getSystemActionList(child.getId());
+
+                List<QueryMenuStructureVO> menuStructureVOS1 = new ArrayList<>();
+                for (SystemAction systemAction : systemActions) {
+                    QueryMenuStructureVO menuStructureVO1 = new QueryMenuStructureVO();
+                    menuStructureVO1.setLabel(systemAction.getActionName());
+                    menuStructureVO1.setFId(systemAction.getParentId().longValue());
+                    menuStructureVO1.setId(systemAction.getId().longValue());
+                    menuStructureVO1.setActionCode(systemAction.getActionCode());
+                    menuStructureVO1.setChildren(new ArrayList<>());
+                    menuStructureVOS1.add(menuStructureVO1);
+                }
+                child.setChildren(menuStructureVOS1);
+            }
+
+        }
+
         return CommonResult.success(menuStructureVOS);
     }
 
@@ -135,11 +160,19 @@ public class SystemUserController {
         editRoleMenuVO.setDescription(systemRole.getDescription());
         editRoleMenuVO.setWebFlag(systemRole.getWebFlag());
         //获取角色所拥有的所有菜单
-        List<SystemRoleMenuRelation> roleMenuRelations = roleMenuRelationService.findRelationByRoleId(Long.valueOf(id));
-        List<Long> menuIds = new ArrayList<>();
-        for (SystemRoleMenuRelation roleMenuRel : roleMenuRelations) {
-            menuIds.add(roleMenuRel.getMenuId());
+//        List<SystemRoleMenuRelation> roleMenuRelations = roleMenuRelationService.findRelationByRoleId(Long.valueOf(id));
+//        List<Long> menuIds = new ArrayList<>();
+//        for (SystemRoleMenuRelation roleMenuRel : roleMenuRelations) {
+//            menuIds.add(roleMenuRel.getMenuId());
+//        }
+
+        //获取该角色拥有的所有按钮
+        List<SystemRoleAction> systemRoleActions = systemRoleActionService.findSystemRoleActionByRoleId(Integer.parseInt(id));
+        List<String> menuIds = new ArrayList<>();
+        for (SystemRoleAction systemRoleAction : systemRoleActions) {
+            menuIds.add(systemRoleAction.getActionCode());
         }
+
         editRoleMenuVO.setMenuIds(menuIds);
         return CommonResult.success(editRoleMenuVO);
     }
@@ -149,20 +182,27 @@ public class SystemUserController {
     public CommonResult addRole(@RequestBody AddRoleForm addRoleForm) {
         SystemRole systemRole = ConvertUtil.convert(addRoleForm, SystemRole.class);
         if (addRoleForm.getMenuIds() == null) {
-            return CommonResult.error(400, "参数不合法");
+            return CommonResult.error(400, "请选择权限");
         }
+
         if (addRoleForm.getId() != null) {
             //编辑角色权限
             roleService.saveOrUpdate(systemRole);
             //清除旧的角色菜单关系
             List<Long> roleIds = new ArrayList<>();
             roleIds.add(addRoleForm.getId());
+            //清楚旧角色菜单关系
             roleMenuRelationService.removeRelationByRoleId(roleIds);
+            //清楚旧角色按钮关系
+            systemRoleActionService.removeSystemRoleActionByRoleId(roleIds);
         } else {//新增
             roleService.saveRole(systemRole);
         }
         systemRole.setId(systemRole.getId());
+        //新增角色菜单信息
         roleMenuRelationService.createRelation(systemRole, addRoleForm.getMenuIds());
+        //新增角色按钮信息
+        systemRoleActionService.createSystemRoleAction(systemRole,addRoleForm.getMenuIds());
         return CommonResult.success();
     }
 
@@ -495,7 +535,7 @@ public class SystemUserController {
 //        return CommonResult.success(initComboxs);
 //    }
 
-    @ApiOperation(value = "账户管理-新增数据初始化-角色")
+    @ApiOperation(value = "账户管理-新增数据初始化-角色   获取所有角色")
     @PostMapping(value = "/initAccountRole")
     public CommonResult<List<InitComboxVO>> initAccountRole() {
         List<InitComboxVO> initComboxs = new ArrayList<>();
@@ -641,6 +681,18 @@ public class SystemUserController {
         List<DepartmentVO> department = departmentService.findDepartment(departmentId);
         DepartmentVO departmentVO = department.get(0);
         return CommonResult.success(departmentVO);
+    }
+
+    @ApiOperation(value = "获取所有角色以及对应角色下的用户")
+    @PostMapping(value = "/getRoleAndSystemUser")
+    public CommonResult getRoleAndSystemUser() {
+        List<SystemRoleVO> role = roleService.findRole();
+        List<SystemRoleAndSystemUserVO> systemRoleAndSystemUserVOS = ConvertUtil.convertList(role, SystemRoleAndSystemUserVO.class);
+        for (SystemRoleAndSystemUserVO systemRoleVO : systemRoleAndSystemUserVOS) {
+            List<SystemUserSimpleVO> systemUserSimpleVOS = userRoleRelationService.getSystemUserSimpleByRoleId(systemRoleVO.getId());
+            systemRoleVO.setSystemUserVOS(systemUserSimpleVOS);
+        }
+        return CommonResult.success(systemRoleAndSystemUserVOS);
     }
 
 

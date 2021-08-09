@@ -55,6 +55,12 @@ public class SystemMenu extends Model<SystemMenu> {
     @ApiModelProperty(value = "菜单类型(zgys,ky,bg,hy)")
     private String type;
 
+    @ApiModelProperty(value = "权限code")
+    private String actionCode;
+
+    @ApiModelProperty(value = "删除标记")
+    private String voided;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

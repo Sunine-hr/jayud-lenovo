@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -44,7 +45,9 @@ public class SystemRoleServiceImpl extends ServiceImpl<SystemRoleMapper, SystemR
 
     @Override
     public List<SystemRoleVO> findRole() {
-        List<SystemRole> systemRoles = baseMapper.selectList(null);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status",1);
+        List<SystemRole> systemRoles = baseMapper.selectList(queryWrapper);
         return convertList(systemRoles);
     }
 

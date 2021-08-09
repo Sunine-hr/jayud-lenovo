@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.CustomerEarningsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.CustomerEarnings">
+        <id column="id" property="id" />
+        <result column="year_business" property="yearBusiness" />
+        <result column="total_assets" property="totalAssets" />
+        <result column="asset_liability_ratio" property="assetLiabilityRatio" />
+        <result column="inventory_day" property="inventoryDay" />
+        <result column="accounts_receivable_day" property="accountsReceivableDay" />
+        <result column="nw_profit" property="nwProfit" />
+        <result column="gw_margin" property="gwMargin" />
+        <result column="nw_margin" property="nwMargin" />
+        <result column="tax_bearing_rate" property="taxBearingRate" />
+        <result column="bank_loan" property="bankLoan" />
+        <result column="report_begin_date" property="reportBeginDate" />
+        <result column="report_end_date" property="reportEndDate" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_dtm" property="crtDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_dtm" property="mdyDtm" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_dtm" property="voidedDtm" />
+        <result column="voided" property="voided" />
+        <result column="customer_id" property="customerId" />
+        <result column="inventory" property="inventory" />
+        <result column="accounts_receivable" property="accountsReceivable" />
+        <result column="accounts_payable" property="accountsPayable" />
+        <result column="fixed_assets" property="fixedAssets" />
+        <result column="operating_profit" property="operatingProfit" />
+        <result column="flow_rate" property="flowRate" />
+        <result column="quick_ratio" property="quickRatio" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, year_business, total_assets, asset_liability_ratio, inventory_day, accounts_receivable_day, nw_profit, gw_margin, nw_margin, tax_bearing_rate, bank_loan, report_begin_date, report_end_date, crt_by, crt_by_name, crt_dtm, mdy_by, mdy_by_name, mdy_dtm, voided_by, voided_by_name, voided_dtm, voided, customer_id, inventory, accounts_receivable, accounts_payable, fixed_assets, operating_profit, flow_rate, quick_ratio
+    </sql>
+
+</mapper>

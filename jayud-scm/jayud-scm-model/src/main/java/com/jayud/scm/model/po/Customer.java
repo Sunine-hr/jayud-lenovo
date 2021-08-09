@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -20,7 +18,7 @@ import lombok.EqualsAndHashCode;
  * </p>
  *
  * @author LLJ
- * @since 2021-07-27
+ * @since 2021-08-04
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -39,14 +37,26 @@ public class Customer extends Model<Customer> {
     @ApiModelProperty(value = "名称")
     private String customerName;
 
-    @ApiModelProperty(value = "类型")
+    @ApiModelProperty(value = "客户等级")
     private String customerType;
 
     @ApiModelProperty(value = "简称")
     private String customerAbbr;
 
+    @ApiModelProperty(value = "跟单商务id")
+    private Integer followerId;
+
     @ApiModelProperty(value = "商务")
     private String followerName;
+
+    @ApiModelProperty(value = "业务员id")
+    private Integer fsalesId;
+
+    @ApiModelProperty(value = "业务员姓名")
+    private String fsalesMan;
+
+    @ApiModelProperty(value = "是否共享客户")
+    private Integer isShare;
 
     @ApiModelProperty(value = "法人")
     private String legalDeputy;
@@ -57,43 +67,14 @@ public class Customer extends Model<Customer> {
     @ApiModelProperty(value = "注册电话")
     private String regTel;
 
-    @ApiModelProperty(value = "原税务编号，现改为纳税识别号")
+    @ApiModelProperty(value = "税务编号，纳税识别号，统一信用号码")
     private String taxNo;
+
+    @ApiModelProperty(value = "海关代码")
+    private String customsCode;
 
     @ApiModelProperty(value = "网址")
     private String companyNet;
-
-    @ApiModelProperty(value = "省")
-    private String province;
-
-    @ApiModelProperty(value = "市")
-    private String city;
-
-    @ApiModelProperty(value = "县、区")
-    private String county;
-
-    private Integer crtBy;
-
-    private String crtByName;
-
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime crtDtm;
-
-    private Integer mdyBy;
-
-    private String mdyByName;
-
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime mdyDtm;
-
-    private Integer voidedBy;
-
-    private String voidedByName;
-
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime voidedDtm;
-
-    private Integer voided;
 
     @ApiModelProperty(value = "省名称")
     private String provinceName;
@@ -116,44 +97,11 @@ public class Customer extends Model<Customer> {
     @ApiModelProperty(value = "客户拼音简写")
     private String customerAbbrCn;
 
-    @ApiModelProperty(value = "跟单商务id")
-    private Integer followerId;
-
-    @ApiModelProperty(value = "业务员姓名")
-    private String fsalesMan;
-
-    @ApiModelProperty(value = "业务员id")
-    private Integer fsalesId;
-
-    @ApiModelProperty(value = "开票地址")
-    private String invoiceAddress;
-
-    @ApiModelProperty(value = "开票银行")
-    private String invoiceBrank;
-
-    @ApiModelProperty(value = "客户协议编号")
-    private String customerAgNo;
-
-    @ApiModelProperty(value = "原纳税识别号，现已被tax_no取代")
-    private String taxIdentifyNumber;
-
-    @ApiModelProperty(value = "开票抬头")
-    private String makeUp;
-
-    @ApiModelProperty(value = "开票账号")
-    private String invoiceAccount;
-
-    @ApiModelProperty(value = "开票电话")
-    private String invoiceTel;
-
     @ApiModelProperty(value = "英文名称")
     private String enCustomerName;
 
     @ApiModelProperty(value = "英文地址")
     private String enCustomerAddress;
-
-    @ApiModelProperty(value = "抬头方式")
-    private String makeUpStyle;
 
     @ApiModelProperty(value = "客户类型(融资客户/垫资客户/账期客户)")
     private String customerStyle;
@@ -182,17 +130,11 @@ public class Customer extends Model<Customer> {
     @ApiModelProperty(value = "是否自动核销，0：不自动核销，1：自动核销")
     private Integer isVerificationFlag;
 
-    @ApiModelProperty(value = "备注")
-    private String remark;
-
     @ApiModelProperty(value = "工商注册号")
     private String busRegisterNo;
 
     @ApiModelProperty(value = "组织机构代码")
     private String orgCode;
-
-    @ApiModelProperty(value = "统一信用代码")
-    private String unCreditCode;
 
     @ApiModelProperty(value = "公司类型")
     private String companyType;
@@ -206,7 +148,7 @@ public class Customer extends Model<Customer> {
     @ApiModelProperty(value = "核准日期")
     private String approvalDtm;
 
-    @ApiModelProperty(value = "登记机")
+    @ApiModelProperty(value = "登记机关")
     private String registerMac;
 
     @ApiModelProperty(value = "经营范围")
@@ -224,33 +166,25 @@ public class Customer extends Model<Customer> {
     @ApiModelProperty(value = "提交到wms，0未提交1已提交")
     private Integer isCommitWms;
 
+    @ApiModelProperty(value = "提交到bms，0未提交1已提交")
     private Integer isCommitBms;
-
-    @ApiModelProperty(value = "结算客户编码，用于凭证")
-    private String k3AccNo;
-
-    @ApiModelProperty(value = "客户，用于凭证")
-    private String k3AccNo2;
 
     @ApiModelProperty(value = "区域")
     private String area;
 
-    @ApiModelProperty(value = "是否共享客户")
-    private Integer isShare;
-
     @ApiModelProperty(value = "代理品牌")
     private String agencyBrand;
 
-    @ApiModelProperty(value = "供应商")
+    @ApiModelProperty(value = "主要供应商")
     private String supplierName;
 
     @ApiModelProperty(value = "经营产品")
     private String businessProducts;
 
-    @ApiModelProperty(value = "进口量")
+    @ApiModelProperty(value = "预计进口量")
     private BigDecimal iAchievement;
 
-    @ApiModelProperty(value = "出口量")
+    @ApiModelProperty(value = "预计出口量")
     private BigDecimal eAchievement;
 
     @ApiModelProperty(value = "客户来源")
@@ -261,6 +195,39 @@ public class Customer extends Model<Customer> {
 
     @ApiModelProperty(value = "第一单下单日期")
     private LocalDate firstOrderDate;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
+
+    @ApiModelProperty(value = "创建人ID")
+    private Integer crtBy;
+
+    @ApiModelProperty(value = "创建人名称")
+    private String crtByName;
+
+    @ApiModelProperty(value = "创建时间")
+    private LocalDateTime crtByDtm;
+
+    @ApiModelProperty(value = "最后修改人ID")
+    private Integer mdyBy;
+
+    @ApiModelProperty(value = "最后修改人名称")
+    private String mdyByName;
+
+    @ApiModelProperty(value = "最后修改时间")
+    private LocalDateTime mdyByDtm;
+
+    @ApiModelProperty(value = "删除标记")
+    private Integer voided;
+
+    @ApiModelProperty(value = "删除人ID")
+    private Integer voidedBy;
+
+    @ApiModelProperty(value = "删除人名称")
+    private String voidedByName;
+
+    @ApiModelProperty(value = "删除时间")
+    private LocalDateTime voidedByDtm;
 
 
     @Override

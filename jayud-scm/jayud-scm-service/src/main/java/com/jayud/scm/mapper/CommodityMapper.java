@@ -2,6 +2,7 @@ package com.jayud.scm.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.QueryCommodityForm;
 import com.jayud.scm.model.po.Commodity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -33,4 +34,6 @@ public interface CommodityMapper extends BaseMapper<Commodity> {
     IPage<CommodityFormVO> findByPage(@Param("page") Page<CommodityFormVO> page, @Param("form")QueryCommodityForm form);
 
     void getOrderNo(Map<String,Object> map);
+
+    boolean commonDelete(@Param("form") DeleteForm form);
 }

@@ -13,4 +13,8 @@ public class QueryForm extends BasePageForm{
     @ApiModelProperty("搜索key")
     private String key;
 
+    @ApiModelProperty("模糊条件")
+    private String name;
+
+
 }

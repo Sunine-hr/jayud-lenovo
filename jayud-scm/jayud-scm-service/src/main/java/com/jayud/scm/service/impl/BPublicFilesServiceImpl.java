@@ -67,16 +67,16 @@ public class BPublicFilesServiceImpl extends ServiceImpl<BPublicFilesMapper, BPu
 
     @Override
     public boolean delete(DeleteForm deleteForm) {
-        List<BPublicFiles> bPublicFiles = new ArrayList<>();
+//        List<BPublicFiles> bPublicFiles = new ArrayList<>();
         List<CommodityFollow> commodityFollows = new ArrayList<>();
         for (Long id : deleteForm.getIds()) {
-            BPublicFiles publicFiles = new BPublicFiles();
-            publicFiles.setId(id.intValue());
-            publicFiles.setVoided(1);
-            publicFiles.setVoidedBy(deleteForm.getId().intValue());
-            publicFiles.setVoidedByDtm(deleteForm.getDeleteTime());
-            publicFiles.setVoidedByName(deleteForm.getName());
-            bPublicFiles.add(publicFiles);
+//            BPublicFiles publicFiles = new BPublicFiles();
+//            publicFiles.setId(id.intValue());
+//            publicFiles.setVoided(1);
+//            publicFiles.setVoidedBy(deleteForm.getId().intValue());
+//            publicFiles.setVoidedByDtm(deleteForm.getDeleteTime());
+//            publicFiles.setVoidedByName(deleteForm.getName());
+//            bPublicFiles.add(publicFiles);
 
             CommodityFollow commodityFollow = new CommodityFollow();
             commodityFollow.setCommodityId(id.intValue());
@@ -87,15 +87,19 @@ public class BPublicFilesServiceImpl extends ServiceImpl<BPublicFilesMapper, BPu
             commodityFollow.setCrtByName(deleteForm.getName());
             commodityFollows.add(commodityFollow);
         }
-        boolean b = this.updateBatchById(bPublicFiles);
-        if(b){
-            log.warn("附件删除成功："+bPublicFiles);
-            boolean b1 = commodityFollowService.saveBatch(commodityFollows);
-            if(!b1){
-                log.warn("操作记录表添加失败"+commodityFollows);
-            }
+//        boolean b = this.updateBatchById(bPublicFiles);
+//        if(b){
+//            log.warn("附件删除成功："+bPublicFiles);
+//            boolean b1 = commodityFollowService.saveBatch(commodityFollows);
+//            if(!b1){
+//                log.warn("操作记录表添加失败"+commodityFollows);
+//            }
+//        }
+        boolean b1 = commodityFollowService.saveBatch(commodityFollows);
+        if(!b1){
+            log.warn("操作记录表添加失败"+commodityFollows);
         }
-        return b;
+        return b1;
     }
 
     @Override

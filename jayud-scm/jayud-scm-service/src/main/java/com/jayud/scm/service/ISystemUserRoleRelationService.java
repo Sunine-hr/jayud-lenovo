@@ -4,6 +4,7 @@ package com.jayud.scm.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.po.SystemRole;
 import com.jayud.scm.model.po.SystemUserRoleRelation;
+import com.jayud.scm.model.vo.SystemUserSimpleVO;
 
 import java.util.List;
 
@@ -50,4 +51,6 @@ public interface ISystemUserRoleRelationService extends IService<SystemUserRoleR
      * @return
      */
     boolean isExistUserRelation(List<Long> roleIds);
+
+    List<SystemUserSimpleVO> getSystemUserSimpleByRoleId(Long id);
 }

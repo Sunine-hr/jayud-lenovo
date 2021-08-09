@@ -55,6 +55,9 @@
         <if test="form.key !=null and form.key!=''">
             and ${form.key} like concat('%',#{form.condition},'%') ESCAPE '/'
         </if>
+        <if test="form.name !=null and form.name!=''">
+            and code_no like concat('%',#{form.name},'%') or code_name like concat('%',#{form.name},'%')
+        </if>
     </select>
 
     <select id="findHsCode" resultType="String">

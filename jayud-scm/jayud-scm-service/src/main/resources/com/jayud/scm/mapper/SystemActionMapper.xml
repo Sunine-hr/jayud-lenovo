@@ -26,4 +26,23 @@
         id, parent_id, action_name, action_code, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
 
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.SystemActionVO">
+        select sa.id ,sa.action_name actionName ,sa.action_code actionCode, sm.title title
+        from system_action sa
+        left join system_menu sm on sa.parent_id = sm.id
+        where sa.voided = 0
+        <if test="form.key != null and form.key != ''">
+            and
+            <if test="form.key == 'action_name' ">
+                sa.action_name = #{form.condition}
+            </if>
+            <if test="form.key == 'action_code' ">
+                sa.action_code = #{form.condition}
+            </if>
+            <if test="form.key == 'title' ">
+                sm.title = #{form.condition}
+            </if>
+        </if>
+    </select>
+
 </mapper>

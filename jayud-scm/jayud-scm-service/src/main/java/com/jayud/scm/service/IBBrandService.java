@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IBBrandService extends IService<BBrand> {
 
+    BBrand getNameByNameEn(String skuBrand);
 }

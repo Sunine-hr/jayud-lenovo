@@ -15,6 +15,9 @@ public class QueryMenuStructureVO {
     @ApiModelProperty(value = "菜单名称")
     private String label;
 
+    @ApiModelProperty(value = "权限code")
+    private String actionCode;
+
     @ApiModelProperty(value = "父级菜单ID")
     private Long fId;
 

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.CustomerBankMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.CustomerBank">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="bank_name" property="bankName" />
+        <result column="bank_address" property="bankAddress" />
+        <result column="bank_area" property="bankArea" />
+        <result column="account_name" property="accountName" />
+        <result column="account_no" property="accountNo" />
+        <result column="swift_code" property="swiftCode" />
+        <result column="bank_code" property="bankCode" />
+        <result column="currency_name" property="currencyName" />
+        <result column="is_default" property="isDefault" />
+        <result column="onl_id" property="onlId" />
+        <result column="is_sync" property="isSync" />
+        <result column="is_disabled" property="isDisabled" />
+        <result column="check_state_flag" property="checkStateFlag" />
+        <result column="f_level" property="fLevel" />
+        <result column="f_step" property="fStep" />
+        <result column="remark" property="remark" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_by_dtm" property="crtByDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_by_dtm" property="mdyByDtm" />
+        <result column="voided" property="voided" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_by_dtm" property="voidedByDtm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, bank_name, bank_address, bank_area, account_name, account_no, swift_code, bank_code, currency_name, is_default, onl_id, is_sync, is_disabled, check_state_flag, f_level, f_step, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
+    </sql>
+
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.CustomerBankVO">
+        select id, customer_id customerId, is_default isDefault,
+        bank_name bankName, bank_address bankAddress, bank_area bankArea, account_name accountName,
+        account_no accountNo, swift_code swiftCode, bank_code bankCode, currency_name currencyName,
+        crt_by_name crtByName, crt_by_dtm crtByDtm,remark ,mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
+        from customer_relationer where voided = 0 and customer_id = #{form.id}
+    </select>
+
+</mapper>

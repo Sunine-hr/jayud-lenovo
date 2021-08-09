@@ -45,4 +45,11 @@
             #{item}
         </foreach>
     </select>
+
+    <select id="getSystemUserSimpleByRoleId" resultType="com.jayud.scm.model.vo.SystemUserSimpleVO">
+        select su.id,su.name,su.user_name userName
+        from system_user_role_relation sur
+        left join system_user su on su.id = sur.user_id
+        where sur.role_id = #{id}
+    </select>
 </mapper>

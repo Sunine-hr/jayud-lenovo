@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import com.jayud.scm.model.po.SystemRole;
 import com.jayud.scm.model.po.SystemUserRoleRelation;
+import com.jayud.scm.model.vo.SystemUserSimpleVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -26,4 +27,6 @@ public interface SystemUserRoleRelationMapper extends BaseMapper<SystemUserRoleR
     boolean removeRelationByUserId(List<Long> userIds);
 
     List<SystemUserRoleRelation> isExistUserRelation(List<Long> roleIds);
+
+    List<SystemUserSimpleVO> getSystemUserSimpleByRoleId(Long id);
 }

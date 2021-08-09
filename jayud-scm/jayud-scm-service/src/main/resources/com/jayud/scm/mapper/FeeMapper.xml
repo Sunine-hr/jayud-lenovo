@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.FeeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.Fee">
+        <id column="id" property="id" />
+        <result column="fee_model_id" property="feeModelId" />
+        <result column="deputy_style" property="deputyStyle" />
+        <result column="incoterms" property="incoterms" />
+        <result column="pay_style" property="payStyle" />
+        <result column="pay_day" property="payDay" />
+        <result column="re_style" property="reStyle" />
+        <result column="re_day" property="reDay" />
+        <result column="account_style" property="accountStyle" />
+        <result column="quota_type" property="quotaType" />
+        <result column="product_class" property="productClass" />
+        <result column="proxy_fee" property="proxyFee" />
+        <result column="g_rate_type" property="gRateType" />
+        <result column="p_rate_type" property="pRateType" />
+        <result column="rate_value" property="rateValue" />
+        <result column="rate_time" property="rateTime" />
+        <result column="is_lowest_price" property="isLowestPrice" />
+        <result column="lowest_price" property="lowestPrice" />
+        <result column="lowest_price_type" property="lowestPriceType" />
+        <result column="interest_type" property="interestType" />
+        <result column="interest_fee" property="interestFee" />
+        <result column="interest_day_no" property="interestDayNo" />
+        <result column="interest_day_lowest" property="interestDayLowest" />
+        <result column="lc_fee" property="lcFee" />
+        <result column="late_fee" property="lateFee" />
+        <result column="y_fee" property="yFee" />
+        <result column="b_fee" property="bFee" />
+        <result column="o_fee" property="oFee" />
+        <result column="earnest_per" property="earnestPer" />
+        <result column="dis_count" property="disCount" />
+        <result column="proxy_charge" property="proxyCharge" />
+        <result column="shipping_fee_style" property="shippingFeeStyle" />
+        <result column="inv_type" property="invType" />
+        <result column="msg_service_fee" property="msgServiceFee" />
+        <result column="is_merge_low_fee" property="isMergeLowFee" />
+        <result column="rate_diff_type" property="rateDiffType" />
+        <result column="rate_bank" property="rateBank" />
+        <result column="add_proxy_fee" property="addProxyFee" />
+        <result column="remark" property="remark" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_by_dtm" property="crtByDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_by_dtm" property="mdyByDtm" />
+        <result column="voided" property="voided" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_by_dtm" property="voidedByDtm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, fee_model_id, deputy_style, incoterms, pay_style, pay_day, re_style, re_day, account_style, quota_type, product_class, proxy_fee, g_rate_type, p_rate_type, rate_value, rate_time, is_lowest_price, lowest_price, lowest_price_type, interest_type, interest_fee, interest_day_no, interest_day_lowest, lc_fee, late_fee, y_fee, b_fee, o_fee, earnest_per, dis_count, proxy_charge, shipping_fee_style, inv_type, msg_service_fee, is_merge_low_fee, rate_diff_type, rate_bank, add_proxy_fee, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
+    </sql>
+
+</mapper>

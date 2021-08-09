@@ -55,5 +55,4 @@ public interface ISystemRoleService extends IService<SystemRole> {
      * @return
      */
     SystemRole getRoleByCondition(Map<String,Object> param);
-
 }

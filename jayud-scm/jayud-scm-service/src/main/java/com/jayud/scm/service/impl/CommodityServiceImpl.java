@@ -5,16 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
-import com.jayud.scm.model.po.Commodity;
+import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.CommodityMapper;
-import com.jayud.scm.model.po.CommodityEntry;
-import com.jayud.scm.model.po.CommodityFollow;
-import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.*;
 import com.jayud.scm.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -50,19 +48,22 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
     @Autowired
     private ICommodityEntryService commodityEntryService;
 
+    @Autowired
+    private IBBrandService brandService;
+
 
     @Override
     public boolean delete(DeleteForm deleteForm) {
-        List<Commodity> commodities = new ArrayList<>();
+//        List<Commodity> commodities = new ArrayList<>();
         List<CommodityFollow> commodityFollows = new ArrayList<>();
         for (Long id : deleteForm.getIds()) {
-            Commodity commodity = new Commodity();
-            commodity.setId(id.intValue());
-            commodity.setVoided(1);
-            commodity.setVoidedBy(deleteForm.getId().intValue());
-            commodity.setVoidedByDtm(deleteForm.getDeleteTime());
-            commodity.setVoidedByName(deleteForm.getName());
-            commodities.add(commodity);
+//            Commodity commodity = new Commodity();
+//            commodity.setId(id.intValue());
+//            commodity.setVoided(1);
+//            commodity.setVoidedBy(deleteForm.getId().intValue());
+//            commodity.setVoidedByDtm(deleteForm.getDeleteTime());
+//            commodity.setVoidedByName(deleteForm.getName());
+//            commodities.add(commodity);
 
             CommodityFollow commodityFollow = new CommodityFollow();
             commodityFollow.setCommodityId(id.intValue());
@@ -73,15 +74,16 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
             commodityFollow.setCrtByName(deleteForm.getName());
             commodityFollows.add(commodityFollow);
         }
-        boolean b = this.updateBatchById(commodities);
-        if(b){
-            log.warn("商品删除成功："+commodities);
-            boolean b1 = commodityFollowService.saveBatch(commodityFollows);
-            if(!b1){
-                log.warn("操作记录表添加失败"+commodityFollows);
-            }
+//        boolean b = this.updateBatchById(commodities);
+//        if(b){
+//            log.warn("商品删除成功："+commodities);
+//
+//        }
+        boolean b1 = commodityFollowService.saveBatch(commodityFollows);
+        if(!b1){
+            log.warn("操作记录表添加失败"+commodityFollows);
         }
-        return b;
+        return b1;
     }
 
     @Override
@@ -121,7 +123,8 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
 
         if(save){
             log.warn("商品添加或修改成功："+commodity);
-            commodityFollow.setCrtBy(commodity.getId().intValue());
+            commodityFollow.setCommodityId(commodity.getId());
+            commodityFollow.setCrtBy(systemUser.getId().intValue());
             commodityFollow.setCrtByDtm(LocalDateTime.now());
             commodityFollow.setCrtByName(systemUser.getName());
             commodityFollow.setFollowContext(commodityFollow.getFollowContext()+commodity.getId());
@@ -169,6 +172,12 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
             commodityDetailVO.setHsCodeVO(hsCodeVO);
             commodityDetailVO.setCommodityEntryVOS(commodityEntryVOS);
         }
+        BBrand bBrand = brandService.getNameByNameEn(commodity.getSkuBrand());
+        if(bBrand != null){
+            commodityDetailVO.setAllName(bBrand.getAllName());
+        }else{
+            commodityDetailVO.setAllName(commodity.getSkuBrand());
+        }
         return commodityDetailVO;
     }
 
@@ -177,6 +186,7 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
         //获取操作人
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
+        List<CommodityFollow> commodityFollows = new ArrayList<>();
         List<Commodity> commodities = new ArrayList<>();
         for (Integer integer : form.getId()) {
             Commodity commodity = new Commodity();
@@ -188,14 +198,34 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
             commodity.setTaxCodeDate(LocalDateTime.now());
             commodity.setTaxCodeName(form.getTaxClassName());
             commodities.add(commodity);
+
+            CommodityFollow commodityFollow = new CommodityFollow();
+            commodityFollow.setSType(OperationEnum.UPDATE.getCode());
+            commodityFollow.setFollowContext("税收编码归类为"+form.getTaxCode());
+            commodityFollow.setCommodityId(commodity.getId());
+            commodityFollow.setCrtBy(systemUser.getId().intValue());
+            commodityFollow.setCrtByDtm(LocalDateTime.now());
+            commodityFollow.setCrtByName(systemUser.getName());
+            commodityFollow.setFollowContext(commodityFollow.getFollowContext()+commodity.getId());
+            commodityFollows.add(commodityFollow);
         }
         boolean b = this.updateBatchById(commodities);
         if(b){
             log.warn("税收归类成功"+commodities);
+
+            boolean save1 = commodityFollowService.saveBatch(commodityFollows);
+            if(!save1){
+                log.warn("操作记录表添加失败"+commodityFollows);
+            }
         }
         return b;
     }
 
+    /**
+     * 商品归类
+     * @param form
+     * @return
+     */
     @Override
     public boolean reviewCommodity(AddReviewCommodityForm form) {
 
@@ -248,6 +278,17 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
             if(!b){
                 log.warn("商品申报要素信息添加失败,数据为"+commodityEntries);
                 return false;
+            }
+            CommodityFollow commodityFollow = new CommodityFollow();
+            commodityFollow.setCommodityId(commodity.getId());
+            commodityFollow.setSType(OperationEnum.UPDATE.getCode());
+            commodityFollow.setFollowContext("商品归类,海关编码改为"+commodity.getHsCodeNo());
+            commodityFollow.setCrtBy(systemUser.getId().intValue());
+            commodityFollow.setCrtByDtm(LocalDateTime.now());
+            commodityFollow.setCrtByName(systemUser.getName());
+            boolean b1 = commodityFollowService.save(commodityFollow);
+            if(!b1){
+                log.warn("商品日志操作添加失败："+ commodityFollow);
             }
         }
 
@@ -329,7 +370,7 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
             CommodityFollow commodityFollow = new CommodityFollow();
             commodityFollow.setCommodityId(commodity.getId());
             commodityFollow.setSType(OperationEnum.UPDATE.getCode());
-            commodityFollow.setFollowContext("商品归类"+commodity.getId());
+            commodityFollow.setFollowContext("商品归类,海关编码改为"+commodity.getHsCodeNo());
             commodityFollow.setCrtBy(systemUser.getId().intValue());
             commodityFollow.setCrtByDtm(LocalDateTime.now());
             commodityFollow.setCrtByName(systemUser.getName());
@@ -354,21 +395,25 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
         List<CommodityFollow> commodityFollows = new ArrayList<>();
 
         for (Commodity commodity : commodities) {
-            CommodityFollow commodityFollow = new CommodityFollow();
+
             commodity.setSkuNo(getOrderNo(NoCodeEnum.COMMODITY.getCode(),LocalDateTime.now()));
             commodity.setCrtBy(systemUser.getId().intValue());
             commodity.setCrtByDtm(LocalDateTime.now());
             commodity.setCrtByName(systemUser.getName());
+        }
+
+        boolean save = this.saveBatch(commodities);
+
+        for (Commodity commodity : commodities) {
+            CommodityFollow commodityFollow = new CommodityFollow();
+            commodityFollow.setCommodityId(commodity.getId());
             commodityFollow.setSType(OperationEnum.INSERT.getCode());
             commodityFollow.setFollowContext(OperationEnum.INSERT.getDesc()+commodity.getId());
             commodityFollow.setCrtBy(systemUser.getId().intValue());
             commodityFollow.setCrtByDtm(LocalDateTime.now());
             commodityFollow.setCrtByName(systemUser.getName());
             commodityFollows.add(commodityFollow);
-
         }
-
-        boolean save = this.saveBatch(commodities);
 
         if(!save){
             log.warn("商品添加或修改失败："+commodities);
@@ -387,6 +432,12 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
         QueryWrapper<Commodity> queryWrapper = new QueryWrapper();
         queryWrapper.lambda().eq(Commodity::getSkuModel,skuModel);
         queryWrapper.lambda().eq(Commodity::getSkuBrand,skuBrand);
+        queryWrapper.lambda().eq(Commodity::getVoided,0);
         return this.getOne(queryWrapper);
+    }
+
+    @Override
+    public boolean commonDelete(DeleteForm deleteForm) {
+        return this.baseMapper.commonDelete(deleteForm);
     }
 }

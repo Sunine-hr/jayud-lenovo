@@ -12,8 +12,9 @@ import com.jayud.scm.model.bo.AddCommodityModelForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.QueryCommodityForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
-import com.jayud.scm.model.po.Commodity;
-import com.jayud.scm.model.po.SystemUser;
+import com.jayud.scm.model.enums.TableEnum;
+import com.jayud.scm.model.po.*;
+import com.jayud.scm.model.vo.BDataDicEntryVO;
 import com.jayud.scm.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -62,6 +63,24 @@ public class CommonController {
     @Autowired
     private IBPublicFilesService bPublicFilesService;
 
+    @Autowired
+    private ISystemRoleActionService systemRoleActionService;
+
+    @Autowired
+    private ISystemUserRoleRelationService systemUserRoleRelationService;
+
+    @Autowired
+    private ISystemActionService systemActionService;
+
+    @Autowired
+    private ISystemRoleActionCheckService systemRoleActionCheckService;
+
+    @Autowired
+    private IBDataDicEntryService ibDataDicEntryService;
+
+    @Autowired
+    private ICustomerService customerService;
+
     @ApiOperation(value = "删除通用方法")
     @PostMapping(value = "/delete")
     public CommonResult delete(@Valid @RequestBody DeleteForm deleteForm) {
@@ -71,24 +90,40 @@ public class CommonController {
         deleteForm.setName(UserOperator.getToken());
         deleteForm.setId(systemUserBySystemName.getId());
         deleteForm.setDeleteTime(LocalDateTime.now());
+        deleteForm.setTable(TableEnum.getDesc(deleteForm.getKey()));
+        boolean result = commodityService.commonDelete(deleteForm);
+        if(!result){
+            return CommonResult.error(444,"删除失败");
+        }
 
-        boolean result = true;
         switch (deleteForm.getKey()){
             case 1:
                 result = commodityService.delete(deleteForm);
                 break;
-            case 2:
-                result = hsCodeService.delete(deleteForm);
-                break;
+//            case 2:
+//                result = hsCodeService.delete(deleteForm);
+//                break;
             case 3:
                 result = bPublicFilesService.delete(deleteForm);
+                break;
+//            case 4:
+//                result = systemActionService.delete(deleteForm);
+//                break;
+//            case 5:
+//                result = systemRoleActionCheckService.delete(deleteForm);
+//                break;
+//            case 6:
+//                result = ibDataDicEntryService.delete(deleteForm);
+//                break;
+            case 7:
+                result = customerService.delete(deleteForm);
                 break;
         }
 
         if(result){
             return CommonResult.success();
         }else{
-            return CommonResult.error(444,"商品删除失败");
+            return CommonResult.error(444,"删除失败");
         }
     }
 
@@ -187,6 +222,36 @@ public class CommonController {
     public CommonResult getOrderNo() {
         String orderNo = this.commodityService.getOrderNo(NoCodeEnum.COMMODITY.getCode(), LocalDateTime.now());
         return CommonResult.success(orderNo);
+    }
+
+    @ApiOperation(value = "判断是否有按钮权限")
+    @PostMapping(value = "/isPermission")
+    public CommonResult isPermission(@RequestBody Map<String,Object> map) {
+        String actionCode = MapUtil.getStr(map, "actionCode");
+        //获取登录用户
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        //获取按钮权限
+        SystemAction systemAction = systemActionService.getSystemActionByActionCode(actionCode);
+
+        //获取登录用户所属角色
+        List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
+        for (SystemRole systemRole : enabledRolesByUserId) {
+            SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),actionCode);
+            if(systemRoleAction != null){
+                return CommonResult.success();
+            }
+        }
+
+        return CommonResult.error(444,"该用户没有该按钮权限");
+    }
+
+    @ApiOperation(value = "通过配置编码获取对应的下拉列表")
+    @PostMapping(value = "/getDropDownList")
+    public CommonResult getDropDownList(@RequestBody Map<String,Object> map) {
+        String dicCode = MapUtil.getStr(map, "dicCode");
+        List<BDataDicEntryVO> bDataDicEntryVOS = ibDataDicEntryService.getDropDownList(dicCode);
+        return CommonResult.success(bDataDicEntryVOS);
     }
 
 }

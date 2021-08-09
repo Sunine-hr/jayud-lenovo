@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.scm.model.po.BBrand;
 import com.jayud.scm.mapper.BBrandMapper;
 import com.jayud.scm.service.IBBrandService;
@@ -17,4 +18,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class BBrandServiceImpl extends ServiceImpl<BBrandMapper, BBrand> implements IBBrandService {
 
+    @Override
+    public BBrand getNameByNameEn(String skuBrand) {
+        QueryWrapper<BBrand> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(BBrand::getEnName,skuBrand);
+        queryWrapper.lambda().eq(BBrand::getVoided,0);
+        return this.getOne(queryWrapper);
+    }
 }

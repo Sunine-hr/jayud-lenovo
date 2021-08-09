@@ -43,7 +43,7 @@ public class CommodityFollowServiceImpl extends ServiceImpl<CommodityFollowMappe
      */
     @Override
     public IPage<CommodityFollowVO> findListByCommodityId(QueryCommonForm form) {
-        Page<BCountryVO> page = new Page<>(form.getPageNum(),form.getPageSize() );
+        Page<CommodityFollowVO> page = new Page<>(form.getPageNum(),form.getPageSize() );
         return this.baseMapper.findListByCommodityId(form,page);
     }
 

@@ -51,6 +51,7 @@ public class SystemMenuServiceImpl extends ServiceImpl<SystemMenuMapper, SystemM
             menuStructureVO.setLabel(systemMenu.getTitle());
             menuStructureVO.setFId(systemMenu.getParentId());
             menuStructureVO.setId(systemMenu.getId());
+            menuStructureVO.setActionCode(systemMenu.getActionCode());
             menuStructureVOS.add(menuStructureVO);
         }
         return convertRoleMenuTree(menuStructureVOS, 0L);
@@ -83,6 +84,14 @@ public class SystemMenuServiceImpl extends ServiceImpl<SystemMenuMapper, SystemM
         List<SystemMenu> systemMenus = this.baseMapper.selectByUserId(roleIds, 0, type);
         systemMenus=systemMenus.stream().filter(e -> 3 == e.getLevel()).collect(Collectors.toList());
         return systemMenus;
+    }
+
+    @Override
+    public SystemMenu getSystemMenuByActionCode(String m) {
+        QueryWrapper<SystemMenu> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SystemMenu::getActionCode,m);
+        queryWrapper.lambda().eq(SystemMenu::getVoided,0);
+        return this.getOne(queryWrapper);
     }
 
 

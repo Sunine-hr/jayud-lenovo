@@ -5,6 +5,7 @@ import com.jayud.scm.model.po.SystemRole;
 import com.jayud.scm.model.po.SystemRoleMenuRelation;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -21,7 +22,7 @@ public interface ISystemRoleMenuRelationService extends IService<SystemRoleMenuR
      * @param role
      * @param menuIds
      */
-    void createRelation(SystemRole role, List<Long> menuIds);
+    void createRelation(SystemRole role, List<String> menuIds);
 
     /**
      * 根据角色ID查询关联菜单

@@ -50,4 +50,26 @@ public interface OmsClient {
     @PostMapping(value = "/api/findDict")
     public ApiResult<List<Object>> findDictType(@RequestParam("dictTypeCode") String dictTypeCode);
 
+    @ApiOperation(value = "获取企业微信token")
+    @RequestMapping(value = "/api/getEnterpriseToken")
+    public ApiResult getEnterpriseToken(@RequestParam("corpid") String corpid,
+                                        @RequestParam("corpsecret") String corpsecret);
+
+    @ApiOperation(value = "获取企业微信部门")
+    @RequestMapping(value = "/api/getEnterpriseDep")
+    public ApiResult getEnterpriseDep(@RequestParam("departmentId") Long departmentId,
+                                      @RequestParam("corpid") String corpid,
+                                      @RequestParam("corpsecret") String corpsecret,
+                                      @RequestParam("token") String token);
+
+    @ApiOperation(value = "获取企业微信部门员工详情")
+    @RequestMapping(value = "/api/getEnterpriseDepStaff")
+    public ApiResult getEnterpriseDepStaff(@RequestParam("departmentId") Long departmentId, @RequestParam("fetchChild") boolean fetchChild,
+                                           @RequestParam("corpid") String corpid,
+                                           @RequestParam("corpsecret") String corpsecret,
+                                           @RequestParam("token") String token);
+
+    @ApiOperation(value = "获取系统配置")
+    @RequestMapping(value = "/api/getSystemConf")
+    public ApiResult getSystemConf(@RequestParam("type") Integer type);
 }

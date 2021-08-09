@@ -16,16 +16,16 @@ import java.util.List;
 public interface IMsgUserChannelService extends IService<MsgUserChannel> {
 
     /**
-     *
      * @param userIds
      * @return
      */
     List<MsgUserChannel> getEnableByUserIds(List<Long> userIds);
 
     /**
-     *
      * @param userIds
      * @return
      */
     List<MsgUserChannel> getByUserIds(List<Long> userIds);
+
+    List<MsgUserChannel> getByCondition(MsgUserChannel msgUserChannel);
 }

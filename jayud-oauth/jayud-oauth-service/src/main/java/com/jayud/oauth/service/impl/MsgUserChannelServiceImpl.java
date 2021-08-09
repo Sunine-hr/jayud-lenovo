@@ -34,4 +34,9 @@ public class MsgUserChannelServiceImpl extends ServiceImpl<MsgUserChannelMapper,
         condition.lambda().in(MsgUserChannel::getUserId, userIds);
         return this.baseMapper.selectList(condition);
     }
+
+    @Override
+    public List<MsgUserChannel> getByCondition(MsgUserChannel msgUserChannel) {
+        return this.baseMapper.selectList(new QueryWrapper<>(msgUserChannel));
+    }
 }

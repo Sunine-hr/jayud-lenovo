@@ -13,7 +13,7 @@ import java.util.Objects;
 public enum SystemConfTypeEnum {
 
     ONE(1,"email", "邮箱配置"),
-//    TWO(2, "",""),
+    TWO(2, "enterpriseWechat","企业微信"),
     ;
     private Integer code;
     private String key;

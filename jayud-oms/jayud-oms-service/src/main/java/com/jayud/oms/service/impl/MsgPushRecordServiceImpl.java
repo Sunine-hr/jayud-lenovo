@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.beetl.BeetlUtils;
 import com.jayud.common.entity.Email;
 import com.jayud.common.entity.EmailSysConf;
+import com.jayud.common.entity.EntWechatSysConf;
 import com.jayud.common.enums.*;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.EmailClient;
@@ -14,11 +15,8 @@ import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.QueryMsgPushListCondition;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.mapper.MsgPushRecordMapper;
-import com.jayud.oms.service.IMessagePushTemplateService;
-import com.jayud.oms.service.IMsgPushListService;
-import com.jayud.oms.service.IMsgPushRecordService;
+import com.jayud.oms.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.oms.service.ISystemConfService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +50,8 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
     private EmailClient emailClient;
     @Autowired
     private ISystemConfService systemConfService;
+    @Autowired
+    private WechatMsgService wechatMsgService;
 
     /**
      * 推送任务
@@ -116,6 +116,9 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
                 case MAIL://邮件发送
                     this.sendEmail(msgPushRecord, sysConfMap);
                     break;
+                case ENT_WECHAT:
+                    this.sendEntWechat(msgPushRecord, sysConfMap);
+                    break;
             }
         }
     }
@@ -143,6 +146,31 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
             this.errMsg(msgPushRecord.getId(), "发送邮件失败,系统错误", msgPushRecord.getStatus());
         }
     }
+
+    private void sendEntWechat(MsgPushRecord msgPushRecord, Map<Integer, String> sysConfMap) {
+        String sysConfStr = sysConfMap.get(SystemConfTypeEnum.TWO.getCode());
+        if (StringUtils.isEmpty(sysConfStr)) {
+            log.warn("请配置消息推送配置");
+            this.updateById(new MsgPushRecord().setId(msgPushRecord.getId()).setErrMsg("请配置消息推送配置"));
+            return;
+        }
+        EntWechatSysConf entWechatSysConf = JSONUtil.toBean(sysConfStr, EntWechatSysConf.class);
+        String token = this.wechatMsgService.getEnterpriseToken(entWechatSysConf.getCorpid(), entWechatSysConf.getCorpsecret(), true).getStr("access_token");
+        try {
+            JSONObject result = this.wechatMsgService.sendEnterpriseMsg(msgPushRecord.getReceivingAccount(),
+                    msgPushRecord.getReceiveContent(), entWechatSysConf.getAgentid(), entWechatSysConf.getCorpid(),
+                    entWechatSysConf.getCorpsecret(), token);
+            if (!result.getInt("errcode").equals(0)) {
+                this.sendFailProcessing(msgPushRecord, "发送企业微信失败");
+            } else {
+                this.sendSuccess(msgPushRecord);
+            }
+        } catch (Exception e) {
+            log.warn("发送企业微信失败 msg:" + e.getMessage());
+            this.errMsg(msgPushRecord.getId(), "发送企业微信失败,系统错误", msgPushRecord.getStatus());
+        }
+    }
+
 
     private void sendSuccess(MsgPushRecord msgPushRecord) {
         this.updateById(new MsgPushRecord().setErrMsg(" ").setId(msgPushRecord.getId()).setReceiveContent(msgPushRecord.getReceiveContent())

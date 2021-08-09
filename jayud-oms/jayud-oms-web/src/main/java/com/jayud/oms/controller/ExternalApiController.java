@@ -2,6 +2,9 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -47,34 +50,24 @@ public class ExternalApiController {
 
     @Autowired
     IOrderInfoService orderInfoService;
-
     @Autowired
     FileClient fileClient;
-
     @Autowired
     ILogisticsTrackService logisticsTrackService;
-
     @Autowired
     RedisUtils redisUtils;
-
     @Autowired
     IAuditInfoService auditInfoService;
-
     @Autowired
     IWarehouseInfoService warehouseInfoService;
-
     @Autowired
     ISupplierInfoService supplierInfoService;
-
     @Autowired
     IDriverInfoService driverInfoService;
-
     @Autowired
     IOrderPaymentCostService paymentCostService;
-
     @Autowired
     IOrderReceivableCostService receivableCostService;
-
     @Autowired
     ICurrencyInfoService currencyInfoService;
     @Autowired
@@ -113,6 +106,11 @@ public class ExternalApiController {
     private IProductClassifyService productClassifyService;
     @Autowired
     private IMsgPushRecordService msgPushRecordService;
+    @Autowired
+    private WechatMsgService wechatMsgService;
+    @Autowired
+    private ISystemConfService systemConfService;
+
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -398,7 +396,7 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/oprCostBill")
     ApiResult<Boolean> oprCostBill(@RequestBody OprCostBillForm form) {
         Boolean result = false;
-        if ("payment".equals(form.getOprType())) {
+        if ("payment" .equals(form.getOprType())) {
             List<OrderPaymentCost> paymentCosts = new ArrayList<>();
             if (form.getCmd().contains("pre")) {//暂存应付
                 List<OrderPaymentCost> delCosts = new ArrayList<>();
@@ -422,7 +420,7 @@ public class ExternalApiController {
                 if (delCosts.size() > 0) {
                     paymentCostService.updateBatchById(delCosts);
                 }
-            } else if ("del".equals(form.getCmd())) {//删除对账单
+            } else if ("del" .equals(form.getCmd())) {//删除对账单
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                     orderPaymentCost.setId(costId);
@@ -438,7 +436,7 @@ public class ExternalApiController {
                 }
             }
             result = paymentCostService.updateBatchById(paymentCosts);
-        } else if ("receivable".equals(form.getOprType())) {
+        } else if ("receivable" .equals(form.getOprType())) {
             List<OrderReceivableCost> receivableCosts = new ArrayList<>();
             if (form.getCmd().contains("pre")) {//暂存应收
                 List<OrderReceivableCost> delCosts = new ArrayList<>();
@@ -462,7 +460,7 @@ public class ExternalApiController {
                 if (delCosts.size() > 0) {
                     receivableCostService.updateBatchById(delCosts);
                 }
-            } else if ("del".equals(form.getCmd())) {//删除对账单
+            } else if ("del" .equals(form.getCmd())) {//删除对账单
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                     orderReceivableCost.setId(costId);
@@ -526,15 +524,15 @@ public class ExternalApiController {
     @RequestMapping(value = "api/editSaveConfirm")
     public ApiResult editSaveConfirm(@RequestParam("costIds") List<Long> costIds, @RequestParam("oprType") String oprType,
                                      @RequestParam("cmd") String cmd, @RequestBody Map<String, Object> param) {
-        if ("save_confirm".equals(cmd)) {
-            if ("receivable".equals(oprType)) {
+        if ("save_confirm" .equals(cmd)) {
+            if ("receivable" .equals(oprType)) {
                 OrderReceivableCost receivableCost = new OrderReceivableCost();
                 receivableCost.setIsBill("save_confirm")//持续操作中的过度状态
                         .setTmpBillNo(param.get("billNo").toString());//TODO 等待前端更改,需要前端传账单编号
                 QueryWrapper updateWrapper = new QueryWrapper();
                 updateWrapper.in("id", costIds);
                 receivableCostService.update(receivableCost, updateWrapper);
-            } else if ("payment".equals(oprType)) {
+            } else if ("payment" .equals(oprType)) {
                 OrderPaymentCost paymentCost = new OrderPaymentCost();
                 paymentCost.setIsBill("save_confirm")
                         .setTmpBillNo(param.get("billNo").toString());//TODO 等待前端更改,需要前端传账单编号
@@ -543,15 +541,15 @@ public class ExternalApiController {
                 updateWrapper.in("id", costIds);
                 paymentCostService.update(paymentCost, updateWrapper);
             }
-        } else if ("edit_del".equals(cmd)) {
-            if ("receivable".equals(oprType)) {
+        } else if ("edit_del" .equals(cmd)) {
+            if ("receivable" .equals(oprType)) {
                 OrderReceivableCost receivableCost = new OrderReceivableCost();
                 receivableCost.setIsBill("0");//从save_confirm状态回滚到未出账-0状态
                 receivableCost.setStatus(1);//草稿状态
                 QueryWrapper updateWrapper = new QueryWrapper();
                 updateWrapper.in("id", costIds);
                 receivableCostService.update(receivableCost, updateWrapper);
-            } else if ("payment".equals(oprType)) {
+            } else if ("payment" .equals(oprType)) {
                 OrderPaymentCost paymentCost = new OrderPaymentCost();
                 paymentCost.setIsBill("0");//从save_confirm状态回滚到未出账-0状态
                 paymentCost.setStatus(1);//草稿状态
@@ -572,7 +570,7 @@ public class ExternalApiController {
      */
     @RequestMapping(value = "api/oprCostGenreByCw")
     ApiResult<Boolean> oprCostGenreByCw(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd) {
-        if ("receivable".equals(cmd)) {
+        if ("receivable" .equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                 orderReceivableCost.setId(orderCost.getCostId());
@@ -581,7 +579,7 @@ public class ExternalApiController {
                 orderReceivableCost.setOptTime(LocalDateTime.now());
                 receivableCostService.updateById(orderReceivableCost);
             }
-        } else if ("payment".equals(cmd)) {
+        } else if ("payment" .equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                 orderPaymentCost.setId(orderCost.getCostId());
@@ -603,7 +601,7 @@ public class ExternalApiController {
      */
     @RequestMapping(value = "api/writeBackCostData")
     ApiResult writeBackCostData(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd) {
-        if ("receivable".equals(cmd)) {
+        if ("receivable" .equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 //获取该条费用以出账时结算币种的汇率和本币金额
 //                InputReceivableCostVO sCost = receivableCostService.getWriteBackSCostData(orderCost.getCostId());
@@ -619,7 +617,7 @@ public class ExternalApiController {
                 orderReceivableCost.setOptTime(LocalDateTime.now());
                 receivableCostService.updateById(orderReceivableCost);
             }
-        } else if ("payment".equals(cmd)) {
+        } else if ("payment" .equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 //获取该条费用以出账时结算币种的汇率和本币金额
 //                InputPaymentCostVO fCost = paymentCostService.getWriteBackFCostData(orderCost.getCostId());
@@ -1908,6 +1906,53 @@ public class ExternalApiController {
 
         this.msgPushRecordService.createPushTask(triggerStatus, sqlParam, now, otherParam);
         return ApiResult.ok();
+    }
+
+
+    @ApiOperation(value = "获取系统配置")
+    @RequestMapping(value = "/api/getSystemConf")
+    public ApiResult getSystemConf(@RequestParam("type") Integer type) {
+        List<SystemConf> list = this.systemConfService.getByCondition(new SystemConf().setType(type));
+        return ApiResult.ok(list.size() > 0 ? list.get(0) : null);
+    }
+
+
+    @ApiOperation(value = "获取企业微信token")
+    @RequestMapping(value = "/api/getEnterpriseToken")
+    public ApiResult<String> getEnterpriseToken(@RequestParam("corpid") String corpid,
+                                                @RequestParam("corpsecret") String corpsecret) {
+        JSONObject result = this.wechatMsgService.getEnterpriseToken(corpid, corpsecret, true);
+        if (!result.getInt("errcode").equals(0)) {
+            return ApiResult.error(result.getStr("errmsg"));
+        }
+        return ApiResult.ok(result.getStr("access_token"));
+    }
+
+    @ApiOperation(value = "获取企业微信部门")
+    @RequestMapping(value = "/api/getEnterpriseDep")
+    public ApiResult getEnterpriseDep(@RequestParam(value = "departmentId", required = false) Long departmentId,
+                                      @RequestParam("corpid") String corpid,
+                                      @RequestParam("corpsecret") String corpsecret,
+                                      @RequestParam("token") String token) {
+        JSONObject result = this.wechatMsgService.getEnterpriseDep(departmentId, corpid, corpsecret, token);
+        if (!result.getInt("errcode").equals(0)) {
+            return ApiResult.error(result.getStr("errmsg"));
+        }
+        return ApiResult.ok(result.getJSONArray("department"));
+    }
+
+    @ApiOperation(value = "获取企业微信部门员工详情")
+    @RequestMapping(value = "/api/getEnterpriseDepStaff")
+    public ApiResult getEnterpriseDepStaff(@RequestParam("departmentId") Long departmentId,
+                                           @RequestParam("fetchChild") boolean fetchChild,
+                                           @RequestParam("corpid") String corpid,
+                                           @RequestParam("corpsecret") String corpsecret,
+                                           @RequestParam("token") String token) {
+        JSONObject result = this.wechatMsgService.getEnterpriseDepStaff(departmentId, fetchChild, corpid, corpsecret, token);
+        if (!result.getInt("errcode").equals(0)) {
+            return ApiResult.error(result.getStr("errmsg"));
+        }
+        return ApiResult.ok(result.getJSONArray("userlist"));
     }
 
 }

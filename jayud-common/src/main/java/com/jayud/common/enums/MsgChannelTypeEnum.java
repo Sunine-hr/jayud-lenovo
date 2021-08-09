@@ -16,7 +16,7 @@ import java.util.Objects;
 public enum MsgChannelTypeEnum {
 
     MAIL(1, "邮件"),
-//    WECHAT(2, "微信"),
+    ENT_WECHAT(2, "企业微信"),
     ;
     private Integer code;
     private String desc;

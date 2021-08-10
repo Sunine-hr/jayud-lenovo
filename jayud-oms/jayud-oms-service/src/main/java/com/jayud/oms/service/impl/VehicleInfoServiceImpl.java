@@ -122,8 +122,8 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
     }
 
     @Override
-    public List<VehicleInfoVO> findVehicleByDriverName(String driverName) {
-        return baseMapper.findVehicleByDriverName(driverName);
+    public List<VehicleInfoVO> findTmsVehicle() {
+        return baseMapper.findTmsVehicle();
     }
 
     @Override

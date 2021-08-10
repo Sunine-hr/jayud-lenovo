@@ -72,6 +72,9 @@ public class DriverInfo extends Model<DriverInfo> {
     @ApiModelProperty(value = "密码（微信登录使用）")
     private String password;
 
+    @ApiModelProperty(value = "小程序id")
+    private String appletId;
+
 
     @Override
     protected Serializable pkVal() {

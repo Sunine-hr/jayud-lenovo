@@ -51,7 +51,7 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
     /**
      * 根据司机查询车辆信息
      */
-    List<VehicleInfoVO> findVehicleByDriverName(String driverName);
+    List<VehicleInfoVO> findTmsVehicle();
 
     /**
      * 获取所有的车型尺寸

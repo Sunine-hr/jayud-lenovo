@@ -12,6 +12,7 @@ import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.DriverInfo;
 import com.jayud.oms.model.vo.DriverInfoLinkVO;
 import com.jayud.oms.model.vo.DriverInfoVO;
+import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.service.IDriverInfoService;
 import com.jayud.oms.service.IVehicleInfoService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -114,16 +116,21 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
     @Override
     public DriverInfoLinkVO getDriverInfoLink(Long driverId) {
         DriverInfo driverInfo = getById(driverId);
-//        if(driverInfo != null){
-//            DriverInfoLinkVO driverInfoLinkVO = new DriverInfoLinkVO();
-//            driverInfoLinkVO.setDriverName(driverInfo.getName());
-//            driverInfoLinkVO.setDriverPhone(driverInfo.getPhone());
-//
-//            //根据司机名称获取车辆信息
-//            List<VehicleInfoVO> vehicleInfoVO = vehicleInfoService.findVehicleByDriverName(driverInfo.getName());
-//            driverInfoLinkVO.setVehicleInfoVOList(vehicleInfoVO);
-//            return driverInfoLinkVO;
-//        }
+        if (driverInfo != null) {
+            DriverInfoLinkVO driverInfoLinkVO = new DriverInfoLinkVO();
+            driverInfoLinkVO.setDriverName(driverInfo.getName());
+            driverInfoLinkVO.setDriverPhone(driverInfo.getPhone());
+            //获取中港车
+            List<VehicleInfoVO> tmp = new ArrayList<>();
+            List<VehicleInfoVO> vehicleInfoVOs = vehicleInfoService.findTmsVehicle();
+            for (VehicleInfoVO vehicleInfoVO : vehicleInfoVOs) {
+                if (vehicleInfoVO.getDriverIds() != null && vehicleInfoVO.getDriverIds().contains(driverInfo.getId())) {
+                    tmp.add(vehicleInfoVO);
+                }
+            }
+            driverInfoLinkVO.setVehicleInfoVOList(tmp);
+            return driverInfoLinkVO;
+        }
         return new DriverInfoLinkVO();
     }
 

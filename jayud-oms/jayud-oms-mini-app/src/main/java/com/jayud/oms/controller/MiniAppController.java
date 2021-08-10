@@ -130,13 +130,8 @@ public class MiniAppController {
                 if (process.size() != 0) {
                     this.driverOrderInfoService.synchronizeTmsStatus(process.get(0), driverOrderTransportVO.getId());
                 }
-
             }
-
-
         }
-
-
         return CommonResult.success(tmps);
     }
 
@@ -153,6 +148,8 @@ public class MiniAppController {
         if (tmp != null) {
             return CommonResult.error(400, "该订单已确认过接单");
         }
+
+
 
         if (this.driverOrderInfoService.saveOrUpdateDriverOrder(driverOrderInfo)) {
             return CommonResult.success();

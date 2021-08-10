@@ -116,16 +116,17 @@
         </where>
         order by id desc
     </select>
-    <select id="findVehicleByDriverName" resultType="com.jayud.oms.model.vo.VehicleInfoVO">
+    <select id="findTmsVehicle" resultType="com.jayud.oms.model.vo.VehicleInfoVO">
         select
             w.id,
             plate_number plateNumber,
             hk_number hkNumber,
             w.supplier_id supplierId,
-            s.supplier_ch_name supplierName
+            s.supplier_ch_name supplierName,
+            w.driver_info_ids
         from
             vehicle_info w left join supplier_info s on w.supplier_id=s.id
-        where w.id in (select di.vehicle_id from driver_info di where di.`name` = #{driverName})
+        where w.type=0
     </select>
 
     <select id="findVehicleSize" resultType="com.jayud.oms.model.vo.VehicleSizeInfoVO">

@@ -14,7 +14,7 @@ public class LoginUser {
     private String account;
     //密码
     private String password;
-    //验证码
+    //小程序code
     private String code;
     //登录类型（1.密码登录，2.验证码登录，3.人脸登录）
     private Integer type;

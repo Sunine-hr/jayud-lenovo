@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author Daneil
@@ -80,8 +81,13 @@ public class MailServiceImpl implements MailService {
             javaMailSender.setUsername(email.getFrom());
             javaMailSender.setPassword(email.getPassword());
             javaMailSender.setPort(465);
+            javaMailSender.setProtocol("smtp");
             javaMailSender.setDefaultEncoding("Utf-8");
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            Properties p = new Properties();
+            p.setProperty("mail.smtp.auth", "false");
+            p.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            javaMailSender.setJavaMailProperties(p);
             MimeMessageHelper helper;
             helper = new MimeMessageHelper(mimeMessage, true);
             helper.setFrom(email.getFrom(), email.getTo());                //sender为自定义显示发件人名称

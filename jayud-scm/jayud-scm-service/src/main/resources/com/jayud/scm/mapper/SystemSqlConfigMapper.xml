@@ -59,4 +59,12 @@
         LIMIT 1
     </select>
 
+    <!--
+        根据SQL代码和通用条件分页查询,返回泛型map
+            ${} 放弃预编译，不进行检查，直接注入sql语句
+    -->
+    <select id="findCommonByPage" resultType="java.util.Map">
+        ${paraMap.sqlStr}
+    </select>
+
 </mapper>

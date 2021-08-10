@@ -12,6 +12,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
+import com.jayud.scm.model.bo.QueryCommonConfigForm;
 import com.jayud.scm.model.bo.QuerySystemSqlConfigForm;
 import com.jayud.scm.model.bo.SystemSqlConfigForm;
 import com.jayud.scm.model.po.SystemUser;
@@ -134,7 +135,7 @@ public class SystemSqlConfigController {
     }
 
     /*
-        根据sql代码，查询数据 TODO
+        根据sql代码，查询数据
         查询条件
             1.普通查询参数
             2.数据权限查询参数
@@ -143,7 +144,12 @@ public class SystemSqlConfigController {
             2.count(汇总)
             3.无数据的返回消息
     */
-
+    @ApiOperation(value = "根据SQL代码和通用条件分页查询,返回泛型map")
+    @PostMapping(value = "/findCommonByPage")
+    public CommonResult<CommonPageResult<Map<String, Object>>> findCommonByPage(@Valid @RequestBody QueryCommonConfigForm form){
+        CommonPageResult<Map<String, Object>> pageVO = systemSqlConfigService.findCommonByPage(form);
+        return CommonResult.success(pageVO);
+    }
 
 
 

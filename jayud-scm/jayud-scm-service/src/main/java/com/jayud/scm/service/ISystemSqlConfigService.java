@@ -1,14 +1,17 @@
 package com.jayud.scm.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.CommonPageResult;
+import com.jayud.scm.model.bo.QueryCommonConfigForm;
 import com.jayud.scm.model.bo.QuerySystemSqlConfigForm;
 import com.jayud.scm.model.bo.SystemSqlConfigForm;
 import com.jayud.scm.model.po.SystemSqlConfig;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.SystemSqlConfigVO;
 import com.jayud.scm.model.vo.TableColumnVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -52,4 +55,11 @@ public interface ISystemSqlConfigService extends IService<SystemSqlConfig> {
      * @return
      */
     List<TableColumnVO> getTableColumn(String sqlCode);
+
+    /**
+     * 根据SQL代码和通用条件分页查询,返回泛型map
+     * @param form
+     * @return
+     */
+    CommonPageResult<Map<String, Object>> findCommonByPage(QueryCommonConfigForm form);
 }

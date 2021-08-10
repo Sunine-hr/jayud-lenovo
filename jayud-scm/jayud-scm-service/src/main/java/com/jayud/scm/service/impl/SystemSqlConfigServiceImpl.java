@@ -1,6 +1,7 @@
 package com.jayud.scm.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -8,11 +9,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonPageResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.mapper.SystemSqlConfigMapper;
+import com.jayud.scm.model.bo.QueryCommonConfigForm;
 import com.jayud.scm.model.bo.QuerySystemSqlConfigForm;
 import com.jayud.scm.model.bo.SystemSqlConfigForm;
 import com.jayud.scm.model.enums.VoidedEnum;
@@ -28,7 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -144,6 +149,29 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
             }
         }
         return lsit;
+    }
+
+    @Override
+    public CommonPageResult<Map<String, Object>> findCommonByPage(QueryCommonConfigForm form) {
+        String sqlCode = form.getSqlCode();
+        SystemSqlConfigVO systemSqlConfigVO = systemSqlConfigMapper.getSystemSqlConfigBySqlCode(sqlCode);
+        if(ObjectUtil.isEmpty(systemSqlConfigVO)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "SQL代码，没有找到对应的SQL配置");
+        }
+        String sqlStr = systemSqlConfigVO.getSqlStr();
+        if(StrUtil.isEmpty(sqlStr)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "SQL代码，没有配置SQL语句。");
+        }
+
+        Map<String, Object> paraMap = new HashMap<>();
+        paraMap.put("sqlStr", sqlStr);
+        //定义分页参数
+        Page<Map<String, Object>> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则 不在这里排序，后台用sql拼装排序
+        //page.addOrder(OrderItem.desc("t.id"));
+        IPage<Map<String, Object>> pageInfo = systemSqlConfigMapper.findCommonByPage(page, paraMap);//这是分页的结果集
+        CommonPageResult<Map<String, Object>> pageVO = new CommonPageResult(pageInfo);//这个是整个的结果结果集（后面汇总的结果放在extendedData扩展数据里面）
+        return pageVO;
     }
 
 

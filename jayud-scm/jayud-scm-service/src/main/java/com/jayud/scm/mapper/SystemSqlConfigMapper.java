@@ -9,6 +9,8 @@ import com.jayud.scm.model.vo.SystemSqlConfigVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Map;
+
 /**
  * <p>
  * SQL数据源配置 Mapper 接口
@@ -41,4 +43,13 @@ public interface SystemSqlConfigMapper extends BaseMapper<SystemSqlConfig> {
      * @return
      */
     SystemSqlConfigVO getSystemSqlConfigBySqlCode(@Param("sqlCode") String sqlCode);
+
+    /**
+     * 根据SQL代码和通用条件分页查询,返回泛型map
+     * @param page 分页
+     * @param paraMap 条件参数
+     *                 paraMap.put("sqlStr", sqlStr);   SQL语句
+     * @return
+     */
+    IPage<Map<String, Object>> findCommonByPage(@Param("page") Page<Map<String, Object>> page, @Param("paraMap") Map<String, Object> paraMap);
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -32,9 +33,11 @@ public class CustomerRelationerVO {
     private Integer customerId;
 
     @ApiModelProperty(value = "联系人类型(负责人，下单人，对接人，收货人)")
+    @JsonProperty(value = "sType")
     private String sType;
 
     @ApiModelProperty(value = "姓名")
+    @JsonProperty(value = "cName")
     private String cName;
 
     @ApiModelProperty(value = "电话")
@@ -50,7 +53,6 @@ public class CustomerRelationerVO {
     private String qq;
 
     @ApiModelProperty(value = "生日")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDate birthday;
 
     @ApiModelProperty(value = "是否默认值(1默认)")

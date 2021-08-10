@@ -34,7 +34,7 @@
         id, customer_id, s_type, c_name, tel, mobile_tel, email, qq, birthday, is_default, onl_id, is_sync, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
 
-    <select id="" resultType="com.jayud.scm.model.vo.CustomerRelationerVO">
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.CustomerRelationerVO">
         select id, customer_id customerId, s_type sType, c_name cName, tel,
         mobile_tel mobileTel, email, qq, birthday, is_default isDefault,
         crt_by_name crtByName, crt_by_dtm crtByDtm,remark ,mdy_by_name mdyByName, mdy_by_dtm mdyByDtm

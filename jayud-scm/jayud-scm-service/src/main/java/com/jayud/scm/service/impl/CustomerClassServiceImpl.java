@@ -59,7 +59,7 @@ public class CustomerClassServiceImpl extends ServiceImpl<CustomerClassMapper, C
             customerClass.setCustomerId(form.getId());
             customerClass.setCrtBy(systemUser.getId().intValue());
             customerClass.setCrtByDtm(LocalDateTime.now());
-            customerClass.setCrtByName(UserOperator.getToken());
+            customerClass.setCrtByName(systemUser.getUserName());
         }
         boolean b = this.saveOrUpdateBatch(customerClasses);
         if(b){
@@ -77,7 +77,7 @@ public class CustomerClassServiceImpl extends ServiceImpl<CustomerClassMapper, C
             customerClass.setCustomerId(form.getId());
             customerClass.setMdyBy(systemUser.getId().intValue());
             customerClass.setMdyByDtm(LocalDateTime.now());
-            customerClass.setMdyByName(UserOperator.getToken());
+            customerClass.setMdyByName(systemUser.getUserName());
         }
         boolean b = this.saveOrUpdateBatch(customerClasses);
         if(b){

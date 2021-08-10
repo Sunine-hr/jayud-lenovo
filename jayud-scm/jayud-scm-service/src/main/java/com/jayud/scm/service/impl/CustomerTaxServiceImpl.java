@@ -65,13 +65,13 @@ public class CustomerTaxServiceImpl extends ServiceImpl<CustomerTaxMapper, Custo
         if(form != null){
             customerTax.setMdyBy(systemUser.getId().intValue());
             customerTax.setMdyByDtm(LocalDateTime.now());
-            customerTax.setMdyByName(UserOperator.getToken());
+            customerTax.setMdyByName(systemUser.getUserName());
             customerFollow.setSType(OperationEnum.UPDATE.getCode());
             customerFollow.setFollowContext(UserOperator.getToken()+"修改开票资料"+customerTax.getTaxName());
         }else {
             customerTax.setCrtBy(systemUser.getId().intValue());
             customerTax.setCrtByDtm(LocalDateTime.now());
-            customerTax.setCrtByName(UserOperator.getToken());
+            customerTax.setCrtByName(systemUser.getUserName());
             customerFollow.setSType(OperationEnum.INSERT.getCode());
             customerFollow.setFollowContext(UserOperator.getToken()+"增加开票资料"+customerTax.getTaxName());
         }
@@ -80,7 +80,7 @@ public class CustomerTaxServiceImpl extends ServiceImpl<CustomerTaxMapper, Custo
             customerFollow.setCustomerId(form.getCustomerId());
             customerFollow.setCrtBy(systemUser.getId().intValue());
             customerFollow.setCrtByDtm(LocalDateTime.now());
-            customerFollow.setCrtByName(UserOperator.getToken());
+            customerFollow.setCrtByName(systemUser.getUserName());
             boolean save = customerFollowService.save(customerFollow);
             if(save){
                 log.warn("增加或修改开票资料，客户操作日志添加成功");
@@ -102,15 +102,15 @@ public class CustomerTaxServiceImpl extends ServiceImpl<CustomerTaxMapper, Custo
         CustomerTax customerTax = ConvertUtil.convert(form, CustomerTax.class);
         customerTax.setMdyBy(systemUser.getId().intValue());
         customerTax.setMdyByDtm(LocalDateTime.now());
-        customerTax.setMdyByName(UserOperator.getToken());
+        customerTax.setMdyByName(systemUser.getUserName());
 
         CustomerFollow customerFollow = new CustomerFollow();
         customerFollow.setSType(OperationEnum.UPDATE.getCode());
         customerFollow.setCustomerId(form.getCustomerId());
-        customerFollow.setFollowContext(UserOperator.getToken()+"修改联系人的默认值为"+customerTax.getTaxName());
+        customerFollow.setFollowContext(systemUser.getUserName()+"修改联系人的默认值为"+customerTax.getTaxName());
         customerFollow.setCrtBy(systemUser.getId().intValue());
         customerFollow.setCrtByDtm(LocalDateTime.now());
-        customerFollow.setCrtByName(UserOperator.getToken());
+        customerFollow.setCrtByName(systemUser.getUserName());
         boolean update = this.updateById(customerTax);
         if(update){
             log.warn("修改默认值成功");

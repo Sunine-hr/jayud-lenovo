@@ -63,11 +63,11 @@ public class BDataDicServiceImpl extends ServiceImpl<BDataDicMapper, BDataDic> i
         if(form.getId() != null){
             bDataDic.setMdyBy(systemUser.getId().intValue());
             bDataDic.setMdyByDtm(LocalDateTime.now());
-            bDataDic.setMdyByName(UserOperator.getToken());
+            bDataDic.setMdyByName(systemUser.getUserName());
         }else{
             bDataDic.setCrtBy(systemUser.getId().intValue());
             bDataDic.setCrtByDtm(LocalDateTime.now());
-            bDataDic.setCrtByName(UserOperator.getToken());
+            bDataDic.setCrtByName(systemUser.getUserName());
         }
         boolean update = this.saveOrUpdate(bDataDic);
 

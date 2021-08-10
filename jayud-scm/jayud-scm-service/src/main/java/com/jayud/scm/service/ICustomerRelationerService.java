@@ -7,6 +7,8 @@ import com.jayud.scm.model.po.CustomerRelationer;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.CustomerRelationerVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 客户联系人表 服务类
@@ -24,4 +26,6 @@ public interface ICustomerRelationerService extends IService<CustomerRelationer>
     boolean modifyDefaultValues(AddCustomerRelationerForm form);
 
     CustomerRelationerVO getCustomerRelationerById(Integer id);
+
+    List<CustomerRelationer> getCustomerRelationerByCustomerIdAndType(Integer id, String s);
 }

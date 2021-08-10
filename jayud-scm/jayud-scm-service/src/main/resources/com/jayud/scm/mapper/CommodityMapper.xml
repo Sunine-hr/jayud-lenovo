@@ -124,16 +124,15 @@
     </select>
 
     <update id="commonDelete">
-         update #{form.table} co set voided = 1,voided_by = #{form.id}, voided_by_name = #{form.name},, voided_by_dtm = #{form.deleteTime}
+         update ${form.table} set voided = 1,voided_by = #{form.id}, voided_by_name = #{form.name}, voided_by_dtm = #{form.deleteTime}
          <where>
-             <if test="legalIds != null and legalIds.size>0">
-                 and co.`id` in
+             <if test="form.ids != null and form.ids.size>0">
+                 and `id` in
                  <foreach collection="form.ids" item="id" open="(" separator="," close=")">
                      #{id}
                  </foreach>
              </if>
          </where>
-
     </update>
 
 </mapper>

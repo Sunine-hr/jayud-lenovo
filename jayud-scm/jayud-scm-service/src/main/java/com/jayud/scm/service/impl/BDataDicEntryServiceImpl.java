@@ -76,11 +76,11 @@ public class BDataDicEntryServiceImpl extends ServiceImpl<BDataDicEntryMapper, B
         if(form.getId() != null){
             bDataDicEntry.setMdyBy(systemUser.getId().intValue());
             bDataDicEntry.setMdyByDtm(LocalDateTime.now());
-            bDataDicEntry.setMdyByName(UserOperator.getToken());
+            bDataDicEntry.setMdyByName(systemUser.getUserName());
         }else{
             bDataDicEntry.setCrtBy(systemUser.getId().intValue());
             bDataDicEntry.setCrtByDtm(LocalDateTime.now());
-            bDataDicEntry.setCrtByName(UserOperator.getToken());
+            bDataDicEntry.setCrtByName(systemUser.getUserName());
         }
         boolean update = this.saveOrUpdate(bDataDicEntry);
 
@@ -109,5 +109,14 @@ public class BDataDicEntryServiceImpl extends ServiceImpl<BDataDicEntryMapper, B
             log.warn("数据字典删除成功："+bDataDicEntries);
         }
         return b;
+    }
+
+    @Override
+    public String getTextByDicCodeAndDataValue(String dicCode, String dataValue) {
+        QueryWrapper<BDataDicEntry> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(BDataDicEntry::getDicCode,dicCode);
+        queryWrapper.lambda().eq(BDataDicEntry::getDataValue,dataValue);
+        queryWrapper.lambda().eq(BDataDicEntry::getVoided,0);
+        return this.getOne(queryWrapper).getDataText();
     }
 }

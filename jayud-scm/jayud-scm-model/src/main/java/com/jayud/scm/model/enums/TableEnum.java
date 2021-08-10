@@ -19,9 +19,12 @@ public enum TableEnum {
     customer_relationer(8,"customer_relationer"),
     customer_bank(9,"customer_bank"),
     customer_address(10,"customer_address"),
-//    hs_code(11,"hs_code"),
-//    hs_code(12,"hs_code"),
-
+    customer_maintenance_setup(11,"customer_maintenance_setup"),
+    customer_agreement(12,"customer_agreement"),
+    customer_guarantee(13,"customer_guarantee"),
+    customer_tax(14,"customer_tax"),
+//    fee_model(15,"fee_model"),
+//    hs_code(16,"hs_code")
     ;
 
     private Integer code;

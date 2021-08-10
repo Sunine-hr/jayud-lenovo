@@ -12,6 +12,8 @@ import com.jayud.scm.model.vo.CustomerAddressVO;
 import com.jayud.scm.model.vo.CustomerMaintenanceSetupVO;
 import com.jayud.scm.service.ICustomerAddressService;
 import com.jayud.scm.service.ICustomerMaintenanceSetupService;
+import com.jayud.scm.service.ISystemRoleService;
+import com.jayud.scm.service.ISystemUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,12 @@ public class CustomerMaintenanceSetupController {
     @Autowired
     private ICustomerMaintenanceSetupService customerMaintenanceSetupService;
 
+    @Autowired
+    private ISystemUserService systemUserService;
+
+    @Autowired
+    private ISystemRoleService roleService;
+
     @ApiOperation(value = "根据条件分页查询所有该客户的所有维护人")
     @PostMapping(value = "/findByPage")
     public CommonResult findByPage(@RequestBody QueryCommonForm form) {
@@ -50,6 +58,8 @@ public class CustomerMaintenanceSetupController {
     @ApiOperation(value = "新增客户维护人")
     @PostMapping(value = "/saveOrUpdateCustomerMaintenanceSetup")
     public CommonResult saveOrUpdateCustomerMaintenanceSetup(@RequestBody AddCustomerMaintenanceSetupForm form) {
+        form.setWhUserName(systemUserService.getSystemUserBySystemId(form.getWhUserId().longValue()).getUserName());
+        form.setRoleName(roleService.getById(form.getRoleId().longValue()).getName());
         boolean result = customerMaintenanceSetupService.saveOrUpdateCustomerMaintenanceSetup(form);
         if(!result){
             return CommonResult.error(444,"新增客户维护人失败");

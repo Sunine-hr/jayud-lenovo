@@ -10,6 +10,8 @@ import com.jayud.scm.model.vo.CustomerFormVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Map;
+
 /**
  * <p>
  * 客户表 Mapper 接口
@@ -22,4 +24,8 @@ import org.apache.ibatis.annotations.Param;
 public interface CustomerMapper extends BaseMapper<Customer> {
 
     IPage<CustomerFormVO> findByPage(@Param("page") Page<CommodityFormVO> page, @Param("form") QueryCustomerForm form);
+
+    void toExamine(Map<String, Object> map);
+
+    void deApproval(Map<String, Object> map);
 }

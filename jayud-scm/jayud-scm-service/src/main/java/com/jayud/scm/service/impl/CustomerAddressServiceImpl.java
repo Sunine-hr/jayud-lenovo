@@ -59,13 +59,13 @@ public class CustomerAddressServiceImpl extends ServiceImpl<CustomerAddressMappe
         if(form != null){
             customerAddress.setMdyBy(systemUser.getId().intValue());
             customerAddress.setMdyByDtm(LocalDateTime.now());
-            customerAddress.setMdyByName(UserOperator.getToken());
+            customerAddress.setMdyByName(systemUser.getUserName());
             customerFollow.setSType(OperationEnum.UPDATE.getCode());
             customerFollow.setFollowContext(UserOperator.getToken()+"修改地址类型");
         }else {
             customerAddress.setCrtBy(systemUser.getId().intValue());
             customerAddress.setCrtByDtm(LocalDateTime.now());
-            customerAddress.setCrtByName(UserOperator.getToken());
+            customerAddress.setCrtByName(systemUser.getUserName());
             customerFollow.setSType(OperationEnum.INSERT.getCode());
             customerFollow.setFollowContext(UserOperator.getToken()+"增加地址类型");
         }
@@ -74,7 +74,7 @@ public class CustomerAddressServiceImpl extends ServiceImpl<CustomerAddressMappe
             customerFollow.setCustomerId(form.getCustomerId());
             customerFollow.setCrtBy(systemUser.getId().intValue());
             customerFollow.setCrtByDtm(LocalDateTime.now());
-            customerFollow.setCrtByName(UserOperator.getToken());
+            customerFollow.setCrtByName(systemUser.getUserName());
             boolean save = customerFollowService.save(customerFollow);
             if(save){
                 log.warn("增加地址类型，客户操作日志成功");
@@ -102,15 +102,15 @@ public class CustomerAddressServiceImpl extends ServiceImpl<CustomerAddressMappe
         CustomerAddress customerAddress = ConvertUtil.convert(form, CustomerAddress.class);
         customerAddress.setMdyBy(systemUser.getId().intValue());
         customerAddress.setMdyByDtm(LocalDateTime.now());
-        customerAddress.setMdyByName(UserOperator.getToken());
+        customerAddress.setMdyByName(systemUser.getUserName());
 
         CustomerFollow customerFollow = new CustomerFollow();
         customerFollow.setSType(OperationEnum.UPDATE.getCode());
         customerFollow.setCustomerId(form.getCustomerId());
-        customerFollow.setFollowContext(UserOperator.getToken()+"修改地址的默认值为"+customerAddress.getCName()+customerAddress.getAddress());
+        customerFollow.setFollowContext(systemUser.getUserName()+"修改地址的默认值为"+customerAddress.getCName()+customerAddress.getAddress());
         customerFollow.setCrtBy(systemUser.getId().intValue());
         customerFollow.setCrtByDtm(LocalDateTime.now());
-        customerFollow.setCrtByName(UserOperator.getToken());
+        customerFollow.setCrtByName(systemUser.getUserName());
         boolean update = this.updateById(customerAddress);
         if(update){
             log.warn("修改地址类型默认值成功");

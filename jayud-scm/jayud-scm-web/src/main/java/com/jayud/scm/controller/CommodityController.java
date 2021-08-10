@@ -99,7 +99,7 @@ public class CommodityController {
 
         if(!form.getSkuModel().equals("无型号")){
             Commodity commodity = commodityService.getCommodityBySkuModelAndSkuBrand(form.getSkuModel(),form.getSkuBrand());
-            if(commodity != null){
+            if(commodity != null && commodity.getId() != form.getId()){
                 return CommonResult.error(444,"商品型号和品牌已存在");
             }
         }

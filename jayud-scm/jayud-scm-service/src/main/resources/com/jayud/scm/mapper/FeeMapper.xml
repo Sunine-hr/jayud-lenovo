@@ -60,4 +60,17 @@
         id, fee_model_id, deputy_style, incoterms, pay_style, pay_day, re_style, re_day, account_style, quota_type, product_class, proxy_fee, g_rate_type, p_rate_type, rate_value, rate_time, is_lowest_price, lowest_price, lowest_price_type, interest_type, interest_fee, interest_day_no, interest_day_lowest, lc_fee, late_fee, y_fee, b_fee, o_fee, earnest_per, dis_count, proxy_charge, shipping_fee_style, inv_type, msg_service_fee, is_merge_low_fee, rate_diff_type, rate_bank, add_proxy_fee, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
 
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.FeeVO">
+        select id, fee_model_id feeModelId, deputy_style deputyStyle,
+        incoterms, pay_style payStyle, pay_day payDay, re_style reStyle, re_day reDay, account_style accountStyle,
+        quota_type quotaType, product_class productClass, proxy_fee proxyFee, g_rate_type gRateType, p_rate_type pRateType,
+        rate_value rateValue, rate_time rateTime, is_lowest_price isLowestPrice, lowest_price lowestPrice, lowest_price_type lowestPriceType,
+        interest_type interestType, interest_fee interestFee, interest_day_no interestDayNo, interest_day_lowest interestDayLowest,
+        lc_fee lcFee, late_fee lateFee, y_fee yFee, b_fee bFee, o_fee oFee, earnest_per earnestPer, dis_count disCount,
+        proxy_charge proxyCharge, shipping_fee_style shippingFeeStyle, inv_type invType, msg_service_fee msgServiceFee,
+        is_merge_low_fee isMergeLowFee, rate_diff_type rateDiffType, rate_bank rateBank, add_proxy_fee addProxyFee,
+        remark, crt_by_name crtByName, crt_by_dtm crtByDtm,mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
+        from fee where voided = 0 and fee_model_id = #{form.id}
+    </select>
+
 </mapper>

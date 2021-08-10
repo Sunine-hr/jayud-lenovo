@@ -55,4 +55,17 @@
         id, sign_customer_name, sign_company_name, is_extended, is_num, customer_id, customer_name, treaty_type, treaty_no, treaty_begin_dtm, treaty_end_dtm, treaty_date, treaty_copy_right, treaty_notes, remark, is_default_value, is_files, files_user, files_dtm, files_num, is_yuan_jian, yuan_jian_dtm, f_level, f_step, check_state_flag, crt_by, crt_by_name, crt_dtm, mdy_by, mdy_by_name, mdy_dtm, voided_by, voided_by_name, voided_dtm, voided, parent_id, dispute, is_pay_in, receivername, receivertel, receivercode, mailing_address, is_sync, model_type
     </sql>
 
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.CustomerAgreementVO">
+        select id, customer_id customerId,
+       sign_customer_name signCustomerName, sign_company_name signCompanyName, is_extended isExtended,
+       is_num isNum, customer_name customerName, treaty_type treatyType,
+       treaty_no treatyNo, treaty_begin_dtm treatyBeginDtm, treaty_end_dtm treatyEndDtm, treaty_date treatyDate,
+       treaty_copy_right treatyCopyRight, treaty_notes treatyNotes, remark,
+       is_default_value isDefaultValue, is_files isFiles, files_user filesUser, files_dtm filesDtm, files_num filesNum,
+       is_yuan_jian isYuanJian, yuan_jian_dtm yuanJianDtm, check_state_flag checkStateFlag,parent_id parentId,
+       dispute, is_pay_in isPayIn, receivername, receivertel, receivercode, mailing_address mailingAddress, model_type modelType,
+       crt_by_name crtByName, crt_dtm crtByDtm,remark,mdy_by_name mdyByName, mdy_dtm mdyByDtm
+       from customer_agreement where voided = 0 and customer_id = #{form.id}
+    </select>
+
 </mapper>

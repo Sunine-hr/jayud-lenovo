@@ -126,4 +126,32 @@
         order by co.id desc
     </select>
 
+    <select id="toExamine" parameterType="map" statementType="CALLABLE" resultType="java.util.HashMap">
+        {
+        call up_public_check_sp(
+        #{table,mode=IN},
+        #{actionCode,mode=IN},
+        #{id,mode=IN},
+        #{userId,mode=IN},
+        #{userName,mode=IN},
+        #{state,mode=OUT,jdbcType=INT}
+        #{string,mode=OUT,jdbcType=VARCHER}
+        )
+        }
+    </select>
+
+    <select id="deApproval" parameterType="map" statementType="CALLABLE" resultType="java.util.HashMap">
+        {
+        call up_public_uncheck_sp(
+        #{table,mode=IN},
+        #{actionCode,mode=IN},
+        #{id,mode=IN},
+        #{userId,mode=IN},
+        #{userName,mode=IN},
+        #{state,mode=OUT,jdbcType=INT}
+        #{string,mode=OUT,jdbcType=VARCHER}
+        )
+        }
+    </select>
+
 </mapper>

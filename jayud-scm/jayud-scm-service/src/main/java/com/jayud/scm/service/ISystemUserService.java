@@ -150,4 +150,6 @@ public interface ISystemUserService extends IService<SystemUser> {
     List<SystemUser> getByCondition(SystemUser setUserType);
 
     List<SystemUserVO> getSystemUserList();
+
+    SystemUser getSystemUserBySystemId(long longValue);
 }

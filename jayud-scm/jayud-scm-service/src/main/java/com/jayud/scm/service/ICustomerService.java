@@ -1,6 +1,7 @@
 package com.jayud.scm.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.po.Customer;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -32,4 +33,8 @@ public interface ICustomerService extends IService<Customer> {
     boolean updateCustomerName(Customer customer);
 
     boolean AddCustomerFollow(AddCustomerFollowForm followForm);
+
+    CommonResult toExamine(PermissionForm form);
+
+    CommonResult deApproval(PermissionForm form);
 }

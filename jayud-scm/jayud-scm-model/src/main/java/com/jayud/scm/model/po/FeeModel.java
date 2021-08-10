@@ -17,7 +17,7 @@ import lombok.EqualsAndHashCode;
  * </p>
  *
  * @author LLJ
- * @since 2021-08-04
+ * @since 2021-08-09
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -36,7 +36,7 @@ public class FeeModel extends Model<FeeModel> {
     @ApiModelProperty(value = "业务类型")
     private String modelType;
 
-    @ApiModelProperty(value = "模板名称")
+    @ApiModelProperty(value = "模板编号")
     private String modelName;
 
     @ApiModelProperty(value = "启用日期")

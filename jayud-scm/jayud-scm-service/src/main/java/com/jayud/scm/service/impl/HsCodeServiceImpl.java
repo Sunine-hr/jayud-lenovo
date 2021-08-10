@@ -85,7 +85,10 @@ public class HsCodeServiceImpl extends ServiceImpl<HsCodeMapper, HsCode> impleme
 
         if(CollectionUtils.isNotEmpty(form.getHsCodeElementsVOS())){
             for (AddHsCodeElementsForm hsCodeElementsForm : form.getHsCodeElementsVOS()) {
-                stringBuffer.append(hsCodeElementsForm.getElementsName()).append("|");
+                if(hsCodeElementsForm.getElementsName().equals("型号")){
+                    stringBuffer.append(hsCodeElementsForm.getDefaultValue() == null?" ":(hsCodeElementsForm.getDefaultValue()+"型")).append("|");
+                }
+                stringBuffer.append(hsCodeElementsForm.getDefaultValue() == null?" ":hsCodeElementsForm.getDefaultValue()).append("|");
             }
         }
 
@@ -104,11 +107,11 @@ public class HsCodeServiceImpl extends ServiceImpl<HsCodeMapper, HsCode> impleme
 
             hsCode.setMdyBy(systemUser.getId().intValue());
             hsCode.setMdyByDtm(LocalDateTime.now());
-            hsCode.setMdyByName(systemUser.getName());
+            hsCode.setMdyByName(systemUser.getUserName());
         }else{
             hsCode.setCrtBy(systemUser.getId().intValue());
             hsCode.setCrtByDtm(LocalDateTime.now());
-            hsCode.setCrtByName(systemUser.getName());
+            hsCode.setCrtByName(systemUser.getUserName());
         }
         hsCode.setElements(stringBuffer.length()>0?stringBuffer.toString().substring(0,stringBuffer.length()-1):null);
         boolean update = this.saveOrUpdate(hsCode);
@@ -125,7 +128,7 @@ public class HsCodeServiceImpl extends ServiceImpl<HsCodeMapper, HsCode> impleme
                 hsCodeElement.setId(null);
                 hsCodeElement.setCrtBy(systemUser.getId().intValue());
                 hsCodeElement.setCrtByDtm(LocalDateTime.now());
-                hsCodeElement.setCrtByName(systemUser.getName());
+                hsCodeElement.setCrtByName(systemUser.getUserName());
                 hsCodeElement.setHsCodeNo(hsCode.getCodeNo());
             }
             boolean b = hsCodeElementsService.saveBatch(hsCodeElements);

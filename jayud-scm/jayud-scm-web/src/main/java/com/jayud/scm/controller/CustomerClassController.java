@@ -37,7 +37,7 @@ public class CustomerClassController {
 
     @ApiOperation(value = "获取客户已设置的客户类型")
     @PostMapping(value = "/getCustomerClassByByCustomerId")
-    public CommonResult getCustomerClassByByCustomerId(@RequestBody Map<String,Object> map) {
+    public CommonResult<List<CustomerClassVO>> getCustomerClassByByCustomerId(@RequestBody Map<String,Object> map) {
         Integer customerId = MapUtil.getInt(map, "customerId");
         List<CustomerClass> customerClassByCustomerId = customerClassService.getCustomerClassByCustomerId(customerId);
         List<CustomerClassVO> customerClassVOS = ConvertUtil.convertList(customerClassByCustomerId, CustomerClassVO.class);

@@ -9,6 +9,7 @@ import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.po.Customer;
 import com.jayud.scm.model.vo.CustomerFormVO;
 import com.jayud.scm.model.vo.CustomerVO;
+import com.jayud.scm.service.IBDataDicEntryService;
 import com.jayud.scm.service.ICustomerClassService;
 import com.jayud.scm.service.ICustomerService;
 import io.swagger.annotations.Api;
@@ -47,6 +48,9 @@ public class CustomerController {
     @Autowired
     private ICustomerClassService customerClassService;
 
+    @Autowired
+    private IBDataDicEntryService ibDataDicEntryService;
+
     @ApiOperation(value = "根据条件分页查询所有客户信息")
     @PostMapping(value = "/findByPage")
     public CommonResult findByPage(@RequestBody QueryCustomerForm form) {
@@ -71,6 +75,10 @@ public class CustomerController {
         if (page.getRecords().size() == 0) {
             map1.put("pageInfo", new CommonPageResult(page));
         }else {
+            for (CustomerFormVO record : page.getRecords()) {
+                record.setCustomerStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1010",record.getCustomerStyle()));
+                record.setCustomerState(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",record.getCustomerState()));
+            }
             CommonPageResult<CustomerFormVO> pageVO = new CommonPageResult(page);
             map1.put("pageInfo", pageVO);
         }
@@ -127,7 +135,7 @@ public class CustomerController {
         String customerName = MapUtil.getStr(map, "customerName");
         Integer id = MapUtil.getInt(map, "id");
         Customer customer = customerService.getCustomer(customerName);
-        if(!customer.getId().equals(id)){
+        if(customer != null && !customer.getId().equals(id)){
             return CommonResult.error(444,"客户名称已存在");
         }
         customer.setId(id);

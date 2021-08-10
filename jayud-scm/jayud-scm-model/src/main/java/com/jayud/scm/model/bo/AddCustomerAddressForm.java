@@ -69,4 +69,7 @@ public class AddCustomerAddressForm {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @ApiModelProperty(value = "是否为默认0否1是")
+    private Integer isDefault;
+
 }

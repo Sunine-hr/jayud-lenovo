@@ -3,10 +3,14 @@ package com.jayud.scm.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.scm.model.bo.AddSystemRoleActionCheckForm;
 import com.jayud.scm.model.bo.DeleteForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.bo.QueryForm;
 import com.jayud.scm.model.po.SystemRoleActionCheck;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.scm.model.vo.SystemRoleActionCheckNodeVO;
 import com.jayud.scm.model.vo.SystemRoleActionCheckVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -23,4 +27,6 @@ public interface ISystemRoleActionCheckService extends IService<SystemRoleAction
     boolean delete(DeleteForm deleteForm);
 
     boolean addSystemRoleAction(AddSystemRoleActionCheckForm form);
+
+    List<SystemRoleActionCheckNodeVO> getAuditNode(QueryCommonForm form);
 }

@@ -31,4 +31,11 @@
         id, customer_id, model_type, model_name, use_date, is_default_value, f_level, f_step, check_state_flag, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
 
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.FeeModelVO">
+        select id, customer_id customerId, is_default_value isDefaultValue,
+        model_type modelType, model_name modelName, use_date useDate,check_state_flag checkStateFlag,
+        crt_by_name crtByName, crt_by_dtm crtByDtm,remark ,mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
+        from fee_model where voided = 0 and customer_id = #{form.id}
+    </select>
+
 </mapper>

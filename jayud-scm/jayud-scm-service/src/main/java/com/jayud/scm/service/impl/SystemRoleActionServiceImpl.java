@@ -81,7 +81,7 @@ public class SystemRoleActionServiceImpl extends ServiceImpl<SystemRoleActionMap
                 systemRoleAction.setActionCode(m);
                 systemRoleAction.setCrtBy(systemUser.getId().intValue());
                 systemRoleAction.setCrtByDtm(LocalDateTime.now());
-                systemRoleAction.setCrtByName(UserOperator.getToken());
+                systemRoleAction.setCrtByName(systemUser.getUserName());
                 systemRoleAction.insert();
             }
         });

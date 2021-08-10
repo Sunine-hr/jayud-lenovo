@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
  * </p>
  *
  * @author LLJ
- * @since 2021-08-04
+ * @since 2021-08-09
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -29,8 +29,10 @@ public class FeeList extends Model<FeeList> {
       @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    @ApiModelProperty(value = "结算方案条款Id")
     private Integer feeId;
 
+    @ApiModelProperty(value = "结算方案Id")
     private Integer feesId;
 
     @ApiModelProperty(value = "应收账期方式（现结，账期，月结）")

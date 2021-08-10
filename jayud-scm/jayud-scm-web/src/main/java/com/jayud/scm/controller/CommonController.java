@@ -6,10 +6,12 @@ import cn.hutool.poi.excel.ExcelUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.scm.model.bo.AddCommodityModelForm;
 import com.jayud.scm.model.bo.DeleteForm;
+import com.jayud.scm.model.bo.PermissionForm;
 import com.jayud.scm.model.bo.QueryCommodityForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.TableEnum;
@@ -81,13 +83,16 @@ public class CommonController {
     @Autowired
     private ICustomerService customerService;
 
+    @Autowired
+    private ICustomerRelationerService customerRelationerService;
+
     @ApiOperation(value = "删除通用方法")
     @PostMapping(value = "/delete")
     public CommonResult delete(@Valid @RequestBody DeleteForm deleteForm) {
 
         //获取当前登录人信息
         SystemUser systemUserBySystemName = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
-        deleteForm.setName(UserOperator.getToken());
+        deleteForm.setName(systemUserBySystemName.getUserName());
         deleteForm.setId(systemUserBySystemName.getId());
         deleteForm.setDeleteTime(LocalDateTime.now());
         deleteForm.setTable(TableEnum.getDesc(deleteForm.getKey()));
@@ -226,24 +231,42 @@ public class CommonController {
 
     @ApiOperation(value = "判断是否有按钮权限")
     @PostMapping(value = "/isPermission")
-    public CommonResult isPermission(@RequestBody Map<String,Object> map) {
-        String actionCode = MapUtil.getStr(map, "actionCode");
+    public CommonResult isPermission(@RequestBody PermissionForm form) {
+
         //获取登录用户
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
         //获取按钮权限
-        SystemAction systemAction = systemActionService.getSystemActionByActionCode(actionCode);
+//        SystemAction systemAction = systemActionService.getSystemActionByActionCode(form.getActionCode());
 
         //获取登录用户所属角色
         List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
         for (SystemRole systemRole : enabledRolesByUserId) {
-            SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),actionCode);
-            if(systemRoleAction != null){
-                return CommonResult.success();
+            SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),form.getActionCode());
+            if(systemRoleAction == null){
+                return CommonResult.error(444,"该用户没有该按钮权限");
             }
         }
-
-        return CommonResult.error(444,"该用户没有该按钮权限");
+        //拥有按钮权限，判断是否为审核按钮
+        if(!form.getType().equals(0)){
+            if(form.getCustomerAudit()){
+                List<CustomerRelationer> customerRelationers = customerRelationerService.getCustomerRelationerByCustomerIdAndType(form.getId(),"3");
+                if(CollectionUtils.isEmpty(customerRelationers)){
+                    return CommonResult.error(444,"该审核客户没有对应下单人，无法审核");
+                }
+            }
+            //
+            form.setTable(TableEnum.getDesc(form.getKey()));
+            form.setUserId(systemUser.getId().intValue());
+            form.setUserName(systemUser.getUserName());
+            if(form.getType().equals(1)){//审核
+                return customerService.toExamine(form);
+            }
+            if(form.getType().equals(2)){
+                return customerService.deApproval(form);
+            }
+        }
+        return CommonResult.success();
     }
 
     @ApiOperation(value = "通过配置编码获取对应的下拉列表")

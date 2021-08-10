@@ -249,9 +249,9 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
                 addCommodityEntryForm.setElementSort(addCommodityEntryForm.getSortIndex());
 
                 if(addCommodityEntryForm.getElementName().equals("型号")){
-                    stringBuffer.append(addCommodityEntryForm.getElementValue()+"型").append("|");
+                    stringBuffer.append(addCommodityEntryForm.getElementValue() == null?" ":(addCommodityEntryForm.getElementValue()+"型")).append("|");
                 }
-                stringBuffer.append(addCommodityEntryForm.getElementValue()).append("|");
+                stringBuffer.append(addCommodityEntryForm.getElementValue() == null?" ":addCommodityEntryForm.getElementValue()).append("|");
             }
         }
 

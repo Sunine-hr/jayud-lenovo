@@ -66,13 +66,13 @@ public class CustomerBankServiceImpl extends ServiceImpl<CustomerBankMapper, Cus
         if(form != null){
             customerBank.setMdyBy(systemUser.getId().intValue());
             customerBank.setMdyByDtm(LocalDateTime.now());
-            customerBank.setMdyByName(UserOperator.getToken());
+            customerBank.setMdyByName(systemUser.getUserName());
             customerFollow.setSType(OperationEnum.UPDATE.getCode());
             customerFollow.setFollowContext(UserOperator.getToken()+"修改银行资料");
         }else {
             customerBank.setCrtBy(systemUser.getId().intValue());
             customerBank.setCrtByDtm(LocalDateTime.now());
-            customerBank.setCrtByName(UserOperator.getToken());
+            customerBank.setCrtByName(systemUser.getUserName());
             customerFollow.setSType(OperationEnum.INSERT.getCode());
             customerFollow.setFollowContext(UserOperator.getToken()+"增加银行资料");
         }
@@ -81,7 +81,7 @@ public class CustomerBankServiceImpl extends ServiceImpl<CustomerBankMapper, Cus
             customerFollow.setCustomerId(form.getCustomerId());
             customerFollow.setCrtBy(systemUser.getId().intValue());
             customerFollow.setCrtByDtm(LocalDateTime.now());
-            customerFollow.setCrtByName(UserOperator.getToken());
+            customerFollow.setCrtByName(systemUser.getUserName());
             boolean save = customerFollowService.save(customerFollow);
             if(save){
                 log.warn("银行资料增加，客户操作日志成功");
@@ -108,7 +108,7 @@ public class CustomerBankServiceImpl extends ServiceImpl<CustomerBankMapper, Cus
         CustomerBank customerBank = ConvertUtil.convert(form, CustomerBank.class);
         customerBank.setMdyBy(systemUser.getId().intValue());
         customerBank.setMdyByDtm(LocalDateTime.now());
-        customerBank.setMdyByName(UserOperator.getToken());
+        customerBank.setMdyByName(systemUser.getUserName());
 
         CustomerFollow customerFollow = new CustomerFollow();
         customerFollow.setSType(OperationEnum.UPDATE.getCode());
@@ -116,7 +116,7 @@ public class CustomerBankServiceImpl extends ServiceImpl<CustomerBankMapper, Cus
         customerFollow.setFollowContext(UserOperator.getToken()+"修改银行资料的默认值为"+customerBank.getBankName());
         customerFollow.setCrtBy(systemUser.getId().intValue());
         customerFollow.setCrtByDtm(LocalDateTime.now());
-        customerFollow.setCrtByName(UserOperator.getToken());
+        customerFollow.setCrtByName(systemUser.getUserName());
         boolean update = this.updateById(customerBank);
         if(update){
             log.warn("修改默认值成功");

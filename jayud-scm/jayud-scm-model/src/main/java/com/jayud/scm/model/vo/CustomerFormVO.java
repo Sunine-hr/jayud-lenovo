@@ -36,7 +36,7 @@ public class CustomerFormVO {
     @ApiModelProperty(value = "名称")
     private String customerName;
 
-    @ApiModelProperty(value = "类型")
+    @ApiModelProperty(value = "客户等级")
     private String customerType;
 
     @ApiModelProperty(value = "简称")

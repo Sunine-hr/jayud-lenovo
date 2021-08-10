@@ -63,11 +63,11 @@ public class SystemActionServiceImpl extends ServiceImpl<SystemActionMapper, Sys
         if(form.getId() != null){
             systemAction.setMdyBy(systemUser.getId().intValue());
             systemAction.setMdyByDtm(LocalDateTime.now());
-            systemAction.setMdyByName(UserOperator.getToken());
+            systemAction.setMdyByName(systemUser.getUserName());
         }else {
             systemAction.setCrtBy(systemUser.getId().intValue());
             systemAction.setCrtByDtm(LocalDateTime.now());
-            systemAction.setCrtByName(UserOperator.getToken());
+            systemAction.setCrtByName(systemUser.getUserName());
         }
         boolean update = this.saveOrUpdate(systemAction);
         if(!update){

@@ -44,7 +44,7 @@
         bank_name bankName, bank_address bankAddress, bank_area bankArea, account_name accountName,
         account_no accountNo, swift_code swiftCode, bank_code bankCode, currency_name currencyName,
         crt_by_name crtByName, crt_by_dtm crtByDtm,remark ,mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
-        from customer_relationer where voided = 0 and customer_id = #{form.id}
+        from customer_bank where voided = 0 and customer_id = #{form.id}
     </select>
 
 </mapper>

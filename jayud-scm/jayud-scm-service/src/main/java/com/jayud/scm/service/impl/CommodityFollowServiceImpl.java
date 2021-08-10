@@ -56,7 +56,7 @@ public class CommodityFollowServiceImpl extends ServiceImpl<CommodityFollowMappe
         commodityFollow.setSType(OperationEnum.INSERT.getCode());
         commodityFollow.setCrtBy(systemUser.getId().intValue());
         commodityFollow.setCrtByDtm(LocalDateTime.now());
-        commodityFollow.setCrtByName(UserOperator.getToken());
+        commodityFollow.setCrtByName(systemUser.getUserName());
 
         boolean save = this.save(commodityFollow);
         if(!save){

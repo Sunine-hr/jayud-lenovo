@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -55,22 +56,22 @@ public class CustomerRelationerServiceImpl extends ServiceImpl<CustomerRelatione
         if(form != null){
             customerRelationer.setMdyBy(systemUser.getId().intValue());
             customerRelationer.setMdyByDtm(LocalDateTime.now());
-            customerRelationer.setMdyByName(UserOperator.getToken());
+            customerRelationer.setMdyByName(systemUser.getUserName());
             customerFollow.setSType(OperationEnum.UPDATE.getCode());
-            customerFollow.setFollowContext(UserOperator.getToken()+"修改联系人");
+            customerFollow.setFollowContext(systemUser.getUserName()+"修改联系人");
         }else {
             customerRelationer.setCrtBy(systemUser.getId().intValue());
             customerRelationer.setCrtByDtm(LocalDateTime.now());
-            customerRelationer.setCrtByName(UserOperator.getToken());
+            customerRelationer.setCrtByName(systemUser.getUserName());
             customerFollow.setSType(OperationEnum.INSERT.getCode());
-            customerFollow.setFollowContext(UserOperator.getToken()+"增加联系人");
+            customerFollow.setFollowContext(systemUser.getUserName()+"增加联系人");
         }
         boolean update = this.saveOrUpdate(customerRelationer);
         if(update){
             customerFollow.setCustomerId(form.getCustomerId());
             customerFollow.setCrtBy(systemUser.getId().intValue());
             customerFollow.setCrtByDtm(LocalDateTime.now());
-            customerFollow.setCrtByName(UserOperator.getToken());
+            customerFollow.setCrtByName(systemUser.getUserName());
             boolean save = customerFollowService.save(customerFollow);
             if(save){
                 log.warn("增加客户操作日志成功");
@@ -127,6 +128,15 @@ public class CustomerRelationerServiceImpl extends ServiceImpl<CustomerRelatione
     @Override
     public CustomerRelationerVO getCustomerRelationerById(Integer id) {
         return ConvertUtil.convert(this.getById(id),CustomerRelationerVO.class);
+    }
+
+    @Override
+    public List<CustomerRelationer> getCustomerRelationerByCustomerIdAndType(Integer id, String s) {
+        QueryWrapper<CustomerRelationer> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CustomerRelationer::getCustomerId,id);
+        queryWrapper.lambda().eq(CustomerRelationer::getSType,s);
+        queryWrapper.lambda().eq(CustomerRelationer::getVoided,0);
+        return this.list(queryWrapper);
     }
 
 

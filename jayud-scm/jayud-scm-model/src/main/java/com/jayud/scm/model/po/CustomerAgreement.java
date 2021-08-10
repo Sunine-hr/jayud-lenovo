@@ -50,6 +50,9 @@ public class CustomerAgreement extends Model<CustomerAgreement> {
     @ApiModelProperty(value = "协议编号")
     private String treatyNo;
 
+    @ApiModelProperty(value = "协议名称")
+    private String treatyName;
+
     @ApiModelProperty(value = "协议开始时间")
     private LocalDateTime treatyBeginDtm;
 

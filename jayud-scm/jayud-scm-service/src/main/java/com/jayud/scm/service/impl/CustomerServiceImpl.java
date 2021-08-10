@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.vaildator.FlagValidator;
@@ -21,7 +22,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -72,7 +75,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         Customer customer = ConvertUtil.convert(form, Customer.class);
         customer.setCrtBy(systemUser.getId().intValue());
         customer.setCrtByDtm(LocalDateTime.now());
-        customer.setCrtByName(UserOperator.getToken());
+        customer.setCrtByName(systemUser.getUserName());
         customer.setCustomerNo(commodityService.getOrderNo("1002",LocalDateTime.now()));
         boolean save = this.save(customer);
 
@@ -83,7 +86,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             customerClass.setClassName("客户");
             customerClass.setCrtBy(systemUser.getId().intValue());
             customerClass.setCrtByDtm(LocalDateTime.now());
-            customerClass.setCrtByName(UserOperator.getToken());
+            customerClass.setCrtByName(systemUser.getUserName());
             boolean save1 = this.customerClassService.save(customerClass);
             if(save1){
                 log.warn("客户财务编号添加成功");
@@ -92,7 +95,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             CustomerFollow customerFollow = new CustomerFollow();
             customerFollow.setCrtBy(systemUser.getId().intValue());
             customerFollow.setCrtByDtm(LocalDateTime.now());
-            customerFollow.setCrtByName(UserOperator.getToken());
+            customerFollow.setCrtByName(systemUser.getUserName());
             customerFollow.setCustomerId(customer.getId());
             customerFollow.setFollowContext(OperationEnum.INSERT.getCode());
             customerFollow.setSType("客户表"+OperationEnum.INSERT.getDesc()+customer.getId());
@@ -147,7 +150,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             CustomerFollow customerFollow = new CustomerFollow();
             customerFollow.setCrtBy(systemUser.getId().intValue());
             customerFollow.setCrtByDtm(LocalDateTime.now());
-            customerFollow.setCrtByName(UserOperator.getToken());
+            customerFollow.setCrtByName(systemUser.getUserName());
             customerFollow.setCustomerId(customer.getId());
             customerFollow.setFollowContext(OperationEnum.UPDATE.getCode());
             customerFollow.setSType("客户表"+OperationEnum.UPDATE.getDesc()+customer.getId());
@@ -165,7 +168,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     customerClass1.setClassName(s);
                     customerClass1.setCrtBy(systemUser.getId().intValue());
                     customerClass1.setCrtByDtm(LocalDateTime.now());
-                    customerClass1.setCrtByName(UserOperator.getToken());
+                    customerClass1.setCrtByName(systemUser.getUserName());
                     customerClasses.add(customerClass1);
                 }
             }
@@ -228,10 +231,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             CustomerFollow customerFollow = new CustomerFollow();
             customerFollow.setCrtBy(systemUser.getId().intValue());
             customerFollow.setCrtByDtm(LocalDateTime.now());
-            customerFollow.setCrtByName(UserOperator.getToken());
+            customerFollow.setCrtByName(systemUser.getUserName());
             customerFollow.setCustomerId(customer.getId());
             customerFollow.setFollowContext(OperationEnum.UPDATE.getCode());
-            customerFollow.setSType(UserOperator.getToken()+"修改客户名称为"+customer.getCustomerName());
+            customerFollow.setSType(systemUser.getUserName()+"修改客户名称为"+customer.getCustomerName());
             boolean save2 = this.customerFollowService.save(customerFollow);
             if(save2){
                 log.warn("客户操作日志添加成功");
@@ -249,7 +252,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         customer.setCustomerState(followForm.getCustomerState());
         customer.setMdyBy(systemUser.getId().intValue());
         customer.setMdyByDtm(LocalDateTime.now());
-        customer.setMdyByName(UserOperator.getToken());
+        customer.setMdyByName(systemUser.getUserName());
         boolean update = this.saveOrUpdate(customer);
         if(update){
             log.warn("用户修改为"+followForm.getCustomerState()+"成功");
@@ -259,7 +262,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         customerFollow.setSType(OperationEnum.UPDATE.getCode());
         customerFollow.setCrtBy(systemUser.getId().intValue());
         customerFollow.setCrtByDtm(LocalDateTime.now());
-        customerFollow.setCrtByName(UserOperator.getToken());
+        customerFollow.setCrtByName(systemUser.getUserName());
         customerFollow.setFollowContext("修改客户为"+followForm.getCustomerState()+",内容："+customerFollow.getFollowContext());
 
         boolean save = this.customerFollowService.save(customerFollow);
@@ -268,5 +271,38 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             return false;
         }
         return true;
+    }
+
+    @Override
+    public CommonResult toExamine(PermissionForm form) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("table",form.getTable());
+        map.put("actionCode",form.getActionCode());
+        map.put("id",form.getId());
+        map.put("userId",form.getUserId());
+        map.put("userName",form.getUserName());
+        this.baseMapper.toExamine(map);
+        if(map.get("state").equals(0)){
+            return CommonResult.success();
+        }else {
+            return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
+        }
+
+    }
+
+    @Override
+    public CommonResult deApproval(PermissionForm form) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("table",form.getTable());
+        map.put("actionCode",form.getActionCode());
+        map.put("id",form.getId());
+        map.put("userId",form.getUserId());
+        map.put("userName",form.getUserName());
+        this.baseMapper.deApproval(map);
+        if(map.get("state").equals(0)){
+            return CommonResult.success();
+        }else {
+            return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
+        }
     }
 }

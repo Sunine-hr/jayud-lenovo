@@ -54,5 +54,8 @@ public class AddCustomerBankForm {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @ApiModelProperty(value = "是否默认值")
+    private Integer isDefault;
+
 
 }

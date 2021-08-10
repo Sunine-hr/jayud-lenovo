@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author LLJ
- * @since 2021-08-04
+ * @since 2021-08-09
  */
 @Mapper
 public interface FeeLadderMapper extends BaseMapper<FeeLadder> {

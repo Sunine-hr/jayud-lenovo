@@ -32,4 +32,6 @@ public interface IBDataDicEntryService extends IService<BDataDicEntry> {
     BDataDicEntryVO getBDataDicEntryId(Integer id);
 
     boolean delete(DeleteForm deleteForm);
+
+    String getTextByDicCodeAndDataValue(String dicCode, String dataValue);
 }

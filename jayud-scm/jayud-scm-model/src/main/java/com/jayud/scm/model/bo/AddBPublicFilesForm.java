@@ -3,6 +3,7 @@ package com.jayud.scm.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,6 +13,7 @@ import lombok.EqualsAndHashCode;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -48,9 +50,11 @@ public class AddBPublicFilesForm {
     private String filePath;
 
     @ApiModelProperty(value = "保存文件名")
+    @JsonProperty(value = "sFileName")
     private String sFileName;
 
     @ApiModelProperty(value = "保存路径")
+    @JsonProperty(value = "sFilePath")
     private String sFilePath;
 
     @ApiModelProperty(value = "文件大小")
@@ -69,6 +73,6 @@ public class AddBPublicFilesForm {
     private String remark;
 
     @ApiModelProperty(value = "上传附件")
-    private FileView fileView;
+    private List<FileView> fileView;
 
 }

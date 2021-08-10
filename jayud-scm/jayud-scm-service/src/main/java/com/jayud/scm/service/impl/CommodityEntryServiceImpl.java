@@ -58,7 +58,7 @@ public class CommodityEntryServiceImpl extends ServiceImpl<CommodityEntryMapper,
             commodityEntry.setVoided(1);
             commodityEntry.setVoidedBy(systemUser.getId().intValue());
             commodityEntry.setVoidedByDtm(LocalDateTime.now());
-            commodityEntry.setVoidedByName(UserOperator.getToken());
+            commodityEntry.setVoidedByName(systemUser.getUserName());
         }
         return this.updateBatchById(list);
     }

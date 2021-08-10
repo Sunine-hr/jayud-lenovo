@@ -2,21 +2,24 @@ package com.jayud.scm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddSystemRoleActionCheckForm;
 import com.jayud.scm.model.bo.DeleteForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.bo.QueryForm;
+import com.jayud.scm.model.po.SystemRole;
 import com.jayud.scm.model.po.SystemRoleActionCheck;
 import com.jayud.scm.mapper.SystemRoleActionCheckMapper;
 import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.SystemActionOutVO;
+import com.jayud.scm.model.vo.SystemRoleActionCheckNodeVO;
 import com.jayud.scm.model.vo.SystemRoleActionCheckVO;
-import com.jayud.scm.service.ISystemActionService;
-import com.jayud.scm.service.ISystemRoleActionCheckService;
+import com.jayud.scm.model.vo.SystemUserSimpleVO;
+import com.jayud.scm.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.scm.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +43,12 @@ public class SystemRoleActionCheckServiceImpl extends ServiceImpl<SystemRoleActi
 
     @Autowired
     private ISystemActionService systemActionService;
+
+    @Autowired
+    private ISystemRoleService systemRoleService;
+
+    @Autowired
+    private ISystemUserRoleRelationService systemUserRoleRelationService;
 
     @Override
     public IPage<SystemRoleActionCheckVO> findByPage(QueryForm form) {
@@ -87,7 +96,7 @@ public class SystemRoleActionCheckServiceImpl extends ServiceImpl<SystemRoleActi
 
             systemRoleActionCheck.setCrtBy(systemUser.getId().intValue());
             systemRoleActionCheck.setCrtByDtm(LocalDateTime.now());
-            systemRoleActionCheck.setCrtByName(UserOperator.getToken());
+            systemRoleActionCheck.setCrtByName(systemUser.getUserName());
             systemRoleActionCheck.setRoleId(form.getRoleId());
             systemRoleActionCheck.setActionCode(systemActionById.getActionCode());
             systemRoleActionCheck.setActionId(systemActionById.getId());
@@ -102,5 +111,32 @@ public class SystemRoleActionCheckServiceImpl extends ServiceImpl<SystemRoleActi
             log.warn("角色审核权限增加失败："+systemRoleActionChecks);
         }
         return save;
+    }
+
+    @Override
+    public List<SystemRoleActionCheckNodeVO> getAuditNode(QueryCommonForm form) {
+        QueryWrapper<SystemRoleActionCheck> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SystemRoleActionCheck::getActionCode,form.getActionCode());
+        queryWrapper.lambda().eq(SystemRoleActionCheck::getVoided,0);
+        List<SystemRoleActionCheck> list = this.list(queryWrapper);
+        List<SystemRoleActionCheckNodeVO> systemRoleActionCheckNodeVOS = new ArrayList<>();
+        for (SystemRoleActionCheck systemRoleActionCheck : list) {
+            SystemRoleActionCheckNodeVO systemRoleActionCheckNodeVO = new SystemRoleActionCheckNodeVO();
+            systemRoleActionCheckNodeVO.setCheckLevel(systemRoleActionCheck.getCheckLevel());
+            systemRoleActionCheckNodeVO.setId(systemRoleActionCheck.getId());
+            List<SystemUserSimpleVO> systemUserSimpleByRoleId = systemUserRoleRelationService.getSystemUserSimpleByRoleId(systemRoleActionCheck.getRoleId().longValue());
+            if(CollectionUtils.isNotEmpty(systemUserSimpleByRoleId)){
+                StringBuffer stringBuffer = new StringBuffer();
+                for (SystemUserSimpleVO systemUserSimpleVO : systemUserSimpleByRoleId) {
+                    stringBuffer.append(systemUserSimpleVO.getUserName()).append(",");
+                }
+                systemRoleActionCheckNodeVO.setReviewer(stringBuffer.toString().substring(0,stringBuffer.length()-1));
+
+            }
+            SystemRole byId = systemRoleService.getById(systemRoleActionCheck.getRoleId());
+            systemRoleActionCheckNodeVO.setName(byId.getName());
+            systemRoleActionCheckNodeVOS.add(systemRoleActionCheckNodeVO);
+        }
+        return systemRoleActionCheckNodeVOS;
     }
 }

@@ -3,21 +3,20 @@ package com.jayud.scm.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.scm.feign.FileClient;
 import com.jayud.scm.model.bo.AddBPublicFilesForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.enums.SignEnum;
-import com.jayud.scm.model.po.BPublicFiles;
+import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.BPublicFilesMapper;
-import com.jayud.scm.model.po.Commodity;
-import com.jayud.scm.model.po.CommodityFollow;
-import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.BPublicFilesVO;
 import com.jayud.scm.service.IBPublicFilesService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.scm.service.ICommodityFollowService;
+import com.jayud.scm.service.ICustomerFollowService;
 import com.jayud.scm.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +45,9 @@ public class BPublicFilesServiceImpl extends ServiceImpl<BPublicFilesMapper, BPu
 
     @Autowired
     private ICommodityFollowService commodityFollowService;
+
+    @Autowired
+    private ICustomerFollowService customerFollowService;
 
     @Override
     public List<BPublicFilesVO> getPublicFileList(Integer fileModel, Integer businessId) {
@@ -107,28 +109,49 @@ public class BPublicFilesServiceImpl extends ServiceImpl<BPublicFilesMapper, BPu
 
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
-        BPublicFiles files = ConvertUtil.convert(filesForm, BPublicFiles.class);
-        files.setSFileName(StringUtils.getFileNameStr(Collections.singletonList(filesForm.getFileView())));
-        files.setSFilePath(StringUtils.getFileStr(Collections.singletonList(filesForm.getFileView())));
-        files.setCrtBy(systemUser.getId().intValue());
-        files.setCrtByDtm(LocalDateTime.now());
-        files.setCrtByName(UserOperator.getToken());
-        boolean save = this.save(files);
-        if(!save){
-            log.warn("附件上传失败，id为"+filesForm.getBusinessId());
-            return false;
+        for (FileView fileView : filesForm.getFileView()) {
+            BPublicFiles files = ConvertUtil.convert(filesForm, BPublicFiles.class);
+            files.setSFileName(StringUtils.getFileNameStr(Collections.singletonList(fileView)));
+            files.setSFilePath(StringUtils.getFileStr(Collections.singletonList(fileView)));
+            files.setCrtBy(systemUser.getId().intValue());
+            files.setCrtByDtm(LocalDateTime.now());
+            files.setCrtByName(systemUser.getUserName());
+            boolean save = this.save(files);
+            if(!save){
+                log.warn("附件上传失败，id为"+filesForm.getBusinessId());
+                return false;
+            }
+            if(filesForm.getFileModel().equals(1)){
+                CommodityFollow commodityFollow = new CommodityFollow();
+                commodityFollow.setCrtBy(systemUser.getId().intValue());
+                commodityFollow.setCrtByDtm(LocalDateTime.now());
+                commodityFollow.setCrtByName(systemUser.getUserName());
+                commodityFollow.setCommodityId(filesForm.getBusinessId());
+                commodityFollow.setSType(OperationEnum.INSERT.getCode());
+                commodityFollow.setFollowContext("附件上传失败，商品id为"+filesForm.getBusinessId());
+                boolean save1 = commodityFollowService.save(commodityFollow);
+                if(!save1){
+                    log.warn("商品操作日志，附件上传失败，id为"+filesForm.getBusinessId());
+                }
+
+            }
+            if(filesForm.getFileModel().equals(2)){
+                CustomerFollow customerFollow = new CustomerFollow();
+                customerFollow.setCrtBy(systemUser.getId().intValue());
+                customerFollow.setCrtByDtm(LocalDateTime.now());
+                customerFollow.setCrtByName(systemUser.getUserName());
+                customerFollow.setCustomerId(filesForm.getBusinessId());
+                customerFollow.setSType(OperationEnum.INSERT.getCode());
+                customerFollow.setFollowContext("附件上传失败，商品id为"+filesForm.getBusinessId());
+                boolean save1 = customerFollowService.save(customerFollow);
+                if(!save1){
+                    log.warn("客户操作日志，附件上传失败，id为"+filesForm.getBusinessId());
+                }
+
+            }
         }
-        CommodityFollow commodityFollow = new CommodityFollow();
-        commodityFollow.setCrtBy(systemUser.getId().intValue());
-        commodityFollow.setCrtByDtm(LocalDateTime.now());
-        commodityFollow.setCrtByName(UserOperator.getToken());
-        commodityFollow.setCommodityId(filesForm.getBusinessId());
-        commodityFollow.setSType(OperationEnum.INSERT.getCode());
-        commodityFollow.setFollowContext("附件上传失败，商品id为"+filesForm.getBusinessId());
-        boolean save1 = commodityFollowService.save(commodityFollow);
-        if(!save1){
-            log.warn("商品操作日志，附件上传失败，id为"+filesForm.getBusinessId());
-        }
+
+
         return true;
     }
 }

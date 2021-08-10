@@ -97,7 +97,7 @@ public class TimeTask {
     /**
      * 同步微信账号
      */
-    @Scheduled(cron = "0/59 * * * * ?")
+    @Scheduled(cron = "0 0 0,12 * * ? ")
     public void synEnterpriseWechatUserInfo() {
         QueryWrapper<SystemUser> condition = new QueryWrapper<>();
         condition.lambda().isNotNull(SystemUser::getPhone).eq(SystemUser::getStatus, true);

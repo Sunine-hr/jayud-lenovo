@@ -84,7 +84,11 @@ public class APARDetailForm {
                 '}';
     }
 
-    public void setPriceQty(BigDecimal priceQty) {
+//    public void setPriceQty(BigDecimal priceQty) {
+//        this.priceQty = priceQty.compareTo(new BigDecimal(0)) == 0 ? priceQty : new BigDecimal(1);
+//    }
+
+    public void assemblyPriceQty(BigDecimal priceQty) {
         this.priceQty = priceQty.compareTo(new BigDecimal(0)) == 0 ? priceQty : new BigDecimal(1);
     }
 

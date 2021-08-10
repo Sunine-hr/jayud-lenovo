@@ -897,7 +897,7 @@ public class KingdeeServiceImpl implements KingdeeService {
         Map<String, Object> detail = detailBasic.getInnerMap();
 
         //TODO 数量和金额，正负项要一致,金蝶就是要求，金额是负数时，数量也要是负数   @财务-闫兴丽
-        //TODO 如果是传所有字段过去，数量是负数，单价等是正数，金额负数            @金蝶-袁工
+        //TODO 如果是传所有字段过去，数量是负数，单价等是正数，金额负数            @金蝶-袁工   金额 = 数量 * 单价
         BigDecimal zero = new BigDecimal("0");
         //"FTaxPrice 含税单价" 大于等于 "0"
         if (detailForm.getTaxPrice().compareTo(zero) > -1) {
@@ -988,7 +988,7 @@ public class KingdeeServiceImpl implements KingdeeService {
         Map<String, Object> detail = detailBasic.getInnerMap();
 
         //TODO 数量和金额，正负项要一致,金蝶就是要求，金额是负数时，数量也要是负数   @财务-闫兴丽
-        //TODO 如果是传所有字段过去，数量是负数，单价等是正数，金额负数            @金蝶-袁工
+        //TODO 如果是传所有字段过去，数量是负数，单价等是正数，金额负数            @金蝶-袁工   金额 = 数量 * 单价
         BigDecimal zero = new BigDecimal("0");
         //"FTaxPrice 含税单价" 大于等于 "0"
         if (detailForm.getTaxPrice().compareTo(zero) > -1) {

@@ -76,8 +76,13 @@ public class CustomerController {
             map1.put("pageInfo", new CommonPageResult(page));
         }else {
             for (CustomerFormVO record : page.getRecords()) {
-                record.setCustomerStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1010",record.getCustomerStyle()));
-                record.setCustomerState(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",record.getCustomerState()));
+                if(record.getCustomerStyle() != null){
+                    record.setCustomerStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1010",record.getCustomerStyle()));
+
+                }
+                if(record.getCustomerState() != null){
+                    record.setCustomerState(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",record.getCustomerState()));
+                }
             }
             CommonPageResult<CustomerFormVO> pageVO = new CommonPageResult(page);
             map1.put("pageInfo", pageVO);

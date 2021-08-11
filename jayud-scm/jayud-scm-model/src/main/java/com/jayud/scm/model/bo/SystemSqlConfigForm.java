@@ -27,6 +27,9 @@ public class SystemSqlConfigForm {
     @ApiModelProperty(value = "查询参数(可默认包含@WHERE)")
     private String sqlParams;
 
+    @ApiModelProperty(value = "查询排序(@ORDER)")
+    private String sqlOrder;
+
     @ApiModelProperty(value = "是否含有查询条件(1是 0否)")
     private Integer isHavParam;
 

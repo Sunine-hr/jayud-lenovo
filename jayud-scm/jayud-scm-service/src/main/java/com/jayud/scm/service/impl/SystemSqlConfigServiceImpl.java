@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
@@ -30,10 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -153,24 +151,105 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
 
     @Override
     public CommonPageResult<Map<String, Object>> findCommonByPage(QueryCommonConfigForm form) {
-        String sqlCode = form.getSqlCode();
+        String paraIdentifier = "@";//查询参数标识符
+        //登录用户信息
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+        if(ObjectUtil.isEmpty(systemUser)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录!");
+        }
+        String sqlCode = form.getSqlCode();//SQL代码
+        Map<String, Object> condPara = form.getCondPara();//条件参数{k-v},键值对
         SystemSqlConfigVO systemSqlConfigVO = systemSqlConfigMapper.getSystemSqlConfigBySqlCode(sqlCode);
         if(ObjectUtil.isEmpty(systemSqlConfigVO)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "SQL代码，没有找到对应的SQL配置");
         }
-        String sqlStr = systemSqlConfigVO.getSqlStr();
+        //1.主SQL语句
+        String sqlStr = systemSqlConfigVO.getSqlStr();//SQL语句
+        String sqlParams = systemSqlConfigVO.getSqlParams();//WHERE语句
+        String sqlOrder = systemSqlConfigVO.getSqlOrder();//ORDER语句
+
         if(StrUtil.isEmpty(sqlStr)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "SQL代码，没有配置SQL语句。");
         }
+        //2.WHERE条件语句
+        String wehre = "";//WHERE语句
+        if(StrUtil.isNotEmpty(sqlParams)){
+            String[] split = sqlParams.split("[|]");
+            StringBuffer stringBuffer = new StringBuffer();
+            for (int k=0; k<split.length; k++){
+                String s = split[k];
+                if(k== 0){
+                    stringBuffer.append(s);//第一个where条件，直接放入，不用匹配
+                }else{
+                    //condPara 循环匹配
+                    for (Map.Entry<String, Object> m : condPara.entrySet()) {
+                        //System.out.println("key:" + m.getKey() + " value:" + m.getValue());
+                        String key = m.getKey();//键
+                        Object value = m.getValue();//值
+
+                        String matchesParam  = paraIdentifier+key;//例子：@sqlCode
+
+                        //匹配`字符串s`中是否含有`字符串matchesParam`
+                        if(s.contains(matchesParam)){
+                            //替换
+                            String replace = s.replace(matchesParam, value.toString());
+                            stringBuffer.append(replace);
+                            break;
+                        }
+                    }
+                }
+            }
+            wehre = stringBuffer.toString();
+        }
+        String sqlDataStr = systemSqlConfigVO.getSqlDataStr();//数据权限查询
+        if(StrUtil.isNotEmpty(sqlDataStr)){
+            wehre = wehre + " " + sqlDataStr.replaceAll("@userId", ""+systemUser.getId()+"");
+        }
+        //3.ORDER BY语句，排序
+        String order = "";
+        if(StrUtil.isNotEmpty(sqlOrder)){
+            order = order + " " + sqlOrder;
+        }
 
         Map<String, Object> paraMap = new HashMap<>();
-        paraMap.put("sqlStr", sqlStr);
+        paraMap.put("sqlStr", sqlStr);//SQL语句
+        paraMap.put("wehre", wehre);//WHERE语句
+        paraMap.put("order", order);//ORDER BY语句
         //定义分页参数
         Page<Map<String, Object>> page = new Page(form.getPageNum(),form.getPageSize());
-        //定义排序规则 不在这里排序，后台用sql拼装排序
+        //定义排序规则        注释掉，不在这里排序，后台用sql拼装排序
         //page.addOrder(OrderItem.desc("t.id"));
         IPage<Map<String, Object>> pageInfo = systemSqlConfigMapper.findCommonByPage(page, paraMap);//这是分页的结果集
-        CommonPageResult<Map<String, Object>> pageVO = new CommonPageResult(pageInfo);//这个是整个的结果结果集（后面汇总的结果放在extendedData扩展数据里面）
+
+        Map<String, Object> extendedData = new HashMap<>();
+        List<Map<String, Object>> records = pageInfo.getRecords();
+        if(CollUtil.isEmpty(records)){
+            extendedData.put("pageMsg", systemSqlConfigVO.getMsgStr());//无数据消息提醒
+        }else{
+            extendedData.put("pageMsg", "分页查询成功");//无数据消息提醒
+        }
+        //数据汇总列 countMap
+        String sqlSumColumn = systemSqlConfigVO.getSqlSumColumn();
+        if(StrUtil.isNotEmpty(sqlSumColumn)){
+
+            String[] sqlSumColumnSplist = sqlSumColumn.split(",");
+            StringBuffer stringBuffer = new StringBuffer();
+            for (int n=0; n<sqlSumColumnSplist.length; n++){
+                String field = sqlSumColumnSplist[n];
+                if(n==0){
+                    stringBuffer.append(" IFNULL(SUM("+field+"), 0) " + field + " ");
+                }else{
+                    stringBuffer.append(",").append(" IFNULL(SUM("+field+"), 0) " + field + " ");
+                }
+            }
+            String countSql = stringBuffer.toString();//汇总sql
+            if(StrUtil.isNotEmpty(countSql)){
+                paraMap.put("countSql", countSql);//汇总sql
+                Map<String, Object> countMap = systemSqlConfigMapper.findCommonCount(paraMap);//汇总数据Map
+                extendedData.put("countMap", countMap);
+            }
+        }
+        CommonPageResult<Map<String, Object>> pageVO = new CommonPageResult(pageInfo, extendedData);//这个是整个的结果结果集（后面汇总的结果放在extendedData扩展数据里面）
         return pageVO;
     }
 

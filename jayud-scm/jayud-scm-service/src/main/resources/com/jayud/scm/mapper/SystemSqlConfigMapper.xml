@@ -35,7 +35,7 @@
 
     <select id="findByPage" resultType="com.jayud.scm.model.vo.SystemSqlConfigVO">
         select
-            t.id,t.sql_code,t.sql_name,t.sql_str,t.sql_params,t.is_hav_param,t.is_condition,t.msg_str,t.column_name,t.sql_data_str,t.sql_sum_column,t.remark,t.crt_by,t.crt_by_name,t.crt_by_dtm,t.mdy_by,t.mdy_by_name,t.mdy_by_dtm,t.voided,t.voided_by,t.voided_by_name,t.voided_by_dtm
+            t.id,t.sql_code,t.sql_name,t.sql_str,t.sql_params,t.sql_order,t.is_hav_param,t.is_condition,t.msg_str,t.column_name,t.sql_data_str,t.sql_sum_column,t.remark,t.crt_by,t.crt_by_name,t.crt_by_dtm,t.mdy_by,t.mdy_by_name,t.mdy_by_dtm,t.voided,t.voided_by,t.voided_by_name,t.voided_by_dtm
         from system_sql_config t
         where 1=1
         and t.voided = 0
@@ -46,14 +46,14 @@
 
     <select id="getSystemSqlConfigById" parameterType="java.lang.Integer" resultType="com.jayud.scm.model.vo.SystemSqlConfigVO">
         select
-            t.id,t.sql_code,t.sql_name,t.sql_str,t.sql_params,t.is_hav_param,t.is_condition,t.msg_str,t.column_name,t.sql_data_str,t.sql_sum_column,t.remark,t.crt_by,t.crt_by_name,t.crt_by_dtm,t.mdy_by,t.mdy_by_name,t.mdy_by_dtm,t.voided,t.voided_by,t.voided_by_name,t.voided_by_dtm
+            t.id,t.sql_code,t.sql_name,t.sql_str,t.sql_params,t.sql_order,t.is_hav_param,t.is_condition,t.msg_str,t.column_name,t.sql_data_str,t.sql_sum_column,t.remark,t.crt_by,t.crt_by_name,t.crt_by_dtm,t.mdy_by,t.mdy_by_name,t.mdy_by_dtm,t.voided,t.voided_by,t.voided_by_name,t.voided_by_dtm
         from system_sql_config t
         where t.id = #{id}
     </select>
 
     <select id="getSystemSqlConfigBySqlCode" parameterType="java.lang.String" resultType="com.jayud.scm.model.vo.SystemSqlConfigVO">
         select
-            t.id,t.sql_code,t.sql_name,t.sql_str,t.sql_params,t.is_hav_param,t.is_condition,t.msg_str,t.column_name,t.sql_data_str,t.sql_sum_column,t.remark,t.crt_by,t.crt_by_name,t.crt_by_dtm,t.mdy_by,t.mdy_by_name,t.mdy_by_dtm,t.voided,t.voided_by,t.voided_by_name,t.voided_by_dtm
+            t.id,t.sql_code,t.sql_name,t.sql_str,t.sql_params,t.sql_order,t.is_hav_param,t.is_condition,t.msg_str,t.column_name,t.sql_data_str,t.sql_sum_column,t.remark,t.crt_by,t.crt_by_name,t.crt_by_dtm,t.mdy_by,t.mdy_by_name,t.mdy_by_dtm,t.voided,t.voided_by,t.voided_by_name,t.voided_by_dtm
         from system_sql_config t
         where t.sql_code = #{sqlCode}
         LIMIT 1
@@ -65,6 +65,16 @@
     -->
     <select id="findCommonByPage" resultType="java.util.Map">
         ${paraMap.sqlStr}
+        ${paraMap.wehre}
+        ${paraMap.order}
+    </select>
+
+    <select id="findCommonCount" resultType="java.util.Map">
+        select ${paraMap.countSql} from (
+            ${paraMap.sqlStr}
+            ${paraMap.wehre}
+            ${paraMap.order}
+        ) temp
     </select>
 
 </mapper>

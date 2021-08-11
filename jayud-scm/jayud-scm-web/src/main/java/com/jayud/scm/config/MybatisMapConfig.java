@@ -16,11 +16,14 @@ import java.util.Map;
 @Configuration
 public class MybatisMapConfig {
 
+    /**
+     * Mybatis返回Map的时候转换为驼峰式
+     * @return
+     */
     @Bean
     public ConfigurationCustomizer configurationCustomizer() {
         return configuration -> configuration.setObjectWrapperFactory(new MapWrapperFactory());
     }
-
 
     static class MapWrapperFactory implements ObjectWrapperFactory {
         @Override

@@ -134,8 +134,8 @@
         #{id,mode=IN},
         #{userId,mode=IN},
         #{userName,mode=IN},
-        #{state,mode=OUT,jdbcType=INT}
-        #{string,mode=OUT,jdbcType=VARCHER}
+        #{state,mode=OUT,jdbcType=INTEGER}
+        #{string,mode=OUT,jdbcType=VARCHAR}
         )
         }
     </select>
@@ -148,8 +148,8 @@
         #{id,mode=IN},
         #{userId,mode=IN},
         #{userName,mode=IN},
-        #{state,mode=OUT,jdbcType=INT}
-        #{string,mode=OUT,jdbcType=VARCHER}
+        #{state,mode=OUT,jdbcType=INTEGER}
+        #{string,mode=OUT,jdbcType=VARCHAR}
         )
         }
     </select>

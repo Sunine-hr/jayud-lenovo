@@ -89,7 +89,7 @@ public class MiniAppController {
             status = DriverOrderStatusEnum.IN_TRANSIT.getCode();
         }
         //根据状态查询司机接单信息，如果没有代表还有没有接单
-        List<DriverOrderInfo> driverOrderInfos = this.driverOrderInfoService.getDriverOrderInfoByStatus(form.getDriverId(), status);
+        List<DriverOrderInfo> driverOrderInfos = this.driverOrderInfoService.getDriverOrderInfoByStatus(form.getDriverId(), status, form.getDriverId());
         if (CollectionUtils.isEmpty(driverOrderInfos)) {
             if (DriverOrderStatusEnum.IN_TRANSIT.getCode().equals(form.getStatus())
                     || DriverOrderStatusEnum.FINISHED.getCode().equals(form.getStatus())) {
@@ -148,9 +148,11 @@ public class MiniAppController {
         if (tmp != null) {
             return CommonResult.error(400, "该订单已确认过接单");
         }
-
-
-
+        //查询派车骑师
+        Object sendCarObj = this.tmsClient.getOrderSendCarsByOrderNo(form.getOrderNo()).getData();
+//        this.tmsClient.getInfoByMainOrderNo()
+        cn.hutool.json.JSONObject sendCarsJson = new cn.hutool.json.JSONObject(sendCarObj);
+        driverOrderInfo.setJockeyId(sendCarsJson.getLong("jockeyId"));
         if (this.driverOrderInfoService.saveOrUpdateDriverOrder(driverOrderInfo)) {
             return CommonResult.success();
         } else {
@@ -223,7 +225,8 @@ public class MiniAppController {
         String orderNo = json.getString("orderNo");
 
         //根据子订单ID去找派车信息，然后找到车辆供应商信息 待开发 TODO
-        //DriverInfoLinkVO driverInfoLink = this.driverInfoService.getDriverInfoLink(driverId);
+        DriverInfoLinkVO driverInfoLink = this.driverInfoService.getDriverInfoLink(driverId);
+        List<VehicleInfoVO> vehicleInfoVOList = driverInfoLink.getVehicleInfoVOList();
 
         DriverEmploymentFee driverEmploymentFee = new DriverEmploymentFee()
                 .setCostCode(form.getCostCode())
@@ -234,8 +237,8 @@ public class MiniAppController {
                 .setMainOrderNo(mainOrderNo)
                 .setOrderId(form.getOrderId())
                 .setOrderNo(orderNo)
-                //.setSupplierCode(driverInfoLink.getSupplierCode())
-                //.setSupplierName(driverInfoLink.getSupplierName())
+                .setSupplierCode(vehicleInfoVOList.get(0).getSupplierCode())
+                .setSupplierName(vehicleInfoVOList.get(0).getSupplierName())
                 .setCreateTime(LocalDateTime.now())
                 .setStatus(EmploymentFeeStatusEnum.SUBMIT.getCode())
                 .setDriverId(driverId);
@@ -357,7 +360,7 @@ public class MiniAppController {
         Long driverId = Long.parseLong(SecurityUtil.getUserInfo());
 
         List<DriverOrderInfo> driverOrderInfos = this.driverOrderInfoService
-                .getDriverOrderInfoByStatus(driverId, null);
+                .getDriverOrderInfoByStatus(driverId, null, driverId);
 
         //订单数目分组
         Map<String, Integer> map = new HashMap<>();
@@ -368,7 +371,7 @@ public class MiniAppController {
             orderNos.add(driverOrderInfo.getOrderNo());
         }
         //获取待接单数量
-        ApiResult result = this.tmsClient.getDriverOrderTransportDetailById(driverId, orderNos);
+        ApiResult result = this.tmsClient.getDriverPendingOrderNum(driverId, orderNos);
 
         //重组数据
         Map<String, Object> response = new HashMap<>();
@@ -538,10 +541,20 @@ public class MiniAppController {
             log.error("远程调用查询送货地址数量失败");
             throw new JayudBizException(ResultEnum.OPR_FAIL);
         }
+        //是否虚拟仓
+        ApiResult<Boolean> resultThree = this.tmsClient.isVirtualWarehouseByOrderNo(orderNo);
+        if (!resultThree.isOk()) {
+            log.error("远程调用是否虚拟仓失败");
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        Boolean isVirtual = resultThree.getData();
         cacheValue.put("deliveryAddressNum", resultTwo.getData());
-        int num = Integer.parseInt(resultTwo.getData().toString());
+        cacheValue.put("isVirtual", isVirtual);
+//        int num = Integer.parseInt(resultTwo.getData().toString());
+//        return DriverFeedbackStatusEnum.constructionProcess(status,
+//                num > 1 ? DriverFeedbackStatusEnum.THREE : null, isGetNot);
         return DriverFeedbackStatusEnum.constructionProcess(status,
-                num > 1 ? DriverFeedbackStatusEnum.THREE : null, isGetNot);
+                !isVirtual ? DriverFeedbackStatusEnum.THREE : null, isGetNot);
     }
 
     @ApiOperation(value = "消息通知")

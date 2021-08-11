@@ -81,6 +81,9 @@ public class DriverOrderTransportVO {
     @ApiModelProperty(value = "是否完成反馈状态")
     private Boolean isFeedbackFinish;
 
+    @ApiModelProperty(value = "是否虚拟仓")
+    private Boolean isVirtual;
+
 
     /**
      * 计算总费用

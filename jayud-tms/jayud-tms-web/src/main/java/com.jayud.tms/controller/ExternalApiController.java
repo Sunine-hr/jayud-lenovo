@@ -145,7 +145,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "获取司机待接单数量（小程序）")
     @RequestMapping(value = "/api/getDriverPendingOrderNum")
-    public ApiResult getDriverOrderTransportDetailById(@RequestParam("driverId") Long driverId
+    public ApiResult getDriverPendingOrderNum(@RequestParam("driverId") Long driverId
             , @RequestParam("orderNos") List<String> orderNos) {
         return ApiResult.ok(this.orderSendCarsService.getDriverPendingOrderNum(driverId, orderNos));
     }
@@ -289,7 +289,7 @@ public class ExternalApiController {
             return ApiResult.error("权限数据不能为空");
         }
         Map<String, String> tmp = new HashMap<>();
-        if ("supplier".equals(cmd)) { //供应商
+        if ("supplier" .equals(cmd)) { //供应商
             tmp.put("派车", "T_1");
             tmp.put("提货", "T_4");
             tmp.put("过磅", "T_5");
@@ -371,6 +371,16 @@ public class ExternalApiController {
         OrderTransport tmsOrder = this.orderTransportService.getOne(condition);
         OrderTransportInfoVO details = this.orderTransportService.getDetailsById(tmsOrder.getId());
         return ApiResult.ok(details);
+    }
+
+
+    /**
+     * 根据主订单查询是否虚拟仓
+     */
+    @RequestMapping(value = "/api/isVirtualWarehouseByOrderNo")
+    public ApiResult<Boolean> isVirtualWarehouseByOrderNo(@RequestParam("orderNo") String orderNo) {
+        Boolean isVirtual = this.orderTransportService.isVirtualWarehouseByOrderNo(orderNo);
+        return ApiResult.ok(isVirtual);
     }
 }
 

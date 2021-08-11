@@ -153,5 +153,7 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
      * @return
      */
     IPage<SupplierBillInfo> findSupplierBillInfoByPage(Page<SupplierBillInfo> page,
-                                                   @Param("form") QuerySupplierBillInfo form);
+                                                       @Param("form") QuerySupplierBillInfo form);
+
+    Integer isVirtualWarehouseByOrderNo(String orderNo);
 }

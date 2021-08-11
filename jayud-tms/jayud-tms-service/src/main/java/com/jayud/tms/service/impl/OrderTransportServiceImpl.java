@@ -150,7 +150,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTransport.setStatus(OrderStatusEnum.TMS_T_0.getCode());
         }
         boolean result = orderTransportService.saveOrUpdate(orderTransport);
-        if ("submit".equals(form.getCmd())) {
+        if ("submit" .equals(form.getCmd())) {
             this.msgPush(orderTransport);
         }
         return result;
@@ -864,6 +864,11 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         msg.put("orderNo", orderTransport.getOrderNo());
         request.put("msg", JSONUtil.toJsonStr(msg));
         this.msgClient.consume(request);
+    }
+
+    @Override
+    public Boolean isVirtualWarehouseByOrderNo(String orderNo) {
+        return this.baseMapper.isVirtualWarehouseByOrderNo(orderNo) > 0;
     }
 
 

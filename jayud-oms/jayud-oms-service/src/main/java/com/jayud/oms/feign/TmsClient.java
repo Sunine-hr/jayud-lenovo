@@ -93,7 +93,7 @@ public interface TmsClient {
      * 获取司机待接单数量（小程序）
      */
     @RequestMapping(value = "/api/getDriverPendingOrderNum")
-    ApiResult getDriverOrderTransportDetailById(@RequestParam("driverId") Long driverId
+    ApiResult getDriverPendingOrderNum(@RequestParam("driverId") Long driverId
             , @RequestParam("orderNos") List<String> orderNos);
 
     /**
@@ -163,4 +163,10 @@ public interface TmsClient {
      */
     @RequestMapping(value = "/api/getNumByStatus")
     public ApiResult<Map<String, Integer>> getNumByStatus(@RequestParam("cmd") String cmd, @RequestBody DataControl dataControl);
+
+    /**
+     * 根据主订单查询是否虚拟仓
+     */
+    @RequestMapping(value = "/api/isVirtualWarehouseByOrderNo")
+    public ApiResult<Boolean> isVirtualWarehouseByOrderNo(@RequestParam("orderNo") String orderNo);
 }

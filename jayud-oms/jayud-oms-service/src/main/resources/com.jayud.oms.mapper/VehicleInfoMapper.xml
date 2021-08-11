@@ -123,6 +123,7 @@
             hk_number hkNumber,
             w.supplier_id supplierId,
             s.supplier_ch_name supplierName,
+            s.supplier_code,
             w.driver_info_ids
         from
             vehicle_info w left join supplier_info s on w.supplier_id=s.id

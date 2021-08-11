@@ -895,4 +895,11 @@
         group by ot.order_no
         order by ota.take_time desc
     </select>
+    <select id="isVirtualWarehouseByOrderNo" resultType="java.lang.Integer">
+        select count(*) from order_transport ot
+        left join warehouse_info w on ot.warehouse_info_id = w.id
+        <where>
+            w.is_virtual = true
+        </where>
+    </select>
 </mapper>

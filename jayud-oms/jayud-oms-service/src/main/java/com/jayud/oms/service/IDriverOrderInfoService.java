@@ -18,7 +18,7 @@ public interface IDriverOrderInfoService extends IService<DriverOrderInfo> {
     /**
      * 查询司机接单信息
      */
-    List<DriverOrderInfo> getDriverOrderInfoByStatus(Long driverId, String status);
+    List<DriverOrderInfo> getDriverOrderInfoByStatus(Long driverId, String status, Long jockeyId);
 
     /**
      * 新增编辑

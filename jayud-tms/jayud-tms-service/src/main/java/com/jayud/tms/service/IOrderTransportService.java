@@ -189,4 +189,6 @@ public interface IOrderTransportService extends IService<OrderTransport> {
     IPage<SupplierBillInfo> findSupplierBillInfoByPage(QuerySupplierBillInfo form);
 
     void msgPush(OrderTransport orderTransport);
+
+    Boolean isVirtualWarehouseByOrderNo(String orderNo);
 }

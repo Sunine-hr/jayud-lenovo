@@ -4,4 +4,5 @@ jayud:
     #    server-addr: 127.0.0.1:8848
     config:
       #       namespace: 7a4f5e06-9d25-4cd7-afaa-7ce6e46d687d
-      namespace: 8f1f1f76-aaa3-4fc9-81b8-e61963b11d7b
+      # namespace: 8f1f1f76-aaa3-4fc9-81b8-e61963b11d7b
+      namespace: 7a4f5e06-9d25-4cd7-afaa-7ce6e46d687d

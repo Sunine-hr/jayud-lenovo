@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
@@ -84,6 +85,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     OauthClient oauthClient;
     @Autowired
     private MsgClient msgClient;
+    @Autowired
+    private RedisUtils redisUtils;
 
 
     @Override
@@ -125,6 +128,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 //            orderTransport.setOrderNo(orderNo);
             orderTransport.setCreatedUser(form.getLoginUser());
         }
+        JSONArray jsonArray = new JSONArray();
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
             //有的地址是创建订单填的,有的地址是从地址簿选的
             DeliveryAddress deliveryAddress = new DeliveryAddress();
@@ -133,7 +137,12 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             deliveryAddress.setContacts(inputOrderTakeAdrForm.getContacts());
             deliveryAddress.setPhone(inputOrderTakeAdrForm.getPhone());
             deliveryAddress.setAddress(inputOrderTakeAdrForm.getAddress());
+
             deliveryAddressService.saveOrUpdate(deliveryAddress);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", deliveryAddress.getId());
+            jsonObject.put("address", deliveryAddress.getAddress());
+            jsonArray.add(jsonObject);
 
             OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm, OrderTakeAdr.class);
             orderTakeAdr.setDeliveryId(deliveryAddress.getId());
@@ -142,8 +151,13 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
             orderTakeAdr.setFile(StringUtils.getFileStr(inputOrderTakeAdrForm.getTakeFiles()));
             orderTakeAdr.setFileName(StringUtils.getFileNameStr(inputOrderTakeAdrForm.getTakeFiles()));
+
+
             orderTakeAdrService.saveOrUpdate(orderTakeAdr);
+
         }
+        redisUtils.set("tmsDispatchAddress", jsonArray.toString());
+
         orderTransport.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
         orderTransport.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));
         if (form.getIsGoodsEdit() == null || !form.getIsGoodsEdit()) {

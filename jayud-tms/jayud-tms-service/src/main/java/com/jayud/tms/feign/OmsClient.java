@@ -5,6 +5,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.entity.MapEntity;
 import com.jayud.tms.model.bo.AuditInfoForm;
 import com.jayud.tms.model.bo.HandleSubProcessForm;
 import com.jayud.tms.model.bo.OprStatusForm;
@@ -302,5 +303,27 @@ public interface OmsClient {
      */
     @PostMapping(value = "/initBizService")
     public CommonResult<List<InitComboxStrVO>> initBizService();
+
+    /**
+     * 获取腾讯地图经纬度
+     *
+     * @param address
+     * @param key
+     * @return
+     */
+    @ApiOperation(value = "获取企业微信部门员工详情")
+    @RequestMapping(value = "/api/getTencentMapLaAndLoInfo")
+    public ApiResult getTencentMapLaAndLoInfo(@RequestParam("address") String address,
+                                          @RequestParam("key") String key);
+
+    /**
+     * 获取腾讯地图经纬度
+     *
+     * @param address
+     * @param key
+     * @return
+     */
+    @RequestMapping(value = "/api/getTencentMapLaAndLo")
+    public ApiResult<MapEntity> getTencentMapLaAndLo(@RequestParam("address")String address,@RequestParam("key") String key);
 
 }

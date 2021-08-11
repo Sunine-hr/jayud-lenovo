@@ -2,9 +2,6 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -16,6 +13,7 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
+import com.jayud.common.entity.MapEntity;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.*;
 import com.jayud.common.utils.*;
@@ -110,6 +108,8 @@ public class ExternalApiController {
     private WechatMsgService wechatMsgService;
     @Autowired
     private ISystemConfService systemConfService;
+    @Autowired
+    private MapPositioningService mapPositioningService;
 
 
     @ApiOperation(value = "保存主订单")
@@ -1953,6 +1953,43 @@ public class ExternalApiController {
             return ApiResult.error(result.getStr("errmsg"));
         }
         return ApiResult.ok(result.getJSONArray("userlist"));
+    }
+
+    /**
+     * 获取腾讯地图经纬度详情
+     *
+     * @param address
+     * @param key
+     * @return
+     */
+    @RequestMapping(value = "/api/getTencentMapLaAndLoInfo")
+    public ApiResult getTencentMapLaAndLoInfo(@RequestParam("address") String address,
+                                              @RequestParam("key") String key) {
+        if (StringUtils.isEmpty(address) || StringUtils.isEmpty(key)) {
+            return ApiResult.ok("地址/秘钥不能为空");
+        }
+        JSONObject response = this.mapPositioningService.getTencentMapLaAndLoInfo(address, key);
+        if (!"0" .equals(response.getStr("status"))) {
+            return ApiResult.error(response.getStr("message"));
+        }
+        return ApiResult.ok(response.get("result"));
+
+    }
+
+    /**
+     * 获取腾讯地图经纬度
+     *
+     * @param address
+     * @param key
+     * @return
+     */
+    @RequestMapping(value = "/api/getTencentMapLaAndLo")
+    public ApiResult<MapEntity> getTencentMapLaAndLo(String address, String key) {
+        if (StringUtils.isEmpty(address) || StringUtils.isEmpty(key)) {
+            return ApiResult.ok("地址/秘钥不能为空");
+        }
+        MapEntity mapEntity = this.mapPositioningService.getTencentMapLaAndLo(address, key);
+        return ApiResult.ok(mapEntity);
     }
 
 }

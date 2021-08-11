@@ -1,6 +1,9 @@
 package com.jayud.oms.model.vo;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.MapUtil;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
@@ -84,6 +87,15 @@ public class DriverOrderTransportVO {
     @ApiModelProperty(value = "是否虚拟仓")
     private Boolean isVirtual;
 
+    @ApiModelProperty(value = "应收费用状态")
+    private String receivableCostStatus;
+
+    @ApiModelProperty(value = "应付费用状态")
+    private String paymentCostStatus;
+
+    @ApiModelProperty(value = "接单记录状态")
+    private String recordStatus;
+
 
     /**
      * 计算总费用
@@ -110,6 +122,30 @@ public class DriverOrderTransportVO {
             tmp.put("totalAmount", v + k);
             totalCost.add(tmp);
         });
+    }
+
+    public void assemblyCostStatus(Map<String, Object> costStatus) {
+        if (CollectionUtil.isEmpty(costStatus)) return;
+
+        Map<String, Object> receivableCostStatus = (Map<String, Object>) costStatus.get("receivableCostStatus");
+        Map<String, Object> paymentCostStatus = (Map<String, Object>) costStatus.get("paymentCostStatus");
+
+        String receivableStatusDesc = MapUtil.getStr(receivableCostStatus, orderNo);
+        String paymentStatusDesc = MapUtil.getStr(paymentCostStatus, orderNo);
+
+        if (!StringUtils.isEmpty(receivableStatusDesc)) {
+            String[] split = receivableStatusDesc.split("-", 2);
+            this.receivableCostStatus = split[0];
+        } else {
+            this.receivableCostStatus = "未录入";
+        }
+
+        if (!StringUtils.isEmpty(paymentStatusDesc)) {
+            String[] split = paymentStatusDesc.split("-", 2);
+            this.paymentCostStatus = split[0];
+        } else {
+            this.paymentCostStatus = "未录入";
+        }
     }
 
 

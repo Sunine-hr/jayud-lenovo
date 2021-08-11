@@ -102,6 +102,7 @@ public class MiniAppController {
         //组装订单
         form.assemblyOrder(map.keySet());
 
+//        Map<String, Object> costStatus = this.orderInfoService.getCostStatus(null, subOrderNos).getData();
         //查询中港订单信息
         ApiResult result = tmsClient.getDriverOrderTransport(form);
         Gson gson = new Gson();
@@ -118,6 +119,9 @@ public class MiniAppController {
                 }
                 //是否已完成反馈状态
                 DriverOrderInfo driverOrderInfo = map.get(driverOrderTransportVO.getId());
+                if (driverOrderInfo != null) {
+                    driverOrderTransportVO.setRecordStatus(driverOrderInfo.getStatus());
+                }
                 if (driverOrderInfo != null && DriverOrderStatusEnum.FINISHED.getCode().equals(driverOrderInfo.getStatus())) {
                     driverOrderTransportVO.setIsFeedbackFinish(true);
                 } else {
@@ -447,7 +451,11 @@ public class MiniAppController {
                 if (org.apache.commons.lang.StringUtils.isEmpty(form.getStatus())) {
                     return CommonResult.error(400, "请选择通关状态");
                 }
-                if (MapUtil.getInt(cacheValue, "deliveryAddressNum") == 1) {//送到目的地址，要补入仓出仓数据
+//                if (MapUtil.getInt(cacheValue, "deliveryAddressNum") == 1) {//送到目的地址，要补入仓出仓数据
+//                    form.setNextCmd(CommonConstant.CAR_SEND);
+//                }
+                //虚拟仓是直接送到目的地,实际仓库送到中转仓库
+                if (MapUtil.getBool(cacheValue, "isVirtual")) {//送到目的地址，要补入仓出仓数据
                     form.setNextCmd(CommonConstant.CAR_SEND);
                 }
                 form.setCmd(CommonConstant.CAR_GO_CUSTOMS);

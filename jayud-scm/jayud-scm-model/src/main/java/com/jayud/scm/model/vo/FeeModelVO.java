@@ -34,6 +34,9 @@ public class FeeModelVO {
     @ApiModelProperty(value = "业务类型")
     private String modelType;
 
+    @ApiModelProperty(value = "业务类型")
+    private String modelTypeName;
+
     @ApiModelProperty(value = "模板编号")
     private String modelName;
 

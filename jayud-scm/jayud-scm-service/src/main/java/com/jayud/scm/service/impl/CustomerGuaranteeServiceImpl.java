@@ -52,7 +52,7 @@ public class CustomerGuaranteeServiceImpl extends ServiceImpl<CustomerGuaranteeM
         CustomerFollow customerFollow = new CustomerFollow();
 
         CustomerGuarantee customerGuarantee = ConvertUtil.convert(form, CustomerGuarantee.class);
-        if(form != null){
+        if(form.getId() != null){
             customerGuarantee.setMdyBy(systemUser.getId().intValue());
             customerGuarantee.setMdyByDtm(LocalDateTime.now());
             customerGuarantee.setMdyByName(systemUser.getUserName());

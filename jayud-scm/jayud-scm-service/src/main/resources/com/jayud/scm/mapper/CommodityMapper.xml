@@ -127,7 +127,7 @@
          update ${form.table} set voided = 1,voided_by = #{form.id}, voided_by_name = #{form.name}, voided_by_dtm = #{form.deleteTime}
          <where>
              <if test="form.ids != null and form.ids.size>0">
-                 and `id` in
+                 and id in
                  <foreach collection="form.ids" item="id" open="(" separator="," close=")">
                      #{id}
                  </foreach>

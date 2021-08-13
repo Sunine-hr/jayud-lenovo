@@ -37,6 +37,9 @@ public class CustomerBankVO {
     @ApiModelProperty(value = "区域【境内 境外】")
     private String bankArea;
 
+    @ApiModelProperty(value = "区域【境内 境外】")
+    private String bankAreaName;
+
     @ApiModelProperty(value = "账户名称")
     private String accountName;
 
@@ -51,6 +54,9 @@ public class CustomerBankVO {
 
     @ApiModelProperty(value = "币别")
     private String currencyName;
+
+    @ApiModelProperty(value = "币别")
+    private String currencyName1;
 
     @ApiModelProperty(value = "是否默认值")
     private Integer isDefault;

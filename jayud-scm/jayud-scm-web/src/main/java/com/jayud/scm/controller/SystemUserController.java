@@ -126,20 +126,23 @@ public class SystemUserController {
 
         for (QueryMenuStructureVO menuStructureVO : menuStructureVOS) {
             for (QueryMenuStructureVO child : menuStructureVO.getChildren()) {
-                //获取菜单下按钮
-                List<SystemAction> systemActions = systemActionService.getSystemActionList(child.getId());
+                for (QueryMenuStructureVO childChild : child.getChildren()) {
+                    //获取菜单下按钮
+                    List<SystemAction> systemActions = systemActionService.getSystemActionList(childChild.getId());
 
-                List<QueryMenuStructureVO> menuStructureVOS1 = new ArrayList<>();
-                for (SystemAction systemAction : systemActions) {
-                    QueryMenuStructureVO menuStructureVO1 = new QueryMenuStructureVO();
-                    menuStructureVO1.setLabel(systemAction.getActionName());
-                    menuStructureVO1.setFId(systemAction.getParentId().longValue());
-                    menuStructureVO1.setId(systemAction.getId().longValue());
-                    menuStructureVO1.setActionCode(systemAction.getActionCode());
-                    menuStructureVO1.setChildren(new ArrayList<>());
-                    menuStructureVOS1.add(menuStructureVO1);
+                    List<QueryMenuStructureVO> menuStructureVOS1 = new ArrayList<>();
+                    for (SystemAction systemAction : systemActions) {
+                        QueryMenuStructureVO menuStructureVO1 = new QueryMenuStructureVO();
+                        menuStructureVO1.setLabel(systemAction.getActionName());
+                        menuStructureVO1.setFId(systemAction.getParentId().longValue());
+                        menuStructureVO1.setId(systemAction.getId().longValue());
+                        menuStructureVO1.setActionCode(systemAction.getActionCode());
+                        menuStructureVO1.setChildren(new ArrayList<>());
+                        menuStructureVOS1.add(menuStructureVO1);
+                    }
+                    childChild.setChildren(menuStructureVOS1);
                 }
-                child.setChildren(menuStructureVOS1);
+
             }
 
         }
@@ -695,6 +698,18 @@ public class SystemUserController {
         return CommonResult.success(systemRoleAndSystemUserVOS);
     }
 
+    @ApiOperation(value = "获取所有角色为业务的用户")
+    @PostMapping(value = "/getSystemUserByRole")
+    public CommonResult getSystemUserByRole() {
+        SystemRole systemRole = roleService.getRoleByRoleName("业务员");
+        List<SystemUserRoleRelation> systemUserRoleRelations = this.userRoleRelationService.getEnabledUsersByRoleId(systemRole.getId());
+        List<Long> longs = new ArrayList<>();
+        for (SystemUserRoleRelation systemUserRoleRelation : systemUserRoleRelations) {
+            longs.add(systemUserRoleRelation.getUserId());
+        }
+        List<SystemUser> byIds = this.userService.getByIds(longs);
+        return CommonResult.success(byIds);
+    }
 
 }
 

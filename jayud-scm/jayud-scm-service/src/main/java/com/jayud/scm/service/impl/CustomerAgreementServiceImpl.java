@@ -54,7 +54,7 @@ public class CustomerAgreementServiceImpl extends ServiceImpl<CustomerAgreementM
         CustomerFollow customerFollow = new CustomerFollow();
 
         CustomerAgreement customerAgreement = ConvertUtil.convert(form, CustomerAgreement.class);
-        if(form != null){
+        if(form.getId() != null){
             customerAgreement.setMdyBy(systemUser.getId().intValue());
             customerAgreement.setMdyDtm(LocalDateTime.now());
             customerAgreement.setMdyByName(systemUser.getUserName());

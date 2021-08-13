@@ -32,6 +32,9 @@ public class CustomerGuaranteeVO {
     @ApiModelProperty(value = "提保类型")
     private String guaranteeType;
 
+    @ApiModelProperty(value = "提保类型")
+    private String guaranteeTypeName;
+
     @ApiModelProperty(value = "担保协议名称")
     private String guaranteeName;
 

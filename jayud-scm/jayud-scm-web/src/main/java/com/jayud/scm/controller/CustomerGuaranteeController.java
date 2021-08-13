@@ -8,8 +8,10 @@ import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddCustomerGuaranteeForm;
 import com.jayud.scm.model.bo.AddCustomerRelationerForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.vo.CustomerAgreementVO;
 import com.jayud.scm.model.vo.CustomerGuaranteeVO;
 import com.jayud.scm.model.vo.CustomerRelationerVO;
+import com.jayud.scm.service.IBDataDicEntryService;
 import com.jayud.scm.service.ICustomerGuaranteeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -38,10 +40,16 @@ public class CustomerGuaranteeController {
     @Autowired
     private ICustomerGuaranteeService customerGuaranteeService;
 
+    @Autowired
+    private IBDataDicEntryService ibDataDicEntryService;
+
     @ApiOperation(value = "根据条件分页查询所有该客户的担保合同")
     @PostMapping(value = "/findByPage")
     public CommonResult findByPage(@RequestBody QueryCommonForm form) {
         IPage<CustomerGuaranteeVO> page = this.customerGuaranteeService.findByPage(form);
+        for (CustomerGuaranteeVO record : page.getRecords()) {
+            record.setGuaranteeTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",record.getGuaranteeType()));
+        }
         CommonPageResult pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);
     }
@@ -61,6 +69,7 @@ public class CustomerGuaranteeController {
     public CommonResult<CustomerGuaranteeVO> getCustomerGuaranteeById(@RequestBody Map<String,Object> map) {
         Integer id = MapUtil.getInt(map, "id");
         CustomerGuaranteeVO customerGuaranteeVO = customerGuaranteeService.getCustomerGuaranteeById(id);
+        customerGuaranteeVO.setGuaranteeTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",customerGuaranteeVO.getGuaranteeType()));
         return CommonResult.success(customerGuaranteeVO);
     }
 

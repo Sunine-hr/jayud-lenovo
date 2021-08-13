@@ -31,7 +31,7 @@ public class AddCustomerAgreementForm {
     private String signCompanyName;
 
     @ApiModelProperty(value = "是否顺延，0顺延，1不顺延")
-    private Integer isExtended;
+    private String isExtended;
 
     @ApiModelProperty(value = "我司原件份数")
     private Integer isNum;
@@ -52,10 +52,10 @@ public class AddCustomerAgreementForm {
     private String treatyNo;
 
     @ApiModelProperty(value = "协议开始时间")
-    private LocalDateTime treatyBeginDtm;
+    private String treatyBeginDtm;
 
     @ApiModelProperty(value = "协议结束时间")
-    private LocalDateTime treatyEndDtm;
+    private String treatyEndDtm;
 
     @ApiModelProperty(value = "协议有效期限(月)")
     private String treatyDate;
@@ -88,7 +88,7 @@ public class AddCustomerAgreementForm {
     private Integer isYuanJian;
 
     @ApiModelProperty(value = "原件归档时间")
-    private LocalDateTime yuanJianDtm;
+    private String yuanJianDtm;
 
     @ApiModelProperty(value = "父协议ID")
     private Integer parentId;
@@ -116,5 +116,8 @@ public class AddCustomerAgreementForm {
 
     @ApiModelProperty(value = "业务类型")
     private Integer modelType;
+
+    @ApiModelProperty(value = "业务类型")
+    private String modelTypeCopy;
 
 }

@@ -17,4 +17,6 @@ import java.util.List;
 public interface IFeesService extends IService<Fees> {
 
     List<FeesComboxVO> formulaSettingMaintenance(String modelType);
+
+    Fees getFeesById(Integer feesId);
 }

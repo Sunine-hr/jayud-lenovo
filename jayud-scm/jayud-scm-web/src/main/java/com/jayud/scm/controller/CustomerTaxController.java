@@ -11,6 +11,7 @@ import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.vo.CustomerRelationerVO;
 import com.jayud.scm.model.vo.CustomerTaxVO;
 import com.jayud.scm.service.ICustomerRelationerService;
+import com.jayud.scm.service.ICustomerService;
 import com.jayud.scm.service.ICustomerTaxService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,10 +40,16 @@ public class CustomerTaxController {
     @Autowired
     private ICustomerTaxService customerTaxService;
 
+    @Autowired
+    private ICustomerService customerService;
+
     @ApiOperation(value = "根据条件分页查询所有该客户的所有开票资料")
     @PostMapping(value = "/findByPage")
     public CommonResult findByPage(@RequestBody QueryCommonForm form) {
         IPage<CustomerTaxVO> page = this.customerTaxService.findByPage(form);
+        for (CustomerTaxVO record : page.getRecords()) {
+            record.setTaxNo(customerService.getById(record.getCustomerId()).getTaxNo() == null ? "":customerService.getById(record.getId()).getTaxNo());
+        }
         CommonPageResult pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);
     }
@@ -72,6 +79,7 @@ public class CustomerTaxController {
     public CommonResult<CustomerTaxVO> getCustomerTaxById(@RequestBody Map<String,Object> map) {
         Integer id = MapUtil.getInt(map, "id");
         CustomerTaxVO customerTaxVO = customerTaxService.getCustomerTaxById(id);
+        customerTaxVO.setTaxNo(customerService.getById(customerTaxVO.getCustomerId()).getTaxNo() == null ? "":customerService.getById(customerTaxVO.getId()).getTaxNo());
         return CommonResult.success(customerTaxVO);
     }
 

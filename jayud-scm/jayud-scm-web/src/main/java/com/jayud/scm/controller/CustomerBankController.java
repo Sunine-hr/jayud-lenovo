@@ -3,11 +3,13 @@ package com.jayud.scm.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddCustomerBankForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.vo.CustomerBankVO;
+import com.jayud.scm.service.IBDataDicEntryService;
 import com.jayud.scm.service.ICustomerBankService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,10 +38,24 @@ public class CustomerBankController {
     @Autowired
     private ICustomerBankService customerBankService;
 
+    @Autowired
+    private IBDataDicEntryService ibDataDicEntryService;
+
     @ApiOperation(value = "根据条件分页查询所有该客户的银行资料")
     @PostMapping(value = "/findByPage")
     public CommonResult findByPage(@RequestBody QueryCommonForm form) {
         IPage<CustomerBankVO> page = this.customerBankService.findByPage(form);
+        if(CollectionUtils.isNotEmpty(page.getRecords())){
+            for (CustomerBankVO record : page.getRecords()) {
+                if(record.getCurrencyName() != null){
+                    record.setCurrencyName1(ibDataDicEntryService.getTextByDicCodeAndDataValue("1003",record.getCurrencyName()));
+                }
+                if(record.getBankArea() != null){
+                    record.setBankAreaName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1017",record.getBankArea()));
+                }
+
+            }
+        }
         CommonPageResult pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);
     }
@@ -69,6 +85,12 @@ public class CustomerBankController {
     public CommonResult<CustomerBankVO> getCustomerBankById(@RequestBody Map<String,Object> map) {
         Integer id = MapUtil.getInt(map, "id");
         CustomerBankVO customerBankVO = customerBankService.getCustomerBankById(id);
+        if(customerBankVO.getCurrencyName() != null){
+            customerBankVO.setCurrencyName1(ibDataDicEntryService.getTextByDicCodeAndDataValue("1003",customerBankVO.getCurrencyName()));
+        }
+        if(customerBankVO.getBankArea() != null){
+            customerBankVO.setBankAreaName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1017",customerBankVO.getBankArea()));
+        }
         return CommonResult.success(customerBankVO);
     }
 }

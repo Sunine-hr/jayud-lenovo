@@ -63,7 +63,7 @@ public class CustomerBankServiceImpl extends ServiceImpl<CustomerBankMapper, Cus
         CustomerFollow customerFollow = new CustomerFollow();
 
         CustomerBank customerBank = ConvertUtil.convert(form, CustomerBank.class);
-        if(form != null){
+        if(form.getId() != null){
             customerBank.setMdyBy(systemUser.getId().intValue());
             customerBank.setMdyByDtm(LocalDateTime.now());
             customerBank.setMdyByName(systemUser.getUserName());

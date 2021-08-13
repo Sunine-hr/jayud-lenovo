@@ -33,6 +33,9 @@ public class AddCustomerMaintenanceSetupForm {
     @ApiModelProperty(value = "业务类型")
     private Integer modelType;
 
+    @ApiModelProperty(value = "业务类型")
+    private String modelTypeName;
+
     @ApiModelProperty(value = "角色id")
     private Integer roleId;
 

@@ -3,6 +3,7 @@ package com.jayud.scm.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddCustomerAddressForm;
@@ -10,10 +11,7 @@ import com.jayud.scm.model.bo.AddCustomerMaintenanceSetupForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.vo.CustomerAddressVO;
 import com.jayud.scm.model.vo.CustomerMaintenanceSetupVO;
-import com.jayud.scm.service.ICustomerAddressService;
-import com.jayud.scm.service.ICustomerMaintenanceSetupService;
-import com.jayud.scm.service.ISystemRoleService;
-import com.jayud.scm.service.ISystemUserService;
+import com.jayud.scm.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,10 +45,20 @@ public class CustomerMaintenanceSetupController {
     @Autowired
     private ISystemRoleService roleService;
 
+    @Autowired
+    private IBDataDicEntryService ibDataDicEntryService;
+
     @ApiOperation(value = "根据条件分页查询所有该客户的所有维护人")
     @PostMapping(value = "/findByPage")
     public CommonResult findByPage(@RequestBody QueryCommonForm form) {
         IPage<CustomerMaintenanceSetupVO> page = this.customerMaintenanceSetupService.findByPage(form);
+        if(CollectionUtils.isNotEmpty(page.getRecords())){
+            for (CustomerMaintenanceSetupVO record : page.getRecords()) {
+                if(record.getModelType() != null){
+                    record.setModelTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1018",record.getModelType().toString()));
+                }
+            }
+        }
         CommonPageResult pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);
     }
@@ -58,6 +66,7 @@ public class CustomerMaintenanceSetupController {
     @ApiOperation(value = "新增客户维护人")
     @PostMapping(value = "/saveOrUpdateCustomerMaintenanceSetup")
     public CommonResult saveOrUpdateCustomerMaintenanceSetup(@RequestBody AddCustomerMaintenanceSetupForm form) {
+        form.setModelType(Integer.parseInt(form.getModelTypeName()));
         form.setWhUserName(systemUserService.getSystemUserBySystemId(form.getWhUserId().longValue()).getUserName());
         form.setRoleName(roleService.getById(form.getRoleId().longValue()).getName());
         boolean result = customerMaintenanceSetupService.saveOrUpdateCustomerMaintenanceSetup(form);
@@ -72,6 +81,9 @@ public class CustomerMaintenanceSetupController {
     public CommonResult<CustomerMaintenanceSetupVO> getCustomerMaintenanceSetupById(@RequestBody Map<String,Object> map) {
         Integer id = MapUtil.getInt(map, "id");
         CustomerMaintenanceSetupVO customerMaintenanceSetupVO = customerMaintenanceSetupService.getCustomerMaintenanceSetupById(id);
+        if(customerMaintenanceSetupVO.getModelType() != null){
+            customerMaintenanceSetupVO.setModelTypeName(customerMaintenanceSetupVO.getModelType().toString());
+        }
         return CommonResult.success(customerMaintenanceSetupVO);
     }
 

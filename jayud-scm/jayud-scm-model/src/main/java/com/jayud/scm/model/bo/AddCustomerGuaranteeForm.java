@@ -54,12 +54,12 @@ public class AddCustomerGuaranteeForm {
     private String address;
 
     @ApiModelProperty(value = "开始日期")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime beginDate;
+//    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private String beginDate;
 
     @ApiModelProperty(value = "结束日期")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime endDate;
+//    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private String endDate;
 
     @ApiModelProperty(value = "是否有房产复制件")
     private Integer isHourse;
@@ -74,7 +74,7 @@ public class AddCustomerGuaranteeForm {
     private String isFile;
 
     @ApiModelProperty(value = "归档日期")
-    private LocalDateTime fileDate;
+    private String fileDate;
 
     @ApiModelProperty(value = "归档人")
     private String fileUserName;

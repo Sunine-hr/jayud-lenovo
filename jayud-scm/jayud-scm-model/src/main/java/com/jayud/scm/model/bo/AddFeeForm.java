@@ -3,6 +3,7 @@ package com.jayud.scm.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -30,7 +31,7 @@ public class AddFeeForm {
     private Integer id;
 
     @ApiModelProperty(value = "客户ID")
-    private Integer CustomerId;
+    private Integer customerId;
 
     @ApiModelProperty(value = "结算方案ID")
     private Integer feeModelId;
@@ -51,6 +52,7 @@ public class AddFeeForm {
     private String reStyle;
 
     @ApiModelProperty(value = "收款账期天数")
+    @JsonProperty(value = "reDay")
     private Integer reDay;
 
     @ApiModelProperty(value = "结算方式")
@@ -66,9 +68,11 @@ public class AddFeeForm {
     private BigDecimal proxyFee;
 
     @ApiModelProperty(value = "货款汇率类型")
+    @JsonProperty(value = "gRateType")
     private String gRateType;
 
     @ApiModelProperty(value = "代理费费率类型")
+    @JsonProperty(value = "pRateType")
     private String pRateType;
 
     @ApiModelProperty(value = "取值（买入，卖出）")
@@ -99,18 +103,22 @@ public class AddFeeForm {
     private Integer interestDayLowest;
 
     @ApiModelProperty(value = "信用证服务费率")
+    @JsonProperty(value = "lcFee")
     private BigDecimal lcFee;
 
     @ApiModelProperty(value = "逾期费率")
     private BigDecimal lateFee;
 
     @ApiModelProperty(value = "报关运费比例")
+    @JsonProperty(value = "yFee")
     private BigDecimal yFee;
 
     @ApiModelProperty(value = "报关保费比例")
+    @JsonProperty(value = "bFee")
     private BigDecimal bFee;
 
     @ApiModelProperty(value = "报关杂费比例")
+    @JsonProperty(value = "oFee")
     private BigDecimal oFee;
 
     @ApiModelProperty(value = "保证金比例")

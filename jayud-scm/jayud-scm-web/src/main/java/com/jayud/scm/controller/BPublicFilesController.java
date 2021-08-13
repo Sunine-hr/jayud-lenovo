@@ -2,9 +2,11 @@ package com.jayud.scm.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddBPublicFilesForm;
 import com.jayud.scm.model.vo.BPublicFilesVO;
+import com.jayud.scm.service.IBDataDicEntryService;
 import com.jayud.scm.service.IBPublicFilesService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,12 +33,23 @@ public class BPublicFilesController {
     @Autowired
     private IBPublicFilesService bPublicFilesService;
 
+    @Autowired
+    private IBDataDicEntryService ibDataDicEntryService;
+
     @ApiOperation(value = "通过类型和订单id查询所有附件")
     @PostMapping(value = "/findPublicFile")
     public CommonResult findPublicFile(@RequestBody Map<String,Object> map) {
         Integer fileModel = MapUtil.getInt(map,"fileModel");
         Integer businessId = MapUtil.getInt(map, "businessId");
         List<BPublicFilesVO> bPublicFilesVOS = bPublicFilesService.getPublicFileList(fileModel,businessId);
+        if(CollectionUtils.isNotEmpty(bPublicFilesVOS)){
+            for (BPublicFilesVO bPublicFilesVO : bPublicFilesVOS) {
+                if(bPublicFilesVO.getFileModel() != null){
+                    bPublicFilesVO.setFileModelCopy(ibDataDicEntryService.getTextByDicCodeAndDataValue("1016",bPublicFilesVO.getFileModel().toString()));
+                }
+            }
+        }
+
         return CommonResult.success(bPublicFilesVOS);
     }
 

@@ -3,6 +3,7 @@ package com.jayud.scm.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.*;
@@ -75,15 +76,21 @@ public class CustomerController {
         if (page.getRecords().size() == 0) {
             map1.put("pageInfo", new CommonPageResult(page));
         }else {
-            for (CustomerFormVO record : page.getRecords()) {
-                if(record.getCustomerStyle() != null){
-                    record.setCustomerStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1010",record.getCustomerStyle()));
+            if(CollectionUtils.isNotEmpty(page.getRecords())){
+                for (CustomerFormVO record : page.getRecords()) {
+                    if(record.getCustomerStyle() != null){
+                        record.setCustomerStyleName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1010",record.getCustomerStyle()));
 
-                }
-                if(record.getCustomerState() != null){
-                    record.setCustomerState(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",record.getCustomerState()));
+                    }
+                    if(record.getCustomerState() != null){
+                        record.setCustomerStateName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",record.getCustomerState()));
+                    }
+                    if(record.getArea() != null){
+                        record.setAreaName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1015",record.getArea()));
+                    }
                 }
             }
+
             CommonPageResult<CustomerFormVO> pageVO = new CommonPageResult(page);
             map1.put("pageInfo", pageVO);
         }
@@ -96,6 +103,16 @@ public class CustomerController {
     public CommonResult<CustomerVO> getCustomerById(@RequestBody Map<String,Object> map) {
         Integer id = MapUtil.getInt(map, "id");
         CustomerVO customerVO = this.customerService.getCustomerById(id);
+        if(customerVO.getCustomerStyle() != null){
+            customerVO.setCustomerStyleName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1010",customerVO.getCustomerStyle()));
+
+        }
+        if(customerVO.getCustomerState() != null){
+            customerVO.setCustomerStateName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",customerVO.getCustomerState()));
+        }
+        if(customerVO.getArea() != null){
+            customerVO.setAreaName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1015",customerVO.getArea()));
+        }
         return CommonResult.success(customerVO);
     }
 

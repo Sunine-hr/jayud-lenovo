@@ -223,4 +223,13 @@ public class CustomerVO {
     @ApiModelProperty(value = "开票银行账号")
     private String taxBankNo;
 
+    @ApiModelProperty(value = "区域")
+    private String areaName;
+
+    @ApiModelProperty(value = "客户类型")
+    private String customerStyleName;
+
+    @ApiModelProperty(value = "客户跟进状态")
+    private String customerStateName;
+
 }

@@ -31,7 +31,10 @@ public class CustomerAgreementVO {
     private String signCompanyName;
 
     @ApiModelProperty(value = "是否顺延，0顺延，1不顺延")
-    private Integer isExtended;
+    private String isExtended;
+
+    @ApiModelProperty(value = "是否顺延，0顺延，1不顺延")
+    private String isExtendedName;
 
     @ApiModelProperty(value = "我司原件份数")
     private Integer isNum;
@@ -44,6 +47,9 @@ public class CustomerAgreementVO {
 
     @ApiModelProperty(value = "协议类型")
     private String treatyType;
+
+    @ApiModelProperty(value = "协议类型")
+    private String treatyTypeName;
 
     @ApiModelProperty(value = "协议编号")
     private String treatyNo;
@@ -62,6 +68,9 @@ public class CustomerAgreementVO {
 
     @ApiModelProperty(value = "协议版本(我司版本、客户版本)")
     private String treatyCopyRight;
+
+    @ApiModelProperty(value = "协议版本(我司版本、客户版本)")
+    private String treatyCopyRightName;
 
     @ApiModelProperty(value = "协议说明")
     private String treatyNotes;
@@ -121,5 +130,15 @@ public class CustomerAgreementVO {
 
     @ApiModelProperty(value = "签约主体通信地址")
     private String mailingAddress;
+
+    @ApiModelProperty(value = "业务类型")
+    private Integer modelType;
+
+    @ApiModelProperty(value = "业务类型")
+    private String modelTypeCopy;
+
+    @ApiModelProperty(value = "业务类型")
+    private String modelTypeCopyName;
+
 
 }

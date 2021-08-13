@@ -2,14 +2,17 @@ package com.jayud.scm.controller;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddCustomerRelationerForm;
 import com.jayud.scm.model.bo.AddFeeModelForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.vo.CustomerAgreementVO;
 import com.jayud.scm.model.vo.CustomerRelationerVO;
 import com.jayud.scm.model.vo.FeeModelVO;
+import com.jayud.scm.service.IBDataDicEntryService;
 import com.jayud.scm.service.IFeeModelService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,10 +39,19 @@ public class FeeModelController {
     @Autowired
     private IFeeModelService feeModelService;
 
+    @Autowired
+    private IBDataDicEntryService ibDataDicEntryService;
+
     @ApiOperation(value = "根据条件分页查询所有该客户的结算设置")
     @PostMapping(value = "/findByPage")
     public CommonResult findByPage(@RequestBody QueryCommonForm form) {
         IPage<FeeModelVO> page = this.feeModelService.findByPage(form);
+        if(CollectionUtils.isNotEmpty(page.getRecords())){
+            for (FeeModelVO record : page.getRecords()) {
+                record.setModelTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",record.getModelType()));
+
+            }
+        }
         CommonPageResult pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);
     }

@@ -33,7 +33,7 @@ public class CustomerAgreement extends Model<CustomerAgreement> {
     private String signCompanyName;
 
     @ApiModelProperty(value = "是否顺延，0顺延，1不顺延")
-    private Integer isExtended;
+    private String isExtended;
 
     @ApiModelProperty(value = "我司原件份数")
     private Integer isNum;

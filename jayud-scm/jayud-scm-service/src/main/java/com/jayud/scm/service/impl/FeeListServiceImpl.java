@@ -5,10 +5,12 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.po.FeeList;
 import com.jayud.scm.mapper.FeeListMapper;
+import com.jayud.scm.model.po.Fees;
 import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.FeeListVO;
 import com.jayud.scm.service.IFeeListService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.scm.service.IFeesService;
 import com.jayud.scm.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,12 +32,22 @@ public class FeeListServiceImpl extends ServiceImpl<FeeListMapper, FeeList> impl
     @Autowired
     private ISystemUserService systemUserService;
 
+    @Autowired
+    private IFeesService feesService;
+
     @Override
     public List<FeeListVO> getFeeListByFeeId(Integer id) {
         QueryWrapper<FeeList> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(FeeList::getFeeId,id);
         queryWrapper.lambda().eq(FeeList::getVoided,0);
-        return ConvertUtil.convertList(this.list(queryWrapper),FeeListVO.class);
+        List<FeeListVO> feeListVOS = ConvertUtil.convertList(this.list(queryWrapper), FeeListVO.class);
+        for (FeeListVO feeListVO : feeListVOS) {
+            Fees fees = feesService.getFeesById(feeListVO.getFeesId());
+            feeListVO.setFeeAlias(fees.getFeeAlias());
+            feeListVO.setFeeName(fees.getFeeName());
+            feeListVO.setFeeFormula(fees.getFeeFormula());
+        }
+        return feeListVOS;
     }
 
     @Override

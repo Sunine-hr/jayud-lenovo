@@ -40,4 +40,9 @@ public class FeesServiceImpl extends ServiceImpl<FeesMapper, Fees> implements IF
         }
         return feesComboxVOS;
     }
+
+    @Override
+    public Fees getFeesById(Integer feesId) {
+        return this.getById(feesId);
+    }
 }

@@ -47,7 +47,7 @@
     <select id="findByPage" resultType="com.jayud.scm.model.vo.CustomerAddressVO">
         select id, customer_id customerId, s_type sType,
         province, city, county, address, c_name cName, tel, mobile_tel mobileTel, email, qq,
-        is_default isDefault,delivery_warehouse deliveryWarehouse, delivery_factory deliveryFactory,
+        is_default isDefault,delivery_warehouse deliveryWarehouse, delivery_factory deliveryFactory,region,
         crt_by_name crtByName, crt_by_dtm crtByDtm,remark,mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
         from customer_address where voided = 0 and customer_id = #{form.id}
     </select>

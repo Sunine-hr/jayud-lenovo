@@ -94,20 +94,23 @@ public class SystemActionController {
         for (QueryMenuStructureVO menuStructureVO : menuStructureVOS) {
             //获取菜单下按钮
             for (QueryMenuStructureVO child : menuStructureVO.getChildren()) {
-                //获取菜单下按钮
-                List<SystemAction> systemActions = systemActionService.getSystemActionByIsAudit(child.getId());
 
-                List<QueryMenuStructureVO> menuStructureVOS1 = new ArrayList<>();
-                for (SystemAction systemAction : systemActions) {
-                    QueryMenuStructureVO menuStructureVO1 = new QueryMenuStructureVO();
-                    menuStructureVO1.setLabel(systemAction.getActionName());
-                    menuStructureVO1.setFId(systemAction.getParentId().longValue());
-                    menuStructureVO1.setId(systemAction.getId().longValue());
-                    menuStructureVO1.setActionCode(systemAction.getActionCode());
-                    menuStructureVO1.setChildren(new ArrayList<>());
-                    menuStructureVOS1.add(menuStructureVO1);
+                for (QueryMenuStructureVO childChild : child.getChildren()) {
+                    //获取菜单下按钮
+                    List<SystemAction> systemActions = systemActionService.getSystemActionList(childChild.getId());
+
+                    List<QueryMenuStructureVO> menuStructureVOS1 = new ArrayList<>();
+                    for (SystemAction systemAction : systemActions) {
+                        QueryMenuStructureVO menuStructureVO1 = new QueryMenuStructureVO();
+                        menuStructureVO1.setLabel(systemAction.getActionName());
+                        menuStructureVO1.setFId(systemAction.getParentId().longValue());
+                        menuStructureVO1.setId(systemAction.getId().longValue());
+                        menuStructureVO1.setActionCode(systemAction.getActionCode());
+                        menuStructureVO1.setChildren(new ArrayList<>());
+                        menuStructureVOS1.add(menuStructureVO1);
+                    }
+                    childChild.setChildren(menuStructureVOS1);
                 }
-                child.setChildren(menuStructureVOS1);
             }
         }
         return CommonResult.success(menuStructureVOS);

@@ -36,6 +36,10 @@ public class CustomerAddressVO {
     @JsonProperty(value = "sType")
     private String sType;
 
+    @ApiModelProperty(value = "地址类型(出库，收票等)")
+    @JsonProperty(value = "sTypeName")
+    private String sTypeName;
+
     @ApiModelProperty(value = "省")
     private String province;
 
@@ -67,6 +71,9 @@ public class CustomerAddressVO {
     @ApiModelProperty(value = "区域")
     private String region;
 
+    @ApiModelProperty(value = "区域")
+    private String regionName;
+
     @ApiModelProperty(value = "备注")
     private String remark;
 
@@ -88,5 +95,8 @@ public class CustomerAddressVO {
 
     @ApiModelProperty(value = "收货公司")
     private String deliveryFactory;
+
+    @ApiModelProperty(value = "是否为默认0否1是")
+    private Integer isDefault;
 
 }

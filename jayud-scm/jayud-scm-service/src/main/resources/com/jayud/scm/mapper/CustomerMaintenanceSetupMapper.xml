@@ -34,7 +34,7 @@
 
     <select id="findByPage" resultType="com.jayud.scm.model.vo.CustomerMaintenanceSetupVO">
         select id, customer_id customerId,
-        model_type modelType, role_id roleId, role_name roleName, wh_user_id whUserId, wh_user_name whUserName, check_state_flag,
+        model_type modelType, role_id roleId, role_name roleName, wh_user_id whUserId, wh_user_name whUserName, check_state_flag checkStateFlag,
         crt_by_name crtByName, crt_by_dtm crtByDtm,remark
         from customer_maintenance_setup where voided = 0 and customer_id = #{form.id}
     </select>

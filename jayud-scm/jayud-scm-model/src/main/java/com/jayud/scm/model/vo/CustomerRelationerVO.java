@@ -36,6 +36,10 @@ public class CustomerRelationerVO {
     @JsonProperty(value = "sType")
     private String sType;
 
+    @ApiModelProperty(value = "联系人类型(负责人，下单人，对接人，收货人)")
+    @JsonProperty(value = "sTypeName")
+    private String sTypeName;
+
     @ApiModelProperty(value = "姓名")
     @JsonProperty(value = "cName")
     private String cName;

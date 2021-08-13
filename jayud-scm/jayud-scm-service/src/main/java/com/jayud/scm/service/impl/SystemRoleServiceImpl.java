@@ -64,6 +64,14 @@ public class SystemRoleServiceImpl extends ServiceImpl<SystemRoleMapper, SystemR
         return baseMapper.getRoleByCondition(param);
     }
 
+    @Override
+    public SystemRole getRoleByRoleName(String name) {
+        QueryWrapper<SystemRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SystemRole::getName,name);
+        queryWrapper.lambda().eq(SystemRole::getStatus,1);
+        return this.getOne(queryWrapper);
+    }
+
 
     /**
      * 参数转换

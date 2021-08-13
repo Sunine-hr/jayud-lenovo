@@ -76,7 +76,7 @@ public class SystemRoleActionCheckController {
 
     @ApiOperation(value = "获取审核节点")
     @PostMapping(value = "/getAuditNode")
-    public CommonResult getAuditNode(@RequestBody QueryCommonForm form) {
+    public CommonResult<List<SystemRoleActionCheckNodeVO>> getAuditNode(@RequestBody QueryCommonForm form) {
         List<SystemRoleActionCheckNodeVO> systemRoleActionCheckNodeVOS = systemRoleActionCheckService.getAuditNode(form);
         return CommonResult.success(systemRoleActionCheckNodeVOS);
     }

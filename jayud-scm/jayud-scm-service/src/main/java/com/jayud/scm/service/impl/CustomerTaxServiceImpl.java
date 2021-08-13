@@ -62,7 +62,7 @@ public class CustomerTaxServiceImpl extends ServiceImpl<CustomerTaxMapper, Custo
         CustomerFollow customerFollow = new CustomerFollow();
 
         CustomerTax customerTax = ConvertUtil.convert(form, CustomerTax.class);
-        if(form != null){
+        if(form.getId() != null){
             customerTax.setMdyBy(systemUser.getId().intValue());
             customerTax.setMdyByDtm(LocalDateTime.now());
             customerTax.setMdyByName(systemUser.getUserName());

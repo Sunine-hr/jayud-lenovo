@@ -53,7 +53,7 @@ public class CustomerRelationerServiceImpl extends ServiceImpl<CustomerRelatione
         CustomerFollow customerFollow = new CustomerFollow();
 
         CustomerRelationer customerRelationer = ConvertUtil.convert(form, CustomerRelationer.class);
-        if(form != null){
+        if(form.getId() != null){
             customerRelationer.setMdyBy(systemUser.getId().intValue());
             customerRelationer.setMdyByDtm(LocalDateTime.now());
             customerRelationer.setMdyByName(systemUser.getUserName());

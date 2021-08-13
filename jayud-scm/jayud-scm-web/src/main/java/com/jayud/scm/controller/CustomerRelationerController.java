@@ -3,6 +3,7 @@ package com.jayud.scm.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddCustomerRelationerForm;
@@ -11,6 +12,7 @@ import com.jayud.scm.model.bo.QueryCustomerForm;
 import com.jayud.scm.model.po.Customer;
 import com.jayud.scm.model.vo.BDataDicEntryVO;
 import com.jayud.scm.model.vo.CustomerRelationerVO;
+import com.jayud.scm.service.IBDataDicEntryService;
 import com.jayud.scm.service.ICustomerRelationerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,10 +41,19 @@ public class CustomerRelationerController {
     @Autowired
     private ICustomerRelationerService customerRelationerService;
 
+    @Autowired
+    private IBDataDicEntryService ibDataDicEntryService;
+
     @ApiOperation(value = "根据条件分页查询所有该客户的所有联系人")
     @PostMapping(value = "/findByPage")
     public CommonResult findByPage(@RequestBody QueryCommonForm form) {
         IPage<CustomerRelationerVO> page = this.customerRelationerService.findByPage(form);
+        if(CollectionUtils.isNotEmpty(page.getRecords())){
+            for (CustomerRelationerVO record : page.getRecords()) {
+                record.setSTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1014",record.getSType()));
+            }
+        }
+
         CommonPageResult pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);
     }
@@ -72,6 +83,8 @@ public class CustomerRelationerController {
     public CommonResult<CustomerRelationerVO> getCustomerRelationerById(@RequestBody Map<String,Object> map) {
         Integer id = MapUtil.getInt(map, "id");
         CustomerRelationerVO customerRelationerVO = customerRelationerService.getCustomerRelationerById(id);
+        customerRelationerVO.setSTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1014",customerRelationerVO.getSType()));
+
         return CommonResult.success(customerRelationerVO);
     }
 

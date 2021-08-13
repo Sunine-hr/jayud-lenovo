@@ -72,4 +72,13 @@ public class FeeListVO {
     @ApiModelProperty(value = "最后修改时间")
     private LocalDateTime mdyByDtm;
 
+    @ApiModelProperty(value = "费用类别")
+    private String feeAlias;
+
+    @ApiModelProperty(value = "费用名称")
+    private String feeName;
+
+    @ApiModelProperty(value = "计算公式")
+    private String feeFormula;
+
 }

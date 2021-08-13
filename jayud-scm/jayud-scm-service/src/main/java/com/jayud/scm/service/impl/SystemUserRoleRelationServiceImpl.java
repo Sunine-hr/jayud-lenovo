@@ -1,13 +1,16 @@
 package com.jayud.scm.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.scm.mapper.SystemUserRoleRelationMapper;
 import com.jayud.scm.model.po.SystemRole;
+import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.po.SystemUserRoleRelation;
 import com.jayud.scm.model.vo.SystemUserSimpleVO;
 import com.jayud.scm.service.ISystemUserRoleRelationService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,6 +65,14 @@ public class SystemUserRoleRelationServiceImpl extends ServiceImpl<SystemUserRol
     @Override
     public List<SystemUserSimpleVO> getSystemUserSimpleByRoleId(Long id) {
         return baseMapper.getSystemUserSimpleByRoleId(id);
+    }
+
+    @Override
+    public List<SystemUserRoleRelation> getEnabledUsersByRoleId(Long id) {
+        QueryWrapper<SystemUserRoleRelation> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(SystemUserRoleRelation::getRoleId,id);
+        List<SystemUserRoleRelation> list = this.list(queryWrapper);
+        return list;
     }
 
 

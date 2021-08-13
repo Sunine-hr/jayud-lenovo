@@ -56,7 +56,7 @@ public class CustomerAddressServiceImpl extends ServiceImpl<CustomerAddressMappe
         CustomerFollow customerFollow = new CustomerFollow();
 
         CustomerAddress customerAddress = ConvertUtil.convert(form, CustomerAddress.class);
-        if(form != null){
+        if(form.getId() != null){
             customerAddress.setMdyBy(systemUser.getId().intValue());
             customerAddress.setMdyByDtm(LocalDateTime.now());
             customerAddress.setMdyByName(systemUser.getUserName());

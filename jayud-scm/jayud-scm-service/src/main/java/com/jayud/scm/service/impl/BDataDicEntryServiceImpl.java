@@ -117,6 +117,7 @@ public class BDataDicEntryServiceImpl extends ServiceImpl<BDataDicEntryMapper, B
         queryWrapper.lambda().eq(BDataDicEntry::getDicCode,dicCode);
         queryWrapper.lambda().eq(BDataDicEntry::getDataValue,dataValue);
         queryWrapper.lambda().eq(BDataDicEntry::getVoided,0);
-        return this.getOne(queryWrapper).getDataText();
+
+        return this.getOne(queryWrapper).getDataText() != null ? this.getOne(queryWrapper).getDataText() : "";
     }
 }

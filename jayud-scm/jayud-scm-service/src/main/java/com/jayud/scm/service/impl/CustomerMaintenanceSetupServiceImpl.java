@@ -7,16 +7,14 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddCustomerMaintenanceSetupForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.enums.OperationEnum;
-import com.jayud.scm.model.po.CustomerFollow;
-import com.jayud.scm.model.po.CustomerMaintenanceSetup;
+import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.CustomerMaintenanceSetupMapper;
-import com.jayud.scm.model.po.CustomerRelationer;
-import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.CustomerMaintenanceSetupVO;
 import com.jayud.scm.model.vo.CustomerRelationerVO;
 import com.jayud.scm.service.ICustomerFollowService;
 import com.jayud.scm.service.ICustomerMaintenanceSetupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.scm.service.ICustomerService;
 import com.jayud.scm.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +38,9 @@ public class CustomerMaintenanceSetupServiceImpl extends ServiceImpl<CustomerMai
     @Autowired
     private ICustomerFollowService customerFollowService;
 
+    @Autowired
+    private ICustomerService customerService;
+
     @Override
     public IPage<CustomerMaintenanceSetupVO> findByPage(QueryCommonForm form) {
         Page<CustomerMaintenanceSetupVO> page = new Page<>(form.getPageNum(), form.getPageSize());
@@ -52,7 +53,7 @@ public class CustomerMaintenanceSetupServiceImpl extends ServiceImpl<CustomerMai
         CustomerFollow customerFollow = new CustomerFollow();
 
         CustomerMaintenanceSetup customerMaintenanceSetup = ConvertUtil.convert(form, CustomerMaintenanceSetup.class);
-        if(form != null){
+        if(form.getId() != null){
             customerMaintenanceSetup.setMdyBy(systemUser.getId().intValue());
             customerMaintenanceSetup.setMdyByDtm(LocalDateTime.now());
             customerMaintenanceSetup.setMdyByName(UserOperator.getToken());
@@ -66,7 +67,27 @@ public class CustomerMaintenanceSetupServiceImpl extends ServiceImpl<CustomerMai
             customerFollow.setFollowContext(UserOperator.getToken()+"增加维护人信息");
         }
         boolean update = this.saveOrUpdate(customerMaintenanceSetup);
+
         if(update){
+
+
+            if(form.getRoleName().equals("业务员")){
+                Customer customer = new Customer();
+                customer.setId(customerMaintenanceSetup.getId());
+                customer.setFsalesId(customerMaintenanceSetup.getWhUserId());
+                customer.setFsalesMan(customerMaintenanceSetup.getWhUserName());
+                this.customerService.updateById(customer);
+                log.warn("客户跟单业务员修改成功");
+            }
+            if(form.getRoleName().equals("商务")){
+                Customer customer = new Customer();
+                customer.setId(customerMaintenanceSetup.getId());
+                customer.setFollowerId(customerMaintenanceSetup.getWhUserId());
+                customer.setFollowerName(customerMaintenanceSetup.getWhUserName());
+                this.customerService.updateById(customer);
+                log.warn("客户跟单商务修改成功");
+            }
+
             customerFollow.setCustomerId(form.getCustomerId());
             customerFollow.setCrtBy(systemUser.getId().intValue());
             customerFollow.setCrtByDtm(LocalDateTime.now());

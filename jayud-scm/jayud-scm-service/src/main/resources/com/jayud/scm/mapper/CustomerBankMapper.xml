@@ -41,7 +41,7 @@
 
     <select id="findByPage" resultType="com.jayud.scm.model.vo.CustomerBankVO">
         select id, customer_id customerId, is_default isDefault,
-        bank_name bankName, bank_address bankAddress, bank_area bankArea, account_name accountName,
+        bank_name bankName, bank_address bankAddress, bank_area bankArea, account_name accountName,check_state_flag checkStateFlag,
         account_no accountNo, swift_code swiftCode, bank_code bankCode, currency_name currencyName,
         crt_by_name crtByName, crt_by_dtm crtByDtm,remark ,mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
         from customer_bank where voided = 0 and customer_id = #{form.id}

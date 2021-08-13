@@ -4,23 +4,23 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.tms.model.po.OrderSendCars">
-        <id column="id" property="id" />
-        <result column="transport_no" property="transportNo" />
-        <result column="order_no" property="orderNo" />
-        <result column="vehicle_type" property="vehicleType" />
-        <result column="vehicle_size" property="vehicleSize" />
-        <result column="cntr_no" property="cntrNo" />
-        <result column="cntr_pic" property="cntrPic" />
-        <result column="cntr_pic_name" property="cntrPicName" />
-        <result column="driver_info_info" property="driverInfoId" />
-        <result column="vehicle_id" property="vehicleId" />
-        <result column="remarks" property="remarks" />
-        <result column="describes" property="describes" />
-        <result column="status" property="status" />
-        <result column="updated_time" property="updatedTime" />
-        <result column="created_user" property="createdUser" />
-        <result column="created_time" property="createdTime" />
-        <result column="updated_user" property="updatedUser" />
+        <id column="id" property="id"/>
+        <result column="transport_no" property="transportNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="vehicle_type" property="vehicleType"/>
+        <result column="vehicle_size" property="vehicleSize"/>
+        <result column="cntr_no" property="cntrNo"/>
+        <result column="cntr_pic" property="cntrPic"/>
+        <result column="cntr_pic_name" property="cntrPicName"/>
+        <result column="driver_info_info" property="driverInfoId"/>
+        <result column="vehicle_id" property="vehicleId"/>
+        <result column="remarks" property="remarks"/>
+        <result column="describes" property="describes"/>
+        <result column="status" property="status"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_user" property="updatedUser"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -29,7 +29,7 @@
         cntr_pic_name, driver_info_info,
         vehicle_id,remarks, describes, status, updated_time, updated_user, created_user, created_time
     </sql>
-    <select id="getOrderSendInfo"  resultType="com.jayud.tms.model.vo.OrderSendCarsVO" >
+    <select id="getOrderSendInfo" resultType="com.jayud.tms.model.vo.OrderSendCarsVO">
         SELECT
             osc.`id`,
             osc.`transport_no` transportNo,
@@ -67,7 +67,7 @@
             LEFT JOIN supplier_info si ON vi.`supplier_id` = si.`id`
             WHERE ot.`order_no` = #{orderNo}
     </select>
-    <select id="initDriverInfo"  resultType="com.jayud.tms.model.vo.DriverInfoPdfVO" >
+    <select id="initDriverInfo" resultType="com.jayud.tms.model.vo.DriverInfoPdfVO">
         SELECT
             ot.legal_name legalName,le.rigis_address rigisAddress,le.phone legalPhone,le.fax,
             di.`name`,di.id_no idNo,di.hk_phone hkPhone,di.phone,
@@ -84,7 +84,7 @@
 	        LEFT JOIN vehicle_info vi ON vi.id = osc.vehicle_id
             WHERE ot.`order_no` = #{orderNo}
     </select>
-    <select id="initSendCarList"  resultType="com.jayud.tms.model.vo.SendCarListTempVO" >
+    <select id="initSendCarList" resultType="com.jayud.tms.model.vo.SendCarListTempVO">
     SELECT
         ot.legal_name legalName,
         le.legal_en_name legalEnName,
@@ -109,5 +109,20 @@
         left join vehicle_info vi on vi.id = osc.vehicle_id
     WHERE
         ot.order_no = #{orderNo}
+    </select>
+    <select id="getDriverPendingOrderNum" resultType="java.lang.Integer">
+        select count(1) from order_send_cars osc
+        inner join order_transport ot on ot.order_no = osc.order_no
+        <where>
+            and (osc.driver_info_id = #{driverId} OR osc.jockey_id = #{driverId})
+            and ot.status ='T_4'
+            <if test="orderNos!=null and orderNos.size>0">
+                and osc.order_no not in
+                <foreach collection="orderNos" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+
     </select>
 </mapper>

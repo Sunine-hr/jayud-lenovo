@@ -3157,6 +3157,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         String tmp = form.getReceivableCosts().get(0).getMainOrderNo();
         List<OrderReceivableCost> orderReceivableCostList = this.orderReceivableCostService.getSubInternalCostByMainOrderNo(tmp, null);
 
+        //应付供应商是子订单操作主体
+        SupplierInfo supplierInfo = this.supplierInfoService.getByName(form.getSubLegalName());
+        form.getReceivableCosts().forEach(e -> {
+            e.setCustomerName(supplierInfo.getSupplierChName()).setCustomerCode(supplierInfo.getSupplierCode());
+        });
+
         orderReceivableCostList.addAll(form.getReceivableCosts());
         //过滤相同数据
         orderReceivableCostList = orderReceivableCostList.stream().collect(Collectors.collectingAndThen(
@@ -3185,8 +3191,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         ConcurrentMap<Long, OrderPaymentCost> oldBinds = paymentCost.stream().collect(Collectors.toConcurrentMap(OrderPaymentCost::getReceivableId, e -> e));
         //添加/修改
         List<OrderPaymentCost> addOrUpdate = new ArrayList<>();
-        //应付供应商是子订单操作主体
-        SupplierInfo supplierInfo = this.supplierInfoService.getByName(form.getSubLegalName());
+
 
         for (OrderReceivableCost receivableCost : orderReceivableCostList) {
 
@@ -3205,14 +3210,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 convert.setId(null).setReceivableId(receivableCost.getId())
                         .setCreatedTime(LocalDateTime.now()).setCreatedUser(UserOperator.getToken());
             }
-            convert.setOrderNo(null).setLegalName(null).setLegalId(null).setCustomerCode(null).setCustomerName(null)
+            convert.setOrderNo(null).setLegalName(null).setLegalId(null)
                     .setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()))
                     .setIsSumToMain(true).setIsBill("0").setSubType("main")
                     .setInternalDepartmentId(receivableCost.getDepartmentId())
                     .setDepartmentId(Long.valueOf(orderInfo.getBizBelongDepart()));
-            if (supplierInfo != null) {
-                convert.setCustomerName(supplierInfo.getSupplierChName()).setCustomerCode(supplierInfo.getSupplierCode());
-            }
+//            if (supplierInfo != null) {
+//                convert.setCustomerName(supplierInfo.getSupplierChName()).setCustomerCode(supplierInfo.getSupplierCode());
+//            }
             addOrUpdate.add(convert);
         }
         //剔除应付费用

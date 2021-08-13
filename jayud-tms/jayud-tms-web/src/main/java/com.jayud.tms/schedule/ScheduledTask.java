@@ -51,18 +51,19 @@ public class ScheduledTask {
         //获取缓存地址
         String tmsDispatchAddress = redisUtils.get("tmsDispatchAddress");
         JSONArray jsonArray = new JSONArray(tmsDispatchAddress);
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            MapEntity mapEntity = omsClient.getTencentMapLaAndLo(jsonObject.getStr("address"), tencentMapKey).getData();
-            if (mapEntity != null) {
-                DeliveryAddress tmp = new DeliveryAddress().setId(jsonObject.getLong("id")).setLoAndLa(mapEntity.getLongitude() + "," + mapEntity.getLatitude());
-                this.deliveryAddressService.updateById(tmp);
-                jsonArray.remove(jsonObject);
-            }
-        }
         if (jsonArray.size() > 0) {
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                MapEntity mapEntity = omsClient.getTencentMapLaAndLo(jsonObject.getStr("address"), tencentMapKey).getData();
+                if (mapEntity != null) {
+                    DeliveryAddress tmp = new DeliveryAddress().setId(jsonObject.getLong("id")).setLoAndLa(mapEntity.getLongitude() + "," + mapEntity.getLatitude());
+                    this.deliveryAddressService.updateById(tmp);
+                    jsonArray.remove(jsonObject);
+                }
+            }
             redisUtils.set("tmsDispatchAddress", jsonArray.toString());
         }
+
 
         // 结束时间
         stopWatch.stop();

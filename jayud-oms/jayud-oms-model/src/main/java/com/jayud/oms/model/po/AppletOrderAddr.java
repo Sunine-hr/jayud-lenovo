@@ -1,24 +1,36 @@
-package com.jayud.oms.model.vo;
+package com.jayud.oms.model.po;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.baomidou.mybatisplus.annotation.TableId;
+import java.time.LocalDateTime;
+import java.io.Serializable;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- * 订单对应收货地址
+ * 小程序订单地址记录
  * </p>
  *
- * @author chuanmei
- * @since 2020-09-15
+ * @author LDR
+ * @since 2021-08-12
  */
 @Data
-public class DriverOrderTakeAdrVO {
+@EqualsAndHashCode(callSuper = false)
+@ApiModel(value="AppletOrderAddr对象", description="小程序订单地址记录")
+public class AppletOrderAddr extends Model<AppletOrderAddr> {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "提货/送货信息id")
+    @ApiModelProperty(value = "小程序记录地址id")
+      @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+
+    @ApiModelProperty(value = "小程序订单记录id")
+    private Long appletOrderRecordId;
 
     @ApiModelProperty(value = "订单编号")
     private String orderNo;
@@ -30,8 +42,7 @@ public class DriverOrderTakeAdrVO {
     private String phone;
 
     @ApiModelProperty(value = "提货/收货日期")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private String takeTime;
+    private LocalDateTime takeTime;
 
     @ApiModelProperty(value = "货物描述")
     private String goodsDesc;
@@ -59,5 +70,11 @@ public class DriverOrderTakeAdrVO {
 
     @ApiModelProperty(value = "经纬度")
     private String loAndLa;
+
+
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
 
 }

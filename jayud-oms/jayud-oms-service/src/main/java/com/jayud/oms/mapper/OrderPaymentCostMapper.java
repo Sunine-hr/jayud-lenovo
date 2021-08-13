@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderPaymentCost;
+import com.jayud.oms.model.vo.DriverBillCostVO;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
 import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
@@ -35,10 +36,11 @@ public interface OrderPaymentCostMapper extends BaseMapper<OrderPaymentCost> {
      */
     List<Map<String, Object>> getPendingExpenseApproval(@Param("subType") String subType,
                                                         @Param("orderNos") List<String> orderNos,
-                                                        @Param("legalIds")List<Long> legalIds);
+                                                        @Param("legalIds") List<Long> legalIds);
 
     /**
-     *  查询供应商应付异常费用
+     * 查询供应商应付异常费用
+     *
      * @param form
      * @return
      */
@@ -46,6 +48,7 @@ public interface OrderPaymentCostMapper extends BaseMapper<OrderPaymentCost> {
 
     /**
      * 统计主订单费用
+     *
      * @param form
      * @param legalIds
      * @param status
@@ -56,4 +59,7 @@ public interface OrderPaymentCostMapper extends BaseMapper<OrderPaymentCost> {
     List<StatisticsOrderBaseCostVO> getBaseStatisticsAllCost(@Param("form") QueryStatisticalReport form,
                                                              @Param("legalIds") List<Long> legalIds,
                                                              @Param("status") List<String> status);
+
+    List<DriverBillCostVO> getDriverBillCost(@Param("orderNos") List<String> orderNos,
+                                             @Param("status") List<String> status,@Param("time") String time);
 }

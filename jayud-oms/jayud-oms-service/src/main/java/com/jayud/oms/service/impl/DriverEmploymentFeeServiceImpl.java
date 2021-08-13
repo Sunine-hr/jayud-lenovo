@@ -1,6 +1,8 @@
 package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.enums.EmploymentFeeStatusEnum;
 import com.jayud.oms.model.po.DriverEmploymentFee;
@@ -78,8 +80,9 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
             OrderPaymentCost paymentCost = ConvertUtil.convert(driverEmploymentFee, OrderPaymentCost.class);
             paymentCost.setCustomerCode(driverEmploymentFee.getSupplierCode())
                     .setCustomerName(driverEmploymentFee.getSupplierName())
-                    .setSubType("zgys");
-
+                    .setSubType(SubOrderSignEnum.ZGYS.getSignOne())
+                    .setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()))
+                    .setDriverCostId(driverEmploymentFee.getId());
 
             DriverEmploymentFee employmentFee = new DriverEmploymentFee()
                     .setId(driverEmploymentFee.getId())

@@ -10,10 +10,8 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
-import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.DateUtils;
-import com.jayud.common.utils.MD5;
-import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.*;
+import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.feign.TmsClient;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.enums.DriverFeedbackStatusEnum;
@@ -72,6 +70,12 @@ public class MiniAppController {
     private IWarehouseInfoService warehouseInfoService;
     @Autowired
     private IRegionCityService regionCityService;
+    @Autowired
+    private IAppletOrderRecordService appletOrderRecordService;
+    @Autowired
+    private IAppletOrderAddrService appletOrderAddrService;
+    @Autowired
+    private FileClient fileClient;
 
 
     @PostMapping("/getDriverOrderTransport")
@@ -97,7 +101,9 @@ public class MiniAppController {
             }
         }
 
+
         Map<Long, DriverOrderInfo> map = driverOrderInfos.stream().collect(Collectors.toMap(DriverOrderInfo::getOrderId, tmp -> tmp));
+
 
         //组装订单
         form.assemblyOrder(map.keySet());
@@ -136,6 +142,9 @@ public class MiniAppController {
                 }
             }
         }
+        if (DriverOrderStatusEnum.CANCEL.getCode().equals(form.getStatus())) {
+            tmps = new ArrayList<>(this.appletOrderRecordService.getConvertPendingRecord());
+        }
         return CommonResult.success(tmps);
     }
 
@@ -154,7 +163,6 @@ public class MiniAppController {
         }
         //查询派车骑师
         Object sendCarObj = this.tmsClient.getOrderSendCarsByOrderNo(form.getOrderNo()).getData();
-//        this.tmsClient.getInfoByMainOrderNo()
         cn.hutool.json.JSONObject sendCarsJson = new cn.hutool.json.JSONObject(sendCarObj);
         driverOrderInfo.setJockeyId(sendCarsJson.getLong("jockeyId"));
         if (this.driverOrderInfoService.saveOrUpdateDriverOrder(driverOrderInfo)) {
@@ -377,6 +385,8 @@ public class MiniAppController {
         //获取待接单数量
         ApiResult result = this.tmsClient.getDriverPendingOrderNum(driverId, orderNos);
 
+        List<AppletOrderRecord> appletOrderRecords = this.appletOrderRecordService.getByCondition(new AppletOrderRecord().setRecordStatus(1));
+
         //重组数据
         Map<String, Object> response = new HashMap<>();
         Integer transitNum = map.get(DriverOrderStatusEnum.IN_TRANSIT.getCode());
@@ -384,6 +394,7 @@ public class MiniAppController {
         response.put("pending", result.getData() == null ? 0 : result.getData());
         response.put("transitNum", transitNum == null ? 0 : transitNum);
         response.put("finishedNum", finishedNum == null ? 0 : finishedNum);
+        response.put("cancelNum", appletOrderRecords.size());
 
         return CommonResult.success(response);
     }
@@ -576,5 +587,169 @@ public class MiniAppController {
         return CommonResult.success(map);
     }
 
+
+    @PostMapping("/getLaAndLongitude")
+    @ApiOperation(value = "获取经纬度")
+    public CommonResult<Map<String, Object>> getLaAndLongitude(@RequestBody Map<String, Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        if (id == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        QueryDriverOrderTransportForm form = new QueryDriverOrderTransportForm();
+        form.setOrderIds(Collections.singletonList(id));
+
+        //查询中港订单信息
+        Object result = tmsClient.getDriverOrderTransport(form).getData();
+        Gson gson = new Gson();
+        Type type = new TypeToken<List<DriverOrderTransportVO>>() {
+        }.getType();
+        List<DriverOrderTransportVO> data = gson.fromJson(gson.toJson(result), type);
+        Map<String, Object> resultMap = new HashMap<>();
+        Map<String, Object> startPoint = new HashMap<>();
+        Map<String, Object> endPoint = new HashMap<>();
+
+        if (CollectionUtils.isNotEmpty(data)) {
+            DriverOrderTransportVO driverOrderTransportVO = data.get(0);
+
+            DriverOrderTakeAdrVO pickUpAddr = driverOrderTransportVO.getPickUpGoodsList().get(0);
+            String loAndLa = pickUpAddr.getLoAndLa();
+            if (!StringUtils.isEmpty(loAndLa)) {
+                String[] split = loAndLa.split(",");
+                startPoint.put("name", pickUpAddr.getAddress());
+                startPoint.put("longitude", split[0]);
+                startPoint.put("latitude", split[1]);
+            }
+            DriverOrderTakeAdrVO receivingAddr = driverOrderTransportVO.getReceivingGoods();
+            loAndLa = receivingAddr.getLoAndLa();
+            if (!StringUtils.isEmpty(loAndLa)) {
+                String[] split = loAndLa.split(",");
+                endPoint.put("name", receivingAddr.getAddress());
+                endPoint.put("longitude", split[0]);
+                endPoint.put("latitude", split[1]);
+            }
+
+        }
+        resultMap.put("startPoint", startPoint);
+        resultMap.put("endPoint", endPoint);
+        return CommonResult.success(resultMap);
+    }
+
+    @ApiOperation(value = "取消订单")
+    @PostMapping(value = "/cancel")
+    public CommonResult cancel(@RequestBody Map<String, Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        if (id == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        QueryDriverOrderTransportForm form = new QueryDriverOrderTransportForm();
+        form.setOrderIds(Collections.singletonList(id));
+        //查询中港订单信息
+        Object result = tmsClient.getDriverOrderTransport(form).getData();
+        Gson gson = new Gson();
+        Type type = new TypeToken<List<DriverOrderTransportVO>>() {
+        }.getType();
+        List<DriverOrderTransportVO> data = gson.fromJson(gson.toJson(result), type);
+        if (CollectionUtils.isNotEmpty(data)) {
+            DriverOrderTransportVO tmp = data.get(0);
+            if (!OrderStatusEnum.TMS_T_4.getDesc().equals(tmp.getStatus())) {
+                return CommonResult.error(400, "只有待接单状态下才能取消订单");
+            }
+            AppletOrderRecord appletOrderRecord = ConvertUtil.convert(tmp, AppletOrderRecord.class);
+            appletOrderRecord.setStatus(tmp.getStatus());
+            appletOrderRecord.setRecordStatus(1);
+            appletOrderRecord.setOrderId(tmp.getId());
+            List<AppletOrderAddr> pickUpAddrs = ConvertUtil.convertList(tmp.getPickUpGoodsList(), AppletOrderAddr.class);
+            if (!CollectionUtils.isEmpty(tmp.getReceivingGoodsList())) {
+                List<AppletOrderAddr> receivingUpAddrs = ConvertUtil.convertList(tmp.getReceivingGoodsList(), AppletOrderAddr.class);
+                pickUpAddrs.addAll(receivingUpAddrs);
+            }
+            RejectTmsOrderForm rejectTmsOrderForm = new RejectTmsOrderForm();
+            rejectTmsOrderForm.setCmd(OrderStatusEnum.TMS_T_5_1.getCode());
+            rejectTmsOrderForm.setOrderId(tmp.getId());
+            rejectTmsOrderForm.setRejectOptions(2);
+            CommonResult commonResult = this.tmsClient.rejectOrder(rejectTmsOrderForm);
+            if (ResultEnum.SUCCESS.getCode().equals(commonResult.getCode())) {
+                this.appletOrderRecordService.save(appletOrderRecord);
+                pickUpAddrs.forEach(e -> e.setAppletOrderRecordId(appletOrderRecord.getId()));
+                this.appletOrderAddrService.saveBatch(pickUpAddrs);
+            } else {
+                log.warn("取消订单失败 报错信息:" + commonResult.getMsg());
+                return CommonResult.error(400, "取消订单失败");
+            }
+        }
+
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "获取司机账单费用")
+    @PostMapping(value = "/getDriverBillCost")
+    public CommonResult getDriverBillCost(@RequestBody Map<String, Object> map) {
+        String time = MapUtil.getStr(map, "time");
+        Long driverId = Long.valueOf(SecurityUtil.getUserInfo());
+        List<DriverOrderInfo> driverOrderInfos = this.driverOrderInfoService.getDriverOrderInfoByStatus(driverId, null, driverId);
+        List<String> orderNos = driverOrderInfos.stream().map(DriverOrderInfo::getOrderNo).collect(Collectors.toList());
+        List<String> status = new ArrayList<>();
+        status.add(OrderStatusEnum.COST_0.getCode());
+        status.add(OrderStatusEnum.COST_2.getCode());
+        status.add(OrderStatusEnum.COST_3.getCode());
+        List<DriverBillCostVO> driverBillCost = this.orderPaymentCostService.getDriverBillCost(orderNos, status, time);
+        List<Map<String, Object>> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(driverBillCost)) {
+            Map<String, String> currencyNameMap = this.currencyInfoService.initCurrencyInfo().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+            Map<String, Map<String, Object>> tmpMap = new HashMap<>();
+            for (DriverBillCostVO driverBillCostVO : driverBillCost) {
+                Map<String, Object> tmp = tmpMap.get(driverBillCostVO.getOrderNo());
+                if (tmp == null) {
+                    tmp = new HashMap<>();
+                    tmp.put("orderNo", driverBillCostVO.getOrderNo());
+                    tmp.put("operationTime", driverBillCostVO.getOperationTime());
+                    tmp.put("amount", driverBillCostVO.getAmount() + " " + currencyNameMap.get(driverBillCostVO.getCurrencyCode()));
+                } else {
+                    tmp.put("amount", tmp.get("amout") + "," + driverBillCostVO.getAmount() + " " + currencyNameMap.get(driverBillCostVO.getCurrencyCode()));
+                }
+                tmpMap.put(driverBillCostVO.getOrderNo(), tmp);
+            }
+            tmpMap.forEach((k, v) -> {
+                Object amountObj = v.get("amount");
+                String amount = Utilities.calculatingCosts(Arrays.asList(amountObj.toString()));
+                v.put("amount", amount);
+                list.add(v);
+            });
+        }
+
+        return CommonResult.success(list);
+    }
+
+
+    @ApiOperation(value = "获取司机账单费用详情")
+    @PostMapping(value = "/getDriverBillCostInfo")
+    public CommonResult<List<Map<String, Object>>> getDriverBillCostInfo(@RequestBody Map<String, Object> map) {
+        String orderNo = MapUtil.getStr(map, "orderNo");
+        if (StringUtils.isEmpty(orderNo)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+
+        List<String> status = new ArrayList<>();
+        status.add(OrderStatusEnum.COST_0.getCode());
+        status.add(OrderStatusEnum.COST_2.getCode());
+        status.add(OrderStatusEnum.COST_3.getCode());
+        List<DriverBillCostVO> driverBillCost = this.orderPaymentCostService.getDriverBillCost(Arrays.asList(orderNo), status, null);
+        List<Map<String, Object>> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(driverBillCost)) {
+            Map<String, String> currencyNameMap = this.currencyInfoService.initCurrencyInfo().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+            Map<String, String> costInfoMap = this.costInfoService.findCostInfo().stream().collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName()));
+            Object url = this.fileClient.getBaseUrl().getData();
+            for (DriverBillCostVO driverBillCostVO : driverBillCost) {
+                Map<String, Object> tmp = new HashMap<>();
+                tmp.put("orderNo", driverBillCostVO.getOrderNo());
+                tmp.put("costName", costInfoMap.get(driverBillCostVO.getCostCode()));
+                tmp.put("amount", driverBillCostVO.getAmount() + " " + currencyNameMap.get(driverBillCostVO.getCurrencyCode()));
+                tmp.put("fileViewList", StringUtils.getFileViews(driverBillCostVO.getFiles(), driverBillCostVO.getFileName(), url.toString()));
+                list.add(tmp);
+            }
+        }
+
+        return CommonResult.success(list);
+    }
 
 }

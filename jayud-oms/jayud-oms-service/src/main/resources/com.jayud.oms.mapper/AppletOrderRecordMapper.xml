@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.AppletOrderRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.AppletOrderRecord">
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="order_no" property="orderNo" />
+        <result column="port_name" property="portName" />
+        <result column="status" property="status" />
+        <result column="pick_up_province" property="pickUpProvince" />
+        <result column="pick_up_city" property="pickUpCity" />
+        <result column="pick_up_area" property="pickUpArea" />
+        <result column="pick_la_and_lo" property="pickLaAndLo" />
+        <result column="receiving_province" property="receivingProvince" />
+        <result column="receiving_city" property="receivingCity" />
+        <result column="receiving_area" property="receivingArea" />
+        <result column="receiving_la_and_lo" property="receivingLaAndLo" />
+        <result column="goods_desc" property="goodsDesc" />
+        <result column="time" property="time" />
+        <result column="address" property="address" />
+        <result column="contacts" property="contacts" />
+        <result column="contact_number" property="contactNumber" />
+        <result column="is_virtual" property="isVirtual" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="order_status" property="orderStatus" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_id, order_no, port_name, status, pick_up_province, pick_up_city, pick_up_area, pick_la_and_lo, receiving_province, receiving_city, receiving_area, receiving_la_and_lo, goods_desc, time, address, contacts, contact_number, is_virtual, create_user, create_time, update_user, update_time, order_status
+    </sql>
+
+</mapper>

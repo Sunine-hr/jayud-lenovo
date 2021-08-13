@@ -48,6 +48,9 @@ public class DriverOrderTransportVO {
     @ApiModelProperty(value = "区(提货)")
     private String pickUpArea;
 
+    @ApiModelProperty(value = "提货经纬度")
+    private String pickLaAndLo;
+
     @ApiModelProperty(value = "省（送货）")
     private String receivingProvince;
 
@@ -57,14 +60,29 @@ public class DriverOrderTransportVO {
     @ApiModelProperty(value = "区(送货)")
     private String receivingArea;
 
+    @ApiModelProperty(value = "送货经纬度")
+    private String receivingLaAndLo;
+
     @ApiModelProperty(value = "货物信息")
     private String goodsDesc;
 
     @ApiModelProperty(value = "中港订单时间")
     private String time;
 
+    @ApiModelProperty(value = "送货详细地址(中转仓库)")
+    private String address;
+
+    @ApiModelProperty(value = "联系人(中转仓库)")
+    private String contacts;
+
+    @ApiModelProperty(value = "联系电话(中转仓库)")
+    private String contactNumber;
+
     @ApiModelProperty(value = "提货信息")
     private List<DriverOrderTakeAdrVO> pickUpGoodsList = new ArrayList<>();
+
+    @ApiModelProperty(value = "送货信息集合")
+    private List<DriverOrderTakeAdrVO> receivingGoodsList = new ArrayList<>();
 
     @ApiModelProperty(value = "送货信息")
     private DriverOrderTakeAdrVO receivingGoods;
@@ -153,4 +171,88 @@ public class DriverOrderTransportVO {
         this.status = OrderStatusEnum.getDesc(status);
     }
 
+
+    public void groupAddr(List<DriverOrderTakeAdrVO> list) {
+        //类型(1提货 2收货)
+        list.stream().filter(tmp -> this.orderNo.equals(tmp.getOrderNo())).forEach(tmp -> {
+            if (tmp.getOprType() == 1) {
+                pickUpGoodsList.add(tmp);
+            }
+            if (tmp.getOprType() == 2) {
+                receivingGoodsList.add(tmp);
+            }
+        });
+    }
+
+    public void assemblyAddr() {
+//        if (receivingGoodsList.size() == 1) {
+//            DriverOrderTakeAdrVO receivingGoods = receivingGoodsList.get(0);
+//            this.receivingProvince = receivingGoods.getProvince();
+//            this.receivingCity = StringUtils.isEmpty(receivingGoods.getArea()) ? receivingGoods.getProvince() : receivingGoods.getCity();
+//            this.receivingArea = StringUtils.isEmpty(receivingGoods.getArea()) ? receivingGoods.getCity() : receivingGoods.getArea();
+//            this.receivingGoods = receivingGoods;
+//        }
+//        if (receivingGoodsList.size() > 1) {
+//            receivingGoods = new DriverOrderTakeAdrVO();
+//            receivingGoods.setProvince(this.receivingProvince);
+//            String city = "";
+//            String area = "";
+//            if (StringUtils.isEmpty(this.receivingArea)) {
+//                city = this.receivingProvince;
+//                area = this.receivingCity;
+//            } else {
+//                city = this.receivingCity;
+//                area = this.receivingArea;
+//            }
+//            receivingGoods.setCity(city);
+//            receivingGoods.setArea(area);
+//            receivingGoods.setAddress(this.address);
+//            receivingGoods.setPhone(this.contactNumber);
+//            receivingGoods.setContacts(this.contacts);
+//            //外部送货地址
+//            this.receivingCity = city;
+//            this.receivingArea = area;
+//        }
+
+        //虚拟仓展示多个地址
+        if (isVirtual != null && isVirtual) {
+            if (receivingGoodsList.size() > 0) {
+                DriverOrderTakeAdrVO receivingGoods = receivingGoodsList.get(0);
+                this.receivingProvince = receivingGoods.getProvince();
+                this.receivingCity = org.apache.commons.lang.StringUtils.isEmpty(receivingGoods.getArea()) ? receivingGoods.getProvince() : receivingGoods.getCity();
+                this.receivingArea = org.apache.commons.lang.StringUtils.isEmpty(receivingGoods.getArea()) ? receivingGoods.getCity() : receivingGoods.getArea();
+                this.receivingLaAndLo = receivingGoods.getLoAndLa();
+                this.receivingGoods = receivingGoods;
+            }
+        } else {
+            receivingGoods = new DriverOrderTakeAdrVO();
+            receivingGoods.setProvince(this.receivingProvince);
+            String city = "";
+            String area = "";
+            if (org.apache.commons.lang.StringUtils.isEmpty(this.receivingArea)) {
+                city = this.receivingProvince;
+                area = this.receivingCity;
+            } else {
+                city = this.receivingCity;
+                area = this.receivingArea;
+            }
+            receivingGoods.setCity(city);
+            receivingGoods.setArea(area);
+            receivingGoods.setAddress(this.address);
+            receivingGoods.setPhone(this.contactNumber);
+            receivingGoods.setContacts(this.contacts);
+            //外部送货地址
+            this.receivingCity = city;
+            this.receivingArea = area;
+        }
+
+
+        if (!CollectionUtils.isEmpty(pickUpGoodsList)) {
+            DriverOrderTakeAdrVO pickUpGoods = pickUpGoodsList.get(0);
+            this.pickUpProvince = pickUpGoods.getProvince();
+            this.pickUpCity = org.apache.commons.lang.StringUtils.isEmpty(pickUpGoods.getArea()) ? pickUpGoods.getProvince() : pickUpGoods.getCity();
+            this.pickUpArea = org.apache.commons.lang.StringUtils.isEmpty(pickUpGoods.getArea()) ? pickUpGoods.getCity() : pickUpGoods.getArea();
+            this.pickLaAndLo = pickUpGoods.getLoAndLa();
+        }
+    }
 }

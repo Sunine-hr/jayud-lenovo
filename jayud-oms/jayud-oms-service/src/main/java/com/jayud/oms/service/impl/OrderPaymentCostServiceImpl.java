@@ -10,6 +10,7 @@ import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.CurrencyInfo;
 import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.po.SupplierInfo;
+import com.jayud.oms.model.vo.DriverBillCostVO;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
 import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
@@ -384,7 +385,7 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
      */
     @Override
     public List<Map<String, Object>> statisticsMainOrderCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
-        return this.baseMapper.statisticsMainOrderCost(form,legalIds, status);
+        return this.baseMapper.statisticsMainOrderCost(form, legalIds, status);
     }
 
     @Override
@@ -397,7 +398,7 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
             v.forEach(e -> {
                 if (e.getIsSumToMain()) {
                     tmps.add(e);
-                } else if (e.getIsInternal()||!e.getIsInternal()) {
+                } else if (e.getIsInternal() || !e.getIsInternal()) {
                     tmps.add(e);
                 }
             });
@@ -406,4 +407,8 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
         return tmps;
     }
 
+    @Override
+    public List<DriverBillCostVO> getDriverBillCost(List<String> orderNos, List<String> status, String time) {
+        return this.baseMapper.getDriverBillCost(orderNos, status, time);
+    }
 }

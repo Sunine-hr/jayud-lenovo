@@ -652,10 +652,20 @@ public class OrderInTransportController {
             auditInfoForm.setAuditStatus(cmd);
             auditInfoForm.setAuditTypeDesc(cmd);
         } else if (OrderStatusEnum.TMS_T_5_1.getCode().equals(form.getCmd())) {//车辆提货驳回
-            orderTransport.setStatus(OrderStatusEnum.TMS_T_5_1.getCode());
-
-            auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_5_1.getCode());
-            auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_5_1.getDesc());
+            //
+            String cmd = form.getCmd();
+            if (rejectOptions == 2) {//派车驳回
+                cmd = OrderStatusEnum.TMS_T_3_1.getCode();
+                deleteStatus.add(OrderStatusEnum.TMS_T_2.getCode());
+                deleteStatus.add(OrderStatusEnum.TMS_T_3.getCode());
+                deleteStatus.add(OrderStatusEnum.TMS_T_4.getCode());
+            }
+//            orderTransport.setStatus(OrderStatusEnum.TMS_T_5_1.getCode());
+//            auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_5_1.getCode());
+//            auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_5_1.getDesc());
+            orderTransport.setStatus(cmd);
+            auditInfoForm.setAuditStatus(cmd);
+            auditInfoForm.setAuditTypeDesc(cmd);
         }
         //推送派车驳回消息
         if (!this.orderSendCarsService.dispatchRejectionMsgPush(form, orderTransport1)) {

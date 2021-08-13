@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
@@ -14,10 +15,7 @@ import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.tms.feign.OauthClient;
 import com.jayud.tms.feign.OmsClient;
-import com.jayud.tms.model.bo.InputOrderTransportForm;
-import com.jayud.tms.model.bo.OprStatusForm;
-import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
-import com.jayud.tms.model.bo.TmsChangeStatusForm;
+import com.jayud.tms.model.bo.*;
 import com.jayud.tms.model.enums.OrderTakeAdrTypeEnum;
 import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.po.OrderTakeAdr;
@@ -61,6 +59,8 @@ public class ExternalApiController {
     private OauthClient oauthClient;
     @Autowired
     private OmsClient omsClient;
+    @Autowired
+    private OrderInTransportController transportController;
 
     @ApiOperation(value = "创建中港子订单")
     @RequestMapping(value = "/api/createOrderTransport")
@@ -289,7 +289,7 @@ public class ExternalApiController {
             return ApiResult.error("权限数据不能为空");
         }
         Map<String, String> tmp = new HashMap<>();
-        if ("supplier" .equals(cmd)) { //供应商
+        if ("supplier".equals(cmd)) { //供应商
             tmp.put("派车", "T_1");
             tmp.put("提货", "T_4");
             tmp.put("过磅", "T_5");
@@ -381,6 +381,14 @@ public class ExternalApiController {
     public ApiResult<Boolean> isVirtualWarehouseByOrderNo(@RequestParam("orderNo") String orderNo) {
         Boolean isVirtual = this.orderTransportService.isVirtualWarehouseByOrderNo(orderNo);
         return ApiResult.ok(isVirtual);
+    }
+
+    /**
+     * 驳回操作
+     */
+    @RequestMapping(value = "/api/rejectOrder")
+    public CommonResult rejectOrder(@RequestBody RejectOrderForm form) {
+        return transportController.rejectOrder(form);
     }
 }
 

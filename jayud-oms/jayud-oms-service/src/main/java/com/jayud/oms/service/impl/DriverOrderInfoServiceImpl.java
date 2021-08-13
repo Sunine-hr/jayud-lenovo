@@ -35,7 +35,7 @@ public class DriverOrderInfoServiceImpl extends ServiceImpl<DriverOrderInfoMappe
             condition.lambda().or().eq(DriverOrderInfo::getJockeyId, jockeyId);
         }
         if (status != null) {
-            condition.lambda().eq(DriverOrderInfo::getStatus, status);
+            condition.lambda().and(e->e.eq(DriverOrderInfo::getStatus, status));
         }
 
         return this.baseMapper.selectList(condition);

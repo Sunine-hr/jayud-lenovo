@@ -22,7 +22,7 @@ public class MapPositioningServiceImpl implements MapPositioningService {
      */
     @Override
     public JSONObject getTencentMapLaAndLoInfo(String address, String key) {
-        HttpResponse response = HttpRequest.post("https://apis.map.qq.com/ws/geocoder/v1/?address=" + address + "&key=" + key)
+        HttpResponse response = HttpRequest.get("https://apis.map.qq.com/ws/geocoder/v1/?address=" + address + "&key=" + key)
                 .execute();
         String feedback = response.body();
         JSONObject jsonObject = new JSONObject(feedback);

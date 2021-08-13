@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.AppletOrderAddrMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.AppletOrderAddr">
+        <id column="id" property="id" />
+        <result column="applet_order_record_id" property="appletOrderRecordId" />
+        <result column="order_no" property="orderNo" />
+        <result column="contacts" property="contacts" />
+        <result column="phone" property="phone" />
+        <result column="take_time" property="takeTime" />
+        <result column="goods_desc" property="goodsDesc" />
+        <result column="piece_amount" property="pieceAmount" />
+        <result column="weight" property="weight" />
+        <result column="opr_type" property="oprType" />
+        <result column="province" property="province" />
+        <result column="city" property="city" />
+        <result column="area" property="area" />
+        <result column="address" property="address" />
+        <result column="lo_and_la" property="loAndLa" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, applet_order_record_id, order_no, contacts, phone, take_time, goods_desc, piece_amount, weight, opr_type, province, city, area, address, lo_and_la
+    </sql>
+
+</mapper>

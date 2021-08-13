@@ -16,6 +16,7 @@ public enum DriverOrderStatusEnum {
     PENDING("1", "待提货"),
     IN_TRANSIT("2", "运输中"),
     FINISHED("3", "已完结"),
+    CANCEL("4", "取消"),
     ;
 
     private String code;

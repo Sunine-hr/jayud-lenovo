@@ -2,11 +2,9 @@ package com.jayud.oms.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.entity.DataControl;
-import com.jayud.oms.model.bo.DriverFeedbackStatusForm;
-import com.jayud.oms.model.bo.InputOrderTransportForm;
-import com.jayud.oms.model.bo.QueryDriverOrderTransportForm;
-import com.jayud.oms.model.bo.TmsChangeStatusForm;
+import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.vo.DriverOrderTakeAdrVO;
 import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputOrderTransportVO;
@@ -169,4 +167,10 @@ public interface TmsClient {
      */
     @RequestMapping(value = "/api/isVirtualWarehouseByOrderNo")
     public ApiResult<Boolean> isVirtualWarehouseByOrderNo(@RequestParam("orderNo") String orderNo);
+
+    /**
+     * 驳回操作
+     */
+    @RequestMapping(value = "/api/rejectOrder")
+    public CommonResult rejectOrder(@RequestBody RejectTmsOrderForm form);
 }

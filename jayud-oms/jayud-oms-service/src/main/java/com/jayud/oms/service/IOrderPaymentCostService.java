@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderPaymentCost;
+import com.jayud.oms.model.vo.DriverBillCostVO;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
 import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
@@ -151,6 +152,7 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
 
     /**
      * 根据订单号修改
+     *
      * @param mainOrderNo
      * @param subOrder
      * @param orderPaymentCost
@@ -159,6 +161,7 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
 
     /**
      * 根据主订单号集合获取应付费用
+     *
      * @param mainOrderNos
      * @return
      */
@@ -176,4 +179,13 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
 
 
     List<StatisticsOrderBaseCostVO> getBaseStatisticsAllCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status);
+
+    /**
+     * 查询司机费用
+     * @param orderNos
+     * @param status
+     * @param time
+     * @return
+     */
+    public List<DriverBillCostVO> getDriverBillCost(List<String> orderNos, List<String> status, String time);
 }

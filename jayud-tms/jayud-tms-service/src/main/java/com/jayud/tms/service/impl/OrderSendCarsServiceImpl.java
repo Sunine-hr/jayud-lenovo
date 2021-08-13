@@ -59,12 +59,13 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
 
     @Override
     public int getDriverPendingOrderNum(Long driverId, List<String> orderNos) {
-        QueryWrapper<OrderSendCars> condition = new QueryWrapper<>();
-        condition.lambda().and(e -> e.eq(OrderSendCars::getDriverInfoId, driverId).or().eq(OrderSendCars::getJockeyId, driverId));
-        if (CollectionUtils.isNotEmpty(orderNos)) {
-            condition.lambda().notIn(OrderSendCars::getOrderNo, orderNos);
-        }
-        return this.count(condition);
+//        QueryWrapper<OrderSendCars> condition = new QueryWrapper<>();
+//        condition.lambda().and(e -> e.eq(OrderSendCars::getDriverInfoId, driverId).or().eq(OrderSendCars::getJockeyId, driverId));
+//        if (CollectionUtils.isNotEmpty(orderNos)) {
+//            condition.lambda().notIn(OrderSendCars::getOrderNo, orderNos);
+//        }
+        int count = this.baseMapper.getDriverPendingOrderNum(driverId, orderNos);
+        return count;
     }
 
     /**

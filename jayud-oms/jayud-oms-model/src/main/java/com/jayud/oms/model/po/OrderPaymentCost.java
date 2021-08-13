@@ -150,6 +150,9 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
     @ApiModelProperty(value = "订单结算单位")
     private String unitName;
 
+    @ApiModelProperty(value = "司机费用id")
+    private Long driverCostId;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

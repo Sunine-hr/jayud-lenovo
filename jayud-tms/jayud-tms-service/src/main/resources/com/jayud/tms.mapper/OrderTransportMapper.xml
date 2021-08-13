@@ -899,7 +899,8 @@
         select count(*) from order_transport ot
         left join warehouse_info w on ot.warehouse_info_id = w.id
         <where>
-            w.is_virtual = true
+            and ot.order_no=#{orderNo}
+            and w.is_virtual = true
         </where>
     </select>
 </mapper>

@@ -475,7 +475,12 @@ public class MiniAppController {
                 form.setCmd(CommonConstant.CAR_SEND);
                 break;
             case 4:
-                if (MapUtil.getInt(cacheValue, "deliveryAddressNum") > 1) {
+//                if (MapUtil.getInt(cacheValue, "deliveryAddressNum") > 1) {
+//                    form.setCmd(CommonConstant.CAR_ENTER_WAREHOUSE);
+//                } else {
+//                    form.setCmd(CommonConstant.CONFIRM_SIGN_IN);
+//                }
+                if (!MapUtil.getBool(cacheValue, "isVirtual")) {
                     form.setCmd(CommonConstant.CAR_ENTER_WAREHOUSE);
                 } else {
                     form.setCmd(CommonConstant.CONFIRM_SIGN_IN);

@@ -715,7 +715,14 @@ public class MiniAppController {
         status.add(OrderStatusEnum.COST_0.getCode());
         status.add(OrderStatusEnum.COST_2.getCode());
         status.add(OrderStatusEnum.COST_3.getCode());
-        List<DriverBillCostVO> driverBillCost = this.orderPaymentCostService.getDriverBillCost(orderNos, status, time);
+
+        List<DriverEmploymentFee> employmentFees = this.driverEmploymentFeeService.getByCondition(new DriverEmploymentFee().setDriverId(driverId).setStatus(EmploymentFeeStatusEnum.SUBMITTED.getCode()));
+        if (CollectionUtils.isEmpty(employmentFees)) {
+            return CommonResult.success();
+        }
+        List<Long> employIds = employmentFees.stream().map(DriverEmploymentFee::getId).collect(Collectors.toList());
+
+        List<DriverBillCostVO> driverBillCost = this.orderPaymentCostService.getDriverBillCost(orderNos, status, time,employIds);
         List<Map<String, Object>> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(driverBillCost)) {
             Map<String, String> currencyNameMap = this.currencyInfoService.initCurrencyInfo().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
@@ -728,7 +735,7 @@ public class MiniAppController {
                     tmp.put("operationTime", driverBillCostVO.getOperationTime());
                     tmp.put("amount", driverBillCostVO.getAmount() + " " + currencyNameMap.get(driverBillCostVO.getCurrencyCode()));
                 } else {
-                    tmp.put("amount", tmp.get("amout") + "," + driverBillCostVO.getAmount() + " " + currencyNameMap.get(driverBillCostVO.getCurrencyCode()));
+                    tmp.put("amount", tmp.get("amount") + "," + driverBillCostVO.getAmount() + " " + currencyNameMap.get(driverBillCostVO.getCurrencyCode()));
                 }
                 tmpMap.put(driverBillCostVO.getOrderNo(), tmp);
             }
@@ -751,12 +758,20 @@ public class MiniAppController {
         if (StringUtils.isEmpty(orderNo)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-
+        Long driverId = Long.valueOf(SecurityUtil.getUserInfo());
         List<String> status = new ArrayList<>();
         status.add(OrderStatusEnum.COST_0.getCode());
         status.add(OrderStatusEnum.COST_2.getCode());
         status.add(OrderStatusEnum.COST_3.getCode());
-        List<DriverBillCostVO> driverBillCost = this.orderPaymentCostService.getDriverBillCost(Arrays.asList(orderNo), status, null);
+
+        List<DriverEmploymentFee> employmentFees = this.driverEmploymentFeeService.getByCondition(new DriverEmploymentFee().setDriverId(driverId).setStatus(EmploymentFeeStatusEnum.SUBMITTED.getCode()));
+        if (CollectionUtils.isEmpty(employmentFees)) {
+            return CommonResult.success();
+        }
+        List<Long> employIds = employmentFees.stream().map(DriverEmploymentFee::getId).collect(Collectors.toList());
+
+
+        List<DriverBillCostVO> driverBillCost = this.orderPaymentCostService.getDriverBillCost(Arrays.asList(orderNo), status, null, employIds);
         List<Map<String, Object>> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(driverBillCost)) {
             Map<String, String> currencyNameMap = this.currencyInfoService.initCurrencyInfo().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));

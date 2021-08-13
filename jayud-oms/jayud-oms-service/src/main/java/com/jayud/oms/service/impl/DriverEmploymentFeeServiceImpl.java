@@ -101,5 +101,10 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
         return this.baseMapper.getEmploymentFeeInfo(orderNo);
     }
 
+    @Override
+    public List<DriverEmploymentFee> getByCondition(DriverEmploymentFee driverEmploymentFee) {
+        return this.baseMapper.selectList(new QueryWrapper<>(driverEmploymentFee));
+    }
+
 
 }

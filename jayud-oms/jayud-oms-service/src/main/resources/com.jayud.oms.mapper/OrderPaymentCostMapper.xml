@@ -329,6 +329,12 @@
             <if test="time!=null and time!=''">
                 and date_format(oi.operation_time,'%Y-%m') =#{time}
             </if>
+            <if test="employIds !=null and employIds.size>0">
+                and opc.driver_cost_id in
+                <foreach collection="employIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
 
             <!--            <if test="legalIds != null and legalIds.size>0">-->
             <!--                and oi.`legal_entity_id` in-->

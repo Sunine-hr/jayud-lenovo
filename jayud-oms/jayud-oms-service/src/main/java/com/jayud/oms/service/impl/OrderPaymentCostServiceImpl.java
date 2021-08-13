@@ -408,7 +408,7 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
     }
 
     @Override
-    public List<DriverBillCostVO> getDriverBillCost(List<String> orderNos, List<String> status, String time) {
-        return this.baseMapper.getDriverBillCost(orderNos, status, time);
+    public List<DriverBillCostVO> getDriverBillCost(List<String> orderNos, List<String> status, String time, List<Long> employIds) {
+        return this.baseMapper.getDriverBillCost(orderNos, status, time,employIds);
     }
 }

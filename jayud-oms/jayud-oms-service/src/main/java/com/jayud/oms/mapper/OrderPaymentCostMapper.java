@@ -61,5 +61,6 @@ public interface OrderPaymentCostMapper extends BaseMapper<OrderPaymentCost> {
                                                              @Param("status") List<String> status);
 
     List<DriverBillCostVO> getDriverBillCost(@Param("orderNos") List<String> orderNos,
-                                             @Param("status") List<String> status,@Param("time") String time);
+                                             @Param("status") List<String> status, @Param("time") String time,
+                                             @Param("employIds") List<Long> employIds);
 }

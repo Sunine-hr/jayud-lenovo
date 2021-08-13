@@ -185,7 +185,8 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
      * @param orderNos
      * @param status
      * @param time
+     * @param employIds
      * @return
      */
-    public List<DriverBillCostVO> getDriverBillCost(List<String> orderNos, List<String> status, String time);
+    public List<DriverBillCostVO> getDriverBillCost(List<String> orderNos, List<String> status, String time, List<Long> employIds);
 }

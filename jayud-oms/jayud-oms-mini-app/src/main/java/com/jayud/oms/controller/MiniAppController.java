@@ -183,7 +183,11 @@ public class MiniAppController {
 
     @PostMapping("/initEmploymentFeeBox")
     @ApiOperation(value = "录用费用下拉选项")
-    public CommonResult<Map<String, List<InitComboxStrVO>>> initEmploymentFeeBox() {
+    public CommonResult<Map<String, List<InitComboxStrVO>>> initEmploymentFeeBox(@RequestBody Map<String, Object> param) {
+        Long orderId = MapUtil.getLong(param, "orderId");
+        if (orderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
         List<CostInfo> costInfos = this.costInfoService.getCostInfoByStatus(StatusEnum.ENABLE.getCode());
         List<InitComboxStrVO> boxOne = new ArrayList<>();
         for (CostInfo costInfo : costInfos) {
@@ -193,15 +197,29 @@ public class MiniAppController {
             boxOne.add(comboxStrVO);
         }
 
+//        this.tmsClient.get
+        Object data = this.tmsClient.getTmsById(orderId).getData();
+        cn.hutool.json.JSONObject jsonObject = new cn.hutool.json.JSONObject(data);
         //币种
         List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
-        List<CurrencyInfo> currencyInfos = currencyInfoService.list();
-        for (CurrencyInfo currencyInfo : currencyInfos) {
+        List<CurrencyInfoVO> currencyInfos = currencyInfoService.findCurrencyInfo(jsonObject.getStr("createdTime"));
+        for (CurrencyInfoVO currencyInfo : currencyInfos) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
             comboxStrVO.setCode(currencyInfo.getCurrencyCode());
             comboxStrVO.setName(currencyInfo.getCurrencyName());
+            comboxStrVO.setNote(String.valueOf(currencyInfo.getExchangeRate()));
             initComboxStrVOS.add(comboxStrVO);
         }
+
+        //币种
+//        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+//        List<CurrencyInfo> currencyInfos = currencyInfoService.list();
+//        for (CurrencyInfo currencyInfo : currencyInfos) {
+//            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+//            comboxStrVO.setCode(currencyInfo.getCurrencyCode());
+//            comboxStrVO.setName(currencyInfo.getCurrencyName());
+//            initComboxStrVOS.add(comboxStrVO);
+//        }
         Map<String, List<InitComboxStrVO>> map = new HashMap<>();
         map.put("costInfos", boxOne);
         map.put("currencys", initComboxStrVOS);

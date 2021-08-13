@@ -173,4 +173,10 @@ public interface TmsClient {
      */
     @RequestMapping(value = "/api/rejectOrder")
     public CommonResult rejectOrder(@RequestBody RejectTmsOrderForm form);
+
+    /**
+     * 根据id获取中港信息
+     */
+    @RequestMapping(value = "/api/getTmsById")
+    public ApiResult getTmsById(@RequestParam("id") Long id);
 }

@@ -390,6 +390,14 @@ public class ExternalApiController {
     public CommonResult rejectOrder(@RequestBody RejectOrderForm form) {
         return transportController.rejectOrder(form);
     }
+
+    /**
+     * 根据id获取中港信息
+     */
+    @RequestMapping(value = "/api/getTmsById")
+    public ApiResult<OrderTransport> getTmsById(@RequestParam("id") Long id) {
+        return ApiResult.ok(this.orderTransportService.getById(id));
+    }
 }
 
 

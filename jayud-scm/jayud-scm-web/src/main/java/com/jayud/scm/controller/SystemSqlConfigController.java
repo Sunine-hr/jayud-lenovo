@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -149,6 +150,14 @@ public class SystemSqlConfigController {
     public CommonResult<CommonPageResult<Map<String, Object>>> findCommonByPage(@Valid @RequestBody QueryCommonConfigForm form){
         CommonPageResult<Map<String, Object>> pageVO = systemSqlConfigService.findCommonByPage(form);
         return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "生成表格列,表格头")
+    @PostMapping(value = "/createTableColumn")
+    public CommonResult<List<TableColumnVO>> createTableColumn(@Valid @RequestBody List<TableColumnVO> form){
+        List<TableColumnVO> list = new ArrayList<>();
+        list = form;
+        return CommonResult.success(list);
     }
 
 

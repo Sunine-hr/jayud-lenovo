@@ -49,7 +49,19 @@ public interface SystemSqlConfigMapper extends BaseMapper<SystemSqlConfig> {
      * @param page 分页
      * @param paraMap 条件参数
      *                 paraMap.put("sqlStr", sqlStr);   SQL语句
+     *                 paraMap.put("wehre", wehre);     WHERE语句
+     *                 paraMap.put("countSql", countSql);   汇总SQL
      * @return
      */
     IPage<Map<String, Object>> findCommonByPage(@Param("page") Page<Map<String, Object>> page, @Param("paraMap") Map<String, Object> paraMap);
+
+    /**
+     * 根据SQL代码和通用条件查询汇总数据,返回泛型map
+     * @param paraMap 条件参数
+     *                 paraMap.put("sqlStr", sqlStr);   SQL语句
+     *                 paraMap.put("wehre", wehre);     WHERE语句
+     *                 paraMap.put("countSql", countSql);   汇总SQL
+     * @return
+     */
+    Map<String, Object> findCommonCount(@Param("paraMap") Map<String, Object> paraMap);
 }

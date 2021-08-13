@@ -49,9 +49,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Autowired
     private ICommodityService commodityService;
 
-    @Autowired
-    private ICustomerTaxService customerTaxService;
-
     @Override
     public IPage<CustomerFormVO> findByPage(QueryCustomerForm form) {
         Page<CommodityFormVO> page = new Page<>(form.getPageNum(), form.getPageSize());
@@ -118,19 +115,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             for (CustomerClass customerClass : customerClasses) {
                 stringBuffer.append(customerClass.getClassName()).append(",");
             }
-
             customerVO.setType(stringBuffer.toString().substring(0,stringBuffer.length()-1));
 
-        }
-
-
-        CustomerTax customerTax = customerTaxService.getCustomerTaxByCustomerId(customer.getId());
-        if(customerTax != null){
-            customerVO.setTaxName(customerTax.getTaxName());
-            customerVO.setTaxAddress(customerTax.getTaxAddress());
-            customerVO.setTaxBank(customerTax.getTaxBank());
-            customerVO.setTaxTel(customerTax.getTaxTel());
-            customerVO.setTaxBankNo(customerTax.getTaxBankNo());
         }
 
         return customerVO;

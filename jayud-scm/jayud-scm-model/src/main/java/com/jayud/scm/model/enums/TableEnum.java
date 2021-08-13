@@ -23,7 +23,7 @@ public enum TableEnum {
     customer_agreement(12,"customer_agreement"),
     customer_guarantee(13,"customer_guarantee"),
     customer_tax(14,"customer_tax"),
-//    fee_model(15,"fee_model"),
+    fee_model(15,"fee_model"),
 //    hs_code(16,"hs_code")
     ;
 

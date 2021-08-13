@@ -69,7 +69,7 @@ public class CustomerGuaranteeController {
     public CommonResult<CustomerGuaranteeVO> getCustomerGuaranteeById(@RequestBody Map<String,Object> map) {
         Integer id = MapUtil.getInt(map, "id");
         CustomerGuaranteeVO customerGuaranteeVO = customerGuaranteeService.getCustomerGuaranteeById(id);
-        customerGuaranteeVO.setGuaranteeTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",customerGuaranteeVO.getGuaranteeType()));
+        customerGuaranteeVO.setGuaranteeTypeName(customerGuaranteeVO.getGuaranteeType());
         return CommonResult.success(customerGuaranteeVO);
     }
 

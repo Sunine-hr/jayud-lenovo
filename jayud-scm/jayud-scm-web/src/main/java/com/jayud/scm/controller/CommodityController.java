@@ -238,7 +238,7 @@ public class CommodityController {
         }
 
         for (int i = 0; i < list.size(); i++) {
-            for (int j = i; j < list.size(); j++) {
+            for (int j = i+1; j < list.size(); j++) {
                 if(list.get(i).getSkuBrand().equals(list.get(j).getSkuBrand())){
                     if(list.get(i).getSkuModel().equals(list.get(j).getSkuModel())){
                         return CommonResult.error(444,"excel中存在同品牌同型号的商品，插入失败");

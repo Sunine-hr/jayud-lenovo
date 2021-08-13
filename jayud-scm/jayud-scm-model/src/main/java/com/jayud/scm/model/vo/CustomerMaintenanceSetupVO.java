@@ -48,8 +48,8 @@ public class CustomerMaintenanceSetupVO {
     @ApiModelProperty(value = "维护人名称")
     private String whUserName;
 
-    @ApiModelProperty(value = "审核级别")
-    private Integer fLevel;
+    @ApiModelProperty(value = "审核状态")
+    private String checkStateFlag;
 
     @ApiModelProperty(value = "备注")
     private String remark;

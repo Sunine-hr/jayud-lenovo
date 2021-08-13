@@ -44,10 +44,10 @@
         <if test="form.key != null and form.key != ''">
             and
             <if test="form.key == 'action_code' ">
-                srac.action_code = #{form.condition}
+                srac.action_code like concat('%',#{form.condition},'%')
             </if>
             <if test="form.key == 'name' ">
-                sr.name = #{form.condition}
+                sr.name like concat('%',#{form.condition},'%')
             </if>
         </if>
     </select>

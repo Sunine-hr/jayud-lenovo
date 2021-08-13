@@ -51,7 +51,7 @@ public class CustomerGuarantee extends Model<CustomerGuarantee> {
     private String contractName;
 
     @ApiModelProperty(value = "证件号码")
-    private Integer cardNo;
+    private String cardNo;
 
     @ApiModelProperty(value = "地址")
     private String address;

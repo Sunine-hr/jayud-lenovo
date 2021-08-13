@@ -48,7 +48,9 @@ public class CustomerTaxController {
     public CommonResult findByPage(@RequestBody QueryCommonForm form) {
         IPage<CustomerTaxVO> page = this.customerTaxService.findByPage(form);
         for (CustomerTaxVO record : page.getRecords()) {
-            record.setTaxNo(customerService.getById(record.getCustomerId()).getTaxNo() == null ? "":customerService.getById(record.getId()).getTaxNo());
+            if(customerService.getById(record.getCustomerId()).getTaxNo() != null){
+                record.setTaxNo(customerService.getById(record.getCustomerId()).getTaxNo());
+            }
         }
         CommonPageResult pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);
@@ -79,7 +81,9 @@ public class CustomerTaxController {
     public CommonResult<CustomerTaxVO> getCustomerTaxById(@RequestBody Map<String,Object> map) {
         Integer id = MapUtil.getInt(map, "id");
         CustomerTaxVO customerTaxVO = customerTaxService.getCustomerTaxById(id);
-        customerTaxVO.setTaxNo(customerService.getById(customerTaxVO.getCustomerId()).getTaxNo() == null ? "":customerService.getById(customerTaxVO.getId()).getTaxNo());
+        if(customerService.getById(customerTaxVO.getCustomerId()).getTaxNo() != null){
+            customerTaxVO.setTaxNo(customerService.getById(customerTaxVO.getCustomerId()).getTaxNo());
+        }
         return CommonResult.success(customerTaxVO);
     }
 

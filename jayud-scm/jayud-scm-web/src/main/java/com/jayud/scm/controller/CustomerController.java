@@ -7,12 +7,15 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.*;
+import com.jayud.scm.model.enums.CorrespondEnum;
 import com.jayud.scm.model.po.Customer;
+import com.jayud.scm.model.po.CustomerTax;
 import com.jayud.scm.model.vo.CustomerFormVO;
 import com.jayud.scm.model.vo.CustomerVO;
 import com.jayud.scm.service.IBDataDicEntryService;
 import com.jayud.scm.service.ICustomerClassService;
 import com.jayud.scm.service.ICustomerService;
+import com.jayud.scm.service.ICustomerTaxService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -52,10 +55,17 @@ public class CustomerController {
     @Autowired
     private IBDataDicEntryService ibDataDicEntryService;
 
+    @Autowired
+    private ICustomerTaxService customerTaxService;
+
     @ApiOperation(value = "根据条件分页查询所有客户信息")
     @PostMapping(value = "/findByPage")
     public CommonResult findByPage(@RequestBody QueryCustomerForm form) {
         form.setTime();
+        if(form.getKey() != null && CorrespondEnum.getName(form.getKey()) == null){
+            return CommonResult.error(444,"该条件无法搜索");
+        }
+        form.setKey(CorrespondEnum.getName(form.getKey()));
 
         List list = new ArrayList();
         //获取表头信息
@@ -79,14 +89,22 @@ public class CustomerController {
             if(CollectionUtils.isNotEmpty(page.getRecords())){
                 for (CustomerFormVO record : page.getRecords()) {
                     if(record.getCustomerStyle() != null){
-                        record.setCustomerStyleName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1010",record.getCustomerStyle()));
+                        record.setCustomerStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1010",record.getCustomerStyle()));
 
                     }
                     if(record.getCustomerState() != null){
-                        record.setCustomerStateName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",record.getCustomerState()));
+                        record.setCustomerState(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",record.getCustomerState()));
                     }
                     if(record.getArea() != null){
-                        record.setAreaName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1015",record.getArea()));
+                        record.setArea(ibDataDicEntryService.getTextByDicCodeAndDataValue("1015",record.getArea()));
+                    }
+                    if(record.getBusinessType() != null){
+                        String[] split = record.getBusinessType().split(",");
+                        StringBuffer stringBuffer = new StringBuffer();
+                        for (String s : split) {
+                            stringBuffer.append(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",s)).append(",");
+                        }
+                        record.setBusinessType(stringBuffer.toString().substring(0,stringBuffer.length()-1));
                     }
                 }
             }
@@ -112,6 +130,14 @@ public class CustomerController {
         }
         if(customerVO.getArea() != null){
             customerVO.setAreaName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1015",customerVO.getArea()));
+        }
+        CustomerTax customerTax = customerTaxService.getCustomerTaxByCustomerId(customerVO.getId());
+        if(customerTax != null){
+            customerVO.setTaxName(customerTax.getTaxName());
+            customerVO.setTaxAddress(customerTax.getTaxAddress());
+            customerVO.setTaxBank(customerTax.getTaxBank());
+            customerVO.setTaxTel(customerTax.getTaxTel());
+            customerVO.setTaxBankNo(customerTax.getTaxBankNo());
         }
         return CommonResult.success(customerVO);
     }

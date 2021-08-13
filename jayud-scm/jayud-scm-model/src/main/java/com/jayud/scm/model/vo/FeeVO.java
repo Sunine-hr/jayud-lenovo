@@ -3,6 +3,7 @@ package com.jayud.scm.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -26,7 +27,7 @@ import java.util.List;
 public class FeeVO {
 
     @ApiModelProperty(value = "自动ID")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     @ApiModelProperty(value = "结算方案ID")
@@ -48,6 +49,7 @@ public class FeeVO {
     private String reStyle;
 
     @ApiModelProperty(value = "收款账期天数")
+    @JsonProperty(value = "reDay")
     private Integer reDay;
 
     @ApiModelProperty(value = "结算方式")
@@ -63,9 +65,11 @@ public class FeeVO {
     private BigDecimal proxyFee;
 
     @ApiModelProperty(value = "货款汇率类型")
+    @JsonProperty(value = "gRateType")
     private String gRateType;
 
     @ApiModelProperty(value = "代理费费率类型")
+    @JsonProperty(value = "pRateType")
     private String pRateType;
 
     @ApiModelProperty(value = "取值（买入，卖出）")
@@ -75,6 +79,7 @@ public class FeeVO {
     private String rateTime;
 
     @ApiModelProperty(value = "是否有最低收费")
+    @JsonProperty(value = "isLowestPrice")
     private BigDecimal isLowestPrice;
 
     @ApiModelProperty(value = "最低收费金额")
@@ -96,18 +101,23 @@ public class FeeVO {
     private Integer interestDayLowest;
 
     @ApiModelProperty(value = "信用证服务费率")
+    @JsonProperty(value = "lcFee")
     private BigDecimal lcFee;
 
     @ApiModelProperty(value = "逾期费率")
+    @JsonProperty(value = "lateFee")
     private BigDecimal lateFee;
 
     @ApiModelProperty(value = "报关运费比例")
+    @JsonProperty(value = "yFee")
     private BigDecimal yFee;
 
     @ApiModelProperty(value = "报关保费比例")
+    @JsonProperty(value = "bFee")
     private BigDecimal bFee;
 
     @ApiModelProperty(value = "报关杂费比例")
+    @JsonProperty(value = "oFee")
     private BigDecimal oFee;
 
     @ApiModelProperty(value = "保证金比例")
@@ -123,6 +133,7 @@ public class FeeVO {
     private String shippingFeeStyle;
 
     @ApiModelProperty(value = "发票处理方式（随货，先税后票，先开票后收税代）")
+    @JsonProperty(value = "invType")
     private String invType;
 
     @ApiModelProperty(value = "信息服务费率")

@@ -34,13 +34,13 @@
         <if test="form.key != null and form.key != ''">
             and
             <if test="form.key == 'action_name' ">
-                sa.action_name = #{form.condition}
+                sa.action_name like concat('%',#{form.condition},'%')
             </if>
             <if test="form.key == 'action_code' ">
-                sa.action_code = #{form.condition}
+                sa.action_code like concat('%',#{form.condition},'%')
             </if>
             <if test="form.key == 'title' ">
-                sm.title = #{form.condition}
+                sm.title like concat('%',#{form.condition},'%')
             </if>
         </if>
     </select>

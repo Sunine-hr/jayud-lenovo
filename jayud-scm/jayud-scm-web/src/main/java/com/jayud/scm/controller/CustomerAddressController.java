@@ -89,6 +89,12 @@ public class CustomerAddressController {
     public CommonResult<CustomerAddressVO> getCustomerAddressById(@RequestBody Map<String,Object> map) {
         Integer id = MapUtil.getInt(map, "id");
         CustomerAddressVO customerAddressVO = customerAddressService.getCustomerAddressById(id);
+        if(customerAddressVO.getSType() != null){
+            customerAddressVO.setSTypeName(customerAddressVO.getSType());
+        }
+        if(customerAddressVO.getRegion() != null){
+            customerAddressVO.setRegionName(customerAddressVO.getRegion());
+        }
         return CommonResult.success(customerAddressVO);
     }
 

@@ -1,5 +1,6 @@
 package com.jayud.scm.model.enums;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -72,7 +73,35 @@ public enum CorrespondEnum {
     TITLE("title","title","父级菜单"),
     ACTION_NAME("actionName","action_name","权限名称"),
     ACTION_CODE("actionCode","action_code","权限code"),
-    NAME("name","name","角色");
+    NAME("name","name","角色"),
+
+    //customer
+    CUSTOMERNO("customerNo","customer_no","编号"),
+    CUSTOMERNAME("customerName","customer_name","名称"),
+    CUSTOMERTYPE("customerType","customer_type","客户等级"),
+    CUSTOMERABBR("customerAbbr","customer_abbr","简称"),
+    FOLLOWERNAME("followerName","follower_name","商务"),
+    BUSINESSTYPE("businessType","business_type","业务类型"),
+    LEGALDEPUTY("legalDeputy","legal_deputy","法人"),
+    REGADDRESS("regAddress","reg_address","注册地址"),
+    REGTEL("regTel","reg_tel","注册电话"),
+    TAXNO("taxNo","tax_no","纳税识别号"),
+    COMPANYNET("companyNet","company_net","网址"),
+    PROVINCENAME("provinceName","province_name","省"),
+
+    CITYNAME("cityName","city_name","市"),
+    COUNTYNAME("countyName","county_name","县、区"),
+    CRTBYNAME("crtByName","crt_by_name","创建人"),
+    MDYBYNAME("mdyByName","mdy_by_name","修改人"),
+    FSALESMAN("fsalesMan","fsales_man","业务员姓名"),
+
+    CUSTOMERAGNO("customerAgNo","customer_ag_no","客户协议编号"),
+    ENCUSTOMERNAME("enCustomerName","en_customer_name","英文名称"),
+    ENCUSTOMERADDRESS("enCustomerAddress","en_customer_address","英文地址"),
+    CUSTOMERSTYLE("customerStyle","customer_style","客户类型"),
+    CUSTOMERSTATE("customerState","customer_state","客户跟进状态"),
+    AREA("area","area","区域")
+    ;
 
     private String code;
     private String name;

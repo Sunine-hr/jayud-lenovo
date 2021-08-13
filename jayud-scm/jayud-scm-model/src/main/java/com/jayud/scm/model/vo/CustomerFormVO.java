@@ -105,17 +105,17 @@ public class CustomerFormVO {
     @ApiModelProperty(value = "英文地址")
     private String enCustomerAddress;
 
-//    @ApiModelProperty(value = "客户类型")
+    @ApiModelProperty(value = "客户类型")
     private String customerStyle;
 
-    @ApiModelProperty(value = "客户类型")
-    private String customerStyleName;
-
-//    @ApiModelProperty(value = "客户跟进状态")
-    private String customerState;
+//    @ApiModelProperty(value = "客户类型")
+//    private String customerStyleName;
 
     @ApiModelProperty(value = "客户跟进状态")
-    private String customerStateName;
+    private String customerState;
+
+//    @ApiModelProperty(value = "客户跟进状态")
+//    private String customerStateName;
 
     @ApiModelProperty(value = "备注")
     private String remark;
@@ -123,8 +123,8 @@ public class CustomerFormVO {
     @ApiModelProperty(value = "区域")
     private String area;
 
-    @ApiModelProperty(value = "区域")
-    private String areaName;
+//    @ApiModelProperty(value = "区域")
+//    private String areaName;
 
 
 }

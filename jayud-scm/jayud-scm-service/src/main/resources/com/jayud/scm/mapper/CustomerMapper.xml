@@ -88,7 +88,7 @@
         en_customer_name enCustomerName, en_customer_address enCustomerAddress,
         customer_style customerStyle,
         customer_state customerState,remark,  area, agency_brand agencyBrand,
-        (SELECT GROUP_CONCAT(model_name separator ',') FROM fee_model where customer_id = co.id) businessType,
+        (SELECT GROUP_CONCAT(c.model_type separator ',') FROM (select distinct model_type , customer_id from fee_model ) c where c.customer_id = co.id) businessType,
         (SELECT GROUP_CONCAT(class_name separator ',') FROM customer_class where customer_id = co.id ) type
         from customer co where co.voided = 0
         <if test="form.key !=null and form.key!=''">
@@ -96,9 +96,6 @@
         </if>
         <if test="form.auditStatus !=null and form.auditStatus!=''">
             <choose>
-                <when test="form.auditStatus == 'all'">
-
-                </when>
                 <when test="form.auditStatus == 'notApproved'">
                     and co.check_state_flag != 'Y'
                 </when>

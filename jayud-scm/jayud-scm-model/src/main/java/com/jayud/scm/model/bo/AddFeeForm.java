@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -37,21 +38,27 @@ public class AddFeeForm {
     private Integer feeModelId;
 
     @ApiModelProperty(value = "代理方式(代理进口，自营进口，自营出口，代办退税)")
+    @NotNull(message = "代理方式不为空")
     private String deputyStyle;
 
     @ApiModelProperty(value = "交易方式（CIF，FOB）")
+    @NotNull(message = "成交方式不为空")
     private String incoterms;
 
     @ApiModelProperty(value = "付款方式")
+    @NotNull(message = "付款方式不为空")
     private String payStyle;
 
     @ApiModelProperty(value = "付款账期天数")
+    @NotNull(message = "付款账期天数不为空")
     private Integer payDay;
 
     @ApiModelProperty(value = "收款方式")
+    @NotNull(message = "收款方式不为空")
     private String reStyle;
 
     @ApiModelProperty(value = "收款账期天数")
+    @NotNull(message = "收款账期天数不为空")
     @JsonProperty(value = "reDay")
     private Integer reDay;
 

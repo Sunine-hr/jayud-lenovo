@@ -72,7 +72,7 @@ public class FeeServiceImpl extends ServiceImpl<FeeMapper, Fee> implements IFeeS
             customerFollow.setSType(OperationEnum.INSERT.getCode());
             customerFollow.setFollowContext(systemUser.getUpdatedUser()+"新增结算方案条款");
         }
-        boolean save = this.save(fee);
+        boolean save = this.saveOrUpdate(fee);
         if(save){
             //不管新增还是修改，删除原来的结算方案条款明细
             feeListService.delete(fee.getId());
@@ -81,6 +81,7 @@ public class FeeServiceImpl extends ServiceImpl<FeeMapper, Fee> implements IFeeS
             List<AddFeeListForm> addFeeListForms = form.getAddFeeListForms();
             List<FeeList> feeLists = ConvertUtil.convertList(addFeeListForms, FeeList.class);
             for (FeeList feeList : feeLists) {
+                feeList.setFeeId(fee.getId());
                 feeList.setCrtBy(systemUser.getId().intValue());
                 feeList.setCrtByDtm(LocalDateTime.now());
                 feeList.setCrtByName(systemUser.getUserName());
@@ -147,7 +148,7 @@ public class FeeServiceImpl extends ServiceImpl<FeeMapper, Fee> implements IFeeS
             customerFollow.setCrtByName(systemUser.getUserName());
         }
 
-        return false;
+        return b;
     }
 
     @Override

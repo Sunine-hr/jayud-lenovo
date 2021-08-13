@@ -8,14 +8,12 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddCustomerTaxForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.enums.OperationEnum;
-import com.jayud.scm.model.po.CustomerFollow;
-import com.jayud.scm.model.po.CustomerRelationer;
-import com.jayud.scm.model.po.CustomerTax;
+import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.CustomerTaxMapper;
-import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.CustomerRelationerVO;
 import com.jayud.scm.model.vo.CustomerTaxVO;
 import com.jayud.scm.service.ICustomerFollowService;
+import com.jayud.scm.service.ICustomerService;
 import com.jayud.scm.service.ICustomerTaxService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.scm.service.ISystemUserService;
@@ -41,6 +39,9 @@ public class CustomerTaxServiceImpl extends ServiceImpl<CustomerTaxMapper, Custo
     @Autowired
     private ICustomerFollowService customerFollowService;
 
+    @Autowired
+    private ICustomerService customerService;
+
     @Override
     public CustomerTax getCustomerTaxByCustomerId(Integer id) {
         QueryWrapper<CustomerTax> queryWrapper = new QueryWrapper<>();
@@ -60,6 +61,7 @@ public class CustomerTaxServiceImpl extends ServiceImpl<CustomerTaxMapper, Custo
     public boolean saveOrUpdateCustomerTax(AddCustomerTaxForm form) {
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
         CustomerFollow customerFollow = new CustomerFollow();
+        Customer customer = new Customer();
 
         CustomerTax customerTax = ConvertUtil.convert(form, CustomerTax.class);
         if(form.getId() != null){
@@ -77,6 +79,14 @@ public class CustomerTaxServiceImpl extends ServiceImpl<CustomerTaxMapper, Custo
         }
         boolean update = this.saveOrUpdate(customerTax);
         if(update){
+
+            customer.setId(form.getCustomerId());
+            customer.setTaxNo(form.getTaxNo());
+            boolean update1 = customerService.updateById(customer);
+            if(update1){
+                log.warn("修改客户税号为"+form.getTaxNo());
+            }
+
             customerFollow.setCustomerId(form.getCustomerId());
             customerFollow.setCrtBy(systemUser.getId().intValue());
             customerFollow.setCrtByDtm(LocalDateTime.now());

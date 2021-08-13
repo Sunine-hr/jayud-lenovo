@@ -72,6 +72,7 @@ public class CustomerAgreementController {
     @ApiOperation(value = "新增客户协议")
     @PostMapping(value = "/saveOrUpdateCustomerAgreement")
     public CommonResult saveOrUpdateCustomerAgreement(@RequestBody AddCustomerAgreementForm form) {
+        form.setModelType(Integer.parseInt(form.getModelTypeCopy()));
         boolean result = customerAgreementService.saveOrUpdateCustomerAgreement(form);
         if(!result){
             return CommonResult.error(444,"新增客户协议失败");

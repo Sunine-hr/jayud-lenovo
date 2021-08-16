@@ -22,6 +22,9 @@ public class ViewFBillForm {
     @NotEmpty(message = "cmd is required")
     private String cmd;
 
+    @ApiModelProperty(value = "模板操作指令", required = true)
+    private String templateCmd;
+
     @ApiModelProperty(value = "展示维度(1:费用项展示,2:订单维度)", required = true)
     @NotNull(message = "type is required")
     private Integer type=1;

@@ -478,7 +478,7 @@ public class OrderReceivableBillServiceImpl extends ServiceImpl<OrderReceivableB
         }
         //内陆数据处理
 //        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
-        array = this.commonService.templateDataProcessing(form.getCmd(), form.getCmd(), array, mainOrderNos, 0);
+        array = this.commonService.templateDataProcessing(form.getCmd(), form.getTemplateCmd(), array, mainOrderNos, 0);
         return array;
     }
 

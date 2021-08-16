@@ -594,7 +594,8 @@
         (select sum(ota.weight) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where
         ot.main_order_no = oi.order_no and ota.opr_type = '1') weight,
         (select GROUP_CONCAT(oc.yun_customs_no,',') from order_customs oc where oc.main_order_no = oi.order_no)
-        yunCustomsNo
+        yunCustomsNo,
+        t.department_id,t.internal_department_id,t.is_internal,oi.biz_belong_depart
         FROM
         order_info oi
         left join order_payment_cost t on oi.order_no = t.main_order_no
@@ -618,9 +619,11 @@
                 SELECT DISTINCT
                 <if test="cmd == 'main'">
                     oi.legal_name legalName,
+                    oi.legal_entity_id,
                 </if>
                 <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
                     opc.legal_name legalName,
+                    opc.legal_id legalEntityId,
                 </if>
                 <!--        <if test="cmd == 'bg'">-->
                 <!--            oc.legal_name legalName,-->
@@ -656,9 +659,11 @@
                 SELECT DISTINCT
                 <if test="cmd == 'main'">
                     oi.legal_name legalName,
+                    oi.legal_entity_id,
                 </if>
                 <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
                     sub.legal_name legalName,
+                    sub.legal_entity_id,
                 </if>
                 <!--        <if test="cmd == 'bg'">-->
                 <!--            oc.legal_name legalName,-->

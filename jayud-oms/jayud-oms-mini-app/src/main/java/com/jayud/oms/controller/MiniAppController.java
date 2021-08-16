@@ -568,7 +568,7 @@ public class MiniAppController {
             List<DriverOrderTakeAdrVO> receivingGoodsList = transportVO.getReceivingGoodsList();
             address = CollectionUtils.isEmpty(receivingGoodsList) ? receivingGoodsList.get(0).getAddress() : "";
         } else {
-            address = transportVO.getAddress();
+            address = transportVO.getReceivingProvince() + transportVO.getReceivingCity() + transportVO.getReceivingArea() + transportVO.getAddress();
         }
 
         response.put("address", address);

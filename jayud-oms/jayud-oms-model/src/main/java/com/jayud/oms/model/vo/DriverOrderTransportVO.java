@@ -40,25 +40,25 @@ public class DriverOrderTransportVO {
     private String status;
 
     @ApiModelProperty(value = "省（提货）")
-    private String pickUpProvince;
+    private String pickUpProvince="";
 
     @ApiModelProperty(value = "市（提货）")
-    private String pickUpCity;
+    private String pickUpCity="";
 
     @ApiModelProperty(value = "区(提货)")
-    private String pickUpArea;
+    private String pickUpArea="";
 
     @ApiModelProperty(value = "提货经纬度")
     private String pickLaAndLo;
 
     @ApiModelProperty(value = "省（送货）")
-    private String receivingProvince;
+    private String receivingProvince="";
 
     @ApiModelProperty(value = "市（送货）")
-    private String receivingCity;
+    private String receivingCity="";
 
     @ApiModelProperty(value = "区(送货)")
-    private String receivingArea;
+    private String receivingArea="";
 
     @ApiModelProperty(value = "送货经纬度")
     private String receivingLaAndLo;

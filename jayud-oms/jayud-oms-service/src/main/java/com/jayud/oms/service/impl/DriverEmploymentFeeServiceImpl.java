@@ -109,9 +109,9 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
     @Override
     public List<DriverEmploymentFee> getByOrderNos(List<String> orderNos, String status) {
         QueryWrapper<DriverEmploymentFee> condition = new QueryWrapper<>();
-        condition.lambda().eq(DriverEmploymentFee::getOrderNo, orderNos);
+        condition.lambda().in(DriverEmploymentFee::getOrderNo, orderNos);
         if (StringUtils.isNotEmpty(status)) {
-            condition.lambda().in(DriverEmploymentFee::getOrderNo, orderNos);
+            condition.lambda().eq(DriverEmploymentFee::getStatus, status);
         }
         return this.baseMapper.selectList(condition);
     }

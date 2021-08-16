@@ -38,6 +38,9 @@ public class CustomerTax extends Model<CustomerTax> {
     @ApiModelProperty(value = "开票地址")
     private String taxAddress;
 
+    @ApiModelProperty(value = "税务编号，纳税识别号，统一信用号码")
+    private String taxNo;
+
     @ApiModelProperty(value = "开票电话")
     private String taxTel;
 

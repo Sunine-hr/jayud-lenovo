@@ -114,6 +114,9 @@
         <if test="form.type !=null and form.type!=''">
             and co.id in (select customer_id from customer_class where class_name = #{form.type})
         </if>
+        <if test="form.classType !=null and form.classType!=''">
+            and co.id in (select customer_id from customer_class where class_name = #{form.classType})
+        </if>
         <if test="form.startTime !=null and form.startTime!=''">
             and co.crt_by_dtm <![CDATA[>= ]]> #{form.startTime}
         </if>
@@ -126,12 +129,12 @@
     <select id="toExamine" parameterType="map" statementType="CALLABLE" resultType="java.util.HashMap">
         {
         call up_public_check_sp(
-        #{table,mode=IN},
         #{actionCode,mode=IN},
+        #{table,mode=IN},
         #{id,mode=IN},
         #{userId,mode=IN},
         #{userName,mode=IN},
-        #{state,mode=OUT,jdbcType=INTEGER}
+        #{state,mode=OUT,jdbcType=INTEGER},
         #{string,mode=OUT,jdbcType=VARCHAR}
         )
         }
@@ -140,12 +143,12 @@
     <select id="deApproval" parameterType="map" statementType="CALLABLE" resultType="java.util.HashMap">
         {
         call up_public_uncheck_sp(
-        #{table,mode=IN},
         #{actionCode,mode=IN},
+        #{table,mode=IN},
         #{id,mode=IN},
         #{userId,mode=IN},
         #{userName,mode=IN},
-        #{state,mode=OUT,jdbcType=INTEGER}
+        #{state,mode=OUT,jdbcType=INTEGER},
         #{string,mode=OUT,jdbcType=VARCHAR}
         )
         }

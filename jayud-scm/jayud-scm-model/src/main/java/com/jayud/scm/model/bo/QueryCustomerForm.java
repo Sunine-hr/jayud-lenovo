@@ -19,6 +19,9 @@ public class QueryCustomerForm extends BasePageForm{
     @ApiModelProperty("客户类型")
     private String type;
 
+    @ApiModelProperty("类型")
+    private String classType;
+
 //    @ApiModelProperty("是否归类")
 //    private String isClassification;
 

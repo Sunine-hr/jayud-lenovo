@@ -32,6 +32,9 @@ public class AddCustomerNameForm {
     @ApiModelProperty(value = "统一信用代码")
     private String tax_no;
 
+    @ApiModelProperty(value = "类型")
+    private String type;
+
 
 
 

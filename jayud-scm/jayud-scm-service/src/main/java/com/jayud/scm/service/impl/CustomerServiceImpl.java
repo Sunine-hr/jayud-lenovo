@@ -80,7 +80,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             log.warn("客户添加成功");
             CustomerClass customerClass = new CustomerClass();
             customerClass.setCustomerId(customer.getId());
-            customerClass.setClassName("客户");
+            customerClass.setClassName(form.getType() != null ? form.getType() : "客户");
             customerClass.setCrtBy(systemUser.getId().intValue());
             customerClass.setCrtByDtm(LocalDateTime.now());
             customerClass.setCrtByName(systemUser.getUserName());
@@ -262,8 +262,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     public CommonResult toExamine(PermissionForm form) {
         Map<String,Object> map = new HashMap<>();
-        map.put("table",form.getTable());
         map.put("actionCode",form.getActionCode());
+        map.put("table",form.getTable());
         map.put("id",form.getId());
         map.put("userId",form.getUserId());
         map.put("userName",form.getUserName());

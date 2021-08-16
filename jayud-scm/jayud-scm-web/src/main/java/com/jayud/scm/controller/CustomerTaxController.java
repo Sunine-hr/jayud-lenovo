@@ -81,9 +81,6 @@ public class CustomerTaxController {
     public CommonResult<CustomerTaxVO> getCustomerTaxById(@RequestBody Map<String,Object> map) {
         Integer id = MapUtil.getInt(map, "id");
         CustomerTaxVO customerTaxVO = customerTaxService.getCustomerTaxById(id);
-        if(customerService.getById(customerTaxVO.getCustomerId()).getTaxNo() != null){
-            customerTaxVO.setTaxNo(customerService.getById(customerTaxVO.getCustomerId()).getTaxNo());
-        }
         return CommonResult.success(customerTaxVO);
     }
 

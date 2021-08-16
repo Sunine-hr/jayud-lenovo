@@ -152,4 +152,6 @@ public interface ISystemUserService extends IService<SystemUser> {
     List<SystemUserVO> getSystemUserList();
 
     SystemUser getSystemUserBySystemId(long longValue);
+
+    List<SystemUser> getSystemUserByDepartmentId(Long departmentId);
 }

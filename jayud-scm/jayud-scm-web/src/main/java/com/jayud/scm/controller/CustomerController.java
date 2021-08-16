@@ -93,7 +93,7 @@ public class CustomerController {
 
                     }
                     if(record.getCustomerState() != null){
-                        record.setCustomerState(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",record.getCustomerState()));
+                        record.setCustomerState(ibDataDicEntryService.getTextByDicCodeAndDataValue("1013",record.getCustomerState()));
                     }
                     if(record.getArea() != null){
                         record.setArea(ibDataDicEntryService.getTextByDicCodeAndDataValue("1015",record.getArea()));
@@ -126,7 +126,7 @@ public class CustomerController {
 
         }
         if(customerVO.getCustomerState() != null){
-            customerVO.setCustomerStateName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",customerVO.getCustomerState()));
+            customerVO.setCustomerStateName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1013",customerVO.getCustomerState()));
         }
         if(customerVO.getArea() != null){
             customerVO.setAreaName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1015",customerVO.getArea()));

@@ -28,4 +28,36 @@
         id, role_id, action_id, action_code, menu_code, date_type, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
 
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.SystemRoleActionDataVO">
+        select sra.id ,
+        sra.action_code actionCode,
+        sm.title title,sr.name name,
+        sra.date_type dataType,
+        sra.crt_by_name crtByName,
+        sra.crt_by_dtm crtByDtm
+        from system_role_action_data sra
+        left join system_role sr on sra.role_id = sr.id
+        left join system_menu sm on sra.action_id = sm.id
+        where srac.voided = 0
+        <if test="form.key != null and form.key != ''">
+            and
+            <if test="form.key == 'action_code' ">
+                sra.action_code like concat('%',#{form.condition},'%')
+            </if>
+            <if test="form.key == 'name' ">
+                sr.name like concat('%',#{form.condition},'%')
+            </if>
+        </if>
+    </select>
+
+    <select id="getRoleData" resultType="Integer">
+        select max (sra.date_type dataType)
+        from system_role_action_data sra
+        where sra.voided = 0
+        and sra.role_id in
+        <foreach collection="longs"  item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>

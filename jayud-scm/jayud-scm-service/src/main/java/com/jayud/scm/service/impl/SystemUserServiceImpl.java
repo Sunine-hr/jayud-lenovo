@@ -427,6 +427,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         return this.baseMapper.selectOne(condition);
     }
 
+    @Override
+    public List<SystemUser> getSystemUserByDepartmentId(Long departmentId) {
+        QueryWrapper<SystemUser> condition = new QueryWrapper<>();
+        condition.lambda().eq(SystemUser::getDepartmentId,departmentId);
+        condition.lambda().eq(SystemUser::getStatus,1);
+        return this.list(condition);
+    }
+
     /**
      * 添加登录记录
      *

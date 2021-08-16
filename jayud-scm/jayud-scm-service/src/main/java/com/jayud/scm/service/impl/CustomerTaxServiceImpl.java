@@ -61,7 +61,7 @@ public class CustomerTaxServiceImpl extends ServiceImpl<CustomerTaxMapper, Custo
     public boolean saveOrUpdateCustomerTax(AddCustomerTaxForm form) {
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
         CustomerFollow customerFollow = new CustomerFollow();
-        Customer customer = new Customer();
+//        Customer customer = new Customer();
 
         CustomerTax customerTax = ConvertUtil.convert(form, CustomerTax.class);
         if(form.getId() != null){
@@ -80,12 +80,12 @@ public class CustomerTaxServiceImpl extends ServiceImpl<CustomerTaxMapper, Custo
         boolean update = this.saveOrUpdate(customerTax);
         if(update){
 
-            customer.setId(form.getCustomerId());
-            customer.setTaxNo(form.getTaxNo());
-            boolean update1 = customerService.updateById(customer);
-            if(update1){
-                log.warn("修改客户税号为"+form.getTaxNo());
-            }
+//            customer.setId(form.getCustomerId());
+//            customer.setTaxNo(form.getTaxNo());
+//            boolean update1 = customerService.updateById(customer);
+//            if(update1){
+//                log.warn("修改客户税号为"+form.getTaxNo());
+//            }
 
             customerFollow.setCustomerId(form.getCustomerId());
             customerFollow.setCrtBy(systemUser.getId().intValue());

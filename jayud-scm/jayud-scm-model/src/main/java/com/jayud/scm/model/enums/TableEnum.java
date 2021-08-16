@@ -24,6 +24,7 @@ public enum TableEnum {
     customer_guarantee(13,"customer_guarantee"),
     customer_tax(14,"customer_tax"),
     fee_model(15,"fee_model"),
+    system_role_action_data(16,"system_role_action_data"),
 //    hs_code(16,"hs_code")
     ;
 

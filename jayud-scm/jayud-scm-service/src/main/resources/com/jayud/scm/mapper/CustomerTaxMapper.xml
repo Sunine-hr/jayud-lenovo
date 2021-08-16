@@ -35,7 +35,7 @@
 
     <select id="findByPage" resultType="com.jayud.scm.model.vo.CustomerTaxVO">
         select id, customer_id customerId,
-        is_default_value isDefaultValue,tax_name taxName, tax_address taxAddress, tax_tel taxTel, tax_bank taxBank, tax_bank_no taxBankNo,check_state_flag checkStateFlag,
+        is_default_value isDefaultValue,tax_name taxName, tax_address taxAddress, tax_tel taxTel, tax_bank taxBank, tax_bank_no taxBankNo,check_state_flag checkStateFlag,tax_no taxNo,
         crt_by_name crtByName, crt_by_dtm crtByDtm,remark,mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
         from customer_tax where voided = 0 and customer_id = #{form.id}
     </select>

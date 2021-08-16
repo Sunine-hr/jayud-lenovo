@@ -145,7 +145,7 @@ public class OrderComboxController {
         resultMap.put(CommonConstant.CONTRACTS, comboxStrVOS);
 
         //业务所属部门
-        initComboxVOS =  oauthClient.findDepartment().getData();
+        initComboxVOS = oauthClient.findDepartment().getData();
         resultMap.put(CommonConstant.DEPARTMENTS, initComboxVOS);
 
         //通关口岸
@@ -228,7 +228,7 @@ public class OrderComboxController {
 
         //根据客户获取业务员
         //设置业务员默认值
-        resultMap.put("ywId",customer.getYwId());
+        resultMap.put("ywId", customer.getYwId());
 //        List<InitComboxVO> yws = new ArrayList<>();
 //        List<Long> ids = new ArrayList<>();
 //        ids.add(customer.getYwId());
@@ -638,6 +638,11 @@ public class OrderComboxController {
         switch (orderSignEnum) {
             case BG:
                 department = "报关部";
+                break;
+            case CCF:
+            case CCE:
+            case CCI:
+                department = "仓储部";
                 break;
         }
         Object departmentId = oauthClient.getDeptIdByDeptName(department).getData();

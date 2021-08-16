@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -114,6 +115,7 @@ public class OrderCommonController {
         if ("submit_main".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())) {
             List<InputPaymentCostForm> paymentCostForms = form.getPaymentCostList();
             List<InputReceivableCostForm> receivableCostForms = form.getReceivableCostList();
+            Map<String, String> costInfoMap = this.costInfoService.findCostInfo().stream().collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName()));
             for (InputPaymentCostForm paymentCost : paymentCostForms) {
                 if (StringUtil.isNullOrEmpty(paymentCost.getCustomerCode())
                         || StringUtil.isNullOrEmpty(paymentCost.getCostCode())
@@ -124,6 +126,9 @@ public class OrderCommonController {
                         || paymentCost.getAmount() == null || paymentCost.getExchangeRate() == null
                         || paymentCost.getChangeAmount() == null) {
                     return CommonResult.error(400, "参数不合法");
+                }
+                if (paymentCost.getAmount().compareTo(new BigDecimal(0)) == 0) {
+                    return CommonResult.error(400, costInfoMap.get(paymentCost.getCostCode()) + "应付金额不能为0");
                 }
 
                 paymentCost.checkParam();
@@ -138,6 +143,9 @@ public class OrderCommonController {
                         || receivableCost.getAmount() == null || receivableCost.getExchangeRate() == null
                         || receivableCost.getChangeAmount() == null) {
                     return CommonResult.error(400, "参数不合法");
+                }
+                if (receivableCost.getAmount().compareTo(new BigDecimal(0)) == 0) {
+                    return CommonResult.error(400, costInfoMap.get(receivableCost.getCostCode()) + "应收金额不能为0");
                 }
                 receivableCost.checkUnitParam();
             }
@@ -211,7 +219,7 @@ public class OrderCommonController {
         result.put("isTrailer", isTrailer);
         result.put("cabinetSizeName", MapUtil.getStr(map, "cabinetSizeName"));
         result.put("licensePlate", MapUtil.getStr(map, "plateNumber"));
-        result.put("isFast",isFast);
+        result.put("isFast", isFast);
 
         result.put("takeTimeStr", MapUtil.getStr(map, "dateStr"));
         return CommonResult.success(result);

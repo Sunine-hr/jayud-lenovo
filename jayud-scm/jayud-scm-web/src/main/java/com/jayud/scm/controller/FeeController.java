@@ -127,7 +127,7 @@ public class FeeController {
     public CommonResult stepPriceSetting(@RequestBody AddFeeLadderSettingForm form) {
         boolean result = feeLadderService.stepPriceSetting(form);
         if(!result){
-            return CommonResult.error(444,"复制结算方案条款失败");
+            return CommonResult.error(444,"添加结算方案阶梯价失败");
         }
         return CommonResult.success();
     }

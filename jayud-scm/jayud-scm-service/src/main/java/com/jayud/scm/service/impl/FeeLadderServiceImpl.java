@@ -1,6 +1,7 @@
 package com.jayud.scm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddFeeLadderForm;
@@ -49,14 +50,19 @@ public class FeeLadderServiceImpl extends ServiceImpl<FeeLadderMapper, FeeLadder
         QueryWrapper<FeeLadder> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(FeeLadder::getFeeId,form.getFeeId());
         queryWrapper.lambda().eq(FeeLadder::getVoided,0);
+        boolean b = true;
         List<FeeLadder> list = this.list(queryWrapper);
-        for (FeeLadder feeLadder : list) {
-            feeLadder.setVoided(1);
-            feeLadder.setVoidedBy(systemUser.getId().intValue());
-            feeLadder.setVoidedByDtm(LocalDateTime.now());
-            feeLadder.setVoidedByName(systemUser.getUserName());
+        if(CollectionUtils.isNotEmpty(list)){
+            for (FeeLadder feeLadder : list) {
+                feeLadder.setVoided(1);
+                feeLadder.setVoidedBy(systemUser.getId().intValue());
+                feeLadder.setVoidedByDtm(LocalDateTime.now());
+                feeLadder.setVoidedByName(systemUser.getUserName());
+            }
+            b = this.updateBatchById(list);
         }
-        boolean b = this.updateBatchById(list);
+
+
         if(b){
             log.warn("删除原来阶梯价成功"+form.getFeeId());
             List<FeeLadder> feeLadders = ConvertUtil.convertList(form.getAddFeeLadderForms(), FeeLadder.class);

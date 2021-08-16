@@ -10,6 +10,9 @@ ADD COLUMN `lo_and_la` varchar(255) NULL COMMENT '腾讯经纬度' AFTER `mailbo
 ALTER TABLE `order_payment_cost`
 ADD COLUMN `driver_cost_id` bigint(20) NULL COMMENT '司机费用id' AFTER `unit_name`;
 
+ALTER TABLE `driver_order_info`
+ADD COLUMN `jockey_id` bigint(20) NULL DEFAULT NULL COMMENT '骑师id(司机信息id)' AFTER `status`;
+
 
 CREATE TABLE `applet_order_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -25,7 +28,7 @@ CREATE TABLE `applet_order_record` (
   `receiving_city` varchar(50) DEFAULT NULL COMMENT '市（送货）',
   `receiving_area` varchar(50) DEFAULT NULL COMMENT '区(送货)',
   `receiving_la_and_lo` varchar(50) DEFAULT NULL COMMENT '送货经纬度',
-  `goods_desc` varchar(50) DEFAULT NULL COMMENT '货物信息',
+  `goods_desc` varchar(1000) DEFAULT NULL COMMENT '货物信息',
   `time` varchar(50) DEFAULT NULL COMMENT '中港订单时间',
   `address` varchar(255) DEFAULT NULL COMMENT '送货详细地址(中转仓库)',
   `contacts` varchar(255) DEFAULT NULL COMMENT '联系人(中转仓库)',
@@ -39,3 +42,22 @@ CREATE TABLE `applet_order_record` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='小程序订单记录';
 
+
+CREATE TABLE `applet_order_addr` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '小程序记录地址id',
+  `applet_order_record_id` bigint(20) DEFAULT NULL COMMENT '小程序订单记录id',
+  `order_no` varchar(50) DEFAULT NULL COMMENT '订单编号',
+  `contacts` varchar(255) DEFAULT NULL COMMENT '联系人',
+  `phone` varchar(255) DEFAULT NULL COMMENT '联系电话',
+  `take_time` datetime DEFAULT NULL COMMENT '提货/收货日期',
+  `goods_desc` varchar(1000) DEFAULT NULL COMMENT '货物描述',
+  `piece_amount` varchar(50) DEFAULT NULL COMMENT '件数',
+  `weight` varchar(50) DEFAULT NULL COMMENT '重量',
+  `opr_type` int(10) DEFAULT NULL COMMENT '类型(1提货 2收货)',
+  `province` varchar(50) DEFAULT NULL COMMENT '省',
+  `city` varchar(50) DEFAULT NULL COMMENT '市',
+  `area` varchar(50) DEFAULT NULL COMMENT '区',
+  `address` varchar(1000) DEFAULT NULL COMMENT '详细地址',
+  `lo_and_la` varchar(255) DEFAULT NULL COMMENT '经纬度',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COMMENT='小程序订单地址记录';

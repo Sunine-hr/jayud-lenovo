@@ -542,36 +542,53 @@ public class MiniAppController {
         if (org.apache.commons.lang.StringUtils.isEmpty(orderNo)) {
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
         }
+        QueryDriverOrderTransportForm form = new QueryDriverOrderTransportForm();
+        form.setOrderNo(orderNo);
+        ApiResult result = tmsClient.getDriverOrderTransport(form);
+        Gson gson = new Gson();
+        Type type = new TypeToken<ApiResult<List<DriverOrderTransportVO>>>() {
+        }.getType();
+        ApiResult<List<DriverOrderTransportVO>> data = gson.fromJson(gson.toJson(result), type);
+        List<DriverOrderTransportVO> tmps = data.getData();
+        if (CollectionUtils.isEmpty(tmps)) {
+            return CommonResult.success();
+        }
+        DriverOrderTransportVO transportVO = tmps.get(0);
+
         //查询送货地址
-        ApiResult<List<DriverOrderTakeAdrVO>> result = this.tmsClient.getDriverOrderTakeAdrByOrderNo(Collections.singletonList(orderNo), 2);
-        if (!result.isOk()) {
-            log.warn("查询送货地址失败");
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        List<DriverOrderTakeAdrVO> orderTakeAdrVOs = result.getData();
+//        ApiResult<List<DriverOrderTakeAdrVO>> result = this.tmsClient.getDriverOrderTakeAdrByOrderNo(Collections.singletonList(orderNo), 2);
+//        if (!result.isOk()) {
+//            log.warn("查询送货地址失败");
+//            return CommonResult.error(ResultEnum.OPR_FAIL);
+//        }
+//        List<DriverOrderTakeAdrVO> orderTakeAdrVOs = result.getData();
         Map<String, Object> response = new HashMap<>();
-        if (orderTakeAdrVOs.size() == 1) { //只有一个送货地址，取送货地址
-            String address = orderTakeAdrVOs.get(0).getAddress();
-            response.put("address", address);
-            return CommonResult.success(response);
+        String address = "";
+        if (transportVO.getIsVirtual() != null && transportVO.getIsVirtual()) { //只有一个送货地址，取送货地址
+            List<DriverOrderTakeAdrVO> receivingGoodsList = transportVO.getReceivingGoodsList();
+            address = CollectionUtils.isEmpty(receivingGoodsList) ? receivingGoodsList.get(0).getAddress() : "";
+        } else {
+            address = transportVO.getAddress();
         }
+
+        response.put("address", address);
         //送货地址大于一个，取中转仓地址
         //查询派车单
-        result = this.tmsClient.getOrderSendCarsByOrderNo(orderNo);
-        if (!result.isOk()) {
-            log.warn("查询派车单信息失败");
-            return CommonResult.error(ResultEnum.OPR_FAIL);
-        }
-        JSONObject json = JSONObject.parseObject(JSONObject.toJSONString(result.getData()));
-        Long warehouseInfoId = json.getLong("warehouseInfoId");
-
-        WarehouseInfo warehouseInfo = this.warehouseInfoService.getById(warehouseInfoId);
+//        result = this.tmsClient.getOrderSendCarsByOrderNo(orderNo);
+//        if (!result.isOk()) {
+//            log.warn("查询派车单信息失败");
+//            return CommonResult.error(ResultEnum.OPR_FAIL);
+//        }
+//        JSONObject json = JSONObject.parseObject(JSONObject.toJSONString(result.getData()));
+//        Long warehouseInfoId = json.getLong("warehouseInfoId");
+//
+//        WarehouseInfo warehouseInfo = this.warehouseInfoService.getById(warehouseInfoId);
         //查询中转仓地址名称
-        Collection<RegionCity> regionCities = regionCityService.listByIds(Arrays.asList(warehouseInfo.getStateCode(), warehouseInfo.getCityCode(), warehouseInfo.getAreaCode()));
-        //拼接地址
-        StringBuilder sb = new StringBuilder();
-        regionCities.forEach(tmp -> sb.append(tmp.getName()));
-        response.put("address", sb.append(warehouseInfo.getAddress()));
+//        Collection<RegionCity> regionCities = regionCityService.listByIds(Arrays.asList(warehouseInfo.getStateCode(), warehouseInfo.getCityCode(), warehouseInfo.getAreaCode()));
+//        //拼接地址
+//        StringBuilder sb = new StringBuilder();
+//        regionCities.forEach(tmp -> sb.append(tmp.getName()));
+//        response.put("address", sb.append(warehouseInfo.getAddress()));
         return CommonResult.success(response);
     }
 
@@ -587,6 +604,16 @@ public class MiniAppController {
      * 获取流程
      */
     private List<Map<String, Object>> getProcess(String orderNo, String status, boolean isGetNot, Map<String, Object> cacheValue) {
+        //TODO 后面要改就用这个
+//        ApiResult resultOne = this.tmsClient.getTmsOrderByOrderNo(orderNo);
+//        if (!resultOne.isOk()) {
+//            log.error("远程调用查询中港订单失败");
+//            throw new JayudBizException(ResultEnum.OPR_FAIL);
+//        }
+//        if (status == null) {
+//            status = new cn.hutool.json.JSONObject(resultOne.getData()).getStr("status");
+//        }
+
         if (status == null) {
             ApiResult resultOne = this.tmsClient.getOrderTransportStatus(orderNo);
             if (!resultOne.isOk()) {

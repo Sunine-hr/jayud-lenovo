@@ -769,14 +769,16 @@ public class MiniAppController {
         status.add(OrderStatusEnum.COST_2.getCode());
         status.add(OrderStatusEnum.COST_3.getCode());
 
+        List<Map<String, Object>> list = new ArrayList<>();
+
         List<DriverEmploymentFee> employmentFees = this.driverEmploymentFeeService.getByOrderNos(orderNos, EmploymentFeeStatusEnum.SUBMITTED.getCode());
         if (CollectionUtils.isEmpty(employmentFees)) {
-            return CommonResult.success();
+            return CommonResult.success(list);
         }
         List<Long> employIds = employmentFees.stream().map(DriverEmploymentFee::getId).collect(Collectors.toList());
 
         List<DriverBillCostVO> driverBillCost = this.orderPaymentCostService.getDriverBillCost(orderNos, status, time, employIds);
-        List<Map<String, Object>> list = new ArrayList<>();
+
         if (!CollectionUtils.isEmpty(driverBillCost)) {
             Map<String, String> currencyNameMap = this.currencyInfoService.initCurrencyInfo().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
             Map<String, Map<String, Object>> tmpMap = new HashMap<>();
@@ -817,15 +819,17 @@ public class MiniAppController {
         status.add(OrderStatusEnum.COST_2.getCode());
         status.add(OrderStatusEnum.COST_3.getCode());
 
+        List<Map<String, Object>> list = new ArrayList<>();
+
         List<DriverEmploymentFee> employmentFees = this.driverEmploymentFeeService.getByOrderNos(Arrays.asList(orderNo), EmploymentFeeStatusEnum.SUBMITTED.getCode());
         if (CollectionUtils.isEmpty(employmentFees)) {
-            return CommonResult.success();
+            return CommonResult.success(list);
         }
         List<Long> employIds = employmentFees.stream().map(DriverEmploymentFee::getId).collect(Collectors.toList());
 
 
         List<DriverBillCostVO> driverBillCost = this.orderPaymentCostService.getDriverBillCost(Arrays.asList(orderNo), status, null, employIds);
-        List<Map<String, Object>> list = new ArrayList<>();
+
         if (!CollectionUtils.isEmpty(driverBillCost)) {
             Map<String, String> currencyNameMap = this.currencyInfoService.initCurrencyInfo().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
             Map<String, String> costInfoMap = this.costInfoService.findCostInfo().stream().collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName()));

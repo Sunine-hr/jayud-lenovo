@@ -179,4 +179,11 @@ public interface TmsClient {
      */
     @RequestMapping(value = "/api/getTmsById")
     public ApiResult getTmsById(@RequestParam("id") Long id);
+
+    /**
+     * 获取司机待接单
+     */
+    @RequestMapping(value = "/api/getDriverPendingOrder")
+    public ApiResult getDriverPendingOrder(@RequestParam("orderNos") List<String> orderNos);
+
 }

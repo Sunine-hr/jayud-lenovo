@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.entity.MapEntity;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,6 +78,10 @@ public class MiniAppController {
     private IAppletOrderAddrService appletOrderAddrService;
     @Autowired
     private FileClient fileClient;
+    @Autowired
+    private MapPositioningService mapPositioningService;
+    @Value("${tencentMap.key}")
+    private String tencentMapKey;
 
 
     @PostMapping("/getDriverOrderTransport")
@@ -254,9 +260,22 @@ public class MiniAppController {
         String mainOrderNo = json.getString("mainOrderNo");
         String orderNo = json.getString("orderNo");
 
+        Object sendCarsObj = this.tmsClient.getOrderSendCarsByOrderNo(orderNo).getData();
+        cn.hutool.json.JSONObject jsonObject = new cn.hutool.json.JSONObject(sendCarsObj);
+
         //根据子订单ID去找派车信息，然后找到车辆供应商信息 待开发 TODO
         DriverInfoLinkVO driverInfoLink = this.driverInfoService.getDriverInfoLink(driverId);
         List<VehicleInfoVO> vehicleInfoVOList = driverInfoLink.getVehicleInfoVOList();
+        String supplierCode = "";
+        String supplierName = "";
+        for (VehicleInfoVO vehicleInfoVO : vehicleInfoVOList) {
+            Long vehicleId = jsonObject.getLong("vehicleId");
+            if (vehicleId.equals(vehicleInfoVO.getId())) {
+                supplierCode = vehicleInfoVO.getSupplierCode();
+                supplierName = vehicleInfoVO.getSupplierName();
+            }
+
+        }
 
         DriverEmploymentFee driverEmploymentFee = new DriverEmploymentFee()
                 .setCostCode(form.getCostCode())
@@ -267,8 +286,8 @@ public class MiniAppController {
                 .setMainOrderNo(mainOrderNo)
                 .setOrderId(form.getOrderId())
                 .setOrderNo(orderNo)
-                .setSupplierCode(vehicleInfoVOList.get(0).getSupplierCode())
-                .setSupplierName(vehicleInfoVOList.get(0).getSupplierName())
+                .setSupplierCode(supplierCode)
+                .setSupplierName(supplierName)
                 .setCreateTime(LocalDateTime.now())
                 .setStatus(EmploymentFeeStatusEnum.SUBMIT.getCode())
                 .setDriverId(driverId);
@@ -633,7 +652,7 @@ public class MiniAppController {
 
         if (CollectionUtils.isNotEmpty(data)) {
             DriverOrderTransportVO driverOrderTransportVO = data.get(0);
-
+            Boolean isVirtual = driverOrderTransportVO.getIsVirtual();
             DriverOrderTakeAdrVO pickUpAddr = driverOrderTransportVO.getPickUpGoodsList().get(0);
             String loAndLa = pickUpAddr.getLoAndLa();
             if (!StringUtils.isEmpty(loAndLa)) {
@@ -644,11 +663,18 @@ public class MiniAppController {
             }
             DriverOrderTakeAdrVO receivingAddr = driverOrderTransportVO.getReceivingGoods();
             loAndLa = receivingAddr.getLoAndLa();
-            if (!StringUtils.isEmpty(loAndLa)) {
-                String[] split = loAndLa.split(",");
+            if (isVirtual != null && !isVirtual) {
+                MapEntity mapEntity = this.mapPositioningService.getTencentMapLaAndLo(receivingAddr.getAddress(), tencentMapKey);
                 endPoint.put("name", receivingAddr.getAddress());
-                endPoint.put("longitude", split[0]);
-                endPoint.put("latitude", split[1]);
+                endPoint.put("longitude", mapEntity.getLongitude());
+                endPoint.put("latitude", mapEntity.getLatitude());
+            } else {
+                if (!StringUtils.isEmpty(loAndLa)) {
+                    String[] split = loAndLa.split(",");
+                    endPoint.put("name", receivingAddr.getAddress());
+                    endPoint.put("longitude", split[0]);
+                    endPoint.put("latitude", split[1]);
+                }
             }
 
         }
@@ -716,13 +742,13 @@ public class MiniAppController {
         status.add(OrderStatusEnum.COST_2.getCode());
         status.add(OrderStatusEnum.COST_3.getCode());
 
-        List<DriverEmploymentFee> employmentFees = this.driverEmploymentFeeService.getByCondition(new DriverEmploymentFee().setDriverId(driverId).setStatus(EmploymentFeeStatusEnum.SUBMITTED.getCode()));
+        List<DriverEmploymentFee> employmentFees = this.driverEmploymentFeeService.getByOrderNos(orderNos, EmploymentFeeStatusEnum.SUBMITTED.getCode());
         if (CollectionUtils.isEmpty(employmentFees)) {
             return CommonResult.success();
         }
         List<Long> employIds = employmentFees.stream().map(DriverEmploymentFee::getId).collect(Collectors.toList());
 
-        List<DriverBillCostVO> driverBillCost = this.orderPaymentCostService.getDriverBillCost(orderNos, status, time,employIds);
+        List<DriverBillCostVO> driverBillCost = this.orderPaymentCostService.getDriverBillCost(orderNos, status, time, employIds);
         List<Map<String, Object>> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(driverBillCost)) {
             Map<String, String> currencyNameMap = this.currencyInfoService.initCurrencyInfo().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
@@ -764,7 +790,7 @@ public class MiniAppController {
         status.add(OrderStatusEnum.COST_2.getCode());
         status.add(OrderStatusEnum.COST_3.getCode());
 
-        List<DriverEmploymentFee> employmentFees = this.driverEmploymentFeeService.getByCondition(new DriverEmploymentFee().setDriverId(driverId).setStatus(EmploymentFeeStatusEnum.SUBMITTED.getCode()));
+        List<DriverEmploymentFee> employmentFees = this.driverEmploymentFeeService.getByOrderNos(Arrays.asList(orderNo), EmploymentFeeStatusEnum.SUBMITTED.getCode());
         if (CollectionUtils.isEmpty(employmentFees)) {
             return CommonResult.success();
         }

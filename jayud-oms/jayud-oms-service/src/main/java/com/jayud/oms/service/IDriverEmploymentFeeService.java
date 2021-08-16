@@ -45,4 +45,6 @@ public interface IDriverEmploymentFeeService extends IService<DriverEmploymentFe
     List<DriverEmploymentFeeVO> getEmploymentFeeInfo(String orderNo);
 
     List<DriverEmploymentFee> getByCondition(DriverEmploymentFee driverEmploymentFee);
+
+    List<DriverEmploymentFee> getByOrderNos(List<String> orderNos, String status);
 }

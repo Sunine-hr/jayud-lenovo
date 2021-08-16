@@ -398,6 +398,17 @@ public class ExternalApiController {
     public ApiResult<OrderTransport> getTmsById(@RequestParam("id") Long id) {
         return ApiResult.ok(this.orderTransportService.getById(id));
     }
+
+
+    /**
+     * 获取司机待接单
+     */
+    @RequestMapping(value = "/api/getDriverPendingOrder")
+    public ApiResult<List<OrderSendCars>> getDriverPendingOrder(@RequestParam("orderNos") List<String> orderNos) {
+        QueryWrapper<OrderSendCars> condition = new QueryWrapper<>();
+        condition.lambda().notIn(OrderSendCars::getOrderNo, orderNos);
+        return ApiResult.ok(this.orderSendCarsService.getBaseMapper().selectList(condition));
+    }
 }
 
 

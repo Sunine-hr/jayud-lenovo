@@ -106,5 +106,15 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
         return this.baseMapper.selectList(new QueryWrapper<>(driverEmploymentFee));
     }
 
+    @Override
+    public List<DriverEmploymentFee> getByOrderNos(List<String> orderNos, String status) {
+        QueryWrapper<DriverEmploymentFee> condition = new QueryWrapper<>();
+        condition.lambda().eq(DriverEmploymentFee::getOrderNo, orderNos);
+        if (StringUtils.isNotEmpty(status)) {
+            condition.lambda().in(DriverEmploymentFee::getOrderNo, orderNos);
+        }
+        return this.baseMapper.selectList(condition);
+    }
+
 
 }

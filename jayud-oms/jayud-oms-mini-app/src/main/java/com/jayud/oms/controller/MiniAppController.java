@@ -566,7 +566,7 @@ public class MiniAppController {
         String address = "";
         if (transportVO.getIsVirtual() != null && transportVO.getIsVirtual()) { //只有一个送货地址，取送货地址
             List<DriverOrderTakeAdrVO> receivingGoodsList = transportVO.getReceivingGoodsList();
-            address = CollectionUtils.isEmpty(receivingGoodsList) ? receivingGoodsList.get(0).getAddress() : "";
+            address = !CollectionUtils.isEmpty(receivingGoodsList) ? receivingGoodsList.get(0).getAddress() : "";
         } else {
             address = transportVO.getReceivingProvince() + transportVO.getReceivingCity() + transportVO.getReceivingArea() + transportVO.getAddress();
         }

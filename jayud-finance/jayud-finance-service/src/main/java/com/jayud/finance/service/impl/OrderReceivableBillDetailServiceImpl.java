@@ -587,7 +587,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
                             if ("money".equals(f.getName())) {
                                 addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
                             }
-                            propertiesMap.put(addProperties, addValue);
+                            propertiesMap.put(addProperties, new BigDecimal(addValue).setScale(2).stripTrailingZeros().toPlainString());
                         }
                         jsonObject.putAll(propertiesMap);
 //                        viewBillToOrder = (ViewBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);

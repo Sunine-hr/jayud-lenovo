@@ -463,6 +463,10 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                             if ("money".equals(f.getName())) {
                                 addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
                             }
+                            //2位不四舍五入
+                            if (!StringUtils.isEmpty(addValue)){
+                                addValue=new BigDecimal(addValue).setScale(2,BigDecimal.ROUND_DOWN).stripTrailingZeros().toPlainString();
+                            }
                             propertiesMap.put(addProperties, addValue);
                         }
                         jsonObject.putAll(propertiesMap);

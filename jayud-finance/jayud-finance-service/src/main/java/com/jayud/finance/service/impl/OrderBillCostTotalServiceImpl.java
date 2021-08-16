@@ -100,7 +100,7 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
 
             BigDecimal money = this.baseMapper.calculateSettlementCurrency(object.getStr("billNo"),
                     moneyType, cmd, orderNo);
-            object.put(key, money);
+            object.put(key, money.setScale(2, BigDecimal.ROUND_DOWN).stripTrailingZeros().toPlainString());
         }
     }
 

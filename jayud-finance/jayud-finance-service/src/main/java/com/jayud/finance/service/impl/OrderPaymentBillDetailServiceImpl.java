@@ -13,10 +13,7 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.enums.BillTypeEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
-import com.jayud.common.utils.BeanUtils;
-import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.DateUtils;
-import com.jayud.common.utils.Utilities;
+import com.jayud.common.utils.*;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.enums.BillTemplateEnum;
@@ -589,6 +586,10 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                             }
                             if ("money".equals(f.getName())) {
                                 addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
+                            }
+                            //2位不四舍五入
+                            if (!StringUtils.isEmpty(addValue)){
+                                addValue=new BigDecimal(addValue).setScale(2,BigDecimal.ROUND_DOWN).stripTrailingZeros().toPlainString();
                             }
                             propertiesMap.put(addProperties, addValue);
                         }

@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -43,6 +45,9 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
     @Autowired
     private IOrderPaymentCostService paymentCostService;
 
+    ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
+
+
     @Override
     public List<Map<String, Object>> getCSPendingNum() {
         Map<String, String> tmp = new LinkedHashMap<>();
@@ -54,15 +59,14 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
 
         List<Map<String, Object>> result = new ArrayList<>(tmp.size());
 
-        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
-        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = legalEntityByLegalName.getData();
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         AtomicReference<List<OrderInfo>> orderInfos = new AtomicReference<>();
         Map<String, Integer> unemployedFeesMap = new HashMap<>();
 
-
-        new Thread(() -> {
+        fixedThreadPool.execute(()->{
             try {
                 List<OrderInfo> list = this.orderInfoService.getByLegalEntityIds(legalIds);
                 orderInfos.set(list);
@@ -74,7 +78,21 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
                 log.warn("获取未录用费用数量线程报错", e);
                 countDownLatch.countDown();
             }
-        }).start();
+        });
+
+//        new Thread(() -> {
+//            try {
+//                List<OrderInfo> list = this.orderInfoService.getByLegalEntityIds(legalIds);
+//                orderInfos.set(list);
+//                //统计未录用订单数量
+//                Integer num = this.costCommonService.allUnemployedFeesNum(list, legalIds, SubOrderSignEnum.MAIN.getSignOne());
+//                unemployedFeesMap.put("pendingFees", num);
+//                countDownLatch.countDown();
+//            } catch (Exception e) {
+//                log.warn("获取未录用费用数量线程报错", e);
+//                countDownLatch.countDown();
+//            }
+//        }).start();
 
         tmp.forEach((k, v) -> {
             Map<String, Object> map = new HashMap<>();

@@ -173,4 +173,6 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
 
 
     List<ProfitStatementBillDetailsVO> statisticsBillByCostIds(@Param("payCostIds")List<String> payCostIds);
+
+    List<Map<String, Object>> getBillingStatusNum(@Param("userName") String userName);
 }

@@ -31,4 +31,15 @@ public interface FinanceClient {
     @RequestMapping(value = "/api/getExchangeRates")
     public ApiResult<Map<String, BigDecimal>> getExchangeRates(@RequestParam("dcCode") String dcCode,
                                                                @RequestParam("month") String month);
+
+    /**
+     * 应收/应付账单状态统计
+     *
+     * @param userName
+     * @param type     类型(0:应收,1:应付)
+     * @return
+     */
+    @RequestMapping(value = "/api/getBillingStatusNum")
+    public ApiResult<Map<String, Integer>> getBillingStatusNum(@RequestParam("userName") String userName,
+                                                               @RequestParam("type") Integer type);
 }

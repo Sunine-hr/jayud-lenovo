@@ -275,4 +275,11 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @return
      */
     List<ProfitStatementBillDetailsVO> statisticsBillByCostIds(List<String> payCostIds);
+
+    /**
+     * 获取制单人账单数量
+     * @param userName
+     * @return
+     */
+    List<Map<String, Object>> getBillingStatusNum(String userName);
 }

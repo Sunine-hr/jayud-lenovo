@@ -1199,6 +1199,16 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         return this.baseMapper.statisticsBillByCostIds(reCostIds);
     }
 
+    /**
+     * 获取制单人账单数量
+     * @param userName
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> getBillingStatusNum(String userName) {
+        return this.baseMapper.getBillingStatusNum(userName);
+    }
+
 
     private void tmsSpecialDataProcessing(String cmd, ViewBilToOrderVO viewBillToOrder) {
         //中港运输 处理目的地:当有两条或两条以上时,则获取中转仓地址

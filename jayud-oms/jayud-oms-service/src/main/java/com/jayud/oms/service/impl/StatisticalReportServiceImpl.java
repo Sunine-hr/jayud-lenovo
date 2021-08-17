@@ -9,6 +9,8 @@ import com.jayud.common.utils.BigDecimalUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
+import com.jayud.oms.feign.FileClient;
+import com.jayud.oms.feign.FinanceClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderInfo;
@@ -44,6 +46,8 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
     private IOrderReceivableCostService receivableCostService;
     @Autowired
     private IOrderPaymentCostService paymentCostService;
+    @Autowired
+    private FinanceClient financeClient;
 
     ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
 
@@ -56,6 +60,12 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
         tmp.put("待录入费用", "pendingFees");
         tmp.put("费用审核", "feeCheck");
         tmp.put("待处理", "pending");
+        tmp.put("应收账单提交财务", "reBillSubmitFinance");
+        tmp.put("应付账单提交财务", "payBillSubmitFinance");
+        tmp.put("开票申请", "invoicingRequisition");
+        tmp.put("付款申请","paymentApplication");
+
+
 
         List<Map<String, Object>> result = new ArrayList<>(tmp.size());
 
@@ -66,7 +76,7 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
         AtomicReference<List<OrderInfo>> orderInfos = new AtomicReference<>();
         Map<String, Integer> unemployedFeesMap = new HashMap<>();
 
-        fixedThreadPool.execute(()->{
+        fixedThreadPool.execute(() -> {
             try {
                 List<OrderInfo> list = this.orderInfoService.getByLegalEntityIds(legalIds);
                 orderInfos.set(list);
@@ -93,7 +103,9 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
 //                countDownLatch.countDown();
 //            }
 //        }).start();
-
+        String userName = UserOperator.getToken();
+        Map<String, Integer> receivableStatusNum = this.financeClient.getBillingStatusNum(userName, 0).getData();
+        Map<String, Integer> payStatusNum = this.financeClient.getBillingStatusNum(userName, 1).getData();
         tmp.forEach((k, v) -> {
             Map<String, Object> map = new HashMap<>();
             Integer num = 0;
@@ -121,6 +133,18 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
                             num = (int) orderInfos.get().stream().filter(e -> (e.getIsRejected() != null && e.getIsRejected())
                                     || OrderStatusEnum.MAIN_6.getCode().equals(e.getStatus().toString())).count();
                         }
+                        break;
+                    case "reBillSubmitFinance":
+                        num = receivableStatusNum.get("B_2");
+                        break;
+                    case "payBillSubmitFinance":
+                        num = payStatusNum.get("B_2");
+                        break;
+                    case "invoicingRequisition":
+                        num = receivableStatusNum.get("B_4");
+                        break;
+                    case "paymentApplication":
+                        num = payStatusNum.get("B_4");
                         break;
                 }
 

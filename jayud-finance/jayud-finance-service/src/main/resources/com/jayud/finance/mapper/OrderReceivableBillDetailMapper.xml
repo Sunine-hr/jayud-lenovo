@@ -691,4 +691,20 @@
         </where>
         group by orbd.bill_no
     </select>
+
+
+    <select id="getBillingStatusNum" resultType="java.util.Map">
+        SELECT
+        tmp.audit_status auditStatus,
+        count(1) num
+        FROM
+        (select * from `order_receivable_bill_detail`
+        <where>
+            <if test="userName==null and userName!=''">
+                make_user=#{userName}
+            </if>
+        </where>
+        group by bill_no) tmp
+        group by tmp.audit_status
+    </select>
 </mapper>

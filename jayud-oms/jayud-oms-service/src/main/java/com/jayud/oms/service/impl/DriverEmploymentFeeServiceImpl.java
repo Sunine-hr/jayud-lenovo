@@ -82,7 +82,8 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
                     .setCustomerName(driverEmploymentFee.getSupplierName())
                     .setSubType(SubOrderSignEnum.ZGYS.getSignOne())
                     .setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()))
-                    .setDriverCostId(driverEmploymentFee.getId());
+                    .setDriverCostId(driverEmploymentFee.getId())
+                    .setExchangeRate(driverEmploymentFee.getExchangeRate());
 
             DriverEmploymentFee employmentFee = new DriverEmploymentFee()
                     .setId(driverEmploymentFee.getId())

@@ -3,27 +3,18 @@ package com.jayud.oms.schedule;
 import cn.hutool.core.date.StopWatch;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.oms.feign.TmsClient;
-import com.jayud.oms.model.bo.GetOrderDetailForm;
-import com.jayud.oms.model.enums.EmploymentFeeStatusEnum;
+import com.jayud.oms.model.enums.DriverOrderStatusEnum;
 import com.jayud.oms.model.po.DriverOrderInfo;
-import com.jayud.oms.model.po.OrderInfo;
-import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.IDriverOrderInfoService;
-import com.jayud.oms.service.IMsgPushRecordService;
-import com.jayud.oms.service.IOrderInfoService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,7 +59,7 @@ public class ScheduledTask {
             driverOrderInfo.setJockeyId(jockeyId);
             driverOrderInfo.setOrderNo(orderNo);
             driverOrderInfo.setTime(LocalDateTime.now());
-            driverOrderInfo.setStatus(EmploymentFeeStatusEnum.SUBMIT.getCode());
+            driverOrderInfo.setStatus(DriverOrderStatusEnum.IN_TRANSIT.getCode());
             JSONObject tmp = new JSONObject(this.tmsClient.getTmsOrderByOrderNo(orderNo).getData());
             driverOrderInfo.setOrderId(tmp.getLong("id"));
             this.driverOrderInfoService.save(driverOrderInfo);

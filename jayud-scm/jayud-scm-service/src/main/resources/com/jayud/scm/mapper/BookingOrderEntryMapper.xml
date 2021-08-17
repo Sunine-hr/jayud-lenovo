@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.BookingOrderEntryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.BookingOrderEntry">
+        <id column="id" property="id" />
+        <result column="booking_id" property="bookingId" />
+        <result column="item_no" property="itemNo" />
+        <result column="item_id" property="itemId" />
+        <result column="item_model" property="itemModel" />
+        <result column="item_name" property="itemName" />
+        <result column="item_brand" property="itemBrand" />
+        <result column="item_origin" property="itemOrigin" />
+        <result column="item_notes" property="itemNotes" />
+        <result column="unit" property="unit" />
+        <result column="qty" property="qty" />
+        <result column="price" property="price" />
+        <result column="hg_price" property="hgPrice" />
+        <result column="cip_price" property="cipPrice" />
+        <result column="invoice_price" property="invoicePrice" />
+        <result column="rmb_price" property="rmbPrice" />
+        <result column="ex_rmb_price" property="exRmbPrice" />
+        <result column="total_money" property="totalMoney" />
+        <result column="total_hg_money" property="totalHgMoney" />
+        <result column="destination" property="destination" />
+        <result column="customs_code" property="customsCode" />
+        <result column="elements" property="elements" />
+        <result column="supplier_name" property="supplierName" />
+        <result column="packing_type" property="packingType" />
+        <result column="po" property="po" />
+        <result column="pn" property="pn" />
+        <result column="bn" property="bn" />
+        <result column="ctns_no" property="ctnsNo" />
+        <result column="packages" property="packages" />
+        <result column="gw" property="gw" />
+        <result column="nw" property="nw" />
+        <result column="cbm" property="cbm" />
+        <result column="item_size" property="itemSize" />
+        <result column="shipping_m" property="shippingM" />
+        <result column="demand_no" property="demandNo" />
+        <result column="in_store_num" property="inStoreNum" />
+        <result column="is_function" property="isFunction" />
+        <result column="remark" property="remark" />
+        <result column="packmodel" property="packmodel" />
+        <result column="pick_up_no" property="pickUpNo" />
+        <result column="pick_up_user" property="pickUpUser" />
+        <result column="pick_up_tel" property="pickUpTel" />
+        <result column="pick_up_address" property="pickUpAddress" />
+        <result column="pick_up_remark" property="pickUpRemark" />
+        <result column="delivery_name" property="deliveryName" />
+        <result column="delivery_tel" property="deliveryTel" />
+        <result column="delivery_address" property="deliveryAddress" />
+        <result column="delivery_remark" property="deliveryRemark" />
+        <result column="delivery_date" property="deliveryDate" />
+        <result column="accessories" property="accessories" />
+        <result column="receiving_id" property="receivingId" />
+        <result column="receiving_entry_id" property="receivingEntryId" />
+        <result column="control_ma" property="controlMa" />
+        <result column="hk_control" property="hkControl" />
+        <result column="tax" property="tax" />
+        <result column="is_hg_tax" property="isHgTax" />
+        <result column="appoint_hg_tax" property="appointHgTax" />
+        <result column="hg_tax" property="hgTax" />
+        <result column="consume_tax" property="consumeTax" />
+        <result column="tlx_tax" property="tlxTax" />
+        <result column="customer_num" property="customerNum" />
+        <result column="is_ciq" property="isCiq" />
+        <result column="ciq_type" property="ciqType" />
+        <result column="board_num" property="boardNum" />
+        <result column="origin_country" property="originCountry" />
+        <result column="contract_entry_id" property="contractEntryId" />
+        <result column="arrival_date" property="arrivalDate" />
+        <result column="customer_serno" property="customerSerno" />
+        <result column="onl_id" property="onlId" />
+        <result column="orig_place_code" property="origPlaceCode" />
+        <result column="district_code" property="districtCode" />
+        <result column="eng_man_ent_cnm" property="engManEntCnm" />
+        <result column="use_to" property="useTo" />
+        <result column="item_brand_type" property="itemBrandType" />
+        <result column="export_discounts" property="exportDiscounts" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_by_dtm" property="crtByDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_by_dtm" property="mdyByDtm" />
+        <result column="voided" property="voided" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_by_dtm" property="voidedByDtm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, booking_id, item_no, item_id, item_model, item_name, item_brand, item_origin, item_notes, unit, qty, price, hg_price, cip_price, invoice_price, rmb_price, ex_rmb_price, total_money, total_hg_money, destination, customs_code, elements, supplier_name, packing_type, po, pn, bn, ctns_no, packages, gw, nw, cbm, item_size, shipping_m, demand_no, in_store_num, is_function, remark, packmodel, pick_up_no, pick_up_user, pick_up_tel, pick_up_address, pick_up_remark, delivery_name, delivery_tel, delivery_address, delivery_remark, delivery_date, accessories, receiving_id, receiving_entry_id, control_ma, hk_control, tax, is_hg_tax, appoint_hg_tax, hg_tax, consume_tax, tlx_tax, customer_num, is_ciq, ciq_type, board_num, origin_country, contract_entry_id, arrival_date, customer_serno, onl_id, orig_place_code, district_code, eng_man_ent_cnm, use_to, item_brand_type, export_discounts, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
+    </sql>
+
+    <select id="findBookingOrderEntryByBookingId" parameterType="java.lang.Integer" resultType="com.jayud.scm.model.vo.BookingOrderEntryVO">
+        select
+            t.`id`,t.`booking_id`,t.`item_no`,t.`item_id`,t.`item_model`,t.`item_name`,t.`item_brand`,t.`item_origin`,t.`item_notes`,t.`unit`,t.`qty`,t.`price`,t.`hg_price`,t.`cip_price`,t.`invoice_price`,t.`rmb_price`,t.`ex_rmb_price`,t.`total_money`,t.`total_hg_money`,t.`destination`,t.`customs_code`,t.`elements`,t.`supplier_name`,t.`packing_type`,t.`po`,t.`pn`,t.`bn`,t.`ctns_no`,t.`packages`,t.`gw`,t.`nw`,t.`cbm`,t.`item_size`,t.`shipping_m`,t.`demand_no`,t.`in_store_num`,t.`is_function`,t.`remark`,t.`packmodel`,t.`pick_up_no`,t.`pick_up_user`,t.`pick_up_tel`,t.`pick_up_address`,t.`pick_up_remark`,t.`delivery_name`,t.`delivery_tel`,t.`delivery_address`,t.`delivery_remark`,t.`delivery_date`,t.`accessories`,t.`receiving_id`,t.`receiving_entry_id`,t.`control_ma`,t.`hk_control`,t.`tax`,t.`is_hg_tax`,t.`appoint_hg_tax`,t.`hg_tax`,t.`consume_tax`,t.`tlx_tax`,t.`customer_num`,t.`is_ciq`,t.`ciq_type`,t.`board_num`,t.`origin_country`,t.`contract_entry_id`,t.`arrival_date`,t.`customer_serno`,t.`onl_id`,t.`orig_place_code`,t.`district_code`,t.`eng_man_ent_cnm`,t.`use_to`,t.`item_brand_type`,t.`export_discounts`,t.`crt_by`,t.`crt_by_name`,t.`crt_by_dtm`,t.`mdy_by`,t.`mdy_by_name`,t.`mdy_by_dtm`,t.`voided`,t.`voided_by`,t.`voided_by_name`,t.`voided_by_dtm`
+        from  booking_order_entry t
+        where 1=1
+        and t.voided = 0
+        and t.`booking_id` = #{bookingId}
+    </select>
+
+    <select id="getBookingOrderEntryById" parameterType="java.lang.Integer" resultType="com.jayud.scm.model.vo.BookingOrderEntryVO">
+        select
+            t.`id`,t.`booking_id`,t.`item_no`,t.`item_id`,t.`item_model`,t.`item_name`,t.`item_brand`,t.`item_origin`,t.`item_notes`,t.`unit`,t.`qty`,t.`price`,t.`hg_price`,t.`cip_price`,t.`invoice_price`,t.`rmb_price`,t.`ex_rmb_price`,t.`total_money`,t.`total_hg_money`,t.`destination`,t.`customs_code`,t.`elements`,t.`supplier_name`,t.`packing_type`,t.`po`,t.`pn`,t.`bn`,t.`ctns_no`,t.`packages`,t.`gw`,t.`nw`,t.`cbm`,t.`item_size`,t.`shipping_m`,t.`demand_no`,t.`in_store_num`,t.`is_function`,t.`remark`,t.`packmodel`,t.`pick_up_no`,t.`pick_up_user`,t.`pick_up_tel`,t.`pick_up_address`,t.`pick_up_remark`,t.`delivery_name`,t.`delivery_tel`,t.`delivery_address`,t.`delivery_remark`,t.`delivery_date`,t.`accessories`,t.`receiving_id`,t.`receiving_entry_id`,t.`control_ma`,t.`hk_control`,t.`tax`,t.`is_hg_tax`,t.`appoint_hg_tax`,t.`hg_tax`,t.`consume_tax`,t.`tlx_tax`,t.`customer_num`,t.`is_ciq`,t.`ciq_type`,t.`board_num`,t.`origin_country`,t.`contract_entry_id`,t.`arrival_date`,t.`customer_serno`,t.`onl_id`,t.`orig_place_code`,t.`district_code`,t.`eng_man_ent_cnm`,t.`use_to`,t.`item_brand_type`,t.`export_discounts`,t.`crt_by`,t.`crt_by_name`,t.`crt_by_dtm`,t.`mdy_by`,t.`mdy_by_name`,t.`mdy_by_dtm`,t.`voided`,t.`voided_by`,t.`voided_by_name`,t.`voided_by_dtm`
+        from  booking_order_entry t
+        where 1=1
+        and t.`id` = #{id}
+
+    </select>
+
+</mapper>

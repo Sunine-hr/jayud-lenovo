@@ -222,6 +222,8 @@ public class CommodityController {
         aliasMap.put("参考价","referencePrice");
         aliasMap.put("料号","itemNo");
         aliasMap.put("备注","remark");
+        aliasMap.put("海关编码","hsCode");
+        aliasMap.put("申报要素","skuElements");
 
         excelReader.setHeaderAlias(aliasMap);
 

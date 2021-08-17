@@ -84,6 +84,15 @@ public class AddCommodityModelForm {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @ExcelProperty("海关编码")
+    @ApiModelProperty(value = "海关编码")
+    private String hsCodeNo;
+
+    @ExcelProperty("申报要素")
+    @ApiModelProperty(value = "申报要素")
+    private String skuElements;
+
+
 
 
 }

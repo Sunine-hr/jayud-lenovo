@@ -390,6 +390,7 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
         //获取操作人
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
+
         List<Commodity> commodities = ConvertUtil.convertList(list, Commodity.class);
 
         List<CommodityFollow> commodityFollows = new ArrayList<>();
@@ -405,10 +406,40 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
         boolean save = this.saveBatch(commodities);
 
         for (Commodity commodity : commodities) {
+
+            //判断是否要插入商品申报要素表
+            HsCodeVO hsCodeVO = hsCodeService.getHsCodeByCodeNo(commodity.getHsCodeNo());
+            List<HsCodeElementsVO> hsCodeElementsVOS = hsCodeVO.getHsCodeElementsVOS();
+            List<CommodityEntry> commodityEntries = new ArrayList<>();
+
+            if(commodity.getSkuElements() != null){
+                String[] split = commodity.getSkuElements().split("|");
+                if(split.length == hsCodeElementsVOS.size()){
+                    Integer i = 0;
+                    for (HsCodeElementsVO hsCodeElementsVO : hsCodeElementsVOS) {
+                        CommodityEntry commodityEntry = new CommodityEntry();
+                        commodityEntry.setCommodityId(commodity.getId());
+                        commodityEntry.setCrtBy(systemUser.getId().intValue());
+                        commodityEntry.setCrtByDtm(LocalDateTime.now());
+                        commodityEntry.setCrtByName(systemUser.getName());
+                        commodityEntry.setElementName(hsCodeElementsVO.getElementsName());
+                        commodityEntry.setElementValue(split[i]);
+                        commodityEntry.setElementSort(++i);
+                        commodityEntries.add(commodityEntry);
+                    }
+                }
+            }
+
+            if(CollectionUtils.isNotEmpty(commodityEntries)){
+                boolean b = commodityEntryService.saveBatch(commodityEntries);
+                if(!b){
+                    log.warn("商品导入,商品申报要素添加失败："+commodities);
+                }
+            }
             CommodityFollow commodityFollow = new CommodityFollow();
             commodityFollow.setCommodityId(commodity.getId());
             commodityFollow.setSType(OperationEnum.INSERT.getCode());
-            commodityFollow.setFollowContext(OperationEnum.INSERT.getDesc()+commodity.getId());
+            commodityFollow.setFollowContext("商品导入成功"+OperationEnum.INSERT.getDesc()+commodity.getId());
             commodityFollow.setCrtBy(systemUser.getId().intValue());
             commodityFollow.setCrtByDtm(LocalDateTime.now());
             commodityFollow.setCrtByName(systemUser.getName());
@@ -416,14 +447,14 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
         }
 
         if(!save){
-            log.warn("商品添加或修改失败："+commodities);
+            log.warn("商品导入商品添加失败："+commodities);
             boolean b = commodityFollowService.saveBatch(commodityFollows);
             if(!b){
-                log.warn("商品日志操作添加失败："+commodityFollows);
+                log.warn("导入商品添加，商品日志操作添加失败："+commodityFollows);
             }
         }
-        log.warn("商品添加或修改成功："+commodities);
-        log.warn("商品日志操作添加成功："+commodityFollows);
+        log.warn("商品导入商品添加成功："+commodities);
+        log.warn("导入商品添加，商品日志操作添加成功："+commodityFollows);
         return true;
     }
 

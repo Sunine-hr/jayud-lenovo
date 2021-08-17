@@ -22,6 +22,7 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
 
     /**
      * 创建拖车单
+     *
      * @param addTrailerOrderFrom
      */
     String createOrder(AddTrailerOrderFrom addTrailerOrderFrom);
@@ -30,6 +31,7 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
 
     /**
      * 根据主订单号获取订单信息
+     *
      * @param orderNo
      * @return
      */
@@ -37,6 +39,7 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
 
     /**
      * 根据id获取订单信息
+     *
      * @param id
      * @return
      */
@@ -44,6 +47,7 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
 
     /**
      * 根据主订单号集合获取订单信息
+     *
      * @param mainOrderNoList
      * @return
      */
@@ -51,6 +55,7 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
 
     /**
      * 分页查询订单信息
+     *
      * @param form
      * @return
      */
@@ -58,6 +63,7 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
 
     /**
      * 修改流程状态
+     *
      * @param trailerOrder1
      * @param form
      */
@@ -70,12 +76,14 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
 
     /**
      * 派车操作
+     *
      * @param form
      */
     void doTrailerDispatchOpt(TrailerProcessOptForm form);
 
     /**
      * 订单驳回
+     *
      * @param tmp
      * @param auditInfoForm
      * @param trailerCargoRejected
@@ -84,6 +92,7 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
 
     /**
      * 订单驳回
+     *
      * @param tmp
      * @param auditInfoForm
      * @param trailerCargoRejected
@@ -92,6 +101,7 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
 
     /**
      * 根据订单号获取订单详情
+     *
      * @param orderNo
      * @return
      */
@@ -99,6 +109,7 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
 
     /**
      * 根据主订单号查询所有详情
+     *
      * @param mainOrderNos
      * @return
      */
@@ -111,4 +122,6 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
     List<TrailerOrder> getByCondition(TrailerOrder setMainOrderNo);
 
     List<TrailerOrder> getOrdersByOrderNos(List<String> orderNos);
+
+    public List<TrailerOrder> getByLegalEntityId(List<Long> legalIds);
 }

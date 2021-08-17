@@ -5,7 +5,6 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
@@ -35,6 +34,7 @@ import com.jayud.trailer.service.ITrailerOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.trailer.vo.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,10 +86,10 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             trailerOrder.setCreateUser(UserOperator.getToken());
             trailerOrder.setStatus(OrderStatusEnum.TT_0.getCode());
             boolean save = this.save(trailerOrder);
-            if(save){
-                log.warn(trailerOrder.getMainOrderNo()+"拖车单添加成功");
-            }else{
-                log.error(trailerOrder.getMainOrderNo()+"拖车单添加失败");
+            if (save) {
+                log.warn(trailerOrder.getMainOrderNo() + "拖车单添加成功");
+            } else {
+                log.error(trailerOrder.getMainOrderNo() + "拖车单添加失败");
             }
         } else {
             //修改拖车单
@@ -98,10 +98,10 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             trailerOrder.setUpdateTime(now);
             trailerOrder.setUpdateUser(UserOperator.getToken());
             boolean update = this.saveOrUpdate(trailerOrder);
-            if(update){
-                log.warn(trailerOrder.getMainOrderNo()+"拖车单修改成功");
-            }else{
-                log.error(trailerOrder.getMainOrderNo()+"拖车单修改失败");
+            if (update) {
+                log.warn(trailerOrder.getMainOrderNo() + "拖车单修改成功");
+            } else {
+                log.error(trailerOrder.getMainOrderNo() + "拖车单修改失败");
             }
         }
 //        omsClient.deleteGoodsByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()), BusinessTypeEnum.TC.getCode());
@@ -489,7 +489,19 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
 
     @Override
     public Integer getNumByStatus(String status, List<Long> legalIds) {
-        Integer num = this.baseMapper.getNumByStatus(status, legalIds);
+        Integer num = 0;
+        switch (status) {
+            case "CostAudit":
+//                List<Long> legalIds = dataControl.getCompanyIds();
+                List<TrailerOrder> list = this.getByLegalEntityId(legalIds);
+                if (CollectionUtils.isEmpty(list)) return num;
+                List<String> orderNos = list.stream().map(TrailerOrder::getOrderNo).collect(Collectors.toList());
+                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.TC.getSignOne(), legalIds, orderNos).getData();
+                break;
+            default:
+                num = this.baseMapper.getNumByStatus(status, legalIds);
+        }
+
         return num == null ? 0 : num;
     }
 
@@ -509,6 +521,13 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     public List<TrailerOrder> getOrdersByOrderNos(List<String> orderNos) {
         QueryWrapper<TrailerOrder> condition = new QueryWrapper<>();
         condition.lambda().in(TrailerOrder::getOrderNo, orderNos);
+        return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public List<TrailerOrder> getByLegalEntityId(List<Long> legalIds) {
+        QueryWrapper<TrailerOrder> condition = new QueryWrapper<>();
+        condition.lambda().in(TrailerOrder::getLegalEntityId, legalIds);
         return this.baseMapper.selectList(condition);
     }
 

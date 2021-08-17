@@ -156,10 +156,11 @@ public class ExternalApiController {
         tmp.put("拖车离仓", "TT_5");
         tmp.put("拖车过磅", "TT_6");
         tmp.put("确认还柜", "TT_7");
+        tmp.put("费用审核", "CostAudit");
         List<Map<String, Object>> result = new ArrayList<>();
 
-        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
-        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = legalEntityByLegalName.getData();
 
         for (Map<String, Object> menus : menusList) {
 
@@ -167,8 +168,9 @@ public class ExternalApiController {
             Object title = menus.get("title");
             String status = tmp.get(title);
             Integer num = 0;
-            num = this.trailerOrderService.getNumByStatus(status, legalIds);
-
+            if (status != null) {
+                num = this.trailerOrderService.getNumByStatus(status, legalIds);
+            }
             map.put("menusName", title);
             map.put("num", num);
             result.add(map);
@@ -198,7 +200,7 @@ public class ExternalApiController {
      * 关闭订单
      */
     @RequestMapping(value = "/api/closeOrder")
-    public ApiResult closeOrder(@RequestBody List<SubOrderCloseOpt> form){
+    public ApiResult closeOrder(@RequestBody List<SubOrderCloseOpt> form) {
         List<String> orderNos = form.stream().map(SubOrderCloseOpt::getOrderNo).collect(Collectors.toList());
         List<TrailerOrder> list = this.trailerOrderService.getOrdersByOrderNos(orderNos);
         Map<String, TrailerOrder> map = list.stream().collect(Collectors.toMap(TrailerOrder::getOrderNo, e -> e));

@@ -34,4 +34,9 @@ public class AddDriverEmploymentFeeForm {
     @ApiModelProperty(value = "币种单位")
     @NotEmpty(message = "币种单位不能为空")
     private String currencyCode;
+
+
+    @ApiModelProperty(value = "汇率")
+    @NotNull(message = "需要配置汇率")
+    private BigDecimal exchangeRate;
 }

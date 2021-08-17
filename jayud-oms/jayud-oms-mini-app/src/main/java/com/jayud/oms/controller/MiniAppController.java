@@ -290,7 +290,8 @@ public class MiniAppController {
                 .setSupplierName(supplierName)
                 .setCreateTime(LocalDateTime.now())
                 .setStatus(EmploymentFeeStatusEnum.SUBMIT.getCode())
-                .setDriverId(driverId);
+                .setDriverId(driverId)
+                .setExchangeRate(form.getExchangeRate());
 
         //保存费用
         this.driverEmploymentFeeService.save(driverEmploymentFee);

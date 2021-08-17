@@ -13,6 +13,9 @@ ADD COLUMN `driver_cost_id` bigint(20) NULL COMMENT '司机费用id' AFTER `unit
 ALTER TABLE `driver_order_info`
 ADD COLUMN `jockey_id` bigint(20) NULL DEFAULT NULL COMMENT '骑师id(司机信息id)' AFTER `status`;
 
+ALTER TABLE `driver_employment_fee`
+ADD COLUMN `exchange_rate` decimal(10, 4) NULL DEFAULT NULL COMMENT '汇率' AFTER `create_time`;
+
 
 CREATE TABLE `applet_order_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,

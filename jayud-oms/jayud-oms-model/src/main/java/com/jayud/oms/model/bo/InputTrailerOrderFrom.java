@@ -168,7 +168,7 @@ public class InputTrailerOrderFrom {
     private List<AddTrailerOrderAddressForm> orderAddressForms;
 
     @ApiModelProperty(value = "是否资料齐全")
-    private Boolean isInfoComplete=true;
+    private Boolean isInfoComplete = true;
 
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
@@ -181,6 +181,16 @@ public class InputTrailerOrderFrom {
         if (this.legalEntityId == null || StringUtils.isEmpty(this.unitCode)
                 || this.impAndExpType == null || this.cabinetSize == null
                 || StringUtils.isEmpty(this.portCode)) {
+            return false;
+        }
+        //提运单
+        if (StringUtils.isEmpty(this.billOfLading)) {
+            log.warn("提运单不能为空");
+            return false;
+        }
+        //提运单
+        if (StringUtils.isEmpty(this.cabinetNumber)) {
+            log.warn("柜号不能为空");
             return false;
         }
         // 发货/收货地址是必填项

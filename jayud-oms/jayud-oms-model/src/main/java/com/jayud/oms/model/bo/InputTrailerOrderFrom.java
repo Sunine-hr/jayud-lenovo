@@ -183,16 +183,24 @@ public class InputTrailerOrderFrom {
                 || StringUtils.isEmpty(this.portCode)) {
             return false;
         }
-        //提运单
-        if (StringUtils.isEmpty(this.billOfLading)) {
-            log.warn("提运单不能为空");
-            return false;
+        if (this.impAndExpType == 1) {
+            //提运单
+            if (StringUtils.isEmpty(this.billOfLading)) {
+                log.warn("提运单不能为空");
+                return false;
+            }
+            //柜号
+            if (StringUtils.isEmpty(this.cabinetNumber)) {
+                log.warn("柜号不能为空");
+                return false;
+            }
+        } else {
+            if (StringUtils.isEmpty(this.so)) {
+                log.warn("SO不能为空");
+                return false;
+            }
         }
-        //提运单
-        if (StringUtils.isEmpty(this.cabinetNumber)) {
-            log.warn("柜号不能为空");
-            return false;
-        }
+
         // 发货/收货地址是必填项
         if (isInfoComplete) { //资料齐全,需要校验资料
             if (CollectionUtils.isEmpty(this.orderAddressForms)) {

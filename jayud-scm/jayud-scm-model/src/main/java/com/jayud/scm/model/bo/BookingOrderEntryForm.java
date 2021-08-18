@@ -1,7 +1,6 @@
 package com.jayud.scm.model.bo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,7 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@ApiModel(value = "委托订单明细表")
+/**
+ * 委托订单明细表
+ */
 @Data
 public class BookingOrderEntryForm {
 
@@ -25,31 +26,97 @@ public class BookingOrderEntryForm {
     @ApiModelProperty(value = "产品id")
     private Integer itemId;
 
-    @ApiModelProperty(value = "型号")
+    @ApiModelProperty(value = "型号")//TODO 型号 下拉列表 有一个`产品id`的字段
     private String itemModel;
 
-    @ApiModelProperty(value = "名称")
+    @ApiModelProperty(value = "名称")//TODO 商品名称 有一个`名称`
     private String itemName;
 
     @ApiModelProperty(value = "品牌")
     private String itemBrand;
 
-    @ApiModelProperty(value = "产地")
+    @ApiModelProperty(value = "产地")//TODO 产地 -> 国家表 下拉列表
     private String itemOrigin;
-
-    @ApiModelProperty(value = "商品备注")
-    private String itemNotes;
 
     @ApiModelProperty(value = "单位")
     private String unit;
 
+    @ApiModelProperty(value = "海关编码")
+    private String customsCode;
+
     @ApiModelProperty(value = "数量")
     private BigDecimal qty;
 
+    @ApiModelProperty(value = "报关单价")
+    private BigDecimal hgPrice;
+
+    @ApiModelProperty(value = "报关总价(=hg_price*qty)")
+    private BigDecimal totalHgMoney;
+
+    @ApiModelProperty(value = "件数")
+    private BigDecimal packages;
+
+    @ApiModelProperty(value = "料号")
+    private String pn;
+
+    @ApiModelProperty(value = "批号")
+    private String bn;
+
+    @ApiModelProperty(value = "毛重")
+    private BigDecimal gw;
+
+    @ApiModelProperty(value = "净重")
+    private BigDecimal nw;
+
+    @ApiModelProperty(value = "体积")//TODO 没有材积字段 有`体积`
+    private BigDecimal cbm;
+
+    @ApiModelProperty(value = "唛头")
+    private String shippingM;
+
+    @ApiModelProperty(value = "入仓单号")
+    private String inStoreNum;
+
+    //TODO 没有 参考价 字段，不保存字段，从商品里面直接带出来
+
+    @ApiModelProperty(value = "外箱型号")
+    private String packmodel;
+
+    //TODO 没有 外部参考价 字段，不保存字段，从商品里面直接带出来
+
+    @ApiModelProperty(value = "包装方式")//TODO 包装方式 下拉取值
+    private String packingType;
+
+    @ApiModelProperty(value = "申报要素")
+    private String elements;
+
+    @ApiModelProperty(value = "备注")//商品报关备注 -> 用`备注`
+    private String remark;
+
+    @ApiModelProperty(value = "商品描述")
+    private String itemNotes;
+
+    @ApiModelProperty(value = "采购订货单号")//TODO PO 有一个`采购订货单号`
+    private String po;
+
+    @ApiModelProperty(value = "配件")
+    private String accessories;
+
+    @ApiModelProperty(value = "箱号")//TODO 外箱号 对应 `箱号`
+    private String ctnsNo;
+
+    @ApiModelProperty(value = "目的国")//TODO 最终目的国（地区） 对应 `目的国`，国家表，下拉取值
+    private String destination;
+
+    @ApiModelProperty(value = "境内目的地/境内货源地，进口指境内目的地，出口指境内货源地")//TODO 境内货源地 对应 `内目的地/境内货源地，进口指境内目的地，出口指境内货源地`，字典，下拉取值
+    private String districtCode;
+
+
+
+
+    //其他字段
     @ApiModelProperty(value = "单价")
     private BigDecimal price;
-
-    private BigDecimal hgPrice;
 
     @ApiModelProperty(value = "运保费单价")
     private BigDecimal cipPrice;
@@ -66,68 +133,17 @@ public class BookingOrderEntryForm {
     @ApiModelProperty(value = "总价格(=qty*price)")
     private BigDecimal totalMoney;
 
-    @ApiModelProperty(value = "销售总价(=hg_price*qty)")
-    private BigDecimal totalHgMoney;
-
-    @ApiModelProperty(value = "目的国")
-    private String destination;
-
-    @ApiModelProperty(value = "海关编码")
-    private String customsCode;
-
-    @ApiModelProperty(value = "申报要素")
-    private String elements;
-
     @ApiModelProperty(value = "供应商名称")
     private String supplierName;
-
-    @ApiModelProperty(value = "包装方式")
-    private String packingType;
-
-    @ApiModelProperty(value = "采购订货单号")
-    private String po;
-
-    @ApiModelProperty(value = "料号")
-    private String pn;
-
-    @ApiModelProperty(value = "批号")
-    private String bn;
-
-    @ApiModelProperty(value = "箱号")
-    private String ctnsNo;
-
-    @ApiModelProperty(value = "件数")
-    private BigDecimal packages;
-
-    @ApiModelProperty(value = "毛重")
-    private BigDecimal gw;
-
-    @ApiModelProperty(value = "净重")
-    private BigDecimal nw;
-
-    @ApiModelProperty(value = "体积")
-    private BigDecimal cbm;
 
     @ApiModelProperty(value = "尺寸")
     private BigDecimal itemSize;
 
-    @ApiModelProperty(value = "唛头")
-    private String shippingM;
-
     @ApiModelProperty(value = "订单号")
     private String demandNo;
 
-    @ApiModelProperty(value = "入仓单号")
-    private String inStoreNum;
-
     @ApiModelProperty(value = "功能")
     private String isFunction;
-
-    @ApiModelProperty(value = "备注")
-    private String remark;
-
-    @ApiModelProperty(value = "外箱型号")
-    private String packmodel;
 
     @ApiModelProperty(value = "提货单号")
     private String pickUpNo;
@@ -158,9 +174,6 @@ public class BookingOrderEntryForm {
 
     @ApiModelProperty(value = "交仓时间")
     private String deliveryDate;
-
-    @ApiModelProperty(value = "配件")
-    private String accessories;
 
     @ApiModelProperty(value = "入库id")
     private Integer receivingId;
@@ -222,9 +235,6 @@ public class BookingOrderEntryForm {
     @ApiModelProperty(value = "原产地区代码【原产国内的生产区域，如州、省等】")
     private String origPlaceCode;
 
-    @ApiModelProperty(value = "境内目的地/境内货源地，进口指境内目的地，出口指境内货源地")
-    private String districtCode;
-
     @ApiModelProperty(value = "境外生产企业名称")
     private String engManEntCnm;
 
@@ -269,7 +279,5 @@ public class BookingOrderEntryForm {
     @ApiModelProperty(value = "删除时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime voidedByDtm;
-
-
 
 }

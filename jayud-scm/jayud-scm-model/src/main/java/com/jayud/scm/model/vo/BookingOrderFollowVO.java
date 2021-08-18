@@ -1,13 +1,14 @@
 package com.jayud.scm.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@ApiModel(value = "委托单跟踪记录表")
+/**
+ * 委托单跟踪记录表
+ */
 @Data
 public class BookingOrderFollowVO {
 

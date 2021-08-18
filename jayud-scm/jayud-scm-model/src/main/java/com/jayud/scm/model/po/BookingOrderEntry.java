@@ -54,7 +54,7 @@ public class BookingOrderEntry extends Model<BookingOrderEntry> {
     @ApiModelProperty(value = "产地")
     private String itemOrigin;
 
-    @ApiModelProperty(value = "商品备注")
+    @ApiModelProperty(value = "商品描述")
     private String itemNotes;
 
     @ApiModelProperty(value = "单位")
@@ -66,6 +66,7 @@ public class BookingOrderEntry extends Model<BookingOrderEntry> {
     @ApiModelProperty(value = "单价")
     private BigDecimal price;
 
+    @ApiModelProperty(value = "报关单价")
     private BigDecimal hgPrice;
 
     @ApiModelProperty(value = "运保费单价")
@@ -83,7 +84,7 @@ public class BookingOrderEntry extends Model<BookingOrderEntry> {
     @ApiModelProperty(value = "总价格(=qty*price)")
     private BigDecimal totalMoney;
 
-    @ApiModelProperty(value = "销售总价(=hg_price*qty)")
+    @ApiModelProperty(value = "报关总价(=hg_price*qty)")
     private BigDecimal totalHgMoney;
 
     @ApiModelProperty(value = "目的国")

@@ -5,11 +5,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.scm.model.bo.QueryCustomerForm;
 import com.jayud.scm.model.po.Customer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.scm.model.po.VFeeModel;
 import com.jayud.scm.model.vo.CommodityFormVO;
 import com.jayud.scm.model.vo.CustomerFormVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,4 +30,11 @@ public interface CustomerMapper extends BaseMapper<Customer> {
     void toExamine(Map<String, Object> map);
 
     void deApproval(Map<String, Object> map);
+
+    /**
+     * 根据客户id，查询结算方案(结算条款)
+     * @param customerId
+     * @return
+     */
+    List<VFeeModel> findVFeeModelByCustomerId(@Param("customerId") Integer customerId);
 }

@@ -8,9 +8,6 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddCustomerRelationerForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
-import com.jayud.scm.model.bo.QueryCustomerForm;
-import com.jayud.scm.model.po.Customer;
-import com.jayud.scm.model.vo.BDataDicEntryVO;
 import com.jayud.scm.model.vo.CustomerRelationerVO;
 import com.jayud.scm.service.IBDataDicEntryService;
 import com.jayud.scm.service.ICustomerRelationerService;
@@ -20,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -53,7 +49,6 @@ public class CustomerRelationerController {
                 record.setSTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1014",record.getSType()));
             }
         }
-
         CommonPageResult pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);
     }

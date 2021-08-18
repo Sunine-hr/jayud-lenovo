@@ -154,4 +154,9 @@
         }
     </select>
 
+    <select id="findVFeeModelByCustomerId" parameterType="java.lang.Integer" resultType="com.jayud.scm.model.po.VFeeModel">
+        select * from v_fee_model
+        where customer_id = #{customerId}
+    </select>
+
 </mapper>

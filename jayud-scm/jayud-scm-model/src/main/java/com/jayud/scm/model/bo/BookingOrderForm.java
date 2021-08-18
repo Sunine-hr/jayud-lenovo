@@ -1,26 +1,24 @@
 package com.jayud.scm.model.bo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@ApiModel(value = "委托订单主表")
+/**
+ * 委托订单主表
+ */
 @Data
 public class BookingOrderForm {
 
-    //第一部分
-
-    //弟二部分
-
-    //弟三部分
-
-
     @ApiModelProperty(value = "自动id")
     private Integer id;
+
+    //第一部分
+    @ApiModelProperty(value = "业务类型/工作单类型 0进口  1出口 2国内 4香港  5采购  6销售")
+    private Integer modelType;
 
     @ApiModelProperty(value = "委托单号")
     private String bookingNo;
@@ -29,15 +27,138 @@ public class BookingOrderForm {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime bookingDate;
 
+    //TODO 订车时间，这个字段不要了
+
+    @ApiModelProperty(value = "客户名称、利润中心id")
+    private Integer customerId;
+
+    @ApiModelProperty(value = "供应商id")
+    private Integer supplierId;
+
+    @ApiModelProperty(value = "境外客户id")
+    private Integer overseasCustomersId;
+
+    @ApiModelProperty(value = "商务id")
+    private Integer followerId;
+
+    @ApiModelProperty(value = "采购人(客户下单人)")
+    private String buyer;
+
+    @ApiModelProperty(value = "业务员id")
+    private Integer fsalesId;
+
+    @ApiModelProperty(value = "香港公司id")//TODO 香港抬头表b_hk_company，对应字段`香港公司id`
+    private Integer hkCoId;
+
+    @ApiModelProperty(value = "香港公司中文名称")
+    private String hkCoName;
+
+    @ApiModelProperty(value = "香港公司英文名称")
+    private String hkCoNameEn;
+
+    @ApiModelProperty(value = "香港公司中文地址")
+    private String hkCoAddress;
+
+    @ApiModelProperty(value = "香港公司英文地址")
+    private String hkCoAddressEn;
+
+    @ApiModelProperty(value = "香港公司联系人")
+    private String hkCoRelationer;
+
+    @ApiModelProperty(value = "香港公司电话")
+    private String hkCoTel;
+
+    @ApiModelProperty(value = "香港公司邮箱")
+    private String hkCoEmail;
+
+    @ApiModelProperty(value = "香港公司传真")
+    private String hkCoFax;
+
+    @ApiModelProperty(value = "客户合同号")
+    private String contractNo;
+
+    @ApiModelProperty(value = "客户邮箱")
+    private String customerEmail;
+
+    //第二部分
+    @ApiModelProperty(value = "结算id")//TODO 结算方案(结算条款) -> 从客户，取值，取结算方案视图 v_fee_model， 结算id
+    private Integer arfeeId;
+
+    @ApiModelProperty(value = "指定综合费率")
+    private BigDecimal compositeFee;
+
+    @ApiModelProperty(value = "综合费率")
+    private BigDecimal proxyFee;
+
+    @ApiModelProperty(value = "付款方式")
+    private String payFeeStyle;
+
+    //TODO 最低消费 从结算方案中带出了，仅查看
+
+
+    @ApiModelProperty(value = "交易条件")
+    private String incoterms;
+
+    @ApiModelProperty(value = "币别") //TODO 币别的取值
+    private String currencyName;
+
+    @ApiModelProperty(value = "报关抬头方式（单抬头、双抬头）")//TODO 原型:抬头方式 数据表:报关抬头方式（单抬头、双抬头）
+    private String billStyle;
+
+    @ApiModelProperty(value = "计息帐期天数")
+    private Integer balanceDay;
+
+    @ApiModelProperty(value = "报关方式(自主报关，委托报关，客户自行报关)")//TODO 原型:报关方式 数据表:报关方式(自主报关，委托报关，客户自行报关)
+    private String hgType;
+
+    @ApiModelProperty(value = "代理方式/协议类型")//TODO 业务模式 -> 对应字段`代理方式/协议类型`
+    private String deputyStyle;
+
+    @ApiModelProperty(value = "出口境内货源地") //TODO 境内货源地 -> 对应字段`出口境内货源地`
+    private String originArea;
+
+    @ApiModelProperty(value = "是否报关(需要报关，等通知报关)")//TODO 是否报关(需要报关，等通知报关) 下拉取值
+    private String isHg;
+
+
+    //第三部分
+    @ApiModelProperty(value = "起运地（默认深圳、香港）")
+    private String origin;
+
+    @ApiModelProperty(value = "目的地")
+    private String destination;
+
+    @ApiModelProperty(value = "主管海关（申报地海关）")//TODO 主管海关（申报地海关） 下拉取值
+    private String customMaster;
+
+    @ApiModelProperty(value = "经停港/指运港")//TODO 经停港/指运港 下拉取值
+    private String distinatePort;
+
+    @ApiModelProperty(value = "启运国/运抵国")//TODO 启运国/运抵国  国家表 下拉取值
+    private String tradeCountry;
+
+    @ApiModelProperty(value = "港口(出入境口岸)")//出境关别 -> 对应字段`出入境口岸` 下拉取值
+    private String port;
+
+    @ApiModelProperty(value = "贸易国别")//TODO 贸易国别  国家表 下拉取值
+    private String tradeAreaCode;
+
+    @ApiModelProperty(value = "开票备注")
+    private String invRemark;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
+
+
+
+
+    //其他字段
     @ApiModelProperty(value = "预计到货日期")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime arrivedDate;
 
     @ApiModelProperty(value = "订单状态-1验货异常，-2异常已处理，-3提货异常， 0未确认,1已确认待交货,2已收货,3验货已完成,4入库,5已过关,6已过货,7配送中,8已签收,9部分出库，10已出库，11已报关")
     private Integer stateFlag;
-
-    @ApiModelProperty(value = "客户名称、利润中心id")
-    private Integer customerId;
 
     @ApiModelProperty(value = "客户编号")
     private String customerNo;
@@ -48,15 +169,6 @@ public class BookingOrderForm {
     @ApiModelProperty(value = "客户类型")
     private String customerType;
 
-    @ApiModelProperty(value = "采购人(客户下单人)")
-    private String buyer;
-
-    @ApiModelProperty(value = "客户邮箱")
-    private String customerEmail;
-
-    @ApiModelProperty(value = "供应商id")
-    private Integer supplierId;
-
     @ApiModelProperty(value = "供应商名称（可以使用，实际供应商在明细表）")
     private String supplierName;
 
@@ -65,15 +177,6 @@ public class BookingOrderForm {
 
     @ApiModelProperty(value = "供应商类型")
     private String supplierType;
-
-    @ApiModelProperty(value = "业务类型/工作单类型 0进口  1出口 2国内 4香港  5采购  6销售")
-    private Integer modelType;
-
-    @ApiModelProperty(value = "起运地（默认深圳、香港）")
-    private String origin;
-
-    @ApiModelProperty(value = "目的地")
-    private String destination;
 
     @ApiModelProperty(value = "提货单号")
     private String pickUpNo;
@@ -102,18 +205,6 @@ public class BookingOrderForm {
     @ApiModelProperty(value = "交货备注")
     private String deliveryRemark;
 
-    @ApiModelProperty(value = "报关方式(自主报关，委托报关，客户自行报关)")
-    private String hgType;
-
-    @ApiModelProperty(value = "客户合同号")
-    private String contractNo;
-
-    @ApiModelProperty(value = "币别")
-    private String currencyName;
-
-    @ApiModelProperty(value = "是否报关(需要报关，等通知报关)")
-    private String isHg;
-
     @ApiModelProperty(value = "订车id")
     private Integer hgTruckBookId;
 
@@ -139,12 +230,6 @@ public class BookingOrderForm {
     @ApiModelProperty(value = "审核步骤")
     private Integer fStep;
 
-    @ApiModelProperty(value = "备注")
-    private String remark;
-
-    @ApiModelProperty(value = "境外客户id")
-    private Integer overseasCustomersId;
-
     @ApiModelProperty(value = "境外客户名称")
     private String overseasCustomers;
 
@@ -160,18 +245,6 @@ public class BookingOrderForm {
     @ApiModelProperty(value = "供应商联系人id")
     private Integer supplierRelationId;
 
-    @ApiModelProperty(value = "结算id")
-    private Integer arfeeId;
-
-    @ApiModelProperty(value = "代理方式/协议类型")
-    private String deputyStyle;
-
-    @ApiModelProperty(value = "交易条件")
-    private String incoterms;
-
-    @ApiModelProperty(value = "付款方式")
-    private String payFeeStyle;
-
     @ApiModelProperty(value = "付款帐期天数")
     private Integer payFeeDay;
 
@@ -186,9 +259,6 @@ public class BookingOrderForm {
 
     @ApiModelProperty(value = "利息率")
     private Integer interest;
-
-    @ApiModelProperty(value = "计息帐期天数")
-    private Integer balanceDay;
 
     @ApiModelProperty(value = "保险")
     private String insurance;
@@ -223,23 +293,11 @@ public class BookingOrderForm {
     @ApiModelProperty(value = "指定海关汇率")
     private BigDecimal appointHgRate;
 
-    @ApiModelProperty(value = "指定综合费率")
-    private BigDecimal compositeFee;
-
-    @ApiModelProperty(value = "综合费率")
-    private BigDecimal proxyFee;
-
     @ApiModelProperty(value = "固定代理费")
     private BigDecimal compositeProxyFee;
 
-    @ApiModelProperty(value = "业务员id")
-    private Integer fsalesId;
-
     @ApiModelProperty(value = "业务员")
     private String fsalesName;
-
-    @ApiModelProperty(value = "商务id")
-    private Integer followerId;
 
     @ApiModelProperty(value = "商务跟单")
     private String followerName;
@@ -252,9 +310,6 @@ public class BookingOrderForm {
 
     @ApiModelProperty(value = "保证金比例")
     private Integer earnestPer;
-
-    @ApiModelProperty(value = "开票备注")
-    private String invRemark;
 
     @ApiModelProperty(value = "取消最低收费，0默认，1取消最低收费")
     private Integer isLowestPrice;
@@ -270,9 +325,6 @@ public class BookingOrderForm {
 
     @ApiModelProperty(value = "报关单id")
     private Integer billId;
-
-    @ApiModelProperty(value = "报关抬头方式（单抬头、双抬头）")
-    private String billStyle;
 
     @ApiModelProperty(value = "海关认证状态。0：不需制证，1需制证，2已制证")
     private Integer isHsStatus;
@@ -292,36 +344,6 @@ public class BookingOrderForm {
 
     @ApiModelProperty(value = "销售合同号")
     private String salesContractNo;
-
-    @ApiModelProperty(value = "出口境内货源地")
-    private String originArea;
-
-    @ApiModelProperty(value = "香港公司id")
-    private Integer hkCoId;
-
-    @ApiModelProperty(value = "香港公司中文名称")
-    private String hkCoName;
-
-    @ApiModelProperty(value = "香港公司英文名称")
-    private String hkCoNameEn;
-
-    @ApiModelProperty(value = "香港公司中文地址")
-    private String hkCoAddress;
-
-    @ApiModelProperty(value = "香港公司英文地址")
-    private String hkCoAddressEn;
-
-    @ApiModelProperty(value = "香港公司联系人")
-    private String hkCoRelationer;
-
-    @ApiModelProperty(value = "香港公司电话")
-    private String hkCoTel;
-
-    @ApiModelProperty(value = "香港公司邮箱")
-    private String hkCoEmail;
-
-    @ApiModelProperty(value = "香港公司传真")
-    private String hkCoFax;
 
     @ApiModelProperty(value = "报关币别")
     private String hgCurrencyName;
@@ -361,21 +383,6 @@ public class BookingOrderForm {
 
     @ApiModelProperty(value = "入仓单号、报关提运单号")
     private String hubNo;
-
-    @ApiModelProperty(value = "主管海关（申报地海关）")
-    private String customMaster;
-
-    @ApiModelProperty(value = "经停港/指运港")
-    private String distinatePort;
-
-    @ApiModelProperty(value = "港口(出入境口岸)")
-    private String port;
-
-    @ApiModelProperty(value = "启运国/运抵国")
-    private String tradeCountry;
-
-    @ApiModelProperty(value = "贸易国别")
-    private String tradeAreaCode;
 
     @ApiModelProperty(value = "启运港")
     private String despPortCode;
@@ -442,7 +449,5 @@ public class BookingOrderForm {
     @ApiModelProperty(value = "删除时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime voidedByDtm;
-
-
 
 }

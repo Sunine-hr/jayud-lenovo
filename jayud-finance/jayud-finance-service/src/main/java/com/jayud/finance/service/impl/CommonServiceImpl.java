@@ -334,6 +334,7 @@ public class CommonServiceImpl implements CommonService {
 
             String orderNosKey = cmd.equals(SubOrderSignEnum.MAIN.getSignOne()) ? "orderNo" : "subOrderNo";
             JSONObject object = new JSONObject(data.get(jsonObject.getStr(orderNosKey)));
+
             //客户字段 应收:结算单位 应付:供应商 TODO 产品核对过,直接取主订单客户名称
 //            if (type == 0) {
 //                object.put("customerName", jsonObject.getStr("unitAccount"));
@@ -342,6 +343,10 @@ public class CommonServiceImpl implements CommonService {
 //            }
 
             jsonObject.putAll(object);
+            if (cmd.equals(SubOrderSignEnum.MAIN.getSignOne())) {
+                jsonObject.put("subOrderNo", "");
+            }
+
             jsonArray.add(jsonObject);
         }
         return jsonArray.size() == 0 ? array : jsonArray;

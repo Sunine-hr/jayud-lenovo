@@ -219,6 +219,7 @@ public class PaymentNotPaidBillVO {
         String orderNo = "";
         if (isMain) {
             orderNo = this.orderNo;
+            this.subOrderNo="";
         } else {
             orderNo = this.orderNo + "~" + this.subOrderNo;
         }

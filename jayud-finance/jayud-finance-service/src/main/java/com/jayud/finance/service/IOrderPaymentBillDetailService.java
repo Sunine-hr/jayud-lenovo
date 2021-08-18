@@ -93,7 +93,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @param billNo
      * @return
      */
-    List<ViewFBilToOrderVO> viewBillDetail(String billNo);
+//    List<ViewFBilToOrderVO> viewBillDetail(String billNo);
 
     /**
      * 对账单详情 TODO 改版

@@ -507,55 +507,55 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         return update(orderReceivableBillDetail, updateWrapper);
     }
 
-    @Override
-    public List<ViewBilToOrderVO> viewSBillDetail(String billNo) {
-        List<ViewBilToOrderVO> orderList = baseMapper.viewSBillDetail(billNo);
-        List<ViewBilToOrderVO> newOrderList = new ArrayList<>();
-        List<ViewBillToCostClassVO> findCostClass = baseMapper.findSCostClass(billNo);
-        for (ViewBilToOrderVO viewBillToOrder : orderList) {
-            //处理目的地:当有两条或两条以上时,则获取中转仓地址
-            if (!StringUtil.isNullOrEmpty(viewBillToOrder.getEndAddress())) {
-                String[] strs = viewBillToOrder.getEndAddress().split(",");
-                if (strs.length > 1) {
-                    viewBillToOrder.setEndAddress(receivableBillService.getWarehouseAddress(viewBillToOrder.getOrderNo()));
-                }
-            }
-            for (ViewBillToCostClassVO viewBillToCostClass : findCostClass) {
-                if ((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && StringUtil.isNullOrEmpty(viewBillToCostClass.getSubOrderNo()) &&
-                        viewBillToCostClass.getOrderNo().equals(viewBillToOrder.getOrderNo()))
-                        || ((!StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo())) && viewBillToOrder.getSubOrderNo().equals(viewBillToCostClass.getSubOrderNo()))) {
-                    try {
-                        String addProperties = "";
-                        String addValue = "";
-                        Map<String, Object> propertiesMap = new HashMap<String, Object>();
-                        Class cls = viewBillToCostClass.getClass();
-                        Field[] fields = cls.getDeclaredFields();
-                        for (int i = 0; i < fields.length; i++) {
-                            Field f = fields[i];
-                            f.setAccessible(true);
-                            if ("name".equals(f.getName())) {
-                                addProperties = String.valueOf(f.get(viewBillToCostClass)).toLowerCase();//待新增得属性
-                            }
-                            if ("money".equals(f.getName())) {
-                                addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
-                            }
-                            propertiesMap.put(addProperties, addValue);
-                        }
-                        viewBillToOrder = (ViewBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            newOrderList.add(viewBillToOrder);
-        }
-        return newOrderList;
-    }
+//    @Override
+//    public List<ViewBilToOrderVO> viewSBillDetail(String billNo) {
+//        List<ViewBilToOrderVO> orderList = baseMapper.viewSBillDetail(billNo);
+//        List<ViewBilToOrderVO> newOrderList = new ArrayList<>();
+//        List<ViewBillToCostClassVO> findCostClass = baseMapper.findSCostClass(billNo);
+//        for (ViewBilToOrderVO viewBillToOrder : orderList) {
+//            //处理目的地:当有两条或两条以上时,则获取中转仓地址
+//            if (!StringUtil.isNullOrEmpty(viewBillToOrder.getEndAddress())) {
+//                String[] strs = viewBillToOrder.getEndAddress().split(",");
+//                if (strs.length > 1) {
+//                    viewBillToOrder.setEndAddress(receivableBillService.getWarehouseAddress(viewBillToOrder.getOrderNo()));
+//                }
+//            }
+//            for (ViewBillToCostClassVO viewBillToCostClass : findCostClass) {
+//                if ((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && StringUtil.isNullOrEmpty(viewBillToCostClass.getSubOrderNo()) &&
+//                        viewBillToCostClass.getOrderNo().equals(viewBillToOrder.getOrderNo()))
+//                        || ((!StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo())) && viewBillToOrder.getSubOrderNo().equals(viewBillToCostClass.getSubOrderNo()))) {
+//                    try {
+//                        String addProperties = "";
+//                        String addValue = "";
+//                        Map<String, Object> propertiesMap = new HashMap<String, Object>();
+//                        Class cls = viewBillToCostClass.getClass();
+//                        Field[] fields = cls.getDeclaredFields();
+//                        for (int i = 0; i < fields.length; i++) {
+//                            Field f = fields[i];
+//                            f.setAccessible(true);
+//                            if ("name".equals(f.getName())) {
+//                                addProperties = String.valueOf(f.get(viewBillToCostClass)).toLowerCase();//待新增得属性
+//                            }
+//                            if ("money".equals(f.getName())) {
+//                                addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
+//                            }
+//                            propertiesMap.put(addProperties, addValue);
+//                        }
+//                        viewBillToOrder = (ViewBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//            newOrderList.add(viewBillToOrder);
+//        }
+//        return newOrderList;
+//    }
 
 
     @Override
     public JSONArray viewSBillDetailInfo(String billNo, String cmd, String templateCmd) {
-        List<ViewBilToOrderVO> orderList = baseMapper.viewSBillDetail(billNo);
+        List<ViewBilToOrderVO> orderList = baseMapper.viewSBillDetail(billNo, cmd);
 
         JSONArray array = new JSONArray(orderList);
 

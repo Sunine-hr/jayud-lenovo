@@ -95,7 +95,12 @@ public class SystemUserController {
         token.setPassword(loginForm.getPassword().toCharArray());
         //保持登录
         token.setRememberMe(loginForm.getKeepLogin());
-
+        SystemUser systemUser = this.userService.getSystemUserBySystemName(loginForm.getUsername());
+        if (systemUser != null) {
+            if (systemUser.getStatus() == 0) {
+                return CommonResult.error(400, "该用户已被禁用");
+            }
+        }
         //该系统暂没有图验证
 
         //登录逻辑
@@ -324,8 +329,8 @@ public class SystemUserController {
         List<MsgUserChannel> tmps = form.getMsgUserChannelList();
         if (CollectionUtils.isNotEmpty(tmps)) {
             for (MsgUserChannel tmp : tmps) {
-                if (tmp.getIsSelect() && StringUtils.isEmpty(tmp.getAccount())){
-                    return CommonResult.error(400,"已勾选消息提醒,请输入相应的内容");
+                if (tmp.getIsSelect() && StringUtils.isEmpty(tmp.getAccount())) {
+                    return CommonResult.error(400, "已勾选消息提醒,请输入相应的内容");
                 }
             }
         }

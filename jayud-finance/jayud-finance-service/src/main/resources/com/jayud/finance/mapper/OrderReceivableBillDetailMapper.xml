@@ -431,7 +431,7 @@
             orc.main_order_no,
             orc.order_no
     </select>
-    <select id="viewSBillDetail" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
+    <select id="viewSBillDetail" resultType="com.jayud.finance.vo.ViewBilToOrderVO">
          SELECT
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
@@ -457,7 +457,14 @@
 		left join order_receivable_bill orb on orb.id = orbd.bill_id
 		left join order_receivable_cost orc on orc.id = orbd.cost_id
         where orbd.bill_no = #{billNo}
-        group by oi.order_no,subOrderNo
+        <choose>
+            <when test="cmd =='main'">
+                group by oi.order_no
+            </when>
+            <otherwise>
+                group by oi.order_no,subOrderNo
+            </otherwise>
+        </choose>
     </select>
     <select id="getViewSBill" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT

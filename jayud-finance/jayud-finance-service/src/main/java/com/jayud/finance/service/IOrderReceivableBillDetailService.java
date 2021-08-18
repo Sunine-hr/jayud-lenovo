@@ -96,7 +96,7 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @param billNo
      * @return
      */
-    List<ViewBilToOrderVO> viewSBillDetail(String billNo);
+//    List<ViewBilToOrderVO> viewSBillDetail(String billNo);
 
     /**
      * 对账单详情 TODO 升级版

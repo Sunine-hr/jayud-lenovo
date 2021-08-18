@@ -309,7 +309,15 @@
         <if test="form.bizCode != null and form.bizCode!=''">
             and temp.bizCode =#{form.bizCode}
         </if>
-        group by temp.orderNo,temp.subOrderNo
+        <choose>
+            <when test="form.cmd == 'main'">
+                group by temp.orderNo
+            </when>
+            <otherwise>
+                group by temp.orderNo,temp.subOrderNo
+            </otherwise>
+        </choose>
+
     </select>
 
     <select id="findBaseNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm"

@@ -63,9 +63,10 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
      * 预览账单分页查询
      *
      * @param billNo
+     * @param cmd
      * @return
      */
-    List<ViewBilToOrderVO> viewSBillDetail(@Param("billNo") String billNo);
+    List<ViewBilToOrderVO> viewSBillDetail(@Param("billNo") String billNo, @Param("cmd") String cmd);
 
     /**
      * 查询账单明细

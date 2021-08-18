@@ -370,7 +370,7 @@ public class StringUtils {
      */
     public static List<Map<String, String>> addressResolutionThree(String address) {
 //        String regex = "((?<province>[^省]+省|.+自治区)|上海|北京|天津|重庆)|(?<city>[^市]+市|.+自治州)|(?<county>[^县]+县|.+区|.+镇|.+局)?(?<town>[^区]+区|.+镇)?(?<village>.*)";
-        String regex = "(?<province>[^省]+自治区|.*?省|.*?行政区|.*?市)(?<city>[^市]+自治州|.*?地区|.*?行政单位|.+盟|市辖区|.*?市|.*?县)(?<county>[^县]+县|.+区|.+市|.+旗|.+海域|.+岛)?(?<town>[^区]+区|.+镇)?(?<village>.*)";
+        String regex = "(?<province>[^省]+自治区|.*?省|.*?行政区|.*?市)(?<city>[^市]+自治州|.*?地区|.*?行政单位|.+盟|市辖区|.*?市|.*?县)(?<county>[^县]+县|.*?区|.+市|.+旗|.+海域|.+岛)(?<town>[^区]+区|.+镇|.街道)?(?<village>.*)";
         Matcher m = Pattern.compile(regex).matcher(address);
         String province = "", city = "", county = "", town = "", village = "";
         List<Map<String, String>> table = new ArrayList<Map<String, String>>();

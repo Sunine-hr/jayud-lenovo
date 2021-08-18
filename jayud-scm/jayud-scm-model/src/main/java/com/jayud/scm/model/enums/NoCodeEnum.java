@@ -11,6 +11,8 @@ public enum NoCodeEnum {
 
 
     COMMODITY("1001","商品编号"),
+    CUSTOMER("1002","客户编号"),
+    FEE("1003","委托单号"),
     ;
 
     private String code;

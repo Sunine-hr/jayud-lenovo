@@ -86,6 +86,12 @@ public class CommonController {
     @Autowired
     private ICustomerRelationerService customerRelationerService;
 
+    @Autowired
+    private IHubReceivingService hubReceivingService;
+
+    @Autowired
+    private IHubShippingService hubShippingService;
+
     @ApiOperation(value = "删除通用方法")
     @PostMapping(value = "/delete")
     public CommonResult delete(@Valid @RequestBody DeleteForm deleteForm) {
@@ -122,6 +128,12 @@ public class CommonController {
 //                break;
             case 7:
                 result = customerService.delete(deleteForm);
+                break;
+            case 17:
+                result = hubReceivingService.delete(deleteForm);
+                break;
+            case 18:
+                result = hubShippingService.delete(deleteForm);
                 break;
         }
 

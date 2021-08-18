@@ -1,12 +1,24 @@
 package com.jayud.scm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.UserOperator;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.scm.model.bo.AddHubShippingEntryForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.HubShippingEntry;
 import com.jayud.scm.mapper.HubShippingEntryMapper;
+import com.jayud.scm.model.po.SystemUser;
+import com.jayud.scm.model.vo.HubReceivingEntryVO;
+import com.jayud.scm.model.vo.HubShippingEntryVO;
 import com.jayud.scm.service.IHubShippingEntryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.scm.service.ISystemUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -20,11 +32,44 @@ import java.util.List;
 @Service
 public class HubShippingEntryServiceImpl extends ServiceImpl<HubShippingEntryMapper, HubShippingEntry> implements IHubShippingEntryService {
 
+    @Autowired
+    private ISystemUserService systemUserService;
+
     @Override
     public List<HubShippingEntry> getShippingEntryByShippingId(Long id) {
         QueryWrapper<HubShippingEntry> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(HubShippingEntry::getShippingId,id);
         queryWrapper.lambda().eq(HubShippingEntry::getVoided,0);
         return this.list(queryWrapper);
+    }
+
+    @Override
+    public IPage<HubShippingEntryVO> findByPage(QueryCommonForm form) {
+        Page<HubShippingEntryVO> page = new Page<>(form.getPageNum(), form.getPageSize());
+        return this.baseMapper.findByPage(page, form);
+    }
+
+    @Override
+    public boolean saveOrUpdateHubShippingEntry(List<AddHubShippingEntryForm> form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        List<HubShippingEntry> hubShippingEntries = ConvertUtil.convertList(form, HubShippingEntry.class);
+        for (HubShippingEntry hubShippingEntry : hubShippingEntries) {
+            if(hubShippingEntry.getId() != null){
+                hubShippingEntry.setMdyBy(systemUser.getId().intValue());
+                hubShippingEntry.setMdyByDtm(LocalDateTime.now());
+                hubShippingEntry.setMdyByName(systemUser.getUserName());
+            }else{
+                hubShippingEntry.setCrtBy(systemUser.getId().intValue());
+                hubShippingEntry.setCrtByDtm(LocalDateTime.now());
+                hubShippingEntry.setCrtByName(systemUser.getUserName());
+            }
+        }
+        boolean b = this.saveOrUpdateBatch(hubShippingEntries);
+        if(!b){
+            log.warn("出库订单明细添加或修改失败");
+        }
+
+        return b;
     }
 }

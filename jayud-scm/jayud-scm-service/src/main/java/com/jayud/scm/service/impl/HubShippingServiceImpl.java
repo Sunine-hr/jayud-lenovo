@@ -2,17 +2,17 @@ package com.jayud.scm.service.impl;
 
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.scm.model.bo.AddHubShippingEntryForm;
+import com.jayud.scm.model.bo.AddHubShippingForm;
 import com.jayud.scm.model.bo.DeleteForm;
+import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.HubShippingMapper;
 import com.jayud.scm.model.vo.HubShippingEntryVO;
 import com.jayud.scm.model.vo.HubShippingVO;
-import com.jayud.scm.service.IHubShippingEntryService;
-import com.jayud.scm.service.IHubShippingFollowService;
-import com.jayud.scm.service.IHubShippingService;
+import com.jayud.scm.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.scm.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +39,9 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
 
     @Autowired
     private ISystemUserService systemUserService;
+
+    @Autowired
+    private ICommodityService commodityService;
 
     @Override
     public boolean delete(DeleteForm deleteForm) {
@@ -110,6 +113,53 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
             boolean save = this.hubShippingFollowService.save(hubShippingFollow);
             if(save){
                 log.warn("签收出库单,操作日志添加成功");
+            }
+        }
+        return update;
+    }
+
+    @Override
+    public boolean saveOrUpdateHubShipping(AddHubShippingForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+        HubShipping hubShipping = ConvertUtil.convert(form, HubShipping.class);
+        HubShippingFollow hubShippingFollow = new HubShippingFollow();
+
+        if(hubShipping.getId() != null){
+            hubShipping.setMdyByName(systemUser.getUserName());
+            hubShipping.setMdyBy(systemUser.getId().intValue());
+            hubShipping.setMdyByDtm(LocalDateTime.now());
+            hubShippingFollow.setSType(OperationEnum.UPDATE.getCode());
+            hubShippingFollow.setFollowContext(systemUser.getUserName()+"修改出库单，单号为"+hubShipping.getShippingNo());
+        }else{
+            hubShipping.setShippingNo(commodityService.getOrderNo(NoCodeEnum.HUB_SHIPPING.getCode(),LocalDateTime.now()));
+            hubShipping.setCrtBy(systemUser.getId().intValue());
+            hubShipping.setCrtByDtm(LocalDateTime.now());
+            hubShipping.setCrtByName(systemUser.getUserName());
+            hubShippingFollow.setSType(OperationEnum.INSERT.getCode());
+            hubShippingFollow.setFollowContext(systemUser.getUserName()+"增加出库单，单号为"+hubShipping.getShippingNo());
+        }
+        boolean update = this.saveOrUpdate(hubShipping);
+        if(update){
+            log.warn("修改或新增出库单成功"+hubShipping);
+            List<AddHubShippingEntryForm> addHubShippingEntryFormList = form.getAddHubShippingEntryFormList();
+            List<HubShippingEntry> hubShippingEntries = ConvertUtil.convertList(addHubShippingEntryFormList, HubShippingEntry.class);
+            for (HubShippingEntry hubShippingEntry : hubShippingEntries) {
+                hubShippingEntry.setShippingId(hubShipping.getId());
+                hubShippingEntry.setCrtBy(systemUser.getId().intValue());
+                hubShippingEntry.setCrtByDtm(LocalDateTime.now());
+                hubShippingEntry.setCrtByName(systemUser.getUserName());
+            }
+            boolean b = this.hubShippingEntryService.saveOrUpdateBatch(hubShippingEntries);
+            if(!b){
+                log.warn("修改或新增出库单明细失败"+hubShippingEntries);
+            }
+            hubShippingFollow.setCrtBy(systemUser.getId().intValue());
+            hubShippingFollow.setCrtByDtm(LocalDateTime.now());
+            hubShippingFollow.setCrtByName(systemUser.getUserName());
+            hubShippingFollow.setShippingId(hubShipping.getId());
+            boolean save = this.hubShippingFollowService.save(hubShippingFollow);
+            if(save){
+                log.warn("修改或者新增出库单，出库操作日志添加成功"+hubShippingFollow);
             }
         }
         return update;

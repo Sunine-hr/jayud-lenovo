@@ -69,4 +69,18 @@
         id, shipping_id, booking_id, booking_no, booking_entry_id, receiving_id, receiving_no, receiving_entry_id, bill_id, bill_no, item_id, item_no, item_model, item_name, item_brand, item_origin, qty, unit, price, hg_price, packages, pallets, cartons, i_cartons, ctns_no, gw, nw, cbm, temp_01, temp_02, temp_03, state_flag, check_begin_time, check_end_time, check_remark, pn, is_onl, onl_id, onl_no, requirement, pick_requested, allocated_requested, pack_requested, qc_requested, label_requested, is_unpacking, wh_no, crt_by, crt_by_name, crt_by_dtm, remark, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
 
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.HubShippingEntryVO">
+        select id, shipping_id shippingId, booking_id bookingId, booking_no bookingNo,
+        booking_entry_id bookingEntryId, receiving_id receivingId, receiving_no receivingNo, receiving_entry_id receivingEntryId,
+        bill_id billId, bill_no billNo, item_id itemId, item_no itemNo, item_model itemModel, item_name itemName, item_brand itemBrand,
+        item_origin itemOrigin, qty, unit, price, hg_price hgPrice, packages, pallets, cartons,
+        i_cartons iCartons, ctns_no ctnsNo, gw, nw, cbm, state_flag stateFlag,
+        check_begin_time checkBeginTime, check_end_time checkEndTime, check_remark checkRemark, pn,
+        requirement, pick_requested, allocated_requested, pack_requested,
+        qc_requested qcRequested, label_requested labelRequested, is_unpacking isUnpacking, wh_no whNo, crt_by_name crtByName,
+        crt_by_dtm crtByDtm, remark, mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
+        from hub_shipping_entry hse
+        where hse.voided = 0 and hse.shipping_id = #{form.id}
+    </select>
+
 </mapper>

@@ -65,8 +65,8 @@ public class CustomerController {
         if(form.getKey() != null && CorrespondEnum.getName(form.getKey()) == null){
             return CommonResult.error(444,"该条件无法搜索");
         }
-        if(form.getClassType() != null){
-            form.setClassType(ibDataDicEntryService.getTextByDicCodeAndDataValue("1012",form.getClassType()));
+        if(form.getType() != null){
+            form.setType(ibDataDicEntryService.getTextByDicCodeAndDataValue("1012",form.getClassType()));
         }
         form.setKey(CorrespondEnum.getName(form.getKey()));
 

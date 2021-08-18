@@ -46,7 +46,12 @@ public class HubShippingController {
 
     @ApiOperation(value = "新增或修改出库订单")
     @PostMapping(value = "/saveOrUpdateHubShipping")
-    public CommonResult saveOrUpdateHubShipping(@RequestBody AddHubShippingForm addHubShippingForm) {
+    public CommonResult saveOrUpdateHubShipping(@RequestBody AddHubShippingForm form) {
+        form.setModelType(Integer.parseInt(form.getModelTypeName()));
+        boolean result = hubShippingService.saveOrUpdateHubShipping(form);
+        if(!result){
+            return CommonResult.error(444,"新增或修改出库订单失败");
+        }
         return CommonResult.success();
     }
 

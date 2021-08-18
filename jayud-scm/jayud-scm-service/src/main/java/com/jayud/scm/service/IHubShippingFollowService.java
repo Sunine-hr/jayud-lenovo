@@ -1,7 +1,11 @@
 package com.jayud.scm.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.scm.model.bo.AddHubShippingFollowForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.HubShippingFollow;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.scm.model.vo.HubShippingFollowVO;
 
 /**
  * <p>
@@ -13,4 +17,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IHubShippingFollowService extends IService<HubShippingFollow> {
 
+    IPage<HubShippingFollowVO> findListByHubShippingId(QueryCommonForm form);
+
+    boolean addHubShippingFollow(AddHubShippingFollowForm followForm);
 }

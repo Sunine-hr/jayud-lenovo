@@ -28,4 +28,11 @@
         id, shipping_id, booking_id, s_type, follow_context, remark, is_onl, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
 
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.HubShippingFollowVO">
+        select id, shipping_id shippingId, booking_id bookingId, s_type sType, follow_context followContext,
+        crt_by_name crtByName,crt_by_dtm crtByDtm, remark, mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
+        from hub_shipping_follow hse
+        where hse.voided = 0 and hse.shipping_id = #{form.id}
+    </select>
+
 </mapper>

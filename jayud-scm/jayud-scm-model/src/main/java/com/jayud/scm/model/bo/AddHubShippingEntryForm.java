@@ -3,6 +3,7 @@ package com.jayud.scm.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -95,6 +96,7 @@ public class AddHubShippingEntryForm {
     private Integer cartons;
 
     @ApiModelProperty(value = "散箱")
+    @JsonProperty(value = "iCartons")
     private Integer iCartons;
 
     @ApiModelProperty(value = "箱号")

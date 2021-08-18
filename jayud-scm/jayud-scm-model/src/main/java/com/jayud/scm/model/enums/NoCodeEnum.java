@@ -18,6 +18,7 @@ public enum NoCodeEnum {
     D001("D001","委托单号"),
     CUSTOMER("1002","客户编号"),
     FEE("1003","委托单号"),
+    HUB_SHIPPING("1004","出库单号"),
     ;
 
     private String code;

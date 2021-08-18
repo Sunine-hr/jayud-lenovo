@@ -3,6 +3,7 @@ package com.jayud.scm.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -35,10 +36,15 @@ public class AddHubShippingForm {
     @ApiModelProperty(value = "业务类型")
     private Integer modelType;
 
+    @ApiModelProperty(value = "业务类型")
+    private String modelTypeName;
+
     @ApiModelProperty(value = "出库类型(0正常，1暂存)")
+    @JsonProperty(value = "sModel")
     private Integer sModel;
 
     @ApiModelProperty(value = "出库次数")
+    @JsonProperty(value = "sType")
     private Integer sType;
 
     @ApiModelProperty(value = "订单ID")
@@ -228,27 +234,35 @@ public class AddHubShippingForm {
     private String remark;
 
     @ApiModelProperty(value = "审核人")
+    @JsonProperty(value = "fMultiLevel0")
     private String fMultiLevel0;
 
     @ApiModelProperty(value = "审核 时间")
+    @JsonProperty(value = "fDateTime0")
     private LocalDateTime fDateTime0;
 
     @ApiModelProperty(value = "审核人")
+    @JsonProperty(value = "fMultiLevel1")
     private String fMultiLevel1;
 
     @ApiModelProperty(value = "审核 时间")
+    @JsonProperty(value = "fDateTime1")
     private LocalDateTime fDateTime1;
 
     @ApiModelProperty(value = "审核人")
+    @JsonProperty(value = "fMultiLevel2")
     private String fMultiLevel2;
 
     @ApiModelProperty(value = "审核 时间")
+    @JsonProperty(value = "fDateTime2")
     private LocalDateTime fDateTime2;
 
     @ApiModelProperty(value = "审核人")
+    @JsonProperty(value = "fMultiLevel3")
     private String fMultiLevel3;
 
     @ApiModelProperty(value = "审核 时间")
+    @JsonProperty(value = "fDateTime3")
     private LocalDateTime fDateTime3;
 
     @ApiModelProperty(value = "审核状态")

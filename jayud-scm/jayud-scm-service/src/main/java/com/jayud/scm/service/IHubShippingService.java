@@ -1,5 +1,6 @@
 package com.jayud.scm.service;
 
+import com.jayud.scm.model.bo.AddHubShippingForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.po.HubShipping;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -20,4 +21,6 @@ public interface IHubShippingService extends IService<HubShipping> {
     HubShippingVO getHubShippingById(Integer id);
 
     boolean signOrder(Integer id);
+
+    boolean saveOrUpdateHubShipping(AddHubShippingForm form);
 }

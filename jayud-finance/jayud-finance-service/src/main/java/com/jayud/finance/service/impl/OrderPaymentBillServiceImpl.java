@@ -824,7 +824,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         }
         PaymentNotPaidBillVO paymentNotPaidBillVO = pageList.get(0);
         //查询费用合计金额
-        Map<String, Map<String, BigDecimal>> costAmountMap = this.omsClient.statisticalCostByOrderNos(orderNos, isMain,
+         Map<String, Map<String, BigDecimal>> costAmountMap = this.omsClient.statisticalCostByOrderNos(orderNos, isMain,
                 paymentNotPaidBillVO.getLegalId(), paymentNotPaidBillVO.getCustomerCode(),
                 BillTypeEnum.PAYMENT.getCode()).getData();
         //查询所有费用详情

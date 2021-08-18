@@ -216,8 +216,13 @@ public class PaymentNotPaidBillVO {
             return;
         }
 //        String orderNo = isMain ? this.orderNo : this.subOrderNo;
-
-        Map<String, BigDecimal> tmp = costMap.get(this.orderNo + "~" + this.subOrderNo);
+        String orderNo = "";
+        if (isMain) {
+            orderNo = this.orderNo;
+        } else {
+            orderNo = this.orderNo + "~" + this.subOrderNo;
+        }
+        Map<String, BigDecimal> tmp = costMap.get(orderNo);
         if (tmp == null) return;
         StringBuilder sb = new StringBuilder();
         tmp.forEach((k, v) -> {

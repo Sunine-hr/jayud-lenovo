@@ -1212,4 +1212,15 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         }
     }
 
+    public static void main(String[] args) {
+        List<String> str=new ArrayList<>();
+        str.add("广东省");
+//        str.add("深圳市");
+        String tmp="广东省深圳市西乡街道黄田杨贝工业区一期2栋2楼104厂房B区 (7614) 0000";
+        for (String s : str) {
+            tmp=tmp.replace(s,"");
+        }
+        System.out.println(tmp);
+    }
+
 }

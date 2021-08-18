@@ -269,12 +269,13 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
     @Override
     public Map<String, Map<String, BigDecimal>> statisticalPayCostByOrderNos(List<OrderPaymentCost> list, Boolean isMain) {
         Map<String, List<OrderPaymentCost>> group = null;
-//        if (isMain) {
-//            group = list.stream().collect(Collectors.groupingBy(OrderPaymentCost::getMainOrderNo));
-//        } else {
+        if (isMain) {
+            group = list.stream().collect(Collectors.groupingBy(OrderPaymentCost::getMainOrderNo));
+        } else {
 //            group = list.stream().collect(Collectors.groupingBy(OrderPaymentCost::getOrderNo));
-//        }
-        group = list.stream().collect(Collectors.groupingBy(e -> e.getMainOrderNo() + "~" + e.getOrderNo()));
+            group = list.stream().collect(Collectors.groupingBy(e -> e.getMainOrderNo() + "~" + e.getOrderNo()));
+        }
+
         List<CurrencyInfo> currencyInfos = currencyInfoService.list();
         Map<String, String> currencyMap = currencyInfos.stream().collect(Collectors.toMap(CurrencyInfo::getCurrencyCode, CurrencyInfo::getCurrencyName));
         Map<String, Map<String, BigDecimal>> map = new HashMap<>();

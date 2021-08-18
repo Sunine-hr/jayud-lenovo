@@ -1,22 +1,24 @@
 package com.jayud.scm.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.vaildator.FlagValidator;
+import com.jayud.scm.mapper.CustomerMaintenanceSetupMapper;
+import com.jayud.scm.mapper.CustomerMapper;
+import com.jayud.scm.mapper.CustomerRelationerMapper;
 import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
-import com.jayud.scm.mapper.CustomerMapper;
-import com.jayud.scm.model.vo.CommodityFormVO;
-import com.jayud.scm.model.vo.CustomerFormVO;
-import com.jayud.scm.model.vo.CustomerVO;
+import com.jayud.scm.model.vo.*;
 import com.jayud.scm.service.*;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +50,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     @Autowired
     private ICommodityService commodityService;
+
+
+    @Autowired
+    CustomerRelationerMapper customerRelationerMapper;//客户联系人表
+    @Autowired
+    CustomerMaintenanceSetupMapper customerMaintenanceSetupMapper;//客户维护人表
+
 
     @Override
     public IPage<CustomerFormVO> findByPage(QueryCustomerForm form) {
@@ -290,5 +299,33 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }else {
             return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
         }
+    }
+
+    @Override
+    public List<VFeeModel> findVFeeModelByCustomerId(Integer customerId) {
+        List<VFeeModel> list = this.baseMapper.findVFeeModelByCustomerId(customerId);
+        return list;
+    }
+
+    @Override
+    public CustomerOperatorVO findCustomerOperatorByCustomerId(Integer customerId) {
+        CustomerOperatorVO customerOperatorVO = new CustomerOperatorVO();
+        Customer customer = this.getById(customerId);
+        if(ObjectUtil.isEmpty(customer)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "客户不存在");
+        }
+        //商务员list
+        String roleName = "商务";
+        List<CustomerMaintenanceSetupVO> followerList = customerMaintenanceSetupMapper.findCustomerMaintenanceSetupBycustomerIdAndRoleName(customerId, roleName);
+        customerOperatorVO.setFollowerList(followerList);
+        //业务员list
+        roleName = "业务";
+        List<CustomerMaintenanceSetupVO> fsalesList = customerMaintenanceSetupMapper.findCustomerMaintenanceSetupBycustomerIdAndRoleName(customerId, roleName);
+        customerOperatorVO.setFsalesList(fsalesList);
+        //客户下单人list
+        String stype = "3";//3 客户下单人
+        List<CustomerRelationerVO> buyerList = customerRelationerMapper.findCustomerRelationerByCustomerIdAndStype(customerId, stype);
+        customerOperatorVO.setBuyerList(buyerList);
+        return customerOperatorVO;
     }
 }

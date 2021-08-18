@@ -41,4 +41,15 @@
         from customer_relationer where voided = 0 and customer_id = #{form.id}
     </select>
 
+    <select id="findCustomerRelationerByCustomerIdAndStype" resultType="com.jayud.scm.model.vo.CustomerRelationerVO">
+        select id, customer_id customerId, s_type sType, c_name cName, tel,
+               mobile_tel mobileTel, email, qq, birthday, is_default isDefault,
+               crt_by_name crtByName, crt_by_dtm crtByDtm,remark ,mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
+        from customer_relationer
+        where voided = 0
+        and customer_id = #{customerId, jdbcType=INTEGER}
+        and s_type = #{stype, jdbcType=VARCHAR}
+    </select>
+
+
 </mapper>

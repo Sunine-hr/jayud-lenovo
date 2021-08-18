@@ -81,7 +81,7 @@ public class BookingOrderForm {
     private String customerEmail;
 
     //第二部分
-    @ApiModelProperty(value = "结算id")//TODO 结算方案 -> 从客户，取值，取结算方案视图 v_fee_model， 结算id
+    @ApiModelProperty(value = "结算id")//TODO 结算方案(结算条款) -> 从客户，取值，取结算方案视图 v_fee_model， 结算id
     private Integer arfeeId;
 
     @ApiModelProperty(value = "指定综合费率")
@@ -134,13 +134,13 @@ public class BookingOrderForm {
     @ApiModelProperty(value = "经停港/指运港")//TODO 经停港/指运港 下拉取值
     private String distinatePort;
 
-    @ApiModelProperty(value = "启运国/运抵国")//TODO 启运国/运抵国 下拉取值
+    @ApiModelProperty(value = "启运国/运抵国")//TODO 启运国/运抵国  国家表 下拉取值
     private String tradeCountry;
 
     @ApiModelProperty(value = "港口(出入境口岸)")//出境关别 -> 对应字段`出入境口岸` 下拉取值
     private String port;
 
-    @ApiModelProperty(value = "贸易国别")//TODO 贸易国别 下拉取值
+    @ApiModelProperty(value = "贸易国别")//TODO 贸易国别  国家表 下拉取值
     private String tradeAreaCode;
 
     @ApiModelProperty(value = "开票备注")

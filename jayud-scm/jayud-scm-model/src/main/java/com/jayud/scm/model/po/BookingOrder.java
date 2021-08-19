@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -134,19 +135,23 @@ public class BookingOrder extends Model<BookingOrder> {
     private String hgTruckNo;
 
     @ApiModelProperty(value = "审核人")
+    @JsonProperty("fMultiLevei0")
     private String fMultiLevei0;
 
     @ApiModelProperty(value = "审核时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonProperty("fDatetime")
     private LocalDateTime fDatetime;
 
     @ApiModelProperty(value = "审核状态")
     private String checkStateFlag;
 
     @ApiModelProperty(value = "审核级别")
+    @JsonProperty("fLevel")
     private Integer fLevel;
 
     @ApiModelProperty(value = "审核步骤")
+    @JsonProperty("fStep")
     private Integer fStep;
 
     @ApiModelProperty(value = "备注")
@@ -204,6 +209,7 @@ public class BookingOrder extends Model<BookingOrder> {
     private String insurance;
 
     @ApiModelProperty(value = "下单汇率")
+    @JsonProperty("fRate")
     private BigDecimal fRate;
 
     @ApiModelProperty(value = "报关当天汇率")

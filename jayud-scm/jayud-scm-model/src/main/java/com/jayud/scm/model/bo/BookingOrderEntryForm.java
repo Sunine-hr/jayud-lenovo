@@ -29,7 +29,7 @@ public class BookingOrderEntryForm {
     @ApiModelProperty(value = "型号")//TODO 型号 下拉列表 有一个`产品id`的字段
     private String itemModel;
 
-    @ApiModelProperty(value = "名称")//TODO 商品名称 有一个`名称`
+    @ApiModelProperty(value = "商品名称 -> 对应字段`名称`")//TODO 商品名称 有一个`名称`
     private String itemName;
 
     @ApiModelProperty(value = "品牌")
@@ -68,7 +68,7 @@ public class BookingOrderEntryForm {
     @ApiModelProperty(value = "净重")
     private BigDecimal nw;
 
-    @ApiModelProperty(value = "体积")//TODO 没有材积字段 有`体积`
+    @ApiModelProperty(value = "材积 -> 对应字段`体积`")//TODO 材积 -> 对应字段`体积`
     private BigDecimal cbm;
 
     @ApiModelProperty(value = "唛头")
@@ -90,13 +90,13 @@ public class BookingOrderEntryForm {
     @ApiModelProperty(value = "申报要素")
     private String elements;
 
-    @ApiModelProperty(value = "备注")//商品报关备注 -> 用`备注`
+    @ApiModelProperty(value = "商品报关备注 -> 对应字段`备注`")//TODO 商品报关备注 -> 用`备注`
     private String remark;
 
     @ApiModelProperty(value = "商品描述")
     private String itemNotes;
 
-    @ApiModelProperty(value = "采购订货单号")//TODO PO 有一个`采购订货单号`
+    @ApiModelProperty(value = "PO -> 对应字段`采购订货单号`")//TODO PO 有一个`采购订货单号`
     private String po;
 
     @ApiModelProperty(value = "配件")

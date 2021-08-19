@@ -1,9 +1,11 @@
 package com.jayud.scm.model.bo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -18,36 +20,46 @@ public class BookingOrderForm {
 
     //第一部分
     @ApiModelProperty(value = "业务类型/工作单类型 0进口  1出口 2国内 4香港  5采购  6销售")
+    @NotNull(message = "业务类型，不能为空")
     private Integer modelType;
 
     @ApiModelProperty(value = "委托单号")
+    @NotNull(message = "委托单号，不能为空")
     private String bookingNo;
 
     @ApiModelProperty(value = "委托单日期")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @NotNull(message = "委托单日期，不能为空")
     private LocalDateTime bookingDate;
 
     //TODO 订车时间，这个字段不要了
 
     @ApiModelProperty(value = "客户名称、利润中心id")
+    @NotNull(message = "客户名称、利润中心id，不能为空")
     private Integer customerId;
 
     @ApiModelProperty(value = "供应商id")
+    @NotNull(message = "供应商id，不能为空")
     private Integer supplierId;
 
     @ApiModelProperty(value = "境外客户id")
+    @NotNull(message = "境外客户id，不能为空")
     private Integer overseasCustomersId;
 
     @ApiModelProperty(value = "商务id")
+    @NotNull(message = "商务id，不能为空")
     private Integer followerId;
 
     @ApiModelProperty(value = "采购人(客户下单人)")
+    @NotNull(message = "采购人(客户下单人)，不能为空")
     private String buyer;
 
     @ApiModelProperty(value = "业务员id")
+    @NotNull(message = "业务员id，不能为空")
     private Integer fsalesId;
 
     @ApiModelProperty(value = "香港公司id")//TODO 香港抬头表b_hk_company，对应字段`香港公司id`
+    @NotNull(message = "香港公司id，不能为空")
     private Integer hkCoId;
 
     @ApiModelProperty(value = "香港公司中文名称")
@@ -81,13 +93,12 @@ public class BookingOrderForm {
     private String customerEmail;
 
     //第二部分
-    @ApiModelProperty(value = "结算id")//TODO 结算方案(结算条款) -> 从客户，取值，取结算方案视图 v_fee_model， 结算id
+    @ApiModelProperty(value = "结算方案 -> 结算id")//TODO 结算方案(结算条款) -> 从客户，取值，取结算方案视图 v_fee_model， 结算id
+    @NotNull(message = "结算id，不能为空")
     private Integer arfeeId;
 
-    @ApiModelProperty(value = "指定综合费率")
-    private BigDecimal compositeFee;
-
     @ApiModelProperty(value = "综合费率")
+    @NotNull(message = "综合费率，不能为空")
     private BigDecimal proxyFee;
 
     @ApiModelProperty(value = "付款方式")
@@ -97,50 +108,64 @@ public class BookingOrderForm {
 
 
     @ApiModelProperty(value = "交易条件")
+    @NotNull(message = "交易条件，不能为空")
     private String incoterms;
 
     @ApiModelProperty(value = "币别") //TODO 币别的取值
+    @NotNull(message = "币别，不能为空")
     private String currencyName;
 
     @ApiModelProperty(value = "报关抬头方式（单抬头、双抬头）")//TODO 原型:抬头方式 数据表:报关抬头方式（单抬头、双抬头）
+    @NotNull(message = "报关抬头方式（单抬头、双抬头），不能为空")
     private String billStyle;
 
     @ApiModelProperty(value = "计息帐期天数")
     private Integer balanceDay;
 
     @ApiModelProperty(value = "报关方式(自主报关，委托报关，客户自行报关)")//TODO 原型:报关方式 数据表:报关方式(自主报关，委托报关，客户自行报关)
+    @NotNull(message = "报关方式(自主报关，委托报关，客户自行报关)，不能为空")
     private String hgType;
 
-    @ApiModelProperty(value = "代理方式/协议类型")//TODO 业务模式 -> 对应字段`代理方式/协议类型`
+    @ApiModelProperty(value = "业务模式 -> 对应字段`代理方式/协议类型`")//TODO 业务模式 -> 对应字段`代理方式/协议类型`
+    @NotNull(message = "代理方式/协议类型，不能为空")
     private String deputyStyle;
 
-    @ApiModelProperty(value = "出口境内货源地") //TODO 境内货源地 -> 对应字段`出口境内货源地`
+    @ApiModelProperty(value = "境内货源地 -> 对应字段`出口境内货源地`") //TODO 境内货源地 -> 对应字段`出口境内货源地`
+    @NotNull(message = "出口境内货源地，不能为空")
     private String originArea;
 
     @ApiModelProperty(value = "是否报关(需要报关，等通知报关)")//TODO 是否报关(需要报关，等通知报关) 下拉取值
+    @NotNull(message = "是否报关(需要报关，等通知报关)，不能为空")
     private String isHg;
 
 
     //第三部分
     @ApiModelProperty(value = "起运地（默认深圳、香港）")
+    @NotNull(message = "起运地（默认深圳、香港），不能为空")
     private String origin;
 
     @ApiModelProperty(value = "目的地")
+    @NotNull(message = "目的地，不能为空")
     private String destination;
 
     @ApiModelProperty(value = "主管海关（申报地海关）")//TODO 主管海关（申报地海关） 下拉取值
+    @NotNull(message = "主管海关（申报地海关），不能为空")
     private String customMaster;
 
     @ApiModelProperty(value = "经停港/指运港")//TODO 经停港/指运港 下拉取值
+    @NotNull(message = "经停港/指运港，不能为空")
     private String distinatePort;
 
     @ApiModelProperty(value = "启运国/运抵国")//TODO 启运国/运抵国  国家表 下拉取值
+    @NotNull(message = "启运国/运抵国，不能为空")
     private String tradeCountry;
 
-    @ApiModelProperty(value = "港口(出入境口岸)")//出境关别 -> 对应字段`出入境口岸` 下拉取值
+    @ApiModelProperty(value = "出境关别 -> 对应字段`港口(出入境口岸)`")//出境关别 -> 对应字段`出入境口岸` 下拉取值
+    @NotNull(message = "港口(出入境口岸)，不能为空")
     private String port;
 
     @ApiModelProperty(value = "贸易国别")//TODO 贸易国别  国家表 下拉取值
+    @NotNull(message = "贸易国别，不能为空")
     private String tradeAreaCode;
 
     @ApiModelProperty(value = "开票备注")
@@ -148,8 +173,6 @@ public class BookingOrderForm {
 
     @ApiModelProperty(value = "备注")
     private String remark;
-
-
 
 
     //其他字段
@@ -215,19 +238,23 @@ public class BookingOrderForm {
     private String hgTruckNo;
 
     @ApiModelProperty(value = "审核人")
+    @JsonProperty("fMultiLevei0")
     private String fMultiLevei0;
 
     @ApiModelProperty(value = "审核时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonProperty("fDatetime")
     private LocalDateTime fDatetime;
 
     @ApiModelProperty(value = "审核状态")
     private String checkStateFlag;
 
     @ApiModelProperty(value = "审核级别")
+    @JsonProperty("fLevel")
     private Integer fLevel;
 
     @ApiModelProperty(value = "审核步骤")
+    @JsonProperty("fStep")
     private Integer fStep;
 
     @ApiModelProperty(value = "境外客户名称")
@@ -264,6 +291,7 @@ public class BookingOrderForm {
     private String insurance;
 
     @ApiModelProperty(value = "下单汇率")
+    @JsonProperty("fRate")
     private BigDecimal fRate;
 
     @ApiModelProperty(value = "报关当天汇率")
@@ -292,6 +320,9 @@ public class BookingOrderForm {
 
     @ApiModelProperty(value = "指定海关汇率")
     private BigDecimal appointHgRate;
+
+    @ApiModelProperty(value = "指定综合费率")
+    private BigDecimal compositeFee;
 
     @ApiModelProperty(value = "固定代理费")
     private BigDecimal compositeProxyFee;

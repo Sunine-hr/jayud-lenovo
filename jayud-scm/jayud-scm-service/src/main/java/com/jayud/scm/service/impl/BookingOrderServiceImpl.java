@@ -15,6 +15,7 @@ import com.jayud.scm.mapper.BookingOrderMapper;
 import com.jayud.scm.model.bo.BookingOrderForm;
 import com.jayud.scm.model.bo.QueryBookingOrderForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
+import com.jayud.scm.model.enums.StateFlagEnum;
 import com.jayud.scm.model.enums.VoidedEnum;
 import com.jayud.scm.model.po.BookingOrder;
 import com.jayud.scm.model.po.BookingOrderEntry;
@@ -93,6 +94,9 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
             bookingOrder.setCrtByName(systemUser.getUserName());
             bookingOrder.setCrtByDtm(LocalDateTime.now());
 
+            //设置状态
+            bookingOrder.setStateFlag(StateFlagEnum.STATE_FLAG_0.getCode());//STATE_FLAG_0(0, "未确认"),
+
             this.saveOrUpdate(bookingOrder);
         }else{
             //修改
@@ -141,6 +145,10 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
     @Override
     public BookingOrderVO getBookingOrderById(Integer id) {
         BookingOrderVO bookingOrderVO = bookingOrderMapper.getBookingOrderById(id);
+        Integer bookingId = bookingOrderVO.getId();//委托单id
+        //商品明细list
+        List<BookingOrderEntryVO> bookingOrderEntryList = bookingOrderEntryMapper.findBookingOrderEntryByBookingId(bookingId);
+        bookingOrderVO.setBookingOrderEntryList(bookingOrderEntryList);
         return bookingOrderVO;
     }
 
@@ -215,6 +223,7 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BookingOrderVO copyBookingOrder(Integer id) {
         BookingOrderVO bookingOrderVO = bookingOrderMapper.getBookingOrderById(id);//1.委托订单主表 BookingOrder
         if(ObjectUtil.isEmpty(bookingOrderVO)){
@@ -225,7 +234,7 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         //1.复制委托单主单
         BookingOrder bookingOrder = ConvertUtil.convert(bookingOrderVO, BookingOrder.class);
         bookingOrder.setId(null);
-        bookingOrder.setBookingNo(null);//TODO 单号的生成规则 待定
+        bookingOrder.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(), LocalDateTime.now()));//单号的生成规则
         this.saveOrUpdate(bookingOrder);
 
         BookingOrderVO bookingOrderVO1 = ConvertUtil.convert(bookingOrder, BookingOrderVO.class);
@@ -248,7 +257,7 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
     public BookingOrderVO prepareBookingOrder(Integer modelType) {
         BookingOrderVO bookingOrderVO = new BookingOrderVO();
         bookingOrderVO.setModelType(modelType);//业务类型/工作单类型 0进口  1出口 2国内 4香港  5采购  6销售
-        bookingOrderVO.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(), LocalDateTime.now()));
+        bookingOrderVO.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(), LocalDateTime.now()));//单号的生成规则
 
         return bookingOrderVO;
     }

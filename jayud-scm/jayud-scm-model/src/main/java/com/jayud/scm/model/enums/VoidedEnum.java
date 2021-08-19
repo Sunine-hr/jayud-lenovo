@@ -5,7 +5,9 @@ import lombok.Getter;
 
 import java.util.Objects;
 
-//废弃标志
+/**
+ * 废弃标志
+ * */
 @Getter
 @AllArgsConstructor
 public enum VoidedEnum {

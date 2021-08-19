@@ -13,7 +13,6 @@ import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.CorrespondEnum;
 import com.jayud.scm.model.po.Commodity;
-import com.jayud.scm.model.vo.BCountryVO;
 import com.jayud.scm.model.vo.CommodityDetailVO;
 import com.jayud.scm.model.vo.CommodityFormVO;
 import com.jayud.scm.model.vo.CommodityVO;
@@ -26,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sun.rmi.runtime.Log;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -89,8 +87,21 @@ public class CommodityController {
             CommonPageResult<CommodityFormVO> pageVO = new CommonPageResult(page);
             map1.put("pageInfo", pageVO);
         }
-
         return CommonResult.success(map1);
+    }
+
+    @ApiOperation(value = "查询商品列表page")
+    @PostMapping(value = "/findCommodityByPage")
+    public CommonResult<CommonPageResult<CommodityFormVO>> findCommodityByPage(@Valid @RequestBody QueryCommodityForm commodityForm) {
+        commodityForm.setTime();
+
+        if(commodityForm.getKey() != null && CorrespondEnum.getName(commodityForm.getKey()) == null){
+            return CommonResult.error(444,"该条件无法搜索");
+        }
+        commodityForm.setKey(CorrespondEnum.getName(commodityForm.getKey()));
+        IPage<CommodityFormVO> page = this.commodityService.findByPage(commodityForm);
+        CommonPageResult<CommodityFormVO> pageVO = new CommonPageResult(page);
+        return CommonResult.success(pageVO);
     }
 
     @ApiOperation(value = "增加或修改商品")

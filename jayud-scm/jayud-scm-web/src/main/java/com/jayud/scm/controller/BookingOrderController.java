@@ -116,36 +116,36 @@ public class BookingOrderController {
 
     }
 
-    //出口委托单，审核
-    @ApiOperation(value = "出口委托单，审核")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name="id", dataType = "Integer", value = "自动ID", required = true)
-    })
-    @PostMapping(value = "/auditBookingOrder")
-    public CommonResult auditBookingOrder(@RequestBody Map<String,Object> map){
-        Integer id = MapUtil.getInt(map, "id");
-        if(ObjectUtil.isEmpty(id)){
-            return CommonResult.error(-1,"id不能为空");
-        }
-        bookingOrderService.auditBookingOrder(id);
-        return CommonResult.success("操作成功!");
-    }
+//    //出口委托单，审核
+//    @ApiOperation(value = "出口委托单，审核")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name="id", dataType = "Integer", value = "自动ID", required = true)
+//    })
+//    @PostMapping(value = "/auditBookingOrder")
+//    public CommonResult auditBookingOrder(@RequestBody Map<String,Object> map){
+//        Integer id = MapUtil.getInt(map, "id");
+//        if(ObjectUtil.isEmpty(id)){
+//            return CommonResult.error(-1,"id不能为空");
+//        }
+//        bookingOrderService.auditBookingOrder(id);
+//        return CommonResult.success("操作成功!");
+//    }
 
 
-    //出口委托单，反审
-    @ApiOperation(value = "出口委托单，反审")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name="id", dataType = "Integer", value = "自动ID", required = true)
-    })
-    @PostMapping(value = "/cancelAuditBookingOrder")
-    public CommonResult cancelAuditBookingOrder(@RequestBody Map<String,Object> map){
-        Integer id = MapUtil.getInt(map, "id");
-        if(ObjectUtil.isEmpty(id)){
-            return CommonResult.error(-1,"id不能为空");
-        }
-        bookingOrderService.cancelAuditBookingOrder(id);
-        return CommonResult.success("操作成功!");
-    }
+//    //出口委托单，反审
+//    @ApiOperation(value = "出口委托单，反审")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name="id", dataType = "Integer", value = "自动ID", required = true)
+//    })
+//    @PostMapping(value = "/cancelAuditBookingOrder")
+//    public CommonResult cancelAuditBookingOrder(@RequestBody Map<String,Object> map){
+//        Integer id = MapUtil.getInt(map, "id");
+//        if(ObjectUtil.isEmpty(id)){
+//            return CommonResult.error(-1,"id不能为空");
+//        }
+//        bookingOrderService.cancelAuditBookingOrder(id);
+//        return CommonResult.success("操作成功!");
+//    }
 
 
     //出口委托单，打印

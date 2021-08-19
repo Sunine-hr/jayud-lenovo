@@ -15,6 +15,7 @@ import com.jayud.scm.mapper.BookingOrderMapper;
 import com.jayud.scm.model.bo.BookingOrderForm;
 import com.jayud.scm.model.bo.QueryBookingOrderForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
+import com.jayud.scm.model.enums.StateFlagEnum;
 import com.jayud.scm.model.enums.VoidedEnum;
 import com.jayud.scm.model.po.BookingOrder;
 import com.jayud.scm.model.po.BookingOrderEntry;
@@ -92,6 +93,9 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
             bookingOrder.setCrtBy(systemUser.getId().intValue());
             bookingOrder.setCrtByName(systemUser.getUserName());
             bookingOrder.setCrtByDtm(LocalDateTime.now());
+
+            //设置状态
+            bookingOrder.setStateFlag(StateFlagEnum.STATE_FLAG_0.getCode());//STATE_FLAG_0(0, "未确认"),
 
             this.saveOrUpdate(bookingOrder);
         }else{

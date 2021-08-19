@@ -30,8 +30,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -124,12 +122,9 @@ public class SystemSqlConfigController {
         //HttpServerletRequest  装请求信息的类
         //HttpServerletResponse  装相应信息的类
         Cookie cookie = null;
-        try {
-            //TableColumn + sqlCode + userId
-            cookie = new Cookie("TableColumn_"+sqlCode+"_"+userId, URLEncoder.encode(json, "utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        //TableColumn + sqlCode + userId
+        //cookie = new Cookie("TableColumn_"+sqlCode+"_"+userId, URLEncoder.encode(json, "utf-8"));
+        cookie = new Cookie("TableColumn_"+sqlCode+"_"+userId, "[]");
         response.addCookie(cookie);
 
         return CommonResult.success(json);

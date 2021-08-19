@@ -2,6 +2,7 @@ package com.jayud.scm;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
+import com.jayud.scm.model.enums.StateFlagEnum;
 import org.junit.Test;
 
 public class BookingOrderTest {
@@ -35,6 +36,14 @@ public class BookingOrderTest {
         long id = snowflake.nextId();
         System.out.println(id);//1427455157129580544
 
+    }
+
+    /**
+     * 打印枚举，给前端
+     */
+    @Test
+    public void stateFlagTest(){
+        System.out.println(StateFlagEnum.getStateFlagEnumList());
     }
 
 }

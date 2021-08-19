@@ -47,5 +47,6 @@ public interface OrderBillCostTotalMapper extends BaseMapper<OrderBillCostTotal>
     BigDecimal calculateSettlementCurrency(@Param("billNo") String billNo,
                                            @Param("moneyType") String moneyType,
                                            @Param("cmd") String cmd,
-                                           @Param("orderNo") String orderNo);
+                                           @Param("mainOrderNo") String mainOrderNo,
+                                           @Param("subOrderNo") String subOrderNo);
 }

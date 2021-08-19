@@ -316,12 +316,11 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
     @Override
     public Map<String, Map<String, BigDecimal>> statisticalReCostByOrderNos(List<OrderReceivableCost> list, Boolean isMain) {
         Map<String, List<OrderReceivableCost>> group = null;
-//        if (isMain) {
-//
-//        } else {
-//            group = list.stream().collect(Collectors.groupingBy(OrderReceivableCost::getOrderNo));
-//        }
-        group = list.stream().collect(Collectors.groupingBy(e -> e.getMainOrderNo() + "~" + e.getOrderNo()));
+        if (isMain) {
+            group = list.stream().collect(Collectors.groupingBy(OrderReceivableCost::getMainOrderNo));
+        } else {
+            group = list.stream().collect(Collectors.groupingBy(e -> e.getMainOrderNo() + "~" + e.getOrderNo()));
+        }
 
         List<CurrencyInfo> currencyInfos = currencyInfoService.list();
         Map<String, String> currencyMap = currencyInfos.stream().collect(Collectors.toMap(CurrencyInfo::getCurrencyCode, CurrencyInfo::getCurrencyName));
@@ -419,6 +418,6 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
 
     @Override
     public List<StatisticsOrderBillDetailsVO> statisticalMainOrderBillDetails(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
-        return this.baseMapper.statisticalMainOrderBillDetails(form,legalIds,status);
+        return this.baseMapper.statisticalMainOrderBillDetails(form, legalIds, status);
     }
 }

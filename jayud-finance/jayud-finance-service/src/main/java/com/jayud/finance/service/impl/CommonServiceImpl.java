@@ -334,6 +334,9 @@ public class CommonServiceImpl implements CommonService {
 
             String orderNosKey = cmd.equals(SubOrderSignEnum.MAIN.getSignOne()) ? "orderNo" : "subOrderNo";
             JSONObject object = new JSONObject(data.get(jsonObject.getStr(orderNosKey)));
+            if (object.isEmpty()) {
+                object = new JSONObject(data.get(jsonObject.getStr("orderNo") + "~" + jsonObject.getStr("subOrderNo")));
+            }
             //客户字段 应收:结算单位 应付:供应商 TODO 产品核对过,直接取主订单客户名称
 //            if (type == 0) {
 //                object.put("customerName", jsonObject.getStr("unitAccount"));
@@ -342,6 +345,10 @@ public class CommonServiceImpl implements CommonService {
 //            }
 
             jsonObject.putAll(object);
+//            if (cmd.equals(SubOrderSignEnum.MAIN.getSignOne())) {
+//                jsonObject.put("subOrderNo", "");
+//            }
+
             jsonArray.add(jsonObject);
         }
         return jsonArray.size() == 0 ? array : jsonArray;
@@ -372,21 +379,24 @@ public class CommonServiceImpl implements CommonService {
                     //组装主订单信息
                     payTemplate.assemblyMainOrderData(result.getData());
                     payTemplate.setCustomerName("佳裕达");
-                    map.put(cmd.equals("main") ? payTemplate.getMainOrderNo() : payTemplate.getOrderNo(), payTemplate);
+                    map.put(payTemplate.getMainOrderNo() + "~" + payTemplate.getOrderNo(), payTemplate);
+//                    map.put(cmd.equals("main") ? payTemplate.getMainOrderNo() : payTemplate.getOrderNo(), payTemplate);
                     break;
                 case TC:
                     TrailerOrderTemplate trailerOrderTemplate = ConvertUtil.convert(jsonObject, TrailerOrderTemplate.class);
                     trailerOrderTemplate.assembleData(jsonObject);
                     //组装主订单信息
                     trailerOrderTemplate.assemblyMainOrderData(result.getData());
-                    map.put(cmd.equals("main") ? trailerOrderTemplate.getMainOrderNo() : trailerOrderTemplate.getOrderNo(), trailerOrderTemplate);
+                    map.put(trailerOrderTemplate.getMainOrderNo() + "~" + trailerOrderTemplate.getOrderNo(), trailerOrderTemplate);
+//                    map.put(cmd.equals("main") ? trailerOrderTemplate.getMainOrderNo() : trailerOrderTemplate.getOrderNo(), trailerOrderTemplate);
                     break;
                 case TC_NORM_RE:
                     trailerOrderTemplate = ConvertUtil.convert(jsonObject, TrailerOrderTemplate.class);
                     trailerOrderTemplate.assembleData(jsonObject);
                     //组装主订单信息
                     trailerOrderTemplate.assemblyMainOrderData(result.getData());
-                    map.put(cmd.equals("main") ? trailerOrderTemplate.getMainOrderNo() : trailerOrderTemplate.getOrderNo(), trailerOrderTemplate);
+                    map.put(trailerOrderTemplate.getMainOrderNo() + "~" + trailerOrderTemplate.getOrderNo(), trailerOrderTemplate);
+//                    map.put(cmd.equals("main") ? trailerOrderTemplate.getMainOrderNo() : trailerOrderTemplate.getOrderNo(), trailerOrderTemplate);
                     break;
 
             }

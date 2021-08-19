@@ -91,15 +91,16 @@ public class OrderBillCostTotalServiceImpl extends ServiceImpl<OrderBillCostTota
 //            List<OrderBillCostTotal> orderBillCostTotals = this.baseMapper.selectList(condition);
 //            合计结算币种
 //            BigDecimal money = orderBillCostTotals.stream().map(OrderBillCostTotal::getMoney).reduce(BigDecimal.ZERO, BigDecimal::add);
-            String orderNo;
-            if (SubOrderSignEnum.MAIN.getSignOne().equals(cmd)) {
-                orderNo = object.getStr("mainOrderNo");
-            } else {
-                orderNo = object.getStr("subOrderNo");
-            }
-
+//            String orderNo;
+//            if (SubOrderSignEnum.MAIN.getSignOne().equals(cmd)) {
+//                orderNo = object.getStr("mainOrderNo");
+//            } else {
+//                orderNo = object.getStr("subOrderNo");
+//            }
+           String  mainOrderNo = object.getStr("mainOrderNo");
+            String subOrderNo = object.getStr("subOrderNo");
             BigDecimal money = this.baseMapper.calculateSettlementCurrency(object.getStr("billNo"),
-                    moneyType, cmd, orderNo);
+                    moneyType, cmd, mainOrderNo,subOrderNo);
             object.put(key, money.setScale(2, BigDecimal.ROUND_DOWN).stripTrailingZeros().toPlainString());
         }
     }

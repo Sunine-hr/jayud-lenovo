@@ -84,6 +84,7 @@ public class AddHubShippingEntryForm {
     private BigDecimal price;
 
     @ApiModelProperty(value = "单价")
+    @JsonProperty(value = "hgPrice")
     private BigDecimal hgPrice;
 
     @ApiModelProperty(value = "件数")
@@ -111,38 +112,20 @@ public class AddHubShippingEntryForm {
     @ApiModelProperty(value = "材积")
     private BigDecimal cbm;
 
-    @ApiModelProperty(value = "备用1")
-    private String temp01;
-
-    @ApiModelProperty(value = "备用2")
-    private String temp02;
-
-    @ApiModelProperty(value = "备用3")
-    private String temp03;
-
     @ApiModelProperty(value = "0:未检货，1：正在检货，2：检货完成，3：复核完成")
     private Integer stateFlag;
 
     @ApiModelProperty(value = "检货开始时间")
-    private LocalDateTime checkBeginTime;
+    private String checkBeginTime;
 
     @ApiModelProperty(value = "检货完成时间")
-    private LocalDateTime checkEndTime;
+    private String checkEndTime;
 
     @ApiModelProperty(value = "检货说明")
     private String checkRemark;
 
     @ApiModelProperty(value = "料号")
     private String pn;
-
-    @ApiModelProperty(value = "是否同步在线")
-    private Integer isOnl;
-
-    @ApiModelProperty(value = "在线ID")
-    private Integer onlId;
-
-    @ApiModelProperty(value = "在线单编号")
-    private String onlNo;
 
     @ApiModelProperty(value = "要求")
     private String requirement;

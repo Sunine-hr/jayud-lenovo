@@ -40,6 +40,9 @@ public class BPublicFilesVO {
     @ApiModelProperty(value = "业务单据ID")
     private Integer businessId;
 
+    @ApiModelProperty(value = "上传文件类型（水单，证照等）")
+    private String fileType;
+
     @ApiModelProperty(value = "内容")
     private List<FileView> fileView;
 

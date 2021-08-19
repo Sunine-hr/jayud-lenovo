@@ -251,14 +251,17 @@ public class CommonController {
         //获取按钮权限
 //        SystemAction systemAction = systemActionService.getSystemActionByActionCode(form.getActionCode());
 
-        //获取登录用户所属角色
-        List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
-        for (SystemRole systemRole : enabledRolesByUserId) {
-            SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),form.getActionCode());
-            if(systemRoleAction == null){
-                return CommonResult.error(444,"该用户没有该按钮权限");
+        if(!systemUser.getUserName().equals("Admin")){
+            //获取登录用户所属角色
+            List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
+            for (SystemRole systemRole : enabledRolesByUserId) {
+                SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),form.getActionCode());
+                if(systemRoleAction == null){
+                    return CommonResult.error(444,"该用户没有该按钮权限");
+                }
             }
         }
+
         //拥有按钮权限，判断是否为审核按钮
         if(!form.getType().equals(0)){
             if(form.getCustomerAudit()){

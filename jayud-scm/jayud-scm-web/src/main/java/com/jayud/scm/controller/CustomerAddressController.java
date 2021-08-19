@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -96,6 +97,15 @@ public class CustomerAddressController {
             customerAddressVO.setRegionName(customerAddressVO.getRegion());
         }
         return CommonResult.success(customerAddressVO);
+    }
+
+    @ApiOperation(value = "根据地址类型和客户id获取地址信息的详情")
+    @PostMapping(value = "/getCustomerAddressByCustomerIdAndSType")
+    public CommonResult<List<CustomerAddressVO>> getCustomerAddressByCustomerIdAndSType(@RequestBody Map<String,Object> map) {
+        Integer customerId = MapUtil.getInt(map, "customerId");
+        String sType = MapUtil.getStr(map, "sType");
+        List<CustomerAddressVO> customerAddressVOS = customerAddressService.getCustomerAddressByCustomerIdAndSType(customerId,sType);
+        return CommonResult.success(customerAddressVOS);
     }
 
 }

@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -131,5 +132,14 @@ public class CustomerAddressServiceImpl extends ServiceImpl<CustomerAddressMappe
     @Override
     public CustomerAddressVO getCustomerAddressById(Integer id) {
         return ConvertUtil.convert(this.getById(id),CustomerAddressVO.class);
+    }
+
+    @Override
+    public List<CustomerAddressVO> getCustomerAddressByCustomerIdAndSType(Integer customerId, String sType) {
+        QueryWrapper<CustomerAddress> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CustomerAddress::getCustomerId,customerId);
+        queryWrapper.lambda().eq(CustomerAddress::getSType,sType);
+        queryWrapper.lambda().eq(CustomerAddress::getVoided,0);
+        return ConvertUtil.convertList(this.list(queryWrapper),CustomerAddressVO.class);
     }
 }

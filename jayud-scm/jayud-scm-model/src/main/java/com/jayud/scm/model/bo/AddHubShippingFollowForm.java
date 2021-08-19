@@ -3,6 +3,7 @@ package com.jayud.scm.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -34,6 +35,7 @@ public class AddHubShippingFollowForm {
     private Integer bookingId;
 
     @ApiModelProperty(value = "跟进类型")
+    @JsonProperty(value = "sType")
     private String sType;
 
     @ApiModelProperty(value = "内容")

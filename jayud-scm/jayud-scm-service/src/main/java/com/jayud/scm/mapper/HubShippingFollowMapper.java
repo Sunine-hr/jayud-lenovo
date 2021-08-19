@@ -7,6 +7,7 @@ import com.jayud.scm.model.po.HubShippingFollow;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.scm.model.vo.HubShippingFollowVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -19,5 +20,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface HubShippingFollowMapper extends BaseMapper<HubShippingFollow> {
 
-    IPage<HubShippingFollowVO> findByPage(Page<HubShippingFollowVO> page, QueryCommonForm form);
+    IPage<HubShippingFollowVO> findByPage(@Param("page") Page<HubShippingFollowVO> page, @Param("form") QueryCommonForm form);
 }

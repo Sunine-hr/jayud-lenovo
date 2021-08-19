@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -49,9 +51,11 @@ public class HubShipping extends Model<HubShipping> {
     private String bookingNo;
 
     @ApiModelProperty(value = "要求交货时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deliveryDate;
 
     @ApiModelProperty(value = "出库日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime shippingDate;
 
     @ApiModelProperty(value = "仓库名称")
@@ -133,9 +137,11 @@ public class HubShipping extends Model<HubShipping> {
     private String checkName;
 
     @ApiModelProperty(value = "检货开始时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime checkBeginTime;
 
     @ApiModelProperty(value = "检货结束时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime checkEndTime;
 
     @ApiModelProperty(value = "检货说明")
@@ -145,12 +151,14 @@ public class HubShipping extends Model<HubShipping> {
     private String reviewName;
 
     @ApiModelProperty(value = "复核完成时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime reviewTime;
 
     @ApiModelProperty(value = "复核说明")
     private String reviewRemark;
 
     @ApiModelProperty(value = "签收日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime signDate;
 
     @ApiModelProperty(value = "签收备注")
@@ -202,6 +210,7 @@ public class HubShipping extends Model<HubShipping> {
     private String customsNo;
 
     @ApiModelProperty(value = "报关日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime customsDate;
 
     @ApiModelProperty(value = "包装方式")
@@ -232,24 +241,28 @@ public class HubShipping extends Model<HubShipping> {
     private String fMultiLevel0;
 
     @ApiModelProperty(value = "审核 时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fDateTime0;
 
     @ApiModelProperty(value = "审核人")
     private String fMultiLevel1;
 
     @ApiModelProperty(value = "审核 时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fDateTime1;
 
     @ApiModelProperty(value = "审核人")
     private String fMultiLevel2;
 
     @ApiModelProperty(value = "审核 时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fDateTime2;
 
     @ApiModelProperty(value = "审核人")
     private String fMultiLevel3;
 
     @ApiModelProperty(value = "审核 时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fDateTime3;
 
     @ApiModelProperty(value = "审核状态")
@@ -280,6 +293,7 @@ public class HubShipping extends Model<HubShipping> {
     private String crtByName;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime crtByDtm;
 
     @ApiModelProperty(value = "最后修改人ID")
@@ -289,6 +303,7 @@ public class HubShipping extends Model<HubShipping> {
     private String mdyByName;
 
     @ApiModelProperty(value = "最后修改时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime mdyByDtm;
 
     @ApiModelProperty(value = "删除标记")
@@ -301,6 +316,7 @@ public class HubShipping extends Model<HubShipping> {
     private String voidedByName;
 
     @ApiModelProperty(value = "删除时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime voidedByDtm;
 
 

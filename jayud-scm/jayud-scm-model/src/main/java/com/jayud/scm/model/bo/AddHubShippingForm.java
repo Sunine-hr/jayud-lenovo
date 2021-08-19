@@ -3,6 +3,7 @@ package com.jayud.scm.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -53,11 +54,13 @@ public class AddHubShippingForm {
     @ApiModelProperty(value = "订单号")
     private String bookingNo;
 
-    @ApiModelProperty(value = "要求交货时间")
-    private LocalDateTime deliveryDate;
-
-    @ApiModelProperty(value = "出库日期")
-    private LocalDateTime shippingDate;
+//    @ApiModelProperty(value = "要求交货时间")
+//    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+//    private String deliveryDate;
+//
+//    @ApiModelProperty(value = "出库日期")
+//    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+//    private String shippingDate;
 
     @ApiModelProperty(value = "仓库名称")
     private String hubName;
@@ -138,10 +141,10 @@ public class AddHubShippingForm {
     private String checkName;
 
     @ApiModelProperty(value = "检货开始时间")
-    private LocalDateTime checkBeginTime;
+    private String checkBeginTime;
 
     @ApiModelProperty(value = "检货结束时间")
-    private LocalDateTime checkEndTime;
+    private String checkEndTime;
 
     @ApiModelProperty(value = "检货说明")
     private String checkRemark;
@@ -150,13 +153,13 @@ public class AddHubShippingForm {
     private String reviewName;
 
     @ApiModelProperty(value = "复核完成时间")
-    private LocalDateTime reviewTime;
+    private String reviewTime;
 
     @ApiModelProperty(value = "复核说明")
     private String reviewRemark;
 
     @ApiModelProperty(value = "签收日期")
-    private LocalDateTime signDate;
+    private String signDate;
 
     @ApiModelProperty(value = "签收备注")
     private String signRemak;
@@ -207,7 +210,7 @@ public class AddHubShippingForm {
     private String customsNo;
 
     @ApiModelProperty(value = "报关日期")
-    private LocalDateTime customsDate;
+    private String customsDate;
 
     @ApiModelProperty(value = "包装方式")
     private String packagesType;

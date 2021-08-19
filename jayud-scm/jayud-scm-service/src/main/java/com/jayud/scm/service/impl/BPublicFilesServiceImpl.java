@@ -111,7 +111,7 @@ public class BPublicFilesServiceImpl extends ServiceImpl<BPublicFilesMapper, BPu
 
         for (FileView fileView : filesForm.getFileView()) {
             BPublicFiles files = ConvertUtil.convert(filesForm, BPublicFiles.class);
-            files.setFileModel(Integer.parseInt(filesForm.getFileModelCopy()));
+            files.setFileType(filesForm.getFileModelCopy());
             files.setSFileName(StringUtils.getFileNameStr(Collections.singletonList(fileView)));
             files.setSFilePath(StringUtils.getFileStr(Collections.singletonList(fileView)));
             files.setCrtBy(systemUser.getId().intValue());

@@ -44,8 +44,8 @@ public class BPublicFilesController {
         List<BPublicFilesVO> bPublicFilesVOS = bPublicFilesService.getPublicFileList(fileModel,businessId);
         if(CollectionUtils.isNotEmpty(bPublicFilesVOS)){
             for (BPublicFilesVO bPublicFilesVO : bPublicFilesVOS) {
-                if(bPublicFilesVO.getFileModel() != null){
-                    bPublicFilesVO.setFileModelCopy(ibDataDicEntryService.getTextByDicCodeAndDataValue("1016",bPublicFilesVO.getFileModel().toString()));
+                if(bPublicFilesVO.getFileType() != null){
+                    bPublicFilesVO.setFileModelCopy(ibDataDicEntryService.getTextByDicCodeAndDataValue("1016",bPublicFilesVO.getFileType()));
                 }
             }
         }

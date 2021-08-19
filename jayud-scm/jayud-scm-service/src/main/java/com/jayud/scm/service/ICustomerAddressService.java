@@ -7,6 +7,8 @@ import com.jayud.scm.model.po.CustomerAddress;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.CustomerAddressVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 客户常用地址表 服务类
@@ -24,4 +26,6 @@ public interface ICustomerAddressService extends IService<CustomerAddress> {
     boolean modifyDefaultValues(AddCustomerAddressForm form);
 
     CustomerAddressVO getCustomerAddressById(Integer id);
+
+    List<CustomerAddressVO> getCustomerAddressByCustomerIdAndSType(Integer customerId, String sType);
 }

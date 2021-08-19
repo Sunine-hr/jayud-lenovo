@@ -131,7 +131,7 @@ public class ExternalApiController {
         tmp.put("确认派车", "NL_3");
         tmp.put("车辆提货", "NL_4");
         tmp.put("货物签收", "NL_5");
-//        tmp.put("费用审核","inlandFeeCheck");
+        tmp.put("费用审核","CostAudit");
         List<Map<String, Object>> result = new ArrayList<>();
 
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());

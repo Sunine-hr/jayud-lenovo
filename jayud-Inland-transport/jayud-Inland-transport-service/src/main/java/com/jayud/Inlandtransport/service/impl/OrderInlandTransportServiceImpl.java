@@ -417,7 +417,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
     public Integer getNumByStatus(String status, List<Long> legalIds) {
         Integer num = this.baseMapper.getNumByStatus(status, legalIds);
         switch (status) {
-            case "inlandFeeCheck":
+            case "CostAudit":
                 List<OrderInlandTransport> list = this.getByLegalEntityId(legalIds);
                 if (org.apache.commons.collections4.CollectionUtils.isEmpty(list)) return num;
                 List<String> orderNos = list.stream().map(OrderInlandTransport::getOrderNo).collect(Collectors.toList());

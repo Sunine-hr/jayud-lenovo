@@ -553,60 +553,15 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
 //    }
 
 
-    @Override
-    public JSONArray viewSBillDetailInfo(String billNo, String cmd, String templateCmd) {
-        List<ViewBilToOrderVO> orderList = baseMapper.viewSBillDetail(billNo, cmd);
-
-        JSONArray array = new JSONArray(orderList);
-
-        List<ViewBilToOrderVO> newOrderList = new ArrayList<>();
-        List<String> mainOrderNos = new ArrayList<>();
-        List<ViewBillToCostClassVO> findCostClass = baseMapper.findSCostClass(billNo);
-
-        for (int i = 0; i < orderList.size(); i++) {
-            ViewBilToOrderVO viewBillToOrder = orderList.get(i);
-            JSONObject jsonObject = array.getJSONObject(i);
-            this.tmsSpecialDataProcessing(cmd, viewBillToOrder);
-
-            for (ViewBillToCostClassVO viewBillToCostClass : findCostClass) {
-                if ((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && StringUtil.isNullOrEmpty(viewBillToCostClass.getSubOrderNo()) &&
-                        viewBillToCostClass.getOrderNo().equals(viewBillToOrder.getOrderNo()))
-                        || ((!StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo())) && viewBillToOrder.getSubOrderNo().equals(viewBillToCostClass.getSubOrderNo()))) {
-                    try {
-                        String addProperties = "";
-                        String addValue = "";
-                        Map<String, Object> propertiesMap = new HashMap<String, Object>();
-                        Class cls = viewBillToCostClass.getClass();
-                        Field[] fields = cls.getDeclaredFields();
-                        for (int j = 0; j < fields.length; j++) {
-                            Field f = fields[j];
-                            f.setAccessible(true);
-                            if ("name".equals(f.getName())) {
-                                addProperties = String.valueOf(f.get(viewBillToCostClass)).toLowerCase();//待新增得属性
-                            }
-                            if ("money".equals(f.getName())) {
-                                addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
-                            }
-                            propertiesMap.put(addProperties, new BigDecimal(addValue).setScale(2).stripTrailingZeros().toPlainString());
-                        }
-                        jsonObject.putAll(propertiesMap);
-//                        viewBillToOrder = (ViewBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
-//                        viewBillToOrder.setDynamicMap(propertiesMap);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            jsonObject.putOnce("num", i + 1);
-            newOrderList.add(viewBillToOrder);
-            mainOrderNos.add(viewBillToOrder.getOrderNo());
-//            list.add(viewBillToOrder);
+    public static void main(String[] args) {
+        List<String> str = new ArrayList<>();
+        str.add("广东省");
+//        str.add("深圳市");
+        String tmp = "广东省深圳市西乡街道黄田杨贝工业区一期2栋2楼104厂房B区 (7614) 0000";
+        for (String s : str) {
+            tmp = tmp.replace(s, "");
         }
-        //模板数据处理
-//        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
-        array = this.commonService.templateDataProcessing(cmd, templateCmd, array, mainOrderNos, 0);
-        return array;
+        System.out.println(tmp);
     }
 
 //    private JSONArray templateDataProcessing(String cmd, JSONArray array, List<String> mainOrderNos) {
@@ -1199,14 +1154,63 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         return this.baseMapper.statisticsBillByCostIds(reCostIds);
     }
 
-    /**
-     * 获取制单人账单数量
-     * @param userName
-     * @return
-     */
     @Override
-    public List<Map<String, Object>> getBillingStatusNum(String userName) {
-        return this.baseMapper.getBillingStatusNum(userName);
+    public JSONArray viewSBillDetailInfo(String billNo, String cmd, String templateCmd) {
+        List<ViewBilToOrderVO> orderList = baseMapper.viewSBillDetail(billNo, cmd);
+
+        JSONArray array = new JSONArray(orderList);
+
+        List<ViewBilToOrderVO> newOrderList = new ArrayList<>();
+        List<String> mainOrderNos = new ArrayList<>();
+        List<ViewBillToCostClassVO> findCostClass = baseMapper.findSCostClass(billNo);
+
+        for (int i = 0; i < orderList.size(); i++) {
+            ViewBilToOrderVO viewBillToOrder = orderList.get(i);
+            JSONObject jsonObject = array.getJSONObject(i);
+            this.tmsSpecialDataProcessing(cmd, viewBillToOrder);
+
+            for (ViewBillToCostClassVO viewBillToCostClass : findCostClass) {
+                if ((StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo()) && StringUtil.isNullOrEmpty(viewBillToCostClass.getSubOrderNo()) &&
+                        viewBillToCostClass.getOrderNo().equals(viewBillToOrder.getOrderNo()))
+                        || ((!StringUtil.isNullOrEmpty(viewBillToOrder.getSubOrderNo())) && viewBillToOrder.getSubOrderNo().equals(viewBillToCostClass.getSubOrderNo()))) {
+                    try {
+                        String addProperties = "";
+                        String addValue = "";
+                        Map<String, Object> propertiesMap = new HashMap<String, Object>();
+                        Class cls = viewBillToCostClass.getClass();
+                        Field[] fields = cls.getDeclaredFields();
+                        for (int j = 0; j < fields.length; j++) {
+                            Field f = fields[j];
+                            f.setAccessible(true);
+                            if ("name".equals(f.getName())) {
+                                addProperties = String.valueOf(f.get(viewBillToCostClass)).toLowerCase();//待新增得属性
+                            }
+                            if ("money".equals(f.getName())) {
+                                addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
+                            }
+                            if (!StringUtils.isEmpty(addValue)) {
+                                addValue = new BigDecimal(addValue).setScale(2, BigDecimal.ROUND_DOWN).stripTrailingZeros().toPlainString();
+                            }
+                            propertiesMap.put(addProperties, addValue);
+                        }
+                        jsonObject.putAll(propertiesMap);
+//                        viewBillToOrder = (ViewBilToOrderVO) ReflectUtil.getObject(viewBillToOrder, propertiesMap);
+//                        viewBillToOrder.setDynamicMap(propertiesMap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            jsonObject.putOnce("num", i + 1);
+            newOrderList.add(viewBillToOrder);
+            mainOrderNos.add(viewBillToOrder.getOrderNo());
+//            list.add(viewBillToOrder);
+        }
+        //模板数据处理
+//        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
+        array = this.commonService.templateDataProcessing(cmd, templateCmd, array, mainOrderNos, 0);
+        return array;
     }
 
 
@@ -1222,15 +1226,15 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         }
     }
 
-    public static void main(String[] args) {
-        List<String> str=new ArrayList<>();
-        str.add("广东省");
-//        str.add("深圳市");
-        String tmp="广东省深圳市西乡街道黄田杨贝工业区一期2栋2楼104厂房B区 (7614) 0000";
-        for (String s : str) {
-            tmp=tmp.replace(s,"");
-        }
-        System.out.println(tmp);
+    /**
+     * 获取制单人账单数量
+     *
+     * @param userName
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> getBillingStatusNum(String userName) {
+        return this.baseMapper.getBillingStatusNum(userName);
     }
 
 }

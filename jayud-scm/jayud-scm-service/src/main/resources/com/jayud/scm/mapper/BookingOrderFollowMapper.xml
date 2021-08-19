@@ -26,5 +26,15 @@
     <sql id="Base_Column_List">
         id, booking_id, s_type, follow_context, remark, is_onl, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
+    
+    <select id="findBookingOrderFollow" parameterType="java.lang.Integer" resultType="com.jayud.scm.model.vo.BookingOrderFollowVO">
+        select
+        t.`id`,t.`booking_id`,t.`s_type`,t.`follow_context`,t.`remark`,t.`is_onl`,t.`crt_by`,t.`crt_by_name`,t.`crt_by_dtm`,t.`mdy_by`,t.`mdy_by_name`,t.`mdy_by_dtm`,t.`voided`,t.`voided_by`,t.`voided_by_name`,t.`voided_by_dtm`
+        from
+        booking_order_follow t
+        where 1=1 and t.voided = 0
+        and t.booking_id = #{bookingId}
+        ORDER BY t.`id`
+    </select>
 
 </mapper>

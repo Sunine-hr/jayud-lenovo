@@ -7,9 +7,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.BookingOrderEntryForm;
+import com.jayud.scm.model.bo.BookingOrderFollowForm;
 import com.jayud.scm.model.bo.BookingOrderForm;
 import com.jayud.scm.model.bo.QueryBookingOrderForm;
 import com.jayud.scm.model.vo.BookingOrderEntryVO;
+import com.jayud.scm.model.vo.BookingOrderFollowVO;
 import com.jayud.scm.model.vo.BookingOrderVO;
 import com.jayud.scm.service.IBookingOrderEntryService;
 import com.jayud.scm.service.IBookingOrderFollowService;
@@ -262,16 +264,38 @@ public class BookingOrderController {
 
 
     /*
-        TODO 附件资料:   上传，删除
+        TODO 附件资料:   上传，删除  使用公用方法，不用写，参数要说明清楚
     */
     //附件资料，上传
 
     //附件资料，删除
 
     /*
-        TODO 跟踪记录：新增
+        TODO 跟踪记录：查询 新增
     */
+    //跟踪记录，查询
+    @ApiOperation(value = "跟踪记录，查询")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="bookingId", dataType = "Integer", value = "委托单ID", required = true)
+    })
+    @PostMapping(value = "/findBookingOrderFollow")
+    public CommonResult<List<BookingOrderFollowVO>> findBookingOrderFollow(@RequestBody Map<String,Object> map){
+        Integer bookingId = MapUtil.getInt(map, "bookingId");
+        if(ObjectUtil.isEmpty(bookingId)){
+            return CommonResult.error(-1,"委托单ID，不能为空");
+        }
+        List<BookingOrderFollowVO> bookingOrderFollowList = bookingOrderFollowService.findBookingOrderFollow(bookingId);
+        return CommonResult.success(bookingOrderFollowList);
+    }
+
     //跟踪记录，新增
+    @ApiOperation(value = "跟踪记录，新增")
+    @PostMapping(value = "/saveBookingOrderFollow")
+    public CommonResult saveBookingOrderFollow(@Valid @RequestBody BookingOrderFollowForm form){
+        bookingOrderFollowService.saveBookingOrderFollow(form);
+        return CommonResult.success("操作成功");
+    }
+
 
 
 }

@@ -1,11 +1,13 @@
 package com.jayud.scm.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 委托订单主表
@@ -118,19 +120,23 @@ public class BookingOrderVO {
     private String hgTruckNo;
 
     @ApiModelProperty(value = "审核人")
+    @JsonProperty("fMultiLevei0")
     private String fMultiLevei0;
 
     @ApiModelProperty(value = "审核时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonProperty("fDatetime")
     private LocalDateTime fDatetime;
 
     @ApiModelProperty(value = "审核状态")
     private String checkStateFlag;
 
     @ApiModelProperty(value = "审核级别")
+    @JsonProperty("fLevel")
     private Integer fLevel;
 
     @ApiModelProperty(value = "审核步骤")
+    @JsonProperty("fStep")
     private Integer fStep;
 
     @ApiModelProperty(value = "备注")
@@ -188,6 +194,7 @@ public class BookingOrderVO {
     private String insurance;
 
     @ApiModelProperty(value = "下单汇率")
+    @JsonProperty("fRate")
     private BigDecimal fRate;
 
     @ApiModelProperty(value = "报关当天汇率")
@@ -436,5 +443,10 @@ public class BookingOrderVO {
     @ApiModelProperty(value = "删除时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime voidedByDtm;
+
+
+    /*扩展显示的字段*/
+    @ApiModelProperty(value = "委托订单明细表list,商品明细list")
+    private List<BookingOrderEntryVO> bookingOrderEntryList;
 
 }

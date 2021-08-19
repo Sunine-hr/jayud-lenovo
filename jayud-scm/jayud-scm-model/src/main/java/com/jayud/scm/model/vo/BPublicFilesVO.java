@@ -2,16 +2,13 @@ package com.jayud.scm.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jayud.common.utils.FileView;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,7 +25,7 @@ import java.util.List;
 public class BPublicFilesVO {
 
     @ApiModelProperty(value = "自动ID")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     @ApiModelProperty(value = "附件类型,1:商品库,2:客户主体,3委托订单,4:付款单,5:收款单,6:入库单,7:出库单,8:应收款,9:提验货,10:中港运输")
@@ -44,9 +41,11 @@ public class BPublicFilesVO {
     private List<FileView> fileView;
 
     @ApiModelProperty(value = "保存文件名")
+    @JsonProperty("sFileName")
     private String sFileName;
 
     @ApiModelProperty(value = "保存路径")
+    @JsonProperty("sFilePath")
     private String sFilePath;
 
     @ApiModelProperty(value = "创建人名称")

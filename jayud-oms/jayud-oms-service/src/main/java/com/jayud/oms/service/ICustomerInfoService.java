@@ -130,7 +130,7 @@ public interface ICustomerInfoService extends IService<CustomerInfo> {
      */
     List<InitComboxStrVO> initApprovedCustomer();
 
-    void saveOrUpdateCustomerInfo(AddCustomerInfoForm form, CustomerInfo customerInfo);
+    Long saveOrUpdateCustomerInfo(AddCustomerInfoForm form, CustomerInfo customerInfo);
 
 
     /**

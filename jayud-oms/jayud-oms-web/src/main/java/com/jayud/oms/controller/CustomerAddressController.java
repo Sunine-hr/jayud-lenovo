@@ -75,10 +75,11 @@ public class CustomerAddressController {
         if ((form.getArea() != null)) {
             area = regionCityService.getById(form.getArea());
         }
-        customerAddress.setProvinceCode(province.getCode())
-                .setCityCode(city.getCode()).setAreaCode(area.getCode());
-
         form.assemblyLastAddr(province, city, area);
+        customerAddress.setProvinceCode(province.getCode())
+                .setCityCode(city.getCode()).setAreaCode(area.getCode())
+                .setFinalAddress(form.getFinalAddress());
+
         return CommonResult.success(this.customerAddressService.saveOrUpdateAddr(customerAddress));
     }
 
@@ -94,6 +95,7 @@ public class CustomerAddressController {
         CustomerAddress customerAddress = new CustomerAddress().setId(id).setStatus(Integer.valueOf(status));
         return CommonResult.success(this.customerAddressService.saveOrUpdateAddr(customerAddress));
     }
+
 
     @ApiOperation(value = "根据主键获取客户地址详情,id是客户地址主键")
     @PostMapping(value = "/getAddrById")

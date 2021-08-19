@@ -389,7 +389,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
      */
     @Override
     @Transactional
-    public void saveOrUpdateCustomerInfo(AddCustomerInfoForm form, CustomerInfo customerInfo) {
+    public Long saveOrUpdateCustomerInfo(AddCustomerInfoForm form, CustomerInfo customerInfo) {
         customerInfo.setIdCode(StringUtils.isEmpty(customerInfo.getIdCode()) ? null : customerInfo.getIdCode());
 
         customerInfo.setFilePath(com.jayud.common.utils.StringUtils.getFileStr(form.getFileViews()))
@@ -411,6 +411,8 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         this.customerRelaLegalService.saveCusRelLegal(form);
         //保存客户和结算单位关系
         this.customerRelaUnitService.saveBatchRelaUnit(customerInfo.getId(), form.getUnitCodeIds());
+
+        return customerInfo.getId();
     }
 
     /**

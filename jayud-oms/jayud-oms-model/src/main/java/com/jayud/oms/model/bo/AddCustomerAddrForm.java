@@ -27,10 +27,10 @@ public class AddCustomerAddrForm {
     private Long id;
 
     @ApiModelProperty(value = "地址类型（0 提货地址 1送货地址）")
-    @NotEmpty(message = "type is required")
+    @NotNull(message = "type is required")
     private Integer type;
 
-    @ApiModelProperty(value = "客户地址id")
+    @ApiModelProperty(value = "客户id")
     @NotNull(message = "customerId is required")
     private Long customerId;
 
@@ -92,7 +92,7 @@ public class AddCustomerAddrForm {
         StringBuilder sb = new StringBuilder();
         sb.append(province.getName()).append(" ").append(city.getName()).append(" ");
         if (area != null) {
-            sb.append(area.getName());
+            sb.append(area.getName()).append(" ");
         }
         sb.append(this.finalAddress);
         this.finalAddress = sb.toString();

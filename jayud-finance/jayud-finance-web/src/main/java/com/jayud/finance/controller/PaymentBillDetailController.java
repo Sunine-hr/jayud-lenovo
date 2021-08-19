@@ -252,6 +252,10 @@ public class PaymentBillDetailController {
                                  HttpServletResponse response) throws IOException {
 
         JSONArray datas = this.billDetailService.viewBillDetailInfo(billNo, cmd, templateCmd);
+        for (int i = 0; i < datas.size(); i++) {
+            JSONObject jsonObject = datas.getJSONObject(i);
+            jsonObject.put("customerName", "佳裕达");
+        }
 
         ViewBillVO viewBillVO = billDetailService.getViewBill(billNo);
 

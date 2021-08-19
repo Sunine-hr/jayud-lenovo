@@ -457,14 +457,15 @@
 		left join order_receivable_bill orb on orb.id = orbd.bill_id
 		left join order_receivable_cost orc on orc.id = orbd.cost_id
         where orbd.bill_no = #{billNo}
-        <choose>
-            <when test="cmd =='main'">
-                group by oi.order_no
-            </when>
-            <otherwise>
-                group by oi.order_no,subOrderNo
-            </otherwise>
-        </choose>
+<!--        <choose>-->
+<!--            <when test="cmd =='main'">-->
+<!--                group by oi.order_no-->
+<!--            </when>-->
+<!--            <otherwise>-->
+<!--                group by oi.order_no,subOrderNo-->
+<!--            </otherwise>-->
+<!--        </choose>-->
+        group by oi.order_no,subOrderNo
     </select>
     <select id="getViewSBill" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillVO">
         SELECT DISTINCT

@@ -962,11 +962,20 @@
         tmp.audit_status auditStatus,
         count(1) num
         FROM
-        (select * from `order_payment_bill_detail`
+        (select opbd.* from `order_payment_bill_detail` opbd
+        inner join order_payment_cost opc on opc.id = opbd.cost_id
         <where>
             <if test="userName==null and userName!=''">
-                make_user=#{userName}
+                and make_user=#{userName}
             </if>
+            <choose>
+                <when test="isMain">
+                    and opc.is_sum_to_main=#{isMain}
+                </when>
+                <otherwise>
+                    and opc.sub_type=#{subType} and opc.is_sum_to_main=#{isMain}
+                </otherwise>
+            </choose>
         </where>
         group by bill_no) tmp
         group by tmp.audit_status

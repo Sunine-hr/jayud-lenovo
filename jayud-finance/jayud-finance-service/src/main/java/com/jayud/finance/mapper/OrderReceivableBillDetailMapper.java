@@ -158,5 +158,7 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
 
     List<ProfitStatementBillDetailsVO> statisticsBillByCostIds(@Param("reCostIds") List<String> reCostIds);
 
-    List<Map<String, Object>> getBillingStatusNum(@Param("userName") String userName);
+    List<Map<String, Object>> getBillingStatusNum(@Param("userName") String userName,
+                                                  @Param("isMain") boolean isMain,
+                                                  @Param("subType") String subType);
 }

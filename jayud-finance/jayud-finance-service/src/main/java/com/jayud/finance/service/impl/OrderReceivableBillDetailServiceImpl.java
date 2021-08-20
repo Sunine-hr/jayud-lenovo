@@ -25,7 +25,6 @@ import com.jayud.finance.po.OrderBillCostTotal;
 import com.jayud.finance.po.OrderReceivableBill;
 import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.*;
-import com.jayud.finance.util.ReflectUtil;
 import com.jayud.finance.vo.*;
 import io.netty.util.internal.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -1230,11 +1229,13 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
      * 获取制单人账单数量
      *
      * @param userName
+     * @param isMain
+     * @param name
      * @return
      */
     @Override
-    public List<Map<String, Object>> getBillingStatusNum(String userName) {
-        return this.baseMapper.getBillingStatusNum(userName);
+    public List<Map<String, Object>> getBillingStatusNum(String userName, boolean isMain, String subType) {
+        return this.baseMapper.getBillingStatusNum(userName,isMain,subType);
     }
 
 }

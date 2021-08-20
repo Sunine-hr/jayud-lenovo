@@ -66,14 +66,16 @@ public class ExternalApiController {
      */
     @RequestMapping(value = "/api/getBillingStatusNum")
     public ApiResult<Map<String, Integer>> getBillingStatusNum(@RequestParam("userName") String userName,
-                                                               @RequestParam("type") Integer type) {
+                                                               @RequestParam("type") Integer type,
+                                                               @RequestParam("isMain") boolean isMain,
+                                                               @RequestParam("subType") String subType) {
         List<Map<String, Object>> list = new ArrayList<>();
         switch (type) {
             case 0:
-                list = this.receivableBillDetailService.getBillingStatusNum(userName);
+                list = this.receivableBillDetailService.getBillingStatusNum(userName, isMain, subType);
                 break;
             case 1:
-                list = this.paymentBillDetailService.getBillingStatusNum(userName);
+                list = this.paymentBillDetailService.getBillingStatusNum(userName, isMain, subType);
                 break;
         }
         Map<String, Integer> result = list.stream().collect(Collectors.toMap(e -> e.get("auditStatus").toString(), e -> MapUtil.getInt(e, "num")));

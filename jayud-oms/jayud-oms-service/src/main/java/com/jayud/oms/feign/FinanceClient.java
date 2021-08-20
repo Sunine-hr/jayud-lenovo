@@ -41,5 +41,7 @@ public interface FinanceClient {
      */
     @RequestMapping(value = "/api/getBillingStatusNum")
     public ApiResult<Map<String, Integer>> getBillingStatusNum(@RequestParam("userName") String userName,
-                                                               @RequestParam("type") Integer type);
+                                                               @RequestParam("type") Integer type,
+                                                               @RequestParam("isMain") boolean isMain,
+                                                               @RequestParam("subType") String subType);
 }

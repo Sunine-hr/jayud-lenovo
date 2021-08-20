@@ -279,7 +279,9 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
     /**
      * 获取制单人账单数量
      * @param userName
+     * @param isMain
+     * @param subType
      * @return
      */
-    List<Map<String, Object>> getBillingStatusNum(String userName);
+    List<Map<String, Object>> getBillingStatusNum(String userName, boolean isMain, String subType);
 }

@@ -63,8 +63,7 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
         tmp.put("应收账单提交财务", "reBillSubmitFinance");
         tmp.put("应付账单提交财务", "payBillSubmitFinance");
         tmp.put("开票申请", "invoicingRequisition");
-        tmp.put("付款申请","paymentApplication");
-
+        tmp.put("付款申请", "paymentApplication");
 
 
         List<Map<String, Object>> result = new ArrayList<>(tmp.size());
@@ -104,8 +103,8 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
 //            }
 //        }).start();
         String userName = UserOperator.getToken();
-        Map<String, Integer> receivableStatusNum = this.financeClient.getBillingStatusNum(userName, 0).getData();
-        Map<String, Integer> payStatusNum = this.financeClient.getBillingStatusNum(userName, 1).getData();
+        Map<String, Integer> receivableStatusNum = this.financeClient.getBillingStatusNum(userName, 0, true, SubOrderSignEnum.MAIN.getSignOne()).getData();
+        Map<String, Integer> payStatusNum = this.financeClient.getBillingStatusNum(userName, 1, true, SubOrderSignEnum.MAIN.getSignOne()).getData();
         tmp.forEach((k, v) -> {
             Map<String, Object> map = new HashMap<>();
             Integer num = 0;
@@ -135,16 +134,16 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
                         }
                         break;
                     case "reBillSubmitFinance":
-                        num = receivableStatusNum.get("B_2");
+                        num = receivableStatusNum.getOrDefault("B_2", 0);
                         break;
                     case "payBillSubmitFinance":
-                        num = payStatusNum.get("B_2");
+                        num = payStatusNum.getOrDefault("B_2", 0);
                         break;
                     case "invoicingRequisition":
-                        num = receivableStatusNum.get("B_4");
+                        num = receivableStatusNum.getOrDefault("B_4", 0);
                         break;
                     case "paymentApplication":
-                        num = payStatusNum.get("B_4");
+                        num = payStatusNum.getOrDefault("B_4", 0);
                         break;
                 }
 

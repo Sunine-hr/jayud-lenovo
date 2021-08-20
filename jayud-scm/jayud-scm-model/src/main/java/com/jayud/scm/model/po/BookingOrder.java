@@ -77,7 +77,7 @@ public class BookingOrder extends Model<BookingOrder> {
     @ApiModelProperty(value = "供应商类型")
     private String supplierType;
 
-    @ApiModelProperty(value = "业务类型/工作单类型 0进口  1出口 2国内 4香港  5采购  6销售")
+    @ApiModelProperty(value = "业务类型/工作单类型 1进口  2出口 3国内 4香港  5采购  6销售")
     private Integer modelType;
 
     @ApiModelProperty(value = "起运地（默认深圳、香港）")

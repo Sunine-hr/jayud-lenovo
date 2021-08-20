@@ -66,7 +66,7 @@ public class BookingOrderController {
     //出口委托单，准备新增数据
     @ApiOperation(value = "出口委托单，准备新增数据")
     @ApiImplicitParams({
-            @ApiImplicitParam(name="modelType", dataType = "Integer", value = "业务类型/工作单类型 0进口  1出口 2国内 4香港  5采购  6销售", required = true)
+            @ApiImplicitParam(name="modelType", dataType = "Integer", value = "业务类型/工作单类型 1进口  2出口 3国内 4香港  5采购  6销售", required = true)
     })
     @PostMapping(value = "/prepareBookingOrder")
     public CommonResult<BookingOrderVO> prepareBookingOrder(@RequestBody Map<String,Object> map){

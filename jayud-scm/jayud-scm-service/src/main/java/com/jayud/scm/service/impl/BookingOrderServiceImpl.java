@@ -260,7 +260,7 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
     @Override
     public BookingOrderVO prepareBookingOrder(Integer modelType) {
         BookingOrderVO bookingOrderVO = new BookingOrderVO();
-        bookingOrderVO.setModelType(modelType);//业务类型/工作单类型 0进口  1出口 2国内 4香港  5采购  6销售
+        bookingOrderVO.setModelType(modelType);//业务类型/工作单类型 1进口  2出口 3国内 4香港  5采购  6销售
         bookingOrderVO.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(), LocalDateTime.now()));//单号的生成规则
         return bookingOrderVO;
     }

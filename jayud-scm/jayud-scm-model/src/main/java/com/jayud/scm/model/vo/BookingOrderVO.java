@@ -246,9 +246,11 @@ public class BookingOrderVO {
     private String followerName;
 
     @ApiModelProperty(value = "运费比例")
+    @JsonProperty(value = "yfee")
     private BigDecimal yfee;
 
     @ApiModelProperty(value = "保费比例")
+    @JsonProperty(value = "bfee")
     private BigDecimal bfee;
 
     @ApiModelProperty(value = "保证金比例")

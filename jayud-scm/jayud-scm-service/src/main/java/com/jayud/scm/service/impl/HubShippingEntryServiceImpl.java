@@ -18,6 +18,7 @@ import com.jayud.scm.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -55,10 +56,18 @@ public class HubShippingEntryServiceImpl extends ServiceImpl<HubShippingEntryMap
 
         List<HubShippingEntry> hubShippingEntries = ConvertUtil.convertList(form, HubShippingEntry.class);
         for (HubShippingEntry hubShippingEntry : hubShippingEntries) {
-            if(hubShippingEntry.getId() != null){
+            QueryWrapper<HubShippingEntry> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(HubShippingEntry::getBookingEntryId,hubShippingEntry.getBookingEntryId());
+            HubShippingEntry one = this.getOne(queryWrapper);
+            if(one != null){
                 hubShippingEntry.setMdyBy(systemUser.getId().intValue());
                 hubShippingEntry.setMdyByDtm(LocalDateTime.now());
                 hubShippingEntry.setMdyByName(systemUser.getUserName());
+                hubShippingEntry.setQty(hubShippingEntry.getQty().add(one.getQty()));
+                hubShippingEntry.setPackages((hubShippingEntry.getPackages() != null? hubShippingEntry.getPackages():0)+ (one.getPackages()!=null?one.getPackages():0));
+                hubShippingEntry.setGw((hubShippingEntry.getGw()!=null?hubShippingEntry.getGw():new BigDecimal(0)).add((one.getGw()!= null?one.getGw():new BigDecimal(0))));
+                hubShippingEntry.setNw((hubShippingEntry.getNw()!=null?hubShippingEntry.getNw():new BigDecimal(0)).add((one.getNw()!= null?one.getNw():new BigDecimal(0))));
+                hubShippingEntry.setCbm((hubShippingEntry.getCbm()!=null?hubShippingEntry.getCbm():new BigDecimal(0)).add((one.getCbm()!= null?one.getCbm():new BigDecimal(0))));
             }else{
                 hubShippingEntry.setCrtBy(systemUser.getId().intValue());
                 hubShippingEntry.setCrtByDtm(LocalDateTime.now());

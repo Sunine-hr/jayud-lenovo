@@ -4,6 +4,7 @@ package com.jayud.scm.controller;
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddHubShippingForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.vo.HubReceivingVO;
 import com.jayud.scm.model.vo.HubShippingVO;
 import com.jayud.scm.service.IHubShippingService;
@@ -57,9 +58,8 @@ public class HubShippingController {
 
     @ApiOperation(value = "签收出库单")
     @PostMapping(value = "/signOrder")
-    public CommonResult signOrder(@RequestBody Map<String,Object> map) {
-        Integer id = MapUtil.getInt(map, "id");
-        boolean result = hubShippingService.signOrder(id);
+    public CommonResult signOrder(@RequestBody QueryCommonForm form) {
+        boolean result = hubShippingService.signOrder(form);
         if(!result){
             return CommonResult.error(444,"订单签收失败");
         }

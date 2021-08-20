@@ -66,7 +66,6 @@ public class CustomerAddressController {
     @ApiOperation(value = "新增客户地址信息")
     @PostMapping(value = "/saveOrUpdateCustomerAddress")
     public CommonResult saveOrUpdateCustomerAddress(@RequestBody AddCustomerAddressForm form) {
-        form.setRegion(form.getRegionName());
         form.setSType(form.getSTypeName());
         boolean result = customerAddressService.saveOrUpdateCustomerAddress(form);
         if(!result){

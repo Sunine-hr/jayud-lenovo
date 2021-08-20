@@ -3,6 +3,7 @@ package com.jayud.scm.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddHubShippingEntryForm;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +62,10 @@ public class HubShippingEntryController {
     @ApiOperation(value = "新增或修改出库单明细")
     @PostMapping(value = "/saveOrUpdateHubShippingEntry")
     public CommonResult saveOrUpdateHubShippingEntry(@RequestBody List<AddHubShippingEntryForm> form) {
+        if(CollectionUtils.isEmpty(form)){
+            return CommonResult.error(444,"增加数据不为空");
+        }
+
         //todo 新增或修改，所填的值不能超过带出来的委托单的值
         for (AddHubShippingEntryForm addHubShippingEntryForm : form) {
             BookingOrderEntry bookingOrderEntry = bookingOrderEntryService.getById(addHubShippingEntryForm.getBookingEntryId());
@@ -85,8 +91,19 @@ public class HubShippingEntryController {
         for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryByBookingId) {
             for (HubShippingEntry hubShippingEntry : shippingEntryByShippingId) {
                 if(bookingOrderEntryVO.getId().equals(hubShippingEntry.getBookingEntryId())){
-                    bookingOrderEntryByBookingId.remove(bookingOrderEntryVO);
+                    if(bookingOrderEntryVO.getQty().compareTo(hubShippingEntry.getQty()) == -1){
+                        bookingOrderEntryVO.setQty(bookingOrderEntryVO.getQty().subtract(hubShippingEntry.getQty()));
+                        bookingOrderEntryVO.setPackages(bookingOrderEntryVO.getPackages().subtract(BigDecimal.valueOf(hubShippingEntry.getPackages())));
+                        bookingOrderEntryVO.setGw(bookingOrderEntryVO.getGw().subtract(hubShippingEntry.getGw()));
+                        bookingOrderEntryVO.setNw(bookingOrderEntryVO.getNw().subtract(hubShippingEntry.getNw()));
+                        bookingOrderEntryVO.setCbm(bookingOrderEntryVO.getCbm().subtract(hubShippingEntry.getCbm()));
+                    }else{
+                        bookingOrderEntryByBookingId.remove(bookingOrderEntryVO);
+                    }
                 }
+            }
+            if(CollectionUtils.isEmpty(bookingOrderEntryByBookingId)){
+                return CommonResult.success();
             }
         }
         return CommonResult.success(bookingOrderEntryByBookingId);

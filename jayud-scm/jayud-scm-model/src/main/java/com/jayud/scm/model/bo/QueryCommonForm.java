@@ -3,6 +3,8 @@ package com.jayud.scm.model.bo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class QueryCommonForm extends BasePageForm{
 
@@ -14,5 +16,8 @@ public class QueryCommonForm extends BasePageForm{
 
     @ApiModelProperty("权限code")
     private String actionCode;
+
+    @ApiModelProperty("id集合")
+    private List<Integer> ids;
 
 }

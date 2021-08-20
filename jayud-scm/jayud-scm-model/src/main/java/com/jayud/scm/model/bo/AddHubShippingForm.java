@@ -54,13 +54,15 @@ public class AddHubShippingForm {
     @ApiModelProperty(value = "订单号")
     private String bookingNo;
 
-//    @ApiModelProperty(value = "要求交货时间")
+    @ApiModelProperty(value = "要求交货时间")
 //    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-//    private String deliveryDate;
-//
-//    @ApiModelProperty(value = "出库日期")
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private String deliveryDate;
+
+    @ApiModelProperty(value = "出库日期")
 //    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-//    private String shippingDate;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private String shippingDate;
 
     @ApiModelProperty(value = "仓库名称")
     private String hubName;

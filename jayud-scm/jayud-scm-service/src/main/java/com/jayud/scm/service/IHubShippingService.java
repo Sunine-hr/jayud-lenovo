@@ -2,6 +2,7 @@ package com.jayud.scm.service;
 
 import com.jayud.scm.model.bo.AddHubShippingForm;
 import com.jayud.scm.model.bo.DeleteForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.HubShipping;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.HubShippingVO;
@@ -20,7 +21,7 @@ public interface IHubShippingService extends IService<HubShipping> {
 
     HubShippingVO getHubShippingById(Integer id);
 
-    boolean signOrder(Integer id);
+    boolean signOrder(QueryCommonForm form);
 
     boolean saveOrUpdateHubShipping(AddHubShippingForm form);
 }

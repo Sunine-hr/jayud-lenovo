@@ -5,6 +5,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddHubShippingEntryForm;
 import com.jayud.scm.model.bo.AddHubShippingForm;
 import com.jayud.scm.model.bo.DeleteForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
@@ -91,30 +92,43 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
     }
 
     @Override
-    public boolean signOrder(Integer id) {
+    public boolean signOrder(QueryCommonForm form) {
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
-        HubShipping shipping = new HubShipping();
-        shipping.setId(id);
-        shipping.setSignDate(LocalDateTime.now());
-        shipping.setSignState(1);
-        shipping.setMdyBy(systemUser.getId().intValue());
-        shipping.setMdyByDtm(LocalDateTime.now());
-        shipping.setMdyByName(systemUser.getUserName());
 
-        boolean update = this.updateById(shipping);
-        if(update){
+        List<HubShipping> hubShippings = new ArrayList<>();
+        List<HubShippingFollow> hubShippingFollows = new ArrayList<>();
+
+        for (Integer id : form.getIds()) {
+            HubShipping shipping = new HubShipping();
+            shipping.setId(id);
+            shipping.setSignDate(LocalDateTime.now());
+            shipping.setSignState(1);
+            shipping.setMdyBy(systemUser.getId().intValue());
+            shipping.setMdyByDtm(LocalDateTime.now());
+            shipping.setMdyByName(systemUser.getUserName());
+
+            hubShippings.add(shipping);
+
             HubShippingFollow hubShippingFollow = new HubShippingFollow();
             hubShippingFollow.setShippingId(id);
             hubShippingFollow.setSType(OperationEnum.UPDATE.getCode());
-            hubShippingFollow.setFollowContext(systemUser.getUserName()+"签收出库单"+shipping.getShippingNo());
+            hubShippingFollow.setFollowContext(systemUser.getUserName() + "签收出库单");
             hubShippingFollow.setCrtBy(systemUser.getId().intValue());
             hubShippingFollow.setCrtByDtm(LocalDateTime.now());
             hubShippingFollow.setCrtByName(systemUser.getUserName());
-            boolean save = this.hubShippingFollowService.save(hubShippingFollow);
+            hubShippingFollows.add(hubShippingFollow);
+
+        }
+        boolean update = this.updateBatchById(hubShippings);
+
+        if(update){
+            boolean save = this.hubShippingFollowService.saveBatch(hubShippingFollows);
             if(save){
-                log.warn("签收出库单,操作日志添加成功");
+                log.warn("签收出库单成功"+form.getIds());
             }
         }
+
+
         return update;
     }
 

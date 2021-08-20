@@ -3154,21 +3154,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (form.getSubUnitCode() == null || form.getReceivableCosts().size() == 0) {
             return;
         }
-        String tmp = form.getReceivableCosts().get(0).getMainOrderNo();
-        List<OrderReceivableCost> orderReceivableCostList = this.orderReceivableCostService.getSubInternalCostByMainOrderNo(tmp, null);
-
-        //应付供应商是子订单操作主体
-        SupplierInfo supplierInfo = this.supplierInfoService.getByName(form.getSubLegalName());
-        form.getReceivableCosts().forEach(e -> {
-            e.setCustomerName(supplierInfo.getSupplierChName()).setCustomerCode(supplierInfo.getSupplierCode());
-        });
-
-        orderReceivableCostList.addAll(form.getReceivableCosts());
-        //过滤相同数据
-        orderReceivableCostList = orderReceivableCostList.stream().collect(Collectors.collectingAndThen(
-                Collectors.toCollection(() ->
-                        new TreeSet<>(Comparator.comparing(OrderReceivableCost::getId))), ArrayList::new));
-
         //根据结算单位查询客户名称
         CustomerInfo customerInfo = this.customerInfoService.getByCode(form.getSubUnitCode());
         //查询主订单操作主体
@@ -3184,6 +3169,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (!orderInfo.getLegalName().equals(customerInfo.getName())) {
             return;
         }
+
+        String tmp = form.getReceivableCosts().get(0).getMainOrderNo();
+        List<OrderReceivableCost> orderReceivableCostList = this.orderReceivableCostService.getSubInternalCostByMainOrderNo(tmp, null);
+
+        //应付供应商是子订单操作主体
+        SupplierInfo supplierInfo = this.supplierInfoService.getByName(form.getSubLegalName());
+        form.getReceivableCosts().forEach(e -> {
+            e.setCustomerName(supplierInfo.getSupplierChName()).setCustomerCode(supplierInfo.getSupplierCode());
+        });
+
+        orderReceivableCostList.addAll(form.getReceivableCosts());
+        //过滤相同数据
+        orderReceivableCostList = orderReceivableCostList.stream().collect(Collectors.collectingAndThen(
+                Collectors.toCollection(() ->
+                        new TreeSet<>(Comparator.comparing(OrderReceivableCost::getId))), ArrayList::new));
+
+
         //根据主订单号查询主订单应付费用并且是绑定应收id
         List<OrderPaymentCost> paymentCost = this.paymentCostService.getReceivableBinding(new OrderPaymentCost()
                 .setMainOrderNo(mainOrderNo).setIsSumToMain(true));

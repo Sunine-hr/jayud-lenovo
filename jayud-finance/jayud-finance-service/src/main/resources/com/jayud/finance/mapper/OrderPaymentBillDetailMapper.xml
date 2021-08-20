@@ -965,8 +965,8 @@
         (select opbd.* from `order_payment_bill_detail` opbd
         inner join order_payment_cost opc on opc.id = opbd.cost_id
         <where>
-            <if test="userName==null and userName!=''">
-                and make_user=#{userName}
+            <if test="userName!=null and userName!=''">
+                and opbd.make_user=#{userName}
             </if>
             <choose>
                 <when test="isMain">

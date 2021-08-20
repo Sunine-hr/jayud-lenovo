@@ -719,8 +719,8 @@
         (select orbd.* from `order_receivable_bill_detail` orbd
         inner join order_receivable_cost orc on orc.id = orbd.cost_id
         <where>
-            <if test="userName==null and userName!=''">
-                and make_user=#{userName}
+            <if test="userName!=null and userName!=''">
+                and orbd.make_user=#{userName}
             </if>
             <choose>
                 <when test="isMain">

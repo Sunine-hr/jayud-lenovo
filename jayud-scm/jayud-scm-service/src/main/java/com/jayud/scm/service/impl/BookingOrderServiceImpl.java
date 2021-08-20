@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -102,6 +103,9 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
             //修改
             BookingOrderVO bookingOrderVO = bookingOrderMapper.getBookingOrderById(id);
             BookingOrder bookingOrder = ConvertUtil.convert(bookingOrderVO, BookingOrder.class);
+
+            BeanUtil.copyProperties(form, bookingOrder);
+
             //设置修改人信息
             bookingOrder.setMdyBy(systemUser.getId().intValue());
             bookingOrder.setMdyByName(systemUser.getUserName());
@@ -256,9 +260,8 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
     @Override
     public BookingOrderVO prepareBookingOrder(Integer modelType) {
         BookingOrderVO bookingOrderVO = new BookingOrderVO();
-        bookingOrderVO.setModelType(modelType);//业务类型/工作单类型 0进口  1出口 2国内 4香港  5采购  6销售
+        bookingOrderVO.setModelType(modelType);//业务类型/工作单类型 1进口  2出口 3国内 4香港  5采购  6销售
         bookingOrderVO.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(), LocalDateTime.now()));//单号的生成规则
-
         return bookingOrderVO;
     }
 }

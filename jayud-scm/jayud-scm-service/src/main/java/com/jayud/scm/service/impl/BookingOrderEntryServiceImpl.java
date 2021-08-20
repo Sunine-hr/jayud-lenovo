@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
@@ -84,6 +85,8 @@ public class BookingOrderEntryServiceImpl extends ServiceImpl<BookingOrderEntryM
             //修改
             BookingOrderEntryVO bookingOrderEntryVO = bookingOrderEntryMapper.getBookingOrderEntryById(id);
             BookingOrderEntry bookingOrderEntry = ConvertUtil.convert(bookingOrderEntryVO, BookingOrderEntry.class);
+
+            BeanUtil.copyProperties(form, bookingOrderEntry);
 
             //设置修改人
             bookingOrderEntry.setMdyBy(systemUser.getId().intValue());

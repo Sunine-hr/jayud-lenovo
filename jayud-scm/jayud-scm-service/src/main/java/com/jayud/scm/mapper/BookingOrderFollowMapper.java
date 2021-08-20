@@ -1,8 +1,12 @@
 package com.jayud.scm.mapper;
 
-import com.jayud.scm.model.po.BookingOrderFollow;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.scm.model.po.BookingOrderFollow;
+import com.jayud.scm.model.vo.BookingOrderFollowVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +19,10 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface BookingOrderFollowMapper extends BaseMapper<BookingOrderFollow> {
 
+    /**
+     * 跟踪记录，查询
+     * @param bookingId
+     * @return
+     */
+    List<BookingOrderFollowVO> findBookingOrderFollow(@Param("bookingId") Integer bookingId);
 }

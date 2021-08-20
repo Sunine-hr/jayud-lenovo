@@ -108,7 +108,6 @@ public class ExternalApiController {
     }
 
 
-
     @ApiOperation(value = "根据主订单号集合查询内陆订单详情")
     @PostMapping(value = "/api/getInlandOrderInfoByMainOrderNos")
     public ApiResult<List<OrderInlandTransportDetails>> getInlandOrderInfoByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos) {
@@ -131,11 +130,11 @@ public class ExternalApiController {
         tmp.put("确认派车", "NL_3");
         tmp.put("车辆提货", "NL_4");
         tmp.put("货物签收", "NL_5");
-        tmp.put("费用审核","CostAudit");
+        tmp.put("费用审核", "CostAudit");
         List<Map<String, Object>> result = new ArrayList<>();
 
-        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
-        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = legalEntityByLegalName.getData();
 
         for (Map<String, Object> menus : menusList) {
 

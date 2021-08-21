@@ -33,4 +33,11 @@ public interface BookingOrderEntryMapper extends BaseMapper<BookingOrderEntry> {
      */
     BookingOrderEntryVO getBookingOrderEntryById(@Param("id") Integer id);
 
+    /**
+     * 商品明细表，跟委托单号 和 产品id，查询
+     * @param bookingId
+     * @param itemId
+     * @return
+     */
+    BookingOrderEntryVO findBookingOrderEntryByBookingIdAndItemId(@Param("bookingId") Integer bookingId, @Param("itemId") Integer itemId);
 }

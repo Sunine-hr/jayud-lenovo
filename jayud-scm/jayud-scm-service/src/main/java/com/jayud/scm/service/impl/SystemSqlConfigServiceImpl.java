@@ -31,7 +31,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -159,6 +162,9 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
         }
         String sqlCode = form.getSqlCode();//SQL代码
         Map<String, Object> condPara = form.getCondPara();//条件参数{k-v},键值对
+        if(ObjectUtil.isEmpty(condPara)){
+            condPara = new HashMap<>();
+        }
         String sqlWhereCondition = form.getSqlWhereCondition();//where条件(and ...)
         SystemSqlConfigVO systemSqlConfigVO = systemSqlConfigMapper.getSystemSqlConfigBySqlCode(sqlCode);
         if(ObjectUtil.isEmpty(systemSqlConfigVO)){

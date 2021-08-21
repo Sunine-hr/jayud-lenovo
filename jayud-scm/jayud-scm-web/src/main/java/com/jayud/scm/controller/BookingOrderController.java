@@ -17,13 +17,16 @@ import com.jayud.scm.model.vo.BookingOrderEntryVO;
 import com.jayud.scm.model.vo.BookingOrderFollowVO;
 import com.jayud.scm.model.vo.BookingOrderVO;
 import com.jayud.scm.service.*;
+import com.jayud.scm.utils.ExcelTemplateUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -289,21 +292,56 @@ public class BookingOrderController {
 
     //商品明细表，下载模板
     @ApiOperation(value = "商品明细表，下载模板")
-    @PostMapping(value = "/downloadTemplateByBookingOrderEntry")
-    public void downloadTemplateByBookingOrderEntry(){
-
+    @GetMapping(value = "/downloadTemplateByBookingOrderEntry")
+    public void downloadTemplateByBookingOrderEntry(HttpServletResponse response){
+        new ExcelTemplateUtil().downloadExcel(response, "booking_order_entry.xlsx", "出口委托单-商品明细-导入模板.xlsx");
     }
 
     //商品明细表，导入
     @ApiOperation(value = "商品明细表，导入")
     @PostMapping(value = "/importByBookingOrderEntry")
-    public CommonResult importByBookingOrderEntry(){
+    public CommonResult importByBookingOrderEntry(@RequestParam("file") MultipartFile file, @RequestHeader(value = "bookingId") Integer bookingId){
+        //用HttpServletRequest，获取请求头内容
+        if (file.isEmpty()) {
+            return CommonResult.error(-1, "文件为空！");
+        }
+        String originalFilename = file.getOriginalFilename();
+        System.out.println(originalFilename);
+        bookingOrderEntryService.importByBookingOrderEntry(file, bookingId);
         return CommonResult.success("导入成功!");
     }
 
 
     /*
         TODO 附件资料:   上传，删除  使用公用方法，不用写，参数要说明清楚
+        委托单，附件资料
+
+          `file_model` int DEFAULT NULL COMMENT '附件类型,1:商品库,2:客户主体,3委托订单,4:付款单,5:收款单,6:入库单,7:出库单,8:应收款,9:提验货,10:中港运输',
+          `business_id` int DEFAULT NULL COMMENT '业务单据ID',
+
+        1.委托单，附件资料，查询 -> 通过类型和订单id查询所有附件
+        bPublicFiles/findPublicFile
+        {"fileModel":3, "businessId": ?}
+
+        2.委托单，附件资料，上传 -> 添加附件
+        /bPublicFiles/AddPublicFile
+        {
+        "fileModel":3,
+        "fileModelCopy":3,
+        "businessId":?,
+        "remark":?,
+        "fileView":?
+        }
+
+        fileView -> 通过 http://test.oms.jayud.com:9448/jayudFile/file/uploadFile ,返回对象，前端有公用的全局配置。
+
+        3.委托单，附件资料，删除 -> 删除通用方法
+        /common/delete
+        {
+        "ids":?, 	//删除记录的ID集合
+        "key":3		//上传附件表 b_public_files(3,"b_public_files"),
+        }
+
     */
     //附件资料，上传
 

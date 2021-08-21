@@ -114,4 +114,13 @@
 
     </select>
 
+    <select id="findBookingOrderEntryByBookingIdAndItemId" resultType="com.jayud.scm.model.vo.BookingOrderEntryVO">
+        select
+            t.`id`,t.`booking_id`,t.`item_no`,t.`item_id`,t.`item_model`,t.`item_name`,t.`item_brand`,t.`item_origin`,t.`item_notes`,t.`unit`,t.`qty`,t.`price`,t.`hg_price`,t.`cip_price`,t.`invoice_price`,t.`rmb_price`,t.`ex_rmb_price`,t.`total_money`,t.`total_hg_money`,t.`destination`,t.`customs_code`,t.`elements`,t.`supplier_name`,t.`packing_type`,t.`po`,t.`pn`,t.`bn`,t.`ctns_no`,t.`packages`,t.`gw`,t.`nw`,t.`cbm`,t.`item_size`,t.`shipping_m`,t.`demand_no`,t.`in_store_num`,t.`is_function`,t.`remark`,t.`packmodel`,t.`pick_up_no`,t.`pick_up_user`,t.`pick_up_tel`,t.`pick_up_address`,t.`pick_up_remark`,t.`delivery_name`,t.`delivery_tel`,t.`delivery_address`,t.`delivery_remark`,t.`delivery_date`,t.`accessories`,t.`receiving_id`,t.`receiving_entry_id`,t.`control_ma`,t.`hk_control`,t.`tax`,t.`is_hg_tax`,t.`appoint_hg_tax`,t.`hg_tax`,t.`consume_tax`,t.`tlx_tax`,t.`customer_num`,t.`is_ciq`,t.`ciq_type`,t.`board_num`,t.`origin_country`,t.`contract_entry_id`,t.`arrival_date`,t.`customer_serno`,t.`onl_id`,t.`orig_place_code`,t.`district_code`,t.`eng_man_ent_cnm`,t.`use_to`,t.`item_brand_type`,t.`export_discounts`,t.`crt_by`,t.`crt_by_name`,t.`crt_by_dtm`,t.`mdy_by`,t.`mdy_by_name`,t.`mdy_by_dtm`,t.`voided`,t.`voided_by`,t.`voided_by_name`,t.`voided_by_dtm`
+        from  booking_order_entry t
+        where 1=1
+        and t.`booking_id` = #{bookingId, jdbcType=INTEGER}
+        and t.`item_id` = #{itemId, jdbcType=INTEGER}
+    </select>
+
 </mapper>

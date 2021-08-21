@@ -4,6 +4,7 @@ import com.jayud.scm.model.bo.BookingOrderEntryForm;
 import com.jayud.scm.model.po.BookingOrderEntry;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.BookingOrderEntryVO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -49,4 +50,11 @@ public interface IBookingOrderEntryService extends IService<BookingOrderEntry> {
      * @return
      */
     BookingOrderEntryVO copyBookingOrderEntry(Integer id);
+
+    /**
+     * 商品明细表，导入
+     * @param file
+     * @param bookingId
+     */
+    void importByBookingOrderEntry(MultipartFile file, Integer bookingId);
 }

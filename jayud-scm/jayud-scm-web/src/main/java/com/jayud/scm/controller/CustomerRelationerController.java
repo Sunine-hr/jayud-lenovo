@@ -46,7 +46,7 @@ public class CustomerRelationerController {
         IPage<CustomerRelationerVO> page = this.customerRelationerService.findByPage(form);
         if(CollectionUtils.isNotEmpty(page.getRecords())){
             for (CustomerRelationerVO record : page.getRecords()) {
-                record.setSTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1014",record.getSType()));
+                record.setSTypeName(record.getSType());
             }
         }
         CommonPageResult pageVO = new CommonPageResult(page);
@@ -78,7 +78,7 @@ public class CustomerRelationerController {
     public CommonResult<CustomerRelationerVO> getCustomerRelationerById(@RequestBody Map<String,Object> map) {
         Integer id = MapUtil.getInt(map, "id");
         CustomerRelationerVO customerRelationerVO = customerRelationerService.getCustomerRelationerById(id);
-        customerRelationerVO.setSTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1014",customerRelationerVO.getSType()));
+        customerRelationerVO.setSTypeName(customerRelationerVO.getSType());
 
         return CommonResult.success(customerRelationerVO);
     }

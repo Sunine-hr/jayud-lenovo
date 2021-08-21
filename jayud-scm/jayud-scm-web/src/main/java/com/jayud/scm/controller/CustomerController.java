@@ -2,8 +2,6 @@ package com.jayud.scm.controller;
 
 
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonPageResult;
@@ -12,19 +10,20 @@ import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.CorrespondEnum;
 import com.jayud.scm.model.po.Customer;
 import com.jayud.scm.model.po.CustomerTax;
-import com.jayud.scm.model.po.VFeeModel;
 import com.jayud.scm.model.vo.CustomerFormVO;
-import com.jayud.scm.model.vo.CustomerOperatorVO;
 import com.jayud.scm.model.vo.CustomerVO;
 import com.jayud.scm.service.IBDataDicEntryService;
 import com.jayud.scm.service.ICustomerClassService;
 import com.jayud.scm.service.ICustomerService;
 import com.jayud.scm.service.ICustomerTaxService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -66,9 +65,8 @@ public class CustomerController {
         if(form.getKey() != null && CorrespondEnum.getName(form.getKey()) == null){
             return CommonResult.error(444,"该条件无法搜索");
         }
-        //客户类型
-        if(StrUtil.isNotEmpty(form.getType())){
-            form.setType(ibDataDicEntryService.getTextByDicCodeAndDataValue("1012",form.getType()));
+        if(form.getClassType() != null){
+            form.setClassType(ibDataDicEntryService.getTextByDicCodeAndDataValue("1012",form.getClassType()));
         }
         form.setKey(CorrespondEnum.getName(form.getKey()));
 
@@ -93,16 +91,16 @@ public class CustomerController {
         }else {
             if(CollectionUtils.isNotEmpty(page.getRecords())){
                 for (CustomerFormVO record : page.getRecords()) {
-                    if(record.getCustomerStyle() != null){
-                        record.setCustomerStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1010",record.getCustomerStyle()));
-
-                    }
-                    if(record.getCustomerState() != null){
-                        record.setCustomerState(ibDataDicEntryService.getTextByDicCodeAndDataValue("1013",record.getCustomerState()));
-                    }
-                    if(record.getArea() != null){
-                        record.setArea(ibDataDicEntryService.getTextByDicCodeAndDataValue("1015",record.getArea()));
-                    }
+//                    if(record.getCustomerStyle() != null){
+//                        record.setCustomerStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1010",record.getCustomerStyle()));
+//
+//                    }
+//                    if(record.getCustomerState() != null){
+//                        record.setCustomerState(ibDataDicEntryService.getTextByDicCodeAndDataValue("1013",record.getCustomerState()));
+//                    }
+//                    if(record.getArea() != null){
+//                        record.setArea(ibDataDicEntryService.getTextByDicCodeAndDataValue("1015",record.getArea()));
+//                    }
                     if(record.getBusinessType() != null){
                         String[] split = record.getBusinessType().split(",");
                         StringBuffer stringBuffer = new StringBuffer();
@@ -127,14 +125,14 @@ public class CustomerController {
         Integer id = MapUtil.getInt(map, "id");
         CustomerVO customerVO = this.customerService.getCustomerById(id);
         if(customerVO.getCustomerStyle() != null){
-            customerVO.setCustomerStyleName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1010",customerVO.getCustomerStyle()));
+            customerVO.setCustomerStyleName(customerVO.getCustomerStyle());
 
         }
         if(customerVO.getCustomerState() != null){
-            customerVO.setCustomerStateName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1013",customerVO.getCustomerState()));
+            customerVO.setCustomerStateName(customerVO.getCustomerState());
         }
         if(customerVO.getArea() != null){
-            customerVO.setAreaName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1015",customerVO.getArea()));
+            customerVO.setAreaName(customerVO.getArea());
         }
         CustomerTax customerTax = customerTaxService.getCustomerTaxByCustomerId(customerVO.getId());
         if(customerTax != null){
@@ -230,35 +228,6 @@ public class CustomerController {
         }
         return CommonResult.error(444,"跟踪信息添加失败");
     }
-
-    @ApiOperation(value = "根据客户id，查询结算方案(结算条款)")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name="customerId", dataType = "Integer", value = "客户id", required = true)
-    })
-    @PostMapping(value = "/findVFeeModelByCustomerId")
-    public CommonResult<List<VFeeModel>> findVFeeModelByCustomerId(@RequestBody Map<String,Object> map){
-        Integer customerId = MapUtil.getInt(map, "customerId");
-        if(ObjectUtil.isEmpty(customerId)){
-            return CommonResult.error(-1,"客户id不能为空");
-        }
-        List<VFeeModel> vFeeModelList = customerService.findVFeeModelByCustomerId(customerId);
-        return CommonResult.success(vFeeModelList);
-    }
-
-    @ApiOperation(value = "根据客户id，查询客户的操作人员list信息（`商务员`、`业务员`、`客户下单人`）")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name="customerId", dataType = "Integer", value = "客户id", required = true)
-    })
-    @PostMapping(value = "/findCustomerOperatorByCustomerId")
-    public CommonResult<CustomerOperatorVO> findCustomerOperatorByCustomerId(@RequestBody Map<String,Object> map){
-        Integer customerId = MapUtil.getInt(map, "customerId");
-        if(ObjectUtil.isEmpty(customerId)){
-            return CommonResult.error(-1,"客户id不能为空");
-        }
-        CustomerOperatorVO customerOperatorVO = customerService.findCustomerOperatorByCustomerId(customerId);
-        return CommonResult.success(customerOperatorVO);
-    }
-
 
 
 }

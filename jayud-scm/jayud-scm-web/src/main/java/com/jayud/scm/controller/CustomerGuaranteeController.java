@@ -48,7 +48,7 @@ public class CustomerGuaranteeController {
     public CommonResult findByPage(@RequestBody QueryCommonForm form) {
         IPage<CustomerGuaranteeVO> page = this.customerGuaranteeService.findByPage(form);
         for (CustomerGuaranteeVO record : page.getRecords()) {
-            record.setGuaranteeTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",record.getGuaranteeType()));
+            record.setGuaranteeTypeName(record.getGuaranteeType());
         }
         CommonPageResult pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);

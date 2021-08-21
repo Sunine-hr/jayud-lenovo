@@ -8,6 +8,7 @@ import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.po.SystemUserRoleRelation;
 import com.jayud.scm.model.vo.SystemUserSimpleVO;
 import com.jayud.scm.service.ISystemUserRoleRelationService;
+import org.apache.commons.configuration.reloading.Reloadable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,15 +37,20 @@ public class SystemUserRoleRelationServiceImpl extends ServiceImpl<SystemUserRol
 
     /**
      * 创建角色与用户的关联
-     * @param roleId
+     * @param roleIds
      * @param userId
      */
     @Override
-    public void createRelation(Long roleId, Long userId){
-        SystemUserRoleRelation roleRelation = new SystemUserRoleRelation();
-        roleRelation.setRoleId(roleId);
-        roleRelation.setUserId(userId);
-        saveOrUpdate(roleRelation);
+    public void createRelation(List<Long> roleIds, Long userId){
+        List<SystemUserRoleRelation> systemUserRoleRelations = new ArrayList<>();
+        for (Long roleId : roleIds) {
+            SystemUserRoleRelation roleRelation = new SystemUserRoleRelation();
+            roleRelation.setRoleId(roleId);
+            roleRelation.setUserId(userId);
+            systemUserRoleRelations.add(roleRelation);
+        }
+
+        this.saveOrUpdateBatch(systemUserRoleRelations);
 
     }
 

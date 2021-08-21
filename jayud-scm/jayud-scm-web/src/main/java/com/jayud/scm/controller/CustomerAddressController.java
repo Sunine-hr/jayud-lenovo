@@ -52,10 +52,10 @@ public class CustomerAddressController {
         if(CollectionUtils.isNotEmpty(page.getRecords())){
             for (CustomerAddressVO record : page.getRecords()) {
                 if(record.getSType() != null){
-                    record.setSTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1018",record.getSType()));
+                    record.setSTypeName(record.getSType());
                 }
                 if(record.getRegion() != null){
-                    record.setRegionName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1015",record.getRegion()));
+                    record.setRegionName(record.getRegion());
                 }
             }
         }

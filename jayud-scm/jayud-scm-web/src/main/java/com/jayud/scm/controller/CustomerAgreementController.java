@@ -51,17 +51,17 @@ public class CustomerAgreementController {
         IPage<CustomerAgreementVO> page = this.customerAgreementService.findByPage(form);
         if(CollectionUtils.isNotEmpty(page.getRecords())){
             for (CustomerAgreementVO record : page.getRecords()) {
-                record.setModelTypeCopyName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",record.getModelType().toString()));
+                record.setModelTypeCopyName(record.getModelType().toString());
                 record.setModelTypeCopy(record.getModelType().toString());
                 if(record.getTreatyType() != null){
-                    record.setTreatyTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1032",record.getTreatyType()));
+                    record.setTreatyTypeName(record.getTreatyType());
                 }
                 if(record.getTreatyCopyRight() != null){
 
-                    record.setTreatyCopyRightName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1033",record.getTreatyCopyRight()));
+                    record.setTreatyCopyRightName(record.getTreatyCopyRight());
                 }
                 if(record.getIsExtended() != null){
-                    record.setIsExtendedName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1031",record.getIsExtended()));
+                    record.setIsExtendedName(record.getIsExtended());
                 }
             }
         }
@@ -85,17 +85,17 @@ public class CustomerAgreementController {
     public CommonResult<CustomerAgreementVO> getCustomerAgreementById(@RequestBody Map<String,Object> map) {
         Integer id = MapUtil.getInt(map, "id");
         CustomerAgreementVO customerAgreementVO = customerAgreementService.getCustomerAgreementById(id);
-        customerAgreementVO.setModelTypeCopyName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",customerAgreementVO.getModelType().toString()));
+        customerAgreementVO.setModelTypeCopyName(customerAgreementVO.getModelType().toString());
         customerAgreementVO.setModelTypeCopy(customerAgreementVO.getModelType().toString());
         if(customerAgreementVO.getTreatyType() != null){
-            customerAgreementVO.setTreatyTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1032",customerAgreementVO.getTreatyType()));
+            customerAgreementVO.setTreatyTypeName(customerAgreementVO.getTreatyType());
         }
         if(customerAgreementVO.getTreatyCopyRight() != null){
 
-            customerAgreementVO.setTreatyCopyRightName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1033",customerAgreementVO.getTreatyCopyRight()));
+            customerAgreementVO.setTreatyCopyRightName(customerAgreementVO.getTreatyCopyRight());
         }
         if(customerAgreementVO.getIsExtended() != null){
-            customerAgreementVO.setIsExtendedName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1031",customerAgreementVO.getIsExtended()));
+            customerAgreementVO.setIsExtendedName(customerAgreementVO.getIsExtended());
         }
         return CommonResult.success(customerAgreementVO);
     }

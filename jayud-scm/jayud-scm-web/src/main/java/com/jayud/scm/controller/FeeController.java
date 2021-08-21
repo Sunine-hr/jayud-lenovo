@@ -58,23 +58,23 @@ public class FeeController {
             for (FeeVO record : page.getRecords()) {
                 List<FeeListVO> feeListVOS = feeListService.getFeeListByFeeId(record.getId());
                 record.setFeeListVOS(feeListVOS);
-                record.setDeputyStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1019",record.getDeputyStyle()));
-                record.setIncoterms(ibDataDicEntryService.getTextByDicCodeAndDataValue("1002",record.getIncoterms()));
-                record.setPayStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1020",record.getPayStyle()));
-                record.setReStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1022",record.getReStyle()));
-                record.setProductClass(ibDataDicEntryService.getTextByDicCodeAndDataValue("1024",record.getProductClass()));
-                record.setAccountStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1025",record.getAccountStyle()));
-                record.setShippingFeeStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1023",record.getShippingFeeStyle()));
-                record.setInterestType(ibDataDicEntryService.getTextByDicCodeAndDataValue("1026",record.getInterestType()));
-                record.setGRateType(ibDataDicEntryService.getTextByDicCodeAndDataValue("1027",record.getGRateType()));
-                record.setPRateType(ibDataDicEntryService.getTextByDicCodeAndDataValue("1028",record.getPRateType()));
-                record.setRateValue(ibDataDicEntryService.getTextByDicCodeAndDataValue("1029",record.getRateValue()));
-                if(record.getInvType() != null){
-                    record.setInvType(ibDataDicEntryService.getTextByDicCodeAndDataValue("1030",record.getInvType()));
-                }
-                if(record.getQuotaType() != null){
-                    record.setQuotaType(ibDataDicEntryService.getTextByDicCodeAndDataValue("1021",record.getQuotaType()));
-                }
+//                record.setDeputyStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1019",record.getDeputyStyle()));
+//                record.setIncoterms(ibDataDicEntryService.getTextByDicCodeAndDataValue("1002",record.getIncoterms()));
+//                record.setPayStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1020",record.getPayStyle()));
+//                record.setReStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1022",record.getReStyle()));
+//                record.setProductClass(ibDataDicEntryService.getTextByDicCodeAndDataValue("1024",record.getProductClass()));
+//                record.setAccountStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1025",record.getAccountStyle()));
+//                record.setShippingFeeStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1023",record.getShippingFeeStyle()));
+//                record.setInterestType(ibDataDicEntryService.getTextByDicCodeAndDataValue("1026",record.getInterestType()));
+//                record.setGRateType(ibDataDicEntryService.getTextByDicCodeAndDataValue("1027",record.getGRateType()));
+//                record.setPRateType(ibDataDicEntryService.getTextByDicCodeAndDataValue("1028",record.getPRateType()));
+//                record.setRateValue(ibDataDicEntryService.getTextByDicCodeAndDataValue("1029",record.getRateValue()));
+//                if(record.getInvType() != null){
+//                    record.setInvType(ibDataDicEntryService.getTextByDicCodeAndDataValue("1030",record.getInvType()));
+//                }
+//                if(record.getQuotaType() != null){
+//                    record.setQuotaType(ibDataDicEntryService.getTextByDicCodeAndDataValue("1021",record.getQuotaType()));
+//                }
             }
         }
         CommonPageResult pageVO = new CommonPageResult(page);

@@ -37,7 +37,7 @@ public interface ISystemUserRoleRelationService extends IService<SystemUserRoleR
      * @param roleId
      * @param userId
      */
-    void createRelation(Long roleId, Long userId);
+    void createRelation(List<Long> roleId, Long userId);
 
     /**
      * 批量删除关系

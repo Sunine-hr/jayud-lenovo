@@ -51,7 +51,7 @@ public class CustomerBankController {
                     record.setCurrencyName1(ibDataDicEntryService.getTextByDicCodeAndDataValue("1003",record.getCurrencyName()));
                 }
                 if(record.getBankArea() != null){
-                    record.setBankAreaName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1017",record.getBankArea()));
+                    record.setBankAreaName(record.getBankArea());
                 }
 
             }
@@ -89,7 +89,7 @@ public class CustomerBankController {
             customerBankVO.setCurrencyName1(ibDataDicEntryService.getTextByDicCodeAndDataValue("1003",customerBankVO.getCurrencyName()));
         }
         if(customerBankVO.getBankArea() != null){
-            customerBankVO.setBankAreaName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1017",customerBankVO.getBankArea()));
+            customerBankVO.setBankAreaName(customerBankVO.getBankArea());
         }
         return CommonResult.success(customerBankVO);
     }

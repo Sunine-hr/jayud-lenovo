@@ -71,9 +71,9 @@ public class CustomerMaintenanceSetupServiceImpl extends ServiceImpl<CustomerMai
         if(update){
 
 
-            if(form.getRoleName().equals("业务员")){
+            if(form.getRoleName().equals("业务")){
                 Customer customer = new Customer();
-                customer.setId(customerMaintenanceSetup.getId());
+                customer.setId(customerMaintenanceSetup.getCustomerId());
                 customer.setFsalesId(customerMaintenanceSetup.getWhUserId());
                 customer.setFsalesMan(customerMaintenanceSetup.getWhUserName());
                 this.customerService.updateById(customer);
@@ -81,7 +81,7 @@ public class CustomerMaintenanceSetupServiceImpl extends ServiceImpl<CustomerMai
             }
             if(form.getRoleName().equals("商务")){
                 Customer customer = new Customer();
-                customer.setId(customerMaintenanceSetup.getId());
+                customer.setId(customerMaintenanceSetup.getCustomerId());
                 customer.setFollowerId(customerMaintenanceSetup.getWhUserId());
                 customer.setFollowerName(customerMaintenanceSetup.getWhUserName());
                 this.customerService.updateById(customer);

@@ -114,6 +114,12 @@ public class CommodityController {
                 return CommonResult.error(444,"商品型号和品牌已存在");
             }
         }
+        if(form.getId() != null){
+            Commodity byId = commodityService.getById(form.getId());
+            if(byId.getHsCodeNo() != null && byId.getStateFlag().equals("Y")){
+                return CommonResult.error(444,byId.getSkuName()+"已审核且已归类无法进行修改");
+            }
+        }
 
 
         boolean result = this.commodityService.saveOrUpdateCommodity(form);
@@ -141,6 +147,13 @@ public class CommodityController {
     @ApiOperation(value = "审核商品")
     @PostMapping(value = "/reviewCommodity")
     public CommonResult reviewCommodity(@RequestBody AddReviewCommodityForm form) {
+        for (AddCommodityEntryForm addCommodityEntryForm : form.getAddCommodityEntryForms()) {
+            if(addCommodityEntryForm.getElementsName().equals("型号")){
+                if(!addCommodityEntryForm.getDefaultValue().equals(form.getSkuModel())){
+                    return CommonResult.error(444,"型号不一致");
+                }
+            }
+        }
         boolean result = this.commodityService.reviewCommodity(form);
         if(result){
             return CommonResult.success();

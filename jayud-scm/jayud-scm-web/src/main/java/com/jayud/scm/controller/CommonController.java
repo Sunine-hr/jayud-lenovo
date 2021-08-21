@@ -102,6 +102,16 @@ public class CommonController {
         deleteForm.setId(systemUserBySystemName.getId());
         deleteForm.setDeleteTime(LocalDateTime.now());
         deleteForm.setTable(TableEnum.getDesc(deleteForm.getKey()));
+
+        if(deleteForm.getKey().equals(1)){
+            for (Long id : deleteForm.getIds()) {
+                Commodity byId = commodityService.getById(id);
+                if(byId.getHsCodeNo() != null && byId.getStateFlag().equals("Y")){
+                    return CommonResult.error(444,byId.getSkuName()+"已审核且已归类无法进行删除");
+                }
+            }
+        }
+
         boolean result = commodityService.commonDelete(deleteForm);
         if(!result){
             return CommonResult.error(444,"删除失败");

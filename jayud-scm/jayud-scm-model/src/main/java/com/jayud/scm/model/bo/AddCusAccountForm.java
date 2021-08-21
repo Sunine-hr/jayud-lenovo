@@ -30,7 +30,7 @@ public class AddCusAccountForm extends BasePageForm{
 
     @ApiModelProperty(value = "角色ID",required = true)
     @NotEmpty(message = "roleId is required")
-    private Long roleId;
+    private List<Long> roleId;
 
     @ApiModelProperty(value = "所属公司ID",required = true)
     @NotEmpty(message = "companyId is required")

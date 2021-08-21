@@ -55,7 +55,7 @@ public class CustomerMaintenanceSetupController {
         if(CollectionUtils.isNotEmpty(page.getRecords())){
             for (CustomerMaintenanceSetupVO record : page.getRecords()) {
                 if(record.getModelType() != null){
-                    record.setModelTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1018",record.getModelType().toString()));
+                    record.setModelTypeName(ibDataDicEntryService.getTextByDicCodeAndDataValue("1011",record.getModelType().toString()));
                 }
             }
         }

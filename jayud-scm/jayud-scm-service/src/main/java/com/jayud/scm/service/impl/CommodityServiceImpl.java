@@ -251,7 +251,10 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
                 if(addCommodityEntryForm.getElementName().equals("型号")){
                     stringBuffer.append(addCommodityEntryForm.getElementValue() == null?" ":(addCommodityEntryForm.getElementValue()+"型")).append("|");
                 }
-                stringBuffer.append(addCommodityEntryForm.getElementValue() == null?" ":addCommodityEntryForm.getElementValue()).append("|");
+                if(addCommodityEntryForm.getElementValue() != null){
+//                    stringBuffer.append(addCommodityEntryForm.getElementValue() == null?" ":addCommodityEntryForm.getElementValue()).append("|");
+                    stringBuffer.append(addCommodityEntryForm.getElementValue());
+                }
             }
         }
 
@@ -321,14 +324,16 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
                     addCommodityEntryForm.setElementValue(addCommodityEntryForm.getDefaultValue());
                     addCommodityEntryForm.setElementSort(addCommodityEntryForm.getSortIndex());
 
-                    if(addCommodityEntryForm.getElementName().equals("品牌（中文及外文名称")){
-                        addCommodityEntryForm.setElementValue(commodity.getSkuBrand());
+                    if(addCommodityEntryForm.getElementValue() != null){
+                        if(addCommodityEntryForm.getElementName().equals("品牌（中文及外文名称")){
+                            addCommodityEntryForm.setElementValue(commodity.getSkuBrand());
+                        }
+                        if(addCommodityEntryForm.getElementName().equals("型号")){
+                            addCommodityEntryForm.setElementValue(commodity.getSkuModel());
+                            stringBuffer.append(addCommodityEntryForm.getElementValue()+"型").append("|");
+                        }
+                        stringBuffer.append(addCommodityEntryForm.getElementValue()).append("|");
                     }
-                    if(addCommodityEntryForm.getElementName().equals("型号")){
-                        addCommodityEntryForm.setElementValue(commodity.getSkuModel());
-                        stringBuffer.append(addCommodityEntryForm.getElementValue()+"型").append("|");
-                    }
-                    stringBuffer.append(addCommodityEntryForm.getElementValue()).append("|");
                 }
             }
 

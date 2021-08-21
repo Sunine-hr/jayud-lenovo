@@ -40,7 +40,7 @@ public class OprSystemUserForm {
 
     @ApiModelProperty(value = "角色ID",required = true)
     @NotEmpty(message = "角色ID不能为空")
-    private Long roleId;
+    private List<Long> roleId;
 
 //    @ApiModelProperty(value = "所属公司ID",required = true)
 //    @NotEmpty(message = "所属公司ID不能为空")

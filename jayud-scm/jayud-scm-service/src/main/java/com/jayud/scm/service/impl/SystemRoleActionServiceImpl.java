@@ -1,20 +1,21 @@
 package com.jayud.scm.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
-import com.jayud.scm.model.bo.QueryForm;
-import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.SystemRoleActionMapper;
-import com.jayud.scm.model.vo.CommodityFormVO;
-import com.jayud.scm.model.vo.SystemActionOutVO;
+import com.jayud.scm.model.bo.QueryForm;
+import com.jayud.scm.model.po.SystemAction;
+import com.jayud.scm.model.po.SystemRole;
+import com.jayud.scm.model.po.SystemRoleAction;
+import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.SystemRoleActionVO;
 import com.jayud.scm.service.ISystemActionService;
 import com.jayud.scm.service.ISystemRoleActionService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.scm.service.ISystemUserService;
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +45,13 @@ public class SystemRoleActionServiceImpl extends ServiceImpl<SystemRoleActionMap
         QueryWrapper<SystemRoleAction> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(SystemRoleAction::getRoleId,id);
         queryWrapper.lambda().eq(SystemRoleAction::getActionCode,actionCode);
-        return this.getOne(queryWrapper);
+
+        List<SystemRoleAction> systemRoleActionList = this.baseMapper.selectList(queryWrapper);
+        SystemRoleAction systemRoleAction = null;
+        if(CollUtil.isNotEmpty(systemRoleActionList)){
+            systemRoleAction = systemRoleActionList.get(0);
+        }
+        return systemRoleAction;
     }
 
     @Override

@@ -132,7 +132,7 @@ public class BookingOrderController {
         //获取登录用户
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
-        if(!systemUser.getUserName().equals("Admin")){
+        if(!systemUser.getUserName().equalsIgnoreCase("Admin")){
             //获取登录用户所属角色
             List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
             for (SystemRole systemRole : enabledRolesByUserId) {
@@ -162,7 +162,7 @@ public class BookingOrderController {
         //获取登录用户
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
-        if(!systemUser.getUserName().equals("Admin")){
+        if(!systemUser.getUserName().equalsIgnoreCase("Admin")){
             //获取登录用户所属角色
             List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
             for (SystemRole systemRole : enabledRolesByUserId) {

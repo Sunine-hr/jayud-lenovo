@@ -12,7 +12,6 @@ import com.jayud.common.UserOperator;
 import com.jayud.scm.model.bo.AddCommodityModelForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.PermissionForm;
-import com.jayud.scm.model.bo.QueryCommodityForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.TableEnum;
 import com.jayud.scm.model.po.*;
@@ -261,7 +260,7 @@ public class CommonController {
         //获取按钮权限
 //        SystemAction systemAction = systemActionService.getSystemActionByActionCode(form.getActionCode());
 
-        if(!systemUser.getUserName().equals("Admin")){
+        if(!systemUser.getUserName().equalsIgnoreCase("Admin")){
             //获取登录用户所属角色
             List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
             for (SystemRole systemRole : enabledRolesByUserId) {

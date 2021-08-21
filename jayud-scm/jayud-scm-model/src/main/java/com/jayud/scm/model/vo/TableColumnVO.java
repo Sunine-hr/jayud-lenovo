@@ -24,4 +24,7 @@ public class TableColumnVO {
     @ApiModelProperty(value = "列状态（1显示 2不显示）")
     private String columnStatus;
 
+    @ApiModelProperty(value = "列排列（left左对齐表格、right右对齐表格、center居中对齐表格）")
+    private String columnAlign;
+
 }

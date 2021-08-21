@@ -6,25 +6,23 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.scm.model.bo.BookingOrderEntryForm;
-import com.jayud.scm.model.bo.BookingOrderFollowForm;
-import com.jayud.scm.model.bo.BookingOrderForm;
-import com.jayud.scm.model.bo.QueryBookingOrderForm;
+import com.jayud.common.UserOperator;
+import com.jayud.scm.model.bo.*;
+import com.jayud.scm.model.enums.StateFlagEnum;
+import com.jayud.scm.model.enums.TableEnum;
+import com.jayud.scm.model.po.SystemRole;
+import com.jayud.scm.model.po.SystemRoleAction;
+import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.BookingOrderEntryVO;
 import com.jayud.scm.model.vo.BookingOrderFollowVO;
 import com.jayud.scm.model.vo.BookingOrderVO;
-import com.jayud.scm.service.IBookingOrderEntryService;
-import com.jayud.scm.service.IBookingOrderFollowService;
-import com.jayud.scm.service.IBookingOrderService;
+import com.jayud.scm.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -50,6 +48,12 @@ public class BookingOrderController {
     @Autowired
     IBookingOrderFollowService bookingOrderFollowService;//委托单跟踪记录表
 
+    @Autowired
+    ISystemUserService systemUserService;//后台用户表
+    @Autowired
+    ISystemUserRoleRelationService systemUserRoleRelationService;//服务类
+    @Autowired
+    ISystemRoleActionService systemRoleActionService;//角色权限设置（按钮）
 
     /*
         TODO 出口委托单：主表 查询 新增 修改 删除 查看 审核 反审 打印 复制
@@ -118,36 +122,64 @@ public class BookingOrderController {
 
     }
 
-//    //出口委托单，审核
-//    @ApiOperation(value = "出口委托单，审核")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name="id", dataType = "Integer", value = "自动ID", required = true)
-//    })
-//    @PostMapping(value = "/auditBookingOrder")
-//    public CommonResult auditBookingOrder(@RequestBody Map<String,Object> map){
-//        Integer id = MapUtil.getInt(map, "id");
-//        if(ObjectUtil.isEmpty(id)){
-//            return CommonResult.error(-1,"id不能为空");
-//        }
-//        bookingOrderService.auditBookingOrder(id);
-//        return CommonResult.success("操作成功!");
-//    }
+    //出口委托单，审核
+    @ApiOperation(value = "出口委托单，审核")
+    @PostMapping(value = "/auditBookingOrder")
+    public CommonResult auditBookingOrder(@Valid @RequestBody PermissionForm form){
+        //获取登录用户
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        if(!systemUser.getUserName().equals("Admin")){
+            //获取登录用户所属角色
+            List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
+            for (SystemRole systemRole : enabledRolesByUserId) {
+                SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),form.getActionCode());
+                if(systemRoleAction == null){
+                    return CommonResult.error(444,"该用户没有该按钮权限");
+                }
+            }
+        }
+        //拥有按钮权限，判断是否为审核按钮
+        if(!form.getType().equals(0)){
+            form.setTable(TableEnum.getDesc(form.getKey()));
+            form.setUserId(systemUser.getId().intValue());
+            form.setUserName(systemUser.getUserName());
+            if(form.getType().equals(1)){//审核
+                bookingOrderService.auditBookingOrder(form);
+            }
+        }
+        return CommonResult.success("操作成功!");
+    }
 
 
-//    //出口委托单，反审
-//    @ApiOperation(value = "出口委托单，反审")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name="id", dataType = "Integer", value = "自动ID", required = true)
-//    })
-//    @PostMapping(value = "/cancelAuditBookingOrder")
-//    public CommonResult cancelAuditBookingOrder(@RequestBody Map<String,Object> map){
-//        Integer id = MapUtil.getInt(map, "id");
-//        if(ObjectUtil.isEmpty(id)){
-//            return CommonResult.error(-1,"id不能为空");
-//        }
-//        bookingOrderService.cancelAuditBookingOrder(id);
-//        return CommonResult.success("操作成功!");
-//    }
+    //出口委托单，反审
+    @ApiOperation(value = "出口委托单，反审")
+    @PostMapping(value = "/cancelAuditBookingOrder")
+    public CommonResult cancelAuditBookingOrder(@Valid @RequestBody PermissionForm form){
+        //获取登录用户
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        if(!systemUser.getUserName().equals("Admin")){
+            //获取登录用户所属角色
+            List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
+            for (SystemRole systemRole : enabledRolesByUserId) {
+                SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),form.getActionCode());
+                if(systemRoleAction == null){
+                    return CommonResult.error(444,"该用户没有该按钮权限");
+                }
+            }
+        }
+        //拥有按钮权限，判断是否为审核按钮
+        if(!form.getType().equals(0)){
+            form.setTable(TableEnum.getDesc(form.getKey()));
+            form.setUserId(systemUser.getId().intValue());
+            form.setUserName(systemUser.getUserName());
+            if(form.getType().equals(2)){
+                bookingOrderService.cancelAuditBookingOrder(form);
+            }
+        }
+        return CommonResult.success("操作成功!");
+    }
 
 
     //出口委托单，打印
@@ -178,6 +210,13 @@ public class BookingOrderController {
         }
         BookingOrderVO bookingOrderVO = bookingOrderService.copyBookingOrder(id);
         return CommonResult.success(bookingOrderVO);
+    }
+
+    @ApiOperation(value = "出口委托单，获取状态list")
+    @GetMapping("/getStateFlagEnumList")
+    public CommonResult getStateFlagEnumList(){
+        List<Map<String, Object>> stateFlagEnumList = StateFlagEnum.getStateFlagEnumList();
+        return CommonResult.success(stateFlagEnumList);
     }
 
     /*

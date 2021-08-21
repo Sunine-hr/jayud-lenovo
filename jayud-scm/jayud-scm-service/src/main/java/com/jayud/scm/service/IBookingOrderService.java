@@ -1,10 +1,11 @@
 package com.jayud.scm.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.bo.BookingOrderForm;
+import com.jayud.scm.model.bo.PermissionForm;
 import com.jayud.scm.model.bo.QueryBookingOrderForm;
 import com.jayud.scm.model.po.BookingOrder;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.BookingOrderVO;
 
 /**
@@ -45,15 +46,15 @@ public interface IBookingOrderService extends IService<BookingOrder> {
 
     /**
      * 出口委托单，审核
-     * @param id
+     * @param form
      */
-    void auditBookingOrder(Integer id);
+    void auditBookingOrder(PermissionForm form);
 
     /**
      * 出口委托单，反审
-     * @param id
+     * @param form
      */
-    void cancelAuditBookingOrder(Integer id);
+    void cancelAuditBookingOrder(PermissionForm form);
 
     /**
      * 出口委托单，打印

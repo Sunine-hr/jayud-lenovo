@@ -65,14 +65,14 @@
     -->
     <select id="findCommonByPage" resultType="java.util.Map">
         ${paraMap.sqlStr}
-        ${paraMap.wehre}
+        ${paraMap.where}
         ${paraMap.order}
     </select>
 
     <select id="findCommonCount" resultType="java.util.Map">
         select ${paraMap.countSql} from (
             ${paraMap.sqlStr}
-            ${paraMap.wehre}
+            ${paraMap.where}
             ${paraMap.order}
         ) temp
     </select>

@@ -159,6 +159,7 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
         }
         String sqlCode = form.getSqlCode();//SQL代码
         Map<String, Object> condPara = form.getCondPara();//条件参数{k-v},键值对
+        String sqlWhereCondition = form.getSqlWhereCondition();//where条件(and ...)
         SystemSqlConfigVO systemSqlConfigVO = systemSqlConfigMapper.getSystemSqlConfigBySqlCode(sqlCode);
         if(ObjectUtil.isEmpty(systemSqlConfigVO)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "SQL代码，没有找到对应的SQL配置");
@@ -172,7 +173,7 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "SQL代码，没有配置SQL语句。");
         }
         //2.WHERE条件语句
-        String wehre = "";//WHERE语句
+        String where = "";//WHERE语句
         if(StrUtil.isNotEmpty(sqlParams)){
             String[] split = sqlParams.split("[|]");
             StringBuffer stringBuffer = new StringBuffer();
@@ -199,12 +200,17 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
                     }
                 }
             }
-            wehre = stringBuffer.toString();
+            where = stringBuffer.toString();
         }
         String sqlDataStr = systemSqlConfigVO.getSqlDataStr();//数据权限查询
         if(StrUtil.isNotEmpty(sqlDataStr)){
-            wehre = wehre + " " + sqlDataStr.replaceAll("@userId", ""+systemUser.getId()+"");
+            where = where + " " + sqlDataStr.replaceAll("@userId", ""+systemUser.getId()+"");
         }
+        if(StrUtil.isNotEmpty(sqlWhereCondition)){
+            //where条件(and ...)
+            where = where + " " + sqlWhereCondition;
+        }
+
         //3.ORDER BY语句，排序
         String order = "";
         if(StrUtil.isNotEmpty(sqlOrder)){
@@ -213,7 +219,7 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
 
         Map<String, Object> paraMap = new HashMap<>();
         paraMap.put("sqlStr", sqlStr);//SQL语句
-        paraMap.put("wehre", wehre);//WHERE语句
+        paraMap.put("where", where);//WHERE语句
         paraMap.put("order", order);//ORDER BY语句
         //定义分页参数
         Page<Map<String, Object>> page = new Page(form.getPageNum(),form.getPageSize());

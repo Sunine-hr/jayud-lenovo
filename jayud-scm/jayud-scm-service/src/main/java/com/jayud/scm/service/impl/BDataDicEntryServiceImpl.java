@@ -1,23 +1,21 @@
 package com.jayud.scm.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.scm.mapper.BDataDicEntryMapper;
 import com.jayud.scm.model.bo.AddBDataDicEntryForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
-import com.jayud.scm.model.po.BDataDic;
 import com.jayud.scm.model.po.BDataDicEntry;
-import com.jayud.scm.mapper.BDataDicEntryMapper;
-import com.jayud.scm.model.po.SystemRoleActionCheck;
 import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.BDataDicEntryVO;
-import com.jayud.scm.model.vo.BDataDicVO;
 import com.jayud.scm.service.IBDataDicEntryService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.scm.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -117,7 +115,7 @@ public class BDataDicEntryServiceImpl extends ServiceImpl<BDataDicEntryMapper, B
         queryWrapper.lambda().eq(BDataDicEntry::getDicCode,dicCode);
         queryWrapper.lambda().eq(BDataDicEntry::getDataValue,dataValue);
         queryWrapper.lambda().eq(BDataDicEntry::getVoided,0);
-
-        return this.getOne(queryWrapper).getDataText() != null ? this.getOne(queryWrapper).getDataText() : "";
+        BDataDicEntry one = this.getOne(queryWrapper);
+        return ObjectUtil.isNotEmpty(one) ? one.getDataText() : "";
     }
 }

@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
@@ -14,19 +15,18 @@ import com.jayud.scm.mapper.BookingOrderEntryMapper;
 import com.jayud.scm.mapper.BookingOrderFollowMapper;
 import com.jayud.scm.mapper.BookingOrderMapper;
 import com.jayud.scm.model.bo.BookingOrderForm;
+import com.jayud.scm.model.bo.PermissionForm;
 import com.jayud.scm.model.bo.QueryBookingOrderForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.StateFlagEnum;
 import com.jayud.scm.model.enums.VoidedEnum;
 import com.jayud.scm.model.po.BookingOrder;
 import com.jayud.scm.model.po.BookingOrderEntry;
+import com.jayud.scm.model.po.BookingOrderFollow;
 import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.BookingOrderEntryVO;
 import com.jayud.scm.model.vo.BookingOrderVO;
-import com.jayud.scm.service.IBookingOrderEntryService;
-import com.jayud.scm.service.IBookingOrderService;
-import com.jayud.scm.service.ICommodityService;
-import com.jayud.scm.service.ISystemUserService;
+import com.jayud.scm.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,11 +53,13 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
     BookingOrderFollowMapper bookingOrderFollowMapper;//委托单跟踪记录表
 
     @Autowired
-    private ISystemUserService systemUserService;//后台用户表
+    ISystemUserService systemUserService;//后台用户表
     @Autowired
     IBookingOrderEntryService bookingOrderEntryService;//委托订单明细表
     @Autowired
     ICommodityService commodityService;//商品表
+    @Autowired
+    ICustomerService customerService;//客户表
 
     /**
      * 出口委托单，分页查询
@@ -158,56 +160,68 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
 
     /**
      * 出口委托单，审核
-     * @param id
+     * @param form
      */
     @Override
-    public void auditBookingOrder(Integer id) {
-        //登录用户信息
+    @Transactional(rollbackFor = Exception.class)
+    public void auditBookingOrder(PermissionForm form) {
+        //获取登录用户
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
-        if(ObjectUtil.isEmpty(systemUser)){
-            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录");
-        }
-        BookingOrderVO bookingOrderVO = bookingOrderMapper.getBookingOrderById(id);
-        if(ObjectUtil.isEmpty(bookingOrderVO)){
-            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "没有找到委托单");
-        }
-        BookingOrder bookingOrder = ConvertUtil.convert(bookingOrderVO, BookingOrder.class);
+        //1.调用通用的审核
+        CommonResult commonResult = customerService.toExamine(form);
 
-        //设置审核 TODO
-        bookingOrder.setFMultiLevei0(systemUser.getUserName());//审核人
-        bookingOrder.setFDatetime(LocalDateTime.now());//审核时间
-        bookingOrder.setCheckStateFlag("Y");//审核状态 Y | NO
-        bookingOrder.setFLevel(null);//审核级别
-        bookingOrder.setFStep(null);//审核步骤
+        Integer bookingId = form.getId();//委托单ID
 
-        this.saveOrUpdate(bookingOrder);
+        //2.记录 委托单跟踪记录表
+        BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
+        bookingOrderFollow.setBookingId(bookingId);
+        bookingOrderFollow.setSType("1");//1系统 2人工
+        if(commonResult.getCode().equals(ResultEnum.SUCCESS.getCode())){
+            //操作成功
+            bookingOrderFollow.setFollowContext("出口委托单，审核，成功！");
+        }else{
+            //操作失败
+            bookingOrderFollow.setFollowContext("出口委托单，审核，异常！");
+        }
+        //设置创建人
+        bookingOrderFollow.setCrtBy(systemUser.getId().intValue());
+        bookingOrderFollow.setCrtByName(systemUser.getUserName());
+        bookingOrderFollow.setCrtByDtm(LocalDateTime.now());
+        bookingOrderFollowMapper.insert(bookingOrderFollow);
+
     }
 
     /**
      * 出口委托单，反审
-     * @param id
+     * @param form
      */
     @Override
-    public void cancelAuditBookingOrder(Integer id) {
-        //登录用户信息
+    public void cancelAuditBookingOrder(PermissionForm form) {
+        //获取登录用户
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
-        if(ObjectUtil.isEmpty(systemUser)){
-            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录");
-        }
-        BookingOrderVO bookingOrderVO = bookingOrderMapper.getBookingOrderById(id);
-        if(ObjectUtil.isEmpty(bookingOrderVO)){
-            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "没有找到委托单");
-        }
-        BookingOrder bookingOrder = ConvertUtil.convert(bookingOrderVO, BookingOrder.class);
+        //1.调用通用的反审
+        CommonResult commonResult = customerService.deApproval(form);
 
-        //设置审核 TODO
-        bookingOrder.setFMultiLevei0(systemUser.getUserName());//审核人
-        bookingOrder.setFDatetime(LocalDateTime.now());//审核时间
-        bookingOrder.setCheckStateFlag("NO");//审核状态 Y | NO
-        bookingOrder.setFLevel(null);//审核级别
-        bookingOrder.setFStep(null);//审核步骤
+        Integer bookingId = form.getId();//委托单ID
 
-        this.saveOrUpdate(bookingOrder);
+        //2.记录 委托单跟踪记录表
+        BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
+        bookingOrderFollow.setBookingId(bookingId);
+        bookingOrderFollow.setSType("1");//1系统 2人工
+        if(commonResult.getCode().equals(ResultEnum.SUCCESS.getCode())){
+            //操作成功
+            bookingOrderFollow.setFollowContext("出口委托单，反审，成功！");
+        }else{
+            //操作失败
+            bookingOrderFollow.setFollowContext("出口委托单，反审，异常！");
+        }
+        //设置创建人
+        bookingOrderFollow.setCrtBy(systemUser.getId().intValue());
+        bookingOrderFollow.setCrtByName(systemUser.getUserName());
+        bookingOrderFollow.setCrtByDtm(LocalDateTime.now());
+        bookingOrderFollowMapper.insert(bookingOrderFollow);
+
+
     }
 
     /**

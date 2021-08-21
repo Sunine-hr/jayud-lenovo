@@ -448,6 +448,10 @@ public class BookingOrderVO {
 
 
     /*扩展显示的字段*/
+    //TODO 最低消费 从结算方案中带出，仅查看(不保存数据，没有实体字段)
+    @ApiModelProperty(value = "最低消费 从结算方案中带出，仅查看(不保存数据，没有实体字段) ，表fee `最低收费金额`")
+    private BigDecimal lowestPrice;
+
     @ApiModelProperty(value = "委托订单明细表list,商品明细list")
     private List<BookingOrderEntryVO> bookingOrderEntryList;
 

@@ -268,6 +268,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         return true;
     }
 
+    /**
+     * 审核
+     * @param form
+     * @return
+     */
     @Override
     public CommonResult toExamine(PermissionForm form) {
         Map<String,Object> map = new HashMap<>();
@@ -285,6 +290,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     }
 
+    /**
+     * 反审
+     * @param form
+     * @return
+     */
     @Override
     public CommonResult deApproval(PermissionForm form) {
         Map<String,Object> map = new HashMap<>();

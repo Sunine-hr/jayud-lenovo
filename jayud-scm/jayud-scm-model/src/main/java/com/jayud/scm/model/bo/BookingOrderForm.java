@@ -32,8 +32,6 @@ public class BookingOrderForm {
     @NotNull(message = "委托单日期，不能为空")
     private LocalDateTime bookingDate;
 
-    //TODO 订车时间，这个字段不要了
-
     @ApiModelProperty(value = "客户名称、利润中心id")
     @NotNull(message = "客户名称、利润中心id，不能为空")
     private Integer customerId;
@@ -104,8 +102,9 @@ public class BookingOrderForm {
     @ApiModelProperty(value = "付款方式")
     private String payFeeStyle;
 
-    //TODO 最低消费 从结算方案中带出了，仅查看
-
+    //TODO 最低消费 从结算方案中带出，仅查看(不保存数据，没有实体字段)
+    @ApiModelProperty(value = "最低消费 从结算方案中带出，仅查看(不保存数据，没有实体字段) ，表fee `最低收费金额`")
+    private BigDecimal lowestPrice;
 
     @ApiModelProperty(value = "交易条件")
     @NotNull(message = "交易条件，不能为空")
@@ -119,7 +118,7 @@ public class BookingOrderForm {
     @NotNull(message = "报关抬头方式（单抬头、双抬头），不能为空")
     private String billStyle;
 
-    @ApiModelProperty(value = "计息帐期天数")
+    @ApiModelProperty(value = "账期天数 -> 对应字段`计息帐期天数`")
     private Integer balanceDay;
 
     @ApiModelProperty(value = "报关方式(自主报关，委托报关，客户自行报关)")//TODO 原型:报关方式 数据表:报关方式(自主报关，委托报关，客户自行报关)

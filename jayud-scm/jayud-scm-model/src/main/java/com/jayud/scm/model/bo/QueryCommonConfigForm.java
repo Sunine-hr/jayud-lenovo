@@ -13,7 +13,9 @@ public class QueryCommonConfigForm extends BasePageForm{
     @NotBlank(message = "SQL代码，不能为空")
     private String sqlCode;
 
-
     @ApiModelProperty(value = "条件参数{k-v},键值对")
     private Map<String, Object> condPara;
+
+    @ApiModelProperty(value = "where条件(and ...)")
+    private String sqlWhereCondition;
 }

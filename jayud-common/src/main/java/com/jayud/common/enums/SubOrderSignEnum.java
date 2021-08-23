@@ -1,8 +1,11 @@
 package com.jayud.common.enums;
 
+import com.jayud.common.entity.InitComboxStrVO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -43,6 +46,19 @@ public enum SubOrderSignEnum {
             }
         }
         return null;
+    }
+
+    public static List<InitComboxStrVO> initBusinessType() {
+        List<InitComboxStrVO> list = new ArrayList<>();
+        for (SubOrderSignEnum value : values()) {
+            if (value != MAIN) {
+                InitComboxStrVO tmp = new InitComboxStrVO();
+                tmp.setName(value.getDesc());
+                tmp.setCode(value.getSignOne());
+                list.add(tmp);
+            }
+        }
+        return list;
     }
 
 //    public static Integer getCode(String desc) {

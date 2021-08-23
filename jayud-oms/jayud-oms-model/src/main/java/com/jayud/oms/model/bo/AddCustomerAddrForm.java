@@ -1,5 +1,6 @@
 package com.jayud.oms.model.bo;
 
+import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
 import com.jayud.oms.model.po.RegionCity;
 import io.swagger.annotations.ApiModelProperty;
@@ -83,7 +84,7 @@ public class AddCustomerAddrForm {
         List<String> keys = new ArrayList<>();
         keys.add(province.getName());
         keys.add(city.getName());
-        if (area != null) {
+        if (area != null && !StringUtils.isEmpty(area.getName())) {
             keys.add(area.getName());
         }
         for (String key : keys) {
@@ -91,7 +92,7 @@ public class AddCustomerAddrForm {
         }
         StringBuilder sb = new StringBuilder();
         sb.append(province.getName()).append(" ").append(city.getName()).append(" ");
-        if (area != null) {
+        if (area != null && !StringUtils.isEmpty(area.getName())) {
             sb.append(area.getName()).append(" ");
         }
         sb.append(this.finalAddress);

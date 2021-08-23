@@ -33,7 +33,7 @@
     <select id="findCustomerAddressByPage" resultType="com.jayud.oms.model.vo.CustomerAddrVO">
         select
         id, type, customer_id, contacts, phone, province, city, area, address,
-        postcode, status, create_time, create_user, update_time,
+        post_code, status, create_time, create_user, update_time,
         update_user, baidu_la_and_lo, province_code, city_code, area_code,
         final_address
         from

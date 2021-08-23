@@ -9,6 +9,7 @@ import com.jayud.oms.model.enums.DriverOrderStatusEnum;
 import com.jayud.oms.model.po.DriverOrderInfo;
 import com.jayud.oms.service.IDriverOrderInfoService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -46,23 +47,25 @@ public class ScheduledTask {
         List<DriverOrderInfo> list = driverOrderInfoService.list();
         List<String> orderNos = list.stream().map(DriverOrderInfo::getOrderNo).collect(Collectors.toList());
 
-        Object data = this.tmsClient.getDriverPendingOrder(orderNos).getData();
+        if (!CollectionUtils.isEmpty(orderNos)){
+            Object data = this.tmsClient.getDriverPendingOrder(orderNos).getData();
 
-        JSONArray jsonArray = new JSONArray(data);
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            String orderNo = jsonObject.getStr("orderNo");
-            Long driverInfoId = jsonObject.getLong("driverInfoId");
-            Long jockeyId = jsonObject.getLong("jockeyId");
-            DriverOrderInfo driverOrderInfo = new DriverOrderInfo();
-            driverOrderInfo.setDriverId(driverInfoId);
-            driverOrderInfo.setJockeyId(jockeyId);
-            driverOrderInfo.setOrderNo(orderNo);
-            driverOrderInfo.setTime(LocalDateTime.now());
-            driverOrderInfo.setStatus(DriverOrderStatusEnum.IN_TRANSIT.getCode());
-            JSONObject tmp = new JSONObject(this.tmsClient.getTmsOrderByOrderNo(orderNo).getData());
-            driverOrderInfo.setOrderId(tmp.getLong("id"));
-            this.driverOrderInfoService.save(driverOrderInfo);
+            JSONArray jsonArray = new JSONArray(data);
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String orderNo = jsonObject.getStr("orderNo");
+                Long driverInfoId = jsonObject.getLong("driverInfoId");
+                Long jockeyId = jsonObject.getLong("jockeyId");
+                DriverOrderInfo driverOrderInfo = new DriverOrderInfo();
+                driverOrderInfo.setDriverId(driverInfoId);
+                driverOrderInfo.setJockeyId(jockeyId);
+                driverOrderInfo.setOrderNo(orderNo);
+                driverOrderInfo.setTime(LocalDateTime.now());
+                driverOrderInfo.setStatus(DriverOrderStatusEnum.IN_TRANSIT.getCode());
+                JSONObject tmp = new JSONObject(this.tmsClient.getTmsOrderByOrderNo(orderNo).getData());
+                driverOrderInfo.setOrderId(tmp.getLong("id"));
+                this.driverOrderInfoService.save(driverOrderInfo);
+            }
         }
 
         // 结束时间

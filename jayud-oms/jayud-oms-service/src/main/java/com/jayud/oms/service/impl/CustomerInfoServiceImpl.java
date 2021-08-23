@@ -273,10 +273,12 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         customerInfo.setAccountPeriod(lo.get(11));
         customerInfo.setTaxType(lo.get(12));
         customerInfo.setTaxRate(lo.get(13));
-        if (lo.get(14) == null) {
+        if (StringUtils.isEmpty(lo.get(14))) {
             customerInfo.setEstate(null);
+        } else {
+            customerInfo.setEstate(Integer.parseInt(lo.get(14)));
         }
-        customerInfo.setEstate(Integer.parseInt(lo.get(14)));
+
 
         ApiResult deptIdByDeptName = oauthClient.getDeptIdByDeptName(lo.get(15));
         if (deptIdByDeptName.getMsg().equals("fail")) {

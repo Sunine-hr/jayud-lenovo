@@ -58,7 +58,7 @@ public class CustomerAddress extends Model<CustomerAddress> {
     private String address;
 
     @ApiModelProperty(value = "邮编")
-    private String postcode;
+    private String postCode;
 
     @ApiModelProperty(value = "状态（0禁用 1启用）")
     private Integer status;

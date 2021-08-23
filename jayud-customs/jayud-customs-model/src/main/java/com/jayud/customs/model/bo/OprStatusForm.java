@@ -4,6 +4,7 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
+import com.jayud.customs.model.vo.CustomsOrderInfoVO;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -68,6 +69,8 @@ public class OprStatusForm {
     @ApiModelProperty(value = "报关单号")
     private String yunCustomsNo;
 
+    @ApiModelProperty(value = "批量操作数组对象")
+    private List<CustomsOrderInfoVO> orderInfoVOList;
 
     public void checkParam(OrderStatusEnum statusEnum) {
         switch (statusEnum) {

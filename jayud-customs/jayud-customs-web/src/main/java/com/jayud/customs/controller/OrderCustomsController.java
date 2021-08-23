@@ -24,11 +24,10 @@ import com.jayud.customs.model.vo.OrderStatusVO;
 import com.jayud.customs.model.vo.PushOrderVO;
 import com.jayud.customs.service.ICustomsApiService;
 import com.jayud.customs.service.IOrderCustomsService;
-import com.jayud.customs.service.impl.ICustomsApiServiceImpl;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,6 +45,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/orderCustoms")
 @Api(tags = "纯报关接口")
+@Slf4j
 public class OrderCustomsController {
 
     @Autowired
@@ -138,40 +138,40 @@ public class OrderCustomsController {
     @Value("${yunbaoguan.urls.pathName}")
     String pathName;
 
-    private void pushOrder(OrderCustoms orderCustoms){
+    private void pushOrder(OrderCustoms orderCustoms) {
         PushOrderForm pushOrderForm = new PushOrderForm();
         CustomsHeadForm customsHeadForm = new CustomsHeadForm();
         customsHeadForm.setAgentCode("9144030035789940X2");
         customsHeadForm.setAgentName("深圳市佳裕达报关有限公司");
         customsHeadForm.setAgentNo("4453680066");
         customsHeadForm.setBusNo(orderCustoms.getOrderNo());
-        if(orderCustoms.getGoodsType().equals(1)){
+        if (orderCustoms.getGoodsType().equals(1)) {
             customsHeadForm.setDeclareId(2);
-        }else{
+        } else {
             customsHeadForm.setDeclareId(1);
         }
-        if(orderCustoms.getBizModel().equals("2")){
+        if (orderCustoms.getBizModel().equals("2")) {
             customsHeadForm.setCabinNo(orderCustoms.getAirTransportNo());
         }
-        if(orderCustoms.getBizModel().equals("3")){
+        if (orderCustoms.getBizModel().equals("3")) {
             customsHeadForm.setCabinNo(orderCustoms.getSeaTransportNo());
         }
-        if(orderCustoms.getBizModel().equals("4")){
+        if (orderCustoms.getBizModel().equals("4")) {
             customsHeadForm.setCabinNo(orderCustoms.getAirTransportNo());
         }
 
         customsHeadForm.setNote(orderCustoms.getTitle());
         customsHeadForm.setPortNo2(orderCustoms.getPortCode());
         customsHeadForm.setPortNo(orderCustoms.getPortCode());
-        if(orderCustoms.getSupervisionMode()!=null){
+        if (orderCustoms.getSupervisionMode() != null) {
             //根据名称获取字典代码
             ApiResult result = omsClient.getDictCodeByDictTypeName(orderCustoms.getSupervisionMode());
-            if(result.isOk()){
-                customsHeadForm.setTradeNo((String)result.getData());
+            if (result.isOk()) {
+                customsHeadForm.setTradeNo((String) result.getData());
             }
         }
         pushOrderForm.setHead(customsHeadForm);
-        String path = pathName+orderCustoms.getOrderNo();
+        String path = pathName + orderCustoms.getOrderNo();
         pushOrderForm.setCallback(path);
         PushOrderVO pushOrderVO = customsApiService.pushOrder(pushOrderForm);
     }
@@ -470,5 +470,20 @@ public class OrderCustomsController {
         return CommonResult.success();
     }
 
+
+    @ApiOperation(value = "批量操作")
+    @PostMapping(value = "/batchOprOrder")
+    public CommonResult batchOprOrder(@RequestBody OprStatusForm form) {
+        List<CustomsOrderInfoVO> list = form.getOrderInfoVOList();
+        for (CustomsOrderInfoVO customsOrderInfoVO : list) {
+            form.setOrderId(customsOrderInfoVO.getId().longValue());
+            form.setMainOrderId(customsOrderInfoVO.getMainOrderId());
+            CommonResult commonResult = this.oprOrder(form);
+            if (commonResult.getCode() != 0) {
+                log.warn("订单号:" + customsOrderInfoVO.getOrderNo() + " 报错信息:" + commonResult.getMsg());
+            }
+        }
+        return CommonResult.success();
+    }
 }
 

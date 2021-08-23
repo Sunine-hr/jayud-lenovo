@@ -8,7 +8,7 @@ CREATE TABLE `customer_address` (
   `city` bigint(20) NOT NULL COMMENT '市主键',
   `area` bigint(20) DEFAULT NULL COMMENT '区主键',
   `address` varchar(100) NOT NULL COMMENT '详细地址',
-  `postcode` varchar(20) DEFAULT NULL COMMENT '邮编',
+  `post_code` varchar(20) DEFAULT NULL COMMENT '邮编',
   `status` int(1) DEFAULT '1' COMMENT '状态（0禁用 1启用）',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `create_user` varchar(50) DEFAULT NULL COMMENT '创建人',
@@ -20,4 +20,4 @@ CREATE TABLE `customer_address` (
   `area_code` varchar(20) DEFAULT NULL COMMENT '区code',
   `final_address` varchar(500) NOT NULL COMMENT '最终地址',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='客户地址';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='客户地址';

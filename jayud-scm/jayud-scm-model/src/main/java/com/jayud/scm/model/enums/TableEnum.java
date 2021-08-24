@@ -28,7 +28,11 @@ public enum TableEnum {
     hub_receiving(17,"hub_receiving"),
     hub_shipping(18,"hub_shipping"),
     hub_shipping_entry(19,"hub_shipping_entry"),
-    booking_order(20, "booking_order")  //TODO 委托订单主表 booking_order
+    booking_order(20, "booking_order"),  //TODO 委托订单主表 booking_order
+    check_order(21,"check_order"),
+    check_order_entry(22,"check_order_entry"),
+    hg_truck(23,"hg_truck"),
+    hg_bill(24,"hg_bill"),
     ;
 
     private Integer code;

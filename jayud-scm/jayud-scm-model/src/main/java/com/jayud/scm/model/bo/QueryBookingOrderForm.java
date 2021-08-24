@@ -27,4 +27,7 @@ public class QueryBookingOrderForm extends BasePageForm {
     @ApiModelProperty(value = "业务类型/工作单类型 1进口  2出口 3国内 4香港  5采购  6销售")
     private Integer modelType;
 
+    @ApiModelProperty(value = "作用于新增出库单的委托订单查询")
+    private Integer type;
+
 }

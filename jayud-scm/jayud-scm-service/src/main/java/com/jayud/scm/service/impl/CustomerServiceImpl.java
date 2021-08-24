@@ -53,7 +53,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
 
     @Autowired
-    CustomerRelationerMapper customerRelationerMapper;//客户联系人表
+    private CustomerRelationerMapper customerRelationerMapper;//客户联系人表
     @Autowired
     CustomerMaintenanceSetupMapper customerMaintenanceSetupMapper;//客户维护人表
 
@@ -282,7 +282,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         map.put("userId",form.getUserId());
         map.put("userName",form.getUserName());
         this.baseMapper.toExamine(map);
-        if(map.get("state").equals(0)){
+        if(map.get("state").equals(1)){
             return CommonResult.success();
         }else {
             return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
@@ -304,7 +304,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         map.put("userId",form.getUserId());
         map.put("userName",form.getUserName());
         this.baseMapper.deApproval(map);
-        if(map.get("state").equals(0)){
+        if(map.get("state").equals(1)){
             return CommonResult.success();
         }else {
             return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));

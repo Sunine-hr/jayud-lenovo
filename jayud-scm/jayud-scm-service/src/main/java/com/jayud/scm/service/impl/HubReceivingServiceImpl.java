@@ -7,9 +7,7 @@ import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.HubReceivingMapper;
 import com.jayud.scm.model.vo.HubReceivingEntryVO;
 import com.jayud.scm.model.vo.HubReceivingVO;
-import com.jayud.scm.service.IHubReceivingEntryService;
-import com.jayud.scm.service.IHubReceivingFollowService;
-import com.jayud.scm.service.IHubReceivingService;
+import com.jayud.scm.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +31,12 @@ public class HubReceivingServiceImpl extends ServiceImpl<HubReceivingMapper, Hub
 
     @Autowired
     private IHubReceivingFollowService hubReceivingFollowService;
+
+    @Autowired
+    private ICheckOrderService checkOrderService;
+
+    @Autowired
+    private ICheckOrderEntryService checkOrderEntryService;
 
     @Override
     public boolean delete(DeleteForm deleteForm) {
@@ -79,6 +83,13 @@ public class HubReceivingServiceImpl extends ServiceImpl<HubReceivingMapper, Hub
         List<HubReceivingEntryVO> hubReceivingEntries = ConvertUtil.convertList(hubShippingEntries, HubReceivingEntryVO.class);
         hubReceivingVO.setHubReceivingEntryVOS(hubReceivingEntries);
         return hubReceivingVO;
+    }
+
+    @Override
+    public boolean addHubReceiving(Integer id) {
+        CheckOrder checkOrder = checkOrderService.getById(id);
+        checkOrderEntryService.getCheckOrderEntryByCheckOrderId(checkOrder.getId().longValue());
+        return false;
     }
 
 }

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.HgBillMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.HgBill">
+        <id column="id" property="id" />
+        <result column="bill_no" property="billNo" />
+        <result column="bill_date" property="billDate" />
+        <result column="model_type" property="modelType" />
+        <result column="customs_no" property="customsNo" />
+        <result column="customs_date" property="customsDate" />
+        <result column="customer_bill_no" property="customerBillNo" />
+        <result column="hg_truck_id" property="hgTruckId" />
+        <result column="hg_truck_no" property="hgTruckNo" />
+        <result column="total_gw" property="totalGw" />
+        <result column="total_nw" property="totalNw" />
+        <result column="total_cbm" property="totalCbm" />
+        <result column="packages" property="packages" />
+        <result column="pallets" property="pallets" />
+        <result column="cartons" property="cartons" />
+        <result column="l_cartons" property="lCartons" />
+        <result column="is_merge" property="isMerge" />
+        <result column="f_fee_type" property="fFeeType" />
+        <result column="f_fee_currency" property="fFeeCurrency" />
+        <result column="f_fee_money" property="fFeeMoney" />
+        <result column="f_fee_per" property="fFeePer" />
+        <result column="b_fee_type" property="bFeeType" />
+        <result column="b_fee_currency" property="bFeeCurrency" />
+        <result column="b_fee_money" property="bFeeMoney" />
+        <result column="b_fee_per" property="bFeePer" />
+        <result column="o_fee_type" property="oFeeType" />
+        <result column="o_fee_currency" property="oFeeCurrency" />
+        <result column="o_fee_money" property="oFeeMoney" />
+        <result column="o_fee_per" property="oFeePer" />
+        <result column="hk_co_id" property="hkCoId" />
+        <result column="hk_co_name" property="hkCoName" />
+        <result column="hk_co_name_en" property="hkCoNameEn" />
+        <result column="hk_co_address" property="hkCoAddress" />
+        <result column="hk_co_address_en" property="hkCoAddressEn" />
+        <result column="hk_co_relationer" property="hkCoRelationer" />
+        <result column="hk_co_tel" property="hkCoTel" />
+        <result column="hk_co_email" property="hkCoEmail" />
+        <result column="hk_co_fax" property="hkCoFax" />
+        <result column="pick_up_no" property="pickUpNo" />
+        <result column="cabinet_num" property="cabinetNum" />
+        <result column="hk_bill_no" property="hkBillNo" />
+        <result column="declare_state" property="declareState" />
+        <result column="seq_no" property="seqNo" />
+        <result column="is_handle_control" property="isHandleControl" />
+        <result column="check_state_flag" property="checkStateFlag" />
+        <result column="f_level" property="fLevel" />
+        <result column="f_step" property="fStep" />
+        <result column="f_multi_level0" property="fMultiLevel0" />
+        <result column="f_date_time0" property="fDateTime0" />
+        <result column="f_multi_level1" property="fMultiLevel1" />
+        <result column="f_date_time1" property="fDateTime1" />
+        <result column="is_scan" property="isScan" />
+        <result column="scan_date_time" property="scanDateTime" />
+        <result column="print_count" property="printCount" />
+        <result column="is_financial" property="isFinancial" />
+        <result column="hg_company_id" property="hgCompanyId" />
+        <result column="hg_company_name" property="hgCompanyName" />
+        <result column="hg_company_name_en" property="hgCompanyNameEn" />
+        <result column="user_name" property="userName" />
+        <result column="customer_sum" property="customerSum" />
+        <result column="remark" property="remark" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_by_dtm" property="crtByDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_by_dtm" property="mdyByDtm" />
+        <result column="voided" property="voided" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_by_dtm" property="voidedByDtm" />
+        <result column="custom_master" property="customMaster" />
+        <result column="distinate_port" property="distinatePort" />
+        <result column="port" property="port" />
+        <result column="trade_country" property="tradeCountry" />
+        <result column="trade_area_code" property="tradeAreaCode" />
+        <result column="desp_port_code" property="despPortCode" />
+        <result column="goods_place" property="goodsPlace" />
+        <result column="is_us_payment" property="isUsPayment" />
+        <result column="is_confirm" property="isConfirm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, bill_no, bill_date, model_type, customs_no, customs_date, customer_bill_no, hg_truck_id, hg_truck_no, total_gw, total_nw, total_cbm, packages, pallets, cartons, l_cartons, is_merge, f_fee_type, f_fee_currency, f_fee_money, f_fee_per, b_fee_type, b_fee_currency, b_fee_money, b_fee_per, o_fee_type, o_fee_currency, o_fee_money, o_fee_per, hk_co_id, hk_co_name, hk_co_name_en, hk_co_address, hk_co_address_en, hk_co_relationer, hk_co_tel, hk_co_email, hk_co_fax, pick_up_no, cabinet_num, hk_bill_no, declare_state, seq_no, is_handle_control, check_state_flag, f_level, f_step, f_multi_level0, f_date_time0, f_multi_level1, f_date_time1, is_scan, scan_date_time, print_count, is_financial, hg_company_id, hg_company_name, hg_company_name_en, user_name, customer_sum, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm, custom_master, distinate_port, port, trade_country, trade_area_code, desp_port_code, goods_place, is_us_payment, is_confirm
+    </sql>
+
+</mapper>

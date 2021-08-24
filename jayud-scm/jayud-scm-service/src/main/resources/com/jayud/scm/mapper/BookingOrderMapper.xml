@@ -162,6 +162,9 @@
         <if test="form.modelType !=null and form.modelType!=''">
             and t.model_type = #{form.modelType}
         </if>
+        <if test="form.type !=null and form.modelType == 1">
+            and t.`id` in (select id from v_bookOrder)
+        </if>
     </select>
 
     <select id="getBookingOrderById" parameterType="java.lang.Integer" resultType="com.jayud.scm.model.vo.BookingOrderVO">

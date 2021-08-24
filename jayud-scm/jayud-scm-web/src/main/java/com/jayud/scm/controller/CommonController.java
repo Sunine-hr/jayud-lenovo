@@ -92,6 +92,9 @@ public class CommonController {
     @Autowired
     private IHubShippingService hubShippingService;
 
+    @Autowired
+    private ICheckOrderService checkOrderService;
+
     @ApiOperation(value = "删除通用方法")
     @PostMapping(value = "/delete")
     public CommonResult delete(@Valid @RequestBody DeleteForm deleteForm) {
@@ -144,6 +147,9 @@ public class CommonController {
                 break;
             case 18:
                 result = hubShippingService.delete(deleteForm);
+                break;
+            case 21:
+                result = checkOrderService.delete(deleteForm);
                 break;
         }
 
@@ -261,7 +267,7 @@ public class CommonController {
         //获取按钮权限
 //        SystemAction systemAction = systemActionService.getSystemActionByActionCode(form.getActionCode());
 
-        if(!systemUser.getUserName().equals("Admin")){
+        if(!systemUser.getUserName().equals("admin")){
             //获取登录用户所属角色
             List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
             for (SystemRole systemRole : enabledRolesByUserId) {

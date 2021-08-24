@@ -12,58 +12,40 @@ import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- * 客户消息通知表
+ * 提验货单跟踪记录表
  * </p>
  *
  * @author LLJ
- * @since 2021-08-04
+ * @since 2021-08-21
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="CustomerMsg对象", description="客户消息通知表")
-public class CustomerMsg extends Model<CustomerMsg> {
+@ApiModel(value="CheckOrderFollow对象", description="提验货单跟踪记录表")
+public class CheckOrderFollow extends Model<CheckOrderFollow> {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "自动id")
+    @TableId(value = "id", type = IdType.AUTO)
       private Integer id;
 
-    @ApiModelProperty(value = "客户id")
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer customerId;
+    @ApiModelProperty(value = "提验货ID")
+    private Integer checkId;
 
-    @ApiModelProperty(value = "客户名称")
-    private String customerName;
+    @ApiModelProperty(value = "委托订单ID")
+    private Integer bookingId;
 
-    @ApiModelProperty(value = "消息模板id")
-    private Integer msgTemplateId;
+    @ApiModelProperty(value = "跟进类型")
+    private String sType;
 
-    private String temp01;
-
-    private String temp02;
-
-    private String temp03;
-
-    private String temp04;
-
-    private String temp05;
+    @ApiModelProperty(value = "内容")
+    private String followContext;
 
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    @ApiModelProperty(value = "是否禁用 0 未禁用 1 已禁用")
-    private Integer isDisabled;
-
-    @ApiModelProperty(value = "模板类型，0短信，1邮件，2微信")
-    private Integer tplType;
-
-    @ApiModelProperty(value = "客户手机")
-    private String msgTel;
-
-    @ApiModelProperty(value = "客户邮箱")
-    private String msgMail;
-
-    @ApiModelProperty(value = "消息模板编码")
-    private String msgTemplateNo;
+    @ApiModelProperty(value = "是否同步在线平台(1为同步)")
+    private Integer isOnl;
 
     @ApiModelProperty(value = "创建人ID")
     private Integer crtBy;

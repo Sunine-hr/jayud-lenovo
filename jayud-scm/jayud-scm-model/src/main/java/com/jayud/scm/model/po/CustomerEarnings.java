@@ -1,6 +1,9 @@
 package com.jayud.scm.model.po;
 
 import java.math.BigDecimal;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.time.LocalDateTime;
 import java.io.Serializable;
@@ -25,6 +28,7 @@ public class CustomerEarnings extends Model<CustomerEarnings> {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "自动id")
+    @TableId(value = "id", type = IdType.AUTO)
       private Integer id;
 
     @ApiModelProperty(value = "年营业额")

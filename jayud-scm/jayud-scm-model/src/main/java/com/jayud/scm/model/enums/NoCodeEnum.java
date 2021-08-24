@@ -19,6 +19,9 @@ public enum NoCodeEnum {
     CUSTOMER("1002","客户编号"),
     FEE("1003","委托单号"),
     HUB_SHIPPING("1004","出库单号"),
+    CHECK_ORDER("1005","提验货单号"),
+    HUB_RECEIVING("1006","入库单号"),
+    HG_TRUCK("1007","车次编号"),
     ;
 
     private String code;

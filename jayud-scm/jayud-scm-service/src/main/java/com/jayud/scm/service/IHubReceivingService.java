@@ -18,4 +18,6 @@ public interface IHubReceivingService extends IService<HubReceiving> {
     boolean delete(DeleteForm deleteForm);
 
     HubReceivingVO getHubReceivingById(Integer id);
+
+    boolean addHubReceiving(Integer id);
 }

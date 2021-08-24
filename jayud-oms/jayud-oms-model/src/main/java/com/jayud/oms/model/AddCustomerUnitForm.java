@@ -1,6 +1,8 @@
 package com.jayud.oms.model;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.jayud.common.utils.Utilities;
+import com.jayud.oms.model.vo.CustomerUnitVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,7 +12,6 @@ import lombok.experimental.Accessors;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -65,4 +66,7 @@ public class AddCustomerUnitForm extends Model<AddCustomerUnitForm> {
         return this.id;
     }
 
+    public static void main(String[] args) {
+        System.out.println(Utilities.printFieldsInfo(CustomerUnitVO.class));
+    }
 }

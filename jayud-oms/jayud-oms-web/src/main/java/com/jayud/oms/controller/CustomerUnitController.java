@@ -3,6 +3,7 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
+import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.StatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
@@ -12,6 +13,7 @@ import com.jayud.oms.model.AddCustomerUnitForm;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.po.CustomerUnit;
 import com.jayud.oms.model.vo.CustomerUnitVO;
+import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.oms.service.ICustomerUnitService;
@@ -20,13 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -64,7 +63,7 @@ public class CustomerUnitController {
 
     @ApiOperation(value = "获取客户结算单位数据")
     @PostMapping("/list")
-    public CommonResult list(@RequestBody Map<String, Object> map) {
+    public CommonResult<List<CustomerUnitVO>> list(@RequestBody Map<String, Object> map) {
 
         Long customerId = MapUtil.getLong(map, "customerId");
         if (customerId == null) {
@@ -101,6 +100,35 @@ public class CustomerUnitController {
         }
         this.customerUnitService.updateById(new CustomerUnit().setId(id).setStatus(StatusEnum.DELETE.getCode()));
         return CommonResult.success();
+    }
+
+
+    @ApiOperation(value = "下拉客户结算单位")
+    @PostMapping(value = "/initCustomerUnit")
+    public CommonResult<Map<String, Object>> initCustomerUnit(@RequestBody Map<String, Object> param) {
+
+        //获取当前用户所属法人主体
+        Map<String, Object> resultMap = new HashMap<>();
+        //客户
+        List<CustomerInfo> allCustomerInfoList = customerInfoService.getCustomerInfoByCondition(null);
+        List<CustomerInfo> customerInfoList = allCustomerInfoList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CustomerInfo::getName))), ArrayList::new));
+        List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
+        for (CustomerInfo customerInfo : customerInfoList) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(customerInfo.getIdCode());
+            comboxStrVO.setName(customerInfo.getName());
+            comboxStrVO.setId(customerInfo.getId());
+            comboxStrVOS.add(comboxStrVO);
+        }
+
+        //业务所属部门
+        List<InitComboxVO> initComboxVOS = oauthClient.findDepartment().getData();
+
+        List<com.jayud.common.entity.InitComboxStrVO> initComboxStrVOS = SubOrderSignEnum.initBusinessType();
+        resultMap.put("units", comboxStrVOS);
+        resultMap.put(CommonConstant.DEPARTMENTS, initComboxVOS);
+        resultMap.put("businessType", initComboxStrVOS);
+        return CommonResult.success(resultMap);
     }
 }
 

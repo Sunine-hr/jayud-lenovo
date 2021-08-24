@@ -12,7 +12,6 @@ import com.jayud.common.UserOperator;
 import com.jayud.scm.model.bo.AddCommodityModelForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.PermissionForm;
-import com.jayud.scm.model.bo.QueryCommodityForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.TableEnum;
 import com.jayud.scm.model.po.*;

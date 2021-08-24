@@ -9,6 +9,7 @@ import com.jayud.oms.model.enums.DriverOrderStatusEnum;
 import com.jayud.oms.model.po.DriverOrderInfo;
 import com.jayud.oms.service.IDriverOrderInfoService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -44,8 +45,8 @@ public class ScheduledTask {
         // 开始时间
         stopWatch.start();
         List<DriverOrderInfo> list = driverOrderInfoService.list();
-        List<String> orderNos = list.stream().map(DriverOrderInfo::getOrderNo).collect(Collectors.toList());
 
+        List<String> orderNos = list.stream().map(DriverOrderInfo::getOrderNo).collect(Collectors.toList());
         Object data = this.tmsClient.getDriverPendingOrder(orderNos).getData();
 
         JSONArray jsonArray = new JSONArray(data);

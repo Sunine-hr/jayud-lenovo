@@ -406,7 +406,9 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/getDriverPendingOrder")
     public ApiResult<List<OrderSendCars>> getDriverPendingOrder(@RequestParam("orderNos") List<String> orderNos) {
         QueryWrapper<OrderSendCars> condition = new QueryWrapper<>();
-        condition.lambda().notIn(OrderSendCars::getOrderNo, orderNos);
+        if (CollectionUtil.isNotEmpty(orderNos)) {
+            condition.lambda().notIn(OrderSendCars::getOrderNo, orderNos);
+        }
         return ApiResult.ok(this.orderSendCarsService.getBaseMapper().selectList(condition));
     }
 }

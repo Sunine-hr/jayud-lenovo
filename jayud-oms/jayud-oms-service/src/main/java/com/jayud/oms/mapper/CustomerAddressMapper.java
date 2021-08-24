@@ -7,6 +7,7 @@ import com.jayud.oms.model.po.CustomerAddress;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.vo.CustomerAddrVO;
 import com.jayud.oms.model.vo.CustomerAddressVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -17,6 +18,7 @@ import org.apache.ibatis.annotations.Param;
  * @author LDR
  * @since 2021-08-18
  */
+@Mapper
 public interface CustomerAddressMapper extends BaseMapper<CustomerAddress> {
 
     IPage<CustomerAddrVO> findCustomerAddressByPage(@Param("page") Page<CustomerAddressVO> page,

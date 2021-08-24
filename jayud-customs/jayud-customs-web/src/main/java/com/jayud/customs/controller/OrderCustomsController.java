@@ -474,7 +474,7 @@ public class OrderCustomsController {
     @ApiOperation(value = "批量操作")
     @PostMapping(value = "/batchOprOrder")
     public CommonResult batchOprOrder(@RequestBody OprStatusForm form) {
-        List<CustomsOrderInfoVO> list = form.getOrderInfoVOList();
+        List<CustomsOrderInfoVO> list = form.getList();
         for (CustomsOrderInfoVO customsOrderInfoVO : list) {
             form.setOrderId(customsOrderInfoVO.getId().longValue());
             form.setMainOrderId(customsOrderInfoVO.getMainOrderId());

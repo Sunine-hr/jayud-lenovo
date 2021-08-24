@@ -70,7 +70,7 @@ public class OprStatusForm {
     private String yunCustomsNo;
 
     @ApiModelProperty(value = "批量操作数组对象")
-    private List<CustomsOrderInfoVO> orderInfoVOList;
+    private List<CustomsOrderInfoVO> list;
 
     public void checkParam(OrderStatusEnum statusEnum) {
         switch (statusEnum) {

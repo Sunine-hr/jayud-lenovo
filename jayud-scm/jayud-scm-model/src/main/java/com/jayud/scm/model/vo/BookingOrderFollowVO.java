@@ -1,6 +1,7 @@
 package com.jayud.scm.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -19,6 +20,7 @@ public class BookingOrderFollowVO {
     private Integer bookingId;
 
     @ApiModelProperty(value = "跟进类型")
+    @JsonProperty("sType")
     private String sType;
 
     @ApiModelProperty(value = "内容")

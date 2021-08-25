@@ -250,6 +250,9 @@ public class BookingOrderController {
 
     //商品明细表，删除
     @ApiOperation(value = "商品明细表，删除")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="id", dataType = "Integer", value = "id", required = true)
+    })
     @PostMapping(value = "/delBookingOrderEntry")
     public CommonResult delBookingOrderEntry(@RequestBody Map<String,Object> map){
         Integer id = MapUtil.getInt(map, "id");

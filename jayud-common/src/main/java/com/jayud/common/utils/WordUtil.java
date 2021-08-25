@@ -56,7 +56,10 @@ public class WordUtil {
             ServletOutputStream out = response.getOutputStream();
             document.write(out);
             out.close();
-            delFileWord(tarDir, fileName);
+            if (!StringUtils.isEmpty(tarDir)) {
+                delFileWord(tarDir, fileName);
+            }
+
         } else {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             document.write(bos);

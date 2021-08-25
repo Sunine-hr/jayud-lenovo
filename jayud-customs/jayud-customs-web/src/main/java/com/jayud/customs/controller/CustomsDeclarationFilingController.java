@@ -7,8 +7,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.aop.annotations.RepeatSubmitLimit;
+import com.jayud.common.enums.CustomsBizModelEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.HttpUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.WordUtil;
 import com.jayud.customs.model.bo.AddCustomsDeclarationFilingForm;
 import com.jayud.customs.model.bo.QueryCustomsDeclarationFiling;
 import com.jayud.customs.model.po.CustomsDeclFilingRecord;
@@ -18,6 +22,7 @@ import com.jayud.customs.service.ICustomsDeclFilingRecordService;
 import com.jayud.customs.service.ICustomsDeclarationFilingService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -41,10 +46,14 @@ public class CustomsDeclarationFilingController {
     @Autowired
     private ICustomsDeclFilingRecordService customsDeclFilingRecordService;
 
+    @Value("${customs.filingPath}")
+    private String customsFilingPath;
+
 
     @ApiOperation(value = "新增/编辑")
     @PostMapping("/saveOrUpdate")
     @RepeatSubmitLimit
+
     public CommonResult saveOrUpdate(@RequestBody @Valid AddCustomsDeclarationFilingForm form) {
         //校验箱单号是否存在
         if (form.getId() == null && this.customsDeclarationFilingService.exitBoxNum(new CustomsDeclarationFiling().setBoxNum(form.getBoxNum()))) {
@@ -110,19 +119,23 @@ public class CustomsDeclarationFilingController {
 
     @ApiOperation(value = "导出报关归档文件")
     @PostMapping("/exportWordFile")
-    public CommonResult<CustomsDeclarationFilingVO> exportWordFile(@RequestBody Map<String, Object> map) {
+    public CommonResult<CustomsDeclarationFilingVO> exportWordFile(@RequestBody Map<String, Object> map) throws Exception {
         Long id = MapUtil.getLong(map, "id");
         if (id == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        CustomsDeclarationFiling tmp = this.customsDeclarationFilingService.getById(id);
+        CustomsDeclarationFilingVO tmp = this.customsDeclarationFilingService.getDetails(id);
+        //进出口类型(1进口 2出口)
+        String imAndExType = tmp.getImAndExType() == 1 ? "进口" : "出口";
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("boxNum", tmp.getBoxNum());
-        dataMap.put("docType", "海运/出口");
-        dataMap.put("filingDate", "2021-08");
-        dataMap.put("number", 1);
-        dataMap.put("createUser", "张三");
-        dataMap.put("createTime", "2021年8月7日");
+        dataMap.put("docType", CustomsBizModelEnum.getDesc(tmp.getBizModel()) + "/" + imAndExType);
+        dataMap.put("filingDate", tmp.getFilingDate());
+        dataMap.put("number", tmp.getNumber());
+        dataMap.put("createUser", tmp.getCreateUser() == null ? "" : tmp.getCreateUser());
+        dataMap.put("createTime", DateUtils.LocalDateTime2Str(tmp.getCreateTime(), "yyyy年MM月dd日"));
+        WordUtil.exportWord(customsFilingPath, "报关归档文件", null
+                , dataMap, HttpUtils.getHttpResponseServletContext());
 
         return CommonResult.success();
     }

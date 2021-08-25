@@ -26,4 +26,11 @@ public class CustomsDeclFilingRecordServiceImpl extends ServiceImpl<CustomsDeclF
         condition.lambda().in(CustomsDeclFilingRecord::getNum, nums);
         return this.baseMapper.selectList(condition);
     }
+
+    @Override
+    public List<CustomsDeclFilingRecord> getByDeclFilingId(Long declFilingId) {
+        QueryWrapper<CustomsDeclFilingRecord> condition = new QueryWrapper<>();
+        condition.lambda().eq(CustomsDeclFilingRecord::getCustomsDeclFilingId, declFilingId);
+        return this.baseMapper.selectList(condition);
+    }
 }

@@ -21,7 +21,7 @@ public interface ICustomerUnitService extends IService<CustomerUnit> {
      */
     void saveOrUpdateUnit(CustomerUnit customerUnit);
 
-    boolean checkUnique(Long id, Long customerId, String businessType, String optDepartmentCode);
+    boolean checkUnique(Long id, Long customerId, String businessType, Long optDepartmentId);
 
     List<CustomerUnit> getByCondition(CustomerUnit customerUnit);
 }

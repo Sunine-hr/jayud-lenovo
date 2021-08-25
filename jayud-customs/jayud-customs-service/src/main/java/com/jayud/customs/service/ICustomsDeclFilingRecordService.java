@@ -17,4 +17,6 @@ import java.util.List;
 public interface ICustomsDeclFilingRecordService extends IService<CustomsDeclFilingRecord> {
 
     List<CustomsDeclFilingRecord> getByNums(List<String> nums);
+
+    List<CustomsDeclFilingRecord> getByDeclFilingId(Long declFilingId);
 }

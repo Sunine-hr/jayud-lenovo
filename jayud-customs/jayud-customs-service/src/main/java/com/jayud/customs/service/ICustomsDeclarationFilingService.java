@@ -29,4 +29,6 @@ public interface ICustomsDeclarationFilingService extends IService<CustomsDeclar
     String generateBoxNum(String filingDate, Integer bizModel, Integer imAndExType);
 
     IPage<CustomsDeclarationFilingVO> findByPage(QueryCustomsDeclarationFiling form);
+
+    CustomsDeclarationFilingVO getDetails(Long id);
 }

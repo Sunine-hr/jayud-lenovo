@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -41,7 +42,7 @@ public class CustomsDeclarationFiling extends Model<CustomsDeclarationFiling> {
     private String boxNum;
 
     @ApiModelProperty(value = "归档日期(年月)")
-    private LocalDate filingDate;
+    private String filingDate;
 
     @ApiModelProperty(value = "业务模式(1-陆路运输 2-空运 3-海运 4-快递 5-内陆)")
     private Integer bizModel;

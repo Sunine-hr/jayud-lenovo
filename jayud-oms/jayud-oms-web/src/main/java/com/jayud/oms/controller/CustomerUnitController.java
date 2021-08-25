@@ -8,6 +8,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.StatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.AddCustomerUnitForm;
 import com.jayud.oms.model.po.CustomerInfo;
@@ -53,7 +54,7 @@ public class CustomerUnitController {
         CustomerUnit convert = ConvertUtil.convert(form, CustomerUnit.class);
         //业务类型+操作部门的唯一性
         if (this.customerUnitService.checkUnique(form.getId(), form.getCustomerId(), form.getBusinessType()
-                , form.getOptDepartmentCode())) {
+                , form.getOptDepartmentId())) {
             CommonResult.error(400, "该结算单位已存在");
         }
         this.customerUnitService.saveOrUpdateUnit(convert);
@@ -78,10 +79,10 @@ public class CustomerUnitController {
             return CommonResult.success(results);
         }
         Map<Long, String> departmentMap = this.oauthClient.findDepartment().getData().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
-        Map<String, String> customerMap = customerInfoService.list().stream().collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName()));
+        Map<String, String> customerMap = customerInfoService.list().stream().filter(e-> !StringUtils.isEmpty(e.getIdCode())).collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName()));
         for (CustomerUnit customerUnit : list) {
             CustomerUnitVO customerUnitVO = new CustomerUnitVO();
-            String desc = SubOrderSignEnum.getSignOne2SignTwo(customerUnit.getBusinessType());
+            String desc = SubOrderSignEnum.getEnum(customerUnit.getBusinessType()).getDesc();
             customerUnitVO.setBusinessTypeDesc(desc);
             customerUnitVO.setOptDepartmentDesc(departmentMap.get(customerUnit.getOptDepartmentId()));
             customerUnitVO.setUnitDesc(customerMap.get(customerUnit.getUnitCode()));

@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.Query;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.model.bo.AddCustomsDeclarationFilingForm;
 import com.jayud.customs.model.bo.QueryCustomsDeclarationFiling;
@@ -18,6 +17,7 @@ import com.jayud.customs.service.ICustomsDeclarationFilingService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -45,6 +45,7 @@ public class CustomsDeclarationFilingServiceImpl extends ServiceImpl<CustomsDecl
     }
 
     @Override
+    @Transactional
     public void saveOrUpdate(AddCustomsDeclarationFilingForm form) {
         CustomsDeclarationFiling convert = ConvertUtil.convert(form, CustomsDeclarationFiling.class);
         List<CustomsDeclFilingRecord> nums = form.getNums();
@@ -81,7 +82,18 @@ public class CustomsDeclarationFilingServiceImpl extends ServiceImpl<CustomsDecl
     @Override
     public IPage<CustomsDeclarationFilingVO> findByPage(QueryCustomsDeclarationFiling form) {
         Page<CustomsDeclarationFilingVO> page = new Page<>(form.getPageNum(), form.getPageSize());
-        IPage<CustomsDeclarationFilingVO> iPage=this.baseMapper.findByPage(page,form);
+        IPage<CustomsDeclarationFilingVO> iPage = this.baseMapper.findByPage(page, form);
+        iPage.getRecords().forEach(CustomsDeclarationFilingVO::handleNums);
         return iPage;
+    }
+
+    @Override
+    public CustomsDeclarationFilingVO getDetails(Long id) {
+        CustomsDeclarationFiling declarationFiling = this.getById(id);
+        List<CustomsDeclFilingRecord> list = this.customsDeclFilingRecordService.getByDeclFilingId(declarationFiling.getId());
+        CustomsDeclarationFilingVO convert = ConvertUtil.convert(declarationFiling, CustomsDeclarationFilingVO.class);
+        convert.setNums(list);
+        convert.handleNums();
+        return convert;
     }
 }

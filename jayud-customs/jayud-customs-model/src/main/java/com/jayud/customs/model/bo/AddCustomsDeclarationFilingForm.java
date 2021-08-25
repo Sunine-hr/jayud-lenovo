@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.utils.Utilities;
 import com.jayud.customs.model.po.CustomsDeclFilingRecord;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -68,7 +69,7 @@ public class AddCustomsDeclarationFilingForm extends Model<AddCustomsDeclaration
 //    private String num;
 
     public static void main(String[] args) {
-        List<Integer> list = Arrays.asList(1, 3, 8, 1);
+        System.out.println(Utilities.printFieldsInfo(AddCustomsDeclarationFilingForm.class));
 
 
     }

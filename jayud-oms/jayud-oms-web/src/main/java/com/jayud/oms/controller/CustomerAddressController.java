@@ -107,5 +107,14 @@ public class CustomerAddressController {
         CustomerAddress customerAddress = this.customerAddressService.getById(id);
         return CommonResult.success(ConvertUtil.convert(customerAddress, CustomerAddrVO.class));
     }
+
+
+    @ApiOperation(value = "分页查询中港客户地址")
+    @PostMapping(value = "/findTmsCustomerAddressByPage")
+    public CommonResult<CommonPageResult<CustomerAddrVO>> findTmsCustomerAddressByPage(@RequestBody QueryCustomerAddressForm form) {
+        IPage<CustomerAddrVO> iPage = customerAddressService.findCustomerAddressByPage(form);
+//        iPage.getRecords().forEach(CustomerAddrVO::splicingAddress);
+        return CommonResult.success(new CommonPageResult<>(iPage));
+    }
 }
 

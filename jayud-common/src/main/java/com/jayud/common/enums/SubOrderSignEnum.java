@@ -51,12 +51,12 @@ public enum SubOrderSignEnum {
     public static List<InitComboxStrVO> initBusinessType() {
         List<InitComboxStrVO> list = new ArrayList<>();
         for (SubOrderSignEnum value : values()) {
-            if (value != MAIN) {
+//            if (value != MAIN) {
                 InitComboxStrVO tmp = new InitComboxStrVO();
                 tmp.setName(value.getDesc());
                 tmp.setCode(value.getSignOne());
                 list.add(tmp);
-            }
+//            }
         }
         return list;
     }

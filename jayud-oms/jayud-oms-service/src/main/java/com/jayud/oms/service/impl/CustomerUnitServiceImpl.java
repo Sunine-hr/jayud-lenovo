@@ -36,11 +36,11 @@ public class CustomerUnitServiceImpl extends ServiceImpl<CustomerUnitMapper, Cus
     }
 
     @Override
-    public boolean checkUnique(Long id, Long customerId, String businessType, String optDepartmentCode) {
+    public boolean checkUnique(Long id, Long customerId, String businessType, Long optDepartmentId) {
         QueryWrapper<CustomerUnit> condition = new QueryWrapper<>();
         condition.lambda().eq(CustomerUnit::getCustomerId, customerId)
                 .eq(CustomerUnit::getBusinessType, businessType)
-                .eq(CustomerUnit::getOptDepartmentId, optDepartmentCode)
+                .eq(CustomerUnit::getOptDepartmentId, optDepartmentId)
                 .eq(CustomerUnit::getStatus, StatusEnum.ENABLE.getCode());
         if (id != null) {
             condition.lambda().ne(CustomerUnit::getId, id);

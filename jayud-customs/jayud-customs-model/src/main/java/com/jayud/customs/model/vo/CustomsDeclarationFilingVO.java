@@ -41,7 +41,7 @@ public class CustomsDeclarationFilingVO extends Model<CustomsDeclarationFilingVO
     private String boxNum;
 
     @ApiModelProperty(value = "归档日期(年月)")
-    private LocalDate filingDate;
+    private String filingDate;
 
     @ApiModelProperty(value = "业务模式(1-陆路运输 2-空运 3-海运 4-快递 5-内陆)")
     private Integer bizModel;
@@ -66,7 +66,7 @@ public class CustomsDeclarationFilingVO extends Model<CustomsDeclarationFilingVO
     private String updateUser;
 
     @ApiModelProperty(value = "归档记录表")
-    private List<CustomsDeclFilingRecord> list;
+    private List<CustomsDeclFilingRecord> nums;
 
     @ApiModelProperty(value = "报关单号")
     private String num;
@@ -80,13 +80,12 @@ public class CustomsDeclarationFilingVO extends Model<CustomsDeclarationFilingVO
     }
 
 
-    public void setList(List<CustomsDeclFilingRecord> list) {
-        this.list = list;
-        if (CollectionUtil.isNotEmpty(list)) {
+    public void handleNums() {
+        if (CollectionUtil.isNotEmpty(nums)) {
             StringBuilder sb = new StringBuilder();
-            list.forEach(e -> sb.append(e).append(","));
+            nums.forEach(e -> sb.append(e.getNum()).append(","));
             this.num = sb.toString();
-            this.number = list.size();
+            this.number = nums.size();
         }
     }
 }

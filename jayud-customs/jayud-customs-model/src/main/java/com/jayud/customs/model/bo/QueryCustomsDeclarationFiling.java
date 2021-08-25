@@ -33,6 +33,8 @@ public class QueryCustomsDeclarationFiling extends BasePageForm {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "主键")
+    private Long id;
 
     @ApiModelProperty(value = "箱单号")
     private String boxNum;

@@ -41,8 +41,8 @@ public class AddCustomerUnitForm extends Model<AddCustomerUnitForm> {
     private String businessType;
 
     @ApiModelProperty(value = "操作部门code")
-    @NotEmpty(message = "请选择操作部门")
-    private String optDepartmentCode;
+    @NotNull(message = "请选择操作部门")
+    private Long optDepartmentId;
 
     @ApiModelProperty(value = "结算代码code")
     @NotEmpty(message = "请选择结算代码")

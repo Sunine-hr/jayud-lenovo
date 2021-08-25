@@ -16,6 +16,25 @@
         <result column="update_user" property="updateUser"/>
     </resultMap>
 
+    <!-- 通用查询映射结果 -->
+    <resultMap id="OneResultMap" type="com.jayud.customs.model.vo.CustomsDeclarationFilingVO">
+        <id column="id" property="id"/>
+        <result column="box_num" property="boxNum"/>
+        <result column="filing_date" property="filingDate"/>
+        <result column="biz_model" property="bizModel"/>
+        <result column="Im_and_ex_type" property="imAndExType"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <collection property="nums" ofType="com.jayud.customs.model.po.CustomsDeclFilingRecord">
+            <id column="recordId" property="id"/>
+            <result column="customs_decl_filing_id" property="customsDeclFilingId"/>
+            <result column="num" property="num"/>
+        </collection>
+    </resultMap>
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, box_num, filing_date, biz_model, Im_and_ex_type, status, create_time, create_user, update_time, update_user
@@ -23,16 +42,17 @@
 
     <select id="getSerialNumber" resultType="java.lang.Integer">
         select count(1) from customs_declaration_filing
-        where date_format(filing_date,'%Y-%m') = #{filingDate}
+        where filing_date = #{filingDate}
         and biz_model=#{bizModel} and Im_and_ex_type=#{imAndExType}
---         group by date_format(filing_date,'%Y-%m')
     </select>
 
-    <select id="findByPage" resultType="com.jayud.customs.model.vo.CustomsDeclarationFilingVO">
+    <select id="findByPage" resultMap="OneResultMap">
         select
-        id, box_num, filing_date, biz_model, Im_and_ex_type, status, create_time, create_user, update_time, update_user
+        f.id, box_num, filing_date, biz_model, Im_and_ex_type, status,
+        create_time, create_user, update_time, update_user,
+        r.id recordId,r.num,r.customs_decl_filing_id
         from customs_declaration_filing f
-        left join customs_decl_filing_record r on r.customs_decl_filing_record=f.id
+        left join customs_decl_filing_record r on r.customs_decl_filing_id=f.id
         <where>
             <if test="form.boxNum!=null and form.boxNum!=''">
                 and f.box_num like concat('%',#{form.boxNum},'%')

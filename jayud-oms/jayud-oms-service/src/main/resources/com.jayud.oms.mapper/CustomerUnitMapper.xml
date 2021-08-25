@@ -7,7 +7,7 @@
         <id column="id" property="id" />
         <result column="customer_id" property="customerId" />
         <result column="business_type" property="businessType" />
-        <result column="opt_department_code" property="optDepartmentCode" />
+        <result column="opt_department_code" property="optDepartmentId" />
         <result column="unit_code" property="unitCode" />
         <result column="create_time" property="createTime" />
         <result column="create_user" property="createUser" />

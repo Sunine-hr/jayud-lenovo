@@ -1,4 +1,4 @@
-package com.jayud.oms.service.impl;
+package com.jayud.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -7,7 +7,7 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.utils.DateUtils;
-import com.jayud.oms.service.DingtalkMsgService;
+import com.jayud.service.DingtalkMsgService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,5 +1,6 @@
 package com.jayud.oms.feign;
 
+import cn.hutool.json.JSONObject;
 import com.jayud.common.config.FeignRequestInterceptor;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,5 +19,11 @@ public interface MsgClient {
 
     @RequestMapping(value = "/kafka/producer", method = RequestMethod.POST)
     Map<String, String> consume(@RequestBody Map<String, String> param);
+
+    /**
+     * 根据手机号，发送钉钉应用消息
+     */
+    @RequestMapping(value = "/api/msg/dingtalk/sendMessageByMobile", method = RequestMethod.POST)
+    JSONObject sendMessageByMobile(@RequestBody Map<String, String> param);
 
 }

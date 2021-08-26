@@ -163,11 +163,27 @@ public class DingtalkMsgServiceImpl implements DingtalkMsgService {
     @Override
     public JSONObject sendMessageByMobile(String mobile, String message) {
         //1.获取企业凭证,拿到token
-        JSONObject gettoken = this.gettoken(DingtalkMsgService.APPKEY, DingtalkMsgService.APPSECRET);
-        String access_token = gettoken.getStr("access_token");
+        JSONObject jsonObject1 = this.gettoken(DingtalkMsgService.APPKEY, DingtalkMsgService.APPSECRET);
+        String access_token = jsonObject1.getStr("access_token");
+        Integer errcode1 = jsonObject1.getInt("errcode");
+        if(ObjectUtil.isEmpty(errcode1) || !errcode1.equals(0)){
+            String errmsg = StrUtil.isEmpty(jsonObject1.getStr("errmsg")) ? "接口调用失败，无返回值！" : jsonObject1.getStr("errmsg");
+            log.warn(errmsg);
+            jsonObject1.set("errmsg", errmsg);
+            return jsonObject1;
+        }
+
         //2.手机号获取userid,拿到钉钉userid
-        JSONObject jsonObject = this.userGetByMobile(access_token, mobile);
-        String userid = jsonObject.getStr("userid");
+        JSONObject jsonObject2 = this.userGetByMobile(access_token, mobile);
+        String userid = jsonObject2.getStr("userid");
+        Integer errcode2 = jsonObject2.getInt("errcode");
+        if(ObjectUtil.isEmpty(errcode2) || !errcode2.equals(0)){
+            String errmsg = StrUtil.isEmpty(jsonObject2.getStr("errmsg")) ? "接口调用失败，无返回值！" : jsonObject2.getStr("errmsg");
+            log.warn(errmsg);
+            jsonObject2.set("errmsg", errmsg);
+            return jsonObject2;
+        }
+
         //3.发送工作通知,异步发送通知，拿到task_id
         Map<String, Object> body1 = new HashMap<>();
         body1.put("userid_list", userid);
@@ -175,12 +191,28 @@ public class DingtalkMsgServiceImpl implements DingtalkMsgService {
         msg.put("msgtype", "text");
         msg.put("text", new JSONObject().set("content", message+"[佳裕达,"+ DateUtils.getLocalToStr(LocalDateTime.now()) +"]"));
         body1.put("msg", msg);
-        JSONObject jsonObject1 = this.sendMessage(access_token, body1);
-        String task_id = jsonObject1.getStr("task_id");
+        JSONObject jsonObject3 = this.sendMessage(access_token, body1);
+        String task_id = jsonObject3.getStr("task_id");
+        Integer errcode3 = jsonObject3.getInt("errcode");
+        if(ObjectUtil.isEmpty(errcode3) || !errcode3.equals(0)){
+            String errmsg = StrUtil.isEmpty(jsonObject3.getStr("errmsg")) ? "接口调用失败，无返回值！" : jsonObject3.getStr("errmsg");
+            log.warn(errmsg);
+            jsonObject3.set("errmsg", errmsg);
+            return jsonObject3;
+        }
+
         //4.获取工作通知消息的发送结果
         Map<String, Object> body2 = new HashMap<>();
         body2.put("task_id", task_id);
-        JSONObject sendResult = this.getSendResult(access_token, body2);
-        return sendResult;
+        JSONObject jsonObject4 = this.getSendResult(access_token, body2);
+        Integer errcode4 = jsonObject4.getInt("errcode");
+        if(ObjectUtil.isEmpty(errcode4) || !errcode4.equals(0)){
+            String errmsg = StrUtil.isEmpty(jsonObject4.getStr("errmsg")) ? "接口调用失败，无返回值！" : jsonObject4.getStr("errmsg");
+            log.warn(errmsg);
+            jsonObject4.set("errmsg", errmsg);
+            return jsonObject4;
+        }
+
+        return jsonObject4;
     }
 }

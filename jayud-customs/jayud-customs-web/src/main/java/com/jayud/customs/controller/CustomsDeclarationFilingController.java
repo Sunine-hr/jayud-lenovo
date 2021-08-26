@@ -46,7 +46,7 @@ public class CustomsDeclarationFilingController {
     @Autowired
     private ICustomsDeclFilingRecordService customsDeclFilingRecordService;
 
-    @Value("${customs.filingPath}")
+    @Value("${customsFile.filingPath}")
     private String customsFilingPath;
 
 

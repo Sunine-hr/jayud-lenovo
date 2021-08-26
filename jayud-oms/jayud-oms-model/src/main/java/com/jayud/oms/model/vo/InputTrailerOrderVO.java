@@ -221,6 +221,9 @@ public class InputTrailerOrderVO {
         this.cnPics=new ArrayList<>();
         this.soPics=new ArrayList<>();
         this.trailerDispatchVO=null;
+        this.cabinetNumber=null;//柜号
+        this.cabinetSize=null;//车型尺寸id
+        this.cabinetSizeName=null;//车型尺寸
         if (CollectionUtils.isNotEmpty(orderAddressForms)) {
             orderAddressForms.forEach(e -> {
                 e.setId(null);

@@ -57,7 +57,8 @@ public class CustomsDeclarationFilingServiceImpl extends ServiceImpl<CustomsDecl
         } else {
             convert.setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
             this.updateById(convert);
-            this.customsDeclFilingRecordService.updateBatchById(nums);
+            this.customsDeclFilingRecordService.removeByCondition(new CustomsDeclFilingRecord().setCustomsDeclFilingId(form.getId()));
+            this.customsDeclFilingRecordService.saveBatch(nums);
         }
 
     }

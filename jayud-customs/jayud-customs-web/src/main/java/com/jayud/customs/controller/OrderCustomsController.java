@@ -474,13 +474,29 @@ public class OrderCustomsController {
     @ApiOperation(value = "批量操作")
     @PostMapping(value = "/batchOprOrder")
     public CommonResult batchOprOrder(@RequestBody OprStatusForm form) {
-        List<CustomsOrderInfoVO> list = form.getList();
-        for (CustomsOrderInfoVO customsOrderInfoVO : list) {
-            form.setOrderId(customsOrderInfoVO.getId().longValue());
-            form.setMainOrderId(customsOrderInfoVO.getMainOrderId());
+//        List<CustomsOrderInfoVO> list = form.getList();
+
+
+//        for (CustomsOrderInfoVO customsOrderInfoVO : list) {
+//            form.setOrderId(customsOrderInfoVO.getId().longValue());
+//            form.setMainOrderId(customsOrderInfoVO.getMainOrderId());
+//            CommonResult commonResult = this.oprOrder(form);
+//            if (commonResult.getCode() != 0) {
+//                log.warn("订单号:" + customsOrderInfoVO.getOrderNo() + " 报错信息:" + commonResult.getMsg());
+//            }
+//        }
+
+        List<Map<String, Object>> list = form.getList();
+
+        for (Map<String, Object> tmp : list) {
+            Long id = MapUtil.getLong(tmp, "id");
+            Long mainOrderId = MapUtil.getLong(tmp, "mainOrderId");
+            String orderNo = MapUtil.getStr(tmp, "orderNo");
+            form.setOrderId(id);
+            form.setMainOrderId(mainOrderId);
             CommonResult commonResult = this.oprOrder(form);
             if (commonResult.getCode() != 0) {
-                log.warn("订单号:" + customsOrderInfoVO.getOrderNo() + " 报错信息:" + commonResult.getMsg());
+                log.warn("订单号:" + orderNo + " 报错信息:" + commonResult.getMsg());
             }
         }
         return CommonResult.success();

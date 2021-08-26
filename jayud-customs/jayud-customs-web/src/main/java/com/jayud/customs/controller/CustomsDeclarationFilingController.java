@@ -53,7 +53,6 @@ public class CustomsDeclarationFilingController {
     @ApiOperation(value = "新增/编辑")
     @PostMapping("/saveOrUpdate")
     @RepeatSubmitLimit
-
     public CommonResult saveOrUpdate(@RequestBody @Valid AddCustomsDeclarationFilingForm form) {
         //校验箱单号是否存在
         if (form.getId() == null && this.customsDeclarationFilingService.exitBoxNum(new CustomsDeclarationFiling().setBoxNum(form.getBoxNum()))) {
@@ -64,7 +63,8 @@ public class CustomsDeclarationFilingController {
         }
         //校验云报关单号唯一性
         Set<String> nums = form.getNums().stream().map(CustomsDeclFilingRecord::getNum).collect(Collectors.toSet());
-        List<CustomsDeclFilingRecord> list = this.customsDeclFilingRecordService.getByNums(new ArrayList<>(nums));
+
+        List<CustomsDeclFilingRecord> list = this.customsDeclFilingRecordService.getByNums(form.getId(), new ArrayList<>(nums));
         if (CollectionUtil.isNotEmpty(list)) {
             Set<Long> ids = list.stream().map(e -> e.getCustomsDeclFilingId()).collect(Collectors.toSet());
             List<CustomsDeclarationFiling> customsDeclarationFilings = this.customsDeclarationFilingService.listByIds(ids);

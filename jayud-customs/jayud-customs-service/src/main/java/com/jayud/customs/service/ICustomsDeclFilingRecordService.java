@@ -3,7 +3,6 @@ package com.jayud.customs.service;
 import com.jayud.customs.model.po.CustomsDeclFilingRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,7 +15,9 @@ import java.util.List;
  */
 public interface ICustomsDeclFilingRecordService extends IService<CustomsDeclFilingRecord> {
 
-    List<CustomsDeclFilingRecord> getByNums(List<String> nums);
+    List<CustomsDeclFilingRecord> getByNums(Long customsDeclFilingId, List<String> nums);
 
     List<CustomsDeclFilingRecord> getByDeclFilingId(Long declFilingId);
+
+    int removeByCondition(CustomsDeclFilingRecord customsDeclFilingRecord);
 }

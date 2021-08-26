@@ -21,9 +21,12 @@ import java.util.List;
 public class CustomsDeclFilingRecordServiceImpl extends ServiceImpl<CustomsDeclFilingRecordMapper, CustomsDeclFilingRecord> implements ICustomsDeclFilingRecordService {
 
     @Override
-    public List<CustomsDeclFilingRecord> getByNums(List<String> nums) {
+    public List<CustomsDeclFilingRecord> getByNums(Long customsDeclFilingId, List<String> nums) {
         QueryWrapper<CustomsDeclFilingRecord> condition = new QueryWrapper<>();
         condition.lambda().in(CustomsDeclFilingRecord::getNum, nums);
+        if (customsDeclFilingId != null) {
+            condition.lambda().ne(CustomsDeclFilingRecord::getCustomsDeclFilingId, customsDeclFilingId);
+        }
         return this.baseMapper.selectList(condition);
     }
 
@@ -32,5 +35,10 @@ public class CustomsDeclFilingRecordServiceImpl extends ServiceImpl<CustomsDeclF
         QueryWrapper<CustomsDeclFilingRecord> condition = new QueryWrapper<>();
         condition.lambda().eq(CustomsDeclFilingRecord::getCustomsDeclFilingId, declFilingId);
         return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public int removeByCondition(CustomsDeclFilingRecord customsDeclFilingRecord) {
+        return this.baseMapper.delete(new QueryWrapper<>(customsDeclFilingRecord));
     }
 }

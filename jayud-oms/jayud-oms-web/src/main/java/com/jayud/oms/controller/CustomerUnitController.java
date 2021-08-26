@@ -79,9 +79,9 @@ public class CustomerUnitController {
             return CommonResult.success(results);
         }
         Map<Long, String> departmentMap = this.oauthClient.findDepartment().getData().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
-        Map<String, String> customerMap = customerInfoService.list().stream().filter(e-> !StringUtils.isEmpty(e.getIdCode())).collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName()));
+        Map<String, String> customerMap = customerInfoService.list().stream().filter(e -> !StringUtils.isEmpty(e.getIdCode())).collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName()));
         for (CustomerUnit customerUnit : list) {
-            CustomerUnitVO customerUnitVO = new CustomerUnitVO();
+            CustomerUnitVO customerUnitVO = ConvertUtil.convert(customerUnit, CustomerUnitVO.class);
             String desc = SubOrderSignEnum.getEnum(customerUnit.getBusinessType()).getDesc();
             customerUnitVO.setBusinessTypeDesc(desc);
             customerUnitVO.setOptDepartmentDesc(departmentMap.get(customerUnit.getOptDepartmentId()));

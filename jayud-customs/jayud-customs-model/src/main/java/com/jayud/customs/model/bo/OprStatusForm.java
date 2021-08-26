@@ -12,6 +12,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class OprStatusForm {
@@ -70,7 +71,7 @@ public class OprStatusForm {
     private String yunCustomsNo;
 
     @ApiModelProperty(value = "批量操作数组对象")
-    private List<CustomsOrderInfoVO> list;
+    private List<Map<String, Object>> list;
 
     public void checkParam(OrderStatusEnum statusEnum) {
         switch (statusEnum) {

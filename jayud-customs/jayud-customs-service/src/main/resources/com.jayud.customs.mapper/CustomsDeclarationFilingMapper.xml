@@ -64,7 +64,6 @@
                 and r.create_time between #{form.createTime[0]} and #{form.createTime[1]}
             </if>
         </where>
-        group by box_num
         order by id desc
 
     </select>

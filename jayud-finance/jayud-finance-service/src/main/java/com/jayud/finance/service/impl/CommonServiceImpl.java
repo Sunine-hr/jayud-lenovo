@@ -114,6 +114,7 @@ public class CommonServiceImpl implements CommonService {
                 case ZGYS_NORM_PAY:
                     TmsOrderTemplate tmsOrderTemplate = ConvertUtil.convert(jsonObject, TmsOrderTemplate.class);
                     tmsOrderTemplate.assembleData(jsonObject);
+                    tmsOrderTemplate.setSubOrderNo(jsonObject.getStr("orderNo"));
                     //组装主订单信息
                     tmsOrderTemplate.assemblyMainOrderData(result.getData());
                     map.put(cmd.equals("main") ? tmsOrderTemplate.getMainOrderNo() : tmsOrderTemplate.getSubOrderNo(), tmsOrderTemplate);

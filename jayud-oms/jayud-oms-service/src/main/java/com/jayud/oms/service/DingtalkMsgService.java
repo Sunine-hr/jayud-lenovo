@@ -18,10 +18,10 @@ public interface DingtalkMsgService {
      * AppKey: ding07nvmiueit3awmod
      * AppSecret: zj4JdyA8OcvYuBf7cLTaH87S91vuMtI2PKlAtI_Ze0Q7haQ3ux6ysryhT6P-JGM4
      */
-    public final static String AGENTID = "1279251144";
+    public final static String AGENTID = "1279251144";//发送消息时使用的微应用的AgentID
     public final static String MINIAPPID = "5000000000980383";
-    public final static String APPKEY = "ding07nvmiueit3awmod";
-    public final static String APPSECRET = "zj4JdyA8OcvYuBf7cLTaH87S91vuMtI2PKlAtI_Ze0Q7haQ3ux6ysryhT6P-JGM4";
+    public final static String APPKEY = "ding07nvmiueit3awmod";//应用的唯一标识key
+    public final static String APPSECRET = "zj4JdyA8OcvYuBf7cLTaH87S91vuMtI2PKlAtI_Ze0Q7haQ3ux6ysryhT6P-JGM4";//应用的密钥
 
 
     /**
@@ -73,6 +73,17 @@ public interface DingtalkMsgService {
      * @return
      */
     JSONObject sendMessageByMobile(String mobile, String message);
+
+    /**
+     * 通过手机号给钉钉用户发送消息 (自定义的业务接口)-自定义钉钉应用的id和秘钥
+     * @param mobile 接收消息用户的手机号
+     * @param message 发送的消息(文本消息，content内容，建议500字符以内。)
+     * @param agentid 发送消息时使用的微应用的AgentID
+     * @param appkey 应用的唯一标识key
+     * @param appsecret 应用的密钥
+     * @return
+     */
+    JSONObject sendMessageByMobile(String mobile, String message,String agentid, String appkey, String appsecret);
 
 
 

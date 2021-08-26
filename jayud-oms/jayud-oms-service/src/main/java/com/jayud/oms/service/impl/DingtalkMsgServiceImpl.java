@@ -42,7 +42,7 @@ public class DingtalkMsgServiceImpl implements DingtalkMsgService {
             jsonObject.set("errmsg", "ok");
             return jsonObject;
         }
-        HttpResponse response = HttpRequest.get("https://oapi.dingtalk.com/gettoken?appkey="+DingtalkMsgService.APPKEY+"&appsecret="+DingtalkMsgService.APPSECRET)
+        HttpResponse response = HttpRequest.get("https://oapi.dingtalk.com/gettoken?appkey="+appkey+"&appsecret="+appsecret)
                 .execute();
         String feedback = response.body();
         jsonObject = new JSONObject(feedback);
@@ -100,10 +100,9 @@ public class DingtalkMsgServiceImpl implements DingtalkMsgService {
      */
     @Override
     public JSONObject sendMessage(String access_token, Map<String, Object> body) {
-
         //组装请求的参数
         JSONObject request = new JSONObject();
-        request.set("agent_id", DingtalkMsgService.AGENTID);
+        request.set("agent_id", body.get("agent_id"));
         request.set("userid_list", body.get("userid_list"));
         request.set("msg", body.get("msg"));
         HttpResponse response = HttpRequest.post("https://oapi.dingtalk.com/topapi/message/corpconversation/asyncsend_v2?access_token="+access_token)
@@ -138,7 +137,7 @@ public class DingtalkMsgServiceImpl implements DingtalkMsgService {
     public JSONObject getSendResult(String access_token, Map<String, Object> body) {
         //组装请求的参数
         JSONObject request = new JSONObject();
-        request.set("agent_id", DingtalkMsgService.AGENTID);
+        request.set("agent_id", body.get("agent_id"));
         request.set("task_id", body.get("task_id"));
         HttpResponse response = HttpRequest.post("https://oapi.dingtalk.com/topapi/message/corpconversation/getsendresult?access_token="+access_token)
                 .body(request.toString())
@@ -162,8 +161,11 @@ public class DingtalkMsgServiceImpl implements DingtalkMsgService {
      */
     @Override
     public JSONObject sendMessageByMobile(String mobile, String message) {
+        String agentid = DingtalkMsgService.AGENTID;
+        String appkey = DingtalkMsgService.APPKEY;
+        String appsecret = DingtalkMsgService.APPSECRET;
         //1.获取企业凭证,拿到token
-        JSONObject jsonObject1 = this.gettoken(DingtalkMsgService.APPKEY, DingtalkMsgService.APPSECRET);
+        JSONObject jsonObject1 = this.gettoken(appkey, appsecret);
         String access_token = jsonObject1.getStr("access_token");
         Integer errcode1 = jsonObject1.getInt("errcode");
         if(ObjectUtil.isEmpty(errcode1) || !errcode1.equals(0)){
@@ -183,9 +185,9 @@ public class DingtalkMsgServiceImpl implements DingtalkMsgService {
             jsonObject2.set("errmsg", errmsg);
             return jsonObject2;
         }
-
         //3.发送工作通知,异步发送通知，拿到task_id
         Map<String, Object> body1 = new HashMap<>();
+        body1.put("agent_id", agentid);
         body1.put("userid_list", userid);
         Map<String, Object> msg = new HashMap<>();
         msg.put("msgtype", "text");
@@ -203,6 +205,7 @@ public class DingtalkMsgServiceImpl implements DingtalkMsgService {
 
         //4.获取工作通知消息的发送结果
         Map<String, Object> body2 = new HashMap<>();
+        body2.put("agent_id", agentid);
         body2.put("task_id", task_id);
         JSONObject jsonObject4 = this.getSendResult(access_token, body2);
         Integer errcode4 = jsonObject4.getInt("errcode");
@@ -215,4 +218,64 @@ public class DingtalkMsgServiceImpl implements DingtalkMsgService {
 
         return jsonObject4;
     }
+
+    @Override
+    public JSONObject sendMessageByMobile(String mobile, String message, String agentid, String appkey, String appsecret) {
+
+        //1.获取企业凭证,拿到token
+        JSONObject jsonObject1 = this.gettoken(appkey, appsecret);
+        String access_token = jsonObject1.getStr("access_token");
+        Integer errcode1 = jsonObject1.getInt("errcode");
+        if(ObjectUtil.isEmpty(errcode1) || !errcode1.equals(0)){
+            String errmsg = StrUtil.isEmpty(jsonObject1.getStr("errmsg")) ? "接口调用失败，无返回值！" : jsonObject1.getStr("errmsg");
+            log.warn(errmsg);
+            jsonObject1.set("errmsg", errmsg);
+            return jsonObject1;
+        }
+
+        //2.手机号获取userid,拿到钉钉userid
+        JSONObject jsonObject2 = this.userGetByMobile(access_token, mobile);
+        String userid = jsonObject2.getStr("userid");
+        Integer errcode2 = jsonObject2.getInt("errcode");
+        if(ObjectUtil.isEmpty(errcode2) || !errcode2.equals(0)){
+            String errmsg = StrUtil.isEmpty(jsonObject2.getStr("errmsg")) ? "接口调用失败，无返回值！" : jsonObject2.getStr("errmsg");
+            log.warn(errmsg);
+            jsonObject2.set("errmsg", errmsg);
+            return jsonObject2;
+        }
+        //3.发送工作通知,异步发送通知，拿到task_id
+        Map<String, Object> body1 = new HashMap<>();
+        body1.put("agent_id", agentid);
+        body1.put("userid_list", userid);
+        Map<String, Object> msg = new HashMap<>();
+        msg.put("msgtype", "text");
+        msg.put("text", new JSONObject().set("content", message+"[佳裕达,"+ DateUtils.getLocalToStr(LocalDateTime.now()) +"]"));
+        body1.put("msg", msg);
+        JSONObject jsonObject3 = this.sendMessage(access_token, body1);
+        String task_id = jsonObject3.getStr("task_id");
+        Integer errcode3 = jsonObject3.getInt("errcode");
+        if(ObjectUtil.isEmpty(errcode3) || !errcode3.equals(0)){
+            String errmsg = StrUtil.isEmpty(jsonObject3.getStr("errmsg")) ? "接口调用失败，无返回值！" : jsonObject3.getStr("errmsg");
+            log.warn(errmsg);
+            jsonObject3.set("errmsg", errmsg);
+            return jsonObject3;
+        }
+
+        //4.获取工作通知消息的发送结果
+        Map<String, Object> body2 = new HashMap<>();
+        body2.put("agent_id", agentid);
+        body2.put("task_id", task_id);
+        JSONObject jsonObject4 = this.getSendResult(access_token, body2);
+        Integer errcode4 = jsonObject4.getInt("errcode");
+        if(ObjectUtil.isEmpty(errcode4) || !errcode4.equals(0)){
+            String errmsg = StrUtil.isEmpty(jsonObject4.getStr("errmsg")) ? "接口调用失败，无返回值！" : jsonObject4.getStr("errmsg");
+            log.warn(errmsg);
+            jsonObject4.set("errmsg", errmsg);
+            return jsonObject4;
+        }
+
+        return jsonObject4;
+    }
+
+
 }

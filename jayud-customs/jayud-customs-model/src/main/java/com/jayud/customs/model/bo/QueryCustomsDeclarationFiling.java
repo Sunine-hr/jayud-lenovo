@@ -49,13 +49,13 @@ public class QueryCustomsDeclarationFiling extends BasePageForm {
     private List<String> createTime;
 
 
-    public void setCreateTime(List<String> createTime) {
-        if (CollectionUtils.isNotEmpty(createTime) && createTime.size() > 1) {
-            createTime.set(1, DateUtils.strMaximumTime(createTime.get(1)));
-        }
-        this.createTime = createTime;
-
-    }
+//    public void setCreateTime(List<String> createTime) {
+//        if (CollectionUtils.isNotEmpty(createTime) && createTime.size() > 1) {
+//            createTime.set(1, DateUtils.strMaximumTime(createTime.get(1)));
+//        }
+//        this.createTime = createTime;
+//
+//    }
 
 
 }

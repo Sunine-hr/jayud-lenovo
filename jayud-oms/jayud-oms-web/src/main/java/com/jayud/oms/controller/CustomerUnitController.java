@@ -53,9 +53,9 @@ public class CustomerUnitController {
     public CommonResult saveOrUpdate(@RequestBody @Valid AddCustomerUnitForm form) {
         CustomerUnit convert = ConvertUtil.convert(form, CustomerUnit.class);
         //业务类型+操作部门的唯一性
-        if (this.customerUnitService.checkUnique(form.getId(), form.getCustomerId(), form.getBusinessType()
+        if (!this.customerUnitService.checkUnique(form.getId(), form.getCustomerId(), form.getBusinessType()
                 , form.getOptDepartmentId())) {
-            CommonResult.error(400, "该结算单位已存在");
+            return CommonResult.error(400, "该结算单位已存在");
         }
         this.customerUnitService.saveOrUpdateUnit(convert);
 

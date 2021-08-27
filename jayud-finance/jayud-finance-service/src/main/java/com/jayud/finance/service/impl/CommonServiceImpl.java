@@ -112,6 +112,7 @@ public class CommonServiceImpl implements CommonService {
                 case ZGYS:
                 case ZGYS_NORM_RE:
                 case ZGYS_NORM_PAY:
+                case ZGYS_SUPPLIER_PAY:
                     TmsOrderTemplate tmsOrderTemplate = ConvertUtil.convert(jsonObject, TmsOrderTemplate.class);
                     tmsOrderTemplate.assembleData(jsonObject);
                     tmsOrderTemplate.setSubOrderNo(jsonObject.getStr("orderNo"));
@@ -152,6 +153,7 @@ public class CommonServiceImpl implements CommonService {
                     map.put(template.getMainOrderNo() + "~" + template.getOrderNo(), template);
                     break;
                 case NL_NORM_PAY:
+                case NL_SUPPLIER_PAY:
                     InlandTPPayTemplate templateOne = ConvertUtil.convert(jsonObject, InlandTPPayTemplate.class);
                     templateOne.assembleData(jsonObject);
                     //组装主订单信息
@@ -386,13 +388,14 @@ public class CommonServiceImpl implements CommonService {
             JSONObject jsonObject = array.getJSONObject(i);
             switch (templateEnum) {
                 case TC_NORM_PAY:
+                case TC_SUPPLIER_PAY:
                     TrailerOrderPayTemplate payTemplate = ConvertUtil.convert(jsonObject, TrailerOrderPayTemplate.class);
                     payTemplate.assembleData(jsonObject);
                     //组装主订单信息
                     payTemplate.assemblyMainOrderData(result.getData());
                     payTemplate.setCustomerName("佳裕达");
                     map.put(payTemplate.getMainOrderNo() + "~" + payTemplate.getOrderNo(), payTemplate);
-//                    map.put(cmd.equals("main") ? payTemplate.getMainOrderNo() : payTemplate.getOrderNo(), payTemplate);
+                    map.put(cmd.equals("main") ? payTemplate.getMainOrderNo() : payTemplate.getOrderNo(), payTemplate);
                     break;
                 case TC:
                     TrailerOrderTemplate trailerOrderTemplate = ConvertUtil.convert(jsonObject, TrailerOrderTemplate.class);
@@ -400,7 +403,7 @@ public class CommonServiceImpl implements CommonService {
                     //组装主订单信息
                     trailerOrderTemplate.assemblyMainOrderData(result.getData());
                     map.put(trailerOrderTemplate.getMainOrderNo() + "~" + trailerOrderTemplate.getOrderNo(), trailerOrderTemplate);
-//                    map.put(cmd.equals("main") ? trailerOrderTemplate.getMainOrderNo() : trailerOrderTemplate.getOrderNo(), trailerOrderTemplate);
+                    map.put(cmd.equals("main") ? trailerOrderTemplate.getMainOrderNo() : trailerOrderTemplate.getOrderNo(), trailerOrderTemplate);
                     break;
                 case TC_NORM_RE:
                     trailerOrderTemplate = ConvertUtil.convert(jsonObject, TrailerOrderTemplate.class);
@@ -408,7 +411,7 @@ public class CommonServiceImpl implements CommonService {
                     //组装主订单信息
                     trailerOrderTemplate.assemblyMainOrderData(result.getData());
                     map.put(trailerOrderTemplate.getMainOrderNo() + "~" + trailerOrderTemplate.getOrderNo(), trailerOrderTemplate);
-//                    map.put(cmd.equals("main") ? trailerOrderTemplate.getMainOrderNo() : trailerOrderTemplate.getOrderNo(), trailerOrderTemplate);
+                    map.put(cmd.equals("main") ? trailerOrderTemplate.getMainOrderNo() : trailerOrderTemplate.getOrderNo(), trailerOrderTemplate);
                     break;
 
             }

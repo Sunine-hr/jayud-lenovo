@@ -16,6 +16,6 @@ CREATE TABLE `customs_declaration_filing` (
 CREATE TABLE `customs_decl_filing_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `customs_decl_filing_id` bigint(20) NOT NULL COMMENT '报关归档id',
-  `yun_customs_no` varchar(50) NOT NULL COMMENT '云报关号',
+  `num` varchar(50) NOT NULL COMMENT '云报关号',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='报关归档记录';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COMMENT='报关归档记录';

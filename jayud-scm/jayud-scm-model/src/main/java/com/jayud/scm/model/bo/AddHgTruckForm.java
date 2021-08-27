@@ -3,6 +3,7 @@ package com.jayud.scm.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -38,21 +39,22 @@ public class AddHgTruckForm {
 
     @ApiModelProperty(value = "车次日期")
     @NotNull(message = "车次时间不为空")
-    private LocalDateTime truckDate;
+    private String truckDate;
 
     @ApiModelProperty(value = "车次时间(上午9：00，下午6：00等)")
     private String truckTime;
 
     @ApiModelProperty(value = "运输公司ID")
+    @NotNull(message = "运输公司不为空")
     private Integer truckCompanyId;
 
     @ApiModelProperty(value = "运输公司")
-    @NotNull(message = "运输公司不为空")
     private String truckCompany;
 
     @ApiModelProperty(value = "车辆类型（0正常，1：加车，2包车）")
     @NotNull(message = "车辆类型不为空")
-    private Integer sType;
+    @JsonProperty(value = "sType")
+    private String sType;
 
     @ApiModelProperty(value = "预订车次类型")
     @NotNull(message = "车次类型不为空")
@@ -125,7 +127,7 @@ public class AddHgTruckForm {
     private String diffType;
 
     @ApiModelProperty(value = "柜车号码")
-    @NotNull(message = "柜车号码不为空")
+//    @NotNull(message = "柜车号码不为空")
     private String cabinetNo;
 
     @ApiModelProperty(value = "自动出库标志")

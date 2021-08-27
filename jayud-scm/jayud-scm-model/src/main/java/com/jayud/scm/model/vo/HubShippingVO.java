@@ -3,6 +3,8 @@ package com.jayud.scm.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -36,9 +38,11 @@ public class HubShippingVO {
     private Integer modelType;
 
     @ApiModelProperty(value = "出库类型(0正常，1暂存)")
+    @JsonProperty(value = "sModel")
     private Integer sModel;
 
     @ApiModelProperty(value = "出库次数")
+    @JsonProperty(value = "sType")
     private Integer sType;
 
     @ApiModelProperty(value = "订单ID")
@@ -48,9 +52,11 @@ public class HubShippingVO {
     private String bookingNo;
 
     @ApiModelProperty(value = "要求交货时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deliveryDate;
 
     @ApiModelProperty(value = "出库日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime shippingDate;
 
     @ApiModelProperty(value = "仓库名称")
@@ -87,18 +93,23 @@ public class HubShippingVO {
     private BigDecimal totalGw;
 
     @ApiModelProperty(value = "总净重")
+    @JsonProperty(value = "totaNw")
     private BigDecimal totaNw;
 
     @ApiModelProperty(value = "总体积")
+    @JsonProperty(value = "totaCbm")
     private BigDecimal totaCbm;
 
     @ApiModelProperty(value = "总件数")
+    @JsonProperty(value = "totaPackages")
     private Integer totaPackages;
 
     @ApiModelProperty(value = "总板数")
+    @JsonProperty(value = "totaPallets")
     private Integer totaPallets;
 
     @ApiModelProperty(value = "总箱数")
+    @JsonProperty(value = "totaCartons")
     private Integer totaCartons;
 
     @ApiModelProperty(value = "总散箱")
@@ -132,9 +143,11 @@ public class HubShippingVO {
     private String checkName;
 
     @ApiModelProperty(value = "检货开始时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime checkBeginTime;
 
     @ApiModelProperty(value = "检货结束时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime checkEndTime;
 
     @ApiModelProperty(value = "检货说明")
@@ -144,12 +157,14 @@ public class HubShippingVO {
     private String reviewName;
 
     @ApiModelProperty(value = "复核完成时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime reviewTime;
 
     @ApiModelProperty(value = "复核说明")
     private String reviewRemark;
 
     @ApiModelProperty(value = "签收日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime signDate;
 
     @ApiModelProperty(value = "签收备注")
@@ -171,24 +186,17 @@ public class HubShippingVO {
     private Integer hgTruckId;
 
     @ApiModelProperty(value = "是否打印，0:未打印，1已打印")
+    @JsonProperty(value = "isAutoPrint")
     private Integer isAutoPrint;
 
     @ApiModelProperty(value = "打印次数")
     private Integer printNum;
 
-    @ApiModelProperty(value = "0未同步1已同步")
-    private Integer isOnl;
-
-    @ApiModelProperty(value = "在线ID")
-    private Integer onlId;
-
-    @ApiModelProperty(value = "在线编号")
-    private String onlNo;
-
     @ApiModelProperty(value = "配送区域")
     private String region;
 
     @ApiModelProperty(value = "是否开票0不开票，1要开票")
+    @JsonProperty(value = "isInv")
     private Integer isInv;
 
     @ApiModelProperty(value = "主体ID")
@@ -201,6 +209,7 @@ public class HubShippingVO {
     private String customsNo;
 
     @ApiModelProperty(value = "报关日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime customsDate;
 
     @ApiModelProperty(value = "包装方式")
@@ -216,72 +225,47 @@ public class HubShippingVO {
     private String packagesRemark;
 
     @ApiModelProperty(value = "快递发货类别")
+    @JsonProperty(value = "sfType")
     private String sfType;
 
     @ApiModelProperty(value = "快递付款方式")
+    @JsonProperty(value = "sfPay")
     private String sfPay;
 
     @ApiModelProperty(value = "快递备注")
+    @JsonProperty(value = "sfRemark")
     private String sfRemark;
 
     @ApiModelProperty(value = "备注")
     private String remark;
 
     @ApiModelProperty(value = "审核人")
+    @JsonProperty(value = "fMultiLevel0")
     private String fMultiLevel0;
 
     @ApiModelProperty(value = "审核 时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonProperty(value = "fDateTime0")
     private LocalDateTime fDateTime0;
-
-    @ApiModelProperty(value = "审核人")
-    private String fMultiLevel1;
-
-    @ApiModelProperty(value = "审核 时间")
-    private LocalDateTime fDateTime1;
-
-    @ApiModelProperty(value = "审核人")
-    private String fMultiLevel2;
-
-    @ApiModelProperty(value = "审核 时间")
-    private LocalDateTime fDateTime2;
-
-    @ApiModelProperty(value = "审核人")
-    private String fMultiLevel3;
-
-    @ApiModelProperty(value = "审核 时间")
-    private LocalDateTime fDateTime3;
 
     @ApiModelProperty(value = "审核状态")
     private String checkStateFlag;
 
-    @ApiModelProperty(value = "审核级别")
-    private Integer fLevel;
-
-    @ApiModelProperty(value = "审核步长")
-    private Integer fStep;
-
     @ApiModelProperty(value = "出库状态（0未出库，1已安排，2已出库，3已完成）")
     private Integer stateFlag;
-
-    @ApiModelProperty(value = "备用1")
-    private String temp01;
-
-    @ApiModelProperty(value = "备用2")
-    private String temp02;
-
-    @ApiModelProperty(value = "备用3")
-    private String temp03;
 
     @ApiModelProperty(value = "创建人名称")
     private String crtByName;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime crtByDtm;
 
     @ApiModelProperty(value = "最后修改人名称")
     private String mdyByName;
 
     @ApiModelProperty(value = "最后修改时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime mdyByDtm;
 
     @ApiModelProperty(value = "出库订单明细集合")

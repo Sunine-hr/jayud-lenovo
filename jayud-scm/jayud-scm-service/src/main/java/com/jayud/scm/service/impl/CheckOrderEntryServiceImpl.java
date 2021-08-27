@@ -1,13 +1,18 @@
 package com.jayud.scm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddCheckOrderEntryForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.BookingOrderEntry;
 import com.jayud.scm.model.po.CheckOrderEntry;
 import com.jayud.scm.mapper.CheckOrderEntryMapper;
 import com.jayud.scm.model.po.SystemUser;
+import com.jayud.scm.model.vo.CheckOrderEntryVO;
+import com.jayud.scm.model.vo.CustomerTaxVO;
 import com.jayud.scm.service.IBookingOrderEntryService;
 import com.jayud.scm.service.ICheckOrderEntryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -94,5 +99,11 @@ public class CheckOrderEntryServiceImpl extends ServiceImpl<CheckOrderEntryMappe
         }
 
         return b;
+    }
+
+    @Override
+    public IPage<CheckOrderEntryVO> findByPage(QueryCommonForm form) {
+        Page<CheckOrderEntryVO> page = new Page<>(form.getPageNum(), form.getPageSize());
+        return this.baseMapper.findByPage(page, form);
     }
 }

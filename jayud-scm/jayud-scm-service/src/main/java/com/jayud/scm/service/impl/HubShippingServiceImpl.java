@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddHubShippingEntryForm;
@@ -10,6 +11,8 @@ import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.HubShippingMapper;
+import com.jayud.scm.model.vo.CheckOrderEntryVO;
+import com.jayud.scm.model.vo.CheckOrderVO;
 import com.jayud.scm.model.vo.HubShippingEntryVO;
 import com.jayud.scm.model.vo.HubShippingVO;
 import com.jayud.scm.service.*;
@@ -177,5 +180,23 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
             }
         }
         return update;
+    }
+
+    @Override
+    public List<HubShippingVO> getHubShippingByBookingId(QueryCommonForm form) {
+
+        List<HubShippingVO> hubShippingVOS = new ArrayList<>();
+        for (Integer id : form.getIds()) {
+            QueryWrapper<HubShipping> queryWrapper = new QueryWrapper();
+            queryWrapper.lambda().eq(HubShipping::getBookingId,id);
+            List<HubShipping> list = this.list(queryWrapper);
+            List<HubShippingVO> shippingVOS = ConvertUtil.convertList(list, HubShippingVO.class);
+            for (HubShippingVO hubShippingVO : shippingVOS) {
+                List<HubShippingEntry> hubShippingEntryVOS = hubShippingEntryService.getShippingEntryByShippingId(hubShippingVO.getId().longValue());
+                hubShippingVO.setHubShippingEntryVOS(ConvertUtil.convertList(hubShippingEntryVOS, HubShippingEntryVO.class));
+            }
+            hubShippingVOS.addAll(shippingVOS);
+        }
+        return hubShippingVOS;
     }
 }

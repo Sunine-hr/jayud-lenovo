@@ -165,6 +165,9 @@
         <if test="form.type !=null and form.modelType == 1">
             and t.`id` in (select id from v_bookOrder)
         </if>
+        <if test="form.hgTruckId !=null and form.hgTruckId !=''">
+            and t.`hg_truck_id` = #{form.hgTruckId}
+        </if>
     </select>
 
     <select id="getBookingOrderById" parameterType="java.lang.Integer" resultType="com.jayud.scm.model.vo.BookingOrderVO">
@@ -175,5 +178,25 @@
         join fee f on t.arfee_id = f.id
         where 1=1
         and t.`id` = #{id}
+    </select>
+
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.BookingOrderVO">
+        select
+        t.`id`,t.`booking_no`,t.`booking_date`,t.`arrived_date`,t.`state_flag`,t.`customer_id`,t.`customer_no`,t.`customer_name`,t.`customer_type`,t.`buyer`,t.`customer_email`,t.`supplier_id`,t.`supplier_name`,t.`supplier_no`,t.`supplier_type`,t.`model_type`,t.`origin`,t.`destination`,t.`pick_up_no`,t.`pick_up_user`,t.`pick_up_tel`,t.`pick_up_address`,t.`pick_up_remark`,t.`delivery_name`,t.`delivery_tel`,t.`delivery_address`,t.`delivery_remark`,t.`hg_type`,t.`contract_no`,t.`currency_name`,t.`is_hg`,t.`hg_truck_book_id`,t.`hg_truck_id`,t.`hg_truck_no`,t.`f_multi_levei0`,t.`f_datetime`,t.`check_state_flag`,t.`f_level`,t.`f_step`,t.`remark`,t.`overseas_customers_id`,t.`overseas_customers`,t.`receiving_id`,t.`receiving_no`,t.`customer_relation_id`,t.`supplier_relation_id`,t.`arfee_id`,t.`deputy_style`,t.`incoterms`,t.`pay_fee_style`,t.`pay_fee_day`,t.`re_fee_style`,t.`re_fee_day`,t.`account_type`,t.`interest`,t.`balance_day`,t.`insurance`,t.`f_rate`,t.`bg_rate`,t.`hg_rate`,t.`arrived_rate`,t.`invoice_rate`,t.`rece_rate`,t.`account_rate`,t.`goods_rate`,t.`convert_rate`,t.`appoint_hg_rate`,t.`composite_fee`,t.`proxy_fee`,t.`composite_proxy_fee`,t.`fsales_id`,t.`fsales_name`,t.`follower_id`,t.`follower_name`,t.`yfee`,t.`bfee`,t.`earnest_per`,t.`inv_remark`,t.`is_lowest_price`,t.`inv_customer_id`,t.`inv_customer_name`,t.`product_class`,t.`bill_id`,t.`bill_style`,t.`is_hs_status`,t.`make_by`,t.`make_by_name`,t.`make_dtm`,t.`purchase_contract_no`,t.`sales_contract_no`,t.`origin_area`,t.`hk_co_id`,t.`hk_co_name`,t.`hk_co_name_en`,t.`hk_co_address`,t.`hk_co_address_en`,t.`hk_co_relationer`,t.`hk_co_tel`,t.`hk_co_email`,t.`hk_co_fax`,t.`hg_currency_name`,t.`is_urgent`,t.`min_fees_no`,t.`is_sync`,t.`onl_id`,t.`onl_no`,t.`print_num`,t.`is_jiaji`,t.`purchaseid`,t.`purchasename`,t.`saleid`,t.`salename`,t.`hub_no`,t.`custom_master`,t.`distinate_port`,t.`port`,t.`trade_country`,t.`trade_area_code`,t.`desp_port_code`,t.`goods_place`,t.`is_us_payment`,t.`is_confirm`,t.`so_num`,t.`consignee_code`,t.`consignee_address`,t.`consignee_tel`,t.`container_type`,t.`consignee_name`,t.`transportation_type`,t.`crt_by`,t.`crt_by_name`,t.`crt_by_dtm`,t.`mdy_by`,t.`mdy_by_name`,t.`mdy_by_dtm`,t.`voided`,t.`voided_by`,t.`voided_by_name`,t.`voided_by_dtm`
+        from booking_order t
+        where 1=1
+        and t.voided = 0 and ISNULL(t.hg_truck_id)
+        <if test="form.bookingNo !=null and form.bookingNo!=''">
+            and t.`booking_no` like concat('%',#{form.bookingNo},'%')
+        </if>
+        <if test="form.modelType !=null and form.modelType!=''">
+            and t.model_type = #{form.modelType}
+        </if>
+        <if test="form.hgTruckId !=null and form.hgTruckId !=''">
+            and t.`hg_truck_id` = #{form.hgTruckId}
+        </if>
+        <if test="form.customerName !=null and form.customerName !=''">
+            and t.`customer_name` = #{form.customerName}
+        </if>
     </select>
 </mapper>

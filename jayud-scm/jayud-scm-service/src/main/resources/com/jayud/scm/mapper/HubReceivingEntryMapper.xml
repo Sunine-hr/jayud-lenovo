@@ -73,8 +73,20 @@
         ctns_no ctnsNo, bill_id billId, bill_no billNo, ctns_item_model ctnsItemModel, is_print isPrint, print_num printNum,
         print_sum printSum, pn, bn, state_flag stateFlag,  remark,
         crt_by_name crtByName,crt_by_dtm crtByDtm, remark, mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
-        from hub_shipping_entry hse
-        where hse.voided = 0 and hse.shipping_id = #{form.id}
+        from hub_receiving_entry hse
+        where hse.voided = 0 and hse.receiving_id = #{form.id}
+    </select>
+
+    <select id="findByPageByBillId" resultType="com.jayud.scm.model.vo.HubReceivingEntryVO">
+        select id, receiving_id receivingId, item_no itemNo, booking_id bookingId, booking_no bookingNo, booking_entry_id bookingEntryId,
+        item_id itemId, item_model itemModel, item_name itemName, item_brand itemBrand, item_origin itemOrigin,
+        item_notes itemNotes, qty, unit, price, hg_price hgPrice, packages, pallets,
+        cartons, l_cartons lCartons, gw, nw, cbm, lot_list lotList, po, ctns_size ctnsSize,
+        ctns_no ctnsNo, bill_id billId, bill_no billNo, ctns_item_model ctnsItemModel, is_print isPrint, print_num printNum,
+        print_sum printSum, pn, bn, state_flag stateFlag,  remark,
+        crt_by_name crtByName,crt_by_dtm crtByDtm, remark, mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
+        from hub_receiving_entry hse
+        where hse.voided = 0 and hse.bill_id = #{form.id}
     </select>
 
 </mapper>

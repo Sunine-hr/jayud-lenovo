@@ -1,9 +1,14 @@
 package com.jayud.scm.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.DeleteForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.CheckOrderMapper;
+import com.jayud.scm.model.vo.CheckOrderEntryVO;
+import com.jayud.scm.model.vo.CheckOrderVO;
 import com.jayud.scm.service.ICheckOrderEntryService;
 import com.jayud.scm.service.ICheckOrderFollowService;
 import com.jayud.scm.service.ICheckOrderService;
@@ -66,5 +71,22 @@ public class CheckOrderServiceImpl extends ServiceImpl<CheckOrderMapper, CheckOr
             log.warn("操作记录表添加失败"+checkOrderFollows);
         }
         return b1;
+    }
+
+    @Override
+    public List<CheckOrderVO> getCheckOrderByBookingId(QueryCommonForm form) {
+        List<CheckOrderVO> checkOrderVOS = new ArrayList<>();
+        for (Integer id : form.getIds()) {
+            QueryWrapper<CheckOrder> queryWrapper = new QueryWrapper();
+            queryWrapper.lambda().eq(CheckOrder::getBookingId,id);
+            List<CheckOrder> list = this.list(queryWrapper);
+            List<CheckOrderVO> checkOrderVOS1 = ConvertUtil.convertList(list, CheckOrderVO.class);
+            for (CheckOrderVO checkOrderVO : checkOrderVOS1) {
+                List<CheckOrderEntry> checkOrderEntryByCheckOrderId = checkOrderEntryService.getCheckOrderEntryByCheckOrderId(checkOrderVO.getId().longValue());
+                checkOrderVO.setCheckOrderEntryVOS(ConvertUtil.convertList(checkOrderEntryByCheckOrderId, CheckOrderEntryVO.class));
+            }
+            checkOrderVOS.addAll(checkOrderVOS1);
+        }
+        return checkOrderVOS;
     }
 }

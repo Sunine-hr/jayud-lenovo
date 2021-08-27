@@ -10,6 +10,7 @@ import com.jayud.scm.model.vo.CheckOrderFollowVO;
 import com.jayud.scm.model.vo.CommodityFollowVO;
 import com.jayud.scm.service.ICheckOrderFollowService;
 import com.jayud.scm.service.ICommodityFollowService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,12 +31,13 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/checkOrderFollow")
+@Api(tags = "提验货单跟踪记录管理")
 public class CheckOrderFollowController {
 
     @Autowired
     private ICheckOrderFollowService checkOrderFollowService;
 
-    @ApiOperation(value = "根据商品id获取商品操作日志")
+    @ApiOperation(value = "根据提验货id获取提验货操作日志")
     @PostMapping(value = "/findListByCommodityId")
     public CommonResult findListByCheckOrderId(@RequestBody QueryCommonForm form) {
         IPage<CheckOrderFollowVO> page = this.checkOrderFollowService.findListByCheckOrderId(form);

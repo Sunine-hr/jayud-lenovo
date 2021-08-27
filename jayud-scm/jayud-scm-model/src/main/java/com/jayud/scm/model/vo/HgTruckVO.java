@@ -47,7 +47,7 @@ public class HgTruckVO {
     private String truckCompany;
 
     @ApiModelProperty(value = "车辆类型（0正常，1：加车，2包车）")
-    private Integer sType;
+    private String sType;
 
     @ApiModelProperty(value = "预订车次类型")
     private String preTruckStyle;

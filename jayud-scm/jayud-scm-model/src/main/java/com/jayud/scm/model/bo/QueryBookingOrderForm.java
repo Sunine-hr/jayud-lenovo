@@ -17,6 +17,8 @@ public class QueryBookingOrderForm extends BasePageForm {
     //查询条件
     //委托单号
     //客户名称
+    @ApiModelProperty(value = "客户名称、利润中心")
+    private String customerName;
     //报关单号
 
     //委托单状态
@@ -29,5 +31,8 @@ public class QueryBookingOrderForm extends BasePageForm {
 
     @ApiModelProperty(value = "作用于新增出库单的委托订单查询")
     private Integer type;
+
+    @ApiModelProperty(value = "港车id")
+    private Integer hgTruckId;
 
 }

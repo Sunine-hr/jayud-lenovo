@@ -7,14 +7,18 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.Query;
 import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.StateFlagEnum;
 import com.jayud.scm.model.enums.TableEnum;
+import com.jayud.scm.model.po.BookingOrder;
 import com.jayud.scm.model.po.SystemRole;
 import com.jayud.scm.model.po.SystemRoleAction;
 import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.BookingOrderEntryVO;
 import com.jayud.scm.model.vo.BookingOrderFollowVO;
+import com.jayud.scm.model.vo.BookingOrderFormVO;
 import com.jayud.scm.model.vo.BookingOrderVO;
 import com.jayud.scm.service.*;
 import com.jayud.scm.utils.ExcelTemplateUtil;
@@ -22,12 +26,14 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.velocity.util.ArrayListWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -373,6 +379,48 @@ public class BookingOrderController {
         return CommonResult.success("操作成功");
     }
 
+
+    @ApiOperation(value = "根据报关单id获取委托单明细信息")
+    @PostMapping(value = "/getBookingEntryByBillId")
+    public CommonResult getBookingEntryByBillId(@RequestBody QueryCommonForm form) {
+        BookingOrder bookingOrder = bookingOrderService.getBookingOrderByBillId(form.getId());
+        if(bookingOrder != null){
+            List<BookingOrderEntryVO> bookingOrderEntryByBookingId = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingOrder.getId());
+            return CommonResult.success(bookingOrderEntryByBookingId);
+        }
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "根据港车id获取委托单信息")
+    @PostMapping(value = "/getBookingOrderByHgTrackId")
+    public CommonResult getBookingOrderByHgTrackId(@RequestBody QueryCommonForm form) {
+        List<BookingOrder> bookingOrders = bookingOrderService.getBookingOrderByHgTrackId(form.getId());
+
+        List<BookingOrderFormVO> bookingOrderFormVOS = new ArrayList<>();
+        List<BookingOrderVO> bookingOrderVOS = ConvertUtil.convertList(bookingOrders, BookingOrderVO.class);
+        for (BookingOrderVO bookingOrderVO : bookingOrderVOS) {
+            List<BookingOrderEntryVO> bookingOrderEntryByBookingId = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingOrderVO.getId());
+            for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryByBookingId) {
+                BookingOrderFormVO bookingOrderFormVO = ConvertUtil.convert(bookingOrderVO,BookingOrderFormVO.class);
+                bookingOrderFormVO.setGw(bookingOrderEntryVO.getGw());
+                bookingOrderFormVO.setQty(bookingOrderEntryVO.getQty());
+                bookingOrderFormVO.setTotalCipPrice(bookingOrderEntryVO.getCipPrice().multiply(bookingOrderEntryVO.getQty()));
+                bookingOrderFormVO.setTotalHgMoney(bookingOrderEntryVO.getTotalHgMoney());
+                bookingOrderFormVO.setTotalMoney(bookingOrderEntryVO.getTotalMoney());
+                bookingOrderFormVO.setPackages(bookingOrderEntryVO.getPackages());
+                bookingOrderFormVOS.add(bookingOrderFormVO);
+            }
+        }
+        return CommonResult.success(bookingOrderFormVOS);
+    }
+
+    @ApiOperation(value = "出口委托单，分页查询")
+    @PostMapping(value = "/findByPage")
+    public CommonResult<CommonPageResult<BookingOrderVO>> findByPage(@Valid @RequestBody QueryBookingOrderForm form){
+        IPage<BookingOrderVO> page = bookingOrderService.findByPage(form);
+        CommonPageResult<BookingOrderVO> pageVO = new CommonPageResult(page);
+        return CommonResult.success(pageVO);
+    }
 
 
 }

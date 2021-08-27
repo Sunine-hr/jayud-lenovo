@@ -7,6 +7,8 @@ import com.jayud.scm.model.po.HubShipping;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.HubShippingVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 出库单主表 服务类
@@ -24,4 +26,6 @@ public interface IHubShippingService extends IService<HubShipping> {
     boolean signOrder(QueryCommonForm form);
 
     boolean saveOrUpdateHubShipping(AddHubShippingForm form);
+
+    List<HubShippingVO> getHubShippingByBookingId(QueryCommonForm form);
 }

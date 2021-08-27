@@ -5,8 +5,11 @@ import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddHubShippingForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.po.BookingOrder;
+import com.jayud.scm.model.vo.CheckOrderVO;
 import com.jayud.scm.model.vo.HubReceivingVO;
 import com.jayud.scm.model.vo.HubShippingVO;
+import com.jayud.scm.service.IBookingOrderService;
 import com.jayud.scm.service.IHubShippingService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,6 +39,9 @@ public class HubShippingController {
 
     @Autowired
     private IHubShippingService hubShippingService;
+
+    @Autowired
+    private IBookingOrderService bookingOrderService;
 
     @ApiOperation(value = "根据id查询出库订单信息")
     @PostMapping(value = "/getHubShippingById")
@@ -64,6 +72,19 @@ public class HubShippingController {
             return CommonResult.error(444,"订单签收失败");
         }
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "根据委托单id获取出库单信息")
+    @PostMapping(value = "/getHubShippingByBookingId")
+    public CommonResult getHubShippingByBookingId(@RequestBody QueryCommonForm form) {
+        List<BookingOrder> bookingOrderByHgTrackId = bookingOrderService.getBookingOrderByHgTrackId(form.getId());
+        List<Integer> list = new ArrayList<>();
+        for (BookingOrder bookingOrder : bookingOrderByHgTrackId) {
+            list.add(bookingOrder.getId());
+        }
+        form.setIds(list);
+        List<HubShippingVO> hubShippingVOS = hubShippingService.getHubShippingByBookingId(form);
+        return CommonResult.success(hubShippingVOS);
     }
 
 }

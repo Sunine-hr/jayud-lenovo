@@ -51,4 +51,14 @@
         id, check_id, booking_entry_id, booking_id, booking_no, item_num, item_model, item_name, item_brand, item_origin, item_notes, item_accs, qty, unit, pn, bn, ctns_no, gw, nw, cbm, shipping_m, demand_no, in_store_num, packages_type, packages, pallets, cartons, lcartons, remark, check_remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
 
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.CheckOrderEntryVO">
+        select id, check_id checkId, booking_entry_id bookingEntryId, booking_id bookingId, booking_no bookingNo,
+        item_num itemNum, item_model itemModel, item_name itemName, item_brand itemBrand, item_origin itemOrigin,
+        item_notes itemNotes, item_accs itemAccs, qty, unit, pn, bn, ctns_no, gw, nw, cbm,
+        shipping_m shippingM, demand_no demandNo, in_store_num inStoreNum, packages_type packagesType, packages,
+        pallets, cartons, lcartons, remark, check_remark checkRemark, crt_by_name crtByName,
+        crt_by_dtm crtByDtm, mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
+        from check_order_entry coe where coe.voided = 0 and coe.check_id = #{form.id}
+    </select>
+
 </mapper>

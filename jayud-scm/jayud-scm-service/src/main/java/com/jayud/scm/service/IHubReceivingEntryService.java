@@ -18,7 +18,11 @@ import java.util.List;
  */
 public interface IHubReceivingEntryService extends IService<HubReceivingEntry> {
 
-    List<HubReceivingEntry> getShippingEntryByShippingId(Long id);
+    List<HubReceivingEntry> getReceivingEntryByReceivingId(Long id);
 
     IPage<HubReceivingEntryVO> findByPage(QueryCommonForm form);
+
+    IPage<HubReceivingEntryVO> findByPageByBillId(QueryCommonForm form);
+
+    List<HubReceivingEntry> getListByBillId(Long id);
 }

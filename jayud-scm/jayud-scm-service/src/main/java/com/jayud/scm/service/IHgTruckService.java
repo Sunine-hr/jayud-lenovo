@@ -1,6 +1,9 @@
 package com.jayud.scm.service;
 
 import com.jayud.scm.model.bo.AddHgTruckForm;
+import com.jayud.scm.model.bo.DeleteForm;
+import com.jayud.scm.model.bo.HgTruckLicensePlateForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.HgTruck;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.HgTruckVO;
@@ -18,4 +21,16 @@ public interface IHgTruckService extends IService<HgTruck> {
     HgTruckVO getHgTruckById(Integer id);
 
     boolean saveOrUpdateHgTruck(AddHgTruckForm form);
+
+    boolean tieUpCar(QueryCommonForm form);
+
+    boolean updateTrainNumberStatus(QueryCommonForm form);
+
+    boolean sealInformationEntry(QueryCommonForm form);
+
+    boolean tieLicensePlate(HgTruckLicensePlateForm form);
+
+    boolean unboundTrainNumber(QueryCommonForm form);
+
+    boolean delete(DeleteForm deleteForm);
 }

@@ -1,8 +1,11 @@
 package com.jayud.scm.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.scm.model.bo.AddCheckOrderEntryForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.CheckOrderEntry;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.scm.model.vo.CheckOrderEntryVO;
 
 import java.util.List;
 
@@ -21,4 +24,6 @@ public interface ICheckOrderEntryService extends IService<CheckOrderEntry> {
     boolean addCheckOrderEntry(List<AddCheckOrderEntryForm> form);
 
     boolean updateCheckOrderEntry(List<AddCheckOrderEntryForm> form);
+
+    IPage<CheckOrderEntryVO> findByPage(QueryCommonForm form);
 }

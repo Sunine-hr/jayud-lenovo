@@ -34,7 +34,7 @@ public class AddBPublicFilesForm {
     @ApiModelProperty(value = "附件类型,1:商品库,2:客户主体,3委托订单,4:付款单,5:收款单,6:入库单,7:出库单,8:应收款,9:提验货,10:中港运输")
     private Integer fileModel;
 
-    @ApiModelProperty(value = "附件类型,1:商品库,2:客户主体,3委托订单,4:付款单,5:收款单,6:入库单,7:出库单,8:应收款,9:提验货,10:中港运输")
+    @ApiModelProperty(value = "上传文件类型")
     private String fileModelCopy;
 
     @ApiModelProperty(value = "业务单据ID")

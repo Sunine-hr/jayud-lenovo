@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -37,6 +39,7 @@ public class HgTruck extends Model<HgTruck> {
     private String truckNo;
 
     @ApiModelProperty(value = "车次日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime truckDate;
 
     @ApiModelProperty(value = "车次时间(上午9：00，下午6：00等)")
@@ -49,7 +52,7 @@ public class HgTruck extends Model<HgTruck> {
     private String truckCompany;
 
     @ApiModelProperty(value = "车辆类型（0正常，1：加车，2包车）")
-    private Integer sType;
+    private String sType;
 
     @ApiModelProperty(value = "预订车次类型")
     private String preTruckStyle;

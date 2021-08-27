@@ -34,4 +34,6 @@ public interface BookingOrderMapper extends BaseMapper<BookingOrder> {
      * @return
      */
     BookingOrderVO getBookingOrderById(@Param("id") Integer id);
+
+    IPage<BookingOrderVO> findByPage(@Param("page") Page<BookingOrderVO> page, @Param("form") QueryBookingOrderForm form);
 }

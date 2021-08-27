@@ -1,8 +1,12 @@
 package com.jayud.scm.service;
 
 import com.jayud.scm.model.bo.DeleteForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.CheckOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.scm.model.vo.CheckOrderVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +19,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface ICheckOrderService extends IService<CheckOrder> {
 
     boolean delete(DeleteForm deleteForm);
+
+    List<CheckOrderVO> getCheckOrderByBookingId(QueryCommonForm form);
 }

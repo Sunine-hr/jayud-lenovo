@@ -26,7 +26,7 @@ import java.util.List;
 public class HubReceivingEntryServiceImpl extends ServiceImpl<HubReceivingEntryMapper, HubReceivingEntry> implements IHubReceivingEntryService {
 
     @Override
-    public List<HubReceivingEntry> getShippingEntryByShippingId(Long id) {
+    public List<HubReceivingEntry> getReceivingEntryByReceivingId(Long id) {
         QueryWrapper<HubReceivingEntry> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(HubReceivingEntry::getReceivingId,id);
         queryWrapper.lambda().eq(HubReceivingEntry::getVoided,0);
@@ -37,5 +37,19 @@ public class HubReceivingEntryServiceImpl extends ServiceImpl<HubReceivingEntryM
     public IPage<HubReceivingEntryVO> findByPage(QueryCommonForm form) {
         Page<HubReceivingEntryVO> page = new Page<>(form.getPageNum(), form.getPageSize());
         return this.baseMapper.findByPage(page, form);
+    }
+
+    @Override
+    public IPage<HubReceivingEntryVO> findByPageByBillId(QueryCommonForm form) {
+        Page<HubReceivingEntryVO> page = new Page<>(form.getPageNum(), form.getPageSize());
+        return this.baseMapper.findByPageByBillId(page, form);
+    }
+
+    @Override
+    public List<HubReceivingEntry> getListByBillId(Long id) {
+        QueryWrapper<HubReceivingEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(HubReceivingEntry::getBillId,id);
+        queryWrapper.lambda().eq(HubReceivingEntry::getVoided,0);
+        return this.list(queryWrapper);
     }
 }

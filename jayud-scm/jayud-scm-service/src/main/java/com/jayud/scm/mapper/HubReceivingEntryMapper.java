@@ -21,4 +21,6 @@ import org.apache.ibatis.annotations.Param;
 public interface HubReceivingEntryMapper extends BaseMapper<HubReceivingEntry> {
 
     IPage<HubReceivingEntryVO> findByPage(@Param("page") Page<HubReceivingEntryVO> page, @Param("form")QueryCommonForm form);
+
+    IPage<HubReceivingEntryVO> findByPageByBillId(@Param("page")Page<HubReceivingEntryVO> page, @Param("form")QueryCommonForm form);
 }

@@ -16,5 +16,7 @@ public class QueryForm extends BasePageForm{
     @ApiModelProperty("模糊条件")
     private String name;
 
+    @ApiModelProperty("id")
+    private Integer id;
 
 }

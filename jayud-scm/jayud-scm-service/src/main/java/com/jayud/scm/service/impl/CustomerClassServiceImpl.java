@@ -3,6 +3,7 @@ package com.jayud.scm.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.scm.model.bo.AddCustomerClassForm;
 import com.jayud.scm.model.bo.AddCustomerTypeForm;
 import com.jayud.scm.model.po.CustomerClass;
 import com.jayud.scm.mapper.CustomerClassMapper;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,12 +56,22 @@ public class CustomerClassServiceImpl extends ServiceImpl<CustomerClassMapper, C
 
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
-        List<CustomerClass> customerClasses = ConvertUtil.convertList(form.getAddCustomerClassForms(), CustomerClass.class);
-        for (CustomerClass customerClass : customerClasses) {
+        List<CustomerClass> customerClasses = new ArrayList<>();
+        for (AddCustomerClassForm addCustomerClassForm : form.getAddCustomerClassForms()) {
+            QueryWrapper<CustomerClass> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(CustomerClass::getClassName,addCustomerClassForm.getClassName());
+            queryWrapper.lambda().eq(CustomerClass::getCustomerId,form.getId());
+            CustomerClass customerClass = this.getOne(queryWrapper);
+            if(customerClass == null){
+                customerClass = new CustomerClass();
+            }
+
             customerClass.setCustomerId(form.getId());
+            customerClass.setClassName(addCustomerClassForm.getClassName());
             customerClass.setCrtBy(systemUser.getId().intValue());
             customerClass.setCrtByDtm(LocalDateTime.now());
             customerClass.setCrtByName(systemUser.getUserName());
+            customerClasses.add(customerClass);
         }
         boolean b = this.saveOrUpdateBatch(customerClasses);
         if(b){

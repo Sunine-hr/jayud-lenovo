@@ -5,7 +5,10 @@ import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.PermissionForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.enums.CheckStateEnum;
+import com.jayud.scm.model.po.BookingOrder;
 import com.jayud.scm.model.po.CheckOrder;
+import com.jayud.scm.model.vo.CheckOrderVO;
+import com.jayud.scm.service.IBookingOrderService;
 import com.jayud.scm.service.ICheckOrderService;
 import com.jayud.scm.service.IHubReceivingService;
 import io.swagger.annotations.Api;
@@ -16,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -35,6 +41,9 @@ public class CheckOrderController {
 
     @Autowired
     private IHubReceivingService hubReceivingService;
+
+    @Autowired
+    private IBookingOrderService bookingOrderService;
 
     @ApiOperation(value = "下一步操作 1提货完成、2验货完成、3提货撤销、4验货撤销")
     @PostMapping(value = "/nextOperation")
@@ -88,6 +97,19 @@ public class CheckOrderController {
             return CommonResult.error(444,"操作失败");
         }
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "根据委托单id获取提验货信息")
+    @PostMapping(value = "/getCheckOrderByBookingId")
+    public CommonResult<List<CheckOrderVO>> getCheckOrderByBookingId(@RequestBody QueryCommonForm form) {
+        List<BookingOrder> bookingOrderByHgTrackId = bookingOrderService.getBookingOrderByHgTrackId(form.getId());
+        List<Integer> list = new ArrayList<>();
+        for (BookingOrder bookingOrder : bookingOrderByHgTrackId) {
+            list.add(bookingOrder.getId());
+        }
+        form.setIds(list);
+        List<CheckOrderVO> checkOrderVOList = checkOrderService.getCheckOrderByBookingId(form);
+        return CommonResult.success(checkOrderVOList);
     }
 
 }

@@ -2,13 +2,18 @@ package com.jayud.scm.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.Query;
 import com.jayud.scm.model.bo.AddCheckOrderEntryForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.CheckOrderEntry;
 import com.jayud.scm.model.po.HubShippingEntry;
 import com.jayud.scm.model.vo.BookingOrderEntryVO;
+import com.jayud.scm.model.vo.CheckOrderEntryVO;
+import com.jayud.scm.model.vo.CustomerTaxVO;
 import com.jayud.scm.service.IBookingOrderEntryService;
 import com.jayud.scm.service.ICheckOrderEntryService;
 import io.swagger.annotations.Api;
@@ -42,6 +47,14 @@ public class CheckOrderEntryController {
 
     @Autowired
     private IBookingOrderEntryService bookingOrderEntryService;
+
+    @ApiOperation(value = "根据提验货单获取提货验货单明细")
+    @PostMapping(value = "/findByPage")
+    public CommonResult<CommonPageResult<CheckOrderEntryVO>> findByPage(@RequestBody QueryCommonForm form) {
+        IPage<CheckOrderEntryVO> page = this.checkOrderEntryService.findByPage(form);
+        CommonPageResult pageVO = new CommonPageResult(page);
+        return CommonResult.success(pageVO);
+    }
 
     @ApiOperation(value = "新增提货验货单明细")
     @PostMapping(value = "/addCheckOrderEntry")
@@ -79,16 +92,17 @@ public class CheckOrderEntryController {
         Integer bookingId = MapUtil.getInt(map, "bookingId");
         List<BookingOrderEntryVO> bookingOrderEntryByBookingId = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingId);
         List<CheckOrderEntry> checkOrderEntries = checkOrderEntryService.getCheckOrderEntryByCheckOrderId(checkOrderId.longValue());
-        for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryByBookingId) {
-            for (CheckOrderEntry checkOrderEntry : checkOrderEntries) {
-                if(bookingOrderEntryVO.getId().equals(checkOrderEntry.getBookingEntryId())){
 
-                    bookingOrderEntryByBookingId.remove(bookingOrderEntryVO);
+        for (int i = 0; i < bookingOrderEntryByBookingId.size(); i++) {
+            for (CheckOrderEntry checkOrderEntry : checkOrderEntries) {
+                if(bookingOrderEntryByBookingId.get(i).getId().equals(checkOrderEntry.getBookingEntryId())){
+                    bookingOrderEntryByBookingId.remove(i);
                 }
             }
-            if(CollectionUtils.isEmpty(bookingOrderEntryByBookingId)){
-                return CommonResult.success();
-            }
+        }
+
+        if(CollectionUtils.isEmpty(bookingOrderEntryByBookingId)){
+            return CommonResult.success();
         }
         return CommonResult.success(bookingOrderEntryByBookingId);
     }

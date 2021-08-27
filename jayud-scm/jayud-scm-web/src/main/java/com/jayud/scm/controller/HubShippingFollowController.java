@@ -35,7 +35,7 @@ public class HubShippingFollowController {
     @Autowired
     private IHubShippingFollowService hubShippingFollowService;
 
-    @ApiOperation(value = "根据商品id获取商品操作日志")
+    @ApiOperation(value = "根据出库id获取出库操作日志")
     @PostMapping(value = "/findListByHubShippingId")
     public CommonResult findListByHubShippingId(@RequestBody QueryCommonForm form) {
         IPage<HubShippingFollowVO> page = this.hubShippingFollowService.findListByHubShippingId(form);

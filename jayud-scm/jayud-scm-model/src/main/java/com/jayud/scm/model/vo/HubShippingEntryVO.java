@@ -3,6 +3,8 @@ package com.jayud.scm.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -74,9 +76,11 @@ public class HubShippingEntryVO {
     private String itemOrigin;
 
     @ApiModelProperty(value = "数量")
+    @JsonProperty(value = "qty")
     private BigDecimal qty;
 
     @ApiModelProperty(value = "单位")
+    @JsonProperty(value = "unit")
     private String unit;
 
     @ApiModelProperty(value = "单价")
@@ -95,9 +99,11 @@ public class HubShippingEntryVO {
     private Integer cartons;
 
     @ApiModelProperty(value = "散箱")
+    @JsonProperty(value = "iCartons")
     private Integer iCartons;
 
     @ApiModelProperty(value = "箱号")
+    @JsonProperty(value = "ctnsNo")
     private String ctnsNo;
 
     @ApiModelProperty(value = "毛重")
@@ -109,22 +115,15 @@ public class HubShippingEntryVO {
     @ApiModelProperty(value = "材积")
     private BigDecimal cbm;
 
-    @ApiModelProperty(value = "备用1")
-    private String temp01;
-
-    @ApiModelProperty(value = "备用2")
-    private String temp02;
-
-    @ApiModelProperty(value = "备用3")
-    private String temp03;
-
     @ApiModelProperty(value = "0:未检货，1：正在检货，2：检货完成，3：复核完成")
     private Integer stateFlag;
 
     @ApiModelProperty(value = "检货开始时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime checkBeginTime;
 
     @ApiModelProperty(value = "检货完成时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime checkEndTime;
 
     @ApiModelProperty(value = "检货说明")
@@ -132,15 +131,6 @@ public class HubShippingEntryVO {
 
     @ApiModelProperty(value = "料号")
     private String pn;
-
-    @ApiModelProperty(value = "是否同步在线")
-    private Integer isOnl;
-
-    @ApiModelProperty(value = "在线ID")
-    private Integer onlId;
-
-    @ApiModelProperty(value = "在线单编号")
-    private String onlNo;
 
     @ApiModelProperty(value = "要求")
     private String requirement;
@@ -155,6 +145,7 @@ public class HubShippingEntryVO {
     private String packRequested;
 
     @ApiModelProperty(value = "QC")
+    @JsonProperty(value = "qcRequested")
     private String qcRequested;
 
     @ApiModelProperty(value = "帖标")
@@ -170,6 +161,7 @@ public class HubShippingEntryVO {
     private String crtByName;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime crtByDtm;
 
     @ApiModelProperty(value = "备注")
@@ -179,6 +171,7 @@ public class HubShippingEntryVO {
     private String mdyByName;
 
     @ApiModelProperty(value = "最后修改时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime mdyByDtm;
 
 }

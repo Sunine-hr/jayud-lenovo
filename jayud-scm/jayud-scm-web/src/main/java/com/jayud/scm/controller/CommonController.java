@@ -1,6 +1,7 @@
 package com.jayud.scm.controller;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.db.meta.Table;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import com.alibaba.excel.EasyExcel;
@@ -94,6 +95,15 @@ public class CommonController {
     @Autowired
     private ICheckOrderService checkOrderService;
 
+    @Autowired
+    private IHgBillService hgBillService;
+
+    @Autowired
+    private IHgTruckService hgTruckService;
+
+    @Autowired
+    private IBookingOrderService bookingOrderService;
+
     @ApiOperation(value = "删除通用方法")
     @PostMapping(value = "/delete")
     public CommonResult delete(@Valid @RequestBody DeleteForm deleteForm) {
@@ -113,6 +123,15 @@ public class CommonController {
                 }
             }
         }
+        if(deleteForm.getTable().equals(TableEnum.hg_truck.getDesc())){
+            for (Long id : deleteForm.getIds()) {
+                List<BookingOrder> bookingOrderByHgTrackId = bookingOrderService.getBookingOrderByHgTrackId(id.intValue());
+                if(CollectionUtils.isNotEmpty(bookingOrderByHgTrackId)){
+                    return CommonResult.error(444,"该车辆绑定了委托单，无法进行删除");
+                }
+            }
+
+        }
 
         boolean result = commodityService.commonDelete(deleteForm);
         if(!result){
@@ -129,15 +148,6 @@ public class CommonController {
             case 3:
                 result = bPublicFilesService.delete(deleteForm);
                 break;
-//            case 4:
-//                result = systemActionService.delete(deleteForm);
-//                break;
-//            case 5:
-//                result = systemRoleActionCheckService.delete(deleteForm);
-//                break;
-//            case 6:
-//                result = ibDataDicEntryService.delete(deleteForm);
-//                break;
             case 7:
                 result = customerService.delete(deleteForm);
                 break;
@@ -149,6 +159,12 @@ public class CommonController {
                 break;
             case 21:
                 result = checkOrderService.delete(deleteForm);
+                break;
+            case 23:
+                result = hgTruckService.delete(deleteForm);
+                break;
+            case 24:
+                result = hgBillService.delete(deleteForm);
                 break;
         }
 
@@ -280,7 +296,7 @@ public class CommonController {
         //拥有按钮权限，判断是否为审核按钮
         if(!form.getType().equals(0)){
             if(form.getCustomerAudit()){
-                List<CustomerRelationer> customerRelationers = customerRelationerService.getCustomerRelationerByCustomerIdAndType(form.getId(),"3");
+                List<CustomerRelationer> customerRelationers = customerRelationerService.getCustomerRelationerByCustomerIdAndType(form.getId(),"客户下单人");
                 if(CollectionUtils.isEmpty(customerRelationers)){
                     return CommonResult.error(444,"该审核客户没有对应下单人，无法审核");
                 }

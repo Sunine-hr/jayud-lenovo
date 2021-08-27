@@ -80,12 +80,12 @@ public class SystemRoleActionCheckServiceImpl extends ServiceImpl<SystemRoleActi
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
         //增加强先删除原来的审核按钮
-//        QueryWrapper<SystemRoleActionCheck> queryWrapper = new QueryWrapper();
-//        queryWrapper.lambda().eq(SystemRoleActionCheck::getRoleId,form.getRoleId());
-//        boolean remove = this.remove(queryWrapper);
-//        if(remove){
-//            log.warn("删除原来的审核权限");
-//        }
+        QueryWrapper<SystemRoleActionCheck> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(SystemRoleActionCheck::getRoleId,form.getRoleId());
+        boolean remove = this.remove(queryWrapper);
+        if(remove){
+            log.warn("删除原来的审核权限");
+        }
 
         List<SystemRoleActionCheck> systemRoleActionChecks = new ArrayList<>();
 

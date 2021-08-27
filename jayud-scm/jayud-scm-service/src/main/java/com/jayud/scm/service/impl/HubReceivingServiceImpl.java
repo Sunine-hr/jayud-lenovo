@@ -44,7 +44,7 @@ public class HubReceivingServiceImpl extends ServiceImpl<HubReceivingMapper, Hub
         List<HubReceivingFollow> hubReceivingFollows = new ArrayList<>();
         for (Long id : deleteForm.getIds()) {
 
-            List<HubReceivingEntry> hubShippingEntries1 = hubReceivingEntryService.getShippingEntryByShippingId(id);
+            List<HubReceivingEntry> hubShippingEntries1 = hubReceivingEntryService.getReceivingEntryByReceivingId(id);
             for (HubReceivingEntry hubReceivingEntry : hubShippingEntries1) {
                 hubReceivingEntry.setVoidedBy(deleteForm.getId().intValue());
                 hubReceivingEntry.setVoidedByDtm(deleteForm.getDeleteTime());
@@ -78,7 +78,7 @@ public class HubReceivingServiceImpl extends ServiceImpl<HubReceivingMapper, Hub
     @Override
     public HubReceivingVO getHubReceivingById(Integer id) {
         HubReceiving hubReceiving = this.getById(id);
-        List<HubReceivingEntry> hubShippingEntries = hubReceivingEntryService.getShippingEntryByShippingId(hubReceiving.getId().longValue());
+        List<HubReceivingEntry> hubShippingEntries = hubReceivingEntryService.getReceivingEntryByReceivingId(hubReceiving.getId().longValue());
         HubReceivingVO hubReceivingVO = ConvertUtil.convert(hubReceiving, HubReceivingVO.class);
         List<HubReceivingEntryVO> hubReceivingEntries = ConvertUtil.convertList(hubShippingEntries, HubReceivingEntryVO.class);
         hubReceivingVO.setHubReceivingEntryVOS(hubReceivingEntries);

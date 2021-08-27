@@ -3,6 +3,7 @@ package com.jayud.scm.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -221,7 +222,6 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         bookingOrderFollow.setCrtByDtm(LocalDateTime.now());
         bookingOrderFollowMapper.insert(bookingOrderFollow);
 
-
     }
 
     /**
@@ -277,5 +277,31 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         bookingOrderVO.setModelType(modelType);//业务类型/工作单类型 1进口  2出口 3国内 4香港  5采购  6销售
         bookingOrderVO.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(), LocalDateTime.now()));//单号的生成规则
         return bookingOrderVO;
+    }
+
+    @Override
+    public BookingOrder getBookingOrderByBillId(Integer id) {
+        QueryWrapper<BookingOrder> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(BookingOrder::getBillId,id);
+        queryWrapper.lambda().eq(BookingOrder::getVoided,0);
+        return this.getOne(queryWrapper);
+    }
+
+    @Override
+    public List<BookingOrder> getBookingOrderByHgTrackId(Integer id) {
+        QueryWrapper<BookingOrder> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(BookingOrder::getHgTruckId,id);
+        queryWrapper.lambda().eq(BookingOrder::getVoided,0);
+        return this.list(queryWrapper);
+    }
+
+    @Override
+    public IPage<BookingOrderVO> findByPage(QueryBookingOrderForm form) {
+        //定义分页参数
+        Page<BookingOrderVO> page = new Page(form.getPageNum(),form.getPageSize());
+        //定义排序规则
+        //page.addOrder(OrderItem.desc("t.id"));
+        IPage<BookingOrderVO> pageInfo = bookingOrderMapper.findByPage(page, form);
+        return pageInfo;
     }
 }

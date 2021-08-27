@@ -8,6 +8,8 @@ import com.jayud.scm.model.bo.QueryBookingOrderForm;
 import com.jayud.scm.model.po.BookingOrder;
 import com.jayud.scm.model.vo.BookingOrderVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 委托订单主表 服务类
@@ -75,4 +77,10 @@ public interface IBookingOrderService extends IService<BookingOrder> {
      * @return
      */
     BookingOrderVO prepareBookingOrder(Integer modelType);
+
+    BookingOrder getBookingOrderByBillId(Integer id);
+
+    List<BookingOrder> getBookingOrderByHgTrackId(Integer id);
+
+    IPage<BookingOrderVO> findByPage(QueryBookingOrderForm form);
 }

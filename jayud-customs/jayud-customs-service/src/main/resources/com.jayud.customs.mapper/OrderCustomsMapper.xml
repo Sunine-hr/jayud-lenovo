@@ -294,7 +294,7 @@
             AND oc.`status` = 'C_10'
         </if>
         <if test="form.cmd == 'goCustomsConfirm'">
-            AND oc.`status` = 'C_5' and oc.class_code = 'CBG'
+            AND oc.`status` in ('C_5','C_6_1','C_6_2')  and oc.class_code = 'CBG'
         </if>
         <if test="form.cmd == 'costAudit'">
             AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = oc.order_no AND opc.`status` = '2' and opc.sub_type = 'bg')
@@ -324,10 +324,15 @@
     <select id="getMainOrderNoByStatus" resultType="string">
         select main_order_no from order_customs
         <where>
-            <if test="status == 'C_5'">
-                and class_code = 'CBG'
-            </if>
-            and status=#{status}
+        <choose>
+            <when test="status == 'C_5'">
+                and status in ('C_5','C_6_1','C_6_2') and class_code = 'CBG'
+            </when>
+            <otherwise>
+                and status=#{status}
+            </otherwise>
+        </choose>
+
             <if test="legalIds != null and legalIds.size>0">
                 and `legal_entity_id` in
                 <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">

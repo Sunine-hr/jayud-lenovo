@@ -325,6 +325,12 @@ public enum OrderStatusEnum {
         if (CUSTOMS_C_5_1.getCode().equals(currentStatus)) {
             return OrderStatusEnum.CUSTOMS_C_5_1;
         }
+        if (CUSTOMS_C_6_1.getCode().equals(currentStatus)) {
+            return OrderStatusEnum.CUSTOMS_C_6_1;
+        }
+        if (CUSTOMS_C_6_2.getCode().equals(currentStatus)) {
+            return OrderStatusEnum.CUSTOMS_C_6_2;
+        }
         List<OrderStatusEnum> statusEnums = getCustomsProcess();
         boolean next = true;
         for (int i = 0; i < statusEnums.size(); i++) {

@@ -164,14 +164,14 @@ public class CustomerAddressController {
     @PostMapping(value = "/saveOrUpdateOrderAddr")
     public CommonResult saveOrUpdateOrderAddr(@RequestBody AddCustomerAddrForm form) {
         form.checkOrderOptAdd();
-        CustomerAddress customerAddress = ConvertUtil.convert(form, CustomerAddress.class);
         CustomerInfo customerInfo = this.customerInfoService.getByCode(form.getCustomerCode());
         form.setCustomerId(customerInfo.getId());
+        CustomerAddress customerAddress = ConvertUtil.convert(form, CustomerAddress.class);
 
         RegionCity province = regionCityService.getById(form.getProvince());
         RegionCity city = regionCityService.getById(form.getCity());
         RegionCity area = new RegionCity();
-        if ((form.getArea() != null)) {
+        if (form.getArea() != null) {
             area = regionCityService.getById(form.getArea());
         }
         form.assemblyLastAddr(province, city, area);

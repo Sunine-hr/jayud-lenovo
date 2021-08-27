@@ -61,7 +61,7 @@
                 and r.num like concat('%',#{form.num},'%')
             </if>
             <if test="form.createTime!=null and form.createTime.size>0">
-                and r.create_time between #{form.createTime[0]} and #{form.createTime[1]}
+                and f.create_time between #{form.createTime[0]} and #{form.createTime[1]}
             </if>
         </where>
         order by id desc

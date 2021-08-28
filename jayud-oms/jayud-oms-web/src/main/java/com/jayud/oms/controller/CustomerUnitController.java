@@ -131,5 +131,24 @@ public class CustomerUnitController {
         resultMap.put("businessType", initComboxStrVOS);
         return CommonResult.success(resultMap);
     }
+
+    @ApiOperation(value = "获取客户结算单位")
+    @PostMapping("/getCustomerSettlementUnit")
+    public CommonResult getCustomerSettlementUnit(@RequestBody Map<String, Object> map) {
+        String customerCode = MapUtil.getStr(map, "customerCode");
+        String type = MapUtil.getStr(map, "type");
+        Long departmentId = MapUtil.getLong(map, "departmentId");
+        if (StringUtils.isEmpty(type) || departmentId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        if (StringUtils.isEmpty(customerCode)) {
+            return CommonResult.error(400, "请选择客户");
+        }
+        CustomerInfo customerInfo = this.customerInfoService.getByCode(customerCode);
+        List<CustomerUnit> list = this.customerUnitService.getByCondition(new CustomerUnit().setCustomerId(customerInfo.getId()).setStatus(StatusEnum.ENABLE.getCode())
+                .setBusinessType(type).setOptDepartmentId(departmentId));
+
+        return CommonResult.success();
+    }
 }
 

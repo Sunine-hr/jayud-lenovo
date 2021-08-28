@@ -3170,18 +3170,29 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return;
         }
 
+
         String tmp = form.getReceivableCosts().get(0).getMainOrderNo();
-        List<OrderReceivableCost> orderReceivableCostList = this.orderReceivableCostService.getSubInternalCostByMainOrderNo(tmp, null);
+        List<OrderReceivableCost> oldReceivableCostList = this.orderReceivableCostService.getSubInternalCostByMainOrderNo(tmp, null);
 
         //应付供应商是子订单操作主体
         SupplierInfo supplierInfo = this.supplierInfoService.getByName(form.getSubLegalName());
-        form.getReceivableCosts().forEach(e -> {
+
+        List<OrderReceivableCost> newReceivableCosts = ConvertUtil.convertList(form.getReceivableCosts(), OrderReceivableCost.class);
+        //设置内部往来标识
+        form.getReceivableCosts().forEach(e -> e.setIsInternal(true));
+
+
+//        form.getReceivableCosts().forEach(e -> {
+//            e.setCustomerName(supplierInfo.getSupplierChName()).setCustomerCode(supplierInfo.getSupplierCode());
+//        });
+        newReceivableCosts.forEach(e -> {
             e.setCustomerName(supplierInfo.getSupplierChName()).setCustomerCode(supplierInfo.getSupplierCode());
         });
 
-        orderReceivableCostList.addAll(form.getReceivableCosts());
+//        orderReceivableCostList.addAll(orderReceivableCosts);
+        newReceivableCosts.addAll(oldReceivableCostList);
         //过滤相同数据
-        orderReceivableCostList = orderReceivableCostList.stream().collect(Collectors.collectingAndThen(
+        newReceivableCosts = newReceivableCosts.stream().collect(Collectors.collectingAndThen(
                 Collectors.toCollection(() ->
                         new TreeSet<>(Comparator.comparing(OrderReceivableCost::getId))), ArrayList::new));
 
@@ -3195,7 +3206,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderPaymentCost> addOrUpdate = new ArrayList<>();
 
 
-        for (OrderReceivableCost receivableCost : orderReceivableCostList) {
+        for (OrderReceivableCost receivableCost : newReceivableCosts) {
 
             OrderPaymentCost bind = oldBinds.remove(receivableCost.getId());
             OrderPaymentCost convert = ConvertUtil.convert(receivableCost, OrderPaymentCost.class);

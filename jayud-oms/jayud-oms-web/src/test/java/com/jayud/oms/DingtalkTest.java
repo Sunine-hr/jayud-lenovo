@@ -42,5 +42,29 @@ public class DingtalkTest {
 
     }
 
+    /**
+     * 通过openid，给微信小程序用户发送订阅消息
+     */
+    @Test
+    public void sendMessageByOpenidTest(){
+        Map<String, Object> msgMap = new HashMap<>();
+        msgMap.put("touser", "oIjjU5DQ8BGQfWKLjn43xtAJUtGc");
+        msgMap.put("template_id", "XPh1K5M1tWTuDyG2g26zgurUIHIEw5dDX50DxDJCOAs");
+        msgMap.put("page", "index");
+        msgMap.put("lang", "zh_CN");
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("thing2", new JSONObject().set("value", "集司码头-new-5"));
+        data.put("thing3", new JSONObject().set("value", "请前往查看接单详情，沟通操作细节！"));
+        data.put("thing4", new JSONObject().set("value", "某某项目v.2021"));
+        data.put("thing11", new JSONObject().set("value", "1板+10件+11箱"));
+        data.put("thing1", new JSONObject().set("value", "2021年1月14日上午8：00"));
+
+        msgMap.put("data", data);
+        log.debug(String.format("开始发送订阅消息给微信小程序..."));
+        JSONObject jsonObject = msgClient.sendMessageByOpenid(msgMap);
+        System.out.println(jsonObject);
+    }
+
 
 }

@@ -26,4 +26,10 @@ public interface MsgClient {
     @RequestMapping(value = "/api/msg/dingtalk/sendMessageByMobile", method = RequestMethod.POST)
     JSONObject sendMessageByMobile(@RequestBody Map<String, String> param);
 
+    /**
+     * 通过openid，给微信小程序用户发送订阅消息
+     */
+    @RequestMapping(value = "/api/msg/weixinminiprogram/sendMessageByOpenid", method = RequestMethod.POST)
+    JSONObject sendMessageByOpenid(@RequestBody Map<String, Object> param);
+
 }

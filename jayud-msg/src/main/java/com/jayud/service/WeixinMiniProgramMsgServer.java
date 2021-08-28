@@ -37,4 +37,17 @@ public interface WeixinMiniProgramMsgServer {
      * @return
      */
     JSONObject subscribeMessageSend(String access_token, Map<String, Object> body);
+
+    /*自定义接口*/
+
+    /**
+     * 通过openid，给微信小程序用户发送订阅消息
+     * 注意：
+     *      小程序页面，调起授权，出现一次，授权一次，发送一次订阅消息（授权一次，多发送无效；选择了“总是保持以上选择，不再询问”，也仅仅是授权了一次，第二次发送则用户拒绝消息）
+     *      需要引导用户授权
+     * @param openid
+     * @param body
+     * @return
+     */
+    JSONObject sendMessageByOpenid(String openid, Map<String, Object> body);
 }

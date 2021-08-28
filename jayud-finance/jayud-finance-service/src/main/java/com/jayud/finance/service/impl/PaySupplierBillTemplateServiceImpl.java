@@ -180,7 +180,7 @@ public class PaySupplierBillTemplateServiceImpl implements BillTemplateService {
                     settlementCurrency = "CNY";
                     originalCurrency = "HKD";
                     break;
-                case "港币":
+                case "港元":
                     settlementCurrency = "HKD";
                     originalCurrency = "CNY";
                     break;

@@ -10,6 +10,7 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.service.DingtalkMsgService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,19 @@ import java.util.Map;
 @Service
 @Slf4j
 public class DingtalkMsgServiceImpl implements DingtalkMsgService {
+
+    /**
+     * jayud 钉钉 应用凭证
+     */
+    @Value("${dingtalk.agentId}")
+    private String agentid;//发送消息时使用的微应用的AgentID
+    @Value("${dingtalk.miniappid}")
+    private String miniappid;
+    @Value("${dingtalk.appkey}")
+    private String appkey;//应用的唯一标识key
+    @Value("${dingtalk.appsecret}")
+    private String appsecret;//应用的密钥
+
 
     @Autowired
     private RedisUtils redisUtils;
@@ -162,9 +176,6 @@ public class DingtalkMsgServiceImpl implements DingtalkMsgService {
      */
     @Override
     public JSONObject sendMessageByMobile(String mobile, String message) {
-        String agentid = DingtalkMsgService.AGENTID;
-        String appkey = DingtalkMsgService.APPKEY;
-        String appsecret = DingtalkMsgService.APPSECRET;
         //1.获取企业凭证,拿到token
         JSONObject jsonObject1 = this.gettoken(appkey, appsecret);
         String access_token = jsonObject1.getStr("access_token");
@@ -192,7 +203,7 @@ public class DingtalkMsgServiceImpl implements DingtalkMsgService {
         body1.put("userid_list", userid);
         Map<String, Object> msg = new HashMap<>();
         msg.put("msgtype", "text");
-        msg.put("text", new JSONObject().set("content", message+"[佳裕达,"+ DateUtils.getLocalToStr(LocalDateTime.now()) +"]"));
+        msg.put("text", new JSONObject().set("content", message+"[时间："+ DateUtils.getLocalToStr(LocalDateTime.now()) +"]"));
         body1.put("msg", msg);
         JSONObject jsonObject3 = this.sendMessage(access_token, body1);
         String task_id = jsonObject3.getStr("task_id");
@@ -250,7 +261,7 @@ public class DingtalkMsgServiceImpl implements DingtalkMsgService {
         body1.put("userid_list", userid);
         Map<String, Object> msg = new HashMap<>();
         msg.put("msgtype", "text");
-        msg.put("text", new JSONObject().set("content", message+"[佳裕达,"+ DateUtils.getLocalToStr(LocalDateTime.now()) +"]"));
+        msg.put("text", new JSONObject().set("content", message+"[时间："+ DateUtils.getLocalToStr(LocalDateTime.now()) +"]"));
         body1.put("msg", msg);
         JSONObject jsonObject3 = this.sendMessage(access_token, body1);
         String task_id = jsonObject3.getStr("task_id");

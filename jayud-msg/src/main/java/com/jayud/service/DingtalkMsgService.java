@@ -12,19 +12,6 @@ import java.util.Map;
 public interface DingtalkMsgService {
 
     /**
-     * jayud 钉钉 应用凭证
-     * AgentId: 1279251144
-     * miniAppId: 5000000000980383
-     * AppKey: ding07nvmiueit3awmod
-     * AppSecret: zj4JdyA8OcvYuBf7cLTaH87S91vuMtI2PKlAtI_Ze0Q7haQ3ux6ysryhT6P-JGM4
-     */
-    public final static String AGENTID = "1279251144";//发送消息时使用的微应用的AgentID
-    public final static String MINIAPPID = "5000000000980383";
-    public final static String APPKEY = "ding07nvmiueit3awmod";//应用的唯一标识key
-    public final static String APPSECRET = "zj4JdyA8OcvYuBf7cLTaH87S91vuMtI2PKlAtI_Ze0Q7haQ3ux6ysryhT6P-JGM4";//应用的密钥
-
-
-    /**
          获取企业凭证
          请求方式：GET
          请求地址：https://oapi.dingtalk.com/gettoken

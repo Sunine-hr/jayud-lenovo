@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.utils.Utilities;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang.StringUtils;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
  * @since 2020-11-04
  */
 @Data
+@Accessors(chain = true)
 public class CustomerAddrVO {
 
     private static final long serialVersionUID = 1L;
@@ -47,6 +49,15 @@ public class CustomerAddrVO {
 
     @ApiModelProperty(value = "区主键")
     private Integer area;
+
+    @ApiModelProperty(value = "省名称")
+    private String provinceDesc;
+
+    @ApiModelProperty(value = "市名称")
+    private String cityDesc;
+
+    @ApiModelProperty(value = "区名称")
+    private String areaDesc = "";
 
     @ApiModelProperty(value = "省")
     private String provinceName;

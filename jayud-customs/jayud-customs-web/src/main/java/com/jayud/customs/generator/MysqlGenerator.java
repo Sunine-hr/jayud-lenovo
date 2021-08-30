@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-customs\\jayud-customs-service",
                 "jayud-customs\\jayud-customs-web"};
         for (String model : models) {
-            shell(model,"customs_filing");
+            shell(model,"customs_decl_filing_record");
 
         }
     }

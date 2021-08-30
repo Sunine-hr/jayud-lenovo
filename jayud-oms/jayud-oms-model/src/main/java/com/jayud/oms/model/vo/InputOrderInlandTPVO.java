@@ -135,6 +135,8 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
         this.status=null;
         this.orderTaker=null;
         this.receivingOrdersDate=null;
+        this.vehicleType=null; //车型类型
+        this.vehicleSize=null; //车型尺寸
         if (CollectionUtils.isNotEmpty(pickUpAddressList)) {
             pickUpAddressList.forEach(e -> {
                 e.setGoodsId(null);

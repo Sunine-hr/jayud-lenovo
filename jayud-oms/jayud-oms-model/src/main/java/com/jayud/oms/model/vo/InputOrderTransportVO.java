@@ -260,6 +260,10 @@ public class InputOrderTransportVO {
         this.encode = null;
         this.status = null;
         this.subTmsStatus = null;
+        this.cntrNo = null; //柜号
+        this.cntrPics=null; //柜号图片
+        this.vehicleSize=null; //车型尺寸
+        this.vehicleType=null; //车型类型
         if (this.orderTakeAdrForms1 != null) {
             orderTakeAdrForms1.forEach(e -> {
                 e.setTakeAdrId(null);

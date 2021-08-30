@@ -48,6 +48,12 @@
             <if test="form.customerId !=null">
                 and customer_id =#{form.customerId}
             </if>
+            <if test="form.type !=null">
+                and `type` =#{form.type}
+            </if>
+            <if test="form.status !=null">
+                and `status` =#{form.status}
+            </if>
         </where>
 
     </select>

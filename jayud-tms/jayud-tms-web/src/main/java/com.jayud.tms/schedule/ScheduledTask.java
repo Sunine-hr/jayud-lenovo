@@ -37,12 +37,12 @@ public class ScheduledTask {
     private IDeliveryAddressService deliveryAddressService;
 
     /**
-     * 同步主订单数据
+     * 定时同步中港地址经纬度
      * corn表达式格式：秒 分 时 日 月 星期 年（可选）
      * 0/7 * * * * ?        代表每7秒执行一次
      * 0 0 4 1 * ?          每月1号凌晨4点触发
      */
-    @Scheduled(cron = "0/59 * * * * ?")
+    @Scheduled(cron = "0 0/10 * * * ?")
     public void syncMainOrderData() {
         log.info("*********   定时同步中港地址经纬度 :" + DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN) + "  **************");
         StopWatch stopWatch = new StopWatch();

@@ -620,7 +620,7 @@ public class OrderComboxController {
     }
 
 
-    @ApiOperation(value = "下拉业务类型")
+    @ApiOperation(value = "下拉所属部门")
     @PostMapping(value = "/initDepartment")
     public CommonResult<List<InitComboxVO>> initDepartment(Map<String, Object> map) {
         //业务所属部门
@@ -652,6 +652,13 @@ public class OrderComboxController {
         Map<String, Long> response = new HashMap<>();
         response.put("departmentId", Long.valueOf(departmentId.toString()));
         return CommonResult.success(response);
+    }
+
+
+    @ApiOperation(value = "下拉客户结算单位业务类型")
+    @PostMapping(value = "/initCustomerUnitBisType")
+    public CommonResult<List<com.jayud.common.entity.InitComboxStrVO>> initCustomerUnitBisType(Map<String, Object> map) {
+        return CommonResult.success(SubOrderSignEnum.initBusinessType());
     }
 }
 

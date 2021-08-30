@@ -23,8 +23,8 @@ public interface IRegionCityService extends IService<RegionCity> {
      */
     List<RegionCity> cascadeQueryRegionCity(Long id);
 
-//    /**
-//     * 获取地址名称
-//     */
-//    List<RegionCity> getAddrName(Long... id);
+    /**
+     * 获取地址名称
+     */
+    List<RegionCity> getAddrName(Long... id);
 }

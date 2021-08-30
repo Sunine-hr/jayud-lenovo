@@ -1144,8 +1144,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
             }
             if (orderReceivableCosts.size() > 0) {
-                Map<String, String> customerInfoMap = this.customerInfoService.list().stream().collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName()));
-                orderReceivableCosts.stream().filter(e->StringUtils.isEmpty(e.getCustomerName())).forEach(e->e.setCustomerName(customerInfoMap.get(e.getCustomerCode())));
+                Map<String, String> customerInfoMap = this.customerInfoService.list().stream().filter(e -> !StringUtils.isEmpty(e.getIdCode())).collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName()));
+                orderReceivableCosts.stream().filter(e -> StringUtils.isEmpty(e.getCustomerName())).forEach(e -> e.setCustomerName(customerInfoMap.get(e.getCustomerCode())));
                 optOne = receivableCostService.saveOrUpdateBatch(orderReceivableCosts);
             }
             //推送应收费用审核消息

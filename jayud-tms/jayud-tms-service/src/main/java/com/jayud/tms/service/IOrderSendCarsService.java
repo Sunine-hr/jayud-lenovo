@@ -74,4 +74,5 @@ public interface IOrderSendCarsService extends IService<OrderSendCars> {
      */
     public boolean dispatchRejectionMsgPush(RejectOrderForm form, OrderTransport orderTransport);
 
+    List<OrderSendCars> getByExcludeStatus(List<String> excludeStatus);
 }

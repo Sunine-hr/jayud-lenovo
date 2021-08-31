@@ -68,6 +68,10 @@
             <result column="rate" property="rate"/>
             <result column="buyer_id" property="buyerId"/>
             <result column="status" property="status"/>
+            <result column="app_key" property="appKey"/>
+            <result column="gps_address" property="gpsAddress"/>
+            <result column="gps_type" property="gpsType"/>
+            <result column="gps_req_param" property="gpsReqParam"/>
         </association>
     </resultMap>
 
@@ -141,5 +145,19 @@
         vehicle_info v
         left join supplier_info s on v.supplier_id=s.id
         where v.id=#{vehicleId}
+    </select>
+
+
+    <select id="getDetailsByPlateNum" parameterType="java.lang.Long" resultMap="VehicleDetailsMap">
+        select
+        v.*,s.*
+        from
+        vehicle_info v
+        left join supplier_info s on v.supplier_id=s.id
+        where v.plate_number in
+        <foreach collection="plateNumbers" open="(" separator="," close=")" item="item">
+            #{item}
+        </foreach>
+
     </select>
 </mapper>

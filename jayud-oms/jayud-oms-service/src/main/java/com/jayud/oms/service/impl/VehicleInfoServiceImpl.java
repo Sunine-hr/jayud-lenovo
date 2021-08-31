@@ -167,4 +167,9 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
         return this.baseMapper.selectList(condition);
     }
 
+    @Override
+    public List<VehicleDetailsVO> getDetailsByPlateNum(List<String> plateNum) {
+        return this.baseMapper.getDetailsByPlateNum(plateNum);
+    }
+
 }

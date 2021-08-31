@@ -314,7 +314,7 @@ public interface OmsClient {
     @ApiOperation(value = "获取企业微信部门员工详情")
     @RequestMapping(value = "/api/getTencentMapLaAndLoInfo")
     public ApiResult getTencentMapLaAndLoInfo(@RequestParam("address") String address,
-                                          @RequestParam("key") String key);
+                                              @RequestParam("key") String key);
 
     /**
      * 获取腾讯地图经纬度
@@ -324,6 +324,15 @@ public interface OmsClient {
      * @return
      */
     @RequestMapping(value = "/api/getTencentMapLaAndLo")
-    public ApiResult<MapEntity> getTencentMapLaAndLo(@RequestParam("address")String address,@RequestParam("key") String key);
+    public ApiResult<MapEntity> getTencentMapLaAndLo(@RequestParam("address") String address, @RequestParam("key") String key);
 
+
+    /**
+     * 批量更新实时定位GPS
+     *
+     * @param paramMap
+     * @return
+     */
+    @RequestMapping(value = "/api/batchSyncGPSPositioning")
+    public ApiResult batchSyncGPSPositioning(@RequestBody Map<String, List<String>> paramMap);
 }

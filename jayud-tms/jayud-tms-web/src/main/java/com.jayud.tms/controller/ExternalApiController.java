@@ -1,6 +1,7 @@
 package com.jayud.tms.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -12,6 +13,7 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.tms.feign.OauthClient;
 import com.jayud.tms.feign.OmsClient;
@@ -410,6 +412,44 @@ public class ExternalApiController {
             condition.lambda().notIn(OrderSendCars::getOrderNo, orderNos);
         }
         return ApiResult.ok(this.orderSendCarsService.getBaseMapper().selectList(condition));
+    }
+
+
+    /**
+     * 批量更新中港车实时定位GPS
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/batchSyncTMSGPSPositioning")
+    public ApiResult batchSyncTMSGPSPositioning() {
+//        TMS_T_0("T_0", "待接单"), //仅中港子订单状态用
+//                TMS_T_1("T_1", "运输接单"),
+//                TMS_T_1_1("T_1_1", "运输接单驳回"),
+//                TMS_T_2("T_2", "运输派车"),
+//                TMS_T_2_1("T_2_1", "运输派车驳回"),
+//                TMS_T_3("T_3", "运输审核"),
+//                TMS_T_3_1("T_3_1", "运输审核不通过"),//仅中港子订单状态用,这个是审核派车信息
+//                TMS_T_3_2("T_3_2", "运输审核驳回"),
+
+        List<String> excludeStatus = Arrays.asList(OrderStatusEnum.TMS_T_0.getCode(),
+                OrderStatusEnum.TMS_T_1.getCode(),
+                OrderStatusEnum.TMS_T_1_1.getCode(),
+                OrderStatusEnum.TMS_T_2.getCode(),
+                OrderStatusEnum.TMS_T_2_1.getCode(),
+                OrderStatusEnum.TMS_T_3.getCode(),
+                OrderStatusEnum.TMS_T_3_1.getCode(),
+                OrderStatusEnum.TMS_T_3_2.getCode(),
+                OrderStatusEnum.TMS_T_15.getCode());
+        //查询所有确认派车和签收前之间状态
+        List<OrderSendCars> orderSendCars = this.orderSendCarsService.getByExcludeStatus(excludeStatus);
+        Map<Long, Set<String>> map = orderSendCars.stream().collect(Collectors.groupingBy(OrderSendCars::getVehicleId, Collectors.mapping(OrderSendCars::getOrderNo, Collectors.toSet())));
+        Object vehicleInfoObjs = this.omsClient.getVehicleInfoByIds(new ArrayList<>(map.keySet())).getData();
+        Map<Long, String> vehicleInfoMap = new JSONArray(vehicleInfoObjs).stream().collect(Collectors.toMap(e -> ((JSONObject) e).getLong("id"), e -> ((JSONObject) e).getStr("plateNumber")));
+        Map<String, List<String>> req = new HashMap<>();
+        map.forEach((k, v) -> {
+            req.put(vehicleInfoMap.get(k), new ArrayList<>(v));
+        });
+        return this.omsClient.batchSyncGPSPositioning(req);
     }
 }
 

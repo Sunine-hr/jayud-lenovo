@@ -43,4 +43,6 @@ public interface OrderSendCarsMapper extends BaseMapper<OrderSendCars> {
     List<SendCarListTempVO> initSendCarList(@Param("orderNo") String orderNo);
 
     int getDriverPendingOrderNum(@Param("driverId") Long driverId, @Param("orderNos") List<String> orderNos);
+
+    List<OrderSendCars> getByExcludeStatus(@Param("excludeStatus") List<String> excludeStatus);
 }

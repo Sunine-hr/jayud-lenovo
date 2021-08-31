@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.GpsPositioningMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.GpsPositioning">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="vehicle_status" property="vehicleStatus" />
+        <result column="direction" property="direction" />
+        <result column="latitude" property="latitude" />
+        <result column="longitude" property="longitude" />
+        <result column="speed" property="speed" />
+        <result column="status" property="status" />
+        <result column="type" property="type" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, vehicle_status, direction, latitude, longitude, speed, status, type, create_time, update_time
+    </sql>
+
+</mapper>

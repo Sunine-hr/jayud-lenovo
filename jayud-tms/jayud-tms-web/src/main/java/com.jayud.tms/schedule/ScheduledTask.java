@@ -3,9 +3,11 @@ package com.jayud.tms.schedule;
 import cn.hutool.core.date.StopWatch;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.entity.MapEntity;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.tms.controller.ExternalApiController;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.service.IDeliveryAddressService;
@@ -35,6 +37,8 @@ public class ScheduledTask {
     private String tencentMapKey;
     @Autowired
     private IDeliveryAddressService deliveryAddressService;
+    @Autowired
+    private ExternalApiController externalApiController;
 
     /**
      * 定时同步中港地址经纬度
@@ -70,5 +74,16 @@ public class ScheduledTask {
         log.info("********* 定时同步中港地址经纬度 (单位:秒): " + stopWatch.getTotalTimeSeconds() + " 秒. **************");
     }
 
+    /**
+     * 定时同步中港地址经纬度
+     * corn表达式格式：秒 分 时 日 月 星期 年（可选）
+     * 0/7 * * * * ?        代表每7秒执行一次
+     * 0 0 4 1 * ?          每月1号凌晨4点触发
+     */
+    @Scheduled(cron = "0/59 * * * * ?")
+    public void test() {
+        ApiResult result = this.externalApiController.batchSyncTMSGPSPositioning();
+        System.out.println(new JSONObject(result).toString());
+    }
 
 }

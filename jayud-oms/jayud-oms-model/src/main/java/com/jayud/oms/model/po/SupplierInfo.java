@@ -139,6 +139,9 @@ public class SupplierInfo extends Model<SupplierInfo> {
     @ApiModelProperty(value = "对接GPS公用路径前缀")
     private String gpsAddress;
 
+    @ApiModelProperty(value = "gps厂商(1:云港通,2:北斗)")
+    private Integer gpsType;
+
 
 
     @Override

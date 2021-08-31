@@ -110,6 +110,10 @@ public class ExternalApiController {
     private ISystemConfService systemConfService;
     @Autowired
     private MapPositioningService mapPositioningService;
+    @Autowired
+    private GPSPositioningApiService gpsPositioningApiService;
+    @Autowired
+    private IGpsPositioningService gpsPositioningService;
 
 
     @ApiOperation(value = "保存主订单")
@@ -396,7 +400,7 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/oprCostBill")
     ApiResult<Boolean> oprCostBill(@RequestBody OprCostBillForm form) {
         Boolean result = false;
-        if ("payment" .equals(form.getOprType())) {
+        if ("payment".equals(form.getOprType())) {
             List<OrderPaymentCost> paymentCosts = new ArrayList<>();
             if (form.getCmd().contains("pre")) {//暂存应付
                 List<OrderPaymentCost> delCosts = new ArrayList<>();
@@ -420,7 +424,7 @@ public class ExternalApiController {
                 if (delCosts.size() > 0) {
                     paymentCostService.updateBatchById(delCosts);
                 }
-            } else if ("del" .equals(form.getCmd())) {//删除对账单
+            } else if ("del".equals(form.getCmd())) {//删除对账单
                 for (Long costId : form.getCostIds()) {
                     OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                     orderPaymentCost.setId(costId);
@@ -436,7 +440,7 @@ public class ExternalApiController {
                 }
             }
             result = paymentCostService.updateBatchById(paymentCosts);
-        } else if ("receivable" .equals(form.getOprType())) {
+        } else if ("receivable".equals(form.getOprType())) {
             List<OrderReceivableCost> receivableCosts = new ArrayList<>();
             if (form.getCmd().contains("pre")) {//暂存应收
                 List<OrderReceivableCost> delCosts = new ArrayList<>();
@@ -460,7 +464,7 @@ public class ExternalApiController {
                 if (delCosts.size() > 0) {
                     receivableCostService.updateBatchById(delCosts);
                 }
-            } else if ("del" .equals(form.getCmd())) {//删除对账单
+            } else if ("del".equals(form.getCmd())) {//删除对账单
                 for (Long costId : form.getCostIds()) {
                     OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                     orderReceivableCost.setId(costId);
@@ -524,15 +528,15 @@ public class ExternalApiController {
     @RequestMapping(value = "api/editSaveConfirm")
     public ApiResult editSaveConfirm(@RequestParam("costIds") List<Long> costIds, @RequestParam("oprType") String oprType,
                                      @RequestParam("cmd") String cmd, @RequestBody Map<String, Object> param) {
-        if ("save_confirm" .equals(cmd)) {
-            if ("receivable" .equals(oprType)) {
+        if ("save_confirm".equals(cmd)) {
+            if ("receivable".equals(oprType)) {
                 OrderReceivableCost receivableCost = new OrderReceivableCost();
                 receivableCost.setIsBill("save_confirm")//持续操作中的过度状态
                         .setTmpBillNo(param.get("billNo").toString());//TODO 等待前端更改,需要前端传账单编号
                 QueryWrapper updateWrapper = new QueryWrapper();
                 updateWrapper.in("id", costIds);
                 receivableCostService.update(receivableCost, updateWrapper);
-            } else if ("payment" .equals(oprType)) {
+            } else if ("payment".equals(oprType)) {
                 OrderPaymentCost paymentCost = new OrderPaymentCost();
                 paymentCost.setIsBill("save_confirm")
                         .setTmpBillNo(param.get("billNo").toString());//TODO 等待前端更改,需要前端传账单编号
@@ -541,15 +545,15 @@ public class ExternalApiController {
                 updateWrapper.in("id", costIds);
                 paymentCostService.update(paymentCost, updateWrapper);
             }
-        } else if ("edit_del" .equals(cmd)) {
-            if ("receivable" .equals(oprType)) {
+        } else if ("edit_del".equals(cmd)) {
+            if ("receivable".equals(oprType)) {
                 OrderReceivableCost receivableCost = new OrderReceivableCost();
                 receivableCost.setIsBill("0");//从save_confirm状态回滚到未出账-0状态
                 receivableCost.setStatus(1);//草稿状态
                 QueryWrapper updateWrapper = new QueryWrapper();
                 updateWrapper.in("id", costIds);
                 receivableCostService.update(receivableCost, updateWrapper);
-            } else if ("payment" .equals(oprType)) {
+            } else if ("payment".equals(oprType)) {
                 OrderPaymentCost paymentCost = new OrderPaymentCost();
                 paymentCost.setIsBill("0");//从save_confirm状态回滚到未出账-0状态
                 paymentCost.setStatus(1);//草稿状态
@@ -570,7 +574,7 @@ public class ExternalApiController {
      */
     @RequestMapping(value = "api/oprCostGenreByCw")
     ApiResult<Boolean> oprCostGenreByCw(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd) {
-        if ("receivable" .equals(cmd)) {
+        if ("receivable".equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 OrderReceivableCost orderReceivableCost = new OrderReceivableCost();
                 orderReceivableCost.setId(orderCost.getCostId());
@@ -579,7 +583,7 @@ public class ExternalApiController {
                 orderReceivableCost.setOptTime(LocalDateTime.now());
                 receivableCostService.updateById(orderReceivableCost);
             }
-        } else if ("payment" .equals(cmd)) {
+        } else if ("payment".equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 OrderPaymentCost orderPaymentCost = new OrderPaymentCost();
                 orderPaymentCost.setId(orderCost.getCostId());
@@ -601,7 +605,7 @@ public class ExternalApiController {
      */
     @RequestMapping(value = "api/writeBackCostData")
     ApiResult writeBackCostData(@RequestBody List<OrderCostForm> forms, @RequestParam("cmd") String cmd) {
-        if ("receivable" .equals(cmd)) {
+        if ("receivable".equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 //获取该条费用以出账时结算币种的汇率和本币金额
 //                InputReceivableCostVO sCost = receivableCostService.getWriteBackSCostData(orderCost.getCostId());
@@ -617,7 +621,7 @@ public class ExternalApiController {
                 orderReceivableCost.setOptTime(LocalDateTime.now());
                 receivableCostService.updateById(orderReceivableCost);
             }
-        } else if ("payment" .equals(cmd)) {
+        } else if ("payment".equals(cmd)) {
             for (OrderCostForm orderCost : forms) {
                 //获取该条费用以出账时结算币种的汇率和本币金额
 //                InputPaymentCostVO fCost = paymentCostService.getWriteBackFCostData(orderCost.getCostId());
@@ -1969,7 +1973,7 @@ public class ExternalApiController {
             return ApiResult.ok("地址/秘钥不能为空");
         }
         JSONObject response = this.mapPositioningService.getTencentMapLaAndLoInfo(address, key);
-        if (!"0" .equals(response.getStr("status"))) {
+        if (!"0".equals(response.getStr("status"))) {
             return ApiResult.error(response.getStr("message"));
         }
         return ApiResult.ok(response.get("result"));
@@ -1990,6 +1994,78 @@ public class ExternalApiController {
         }
         MapEntity mapEntity = this.mapPositioningService.getTencentMapLaAndLo(address, key);
         return ApiResult.ok(mapEntity);
+    }
+
+
+    /**
+     * 批量更新实时定位GPS
+     *
+     * @param paramMap
+     * @return
+     */
+    @RequestMapping(value = "/api/batchSyncGPSPositioning")
+    public ApiResult batchSyncGPSPositioning(@RequestBody Map<String, List<String>> paramMap) {
+        if (paramMap == null) {
+            return ApiResult.ok();
+        }
+        //车牌
+        List<String> licensePlateList = new ArrayList<>();
+        List<String> orderNos = new ArrayList<>();
+        paramMap.forEach((k, v) -> {
+            licensePlateList.add(k);
+            orderNos.addAll(v);
+        });
+        //获取供应商
+        List<VehicleDetailsVO> list = vehicleInfoService.getDetailsByPlateNum(licensePlateList);
+
+        Map<String, List<VehicleDetailsVO>> tmp = list.stream().filter(e -> e.getSupplierInfoVO().getGpsType() != null).collect(Collectors.groupingBy(e -> e.getSupplierInfoVO().getGpsType() + "~" + e.getSupplierInfoVO().getSupplierCode()));
+        if (tmp == null) {
+            log.info("供应商没有配置gps厂商");
+            return ApiResult.ok();
+        }
+        //根据车牌获取gps信息
+        List<GpsPositioning> oldPositioning = this.gpsPositioningService.getByOrderNo(orderNos, 1);
+        Map<String, GpsPositioning> oldMap = oldPositioning.stream().collect(Collectors.toMap(e -> e.getPlateNumber() + "~" + e.getOrderNo(), e -> e));
+        tmp.forEach((k, v) -> {
+            String[] split = k.split("~");
+            List<String> licensePlates = new ArrayList<>();
+            SupplierInfoVO supplierInfoVO = v.get(0).getSupplierInfoVO();
+            String gpsReqParam = supplierInfoVO.getGpsReqParam();
+            Map<String, Object> paraMap = JSONUtil.toBean(gpsReqParam, Map.class);
+            paraMap.put("gpsAddress", supplierInfoVO.getGpsAddress());
+            for (VehicleDetailsVO vehicleDetailsVO : v) {
+                licensePlates.add(vehicleDetailsVO.getPlateNumber());
+            }
+            try {
+                Object obj = this.gpsPositioningApiService.getPositionsObj(licensePlates, Integer.valueOf(split[0]), paraMap);
+                List<GpsPositioning> gpsPositioning = this.gpsPositioningApiService.convertDatas(obj);
+                //一辆车绑定多个订单
+                List<GpsPositioning> appends = new ArrayList<>();
+                gpsPositioning.forEach(e -> {
+                    List<String> orderNoList = paramMap.get(e.getPlateNumber());
+                    orderNoList.forEach(e1 -> {
+                        GpsPositioning convert = ConvertUtil.convert(e, GpsPositioning.class);
+                        convert.setOrderNo(e1);
+                        appends.add(convert);
+                    });
+
+                });
+                appends.forEach(e -> {
+                    GpsPositioning positioning = oldMap.get(e.getPlateNumber() + "~" + e.getOrderNo());
+                    if (positioning == null) {
+                        e.setCreateTime(LocalDateTime.now()).setStatus(1).setStartTime(LocalDateTime.now()).setEndTime(LocalDateTime.now());
+                    } else {
+                        e.setId(positioning.getId()).setUpdateTime(LocalDateTime.now()).setStartTime(LocalDateTime.now()).setEndTime(LocalDateTime.now());
+                    }
+                });
+                //同步信息
+                this.gpsPositioningService.saveOrUpdateBatch(appends);
+            } catch (Exception e) {
+                log.warn("批量获取实时定位错误,gps厂商={},错误信息={}", GPSTypeEnum.getDesc(Integer.valueOf(split[0])), e.getMessage());
+            }
+        });
+
+        return ApiResult.ok();
     }
 
 }

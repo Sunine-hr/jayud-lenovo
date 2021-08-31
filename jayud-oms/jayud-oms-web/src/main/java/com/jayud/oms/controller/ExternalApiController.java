@@ -16,6 +16,7 @@ import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.MapEntity;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.*;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.*;
 import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.feign.OauthClient;
@@ -2060,8 +2061,72 @@ public class ExternalApiController {
                 });
                 //同步信息
                 this.gpsPositioningService.saveOrUpdateBatch(appends);
-            } catch (Exception e) {
-                log.warn("批量获取实时定位错误,gps厂商={},错误信息={}", GPSTypeEnum.getDesc(Integer.valueOf(split[0])), e.getMessage());
+            } catch (JayudBizException e) {
+                log.error("批量获取实时定位错误,gps厂商={},错误信息={}", GPSTypeEnum.getDesc(Integer.valueOf(split[0])), e.getMessage(), e);
+            }
+        });
+
+        return ApiResult.ok();
+    }
+
+
+    /**
+     * 批量更新实时定位GPS
+     *
+     * @param paramMap
+     * @return
+     */
+    @RequestMapping(value = "/api/batchSyncGPSHistoryPositioning")
+    public ApiResult batchSyncGPSHistoryPositioning(@RequestBody Map<String, List<Map<String, Object>>> paramMap) {
+        if (paramMap == null) {
+            return ApiResult.ok();
+        }
+        //车牌
+        List<String> licensePlateList = new ArrayList<>();
+        List<String> orderNos = new ArrayList<>();
+        paramMap.forEach((k, v) -> {
+            licensePlateList.add(k);
+            v.forEach(e -> {
+                String orderNo = MapUtil.getStr(e, "orderNo");
+                orderNos.add(orderNo);
+            });
+        });
+        //获取供应商
+        List<VehicleDetailsVO> list = vehicleInfoService.getDetailsByPlateNum(licensePlateList);
+
+        Map<String, List<VehicleDetailsVO>> tmp = list.stream().filter(e -> e.getSupplierInfoVO().getGpsType() != null).collect(Collectors.groupingBy(e -> e.getSupplierInfoVO().getGpsType() + "~" + e.getSupplierInfoVO().getSupplierCode()));
+        if (tmp == null) {
+            log.info("供应商没有配置gps厂商");
+            return ApiResult.ok();
+        }
+        //根据车牌获取gps信息
+        List<GpsPositioning> oldPositioning = this.gpsPositioningService.getGroupByOrderNo(orderNos, 2);
+        Map<String, GpsPositioning> oldMap = oldPositioning.stream().collect(Collectors.toMap(e -> e.getPlateNumber() + "~" + e.getOrderNo(), e -> e));
+        tmp.forEach((k, v) -> {
+            String[] split = k.split("~");
+            SupplierInfoVO supplierInfoVO = v.get(0).getSupplierInfoVO();
+            String gpsReqParam = supplierInfoVO.getGpsReqParam();
+            Map<String, Object> paraMap = JSONUtil.toBean(gpsReqParam, Map.class);
+            paraMap.put("gpsAddress", supplierInfoVO.getGpsAddress());
+
+            for (VehicleDetailsVO vehicleDetailsVO : v) {
+                //获取车牌下订单集合
+                List<Map<String, Object>> orderInfos = paramMap.get(vehicleDetailsVO.getPlateNumber());
+                orderInfos.forEach(e -> {
+                    String orderNo = MapUtil.getStr(e, "orderNo");
+                    //过滤已经同步的订单
+                    if (oldMap.get(vehicleDetailsVO.getPlateNumber() + "~" + orderNo) == null) {
+                        try {
+                            LocalDateTime startTime = MapUtil.get(e, "startTime", LocalDateTime.class);
+                            LocalDateTime endTime = MapUtil.get(e, "endTime", LocalDateTime.class);
+                            Object obj = this.gpsPositioningApiService.getHistory(vehicleDetailsVO.getPlateNumber(), startTime, endTime, Integer.valueOf(split[0]), paraMap);
+                            List<GpsPositioning> gpsPositioning = this.gpsPositioningApiService.convertDatas(obj);
+                            this.gpsPositioningService.saveBatch(gpsPositioning);
+                        }catch (JayudBizException exception){
+                            log.error("获取历史轨迹错误,gps厂商={},错误信息={}", GPSTypeEnum.getDesc(Integer.valueOf(split[0])), exception.getMessage(), exception);
+                        }
+                    }
+                });
             }
         });
 

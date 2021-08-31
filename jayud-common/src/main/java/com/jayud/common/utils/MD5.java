@@ -1,5 +1,7 @@
 package com.jayud.common.utils;
 
+import java.security.MessageDigest;
+
 /**
  * @author larry
  * @Date 2019/11/30
@@ -282,6 +284,27 @@ public class MD5 {
             i = 0;
         }
         md5Memcpy(buffer, inbuf, index, i, inputLen - i);
+    }
+
+    //生成全以小写字母
+    public static String getmd5(String str) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(str.getBytes());
+            byte[] b = md.digest();
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < b.length; i++) {
+                int v = (int) b[i];
+                v = v < 0 ? 0x100 + v : v;
+                String cc = Integer.toHexString(v);
+                if (cc.length() == 1)
+                    sb.append('0');
+                sb.append(cc);
+            }
+            return sb.toString();
+        } catch (Exception e) {
+        }
+        return "";
     }
 
     public static void main(String[] args) {

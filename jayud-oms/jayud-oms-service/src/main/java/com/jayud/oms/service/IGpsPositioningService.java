@@ -3,7 +3,9 @@ package com.jayud.oms.service;
 import com.jayud.oms.model.po.GpsPositioning;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -35,4 +37,12 @@ public interface IGpsPositioningService extends IService<GpsPositioning> {
      */
     List<GpsPositioning> getByOrderNo(List<String> orderNos, Integer status);
 
+    /**
+     * 根据车牌获取gps记录
+     *
+     * @param orderNos
+     * @param status          1:实时,2:历史轨迹
+     * @return
+     */
+    List<GpsPositioning> getGroupByOrderNo(List<String> orderNos, Integer status);
 }

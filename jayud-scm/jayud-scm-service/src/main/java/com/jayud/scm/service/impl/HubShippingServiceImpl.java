@@ -1,6 +1,7 @@
 package com.jayud.scm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddHubShippingEntryForm;
@@ -22,7 +23,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -90,7 +93,7 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
         HubShippingVO hubShippingVO = ConvertUtil.convert(hubShipping, HubShippingVO.class);
         List<HubShippingEntry> hubShippingEntries = hubShippingEntryService.getShippingEntryByShippingId(hubShippingVO.getId().longValue());
         List<HubShippingEntryVO> hubShippingEntryVOS = ConvertUtil.convertList(hubShippingEntries, HubShippingEntryVO.class);
-        hubShippingVO.setHubShippingEntryVOS(hubShippingEntryVOS);
+        hubShippingVO.setAddHubShippingEntryFormList(hubShippingEntryVOS);
         return hubShippingVO;
     }
 
@@ -193,10 +196,25 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
             List<HubShippingVO> shippingVOS = ConvertUtil.convertList(list, HubShippingVO.class);
             for (HubShippingVO hubShippingVO : shippingVOS) {
                 List<HubShippingEntry> hubShippingEntryVOS = hubShippingEntryService.getShippingEntryByShippingId(hubShippingVO.getId().longValue());
-                hubShippingVO.setHubShippingEntryVOS(ConvertUtil.convertList(hubShippingEntryVOS, HubShippingEntryVO.class));
+                hubShippingVO.setAddHubShippingEntryFormList(ConvertUtil.convertList(hubShippingEntryVOS, HubShippingEntryVO.class));
             }
             hubShippingVOS.addAll(shippingVOS);
         }
         return hubShippingVOS;
+    }
+
+    @Override
+    public CommonResult automaticGenerationHubShipping(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("orderId",form.getId());
+        map.put("userId",systemUser.getId());
+        map.put("userName",systemUser.getUserName());
+        this.baseMapper.automaticGenerationHubShipping(map);
+        if(map.get("state").equals(0)){
+            return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
+        }
+        return CommonResult.success();
     }
 }

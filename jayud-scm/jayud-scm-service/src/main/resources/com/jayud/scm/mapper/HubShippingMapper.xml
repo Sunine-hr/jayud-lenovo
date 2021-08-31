@@ -103,4 +103,16 @@
         id, shipping_no, model_type, s_model, s_type, booking_id, booking_no, delivery_date, shipping_date, hub_name, receiving_id, receiving_no, deliver_id, deliver_no, deliver_type, supplier_id, supplier_name, customer_id, customer_name, total_gw, tota_nw, tota_cbm, tota_packages, tota_pallets, tota_cartons, total_cartons, wh_type, wh_no, wh_tel, wh_name, wh_address, wh_date, customer_contacts, customer_tel, check_name, check_begin_time, check_end_time, check_remark, review_name, review_time, review_remark, sign_date, sign_remak, sign_state, delivery_warehouse, delivery_factory, delivery_remark, hg_truck_id, is_auto_print, print_num, is_onl, onl_id, onl_no, region, is_inv, company_id, company_name, customs_no, customs_date, packages_type, is_label, label_remark, packages_remark, sf_type, sf_pay, sf_remark, remark, f_multi_level0, f_date_time0, f_multi_level1, f_date_time1, f_multi_level2, f_date_time2, f_multi_level3, f_date_time3, check_state_flag, f_level, f_step, state_flag, temp01, temp02, temp03, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
 
+    <select id="automaticGenerationHubShipping" parameterType="java.util.Map" statementType="CALLABLE" resultType="java.util.HashMap">
+        {
+        call up_order_to_shipping_sp (
+         #{orderId , mode = IN},
+         #{userId , mode = IN},
+         #{userName , mode = IN},
+         #{state,mode=OUT,jdbcType=INTEGER},
+         #{string,mode=OUT,jdbcType=VARCHAR}
+        )
+        }
+    </select>
+
 </mapper>

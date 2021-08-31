@@ -15,6 +15,7 @@ import com.jayud.scm.mapper.CustomerMaintenanceSetupMapper;
 import com.jayud.scm.mapper.CustomerMapper;
 import com.jayud.scm.mapper.CustomerRelationerMapper;
 import com.jayud.scm.model.bo.*;
+import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
 import com.jayud.scm.model.vo.*;
@@ -51,7 +52,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Autowired
     private ICommodityService commodityService;
 
-
     @Autowired
     private CustomerRelationerMapper customerRelationerMapper;//客户联系人表
     @Autowired
@@ -82,7 +82,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         customer.setCrtBy(systemUser.getId().intValue());
         customer.setCrtByDtm(LocalDateTime.now());
         customer.setCrtByName(systemUser.getUserName());
-        customer.setCustomerNo(commodityService.getOrderNo("1002",LocalDateTime.now()));
+        customer.setFsalesMan(systemUser.getUserName());
+        customer.setFsalesId(systemUser.getId().intValue());
+        customer.setCustomerNo(commodityService.getOrderNo(NoCodeEnum.CUSTOMER.getCode(),LocalDateTime.now()));
         boolean save = this.save(customer);
 
         if(save){
@@ -96,6 +98,36 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             boolean save1 = this.customerClassService.save(customerClass);
             if(save1){
                 log.warn("客户财务编号添加成功");
+            }
+
+            CustomerMaintenanceSetup customerMaintenanceSetup = new CustomerMaintenanceSetup();
+            customerMaintenanceSetup.setCustomerId(customer.getId());
+            customerMaintenanceSetup.setRoleName("业务");
+            customerMaintenanceSetup.setRoleId(7);
+            customerMaintenanceSetup.setWhUserId(systemUser.getId().intValue());
+            customerMaintenanceSetup.setWhUserName(systemUser.getUserName());
+            customerMaintenanceSetup.setModelType(1);
+            customerMaintenanceSetup.setCrtBy(systemUser.getId().intValue());
+            customerMaintenanceSetup.setCrtByDtm(LocalDateTime.now());
+            customerMaintenanceSetup.setCrtByName(systemUser.getUserName());
+            int save3 = this.customerMaintenanceSetupMapper.insert(customerMaintenanceSetup);
+            if(save3>0){
+                log.warn("客户维护人添加成功");
+            }
+
+            CustomerMaintenanceSetup customerMaintenanceSetup1 = new CustomerMaintenanceSetup();
+            customerMaintenanceSetup.setCustomerId(customer.getId());
+            customerMaintenanceSetup1.setRoleName("业务");
+            customerMaintenanceSetup1.setRoleId(7);
+            customerMaintenanceSetup1.setWhUserId(systemUser.getId().intValue());
+            customerMaintenanceSetup1.setWhUserName(systemUser.getUserName());
+            customerMaintenanceSetup1.setModelType(2);
+            customerMaintenanceSetup1.setCrtBy(systemUser.getId().intValue());
+            customerMaintenanceSetup1.setCrtByDtm(LocalDateTime.now());
+            customerMaintenanceSetup1.setCrtByName(systemUser.getUserName());
+            int save4 = this.customerMaintenanceSetupMapper.insert(customerMaintenanceSetup1);
+            if(save4>0){
+                log.warn("客户维护人添加成功");
             }
 
             CustomerFollow customerFollow = new CustomerFollow();

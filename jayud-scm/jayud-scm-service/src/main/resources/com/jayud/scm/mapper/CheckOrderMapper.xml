@@ -68,4 +68,16 @@
         id, check_no, check_type, model_type, booking_id, booking_no, order_type, truck_model, check_state, check_date_time, check_user, check_tel, card_number, truck_no, total_gw, total_cbm, total_packages, is_pallet, total_pallet, packages_type, customer_user, customer_user_tel, pick_no, pick_up_user, pick_up_tel, pick_address, check_remark, warehouse_id, warehouse_name, shipping_deliver_id, customer_id, customer_name, supplier_id, suppler_name, start_date, arrive_date, leave_date, to_warehouse_time, check_end_time, is_onl, onl_id, onl_no, receipt_priority, check_state_flag, f_level, f_step, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
 
+    <select id="automaticGenerationCheckOrder" parameterType="java.util.Map" statementType="CALLABLE" resultType="java.util.HashMap">
+        {
+        call up_order_to_check_sp (
+         #{orderId , mode = IN},
+         #{userId , mode = IN},
+         #{userName , mode = IN},
+         #{state,mode=OUT,jdbcType=INTEGER},
+         #{string,mode=OUT,jdbcType=VARCHAR}
+        )
+        }
+    </select>
+
 </mapper>

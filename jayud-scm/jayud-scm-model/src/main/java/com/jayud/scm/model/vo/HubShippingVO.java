@@ -37,6 +37,9 @@ public class HubShippingVO {
     @ApiModelProperty(value = "业务类型")
     private Integer modelType;
 
+    @ApiModelProperty(value = "业务类型")
+    private String modelTypeName;
+
     @ApiModelProperty(value = "出库类型(0正常，1暂存)")
     @JsonProperty(value = "sModel")
     private Integer sModel;
@@ -75,7 +78,7 @@ public class HubShippingVO {
     private String deliverNo;
 
     @ApiModelProperty(value = "发货类型（0自提，1发货，2配送，3直送发货，4转仓，5存仓发货,6.暂放仓库）")
-    private Integer deliverType;
+    private String deliverType;
 
     @ApiModelProperty(value = "供应商ID")
     private Integer supplierId;
@@ -269,6 +272,6 @@ public class HubShippingVO {
     private LocalDateTime mdyByDtm;
 
     @ApiModelProperty(value = "出库订单明细集合")
-    private List<HubShippingEntryVO> hubShippingEntryVOS;
+    private List<HubShippingEntryVO> addHubShippingEntryFormList;
 
 }

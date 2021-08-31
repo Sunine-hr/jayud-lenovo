@@ -253,7 +253,7 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
                 }
                 if(addCommodityEntryForm.getElementValue() != null){
 //                    stringBuffer.append(addCommodityEntryForm.getElementValue() == null?" ":addCommodityEntryForm.getElementValue()).append("|");
-                    stringBuffer.append(addCommodityEntryForm.getElementValue());
+                    stringBuffer.append(addCommodityEntryForm.getElementValue()).append("|");
                 }
             }
         }

@@ -45,7 +45,9 @@ public class HgBillController {
         List<BookingOrder> bookingOrderByHgTrackId = bookingOrderService.getBookingOrderByHgTrackId(form.getId());
         List<Integer> list = new ArrayList<>();
         for (BookingOrder bookingOrder : bookingOrderByHgTrackId) {
-            list.add(bookingOrder.getId());
+            if(bookingOrder.getBillId() != null){
+                list.add(bookingOrder.getBillId());
+            }
         }
         form.setIds(list);
         List<HgBillVO> hgBillVOS = hgBillService.getHgBillByBookingId(form);

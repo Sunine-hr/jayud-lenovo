@@ -38,7 +38,7 @@ public class CheckOrderFollowController {
     private ICheckOrderFollowService checkOrderFollowService;
 
     @ApiOperation(value = "根据提验货id获取提验货操作日志")
-    @PostMapping(value = "/findListByCommodityId")
+    @PostMapping(value = "/findListByCheckOrderId")
     public CommonResult findListByCheckOrderId(@RequestBody QueryCommonForm form) {
         IPage<CheckOrderFollowVO> page = this.checkOrderFollowService.findListByCheckOrderId(form);
         CommonPageResult<CheckOrderFollowVO> pageVO = new CommonPageResult(page);

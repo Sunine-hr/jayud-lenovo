@@ -199,4 +199,15 @@
             and t.`customer_name` = #{form.customerName}
         </if>
     </select>
+
+    <select id="upOrderCheckValidate" parameterType="map" statementType="CALLABLE" resultType="java.util.HashMap">
+        {
+        call up_order_check_validate(
+        #{orderId,mode=IN},
+        #{step,mode=IN},
+        #{result,mode=OUT,jdbcType=INTEGER},
+        #{msg,mode=OUT,jdbcType=VARCHAR}
+        )
+        }
+    </select>
 </mapper>

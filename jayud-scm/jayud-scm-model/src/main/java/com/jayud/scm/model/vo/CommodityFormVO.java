@@ -31,44 +31,47 @@ public class CommodityFormVO {
 //      @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty(value = "商品编号")
-    private String skuNo;
+    //    @ApiModelProperty(value = "状态，0未审核，1已审核，2审核不通过")
+    private Integer stateFlag;
+
+    @ApiModelProperty(value = "状态")
+    private String stateFlagDesc;
 
     @ApiModelProperty(value = "型号")
     private String skuModel;
 
+    @ApiModelProperty(value = "品牌")
+    private String skuBrand;
+
     @ApiModelProperty(value = "商品名称")
     private String skuName;
-
-    @ApiModelProperty(value = "报关名称")
-    private String skuNameHs;
 
     @ApiModelProperty(value = "单位")
     private String skuUnit;
 
-    @ApiModelProperty(value = "品牌")
-    private String skuBrand;
-
-    @ApiModelProperty(value = "产地")
-    private String skuOrigin;
-
-    @ApiModelProperty(value = "商品描述")
-    private String skuNotes;
-
-    @ApiModelProperty(value = "配件")
-    private String accessories;
-
     @ApiModelProperty(value = "海关编码")
     private String hsCodeNo;
 
-    @ApiModelProperty(value = "香港海关报关编码")
-    private String hkCodeNo;
+    @ApiModelProperty(value = "关税率")
+    private BigDecimal tempInRate;
 
-    @ApiModelProperty(value = "香港海关报关名称")
-    private String hkCodeName;
+    @ApiModelProperty(value = "增值税率")
+    private BigDecimal taxRate;
+
+    @ApiModelProperty(value = "退税率")
+    private BigDecimal tslRate;
 
     @ApiModelProperty(value = "香港管制")
     private String hkControl;
+
+    @ApiModelProperty(value = "监管条件")
+    private String controlMa;
+
+    @ApiModelProperty(value = "商检条件")
+    private String controlCiq;
+
+    @ApiModelProperty(value = "申报要素")
+    private String skuElements;
 
     @ApiModelProperty(value = "单位净重")
     private BigDecimal unitNw;
@@ -94,18 +97,30 @@ public class CommodityFormVO {
     @ApiModelProperty(value = "税收分类名称")
     private String taxCodeName;
 
+    @ApiModelProperty(value = "商品编号")
+    private String skuNo;
+
+    @ApiModelProperty(value = "报关名称")
+    private String skuNameHs;
+
+    @ApiModelProperty(value = "产地")
+    private String skuOrigin;
+
+    @ApiModelProperty(value = "商品描述")
+    private String skuNotes;
+
+    @ApiModelProperty(value = "配件")
+    private String accessories;
+
+    @ApiModelProperty(value = "香港海关报关编码")
+    private String hkCodeNo;
+
+    @ApiModelProperty(value = "香港海关报关名称")
+    private String hkCodeName;
+
     @ApiModelProperty(value = "税务归类日期")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime taxCodeDate;
-
-    @ApiModelProperty(value = "申报要素")
-    private String skuElements;
-
-//    @ApiModelProperty(value = "状态，0未审核，1已审核，2审核不通过")
-    private Integer stateFlag;
-
-    @ApiModelProperty(value = "状态")
-    private String stateFlagDesc;
 
     @ApiModelProperty(value = "归类人ID")
     private Integer classBy;
@@ -139,21 +154,6 @@ public class CommodityFormVO {
     @ApiModelProperty(value = "最后修改时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime mdyByDtm;
-
-    @ApiModelProperty(value = "出口税率")
-    private BigDecimal outRate;
-
-    @ApiModelProperty(value = "增值税率")
-    private BigDecimal taxRate;
-
-    @ApiModelProperty(value = "退税率")
-    private BigDecimal tslRate;
-
-    @ApiModelProperty(value = "监管条件")
-    private String controlMa;
-
-    @ApiModelProperty(value = "商检条件")
-    private String controlCiq;
 
 
     public void setIsMark(Integer isMark) {

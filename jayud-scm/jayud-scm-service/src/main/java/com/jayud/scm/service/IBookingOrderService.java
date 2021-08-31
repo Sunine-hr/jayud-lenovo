@@ -2,6 +2,7 @@ package com.jayud.scm.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.BookingOrderForm;
 import com.jayud.scm.model.bo.PermissionForm;
 import com.jayud.scm.model.bo.QueryBookingOrderForm;
@@ -83,4 +84,6 @@ public interface IBookingOrderService extends IService<BookingOrder> {
     List<BookingOrder> getBookingOrderByHgTrackId(Integer id);
 
     IPage<BookingOrderVO> findByPage(QueryBookingOrderForm form);
+
+    CommonResult upOrderCheckValidate(Integer id);
 }

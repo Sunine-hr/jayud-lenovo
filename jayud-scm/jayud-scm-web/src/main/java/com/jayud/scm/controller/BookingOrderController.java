@@ -148,6 +148,13 @@ public class BookingOrderController {
                 }
             }
         }
+
+        //调用存储过程，查看委托单是否能审核或反审
+        CommonResult commonResult = bookingOrderService.upOrderCheckValidate(form.getId());
+        if(commonResult.getCode().equals(1)){
+            return commonResult;
+        }
+
         //拥有按钮权限，判断是否为审核按钮
         if(!form.getType().equals(0)){
             form.setTable(TableEnum.getDesc(form.getKey()));
@@ -168,7 +175,7 @@ public class BookingOrderController {
         //获取登录用户
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
-        if(!systemUser.getUserName().equalsIgnoreCase("Admin")){
+        if(!systemUser.getUserName().equalsIgnoreCase("admin")){
             //获取登录用户所属角色
             List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
             for (SystemRole systemRole : enabledRolesByUserId) {
@@ -178,6 +185,13 @@ public class BookingOrderController {
                 }
             }
         }
+
+        //调用存储过程，查看委托单是否能审核或反审
+        CommonResult commonResult = bookingOrderService.upOrderCheckValidate(form.getId());
+        if(commonResult.getCode().equals(1)){
+            return commonResult;
+        }
+
         //拥有按钮权限，判断是否为审核按钮
         if(!form.getType().equals(0)){
             form.setTable(TableEnum.getDesc(form.getKey()));
@@ -385,7 +399,7 @@ public class BookingOrderController {
 
     @ApiOperation(value = "根据报关单id获取委托单明细信息")
     @PostMapping(value = "/getBookingEntryByBillId")
-    public CommonResult getBookingEntryByBillId(@RequestBody QueryCommonForm form) {
+    public CommonResult<List<BookingOrderEntryVO>> getBookingEntryByBillId(@RequestBody QueryCommonForm form) {
         BookingOrder bookingOrder = bookingOrderService.getBookingOrderByBillId(form.getId());
         if(bookingOrder != null){
             List<BookingOrderEntryVO> bookingOrderEntryByBookingId = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingOrder.getId());
@@ -402,6 +416,7 @@ public class BookingOrderController {
         List<BookingOrderFormVO> bookingOrderFormVOS = new ArrayList<>();
         List<BookingOrderVO> bookingOrderVOS = ConvertUtil.convertList(bookingOrders, BookingOrderVO.class);
         for (BookingOrderVO bookingOrderVO : bookingOrderVOS) {
+
             List<BookingOrderEntryVO> bookingOrderEntryByBookingId = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingOrderVO.getId());
             for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryByBookingId) {
                 BookingOrderFormVO bookingOrderFormVO = ConvertUtil.convert(bookingOrderVO,BookingOrderFormVO.class);

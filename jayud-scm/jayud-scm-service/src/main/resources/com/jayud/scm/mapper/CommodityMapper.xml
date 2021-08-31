@@ -77,7 +77,7 @@
         is_mark isMark, co.remark, co.crt_by_name crtByName,
         co.crt_by_dtm crtByDtm, co.mdy_by_name mdyByName,
         co.mdy_by_dtm mdyByDtm,
-        hc.out_rate outRate,
+        if(hc.temp_in_rate is null , hc.low_rate , hc.temp_in_rate) tempInRate,
         hc.tax_rate taxRate,hc.tsl_rate tslRate,hc.control_ma controlMa,hc.control_ciq controlCiq
         from commodity co
         left join hs_code hc on co.hs_code_no = hc.code_no

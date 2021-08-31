@@ -33,7 +33,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -303,5 +305,18 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         //page.addOrder(OrderItem.desc("t.id"));
         IPage<BookingOrderVO> pageInfo = bookingOrderMapper.findByPage(page, form);
         return pageInfo;
+    }
+
+    @Override
+    public CommonResult upOrderCheckValidate(Integer id) {
+        BookingOrder byId = this.getById(id);
+        Map map = new HashMap();
+        map.put("orderId",byId.getId());
+        map.put("step",byId.getFStep());
+        this.baseMapper.upOrderCheckValidate(map);
+        if(map.get("result").equals(1)){
+            return CommonResult.error((Integer)map.get("result") , (String)map.get("msg"));
+        }
+        return CommonResult.success();
     }
 }

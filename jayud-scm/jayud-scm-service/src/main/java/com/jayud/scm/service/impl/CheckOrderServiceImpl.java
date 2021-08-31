@@ -1,6 +1,8 @@
 package com.jayud.scm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.CommonResult;
+import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
@@ -13,11 +15,14 @@ import com.jayud.scm.service.ICheckOrderEntryService;
 import com.jayud.scm.service.ICheckOrderFollowService;
 import com.jayud.scm.service.ICheckOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.scm.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -35,6 +40,9 @@ public class CheckOrderServiceImpl extends ServiceImpl<CheckOrderMapper, CheckOr
 
     @Autowired
     private ICheckOrderFollowService checkOrderFollowService;
+
+    @Autowired
+    private ISystemUserService systemUserService;
 
     @Override
     public boolean delete(DeleteForm deleteForm) {
@@ -88,5 +96,20 @@ public class CheckOrderServiceImpl extends ServiceImpl<CheckOrderMapper, CheckOr
             checkOrderVOS.addAll(checkOrderVOS1);
         }
         return checkOrderVOS;
+    }
+
+    @Override
+    public CommonResult automaticGenerationCheckOrder(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("orderId",form.getId());
+        map.put("userId",systemUser.getId());
+        map.put("userName",systemUser.getUserName());
+        this.baseMapper.automaticGenerationCheckOrder(map);
+        if(map.get("state").equals(0)){
+            return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
+        }
+        return CommonResult.success();
     }
 }

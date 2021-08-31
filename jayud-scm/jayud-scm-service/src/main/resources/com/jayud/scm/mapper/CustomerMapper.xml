@@ -109,7 +109,7 @@
 
         </if>
         <if test="form.businessType !=null and form.businessType!=''">
-            and co.id in (select customer_id from fee_model where model_type = #{form.businessType}
+            and co.id in (select customer_id from fee_model where model_type = #{form.businessType})
         </if>
         <if test="form.type !=null and form.type!=''">
             and co.id in (select customer_id from customer_class where class_name = #{form.type})

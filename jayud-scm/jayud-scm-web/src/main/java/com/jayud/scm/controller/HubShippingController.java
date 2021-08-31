@@ -11,6 +11,7 @@ import com.jayud.scm.model.vo.HubReceivingVO;
 import com.jayud.scm.model.vo.HubShippingVO;
 import com.jayud.scm.service.IBookingOrderService;
 import com.jayud.scm.service.IHubShippingService;
+import com.jayud.scm.service.impl.CommodityServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,7 @@ public class HubShippingController {
         Integer id = MapUtil.getInt(map, "id");
 
         HubShippingVO hubShippingVO = hubShippingService.getHubShippingById(id);
+        hubShippingVO.setModelTypeName(hubShippingVO.getModelType().toString());
 
         return CommonResult.success(hubShippingVO);
     }
@@ -85,6 +87,12 @@ public class HubShippingController {
         form.setIds(list);
         List<HubShippingVO> hubShippingVOS = hubShippingService.getHubShippingByBookingId(form);
         return CommonResult.success(hubShippingVOS);
+    }
+
+    @ApiOperation(value = "自动出库")
+    @PostMapping(value = "/automaticGenerationHubShipping")
+    public CommonResult automaticGenerationHubShipping(@RequestBody QueryCommonForm form) {
+        return hubShippingService.automaticGenerationHubShipping(form);
     }
 
 }

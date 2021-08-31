@@ -9,6 +9,8 @@ import com.jayud.scm.model.vo.BookingOrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Map;
+
 /**
  * <p>
  * 委托订单主表 Mapper 接口
@@ -36,4 +38,6 @@ public interface BookingOrderMapper extends BaseMapper<BookingOrder> {
     BookingOrderVO getBookingOrderById(@Param("id") Integer id);
 
     IPage<BookingOrderVO> findByPage(@Param("page") Page<BookingOrderVO> page, @Param("form") QueryBookingOrderForm form);
+
+    void upOrderCheckValidate(Map map);
 }

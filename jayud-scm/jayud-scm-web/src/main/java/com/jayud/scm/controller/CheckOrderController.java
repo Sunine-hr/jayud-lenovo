@@ -112,5 +112,11 @@ public class CheckOrderController {
         return CommonResult.success(checkOrderVOList);
     }
 
+    @ApiOperation(value = "自动生成提验货单")
+    @PostMapping(value = "/automaticGenerationCheckOrder")
+    public CommonResult automaticGenerationCheckOrder(@RequestBody QueryCommonForm form) {
+        return checkOrderService.automaticGenerationCheckOrder(form);
+    }
+
 }
 

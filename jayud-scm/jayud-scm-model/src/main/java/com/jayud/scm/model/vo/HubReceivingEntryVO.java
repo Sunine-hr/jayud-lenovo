@@ -3,6 +3,8 @@ package com.jayud.scm.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -82,6 +84,7 @@ public class HubReceivingEntryVO {
     private Integer cartons;
 
     @ApiModelProperty(value = "散箱数")
+    @JsonProperty(value = "lCartons")
     private Integer lCartons;
 
     @ApiModelProperty(value = "毛重")
@@ -112,9 +115,11 @@ public class HubReceivingEntryVO {
     private String billNo;
 
     @ApiModelProperty(value = "外箱型号")
+    @JsonProperty(value = "ctnsItemModel")
     private String ctnsItemModel;
 
     @ApiModelProperty(value = "是否已打印")
+    @JsonProperty(value = "isPrint")
     private Integer isPrint;
 
     @ApiModelProperty(value = "打印次数")
@@ -143,18 +148,6 @@ public class HubReceivingEntryVO {
 
     @ApiModelProperty(value = "备注")
     private String remark;
-
-    @ApiModelProperty(value = "备用字段1")
-    private String temp01;
-
-    @ApiModelProperty(value = "备用字段2")
-    private String temp02;
-
-    @ApiModelProperty(value = "备用字段3")
-    private String temp03;
-
-    @ApiModelProperty(value = "备用字段4")
-    private String temp04;
 
     @ApiModelProperty(value = "创建人名称")
     private String crtByName;

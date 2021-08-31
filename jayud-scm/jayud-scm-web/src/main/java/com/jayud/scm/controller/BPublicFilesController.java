@@ -50,13 +50,11 @@ public class BPublicFilesController {
         Integer fileModel = MapUtil.getInt(map,"fileModel");
         Integer businessId = MapUtil.getInt(map, "businessId");
         List<BPublicFilesVO> bPublicFilesVOS = bPublicFilesService.getPublicFileList(fileModel,businessId);
-        if(CollectionUtils.isNotEmpty(bPublicFilesVOS)){
-            for (BPublicFilesVO bPublicFilesVO : bPublicFilesVOS) {
-                if(bPublicFilesVO.getFileType() != null){
-                    bPublicFilesVO.setFileModelCopy(ibDataDicEntryService.getTextByDicCodeAndDataValue("1016",bPublicFilesVO.getFileType()));
-                }
-            }
-        }
+//        if(CollectionUtils.isNotEmpty(bPublicFilesVOS)){
+//            for (BPublicFilesVO bPublicFilesVO : bPublicFilesVOS) {
+//
+//            }
+//        }
 
         return CommonResult.success(bPublicFilesVOS);
     }

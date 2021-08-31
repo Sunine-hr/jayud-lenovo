@@ -294,7 +294,7 @@ public class CommonController {
         }
 
         //拥有按钮权限，判断是否为审核按钮
-        if(!form.getType().equals(0)){
+        if(!form.getType().equals(0) && !systemUser.getUserName().equals("admin")){
             if(form.getCustomerAudit()){
                 List<CustomerRelationer> customerRelationers = customerRelationerService.getCustomerRelationerByCustomerIdAndType(form.getId(),"客户下单人");
                 if(CollectionUtils.isEmpty(customerRelationers)){

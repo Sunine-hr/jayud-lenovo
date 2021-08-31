@@ -36,8 +36,8 @@ QueryCommodityForm extends BasePageForm{
 
     public void setTime(){
         if(createTime != null && createTime.length>0){
-            startTime = createTime[0];
-            endTime = createTime[1];
+            startTime = createTime[0]+" 00:00:00";
+            endTime = createTime[1]+" 23:59:59";
         }
     }
 

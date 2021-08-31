@@ -1,5 +1,6 @@
 package com.jayud.scm.service;
 
+import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddHubShippingForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
@@ -28,4 +29,6 @@ public interface IHubShippingService extends IService<HubShipping> {
     boolean saveOrUpdateHubShipping(AddHubShippingForm form);
 
     List<HubShippingVO> getHubShippingByBookingId(QueryCommonForm form);
+
+    CommonResult automaticGenerationHubShipping(QueryCommonForm form);
 }

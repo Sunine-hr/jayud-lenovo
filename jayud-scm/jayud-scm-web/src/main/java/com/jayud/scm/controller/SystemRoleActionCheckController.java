@@ -66,6 +66,9 @@ public class SystemRoleActionCheckController {
         if (form == null) {
             return CommonResult.success();
         }
+        if(form.getActionId().size()<=0){
+            return CommonResult.success();
+        }
 
         boolean result = systemRoleActionCheckService.addSystemRoleAction(form);
         if (result) {

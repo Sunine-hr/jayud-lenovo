@@ -4,6 +4,8 @@ import com.jayud.scm.model.po.CheckOrder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.Map;
+
 /**
  * <p>
  * 提验货主表 Mapper 接口
@@ -15,4 +17,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface CheckOrderMapper extends BaseMapper<CheckOrder> {
 
+    void automaticGenerationCheckOrder(Map<String, Object> map);
 }

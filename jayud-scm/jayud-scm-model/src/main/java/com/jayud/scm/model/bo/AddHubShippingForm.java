@@ -80,7 +80,7 @@ public class AddHubShippingForm {
     private String deliverNo;
 
     @ApiModelProperty(value = "发货类型（0自提，1发货，2配送，3直送发货，4转仓，5存仓发货,6.暂放仓库）")
-    private Integer deliverType;
+    private String deliverType;
 
     @ApiModelProperty(value = "供应商ID")
     private Integer supplierId;

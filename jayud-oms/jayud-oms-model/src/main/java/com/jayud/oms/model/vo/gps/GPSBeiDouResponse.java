@@ -31,4 +31,25 @@ public class GPSBeiDouResponse {
         @ApiModelProperty(value = "速度 单位：千米/小时")
         private String speed;
     }
+
+    @Data
+    public class historicalPos{
+        @ApiModelProperty(value = "车牌号")
+        private String carPlate;
+
+//        @ApiModelProperty(value = "车辆状态文字")
+//        private String stateCn;
+
+        @ApiModelProperty(value = "方向")
+        private String drct;
+
+        @ApiModelProperty(value = "纬度")
+        private String lat;
+
+        @ApiModelProperty(value = "经度")
+        private String lng;
+
+        @ApiModelProperty(value = "速度 单位：千米/小时")
+        private String speed;
+    }
 }

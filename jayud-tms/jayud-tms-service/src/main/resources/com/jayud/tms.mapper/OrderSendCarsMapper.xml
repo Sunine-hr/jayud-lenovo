@@ -128,11 +128,23 @@
     <select id="getByExcludeStatus" resultType="com.jayud.tms.model.po.OrderSendCars">
         select c.* from order_send_cars c inner join order_transport ot
         <where>
-            ot.status in 
-            <foreach collection="excludeStatus"  item="item" open="(" separator="," close=")">
+            ot.status in
+            <foreach collection="excludeStatus" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </where>
 
+    </select>
+    <select id="getByStatus" resultType="com.jayud.tms.model.vo.OrderSendCarsVO">
+        select
+        ot.id transportId,oc.*
+        from
+        order_send_cars oc inner join order_transport ot  on ot.order_no=oc.order_no
+        <where>
+            ot.status in
+            <foreach collection="status" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
     </select>
 </mapper>

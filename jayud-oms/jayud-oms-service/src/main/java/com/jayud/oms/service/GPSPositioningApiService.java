@@ -3,6 +3,7 @@ package com.jayud.oms.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.GpsPositioning;
+import com.jayud.oms.model.vo.gps.GPSBeiDouResponse;
 import com.jayud.oms.model.vo.gps.GPSYGTResponse;
 
 import java.time.LocalDateTime;
@@ -61,5 +62,5 @@ public interface GPSPositioningApiService {
     List<GPSYGTResponse>  getYGTHistory(String plateNumber, LocalDateTime startTime, LocalDateTime endTime,
                          Map<String, Object> params);
 
-    Object getBeiDouHistory(String plateNumber, LocalDateTime startTime, LocalDateTime endTime, Map<String, Object> params);
+    List<GPSBeiDouResponse.historicalPos> getBeiDouHistory(String plateNumber, LocalDateTime startTime, LocalDateTime endTime, Map<String, Object> params);
 }

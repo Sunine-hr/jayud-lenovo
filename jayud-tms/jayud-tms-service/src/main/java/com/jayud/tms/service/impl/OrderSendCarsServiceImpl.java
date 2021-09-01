@@ -169,6 +169,11 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
        return this.baseMapper.getByExcludeStatus(excludeStatus);
     }
 
+    @Override
+    public List<OrderSendCarsVO> getByStatus(List<String> status) {
+        return this.baseMapper.getByStatus(status);
+    }
+
 
     private void sendCarsMsg2Vivo(SendCarForm form, OrderTransport orderTransport) {
         //查询接单法人

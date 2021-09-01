@@ -139,7 +139,19 @@ public class LogisticsTrackServiceImpl extends ServiceImpl<LogisticsTrackMapper,
         QueryWrapper<LogisticsTrack> condition = new QueryWrapper<>();
         condition.lambda().eq(LogisticsTrack::getOrderId, id);
         condition.lambda().eq(LogisticsTrack::getType, type);
-        condition.lambda().eq(LogisticsTrack::getStatus,status);
+        condition.lambda().eq(LogisticsTrack::getStatus, status);
         return this.baseMapper.selectOne(condition);
     }
+
+    @Override
+    public List<LogisticsTrack> getLogisticsTrackByOrderIds(List<Long> subOrderIds,
+                                                            List<String> status, Integer type) {
+        QueryWrapper<LogisticsTrack> condition = new QueryWrapper<>();
+        condition.lambda().in(LogisticsTrack::getOrderId, subOrderIds);
+        condition.lambda().eq(LogisticsTrack::getType, type);
+        condition.lambda().in(LogisticsTrack::getStatus, status);
+        return this.baseMapper.selectList(condition);
+    }
+
+
 }

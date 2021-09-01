@@ -9,6 +9,10 @@ public class OrderSendCarsVO {
     @ApiModelProperty(value = "主键id")
     private Long id;
 
+    //TODO 2021/9/1新增
+    @ApiModelProperty(value = "中港id")
+    private Long transportId;
+
     @ApiModelProperty(value = "运输订单号")
     private String transportNo;
 

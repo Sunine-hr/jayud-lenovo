@@ -335,4 +335,26 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/batchSyncGPSPositioning")
     public ApiResult batchSyncGPSPositioning(@RequestBody Map<String, List<String>> paramMap);
+
+    /**
+     * 批量更新GPS历史轨迹
+     *
+     * @param paramMap
+     * @return
+     */
+    @RequestMapping(value = "/api/batchSyncGPSHistoryPositioning")
+    public ApiResult batchSyncGPSHistoryPositioning(@RequestBody Map<String, List<Map<String, Object>>> paramMap);
+
+    /**
+     * 根据子订单主键集合查询订单轨迹
+     *
+     * @param subOrderIds
+     * @param status
+     * @param type
+     * @return
+     */
+    @RequestMapping(value = "/api/getLogisticsTrackByOrderIds")
+    public ApiResult getLogisticsTrackByOrderIds(@RequestParam("subOrderIds") List<Long> subOrderIds,
+                                                 @RequestParam("status") List<String> status,
+                                                 @RequestParam("type") Integer type);
 }

@@ -83,6 +83,10 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
         return null;
     }
 
+    public static void main(String[] args) {
+        System.out.println(DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.TIMESTAMP_PATTERN));
+    }
+
     @Override
     public List<GPSYGTResponse> getYGTHistory(String plateNumber, LocalDateTime startTime, LocalDateTime endTime, Map<String, Object> params) {
         String appKey = MapUtil.getStr(params, "appKey");
@@ -103,18 +107,33 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
         }
         JSONArray positions = responseJson.getJSONArray("Data");
         List<GPSYGTResponse> tmp = positions.toList(GPSYGTResponse.class);
-        tmp.forEach(e->e.setLicenceNumber(responseJson.getStr("LicenceNumber")));
+        tmp.forEach(e -> e.setLicenceNumber(responseJson.getStr("LicenceNumber")));
         return tmp;
     }
 
-
-
     @Override
-    public Object getBeiDouHistory(String plateNumber, LocalDateTime startTime, LocalDateTime endTime,
-                                   Map<String, Object> params) {
-        return null;
-    }
+    public List<GPSBeiDouResponse.historicalPos> getBeiDouHistory(String plateNumber, LocalDateTime startTime, LocalDateTime endTime,
+                                                                  Map<String, Object> params) {
 
+        String userId = MapUtil.getStr(params, "userId", "");
+        String loginType = MapUtil.getStr(params, "loginType", "");
+        String loginWay = MapUtil.getStr(params, "loginWay", "");
+        String gpsAddress = MapUtil.getStr(params, "gpsAddress");
+        String sessionId = this.getBeiDouSessionId(params);
+        String startTimeStr = DateUtils.LocalDateTime2Str(startTime, DateUtils.TIMESTAMP_PATTERN);
+        String endTimeStr = DateUtils.LocalDateTime2Str(endTime, DateUtils.TIMESTAMP_PATTERN);
+        //组装请求的参数
+        HttpResponse response = HttpRequest.get(gpsAddress + "/gps-web/api/get_gps_h_plate.jsp?" +
+                "carPlate=" + plateNumber + "&startTime=" + startTimeStr + "&endTime=" + endTimeStr + " &userId=" + userId + "&sessionId=" + sessionId + "&loginType=" + loginType + "&loginWay=" + loginWay)
+                .execute();
+        String feedback = response.body();
+        JSONObject responseJson = new JSONObject(feedback);
+        if (!responseJson.getBool("rspCode")) {
+            log.warn("实时定位失败,车牌号={},错误信息={}", plateNumber, responseJson.getStr("rspDesc"));
+        }
+        List<GPSBeiDouResponse.historicalPos> list = responseJson.getJSONArray("list").toList(GPSBeiDouResponse.historicalPos.class);
+        return list;
+    }
 
     @Override
     public List<GpsPositioning> convertDatas(Object list) {
@@ -139,6 +158,18 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
                 GPSBeiDouResponse.realTimePos tmp = (GPSBeiDouResponse.realTimePos) o;
                 GpsPositioning gpsPositioning = new GpsPositioning();
                 gpsPositioning.setVehicleStatus(tmp.getStateCn());
+                gpsPositioning.setDirection(tmp.getDrct());
+                gpsPositioning.setLatitude(tmp.getLat());
+                gpsPositioning.setLongitude(tmp.getLng());
+                gpsPositioning.setSpeed(tmp.getSpeed());
+                gpsPositioning.setPlateNumber(tmp.getCarPlate());
+                gpsPositioning.setType(GPSTypeEnum.TWO.getCode());
+                positionings.add(gpsPositioning);
+            }
+        } else if (obj instanceof GPSBeiDouResponse.historicalPos) {
+            for (Object o : tmps) {
+                GPSBeiDouResponse.historicalPos tmp = (GPSBeiDouResponse.historicalPos) o;
+                GpsPositioning gpsPositioning = new GpsPositioning();
                 gpsPositioning.setDirection(tmp.getDrct());
                 gpsPositioning.setLatitude(tmp.getLat());
                 gpsPositioning.setLongitude(tmp.getLng());

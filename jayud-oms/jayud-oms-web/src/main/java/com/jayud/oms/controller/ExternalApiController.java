@@ -2071,7 +2071,7 @@ public class ExternalApiController {
 
 
     /**
-     * 批量更新实时定位GPS
+     * 批量更新GPS历史轨迹
      *
      * @param paramMap
      * @return
@@ -2099,6 +2099,7 @@ public class ExternalApiController {
             log.info("供应商没有配置gps厂商");
             return ApiResult.ok();
         }
+
         //根据车牌获取gps信息
         List<GpsPositioning> oldPositioning = this.gpsPositioningService.getGroupByOrderNo(orderNos, 2);
         Map<String, GpsPositioning> oldMap = oldPositioning.stream().collect(Collectors.toMap(e -> e.getPlateNumber() + "~" + e.getOrderNo(), e -> e));
@@ -2115,14 +2116,25 @@ public class ExternalApiController {
                 orderInfos.forEach(e -> {
                     String orderNo = MapUtil.getStr(e, "orderNo");
                     //过滤已经同步的订单
-                    if (oldMap.get(vehicleDetailsVO.getPlateNumber() + "~" + orderNo) == null) {
+//                    if (oldMap.get(vehicleDetailsVO.getPlateNumber() + "~" + orderNo) == null) {
+                    if (!this.redisUtils.hasKey("GPS_" + orderNo)) {
                         try {
                             LocalDateTime startTime = MapUtil.get(e, "startTime", LocalDateTime.class);
                             LocalDateTime endTime = MapUtil.get(e, "endTime", LocalDateTime.class);
                             Object obj = this.gpsPositioningApiService.getHistory(vehicleDetailsVO.getPlateNumber(), startTime, endTime, Integer.valueOf(split[0]), paraMap);
                             List<GpsPositioning> gpsPositioning = this.gpsPositioningApiService.convertDatas(obj);
-                            this.gpsPositioningService.saveBatch(gpsPositioning);
-                        }catch (JayudBizException exception){
+
+                            List<List<String>> positionList = new ArrayList<>();
+                            gpsPositioning.forEach(g -> {
+                                g.setOrderNo(orderNo).setCreateTime(LocalDateTime.now()).setStatus(2).setStartTime(startTime).setEndTime(endTime);
+                                List<String> position = new ArrayList<>();
+                                position.add(g.getLatitude());
+                                position.add(g.getLongitude());
+                                positionList.add(position);
+                            });
+                            this.redisUtils.set("GPS_" + orderNo, positionList);
+//                            this.gpsPositioningService.saveBatch(gpsPositioning);
+                        } catch (JayudBizException exception) {
                             log.error("获取历史轨迹错误,gps厂商={},错误信息={}", GPSTypeEnum.getDesc(Integer.valueOf(split[0])), exception.getMessage(), exception);
                         }
                     }
@@ -2132,6 +2144,25 @@ public class ExternalApiController {
 
         return ApiResult.ok();
     }
+
+
+    /**
+     * 根据子订单主键集合查询订单轨迹
+     *
+     * @param subOrderIds
+     * @param status
+     * @param type
+     * @return
+     */
+    @RequestMapping(value = "/api/getLogisticsTrackByOrderIds")
+    public ApiResult getLogisticsTrackByOrderIds(@RequestParam("subOrderIds") List<Long> subOrderIds,
+                                                 @RequestParam("status") List<String> status,
+                                                 @RequestParam("type") Integer type) {
+
+        List<LogisticsTrack> list = this.logisticsTrackService.getLogisticsTrackByOrderIds(subOrderIds, status, type);
+        return ApiResult.ok(list);
+    }
+
 
 }
 

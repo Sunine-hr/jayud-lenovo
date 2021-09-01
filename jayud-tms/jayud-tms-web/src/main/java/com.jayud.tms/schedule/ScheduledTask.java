@@ -80,10 +80,10 @@ public class ScheduledTask {
      * 0/7 * * * * ?        代表每7秒执行一次
      * 0 0 4 1 * ?          每月1号凌晨4点触发
      */
-    @Scheduled(cron = "0/59 * * * * ?")
-    public void test() {
-        ApiResult result = this.externalApiController.batchSyncTMSGPSPositioning();
-        System.out.println(new JSONObject(result).toString());
-    }
+//    @Scheduled(cron = "0/59 * * * * ?")
+//    public void test() {
+//        ApiResult result = this.externalApiController.batchSyncGPSTMSHistoryPositioning();
+//        System.out.println(new JSONObject(result).toString());
+//    }
 
 }

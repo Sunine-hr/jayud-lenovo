@@ -5,6 +5,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.entity.LogisticsTrackVO;
 import com.jayud.common.entity.MapEntity;
 import com.jayud.tms.model.bo.AuditInfoForm;
 import com.jayud.tms.model.bo.HandleSubProcessForm;
@@ -354,7 +355,7 @@ public interface OmsClient {
      * @return
      */
     @RequestMapping(value = "/api/getLogisticsTrackByOrderIds")
-    public ApiResult getLogisticsTrackByOrderIds(@RequestParam("subOrderIds") List<Long> subOrderIds,
-                                                 @RequestParam("status") List<String> status,
-                                                 @RequestParam("type") Integer type);
+    public ApiResult<List<LogisticsTrackVO>> getLogisticsTrackByOrderIds(@RequestParam("subOrderIds") List<Long> subOrderIds,
+                                                                         @RequestParam("status") List<String> status,
+                                                                         @RequestParam("type") Integer type);
 }

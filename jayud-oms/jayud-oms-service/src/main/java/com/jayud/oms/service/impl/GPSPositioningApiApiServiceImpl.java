@@ -132,7 +132,11 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
         if (!responseJson.getBool("rspCode")) {
             log.warn("实时定位失败,车牌号={},错误信息={}", plateNumber, responseJson.getStr("rspDesc"));
         }
-        List<GPSBeiDouResponse.historicalPos> list = responseJson.getJSONArray("list").toList(GPSBeiDouResponse.historicalPos.class);
+        JSONArray jsonArray = responseJson.getJSONArray("list");
+        List<GPSBeiDouResponse.historicalPos> list = new ArrayList<>();
+        if (jsonArray != null) {
+            list = jsonArray.toList(GPSBeiDouResponse.historicalPos.class);
+        }
         return list;
     }
 
@@ -232,11 +236,16 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
                     .execute();
             String feedback = response.body();
             JSONObject responseJson = new JSONObject(feedback);
-            if (!responseJson.getBool("rspCode")) {
+            if (responseJson.getBool("rspCode")) {
                 log.warn("实时定位失败,车牌号={},错误信息={}", e, responseJson.getStr("rspDesc"));
             }
-            GPSBeiDouResponse.realTimePos realTimePos = responseJson.getJSONArray("list").getJSONObject(0).toBean(GPSBeiDouResponse.realTimePos.class);
-            list.add(realTimePos);
+            JSONArray jsonArray = responseJson.getJSONArray("list");
+            if (jsonArray != null) {
+                GPSBeiDouResponse.realTimePos realTimePos = jsonArray.
+                        getJSONObject(0).toBean(GPSBeiDouResponse.realTimePos.class);
+                list.add(realTimePos);
+            }
+
         });
         return list;
     }

@@ -13,9 +13,12 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.entity.LogisticsTrackVO;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.UserTypeEnum;
+import com.jayud.common.utils.JDKUtils;
+import com.jayud.common.utils.Utilities;
 import com.jayud.tms.feign.OauthClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.bo.*;
@@ -432,18 +435,37 @@ public class ExternalApiController {
 //                TMS_T_3_1("T_3_1", "运输审核不通过"),//仅中港子订单状态用,这个是审核派车信息
 //                TMS_T_3_2("T_3_2", "运输审核驳回"),
 
-        List<String> excludeStatus = Arrays.asList(OrderStatusEnum.TMS_T_0.getCode(),
-                OrderStatusEnum.TMS_T_1.getCode(),
-                OrderStatusEnum.TMS_T_1_1.getCode(),
-                OrderStatusEnum.TMS_T_2.getCode(),
-                OrderStatusEnum.TMS_T_2_1.getCode(),
-                OrderStatusEnum.TMS_T_3.getCode(),
-                OrderStatusEnum.TMS_T_3_1.getCode(),
-                OrderStatusEnum.TMS_T_3_2.getCode(),
-                OrderStatusEnum.TMS_T_15.getCode());
+//        List<String> excludeStatus = Arrays.asList(OrderStatusEnum.TMS_T_0.getCode(),
+//                OrderStatusEnum.TMS_T_1.getCode(),
+//                OrderStatusEnum.TMS_T_1_1.getCode(),
+//                OrderStatusEnum.TMS_T_2.getCode(),
+//                OrderStatusEnum.TMS_T_2_1.getCode(),
+//                OrderStatusEnum.TMS_T_3.getCode(),
+//                OrderStatusEnum.TMS_T_3_1.getCode(),
+//                OrderStatusEnum.TMS_T_3_2.getCode(),
+//                OrderStatusEnum.TMS_T_15.getCode());
+
+        List<String> status = Arrays.asList(
+                OrderStatusEnum.TMS_T_4.getCode(),
+                OrderStatusEnum.TMS_T_5.getCode(),
+                OrderStatusEnum.TMS_T_5_1.getCode(),
+                OrderStatusEnum.TMS_T_6.getCode(),
+                OrderStatusEnum.TMS_T_7.getCode(),
+                OrderStatusEnum.TMS_T_7_1.getCode(),
+                OrderStatusEnum.TMS_T_8.getCode(),
+                OrderStatusEnum.TMS_T_8_1.getCode(),
+                OrderStatusEnum.TMS_T_9.getCode(),
+                OrderStatusEnum.TMS_T_9_1.getCode(),
+                OrderStatusEnum.TMS_T_9_2.getCode(),
+                OrderStatusEnum.TMS_T_10.getCode(),
+                OrderStatusEnum.TMS_T_13.getCode(),
+                OrderStatusEnum.TMS_T_14.getCode());
+
+
         //查询所有确认派车和签收前之间状态
-        List<OrderSendCars> orderSendCars = this.orderSendCarsService.getByExcludeStatus(excludeStatus);
-        Map<Long, Set<String>> map = orderSendCars.stream().collect(Collectors.groupingBy(OrderSendCars::getVehicleId, Collectors.mapping(OrderSendCars::getOrderNo, Collectors.toSet())));
+//        List<OrderSendCars> orderSendCars = this.orderSendCarsService.getByExcludeStatus(excludeStatus);
+        List<OrderSendCarsVO> orderSendCars = this.orderSendCarsService.getByStatus(status);
+        Map<Long, Set<String>> map = orderSendCars.stream().filter(e -> e.getVehicleId() != null).collect(Collectors.groupingBy(OrderSendCarsVO::getVehicleId, Collectors.mapping(OrderSendCarsVO::getOrderNo, Collectors.toSet())));
         Object vehicleInfoObjs = this.omsClient.getVehicleInfoByIds(new ArrayList<>(map.keySet())).getData();
         Map<Long, String> vehicleInfoMap = new JSONArray(vehicleInfoObjs).stream().collect(Collectors.toMap(e -> ((JSONObject) e).getLong("id"), e -> ((JSONObject) e).getStr("plateNumber")));
         Map<String, List<String>> req = new HashMap<>();
@@ -469,13 +491,13 @@ public class ExternalApiController {
         for (OrderSendCarsVO orderSendCar : orderSendCars) {
             orderIds.add(orderSendCar.getTransportId());
         }
-        Object logisticsObj = omsClient.getLogisticsTrackByOrderIds(orderIds, Arrays.asList(OrderStatusEnum.TMS_T_4.getCode(), OrderStatusEnum.TMS_T_15.getCode()),
+        List<LogisticsTrackVO> logisticsTrackVOS = omsClient.getLogisticsTrackByOrderIds(orderIds, Arrays.asList(OrderStatusEnum.TMS_T_4.getCode(), OrderStatusEnum.TMS_T_15.getCode()),
                 BusinessTypeEnum.ZGYS.getCode()).getData();
-        Map<String, Object> logisticsMap = new JSONArray(logisticsObj).stream()
-                .collect(Collectors.toMap(e -> ((JSONObject) e).getLong("orderId") + "~" + ((JSONObject) e).getStr("status"),
-                        e -> ((JSONObject) e).get("operatorTime")));
 
-        Map<Long, List<OrderSendCarsVO>> map = orderSendCars.stream().collect(Collectors.groupingBy(OrderSendCarsVO::getVehicleId));
+        Map<Object, Object> logisticsMap = JDKUtils.getGroupByLastData(logisticsTrackVOS, LogisticsTrackVO::getOrderId, e -> e.getOrderId() + "~" + e.getStatus())
+                .stream().filter(e -> e.getOperatorTime() != null).collect(Collectors.toMap(e -> e.getOrderId() + "~" + e.getStatus(), LogisticsTrackVO::getOperatorTime));
+
+        Map<Long, List<OrderSendCarsVO>> map = orderSendCars.stream().filter(e->e.getVehicleId()!=null).collect(Collectors.groupingBy(OrderSendCarsVO::getVehicleId));
         Object vehicleInfoObjs = this.omsClient.getVehicleInfoByIds(new ArrayList<>(map.keySet())).getData();
         Map<Long, String> vehicleInfoMap = new JSONArray(vehicleInfoObjs).stream().collect(Collectors.toMap(e -> ((JSONObject) e).getLong("id"), e -> ((JSONObject) e).getStr("plateNumber")));
         Map<String, List<Map<String, Object>>> req = new HashMap<>();

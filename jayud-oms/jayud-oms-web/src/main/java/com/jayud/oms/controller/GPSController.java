@@ -13,6 +13,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.GPSUtil;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.GetOrderDetailForm;
 import com.jayud.oms.model.po.GpsPositioning;
 import com.jayud.oms.model.po.LogisticsTrack;
@@ -409,7 +410,7 @@ public class GPSController {
 //            System.out.println(a.get("geocodes"));
             JSONArray sddressArr = JSON.parseArray(a.get("geocodes").toString());
 //            System.out.println(sddressArr.get(0));
-            if (sddressArr.get(0) != null) {
+            if (sddressArr != null && sddressArr.get(0) != null) {
                 JSONObject c = JSON.parseObject(sddressArr.get(0).toString());
                 location = c.get("location").toString();
             }
@@ -568,9 +569,11 @@ public class GPSController {
         }
         for (OrderTakeAdrVO orderTakeAdrVO : orderTakeAdrVOS1) {
             String s = httpURLConectionGET(orderTakeAdrVO.getAddress());
-            String[] split1 = s.split(",");
-            orderTakeAdrVO.setLatitude(Double.parseDouble(split1[1]));
-            orderTakeAdrVO.setLongitude(Double.parseDouble(split1[0]));
+            if (!StringUtils.isEmpty(s)) {
+                String[] split1 = s.split(",");
+                orderTakeAdrVO.setLatitude(Double.parseDouble(split1[1]));
+                orderTakeAdrVO.setLongitude(Double.parseDouble(split1[0]));
+            }
         }
 
         historyPositionVO.setLists(lists);

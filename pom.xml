@@ -34,6 +34,7 @@
         <module>jayud-storage</module>
 
         <module>jayud-email</module>
+        <module>jayud-xxjob-task</module>
 
     </modules>
     <parent>
@@ -249,6 +250,12 @@
                     <artifactId>spring-boot-starter-tomcat</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
+            <version>2.3.0</version>
         </dependency>
 
     </dependencies>

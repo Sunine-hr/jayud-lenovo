@@ -1,18 +1,17 @@
 package com.jayud.oms.model.bo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import io.swagger.annotations.ApiModel;
+import com.jayud.common.exception.JayudBizException;
+import com.jayud.oms.model.po.CostGenreTaxRate;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -44,5 +43,21 @@ public class AddCostGenreForm extends Model<AddCostGenreForm> {
     @ApiModelProperty(value = "描述")
     private String remarks;
 
+    @ApiModelProperty(value = "税率")
+    private List<CostGenreTaxRate> costGenreTaxRates;
 
+    public void checkAdd() {
+        if (CollectionUtils.isEmpty(costGenreTaxRates)) {
+            return;
+        }
+        if (costGenreTaxRates.stream().anyMatch(e->e.getCostTypeId()==null||e.getTaxRate()==null)) {
+            throw new JayudBizException(400,"作业环节/税率必填");
+        }
+        Map<Long, Long> map = costGenreTaxRates.stream().collect(Collectors.groupingBy(CostGenreTaxRate::getCostTypeId, Collectors.counting()));
+        map.forEach((k,v)->{
+            if (v>1){
+                throw new JayudBizException(400,"不能选择相同的作业环节");
+            }
+        });
+    }
 }

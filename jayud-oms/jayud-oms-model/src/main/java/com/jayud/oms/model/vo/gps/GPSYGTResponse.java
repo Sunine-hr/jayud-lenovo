@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
+
 /**
  * 云港通实体
  */
@@ -28,6 +30,9 @@ public class GPSYGTResponse {
 
     @ApiModelProperty(value = "速度")
     private Double Speed;
+
+    @ApiModelProperty(value = "终端上报位置的时间")
+    private LocalDateTime ReportTime;
 
 
 }

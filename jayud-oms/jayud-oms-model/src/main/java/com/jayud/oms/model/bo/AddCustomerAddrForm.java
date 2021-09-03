@@ -124,9 +124,9 @@ public class AddCustomerAddrForm {
         if (city == null) {
             throw new JayudBizException(400, "市主键不能为空");
         }
-        if (area == null) {
-            throw new JayudBizException(400, "区主键不能为空");
-        }
+//        if (area == null) {
+//            throw new JayudBizException(400, "区主键不能为空");
+//        }
         if (StringUtils.isEmpty(address)) {
             throw new JayudBizException(400, "详细地址不能为空");
         }

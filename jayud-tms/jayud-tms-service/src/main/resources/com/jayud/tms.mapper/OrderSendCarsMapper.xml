@@ -128,7 +128,7 @@
     <select id="getByExcludeStatus" resultType="com.jayud.tms.model.po.OrderSendCars">
         select c.* from order_send_cars c inner join order_transport ot
         <where>
-            ot.status in
+            ot.status not in
             <foreach collection="excludeStatus" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>

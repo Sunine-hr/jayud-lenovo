@@ -67,6 +67,15 @@ public class InputOrderTakeAdrForm {
     @ApiModelProperty(value = "入仓号")
     private String enterWarehouseNo;
 
+    @ApiModelProperty(value = "省主键")
+    private Long province;
+
+    @ApiModelProperty(value = "市主键")
+    private Long city;
+
+    @ApiModelProperty(value = "区主键")
+    private Long area;
+
     @ApiModelProperty(value = "提货文件上传附件地址数组集合")
     private List<FileView> takeFiles = new ArrayList<>();
 

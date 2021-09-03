@@ -4,6 +4,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 /**
  * 通实体
  */
@@ -12,7 +15,7 @@ import lombok.experimental.Accessors;
 public class GPSBeiDouResponse {
 
     @Data
-    public class realTimePos{
+    public class realTimePos {
         @ApiModelProperty(value = "车牌号")
         private String carPlate;
 
@@ -30,10 +33,13 @@ public class GPSBeiDouResponse {
 
         @ApiModelProperty(value = "速度 单位：千米/小时")
         private String speed;
+
+        @ApiModelProperty(value = "gps时间")
+        private LocalDateTime time;
     }
 
     @Data
-    public class historicalPos{
+    public class historicalPos {
         @ApiModelProperty(value = "车牌号")
         private String carPlate;
 
@@ -51,5 +57,7 @@ public class GPSBeiDouResponse {
 
         @ApiModelProperty(value = "速度 单位：千米/小时")
         private String speed;
+        @ApiModelProperty(value = "gps时间")
+        private LocalDateTime time;
     }
 }

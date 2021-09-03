@@ -57,4 +57,6 @@ public interface ICostGenreService extends IService<CostGenre> {
      * @return
      */
     boolean checkUnique(CostGenre costGenre);
+
+    boolean saveOrUpdate(AddCostGenreForm form);
 }

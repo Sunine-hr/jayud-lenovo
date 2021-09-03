@@ -11,6 +11,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.GPSUtil;
 import com.jayud.oms.model.bo.GetOrderDetailForm;
 import com.jayud.oms.model.po.GpsPositioning;
@@ -500,14 +501,28 @@ public class GPSController {
         InputOrderTransportVO orderTransportForm = orderDetail.getOrderTransportForm();
 
         List<GpsPositioning> gpsPositionings = gpsPositioningService.getByOrderNo(Arrays.asList(orderTransportForm.getOrderNo()), 1);
-        PositionVO convert = null;
+        PositionVO convert = new PositionVO();
         if (!CollectionUtils.isEmpty(gpsPositionings)) {
             convert = ConvertUtil.convert(orderTransportForm, PositionVO.class);
             GpsPositioning positioning = gpsPositionings.get(0);
             double[] doubles = GPSUtil.gps84_To_Gcj02(Double.parseDouble(positioning.getLatitude()), Double.parseDouble(positioning.getLongitude()));
             convert.setLatitude(doubles[0]);
             convert.setLongitude(doubles[1]);
+            convert.setReportTime(DateUtils.LocalDateTime2Str(positioning.getGpsTime(), DateUtils.DATE_TIME_PATTERN));
+            convert.setSpeed(Double.valueOf(positioning.getSpeed()));
         }
+        convert.setMainOrderNo(orderDetail.getOrderForm().getOrderNo());
+        //获取提货地址
+        List<InputOrderTakeAdrVO> orderTakeAdrForms1 = orderTransportForm.getOrderTakeAdrForms1();
+        StringBuffer stringBuffer = new StringBuffer();
+        for (InputOrderTakeAdrVO inputOrderTakeAdrVO : orderTakeAdrForms1) {
+            stringBuffer.append(inputOrderTakeAdrVO.getGoodsDesc()).append(" ")
+                    .append(inputOrderTakeAdrVO.getPlateAmount() == null ? 0 + "板" : inputOrderTakeAdrVO.getPlateAmount() + "板").append("/")
+                    .append(inputOrderTakeAdrVO.getPieceAmount() + "件").append("/")
+                    .append(inputOrderTakeAdrVO.getWeight() + "KG").append(";");
+        }
+        convert.setCustomerName(orderDetail.getOrderForm().getCustomerName());
+        convert.setGoodInfo(stringBuffer.toString().substring(0, stringBuffer.length() - 1));
         return CommonResult.success(convert);
     }
 

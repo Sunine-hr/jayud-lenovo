@@ -849,7 +849,8 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         //定义排序规则
         page.addOrder(OrderItem.desc("temp.createTimeStr"));
         IPage<PaymentNotPaidBillVO> pageInfo = baseMapper.findFBillAuditByPage(page, form);
-        if (pageInfo.getRecords() == null) {
+        List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
+        if (CollectionUtils.isEmpty(pageList)) {
             return pageInfo;
         }
         //获取所有币种
@@ -860,10 +861,19 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
         //查询所有费用本币金额
         Object costInfo = this.omsClient.getCostInfo(costIds, 1).getData();
 
+        //获取费用类型税率
+        List<Long> costGenreIds = new ArrayList<>();
+        pageList.forEach(e -> {
+            costGenreIds.add(e.getCostGenreId());
+        });
+        if (form.getBatchUpdateRateId() != null) {
+            costGenreIds.add(form.getBatchUpdateRateId());
+        }
+        JSONArray taxRateArray = new JSONArray(this.omsClient.getCostGenreTaxRateByGenreIds(costGenreIds).getData());
+        Map<String, BigDecimal> taxRateMap = taxRateArray.stream().collect(Collectors.toMap(e -> ((JSONObject) e).getLong("costGenreId") + "~" + ((JSONObject) e).getLong("costTypeId"), e -> ((JSONObject) e).getBigDecimal("taxRate")));
 
         //所有的费用类型
         List<InitComboxVO> initComboxVOS = omsClient.findEnableCostGenre().getData();
-        List<PaymentNotPaidBillVO> pageList = pageInfo.getRecords();
         for (PaymentNotPaidBillVO paymentNotPaidBill : pageList) {
             List<InitComboxVO> haveCostGenre = new ArrayList<>();
             if (!StringUtil.isNullOrEmpty(paymentNotPaidBill.getCostGenreStr())) {
@@ -886,6 +896,16 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
             }
 
             paymentNotPaidBill.assemblyCostInfo(costInfo, currencyMap);
+            if (form.getBatchUpdateRateId() != null) {
+                Long costGenreId = form.getBatchUpdateRateId();
+                paymentNotPaidBill.setCostGenreId(costGenreId);
+                paymentNotPaidBill.setTaxRate(taxRateMap.getOrDefault(costGenreId + "~" + paymentNotPaidBill.getCostTypeId(), new BigDecimal(0)));
+            } else {
+                if (paymentNotPaidBill.getTaxRate() == null) {
+                    Long costGenreId = paymentNotPaidBill.getCostGenreId();
+                    paymentNotPaidBill.setTaxRate(taxRateMap.getOrDefault(costGenreId + "~" + paymentNotPaidBill.getCostTypeId(), new BigDecimal(0)));
+                }
+            }
         }
 
 

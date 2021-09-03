@@ -17,6 +17,7 @@ import com.jayud.oms.model.vo.gps.GPSBeiDouResponse;
 import com.jayud.oms.model.vo.gps.GPSYGTResponse;
 import com.jayud.oms.service.GPSPositioningApiService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -138,6 +139,7 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
     @Override
     public List<GpsPositioning> convertDatas(Object list) {
         List<Object> tmps = (List<Object>) list;
+        if (CollectionUtils.isEmpty(tmps)) return null;
         Object obj = tmps.get(0);
         List<GpsPositioning> positionings = new ArrayList<>();
         if (obj instanceof GPSYGTResponse) {
@@ -151,6 +153,7 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
                 gpsPositioning.setSpeed(tmp.getSpeed().toString());
                 gpsPositioning.setPlateNumber(tmp.getLicenceNumber());
                 gpsPositioning.setType(GPSTypeEnum.ONE.getCode());
+                gpsPositioning.setGpsTime(tmp.getReportTime());
                 positionings.add(gpsPositioning);
             }
         } else if (obj instanceof GPSBeiDouResponse.realTimePos) {
@@ -164,6 +167,7 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
                 gpsPositioning.setSpeed(tmp.getSpeed());
                 gpsPositioning.setPlateNumber(tmp.getCarPlate());
                 gpsPositioning.setType(GPSTypeEnum.TWO.getCode());
+                gpsPositioning.setGpsTime(tmp.getTime());
                 positionings.add(gpsPositioning);
             }
         } else if (obj instanceof GPSBeiDouResponse.historicalPos) {
@@ -176,6 +180,7 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
                 gpsPositioning.setSpeed(tmp.getSpeed());
                 gpsPositioning.setPlateNumber(tmp.getCarPlate());
                 gpsPositioning.setType(GPSTypeEnum.TWO.getCode());
+                gpsPositioning.setGpsTime(tmp.getTime());
                 positionings.add(gpsPositioning);
             }
         }

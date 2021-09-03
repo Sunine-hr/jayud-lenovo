@@ -844,6 +844,7 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             return pageMap;
         }
 
+
         //获取所有币种
         Map<String, String> currencyMap = this.omsClient.initCurrencyInfo().getData()
                 .stream().collect(Collectors.toMap(InitComboxStrVO::getCode, InitComboxStrVO::getName));
@@ -858,6 +859,16 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         if (pageList.size() == 0) {
             return pageMap;
         }
+        //获取费用类型税率
+        List<Long> costGenreIds = new ArrayList<>();
+        pageList.forEach(e -> {
+            costGenreIds.add(e.getCostGenreId());
+        });
+        if (form.getBatchUpdateRateId() != null) {
+            costGenreIds.add(form.getBatchUpdateRateId());
+        }
+        JSONArray taxRateArray = new JSONArray(this.omsClient.getCostGenreTaxRateByGenreIds(costGenreIds).getData());
+        Map<String, BigDecimal> taxRateMap = taxRateArray.stream().collect(Collectors.toMap(e -> ((JSONObject) e).getLong("costGenreId") + "~" + ((JSONObject) e).getLong("costTypeId"), e -> ((JSONObject) e).getBigDecimal("taxRate")));
         List<String> mainOrderNos = new ArrayList<>();
         for (PaymentNotPaidBillVO paymentNotPaidBill : pageList) {
             List<InitComboxVO> haveCostGenre = new ArrayList<>();
@@ -881,6 +892,19 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
             }
             mainOrderNos.add(paymentNotPaidBill.getOrderNo());
             paymentNotPaidBill.assemblyCostInfo(costInfo, currencyMap);
+            //是否批量修改税率
+
+            if (form.getBatchUpdateRateId() != null) {
+                Long costGenreId = form.getBatchUpdateRateId();
+                paymentNotPaidBill.setCostGenreId(costGenreId);
+                paymentNotPaidBill.setTaxRate(taxRateMap.getOrDefault(costGenreId + "~" + paymentNotPaidBill.getCostTypeId(), new BigDecimal(0)));
+            } else {
+                if (paymentNotPaidBill.getTaxRate() == null) {
+                    Long costGenreId = paymentNotPaidBill.getCostGenreId();
+                    paymentNotPaidBill.setTaxRate(taxRateMap.getOrDefault(costGenreId + "~" + paymentNotPaidBill.getCostTypeId(), new BigDecimal(0)));
+                }
+
+            }
         }
 
         JSONArray array = new JSONArray(pageList);
@@ -1230,12 +1254,12 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
      *
      * @param userName
      * @param isMain
-     * @param name
+     * @param subType
      * @return
      */
     @Override
     public List<Map<String, Object>> getBillingStatusNum(String userName, boolean isMain, String subType) {
-        return this.baseMapper.getBillingStatusNum(userName,isMain,subType);
+        return this.baseMapper.getBillingStatusNum(userName, isMain, subType);
     }
 
 }

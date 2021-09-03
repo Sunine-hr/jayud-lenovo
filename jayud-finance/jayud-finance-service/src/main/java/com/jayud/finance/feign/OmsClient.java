@@ -221,4 +221,12 @@ public interface OmsClient {
     @PostMapping(value = "/getCostDetailByCostIds")
     public ApiResult getCostDetailByCostIds(@RequestParam(value = "reCostIds") List<Long> reCostIds,
                                             @RequestParam(value = "payCostIds") List<Long> payCostIds);
+
+    /**
+     * 根据费用类别id获取税率
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostGenreTaxRateByGenreIds")
+    public ApiResult getCostGenreTaxRateByGenreIds(@RequestParam("costGenreIds") List<Long> costGenreIds);
 }

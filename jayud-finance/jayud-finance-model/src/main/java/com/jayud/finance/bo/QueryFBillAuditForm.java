@@ -43,4 +43,6 @@ public class QueryFBillAuditForm extends BasePageForm{
     @ApiModelProperty(value = "开始创建时间")
     private String beginCreateTimeStr;
 
+    @ApiModelProperty(value = "批量修改费用类型税率")
+    private Long batchUpdateRateId;
 }

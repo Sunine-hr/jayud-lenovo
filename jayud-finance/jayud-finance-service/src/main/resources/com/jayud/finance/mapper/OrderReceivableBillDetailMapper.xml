@@ -526,16 +526,17 @@
         (select pb.cost_genre_ids from product_biz pb where pb.id_code = oi.biz_code) costGenreStr,
         orc.id costId,
         (select ct.code_name from cost_type ct where ct.id = orc.cost_type_id) costTypeName,
+        orc.cost_type_id,
         (select ci.`name` from cost_info ci where ci.id_code = orc.cost_code) costName,
-        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
-        obct.money_type='2' and obct.currency_code = 'CNY') rmb,
-        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
-        obct.money_type='2' and obct.currency_code = 'USD') dollar,
-        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
-        obct.money_type='2' and obct.currency_code = 'EUR') euro,
-        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
-        obct.money_type='2' and obct.currency_code = 'HKD') hKDollar,
-        ifnull(orbd.tax_rate,(select cg.tax_rate from cost_genre cg where cg.id = orc.cost_genre_id)) taxRate,
+--         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
+--         obct.money_type='2' and obct.currency_code = 'CNY') rmb,
+--         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
+--         obct.money_type='2' and obct.currency_code = 'USD') dollar,
+--         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
+--         obct.money_type='2' and obct.currency_code = 'EUR') euro,
+--         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = orbd.cost_id and
+--         obct.money_type='2' and obct.currency_code = 'HKD') hKDollar,
+        orbd.tax_rate taxRate,
         orbd.remarks,
         orbd.bill_no,
         (select ci.currency_name from currency_info ci where ci.currency_code = orbd.settlement_currency)

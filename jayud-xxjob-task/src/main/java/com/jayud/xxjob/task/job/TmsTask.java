@@ -37,6 +37,7 @@ public class TmsTask {
         log.info("执行同步中港GPS历史轨迹任务");
         ApiResult result = tmsClient.batchSyncGPSTMSHistoryPositioning();
         if (!result.isOk()) {
+            log.warn("请求失败 报错信息={}", result.getMsg());
             XxlJobHelper.log("请求失败 报错信息={}", result.getMsg());
         }
     }
@@ -50,6 +51,7 @@ public class TmsTask {
         log.info("执行批量同步中港车辆实时定位任务");
         ApiResult result = tmsClient.batchSyncTMSGPSPositioning();
         if (!result.isOk()) {
+            log.warn("请求失败 报错信息={}", result.getMsg());
             XxlJobHelper.log("请求失败 报错信息={}", result.getMsg());
         }
 

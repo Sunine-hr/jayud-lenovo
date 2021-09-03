@@ -108,11 +108,17 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         orderTakeAdrForms.addAll(orderTakeAdrForms1);
         orderTakeAdrForms.addAll(orderTakeAdrForms2);
 
+
         if (orderTransport.getId() != null) {//修改
             //修改时,先把以前的收货信息清空
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("order_no", form.getOrderNo());
+            //查询提货/收货地址
+            List<OrderTakeAdr> list = this.orderTakeAdrService.list(queryWrapper);
             orderTakeAdrService.remove(queryWrapper);//删除货物信息
+            //删除提货地址
+            Set<Long> deliveryIds = list.stream().map(OrderTakeAdr::getDeliveryId).collect(Collectors.toSet());
+            this.deliveryAddressService.removeByIds(deliveryIds);
             orderTransport.setUpdatedTime(LocalDateTime.now());
             orderTransport.setUpdatedUser(form.getLoginUser());
         } else {//新增
@@ -137,6 +143,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             deliveryAddress.setContacts(inputOrderTakeAdrForm.getContacts());
             deliveryAddress.setPhone(inputOrderTakeAdrForm.getPhone());
             deliveryAddress.setAddress(inputOrderTakeAdrForm.getAddress());
+            deliveryAddress.setProvince(inputOrderTakeAdrForm.getProvince());
+            deliveryAddress.setCity(inputOrderTakeAdrForm.getCity());
+            deliveryAddress.setArea(inputOrderTakeAdrForm.getArea());
 
             deliveryAddressService.saveOrUpdate(deliveryAddress);
             JSONObject jsonObject = new JSONObject();
@@ -164,7 +173,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTransport.setStatus(OrderStatusEnum.TMS_T_0.getCode());
         }
         boolean result = orderTransportService.saveOrUpdate(orderTransport);
-        if ("submit" .equals(form.getCmd())) {
+        if ("submit".equals(form.getCmd())) {
             this.msgPush(orderTransport);
         }
         return result;

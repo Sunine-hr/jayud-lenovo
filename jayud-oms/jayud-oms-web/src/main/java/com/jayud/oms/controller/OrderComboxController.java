@@ -660,5 +660,20 @@ public class OrderComboxController {
     public CommonResult<List<com.jayud.common.entity.InitComboxStrVO>> initCustomerUnitBisType(Map<String, Object> map) {
         return CommonResult.success(SubOrderSignEnum.initBusinessType());
     }
+
+    @ApiOperation(value = "下拉全部费用类别")
+    @PostMapping(value = "/initAllCostType")
+    public CommonResult<List<InitComboxStrVO>> initAllCostType(@RequestBody Map<String, Object> param) {
+        List<CostType> enableCostType = this.costTypeService.getEnableCostType();
+        List<InitComboxStrVO> list=new ArrayList<>();
+        for (CostType costType : enableCostType) {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setId(costType.getId());
+            initComboxStrVO.setName(costType.getCodeName());
+            initComboxStrVO.setCode(costType.getCode());
+            list.add(initComboxStrVO);
+        }
+        return CommonResult.success(list);
+    }
 }
 

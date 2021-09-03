@@ -70,6 +70,9 @@ public class GpsPositioning extends Model<GpsPositioning> {
     @ApiModelProperty(value = "结束时间")
     private LocalDateTime endTime;
 
+    @ApiModelProperty(value = "gps定位时间")
+    private LocalDateTime gpsTime;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

@@ -130,7 +130,7 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
         String feedback = response.body();
         JSONObject responseJson = new JSONObject(feedback);
         if (!responseJson.getBool("rspCode")) {
-            log.warn("实时定位失败,车牌号={},错误信息={}", plateNumber, responseJson.getStr("rspDesc"));
+            log.warn("历史轨迹更新失败,车牌号={},错误信息={}", plateNumber, responseJson.getStr("rspDesc"));
         }
         JSONArray jsonArray = responseJson.getJSONArray("list");
         List<GPSBeiDouResponse.historicalPos> list = new ArrayList<>();

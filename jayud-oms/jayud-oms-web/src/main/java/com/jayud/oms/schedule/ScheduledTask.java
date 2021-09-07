@@ -135,12 +135,12 @@ public class ScheduledTask {
         log.info("********* 定时同步主订单数据任务结束 (单位:秒): " + stopWatch.getTotalTimeSeconds() + " 秒. **************");
     }
 
-    /**
-     * 消息推送
-     */
-    @Scheduled(cron = "0 0/2 * * * ?")
-    public void messagePush() {
-        msgPushRecordService.messagePush();
-    }
+//    /**
+//     * 消息推送
+//     */
+//    @Scheduled(cron = "0 0/2 * * * ?")
+//    public void messagePush() {
+//        msgPushRecordService.messagePush();
+//    }
 
 }

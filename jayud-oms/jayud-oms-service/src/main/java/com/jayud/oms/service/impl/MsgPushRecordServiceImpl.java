@@ -11,6 +11,7 @@ import com.jayud.common.entity.EntWechatSysConf;
 import com.jayud.common.enums.*;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.EmailClient;
+import com.jayud.oms.feign.MsgClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.QueryMsgPushListCondition;
 import com.jayud.oms.model.po.*;
@@ -52,6 +53,8 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
     private ISystemConfService systemConfService;
     @Autowired
     private WechatMsgService wechatMsgService;
+    @Autowired
+    private MsgClient msgClient;
 
     /**
      * 推送任务
@@ -116,8 +119,11 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
                 case MAIL://邮件发送
                     this.sendEmail(msgPushRecord, sysConfMap);
                     break;
-                case ENT_WECHAT:
+                case ENT_WECHAT: //企业微信
                     this.sendEntWechat(msgPushRecord, sysConfMap);
+                    break;
+                case DING_DING: //钉钉
+                    this.sendDingDing(msgPushRecord, sysConfMap);
                     break;
             }
         }
@@ -161,6 +167,8 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
                     msgPushRecord.getReceiveContent(), entWechatSysConf.getAgentid(), entWechatSysConf.getCorpid(),
                     entWechatSysConf.getCorpsecret(), token);
             if (!result.getInt("errcode").equals(0)) {
+//                log.warn("发送{}失败 用户={} 状态={} 报错信息={}",msgPushRecord.getReceivingMode(),
+//                        msgPushRecord.getRecipientName(),msgPushRecord.getReceivingStatus(),result.get("errmsg"));
                 this.sendFailProcessing(msgPushRecord, "发送企业微信失败");
             } else {
                 this.sendSuccess(msgPushRecord);
@@ -168,6 +176,29 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
         } catch (Exception e) {
             log.warn("发送企业微信失败 msg:" + e.getMessage());
             this.errMsg(msgPushRecord.getId(), "发送企业微信失败,系统错误", msgPushRecord.getStatus());
+        }
+    }
+
+    private void sendDingDing(MsgPushRecord msgPushRecord, Map<Integer, String> sysConfMap) {
+        String sysConfStr = sysConfMap.get(SystemConfTypeEnum.THREE.getCode());
+        if (StringUtils.isEmpty(sysConfStr)) {
+            log.warn("请配置消息推送配置");
+            this.updateById(new MsgPushRecord().setId(msgPushRecord.getId()).setErrMsg("请配置消息推送配置"));
+            return;
+        }
+        Map<String, String> dingDingSysConf = JSONUtil.toBean(sysConfStr, Map.class);
+        try {
+            dingDingSysConf.put("message", msgPushRecord.getReceiveContent());
+            dingDingSysConf.put("mobile", msgPushRecord.getReceivingAccount());
+            JSONObject result = this.msgClient.sendMessageByMobile(dingDingSysConf);
+            if (!result.getInt("errcode").equals(0)) {
+                this.sendFailProcessing(msgPushRecord, "发送钉钉失败");
+            } else {
+                this.sendSuccess(msgPushRecord);
+            }
+        } catch (Exception e) {
+            log.warn("发送企业微信失败 msg:" + e.getMessage());
+            this.errMsg(msgPushRecord.getId(), "发送发送钉钉失败,系统错误", msgPushRecord.getStatus());
         }
     }
 

@@ -34,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -2180,6 +2181,22 @@ public class ExternalApiController {
     public ApiResult<List<CostGenreTaxRate>> getCostGenreTaxRateByGenreIds(@RequestParam("costGenreIds") List<Long> costGenreIds) {
         List<CostGenreTaxRate> list = this.costGenreTaxRateService.getCostGenreTaxRateByGenreIds(costGenreIds);
         return ApiResult.ok(list);
+    }
+
+
+    /**
+     * 消息推送
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/channelMsgPush")
+    public ApiResult channelMsgPush() {
+        try {
+            msgPushRecordService.messagePush();
+        } catch (Exception e) {
+            return ApiResult.error(e.getMessage());
+        }
+        return ApiResult.ok();
     }
 
 

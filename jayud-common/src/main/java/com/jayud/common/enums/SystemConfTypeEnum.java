@@ -14,6 +14,7 @@ public enum SystemConfTypeEnum {
 
     ONE(1,"email", "邮箱配置"),
     TWO(2, "enterpriseWechat","企业微信"),
+    THREE(3, "dingding","钉钉配置"),
     ;
     private Integer code;
     private String key;

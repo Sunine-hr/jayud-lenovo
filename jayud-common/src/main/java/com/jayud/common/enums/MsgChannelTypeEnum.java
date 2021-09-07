@@ -17,6 +17,7 @@ public enum MsgChannelTypeEnum {
 
     MAIL(1, "邮件"),
     ENT_WECHAT(2, "企业微信"),
+    DING_DING(3, "钉钉"),
     ;
     private Integer code;
     private String desc;

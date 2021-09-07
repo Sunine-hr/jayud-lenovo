@@ -37,9 +37,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -500,6 +499,20 @@ public class OrderCustomsController {
             }
         }
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "查询所有抬头")
+    @PostMapping(value = "/getAllTitle")
+    public CommonResult<List<Map<String, String>>> getAllTitle() {
+        Set<String> list = this.orderCustomsService.list().stream().map(OrderCustoms::getTitle).collect(Collectors.toSet());
+        List<Map<String, String>> tmps = new ArrayList<>();
+        for (String s : list) {
+            Map<String, String> map = new HashMap<>();
+            map.put("value", s);
+            tmps.add(map);
+        }
+
+        return CommonResult.success(tmps);
     }
 }
 

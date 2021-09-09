@@ -4,6 +4,8 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.beetl.BeetlUtils;
 import com.jayud.common.entity.Email;
 import com.jayud.common.entity.EmailSysConf;
@@ -14,8 +16,10 @@ import com.jayud.oms.feign.EmailClient;
 import com.jayud.oms.feign.MsgClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.QueryMsgPushListCondition;
+import com.jayud.oms.model.bo.QueryMsgPushRecordForm;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.mapper.MsgPushRecordMapper;
+import com.jayud.oms.model.vo.MsgPushRecordVO;
 import com.jayud.oms.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +59,37 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
     private WechatMsgService wechatMsgService;
     @Autowired
     private MsgClient msgClient;
+
+    @Override
+    public IPage<MsgPushRecordVO> findByPage(QueryMsgPushRecordForm form) {
+        Page<MsgPushRecord> page = new Page<>(form.getPageNum(), form.getPageSize());
+        return this.baseMapper.findByPage(page, form);
+    }
+
+    /**
+     * 执行全部完成已读
+     */
+    @Override
+    public int doAllReadOperation() {
+        QueryWrapper<MsgPushRecord> condition = new QueryWrapper<>();
+        condition.lambda().eq(MsgPushRecord::getOptStatus, 1);
+        return this.baseMapper.update(new MsgPushRecord().setOptStatus(2), condition);
+    }
+
+    @Override
+    public int doMarkRead(List<Long> ids) {
+        QueryWrapper<MsgPushRecord> condition = new QueryWrapper<>();
+        //操作状态(1:未读,2:已读,3:删除)
+        condition.lambda().eq(MsgPushRecord::getOptStatus, 1).in(MsgPushRecord::getId, ids);
+        return this.baseMapper.update(new MsgPushRecord().setOptStatus(2), condition);
+    }
+
+    @Override
+    public int doAllDeleteOperation() {
+        QueryWrapper<MsgPushRecord> condition = new QueryWrapper<>();
+        condition.lambda().ne(MsgPushRecord::getOptStatus, 3);
+        return this.baseMapper.update(new MsgPushRecord().setOptStatus(3), condition);
+    }
 
     /**
      * 推送任务
@@ -304,7 +339,8 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
                     .setTemplateContent(template.getTemplateContent())
                     .setSqlSelect(template.getSqlSelect())
                     .setTemplateTitle(template.getTemplateTitle())
-                    .setTitle(template.getTitle());
+                    .setTitle(template.getTitle())
+                    .setSubType(template.getSubType());
             list.add(msgPushRecord);
         }
         return list;

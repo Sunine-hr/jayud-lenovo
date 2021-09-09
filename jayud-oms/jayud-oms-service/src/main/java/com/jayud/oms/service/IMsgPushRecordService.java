@@ -1,7 +1,10 @@
 package com.jayud.oms.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.oms.model.bo.QueryMsgPushRecordForm;
 import com.jayud.oms.model.po.MsgPushRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.model.vo.MsgPushRecordVO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,4 +31,11 @@ public interface IMsgPushRecordService extends IService<MsgPushRecord> {
 
     void messagePush();
 
+    IPage<MsgPushRecordVO> findByPage(QueryMsgPushRecordForm form);
+
+    int doAllReadOperation();
+
+    int doMarkRead(List<Long> list);
+
+    int doAllDeleteOperation();
 }

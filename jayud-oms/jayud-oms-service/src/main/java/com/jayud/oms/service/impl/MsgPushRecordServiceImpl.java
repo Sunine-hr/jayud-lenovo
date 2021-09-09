@@ -287,7 +287,9 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
                 collect(Collectors.groupingBy(e -> Long.valueOf(((Map<String, Object>) e).get("userId").toString())));
         List<MsgPushRecord> msgPushRecords = new ArrayList<>();
         for (MsgPushListInfoVO msgPushListInfoVO : detailsList) {
-            JSONArray msgChannelJsonArr = new JSONArray(msgChannelMap.get(msgPushListInfoVO.getRecipientId()));
+            List<Object> tmps = msgChannelMap.get(msgPushListInfoVO.getRecipientId());
+            if (CollectionUtils.isEmpty(tmps)) continue;
+            JSONArray msgChannelJsonArr = new JSONArray(tmps);
             for (BindingMsgTemplateInfoVO bindingMsgTemplate : msgPushListInfoVO.getBindingMsgTemplates()) {
                 MessagePushTemplate template = templateMap.get(bindingMsgTemplate.getTemplateId());
                 if (bindingMsgTemplate.getSelfRegarding() &&

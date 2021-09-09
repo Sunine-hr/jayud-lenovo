@@ -13,7 +13,9 @@ import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderOprCmdEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.ImageRecog;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.OauthClient;
 import com.jayud.customs.feign.OmsClient;
@@ -513,6 +515,21 @@ public class OrderCustomsController {
         }
 
         return CommonResult.success(tmps);
+    }
+
+    @ApiOperation(value = "识别六联单号")
+    @PostMapping(value = "/identifyEncode")
+    public CommonResult identifyEncode(@RequestBody Map<String, Object> map) {
+        String url = MapUtil.getStr(map, "absolutePath");
+        if (StringUtils.isEmpty(url)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        try {
+            String txt = ImageRecog.discernBarCode(url, 2);
+            return CommonResult.success(txt);
+        } catch (Exception e) {
+            throw new JayudBizException(400, "图片识别失败,六联单位置是否居中");
+        }
     }
 }
 

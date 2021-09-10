@@ -49,9 +49,9 @@ public class MsgPushRecordController {
     public CommonResult<Integer> getUnreadInfo() {
         String token = UserOperator.getToken();
         QueryWrapper<MsgPushRecord> condition = new QueryWrapper<>(new MsgPushRecord().setRecipientName(token).setOptStatus(1));
-        condition.lambda().groupBy(MsgPushRecord::getReceivingStatus,MsgPushRecord::getInitialTime);
-        int count = msgPushRecordService.count(condition);
-        return CommonResult.success(count);
+        condition.lambda().groupBy(MsgPushRecord::getReceivingStatus, MsgPushRecord::getInitialTime);
+        List<MsgPushRecord> list = msgPushRecordService.getBaseMapper().selectList(condition);
+        return CommonResult.success(list.size());
     }
 
     @ApiOperation(value = "获取消息记录")

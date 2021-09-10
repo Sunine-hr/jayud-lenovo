@@ -53,7 +53,6 @@ public class ImageRecog {
         int width = image.getWidth();
         int height = image.getHeight();
         String text = "";
-        //截图部分(满铺情况)
 //        BufferedImage pic2 = image.getSubimage(width / 2 + 200, height/2-320, width / 3, height / 8);
         BufferedImage pic2 = image.getSubimage(width / 2, height / 10, width - width / 2, height - height / 2);
 //        File desImage = new File("./tmp.png");

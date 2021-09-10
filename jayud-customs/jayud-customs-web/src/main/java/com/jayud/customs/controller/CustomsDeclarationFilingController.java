@@ -66,11 +66,19 @@ public class CustomsDeclarationFilingController {
 
         List<CustomsDeclFilingRecord> list = this.customsDeclFilingRecordService.getByNums(form.getId(), new ArrayList<>(nums));
         if (CollectionUtil.isNotEmpty(list)) {
-            Set<Long> ids = list.stream().map(e -> e.getCustomsDeclFilingId()).collect(Collectors.toSet());
-            List<CustomsDeclarationFiling> customsDeclarationFilings = this.customsDeclarationFilingService.listByIds(ids);
-            String str = "报关单号已经归档在%s箱号中，不允许再次归档";
+//            Set<Long> ids = list.stream().map(e -> e.getCustomsDeclFilingId()).collect(Collectors.toSet());
+            Map<Long, List<CustomsDeclFilingRecord>> group = list.stream().collect(Collectors.groupingBy(e -> e.getCustomsDeclFilingId()));
+            List<CustomsDeclarationFiling> customsDeclarationFilings = this.customsDeclarationFilingService.listByIds(group.keySet());
+            String str = "已经归档在%s箱号中，不允许再次归档";
             StringBuilder sb = new StringBuilder();
-            customsDeclarationFilings.forEach(e -> sb.append(String.format(str, e.getBoxNum())).append("\n"));
+            customsDeclarationFilings.forEach(e -> {
+                List<CustomsDeclFilingRecord> records = group.get(e.getId());
+                sb.append("报关单号[");
+                Set<String> orderNoSet = records.stream().map(CustomsDeclFilingRecord::getNum).collect(Collectors.toSet());
+                String orderNos = org.apache.commons.lang3.StringUtils.join(orderNoSet, ",");
+                sb.append(orderNos);
+                sb.append("]").append(String.format(str, e.getBoxNum())).append("\n");
+            });
             return CommonResult.error(400, sb.toString());
         }
         Set<CustomsDeclFilingRecord> tmps = form.getNums().stream().filter(e -> !StringUtils.isEmpty(e.getNum())).collect(Collectors.toSet());

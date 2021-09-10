@@ -46,11 +46,33 @@
         and biz_model=#{bizModel} and Im_and_ex_type=#{imAndExType}
     </select>
 
+<!--    <select id="findByPage" resultMap="OneResultMap">-->
+<!--        select-->
+<!--        f.id, box_num, filing_date, biz_model, Im_and_ex_type, status,-->
+<!--        create_time, create_user, update_time, update_user,-->
+<!--        r.id recordId,r.num,r.customs_decl_filing_id-->
+<!--        from customs_declaration_filing f-->
+<!--        left join customs_decl_filing_record r on r.customs_decl_filing_id=f.id-->
+<!--        <where>-->
+<!--            <if test="form.boxNum!=null and form.boxNum!=''">-->
+<!--                and f.box_num like concat('%',#{form.boxNum},'%')-->
+<!--            </if>-->
+<!--            <if test="form.num!=null and form.num!=''">-->
+<!--                and r.num like concat('%',#{form.num},'%')-->
+<!--            </if>-->
+<!--            <if test="form.createTime!=null and form.createTime.size>0">-->
+<!--                and date_format(f.create_time,'%Y-%m') between #{form.createTime[0]} and #{form.createTime[1]}-->
+<!--            </if>-->
+<!--        </where>-->
+<!--        order by id desc-->
+
+<!--    </select>-->
+
     <select id="findByPage" resultMap="OneResultMap">
         select
         f.id, box_num, filing_date, biz_model, Im_and_ex_type, status,
-        create_time, create_user, update_time, update_user,
-        r.id recordId,r.num,r.customs_decl_filing_id
+        create_time, create_user, update_time, update_user
+--         r.id recordId,r.num,r.customs_decl_filing_id
         from customs_declaration_filing f
         left join customs_decl_filing_record r on r.customs_decl_filing_id=f.id
         <where>
@@ -64,6 +86,7 @@
                 and date_format(f.create_time,'%Y-%m') between #{form.createTime[0]} and #{form.createTime[1]}
             </if>
         </where>
+        group by box_num
         order by id desc
 
     </select>

@@ -84,7 +84,12 @@ public class CustomsDeclarationFilingServiceImpl extends ServiceImpl<CustomsDecl
     public IPage<CustomsDeclarationFilingVO> findByPage(QueryCustomsDeclarationFiling form) {
         Page<CustomsDeclarationFilingVO> page = new Page<>(form.getPageNum(), form.getPageSize());
         IPage<CustomsDeclarationFilingVO> iPage = this.baseMapper.findByPage(page, form);
-        iPage.getRecords().forEach(CustomsDeclarationFilingVO::handleNums);
+        // 查询报关记录
+        iPage.getRecords().forEach(e -> {
+            List<CustomsDeclFilingRecord> recordList = this.customsDeclFilingRecordService.getByDeclFilingId(e.getId());
+            e.setNums(recordList);
+            e.handleNums();
+        });
         return iPage;
     }
 

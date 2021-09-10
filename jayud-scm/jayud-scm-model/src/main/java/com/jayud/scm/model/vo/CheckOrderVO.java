@@ -167,5 +167,5 @@ public class CheckOrderVO {
     private LocalDateTime mdyByDtm;
 
     @ApiModelProperty(value = "提验货明细集合")
-    private List<CheckOrderEntryVO> checkOrderEntryVOS;
+    private List<CheckOrderEntryVO> bookingOrderEntryList;
 }

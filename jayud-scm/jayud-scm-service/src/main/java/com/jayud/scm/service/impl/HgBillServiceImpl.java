@@ -4,16 +4,15 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.HgBillMapper;
+import com.jayud.scm.model.vo.BookingOrderVO;
 import com.jayud.scm.model.vo.HgBillVO;
 import com.jayud.scm.model.vo.HubShippingVO;
-import com.jayud.scm.service.IHgBillFollowService;
-import com.jayud.scm.service.IHgBillService;
+import com.jayud.scm.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.scm.service.IHubReceivingEntryService;
-import com.jayud.scm.service.ISystemUserService;
 import org.apache.poi.hdgf.HDGFDiagram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +42,9 @@ public class HgBillServiceImpl extends ServiceImpl<HgBillMapper, HgBill> impleme
     @Autowired
     private IHubReceivingEntryService hubReceivingEntryService;
 
+    @Autowired
+    private IBookingOrderService bookingOrderService;
+
     @Override
     public List<HgBillVO> getHgBillByBookingId(QueryCommonForm form) {
         List<HgBillVO> hgBillVOS = new ArrayList<>();
@@ -63,7 +65,7 @@ public class HgBillServiceImpl extends ServiceImpl<HgBillMapper, HgBill> impleme
                 hubReceivingEntry.setVoidedBy(deleteForm.getId().intValue());
                 hubReceivingEntry.setVoidedByDtm(deleteForm.getDeleteTime());
                 hubReceivingEntry.setVoidedByName(deleteForm.getName());
-                hubReceivingEntry.setVoided(0);
+                hubReceivingEntry.setVoided(1);
                 hubReceivingEntries.add(hubReceivingEntry);
             }
 
@@ -108,7 +110,7 @@ public class HgBillServiceImpl extends ServiceImpl<HgBillMapper, HgBill> impleme
             HgBillFollow hgBillFollow = new HgBillFollow();
             hgBillFollow.setBillId(hgBill.getId());
             hgBillFollow.setSType(OperationEnum.UPDATE.getCode());
-            hgBillFollow.setFollowContext("");
+            hgBillFollow.setFollowContext("报关日期录入");
             hgBillFollow.setCrtBy(systemUser.getId().intValue());
             hgBillFollow.setCrtByDtm(LocalDateTime.now());
             hgBillFollow.setCrtByName(systemUser.getUserName());
@@ -119,6 +121,46 @@ public class HgBillServiceImpl extends ServiceImpl<HgBillMapper, HgBill> impleme
         }
 
         return update;
+    }
+
+    @Override
+    public boolean addHgBill(Integer bookingId) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        BookingOrderVO bookingOrderById = bookingOrderService.getBookingOrderById(bookingId);
+
+        HgBill hgBill = ConvertUtil.convert(bookingOrderById, HgBill.class);
+        hgBill.setCrtBy(systemUser.getId().intValue());
+        hgBill.setCrtByDtm(LocalDateTime.now());
+        hgBill.setCrtByName(systemUser.getUserName());
+        hgBill.setCheckStateFlag("N0");
+
+        boolean save = this.save(hgBill);
+        if(save){
+            log.warn("新增报关单成功");
+
+            List<HubReceivingEntry> hubReceivingEntries = hubReceivingEntryService.getListByBookingId(bookingId);
+            for (HubReceivingEntry hubReceivingEntry : hubReceivingEntries) {
+                hubReceivingEntry.setBillId(hgBill.getId());
+            }
+            boolean result = this.hubReceivingEntryService.saveOrUpdateBatch(hubReceivingEntries);
+            if(result){
+                log.warn("新增入库明细成功");
+            }
+
+            HgBillFollow hgBillFollow = new HgBillFollow();
+            hgBillFollow.setBillId(hgBill.getId());
+            hgBillFollow.setSType(OperationEnum.INSERT.getCode());
+            hgBillFollow.setFollowContext("委托单入库完成，生成报关单");
+            hgBillFollow.setCrtBy(systemUser.getId().intValue());
+            hgBillFollow.setCrtByDtm(LocalDateTime.now());
+            hgBillFollow.setCrtByName(systemUser.getUserName());
+            boolean save1 = hgBillFollowService.save(hgBillFollow);
+            if(save1){
+                log.warn("新增报关单，操作记录添加成功");
+            }
+        }
+        return save;
     }
 
 }

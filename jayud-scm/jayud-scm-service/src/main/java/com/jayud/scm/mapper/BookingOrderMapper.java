@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.scm.model.bo.QueryBookingOrderForm;
 import com.jayud.scm.model.po.BookingOrder;
 import com.jayud.scm.model.vo.BookingOrderVO;
+import com.jayud.scm.model.vo.QtyVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -40,4 +41,7 @@ public interface BookingOrderMapper extends BaseMapper<BookingOrder> {
     IPage<BookingOrderVO> findByPage(@Param("page") Page<BookingOrderVO> page, @Param("form") QueryBookingOrderForm form);
 
     void upOrderCheckValidate(Map map);
+
+    QtyVO isCommplete(@Param("bookingId")Integer bookingId);
+
 }

@@ -26,4 +26,6 @@ public interface ICheckOrderEntryService extends IService<CheckOrderEntry> {
     boolean updateCheckOrderEntry(List<AddCheckOrderEntryForm> form);
 
     IPage<CheckOrderEntryVO> findByPage(QueryCommonForm form);
+
+    List<CheckOrderEntry> getCheckOrderEntryByBookingId(Integer bookingId);
 }

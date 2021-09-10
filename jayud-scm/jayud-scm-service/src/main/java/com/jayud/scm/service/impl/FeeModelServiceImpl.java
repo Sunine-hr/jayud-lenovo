@@ -8,6 +8,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddFeeModelForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.FeeModelMapper;
@@ -64,7 +65,7 @@ public class FeeModelServiceImpl extends ServiceImpl<FeeModelMapper, FeeModel> i
         feeModel.setCrtBy(systemUser.getId().intValue());
         feeModel.setCrtByDtm(LocalDateTime.now());
         feeModel.setCrtByName(systemUser.getUserName());
-        feeModel.setModelName(commodityService.getOrderNo("1003", LocalDateTime.now()));
+        feeModel.setModelName(commodityService.getOrderNo(NoCodeEnum.FEE_MODEL.getCode(), LocalDateTime.now()));
         customerFollow.setSType(OperationEnum.INSERT.getCode());
         customerFollow.setFollowContext(systemUser.getUserName()+"增加结算设置");
 

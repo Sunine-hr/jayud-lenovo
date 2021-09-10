@@ -33,6 +33,14 @@ public enum TableEnum {
     check_order_entry(22,"check_order_entry"),
     hg_truck(23,"hg_truck"),
     hg_bill(24,"hg_bill"),
+    customer_truck_place(25,"customer_truck_place"),
+    customer_truck_driver(26,"customer_truck_driver"),
+    account_bank_bill(27,"account_bank_bill"),
+    account_bank_bill_entry(28,"account_bank_bill_entry"),
+    acct_receipt(29,"acct_receipt"),
+    invoice(30,"invoice"),
+    export_tax_invoice(31,"export_tax_invoice"),
+    acct_pay(31,"acct_pay"),
     ;
 
     private Integer code;

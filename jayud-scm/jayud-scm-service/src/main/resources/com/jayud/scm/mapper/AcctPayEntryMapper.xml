@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.AcctPayEntryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.AcctPayEntry">
+        <id column="id" property="id" />
+        <result column="f_bill_no" property="fBillNo" />
+        <result column="f_date" property="fDate" />
+        <result column="order_id" property="orderId" />
+        <result column="order_no" property="orderNo" />
+        <result column="currency_name" property="currencyName" />
+        <result column="ap_money" property="apMoney" />
+        <result column="supplier_id" property="supplierId" />
+        <result column="supplier_name" property="supplierName" />
+        <result column="pay_supplier_id" property="paySupplierId" />
+        <result column="pay_supplier_name" property="paySupplierName" />
+        <result column="acct_bank_id" property="acctBankId" />
+        <result column="acct_bank_no" property="acctBankNo" />
+        <result column="acct_bank" property="acctBank" />
+        <result column="acct_code" property="acctCode" />
+        <result column="acct_addr" property="acctAddr" />
+        <result column="swich_code" property="swichCode" />
+        <result column="acct_area" property="acctArea" />
+        <result column="model_type" property="modelType" />
+        <result column="pay_type" property="payType" />
+        <result column="tt_type" property="ttType" />
+        <result column="tax_inv_id" property="taxInvId" />
+        <result column="proxy_money" property="proxyMoney" />
+        <result column="pay_id" property="payId" />
+        <result column="pay_model_type" property="payModelType" />
+        <result column="is_sync" property="isSync" />
+        <result column="onl_id" property="onlId" />
+        <result column="onl_no" property="onlNo" />
+        <result column="order_contract_id" property="orderContractId" />
+        <result column="order_contract_no" property="orderContractNo" />
+        <result column="export_verification_id" property="exportVerificationId" />
+        <result column="remark" property="remark" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_by_dtm" property="crtByDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_by_dtm" property="mdyByDtm" />
+        <result column="voided" property="voided" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_by_dtm" property="voidedByDtm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, f_bill_no, f_date, order_id, order_no, currency_name, ap_money, supplier_id, supplier_name, pay_supplier_id, pay_supplier_name, acct_bank_id, acct_bank_no, acct_bank, acct_code, acct_addr, swich_code, acct_area, model_type, pay_type, tt_type, tax_inv_id, proxy_money, pay_id, pay_model_type, is_sync, onl_id, onl_no, order_contract_id, order_contract_no, export_verification_id, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
+    </sql>
+
+</mapper>

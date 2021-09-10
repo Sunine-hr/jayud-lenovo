@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.AcctReceiptMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.AcctReceipt">
+        <id column="id" property="id" />
+        <result column="fbill_no" property="fbillNo" />
+        <result column="model_type" property="modelType" />
+        <result column="pay_type" property="payType" />
+        <result column="credit_flag" property="creditFlag" />
+        <result column="pay_date" property="payDate" />
+        <result column="bill_date" property="billDate" />
+        <result column="customer_id" property="customerId" />
+        <result column="customer_name" property="customerName" />
+        <result column="pay_compamy_id" property="payCompamyId" />
+        <result column="pay_compamy_name" property="payCompamyName" />
+        <result column="bank_id" property="bankId" />
+        <result column="bank_name" property="bankName" />
+        <result column="bank_num" property="bankNum" />
+        <result column="bank_flow_no" property="bankFlowNo" />
+        <result column="receipt_remark" property="receiptRemark" />
+        <result column="bank_currency" property="bankCurrency" />
+        <result column="bank_money" property="bankMoney" />
+        <result column="acc_rate" property="accRate" />
+        <result column="is_claim" property="isClaim" />
+        <result column="claim_id" property="claimId" />
+        <result column="claim_name" property="claimName" />
+        <result column="claim_date" property="claimDate" />
+        <result column="currency_name" property="currencyName" />
+        <result column="discount_rate" property="discountRate" />
+        <result column="money" property="money" />
+        <result column="lock_money" property="lockMoney" />
+        <result column="shou_fee_cdf" property="shouFeeCdf" />
+        <result column="shou_fee" property="shouFee" />
+        <result column="state_flag" property="stateFlag" />
+        <result column="join_bill_id" property="joinBillId" />
+        <result column="back_foregift" property="backForegift" />
+        <result column="is_sync" property="isSync" />
+        <result column="onl_id" property="onlId" />
+        <result column="onl_no" property="onlNo" />
+        <result column="check_state_flag" property="checkStateFlag" />
+        <result column="f_level" property="fLevel" />
+        <result column="f_step" property="fStep" />
+        <result column="remark" property="remark" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_by_dtm" property="crtByDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_by_dtm" property="mdyByDtm" />
+        <result column="voided" property="voided" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_by_dtm" property="voidedByDtm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, fbill_no, model_type, pay_type, credit_flag, pay_date, bill_date, customer_id, customer_name, pay_compamy_id, pay_compamy_name, bank_id, bank_name, bank_num, bank_flow_no, receipt_remark, bank_currency, bank_money, acc_rate, is_claim, claim_id, claim_name, claim_date, currency_name, discount_rate, money, lock_money, shou_fee_cdf, shou_fee, state_flag, join_bill_id, back_foregift, is_sync, onl_id, onl_no, check_state_flag, f_level, f_step, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
+    </sql>
+
+    <select id="fnGetCurrency" resultType="string">
+       select fn_get_currency_rate_boc(#{now},#{currencyName},#{i})
+   </select>
+
+</mapper>

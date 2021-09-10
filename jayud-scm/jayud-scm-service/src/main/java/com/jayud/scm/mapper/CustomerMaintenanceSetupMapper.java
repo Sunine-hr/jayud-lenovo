@@ -30,5 +30,5 @@ public interface CustomerMaintenanceSetupMapper extends BaseMapper<CustomerMaint
      * @param roleName
      * @return
      */
-    List<CustomerMaintenanceSetupVO> findCustomerMaintenanceSetupBycustomerIdAndRoleName(@Param("customerId") Integer customerId, @Param("roleName") String roleName);
+    List<CustomerMaintenanceSetupVO> findCustomerMaintenanceSetupBycustomerIdAndRoleName(@Param("customerId") Integer customerId, @Param("roleName") String roleName,@Param("modelType") Integer modelType);
 }

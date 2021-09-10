@@ -1,7 +1,10 @@
 package com.jayud.scm.service.impl;
 
+import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.DeleteForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.HubReceivingMapper;
@@ -12,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +42,12 @@ public class HubReceivingServiceImpl extends ServiceImpl<HubReceivingMapper, Hub
     @Autowired
     private ICheckOrderEntryService checkOrderEntryService;
 
+    @Autowired
+    private ICommodityService commodityService;
+
+    @Autowired
+    private ISystemUserService systemUserService;
+
     @Override
     public boolean delete(DeleteForm deleteForm) {
         List<HubReceivingEntry> hubReceivingEntries = new ArrayList<>();
@@ -49,7 +59,7 @@ public class HubReceivingServiceImpl extends ServiceImpl<HubReceivingMapper, Hub
                 hubReceivingEntry.setVoidedBy(deleteForm.getId().intValue());
                 hubReceivingEntry.setVoidedByDtm(deleteForm.getDeleteTime());
                 hubReceivingEntry.setVoidedByName(deleteForm.getName());
-                hubReceivingEntry.setVoided(0);
+                hubReceivingEntry.setVoided(1);
                 hubReceivingEntries.add(hubReceivingEntry);
             }
 
@@ -86,10 +96,54 @@ public class HubReceivingServiceImpl extends ServiceImpl<HubReceivingMapper, Hub
     }
 
     @Override
-    public boolean addHubReceiving(Integer id) {
-        CheckOrder checkOrder = checkOrderService.getById(id);
-        checkOrderEntryService.getCheckOrderEntryByCheckOrderId(checkOrder.getId().longValue());
-        return false;
+    public boolean addHubReceiving(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        HubReceivingFollow hubReceivingFollow = new HubReceivingFollow();
+        CheckOrder checkOrder = checkOrderService.getById(form.getId());
+        HubReceiving hubReceiving = ConvertUtil.convert(checkOrder, HubReceiving.class);
+        hubReceiving.setCheckId(checkOrder.getId());
+        hubReceiving.setCheckNo(checkOrder.getCheckNo());
+        hubReceiving.setCheckBeginTime(checkOrder.getStartDate());
+        hubReceiving.setCheckEndTime(checkOrder.getCheckEndTime());
+        hubReceiving.setReceivingNo(commodityService.getOrderNo(NoCodeEnum.HUB_RECEIVING.getCode(), LocalDateTime.now()));
+        hubReceiving.setReceivingDate(form.getReceivingDate());
+        hubReceiving.setHubName(form.getHubName());
+        hubReceiving.setStorage(form.getStorage());
+        hubReceiving.setSign(form.getSign());
+        hubReceiving.setDeliveryMode(form.getDeliveryMode());
+        hubReceiving.setRemark(form.getRemark());
+        hubReceiving.setCrtBy(systemUser.getId().intValue());
+        hubReceiving.setCrtByDtm(LocalDateTime.now());
+        hubReceiving.setCrtByName(systemUser.getUserName());
+        hubReceiving.setCheckStateFlag("N0");
+        boolean save = this.save(hubReceiving);
+        if(save){
+            log.warn("入库单新增成功");
+            hubReceivingFollow.setReceivingId(hubReceiving.getId());
+            hubReceivingFollow.setSType(OperationEnum.INSERT.getCode());
+            hubReceivingFollow.setFollowContext(systemUser.getUserName()+"入库成功，新增入库单"+hubReceiving.getBookingNo());
+            hubReceivingFollow.setCrtBy(systemUser.getId().intValue());
+            hubReceivingFollow.setCrtByDtm(LocalDateTime.now());
+            hubReceivingFollow.setCrtByName(systemUser.getUserName());
+            boolean save1 = this.hubReceivingFollowService.save(hubReceivingFollow);
+            if(save1){
+                log.warn("入库单新增,操作日志添加成功");
+            }
+            List<CheckOrderEntry> checkOrderEntryByCheckOrderId = checkOrderEntryService.getCheckOrderEntryByCheckOrderId(checkOrder.getId().longValue());
+            List<HubReceivingEntry> hubReceivingEntries = ConvertUtil.convertList(checkOrderEntryByCheckOrderId, HubReceivingEntry.class);
+            for (HubReceivingEntry hubReceivingEntry : hubReceivingEntries) {
+                hubReceivingEntry.setCrtBy(systemUser.getId().intValue());
+                hubReceivingEntry.setCrtByDtm(LocalDateTime.now());
+                hubReceivingEntry.setCrtByName(systemUser.getUserName());
+            }
+            boolean result = this.hubReceivingEntryService.saveBatch(hubReceivingEntries);
+            if(result){
+                log.warn("入库单明细新增添加成功");
+            }
+        }
+
+        return save;
     }
 
 }

@@ -86,4 +86,6 @@ public interface IBookingOrderService extends IService<BookingOrder> {
     IPage<BookingOrderVO> findByPage(QueryBookingOrderForm form);
 
     CommonResult upOrderCheckValidate(Integer id);
+
+    boolean isCommplete(Integer bookingId);
 }

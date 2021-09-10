@@ -104,6 +104,24 @@ public class CommonController {
     @Autowired
     private IBookingOrderService bookingOrderService;
 
+    @Autowired
+    private ICustomerTruckPlaceService customerTruckPlaceService;
+
+    @Autowired
+    private IAccountBankBillService accountBankBillService;
+
+    @Autowired
+    private IAccountBankBillEntryService accountBankBillEntryService;
+
+    @Autowired
+    private IAcctReceiptService acctReceiptService;
+
+    @Autowired
+    private IInvoiceService invoiceService;
+
+    @Autowired
+    private IExportTaxInvoiceService exportTaxInvoiceService;
+
     @ApiOperation(value = "删除通用方法")
     @PostMapping(value = "/delete")
     public CommonResult delete(@Valid @RequestBody DeleteForm deleteForm) {
@@ -165,6 +183,21 @@ public class CommonController {
                 break;
             case 24:
                 result = hgBillService.delete(deleteForm);
+                break;
+            case 25:
+                result = customerTruckPlaceService.delete(deleteForm);
+                break;
+            case 27:
+                result = accountBankBillService.delete(deleteForm);
+                break;
+            case 29:
+                result = acctReceiptService.delete(deleteForm);
+                break;
+            case 30:
+                result = invoiceService.delete(deleteForm);
+                break;
+            case 31:
+                result = exportTaxInvoiceService.delete(deleteForm);
                 break;
         }
 
@@ -294,7 +327,7 @@ public class CommonController {
         }
 
         //拥有按钮权限，判断是否为审核按钮
-        if(!form.getType().equals(0) && !systemUser.getUserName().equals("admin")){
+        if(!form.getType().equals(0)){
             if(form.getCustomerAudit()){
                 List<CustomerRelationer> customerRelationers = customerRelationerService.getCustomerRelationerByCustomerIdAndType(form.getId(),"客户下单人");
                 if(CollectionUtils.isEmpty(customerRelationers)){

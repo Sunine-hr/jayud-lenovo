@@ -25,4 +25,6 @@ public interface IHubReceivingEntryService extends IService<HubReceivingEntry> {
     IPage<HubReceivingEntryVO> findByPageByBillId(QueryCommonForm form);
 
     List<HubReceivingEntry> getListByBillId(Long id);
+
+    List<HubReceivingEntry> getListByBookingId(Integer bookingId);
 }

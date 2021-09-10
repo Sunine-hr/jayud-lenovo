@@ -52,4 +52,12 @@ public class HubReceivingEntryServiceImpl extends ServiceImpl<HubReceivingEntryM
         queryWrapper.lambda().eq(HubReceivingEntry::getVoided,0);
         return this.list(queryWrapper);
     }
+
+    @Override
+    public List<HubReceivingEntry> getListByBookingId(Integer bookingId) {
+        QueryWrapper<HubReceivingEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(HubReceivingEntry::getBookingId,bookingId);
+        queryWrapper.lambda().eq(HubReceivingEntry::getVoided,0);
+        return this.list(queryWrapper);
+    }
 }

@@ -2,6 +2,7 @@ package com.jayud.scm.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonPageResult;
@@ -10,15 +11,15 @@ import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.CorrespondEnum;
 import com.jayud.scm.model.po.Customer;
 import com.jayud.scm.model.po.CustomerTax;
+import com.jayud.scm.model.po.VFeeModel;
 import com.jayud.scm.model.vo.CustomerFormVO;
+import com.jayud.scm.model.vo.CustomerOperatorVO;
 import com.jayud.scm.model.vo.CustomerVO;
 import com.jayud.scm.service.IBDataDicEntryService;
 import com.jayud.scm.service.ICustomerClassService;
 import com.jayud.scm.service.ICustomerService;
 import com.jayud.scm.service.ICustomerTaxService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -229,6 +230,41 @@ public class CustomerController {
         return CommonResult.error(444,"跟踪信息添加失败");
     }
 
+    @ApiOperation(value = "根据客户id，查询结算方案(结算条款)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="customerId", dataType = "Integer", value = "客户id", required = true)
+    })
+    @PostMapping(value = "/findVFeeModelByCustomerId")
+    public CommonResult<List<VFeeModel>> findVFeeModelByCustomerId(@RequestBody Map<String,Object> map){
+        Integer customerId = MapUtil.getInt(map, "customerId");
+        Integer modelType = MapUtil.getInt(map, "modelType");
+        if(ObjectUtil.isEmpty(modelType)){
+            return CommonResult.error(-1,"业务类型不能为空");
+        }
+        if(ObjectUtil.isEmpty(customerId)){
+            return CommonResult.error(-1,"客户id不能为空");
+        }
+        List<VFeeModel> vFeeModelList = customerService.findVFeeModelByCustomerId(customerId,modelType);
+        return CommonResult.success(vFeeModelList);
+    }
+
+    @ApiOperation(value = "根据客户id，查询客户的操作人员list信息（`商务员`、`业务员`、`客户下单人`）")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="customerId", dataType = "Integer", value = "客户id", required = true)
+    })
+    @PostMapping(value = "/findCustomerOperatorByCustomerId")
+    public CommonResult<CustomerOperatorVO> findCustomerOperatorByCustomerId(@RequestBody Map<String,Object> map){
+        Integer customerId = MapUtil.getInt(map, "customerId");
+        Integer modelType = MapUtil.getInt(map, "modelType");
+        if(ObjectUtil.isEmpty(modelType)){
+            return CommonResult.error(-1,"业务类型不能为空");
+        }
+        if(ObjectUtil.isEmpty(customerId)){
+            return CommonResult.error(-1,"客户id不能为空");
+        }
+        CustomerOperatorVO customerOperatorVO = customerService.findCustomerOperatorByCustomerId(customerId,modelType);
+        return CommonResult.success(customerOperatorVO);
+    }
 
 }
 

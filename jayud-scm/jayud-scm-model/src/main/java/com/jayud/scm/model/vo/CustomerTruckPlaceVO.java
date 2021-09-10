@@ -31,6 +31,9 @@ public class CustomerTruckPlaceVO {
     @ApiModelProperty(value = "运输公司ID")
     private Integer customerId;
 
+    @ApiModelProperty(value = "运输公司名称")
+    private String customerName;
+
     @ApiModelProperty(value = "车次类型")
     private String truckType;
 

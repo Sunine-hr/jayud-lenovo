@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.AccountBankBillEntryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.AccountBankBillEntry">
+        <id column="id" property="id" />
+        <result column="bank_bill_id" property="bankBillId" />
+        <result column="order_id" property="orderId" />
+        <result column="order_no" property="orderNo" />
+        <result column="order_entry_id" property="orderEntryId" />
+        <result column="invoice_no" property="invoiceNo" />
+        <result column="invoice_id" property="invoiceId" />
+        <result column="invoice_entry_id" property="invoiceEntryId" />
+        <result column="fee_alias" property="feeAlias" />
+        <result column="ac_money" property="acMoney" />
+        <result column="proxy_money" property="proxyMoney" />
+        <result column="shou_fee" property="shouFee" />
+        <result column="remark" property="remark" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_by_dtm" property="crtByDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_by_dtm" property="mdyByDtm" />
+        <result column="voided" property="voided" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_by_dtm" property="voidedByDtm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, bank_bill_id, order_id, order_no, order_entry_id, invoice_no, invoice_id, invoice_entry_id, fee_alias, ac_money, proxy_money, shou_fee, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
+    </sql>
+
+</mapper>

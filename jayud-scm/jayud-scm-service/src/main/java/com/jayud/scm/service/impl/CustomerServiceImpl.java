@@ -314,7 +314,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         map.put("userId",form.getUserId());
         map.put("userName",form.getUserName());
         this.baseMapper.toExamine(map);
-        if(map.get("state").equals(1)){
+        if(map.get("state").equals(0)){
             return CommonResult.success();
         }else {
             return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
@@ -336,7 +336,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         map.put("userId",form.getUserId());
         map.put("userName",form.getUserName());
         this.baseMapper.deApproval(map);
-        if(map.get("state").equals(1)){
+        if(map.get("state").equals(0)){
             return CommonResult.success();
         }else {
             return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
@@ -344,13 +344,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    public List<VFeeModel> findVFeeModelByCustomerId(Integer customerId) {
-        List<VFeeModel> list = this.baseMapper.findVFeeModelByCustomerId(customerId);
+    public List<VFeeModel> findVFeeModelByCustomerId(Integer customerId,Integer modelType) {
+        List<VFeeModel> list = this.baseMapper.findVFeeModelByCustomerId(customerId,modelType);
         return list;
     }
 
     @Override
-    public CustomerOperatorVO findCustomerOperatorByCustomerId(Integer customerId) {
+    public CustomerOperatorVO findCustomerOperatorByCustomerId(Integer customerId,Integer modelType) {
         CustomerOperatorVO customerOperatorVO = new CustomerOperatorVO();
         Customer customer = this.getById(customerId);
         if(ObjectUtil.isEmpty(customer)){
@@ -358,14 +358,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }
         //商务员list
         String roleName = "商务";
-        List<CustomerMaintenanceSetupVO> followerList = customerMaintenanceSetupMapper.findCustomerMaintenanceSetupBycustomerIdAndRoleName(customerId, roleName);
+        List<CustomerMaintenanceSetupVO> followerList = customerMaintenanceSetupMapper.findCustomerMaintenanceSetupBycustomerIdAndRoleName(customerId, roleName,modelType);
         customerOperatorVO.setFollowerList(followerList);
         //业务员list
         roleName = "业务";
-        List<CustomerMaintenanceSetupVO> fsalesList = customerMaintenanceSetupMapper.findCustomerMaintenanceSetupBycustomerIdAndRoleName(customerId, roleName);
+        List<CustomerMaintenanceSetupVO> fsalesList = customerMaintenanceSetupMapper.findCustomerMaintenanceSetupBycustomerIdAndRoleName(customerId, roleName,modelType);
         customerOperatorVO.setFsalesList(fsalesList);
         //客户下单人list
-        String stype = "3";//3 客户下单人
+        String stype = "客户下单人";//客户下单人
         List<CustomerRelationerVO> buyerList = customerRelationerMapper.findCustomerRelationerByCustomerIdAndStype(customerId, stype);
         customerOperatorVO.setBuyerList(buyerList);
         return customerOperatorVO;

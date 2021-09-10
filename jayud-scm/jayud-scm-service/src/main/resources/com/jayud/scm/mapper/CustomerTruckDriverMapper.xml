@@ -28,4 +28,14 @@
         id, customer_id, truck_id, driver_name, driver_tel, id_code, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
 
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.CustomerTruckDriverVO">
+        select id, customer_id customerId, driver_name driverName, driver_tel driverTel,truck_id truckId,
+         id_code idCode, remark, crt_by_name crtByName, crt_by_dtm crtByDtm, mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
+        from customer_truck_driver
+        where truck_id = #{form.id} and voided = 0
+        <if test="form.key !=null and form.key!=''">
+            and ${form.key} like concat('%',#{form.condition},'%') ESCAPE '/'
+        </if>
+    </select>
+
 </mapper>

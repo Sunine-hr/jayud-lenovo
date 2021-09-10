@@ -106,4 +106,12 @@ public class CheckOrderEntryServiceImpl extends ServiceImpl<CheckOrderEntryMappe
         Page<CheckOrderEntryVO> page = new Page<>(form.getPageNum(), form.getPageSize());
         return this.baseMapper.findByPage(page, form);
     }
+
+    @Override
+    public List<CheckOrderEntry> getCheckOrderEntryByBookingId(Integer bookingId) {
+        QueryWrapper<CheckOrderEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CheckOrderEntry::getBookingId,bookingId);
+        queryWrapper.lambda().eq(CheckOrderEntry::getVoided,0);
+        return this.list(queryWrapper);
+    }
 }

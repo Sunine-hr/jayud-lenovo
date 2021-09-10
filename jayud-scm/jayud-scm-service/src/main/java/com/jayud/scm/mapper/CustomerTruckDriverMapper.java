@@ -1,7 +1,11 @@
 package com.jayud.scm.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.scm.model.bo.QueryForm;
 import com.jayud.scm.model.po.CustomerTruckDriver;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.scm.model.vo.CustomerTruckDriverVO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -15,4 +19,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface CustomerTruckDriverMapper extends BaseMapper<CustomerTruckDriver> {
 
+    IPage<CustomerTruckDriverVO> findByPage(Page<CustomerTruckDriverVO> page, QueryForm form);
 }

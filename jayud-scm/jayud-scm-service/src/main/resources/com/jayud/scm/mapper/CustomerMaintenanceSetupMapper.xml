@@ -47,6 +47,7 @@
         where voided = 0
         and customer_id = #{customerId, jdbcType=INTEGER}
         and role_name = #{roleName, jdbcType=VARCHAR}
+        and model_type = #{modelType}
     </select>
 
 </mapper>

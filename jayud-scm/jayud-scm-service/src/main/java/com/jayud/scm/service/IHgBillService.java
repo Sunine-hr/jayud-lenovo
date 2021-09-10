@@ -24,4 +24,6 @@ public interface IHgBillService extends IService<HgBill> {
     boolean delete(DeleteForm deleteForm);
 
     boolean entryCustomDate(QueryCommonForm form);
+
+    boolean addHgBill(Integer bookingId);
 }

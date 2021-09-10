@@ -23,6 +23,9 @@ public class BookingOrderEntryVO {
     @ApiModelProperty(value = "委托单id")
     private Integer bookingId;
 
+    @ApiModelProperty(value = "提验货单id")
+    private Integer checkId;
+
     @ApiModelProperty(value = "序号")
     private Integer itemNo;
 

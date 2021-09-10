@@ -30,7 +30,7 @@ public class BookingOrderForm {
     @ApiModelProperty(value = "委托单日期")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     @NotNull(message = "委托单日期，不能为空")
-    private LocalDateTime bookingDate;
+    private String bookingDate;
 
     @ApiModelProperty(value = "客户名称、利润中心id")
     @NotNull(message = "客户名称、利润中心id，不能为空")

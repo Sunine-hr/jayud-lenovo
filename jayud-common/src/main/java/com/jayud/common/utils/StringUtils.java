@@ -407,6 +407,11 @@ public class StringUtils {
         return str == null || str.length() == 0;
     }
 
+    public static boolean isEmptyNotTrim(String str) {
+        return str == null || str.length() == 0 || str.trim().length() == 0
+                || "&nbsp;".equals(str.trim());
+    }
+
 
     public static void main(String[] args) {
         String str = "湖北省恩施土家族苗族自治州恩施市";

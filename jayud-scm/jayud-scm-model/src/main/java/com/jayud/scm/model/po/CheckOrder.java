@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -56,6 +58,7 @@ public class CheckOrder extends Model<CheckOrder> {
     private String checkState;
 
     @ApiModelProperty(value = "提货时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime checkDateTime;
 
     @ApiModelProperty(value = "验货人")
@@ -131,18 +134,23 @@ public class CheckOrder extends Model<CheckOrder> {
     private String supplerName;
 
     @ApiModelProperty(value = "验货出发时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startDate;
 
     @ApiModelProperty(value = "到达时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime arriveDate;
 
     @ApiModelProperty(value = "离厂时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime leaveDate;
 
     @ApiModelProperty(value = "到仓时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime toWarehouseTime;
 
     @ApiModelProperty(value = "验货完成时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime checkEndTime;
 
     @ApiModelProperty(value = "0未同步1已同步")

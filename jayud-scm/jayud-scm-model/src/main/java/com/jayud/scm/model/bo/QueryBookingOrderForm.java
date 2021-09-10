@@ -35,4 +35,7 @@ public class QueryBookingOrderForm extends BasePageForm {
     @ApiModelProperty(value = "港车id")
     private Integer hgTruckId;
 
+    @ApiModelProperty(value = "用于判断是否为进项票新增")
+    private Integer isExportTaxInvoice;
+
 }

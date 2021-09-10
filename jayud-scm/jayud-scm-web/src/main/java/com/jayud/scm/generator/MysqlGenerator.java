@@ -30,7 +30,7 @@ public class MysqlGenerator {
                 "jayud-scm\\jayud-scm-service",
                 "jayud-scm\\jayud-scm-web"};
         for (String model : models) {
-            shell(model,"hg_bill_cloud");
+            shell(model,"export_tax_invoice_entry");
         }
     }
 

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.AcctPayMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.AcctPay">
+        <id column="id" property="id" />
+        <result column="pay_no" property="payNo" />
+        <result column="model_type" property="modelType" />
+        <result column="pay_type" property="payType" />
+        <result column="pay_date" property="payDate" />
+        <result column="arrived_date" property="arrivedDate" />
+        <result column="supplier_id" property="supplierId" />
+        <result column="supplier_name" property="supplierName" />
+        <result column="customer_id" property="customerId" />
+        <result column="customer_name" property="customerName" />
+        <result column="pay_rate" property="payRate" />
+        <result column="acct_rate" property="acctRate" />
+        <result column="app_pay_rate" property="appPayRate" />
+        <result column="is_credit" property="isCredit" />
+        <result column="is_my_fee" property="isMyFee" />
+        <result column="is_yu_fee" property="isYuFee" />
+        <result column="is_ding_fee" property="isDingFee" />
+        <result column="is_lock" property="isLock" />
+        <result column="arfee_id" property="arfeeId" />
+        <result column="currency_name" property="currencyName" />
+        <result column="ap_money" property="apMoney" />
+        <result column="proxy_money" property="proxyMoney" />
+        <result column="pay_currency_name" property="payCurrencyName" />
+        <result column="pay_money" property="payMoney" />
+        <result column="acct_bank_id" property="acctBankId" />
+        <result column="acct_bank_no" property="acctBankNo" />
+        <result column="acct_bank" property="acctBank" />
+        <result column="acct_bank_name" property="acctBankName" />
+        <result column="acct_code" property="acctCode" />
+        <result column="acct_addr" property="acctAddr" />
+        <result column="swich_code" property="swichCode" />
+        <result column="acct_area" property="acctArea" />
+        <result column="pay_user" property="payUser" />
+        <result column="pay_time" property="payTime" />
+        <result column="pay_company_id" property="payCompanyId" />
+        <result column="pay_company_name" property="payCompanyName" />
+        <result column="bank_id" property="bankId" />
+        <result column="bank_name" property="bankName" />
+        <result column="bank_number" property="bankNumber" />
+        <result column="shou_fee_currency" property="shouFeeCurrency" />
+        <result column="shou_fee" property="shouFee" />
+        <result column="shou_fee_bearer" property="shouFeeBearer" />
+        <result column="actual_pay_date" property="actualPayDate" />
+        <result column="actual_pay_name" property="actualPayName" />
+        <result column="is_pay" property="isPay" />
+        <result column="pay_remark" property="payRemark" />
+        <result column="uses" property="uses" />
+        <result column="cheque_id" property="chequeId" />
+        <result column="cheque_no" property="chequeNo" />
+        <result column="cheque_state" property="chequeState" />
+        <result column="cheque_date" property="chequeDate" />
+        <result column="begin_data" property="beginData" />
+        <result column="expire_date" property="expireDate" />
+        <result column="state_flag" property="stateFlag" />
+        <result column="pay_to_me_id" property="payToMeId" />
+        <result column="receipt_money" property="receiptMoney" />
+        <result column="f_level" property="fLevel" />
+        <result column="f_step" property="fStep" />
+        <result column="check_state_flag" property="checkStateFlag" />
+        <result column="is_sync" property="isSync" />
+        <result column="onl_id" property="onlId" />
+        <result column="onl_no" property="onlNo" />
+        <result column="remark" property="remark" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_by_dtm" property="crtByDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_by_dtm" property="mdyByDtm" />
+        <result column="voided" property="voided" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_by_dtm" property="voidedByDtm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, pay_no, model_type, pay_type, pay_date, arrived_date, supplier_id, supplier_name, customer_id, customer_name, pay_rate, acct_rate, app_pay_rate, is_credit, is_my_fee, is_yu_fee, is_ding_fee, is_lock, arfee_id, currency_name, ap_money, proxy_money, pay_currency_name, pay_money, acct_bank_id, acct_bank_no, acct_bank, acct_bank_name, acct_code, acct_addr, swich_code, acct_area, pay_user, pay_time, pay_company_id, pay_company_name, bank_id, bank_name, bank_number, shou_fee_currency, shou_fee, shou_fee_bearer, actual_pay_date, actual_pay_name, is_pay, pay_remark, uses, cheque_id, cheque_no, cheque_state, cheque_date, begin_data, expire_date, state_flag, pay_to_me_id, receipt_money, f_level, f_step, check_state_flag, is_sync, onl_id, onl_no, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
+    </sql>
+
+</mapper>

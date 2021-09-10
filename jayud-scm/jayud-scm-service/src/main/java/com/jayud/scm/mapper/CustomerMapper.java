@@ -33,8 +33,10 @@ public interface CustomerMapper extends BaseMapper<Customer> {
 
     /**
      * 根据客户id，查询结算方案(结算条款)
+     *
+     * @param modelType
      * @param customerId
      * @return
      */
-    List<VFeeModel> findVFeeModelByCustomerId(@Param("customerId") Integer customerId);
+    List<VFeeModel> findVFeeModelByCustomerId(@Param("customerId") Integer customerId,@Param("modelType")Integer modelType);
 }

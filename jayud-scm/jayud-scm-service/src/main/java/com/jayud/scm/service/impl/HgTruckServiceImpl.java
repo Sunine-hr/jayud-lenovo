@@ -67,9 +67,9 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
             hgTruckFollow.setFollowContext(OperationEnum.UPDATE.getCode()+hgTruck.getId());
         }else{
             hgTruck.setTruckNo(commodityService.getOrderNo(NoCodeEnum.HG_TRUCK.getCode(),LocalDateTime.now()));
-            hgTruck.setMdyBy(systemUser.getId().intValue());
-            hgTruck.setMdyByDtm(LocalDateTime.now());
-            hgTruck.setMdyByName(systemUser.getUserName());
+            hgTruck.setCrtBy(systemUser.getId().intValue());
+            hgTruck.setCrtByDtm(LocalDateTime.now());
+            hgTruck.setCrtByName(systemUser.getUserName());
             hgTruckFollow.setSType(OperationEnum.INSERT.getCode());
             hgTruckFollow.setFollowContext(OperationEnum.INSERT.getCode()+hgTruck.getTruckNo());
         }

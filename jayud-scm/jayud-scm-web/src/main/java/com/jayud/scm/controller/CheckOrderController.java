@@ -2,23 +2,26 @@ package com.jayud.scm.controller;
 
 
 import com.jayud.common.CommonResult;
-import com.jayud.scm.model.bo.PermissionForm;
-import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.CheckStateEnum;
 import com.jayud.scm.model.po.BookingOrder;
 import com.jayud.scm.model.po.CheckOrder;
 import com.jayud.scm.model.vo.CheckOrderVO;
 import com.jayud.scm.service.IBookingOrderService;
 import com.jayud.scm.service.ICheckOrderService;
+import com.jayud.scm.service.IHgBillService;
 import com.jayud.scm.service.IHubReceivingService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
+import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +37,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/checkOrder")
 @Api(tags = "提验货管理")
+@Slf4j
 public class CheckOrderController {
 
     @Autowired
@@ -44,6 +48,9 @@ public class CheckOrderController {
 
     @Autowired
     private IBookingOrderService bookingOrderService;
+
+    @Autowired
+    private IHgBillService hgBillService;
 
     @ApiOperation(value = "下一步操作 1提货完成、2验货完成、3提货撤销、4验货撤销")
     @PostMapping(value = "/nextOperation")
@@ -85,16 +92,23 @@ public class CheckOrderController {
 
     @ApiOperation(value = "入库") // TODO: 2021/8/23  入库操作未完成
     @PostMapping(value = "/warehousing")
+    @Transactional
     public CommonResult warehousing(@RequestBody QueryCommonForm form) {
         CheckOrder checkOrder = checkOrderService.getById(form.getId());
         checkOrder.setCheckState(CheckStateEnum.CHECK_STATE_6.getCode().toString());
-        boolean result = hubReceivingService.addHubReceiving(form.getId());
+        boolean result = hubReceivingService.addHubReceiving(form);
         if(!result){
             return CommonResult.error(444,"入库失败");
         }
         boolean update = checkOrderService.updateById(checkOrder);
         if(!update){
             return CommonResult.error(444,"操作失败");
+        }
+        //判断是否入库完成，入库完成增加一个报关单
+        boolean result1 = bookingOrderService.isCommplete(checkOrder.getBookingId());
+        if(result1){
+            //新增一个报关单
+            boolean save = hgBillService.addHgBill(checkOrder.getBookingId());
         }
         return CommonResult.success();
     }
@@ -116,6 +130,27 @@ public class CheckOrderController {
     @PostMapping(value = "/automaticGenerationCheckOrder")
     public CommonResult automaticGenerationCheckOrder(@RequestBody QueryCommonForm form) {
         return checkOrderService.automaticGenerationCheckOrder(form);
+
+    }
+
+    @ApiOperation(value = "新增提验货单")
+    @PostMapping(value = "/saveOrUpdateCheckOrder")
+    public CommonResult saveOrUpdateCheckOrder(@RequestBody AddCheckOrderForm form) {
+//        List<AddCheckOrderEntryForm> checkOrderEntryForms = form.getCheckOrderEntryForms();
+//        for (AddCheckOrderEntryForm checkOrderEntryForm : checkOrderEntryForms) {
+//
+//        }
+        boolean result = checkOrderService.saveOrUpdateCheckOrder(form);
+        if(!result){
+            return CommonResult.error(444,"新增或修改提货验货单失败");
+        }
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "根据id获取提验货单信息")
+    @PostMapping(value = "/getCheckOrderById")
+    public CommonResult<CheckOrderVO> getCheckOrderById(@RequestBody QueryForm form) {
+        return CommonResult.success(this.checkOrderService.getCheckOrderById(form.getId()));
     }
 
 }

@@ -60,6 +60,20 @@ public class DateUtil {
         return format.substring(0,7);
     }
 
+    //将string转换成LocalDateTime
+    public static LocalDateTime stringToLocalDateTime(String dateTime,String format) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern(format);
+        LocalDateTime ldt = LocalDateTime.parse(dateTime,df);
+        return ldt;
+    }
+
+    public static String localDateTimeToString(LocalDateTime dateTime,String format) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern(format);
+        String localTime = df.format(dateTime);
+        return localTime;
+
+    }
+
     public static void main(String[] args) {
         LocalDateTime now = LocalDateTime.now();
 //        int monthValue = now.getMonthValue();

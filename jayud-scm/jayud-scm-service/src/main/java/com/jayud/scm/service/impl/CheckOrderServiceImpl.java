@@ -1,24 +1,25 @@
 package com.jayud.scm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.scm.model.bo.AddCheckOrderForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.CheckOrderMapper;
 import com.jayud.scm.model.vo.CheckOrderEntryVO;
 import com.jayud.scm.model.vo.CheckOrderVO;
-import com.jayud.scm.service.ICheckOrderEntryService;
-import com.jayud.scm.service.ICheckOrderFollowService;
-import com.jayud.scm.service.ICheckOrderService;
+import com.jayud.scm.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.scm.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +45,12 @@ public class CheckOrderServiceImpl extends ServiceImpl<CheckOrderMapper, CheckOr
     @Autowired
     private ISystemUserService systemUserService;
 
+    @Autowired
+    private ICommodityService commodityService;
+
+    @Autowired
+    private IBookingOrderFollowService bookingOrderFollowService;
+
     @Override
     public boolean delete(DeleteForm deleteForm) {
         List<CheckOrderEntry> checkOrderEntries = new ArrayList<>();
@@ -55,7 +62,7 @@ public class CheckOrderServiceImpl extends ServiceImpl<CheckOrderMapper, CheckOr
                 checkOrderEntry.setVoidedBy(deleteForm.getId().intValue());
                 checkOrderEntry.setVoidedByDtm(deleteForm.getDeleteTime());
                 checkOrderEntry.setVoidedByName(deleteForm.getName());
-                checkOrderEntry.setVoided(0);
+                checkOrderEntry.setVoided(1);
                 checkOrderEntries.add(checkOrderEntry);
             }
 
@@ -91,7 +98,7 @@ public class CheckOrderServiceImpl extends ServiceImpl<CheckOrderMapper, CheckOr
             List<CheckOrderVO> checkOrderVOS1 = ConvertUtil.convertList(list, CheckOrderVO.class);
             for (CheckOrderVO checkOrderVO : checkOrderVOS1) {
                 List<CheckOrderEntry> checkOrderEntryByCheckOrderId = checkOrderEntryService.getCheckOrderEntryByCheckOrderId(checkOrderVO.getId().longValue());
-                checkOrderVO.setCheckOrderEntryVOS(ConvertUtil.convertList(checkOrderEntryByCheckOrderId, CheckOrderEntryVO.class));
+                checkOrderVO.setBookingOrderEntryList(ConvertUtil.convertList(checkOrderEntryByCheckOrderId, CheckOrderEntryVO.class));
             }
             checkOrderVOS.addAll(checkOrderVOS1);
         }
@@ -107,9 +114,84 @@ public class CheckOrderServiceImpl extends ServiceImpl<CheckOrderMapper, CheckOr
         map.put("userId",systemUser.getId());
         map.put("userName",systemUser.getUserName());
         this.baseMapper.automaticGenerationCheckOrder(map);
-        if(map.get("state").equals(0)){
+        if(map.get("state").equals(1)){
             return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
         }
+        BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
+        bookingOrderFollow.setCrtBy(systemUser.getId().intValue());
+        bookingOrderFollow.setCrtByDtm(LocalDateTime.now());
+        bookingOrderFollow.setCrtByName(systemUser.getUserName());
+        bookingOrderFollow.setBookingId(form.getId());
+        bookingOrderFollow.setSType(OperationEnum.INSERT.getCode());
+        bookingOrderFollow.setFollowContext("自动生成提验货成功");
+        boolean save = bookingOrderFollowService.save(bookingOrderFollow);
+        if(save){
+            log.warn("自动生成提验货，操作日志添加成功");
+        }
         return CommonResult.success();
+    }
+
+    @Override
+    public boolean saveOrUpdateCheckOrder(AddCheckOrderForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        CheckOrderFollow checkOrderFollow = new CheckOrderFollow();
+        CheckOrder checkOrder = ConvertUtil.convert(form, CheckOrder.class);
+        if(form.getId() != null){
+            checkOrder.setMdyByName(systemUser.getUserName());
+            checkOrder.setMdyBy(systemUser.getId().intValue());
+            checkOrder.setMdyByDtm(LocalDateTime.now());
+            checkOrderFollow.setSType(OperationEnum.UPDATE.getCode());
+            checkOrderFollow.setFollowContext(systemUser.getUserName()+"修改提验货单，单号为"+checkOrder.getCheckNo());
+        }else{
+            checkOrder.setCheckNo(commodityService.getOrderNo(NoCodeEnum.CHECK_ORDER.getCode(),LocalDateTime.now()));
+            checkOrder.setCrtBy(systemUser.getId().intValue());
+            checkOrder.setCrtByDtm(LocalDateTime.now());
+            checkOrder.setCrtByName(systemUser.getUserName());
+            checkOrderFollow.setSType(OperationEnum.INSERT.getCode());
+            checkOrderFollow.setFollowContext(systemUser.getUserName()+"增加提验货单，单号为"+checkOrder.getCheckNo());
+        }
+        boolean result = this.saveOrUpdate(checkOrder);
+        if(result){
+            log.warn("增加或修改提验货单成功");
+            if(CollectionUtils.isNotEmpty(form.getBookingOrderEntryList())){
+                List<CheckOrderEntry> checkOrderEntries = ConvertUtil.convertList(form.getBookingOrderEntryList(), CheckOrderEntry.class);
+                for (CheckOrderEntry checkOrderEntry : checkOrderEntries) {
+                    if(checkOrderEntry.getId() != null){
+                        checkOrderEntry.setCheckId(checkOrder.getId());
+                        checkOrderEntry.setMdyBy(systemUser.getId().intValue());
+                        checkOrderEntry.setMdyByDtm(LocalDateTime.now());
+                        checkOrderEntry.setMdyByName(systemUser.getUserName());
+                    }else{
+                        checkOrderEntry.setCheckId(checkOrder.getId());
+                        checkOrderEntry.setCrtBy(systemUser.getId().intValue());
+                        checkOrderEntry.setCrtByDtm(LocalDateTime.now());
+                        checkOrderEntry.setCrtByName(systemUser.getUserName());
+                    }
+                }
+                boolean result1 = this.checkOrderEntryService.saveOrUpdateBatch(checkOrderEntries);
+                if(!result1){
+                    log.warn("修改或新增提验货单明细失败"+checkOrderEntries);
+                }
+                checkOrderFollow.setCrtBy(systemUser.getId().intValue());
+                checkOrderFollow.setCrtByDtm(LocalDateTime.now());
+                checkOrderFollow.setCrtByName(systemUser.getUserName());
+                checkOrderFollow.setCheckId(checkOrder.getId());
+                boolean save = this.checkOrderFollowService.save(checkOrderFollow);
+                if(save){
+                    log.warn("修改或者新增提验货单，提验货操作日志添加成功"+checkOrderFollow);
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public CheckOrderVO getCheckOrderById(Integer id) {
+        CheckOrder checkOrder = this.getById(id);
+        CheckOrderVO checkOrderVO = ConvertUtil.convert(checkOrder, CheckOrderVO.class);
+        List<CheckOrderEntry> checkOrderEntryByCheckOrderId = checkOrderEntryService.getCheckOrderEntryByCheckOrderId(checkOrder.getId().longValue());
+        checkOrderVO.setBookingOrderEntryList(ConvertUtil.convertList(checkOrderEntryByCheckOrderId,CheckOrderEntryVO.class));
+        return checkOrderVO;
     }
 }

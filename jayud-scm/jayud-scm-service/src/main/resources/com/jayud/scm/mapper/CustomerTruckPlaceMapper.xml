@@ -35,7 +35,8 @@
     <select id="findByPage" resultType="com.jayud.scm.model.vo.CustomerTruckPlaceVO">
         select id, customer_id customerId, truck_type truckType, cn_truck_no cnTruckNo, hk_truck_no hkTruckNo, hk_no hkNo, reg_no regNo,
         driver_name driverName, driver_tel driverTel, id_code idCode, remark, crt_by_name crtByName, crt_by_dtm crtByDtm
-        from customer_truck_place where customer_id = #{form.id} and voided = 0
+        from customer_truck_place
+        where customer_id = #{form.id} and voided = 0
         <if test="form.key !=null and form.key!=''">
             and ${form.key} like concat('%',#{form.condition},'%') ESCAPE '/'
         </if>

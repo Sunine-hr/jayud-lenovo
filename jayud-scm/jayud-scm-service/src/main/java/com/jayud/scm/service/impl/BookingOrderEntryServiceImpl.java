@@ -224,6 +224,14 @@ public class BookingOrderEntryServiceImpl extends ServiceImpl<BookingOrderEntryM
         aliasMap.put("箱号", "ctnsNo");
         aliasMap.put("目的国", "destination");
         aliasMap.put("境内货源地", "districtCode");
+
+        aliasMap.put("提货联系人", "pickUpUser");
+        aliasMap.put("提货联系电话", "pickUpTel");
+        aliasMap.put("提货地址", "pickUpAddress");
+        aliasMap.put("交货联系人", "deliveryName");
+        aliasMap.put("交货联系电话", "deliveryTel");
+        aliasMap.put("交货地址", "deliveryAddress");
+        aliasMap.put("交仓单号", "pickUpNo");
         excelReader.setHeaderAlias(aliasMap);
 
         // 第一个参数是指表头所在行，第二个参数是指从哪一行开始读取

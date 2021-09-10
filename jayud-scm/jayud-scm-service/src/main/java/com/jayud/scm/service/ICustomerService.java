@@ -47,12 +47,12 @@ public interface ICustomerService extends IService<Customer> {
      * @param customerId
      * @return
      */
-    List<VFeeModel> findVFeeModelByCustomerId(Integer customerId);
+    List<VFeeModel> findVFeeModelByCustomerId(Integer customerId,Integer modelType);
 
     /**
      * 根据客户id，查询客户的操作人员list信息（`商务员`、`业务员`、`客户下单人`）
      * @param customerId
      * @return
      */
-    CustomerOperatorVO findCustomerOperatorByCustomerId(Integer customerId);
+    CustomerOperatorVO findCustomerOperatorByCustomerId(Integer customerId,Integer modelType);
 }

@@ -43,9 +43,12 @@ public class FeeListServiceImpl extends ServiceImpl<FeeListMapper, FeeList> impl
         List<FeeListVO> feeListVOS = ConvertUtil.convertList(this.list(queryWrapper), FeeListVO.class);
         for (FeeListVO feeListVO : feeListVOS) {
             Fees fees = feesService.getFeesById(feeListVO.getFeesId());
-            feeListVO.setFeeAlias(fees.getFeeAlias());
-            feeListVO.setFeeName(fees.getFeeName());
-            feeListVO.setFeeFormula(fees.getFeeFormula());
+            if(fees != null){
+                feeListVO.setFeeAlias(fees.getFeeAlias());
+                feeListVO.setFeeName(fees.getFeeName());
+                feeListVO.setFeeFormula(fees.getFeeFormula());
+            }
+
         }
         return feeListVOS;
     }

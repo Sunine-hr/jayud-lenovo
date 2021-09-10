@@ -12,14 +12,8 @@ import com.jayud.common.utils.Query;
 import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.StateFlagEnum;
 import com.jayud.scm.model.enums.TableEnum;
-import com.jayud.scm.model.po.BookingOrder;
-import com.jayud.scm.model.po.SystemRole;
-import com.jayud.scm.model.po.SystemRoleAction;
-import com.jayud.scm.model.po.SystemUser;
-import com.jayud.scm.model.vo.BookingOrderEntryVO;
-import com.jayud.scm.model.vo.BookingOrderFollowVO;
-import com.jayud.scm.model.vo.BookingOrderFormVO;
-import com.jayud.scm.model.vo.BookingOrderVO;
+import com.jayud.scm.model.po.*;
+import com.jayud.scm.model.vo.*;
 import com.jayud.scm.service.*;
 import com.jayud.scm.utils.ExcelTemplateUtil;
 import io.swagger.annotations.Api;
@@ -64,6 +58,9 @@ public class BookingOrderController {
     @Autowired
     ISystemRoleActionService systemRoleActionService;//角色权限设置（按钮）
 
+    @Autowired
+    private ICustomerMaintenanceSetupService customerMaintenanceSetupService;
+
     /*
         TODO 出口委托单：主表 查询 新增 修改 删除 查看 审核 反审 打印 复制
     */
@@ -96,8 +93,13 @@ public class BookingOrderController {
     @ApiOperation(value = "出口委托单，保存(新增、修改)")
     @PostMapping(value = "/saveBookingOrder")
     public CommonResult saveBookingOrder(@Valid @RequestBody BookingOrderForm form){
+        CustomerMaintenanceSetup customerMaintenanceSetup = customerMaintenanceSetupService.getById(form.getFsalesId());
+        CustomerMaintenanceSetup customerMaintenanceSetup1 = customerMaintenanceSetupService.getById(form.getFollowerId());
+        form.setFsalesName(customerMaintenanceSetup.getWhUserName());
+        form.setFollowerName(customerMaintenanceSetup1.getWhUserName());
         bookingOrderService.saveBookingOrder(form);
         return CommonResult.success("保存成功!");
+
     }
 
     //出口委托单，删除

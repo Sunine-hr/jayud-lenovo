@@ -19,6 +19,7 @@ import com.jayud.scm.model.bo.BookingOrderForm;
 import com.jayud.scm.model.bo.PermissionForm;
 import com.jayud.scm.model.bo.QueryBookingOrderForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
+import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.enums.StateFlagEnum;
 import com.jayud.scm.model.enums.VoidedEnum;
 import com.jayud.scm.model.po.BookingOrder;
@@ -27,6 +28,7 @@ import com.jayud.scm.model.po.BookingOrderFollow;
 import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.BookingOrderEntryVO;
 import com.jayud.scm.model.vo.BookingOrderVO;
+import com.jayud.scm.model.vo.QtyVO;
 import com.jayud.scm.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,6 +66,9 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
     @Autowired
     ICustomerService customerService;//客户表
 
+    @Autowired
+    private IBookingOrderFollowService bookingOrderFollowService;
+
     /**
      * 出口委托单，分页查询
      * @param form
@@ -96,6 +101,7 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
             //新增
             BookingOrder bookingOrder = ConvertUtil.convert(form, BookingOrder.class);
             //设置创建人信息
+            bookingOrder.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(),LocalDateTime.now()));
             bookingOrder.setCrtBy(systemUser.getId().intValue());
             bookingOrder.setCrtByName(systemUser.getUserName());
             bookingOrder.setCrtByDtm(LocalDateTime.now());
@@ -104,6 +110,18 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
             bookingOrder.setStateFlag(StateFlagEnum.STATE_FLAG_0.getCode());//STATE_FLAG_0(0, "未确认"),
 
             this.saveOrUpdate(bookingOrder);
+
+            BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
+            bookingOrderFollow.setCrtBy(systemUser.getId().intValue());
+            bookingOrderFollow.setCrtByDtm(LocalDateTime.now());
+            bookingOrderFollow.setCrtByName(systemUser.getUserName());
+            bookingOrderFollow.setBookingId(bookingOrder.getId());
+            bookingOrderFollow.setSType(OperationEnum.INSERT.getCode());
+            bookingOrderFollow.setFollowContext(systemUser.getUserName()+"添加委托单"+bookingOrder.getBookingNo());
+            boolean save = bookingOrderFollowService.save(bookingOrderFollow);
+            if(save){
+                log.warn("添加委托单，操作日志添加成功");
+            }
         }else{
             //修改
             BookingOrderVO bookingOrderVO = bookingOrderMapper.getBookingOrderById(id);
@@ -117,6 +135,18 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
             bookingOrder.setMdyByDtm(LocalDateTime.now());
 
             this.saveOrUpdate(bookingOrder);
+
+            BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
+            bookingOrderFollow.setCrtBy(systemUser.getId().intValue());
+            bookingOrderFollow.setCrtByDtm(LocalDateTime.now());
+            bookingOrderFollow.setCrtByName(systemUser.getUserName());
+            bookingOrderFollow.setBookingId(bookingOrder.getId());
+            bookingOrderFollow.setSType(OperationEnum.UPDATE.getCode());
+            bookingOrderFollow.setFollowContext(systemUser.getUserName()+"修改委托单"+bookingOrder.getBookingNo());
+            boolean save = bookingOrderFollowService.save(bookingOrderFollow);
+            if(save){
+                log.warn("修改委托单，操作日志添加成功");
+            }
         }
     }
 
@@ -142,6 +172,18 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         bookingOrder.setVoided(VoidedEnum.ONE.getCode());//ONE 已标记
         bookingOrder.setVoidedBy(systemUser.getId().intValue());
         bookingOrder.setVoidedByDtm(LocalDateTime.now());
+
+        BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
+        bookingOrderFollow.setCrtBy(systemUser.getId().intValue());
+        bookingOrderFollow.setCrtByDtm(LocalDateTime.now());
+        bookingOrderFollow.setCrtByName(systemUser.getUserName());
+        bookingOrderFollow.setBookingId(bookingOrder.getId());
+        bookingOrderFollow.setSType(OperationEnum.DELETE.getCode());
+        bookingOrderFollow.setFollowContext(systemUser.getUserName()+"删除委托单"+bookingOrder.getBookingNo());
+        boolean save = bookingOrderFollowService.save(bookingOrderFollow);
+        if(save){
+            log.warn("删除委托单，操作日志添加成功");
+        }
 
         this.saveOrUpdate(bookingOrder);
     }
@@ -245,6 +287,8 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BookingOrderVO copyBookingOrder(Integer id) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
         BookingOrderVO bookingOrderVO = bookingOrderMapper.getBookingOrderById(id);//1.委托订单主表 BookingOrder
         if(ObjectUtil.isEmpty(bookingOrderVO)){
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "委托单不存在");
@@ -255,6 +299,8 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         BookingOrder bookingOrder = ConvertUtil.convert(bookingOrderVO, BookingOrder.class);
         bookingOrder.setId(null);
         bookingOrder.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(), LocalDateTime.now()));//单号的生成规则
+        bookingOrder.setCheckStateFlag("NO");
+        bookingOrder.setStateFlag(0);
         this.saveOrUpdate(bookingOrder);
 
         BookingOrderVO bookingOrderVO1 = ConvertUtil.convert(bookingOrder, BookingOrderVO.class);
@@ -266,10 +312,21 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
             bookingOrderEntry.setId(null);
             bookingOrderEntry.setBookingId(bookingId);
         });
-        if(CollUtil.isEmpty(bookingOrderEntryList1)){
+        if(CollUtil.isNotEmpty(bookingOrderEntryList1)){
             bookingOrderEntryService.saveOrUpdateBatch(bookingOrderEntryList1);
         }
 
+        BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
+        bookingOrderFollow.setCrtBy(systemUser.getId().intValue());
+        bookingOrderFollow.setCrtByDtm(LocalDateTime.now());
+        bookingOrderFollow.setCrtByName(systemUser.getUserName());
+        bookingOrderFollow.setBookingId(bookingOrder.getId());
+        bookingOrderFollow.setSType(OperationEnum.DELETE.getCode());
+        bookingOrderFollow.setFollowContext(systemUser.getUserName()+"复制委托单"+bookingOrder.getBookingNo());
+        boolean save = bookingOrderFollowService.save(bookingOrderFollow);
+        if(save){
+            log.warn("复制委托单，操作日志添加成功");
+        }
         return bookingOrderVO1;
     }
 
@@ -318,5 +375,14 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
             return CommonResult.error((Integer)map.get("result") , (String)map.get("msg"));
         }
         return CommonResult.success();
+    }
+
+    @Override
+    public boolean isCommplete(Integer bookingId) {
+        QtyVO qtyVO = this.baseMapper.isCommplete(bookingId);
+        if(qtyVO.getBookingQty().compareTo(qtyVO.getReceivingQty()) < 1){
+            return true;
+        }
+        return false;
     }
 }

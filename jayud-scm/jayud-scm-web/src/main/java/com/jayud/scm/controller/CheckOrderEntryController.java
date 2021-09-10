@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -94,6 +95,7 @@ public class CheckOrderEntryController {
         List<CheckOrderEntry> checkOrderEntries = checkOrderEntryService.getCheckOrderEntryByCheckOrderId(checkOrderId.longValue());
 
         for (int i = 0; i < bookingOrderEntryByBookingId.size(); i++) {
+            bookingOrderEntryByBookingId.get(i).setCheckId(checkOrderId);
             for (CheckOrderEntry checkOrderEntry : checkOrderEntries) {
                 if(bookingOrderEntryByBookingId.get(i).getId().equals(checkOrderEntry.getBookingEntryId())){
                     bookingOrderEntryByBookingId.remove(i);
@@ -105,6 +107,29 @@ public class CheckOrderEntryController {
             return CommonResult.success();
         }
         return CommonResult.success(bookingOrderEntryByBookingId);
+    }
+
+    @ApiOperation(value = "获取新增的提验货明细列表")
+    @PostMapping(value = "/findBookingOrderEntryByBookingId")
+    public CommonResult<List<BookingOrderEntryVO>> findBookingOrderEntryByBookingId(@RequestBody Map<String,Object> map) {
+        Integer bookingId = MapUtil.getInt(map, "bookingId");
+        List<BookingOrderEntryVO> bookingOrderEntryList = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingId);
+        List<CheckOrderEntry> checkOrderEntries = checkOrderEntryService.getCheckOrderEntryByBookingId(bookingId);
+        if(CollectionUtils.isNotEmpty(checkOrderEntries)){
+            for (int i = 0; i < bookingOrderEntryList.size(); i++) {
+                for (CheckOrderEntry checkOrderEntry : checkOrderEntries) {
+                    if(bookingOrderEntryList.get(i).getId().equals(checkOrderEntry.getBookingEntryId())){
+                        bookingOrderEntryList.remove(i);
+                    }
+                }
+            }
+
+        }
+
+        if(CollectionUtils.isEmpty(bookingOrderEntryList)){
+            return CommonResult.success(new ArrayList<>());
+        }
+        return CommonResult.success(bookingOrderEntryList);
     }
 
 }

@@ -50,6 +50,9 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
     @Autowired
     private ICommodityService commodityService;
 
+    @Autowired
+    private IBookingOrderFollowService bookingOrderFollowService;
+
     @Override
     public boolean delete(DeleteForm deleteForm) {
         List<HubShippingEntry> hubShippingEntries = new ArrayList<>();
@@ -61,7 +64,7 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
                 hubShippingEntry.setVoidedBy(deleteForm.getId().intValue());
                 hubShippingEntry.setVoidedByDtm(deleteForm.getDeleteTime());
                 hubShippingEntry.setVoidedByName(deleteForm.getName());
-                hubShippingEntry.setVoided(0);
+                hubShippingEntry.setVoided(1);
                 hubShippingEntries.add(hubShippingEntry);
             }
 
@@ -164,10 +167,18 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
             List<AddHubShippingEntryForm> addHubShippingEntryFormList = form.getAddHubShippingEntryFormList();
             List<HubShippingEntry> hubShippingEntries = ConvertUtil.convertList(addHubShippingEntryFormList, HubShippingEntry.class);
             for (HubShippingEntry hubShippingEntry : hubShippingEntries) {
-                hubShippingEntry.setShippingId(hubShipping.getId());
-                hubShippingEntry.setCrtBy(systemUser.getId().intValue());
-                hubShippingEntry.setCrtByDtm(LocalDateTime.now());
-                hubShippingEntry.setCrtByName(systemUser.getUserName());
+                if(hubShippingEntry.getId() != null){
+                    hubShippingEntry.setShippingId(hubShipping.getId());
+                    hubShippingEntry.setMdyBy(systemUser.getId().intValue());
+                    hubShippingEntry.setMdyByDtm(LocalDateTime.now());
+                    hubShippingEntry.setMdyByName(systemUser.getUserName());
+                }else{
+                    hubShippingEntry.setShippingId(hubShipping.getId());
+                    hubShippingEntry.setCrtBy(systemUser.getId().intValue());
+                    hubShippingEntry.setCrtByDtm(LocalDateTime.now());
+                    hubShippingEntry.setCrtByName(systemUser.getUserName());
+                }
+
             }
             boolean b = this.hubShippingEntryService.saveOrUpdateBatch(hubShippingEntries);
             if(!b){
@@ -212,8 +223,19 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
         map.put("userId",systemUser.getId());
         map.put("userName",systemUser.getUserName());
         this.baseMapper.automaticGenerationHubShipping(map);
-        if(map.get("state").equals(0)){
+        if(map.get("state").equals(1)){
             return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
+        }
+        BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
+        bookingOrderFollow.setCrtBy(systemUser.getId().intValue());
+        bookingOrderFollow.setCrtByDtm(LocalDateTime.now());
+        bookingOrderFollow.setCrtByName(systemUser.getUserName());
+        bookingOrderFollow.setBookingId(form.getId());
+        bookingOrderFollow.setSType(OperationEnum.INSERT.getCode());
+        bookingOrderFollow.setFollowContext("自动生成提验货成功");
+        boolean save = bookingOrderFollowService.save(bookingOrderFollow);
+        if(save){
+            log.warn("自动生成提验货，操作日志添加成功");
         }
         return CommonResult.success();
     }

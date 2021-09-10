@@ -1,6 +1,7 @@
 package com.jayud.scm.service;
 
 import com.jayud.common.CommonResult;
+import com.jayud.scm.model.bo.AddCheckOrderForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.CheckOrder;
@@ -24,4 +25,8 @@ public interface ICheckOrderService extends IService<CheckOrder> {
     List<CheckOrderVO> getCheckOrderByBookingId(QueryCommonForm form);
 
     CommonResult automaticGenerationCheckOrder(QueryCommonForm form);
+
+    boolean saveOrUpdateCheckOrder(AddCheckOrderForm form);
+
+    CheckOrderVO getCheckOrderById(Integer id);
 }

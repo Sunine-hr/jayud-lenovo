@@ -47,7 +47,7 @@ public class TrailerOrderTemplate {
     @ApiModelProperty(value = "so", required = true)
     private String so;
 
-    @ApiModelProperty(value = "客户", required = true)
+    @ApiModelProperty(value = "客户")
     private String customerName;
 
     @ApiModelProperty(value = "启运地", required = true)

@@ -254,7 +254,9 @@ public class ReceiveBillDetailController {
                                   @RequestParam(value = "cmd", required = false) String cmd,
                                   @RequestParam(value = "templateCmd", required = false) String templateCmd,
                                   HttpServletResponse response) throws IOException {
-
+        if (StringUtil.isNullOrEmpty(templateCmd)){
+            templateCmd=cmd;
+        }
         JSONArray datas = this.billDetailService.viewSBillDetailInfo(billNo, cmd, templateCmd);
         ViewBillVO viewBillVO = billDetailService.getViewSBill(billNo);
 

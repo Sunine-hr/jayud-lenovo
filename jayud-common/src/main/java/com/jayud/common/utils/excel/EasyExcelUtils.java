@@ -68,10 +68,10 @@ public class EasyExcelUtils {
         //顶部数据
         rowNum = setTop(entity, sheet, workbook, rowNum);
 
-        setColumnWidth(entity, sheet);
+//        setColumnWidth(entity, sheet);
 
         // 处理中文不能自动调整列宽的问题
-//        setSizeColumn(sheet, entity.getTableHead().size());
+        setSizeColumn(sheet, entity.getTableHead().size());
 //        workbook.write(out);
 //        workbook.close();
 
@@ -361,6 +361,7 @@ public class EasyExcelUtils {
     public static void setSizeColumn(Sheet sheet, int size) {
         for (int columnNum = 1; columnNum <= size; columnNum++) {
 //            int columnWidth = 369 / size;
+//            int columnWidth = sheet.getColumnWidth(columnNum) / 256;
             int columnWidth = sheet.getColumnWidth(columnNum) / 256;
             for (int rowNum = 1; rowNum <= sheet.getLastRowNum(); rowNum++) {
                 Row currentRow;
@@ -383,7 +384,7 @@ public class EasyExcelUtils {
             }
 
 
-            sheet.setColumnWidth(columnNum, columnWidth * 100);
+            sheet.setColumnWidth(columnNum, columnWidth * 180);
 
         }
     }

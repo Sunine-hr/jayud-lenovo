@@ -42,7 +42,7 @@ public class TmsOrderTemplate {
     @JsonProperty("orderNo")
     private String subOrderNo;
 
-    @ApiModelProperty(value = "客户", required = true)
+    @ApiModelProperty(value = "客户")
     private String customerName;
 
     @ApiModelProperty(value = "启运地", required = true)

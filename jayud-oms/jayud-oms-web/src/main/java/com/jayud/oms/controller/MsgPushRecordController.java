@@ -48,7 +48,9 @@ public class MsgPushRecordController {
     @PostMapping(value = "/getUnreadInfo")
     public CommonResult<Integer> getUnreadInfo() {
         String token = UserOperator.getToken();
-        int count = msgPushRecordService.count(new QueryWrapper<>(new MsgPushRecord().setRecipientName(token).setOptStatus(1)));
+        QueryWrapper<MsgPushRecord> condition = new QueryWrapper<>(new MsgPushRecord().setRecipientName(token).setOptStatus(1));
+        condition.lambda().groupBy(MsgPushRecord::getReceivingStatus,MsgPushRecord::getInitialTime);
+        int count = msgPushRecordService.count(condition);
         return CommonResult.success(count);
     }
 

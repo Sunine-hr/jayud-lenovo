@@ -50,7 +50,7 @@
             </if>
             and opt_status in (1,2)
         </where>
-        group by receiving_status
+        group by receiving_status,initial_time
         order by id desc
     </select>
 

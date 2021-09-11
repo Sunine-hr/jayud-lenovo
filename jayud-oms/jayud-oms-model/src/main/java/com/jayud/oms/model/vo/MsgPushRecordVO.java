@@ -61,8 +61,9 @@ public class MsgPushRecordVO extends Model<MsgPushRecordVO> {
 //    @ApiModelProperty(value = "发送次数")
 //    private Integer num;
 
-//    @ApiModelProperty(value = "初始时间")
-//    private LocalDateTime initialTime;
+    @ApiModelProperty(value = "初始时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime initialTime;
 
 //    @ApiModelProperty(value = "发送时间类型(1:立即,2:延后)")
 //    private Integer sendTimeType;

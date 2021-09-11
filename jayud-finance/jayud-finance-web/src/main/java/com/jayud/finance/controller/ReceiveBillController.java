@@ -207,6 +207,7 @@ public class ReceiveBillController {
     @ApiOperation(value = "导出预览应收账单")
     @PostMapping("/exportViewReceiveBill")
     public CommonResult<Map<String, Object>> exportViewReceiveBill(@RequestBody @Valid ViewSBillForm form) throws IOException {
+
         List<OrderReceiveBillDetailForm> billDetailForms = form.getBillDetailForms();
         List<Long> costIds = new ArrayList<>();
         for (OrderReceiveBillDetailForm billDetailForm : billDetailForms) {
@@ -220,6 +221,7 @@ public class ReceiveBillController {
         JSONArray datas = billService.viewReceiveBillInfo(form, costIds);
         Map<String, Object> callbackArg = new HashMap<>();
         List<SheetHeadVO> sheetHeadVOS = billService.findSheetHeadInfo(costIds, callbackArg, form.getCmd());
+        sheetHeadVOS = sheetHeadVOS.stream().filter(e -> !"customerName".equals(e.getName()) || !"unitAccount".equals(e.getName())).collect(Collectors.toList());
         int index = Integer.parseInt(callbackArg.get("fixHeadIndex").toString()) - 1;
         LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
         LinkedHashMap<String, String> dynamicHead = new LinkedHashMap<>();

@@ -80,7 +80,8 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
     public int doMarkRead(List<Long> ids) {
         QueryWrapper<MsgPushRecord> condition = new QueryWrapper<>();
         //操作状态(1:未读,2:已读,3:删除)
-        condition.lambda().eq(MsgPushRecord::getOptStatus, 1).in(MsgPushRecord::getId, ids);
+        condition.lambda().eq(MsgPushRecord::getOptStatus, 1)
+                .in(MsgPushRecord::getId, ids);
         return this.baseMapper.update(new MsgPushRecord().setOptStatus(2), condition);
     }
 

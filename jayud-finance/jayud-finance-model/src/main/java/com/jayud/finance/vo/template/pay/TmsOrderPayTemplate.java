@@ -1,4 +1,4 @@
-package com.jayud.finance.vo.template.order;
+package com.jayud.finance.vo.template.pay;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class TmsOrderTemplate {
+public class TmsOrderPayTemplate {
 
     @ApiModelProperty(value = "id")
     private Long id;

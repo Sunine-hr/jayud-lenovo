@@ -20,6 +20,7 @@ import com.jayud.finance.vo.InputGoodsVO;
 import com.jayud.finance.vo.SheetHeadVO;
 import com.jayud.finance.vo.template.order.*;
 import com.jayud.finance.vo.template.pay.InlandTPPayTemplate;
+import com.jayud.finance.vo.template.pay.TmsOrderPayTemplate;
 import com.jayud.finance.vo.template.pay.TrailerOrderPayTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -111,8 +112,6 @@ public class CommonServiceImpl implements CommonService {
             switch (templateEnum) {
                 case ZGYS:
                 case ZGYS_NORM_RE:
-                case ZGYS_NORM_PAY:
-                case ZGYS_SUPPLIER_PAY:
                     TmsOrderTemplate tmsOrderTemplate = ConvertUtil.convert(jsonObject, TmsOrderTemplate.class);
                     tmsOrderTemplate.assembleData(jsonObject);
                     tmsOrderTemplate.setSubOrderNo(jsonObject.getStr("orderNo"));
@@ -120,6 +119,16 @@ public class CommonServiceImpl implements CommonService {
                     tmsOrderTemplate.assemblyMainOrderData(result.getData());
                     map.put(cmd.equals("main") ? tmsOrderTemplate.getMainOrderNo() : tmsOrderTemplate.getSubOrderNo(), tmsOrderTemplate);
                     map.put(tmsOrderTemplate.getMainOrderNo() + "~" + tmsOrderTemplate.getSubOrderNo(), tmsOrderTemplate);
+                    break;
+                case ZGYS_NORM_PAY:
+                case ZGYS_SUPPLIER_PAY:
+                    TmsOrderPayTemplate tmsOrderPayTemplate = ConvertUtil.convert(jsonObject, TmsOrderPayTemplate.class);
+                    tmsOrderPayTemplate.assembleData(jsonObject);
+                    tmsOrderPayTemplate.setSubOrderNo(jsonObject.getStr("orderNo"));
+                    //组装主订单信息
+                    tmsOrderPayTemplate.assemblyMainOrderData(result.getData());
+                    map.put(cmd.equals("main") ? tmsOrderPayTemplate.getMainOrderNo() : tmsOrderPayTemplate.getSubOrderNo(), tmsOrderPayTemplate);
+                    map.put(tmsOrderPayTemplate.getMainOrderNo() + "~" + tmsOrderPayTemplate.getSubOrderNo(), tmsOrderPayTemplate);
                     break;
 //                case ZGYS_ONE:
 //                    break;

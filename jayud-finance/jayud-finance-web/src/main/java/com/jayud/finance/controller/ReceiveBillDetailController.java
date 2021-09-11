@@ -254,8 +254,8 @@ public class ReceiveBillDetailController {
                                   @RequestParam(value = "cmd", required = false) String cmd,
                                   @RequestParam(value = "templateCmd", required = false) String templateCmd,
                                   HttpServletResponse response) throws IOException {
-        if (StringUtil.isNullOrEmpty(templateCmd)){
-            templateCmd=cmd;
+        if (StringUtil.isNullOrEmpty(templateCmd)) {
+            templateCmd = cmd;
         }
         JSONArray datas = this.billDetailService.viewSBillDetailInfo(billNo, cmd, templateCmd);
         ViewBillVO viewBillVO = billDetailService.getViewSBill(billNo);
@@ -263,6 +263,7 @@ public class ReceiveBillDetailController {
         Map<String, Object> callbackArg = new HashMap<>();
         //头部数据重组
         List<SheetHeadVO> sheetHeadVOS = billDetailService.findSSheetHeadInfo(billNo, callbackArg, cmd, templateCmd);
+        sheetHeadVOS = sheetHeadVOS.stream().filter(e -> !"customerName".equals(e.getName())).collect(Collectors.toList());
         int index = Integer.parseInt(callbackArg.get("fixHeadIndex").toString()) - 1;
         LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
         LinkedHashMap<String, String> dynamicHead = new LinkedHashMap<>();

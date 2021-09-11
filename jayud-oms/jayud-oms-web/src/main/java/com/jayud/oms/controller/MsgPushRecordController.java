@@ -96,7 +96,9 @@ public class MsgPushRecordController {
         MsgPushRecord msgPushRecord = this.msgPushRecordService.getById(id);
         //操作状态(1:未读,2:已读,3:删除)
         if (msgPushRecord.getOptStatus() == 1) {
-            this.msgPushRecordService.updateById(new MsgPushRecord().setId(id).setOptStatus(2));
+            this.msgPushRecordService.update(new MsgPushRecord().setId(id).setOptStatus(2),
+                    new QueryWrapper<>(new MsgPushRecord().setOptStatus(msgPushRecord.getOptStatus()).setInitialTime(msgPushRecord.getInitialTime())));
+//            this.msgPushRecordService.updateById(new MsgPushRecord().setId(id).setOptStatus(2));
         }
         return CommonResult.success();
     }
@@ -108,17 +110,23 @@ public class MsgPushRecordController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         Set<Long> ids = list.stream().map(MsgPushRecordVO::getId).collect(Collectors.toSet());
-        this.msgPushRecordService.doMarkRead(new ArrayList<>(ids));
+
+        for (Long id : ids) {
+            MsgPushRecord msgPushRecord = this.msgPushRecordService.getById(id);
+            //操作状态(1:未读,2:已读,3:删除)
+            if (msgPushRecord.getOptStatus() == 1) {
+                this.msgPushRecordService.update(new MsgPushRecord().setId(id).setOptStatus(2),
+                        new QueryWrapper<>(new MsgPushRecord().setOptStatus(msgPushRecord.getOptStatus()).setInitialTime(msgPushRecord.getInitialTime())));
+            }
+        }
+
+//        this.msgPushRecordService.doMarkRead(new ArrayList<>(ids));
         return CommonResult.success();
     }
 
     @ApiOperation(value = "执行全部已读操作")
     @PostMapping(value = "/doAllReadOperation")
     public CommonResult doAllReadOperation(@RequestBody Map<String, Object> map) {
-        Long id = MapUtil.getLong(map, "id");
-        if (id == null) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR);
-        }
         this.msgPushRecordService.doAllReadOperation();
         return CommonResult.success();
     }
@@ -129,14 +137,16 @@ public class MsgPushRecordController {
         if (CollectionUtils.isEmpty(list)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        List<MsgPushRecord> deletes = new ArrayList<>();
+//        List<MsgPushRecord> deletes = new ArrayList<>();
         for (MsgPushRecordVO msgPushRecordVO : list) {
+            this.msgPushRecordService.update(new MsgPushRecord().setId(msgPushRecordVO.getId()).setOptStatus(3),
+                    new QueryWrapper<>(new MsgPushRecord().setOptStatus(msgPushRecordVO.getOptStatus()).setInitialTime(msgPushRecordVO.getInitialTime())));
             MsgPushRecord tmp = new MsgPushRecord();
             //操作状态(1:未读,2:已读,3:删除)
-            tmp.setId(msgPushRecordVO.getId()).setOptStatus(3);
-            deletes.add(tmp);
+//            tmp.setId(msgPushRecordVO.getId()).setOptStatus(3);
+//            deletes.add(tmp);
         }
-        this.msgPushRecordService.updateBatchById(deletes);
+//        this.msgPushRecordService.updateBatchById(deletes);
         return CommonResult.success();
     }
 

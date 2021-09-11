@@ -37,7 +37,7 @@ public class InlandTPTemplate {
     @ApiModelProperty(value = "子订单号", required = true)
     private String subOrderNo;
 
-    @ApiModelProperty(value = "客户")
+    @ApiModelProperty(value = "客户",required = true)
     private String customerName;
 
     @ApiModelProperty(value = "启运地", required = true)

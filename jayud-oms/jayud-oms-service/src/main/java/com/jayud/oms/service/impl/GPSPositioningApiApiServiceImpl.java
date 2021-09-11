@@ -236,7 +236,7 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
                     .execute();
             String feedback = response.body();
             JSONObject responseJson = new JSONObject(feedback);
-            if (responseJson.getBool("rspCode")) {
+            if (!responseJson.getBool("rspCode")) {
                 log.warn("实时定位失败,车牌号={},错误信息={}", e, responseJson.getStr("rspDesc"));
             }
             JSONArray jsonArray = responseJson.getJSONArray("list");

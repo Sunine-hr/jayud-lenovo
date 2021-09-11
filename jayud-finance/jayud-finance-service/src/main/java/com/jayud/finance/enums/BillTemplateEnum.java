@@ -6,6 +6,7 @@ import com.jayud.finance.service.impl.PaySupplierBillTemplateServiceImpl;
 import com.jayud.finance.vo.InitComboxStrVO;
 import com.jayud.finance.vo.template.order.*;
 import com.jayud.finance.vo.template.pay.InlandTPPayTemplate;
+import com.jayud.finance.vo.template.pay.TmsOrderPayTemplate;
 import com.jayud.finance.vo.template.pay.TrailerOrderPayTemplate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,10 +34,10 @@ public enum BillTemplateEnum {
 
     //导出应付模板(标准)
 //    KY_NORM_PAY("ky-norm-pay", AirOrderTemplate.class, "空运", true, 1),
-    ZGYS_NORM_PAY("zgys-norm-pay", TmsOrderTemplate.class, "中港", true, 1, PayBillTemplateServiceImpl.class),
+    ZGYS_NORM_PAY("zgys-norm-pay", TmsOrderPayTemplate.class, "中港", true, 1, PayBillTemplateServiceImpl.class),
     TC_NORM_PAY("tc-norm-pay", TrailerOrderPayTemplate.class, "拖车", true, 1, PayBillTemplateServiceImpl.class),
     NL_NORM_PAY("nl-norm-pay", InlandTPPayTemplate.class, "内陆", true, 1, PayBillTemplateServiceImpl.class),
-    ZGYS_SUPPLIER_PAY("zgys-supplier-pay", TmsOrderTemplate.class, "中港供应商", true, 1, PaySupplierBillTemplateServiceImpl.class),
+    ZGYS_SUPPLIER_PAY("zgys-supplier-pay", TmsOrderPayTemplate.class, "中港供应商", true, 1, PaySupplierBillTemplateServiceImpl.class),
     TC_SUPPLIER_PAY("tc-supplier-pay", TrailerOrderPayTemplate.class, "拖车供应商", true, 1, PaySupplierBillTemplateServiceImpl.class),
     NL_SUPPLIER_PAY("nl-supplier-pay", InlandTPPayTemplate.class, "内陆供应商", true, 1, PaySupplierBillTemplateServiceImpl.class),
 //    HY_NORM_PAY("hy-norm-pay", SeaOrderTemplate.class, "海运", false, 1),

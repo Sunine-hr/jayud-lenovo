@@ -506,7 +506,7 @@ public class OrderCustomsController {
     @ApiOperation(value = "查询所有抬头")
     @PostMapping(value = "/getAllTitle")
     public CommonResult<List<Map<String, String>>> getAllTitle() {
-        Set<String> list = this.orderCustomsService.list().stream().map(OrderCustoms::getTitle).collect(Collectors.toSet());
+        Set<String> list = this.orderCustomsService.list().stream().filter(e -> !StringUtil.isNullOrEmpty(e.getTitle())).map(OrderCustoms::getTitle).collect(Collectors.toSet());
         List<Map<String, String>> tmps = new ArrayList<>();
         for (String s : list) {
             Map<String, String> map = new HashMap<>();

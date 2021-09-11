@@ -9,6 +9,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.model.bo.QueryMsgPushRecordForm;
 import com.jayud.oms.model.po.MsgPushRecord;
 import com.jayud.oms.model.vo.MsgPushRecordVO;
@@ -43,13 +44,16 @@ public class MsgPushRecordController {
 
     @Autowired
     private IMsgPushRecordService msgPushRecordService;
+    @Autowired
+    private OauthClient oauthClient;
 
     @ApiOperation(value = "获取未读信息")
     @PostMapping(value = "/getUnreadInfo")
     public CommonResult<Integer> getUnreadInfo() {
         String token = UserOperator.getToken();
-        QueryWrapper<MsgPushRecord> condition = new QueryWrapper<>(new MsgPushRecord().setRecipientName(token).setOptStatus(1));
-        condition.lambda().groupBy(MsgPushRecord::getReceivingStatus, MsgPushRecord::getInitialTime);
+        Object userId = oauthClient.getSystemUserBySystemName(token).getData();
+        QueryWrapper<MsgPushRecord> condition = new QueryWrapper<>();
+        condition.lambda().eq(MsgPushRecord::getRecipientId, userId).eq(MsgPushRecord::getOptStatus, 1).groupBy(MsgPushRecord::getReceivingStatus, MsgPushRecord::getInitialTime);
         List<MsgPushRecord> list = msgPushRecordService.getBaseMapper().selectList(condition);
         return CommonResult.success(list.size());
     }
@@ -58,8 +62,9 @@ public class MsgPushRecordController {
     @PostMapping(value = "/getMsgPushRecord")
     public CommonResult<List<MsgPushRecordVO>> getMsgPushRecord() {
         String token = UserOperator.getToken();
+        Object userId = oauthClient.getSystemUserBySystemName(token).getData();
         QueryMsgPushRecordForm form = new QueryMsgPushRecordForm();
-        form.setRecipientName(token).setPageNum(1);
+        form.setRecipientId(Long.valueOf(userId.toString())).setRecipientName(null).setPageNum(1);
         form.setPageSize(5);
         IPage<MsgPushRecordVO> iPage = msgPushRecordService.findByPage(form);
         return CommonResult.success(iPage.getRecords());
@@ -69,7 +74,8 @@ public class MsgPushRecordController {
     @PostMapping(value = "/findByPage")
     public CommonResult<CommonPageResult<MsgPushRecordVO>> findByPage(@RequestBody QueryMsgPushRecordForm form) {
         String token = UserOperator.getToken();
-        form.setRecipientName(token);
+        Object userId = oauthClient.getSystemUserBySystemName(token).getData();
+        form.setRecipientId(Long.valueOf(userId.toString())).setRecipientName(null);
         IPage<MsgPushRecordVO> iPage = msgPushRecordService.findByPage(form);
         return CommonResult.success(new CommonPageResult(iPage));
     }

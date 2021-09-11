@@ -48,6 +48,9 @@
             <if test="form.recipientName!=null and form.recipientName!=''">
                 and recipient_name =#{form.recipientName}
             </if>
+            <if test="form.recipientId!=null and form.recipientId!=''">
+                and recipient_id =#{form.recipientId}
+            </if>
             and opt_status in (1,2)
         </where>
         group by receiving_status,initial_time

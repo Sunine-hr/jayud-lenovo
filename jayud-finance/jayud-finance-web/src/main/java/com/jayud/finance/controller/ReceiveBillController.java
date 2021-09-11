@@ -221,7 +221,7 @@ public class ReceiveBillController {
         JSONArray datas = billService.viewReceiveBillInfo(form, costIds);
         Map<String, Object> callbackArg = new HashMap<>();
         List<SheetHeadVO> sheetHeadVOS = billService.findSheetHeadInfo(costIds, callbackArg, form.getCmd());
-        sheetHeadVOS = sheetHeadVOS.stream().filter(e -> !"customerName".equals(e.getName()) || !"unitAccount".equals(e.getName())).collect(Collectors.toList());
+        sheetHeadVOS = sheetHeadVOS.stream().filter(e -> !"customerName".equals(e.getName()) && !"unitAccount".equals(e.getName())).collect(Collectors.toList());
         int index = Integer.parseInt(callbackArg.get("fixHeadIndex").toString()) - 1;
         LinkedHashMap<String, String> headMap = new LinkedHashMap<>();
         LinkedHashMap<String, String> dynamicHead = new LinkedHashMap<>();

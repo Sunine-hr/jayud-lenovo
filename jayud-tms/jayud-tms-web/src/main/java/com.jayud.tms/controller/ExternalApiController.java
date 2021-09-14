@@ -12,19 +12,18 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
-import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.LogisticsTrackVO;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.common.utils.JDKUtils;
-import com.jayud.common.utils.Utilities;
+import com.jayud.tms.feign.FinanceClient;
 import com.jayud.tms.feign.OauthClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.bo.*;
 import com.jayud.tms.model.enums.OrderTakeAdrTypeEnum;
 import com.jayud.tms.model.po.OrderSendCars;
-import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.po.TmsExtensionField;
 import com.jayud.tms.model.vo.*;
@@ -35,7 +34,6 @@ import com.jayud.tms.service.ITmsExtensionFieldService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,6 +65,8 @@ public class ExternalApiController {
     private OmsClient omsClient;
     @Autowired
     private OrderInTransportController transportController;
+    @Autowired
+    private FinanceClient financeClient;
 
     @ApiOperation(value = "创建中港子订单")
     @RequestMapping(value = "/api/createOrderTransport")
@@ -266,12 +266,18 @@ public class ExternalApiController {
         tmp.put("车辆派送", "T_13");
         tmp.put("确认签收", "T_14");
         tmp.put("费用审核", "CostAudit");
+        tmp.put("应收对账单审核","zgysReceiverCheck");
+        tmp.put("应付对账单审核","zgysPayCheck");
         List<Map<String, Object>> result = new ArrayList<>();
 
 //        ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
 //        List<Long> legalIds = legalEntityByLegalName.getData();
         DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.EMPLOYEE_TYPE.getCode()).getData();
-
+        Map<String, Integer> reBillNumMap = this.financeClient.getPendingBillStatusNum(null, dataControl.getCompanyIds(), 0, false, SubOrderSignEnum.ZGYS.getSignOne()).getData();
+        Map<String, Integer> payBillNumMap = this.financeClient.getPendingBillStatusNum(null, dataControl.getCompanyIds(), 1, false, SubOrderSignEnum.ZGYS.getSignOne()).getData();
+        Map<String,Object> datas=new HashMap<>();
+        datas.put("zgysReceiverCheck",reBillNumMap);
+        datas.put("zgysPayCheck",payBillNumMap);
         for (Map<String, Object> menus : menusList) {
 
             Map<String, Object> map = new HashMap<>();
@@ -279,7 +285,7 @@ public class ExternalApiController {
             String status = tmp.get(title);
             Integer num = 0;
             if (status != null) {
-                num = this.orderTransportService.getNumByStatus(status, dataControl);
+                num = this.orderTransportService.getNumByStatus(status, dataControl,datas);
             }
             map.put("menusName", title);
             map.put("num", num);
@@ -307,7 +313,7 @@ public class ExternalApiController {
 
         Map<String, Integer> map = new HashMap<>();
         tmp.forEach((k, v) -> {
-            Integer num = this.orderTransportService.getNumByStatus(v, dataControl);
+            Integer num = this.orderTransportService.getNumByStatus(v, dataControl, new HashMap<>());
             map.put(k, num);
         });
         return ApiResult.ok(map);
@@ -497,7 +503,7 @@ public class ExternalApiController {
         Map<Object, Object> logisticsMap = JDKUtils.getGroupByLastData(logisticsTrackVOS, LogisticsTrackVO::getOrderId, e -> e.getOrderId() + "~" + e.getStatus())
                 .stream().filter(e -> e.getOperatorTime() != null).collect(Collectors.toMap(e -> e.getOrderId() + "~" + e.getStatus(), LogisticsTrackVO::getOperatorTime));
 
-        Map<Long, List<OrderSendCarsVO>> map = orderSendCars.stream().filter(e->e.getVehicleId()!=null).collect(Collectors.groupingBy(OrderSendCarsVO::getVehicleId));
+        Map<Long, List<OrderSendCarsVO>> map = orderSendCars.stream().filter(e -> e.getVehicleId() != null).collect(Collectors.groupingBy(OrderSendCarsVO::getVehicleId));
         Object vehicleInfoObjs = this.omsClient.getVehicleInfoByIds(new ArrayList<>(map.keySet())).getData();
         Map<Long, String> vehicleInfoMap = new JSONArray(vehicleInfoObjs).stream().collect(Collectors.toMap(e -> ((JSONObject) e).getLong("id"), e -> ((JSONObject) e).getStr("plateNumber")));
         Map<String, List<Map<String, Object>>> req = new HashMap<>();

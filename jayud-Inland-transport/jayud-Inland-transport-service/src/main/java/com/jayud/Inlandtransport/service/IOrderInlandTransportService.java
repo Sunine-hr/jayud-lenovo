@@ -12,6 +12,7 @@ import com.jayud.Inlandtransport.model.vo.OrderRejectedOpt;
 import com.jayud.common.entity.AuditInfoForm;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -93,9 +94,10 @@ public interface IOrderInlandTransportService extends IService<OrderInlandTransp
      * 获取内陆状态待处理数量
      * @param status
      * @param legalIds
+     * @param datas
      * @return
      */
-    Integer getNumByStatus(String status, List<Long> legalIds);
+    Integer getNumByStatus(String status, List<Long> legalIds, Map<String, Object> datas);
 
     List<OrderInlandTransport> getByLegalEntityId(List<Long> legalIds);
 }

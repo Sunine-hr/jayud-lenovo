@@ -1,17 +1,14 @@
 package com.jayud.tms.service.impl;
 
-import cn.hutool.core.date.StopWatch;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
-import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
@@ -22,13 +19,9 @@ import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
-import com.jayud.tms.feign.FileClient;
-import com.jayud.tms.feign.MsgClient;
-import com.jayud.tms.feign.OauthClient;
-import com.jayud.tms.feign.OmsClient;
+import com.jayud.tms.feign.*;
 import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.*;
-import com.jayud.tms.model.enums.OrderTakeAdrTypeEnum;
 import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
@@ -47,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -87,6 +79,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     private MsgClient msgClient;
     @Autowired
     private RedisUtils redisUtils;
+    @Autowired
+    private FinanceClient financeClient;
 
 
     @Override
@@ -595,10 +589,11 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
      *
      * @param status
      * @param dataControl
+     * @param datas
      * @return
      */
     @Override
-    public Integer getNumByStatus(String status, DataControl dataControl) {
+    public Integer getNumByStatus(String status, DataControl dataControl, Map<String, Object> datas) {
         Integer num = 0;
         switch (status) {
             case "CostAudit":
@@ -607,6 +602,14 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                 if (CollectionUtils.isEmpty(list)) return num;
                 List<String> orderNos = list.stream().map(OrderTransport::getOrderNo).collect(Collectors.toList());
                 num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.ZGYS.getSignOne(), legalIds, orderNos).getData();
+                break;
+            case "zgysReceiverCheck":
+                Map<String, Integer> costNum = (Map<String, Integer>) datas.get(status);
+                num = costNum.get("B_1");
+                break;
+            case "zgysPayCheck":
+                costNum = (Map<String, Integer>) datas.get(status);
+                num = costNum.get("B_1");
                 break;
             default:
                 num = this.baseMapper.getNumByStatus(status, dataControl);

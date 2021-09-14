@@ -1262,4 +1262,9 @@ public class OrderReceivableBillDetailServiceImpl extends ServiceImpl<OrderRecei
         return this.baseMapper.getBillingStatusNum(userName, isMain, subType);
     }
 
+    @Override
+    public List<Map<String, Object>> getPendingBillStatusNum(List<Long> costIds, String userName, List<Long> legalIds, boolean isMain, String subType) {
+        return this.baseMapper.getPendingBillStatusNum(costIds,userName,legalIds,isMain,subType);
+    }
+
 }

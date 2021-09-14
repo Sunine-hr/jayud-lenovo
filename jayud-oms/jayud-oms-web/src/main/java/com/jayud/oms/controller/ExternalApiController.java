@@ -19,6 +19,7 @@ import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.*;
 import com.jayud.oms.feign.FileClient;
+import com.jayud.oms.feign.FinanceClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.feign.TmsClient;
 import com.jayud.oms.model.bo.*;
@@ -39,6 +40,10 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 
@@ -117,6 +122,8 @@ public class ExternalApiController {
     private IGpsPositioningService gpsPositioningService;
     @Autowired
     private ICostGenreTaxRateService costGenreTaxRateService;
+    @Autowired
+    private FinanceClient financeClient;
 
 
     @ApiOperation(value = "保存主订单")
@@ -1299,12 +1306,15 @@ public class ExternalApiController {
         tmp.put("外部报关放行", "outPortPass");
         tmp.put("通关前审核", "portPassCheck");
         tmp.put("费用审核", "feeCheck");
+        tmp.put("应收对账单审核", "mainReceiverCheck");
+        tmp.put("应付对账单审核", "mainPayCheck");
 
         List<Map<String, Object>> result = new ArrayList<>();
 
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
-
+        Map<String, Integer> reBillNumMap = this.financeClient.getPendingBillStatusNum(null, legalIds, 0, true, SubOrderSignEnum.MAIN.getSignOne()).getData();
+        Map<String, Integer> payBillNumMap = this.financeClient.getPendingBillStatusNum(null, legalIds, 1, true, SubOrderSignEnum.MAIN.getSignOne()).getData();
         for (Map<String, Object> menus : menusList) {
 
             Map<String, Object> map = new HashMap<>();
@@ -1321,6 +1331,12 @@ public class ExternalApiController {
                         break;
                     case "feeCheck":
                         num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null, null);
+                        break;
+                    case "mainReceiverCheck":
+                        num = reBillNumMap.get("B_1");
+                        break;
+                    case "mainPayCheck":
+                        num=payBillNumMap.get("B_1");
                         break;
                 }
 
@@ -2198,6 +2214,31 @@ public class ExternalApiController {
         return ApiResult.ok();
     }
 
+    /**
+     * 获取应收出账的费用ids
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostIdsBySubType")
+    public ApiResult<List<Long>> getReBillCostIdsBySubType(@RequestParam(value = "legalIds", required = false) List<Long> legalIds,
+                                                           @RequestParam(value = "userName", required = false) String userName,
+                                                           @RequestParam("subType") String subType) {
+        List<Long> costIds = this.receivableCostService.getReBillCostIdsBySubType(userName, legalIds, subType);
+        return ApiResult.ok(costIds);
+    }
+
+    /**
+     * 获取应付出账的费用ids
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getPayBillCostIdsBySubType")
+    public ApiResult<List<Long>> getPayBillCostIdsBySubType(@RequestParam(value = "legalIds", required = false) List<Long> legalIds,
+                                                            @RequestParam(value = "userName", required = false) String userName,
+                                                            @RequestParam("subType") String subType) {
+        List<Long> costIds = this.paymentCostService.getPayBillCostIdsBySubType(userName, legalIds, subType);
+        return ApiResult.ok(costIds);
+    }
 
 }
 

@@ -587,8 +587,8 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
                                 addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
                             }
                             //2位不四舍五入
-                            if (!StringUtils.isEmpty(addValue)){
-                                addValue=new BigDecimal(addValue).setScale(2,BigDecimal.ROUND_DOWN).stripTrailingZeros().toPlainString();
+                            if (!StringUtils.isEmpty(addValue)) {
+                                addValue = new BigDecimal(addValue).setScale(2, BigDecimal.ROUND_DOWN).stripTrailingZeros().toPlainString();
                             }
                             propertiesMap.put(addProperties, addValue);
                         }
@@ -1155,6 +1155,7 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
 
     /**
      * 获取制单人账单数量
+     *
      * @param userName
      * @param isMain
      * @param subType
@@ -1162,7 +1163,12 @@ public class OrderPaymentBillDetailServiceImpl extends ServiceImpl<OrderPaymentB
      */
     @Override
     public List<Map<String, Object>> getBillingStatusNum(String userName, boolean isMain, String subType) {
-        return this.baseMapper.getBillingStatusNum(userName,isMain,subType);
+        return this.baseMapper.getBillingStatusNum(userName, isMain, subType);
+    }
+
+    @Override
+    public List<Map<String, Object>> getPendingBillStatusNum(List<Long> costIds, String userName, List<Long> legalIds, boolean isMain, String subType) {
+        return this.baseMapper.getPendingBillStatusNum(costIds, userName, legalIds, isMain, subType);
     }
 
 

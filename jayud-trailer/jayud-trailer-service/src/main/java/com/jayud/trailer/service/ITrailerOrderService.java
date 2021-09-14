@@ -9,6 +9,7 @@ import com.jayud.trailer.vo.TrailerOrderInfoVO;
 import com.jayud.trailer.vo.TrailerOrderVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -117,7 +118,7 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
 
     List<TrailerOrderInfoVO> getInfo(List<String> mainOrderNos);
 
-    Integer getNumByStatus(String status, List<Long> legalIds);
+    Integer getNumByStatus(String status, List<Long> legalIds, Map<String, Object> datas);
 
     List<TrailerOrder> getByCondition(TrailerOrder setMainOrderNo);
 

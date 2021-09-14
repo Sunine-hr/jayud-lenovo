@@ -124,11 +124,12 @@ public interface IOrderTransportService extends IService<OrderTransport> {
     /**
      * 查询订单状态数量
      *
-     * @param status
      * @param legalIds
+     * @param status
+     * @param datas
      * @return
      */
-    public Integer getNumByStatus(String status, DataControl dataControl);
+    public Integer getNumByStatus(String status, DataControl dataControl, Map<String, Object> datas);
 
     /**
      * 根据主订单号集合查询中港详情信息

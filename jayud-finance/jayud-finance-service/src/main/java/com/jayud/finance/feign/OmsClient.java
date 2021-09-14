@@ -3,6 +3,7 @@ package com.jayud.finance.feign;
 
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.finance.bo.AuditInfoForm;
 import com.jayud.finance.bo.OprCostBillForm;
 import com.jayud.finance.bo.OrderCostForm;
@@ -21,7 +22,7 @@ import java.util.Map;
 /**
  * finance模块消费oms模块的接口
  */
-@FeignClient(value = "jayud-oms-web")
+@FeignClient(value = "jayud-oms-web", configuration = FeignRequestInterceptor.class)
 public interface OmsClient {
 
     /**
@@ -229,4 +230,24 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getCostGenreTaxRateByGenreIds")
     public ApiResult getCostGenreTaxRateByGenreIds(@RequestParam("costGenreIds") List<Long> costGenreIds);
+
+    /**
+     * 获取应收出账的费用ids
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostIdsBySubType")
+    public ApiResult<List<Long>> getReBillCostIdsBySubType(@RequestParam("legalIds") List<Long> legalIds,
+                                                           @RequestParam("userName") String userName,
+                                                           @RequestParam("subType") String subType);
+
+    /**
+     * 获取应付出账的费用ids
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getPayBillCostIdsBySubType")
+    public ApiResult<List<Long>> getPayBillCostIdsBySubType(@RequestParam(value = "legalIds", required = false) List<Long> legalIds,
+                                                            @RequestParam(value = "userName", required = false) String userName,
+                                                            @RequestParam("subType") String subType) ;
 }

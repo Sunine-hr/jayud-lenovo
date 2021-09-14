@@ -1,13 +1,11 @@
-package com.jayud.oms.feign;
+package com.jayud.Inlandtransport.feign;
 
 
 import com.jayud.common.ApiResult;
-import com.jayud.oms.model.po.CustomsFinanceFeeRelation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -17,21 +15,6 @@ import java.util.Map;
 @FeignClient(value = "jayud-finance-web")
 public interface FinanceClient {
 
-    /**
-     * 获取云报关-金蝶财务费用项对应关系
-     */
-    @RequestMapping(value = "/api/getCustomsFinanceFeeRelation")
-    ApiResult<Map<String, CustomsFinanceFeeRelation>> getCustomsFinanceFeeRelation();
-
-
-    /**
-     * 根据原始币种和兑换币种获取汇率
-     *
-     * @return
-     */
-    @RequestMapping(value = "/api/getExchangeRates")
-    public ApiResult<Map<String, BigDecimal>> getExchangeRates(@RequestParam("dcCode") String dcCode,
-                                                               @RequestParam("month") String month);
 
     /**
      * 应收/应付账单状态统计

@@ -9,6 +9,7 @@ import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.CurrencyInfo;
 import com.jayud.oms.model.po.OrderPaymentCost;
+import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.vo.DriverBillCostVO;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
@@ -204,7 +205,7 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
      */
     @Override
     public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds, String userName) {
-        return this.baseMapper.getPendingExpenseApproval(subType, orderNos, legalIds,userName);
+        return this.baseMapper.getPendingExpenseApproval(subType, orderNos, legalIds, userName);
     }
 
     @Override
@@ -410,6 +411,27 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
 
     @Override
     public List<DriverBillCostVO> getDriverBillCost(List<String> orderNos, List<String> status, String time, List<Long> employIds) {
-        return this.baseMapper.getDriverBillCost(orderNos, status, time,employIds);
+        return this.baseMapper.getDriverBillCost(orderNos, status, time, employIds);
+    }
+
+    @Override
+    public List<Long> getPayBillCostIdsBySubType(String userName, List<Long> legalIds, String subType) {
+        QueryWrapper<OrderPaymentCost> condition = new QueryWrapper<>();
+        if (SubOrderSignEnum.MAIN.getSignOne().equals(subType)) {
+            condition.lambda().eq(OrderPaymentCost::getIsSumToMain, true);
+        } else {
+            condition.lambda().eq(OrderPaymentCost::getIsSumToMain, false)
+                    .eq(OrderPaymentCost::getSubType, subType);
+        }
+        condition.lambda().select(OrderPaymentCost::getId);
+        if (!StringUtils.isEmpty(userName)) {
+            condition.lambda().eq(OrderPaymentCost::getCreatedUser, userName);
+        }
+        if (!org.apache.commons.collections.CollectionUtils.isEmpty(legalIds)) {
+            condition.lambda().in(OrderPaymentCost::getLegalId, legalIds);
+        }
+        condition.lambda().eq(OrderPaymentCost::getIsBill, 2);
+        List<Long> costIds = this.baseMapper.selectList(condition).stream().map(OrderPaymentCost::getId).collect(Collectors.toList());
+        return costIds;
     }
 }

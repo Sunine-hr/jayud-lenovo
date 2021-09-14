@@ -2,7 +2,6 @@ package com.jayud.trailer.service.impl;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -16,16 +15,12 @@ import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
 import com.jayud.trailer.bo.*;
-import com.jayud.trailer.enums.TrailerOrderStatusEnum;
 import com.jayud.trailer.feign.FileClient;
 import com.jayud.trailer.feign.OauthClient;
 import com.jayud.trailer.feign.OmsClient;
-import com.jayud.trailer.po.OrderFlowSheet;
-import com.jayud.trailer.po.OrderStatus;
 import com.jayud.trailer.po.TrailerDispatch;
 import com.jayud.trailer.po.TrailerOrder;
 import com.jayud.trailer.mapper.TrailerOrderMapper;
@@ -491,7 +486,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     }
 
     @Override
-    public Integer getNumByStatus(String status, List<Long> legalIds) {
+    public Integer getNumByStatus(String status, List<Long> legalIds, Map<String, Object> datas) {
         Integer num = 0;
         switch (status) {
             case "CostAudit":
@@ -500,6 +495,14 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
                 if (CollectionUtils.isEmpty(list)) return num;
                 List<String> orderNos = list.stream().map(TrailerOrder::getOrderNo).collect(Collectors.toList());
                 num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.TC.getSignOne(), legalIds, orderNos).getData();
+                break;
+            case "trailerReceiverCheck":
+                Map<String, Integer> costNum = (Map<String, Integer>) datas.get(status);
+                num = costNum.get("B_1");
+                break;
+            case "trailerPayCheck":
+                costNum = (Map<String, Integer>) datas.get(status);
+                num = costNum.get("B_1");
                 break;
             default:
                 num = this.baseMapper.getNumByStatus(status, legalIds);

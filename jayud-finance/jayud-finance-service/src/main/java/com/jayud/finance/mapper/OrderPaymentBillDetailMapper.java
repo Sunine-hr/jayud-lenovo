@@ -178,4 +178,7 @@ public interface OrderPaymentBillDetailMapper extends BaseMapper<OrderPaymentBil
 
     List<Map<String, Object>> getBillingStatusNum(@Param("userName") String userName,
                                                   @Param("isMain") boolean isMain, @Param("subType") String subType);
+
+    List<Map<String, Object>> getPendingBillStatusNum(@Param("costIds") List<Long> costIds, @Param("userName") String userName,
+                                                      @Param("legalIds") List<Long> legalIds, @Param("isMain") boolean isMain, @Param("subType") String subType);
 }

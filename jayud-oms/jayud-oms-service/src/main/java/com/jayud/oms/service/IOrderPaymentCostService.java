@@ -189,4 +189,6 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
      * @return
      */
     public List<DriverBillCostVO> getDriverBillCost(List<String> orderNos, List<String> status, String time, List<Long> employIds);
+
+    List<Long> getPayBillCostIdsBySubType(String userName, List<Long> legalIds, String subType);
 }

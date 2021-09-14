@@ -165,4 +165,14 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
     public List<StatisticsOrderBaseCostVO> getBaseStatisticsAllCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status);
 
     List<StatisticsOrderBillDetailsVO> statisticalMainOrderBillDetails(QueryStatisticalReport form, List<Long> legalIds, List<String> status);
+
+    /**
+     * 获取出账的费用ids
+     *
+     * @param userName
+     * @param legalIds
+     * @param subType
+     * @return
+     */
+    List<Long> getReBillCostIdsBySubType(String userName, List<Long> legalIds, String subType);
 }

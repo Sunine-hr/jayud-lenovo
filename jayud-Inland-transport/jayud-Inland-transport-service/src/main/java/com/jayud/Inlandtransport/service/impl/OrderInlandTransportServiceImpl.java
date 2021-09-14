@@ -414,7 +414,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
 
 
     @Override
-    public Integer getNumByStatus(String status, List<Long> legalIds) {
+    public Integer getNumByStatus(String status, List<Long> legalIds, Map<String, Object> datas) {
         Integer num = this.baseMapper.getNumByStatus(status, legalIds);
         switch (status) {
             case "CostAudit":
@@ -422,6 +422,14 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
                 if (org.apache.commons.collections4.CollectionUtils.isEmpty(list)) return num;
                 List<String> orderNos = list.stream().map(OrderInlandTransport::getOrderNo).collect(Collectors.toList());
                 num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.NL.getSignOne(), legalIds, orderNos).getData();
+                break;
+            case "inlandReceiverCheck":
+                Map<String, Integer> costNum = (Map<String, Integer>) datas.get(status);
+                num = costNum.get("B_1");
+                break;
+            case "inlandPayCheck":
+                costNum = (Map<String, Integer>) datas.get(status);
+                num = costNum.get("B_1");
                 break;
             default:
                 num = this.baseMapper.getNumByStatus(status, legalIds);

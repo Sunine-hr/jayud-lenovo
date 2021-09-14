@@ -420,4 +420,34 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
     public List<StatisticsOrderBillDetailsVO> statisticalMainOrderBillDetails(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
         return this.baseMapper.statisticalMainOrderBillDetails(form, legalIds, status);
     }
+
+    /**
+     * 获取出账的费用ids
+     *
+     * @param userName
+     * @param legalIds
+     * @param subType
+     * @return
+     */
+    @Override
+    public List<Long> getReBillCostIdsBySubType(String userName, List<Long> legalIds, String subType) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        condition.lambda().select(OrderReceivableCost::getId);
+        if (SubOrderSignEnum.MAIN.getSignOne().equals(subType)) {
+            condition.lambda().eq(OrderReceivableCost::getIsSumToMain, true);
+        } else {
+            condition.lambda().eq(OrderReceivableCost::getIsSumToMain, false)
+                    .eq(OrderReceivableCost::getSubType, subType);
+        }
+        if (!StringUtils.isEmpty(userName)) {
+            condition.lambda().eq(OrderReceivableCost::getCreatedUser, userName);
+        }
+        if (!CollectionUtils.isEmpty(legalIds)) {
+            condition.lambda().in(OrderReceivableCost::getLegalId, legalIds);
+        }
+
+        condition.lambda().eq(OrderReceivableCost::getIsBill, 2);
+        List<Long> costIds = this.baseMapper.selectList(condition).stream().map(OrderReceivableCost::getId).collect(Collectors.toList());
+        return costIds;
+    }
 }

@@ -981,4 +981,26 @@
         group by bill_no) tmp
         group by tmp.audit_status
     </select>
+
+    <select id="getPendingBillStatusNum" resultType="java.util.Map">
+        SELECT
+        tmp.audit_status auditStatus,
+        count(1) num
+        FROM
+        (select opbd.* from `order_payment_bill_detail` opbd
+        <where>
+            <if test="userName!=null and userName!=''">
+                and opbd.make_user=#{userName}
+            </if>
+            <if test="costIds!=null and costIds.size>0">
+                and opbd.cost_id in
+                <foreach collection="costIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+        </where>
+        group by bill_no) tmp
+        group by tmp.audit_status
+    </select>
 </mapper>

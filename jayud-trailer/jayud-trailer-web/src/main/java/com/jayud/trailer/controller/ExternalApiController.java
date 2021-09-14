@@ -11,7 +11,9 @@ import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.trailer.bo.AddTrailerOrderFrom;
+import com.jayud.trailer.feign.FinanceClient;
 import com.jayud.trailer.feign.OauthClient;
 import com.jayud.trailer.feign.OmsClient;
 import com.jayud.trailer.po.TrailerOrder;
@@ -50,12 +52,12 @@ public class ExternalApiController {
 
     @Autowired
     private ITrailerOrderService trailerOrderService;
-
     @Autowired
     private OmsClient omsClient;
-
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private FinanceClient financeClient;
 
     /**
      * 创建拖车单
@@ -158,10 +160,18 @@ public class ExternalApiController {
         tmp.put("拖车过磅", "TT_6");
         tmp.put("确认还柜", "TT_7");
         tmp.put("费用审核", "CostAudit");
+        tmp.put("应收对账单审核", "trailerReceiverCheck");
+        tmp.put("应付对账单审核", "trailerPayCheck");
+
         List<Map<String, Object>> result = new ArrayList<>();
 
         ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
         List<Long> legalIds = legalEntityByLegalName.getData();
+        Map<String, Integer> reBillNumMap = this.financeClient.getPendingBillStatusNum(null, legalIds, 0, false, SubOrderSignEnum.TC.getSignOne()).getData();
+        Map<String, Integer> payBillNumMap = this.financeClient.getPendingBillStatusNum(null, legalIds, 1, false, SubOrderSignEnum.TC.getSignOne()).getData();
+        Map<String,Object> datas=new HashMap<>();
+        datas.put("trailerReceiverCheck",reBillNumMap);
+        datas.put("trailerPayCheck",payBillNumMap);
 
         for (Map<String, Object> menus : menusList) {
 
@@ -170,7 +180,7 @@ public class ExternalApiController {
             String status = tmp.get(title);
             Integer num = 0;
             if (status != null) {
-                num = this.trailerOrderService.getNumByStatus(status, legalIds);
+                num = this.trailerOrderService.getNumByStatus(status, legalIds,datas);
             }
             map.put("menusName", title);
             map.put("num", num);

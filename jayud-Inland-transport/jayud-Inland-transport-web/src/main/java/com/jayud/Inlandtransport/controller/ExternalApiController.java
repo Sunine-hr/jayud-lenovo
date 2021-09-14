@@ -3,6 +3,7 @@ package com.jayud.Inlandtransport.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
+import com.jayud.Inlandtransport.feign.FinanceClient;
 import com.jayud.Inlandtransport.feign.OauthClient;
 import com.jayud.Inlandtransport.model.bo.AddOrderInlandTransportForm;
 import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
@@ -17,6 +18,7 @@ import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.common.enums.CreateUserTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
@@ -40,6 +42,8 @@ public class ExternalApiController {
     private IOrderInlandTransportService orderInlandTransportService;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private FinanceClient financeClient;
 
 
     @RequestMapping(value = "/api/createOrder")
@@ -131,11 +135,17 @@ public class ExternalApiController {
         tmp.put("车辆提货", "NL_4");
         tmp.put("货物签收", "NL_5");
         tmp.put("费用审核", "CostAudit");
+        tmp.put("应收对账单审核", "inlandReceiverCheck");
+        tmp.put("应付对账单审核", "inlandPayCheck");
         List<Map<String, Object>> result = new ArrayList<>();
 
         ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
         List<Long> legalIds = legalEntityByLegalName.getData();
-
+        Map<String, Integer> reBillNumMap = this.financeClient.getPendingBillStatusNum(null, legalIds, 0, false, SubOrderSignEnum.NL.getSignOne()).getData();
+        Map<String, Integer> payBillNumMap = this.financeClient.getPendingBillStatusNum(null, legalIds, 1, false, SubOrderSignEnum.NL.getSignOne()).getData();
+        Map<String,Object> datas=new HashMap<>();
+        datas.put("inlandReceiverCheck",reBillNumMap);
+        datas.put("inlandPayCheck",payBillNumMap);
         for (Map<String, Object> menus : menusList) {
 
             Map<String, Object> map = new HashMap<>();
@@ -143,7 +153,7 @@ public class ExternalApiController {
             String status = tmp.get(title);
             Integer num = 0;
             if (status != null) {
-                num = this.orderInlandTransportService.getNumByStatus(status, legalIds);
+                num = this.orderInlandTransportService.getNumByStatus(status, legalIds,datas);
             }
             map.put("menusName", title);
             map.put("num", num);

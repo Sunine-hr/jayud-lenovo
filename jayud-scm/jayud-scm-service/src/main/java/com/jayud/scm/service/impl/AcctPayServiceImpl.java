@@ -4,23 +4,20 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddAcctPayForm;
 import com.jayud.scm.model.bo.AddAcctPayReceiptForm;
+import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
-import com.jayud.scm.model.po.AcctPay;
+import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.AcctPayMapper;
-import com.jayud.scm.model.po.AcctPayFollow;
-import com.jayud.scm.model.po.ExportTaxInvoice;
-import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.AcctPayVO;
-import com.jayud.scm.service.IAcctPayFollowService;
-import com.jayud.scm.service.IAcctPayService;
+import com.jayud.scm.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.scm.service.ICommodityService;
-import com.jayud.scm.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -41,6 +38,9 @@ public class AcctPayServiceImpl extends ServiceImpl<AcctPayMapper, AcctPay> impl
 
     @Autowired
     private ICommodityService commodityService;
+
+    @Autowired
+    private IAcctPayEntryService acctPayEntryService;
 
     @Override
     public boolean generatePaymentDocument(AddAcctPayReceiptForm form) {
@@ -113,5 +113,42 @@ public class AcctPayServiceImpl extends ServiceImpl<AcctPayMapper, AcctPay> impl
             }
         }
         return result;
+    }
+
+    @Override
+    public boolean delete(DeleteForm deleteForm) {
+        List<AcctPayEntry> acctPayEntries = new ArrayList<>();
+        List<AcctPayFollow> acctPayFollows = new ArrayList<>();
+        for (Long id : deleteForm.getIds()) {
+
+            List<AcctPayEntry> acctPayEntries1 = acctPayEntryService.getListByAcctPayId(id);
+            for (AcctPayEntry acctPayEntry : acctPayEntries1) {
+                acctPayEntry.setVoidedBy(deleteForm.getId().intValue());
+                acctPayEntry.setVoidedByDtm(deleteForm.getDeleteTime());
+                acctPayEntry.setVoidedByName(deleteForm.getName());
+                acctPayEntry.setVoided(1);
+                acctPayEntries.add(acctPayEntry);
+            }
+
+            AcctPayFollow acctPayFollow = new AcctPayFollow();
+            acctPayFollow.setPayId(id.intValue());
+            acctPayFollow.setSType(OperationEnum.DELETE.getCode());
+            acctPayFollow.setFollowContext(OperationEnum.DELETE.getDesc()+id);
+            acctPayFollow.setCrtBy(deleteForm.getId().intValue());
+            acctPayFollow.setCrtByDtm(deleteForm.getDeleteTime());
+            acctPayFollow.setCrtByName(deleteForm.getName());
+            acctPayFollows.add(acctPayFollow);
+        }
+        //删除应收款单明细
+        boolean update = this.acctPayEntryService.updateBatchById(acctPayEntries);
+        if(!update){
+            log.warn("删除付款单详情失败");
+        }
+
+        boolean b1 = this.acctPayFollowService.saveBatch(acctPayFollows);
+        if(!b1){
+            log.warn("操作记录表添加失败"+acctPayFollows);
+        }
+        return b1;
     }
 }

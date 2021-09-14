@@ -122,6 +122,7 @@ public class BPublicFilesServiceImpl extends ServiceImpl<BPublicFilesMapper, BPu
                 log.warn("附件上传失败，id为"+filesForm.getBusinessId());
                 return false;
             }
+
             if(filesForm.getFileModel().equals(1)){
                 CommodityFollow commodityFollow = new CommodityFollow();
                 commodityFollow.setCrtBy(systemUser.getId().intValue());

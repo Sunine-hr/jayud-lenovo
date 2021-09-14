@@ -63,19 +63,19 @@
         item_model_inv itemModelInv, ie.pay_id bpayId, pay_date payDate, pay_rate payRate, is_bill isBill, is_ar isAr
         from invoice i left join invoice_entry ie on i.id = ie.invoice_id and ie.voided = 0
         where i.voided = 0
-        <if test="form.key !=null and form.key = 'fBillNo'">
+        <if test="form.key !=null and form.key == 'fBillNo'">
             and i.f_bill_no like concat('%',#{form.condition},'%')
         </if>
-        <if test="form.key !=null and form.key = 'orderNo'">
+        <if test="form.key !=null and form.key == 'orderNo'">
             and i.order_no like concat('%',#{form.condition},'%')
         </if>
-        <if test="form.key !=null and form.key = 'customerName'">
+        <if test="form.key !=null and form.key == 'customerName'">
             and i.customer_name like concat('%',#{form.condition},'%')
         </if>
-        <if test="form.key !=null and form.key = 'itemName'">
+        <if test="form.key !=null and form.key == 'itemName'">
             and ie.item_name like concat('%',#{form.condition},'%')
         </if>
-        <if test="form.key !=null and form.key = 'itemModel'">
+        <if test="form.key !=null and form.key == 'itemModel'">
             and ie.item_model like concat('%',#{form.condition},'%')
         </if>
     </select>

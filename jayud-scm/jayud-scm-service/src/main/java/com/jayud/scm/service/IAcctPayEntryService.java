@@ -3,6 +3,8 @@ package com.jayud.scm.service;
 import com.jayud.scm.model.po.AcctPayEntry;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  * 应付款表（付款单明细表） 服务类
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IAcctPayEntryService extends IService<AcctPayEntry> {
 
+    List<AcctPayEntry> getListByAcctPayId(Long id);
 }

@@ -3,6 +3,7 @@ package com.jayud.scm.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -37,9 +38,11 @@ public class AcctPayVO {
     private String payType;
 
     @ApiModelProperty(value = "申请付款日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime payDate;
 
     @ApiModelProperty(value = "预计到货日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime arrivedDate;
 
     @ApiModelProperty(value = "供应商ID")
@@ -124,6 +127,7 @@ public class AcctPayVO {
     private String payUser;
 
     @ApiModelProperty(value = "付款操作时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime payTime;
 
     @ApiModelProperty(value = "付款公司ID")
@@ -175,12 +179,15 @@ public class AcctPayVO {
     private Integer chequeState;
 
     @ApiModelProperty(value = "支票交接签收日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime chequeDate;
 
     @ApiModelProperty(value = "期票开票日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime beginData;
 
     @ApiModelProperty(value = "期票到期日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expireDate;
 
     @ApiModelProperty(value = "状态")
@@ -202,12 +209,14 @@ public class AcctPayVO {
     private String crtByName;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime crtByDtm;
 
     @ApiModelProperty(value = "最后修改人名称")
     private String mdyByName;
 
     @ApiModelProperty(value = "最后修改时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime mdyByDtm;
 
 }

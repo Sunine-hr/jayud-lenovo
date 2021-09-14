@@ -71,6 +71,10 @@ public class AcctReceiptServiceImpl extends ServiceImpl<AcctReceiptMapper, AcctR
         acctReceipt.setCrtByName(systemUser.getUserName());
         acctReceipt.setJoinBillId(accountBankBill.getId());
         acctReceipt.setAccRate(new BigDecimal(this.baseMapper.fnGetCurrency(LocalDateTime.now(),ibDataDicEntryService.getTextByDicCodeAndDataValue("1003",acctReceipt.getCurrencyName()),0)));
+        acctReceipt.setIsClaim(1);
+        acctReceipt.setClaimName(accountBankBill.getCrtByName());
+        acctReceipt.setClaimId(accountBankBill.getCrtBy());
+        acctReceipt.setClaimDate(LocalDateTime.now());
         boolean save = this.save(acctReceipt);
         log.warn("生成收款单成功");
         return save;

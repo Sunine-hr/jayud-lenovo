@@ -122,6 +122,9 @@ public class CommonController {
     @Autowired
     private IExportTaxInvoiceService exportTaxInvoiceService;
 
+    @Autowired
+    private IAcctPayService acctPayService;
+
     @ApiOperation(value = "删除通用方法")
     @PostMapping(value = "/delete")
     public CommonResult delete(@Valid @RequestBody DeleteForm deleteForm) {
@@ -198,6 +201,9 @@ public class CommonController {
                 break;
             case 31:
                 result = exportTaxInvoiceService.delete(deleteForm);
+                break;
+            case 32:
+                result = acctPayService.delete(deleteForm);
                 break;
         }
 

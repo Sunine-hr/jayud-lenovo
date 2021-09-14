@@ -2,8 +2,10 @@ package com.jayud.scm.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.*;
+import com.jayud.scm.model.po.AcctReceipt;
 import com.jayud.scm.model.vo.AccountBankBillVO;
 import com.jayud.scm.model.vo.AcctReceiptVO;
 import com.jayud.scm.service.IAcctPayService;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -98,9 +101,26 @@ public class AcctReceiptController {
     @ApiOperation(value = "生成付款单")
     @PostMapping(value = "/generatePaymentDocument")
     public CommonResult generatePaymentDocument(@RequestBody AddAcctPayReceiptForm form) {
+
         boolean result = acctPayService.generatePaymentDocument(form);
         if(!result){
             return CommonResult.error(444,"生成付款单失败");
+        }
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "判断是否能生成付款单")
+    @PostMapping(value = "/isPay")
+    public CommonResult isPay(@RequestBody QueryCommonForm form) {
+
+        AcctReceipt acctReceipt = acctReceiptService.getById(form.getId());
+
+        if(!acctReceipt.getModelType().equals(2)){
+            return CommonResult.error(444,"只有出口的单，才能进行付款操作");
+        }
+
+        if(acctReceipt.getJoinBillId() != null){
+            return CommonResult.error(444,"该收款单由‘水单’生成，无法进行付款");
         }
         return CommonResult.success();
     }

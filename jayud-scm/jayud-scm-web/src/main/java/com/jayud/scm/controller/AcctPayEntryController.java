@@ -19,5 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "付款单明细管理")
 public class AcctPayEntryController {
 
+
+
 }
 

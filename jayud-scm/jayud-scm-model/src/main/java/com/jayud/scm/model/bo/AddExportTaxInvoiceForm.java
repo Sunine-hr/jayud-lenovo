@@ -3,6 +3,7 @@ package com.jayud.scm.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -28,9 +29,11 @@ public class AddExportTaxInvoiceForm {
     private Integer id;
 
     @ApiModelProperty(value = "单据编号")
+    @JsonProperty(value = "fBillNo")
     private String fBillNo;
 
     @ApiModelProperty(value = "税票日期")
+    @JsonProperty(value = "fDate")
     private String fDate;
 
     @ApiModelProperty(value = "付款类型(国内，国外)")
@@ -110,5 +113,8 @@ public class AddExportTaxInvoiceForm {
 
     @ApiModelProperty(value = "备注")
     private String remark;
+
+    @ApiModelProperty(value = "客户合同号")
+    private String customerNo;
 
 }

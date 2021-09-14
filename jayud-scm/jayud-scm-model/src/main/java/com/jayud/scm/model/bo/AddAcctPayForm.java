@@ -37,10 +37,10 @@ public class AddAcctPayForm {
     private String payType;
 
     @ApiModelProperty(value = "申请付款日期")
-    private LocalDateTime payDate;
+    private String payDate;
 
     @ApiModelProperty(value = "预计到货日期")
-    private LocalDateTime arrivedDate;
+    private String arrivedDate;
 
     @ApiModelProperty(value = "供应商ID")
     private Integer supplierId;
@@ -124,7 +124,7 @@ public class AddAcctPayForm {
     private String payUser;
 
     @ApiModelProperty(value = "付款操作时间")
-    private LocalDateTime payTime;
+    private String payTime;
 
     @ApiModelProperty(value = "付款公司ID")
     private Integer payCompanyId;
@@ -151,7 +151,7 @@ public class AddAcctPayForm {
     private String shouFeeBearer;
 
     @ApiModelProperty(value = "确认付款日期")
-    private LocalDateTime actualPayDate;
+    private String actualPayDate;
 
     @ApiModelProperty(value = "实际确认付款人")
     private String actualPayName;
@@ -175,13 +175,13 @@ public class AddAcctPayForm {
     private Integer chequeState;
 
     @ApiModelProperty(value = "支票交接签收日期")
-    private LocalDateTime chequeDate;
+    private String chequeDate;
 
     @ApiModelProperty(value = "期票开票日期")
-    private LocalDateTime beginData;
+    private String beginData;
 
     @ApiModelProperty(value = "期票到期日期")
-    private LocalDateTime expireDate;
+    private String expireDate;
 
     @ApiModelProperty(value = "状态")
     private Integer stateFlag;

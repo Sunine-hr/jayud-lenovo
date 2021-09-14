@@ -2,6 +2,7 @@ package com.jayud.scm.service;
 
 import com.jayud.scm.model.bo.AddAcctPayForm;
 import com.jayud.scm.model.bo.AddAcctPayReceiptForm;
+import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.po.AcctPay;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.AcctPayVO;
@@ -21,4 +22,7 @@ public interface IAcctPayService extends IService<AcctPay> {
     AcctPayVO getAcctPayById(Integer id);
 
     boolean saveOrUpdateAcctPay(AddAcctPayForm form);
+
+    boolean delete(DeleteForm deleteForm);
+
 }

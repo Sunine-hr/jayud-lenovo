@@ -43,7 +43,7 @@ public class AcctPayController {
         return CommonResult.success(acctPayVO);
     }
 
-    @ApiOperation(value = "新增或修改进项票信息")
+    @ApiOperation(value = "新增或修改付款单信息")
     @PostMapping(value = "/saveOrUpdateAcctPay")
     public CommonResult saveOrUpdateAcctPay(@RequestBody AddAcctPayForm form) {
         boolean result = acctPayService.saveOrUpdateAcctPay(form);

@@ -540,6 +540,9 @@
                     #{legalId}
                 </foreach>
             </if>
+            <if test="userName != null and userName = ''">
+                and created_user = #{userName}
+            </if>
             <choose>
                 <when test="subType=='main'">
                     and is_sum_to_main=true
@@ -562,6 +565,9 @@
                 <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                     #{legalId}
                 </foreach>
+            </if>
+            <if test="userName != null and userName = ''">
+                and `created_user` = #{userName}
             </if>
             <choose>
                 <when test="subType=='main'">
@@ -612,6 +618,25 @@
                 <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
                     #{legalId}
                 </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="pendingCustomsDeclarationNum" resultType="java.lang.Integer">
+        SELECT count(*) FROM
+        order_info i
+        <where>
+            and (i.class_code = 'ZGYS' or i.selected_server like concat('%','ZGYSDD','%')) and i.`status` = 1
+            and i.customs_release = 0
+            and not exists (SELECT 1 FROM order_customs oc WHERE oc.`main_order_no` = i.order_no)
+            <if test="legalIds != null and legalIds.size>0">
+                and i.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+            <if test="userName !=null and userName !=''">
+                and i.created_user=#{userName}
             </if>
         </where>
     </select>

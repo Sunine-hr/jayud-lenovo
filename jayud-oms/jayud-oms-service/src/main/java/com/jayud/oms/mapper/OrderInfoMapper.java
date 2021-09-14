@@ -106,11 +106,15 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      *
      * @param legalIds
      * @param subType
+     * @param userName
      * @return
      */
-    Integer getAllCostNum(@Param("legalIds") List<Long> legalIds, @Param("subType") String subType);
+    Integer getAllCostNum(@Param("legalIds") List<Long> legalIds,
+                          @Param("subType") String subType, @Param("userName") String userName);
 
     List<Map<String, Integer>> getMainOrderSummary(@Param("form") QueryStatisticalReport form, @Param("legalIds") List<Long> legalIds);
 
     List<OrderInfoVO> getBasicStatistics(@Param("form") QueryStatisticalReport form, @Param("orderInfo") OrderInfo orderInfo, @Param("legalIds") List<Long> legalIds);
+
+    Integer pendingCustomsDeclarationNum(@Param("legalIds") List<Long> legalIds, @Param("userName") String userName);
 }

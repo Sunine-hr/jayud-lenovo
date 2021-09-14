@@ -79,7 +79,7 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
     /**
      * 查询待处理费用审核
      */
-    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds);
+    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds, String userName);
 
     /**
      * 根据主订单号获取应收绑定数据

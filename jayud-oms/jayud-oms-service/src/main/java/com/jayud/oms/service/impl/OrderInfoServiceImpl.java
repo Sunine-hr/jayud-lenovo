@@ -10,7 +10,6 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
-import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
@@ -35,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
@@ -290,7 +288,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             //定义排序规则
             page.addOrder(OrderItem.desc("oi.id"));
             Map<String, Object> callbackParam = new HashMap<>();
-            Set<Long> mainOrderIds = this.filterGoCustomsAudit(callbackParam, legalIds);
+            Set<Long> mainOrderIds = this.filterGoCustomsAudit(callbackParam, legalIds, null);
             pageInfo = baseMapper.findGoCustomsAuditByPage(page,
                     form.setMainOrderIds(new ArrayList<>(mainOrderIds)),
                     legalIds);
@@ -1076,6 +1074,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public List<OrderInfoVO> getBasicStatistics(QueryStatisticalReport form, List<Long> legalIds, OrderInfo orderInfo) {
         return this.baseMapper.getBasicStatistics(form, orderInfo, legalIds);
+    }
+
+    @Override
+    public Integer pendingExternalCustomsDeclarationNum(List<Long> legalIds, String userName) {
+        return this.baseMapper.pendingCustomsDeclarationNum(legalIds, userName);
     }
 
     /**
@@ -2669,10 +2672,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      *
      * @param callbackParam
      * @param legalIds
+     * @param userName
      * @return
      */
     @Override
-    public Set<Long> filterGoCustomsAudit(Map<String, Object> callbackParam, List<Long> legalIds) {
+    public Set<Long> filterGoCustomsAudit(Map<String, Object> callbackParam, List<Long> legalIds, String userName) {
         //1.完成过磅,2.选择没有过磅情况下完成提货,需要到通关前审核
         Object tmsOrders = this.tmsClient.preconditionsGoCustomsAudit().getData();
         if (tmsOrders == null) {
@@ -2695,7 +2699,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //批量查询主订单详情
         QueryWrapper<OrderInfo> condition = new QueryWrapper<>();
         condition.lambda().select(OrderInfo::getId, OrderInfo::getOrderNo, OrderInfo::getCustomsRelease)
-                .in(OrderInfo::getOrderNo, mainOrderNos);
+                .in(OrderInfo::getOrderNo, mainOrderNos).eq(OrderInfo::getCreatedUser, userName);
         if (CollectionUtil.isNotEmpty(legalIds)) {
             condition.lambda().in(OrderInfo::getLegalEntityId, legalIds);
         }

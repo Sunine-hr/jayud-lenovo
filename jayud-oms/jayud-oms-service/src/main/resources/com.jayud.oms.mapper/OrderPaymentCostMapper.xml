@@ -185,6 +185,9 @@
                         #{legalId}
                     </foreach>
                 </if>
+                <if test="userName !=null and userName!=''">
+                    and opc.created_user = #{userName}
+                </if>
                 GROUP BY opc.main_order_no
             </when>
             <otherwise>
@@ -202,6 +205,10 @@
                         #{item}
                     </foreach>
                 </if>
+                <if test="userName !=null and userName!=''">
+                    and opc.created_user = #{userName}
+                </if>
+
                 <!--                <if test="legalIds != null and legalIds.size>0">-->
                 <!--                    and oi.`legal_entity_id` in-->
                 <!--                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->

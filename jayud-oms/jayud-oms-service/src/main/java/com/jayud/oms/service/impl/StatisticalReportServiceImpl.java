@@ -1,5 +1,6 @@
 package com.jayud.oms.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.OrderStatusEnum;
@@ -74,13 +75,14 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         AtomicReference<List<OrderInfo>> orderInfos = new AtomicReference<>();
         Map<String, Integer> unemployedFeesMap = new HashMap<>();
-
+        String userName = UserOperator.getToken();
         fixedThreadPool.execute(() -> {
             try {
-                List<OrderInfo> list = this.orderInfoService.getByLegalEntityIds(legalIds);
+//                List<OrderInfo> list = this.orderInfoService.getByLegalEntityIds(legalIds);
+                List<OrderInfo> list = this.orderInfoService.getBaseMapper().selectList(new QueryWrapper<>(new OrderInfo().setCreatedUser(userName)));
                 orderInfos.set(list);
                 //统计未录用订单数量
-                Integer num = this.costCommonService.allUnemployedFeesNum(list, legalIds, SubOrderSignEnum.MAIN.getSignOne());
+                Integer num = this.costCommonService.allUnemployedFeesNum(list, null, SubOrderSignEnum.MAIN.getSignOne(), userName);
                 unemployedFeesMap.put("pendingFees", num);
                 countDownLatch.countDown();
             } catch (Exception e) {
@@ -102,7 +104,7 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
 //                countDownLatch.countDown();
 //            }
 //        }).start();
-        String userName = UserOperator.getToken();
+
         Map<String, Integer> receivableStatusNum = this.financeClient.getBillingStatusNum(userName, 0, true, SubOrderSignEnum.MAIN.getSignOne()).getData();
         Map<String, Integer> payStatusNum = this.financeClient.getBillingStatusNum(userName, 1, true, SubOrderSignEnum.MAIN.getSignOne()).getData();
         tmp.forEach((k, v) -> {
@@ -111,10 +113,12 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
             if (v != null) {
                 switch (v) {
                     case "outPortPass":
-                        num = this.orderInfoService.pendingExternalCustomsDeclarationNum(legalIds);
+//                        num = this.orderInfoService.pendingExternalCustomsDeclarationNum(legalIds);
+                        num = this.orderInfoService.pendingExternalCustomsDeclarationNum(null, userName);
                         break;
                     case "portPassCheck":
-                        num = this.orderInfoService.filterGoCustomsAudit(null, legalIds).size();
+//                        num = this.orderInfoService.filterGoCustomsAudit(null, legalIds).size();
+                        num = this.orderInfoService.filterGoCustomsAudit(null, null, UserOperator.getToken()).size();
                         break;
                     case "pendingFees":
                         try {
@@ -125,7 +129,7 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
                         num = unemployedFeesMap.get(v);
                         break;
                     case "feeCheck":
-                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null);
+                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null,userName);
                         break;
                     case "pending":
                         if (orderInfos.get() != null) {

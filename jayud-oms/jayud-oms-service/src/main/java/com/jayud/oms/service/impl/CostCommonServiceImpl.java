@@ -30,11 +30,11 @@ public class CostCommonServiceImpl implements ICostCommonService {
      * 统计应收/应付待处理费用审核
      */
     @Override
-    public Integer auditPendingExpenses(String subType, List<Long> legalIds, List<String> orderNos) {
+    public Integer auditPendingExpenses(String subType, List<Long> legalIds, List<String> orderNos, String userName) {
         Set<String> orderNosSet = new HashSet<>();
         String key = SubOrderSignEnum.MAIN.getSignOne().equals(subType) ? "mainOrderNo" : "orderNo";
         //查询应付待费用审核
-        List<Map<String, Object>> paymentCostMap = this.orderPaymentCostService.getPendingExpenseApproval(subType, orderNos, legalIds);
+        List<Map<String, Object>> paymentCostMap = this.orderPaymentCostService.getPendingExpenseApproval(subType, orderNos, legalIds,userName);
         //查询应收待费用审核
         List<Map<String, Object>> receivableCostMap = this.orderReceivableCostService.getPendingExpenseApproval(subType, orderNos, legalIds);
         paymentCostMap.stream().filter(e -> e.get(key) != null).forEach(e -> orderNosSet.add(e.get(key).toString()));
@@ -48,11 +48,13 @@ public class CostCommonServiceImpl implements ICostCommonService {
      * @param list
      * @param legalIds
      * @param subType
+     * @param userName
      * @return
      */
     @Override
-    public Integer allUnemployedFeesNum(List<OrderInfo> list, List<Long> legalIds, String subType) {
-        Integer num = this.orderInfoMapper.getAllCostNum(legalIds,subType);
+    public Integer allUnemployedFeesNum(List<OrderInfo> list, List<Long> legalIds,
+                                        String subType, String userName) {
+        Integer num = this.orderInfoMapper.getAllCostNum(legalIds,subType,userName);
         return list.size() - num;
     }
 }

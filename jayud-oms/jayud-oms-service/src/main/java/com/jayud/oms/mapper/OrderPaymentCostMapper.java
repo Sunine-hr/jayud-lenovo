@@ -36,7 +36,8 @@ public interface OrderPaymentCostMapper extends BaseMapper<OrderPaymentCost> {
      */
     List<Map<String, Object>> getPendingExpenseApproval(@Param("subType") String subType,
                                                         @Param("orderNos") List<String> orderNos,
-                                                        @Param("legalIds") List<Long> legalIds);
+                                                        @Param("legalIds") List<Long> legalIds,
+                                                        @Param("userName") String userName);
 
     /**
      * 查询供应商应付异常费用

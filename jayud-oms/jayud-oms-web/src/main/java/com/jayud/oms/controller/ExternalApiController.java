@@ -34,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -1318,10 +1317,10 @@ public class ExternalApiController {
                         num = this.orderInfoService.pendingExternalCustomsDeclarationNum(legalIds);
                         break;
                     case "portPassCheck":
-                        num = this.orderInfoService.filterGoCustomsAudit(null, legalIds).size();
+                        num = this.orderInfoService.filterGoCustomsAudit(null, legalIds, null).size();
                         break;
                     case "feeCheck":
-                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null);
+                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null, null);
                         break;
                 }
 
@@ -1568,7 +1567,7 @@ public class ExternalApiController {
     public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
                                                    @RequestParam("legalIds") List<Long> legalIds,
                                                    @RequestParam("orderNos") List<String> orderNos) {
-        Integer num = this.costCommonService.auditPendingExpenses(subType, legalIds, orderNos);
+        Integer num = this.costCommonService.auditPendingExpenses(subType, legalIds, orderNos, null);
         return ApiResult.ok(num);
     }
 

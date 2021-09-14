@@ -30,7 +30,7 @@ import java.util.List;
 @Slf4j
 public class TrailerOrderVO {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.AUTO)
@@ -216,6 +216,9 @@ public class TrailerOrderVO {
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
 
+    @ApiModelProperty(value = "客户code")
+    private String customerCode;
+
     public void setImpAndExpType(Integer impAndExpType) {
         this.impAndExpType = impAndExpType;
         this.impAndExpTypeDesc = TradeTypeEnum.getDesc(impAndExpType);
@@ -237,7 +240,7 @@ public class TrailerOrderVO {
         JSONArray cabinetSizeInfos = new JSONArray(cabinetSizeInfo.getData());
         for (int i = 0; i < cabinetSizeInfos.size(); i++) {
             JSONObject json = cabinetSizeInfos.getJSONObject(i);
-            if(cabinetSize!= null){
+            if (cabinetSize != null) {
                 if (this.cabinetSize.equals(json.getLong("id"))) { //车型尺寸配对
                     this.cabinetSizeName = json.getStr("name");
                     break;
@@ -262,12 +265,12 @@ public class TrailerOrderVO {
                         .append(",").append("重量:").append(goods.getTotalWeight()).append("KG")
                         .append(";");
             }
-            if(goods.getTotalWeight()!=null){
+            if (goods.getTotalWeight() != null) {
                 this.totalWeight = this.totalWeight + goods.getTotalWeight();
-                if(goods.getBulkCargoUnit() != null){
-                    if(goods.getBulkCargoUnit().equals("件")){
+                if (goods.getBulkCargoUnit() != null) {
+                    if (goods.getBulkCargoUnit().equals("件")) {
                         this.totalAmount = this.totalAmount + goods.getBulkCargoAmount();
-                    }else{
+                    } else {
                         this.totalXAmount = this.totalXAmount + goods.getBulkCargoAmount();
                     }
                 }
@@ -280,10 +283,21 @@ public class TrailerOrderVO {
         this.goodsInfo = sb.toString();
     }
 
-    public void getFile(String path){
-        this.soPics = StringUtils.getFileViews(this.getSoFilePath(),this.getSoFileName(),path);
-        this.billPics = StringUtils.getFileViews(this.getBolFilePath(),this.getBolFileName(),path);
-        this.cnPics = StringUtils.getFileViews(this.getCnFilePath(),this.getCnFileName(),path);
-        this.pssPics = StringUtils.getFileViews(this.getPssFilePath(),this.getPssFileName(),path);
+    public void getFile(String path) {
+        this.soPics = StringUtils.getFileViews(this.getSoFilePath(), this.getSoFileName(), path);
+        this.billPics = StringUtils.getFileViews(this.getBolFilePath(), this.getBolFileName(), path);
+        this.cnPics = StringUtils.getFileViews(this.getCnFilePath(), this.getCnFileName(), path);
+        this.pssPics = StringUtils.getFileViews(this.getPssFilePath(), this.getPssFileName(), path);
+    }
+
+    public void assemblyMainOrderInfo(Object mainOrderInfo) {
+        JSONArray jsonArray = new JSONArray(mainOrderInfo);
+        if (jsonArray.size() == 0) {
+            return;
+        }
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            customerCode = jsonObject.getStr("customerCode");
+        }
     }
 }

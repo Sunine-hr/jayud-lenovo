@@ -97,6 +97,9 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
             orderAddress.setFilePath(StringUtils.getFileStr(deliveryAddress.getFileViewList()));
             orderAddress.setType(deliveryAddress.getAddressType());
             orderAddress.setOrderNo(deliveryAddress.getOrderNo());
+            orderAddress.setProvince(deliveryAddress.getProvince());
+            orderAddress.setCity(deliveryAddress.getCity());
+            orderAddress.setArea(deliveryAddress.getArea());
             if (orderAddress.getId() == null) {
                 orderAddress.setCreateTime(LocalDateTime.now());
             }
@@ -206,7 +209,7 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
         QueryWrapper<OrderAddress> condition = new QueryWrapper<>();
         condition.lambda().between(OrderAddress::getDeliveryDate, takeTimeStr[0], takeTimeStr[1]);
         if (code != null) {
-            condition.lambda().eq(OrderAddress::getBusinessType , code);
+            condition.lambda().eq(OrderAddress::getBusinessType, code);
         }
         return this.baseMapper.selectList(condition).stream().map(OrderAddress::getOrderNo).collect(Collectors.toSet());
     }
@@ -247,6 +250,9 @@ public class OrderAddressServiceImpl extends ServiceImpl<OrderAddressMapper, Ord
             orderAddress.setFilePath(StringUtils.getFileStr(deliveryAddress.getTakeFiles()));
             orderAddress.setType(deliveryAddress.getType());
             orderAddress.setOrderNo(deliveryAddress.getOrderNo());
+            orderAddress.setProvince(deliveryAddress.getProvince());
+            orderAddress.setCity(deliveryAddress.getCity());
+            orderAddress.setArea(deliveryAddress.getArea());
             if (orderAddress.getId() == null) {
                 orderAddress.setCreateTime(LocalDateTime.now());
             }

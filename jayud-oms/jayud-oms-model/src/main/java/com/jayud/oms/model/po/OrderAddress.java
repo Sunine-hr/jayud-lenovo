@@ -87,6 +87,15 @@ public class OrderAddress extends Model<OrderAddress> {
     @ApiModelProperty(value = "发货人/送货人")
     private String consignee;
 
+    @ApiModelProperty(value = "省主键")
+    private Long province;
+
+    @ApiModelProperty(value = "市主键")
+    private Long city;
+
+    @ApiModelProperty(value = "区主键")
+    private Long area;
+
 
     @Override
     protected Serializable pkVal() {

@@ -203,8 +203,8 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
      * 查询待处理费用审核
      */
     @Override
-    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds) {
-        return this.baseMapper.getPendingExpenseApproval(subType, orderNos, legalIds);
+    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds, String userName) {
+        return this.baseMapper.getPendingExpenseApproval(subType, orderNos, legalIds,userName);
     }
 
     @Override

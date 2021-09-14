@@ -158,6 +158,9 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         //拖车订单信息
         TrailerOrderVO trailerOrderVO = this.baseMapper.getTrailerOrder(id);
         trailerOrderVO.getFile(prePath);
+        //主订单信息
+        Object mainOrderInfo = this.omsClient.getMainOrderByOrderNos(Arrays.asList(trailerOrderVO.getMainOrderNo())).getData();
+        trailerOrderVO.assemblyMainOrderInfo(mainOrderInfo);
 
         //获取港口信息
         List<InitComboxStrVO> portCodeInfo = (List<InitComboxStrVO>) this.omsClient.initDictByDictTypeCode("Port").getData();

@@ -80,6 +80,17 @@ public class AddTrailerOrderAddressForm {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "省主键")
+    private Long province;
+
+    @ApiModelProperty(value = "市主键")
+    private Long city;
+
+    @ApiModelProperty(value = "区主键")
+    private Long area;
+
+
+
 
 //    public void checkCreateTrailerOrder() {
 //        if (StringUtils.isEmpty(this.contacts)){

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.InitChangeStatusVO;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.SubOrderCloseOpt;
@@ -178,22 +179,40 @@ public class ExternalApiController {
         return ApiResult.ok(result);
     }
 
+//    @ApiOperation(value = "获取拖车订单号")
+//    @RequestMapping(value = "/api/trailer/getOrderNo")
+//    public ApiResult<List<InitChangeStatusVO>> getTrailerOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo) {
+//        InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
+//        List<TrailerOrder> list = this.trailerOrderService.getByCondition(new TrailerOrder().setMainOrderNo(mainOrderNo));
+//        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(list)) {
+//            TrailerOrder tmp = list.get(0);
+//            initChangeStatusVO.setId(tmp.getId());
+//            initChangeStatusVO.setOrderNo(tmp.getOrderNo());
+//            initChangeStatusVO.setOrderType(CommonConstant.TC);
+//            initChangeStatusVO.setOrderTypeDesc(CommonConstant.TC_DESC);
+//            initChangeStatusVO.setStatus(tmp.getProcessStatus() + "");
+//            initChangeStatusVO.setNeedInputCost(tmp.getNeedInputCost());
+//            return ApiResult.ok(initChangeStatusVO);
+//        }
+//        return ApiResult.error();
+//    }
+
     @ApiOperation(value = "获取拖车订单号")
     @RequestMapping(value = "/api/trailer/getOrderNo")
     public ApiResult<List<InitChangeStatusVO>> getTrailerOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo) {
-        InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
         List<TrailerOrder> list = this.trailerOrderService.getByCondition(new TrailerOrder().setMainOrderNo(mainOrderNo));
-        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(list)) {
-            TrailerOrder tmp = list.get(0);
-            initChangeStatusVO.setId(tmp.getId());
-            initChangeStatusVO.setOrderNo(tmp.getOrderNo());
+        List<InitChangeStatusVO> changeStatusVOS = new ArrayList<>();
+        for (TrailerOrder trailerOrder : list) {
+            InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
+            initChangeStatusVO.setId(trailerOrder.getId());
+            initChangeStatusVO.setOrderNo(trailerOrder.getOrderNo());
             initChangeStatusVO.setOrderType(CommonConstant.TC);
             initChangeStatusVO.setOrderTypeDesc(CommonConstant.TC_DESC);
-            initChangeStatusVO.setStatus(tmp.getProcessStatus() + "");
-            initChangeStatusVO.setNeedInputCost(tmp.getNeedInputCost());
-            return ApiResult.ok(initChangeStatusVO);
+            initChangeStatusVO.setNeedInputCost(trailerOrder.getNeedInputCost());
+            initChangeStatusVO.setStatus(trailerOrder.getProcessStatus() + "");
+            changeStatusVOS.add(initChangeStatusVO);
         }
-        return ApiResult.error();
+        return ApiResult.ok(changeStatusVOS);
     }
 
     /**

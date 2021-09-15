@@ -457,6 +457,17 @@ public class ExternalApiController {
     }
 
     /**
+     * 根据部门id获取部门名称
+     *
+     * @param departmentId
+     * @return
+     */
+    @RequestMapping(value = "/api/getDepNameById")
+    ApiResult<String> getDepNameById(@RequestParam("departmentId") Long departmentId) {
+        return ApiResult.ok(this.departmentService.getById(departmentId).getName());
+    }
+
+    /**
      * 获取所有业务员
      */
     @RequestMapping(value = "/api/getSystemUserList")
@@ -513,7 +524,7 @@ public class ExternalApiController {
             }
 
         }
-        if (list.size()>0){
+        if (list.size() > 0) {
             this.msgUserChannelService.saveOrUpdateBatch(list);
         }
 

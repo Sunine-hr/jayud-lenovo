@@ -36,6 +36,16 @@ public interface OauthClient {
     @RequestMapping(value = "/api/getDepartmentNameById")
     ApiResult getDepartmentNameById(@RequestParam("departmentId") Long departmentId);
 
+
+    /**
+     * 根据部门id获取部门名称
+     *
+     * @param departmentId
+     * @return
+     */
+    @RequestMapping(value = "/api/getDepNameById")
+    ApiResult<String> getDepNameById(@RequestParam("departmentId") Long departmentId);
+
     /**
      * 获取接单部门
      *

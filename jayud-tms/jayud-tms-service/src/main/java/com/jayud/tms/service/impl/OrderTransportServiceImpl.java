@@ -23,6 +23,7 @@ import com.jayud.tms.feign.*;
 import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.*;
 import com.jayud.tms.model.po.DeliveryAddress;
+import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
@@ -81,7 +82,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     private RedisUtils redisUtils;
     @Autowired
     private FinanceClient financeClient;
-
+    @Autowired
+    private CustomsClient customsClient;
 
     @Override
     public boolean createOrderTransport(InputOrderTransportForm form) {
@@ -895,6 +897,79 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public Boolean isVirtualWarehouseByOrderNo(String orderNo) {
         return this.baseMapper.isVirtualWarehouseByOrderNo(orderNo) > 0;
+    }
+
+    @Override
+    public InputOrderTransportVO getOrderDetails(String mainOrderNo, String orderNo) {
+        QueryWrapper<OrderTransport> condition = new QueryWrapper<>();
+        if (!StringUtils.isEmpty(orderNo)) {
+            condition.lambda().eq(OrderTransport::getOrderNo, orderNo);
+        }
+        if (!StringUtils.isEmpty(mainOrderNo)) {
+            condition.lambda().eq(OrderTransport::getMainOrderNo, mainOrderNo);
+        }
+        OrderTransport orderTransport = baseMapper.selectOne(condition);
+        InputOrderTransportVO inputOrderTransportVO = ConvertUtil.convert(orderTransport, InputOrderTransportVO.class);
+        if (inputOrderTransportVO == null) {
+            return new InputOrderTransportVO();
+        }
+        //获取提货/送货地址
+        List<InputOrderTakeAdrVO> inputOrderTakeAdrVOS = orderTakeAdrService.findTakeGoodsInfo(inputOrderTransportVO.getOrderNo());
+        List<InputOrderTakeAdrVO> orderTakeAdrForms1 = new ArrayList<>();
+        List<InputOrderTakeAdrVO> orderTakeAdrForms2 = new ArrayList<>();
+        Integer totalAmount = 0;//总件数
+        Double totalWeight = 0.0;//总重量
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
+        for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
+            inputOrderTakeAdrVO.setTakeFiles(StringUtils.getFileViews(inputOrderTakeAdrVO.getFile(), inputOrderTakeAdrVO.getFileName(), prePath));
+            if (CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))) {//提货
+                orderTakeAdrForms1.add(inputOrderTakeAdrVO);
+                Integer pieceAmount = inputOrderTakeAdrVO.getPieceAmount();
+                Double weight = inputOrderTakeAdrVO.getWeight();
+                if (inputOrderTakeAdrVO.getPieceAmount() == null) {
+                    pieceAmount = 0;
+                }
+                if (inputOrderTakeAdrVO.getWeight() == null) {
+                    weight = 0.0;
+                }
+                totalAmount = totalAmount + pieceAmount;
+                totalWeight = totalWeight + weight;
+            } else {
+                orderTakeAdrForms2.add(inputOrderTakeAdrVO);  //送货
+            }
+            inputOrderTakeAdrVO.assemblyGoodsInfo();
+        }
+        //操作部门
+        String depName = this.oauthClient.getDepNameById(inputOrderTransportVO.getDepartmentId()).getData();
+        //派车信息
+        OrderSendCarsVO orderSendCars = this.orderSendCarsService.getDetails(inputOrderTransportVO.getOrderNo());
+        //中转仓库
+        Map<Long, Map<String, Object>> warehouseInfoMap = this.omsClient.getWarehouseMapByIds(Arrays.asList(inputOrderTransportVO.getWarehouseInfoId())).getData();
+        //结算单位
+        Object customerInfos = this.omsClient.getCustomerByUnitCode(Arrays.asList(inputOrderTransportVO.getUnitCode())).getData();
+        //查询口岸
+        String portName = this.omsClient.getPortNameByCode(inputOrderTransportVO.getPortCode()).getData();
+        //六联单号
+        Object mainOrderInfos = this.omsClient.getMainOrderByOrderNos(Arrays.asList(mainOrderNo)).getData();
+        JSONObject mainOrderJson = new JSONArray(mainOrderInfos).getJSONObject(0);
+        if (mainOrderJson.getStr("selectedServer").contains(OrderStatusEnum.CKBG.getCode())) {
+            Object customsInfos = customsClient.getCustomsOrderByMainOrderNos(Arrays.asList(mainOrderNo)).getData();
+            inputOrderTransportVO.setEncode(new JSONArray(customsInfos).getJSONObject(0).getStr("encode"));
+        } else {
+            inputOrderTransportVO.setEncode(mainOrderJson.getStr("encode"));
+        }
+
+        inputOrderTransportVO.assemblySendCars(orderSendCars);
+        inputOrderTransportVO.assemblyCustomerInfo(customerInfos);
+        inputOrderTransportVO.assemblyWarehouseInfo(warehouseInfoMap);
+
+        inputOrderTransportVO.setDepartmentName(depName);
+        inputOrderTransportVO.setPortName(portName);
+        inputOrderTransportVO.setTotalAmount(totalAmount);
+        inputOrderTransportVO.setTotalWeight(totalWeight);
+        inputOrderTransportVO.setOrderTakeAdrForms1(orderTakeAdrForms1);
+        inputOrderTransportVO.setOrderTakeAdrForms2(orderTakeAdrForms2);
+        return inputOrderTransportVO;
     }
 
 

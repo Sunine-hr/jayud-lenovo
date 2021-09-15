@@ -1,5 +1,6 @@
 package com.jayud.tms.model.vo;
 
+import cn.hutool.json.JSONObject;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -37,8 +38,8 @@ public class OrderSendCarsVO {
     @ApiModelProperty(value = "供应商名称")
     private String supplierName;
 
-    @ApiModelProperty(value = "车辆ID",required = true)
-    private Long vehicleId;
+    @ApiModelProperty(value = "骑师姓名")
+    public String jockey;
 
     @ApiModelProperty(value = "大陆车牌号")
     private String plateNumber;
@@ -96,6 +97,26 @@ public class OrderSendCarsVO {
 
     @ApiModelProperty(value = "骑师id")
     public Long jockeyId;
+    @ApiModelProperty(value = "车辆ID", required = true)
+    private Long vehicleId;
 
+    public void assembleVehicle(Object vehAndSupp) {
+        if (vehAndSupp == null) {
+            return;
+        }
+        JSONObject jsonObject = new JSONObject(vehAndSupp);
+        this.plateNumber = jsonObject.getStr("plateNumber");
+        this.hkNumber = jsonObject.getStr("hkNumber");
+        this.supplierId = jsonObject.getLong("supplierId");
+        this.supplierName = jsonObject.getStr("supplierName");
+    }
 
+    public void assembleDriver(Object driverObj) {
+        if (driverObj == null) {
+            return;
+        }
+        JSONObject jsonObject = new JSONObject(driverObj);
+        this.driverName=jsonObject.getStr("name");
+        this.driverPhone=jsonObject.getStr("phone");
+    }
 }

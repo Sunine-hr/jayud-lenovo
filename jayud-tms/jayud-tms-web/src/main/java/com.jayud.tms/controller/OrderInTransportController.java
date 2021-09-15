@@ -801,13 +801,13 @@ public class OrderInTransportController {
 
 
     @ApiOperation(value = "获取中港子订单详情 mainOrderNo=主订单号")
-    @RequestMapping(value = "/getOrderTransportDetails")
-    public CommonResult<InputOrderTransportVO> getOrderTransport(@RequestBody Map<String, String> map) {
+    @PostMapping(value = "/getOrderTransportDetails")
+    public CommonResult<InputOrderTransportVO> getOrderTransportDetails(@RequestBody Map<String, String> map) {
         String mainOrderNo = MapUtil.getStr(map, "mainOrderNo");
         if (StringUtils.isEmpty(mainOrderNo)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        InputOrderTransportVO inputOrderTransportVO = orderTransportService.getOrderTransport(mainOrderNo);
+        InputOrderTransportVO inputOrderTransportVO = orderTransportService.getOrderDetails(mainOrderNo, null);
         return CommonResult.success(inputOrderTransportVO);
     }
 

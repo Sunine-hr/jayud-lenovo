@@ -219,7 +219,7 @@ public class ExternalApiController {
             initChangeStatusVO.setOrderType(CommonConstant.TC);
             initChangeStatusVO.setOrderTypeDesc(CommonConstant.TC_DESC);
             initChangeStatusVO.setNeedInputCost(trailerOrder.getNeedInputCost());
-            initChangeStatusVO.setStatus(trailerOrder.getProcessStatus() + "");
+            initChangeStatusVO.setStatus(trailerOrder.getStatus());
             changeStatusVOS.add(initChangeStatusVO);
         }
         return ApiResult.ok(changeStatusVOS);

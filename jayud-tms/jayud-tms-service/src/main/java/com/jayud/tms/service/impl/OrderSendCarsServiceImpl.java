@@ -174,6 +174,20 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
         return this.baseMapper.getByStatus(status);
     }
 
+    @Override
+    public OrderSendCarsVO getDetails(String orderNo) {
+        //获取派车信息
+        OrderSendCarsVO tmp = this.baseMapper.getOrderSendInfo(orderNo);
+        OrderSendCarsVO sendCarsVO = ConvertUtil.convert(tmp, OrderSendCarsVO.class);
+        //车辆信息
+        Object vehAndSupp = this.omsClient.getVehicleAndSupplierInfo(sendCarsVO.getVehicleId()).getData();
+        sendCarsVO.assembleVehicle(vehAndSupp);
+        //司机信息
+        Object driverObj = this.omsClient.getDriverById(sendCarsVO.getDriverInfoId()).getData();
+        sendCarsVO.assembleDriver(driverObj);
+        return sendCarsVO;
+    }
+
 
     private void sendCarsMsg2Vivo(SendCarForm form, OrderTransport orderTransport) {
         //查询接单法人

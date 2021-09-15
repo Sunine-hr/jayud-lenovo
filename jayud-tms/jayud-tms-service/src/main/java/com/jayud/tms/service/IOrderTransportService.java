@@ -193,4 +193,6 @@ public interface IOrderTransportService extends IService<OrderTransport> {
     void msgPush(OrderTransport orderTransport);
 
     Boolean isVirtualWarehouseByOrderNo(String orderNo);
+
+    InputOrderTransportVO getOrderDetails(String mainOrderNo, String orderNo);
 }

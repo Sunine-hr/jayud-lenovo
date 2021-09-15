@@ -77,4 +77,6 @@ public interface IOrderSendCarsService extends IService<OrderSendCars> {
     List<OrderSendCars> getByExcludeStatus(List<String> excludeStatus);
 
     List<OrderSendCarsVO> getByStatus(List<String> status);
+
+    OrderSendCarsVO getDetails(String orderNo);
 }

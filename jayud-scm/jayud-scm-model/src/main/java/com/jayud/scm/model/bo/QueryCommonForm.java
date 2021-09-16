@@ -86,5 +86,8 @@ public class QueryCommonForm extends BasePageForm{
     @ApiModelProperty(value = "出口结汇汇率")
     private BigDecimal accRate;
 
+    //费用名称
+    @ApiModelProperty(value = "费用名称")
+    private String itemName;
 
 }

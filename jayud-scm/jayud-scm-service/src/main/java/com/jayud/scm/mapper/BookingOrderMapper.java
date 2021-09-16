@@ -40,8 +40,13 @@ public interface BookingOrderMapper extends BaseMapper<BookingOrder> {
 
     IPage<BookingOrderVO> findByPage(@Param("page") Page<BookingOrderVO> page, @Param("form") QueryBookingOrderForm form);
 
-    void upOrderCheckValidate(Map map);
+    void upOrderCheckValidate(@Param("map")Map map);
 
     QtyVO isCommplete(@Param("bookingId")Integer bookingId);
 
+    void settlement(@Param("map") Map<String, Object> map);
+
+    void estimatedUnitPrice(@Param("map")Map<String, Object> map);
+
+    void reverseCalculation(@Param("map")Map<String, Object> map);
 }

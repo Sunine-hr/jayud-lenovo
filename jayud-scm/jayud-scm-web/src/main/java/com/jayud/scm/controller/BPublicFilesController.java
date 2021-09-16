@@ -4,6 +4,8 @@ package com.jayud.scm.controller;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.StringUtils;
+import com.jayud.scm.feign.FileClient;
 import com.jayud.scm.model.bo.AddBPublicFilesForm;
 import com.jayud.scm.model.vo.BPublicFilesVO;
 import com.jayud.scm.service.IBDataDicEntryService;
@@ -40,6 +42,9 @@ public class BPublicFilesController {
     @Autowired
     private IBDataDicEntryService ibDataDicEntryService;
 
+    @Autowired
+    private FileClient fileClient;
+
     @ApiOperation(value = "通过类型和订单id查询所有附件")
     @ApiImplicitParams({
             @ApiImplicitParam(name="fileModel", dataType = "Integer", value = "附件类型,1:商品库,2:客户主体,3委托订单,4:付款单,5:收款单,6:入库单,7:出库单,8:应收款,9:提验货,10:中港运输", required = true),
@@ -47,14 +52,15 @@ public class BPublicFilesController {
     })
     @PostMapping(value = "/findPublicFile")
     public CommonResult<List<BPublicFilesVO>> findPublicFile(@RequestBody Map<String,Object> map) {
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
         Integer fileModel = MapUtil.getInt(map,"fileModel");
         Integer businessId = MapUtil.getInt(map, "businessId");
         List<BPublicFilesVO> bPublicFilesVOS = bPublicFilesService.getPublicFileList(fileModel,businessId);
-//        if(CollectionUtils.isNotEmpty(bPublicFilesVOS)){
-//            for (BPublicFilesVO bPublicFilesVO : bPublicFilesVOS) {
-//
-//            }
-//        }
+        if(CollectionUtils.isNotEmpty(bPublicFilesVOS)){
+            for (BPublicFilesVO bPublicFilesVO : bPublicFilesVOS) {
+                bPublicFilesVO.setFileView(StringUtils.getFileViews(bPublicFilesVO.getSFilePath(),bPublicFilesVO.getSFileName(),prePath));
+            }
+        }
 
         return CommonResult.success(bPublicFilesVOS);
     }

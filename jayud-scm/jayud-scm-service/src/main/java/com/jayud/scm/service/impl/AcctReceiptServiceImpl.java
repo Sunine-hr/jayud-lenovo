@@ -75,6 +75,14 @@ public class AcctReceiptServiceImpl extends ServiceImpl<AcctReceiptMapper, AcctR
         acctReceipt.setClaimName(accountBankBill.getCrtByName());
         acctReceipt.setClaimId(accountBankBill.getCrtBy());
         acctReceipt.setClaimDate(LocalDateTime.now());
+        acctReceipt.setPayDate(accountBankBill.getAccountDate());
+        acctReceipt.setBillDate(accountBankBill.getAccountDate());
+        acctReceipt.setPayCompamyId(accountBankBill.getPayCustomerId());
+        acctReceipt.setPayCompamyName(accountBankBill.getPayCustomerName());
+        acctReceipt.setBankCurrency(accountBankBill.getCurrencyName());
+        acctReceipt.setBankMoney(accountBankBill.getBillArMoney());
+        acctReceipt.setCurrencyName(accountBankBill.getVerificationCurrency());
+        acctReceipt.setMoney(accountBankBill.getVerificationMoney());
         boolean save = this.save(acctReceipt);
         log.warn("生成收款单成功");
         return save;

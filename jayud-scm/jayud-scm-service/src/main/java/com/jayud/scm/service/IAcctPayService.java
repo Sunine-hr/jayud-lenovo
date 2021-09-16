@@ -25,4 +25,5 @@ public interface IAcctPayService extends IService<AcctPay> {
 
     boolean delete(DeleteForm deleteForm);
 
+    AcctPay getAcctPayByPayToMeId(Integer id);
 }

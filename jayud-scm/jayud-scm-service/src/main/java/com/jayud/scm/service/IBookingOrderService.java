@@ -6,6 +6,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.BookingOrderForm;
 import com.jayud.scm.model.bo.PermissionForm;
 import com.jayud.scm.model.bo.QueryBookingOrderForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.BookingOrder;
 import com.jayud.scm.model.vo.BookingOrderVO;
 
@@ -88,4 +89,10 @@ public interface IBookingOrderService extends IService<BookingOrder> {
     CommonResult upOrderCheckValidate(Integer id);
 
     boolean isCommplete(Integer bookingId);
+
+    CommonResult settlement(QueryCommonForm form);
+
+    CommonResult estimatedUnitPrice(Integer id);
+
+    CommonResult reverseCalculation(Integer id);
 }

@@ -19,6 +19,7 @@ import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -177,10 +178,18 @@ public class AccountBankBillServiceImpl extends ServiceImpl<AccountBankBillMappe
     public boolean arrival(QueryCommonForm form) {
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
-        AccountBankBill accountBankBill = new AccountBankBill();
-        accountBankBill.setId(form.getId());
+        AccountBankBill accountBankBill = this.getById(form.getId());
+
+        if(accountBankBill.getVerificationMoney() == null || accountBankBill.getVerificationMoney().compareTo(new BigDecimal(0)) < 1 || accountBankBill.getBillArMoney().compareTo(accountBankBill.getVerificationMoney()) ==0){
+            accountBankBill.setVerificationMoney(form.getBillArMoney());
+        }
+
         accountBankBill.setBillArMoney(form.getBillArMoney());
         accountBankBill.setAccountDate(DateUtil.stringToLocalDateTime(form.getAccountDate(),"yyyy-MM-dd HH:mm:ss"));
+        accountBankBill.setMdyBy(form.getId().intValue());
+        accountBankBill.setMdyByDtm(LocalDateTime.now());
+        accountBankBill.setMdyByName(systemUser.getUserName());
+
         boolean result = this.updateById(accountBankBill);
         if(result){
             log.warn("到账成功");

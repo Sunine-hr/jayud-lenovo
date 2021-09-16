@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -34,6 +36,7 @@ public class VerificationReocrds extends Model<VerificationReocrds> {
     private String fBillNo;
 
     @ApiModelProperty(value = "核销日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fDate;
 
     @ApiModelProperty(value = "收款单ID")
@@ -91,6 +94,7 @@ public class VerificationReocrds extends Model<VerificationReocrds> {
     private String crtByName;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime crtByDtm;
 
     @ApiModelProperty(value = "最后修改人ID")
@@ -100,6 +104,7 @@ public class VerificationReocrds extends Model<VerificationReocrds> {
     private String mdyByName;
 
     @ApiModelProperty(value = "最后修改时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime mdyByDtm;
 
     @ApiModelProperty(value = "删除标记")
@@ -109,6 +114,7 @@ public class VerificationReocrds extends Model<VerificationReocrds> {
     private Integer voidedBy;
 
     @ApiModelProperty(value = "删除人名称")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private String voidedByName;
 
     @ApiModelProperty(value = "删除时间")

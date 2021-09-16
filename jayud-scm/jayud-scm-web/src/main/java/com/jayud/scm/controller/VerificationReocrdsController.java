@@ -3,6 +3,7 @@ package com.jayud.scm.controller;
 
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddVerificationReocrdsForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.service.IVerificationReocrdsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,5 +41,16 @@ public class VerificationReocrdsController {
         }
         return CommonResult.success();
     }
+
+    @ApiOperation(value = "反核销")
+    @PostMapping(value = "/cancelWriteOff")
+    public CommonResult cancelWriteOff(@RequestBody QueryCommonForm form){
+        boolean result = verificationReocrdsService.cancelWriteOff(form);
+        if(!result){
+            return CommonResult.error(444,"反核销失败");
+        }
+        return CommonResult.success();
+    }
+
 }
 

@@ -1,6 +1,7 @@
 package com.jayud.scm.service;
 
 import com.jayud.scm.model.bo.AddVerificationReocrdsForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.VerificationReocrds;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -17,4 +18,6 @@ import java.util.List;
 public interface IVerificationReocrdsService extends IService<VerificationReocrds> {
 
     boolean writeOff(List<AddVerificationReocrdsForm> form);
+
+    boolean cancelWriteOff(QueryCommonForm form);
 }

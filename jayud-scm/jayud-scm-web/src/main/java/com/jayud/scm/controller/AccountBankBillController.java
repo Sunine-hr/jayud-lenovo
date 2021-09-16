@@ -167,6 +167,9 @@ public class AccountBankBillController {
         if(!accountBankBill.getCheckStateFlag().equals("Y")){
             return CommonResult.error(444,"该水单未审核，无法生成收款单");
         }
+        if(accountBankBill.getBillArMoney() == null){
+            return CommonResult.error(444,"该水单未进行到账操作，无法生成收款单");
+        }
         boolean result = acctReceiptService.generateCollectionDoc(accountBankBill);
         if(!result){
             return CommonResult.error(444,"生成收款单失败");

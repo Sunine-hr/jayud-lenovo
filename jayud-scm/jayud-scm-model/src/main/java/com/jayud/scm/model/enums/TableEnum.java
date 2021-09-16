@@ -42,6 +42,7 @@ public enum TableEnum {
     export_tax_invoice(31,"export_tax_invoice"),
     acct_pay(32,"acct_pay"),
     acct_pay_entry(33,"acct_pay_entry"),
+    other_cost(34,"other_cost"),
     ;
 
     private Integer code;

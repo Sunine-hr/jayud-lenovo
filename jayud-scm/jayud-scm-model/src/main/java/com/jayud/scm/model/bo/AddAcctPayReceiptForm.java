@@ -17,9 +17,8 @@ import java.math.BigDecimal;
 @Data
 public class AddAcctPayReceiptForm {
 
-//    @ApiModelProperty(value = "自动ID")
-//    @TableId(value = "id", type = IdType.AUTO)
-//    private Integer id;
+    @ApiModelProperty(value = "收款单Id")
+    private Integer payToMeId;
 
     @ApiModelProperty(value = "供应商ID")
     private Integer supplierId;

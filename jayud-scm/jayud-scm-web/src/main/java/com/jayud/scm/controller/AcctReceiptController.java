@@ -5,6 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.*;
+import com.jayud.scm.model.po.AcctPay;
 import com.jayud.scm.model.po.AcctReceipt;
 import com.jayud.scm.model.vo.AccountBankBillVO;
 import com.jayud.scm.model.vo.AcctReceiptVO;
@@ -115,6 +116,11 @@ public class AcctReceiptController {
 
         AcctReceipt acctReceipt = acctReceiptService.getById(form.getId());
 
+        AcctPay acctPay = acctPayService.getAcctPayByPayToMeId(form.getId());
+        if(acctPay != null){
+            return CommonResult.error(444,"该收款单已经生成付款单，无法重复操作");
+        }
+
         if(!acctReceipt.getModelType().equals(2)){
             return CommonResult.error(444,"只有出口的单，才能进行付款操作");
         }
@@ -122,6 +128,7 @@ public class AcctReceiptController {
         if(acctReceipt.getJoinBillId() != null){
             return CommonResult.error(444,"该收款单由‘水单’生成，无法进行付款");
         }
+
         return CommonResult.success();
     }
 

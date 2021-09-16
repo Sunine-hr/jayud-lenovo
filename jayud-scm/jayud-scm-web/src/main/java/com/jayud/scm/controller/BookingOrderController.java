@@ -442,6 +442,27 @@ public class BookingOrderController {
         return CommonResult.success(pageVO);
     }
 
+    @ApiOperation(value = "结算")
+    @PostMapping(value = "/settlement")
+    public CommonResult settlement(@Valid @RequestBody QueryCommonForm form){
+        CommonResult commonResult = bookingOrderService.settlement(form);
+        return commonResult;
+    }
+
+    @ApiOperation(value = "出口审核暂估单价")
+    @PostMapping(value = "/estimatedUnitPrice")
+    public CommonResult estimatedUnitPrice(@Valid @RequestBody QueryCommonForm form){
+        CommonResult commonResult = bookingOrderService.estimatedUnitPrice(form.getId());
+        return commonResult;
+    }
+
+    @ApiOperation(value = "出口核销反算人民币单价")
+    @PostMapping(value = "/reverseCalculation")
+    public CommonResult reverseCalculation(@Valid @RequestBody QueryCommonForm form){
+        CommonResult commonResult = bookingOrderService.reverseCalculation(form.getId());
+        return commonResult;
+    }
+
 
 }
 

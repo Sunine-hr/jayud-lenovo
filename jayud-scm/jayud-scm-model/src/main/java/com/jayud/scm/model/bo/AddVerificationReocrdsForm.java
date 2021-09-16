@@ -3,6 +3,7 @@ package com.jayud.scm.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -28,10 +29,12 @@ public class AddVerificationReocrdsForm {
     private Integer id;
 
     @ApiModelProperty(value = "核销单号")
+    @JsonProperty(value = "fBillNo")
     private String fBillNo;
 
     @ApiModelProperty(value = "核销日期")
-    private LocalDateTime fDate;
+    @JsonProperty(value = "fDate")
+    private String fDate;
 
     @ApiModelProperty(value = "收款单ID")
     private Integer payId;
@@ -48,8 +51,15 @@ public class AddVerificationReocrdsForm {
     @ApiModelProperty(value = "汇率")
     private BigDecimal rate;
 
+    @ApiModelProperty(value = "委托单id")
+    private Integer orderId;
+
+    @ApiModelProperty(value = "委托单号")
+    private String orderNO;
+
     @ApiModelProperty(value = "核销金额")
-    private BigDecimal cMoney;
+    @JsonProperty(value = "nMoney")
+    private BigDecimal nMoney;
 
     @ApiModelProperty(value = "分摊的银行手续费")
     private BigDecimal shouFee;
@@ -65,51 +75,5 @@ public class AddVerificationReocrdsForm {
 
     @ApiModelProperty(value = "审核状态")
     private String checkStateFlag;
-
-    @ApiModelProperty(value = "审核级别")
-    private Integer fLevel;
-
-    @ApiModelProperty(value = "审核步骤")
-    private Integer fStep;
-
-    @ApiModelProperty(value = "是否已经同步（0未同步，1已同步）")
-    private Integer isSync;
-
-    @ApiModelProperty(value = "在线ID")
-    private Integer onlId;
-
-    @ApiModelProperty(value = "在线编号")
-    private String onlNo;
-
-    @ApiModelProperty(value = "创建人ID")
-    private Integer crtBy;
-
-    @ApiModelProperty(value = "创建人名称")
-    private String crtByName;
-
-    @ApiModelProperty(value = "创建时间")
-    private LocalDateTime crtByDtm;
-
-    @ApiModelProperty(value = "最后修改人ID")
-    private Integer mdyBy;
-
-    @ApiModelProperty(value = "最后修改人名称")
-    private String mdyByName;
-
-    @ApiModelProperty(value = "最后修改时间")
-    private LocalDateTime mdyByDtm;
-
-    @ApiModelProperty(value = "删除标记")
-    private Integer voided;
-
-    @ApiModelProperty(value = "删除人ID")
-    private Integer voidedBy;
-
-    @ApiModelProperty(value = "删除人名称")
-    private String voidedByName;
-
-    @ApiModelProperty(value = "删除时间")
-    private LocalDateTime voidedByDtm;
-
 
 }

@@ -18,6 +18,7 @@ import com.jayud.scm.mapper.BookingOrderMapper;
 import com.jayud.scm.model.bo.BookingOrderForm;
 import com.jayud.scm.model.bo.PermissionForm;
 import com.jayud.scm.model.bo.QueryBookingOrderForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.enums.StateFlagEnum;
@@ -217,6 +218,15 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
 
         Integer bookingId = form.getId();//委托单ID
 
+        //出口委托单审核为 “Y”，即最后一次审核，调用 up_e_order_price_sp
+        BookingOrder bookingOrder = this.getById(bookingId);
+        if(bookingOrder.getCheckStateFlag().equals("Y")){
+            CommonResult commonResult1 = this.estimatedUnitPrice(bookingId);
+            if(commonResult1.getCode().equals(1)){
+                log.warn(commonResult1.getMsg());
+            }
+        }
+
         //2.记录 委托单跟踪记录表
         BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
         bookingOrderFollow.setBookingId(bookingId);
@@ -384,5 +394,43 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
             return true;
         }
         return false;
+    }
+
+    @Override
+    public CommonResult settlement(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",form.getId());
+        map.put("userId",systemUser.getId());
+        map.put("userName",systemUser.getUserName());
+        this.baseMapper.settlement(map);
+        if(map.get("state").equals(1)){
+            return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
+        }
+        return CommonResult.success();
+    }
+
+    @Override
+    public CommonResult estimatedUnitPrice(Integer id) {
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",id);
+        this.baseMapper.estimatedUnitPrice(map);
+        if(map.get("state").equals(1)){
+            return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
+        }
+        return CommonResult.success();
+    }
+
+    @Override
+    public CommonResult reverseCalculation(Integer id) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",id);
+        this.baseMapper.reverseCalculation(map);
+        if(map.get("state").equals(1)){
+            return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
+        }
+        return CommonResult.success();
     }
 }

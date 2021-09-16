@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddAcctPayForm;
@@ -150,5 +151,13 @@ public class AcctPayServiceImpl extends ServiceImpl<AcctPayMapper, AcctPay> impl
             log.warn("操作记录表添加失败"+acctPayFollows);
         }
         return b1;
+    }
+
+    @Override
+    public AcctPay getAcctPayByPayToMeId(Integer id) {
+        QueryWrapper<AcctPay> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(AcctPay::getPayToMeId,id);
+        queryWrapper.lambda().eq(AcctPay::getVoided,0);
+        return this.getOne(queryWrapper);
     }
 }

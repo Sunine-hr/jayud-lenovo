@@ -23,7 +23,6 @@ import com.jayud.tms.feign.*;
 import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.*;
 import com.jayud.tms.model.po.DeliveryAddress;
-import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
@@ -949,16 +948,19 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Object customerInfos = this.omsClient.getCustomerByUnitCode(Arrays.asList(inputOrderTransportVO.getUnitCode())).getData();
         //查询口岸
         String portName = this.omsClient.getPortNameByCode(inputOrderTransportVO.getPortCode()).getData();
-        //六联单号
-        Object mainOrderInfos = this.omsClient.getMainOrderByOrderNos(Arrays.asList(mainOrderNo)).getData();
-        JSONObject mainOrderJson = new JSONArray(mainOrderInfos).getJSONObject(0);
-        if (mainOrderJson.getStr("selectedServer").contains(OrderStatusEnum.CKBG.getCode())) {
-            Object customsInfos = customsClient.getCustomsOrderByMainOrderNos(Arrays.asList(mainOrderNo)).getData();
-            inputOrderTransportVO.setEncode(new JSONArray(customsInfos).getJSONObject(0).getStr("encode"));
-        } else {
-            inputOrderTransportVO.setEncode(mainOrderJson.getStr("encode"));
-        }
+        //报关资料
+        Object customsInfo = this.omsClient.initGoCustomsAudit(mainOrderNo).getData();
 
+        //六联单号
+//        Object mainOrderInfos = this.omsClient.getMainOrderByOrderNos(Arrays.asList(mainOrderNo)).getData();
+//        JSONObject mainOrderJson = new JSONArray(mainOrderInfos).getJSONObject(0);
+//        if (mainOrderJson.getStr("selectedServer").contains(OrderStatusEnum.CKBG.getCode())) {
+//            Object customsInfos = customsClient.getCustomsOrderByMainOrderNos(Arrays.asList(mainOrderNo)).getData();
+//            inputOrderTransportVO.setEncode(new JSONArray(customsInfos).getJSONObject(0).getStr("encode"));
+//        } else {
+//            inputOrderTransportVO.setEncode(mainOrderJson.getStr("encode"));
+//        }
+        inputOrderTransportVO.assemblyCustomsInfo(customsInfo);
         inputOrderTransportVO.assemblySendCars(orderSendCars);
         inputOrderTransportVO.assemblyCustomerInfo(customerInfos);
         inputOrderTransportVO.assemblyWarehouseInfo(warehouseInfoMap);

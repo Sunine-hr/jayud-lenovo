@@ -391,6 +391,15 @@ public class OrderComboxController {
         return CommonResult.success(costTypeComboxs);
     }
 
+
+    @ApiOperation(value = "根据费用名称code下拉作业环节,idCode=费用名称的隐藏值")
+    @PostMapping(value = "/initCostTypeByCostInfoCode")
+    public CommonResult<Map<String, List<InitComboxVO>>> initCostTypeByCostInfoCode(@RequestBody Map<String, Object> param) {
+        Map<String, List<InitComboxVO>> map=this.costInfoService.initCostTypeByCostInfoCode();
+        return CommonResult.success(map);
+    }
+
+
     @ApiOperation(value = "费用类型,bizCode=业务类型CODE")
     @PostMapping(value = "/initCostGenre")
     public CommonResult<List<InitComboxVO>> initCostGenre(@RequestBody Map<String, Object> param) {
@@ -665,7 +674,7 @@ public class OrderComboxController {
     @PostMapping(value = "/initAllCostType")
     public CommonResult<List<InitComboxStrVO>> initAllCostType(@RequestBody Map<String, Object> param) {
         List<CostType> enableCostType = this.costTypeService.getEnableCostType();
-        List<InitComboxStrVO> list=new ArrayList<>();
+        List<InitComboxStrVO> list = new ArrayList<>();
         for (CostType costType : enableCostType) {
             InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
             initComboxStrVO.setId(costType.getId());

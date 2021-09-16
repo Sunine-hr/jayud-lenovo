@@ -83,7 +83,7 @@ public class OrderInlandTransportController {
 
         if (CollectionUtils.isNotEmpty(form.getTakeTimeStr())) {
             Set<Long> subOrderIds = this.omsClient.getOrderAddressOrderIdByTimeInterval(form.getTakeTimeStr(), OrderAddressEnum.PICK_UP.getCode(), BusinessTypeEnum.NL.getCode()).getData();
-            if (subOrderIds.size() ==0) {
+            if (subOrderIds.size() == 0) {
                 subOrderIds.add(-1L);
             }
             form.setSubOrderIds(subOrderIds);
@@ -163,6 +163,18 @@ public class OrderInlandTransportController {
         }
         OrderInlandTransportDetails orderDetails = this.orderInlandTransportService.getOrderDetails(subOrderId);
         return CommonResult.success(orderDetails);
+    }
+
+    /**
+     * 货物编辑
+     *
+     * @return
+     */
+    @ApiOperation(value = "货物编辑")
+    @PostMapping(value = "/editGoods")
+    public CommonResult editGoods(@RequestBody OrderInlandTransportDetails from) {
+        this.orderInlandTransportService.editGoods(from);
+        return CommonResult.success();
     }
 
 

@@ -419,6 +419,7 @@
                 #{item}
             </foreach>
         </where>
+        order by id desc
     </select>
     <select id="statisticsDataNumber" resultType="com.jayud.tms.model.vo.StatisticsDataNumberVO">
         select

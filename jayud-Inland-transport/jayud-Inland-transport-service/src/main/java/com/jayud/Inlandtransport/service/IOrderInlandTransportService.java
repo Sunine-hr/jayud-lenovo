@@ -100,4 +100,6 @@ public interface IOrderInlandTransportService extends IService<OrderInlandTransp
     Integer getNumByStatus(String status, List<Long> legalIds, Map<String, Object> datas);
 
     List<OrderInlandTransport> getByLegalEntityId(List<Long> legalIds);
+
+    void editGoods(OrderInlandTransportDetails from);
 }

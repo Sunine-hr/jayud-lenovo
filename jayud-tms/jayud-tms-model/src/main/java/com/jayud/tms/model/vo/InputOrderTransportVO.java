@@ -7,6 +7,7 @@ import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -144,6 +145,7 @@ public class InputOrderTransportVO {
 
     @ApiModelProperty(value = "是否车辆过磅")
     private Boolean isVehicleWeigh;
+
     @ApiModelProperty(value = "卸货")
     private String unloadGoodsDesc;
 
@@ -174,6 +176,7 @@ public class InputOrderTransportVO {
 
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
+
     @ApiModelProperty(value = "供应商名称(运输公司)")
     private String supplierChName;
 
@@ -185,14 +188,30 @@ public class InputOrderTransportVO {
 
     @ApiModelProperty(value = "供应商代码")
     private String defaultSupplierCode;
+
     @ApiModelProperty(value = "是否车辆过磅描述")
     private String isVehicleWeighDesc;
+
     @ApiModelProperty(value = "操作部门")
     private String departmentName;
+
     @ApiModelProperty(value = "六联单号")
     private String encode;
-    @ApiModelProperty(value = "装车要求")
-    private String sendCarRemarks;
+
+//    @ApiModelProperty(value = "装车要求")
+//    private String sendCarRemarks;
+
+    @ApiModelProperty(value = "报关六联单号附件")
+    private List<FileView> encodePics = new ArrayList<>();
+
+    @ApiModelProperty(value = "舱单附件")
+    private List<FileView> manifestAttachment = new ArrayList<>();
+
+    @ApiModelProperty(value = "报关单附件")
+    private List<FileView> customsOrderAttachment = new ArrayList<>();
+
+    @ApiModelProperty(value = "通关时间")
+    private String goCustomsTime;
 
     public String getSubTmsStatus() {
         return subTmsStatus = this.status;
@@ -220,10 +239,11 @@ public class InputOrderTransportVO {
         return "";
     }
 
-    public void setVehicleWeigh(Boolean vehicleWeigh) {
-        isVehicleWeigh = vehicleWeigh;
-        this.isVehicleWeighDesc = vehicleWeigh ? "是" : "否";
+    public void setIsVehicleWeigh(Boolean isVehicleWeigh){
+        this.isVehicleWeigh = isVehicleWeigh;
+        this.isVehicleWeighDesc = isVehicleWeigh ? "是" : "否";
     }
+
 
     public void assemblySendCars(OrderSendCarsVO orderSendCars) {
         this.supplierChName = orderSendCars.getSupplierName();
@@ -231,9 +251,9 @@ public class InputOrderTransportVO {
         this.hkLicensePlate = orderSendCars.getHkNumber();
         this.driverPhone = orderSendCars.getDriverPhone();
         this.driverName = orderSendCars.getDriverName();
-        this.jockey=orderSendCars.getJockey();
-        this.transportNo=orderSendCars.getTransportNo();
-        this.sendCarRemarks=orderSendCars.getRemarks();
+        this.jockey = orderSendCars.getJockey();
+        this.transportNo = orderSendCars.getTransportNo();
+        this.remarks = orderSendCars.getRemarks();
     }
 
     public void assemblyCustomerInfo(Object customerInfos) {
@@ -279,4 +299,18 @@ public class InputOrderTransportVO {
         this.unloadGoodsDesc = "1".equals(unloadGoodsDesc) ? "卸货" : "";
     }
 
+    /**
+     * 报关资料
+     *
+     * @param customsInfos
+     */
+    public void assemblyCustomsInfo(Object customsInfos) {
+        if (customsInfos == null) {
+            return;
+        }
+        JSONObject jsonObject = new JSONObject(customsInfos);
+        this.encode = jsonObject.getStr("encode");
+        this.manifestAttachment = jsonObject.getJSONArray("manifestAttachment").toList(FileView.class);
+        this.customsOrderAttachment = jsonObject.getJSONArray("customsOrderAttachment").toList(FileView.class);
+    }
 }

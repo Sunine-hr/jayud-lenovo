@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 @Data
@@ -84,4 +85,6 @@ public class InputPaymentCostVO {
     @ApiModelProperty(value = "是否录用费用")
     private Boolean isInternal;
 
+    @ApiModelProperty(value = "作业环节")
+    private List<InitComboxVO> categorys;
 }

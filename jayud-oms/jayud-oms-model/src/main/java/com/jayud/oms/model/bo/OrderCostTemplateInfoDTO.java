@@ -8,6 +8,7 @@ import com.jayud.common.enums.UnitEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.NumberUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.oms.model.vo.InitComboxVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,6 +18,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -40,7 +42,7 @@ public class OrderCostTemplateInfoDTO extends Model<OrderCostTemplateInfoDTO> {
     @ApiModelProperty(value = "费用名称code")
     private String costCode;
 
-    @ApiModelProperty(value = "费用类别")
+    @ApiModelProperty(value = "费用类别(作业环节)")
     private Long costTypeId;
 
     @ApiModelProperty(value = "费用类型")
@@ -67,6 +69,9 @@ public class OrderCostTemplateInfoDTO extends Model<OrderCostTemplateInfoDTO> {
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "作业环节")
+    private List<InitComboxVO> categorys;
 
 
     public String getCurrencyName() {

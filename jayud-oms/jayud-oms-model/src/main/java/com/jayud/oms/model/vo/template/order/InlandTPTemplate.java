@@ -111,6 +111,9 @@ public class InlandTPTemplate extends BaseOrderTemplate {
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 
+    @ApiModelProperty(value = "是否可以进行货物编辑")
+    private Boolean isGoodsEdit;
+
 
     public void setStatus(String status) {
         this.status = status;

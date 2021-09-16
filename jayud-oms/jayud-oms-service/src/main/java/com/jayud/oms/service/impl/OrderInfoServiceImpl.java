@@ -983,6 +983,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         List<InputReceivableCostVO> inputReceivableCostVOS = receivableCostService.findReceivableCost(form);
 
+        Map<String, List<InitComboxVO>> costType = this.costInfoService.initCostTypeByCostInfoCode();
+
+        inputReceivableCostVOS.stream().forEach(e -> e.setCategorys(costType.get(e.getCostCode())));
+        payCost.stream().forEach(e -> e.setCategorys(costType.get(e.getCostCode())));
+
         InputCostVO inputCostVO = new InputCostVO();
         inputCostVO.setPaymentCostList(payCost);
         inputCostVO.setReceivableCostList(inputReceivableCostVOS);

@@ -35,6 +35,6 @@ public class PermissionForm {
     private String userName;
 
     @ApiModelProperty(value = "是否是客户审核")
-    private Boolean customerAudit;
+    private Boolean customerAudit = false;
 
 }

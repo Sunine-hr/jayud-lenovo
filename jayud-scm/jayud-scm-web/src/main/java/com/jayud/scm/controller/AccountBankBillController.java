@@ -127,7 +127,7 @@ public class AccountBankBillController {
         form.setUserId(systemUser.getId().intValue());
         form.setUserName(systemUser.getUserName());
         AccountBankBill accountBankBill = accountBankBillService.getById(form.getId());
-        if(accountBankBill.getBillArMoney() != null && accountBankBill.getBillArMoney().compareTo(new BigDecimal(0)) == 0){
+        if(accountBankBill.getBillArMoney() != null || accountBankBill.getBillArMoney().compareTo(new BigDecimal(0)) == 1){
             return CommonResult.error(1,"该水单已经到账，无法进行反审");
         }
         AcctReceipt acctReceipt = acctReceiptService.getAcctReceiptByJoinBillId(accountBankBill.getId());

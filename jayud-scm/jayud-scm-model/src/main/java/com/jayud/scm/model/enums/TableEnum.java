@@ -43,6 +43,7 @@ public enum TableEnum {
     acct_pay(32,"acct_pay"),
     acct_pay_entry(33,"acct_pay_entry"),
     other_cost(34,"other_cost"),
+    reports(35,"reports"),
     ;
 
     private Integer code;

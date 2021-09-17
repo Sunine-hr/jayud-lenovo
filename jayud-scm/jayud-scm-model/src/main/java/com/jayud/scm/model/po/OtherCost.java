@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -31,6 +33,7 @@ public class OtherCost extends Model<OtherCost> {
     private Integer id;
 
     @ApiModelProperty(value = "费用日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fDate;
 
     @ApiModelProperty(value = "费用名称ID")
@@ -130,6 +133,7 @@ public class OtherCost extends Model<OtherCost> {
     private String applicationReason;
 
     @ApiModelProperty(value = "审核日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime auditDate;
 
     @ApiModelProperty(value = "减免审核备注")
@@ -175,6 +179,7 @@ public class OtherCost extends Model<OtherCost> {
     private String crtByName;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime crtByDtm;
 
     @ApiModelProperty(value = "最后修改人ID")
@@ -184,6 +189,7 @@ public class OtherCost extends Model<OtherCost> {
     private String mdyByName;
 
     @ApiModelProperty(value = "最后修改时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime mdyByDtm;
 
     @ApiModelProperty(value = "删除标记")
@@ -196,6 +202,7 @@ public class OtherCost extends Model<OtherCost> {
     private String voidedByName;
 
     @ApiModelProperty(value = "删除时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime voidedByDtm;
 
 

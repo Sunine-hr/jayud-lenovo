@@ -3,6 +3,7 @@ package com.jayud.scm.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class OtherCostVO {
     private Integer id;
 
     @ApiModelProperty(value = "费用日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fDate;
 
     @ApiModelProperty(value = "费用名称ID")
@@ -139,6 +141,7 @@ public class OtherCostVO {
     private String verificationName;
 
     @ApiModelProperty(value = "核销 时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime verificationDtm;
 
     @ApiModelProperty(value = "状态(0待审核，1已审核，2待确认，3可付款，4已付款)")
@@ -151,11 +154,13 @@ public class OtherCostVO {
     private String crtByName;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime crtByDtm;
 
     @ApiModelProperty(value = "最后修改人名称")
     private String mdyByName;
 
     @ApiModelProperty(value = "最后修改时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime mdyByDtm;
 }

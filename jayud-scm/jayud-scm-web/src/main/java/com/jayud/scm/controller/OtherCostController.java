@@ -2,8 +2,12 @@ package com.jayud.scm.controller;
 
 
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddOtherCostForm;
 import com.jayud.scm.model.bo.AddVerificationReocrdsForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.po.OtherCost;
+import com.jayud.scm.model.vo.OtherCostVO;
 import com.jayud.scm.service.IOtherCostService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,5 +45,14 @@ public class OtherCostController {
         }
         return CommonResult.success();
     }
+
+    @ApiOperation(value = "根据id获取其他费用信息")
+    @PostMapping(value = "/getOtherCostById")
+    public CommonResult<OtherCostVO> getOtherCostById(@RequestBody QueryCommonForm form){
+        OtherCost otherCost = otherCostService.getById(form.getId());
+        OtherCostVO otherCostVO = ConvertUtil.convert(otherCost, OtherCostVO.class);
+        return CommonResult.success(otherCostVO);
+    }
+
 }
 

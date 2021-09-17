@@ -5,6 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddAcctPayForm;
 import com.jayud.scm.model.bo.AddExportTaxInvoiceForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.vo.AcctPayVO;
 import com.jayud.scm.model.vo.ExportTaxInvoiceVO;
 import com.jayud.scm.service.IAcctPayService;
@@ -52,5 +53,27 @@ public class AcctPayController {
         }
         return CommonResult.success();
     }
+
+    @ApiOperation(value = "付款")
+    @PostMapping(value = "/payment")
+    public CommonResult payment(@RequestBody AddAcctPayForm form) {
+        boolean result = acctPayService.payment(form);
+        if(!result){
+            return CommonResult.error(444,"付款失败");
+        }
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "确认付款")
+    @PostMapping(value = "/confirmPayment")
+    public CommonResult confirmPayment(@RequestBody QueryCommonForm form) {
+        boolean result = acctPayService.confirmPayment(form);
+        if(!result){
+            return CommonResult.error(444,"付款失败");
+        }
+        return CommonResult.success();
+    }
+
+
 }
 

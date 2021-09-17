@@ -57,6 +57,7 @@ public class VerificationReocrdsServiceImpl extends ServiceImpl<VerificationReoc
             verificationReocrd.setCrtBy(systemUser.getId().intValue());
             verificationReocrd.setCrtByDtm(LocalDateTime.now());
             verificationReocrd.setCrtByName(systemUser.getUserName());
+            verificationReocrds.add(verificationReocrd);
         }
 
         boolean result = this.saveBatch(verificationReocrds);

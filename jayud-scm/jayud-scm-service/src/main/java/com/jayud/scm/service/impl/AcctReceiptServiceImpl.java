@@ -83,6 +83,7 @@ public class AcctReceiptServiceImpl extends ServiceImpl<AcctReceiptMapper, AcctR
         acctReceipt.setBankMoney(accountBankBill.getBillArMoney());
         acctReceipt.setCurrencyName(accountBankBill.getVerificationCurrency());
         acctReceipt.setMoney(accountBankBill.getVerificationMoney());
+        acctReceipt.setDiscountRate(new BigDecimal(1));
         boolean save = this.save(acctReceipt);
         log.warn("生成收款单成功");
         return save;

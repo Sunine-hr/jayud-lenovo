@@ -5,11 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
-import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.InitChangeStatusVO;
-import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.SubOrderCloseOpt;
-import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.trailer.bo.AddTrailerOrderFrom;
@@ -24,7 +21,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -169,9 +165,9 @@ public class ExternalApiController {
         List<Long> legalIds = legalEntityByLegalName.getData();
         Map<String, Integer> reBillNumMap = this.financeClient.getPendingBillStatusNum(null, legalIds, 0, false, SubOrderSignEnum.TC.getSignOne()).getData();
         Map<String, Integer> payBillNumMap = this.financeClient.getPendingBillStatusNum(null, legalIds, 1, false, SubOrderSignEnum.TC.getSignOne()).getData();
-        Map<String,Object> datas=new HashMap<>();
-        datas.put("trailerReceiverCheck",reBillNumMap);
-        datas.put("trailerPayCheck",payBillNumMap);
+        Map<String, Object> datas = new HashMap<>();
+        datas.put("trailerReceiverCheck", reBillNumMap);
+        datas.put("trailerPayCheck", payBillNumMap);
 
         for (Map<String, Object> menus : menusList) {
 
@@ -180,7 +176,7 @@ public class ExternalApiController {
             String status = tmp.get(title);
             Integer num = 0;
             if (status != null) {
-                num = this.trailerOrderService.getNumByStatus(status, legalIds,datas);
+                num = this.trailerOrderService.getNumByStatus(status, legalIds, datas);
             }
             map.put("menusName", title);
             map.put("num", num);
@@ -219,7 +215,7 @@ public class ExternalApiController {
             initChangeStatusVO.setOrderType(CommonConstant.TC);
             initChangeStatusVO.setOrderTypeDesc(CommonConstant.TC_DESC);
             initChangeStatusVO.setNeedInputCost(trailerOrder.getNeedInputCost());
-            initChangeStatusVO.setStatus(trailerOrder.getStatus());
+            initChangeStatusVO.setStatus(trailerOrder.getProcessStatus() == 3 ? "CLOSE" : trailerOrder.getProcessStatus().toString());
             changeStatusVOS.add(initChangeStatusVO);
         }
         return ApiResult.ok(changeStatusVOS);

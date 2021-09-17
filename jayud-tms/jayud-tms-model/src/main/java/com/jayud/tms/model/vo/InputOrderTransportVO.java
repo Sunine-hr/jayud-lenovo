@@ -213,6 +213,9 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "通关时间")
     private String goCustomsTime;
 
+    @ApiModelProperty(value = "派车备注")
+    private String sendCarDescribes;
+
     public String getSubTmsStatus() {
         return subTmsStatus = this.status;
     }
@@ -254,6 +257,7 @@ public class InputOrderTransportVO {
         this.jockey = orderSendCars.getJockey();
         this.transportNo = orderSendCars.getTransportNo();
         this.remarks = orderSendCars.getRemarks();
+        this.sendCarDescribes=orderSendCars.getDescribes();
     }
 
     public void assemblyCustomerInfo(Object customerInfos) {

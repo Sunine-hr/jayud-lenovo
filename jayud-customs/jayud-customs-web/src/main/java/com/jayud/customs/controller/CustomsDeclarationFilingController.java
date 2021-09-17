@@ -9,10 +9,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.aop.annotations.RepeatSubmitLimit;
 import com.jayud.common.enums.CustomsBizModelEnum;
 import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.utils.DateUtils;
-import com.jayud.common.utils.HttpUtils;
-import com.jayud.common.utils.StringUtils;
-import com.jayud.common.utils.WordUtil;
+import com.jayud.common.utils.*;
 import com.jayud.customs.model.bo.AddCustomsDeclarationFilingForm;
 import com.jayud.customs.model.bo.QueryCustomsDeclarationFiling;
 import com.jayud.customs.model.po.CustomsDeclFilingRecord;
@@ -81,8 +78,9 @@ public class CustomsDeclarationFilingController {
             });
             return CommonResult.error(400, sb.toString());
         }
-        Set<CustomsDeclFilingRecord> tmps = form.getNums().stream().filter(e -> !StringUtils.isEmpty(e.getNum())).collect(Collectors.toSet());
-        form.setNums(new ArrayList<>(tmps));
+        List<CustomsDeclFilingRecord> tmps = form.getNums().stream().filter(e -> !StringUtils.isEmpty(e.getNum())).filter(JDKUtils.distinctByKey(CustomsDeclFilingRecord::getNum))
+                .collect(Collectors.toList());
+        form.setNums(tmps);
         if (form.getNums().size() == 0) {
             return CommonResult.error(400, "请输入报关单号");
         }

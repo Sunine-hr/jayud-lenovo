@@ -108,7 +108,10 @@ public class OrderSendCarsVO {
         this.plateNumber = jsonObject.getStr("plateNumber");
         this.hkNumber = jsonObject.getStr("hkNumber");
         this.supplierId = jsonObject.getLong("supplierId");
-        this.supplierName = jsonObject.getStr("supplierName");
+        JSONObject supplierInfoVO = jsonObject.getJSONObject("supplierInfoVO");
+        if (supplierInfoVO != null) {
+            this.supplierName = supplierInfoVO.getStr("supplierChName");
+        }
     }
 
     public void assembleDriver(Object driverObj) {
@@ -116,7 +119,7 @@ public class OrderSendCarsVO {
             return;
         }
         JSONObject jsonObject = new JSONObject(driverObj);
-        this.driverName=jsonObject.getStr("name");
-        this.driverPhone=jsonObject.getStr("phone");
+        this.driverName = jsonObject.getStr("name");
+        this.driverPhone = jsonObject.getStr("phone");
     }
 }

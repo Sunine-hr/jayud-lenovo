@@ -177,8 +177,10 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
     @Override
     public OrderSendCarsVO getDetails(String orderNo) {
         //获取派车信息
-        OrderSendCarsVO tmp = this.baseMapper.getOrderSendInfo(orderNo);
-        OrderSendCarsVO sendCarsVO = ConvertUtil.convert(tmp, OrderSendCarsVO.class);
+//        OrderSendCarsVO tmp = this.baseMapper.getOrderSendInfo(orderNo);
+//        OrderSendCarsVO sendCarsVO = ConvertUtil.convert(tmp, OrderSendCarsVO.class);
+        OrderSendCars orderSendCars = this.baseMapper.selectOne(new QueryWrapper<>(new OrderSendCars().setOrderNo(orderNo)));
+        OrderSendCarsVO sendCarsVO = ConvertUtil.convert(orderSendCars, OrderSendCarsVO.class);
         //车辆信息
         Object vehAndSupp = this.omsClient.getVehicleAndSupplierInfo(sendCarsVO.getVehicleId()).getData();
         sendCarsVO.assembleVehicle(vehAndSupp);

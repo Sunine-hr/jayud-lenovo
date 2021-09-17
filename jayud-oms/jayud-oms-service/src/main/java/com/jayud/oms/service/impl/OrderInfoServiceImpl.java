@@ -2704,7 +2704,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //批量查询主订单详情
         QueryWrapper<OrderInfo> condition = new QueryWrapper<>();
         condition.lambda().select(OrderInfo::getId, OrderInfo::getOrderNo, OrderInfo::getCustomsRelease)
-                .in(OrderInfo::getOrderNo, mainOrderNos).eq(OrderInfo::getCreatedUser, userName);
+                .in(OrderInfo::getOrderNo, mainOrderNos);
+        if (!StringUtils.isEmpty(userName)) {
+            condition.lambda().eq(OrderInfo::getCreatedUser, userName);
+        }
         if (CollectionUtil.isNotEmpty(legalIds)) {
             condition.lambda().in(OrderInfo::getLegalEntityId, legalIds);
         }

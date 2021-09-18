@@ -311,7 +311,8 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
                     yunbaoguanReceivableCost.setUpdatedTime(LocalDateTime.now());
                     yunbaoguanReceivableCost.setIsComplete(false);
                 } else {
-                    receivableCost.setIsComplete(false);
+                    //TODO 云报关费用记录只同步一次
+//                    receivableCost.setIsComplete(false);
                     receivableCost.setReceivableCostData(JSONUtil.toJsonStr(receivable));
                     receivableCost.setUpdatedTime(LocalDateTime.now());
                     yunbaoguanReceivableCost = receivableCost;

@@ -175,4 +175,17 @@ public interface OauthClient {
      */
     @RequestMapping(value = "/api/getSystemUserList")
     ApiResult<List<SystemUserVO>> getSystemUserList();
+
+
+    /**
+     * 根据岗位获取启用用户
+     */
+    @RequestMapping(value = "/api/getEnableUserByWorkName")
+    ApiResult<List<SystemUserVO>> getEnableUserByWorkName(@RequestParam(value = "workName") String workName);
+
+    /**
+     * 根据用户集合查询用户消息渠道
+     */
+    @RequestMapping(value = "/api/getEnableMsgUserChannelByUserIds")
+    ApiResult<List<Object>> getEnableMsgUserChannelByUserIds(@RequestParam(value = "userIds") List<Long> userIds);
 }

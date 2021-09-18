@@ -160,7 +160,15 @@ public class ReceiveNotPaidBillVO {
             return;
         }
 //        String orderNo = isMain ? this.orderNo : this.subOrderNo;
-        Map<String, BigDecimal> tmp = costMap.get(orderNo + "~" + subOrderNo);
+        String orderNo = "";
+        if (isMain) {
+            orderNo = this.orderNo;
+            this.subOrderNo = "";
+        } else {
+            orderNo = this.orderNo + "~" + this.subOrderNo;
+        }
+
+        Map<String, BigDecimal> tmp = costMap.get(orderNo);
         StringBuilder sb = new StringBuilder();
         tmp.forEach((k, v) -> {
             sb.append(v).append(" ").append(k).append(",");

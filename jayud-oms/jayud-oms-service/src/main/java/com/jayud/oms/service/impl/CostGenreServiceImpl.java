@@ -3,7 +3,6 @@ package com.jayud.oms.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.AddCostGenreForm;
@@ -12,11 +11,13 @@ import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.mapper.CostGenreMapper;
 import com.jayud.oms.model.vo.CostGenreVO;
-import com.jayud.oms.model.vo.CostTypeVO;
 import com.jayud.oms.service.ICostGenreService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.oms.service.ICostGenreTaxRateService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +33,9 @@ import java.util.Objects;
  */
 @Service
 public class CostGenreServiceImpl extends ServiceImpl<CostGenreMapper, CostGenre> implements ICostGenreService {
+
+    @Autowired
+    private ICostGenreTaxRateService costGenreTaxRateService;
 
     /**
      * 分页查询费用类型
@@ -129,10 +133,40 @@ public class CostGenreServiceImpl extends ServiceImpl<CostGenreMapper, CostGenre
             } else {
                 return false;
             }
-        }else {
+        } else {
             condition.lambda().eq(CostGenre::getCode, costGenre.getCode())
                     .or().eq(CostGenre::getName, costGenre.getName());
             return this.count(condition) > 0;
+        }
+    }
+
+    @Override
+    @Transactional
+    public boolean saveOrUpdate(AddCostGenreForm form) {
+        CostGenre costGenre = ConvertUtil.convert(form, CostGenre.class);
+        boolean opt = true;
+        if (Objects.isNull(costGenre.getId())) {
+            costGenre.setCreateTime(LocalDateTime.now())
+                    .setCreateUser(UserOperator.getToken());
+            this.save(costGenre);
+            List<CostGenreTaxRate> genreTaxRates = form.getCostGenreTaxRates();
+            if (!CollectionUtils.isEmpty(genreTaxRates)) {
+                genreTaxRates.forEach(e -> e.setCostGenreId(costGenre.getId()));
+                opt = costGenreTaxRateService.saveBatch(genreTaxRates);
+            }
+            return opt;
+        } else {
+            costGenre.setCode(null)
+                    .setUpdateTime(LocalDateTime.now())
+                    .setUpdateUser(UserOperator.getToken());
+            opt = this.updateById(costGenre);
+            List<CostGenreTaxRate> genreTaxRates = form.getCostGenreTaxRates();
+            this.costGenreTaxRateService.remove(new QueryWrapper<>(new CostGenreTaxRate().setCostGenreId(costGenre.getId())));
+            if (!CollectionUtils.isEmpty(genreTaxRates)) {
+                genreTaxRates.forEach(e -> e.setCostGenreId(costGenre.getId()));
+                opt = costGenreTaxRateService.saveBatch(genreTaxRates);
+            }
+            return opt;
         }
     }
 }

@@ -156,7 +156,7 @@ public class CustomerInfoController {
 //        } else {
 //            customerInfo.setCreatedUser(form.getLoginUserName());
 //        }
-        this.customerInfoService.saveOrUpdateCustomerInfo(form, customerInfo);
+        Long customerId = this.customerInfoService.saveOrUpdateCustomerInfo(form, customerInfo);
 
         //返回成功数据
         Map<String, Object> map = new HashMap<>();
@@ -170,7 +170,7 @@ public class CustomerInfoController {
             map.put("stateCredit", form.getNationalCredit());
             map.put("customsCredit", form.getCustomsCredit());
         }
-
+        map.put("id", customerId);
         return CommonResult.success(map);
     }
 
@@ -408,7 +408,7 @@ public class CustomerInfoController {
     @ApiOperation(value = "客户列表-新增-接单部门")
     @PostMapping(value = "/initDepartment")
     public CommonResult<List<InitComboxVO>> initDepartment() {
-        List<InitComboxVO> initComboxVOS =  oauthClient.findDepartment().getData();
+        List<InitComboxVO> initComboxVOS = oauthClient.findDepartment().getData();
         return CommonResult.success(initComboxVOS);
     }
 

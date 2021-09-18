@@ -3,19 +3,19 @@ package com.jayud.tms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.*;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DelOprStatusForm;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.feign.FreightAirApiClient;
+import com.jayud.tms.feign.MsgClient;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.feign.OmsMiniClient;
 import com.jayud.tms.model.bo.*;
@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,22 +52,20 @@ public class OrderInTransportController {
 
     @Autowired
     IOrderTransportService orderTransportService;
-
     @Autowired
     RedisUtils redisUtils;
-
     @Autowired
     OmsClient omsClient;
-
     @Autowired
     OmsMiniClient omsMiniClient;
-
     @Autowired
     IOrderSendCarsService orderSendCarsService;
     @Autowired
     private FreightAirApiClient freightAirApiClient;
     @Autowired
     private IDeliveryAddressService deliveryAddressService;
+    @Autowired
+    private MsgClient msgClient;
 
 
     /**
@@ -108,11 +107,11 @@ public class OrderInTransportController {
             auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_1.getCode());
             auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_1.getDesc());
         } else if (CommonConstant.CAR_TAKE_GOODS.equals(form.getCmd())) {//车辆提货
-            //小程序司机需确认接单
-           /* Boolean isConfirmJieDan = omsMiniClient.isConfirmJieDan(form.getOrderId()).getData();
+            //TODO 小程序司机需确认接单
+            Boolean isConfirmJieDan = omsMiniClient.isConfirmJieDan(form.getOrderId()).getData();
             if (!isConfirmJieDan) {
                 return CommonResult.error(ResultEnum.IS_CONFIRM_JIE_DAN);
-            }*/
+            }
             orderTransport.setStatus(OrderStatusEnum.TMS_T_5.getCode());
 
             form.setStatus(OrderStatusEnum.TMS_T_5.getCode());
@@ -210,6 +209,7 @@ public class OrderInTransportController {
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
+        this.orderTransportService.msgPush(orderTransport);
         return CommonResult.success();
     }
 
@@ -314,6 +314,7 @@ public class OrderInTransportController {
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
+        this.orderTransportService.msgPush(orderTransport);
         return CommonResult.success();
     }
 
@@ -505,6 +506,7 @@ public class OrderInTransportController {
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
+        this.orderTransportService.msgPush(orderTransport);
         return CommonResult.success();
     }
 
@@ -650,10 +652,20 @@ public class OrderInTransportController {
             auditInfoForm.setAuditStatus(cmd);
             auditInfoForm.setAuditTypeDesc(cmd);
         } else if (OrderStatusEnum.TMS_T_5_1.getCode().equals(form.getCmd())) {//车辆提货驳回
-            orderTransport.setStatus(OrderStatusEnum.TMS_T_5_1.getCode());
-
-            auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_5_1.getCode());
-            auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_5_1.getDesc());
+            //
+            String cmd = form.getCmd();
+            if (rejectOptions == 2) {//派车驳回
+                cmd = OrderStatusEnum.TMS_T_3_1.getCode();
+                deleteStatus.add(OrderStatusEnum.TMS_T_2.getCode());
+                deleteStatus.add(OrderStatusEnum.TMS_T_3.getCode());
+                deleteStatus.add(OrderStatusEnum.TMS_T_4.getCode());
+            }
+//            orderTransport.setStatus(OrderStatusEnum.TMS_T_5_1.getCode());
+//            auditInfoForm.setAuditStatus(OrderStatusEnum.TMS_T_5_1.getCode());
+//            auditInfoForm.setAuditTypeDesc(OrderStatusEnum.TMS_T_5_1.getDesc());
+            orderTransport.setStatus(cmd);
+            auditInfoForm.setAuditStatus(cmd);
+            auditInfoForm.setAuditTypeDesc(cmd);
         }
         //推送派车驳回消息
         if (!this.orderSendCarsService.dispatchRejectionMsgPush(form, orderTransport1)) {
@@ -683,6 +695,7 @@ public class OrderInTransportController {
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
+        this.orderTransportService.msgPush(orderTransport);
         return CommonResult.success();
     }
 
@@ -723,6 +736,7 @@ public class OrderInTransportController {
         if (!result) {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
+        this.orderTransportService.msgPush(orderTransport);
         return CommonResult.success();
     }
 
@@ -787,16 +801,20 @@ public class OrderInTransportController {
 
 
     @ApiOperation(value = "获取中港子订单详情 mainOrderNo=主订单号")
-    @RequestMapping(value = "/getOrderTransportDetails")
-    public CommonResult<InputOrderTransportVO> getOrderTransport(@RequestBody Map<String, String> map) {
+    @PostMapping(value = "/getOrderTransportDetails")
+    public CommonResult<InputOrderTransportVO> getOrderTransportDetails(@RequestBody Map<String, String> map) {
         String mainOrderNo = MapUtil.getStr(map, "mainOrderNo");
         if (StringUtils.isEmpty(mainOrderNo)) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        InputOrderTransportVO inputOrderTransportVO = orderTransportService.getOrderTransport(mainOrderNo);
+        InputOrderTransportVO inputOrderTransportVO = orderTransportService.getOrderDetails(mainOrderNo, null);
         return CommonResult.success(inputOrderTransportVO);
     }
 
+
+    private void msgPush(OrderTransport orderTransport) {
+
+    }
 
 }
 

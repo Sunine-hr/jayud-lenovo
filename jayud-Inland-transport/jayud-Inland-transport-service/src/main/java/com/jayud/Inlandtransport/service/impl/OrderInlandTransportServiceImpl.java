@@ -414,14 +414,22 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
 
 
     @Override
-    public Integer getNumByStatus(String status, List<Long> legalIds) {
+    public Integer getNumByStatus(String status, List<Long> legalIds, Map<String, Object> datas) {
         Integer num = this.baseMapper.getNumByStatus(status, legalIds);
         switch (status) {
-            case "inlandFeeCheck":
+            case "CostAudit":
                 List<OrderInlandTransport> list = this.getByLegalEntityId(legalIds);
                 if (org.apache.commons.collections4.CollectionUtils.isEmpty(list)) return num;
                 List<String> orderNos = list.stream().map(OrderInlandTransport::getOrderNo).collect(Collectors.toList());
                 num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.NL.getSignOne(), legalIds, orderNos).getData();
+                break;
+            case "inlandReceiverCheck":
+                Map<String, Integer> costNum = (Map<String, Integer>) datas.get(status);
+                num = costNum.get("B_1");
+                break;
+            case "inlandPayCheck":
+                costNum = (Map<String, Integer>) datas.get(status);
+                num = costNum.get("B_1");
                 break;
             default:
                 num = this.baseMapper.getNumByStatus(status, legalIds);
@@ -446,6 +454,21 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         QueryWrapper<OrderInlandTransport> condition = new QueryWrapper<>();
         condition.lambda().in(OrderInlandTransport::getLegalEntityId, legalIds);
         return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    @Transactional
+    public void editGoods(OrderInlandTransportDetails from) {
+        OrderInlandTransport orderInlandTransport = new OrderInlandTransport().setId(from.getId())
+                .setVehicleSize(from.getVehicleSize());
+
+        List<OrderDeliveryAddress> pickUpAddressList = from.getPickUpAddressList();
+        List<OrderDeliveryAddress> orderDeliveryAddressList = from.getOrderDeliveryAddressList();
+        pickUpAddressList.addAll(orderDeliveryAddressList);
+        ApiResult result = this.omsClient.addDeliveryAddress(pickUpAddressList);
+        if (result.isOk()) {
+            this.updateById(orderInlandTransport);
+        }
     }
 
 }

@@ -1,6 +1,8 @@
 package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.enums.EmploymentFeeStatusEnum;
 import com.jayud.oms.model.po.DriverEmploymentFee;
@@ -78,8 +80,10 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
             OrderPaymentCost paymentCost = ConvertUtil.convert(driverEmploymentFee, OrderPaymentCost.class);
             paymentCost.setCustomerCode(driverEmploymentFee.getSupplierCode())
                     .setCustomerName(driverEmploymentFee.getSupplierName())
-                    .setSubType("zgys");
-
+                    .setSubType(SubOrderSignEnum.ZGYS.getSignOne())
+                    .setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()))
+                    .setDriverCostId(driverEmploymentFee.getId())
+                    .setExchangeRate(driverEmploymentFee.getExchangeRate());
 
             DriverEmploymentFee employmentFee = new DriverEmploymentFee()
                     .setId(driverEmploymentFee.getId())
@@ -96,6 +100,21 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
     @Override
     public List<DriverEmploymentFeeVO> getEmploymentFeeInfo(String orderNo) {
         return this.baseMapper.getEmploymentFeeInfo(orderNo);
+    }
+
+    @Override
+    public List<DriverEmploymentFee> getByCondition(DriverEmploymentFee driverEmploymentFee) {
+        return this.baseMapper.selectList(new QueryWrapper<>(driverEmploymentFee));
+    }
+
+    @Override
+    public List<DriverEmploymentFee> getByOrderNos(List<String> orderNos, String status) {
+        QueryWrapper<DriverEmploymentFee> condition = new QueryWrapper<>();
+        condition.lambda().in(DriverEmploymentFee::getOrderNo, orderNos);
+        if (StringUtils.isNotEmpty(status)) {
+            condition.lambda().eq(DriverEmploymentFee::getStatus, status);
+        }
+        return this.baseMapper.selectList(condition);
     }
 
 

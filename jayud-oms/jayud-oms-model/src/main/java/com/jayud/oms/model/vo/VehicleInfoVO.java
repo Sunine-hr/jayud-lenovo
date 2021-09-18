@@ -43,6 +43,9 @@ public class VehicleInfoVO {
     @ApiModelProperty(value = "供应商id")
     private Long supplierId;
 
+    @ApiModelProperty(value = "供应商code")
+    private String supplierCode;
+
     @ApiModelProperty(value = "供应商名字")
     private String supplierName;
 

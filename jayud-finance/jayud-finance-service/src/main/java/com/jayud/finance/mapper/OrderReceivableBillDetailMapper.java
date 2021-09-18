@@ -63,9 +63,10 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
      * 预览账单分页查询
      *
      * @param billNo
+     * @param cmd
      * @return
      */
-    List<ViewBilToOrderVO> viewSBillDetail(@Param("billNo") String billNo);
+    List<ViewBilToOrderVO> viewSBillDetail(@Param("billNo") String billNo, @Param("cmd") String cmd);
 
     /**
      * 查询账单明细
@@ -156,4 +157,11 @@ public interface OrderReceivableBillDetailMapper extends BaseMapper<OrderReceiva
                                                                @Param("subType") String subType, @Param("orderNo") String orderNo);
 
     List<ProfitStatementBillDetailsVO> statisticsBillByCostIds(@Param("reCostIds") List<String> reCostIds);
+
+    List<Map<String, Object>> getBillingStatusNum(@Param("userName") String userName,
+                                                  @Param("isMain") boolean isMain,
+                                                  @Param("subType") String subType);
+
+    List<Map<String, Object>> getPendingBillStatusNum(@Param("costIds") List<Long> costIds, @Param("userName") String userName, @Param("legalIds") List<Long> legalIds,
+                                                      @Param("isMain") boolean isMain, @Param("subType") String subType);
 }

@@ -5,7 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@SpringBootApplication(scanBasePackages = "com.jayud")
+@SpringBootApplication(scanBasePackages = {"com.jayud.oms.security","com.jayud.common",
+        "com.jayud.oms.service","com.jayud.oms.mapper","com.jayud.oms.controller","com.jayud.oms.schedule"})
 @EnableDiscoveryClient
 @EnableFeignClients
 public class JayudOmsMiniAppApplication {

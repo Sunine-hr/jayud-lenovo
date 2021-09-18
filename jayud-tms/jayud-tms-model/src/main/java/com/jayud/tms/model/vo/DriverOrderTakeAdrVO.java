@@ -61,6 +61,9 @@ public class DriverOrderTakeAdrVO {
     @ApiModelProperty(value = "详细地址")
     private String address;
 
+    @ApiModelProperty(value = "经纬度")
+    private String loAndLa;
+
     public void setAddress(String address) {
         this.address =
                 (StringUtils.isEmpty(this.province) ? "" : this.province)

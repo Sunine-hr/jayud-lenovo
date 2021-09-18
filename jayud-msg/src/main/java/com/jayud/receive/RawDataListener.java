@@ -1,6 +1,7 @@
 package com.jayud.receive;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.enums.KafkaMsgEnums;
@@ -248,6 +249,32 @@ public class RawDataListener {
 //                kafkaTemplate.send(topic, key, value);
             }
         }
+    }
+
+
+    /**
+     * 消息推送
+     */
+    @KafkaListener(topics = {"${kafka.consumer.topic.msgPushTask}"}, groupId = "${kafka.consumer.group.id}")
+    public void msgPushListener(ConsumerRecord<?, ?> record) {
+        String value = (String) record.value();
+        String key = (String) record.key();
+        String topic = record.topic();
+        long offset = record.offset();
+        //消费信息
+        log.info("kafka消息推送信息消费：offset={} topic={} key={} value={}", offset, topic, key, value);
+        if (StringUtils.isEmpty(key)) {
+            return;
+        }
+        ApiResult result = null;
+        if (match(com.jayud.common.enums.KafkaMsgEnums.MESSAGE_PUSH_TASK, record)) {
+            log.info("消息推送...");
+            result = this.omsClient.createPushTask(value);
+            if (result.getCode() != HttpStatus.SC_OK) {
+                log.error("消息推送 message={}", result.getMsg());
+            }
+        }
+
     }
 
 

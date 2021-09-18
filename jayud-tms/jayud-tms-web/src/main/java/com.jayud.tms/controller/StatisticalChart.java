@@ -97,7 +97,7 @@ public class StatisticalChart {
 
         tmp.forEach((k, v) -> {
             Map<String, Object> map = new HashMap<>();
-            Integer num = this.orderTransportService.getNumByStatus(v, dataControl);
+            Integer num = this.orderTransportService.getNumByStatus(v, dataControl, new HashMap<>());
             map.put("name", k);
             map.put("num", num);
             result.add(map);

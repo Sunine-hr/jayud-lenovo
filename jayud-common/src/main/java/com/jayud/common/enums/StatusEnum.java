@@ -16,7 +16,7 @@ public enum StatusEnum {
     private Integer code;
     private String desc;
 
-    public static String getDesc(String code) {
+    public static String getDesc(Integer code) {
         for (StatusEnum value : values()) {
             if (Objects.equals(code, value.getCode())) {
                 return value.getDesc();

@@ -12,4 +12,6 @@ public interface MailService {
      * @return
      */
     Boolean sendMailWithAttachments(Email emailForm);
+
+    Boolean send(com.jayud.common.entity.Email email);
 }

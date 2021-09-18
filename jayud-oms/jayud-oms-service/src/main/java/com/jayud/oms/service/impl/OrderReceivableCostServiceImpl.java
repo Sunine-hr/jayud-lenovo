@@ -6,8 +6,11 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.mapper.OrderReceivableCostMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
+import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.InputReceivableCostVO;
+import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
+import com.jayud.oms.model.vo.StatisticsOrderBillDetailsVO;
 import com.jayud.oms.service.ICurrencyInfoService;
 import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.oms.service.IOrderReceivableCostService;
@@ -17,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -312,12 +316,11 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
     @Override
     public Map<String, Map<String, BigDecimal>> statisticalReCostByOrderNos(List<OrderReceivableCost> list, Boolean isMain) {
         Map<String, List<OrderReceivableCost>> group = null;
-//        if (isMain) {
-//
-//        } else {
-//            group = list.stream().collect(Collectors.groupingBy(OrderReceivableCost::getOrderNo));
-//        }
-        group = list.stream().collect(Collectors.groupingBy(e -> e.getMainOrderNo() + "~" + e.getOrderNo()));
+        if (isMain) {
+            group = list.stream().collect(Collectors.groupingBy(OrderReceivableCost::getMainOrderNo));
+        } else {
+            group = list.stream().collect(Collectors.groupingBy(e -> e.getMainOrderNo() + "~" + e.getOrderNo()));
+        }
 
         List<CurrencyInfo> currencyInfos = currencyInfoService.list();
         Map<String, String> currencyMap = currencyInfos.stream().collect(Collectors.toMap(CurrencyInfo::getCurrencyCode, CurrencyInfo::getCurrencyName));
@@ -365,5 +368,86 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
         condition.lambda().in(OrderReceivableCost::getMainOrderNo, mainOrderNos);
         condition.lambda().in(OrderReceivableCost::getIsSumToMain, true);
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 统计应收金额
+     *
+     * @param orderNos
+     * @param subType
+     * @param status
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> statisticsOrderAmount(List<String> orderNos, String subType, List<String> status) {
+        return this.baseMapper.statisticsOrderAmount(orderNos, subType, status);
+    }
+
+    /**
+     * 统计主订单费用
+     *
+     * @param form
+     * @param legalIds
+     * @param status
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> statisticsMainOrderCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
+        return this.baseMapper.statisticsMainOrderCost(form, legalIds, status);
+    }
+
+
+    @Override
+    public List<StatisticsOrderBaseCostVO> getBaseStatisticsAllCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
+        List<StatisticsOrderBaseCostVO> costs = this.baseMapper.getBaseStatisticsAllCost(form, legalIds, status);
+        Map<String, List<StatisticsOrderBaseCostVO>> map = costs.stream().collect(Collectors.groupingBy(StatisticsOrderBaseCostVO::getMainOrderNo));
+
+        List<StatisticsOrderBaseCostVO> tmps = new ArrayList<>();
+        map.forEach((k, v) -> {
+            v.forEach(e -> {
+                if (e.getIsSumToMain()) {
+                    tmps.add(e);
+                } else if (!e.getIsInternal()) {
+                    tmps.add(e);
+                }
+            });
+
+        });
+        return tmps;
+    }
+
+    @Override
+    public List<StatisticsOrderBillDetailsVO> statisticalMainOrderBillDetails(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
+        return this.baseMapper.statisticalMainOrderBillDetails(form, legalIds, status);
+    }
+
+    /**
+     * 获取出账的费用ids
+     *
+     * @param userName
+     * @param legalIds
+     * @param subType
+     * @return
+     */
+    @Override
+    public List<Long> getReBillCostIdsBySubType(String userName, List<Long> legalIds, String subType) {
+        QueryWrapper<OrderReceivableCost> condition = new QueryWrapper<>();
+        condition.lambda().select(OrderReceivableCost::getId);
+        if (SubOrderSignEnum.MAIN.getSignOne().equals(subType)) {
+            condition.lambda().eq(OrderReceivableCost::getIsSumToMain, true);
+        } else {
+            condition.lambda().eq(OrderReceivableCost::getIsSumToMain, false)
+                    .eq(OrderReceivableCost::getSubType, subType);
+        }
+        if (!StringUtils.isEmpty(userName)) {
+            condition.lambda().eq(OrderReceivableCost::getCreatedUser, userName);
+        }
+        if (!CollectionUtils.isEmpty(legalIds)) {
+            condition.lambda().in(OrderReceivableCost::getLegalId, legalIds);
+        }
+
+        condition.lambda().eq(OrderReceivableCost::getIsBill, 2);
+        List<Long> costIds = this.baseMapper.selectList(condition).stream().map(OrderReceivableCost::getId).collect(Collectors.toList());
+        return costIds;
     }
 }

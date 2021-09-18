@@ -2,6 +2,7 @@ package com.jayud.customs.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONObject;
@@ -14,7 +15,6 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.HttpRequester;
-import com.jayud.common.utils.RsaEncryptUtil;
 import com.jayud.customs.feign.FinanceClient;
 import com.jayud.customs.feign.MsgClient;
 import com.jayud.customs.model.bo.*;
@@ -28,12 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -308,14 +303,15 @@ public class ICustomsApiServiceImpl implements ICustomsApiService {
                         Wrappers.<YunbaoguanReceivableCost>lambdaQuery()
                                 .eq(YunbaoguanReceivableCost::getApplyNo, form.getApplyNo()));
                 YunbaoguanReceivableCost yunbaoguanReceivableCost = new YunbaoguanReceivableCost();
-                receivableCost.setIsComplete(false);
-                if (receivableCost.getId() == null) {
+                if(ObjectUtil.isEmpty(receivableCost)){
                     yunbaoguanReceivableCost.setApplyNo(form.getApplyNo());
                     yunbaoguanReceivableCost.setUid(form.getUid());
                     yunbaoguanReceivableCost.setReceivableCostData(JSONUtil.toJsonStr(receivable));
                     yunbaoguanReceivableCost.setCreatedTime(LocalDateTime.now());
                     yunbaoguanReceivableCost.setUpdatedTime(LocalDateTime.now());
+                    yunbaoguanReceivableCost.setIsComplete(false);
                 } else {
+                    receivableCost.setIsComplete(false);
                     receivableCost.setReceivableCostData(JSONUtil.toJsonStr(receivable));
                     receivableCost.setUpdatedTime(LocalDateTime.now());
                     yunbaoguanReceivableCost = receivableCost;

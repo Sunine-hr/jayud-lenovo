@@ -368,6 +368,8 @@ public class OrderInfoController {
     public CommonResult<OrderInfoTemplate> getSubOrderDetail(@RequestBody @Valid GetOrderDetailForm form) {
         InputOrderVO inputOrderVO = orderInfoService.getOrderDetail(form);
 
+        InputMainOrderVO orderForm = inputOrderVO.getOrderForm();
+
         OrderInfoTemplate orderInfoTemplate = new OrderInfoTemplate();
         //中港模板
         InputOrderTransportVO orderTransportForm = inputOrderVO.getOrderTransportForm();
@@ -467,7 +469,7 @@ public class OrderInfoController {
                 }
             }
             Map<String, Object> costStatus = this.orderInfoService.getCostStatus(null, subOrderNos);
-            templates.forEach(e -> e.assembleCostStatus(e.getOrderNo(), costStatus));
+            templates.forEach(e -> e.setCustomerCode(orderForm.getCustomerCode()).assembleCostStatus(e.getOrderNo(), costStatus));
 
             Template<TrailerOrderTemplate> template = new Template<TrailerOrderTemplate>() {
             }.setList(templates);

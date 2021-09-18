@@ -68,6 +68,10 @@
             <result column="rate" property="rate"/>
             <result column="buyer_id" property="buyerId"/>
             <result column="status" property="status"/>
+            <result column="app_key" property="appKey"/>
+            <result column="gps_address" property="gpsAddress"/>
+            <result column="gps_type" property="gpsType"/>
+            <result column="gps_req_param" property="gpsReqParam"/>
         </association>
     </resultMap>
 
@@ -116,16 +120,18 @@
         </where>
         order by id desc
     </select>
-    <select id="findVehicleByDriverName" resultType="com.jayud.oms.model.vo.VehicleInfoVO">
+    <select id="findTmsVehicle" resultType="com.jayud.oms.model.vo.VehicleInfoVO">
         select
             w.id,
             plate_number plateNumber,
             hk_number hkNumber,
             w.supplier_id supplierId,
-            s.supplier_ch_name supplierName
+            s.supplier_ch_name supplierName,
+            s.supplier_code,
+            w.driver_info_ids
         from
             vehicle_info w left join supplier_info s on w.supplier_id=s.id
-        where w.id in (select di.vehicle_id from driver_info di where di.`name` = #{driverName})
+        where w.type=0
     </select>
 
     <select id="findVehicleSize" resultType="com.jayud.oms.model.vo.VehicleSizeInfoVO">
@@ -139,5 +145,19 @@
         vehicle_info v
         left join supplier_info s on v.supplier_id=s.id
         where v.id=#{vehicleId}
+    </select>
+
+
+    <select id="getDetailsByPlateNum" parameterType="java.lang.Long" resultMap="VehicleDetailsMap">
+        select
+        v.*,s.*
+        from
+        vehicle_info v
+        left join supplier_info s on v.supplier_id=s.id
+        where v.plate_number in
+        <foreach collection="plateNumbers" open="(" separator="," close=")" item="item">
+            #{item}
+        </foreach>
+
     </select>
 </mapper>

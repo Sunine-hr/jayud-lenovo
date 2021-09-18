@@ -71,4 +71,6 @@ public interface IOrderBillCostTotalService extends IService<OrderBillCostTotal>
      * @return
      */
     List<Map<String, Object>> totalCurrencyAmount(List<String> billNos);
+
+    List<OrderBillCostTotal> getByCondition(OrderBillCostTotal orderBillCostTotal);
 }

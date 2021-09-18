@@ -9,6 +9,7 @@ import com.jayud.oms.model.vo.TrailerDispatchVO;
 import com.jayud.oms.model.vo.TrailerOrderAddressVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.List;
  * @since 2021-03-01
  */
 @Data
+@Accessors(chain = true)
 @Slf4j
 public class TrailerOrderTemplate extends BaseOrderTemplate {
 
@@ -174,6 +176,9 @@ public class TrailerOrderTemplate extends BaseOrderTemplate {
 //
 //    @ApiModelProperty(value = "总箱数")
 //    private String totalXAmountName;
+
+    @ApiModelProperty(value = "客户code")
+    private String customerCode;
 
 
     public void setStatus(String status) {

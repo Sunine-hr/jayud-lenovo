@@ -2,9 +2,12 @@ package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.GetCostDetailForm;
+import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderPaymentCost;
+import com.jayud.oms.model.vo.DriverBillCostVO;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
+import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -76,7 +79,7 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
     /**
      * 查询待处理费用审核
      */
-    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds);
+    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds, String userName);
 
     /**
      * 根据主订单号获取应收绑定数据
@@ -149,6 +152,7 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
 
     /**
      * 根据订单号修改
+     *
      * @param mainOrderNo
      * @param subOrder
      * @param orderPaymentCost
@@ -157,8 +161,34 @@ public interface IOrderPaymentCostService extends IService<OrderPaymentCost> {
 
     /**
      * 根据主订单号集合获取应付费用
+     *
      * @param mainOrderNos
      * @return
      */
     List<OrderPaymentCost> getOrderPaymentCostByMainOrderNos(List<String> mainOrderNos);
+
+    /**
+     * 统计主订单费用
+     *
+     * @param form
+     * @param legalIds
+     * @param status
+     * @return
+     */
+    public List<Map<String, Object>> statisticsMainOrderCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status);
+
+
+    List<StatisticsOrderBaseCostVO> getBaseStatisticsAllCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status);
+
+    /**
+     * 查询司机费用
+     * @param orderNos
+     * @param status
+     * @param time
+     * @param employIds
+     * @return
+     */
+    public List<DriverBillCostVO> getDriverBillCost(List<String> orderNos, List<String> status, String time, List<Long> employIds);
+
+    List<Long> getPayBillCostIdsBySubType(String userName, List<Long> legalIds, String subType);
 }

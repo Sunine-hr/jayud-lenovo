@@ -59,12 +59,13 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
 
     @Override
     public int getDriverPendingOrderNum(Long driverId, List<String> orderNos) {
-        QueryWrapper<OrderSendCars> condition = new QueryWrapper<>();
-        condition.lambda().eq(OrderSendCars::getDriverInfoId, driverId);
-        if (CollectionUtils.isNotEmpty(orderNos)) {
-            condition.lambda().notIn(OrderSendCars::getOrderNo, orderNos);
-        }
-        return this.count(condition);
+//        QueryWrapper<OrderSendCars> condition = new QueryWrapper<>();
+//        condition.lambda().and(e -> e.eq(OrderSendCars::getDriverInfoId, driverId).or().eq(OrderSendCars::getJockeyId, driverId));
+//        if (CollectionUtils.isNotEmpty(orderNos)) {
+//            condition.lambda().notIn(OrderSendCars::getOrderNo, orderNos);
+//        }
+        int count = this.baseMapper.getDriverPendingOrderNum(driverId, orderNos);
+        return count;
     }
 
     /**
@@ -147,7 +148,7 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
         switch (CreateUserTypeEnum.getEnum(orderTransport.getCreateUserType())) {
             case VIVO:
                 if (OrderStatusEnum.TMS_T_4_1.getCode().equals(form.getCmd())
-                ||OrderStatusEnum.TMS_T_5_1.getCode().equals(form.getCmd())) {
+                        || OrderStatusEnum.TMS_T_5_1.getCode().equals(form.getCmd())) {
                     ApiResult result = freightAirApiClient.forwarderDispatchRejected(orderTransport.getThirdPartyOrderNo());
                     if (result.getCode() != HttpStatus.SC_OK) {
                         log.error("请求vivo派车推送接口失败 msg={}", result.getMsg());
@@ -161,6 +162,32 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
         }
 
         return true;
+    }
+
+    @Override
+    public List<OrderSendCars> getByExcludeStatus(List<String> excludeStatus) {
+       return this.baseMapper.getByExcludeStatus(excludeStatus);
+    }
+
+    @Override
+    public List<OrderSendCarsVO> getByStatus(List<String> status) {
+        return this.baseMapper.getByStatus(status);
+    }
+
+    @Override
+    public OrderSendCarsVO getDetails(String orderNo) {
+        //获取派车信息
+//        OrderSendCarsVO tmp = this.baseMapper.getOrderSendInfo(orderNo);
+//        OrderSendCarsVO sendCarsVO = ConvertUtil.convert(tmp, OrderSendCarsVO.class);
+        OrderSendCars orderSendCars = this.baseMapper.selectOne(new QueryWrapper<>(new OrderSendCars().setOrderNo(orderNo)));
+        OrderSendCarsVO sendCarsVO = ConvertUtil.convert(orderSendCars, OrderSendCarsVO.class);
+        //车辆信息
+        Object vehAndSupp = this.omsClient.getVehicleAndSupplierInfo(sendCarsVO.getVehicleId()).getData();
+        sendCarsVO.assembleVehicle(vehAndSupp);
+        //司机信息
+        Object driverObj = this.omsClient.getDriverById(sendCarsVO.getDriverInfoId()).getData();
+        sendCarsVO.assembleDriver(driverObj);
+        return sendCarsVO;
     }
 
 
@@ -190,7 +217,7 @@ public class OrderSendCarsServiceImpl extends ServiceImpl<OrderSendCarsMapper, O
         ApiResult result = freightAirApiClient.forwarderVehicleInfo(JSONUtil.toJsonStr(msg));
         if (result.getCode() != HttpStatus.SC_OK) {
             log.error("推送派车消息给vivo失败 msg={}", result.getMsg());
-            throw new JayudBizException(400,result.getMsg());
+            throw new JayudBizException(400, result.getMsg());
         }
     }
 

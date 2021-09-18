@@ -45,6 +45,9 @@ public class DriverOrderTransportVO {
     @ApiModelProperty(value = "区(提货)")
     private String pickUpArea;
 
+    @ApiModelProperty(value = "提货经纬度")
+    private String pickLaAndLo;
+
     @ApiModelProperty(value = "省（送货）")
     private String receivingProvince;
 
@@ -54,19 +57,22 @@ public class DriverOrderTransportVO {
     @ApiModelProperty(value = "区(送货)")
     private String receivingArea;
 
+    @ApiModelProperty(value = "送货经纬度")
+    private String receivingLaAndLo;
+
     @ApiModelProperty(value = "货物信息")
     private String goodsDesc;
 
     @ApiModelProperty(value = "送货详细地址")
-    @JsonIgnore
+//    @JsonIgnore
     private String address;
 
     @ApiModelProperty(value = "联系人")
-    @JsonIgnore
+//    @JsonIgnore
     private String contacts;
 
     @ApiModelProperty(value = "联系电话")
-    @JsonIgnore
+//    @JsonIgnore
     private String contactNumber;
 
     @ApiModelProperty(value = "中港订单时间")
@@ -77,11 +83,13 @@ public class DriverOrderTransportVO {
     private List<DriverOrderTakeAdrVO> pickUpGoodsList = new ArrayList<>();
 
     @ApiModelProperty(value = "送货信息集合")
-    @JsonIgnore
     private List<DriverOrderTakeAdrVO> receivingGoodsList = new ArrayList<>();
 
     @ApiModelProperty(value = "送货信息")
     private DriverOrderTakeAdrVO receivingGoods;
+
+    @ApiModelProperty(value = "是否虚拟仓")
+    private Boolean isVirtual;
 
     @ApiModelProperty(value = "是否接单")
     private boolean acceptOrder;
@@ -104,14 +112,46 @@ public class DriverOrderTransportVO {
     }
 
     public void assemblyAddr() {
-        if (receivingGoodsList.size() == 1) {
-            DriverOrderTakeAdrVO receivingGoods = receivingGoodsList.get(0);
-            this.receivingProvince = receivingGoods.getProvince();
-            this.receivingCity = StringUtils.isEmpty(receivingGoods.getArea()) ? receivingGoods.getProvince() : receivingGoods.getCity();
-            this.receivingArea = StringUtils.isEmpty(receivingGoods.getArea()) ? receivingGoods.getCity() : receivingGoods.getArea();
-            this.receivingGoods = receivingGoods;
-        }
-        if (receivingGoodsList.size() > 1) {
+//        if (receivingGoodsList.size() == 1) {
+//            DriverOrderTakeAdrVO receivingGoods = receivingGoodsList.get(0);
+//            this.receivingProvince = receivingGoods.getProvince();
+//            this.receivingCity = StringUtils.isEmpty(receivingGoods.getArea()) ? receivingGoods.getProvince() : receivingGoods.getCity();
+//            this.receivingArea = StringUtils.isEmpty(receivingGoods.getArea()) ? receivingGoods.getCity() : receivingGoods.getArea();
+//            this.receivingGoods = receivingGoods;
+//        }
+//        if (receivingGoodsList.size() > 1) {
+//            receivingGoods = new DriverOrderTakeAdrVO();
+//            receivingGoods.setProvince(this.receivingProvince);
+//            String city = "";
+//            String area = "";
+//            if (StringUtils.isEmpty(this.receivingArea)) {
+//                city = this.receivingProvince;
+//                area = this.receivingCity;
+//            } else {
+//                city = this.receivingCity;
+//                area = this.receivingArea;
+//            }
+//            receivingGoods.setCity(city);
+//            receivingGoods.setArea(area);
+//            receivingGoods.setAddress(this.address);
+//            receivingGoods.setPhone(this.contactNumber);
+//            receivingGoods.setContacts(this.contacts);
+//            //外部送货地址
+//            this.receivingCity = city;
+//            this.receivingArea = area;
+//        }
+
+        //虚拟仓展示多个地址
+        if (isVirtual != null && isVirtual) {
+            if (receivingGoodsList.size() > 0) {
+                DriverOrderTakeAdrVO receivingGoods = receivingGoodsList.get(0);
+                this.receivingProvince = receivingGoods.getProvince();
+                this.receivingCity = StringUtils.isEmpty(receivingGoods.getArea()) ? receivingGoods.getProvince() : receivingGoods.getCity();
+                this.receivingArea = StringUtils.isEmpty(receivingGoods.getArea()) ? receivingGoods.getCity() : receivingGoods.getArea();
+                this.receivingLaAndLo = receivingGoods.getLoAndLa();
+                this.receivingGoods = receivingGoods;
+            }
+        } else {
             receivingGoods = new DriverOrderTakeAdrVO();
             receivingGoods.setProvince(this.receivingProvince);
             String city = "";
@@ -132,11 +172,14 @@ public class DriverOrderTransportVO {
             this.receivingCity = city;
             this.receivingArea = area;
         }
+
+
         if (!CollectionUtils.isEmpty(pickUpGoodsList)) {
             DriverOrderTakeAdrVO pickUpGoods = pickUpGoodsList.get(0);
             this.pickUpProvince = pickUpGoods.getProvince();
             this.pickUpCity = StringUtils.isEmpty(pickUpGoods.getArea()) ? pickUpGoods.getProvince() : pickUpGoods.getCity();
             this.pickUpArea = StringUtils.isEmpty(pickUpGoods.getArea()) ? pickUpGoods.getCity() : pickUpGoods.getArea();
+            this.pickLaAndLo = pickUpGoods.getLoAndLa();
         }
     }
 

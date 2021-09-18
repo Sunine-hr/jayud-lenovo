@@ -15,6 +15,7 @@ import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.model.vo.CostTypeVO;
 import com.jayud.oms.model.vo.InitComboxStrVO;
+import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.service.ICostInfoService;
 import com.jayud.oms.service.ICostTypeService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,9 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -238,7 +237,29 @@ public class CostInfoServiceImpl extends ServiceImpl<CostInfoMapper, CostInfo> i
     @Override
     public String getCostNameByCostCode(String costCode) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("id_code",costCode);
+        queryWrapper.eq("id_code", costCode);
         return this.getOne(queryWrapper).getName();
+    }
+
+    @Override
+    public Map<String, List<InitComboxVO>> initCostTypeByCostInfoCode() {
+        List<CostInfo> costInfos = this.getCostInfoByStatus(StatusEnum.ENABLE.getCode());
+        Map<Long, CostType> costTypeMap = this.costTypeService.getEnableCostType().stream().collect(Collectors.toMap(CostType::getId, e -> e));
+        Map<String, List<InitComboxVO>> map = new HashMap<>();
+        for (CostInfo costInfo : costInfos) {
+            String[] split = costInfo.getCids().split(",");
+            List<InitComboxVO> costTypeComboxs = new ArrayList<>();
+            for (String s : split) {
+                if (StringUtils.isEmpty(s)) continue;
+                CostType costType = costTypeMap.get(Long.valueOf(s));
+                if (costType == null) continue;
+                InitComboxVO initComboxVO = new InitComboxVO();
+                initComboxVO.setName(costType.getCodeName());
+                initComboxVO.setId(costType.getId());
+                costTypeComboxs.add(initComboxVO);
+            }
+            map.put(costInfo.getIdCode(), costTypeComboxs);
+        }
+        return map;
     }
 }

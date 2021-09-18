@@ -2,6 +2,7 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -12,10 +13,13 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
+import com.jayud.common.entity.MapEntity;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.*;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.*;
 import com.jayud.oms.feign.FileClient;
+import com.jayud.oms.feign.FinanceClient;
 import com.jayud.oms.feign.OauthClient;
 import com.jayud.oms.feign.TmsClient;
 import com.jayud.oms.model.bo.*;
@@ -36,6 +40,10 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 
@@ -46,34 +54,24 @@ public class ExternalApiController {
 
     @Autowired
     IOrderInfoService orderInfoService;
-
     @Autowired
     FileClient fileClient;
-
     @Autowired
     ILogisticsTrackService logisticsTrackService;
-
     @Autowired
     RedisUtils redisUtils;
-
     @Autowired
     IAuditInfoService auditInfoService;
-
     @Autowired
     IWarehouseInfoService warehouseInfoService;
-
     @Autowired
     ISupplierInfoService supplierInfoService;
-
     @Autowired
     IDriverInfoService driverInfoService;
-
     @Autowired
     IOrderPaymentCostService paymentCostService;
-
     @Autowired
     IOrderReceivableCostService receivableCostService;
-
     @Autowired
     ICurrencyInfoService currencyInfoService;
     @Autowired
@@ -110,6 +108,23 @@ public class ExternalApiController {
     private IProductBizService productBizService;
     @Autowired
     private IProductClassifyService productClassifyService;
+    @Autowired
+    private IMsgPushRecordService msgPushRecordService;
+    @Autowired
+    private WechatMsgService wechatMsgService;
+    @Autowired
+    private ISystemConfService systemConfService;
+    @Autowired
+    private MapPositioningService mapPositioningService;
+    @Autowired
+    private GPSPositioningApiService gpsPositioningApiService;
+    @Autowired
+    private IGpsPositioningService gpsPositioningService;
+    @Autowired
+    private ICostGenreTaxRateService costGenreTaxRateService;
+    @Autowired
+    private FinanceClient financeClient;
+
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -1291,12 +1306,15 @@ public class ExternalApiController {
         tmp.put("外部报关放行", "outPortPass");
         tmp.put("通关前审核", "portPassCheck");
         tmp.put("费用审核", "feeCheck");
+        tmp.put("应收对账单审核", "mainReceiverCheck");
+        tmp.put("应付对账单审核", "mainPayCheck");
 
         List<Map<String, Object>> result = new ArrayList<>();
 
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
-
+        Map<String, Integer> reBillNumMap = this.financeClient.getPendingBillStatusNum(null, legalIds, 0, true, SubOrderSignEnum.MAIN.getSignOne()).getData();
+        Map<String, Integer> payBillNumMap = this.financeClient.getPendingBillStatusNum(null, legalIds, 1, true, SubOrderSignEnum.MAIN.getSignOne()).getData();
         for (Map<String, Object> menus : menusList) {
 
             Map<String, Object> map = new HashMap<>();
@@ -1309,10 +1327,16 @@ public class ExternalApiController {
                         num = this.orderInfoService.pendingExternalCustomsDeclarationNum(legalIds);
                         break;
                     case "portPassCheck":
-                        num = this.orderInfoService.filterGoCustomsAudit(null, legalIds).size();
+                        num = this.orderInfoService.filterGoCustomsAudit(null, legalIds, null).size();
                         break;
                     case "feeCheck":
-                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null);
+                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null, null);
+                        break;
+                    case "mainReceiverCheck":
+                        num = reBillNumMap.get("B_1");
+                        break;
+                    case "mainPayCheck":
+                        num=payBillNumMap.get("B_1");
                         break;
                 }
 
@@ -1559,7 +1583,7 @@ public class ExternalApiController {
     public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
                                                    @RequestParam("legalIds") List<Long> legalIds,
                                                    @RequestParam("orderNos") List<String> orderNos) {
-        Integer num = this.costCommonService.auditPendingExpenses(subType, legalIds, orderNos);
+        Integer num = this.costCommonService.auditPendingExpenses(subType, legalIds, orderNos, null);
         return ApiResult.ok(num);
     }
 
@@ -1870,6 +1894,350 @@ public class ExternalApiController {
     @RequestMapping(value = "/api/getPortInfoALL")
     public ApiResult<Map<String, String>> getPortInfoALL() {
         return ApiResult.ok(this.portInfoService.list().stream().collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName())));
+    }
+
+    @ApiOperation(value = "查询字典")
+    @PostMapping(value = "/api/findDict")
+    public ApiResult<List<Dict>> findDictType(@RequestParam("dictTypeCode") String dictTypeCode) {
+        QueryWrapper<Dict> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Dict::getDictTypeCode, dictTypeCode);
+        List<Dict> dictList = this.dictService.list(queryWrapper);
+        return ApiResult.ok(dictList);
+    }
+
+    /**
+     * 创建消息推送任务
+     */
+    @ApiOperation(value = "创建消息推送任务")
+    @RequestMapping(value = "/api/createPushTask")
+    public ApiResult createPushTask(@RequestBody String msg) {
+        JSONObject jsonObject = new JSONObject(msg);
+        String triggerStatus = jsonObject.getStr("triggerStatus");
+        Map<String, Object> sqlParam = jsonObject.get("sqlParam", Map.class);
+        LocalDateTime now = DateUtils.str2LocalDateTime(jsonObject.getStr("now"), DateUtils.DATE_TIME_PATTERN);
+        Map<String, Object> otherParam = new HashMap<>();
+        String cmd = jsonObject.getStr("cmd");
+        MsgPushInstructionEnum cmdEnum = MsgPushInstructionEnum.getEnum(cmd);
+        if (cmdEnum != null) {
+            switch (cmdEnum) {
+                case CMD1:
+                    List<Long> associatedUserId = new ArrayList<>();
+                    otherParam.put("associatedUserId", associatedUserId);
+                    break;
+            }
+        }
+
+        this.msgPushRecordService.createPushTask(triggerStatus, sqlParam, now, otherParam);
+        return ApiResult.ok();
+    }
+
+
+    @ApiOperation(value = "获取系统配置")
+    @RequestMapping(value = "/api/getSystemConf")
+    public ApiResult getSystemConf(@RequestParam("type") Integer type) {
+        List<SystemConf> list = this.systemConfService.getByCondition(new SystemConf().setType(type));
+        return ApiResult.ok(list.size() > 0 ? list.get(0) : null);
+    }
+
+
+    @ApiOperation(value = "获取企业微信token")
+    @RequestMapping(value = "/api/getEnterpriseToken")
+    public ApiResult<String> getEnterpriseToken(@RequestParam("corpid") String corpid,
+                                                @RequestParam("corpsecret") String corpsecret) {
+        JSONObject result = this.wechatMsgService.getEnterpriseToken(corpid, corpsecret, true);
+        if (!result.getInt("errcode").equals(0)) {
+            return ApiResult.error(result.getStr("errmsg"));
+        }
+        return ApiResult.ok(result.getStr("access_token"));
+    }
+
+    @ApiOperation(value = "获取企业微信部门")
+    @RequestMapping(value = "/api/getEnterpriseDep")
+    public ApiResult getEnterpriseDep(@RequestParam(value = "departmentId", required = false) Long departmentId,
+                                      @RequestParam("corpid") String corpid,
+                                      @RequestParam("corpsecret") String corpsecret,
+                                      @RequestParam("token") String token) {
+        JSONObject result = this.wechatMsgService.getEnterpriseDep(departmentId, corpid, corpsecret, token);
+        if (!result.getInt("errcode").equals(0)) {
+            return ApiResult.error(result.getStr("errmsg"));
+        }
+        return ApiResult.ok(result.getJSONArray("department"));
+    }
+
+    @ApiOperation(value = "获取企业微信部门员工详情")
+    @RequestMapping(value = "/api/getEnterpriseDepStaff")
+    public ApiResult getEnterpriseDepStaff(@RequestParam("departmentId") Long departmentId,
+                                           @RequestParam("fetchChild") boolean fetchChild,
+                                           @RequestParam("corpid") String corpid,
+                                           @RequestParam("corpsecret") String corpsecret,
+                                           @RequestParam("token") String token) {
+        JSONObject result = this.wechatMsgService.getEnterpriseDepStaff(departmentId, fetchChild, corpid, corpsecret, token);
+        if (!result.getInt("errcode").equals(0)) {
+            return ApiResult.error(result.getStr("errmsg"));
+        }
+        return ApiResult.ok(result.getJSONArray("userlist"));
+    }
+
+    /**
+     * 获取腾讯地图经纬度详情
+     *
+     * @param address
+     * @param key
+     * @return
+     */
+    @RequestMapping(value = "/api/getTencentMapLaAndLoInfo")
+    public ApiResult getTencentMapLaAndLoInfo(@RequestParam("address") String address,
+                                              @RequestParam("key") String key) {
+        if (StringUtils.isEmpty(address) || StringUtils.isEmpty(key)) {
+            return ApiResult.ok("地址/秘钥不能为空");
+        }
+        JSONObject response = this.mapPositioningService.getTencentMapLaAndLoInfo(address, key);
+        if (!"0".equals(response.getStr("status"))) {
+            return ApiResult.error(response.getStr("message"));
+        }
+        return ApiResult.ok(response.get("result"));
+
+    }
+
+    /**
+     * 获取腾讯地图经纬度
+     *
+     * @param address
+     * @param key
+     * @return
+     */
+    @RequestMapping(value = "/api/getTencentMapLaAndLo")
+    public ApiResult<MapEntity> getTencentMapLaAndLo(String address, String key) {
+        if (StringUtils.isEmpty(address) || StringUtils.isEmpty(key)) {
+            return ApiResult.ok("地址/秘钥不能为空");
+        }
+        MapEntity mapEntity = this.mapPositioningService.getTencentMapLaAndLo(address, key);
+        return ApiResult.ok(mapEntity);
+    }
+
+
+    /**
+     * 批量更新实时定位GPS
+     *
+     * @param paramMap
+     * @return
+     */
+    @RequestMapping(value = "/api/batchSyncGPSPositioning")
+    public ApiResult batchSyncGPSPositioning(@RequestBody Map<String, List<String>> paramMap) {
+        if (paramMap == null || paramMap.size() == 0) {
+            return ApiResult.ok();
+        }
+        //车牌
+        List<String> licensePlateList = new ArrayList<>();
+        List<String> orderNos = new ArrayList<>();
+        paramMap.forEach((k, v) -> {
+            licensePlateList.add(k);
+            orderNos.addAll(v);
+        });
+        //获取供应商
+        List<VehicleDetailsVO> list = vehicleInfoService.getDetailsByPlateNum(licensePlateList);
+
+        Map<String, List<VehicleDetailsVO>> tmp = list.stream().filter(e -> e.getSupplierInfoVO().getGpsType() != null).collect(Collectors.groupingBy(e -> e.getSupplierInfoVO().getGpsType() + "~" + e.getSupplierInfoVO().getSupplierCode()));
+        if (tmp == null) {
+            log.info("供应商没有配置gps厂商");
+            return ApiResult.ok();
+        }
+        //根据车牌获取gps信息
+        List<GpsPositioning> oldPositioning = this.gpsPositioningService.getByOrderNo(orderNos, 1);
+        Map<String, GpsPositioning> oldMap = oldPositioning.stream().collect(Collectors.toMap(e -> e.getPlateNumber() + "~" + e.getOrderNo(), e -> e));
+        tmp.forEach((k, v) -> {
+            String[] split = k.split("~");
+            List<String> licensePlates = new ArrayList<>();
+            SupplierInfoVO supplierInfoVO = v.get(0).getSupplierInfoVO();
+            String gpsReqParam = supplierInfoVO.getGpsReqParam();
+            Map<String, Object> paraMap = JSONUtil.toBean(gpsReqParam, Map.class);
+            paraMap.put("gpsAddress", supplierInfoVO.getGpsAddress());
+            for (VehicleDetailsVO vehicleDetailsVO : v) {
+                licensePlates.add(vehicleDetailsVO.getPlateNumber());
+            }
+            try {
+                Object obj = this.gpsPositioningApiService.getPositionsObj(licensePlates, Integer.valueOf(split[0]), paraMap);
+                List<GpsPositioning> gpsPositioning = this.gpsPositioningApiService.convertDatas(obj);
+                if (gpsPositioning != null) {
+                    //一辆车绑定多个订单
+                    List<GpsPositioning> appends = new ArrayList<>();
+                    gpsPositioning.forEach(e -> {
+                        List<String> orderNoList = paramMap.get(e.getPlateNumber());
+                        orderNoList.forEach(e1 -> {
+                            GpsPositioning convert = ConvertUtil.convert(e, GpsPositioning.class);
+                            convert.setOrderNo(e1);
+                            appends.add(convert);
+                        });
+
+                    });
+                    appends.forEach(e -> {
+                        GpsPositioning positioning = oldMap.get(e.getPlateNumber() + "~" + e.getOrderNo());
+                        if (positioning == null) {
+                            e.setCreateTime(LocalDateTime.now()).setStatus(1).setStartTime(LocalDateTime.now()).setEndTime(LocalDateTime.now());
+                        } else {
+                            e.setId(positioning.getId()).setUpdateTime(LocalDateTime.now()).setStartTime(LocalDateTime.now()).setEndTime(LocalDateTime.now());
+                        }
+                    });
+                    //同步信息
+                    this.gpsPositioningService.saveOrUpdateBatch(appends);
+                }
+            } catch (JayudBizException e) {
+                log.error("批量获取实时定位错误,gps厂商={},错误信息={}", GPSTypeEnum.getDesc(Integer.valueOf(split[0])), e.getMessage(), e);
+            }
+        });
+
+        return ApiResult.ok();
+    }
+
+
+    /**
+     * 批量更新GPS历史轨迹
+     *
+     * @param paramMap
+     * @return
+     */
+    @RequestMapping(value = "/api/batchSyncGPSHistoryPositioning")
+    public ApiResult batchSyncGPSHistoryPositioning(@RequestBody Map<String, List<Map<String, Object>>> paramMap) {
+        if (paramMap == null) {
+            return ApiResult.ok();
+        }
+        //车牌
+        List<String> licensePlateList = new ArrayList<>();
+        List<String> orderNos = new ArrayList<>();
+        paramMap.forEach((k, v) -> {
+            licensePlateList.add(k);
+            v.forEach(e -> {
+                String orderNo = MapUtil.getStr(e, "orderNo");
+                orderNos.add(orderNo);
+            });
+        });
+        //获取供应商
+        List<VehicleDetailsVO> list = vehicleInfoService.getDetailsByPlateNum(licensePlateList);
+
+        Map<String, List<VehicleDetailsVO>> tmp = list.stream().filter(e -> e.getSupplierInfoVO().getGpsType() != null).collect(Collectors.groupingBy(e -> e.getSupplierInfoVO().getGpsType() + "~" + e.getSupplierInfoVO().getSupplierCode()));
+        if (tmp == null) {
+            log.info("供应商没有配置gps厂商");
+            return ApiResult.ok();
+        }
+
+        //根据车牌获取gps信息
+//        List<GpsPositioning> oldPositioning = this.gpsPositioningService.getGroupByOrderNo(orderNos, 2);
+//        Map<String, GpsPositioning> oldMap = oldPositioning.stream().collect(Collectors.toMap(e -> e.getPlateNumber() + "~" + e.getOrderNo(), e -> e));
+        tmp.forEach((k, v) -> {
+            String[] split = k.split("~");
+            SupplierInfoVO supplierInfoVO = v.get(0).getSupplierInfoVO();
+            String gpsReqParam = supplierInfoVO.getGpsReqParam();
+            Map<String, Object> paraMap = JSONUtil.toBean(gpsReqParam, Map.class);
+            paraMap.put("gpsAddress", supplierInfoVO.getGpsAddress());
+
+            for (VehicleDetailsVO vehicleDetailsVO : v) {
+                //获取车牌下订单集合
+                List<Map<String, Object>> orderInfos = paramMap.get(vehicleDetailsVO.getPlateNumber());
+                orderInfos.forEach(e -> {
+                    String orderNo = MapUtil.getStr(e, "orderNo");
+                    //过滤已经同步的订单
+//                    if (oldMap.get(vehicleDetailsVO.getPlateNumber() + "~" + orderNo) == null) {
+                    if (!this.redisUtils.hasKey("GPS_" + orderNo)) {
+                        try {
+                            LocalDateTime startTime = MapUtil.get(e, "startTime", LocalDateTime.class);
+                            LocalDateTime endTime = MapUtil.get(e, "endTime", LocalDateTime.class);
+                            Object obj = this.gpsPositioningApiService.getHistory(vehicleDetailsVO.getPlateNumber(), startTime, endTime, Integer.valueOf(split[0]), paraMap);
+
+                            List<GpsPositioning> gpsPositioning = this.gpsPositioningApiService.convertDatas(obj);
+                            if (gpsPositioning != null) {
+                                List<List<String>> positionList = new ArrayList<>();
+                                gpsPositioning.forEach(g -> {
+                                    g.setOrderNo(orderNo).setCreateTime(LocalDateTime.now()).setStatus(2).setStartTime(startTime).setEndTime(endTime);
+                                    List<String> position = new ArrayList<>();
+                                    position.add(g.getLatitude());
+                                    position.add(g.getLongitude());
+                                    positionList.add(position);
+                                });
+                                this.redisUtils.set("GPS_" + orderNo, positionList);
+//                            this.gpsPositioningService.saveBatch(gpsPositioning);
+                            }
+
+                        } catch (JayudBizException exception) {
+                            log.error("获取历史轨迹错误,gps厂商={},错误信息={}", GPSTypeEnum.getDesc(Integer.valueOf(split[0])), exception.getMessage(), exception);
+                        }
+                    }
+                });
+            }
+        });
+
+        return ApiResult.ok();
+    }
+
+
+    /**
+     * 根据子订单主键集合查询订单轨迹
+     *
+     * @param subOrderIds
+     * @param status
+     * @param type
+     * @return
+     */
+    @RequestMapping(value = "/api/getLogisticsTrackByOrderIds")
+    public ApiResult getLogisticsTrackByOrderIds(@RequestParam("subOrderIds") List<Long> subOrderIds,
+                                                 @RequestParam("status") List<String> status,
+                                                 @RequestParam("type") Integer type) {
+
+        List<LogisticsTrack> list = this.logisticsTrackService.getLogisticsTrackByOrderIds(subOrderIds, status, type);
+        return ApiResult.ok(list);
+    }
+
+
+    /**
+     * 根据费用类别id获取税率
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostGenreTaxRateByGenreIds")
+    public ApiResult<List<CostGenreTaxRate>> getCostGenreTaxRateByGenreIds(@RequestParam("costGenreIds") List<Long> costGenreIds) {
+        List<CostGenreTaxRate> list = this.costGenreTaxRateService.getCostGenreTaxRateByGenreIds(costGenreIds);
+        return ApiResult.ok(list);
+    }
+
+
+    /**
+     * 消息推送
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/channelMsgPush")
+    public ApiResult channelMsgPush() {
+        try {
+            msgPushRecordService.messagePush();
+        } catch (Exception e) {
+            return ApiResult.error(e.getMessage());
+        }
+        return ApiResult.ok();
+    }
+
+    /**
+     * 获取应收出账的费用ids
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getCostIdsBySubType")
+    public ApiResult<List<Long>> getReBillCostIdsBySubType(@RequestParam(value = "legalIds", required = false) List<Long> legalIds,
+                                                           @RequestParam(value = "userName", required = false) String userName,
+                                                           @RequestParam("subType") String subType) {
+        List<Long> costIds = this.receivableCostService.getReBillCostIdsBySubType(userName, legalIds, subType);
+        return ApiResult.ok(costIds);
+    }
+
+    /**
+     * 获取应付出账的费用ids
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getPayBillCostIdsBySubType")
+    public ApiResult<List<Long>> getPayBillCostIdsBySubType(@RequestParam(value = "legalIds", required = false) List<Long> legalIds,
+                                                            @RequestParam(value = "userName", required = false) String userName,
+                                                            @RequestParam("subType") String subType) {
+        List<Long> costIds = this.paymentCostService.getPayBillCostIdsBySubType(userName, legalIds, subType);
+        return ApiResult.ok(costIds);
     }
 
 }

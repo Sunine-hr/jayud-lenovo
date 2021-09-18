@@ -77,6 +77,15 @@ public class AddTrailerOrderAddressForm {
     @ApiModelProperty(value = "交货日期(提货日期/送货日期)")
     private String deliveryDate;
 
+    @ApiModelProperty(value = "省主键")
+    private Long province;
+
+    @ApiModelProperty(value = "市主键")
+    private Long city;
+
+    @ApiModelProperty(value = "区主键")
+    private Long area;
+
 
     public boolean checkCreateTrailerOrder() {
         if (this.type == null || StringUtils.isEmpty(this.address)

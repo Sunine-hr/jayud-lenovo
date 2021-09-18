@@ -280,4 +280,15 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/saveOrUpdateOrderAddressAndGoodsBatch")
     ApiResult saveOrUpdateOrderAddressAndGoodsBatch(@RequestBody List<AddTrailerOrderAddressForm> orderAddressForms);
+
+
+    /**
+     * 查询待审核费用订单数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/auditPendingExpenses")
+    public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
+                                                   @RequestParam("legalIds") List<Long> legalIds,
+                                                   @RequestParam("orderNos") List<String> orderNos);
 }

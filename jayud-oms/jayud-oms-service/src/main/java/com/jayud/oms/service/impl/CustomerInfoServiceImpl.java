@@ -273,10 +273,12 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         customerInfo.setAccountPeriod(lo.get(11));
         customerInfo.setTaxType(lo.get(12));
         customerInfo.setTaxRate(lo.get(13));
-        if (lo.get(14) == null) {
+        if (StringUtils.isEmpty(lo.get(14))) {
             customerInfo.setEstate(null);
+        } else {
+            customerInfo.setEstate(Integer.parseInt(lo.get(14)));
         }
-        customerInfo.setEstate(Integer.parseInt(lo.get(14)));
+
 
         ApiResult deptIdByDeptName = oauthClient.getDeptIdByDeptName(lo.get(15));
         if (deptIdByDeptName.getMsg().equals("fail")) {
@@ -389,7 +391,7 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
      */
     @Override
     @Transactional
-    public void saveOrUpdateCustomerInfo(AddCustomerInfoForm form, CustomerInfo customerInfo) {
+    public Long saveOrUpdateCustomerInfo(AddCustomerInfoForm form, CustomerInfo customerInfo) {
         customerInfo.setIdCode(StringUtils.isEmpty(customerInfo.getIdCode()) ? null : customerInfo.getIdCode());
 
         customerInfo.setFilePath(com.jayud.common.utils.StringUtils.getFileStr(form.getFileViews()))
@@ -411,6 +413,8 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         this.customerRelaLegalService.saveCusRelLegal(form);
         //保存客户和结算单位关系
         this.customerRelaUnitService.saveBatchRelaUnit(customerInfo.getId(), form.getUnitCodeIds());
+
+        return customerInfo.getId();
     }
 
     /**

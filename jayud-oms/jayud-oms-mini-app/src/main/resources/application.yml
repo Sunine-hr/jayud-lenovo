@@ -78,6 +78,7 @@ jayud:
       - /swagger-ui.html
       - /webjars/**
       - /api/isConfirmJieDan
+      - /miniAppApi/miniLogin
     expired: 31536000
 
 

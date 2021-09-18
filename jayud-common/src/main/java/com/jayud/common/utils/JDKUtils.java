@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -51,5 +53,16 @@ public class JDKUtils {
         return newList;
     }
 
+
+    /**
+     * 根据属性中某一个字段去重
+     * @param keyExtractor
+     * @param <T>
+     * @return
+     */
+    public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
+        Map<Object, Boolean> map = new ConcurrentHashMap<>();
+        return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
 
 }

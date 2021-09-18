@@ -9,14 +9,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author Daneil
@@ -64,6 +67,35 @@ public class MailServiceImpl implements MailService {
             //删除生成的附件
             delFiles.forEach(File::delete);
         } catch (MessagingException e) {
+            log.info("邮件发送失败 异常：{}", e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean send(com.jayud.common.entity.Email email) {
+        try {
+            JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+            javaMailSender.setHost(email.getHost());
+            javaMailSender.setUsername(email.getFrom());
+            javaMailSender.setPassword(email.getPassword());
+            javaMailSender.setPort(465);
+            javaMailSender.setProtocol("smtp");
+            javaMailSender.setDefaultEncoding("Utf-8");
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            Properties p = new Properties();
+            p.setProperty("mail.smtp.auth", "false");
+            p.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            javaMailSender.setJavaMailProperties(p);
+            MimeMessageHelper helper;
+            helper = new MimeMessageHelper(mimeMessage, true);
+            helper.setFrom(email.getFrom(), email.getTo());                //sender为自定义显示发件人名称
+            helper.setTo(email.getTo());
+            helper.setSubject(email.getSubject());
+            helper.setText(email.getText());
+            javaMailSender.send(mimeMessage);//邮件发送完毕
+        } catch (MessagingException | UnsupportedEncodingException e) {
             log.info("邮件发送失败 异常：{}", e.getMessage());
             return false;
         }

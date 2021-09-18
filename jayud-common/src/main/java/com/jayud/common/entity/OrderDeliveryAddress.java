@@ -85,6 +85,15 @@ public class OrderDeliveryAddress extends Model<OrderDeliveryAddress> {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
+    @ApiModelProperty(value = "省主键")
+    private Long province;
+
+    @ApiModelProperty(value = "市主键")
+    private Long city;
+
+    @ApiModelProperty(value = "区主键")
+    private Long area;
+
     @ApiModelProperty(value = "附件集合")
     private List<FileView> fileViewList = new ArrayList<>();
 

@@ -2,7 +2,6 @@ package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.common.entity.DataControl;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.*;
@@ -217,13 +216,14 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 
 
     /**
-     * 过滤关前审核
+     * 过滤通关前审核
      *
      * @param callbackParam
      * @param legalIds
+     * @param userName
      * @return
      */
-    public Set<Long> filterGoCustomsAudit(Map<String, Object> callbackParam, List<Long> legalIds);
+    public Set<Long> filterGoCustomsAudit(Map<String, Object> callbackParam, List<Long> legalIds, String userName);
 
     /**
      * 供应商录入费用
@@ -277,4 +277,36 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     public InputCostVO getCostDetailByCostIds(List<Long> reCostIds, List<Long> payCostIds);
+
+    /**
+     * 根据法人主体ids查询订单
+     * @param legalIds
+     * @return
+     */
+    List<OrderInfo> getByLegalEntityIds(List<Long> legalIds);
+
+    /**
+     * 主订单汇总
+     * @param form
+     * @param legalIds
+     * @return
+     */
+    List<Map<String, Integer>> getMainOrderSummary(QueryStatisticalReport form, List<Long> legalIds);
+
+    /**
+     * 获取统计基础数据
+     * @param form
+     * @param legalIds
+     * @param orderInfo
+     * @return
+     */
+    List<OrderInfoVO> getBasicStatistics(QueryStatisticalReport form, List<Long> legalIds, OrderInfo orderInfo);
+
+    /**
+     * 获取法人主体下和登录用户的待外部报关数
+     *
+     * @param legalIds
+     * @return
+     */
+    Integer pendingExternalCustomsDeclarationNum(List<Long> legalIds, String userName);
 }

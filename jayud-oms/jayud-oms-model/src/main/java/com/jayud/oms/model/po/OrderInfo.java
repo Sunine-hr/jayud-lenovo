@@ -120,6 +120,9 @@ public class OrderInfo extends Model<OrderInfo> {
     @ApiModelProperty(value = "操作时间")
     private LocalDateTime operationTime;
 
+    @ApiModelProperty(value = "是否完成")
+    private Boolean isComplete;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

@@ -261,7 +261,7 @@
             opc.main_order_no,
             opc.order_no
     </select>
-    <select id="viewBillDetail" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewFBilToOrderVO">
+    <select id="viewBillDetail" resultType="com.jayud.finance.vo.ViewFBilToOrderVO">
         SELECT
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
@@ -287,6 +287,14 @@
 		left join order_payment_bill opb on opb.id = opbd.bill_id
 		left join order_payment_cost opc on opc.id=opbd.cost_id
         where opbd.bill_no = #{billNo}
+<!--        <choose>-->
+<!--            <when test="cmd =='main'">-->
+<!--                group by oi.order_no-->
+<!--            </when>-->
+<!--            <otherwise>-->
+<!--                group by oi.order_no,subOrderNo-->
+<!--            </otherwise>-->
+<!--        </choose>-->
         group by oi.order_no,subOrderNo
     </select>
     <select id="getViewBill" parameterType="java.lang.String" resultType="com.jayud.finance.vo.ViewBillVO">
@@ -552,17 +560,18 @@
         opc.cost_genre_id,
         (select pb.cost_genre_ids from product_biz pb where pb.id_code = oi.biz_code) costGenreStr,
         opc.id costId,
+        opc.cost_type_id,
         (select ct.code_name from cost_type ct where ct.id = opc.cost_type_id) costTypeName,
         (select ci.`name` from cost_info ci where ci.id_code = opc.cost_code) costName,
-        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = opbd.cost_id and
-        obct.money_type='1' and obct.currency_code = 'CNY') rmb,
-        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = opbd.cost_id and
-        obct.money_type='1' and obct.currency_code = 'USD') dollar,
-        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = opbd.cost_id and
-        obct.money_type='1' and obct.currency_code = 'EUR') euro,
-        (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = opbd.cost_id and
-        obct.money_type='1' and obct.currency_code = 'HKD') hKDollar,
-        ifnull(opbd.tax_rate,(select cg.tax_rate from cost_genre cg where cg.id = opc.cost_genre_id)) taxRate,
+--         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = opbd.cost_id and
+--         obct.money_type='1' and obct.currency_code = 'CNY') rmb,
+--         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = opbd.cost_id and
+--         obct.money_type='1' and obct.currency_code = 'USD') dollar,
+--         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = opbd.cost_id and
+--         obct.money_type='1' and obct.currency_code = 'EUR') euro,
+--         (select SUM(obct.money) from order_bill_cost_total obct where obct.cost_id = opbd.cost_id and
+--         obct.money_type='1' and obct.currency_code = 'HKD') hKDollar,
+        opbd.tax_rate taxRate,
         opbd.remarks,
         opbd.created_time createTimeStr,
         opbd.bill_no,
@@ -687,7 +696,8 @@
             ifnull((select sum(obct.money) from order_bill_cost_total obct where obct.bill_no = opbd.bill_no
             and obct.cost_id in (SELECT opc.id FROM order_payment_cost opc , cost_type ct WHERE opc.cost_type_id = ct.id and is_pay_collection=0)
             ),0)-ifnull((select sum(cav.discount_money) + sum(cav.short_amount) from cancel_after_verification cav where cav.bill_no = opbd.bill_no),0) dfAmount,
-            (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency limit 1) dfCurrency
+            (select ci.currency_name from currency_info ci where ci.currency_code = opbd.settlement_currency limit 1) dfCurrency,
+            opbd.account_term
         FROM
             order_payment_bill_detail opbd
             LEFT JOIN order_payment_cost opc ON opbd.cost_id = opc.id
@@ -947,5 +957,50 @@
             </foreach>
         </where>
         group by opbd.bill_no
+    </select>
+    <select id="getBillingStatusNum" resultType="java.util.Map">
+        SELECT
+        tmp.audit_status auditStatus,
+        count(1) num
+        FROM
+        (select opbd.* from `order_payment_bill_detail` opbd
+        inner join order_payment_cost opc on opc.id = opbd.cost_id
+        <where>
+            <if test="userName!=null and userName!=''">
+                and opbd.make_user=#{userName}
+            </if>
+            <choose>
+                <when test="isMain">
+                    and opc.is_sum_to_main=#{isMain}
+                </when>
+                <otherwise>
+                    and opc.sub_type=#{subType} and opc.is_sum_to_main=#{isMain}
+                </otherwise>
+            </choose>
+        </where>
+        group by bill_no) tmp
+        group by tmp.audit_status
+    </select>
+
+    <select id="getPendingBillStatusNum" resultType="java.util.Map">
+        SELECT
+        tmp.audit_status auditStatus,
+        count(1) num
+        FROM
+        (select opbd.* from `order_payment_bill_detail` opbd
+        <where>
+            <if test="userName!=null and userName!=''">
+                and opbd.make_user=#{userName}
+            </if>
+            <if test="costIds!=null and costIds.size>0">
+                and opbd.cost_id in
+                <foreach collection="costIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+        </where>
+        group by bill_no) tmp
+        group by tmp.audit_status
     </select>
 </mapper>

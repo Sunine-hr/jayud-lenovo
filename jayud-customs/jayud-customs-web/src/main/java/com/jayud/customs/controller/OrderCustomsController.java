@@ -13,7 +13,9 @@ import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.OrderOprCmdEnum;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.ImageRecog;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.customs.feign.OauthClient;
 import com.jayud.customs.feign.OmsClient;
@@ -24,11 +26,10 @@ import com.jayud.customs.model.vo.OrderStatusVO;
 import com.jayud.customs.model.vo.PushOrderVO;
 import com.jayud.customs.service.ICustomsApiService;
 import com.jayud.customs.service.IOrderCustomsService;
-import com.jayud.customs.service.impl.ICustomsApiServiceImpl;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,14 +39,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
 @RequestMapping("/orderCustoms")
 @Api(tags = "纯报关接口")
+@Slf4j
 public class OrderCustomsController {
 
     @Autowired
@@ -138,40 +139,40 @@ public class OrderCustomsController {
     @Value("${yunbaoguan.urls.pathName}")
     String pathName;
 
-    private void pushOrder(OrderCustoms orderCustoms){
+    private void pushOrder(OrderCustoms orderCustoms) {
         PushOrderForm pushOrderForm = new PushOrderForm();
         CustomsHeadForm customsHeadForm = new CustomsHeadForm();
         customsHeadForm.setAgentCode("9144030035789940X2");
         customsHeadForm.setAgentName("深圳市佳裕达报关有限公司");
         customsHeadForm.setAgentNo("4453680066");
         customsHeadForm.setBusNo(orderCustoms.getOrderNo());
-        if(orderCustoms.getGoodsType().equals(1)){
+        if (orderCustoms.getGoodsType().equals(1)) {
             customsHeadForm.setDeclareId(2);
-        }else{
+        } else {
             customsHeadForm.setDeclareId(1);
         }
-        if(orderCustoms.getBizModel().equals("2")){
+        if (orderCustoms.getBizModel().equals("2")) {
             customsHeadForm.setCabinNo(orderCustoms.getAirTransportNo());
         }
-        if(orderCustoms.getBizModel().equals("3")){
+        if (orderCustoms.getBizModel().equals("3")) {
             customsHeadForm.setCabinNo(orderCustoms.getSeaTransportNo());
         }
-        if(orderCustoms.getBizModel().equals("4")){
+        if (orderCustoms.getBizModel().equals("4")) {
             customsHeadForm.setCabinNo(orderCustoms.getAirTransportNo());
         }
 
         customsHeadForm.setNote(orderCustoms.getTitle());
         customsHeadForm.setPortNo2(orderCustoms.getPortCode());
         customsHeadForm.setPortNo(orderCustoms.getPortCode());
-        if(orderCustoms.getSupervisionMode()!=null){
+        if (orderCustoms.getSupervisionMode() != null) {
             //根据名称获取字典代码
             ApiResult result = omsClient.getDictCodeByDictTypeName(orderCustoms.getSupervisionMode());
-            if(result.isOk()){
-                customsHeadForm.setTradeNo((String)result.getData());
+            if (result.isOk()) {
+                customsHeadForm.setTradeNo((String) result.getData());
             }
         }
         pushOrderForm.setHead(customsHeadForm);
-        String path = pathName+orderCustoms.getOrderNo();
+        String path = pathName + orderCustoms.getOrderNo();
         pushOrderForm.setCallback(path);
         PushOrderVO pushOrderVO = customsApiService.pushOrder(pushOrderForm);
     }
@@ -470,5 +471,65 @@ public class OrderCustomsController {
         return CommonResult.success();
     }
 
+
+    @ApiOperation(value = "批量操作")
+    @PostMapping(value = "/batchOprOrder")
+    public CommonResult batchOprOrder(@RequestBody OprStatusForm form) {
+//        List<CustomsOrderInfoVO> list = form.getList();
+
+
+//        for (CustomsOrderInfoVO customsOrderInfoVO : list) {
+//            form.setOrderId(customsOrderInfoVO.getId().longValue());
+//            form.setMainOrderId(customsOrderInfoVO.getMainOrderId());
+//            CommonResult commonResult = this.oprOrder(form);
+//            if (commonResult.getCode() != 0) {
+//                log.warn("订单号:" + customsOrderInfoVO.getOrderNo() + " 报错信息:" + commonResult.getMsg());
+//            }
+//        }
+
+        List<Map<String, Object>> list = form.getList();
+
+        for (Map<String, Object> tmp : list) {
+            Long id = MapUtil.getLong(tmp, "id");
+            Long mainOrderId = MapUtil.getLong(tmp, "mainOrderId");
+            String orderNo = MapUtil.getStr(tmp, "orderNo");
+            form.setOrderId(id);
+            form.setMainOrderId(mainOrderId);
+            CommonResult commonResult = this.oprOrder(form);
+            if (commonResult.getCode() != 0) {
+                log.warn("订单号:" + orderNo + " 报错信息:" + commonResult.getMsg());
+            }
+        }
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "查询所有抬头")
+    @PostMapping(value = "/getAllTitle")
+    public CommonResult<List<Map<String, String>>> getAllTitle() {
+        Set<String> list = this.orderCustomsService.list().stream().filter(e -> !StringUtil.isNullOrEmpty(e.getTitle())).map(OrderCustoms::getTitle).collect(Collectors.toSet());
+        List<Map<String, String>> tmps = new ArrayList<>();
+        for (String s : list) {
+            Map<String, String> map = new HashMap<>();
+            map.put("value", s);
+            tmps.add(map);
+        }
+
+        return CommonResult.success(tmps);
+    }
+
+    @ApiOperation(value = "识别六联单号")
+    @PostMapping(value = "/identifyEncode")
+    public CommonResult identifyEncode(@RequestBody Map<String, Object> map) {
+        String url = MapUtil.getStr(map, "absolutePath");
+        if (StringUtils.isEmpty(url)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        try {
+            String txt = ImageRecog.discernBarCode(url, 2);
+            return CommonResult.success(txt);
+        } catch (Exception e) {
+            throw new JayudBizException(400, "图片识别失败,六联单位置是否居中");
+        }
+    }
 }
 

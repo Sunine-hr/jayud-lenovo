@@ -43,11 +43,14 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
     @ApiModelProperty(value = "内陆订单编号")
     private String orderNo;
 
-//    @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
-//    private Integer processStatus;
+    @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
+    private Integer processStatus;
 
     @ApiModelProperty(value = "运输状态")
     private String status;
+
+    @ApiModelProperty(value = "是否可以进行货物编辑")
+    private Boolean isGoodsEdit;
 
     @ApiModelProperty(value = "运输状态描述")
     private String statusDesc;
@@ -125,6 +128,7 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
     public void setStatus(String status) {
         this.status = status;
         this.statusDesc = OrderStatusEnum.getDesc(status);
+        this.isGoodsEdit = !OrderStatusEnum.INLANDTP_NL_6.getCode().equals(this.status);
     }
 
     public void copyOperationInfo() {
@@ -132,9 +136,11 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
         this.allPics = new ArrayList<>();
         this.orderNo = null;
         this.mainOrderNo = null;
-        this.status=null;
-        this.orderTaker=null;
-        this.receivingOrdersDate=null;
+        this.status = null;
+        this.orderTaker = null;
+        this.receivingOrdersDate = null;
+        this.vehicleType = null; //车型类型
+        this.vehicleSize = null; //车型尺寸
         if (CollectionUtils.isNotEmpty(pickUpAddressList)) {
             pickUpAddressList.forEach(e -> {
                 e.setGoodsId(null);
@@ -155,4 +161,6 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
             });
         }
     }
+
+
 }

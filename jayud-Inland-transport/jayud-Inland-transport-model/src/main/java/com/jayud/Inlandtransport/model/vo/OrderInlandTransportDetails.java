@@ -3,6 +3,7 @@ package com.jayud.Inlandtransport.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.OrderAddressEnum;
 import com.jayud.common.utils.FileView;
@@ -73,12 +74,14 @@ public class OrderInlandTransportDetails extends Model<OrderInlandTransportDetai
     private String orderTaker;
 
     @ApiModelProperty(value = "接单日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime receivingOrdersDate;
 
     @ApiModelProperty(value = "创建人(登录用户)")
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "派车信息")

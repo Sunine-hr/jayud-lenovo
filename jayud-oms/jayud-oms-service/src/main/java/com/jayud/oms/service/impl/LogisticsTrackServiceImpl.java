@@ -3,6 +3,7 @@ package com.jayud.oms.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.ListUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.mapper.LogisticsTrackMapper;
@@ -12,6 +13,7 @@ import com.jayud.oms.model.po.OrderStatus;
 import com.jayud.oms.model.vo.LogisticsTrackVO;
 import com.jayud.oms.service.ILogisticsTrackService;
 import com.jayud.oms.service.IOrderStatusService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -139,7 +141,23 @@ public class LogisticsTrackServiceImpl extends ServiceImpl<LogisticsTrackMapper,
         QueryWrapper<LogisticsTrack> condition = new QueryWrapper<>();
         condition.lambda().eq(LogisticsTrack::getOrderId, id);
         condition.lambda().eq(LogisticsTrack::getType, type);
-        condition.lambda().eq(LogisticsTrack::getStatus,status);
-        return this.baseMapper.selectOne(condition);
+        condition.lambda().eq(LogisticsTrack::getStatus, status);
+        List<LogisticsTrack> logisticsTracks = this.baseMapper.selectList(condition);
+        if (CollectionUtils.isEmpty(logisticsTracks)) {
+            return null;
+        }
+        return ListUtil.getLastElement(logisticsTracks);
     }
+
+    @Override
+    public List<LogisticsTrack> getLogisticsTrackByOrderIds(List<Long> subOrderIds,
+                                                            List<String> status, Integer type) {
+        QueryWrapper<LogisticsTrack> condition = new QueryWrapper<>();
+        condition.lambda().in(LogisticsTrack::getOrderId, subOrderIds);
+        condition.lambda().eq(LogisticsTrack::getType, type);
+        condition.lambda().in(LogisticsTrack::getStatus, status);
+        return this.baseMapper.selectList(condition);
+    }
+
+
 }

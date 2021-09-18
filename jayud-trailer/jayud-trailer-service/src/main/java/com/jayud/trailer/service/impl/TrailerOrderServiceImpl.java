@@ -2,10 +2,8 @@ package com.jayud.trailer.service.impl;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
@@ -17,16 +15,12 @@ import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
 import com.jayud.trailer.bo.*;
-import com.jayud.trailer.enums.TrailerOrderStatusEnum;
 import com.jayud.trailer.feign.FileClient;
 import com.jayud.trailer.feign.OauthClient;
 import com.jayud.trailer.feign.OmsClient;
-import com.jayud.trailer.po.OrderFlowSheet;
-import com.jayud.trailer.po.OrderStatus;
 import com.jayud.trailer.po.TrailerDispatch;
 import com.jayud.trailer.po.TrailerOrder;
 import com.jayud.trailer.mapper.TrailerOrderMapper;
@@ -35,6 +29,7 @@ import com.jayud.trailer.service.ITrailerOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.trailer.vo.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,9 +67,10 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     @Override
     public String createOrder(AddTrailerOrderFrom addTrailerOrderFrom) {
 
-        TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);
         LocalDateTime now = LocalDateTime.now();
         addTrailerOrderFrom.getPathAndName();
+
+        TrailerOrder trailerOrder = ConvertUtil.convert(addTrailerOrderFrom, TrailerOrder.class);
 //        System.out.println("trailerOrder===================================="+trailerOrder);
         //创建拖车单
         if (addTrailerOrderFrom.getId() == null) {
@@ -85,10 +81,10 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             trailerOrder.setCreateUser(UserOperator.getToken());
             trailerOrder.setStatus(OrderStatusEnum.TT_0.getCode());
             boolean save = this.save(trailerOrder);
-            if(save){
-                log.warn(trailerOrder.getMainOrderNo()+"拖车单添加成功");
-            }else{
-                log.error(trailerOrder.getMainOrderNo()+"拖车单添加失败");
+            if (save) {
+                log.warn(trailerOrder.getMainOrderNo() + "拖车单添加成功");
+            } else {
+                log.error(trailerOrder.getMainOrderNo() + "拖车单添加失败");
             }
         } else {
             //修改拖车单
@@ -97,10 +93,10 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             trailerOrder.setUpdateTime(now);
             trailerOrder.setUpdateUser(UserOperator.getToken());
             boolean update = this.saveOrUpdate(trailerOrder);
-            if(update){
-                log.warn(trailerOrder.getMainOrderNo()+"拖车单修改成功");
-            }else{
-                log.error(trailerOrder.getMainOrderNo()+"拖车单修改失败");
+            if (update) {
+                log.warn(trailerOrder.getMainOrderNo() + "拖车单修改成功");
+            } else {
+                log.error(trailerOrder.getMainOrderNo() + "拖车单修改失败");
             }
         }
 //        omsClient.deleteGoodsByBusOrders(Collections.singletonList(trailerOrder.getOrderNo()), BusinessTypeEnum.TC.getCode());
@@ -157,6 +153,9 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         //拖车订单信息
         TrailerOrderVO trailerOrderVO = this.baseMapper.getTrailerOrder(id);
         trailerOrderVO.getFile(prePath);
+        //主订单信息
+        Object mainOrderInfo = this.omsClient.getMainOrderByOrderNos(Arrays.asList(trailerOrderVO.getMainOrderNo())).getData();
+        trailerOrderVO.assemblyMainOrderInfo(mainOrderInfo);
 
         //获取港口信息
         List<InitComboxStrVO> portCodeInfo = (List<InitComboxStrVO>) this.omsClient.initDictByDictTypeCode("Port").getData();
@@ -487,8 +486,28 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     }
 
     @Override
-    public Integer getNumByStatus(String status, List<Long> legalIds) {
-        Integer num = this.baseMapper.getNumByStatus(status, legalIds);
+    public Integer getNumByStatus(String status, List<Long> legalIds, Map<String, Object> datas) {
+        Integer num = 0;
+        switch (status) {
+            case "CostAudit":
+//                List<Long> legalIds = dataControl.getCompanyIds();
+                List<TrailerOrder> list = this.getByLegalEntityId(legalIds);
+                if (CollectionUtils.isEmpty(list)) return num;
+                List<String> orderNos = list.stream().map(TrailerOrder::getOrderNo).collect(Collectors.toList());
+                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.TC.getSignOne(), legalIds, orderNos).getData();
+                break;
+            case "trailerReceiverCheck":
+                Map<String, Integer> costNum = (Map<String, Integer>) datas.get(status);
+                num = costNum.get("B_1");
+                break;
+            case "trailerPayCheck":
+                costNum = (Map<String, Integer>) datas.get(status);
+                num = costNum.get("B_1");
+                break;
+            default:
+                num = this.baseMapper.getNumByStatus(status, legalIds);
+        }
+
         return num == null ? 0 : num;
     }
 
@@ -508,6 +527,13 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     public List<TrailerOrder> getOrdersByOrderNos(List<String> orderNos) {
         QueryWrapper<TrailerOrder> condition = new QueryWrapper<>();
         condition.lambda().in(TrailerOrder::getOrderNo, orderNos);
+        return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public List<TrailerOrder> getByLegalEntityId(List<Long> legalIds) {
+        QueryWrapper<TrailerOrder> condition = new QueryWrapper<>();
+        condition.lambda().in(TrailerOrder::getLegalEntityId, legalIds);
         return this.baseMapper.selectList(condition);
     }
 

@@ -93,7 +93,7 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @param billNo
      * @return
      */
-    List<ViewFBilToOrderVO> viewBillDetail(String billNo);
+//    List<ViewFBilToOrderVO> viewBillDetail(String billNo);
 
     /**
      * 对账单详情 TODO 改版
@@ -275,4 +275,16 @@ public interface IOrderPaymentBillDetailService extends IService<OrderPaymentBil
      * @return
      */
     List<ProfitStatementBillDetailsVO> statisticsBillByCostIds(List<String> payCostIds);
+
+    /**
+     * 获取制单人账单数量
+     * @param userName
+     * @param isMain
+     * @param subType
+     * @return
+     */
+    List<Map<String, Object>> getBillingStatusNum(String userName, boolean isMain, String subType);
+
+    List<Map<String, Object>> getPendingBillStatusNum(List<Long> costIds, String userName,
+                                                      List<Long> legalIds, boolean isMain, String subType);
 }

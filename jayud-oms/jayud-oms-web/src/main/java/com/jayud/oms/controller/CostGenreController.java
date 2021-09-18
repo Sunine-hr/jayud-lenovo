@@ -1,6 +1,7 @@
 package com.jayud.oms.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
@@ -10,8 +11,10 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.AddCostGenreForm;
 import com.jayud.oms.model.bo.QueryCostGenreForm;
 import com.jayud.oms.model.po.CostGenre;
+import com.jayud.oms.model.po.CostGenreTaxRate;
 import com.jayud.oms.model.vo.CostGenreVO;
 import com.jayud.oms.service.ICostGenreService;
+import com.jayud.oms.service.ICostGenreTaxRateService;
 import com.jayud.oms.service.IProductBizService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,6 +47,8 @@ public class CostGenreController {
     private ICostGenreService costGenreService;
     @Autowired
     private IProductBizService productBizService;
+    @Autowired
+    private ICostGenreTaxRateService costGenreTaxRateService;
 
     @ApiOperation("分页查询费用类型")
     @PostMapping("/findCostGenreByPage")
@@ -53,16 +58,39 @@ public class CostGenreController {
         return CommonResult.success(pageResult);
     }
 
+//    @ApiOperation(value = "新增编辑费用类型")
+//    @PostMapping(value = "/saveOrUpdateCostGenre")
+//    public CommonResult saveOrUpdateCostGenre(@Valid @RequestBody AddCostGenreForm form) {
+//        CostGenre costGenre = new CostGenre().setId(form.getId())
+//                .setCode(form.getCode()).setName(form.getName());
+//        if (this.costGenreService.checkUnique(costGenre)){
+//            return CommonResult.error(400, "名称或代码已经存在");
+//        }
+//
+//        if (this.costGenreService.saveOrUpdateCostGenre(form)) {
+//            return CommonResult.success();
+//        } else {
+//            return CommonResult.error(ResultEnum.OPR_FAIL);
+//        }
+//    }
+
+
+    /**
+     * TODO 增加税率
+     *
+     * @param form
+     * @return
+     */
     @ApiOperation(value = "新增编辑费用类型")
     @PostMapping(value = "/saveOrUpdateCostGenre")
     public CommonResult saveOrUpdateCostGenre(@Valid @RequestBody AddCostGenreForm form) {
         CostGenre costGenre = new CostGenre().setId(form.getId())
                 .setCode(form.getCode()).setName(form.getName());
-        if (this.costGenreService.checkUnique(costGenre)){
+        if (this.costGenreService.checkUnique(costGenre)) {
             return CommonResult.error(400, "名称或代码已经存在");
         }
-
-        if (this.costGenreService.saveOrUpdateCostGenre(form)) {
+        form.checkAdd();
+        if (this.costGenreService.saveOrUpdate(form)) {
             return CommonResult.success();
         } else {
             return CommonResult.error(ResultEnum.OPR_FAIL);
@@ -91,6 +119,8 @@ public class CostGenreController {
         }
         Long id = Long.parseLong(map.get("id"));
         CostGenreVO costInfo = this.costGenreService.getById(id);
+        List<CostGenreTaxRate> list = this.costGenreTaxRateService.list(new QueryWrapper<>(new CostGenreTaxRate().setCostGenreId(id)));
+        costInfo.setCostGenreTaxRates(list);
         return CommonResult.success(costInfo);
     }
 
@@ -98,20 +128,12 @@ public class CostGenreController {
     @PostMapping("/getEnableCostGenre")
     public CommonResult<List<CostGenreVO>> getEnableCostGenre() {
         List<CostGenre> costGenres = this.costGenreService.getEnableCostGenre();
-        List<CostGenreVO> list=new ArrayList<>();
+        List<CostGenreVO> list = new ArrayList<>();
         for (CostGenre costGenre : costGenres) {
             CostGenreVO costGenreVO = ConvertUtil.convert(costGenre, CostGenreVO.class);
             list.add(costGenreVO);
         }
         return CommonResult.success(list);
-    }
-
-    @RepeatSubmitLimit
-    @ApiOperation("查询所用启用费用类型")
-    @PostMapping("/test")
-    public CommonResult test(@RequestBody List<Map<String,Object>> maps) {
-
-        return CommonResult.success(null);
     }
 }
 

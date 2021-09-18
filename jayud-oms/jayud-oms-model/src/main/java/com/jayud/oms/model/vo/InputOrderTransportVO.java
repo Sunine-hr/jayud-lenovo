@@ -122,6 +122,9 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "柜号上传附件地址,前台忽略")
     private String cntrPic;
 
+    @ApiModelProperty(value = "柜号上传附件地址集合")
+    private List<FileView> cntrPics;
+
     @ApiModelProperty(value = "柜号上传附件地址名称,前台忽略")
     private String cntrPicName;
 
@@ -257,6 +260,10 @@ public class InputOrderTransportVO {
         this.encode = null;
         this.status = null;
         this.subTmsStatus = null;
+        this.cntrNo = null; //柜号
+        this.cntrPics=null; //柜号图片
+        this.vehicleSize=null; //车型尺寸
+        this.vehicleType=null; //车型类型
         if (this.orderTakeAdrForms1 != null) {
             orderTakeAdrForms1.forEach(e -> {
                 e.setTakeAdrId(null);

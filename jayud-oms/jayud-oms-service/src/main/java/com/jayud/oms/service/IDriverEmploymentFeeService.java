@@ -38,8 +38,13 @@ public interface IDriverEmploymentFeeService extends IService<DriverEmploymentFe
 
     /**
      * 查询费用详情
+     *
      * @param orderNo
      * @return
      */
     List<DriverEmploymentFeeVO> getEmploymentFeeInfo(String orderNo);
+
+    List<DriverEmploymentFee> getByCondition(DriverEmploymentFee driverEmploymentFee);
+
+    List<DriverEmploymentFee> getByOrderNos(List<String> orderNos, String status);
 }

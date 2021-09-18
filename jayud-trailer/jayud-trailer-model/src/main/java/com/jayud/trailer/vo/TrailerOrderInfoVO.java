@@ -185,10 +185,11 @@ public class TrailerOrderInfoVO extends Model<TrailerOrderInfoVO> {
         JSONArray jsonArray = new JSONArray(vehicleInfos);
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
+            //TODO 下面代码有问题
             if (Long.valueOf(this.trailerDispatchInfoVO.getPlateNumber()).equals(jsonObject.getLong("id"))) {
                 this.trailerDispatchInfoVO.setPlateNumber(jsonObject.getStr("plateNumber"));
+                break;
             }
-
         }
     }
 }

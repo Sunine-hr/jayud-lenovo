@@ -75,7 +75,7 @@
         </foreach>
     </select>
 
-     <select id="totalCurrencyAmount" resultType="java.util.Map">
+    <select id="totalCurrencyAmount" resultType="java.util.Map">
         select bill_no billNo, currency_code currencyCode,money_type moneyType,sum(money) amount
         from order_bill_cost_total
         where
@@ -108,12 +108,22 @@
             </otherwise>
         </choose>
         <where>
+            <!--            <choose>-->
+            <!--                <when test="cmd == 'main'">-->
+            <!--                    and oc.main_order_no=#{orderNo}-->
+            <!--                </when>-->
+            <!--                <otherwise>-->
+            <!--                    and oc.order_no=#{orderNo}-->
+            <!--                </otherwise>-->
+            <!--            </choose>-->
+            and oc.main_order_no=#{mainOrderNo}
+
             <choose>
-                <when test="cmd == 'main'">
-                    and oc.main_order_no=#{orderNo}
+                <when test="subOrderNo!=null and subOrderNo!=''">
+                    and oc.order_no=#{subOrderNo}
                 </when>
                 <otherwise>
-                    and oc.order_no=#{orderNo}
+                    and oc.order_no is null
                 </otherwise>
             </choose>
             and obct.money_type=#{moneyType}

@@ -38,8 +38,8 @@ public class InputOrderInlandTPVO extends Model<InputOrderInlandTPVO> {
     @ApiModelProperty(value = "内陆订单编号")
     private String orderNo;
 
-//    @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
-//    private Integer processStatus;
+    @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
+    private Integer processStatus;
 
     @ApiModelProperty(value = "状态")
     private String status;

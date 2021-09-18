@@ -479,6 +479,7 @@ public class FinanceController {
                 //设置汇率
                 tempReqForm.setExchangeRate(exchangeRate.get(tempReqForm.getCurrency()));
                 List<APARDetailForm> entityDetail = receivableBillDetailService.findReceivableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
+                entityDetail.forEach(e -> e.assemblyPriceQty(e.getPriceQty()));
                 tempReqForm.setEntityDetail(entityDetail);
                 logger.info("推送金蝶传参:" + reqForm);
                 result = service.saveReceivableBill(FormIDEnum.RECEIVABLE.getFormid(), tempReqForm);
@@ -565,6 +566,7 @@ public class FinanceController {
                 //设置汇率
                 tempReqForm.setExchangeRate(exchangeRate.get(tempReqForm.getCurrency()));
                 List<APARDetailForm> entityDetail = paymentBillDetailService.findPayableHeaderDetail(tempReqForm.getBillNo(), tempReqForm.getBusinessNo());
+                entityDetail.forEach(e -> e.assemblyPriceQty(e.getPriceQty()));
                 tempReqForm.setEntityDetail(entityDetail);
                 logger.info("推送金蝶传参:" + reqForm);
 

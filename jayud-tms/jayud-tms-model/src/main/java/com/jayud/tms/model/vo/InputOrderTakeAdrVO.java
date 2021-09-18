@@ -91,15 +91,28 @@ public class InputOrderTakeAdrVO {
     @ApiModelProperty(value = "提货文件上传附件地址数组集合")
     private List<FileView> takeFiles = new ArrayList<>();
 
+    @ApiModelProperty(value = "货物详情")
+    private String goodsInfo;
+
     public String getVehicleTypeDesc() {
-        if(this.vehicleType != null){
-            if(this.vehicleType == 1){
+        if (this.vehicleType != null) {
+            if (this.vehicleType == 1) {
                 return "吨车";
-            }else if(this.vehicleType == 2){
+            } else if (this.vehicleType == 2) {
                 return "柜车";
             }
         }
         return "";
     }
 
+    public void assemblyGoodsInfo() {
+        StringBuilder goodsInfo = new StringBuilder(goodsDesc)
+                .append("/")
+                .append(this.getPlateAmount() == null ? 0 : this.getPlateAmount()).append("板")
+                .append("/")
+                .append(this.getPieceAmount()).append("件数")
+                .append("/")
+                .append(this.getWeight()).append("kg");
+        this.goodsInfo = goodsInfo.toString();
+    }
 }

@@ -13,10 +13,8 @@ import com.jayud.oms.model.bo.QueryCostTemplateForm;
 import com.jayud.oms.model.po.OrderCostTemplate;
 import com.jayud.oms.model.vo.CurrencyInfoVO;
 import com.jayud.oms.model.vo.InitComboxStrVO;
-import com.jayud.oms.service.ICostTypeService;
-import com.jayud.oms.service.ICurrencyInfoService;
-import com.jayud.oms.service.IOrderCostTemplateInfoService;
-import com.jayud.oms.service.IOrderCostTemplateService;
+import com.jayud.oms.model.vo.InitComboxVO;
+import com.jayud.oms.service.*;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,6 +50,8 @@ public class OrderCostTemplateController {
     private IOrderCostTemplateInfoService orderCostTemplateInfoService;
     @Autowired
     private ICostTypeService costTypeService;
+    @Autowired
+    private ICostInfoService costInfoService;
 
 
     @ApiOperation(value = "创建/编辑模板信息")
@@ -151,11 +151,13 @@ public class OrderCostTemplateController {
         //币种
         List<CurrencyInfoVO> currencyInfos = currencyInfoService.findCurrencyInfo(createdTimeStr);
         Map<String, CurrencyInfoVO> tmp = currencyInfos.stream().collect(Collectors.toMap(CurrencyInfoVO::getCurrencyCode, e -> e));
+        Map<String, List<InitComboxVO>> costTypeMap = this.costInfoService.initCostTypeByCostInfoCode();
         List<OrderCostTemplateInfoDTO> list = costTemplateInfos.stream()
                 .map(e -> {
                     CurrencyInfoVO currencyInfoVO = tmp.get(e.getCurrencyCode());
                     e.setCurrencyCode(currencyInfoVO == null ? null : currencyInfoVO.getCurrencyCode());
                     e.setId(null);
+                    e.setCategorys(costTypeMap.get(e.getCostCode()));
                     return e.setCurrency(currencyInfoVO == null ? null : currencyInfoVO.getCurrencyName());
                 }).collect(Collectors.toList());
 

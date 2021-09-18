@@ -73,6 +73,9 @@ public class PaymentNotPaidBillVO {
     @ApiModelProperty(value = "费用类别")
     private String costTypeName;
 
+    @ApiModelProperty(value = "费用类别id")
+    private Long costTypeId;
+
     @ApiModelProperty(value = "费用名称")
     private String costName;
 
@@ -216,8 +219,14 @@ public class PaymentNotPaidBillVO {
             return;
         }
 //        String orderNo = isMain ? this.orderNo : this.subOrderNo;
-
-        Map<String, BigDecimal> tmp = costMap.get(this.orderNo + "~" + this.subOrderNo);
+        String orderNo = "";
+        if (isMain) {
+            orderNo = this.orderNo;
+            this.subOrderNo="";
+        } else {
+            orderNo = this.orderNo + "~" + this.subOrderNo;
+        }
+        Map<String, BigDecimal> tmp = costMap.get(orderNo);
         if (tmp == null) return;
         StringBuilder sb = new StringBuilder();
         tmp.forEach((k, v) -> {

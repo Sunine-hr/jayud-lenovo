@@ -1,15 +1,12 @@
 package com.jayud.finance.service;
 
 import cn.hutool.json.JSONArray;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.CommonResult;
 import com.jayud.finance.bo.*;
-import com.jayud.finance.po.OrderReceivableBill;
 import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.vo.*;
-import com.jayud.finance.vo.template.order.Template;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -96,7 +93,7 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
      * @param billNo
      * @return
      */
-    List<ViewBilToOrderVO> viewSBillDetail(String billNo);
+//    List<ViewBilToOrderVO> viewSBillDetail(String billNo);
 
     /**
      * 对账单详情 TODO 升级版
@@ -266,8 +263,22 @@ public interface IOrderReceivableBillDetailService extends IService<OrderReceiva
 
     /**
      * 根据费用明细id统计账单
+     *
      * @param reCostIds
      * @return
      */
     List<ProfitStatementBillDetailsVO> statisticsBillByCostIds(List<String> reCostIds);
+
+    /**
+     * 获取制单人账单数量
+     *
+     * @param userName
+     * @param isMain
+     * @param subType
+     * @return
+     */
+    List<Map<String, Object>> getBillingStatusNum(String userName, boolean isMain, String subType);
+
+    List<Map<String, Object>> getPendingBillStatusNum(List<Long> costIds, String userName, List<Long> legalIds,
+                                                      boolean isMain, String subType);
 }

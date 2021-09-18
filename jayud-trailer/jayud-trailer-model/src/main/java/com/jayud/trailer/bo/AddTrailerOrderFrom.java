@@ -208,6 +208,24 @@ public class AddTrailerOrderFrom {
         if (CollectionUtils.isEmpty(this.orderAddressForms)) {
             throw new JayudBizException(400, "请输入地址信息");
         }
+        if (this.impAndExpType == 1) {
+            //提运单
+            if (StringUtils.isEmpty(this.billOfLading)) {
+                log.warn("提运单不能为空");
+                throw new JayudBizException("提运单不能为空");
+            }
+            //柜号
+            if (StringUtils.isEmpty(this.cabinetNumber)) {
+                log.warn("柜号不能为空");
+                throw new JayudBizException("柜号不能为空");
+            }
+        } else {
+            if (StringUtils.isEmpty(this.so)) {
+                log.warn("SO不能为空");
+                throw new JayudBizException("SO不能为空");
+            }
+        }
+
         for (AddTrailerOrderAddressForm orderAddressForm : orderAddressForms) {
             orderAddressForm.checkPickUpInfo();
         }

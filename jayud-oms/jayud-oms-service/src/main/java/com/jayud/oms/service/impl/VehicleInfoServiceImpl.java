@@ -122,8 +122,8 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
     }
 
     @Override
-    public List<VehicleInfoVO> findVehicleByDriverName(String driverName) {
-        return baseMapper.findVehicleByDriverName(driverName);
+    public List<VehicleInfoVO> findTmsVehicle() {
+        return baseMapper.findTmsVehicle();
     }
 
     @Override
@@ -165,6 +165,11 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
     public List<VehicleInfo> getByCondition(VehicleInfo vehicleInfo) {
         QueryWrapper<VehicleInfo> condition = new QueryWrapper<>(vehicleInfo);
         return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public List<VehicleDetailsVO> getDetailsByPlateNum(List<String> plateNum) {
+        return this.baseMapper.getDetailsByPlateNum(plateNum);
     }
 
 }

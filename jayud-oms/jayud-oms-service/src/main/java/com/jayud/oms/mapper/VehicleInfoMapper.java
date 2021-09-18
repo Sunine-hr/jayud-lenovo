@@ -35,7 +35,7 @@ public interface VehicleInfoMapper extends BaseMapper<VehicleInfo> {
      * @param driverName
      * @return
      */
-    List<VehicleInfoVO> findVehicleByDriverName(@Param("driverName") String driverName);
+    List<VehicleInfoVO> findTmsVehicle();
 
     /**
      * 获取所有的车型尺寸
@@ -45,10 +45,16 @@ public interface VehicleInfoMapper extends BaseMapper<VehicleInfo> {
     List<VehicleSizeInfoVO> findVehicleSize();
 
     /**
-     * 获取所有的车型尺寸
-     *
      * @return
      */
     VehicleDetailsVO getVehicleDetailsById(@Param("vehicleId") Long vehicleId);
+
+
+    /**
+     * 根据车牌集合获取车辆和供应商信息
+     *
+     * @return
+     */
+    List<VehicleDetailsVO> getDetailsByPlateNum(@Param("plateNumbers") List<String> plateNumbers);
 }
 

@@ -1,8 +1,11 @@
 package com.jayud.oms.security.service.impl;
 
 
+import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.exception.JayudBizException;
+import com.jayud.oms.model.po.DriverInfo;
 import com.jayud.oms.security.entity.Certificate;
 import com.jayud.oms.security.entity.LoginUser;
 import com.jayud.oms.security.factory.LoginFactory;
@@ -11,8 +14,11 @@ import com.jayud.oms.security.service.LoginOperatingService;
 import com.jayud.oms.security.strategy.LoginStrategy;
 import com.jayud.oms.security.util.HttpUtil;
 import com.jayud.oms.security.util.SecurityUtil;
+import com.jayud.oms.service.IDriverInfoService;
+import com.jayud.oms.service.WechatAppService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,6 +46,14 @@ public abstract class AbstractLoginOperatingServiceImpl implements LoginOperatin
     //权限配置
     @Autowired
     private JayudSecurityProperties securityProperties;
+    @Autowired
+    private IDriverInfoService driverInfoService;
+    @Autowired
+    private WechatAppService wechatAppService;
+    @Value("${wechatApplet.appid}")
+    private String wechatAppletAppId;
+    @Value("${wechatApplet.secret}")
+    private String wechatAppletSecret;
 
     @Override
     public void loadAuthenticationManager(AuthenticationManager authenticationManager) {
@@ -84,6 +98,16 @@ public abstract class AbstractLoginOperatingServiceImpl implements LoginOperatin
         //登录校验是否成功
         if (past) {
             ArrayList<GrantedAuthority> authorities = new ArrayList<>();
+            //绑定小程序oppId
+            DriverInfo driverInfo = this.driverInfoService.getById(certificate.getId());
+            if (driverInfo.getAppletId() == null) {
+                JSONObject jsonObject = this.wechatAppService.getOpenId(wechatAppletAppId, wechatAppletSecret, loginUser.getCode());
+                if (jsonObject.getStr("errmsg") == null) {
+//                    throw new JayudBizException("登录失败 错误提示:" + jsonObject.getStr("errmsg"));
+                    this.driverInfoService.updateById(new DriverInfo().setId(driverInfo.getId()).setAppletId(jsonObject.getStr("openid")));
+                }
+
+            }
             // 生成令牌
             return new UsernamePasswordAuthenticationToken(certificate.getId(), null,
                     authorities);

@@ -12,6 +12,8 @@ public enum DriverFeedbackStatusEnum {
 
     //待提货 0(T_4)，待过磅 1,2,3,4(T_5)，待车辆通关5,6,7,8,9,10,11,12(T_8)，待货物派送13(T_13),待签收14,15(待签收)
     //待提货 0(T_4)，待过磅 1,2,3,4(T_5)，待车辆通关5,6,7,8(T_8),待签收 9(车辆入仓)
+    //index=3 判断是否过磅
+//    ZERO("0", "0_0_0-4", "车辆提货"),
     ZERO("0", "0", "车辆提货"),
     ONE("1", "1-4", "车辆过磅"),
     TWO("2", "5-12_5-8", "车辆通关"),
@@ -50,6 +52,7 @@ public enum DriverFeedbackStatusEnum {
                     step = steps[1];
                 }
             }
+
             //取值范围
             String[] ranges = step.split("-");
             int rangeOne = Integer.parseInt(ranges[0]);

@@ -9,8 +9,10 @@ import com.jayud.oms.model.po.CostInfo;
 import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.vo.CostInfoVO;
 import com.jayud.oms.model.vo.InitComboxStrVO;
+import com.jayud.oms.model.vo.InitComboxVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -94,4 +96,7 @@ public interface ICostInfoService extends IService<CostInfo> {
      * @return
      */
     String getCostNameByCostCode(String costCode);
+
+    Map<String, List<InitComboxVO>> initCostTypeByCostInfoCode();
+
 }

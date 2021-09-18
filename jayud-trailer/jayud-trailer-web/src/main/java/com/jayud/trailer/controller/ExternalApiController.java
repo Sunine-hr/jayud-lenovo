@@ -6,11 +6,11 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.entity.InitChangeStatusVO;
-import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.SubOrderCloseOpt;
-import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.trailer.bo.AddTrailerOrderFrom;
+import com.jayud.trailer.feign.FinanceClient;
 import com.jayud.trailer.feign.OauthClient;
 import com.jayud.trailer.feign.OmsClient;
 import com.jayud.trailer.po.TrailerOrder;
@@ -21,7 +21,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,12 +48,12 @@ public class ExternalApiController {
 
     @Autowired
     private ITrailerOrderService trailerOrderService;
-
     @Autowired
     private OmsClient omsClient;
-
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private FinanceClient financeClient;
 
     /**
      * 创建拖车单
@@ -156,10 +155,19 @@ public class ExternalApiController {
         tmp.put("拖车离仓", "TT_5");
         tmp.put("拖车过磅", "TT_6");
         tmp.put("确认还柜", "TT_7");
+        tmp.put("费用审核", "CostAudit");
+        tmp.put("应收对账单审核", "trailerReceiverCheck");
+        tmp.put("应付对账单审核", "trailerPayCheck");
+
         List<Map<String, Object>> result = new ArrayList<>();
 
-        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
-        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
+        List<Long> legalIds = legalEntityByLegalName.getData();
+        Map<String, Integer> reBillNumMap = this.financeClient.getPendingBillStatusNum(null, legalIds, 0, false, SubOrderSignEnum.TC.getSignOne()).getData();
+        Map<String, Integer> payBillNumMap = this.financeClient.getPendingBillStatusNum(null, legalIds, 1, false, SubOrderSignEnum.TC.getSignOne()).getData();
+        Map<String, Object> datas = new HashMap<>();
+        datas.put("trailerReceiverCheck", reBillNumMap);
+        datas.put("trailerPayCheck", payBillNumMap);
 
         for (Map<String, Object> menus : menusList) {
 
@@ -167,8 +175,9 @@ public class ExternalApiController {
             Object title = menus.get("title");
             String status = tmp.get(title);
             Integer num = 0;
-            num = this.trailerOrderService.getNumByStatus(status, legalIds);
-
+            if (status != null) {
+                num = this.trailerOrderService.getNumByStatus(status, legalIds, datas);
+            }
             map.put("menusName", title);
             map.put("num", num);
             result.add(map);
@@ -176,29 +185,47 @@ public class ExternalApiController {
         return ApiResult.ok(result);
     }
 
+//    @ApiOperation(value = "获取拖车订单号")
+//    @RequestMapping(value = "/api/trailer/getOrderNo")
+//    public ApiResult<List<InitChangeStatusVO>> getTrailerOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo) {
+//        InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
+//        List<TrailerOrder> list = this.trailerOrderService.getByCondition(new TrailerOrder().setMainOrderNo(mainOrderNo));
+//        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(list)) {
+//            TrailerOrder tmp = list.get(0);
+//            initChangeStatusVO.setId(tmp.getId());
+//            initChangeStatusVO.setOrderNo(tmp.getOrderNo());
+//            initChangeStatusVO.setOrderType(CommonConstant.TC);
+//            initChangeStatusVO.setOrderTypeDesc(CommonConstant.TC_DESC);
+//            initChangeStatusVO.setStatus(tmp.getProcessStatus() + "");
+//            initChangeStatusVO.setNeedInputCost(tmp.getNeedInputCost());
+//            return ApiResult.ok(initChangeStatusVO);
+//        }
+//        return ApiResult.error();
+//    }
+
     @ApiOperation(value = "获取拖车订单号")
     @RequestMapping(value = "/api/trailer/getOrderNo")
     public ApiResult<List<InitChangeStatusVO>> getTrailerOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo) {
-        InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
         List<TrailerOrder> list = this.trailerOrderService.getByCondition(new TrailerOrder().setMainOrderNo(mainOrderNo));
-        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(list)) {
-            TrailerOrder tmp = list.get(0);
-            initChangeStatusVO.setId(tmp.getId());
-            initChangeStatusVO.setOrderNo(tmp.getOrderNo());
+        List<InitChangeStatusVO> changeStatusVOS = new ArrayList<>();
+        for (TrailerOrder trailerOrder : list) {
+            InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
+            initChangeStatusVO.setId(trailerOrder.getId());
+            initChangeStatusVO.setOrderNo(trailerOrder.getOrderNo());
             initChangeStatusVO.setOrderType(CommonConstant.TC);
             initChangeStatusVO.setOrderTypeDesc(CommonConstant.TC_DESC);
-            initChangeStatusVO.setStatus(tmp.getProcessStatus() + "");
-            initChangeStatusVO.setNeedInputCost(tmp.getNeedInputCost());
-            return ApiResult.ok(initChangeStatusVO);
+            initChangeStatusVO.setNeedInputCost(trailerOrder.getNeedInputCost());
+            initChangeStatusVO.setStatus(trailerOrder.getProcessStatus() == 3 ? "CLOSE" : trailerOrder.getProcessStatus().toString());
+            changeStatusVOS.add(initChangeStatusVO);
         }
-        return ApiResult.error();
+        return ApiResult.ok(changeStatusVOS);
     }
 
     /**
      * 关闭订单
      */
     @RequestMapping(value = "/api/closeOrder")
-    public ApiResult closeOrder(@RequestBody List<SubOrderCloseOpt> form){
+    public ApiResult closeOrder(@RequestBody List<SubOrderCloseOpt> form) {
         List<String> orderNos = form.stream().map(SubOrderCloseOpt::getOrderNo).collect(Collectors.toList());
         List<TrailerOrder> list = this.trailerOrderService.getOrdersByOrderNos(orderNos);
         Map<String, TrailerOrder> map = list.stream().collect(Collectors.toMap(TrailerOrder::getOrderNo, e -> e));

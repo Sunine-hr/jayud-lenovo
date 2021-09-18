@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.MessagePushTemplateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.MessagePushTemplate">
+        <id column="id" property="id"/>
+        <result column="num" property="num"/>
+        <result column="msg_name" property="msgName"/>
+        <result column="type" property="type"/>
+        <result column="sub_type" property="subType"/>
+        <result column="trigger_status" property="triggerStatus"/>
+        <result column="send_time_type" property="sendTimeType"/>
+        <result column="send_time" property="sendTime"/>
+        <result column="time_unit" property="timeUnit"/>
+        <result column="template_content" property="templateContent"/>
+        <result column="content" property="content"/>
+        <result column="rep_param" property="repParam"/>
+        <result column="sql_select" property="sqlSelect"/>
+        <result column="template_title" property="templateTitle"/>
+        <result column="title" property="title"/>
+        <result column="post" property="post"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, num, msg_name, type, sub_type, trigger_status, send_time_type, send_time, time_unit, template_content, content, rep_param, sql_select, template_title, title, post
+    </sql>
+    <select id="executeTemplateSQL" resultType="java.util.Map">
+        ${sqlSelect}
+    </select>
+
+
+    <select id="findByPage" resultType="com.jayud.oms.model.vo.MessagePushTemplateVO">
+        select id, num, msg_name, `type`, sub_type, trigger_status, send_time,
+        time_unit, content, rep_param, title, post,template_content,
+        create_time,create_user,update_user,update_time,status,
+        send_time_type
+        from message_push_template
+        <where>
+            <if test="form.num !=null and form.num!=''">
+                and num like concat('%',#{form.num},'%')
+            </if>
+            <if test="form.msgName !=null and form.msgName!=''">
+                and msg_name like concat('%',#{form.msgName},'%')
+            </if>
+            <if test="form.subType !=null and form.subType!=''">
+                and sub_type = #{form.subType}
+            </if>
+            <if test="form.triggerStatus !=null and form.triggerStatus!=''">
+                and trigger_status = #{form.triggerStatus}
+            </if>
+            <if test="form.type !=null and form.type!=''">
+                and type = #{form.type}
+            </if>
+            <if test="form.posts !=null and form.posts.size>0">
+                and post in
+                <foreach collection="form.posts" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+</mapper>

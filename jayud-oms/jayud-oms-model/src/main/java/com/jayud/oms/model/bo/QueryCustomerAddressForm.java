@@ -36,4 +36,14 @@ public class QueryCustomerAddressForm extends BasePageForm {
     @NotNull(message = "客户主键不能为空")
     private Long customerId;
 
+
+    @ApiModelProperty(value = "客户code 创建订单用的")
+    private String customerCode;
+
+    @ApiModelProperty(value = "状态（0禁用 1启用）")
+    private String status;
+
+    @ApiModelProperty(value = "地址类型（0 提货地址 1送货地址）")
+    private String type;
+
 }

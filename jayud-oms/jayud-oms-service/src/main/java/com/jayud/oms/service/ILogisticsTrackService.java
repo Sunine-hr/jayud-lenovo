@@ -61,4 +61,6 @@ public interface ILogisticsTrackService extends IService<LogisticsTrack> {
      * @return
      */
     LogisticsTrack getLogisticsTrackByOrderIdAndStatusAndType(Long id, String status, int type);
+
+    List<LogisticsTrack> getLogisticsTrackByOrderIds(List<Long> subOrderIds, List<String> status, Integer type);
 }

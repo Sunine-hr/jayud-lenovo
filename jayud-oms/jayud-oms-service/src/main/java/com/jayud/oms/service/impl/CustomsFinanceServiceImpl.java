@@ -63,8 +63,15 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
             // 获取子订单的应收费用
             QueryWrapper<OrderReceivableCost> queryWrapper = new QueryWrapper<>();
             queryWrapper.lambda().eq(OrderReceivableCost::getOrderNo, subOrderCustoms.getOrderNo());
-            Map<String, OrderReceivableCost> receivableCostMap = receivableCostService.list(queryWrapper)
-                    .stream().collect(Collectors.toMap(OrderReceivableCost::getCostCode, e -> e));
+            Map<String, OrderReceivableCost> receivableCostMap = new HashMap<>();
+            try {
+                receivableCostMap = receivableCostService.list(queryWrapper)
+                        .stream().collect(Collectors.toMap(OrderReceivableCost::getCostCode, e -> e));
+            } catch (Exception e) {
+                log.warn("费用code重复 报错信息:{}", e.getMessage());
+                return false;
+            }
+
 
             // 获取云报关-金蝶财务费用项对应关系
             Map<String, CustomsFinanceFeeRelation> feeRelationMap = financeClient.getCustomsFinanceFeeRelation().getData()
@@ -157,24 +164,30 @@ public class CustomsFinanceServiceImpl implements CustomsFinanceService {
                     if (orderInfo.getLegalEntityId().equals(subOrderCustoms.getLegalEntityId()) && orderInfo.getUnitCode().equals(subOrderCustoms.getUnitCode())) {
                         orderReceivableCost.setIsSumToMain(Boolean.TRUE);
                         orderReceivableCost.setLegalName(orderInfo.getLegalName());
-                        orderReceivableCost.setLegalId(orderInfo.getLegalEntityId());
-                    } else {
-                        orderReceivableCost.setIsSumToMain(Boolean.FALSE);
-                        orderReceivableCost.setLegalName(subOrderCustoms.getLegalName());
-                        orderReceivableCost.setLegalId(subOrderCustoms.getLegalEntityId());
-                    }
-
-                    if (orderReceivableCost.getIsSumToMain()) {
-                        orderReceivableCost.setLegalName(orderInfo.getLegalName());
-                        orderReceivableCost.setLegalId(Long.parseLong((oauthClient.getLegalEntityByLegalName(orderInfo.getLegalName()).getData().toString())));
+                        if (orderInfo.getLegalEntityId()==null){
+                            orderReceivableCost.setLegalId(Long.parseLong((oauthClient.getLegalEntityByLegalName(orderInfo.getLegalName()).getData().toString())));
+                        }else {
+                            orderReceivableCost.setLegalId(orderInfo.getLegalEntityId());
+                        }
                         orderReceivableCost.setUnitCode(orderInfo.getUnitCode()).setUnitName(customerNameMap.get(orderInfo.getUnitCode()));
                         orderReceivableCost.setDepartmentId(Long.valueOf(orderInfo.getBizBelongDepart()));
                     } else {
+                        orderReceivableCost.setIsSumToMain(Boolean.FALSE);
                         orderReceivableCost.setLegalName(subOrderCustoms.getLegalName());
-                        orderReceivableCost.setLegalId(Long.parseLong((oauthClient.getLegalEntityByLegalName(subOrderCustoms.getLegalName()).getData().toString())));
+                        if (subOrderCustoms.getLegalEntityId()==null){
+                            orderReceivableCost.setLegalId(Long.parseLong((oauthClient.getLegalEntityByLegalName(subOrderCustoms.getLegalName()).getData().toString())));
+                        }else {
+                            orderReceivableCost.setLegalId(subOrderCustoms.getLegalEntityId());
+                        }
                         orderReceivableCost.setUnitCode(subOrderCustoms.getUnitCode()).setUnitName(customerNameMap.get(subOrderCustoms.getUnitCode()));
                         orderReceivableCost.setDepartmentId(subOrderCustoms.getDepartmentId());
                     }
+
+//                    if (orderReceivableCost.getIsSumToMain()) {
+//                        orderReceivableCost.setLegalName(orderInfo.getLegalName());
+//                    } else {
+//                        orderReceivableCost.setLegalName(subOrderCustoms.getLegalName());
+//                    }
 
                     orderReceivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_3.getCode()));
                     orderReceivableCost.setOptName("system");

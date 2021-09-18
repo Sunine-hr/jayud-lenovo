@@ -72,6 +72,18 @@ public class DeliveryAddress extends Model<DeliveryAddress> {
     @ApiModelProperty(value = "创建人")
     private String createUser;
 
+    @ApiModelProperty(value = "经纬度")
+    private String loAndLa;
+
+    @ApiModelProperty(value = "省主键")
+    private Long province;
+
+    @ApiModelProperty(value = "市主键")
+    private Long city;
+
+    @ApiModelProperty(value = "区主键")
+    private Long area;
+
 
     @Override
     protected Serializable pkVal() {

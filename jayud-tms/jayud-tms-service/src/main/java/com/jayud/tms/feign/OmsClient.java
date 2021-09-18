@@ -5,6 +5,8 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.entity.DelOprStatusForm;
 import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.entity.LogisticsTrackVO;
+import com.jayud.common.entity.MapEntity;
 import com.jayud.tms.model.bo.AuditInfoForm;
 import com.jayud.tms.model.bo.HandleSubProcessForm;
 import com.jayud.tms.model.bo.OprStatusForm;
@@ -303,4 +305,57 @@ public interface OmsClient {
     @PostMapping(value = "/initBizService")
     public CommonResult<List<InitComboxStrVO>> initBizService();
 
+    /**
+     * 获取腾讯地图经纬度
+     *
+     * @param address
+     * @param key
+     * @return
+     */
+    @ApiOperation(value = "获取企业微信部门员工详情")
+    @RequestMapping(value = "/api/getTencentMapLaAndLoInfo")
+    public ApiResult getTencentMapLaAndLoInfo(@RequestParam("address") String address,
+                                              @RequestParam("key") String key);
+
+    /**
+     * 获取腾讯地图经纬度
+     *
+     * @param address
+     * @param key
+     * @return
+     */
+    @RequestMapping(value = "/api/getTencentMapLaAndLo")
+    public ApiResult<MapEntity> getTencentMapLaAndLo(@RequestParam("address") String address, @RequestParam("key") String key);
+
+
+    /**
+     * 批量更新实时定位GPS
+     *
+     * @param paramMap
+     * @return
+     */
+    @RequestMapping(value = "/api/batchSyncGPSPositioning")
+    public ApiResult batchSyncGPSPositioning(@RequestBody Map<String, List<String>> paramMap);
+
+    /**
+     * 批量更新GPS历史轨迹
+     *
+     * @param paramMap
+     * @return
+     */
+    @RequestMapping(value = "/api/batchSyncGPSHistoryPositioning")
+    public ApiResult batchSyncGPSHistoryPositioning(@RequestBody Map<String, List<Map<String, Object>>> paramMap);
+
+    /**
+     * 根据子订单主键集合查询订单轨迹
+     *
+     * @param subOrderIds
+     * @param status
+     * @param type
+     * @return
+     */
+    @RequestMapping(value = "/api/getLogisticsTrackByOrderIds")
+    public ApiResult<List<LogisticsTrackVO>> getLogisticsTrackByOrderIds(@RequestParam("subOrderIds") List<Long> subOrderIds,
+                                                                         @RequestParam("status") List<String> status,
+                                                                         @RequestParam("type") Integer type);
 }

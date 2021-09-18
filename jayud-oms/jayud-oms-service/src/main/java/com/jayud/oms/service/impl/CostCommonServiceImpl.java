@@ -1,6 +1,8 @@
 package com.jayud.oms.service.impl;
 
 import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.oms.mapper.OrderInfoMapper;
+import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.service.ICostCommonService;
 import com.jayud.oms.service.IOrderPaymentCostService;
 import com.jayud.oms.service.IOrderReceivableCostService;
@@ -21,20 +23,38 @@ public class CostCommonServiceImpl implements ICostCommonService {
     private IOrderReceivableCostService orderReceivableCostService;
     @Autowired
     private IOrderPaymentCostService orderPaymentCostService;
+    @Autowired
+    private OrderInfoMapper orderInfoMapper;
 
     /**
      * 统计应收/应付待处理费用审核
      */
     @Override
-    public Integer auditPendingExpenses(String subType, List<Long> legalIds, List<String> orderNos) {
+    public Integer auditPendingExpenses(String subType, List<Long> legalIds, List<String> orderNos, String userName) {
         Set<String> orderNosSet = new HashSet<>();
         String key = SubOrderSignEnum.MAIN.getSignOne().equals(subType) ? "mainOrderNo" : "orderNo";
         //查询应付待费用审核
-        List<Map<String, Object>> paymentCostMap = this.orderPaymentCostService.getPendingExpenseApproval(subType, orderNos, legalIds);
+        List<Map<String, Object>> paymentCostMap = this.orderPaymentCostService.getPendingExpenseApproval(subType, orderNos, legalIds,userName);
         //查询应收待费用审核
         List<Map<String, Object>> receivableCostMap = this.orderReceivableCostService.getPendingExpenseApproval(subType, orderNos, legalIds);
         paymentCostMap.stream().filter(e -> e.get(key) != null).forEach(e -> orderNosSet.add(e.get(key).toString()));
         receivableCostMap.stream().filter(e -> e.get(key) != null).forEach(e -> orderNosSet.add(e.get(key).toString()));
         return orderNosSet.size();
+    }
+
+    /**
+     * 查询所有未录用费用订单数量
+     *
+     * @param list
+     * @param legalIds
+     * @param subType
+     * @param userName
+     * @return
+     */
+    @Override
+    public Integer allUnemployedFeesNum(List<OrderInfo> list, List<Long> legalIds,
+                                        String subType, String userName) {
+        Integer num = this.orderInfoMapper.getAllCostNum(legalIds,subType,userName);
+        return list.size() - num;
     }
 }

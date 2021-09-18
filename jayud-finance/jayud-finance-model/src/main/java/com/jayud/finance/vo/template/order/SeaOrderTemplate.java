@@ -45,7 +45,7 @@ public class SeaOrderTemplate {
     @ApiModelProperty(value = "子订单号", required = true)
     private String subOrderNo;
 
-    @ApiModelProperty(value = "客户", required = true)
+    @ApiModelProperty(value = "客户")
     private String customerName;
 
     @ApiModelProperty(value = "合同号", required = true)

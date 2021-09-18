@@ -1,9 +1,11 @@
 package com.jayud.oauth.model.bo;
 
+import com.jayud.oauth.model.po.MsgUserChannel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @Data
 public class AddSystemUserForm {
@@ -40,4 +42,7 @@ public class AddSystemUserForm {
     @ApiModelProperty(value = "部门ID",required = true)
     @NotEmpty(message = "部门ID不能为空")
     private Long departmentId;
+
+    @ApiModelProperty(value = "消息渠道集合")
+    private List<MsgUserChannel> msgUserChannelList;
 }

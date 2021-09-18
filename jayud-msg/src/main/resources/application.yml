@@ -3,6 +3,11 @@ server:
 spring:
   kafka:     # 指定kafka 代理地址，可以多个
     bootstrap-servers: ${kafka.producer.servers}
+  redis:
+    host: ${redis.server.url}
+    port: ${redis.server.port}
+    password: ${redis.server.password}
+    timeout: 2000s
 hystrix:
   command:
     default:

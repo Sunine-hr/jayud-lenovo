@@ -40,6 +40,8 @@ public class CostAmountVO {
     @ApiModelProperty(value = "应付核销:待付金额对应的币种")//核销
     private String dfCurrency;
 
+    @ApiModelProperty(value = "核算期 XXXX-XX")
+    private String accountTerm;
 
 
 

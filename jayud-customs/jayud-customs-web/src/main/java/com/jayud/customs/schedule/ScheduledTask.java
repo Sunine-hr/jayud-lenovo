@@ -2,6 +2,7 @@ package com.jayud.customs.schedule;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.customs.feign.OmsClient;
 import com.jayud.customs.model.enums.BGOrderStatusEnum;
@@ -64,6 +65,21 @@ public class ScheduledTask {
             }
             List<DeclarationOPDetailVO> processStepDtl = processStep.getDtl();
             stepMap = processStepDtl.stream().collect(Collectors.toMap(DeclarationOPDetailVO::getCname, e -> e, (k1, k2) -> k2));
+            DeclarationOPDetailVO completeNode = stepMap.get("报关完成");
+            if (completeNode != null) {
+                List<String> statusNames = Arrays.asList(BGOrderStatusEnum.CUSTOMS_C_3.getStatus(),
+                        BGOrderStatusEnum.CUSTOMS_C_9.getStatus(),
+                        BGOrderStatusEnum.CUSTOMS_C_11.getStatus(),
+                        BGOrderStatusEnum.CUSTOMS_C_4.getStatus(),
+                        BGOrderStatusEnum.CUSTOMS_C_10.getStatus());
+                stepMap = new HashMap<>();
+                for (String statusName : statusNames) {
+                    DeclarationOPDetailVO convert = ConvertUtil.convert(completeNode, DeclarationOPDetailVO.class);
+                    convert.setCname(statusName);
+                    stepMap.put(statusName, convert);
+                }
+            }
+
 
             // 获得OMS报关单状态
             BGOrderStatusEnum bgOrderStatusEnum = BGOrderStatusEnum.getEnum(orderCustoms.getStatus());
@@ -75,9 +91,9 @@ public class ScheduledTask {
                     continue;
                 }
 
-//                if (Objects.equals(BGOrderStatusEnum.CUSTOMS_C_10.getCode(), bgOrderStatusEnum.getCode())) {
-//                    orderCustoms.setYunCustomsNo(processStep.getHead().getCustom_apply_no());
-//                    // 判断是否有云报关审核应收费用
+                if (Objects.equals(BGOrderStatusEnum.CUSTOMS_C_10.getCode(), bgOrderStatusEnum.getCode())) {
+                    orderCustoms.setYunCustomsNo(processStep.getHead().getCustom_apply_no());
+                    // 判断是否有云报关审核应收费用
 //                    YunbaoguanReceivableCost receivableCost = yunbaoguanReceivableCostService.getOne(
 //                            Wrappers.<YunbaoguanReceivableCost>lambdaQuery()
 //                                    .eq(YunbaoguanReceivableCost::getApplyNo, orderCustoms.getYunCustomsNo()));
@@ -86,7 +102,7 @@ public class ScheduledTask {
 //                        msg.put("msg", receivableCost.getReceivableCostData());
 //                        omsClient.saveReceivableBill(JSONObject.toJSONString(msg));
 //                    }
-//                }
+                }
 
                 bgOrderStatusEnum.updateProcessStatus(orderCustoms,
                         e -> orderCustomsService.updateProcessStatus(orderCustoms, declarationOPDetailVO.getP_name(), declarationOPDetailVO.getProcess_dt()));

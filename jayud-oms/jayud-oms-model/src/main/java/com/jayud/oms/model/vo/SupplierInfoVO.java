@@ -131,6 +131,12 @@ public class SupplierInfoVO {
     @ApiModelProperty(value = "对接GPS公用路径前缀")
     private String gpsAddress;
 
+    @ApiModelProperty(value = "gps厂商(1:云港通,2:北斗)")
+    private Integer gpsType;
+
+    @ApiModelProperty(value = "gps请求参数(json格式)")
+    private String gpsReqParam;
+
 
     /**
      * 组装服务类型id集合
@@ -146,7 +152,7 @@ public class SupplierInfoVO {
     }
 
     public List<Long> getLegalEntityIds() {
-        if(!StringUtil.isNullOrEmpty(this.legalEntityIdStr)){
+        if (!StringUtil.isNullOrEmpty(this.legalEntityIdStr)) {
             String[] strs = this.legalEntityIdStr.split(",");
             for (String str : strs) {
                 legalEntityIds.add(Long.valueOf(str));

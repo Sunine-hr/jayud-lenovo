@@ -69,6 +69,12 @@ public class CancelAfterVerification extends Model<CancelAfterVerification> {
     @ApiModelProperty(value = "短款金额")
     private BigDecimal shortAmount;
 
+    @ApiModelProperty(value = "本币汇率")
+    private BigDecimal localExchangeRate;
+
+    @ApiModelProperty(value = "短款本币金额")
+    private BigDecimal shortLocalAmount;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

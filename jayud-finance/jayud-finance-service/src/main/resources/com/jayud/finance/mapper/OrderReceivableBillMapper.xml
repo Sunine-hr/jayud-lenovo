@@ -309,7 +309,15 @@
         <if test="form.bizCode != null and form.bizCode!=''">
             and temp.bizCode =#{form.bizCode}
         </if>
-        group by temp.orderNo,temp.subOrderNo
+        <choose>
+            <when test="form.cmd == 'main'">
+                group by temp.orderNo
+            </when>
+            <otherwise>
+                group by temp.orderNo,temp.subOrderNo
+            </otherwise>
+        </choose>
+
     </select>
 
     <select id="findBaseNotPaidBillByPage" parameterType="com.jayud.finance.bo.QueryNotPaidBillForm"
@@ -641,7 +649,8 @@
         (select sum(ota.weight) from order_take_adr ota left join order_transport ot on ota.order_no = ot.order_no where
         ot.main_order_no = oi.order_no and ota.opr_type = '1') weight,
         (select GROUP_CONCAT(oc.yun_customs_no,',') from order_customs oc where oc.main_order_no = oi.order_no)
-        yunCustomsNo
+        yunCustomsNo,
+        orc.department_id,orc.is_internal,oi.biz_belong_depart
         FROM
         order_info oi
         left join order_receivable_cost orc on orc.main_order_no = oi.order_no
@@ -664,9 +673,10 @@
                 SELECT DISTINCT
                 <if test="cmd == 'main'">
                     oi.legal_name legalName,
+                    oi.legal_entity_id,
                 </if>
-
                 orc.legal_name legalName,
+                orc.legal_id legalEntityId,
 
                 <!--        <if test="cmd == 'bg'">-->
                 <!--            oc.legal_name legalName,-->
@@ -703,9 +713,11 @@
                 SELECT DISTINCT
                 <if test="cmd == 'main'">
                     oi.legal_name legalName,
+                    oi.legal_entity_id,
                 </if>
                 <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
                     sub.legal_name legalName,
+                    sub.legal_entity_id,
                 </if>
                 <!--        <if test="cmd == 'bg'">-->
                 <!--            oc.legal_name legalName,-->

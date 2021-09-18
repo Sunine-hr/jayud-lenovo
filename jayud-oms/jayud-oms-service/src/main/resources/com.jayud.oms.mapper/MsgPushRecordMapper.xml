@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.MsgPushRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.MsgPushRecord">
+        <id column="id" property="id" />
+        <result column="recipient_name" property="recipientName" />
+        <result column="recipient_id" property="recipientId" />
+        <result column="type" property="type" />
+        <result column="post" property="post" />
+        <result column="receiving_status" property="receivingStatus" />
+        <result column="receive_content" property="receiveContent" />
+        <result column="receiving_mode" property="receivingMode" />
+        <result column="receiving_account" property="receivingAccount" />
+        <result column="num" property="num" />
+        <result column="initial_time" property="initialTime" />
+        <result column="send_time_type" property="sendTimeType" />
+        <result column="delay_time" property="delayTime" />
+        <result column="time_unit" property="timeUnit" />
+        <result column="send_time" property="sendTime" />
+        <result column="status" property="status" />
+        <result column="err_msg" property="errMsg" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, recipient_name, recipient_id, type, post, receiving_status, receive_content, receiving_mode, receiving_account, num, initial_time, send_time_type, delay_time, time_unit, send_time, status, err_msg
+    </sql>
+    <select id="findByPage" resultType="com.jayud.oms.model.vo.MsgPushRecordVO">
+        select
+        id, recipient_name, recipient_id,title,
+        type, post, receiving_status, receive_content,
+        receiving_mode, receiving_account, num, initial_time,
+        send_time_type, delay_time, time_unit, send_time, status, err_msg,opt_status,sub_type
+        from
+        msg_push_record
+        <where>
+            <if test="form.optStatus!=null and form.optStatus!=''">
+                and opt_status =#{form.optStatus}
+            </if>
+            <if test="form.status!=null and form.status!=''">
+                and status =#{form.status}
+            </if>
+            <if test="form.subType!=null and form.subType!=''">
+                and sub_type =#{form.subType}
+            </if>
+            <if test="form.recipientName!=null and form.recipientName!=''">
+                and recipient_name =#{form.recipientName}
+            </if>
+            <if test="form.recipientId!=null and form.recipientId!=''">
+                and recipient_id =#{form.recipientId}
+            </if>
+            and opt_status in (1,2)
+        </where>
+        group by receiving_status,initial_time
+        order by id desc
+    </select>
+
+</mapper>

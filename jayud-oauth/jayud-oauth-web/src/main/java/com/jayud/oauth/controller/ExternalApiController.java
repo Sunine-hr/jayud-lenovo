@@ -1,5 +1,6 @@
 package com.jayud.oauth.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.ApiResult;
@@ -8,13 +9,15 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
+import com.jayud.common.enums.MsgChannelTypeEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.JDKUtils;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oauth.model.bo.AddCusAccountForm;
-import com.jayud.oauth.model.bo.AuditSystemUserForm;
 import com.jayud.oauth.model.bo.OprSystemUserForm;
 import com.jayud.oauth.model.bo.QueryAccountForm;
 import com.jayud.oauth.model.enums.StatusEnum;
@@ -27,12 +30,11 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -55,6 +57,8 @@ public class ExternalApiController {
     ISystemUserLegalService systemUserLegalService;
     @Autowired
     private ISystemMenuService systemMenuService;
+    @Autowired
+    private IMsgUserChannelService msgUserChannelService;
 
 
     @ApiOperation(value = "获取所有部门")
@@ -453,12 +457,81 @@ public class ExternalApiController {
     }
 
     /**
+     * 根据部门id获取部门名称
+     *
+     * @param departmentId
+     * @return
+     */
+    @RequestMapping(value = "/api/getDepNameById")
+    ApiResult<String> getDepNameById(@RequestParam("departmentId") Long departmentId) {
+        return ApiResult.ok(this.departmentService.getById(departmentId).getName());
+    }
+
+    /**
      * 获取所有业务员
      */
     @RequestMapping(value = "/api/getSystemUserList")
-    ApiResult<List<SystemUserVO>> getSystemUserList(){
+    ApiResult<List<SystemUserVO>> getSystemUserList() {
         return ApiResult.ok(this.userService.getSystemUserList());
     }
+
+
+    /**
+     * 根据岗位获取启用用户
+     */
+    @RequestMapping(value = "/api/getEnableUserByWorkName")
+    ApiResult<List<SystemUserVO>> getEnableUserByWorkName(@RequestParam(value = "workName") String workName) {
+        return ApiResult.ok(this.userService.getByCondition(new SystemUser().setWorkName(workName).setStatus(1)));
+    }
+
+    /**
+     * 根据用户集合查询用户消息渠道
+     */
+    @RequestMapping(value = "/api/getEnableMsgUserChannelByUserIds")
+    ApiResult<List<MsgUserChannel>> getEnableMsgUserChannelByUserIds(@RequestParam(value = "userIds") List<Long> userIds) {
+        return ApiResult.ok(this.msgUserChannelService.getEnableByUserIds(userIds));
+    }
+
+    /**
+     * 同步渠道手机账号
+     */
+    @RequestMapping(value = "/api/syncChannelMobileAccount")
+    @Transactional
+    public ApiResult syncChannelMobileAccount() {
+        QueryWrapper<SystemUser> condition = new QueryWrapper<>();
+        condition.lambda().isNotNull(SystemUser::getPhone).eq(SystemUser::getStatus, true);
+        List<SystemUser> systemUsers = this.userService.list(condition);
+        if (CollectionUtil.isEmpty(systemUsers)) {
+            return null;
+        }
+        Map<String, MsgUserChannel> channelMap = this.msgUserChannelService.list().stream().collect(Collectors.toMap(e -> e.getUserId() + "~" + e.getType(), e -> e));
+        List<MsgUserChannel> list = new ArrayList<>();
+        List<MsgChannelTypeEnum> types = Arrays.asList(MsgChannelTypeEnum.DING_DING);
+        for (SystemUser systemUser : systemUsers) {
+
+            for (MsgChannelTypeEnum type : types) {
+                MsgUserChannel msgUserChannel = channelMap.get(systemUser.getId() + "~" + type.getCode());
+                if (msgUserChannel == null) {
+                    msgUserChannel = new MsgUserChannel().setType(type.getCode()).setName(type.getDesc())
+                            .setUserId(systemUser.getId()).setAccount(systemUser.getPhone()).setIsSelect(false);
+                } else {
+                    if (!StringUtils.isEmpty(msgUserChannel.getAccount())) {
+                        continue;
+                    }
+                    msgUserChannel.setAccount(systemUser.getPhone());
+                }
+                list.add(msgUserChannel);
+            }
+
+        }
+        if (list.size() > 0) {
+            this.msgUserChannelService.saveOrUpdateBatch(list);
+        }
+
+        return ApiResult.ok();
+    }
+
+
 }
 
 

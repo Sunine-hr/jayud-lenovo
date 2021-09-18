@@ -185,6 +185,9 @@
                         #{legalId}
                     </foreach>
                 </if>
+                <if test="userName !=null and userName!=''">
+                    and opc.created_user = #{userName}
+                </if>
                 GROUP BY opc.main_order_no
             </when>
             <otherwise>
@@ -202,6 +205,10 @@
                         #{item}
                     </foreach>
                 </if>
+                <if test="userName !=null and userName!=''">
+                    and opc.created_user = #{userName}
+                </if>
+
                 <!--                <if test="legalIds != null and legalIds.size>0">-->
                 <!--                    and oi.`legal_entity_id` in-->
                 <!--                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
@@ -248,5 +255,101 @@
         <if test="form.supplierId !=null">
             and opc.supplier_id = #{form.supplierId}
         </if>
+    </select>
+
+
+    <select id="statisticsMainOrderCost" resultType="java.util.Map">
+        select
+        date_format(oi.create_time,#{form.sqlFormat}) createTime,sum(ifnull(opc.change_amount,0)) changeAmount
+        from order_info oi
+        left join order_payment_cost opc on opc.main_order_no=oi.order_no
+        <where>
+            and opc.is_sum_to_main = true
+            <if test="form.timeInterval != null and form.timeInterval.size>0">
+                and date_format(oi.create_time,#{form.sqlFormat}) between #{form.timeInterval[0]} and
+                #{form.timeInterval[1]}
+            </if>
+            <if test="status!=null and status.size>0">
+                and opc.status in
+                <foreach collection="status" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="legalIds != null and legalIds.size>0">
+                and oi.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+            group by date_format(oi.create_time,#{form.sqlFormat})
+            order by date_format(oi.create_time,#{form.sqlFormat})
+        </where>
+
+    </select>
+    <select id="getBaseStatisticsAllCost" resultType="com.jayud.oms.model.vo.StatisticsOrderBaseCostVO">
+        select
+        opc.main_order_no,opc.order_no,opc.change_amount,opc.status,opc.is_internal,opc.is_sum_to_main,
+        date_format(oi.create_time,#{form.sqlFormat}) orderCreatedTime
+        from order_info oi
+        left join order_payment_cost opc on opc.main_order_no=oi.order_no
+        <where>
+            <if test="form.timeInterval != null and form.timeInterval.size>0">
+                and date_format(oi.create_time,#{form.sqlFormat}) between #{form.timeInterval[0]} and
+                #{form.timeInterval[1]}
+            </if>
+            <if test="status!=null and status.size>0">
+                and opc.status in
+                <foreach collection="status" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="legalIds != null and legalIds.size>0">
+                and oi.`legal_entity_id` in
+                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+                    #{legalId}
+                </foreach>
+            </if>
+            order by date_format(oi.create_time,#{form.sqlFormat})
+        </where>
+    </select>
+
+
+    <select id="getDriverBillCost" resultType="com.jayud.oms.model.vo.DriverBillCostVO">
+        select
+        opc.main_order_no,opc.order_no,opc.amount,opc.currency_code,opc.status,
+        date_format(oi.operation_time,'%Y-%m-%d') operationTime,opc.file_name,opc.files,cost_code
+        from order_info oi
+        left join order_payment_cost opc on opc.main_order_no=oi.order_no
+        <where>
+            <if test="status!=null and status.size>0">
+                and opc.status in
+                <foreach collection="status" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="orderNos!=null and orderNos.size>0">
+                and opc.order_no in
+                <foreach collection="orderNos" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="time!=null and time!=''">
+                and date_format(oi.operation_time,'%Y-%m') =#{time}
+            </if>
+            <if test="employIds !=null and employIds.size>0">
+                and opc.driver_cost_id in
+                <foreach collection="employIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <!--            <if test="legalIds != null and legalIds.size>0">-->
+            <!--                and oi.`legal_entity_id` in-->
+            <!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+            <!--                    #{legalId}-->
+            <!--                </foreach>-->
+            <!--            </if>-->
+            order by oi.operation_time desc
+        </where>
     </select>
 </mapper>

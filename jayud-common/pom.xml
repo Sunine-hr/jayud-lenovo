@@ -76,10 +76,17 @@
             <artifactId>jjwt</artifactId>
             <version>0.9.1</version>
         </dependency>
+<!--   TODO 导出文档需要排除     -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>${poi.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.xmlbeans</groupId>
+                    <artifactId>xmlbeans</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -124,6 +131,72 @@
             <artifactId>easyexcel</artifactId>
             <version>2.2.7</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.ibeetl</groupId>
+            <artifactId>beetl</artifactId>
+            <version>3.1.8.RELEASE</version>
+        </dependency>
+
+        <!--easypoi  TODO 导出word 自动POI依赖版本为3.15-->
+        <dependency>
+            <groupId>cn.afterturn</groupId>
+            <artifactId>easypoi-base</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.afterturn</groupId>
+            <artifactId>easypoi-web</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.afterturn</groupId>
+            <artifactId>easypoi-annotation</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+        <!--注意:word中要使用循环等标签必须单独导入以下依赖-->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>ooxml-schemas</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+        <!--条形识别-->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+
+        <!--文字识别-->
+        <dependency>
+            <groupId>net.sourceforge.tess4j</groupId>
+            <artifactId>tess4j</artifactId>
+            <version>4.5.1</version>
+        </dependency>
+
+        <!-- pdf-->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>fontbox</artifactId>
+            <version>2.0.17</version>
+        </dependency>
+
     </dependencies>
     <distributionManagement>
         <repository>

@@ -4,6 +4,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.Utilities;
 import io.swagger.annotations.ApiModelProperty;
@@ -38,9 +39,10 @@ public class TmsOrderTemplate {
     private String mainOrderNo;
 
     @ApiModelProperty(value = "子订单号", required = true)
-    private String orderNo;
+    @JsonProperty("orderNo")
+    private String subOrderNo;
 
-    @ApiModelProperty(value = "客户", required = true)
+    @ApiModelProperty(value = "客户",required = true)
     private String customerName;
 
     @ApiModelProperty(value = "启运地", required = true)

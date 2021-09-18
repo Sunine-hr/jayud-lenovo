@@ -12,6 +12,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotEmpty;
+
 /**
  * <p>
  * 司机录入费用表(小程序使用)
@@ -71,6 +73,8 @@ public class DriverEmploymentFee extends Model<DriverEmploymentFee> {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
+    @ApiModelProperty(value = "汇率")
+    private BigDecimal exchangeRate;
 
     @Override
     protected Serializable pkVal() {

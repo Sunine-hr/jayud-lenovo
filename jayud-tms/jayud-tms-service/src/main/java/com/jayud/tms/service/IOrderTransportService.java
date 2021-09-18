@@ -99,6 +99,7 @@ public interface IOrderTransportService extends IService<OrderTransport> {
 
     /**
      * 小程序司机车辆通关（补出仓和入仓数据）,送货地址只有一个时候才做这个操作
+     * TODO 虚拟仓时候需要补出仓和入仓数据
      */
     void driverCustomsClearanceVehicles(OprStatusForm form);
 
@@ -123,11 +124,12 @@ public interface IOrderTransportService extends IService<OrderTransport> {
     /**
      * 查询订单状态数量
      *
-     * @param status
      * @param legalIds
+     * @param status
+     * @param datas
      * @return
      */
-    public Integer getNumByStatus(String status, DataControl dataControl);
+    public Integer getNumByStatus(String status, DataControl dataControl, Map<String, Object> datas);
 
     /**
      * 根据主订单号集合查询中港详情信息
@@ -187,4 +189,10 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      * @return
      */
     IPage<SupplierBillInfo> findSupplierBillInfoByPage(QuerySupplierBillInfo form);
+
+    void msgPush(OrderTransport orderTransport);
+
+    Boolean isVirtualWarehouseByOrderNo(String orderNo);
+
+    InputOrderTransportVO getOrderDetails(String mainOrderNo, String orderNo);
 }

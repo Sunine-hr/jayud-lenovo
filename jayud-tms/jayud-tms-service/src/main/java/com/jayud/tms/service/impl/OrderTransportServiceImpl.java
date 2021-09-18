@@ -1,34 +1,27 @@
 package com.jayud.tms.service.impl;
 
-import cn.hutool.core.date.StopWatch;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
-import com.jayud.common.CommonResult;
+import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.InitComboxStrVO;
-import com.jayud.common.enums.OrderAddressEnum;
-import com.jayud.common.enums.OrderStatusEnum;
-import com.jayud.common.enums.SubOrderSignEnum;
-import com.jayud.common.enums.UserTypeEnum;
+import com.jayud.common.enums.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
-import com.jayud.tms.feign.FileClient;
-import com.jayud.tms.feign.OauthClient;
-import com.jayud.tms.feign.OmsClient;
+import com.jayud.tms.feign.*;
 import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.*;
-import com.jayud.tms.model.enums.OrderTakeAdrTypeEnum;
 import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
@@ -47,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -71,24 +63,26 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     @Autowired
     IOrderTakeAdrService orderTakeAdrService;
-
     @Autowired
     IDeliveryAddressService deliveryAddressService;
-
     @Autowired
     IOrderTransportService orderTransportService;
-
     @Autowired
     IOrderSendCarsService orderSendCarsService;
     @Autowired
     OmsClient omsClient;
-
     @Autowired
     FileClient fileClient;
-
     @Autowired
     OauthClient oauthClient;
-
+    @Autowired
+    private MsgClient msgClient;
+    @Autowired
+    private RedisUtils redisUtils;
+    @Autowired
+    private FinanceClient financeClient;
+    @Autowired
+    private CustomsClient customsClient;
 
     @Override
     public boolean createOrderTransport(InputOrderTransportForm form) {
@@ -109,11 +103,17 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         orderTakeAdrForms.addAll(orderTakeAdrForms1);
         orderTakeAdrForms.addAll(orderTakeAdrForms2);
 
+
         if (orderTransport.getId() != null) {//修改
             //修改时,先把以前的收货信息清空
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("order_no", form.getOrderNo());
+            //查询提货/收货地址
+            List<OrderTakeAdr> list = this.orderTakeAdrService.list(queryWrapper);
             orderTakeAdrService.remove(queryWrapper);//删除货物信息
+            //删除提货地址
+            Set<Long> deliveryIds = list.stream().map(OrderTakeAdr::getDeliveryId).collect(Collectors.toSet());
+            this.deliveryAddressService.removeByIds(deliveryIds);
             orderTransport.setUpdatedTime(LocalDateTime.now());
             orderTransport.setUpdatedUser(form.getLoginUser());
         } else {//新增
@@ -129,6 +129,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 //            orderTransport.setOrderNo(orderNo);
             orderTransport.setCreatedUser(form.getLoginUser());
         }
+        JSONArray jsonArray = new JSONArray();
         for (InputOrderTakeAdrForm inputOrderTakeAdrForm : orderTakeAdrForms) {
             //有的地址是创建订单填的,有的地址是从地址簿选的
             DeliveryAddress deliveryAddress = new DeliveryAddress();
@@ -137,7 +138,15 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             deliveryAddress.setContacts(inputOrderTakeAdrForm.getContacts());
             deliveryAddress.setPhone(inputOrderTakeAdrForm.getPhone());
             deliveryAddress.setAddress(inputOrderTakeAdrForm.getAddress());
+            deliveryAddress.setProvince(inputOrderTakeAdrForm.getProvince());
+            deliveryAddress.setCity(inputOrderTakeAdrForm.getCity());
+            deliveryAddress.setArea(inputOrderTakeAdrForm.getArea());
+
             deliveryAddressService.saveOrUpdate(deliveryAddress);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", deliveryAddress.getId());
+            jsonObject.put("address", deliveryAddress.getAddress());
+            jsonArray.add(jsonObject);
 
             OrderTakeAdr orderTakeAdr = ConvertUtil.convert(inputOrderTakeAdrForm, OrderTakeAdr.class);
             orderTakeAdr.setDeliveryId(deliveryAddress.getId());
@@ -146,14 +155,22 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTakeAdr.setOrderNo(orderTransport.getOrderNo());
             orderTakeAdr.setFile(StringUtils.getFileStr(inputOrderTakeAdrForm.getTakeFiles()));
             orderTakeAdr.setFileName(StringUtils.getFileNameStr(inputOrderTakeAdrForm.getTakeFiles()));
+
+
             orderTakeAdrService.saveOrUpdate(orderTakeAdr);
+
         }
+        redisUtils.set("tmsDispatchAddress", jsonArray.toString());
+
         orderTransport.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
         orderTransport.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));
         if (form.getIsGoodsEdit() == null || !form.getIsGoodsEdit()) {
             orderTransport.setStatus(OrderStatusEnum.TMS_T_0.getCode());
         }
         boolean result = orderTransportService.saveOrUpdate(orderTransport);
+        if ("submit".equals(form.getCmd())) {
+            this.msgPush(orderTransport);
+        }
         return result;
     }
 
@@ -573,10 +590,11 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
      *
      * @param status
      * @param dataControl
+     * @param datas
      * @return
      */
     @Override
-    public Integer getNumByStatus(String status, DataControl dataControl) {
+    public Integer getNumByStatus(String status, DataControl dataControl, Map<String, Object> datas) {
         Integer num = 0;
         switch (status) {
             case "CostAudit":
@@ -585,6 +603,14 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                 if (CollectionUtils.isEmpty(list)) return num;
                 List<String> orderNos = list.stream().map(OrderTransport::getOrderNo).collect(Collectors.toList());
                 num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.ZGYS.getSignOne(), legalIds, orderNos).getData();
+                break;
+            case "zgysReceiverCheck":
+                Map<String, Integer> costNum = (Map<String, Integer>) datas.get(status);
+                num = costNum.get("B_1");
+                break;
+            case "zgysPayCheck":
+                costNum = (Map<String, Integer>) datas.get(status);
+                num = costNum.get("B_1");
                 break;
             default:
                 num = this.baseMapper.getNumByStatus(status, dataControl);
@@ -846,6 +872,106 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         }
 
         return pageInfo;
+    }
+
+    @Override
+    public void msgPush(OrderTransport orderTransport) {
+        Map<String, String> request = new HashMap<>();
+        request.put("topic", KafkaMsgEnums.MESSAGE_PUSH_TASK.getTopic());
+        request.put("key", KafkaMsgEnums.MESSAGE_PUSH_TASK.getKey());
+        Map<String, Object> msg = new HashMap<>();
+        msg.put("triggerStatus", orderTransport.getStatus());
+        Map<String, Object> sqlParam = new HashMap<>();
+        sqlParam.put("recordId", orderTransport.getId());
+        msg.put("sqlParam", sqlParam);
+        msg.put("now", DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN));
+        msg.put("cmd", "order");
+        msg.put("subType", SubOrderSignEnum.ZGYS.getSignOne());
+        msg.put("mainOrderNo", orderTransport.getMainOrderNo());
+        msg.put("orderNo", orderTransport.getOrderNo());
+        request.put("msg", JSONUtil.toJsonStr(msg));
+        this.msgClient.consume(request);
+    }
+
+    @Override
+    public Boolean isVirtualWarehouseByOrderNo(String orderNo) {
+        return this.baseMapper.isVirtualWarehouseByOrderNo(orderNo) > 0;
+    }
+
+    @Override
+    public InputOrderTransportVO getOrderDetails(String mainOrderNo, String orderNo) {
+        QueryWrapper<OrderTransport> condition = new QueryWrapper<>();
+        if (!StringUtils.isEmpty(orderNo)) {
+            condition.lambda().eq(OrderTransport::getOrderNo, orderNo);
+        }
+        if (!StringUtils.isEmpty(mainOrderNo)) {
+            condition.lambda().eq(OrderTransport::getMainOrderNo, mainOrderNo);
+        }
+        OrderTransport orderTransport = baseMapper.selectOne(condition);
+        InputOrderTransportVO inputOrderTransportVO = ConvertUtil.convert(orderTransport, InputOrderTransportVO.class);
+        if (inputOrderTransportVO == null) {
+            return new InputOrderTransportVO();
+        }
+        //获取提货/送货地址
+        List<InputOrderTakeAdrVO> inputOrderTakeAdrVOS = orderTakeAdrService.findTakeGoodsInfo(inputOrderTransportVO.getOrderNo());
+        List<InputOrderTakeAdrVO> orderTakeAdrForms1 = new ArrayList<>();
+        List<InputOrderTakeAdrVO> orderTakeAdrForms2 = new ArrayList<>();
+        Integer totalAmount = 0;//总件数
+        Double totalWeight = 0.0;//总重量
+        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
+        for (InputOrderTakeAdrVO inputOrderTakeAdrVO : inputOrderTakeAdrVOS) {
+            inputOrderTakeAdrVO.setTakeFiles(StringUtils.getFileViews(inputOrderTakeAdrVO.getFile(), inputOrderTakeAdrVO.getFileName(), prePath));
+            if (CommonConstant.VALUE_1.equals(String.valueOf(inputOrderTakeAdrVO.getOprType()))) {//提货
+                orderTakeAdrForms1.add(inputOrderTakeAdrVO);
+                Integer pieceAmount = inputOrderTakeAdrVO.getPieceAmount();
+                Double weight = inputOrderTakeAdrVO.getWeight();
+                if (inputOrderTakeAdrVO.getPieceAmount() == null) {
+                    pieceAmount = 0;
+                }
+                if (inputOrderTakeAdrVO.getWeight() == null) {
+                    weight = 0.0;
+                }
+                totalAmount = totalAmount + pieceAmount;
+                totalWeight = totalWeight + weight;
+            } else {
+                orderTakeAdrForms2.add(inputOrderTakeAdrVO);  //送货
+            }
+            inputOrderTakeAdrVO.assemblyGoodsInfo();
+        }
+        //操作部门
+        String depName = this.oauthClient.getDepNameById(inputOrderTransportVO.getDepartmentId()).getData();
+        //派车信息
+        OrderSendCarsVO orderSendCars = this.orderSendCarsService.getDetails(inputOrderTransportVO.getOrderNo());
+        //中转仓库
+        Map<Long, Map<String, Object>> warehouseInfoMap = this.omsClient.getWarehouseMapByIds(Arrays.asList(inputOrderTransportVO.getWarehouseInfoId())).getData();
+        //结算单位
+        Object customerInfos = this.omsClient.getCustomerByUnitCode(Arrays.asList(inputOrderTransportVO.getUnitCode())).getData();
+        //查询口岸
+        String portName = this.omsClient.getPortNameByCode(inputOrderTransportVO.getPortCode()).getData();
+        //报关资料
+        Object customsInfo = this.omsClient.initGoCustomsAudit(mainOrderNo).getData();
+
+        //六联单号
+//        Object mainOrderInfos = this.omsClient.getMainOrderByOrderNos(Arrays.asList(mainOrderNo)).getData();
+//        JSONObject mainOrderJson = new JSONArray(mainOrderInfos).getJSONObject(0);
+//        if (mainOrderJson.getStr("selectedServer").contains(OrderStatusEnum.CKBG.getCode())) {
+//            Object customsInfos = customsClient.getCustomsOrderByMainOrderNos(Arrays.asList(mainOrderNo)).getData();
+//            inputOrderTransportVO.setEncode(new JSONArray(customsInfos).getJSONObject(0).getStr("encode"));
+//        } else {
+//            inputOrderTransportVO.setEncode(mainOrderJson.getStr("encode"));
+//        }
+        inputOrderTransportVO.assemblyCustomsInfo(customsInfo);
+        inputOrderTransportVO.assemblySendCars(orderSendCars);
+        inputOrderTransportVO.assemblyCustomerInfo(customerInfos);
+        inputOrderTransportVO.assemblyWarehouseInfo(warehouseInfoMap);
+
+        inputOrderTransportVO.setDepartmentName(depName);
+        inputOrderTransportVO.setPortName(portName);
+        inputOrderTransportVO.setTotalAmount(totalAmount);
+        inputOrderTransportVO.setTotalWeight(totalWeight);
+        inputOrderTransportVO.setOrderTakeAdrForms1(orderTakeAdrForms1);
+        inputOrderTransportVO.setOrderTakeAdrForms2(orderTakeAdrForms2);
+        return inputOrderTransportVO;
     }
 
 

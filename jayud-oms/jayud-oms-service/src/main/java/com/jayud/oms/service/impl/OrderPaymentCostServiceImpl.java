@@ -6,12 +6,15 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.mapper.OrderPaymentCostMapper;
 import com.jayud.oms.model.bo.GetCostDetailForm;
+import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.CurrencyInfo;
 import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.po.SupplierInfo;
+import com.jayud.oms.model.vo.DriverBillCostVO;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
 import com.jayud.oms.model.vo.InputPaymentCostVO;
+import com.jayud.oms.model.vo.StatisticsOrderBaseCostVO;
 import com.jayud.oms.service.ICurrencyInfoService;
 import com.jayud.oms.service.IOrderPaymentCostService;
 import com.jayud.oms.service.ISupplierInfoService;
@@ -21,10 +24,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Condition;
 import java.util.stream.Collectors;
 
 /**
@@ -201,8 +204,8 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
      * 查询待处理费用审核
      */
     @Override
-    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds) {
-        return this.baseMapper.getPendingExpenseApproval(subType, orderNos, legalIds);
+    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds, String userName) {
+        return this.baseMapper.getPendingExpenseApproval(subType, orderNos, legalIds, userName);
     }
 
     @Override
@@ -268,12 +271,13 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
     @Override
     public Map<String, Map<String, BigDecimal>> statisticalPayCostByOrderNos(List<OrderPaymentCost> list, Boolean isMain) {
         Map<String, List<OrderPaymentCost>> group = null;
-//        if (isMain) {
-//            group = list.stream().collect(Collectors.groupingBy(OrderPaymentCost::getMainOrderNo));
-//        } else {
+        if (isMain) {
+            group = list.stream().collect(Collectors.groupingBy(OrderPaymentCost::getMainOrderNo));
+        } else {
 //            group = list.stream().collect(Collectors.groupingBy(OrderPaymentCost::getOrderNo));
-//        }
-        group = list.stream().collect(Collectors.groupingBy(e -> e.getMainOrderNo() + "~" + e.getOrderNo()));
+            group = list.stream().collect(Collectors.groupingBy(e -> e.getMainOrderNo() + "~" + e.getOrderNo()));
+        }
+
         List<CurrencyInfo> currencyInfos = currencyInfoService.list();
         Map<String, String> currencyMap = currencyInfos.stream().collect(Collectors.toMap(CurrencyInfo::getCurrencyCode, CurrencyInfo::getCurrencyName));
         Map<String, Map<String, BigDecimal>> map = new HashMap<>();
@@ -373,4 +377,61 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
         return this.baseMapper.selectList(condition);
     }
 
+    /**
+     * 统计主订单费用
+     *
+     * @param form
+     * @param legalIds
+     * @param status
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> statisticsMainOrderCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
+        return this.baseMapper.statisticsMainOrderCost(form, legalIds, status);
+    }
+
+    @Override
+    public List<StatisticsOrderBaseCostVO> getBaseStatisticsAllCost(QueryStatisticalReport form, List<Long> legalIds, List<String> status) {
+        List<StatisticsOrderBaseCostVO> costs = this.baseMapper.getBaseStatisticsAllCost(form, legalIds, status);
+        Map<String, List<StatisticsOrderBaseCostVO>> map = costs.stream().collect(Collectors.groupingBy(StatisticsOrderBaseCostVO::getMainOrderNo));
+
+        List<StatisticsOrderBaseCostVO> tmps = new ArrayList<>();
+        map.forEach((k, v) -> {
+            v.forEach(e -> {
+                if (e.getIsSumToMain()) {
+                    tmps.add(e);
+                } else if (e.getIsInternal() || !e.getIsInternal()) {
+                    tmps.add(e);
+                }
+            });
+
+        });
+        return tmps;
+    }
+
+    @Override
+    public List<DriverBillCostVO> getDriverBillCost(List<String> orderNos, List<String> status, String time, List<Long> employIds) {
+        return this.baseMapper.getDriverBillCost(orderNos, status, time, employIds);
+    }
+
+    @Override
+    public List<Long> getPayBillCostIdsBySubType(String userName, List<Long> legalIds, String subType) {
+        QueryWrapper<OrderPaymentCost> condition = new QueryWrapper<>();
+        if (SubOrderSignEnum.MAIN.getSignOne().equals(subType)) {
+            condition.lambda().eq(OrderPaymentCost::getIsSumToMain, true);
+        } else {
+            condition.lambda().eq(OrderPaymentCost::getIsSumToMain, false)
+                    .eq(OrderPaymentCost::getSubType, subType);
+        }
+        condition.lambda().select(OrderPaymentCost::getId);
+        if (!StringUtils.isEmpty(userName)) {
+            condition.lambda().eq(OrderPaymentCost::getCreatedUser, userName);
+        }
+        if (!org.apache.commons.collections.CollectionUtils.isEmpty(legalIds)) {
+            condition.lambda().in(OrderPaymentCost::getLegalId, legalIds);
+        }
+        condition.lambda().eq(OrderPaymentCost::getIsBill, 2);
+        List<Long> costIds = this.baseMapper.selectList(condition).stream().map(OrderPaymentCost::getId).collect(Collectors.toList());
+        return costIds;
+    }
 }

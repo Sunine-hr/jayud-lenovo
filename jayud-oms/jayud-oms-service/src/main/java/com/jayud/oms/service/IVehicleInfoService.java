@@ -8,6 +8,7 @@ import com.jayud.oms.model.vo.VehicleDetailsVO;
 import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.model.vo.VehicleSizeInfoVO;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,7 +52,7 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
     /**
      * 根据司机查询车辆信息
      */
-    List<VehicleInfoVO> findVehicleByDriverName(String driverName);
+    List<VehicleInfoVO> findTmsVehicle();
 
     /**
      * 获取所有的车型尺寸
@@ -76,4 +77,11 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
      * 根据条件获取车辆信息
      */
     List<VehicleInfo> getByCondition(VehicleInfo vehicleInfo);
+
+    /**
+     * 根据车牌集合获取供应商和车辆信息
+     * @param plateNum
+     * @return
+     */
+    List<VehicleDetailsVO> getDetailsByPlateNum(List<String> plateNum);
 }

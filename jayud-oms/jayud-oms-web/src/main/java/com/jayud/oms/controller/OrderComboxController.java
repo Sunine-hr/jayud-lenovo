@@ -145,7 +145,7 @@ public class OrderComboxController {
         resultMap.put(CommonConstant.CONTRACTS, comboxStrVOS);
 
         //业务所属部门
-        initComboxVOS =  oauthClient.findDepartment().getData();
+        initComboxVOS = oauthClient.findDepartment().getData();
         resultMap.put(CommonConstant.DEPARTMENTS, initComboxVOS);
 
         //通关口岸
@@ -228,7 +228,7 @@ public class OrderComboxController {
 
         //根据客户获取业务员
         //设置业务员默认值
-        resultMap.put("ywId",customer.getYwId());
+        resultMap.put("ywId", customer.getYwId());
 //        List<InitComboxVO> yws = new ArrayList<>();
 //        List<Long> ids = new ArrayList<>();
 //        ids.add(customer.getYwId());
@@ -390,6 +390,15 @@ public class OrderComboxController {
         }
         return CommonResult.success(costTypeComboxs);
     }
+
+
+    @ApiOperation(value = "根据费用名称code下拉作业环节,idCode=费用名称的隐藏值")
+    @PostMapping(value = "/initCostTypeByCostInfoCode")
+    public CommonResult<Map<String, List<InitComboxVO>>> initCostTypeByCostInfoCode(@RequestBody Map<String, Object> param) {
+        Map<String, List<InitComboxVO>> map=this.costInfoService.initCostTypeByCostInfoCode();
+        return CommonResult.success(map);
+    }
+
 
     @ApiOperation(value = "费用类型,bizCode=业务类型CODE")
     @PostMapping(value = "/initCostGenre")
@@ -620,7 +629,7 @@ public class OrderComboxController {
     }
 
 
-    @ApiOperation(value = "下拉业务类型")
+    @ApiOperation(value = "下拉所属部门")
     @PostMapping(value = "/initDepartment")
     public CommonResult<List<InitComboxVO>> initDepartment(Map<String, Object> map) {
         //业务所属部门
@@ -639,6 +648,11 @@ public class OrderComboxController {
             case BG:
                 department = "报关部";
                 break;
+            case CCF:
+            case CCE:
+            case CCI:
+                department = "仓储部";
+                break;
         }
         Object departmentId = oauthClient.getDeptIdByDeptName(department).getData();
         if (departmentId == null) {
@@ -647,6 +661,28 @@ public class OrderComboxController {
         Map<String, Long> response = new HashMap<>();
         response.put("departmentId", Long.valueOf(departmentId.toString()));
         return CommonResult.success(response);
+    }
+
+
+    @ApiOperation(value = "下拉客户结算单位业务类型")
+    @PostMapping(value = "/initCustomerUnitBisType")
+    public CommonResult<List<com.jayud.common.entity.InitComboxStrVO>> initCustomerUnitBisType(Map<String, Object> map) {
+        return CommonResult.success(SubOrderSignEnum.initBusinessType());
+    }
+
+    @ApiOperation(value = "下拉全部费用类别")
+    @PostMapping(value = "/initAllCostType")
+    public CommonResult<List<InitComboxStrVO>> initAllCostType(@RequestBody Map<String, Object> param) {
+        List<CostType> enableCostType = this.costTypeService.getEnableCostType();
+        List<InitComboxStrVO> list = new ArrayList<>();
+        for (CostType costType : enableCostType) {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setId(costType.getId());
+            initComboxStrVO.setName(costType.getCodeName());
+            initComboxStrVO.setCode(costType.getCode());
+            list.add(initComboxStrVO);
+        }
+        return CommonResult.success(list);
     }
 }
 

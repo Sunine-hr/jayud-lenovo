@@ -2,11 +2,9 @@ package com.jayud.oms.feign;
 
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.entity.DataControl;
-import com.jayud.oms.model.bo.DriverFeedbackStatusForm;
-import com.jayud.oms.model.bo.InputOrderTransportForm;
-import com.jayud.oms.model.bo.QueryDriverOrderTransportForm;
-import com.jayud.oms.model.bo.TmsChangeStatusForm;
+import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.vo.DriverOrderTakeAdrVO;
 import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputOrderTransportVO;
@@ -93,7 +91,7 @@ public interface TmsClient {
      * 获取司机待接单数量（小程序）
      */
     @RequestMapping(value = "/api/getDriverPendingOrderNum")
-    ApiResult getDriverOrderTransportDetailById(@RequestParam("driverId") Long driverId
+    ApiResult getDriverPendingOrderNum(@RequestParam("driverId") Long driverId
             , @RequestParam("orderNos") List<String> orderNos);
 
     /**
@@ -163,4 +161,29 @@ public interface TmsClient {
      */
     @RequestMapping(value = "/api/getNumByStatus")
     public ApiResult<Map<String, Integer>> getNumByStatus(@RequestParam("cmd") String cmd, @RequestBody DataControl dataControl);
+
+    /**
+     * 根据主订单查询是否虚拟仓
+     */
+    @RequestMapping(value = "/api/isVirtualWarehouseByOrderNo")
+    public ApiResult<Boolean> isVirtualWarehouseByOrderNo(@RequestParam("orderNo") String orderNo);
+
+    /**
+     * 驳回操作
+     */
+    @RequestMapping(value = "/api/rejectOrder")
+    public CommonResult rejectOrder(@RequestBody RejectTmsOrderForm form);
+
+    /**
+     * 根据id获取中港信息
+     */
+    @RequestMapping(value = "/api/getTmsById")
+    public ApiResult getTmsById(@RequestParam("id") Long id);
+
+    /**
+     * 获取司机待接单
+     */
+    @RequestMapping(value = "/api/getDriverPendingOrder")
+    public ApiResult getDriverPendingOrder(@RequestParam("orderNos") List<String> orderNos);
+
 }

@@ -463,6 +463,10 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
                             if ("money".equals(f.getName())) {
                                 addValue = String.valueOf(f.get(viewBillToCostClass));//待新增属性得值
                             }
+                            //2位不四舍五入
+                            if (!StringUtils.isEmpty(addValue)){
+                                addValue=new BigDecimal(addValue).setScale(2,BigDecimal.ROUND_DOWN).stripTrailingZeros().toPlainString();
+                            }
                             propertiesMap.put(addProperties, addValue);
                         }
                         jsonObject.putAll(propertiesMap);
@@ -479,7 +483,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
 
         //内陆数据处理
 //        array = this.inlandTPDataProcessing(form, array, mainOrderNos);
-        array = this.commonService.templateDataProcessing(form.getCmd(), form.getCmd(), array, mainOrderNos, 1);
+        array = this.commonService.templateDataProcessing(form.getCmd(), form.getTemplateCmd(), array, mainOrderNos, 1);
         return array;
     }
 
@@ -824,7 +828,7 @@ public class OrderPaymentBillServiceImpl extends ServiceImpl<OrderPaymentBillMap
         }
         PaymentNotPaidBillVO paymentNotPaidBillVO = pageList.get(0);
         //查询费用合计金额
-        Map<String, Map<String, BigDecimal>> costAmountMap = this.omsClient.statisticalCostByOrderNos(orderNos, isMain,
+         Map<String, Map<String, BigDecimal>> costAmountMap = this.omsClient.statisticalCostByOrderNos(orderNos, isMain,
                 paymentNotPaidBillVO.getLegalId(), paymentNotPaidBillVO.getCustomerCode(),
                 BillTypeEnum.PAYMENT.getCode()).getData();
         //查询所有费用详情

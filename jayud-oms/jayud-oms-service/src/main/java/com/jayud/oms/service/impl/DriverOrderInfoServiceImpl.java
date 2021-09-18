@@ -28,12 +28,16 @@ public class DriverOrderInfoServiceImpl extends ServiceImpl<DriverOrderInfoMappe
      * 查询司机接单信息
      */
     @Override
-    public List<DriverOrderInfo> getDriverOrderInfoByStatus(Long driverId, String status) {
+    public List<DriverOrderInfo> getDriverOrderInfoByStatus(Long driverId, String status, Long jockeyId) {
         QueryWrapper<DriverOrderInfo> condition = new QueryWrapper<>();
         condition.lambda().eq(DriverOrderInfo::getDriverId, driverId);
-        if (status != null) {
-            condition.lambda().eq(DriverOrderInfo::getStatus, status);
+        if (jockeyId != null) {
+            condition.lambda().or().eq(DriverOrderInfo::getJockeyId, jockeyId);
         }
+        if (status != null) {
+            condition.lambda().and(e->e.eq(DriverOrderInfo::getStatus, status));
+        }
+
         return this.baseMapper.selectList(condition);
     }
 

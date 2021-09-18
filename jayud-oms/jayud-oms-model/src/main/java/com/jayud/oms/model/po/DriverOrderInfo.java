@@ -46,6 +46,9 @@ public class DriverOrderInfo extends Model<DriverOrderInfo> {
     @ApiModelProperty(value = "状态（2:运输中,3:已完结）")
     private String status;
 
+    @ApiModelProperty(value = "骑师id")
+    private Long jockeyId;
+
 
     @Override
     protected Serializable pkVal() {

@@ -3,6 +3,9 @@ package com.jayud.scm.service;
 import com.jayud.scm.model.bo.AddReportsForm;
 import com.jayud.scm.model.po.Reports;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.scm.model.vo.ReportsVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +18,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IReportsService extends IService<Reports> {
 
     boolean saveOrUpdateReports(AddReportsForm form);
+
+    List<ReportsVO> getReportsByMenuCode(String actionCode);
 }

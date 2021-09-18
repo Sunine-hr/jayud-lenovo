@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * <p>
  *  前端控制器
@@ -34,6 +36,13 @@ public class ReportsController {
 
     @Autowired
     private IReportsService reportsService;
+
+    @ApiOperation(value = "根据菜单code获取所有打印报表模板")
+    @PostMapping(value = "/getReportsByMenuCode")
+    public CommonResult<List<ReportsVO>> getReportsByMenuCode(@RequestBody QueryCommonForm form) {
+        List<ReportsVO> reportsVOList = reportsService.getReportsByMenuCode(form.getActionCode());
+        return CommonResult.success(reportsVOList);
+    }
 
     @ApiOperation(value = "新增或修改打印报表")
     @PostMapping(value = "/getReportsById")

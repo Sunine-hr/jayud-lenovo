@@ -1,11 +1,13 @@
 package com.jayud.scm.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddReportsForm;
 import com.jayud.scm.model.po.Reports;
 import com.jayud.scm.mapper.ReportsMapper;
 import com.jayud.scm.model.po.SystemUser;
+import com.jayud.scm.model.vo.ReportsVO;
 import com.jayud.scm.service.IReportsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.scm.service.ISystemUserService;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -47,5 +50,15 @@ public class ReportsServiceImpl extends ServiceImpl<ReportsMapper, Reports> impl
             log.warn("打印报表增加或修改成功");
         }
         return result;
+    }
+
+    @Override
+    public List<ReportsVO> getReportsByMenuCode(String actionCode) {
+        QueryWrapper<Reports> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Reports::getMenuCode,actionCode);
+        queryWrapper.lambda().eq(Reports::getVoided,0);
+        List<Reports> reports = this.list(queryWrapper);
+        List<ReportsVO> reportsVOS = ConvertUtil.convertList(reports, ReportsVO.class);
+        return reportsVOS;
     }
 }

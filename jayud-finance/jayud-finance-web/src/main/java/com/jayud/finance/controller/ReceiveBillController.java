@@ -22,6 +22,7 @@ import com.jayud.finance.bo.*;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.service.CommonService;
+import com.jayud.finance.service.ILockOrderService;
 import com.jayud.finance.service.IOrderReceivableBillService;
 import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
@@ -57,6 +58,8 @@ public class ReceiveBillController {
     private CommonService commonService;
     @Autowired
     private OauthClient oauthClient;
+    @Autowired
+    private ILockOrderService lockOrderService;
 
     @ApiOperation(value = "应收出账单列表(主订单/子订单)")
     @PostMapping("/findReceiveBillByPage")
@@ -101,6 +104,10 @@ public class ReceiveBillController {
             }
         }
         form.checkCreateReceiveBill();
+        //检查是否锁单区间
+        if (this.lockOrderService.checkLockingInterval(0,form.getAccountTermStr())) {
+            return CommonResult.error(400,"该核算期已经被锁定");
+        }
 
         //订单维度补充数据
         if (form.getType() == 2) {

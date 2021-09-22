@@ -216,6 +216,9 @@ public class InputOrderTransportVO {
     @ApiModelProperty(value = "派车备注")
     private String sendCarDescribes;
 
+    @ApiModelProperty(value = "通关备注")
+    private String goCustomsRemarks;
+
     public String getSubTmsStatus() {
         return subTmsStatus = this.status;
     }

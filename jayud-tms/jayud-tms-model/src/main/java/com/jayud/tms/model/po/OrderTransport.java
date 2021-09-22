@@ -143,9 +143,9 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "指派供应id")
     private Long supplierId;
 
+
     @ApiModelProperty(value = "指派供应商吨位")
     private String supplierVehicleSize;
-
     @ApiModelProperty(value = "操作部门id")
     private Integer departmentId;
 

@@ -17,6 +17,9 @@ public class QueryCommonForm extends BasePageForm{
     @ApiModelProperty("id")
     private Integer id;
 
+    @ApiModelProperty("记录Id")
+    private Integer recordId;
+
     @ApiModelProperty("下一步操作")
     private Integer next;
 

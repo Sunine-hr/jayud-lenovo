@@ -2,6 +2,7 @@ package com.jayud.scm.controller;
 
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.jayud.common.ApiResult;
 import com.jayud.scm.model.po.RateRmbFromBoc;
 import com.jayud.scm.model.vo.BDataDicEntryVO;
 import com.jayud.scm.service.IBDataDicEntryService;
@@ -61,7 +62,7 @@ public class RateRmbFromBocController {
     @ApiOperation(value = "定时任务抓取中行汇率")
     @PostMapping(value = "/grabExchangeRate")
 //    @Scheduled(cron = "0 0/5 * * * ?")
-    public void grabExchangeRate() {
+    public ApiResult grabExchangeRate() {
         String[] split = RATE_ADDRESS.split(";");
         List<RateRmbFromBoc> rateRmbFromBocs = new ArrayList<>();
         for (String s : split) {
@@ -84,7 +85,9 @@ public class RateRmbFromBocController {
         boolean result = rateRmbFromBocService.saveBatch(rateRmbFromBocs);
         if(result){
             log.warn("添加数据成功");
+            return ApiResult.ok();
         }
+        return ApiResult.error(444,"数据添加失败"+rateRmbFromBocs);
     }
 
     public List<RateRmbFromBoc> listChinaBnakRate(String url) throws Exception{

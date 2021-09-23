@@ -44,7 +44,7 @@ public class ReportsController {
         return CommonResult.success(reportsVOList);
     }
 
-    @ApiOperation(value = "新增或修改打印报表")
+    @ApiOperation(value = "根据id获取打印报表信息")
     @PostMapping(value = "/getReportsById")
     public CommonResult<ReportsVO> getReportsById(@RequestBody QueryCommonForm form) {
         Reports reports = reportsService.getById(form.getId());
@@ -57,9 +57,22 @@ public class ReportsController {
     public CommonResult saveOrUpdateReports(@RequestBody AddReportsForm form) {
         boolean result = reportsService.saveOrUpdateReports(form);
         if(!result){
-            return CommonResult.error(444,"付款失败");
+            return CommonResult.error(444,"新增或修改打印报表失败");
         }
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "根据id获取报表请求地址信息")
+    @PostMapping(value = "/getUrlById")
+    public CommonResult getUrlById(@RequestBody QueryCommonForm form) {
+        Reports reports = reportsService.getById(form.getId());
+        String rptPath = reports.getRptPath();
+        String paraStr = reports.getParaStr();
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(rptPath).append("?");
+
+        stringBuffer.append(paraStr).append("="+form.getRecordId());
+        return CommonResult.success(stringBuffer.substring(0,stringBuffer.length()-1));
     }
 
 }

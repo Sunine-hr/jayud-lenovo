@@ -6,6 +6,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.entity.InitChangeStatusVO;
 import com.jayud.common.entity.SubOrderCloseOpt;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.storage.model.bo.StorageFastOrderForm;
 import com.jayud.storage.model.bo.StorageInputOrderForm;
@@ -220,7 +221,7 @@ public class ExternalApiController {
             initChangeStatusVO.setOrderNo(tmp.getOrderNo());
             initChangeStatusVO.setOrderType(CommonConstant.CCF);
             initChangeStatusVO.setOrderTypeDesc(CommonConstant.CCF_DESC);
-            initChangeStatusVO.setStatus(tmp.getProcessStatus() + "");
+            initChangeStatusVO.setStatus( ProcessStatusEnum.CLOSE.getCode().equals(tmp.getProcessStatus())?"CLOSE":tmp.getProcessStatus()+"");
             initChangeStatusVO.setNeedInputCost(tmp.getNeedInputCost());
             return ApiResult.ok(initChangeStatusVO);
         }

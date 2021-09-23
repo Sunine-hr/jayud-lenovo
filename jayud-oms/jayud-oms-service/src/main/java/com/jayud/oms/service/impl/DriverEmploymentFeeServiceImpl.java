@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.model.enums.EmploymentFeeStatusEnum;
 import com.jayud.oms.model.po.DriverEmploymentFee;
 import com.jayud.oms.mapper.DriverEmploymentFeeMapper;
 import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.vo.DriverEmploymentFeeVO;
+import com.jayud.oms.service.ICostInfoService;
+import com.jayud.oms.service.ICurrencyInfoService;
 import com.jayud.oms.service.IDriverEmploymentFeeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oms.service.IOrderPaymentCostService;
@@ -21,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -35,6 +40,12 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
 
     @Autowired
     private IOrderPaymentCostService orderPaymentCostService;
+    @Autowired
+    private FileClient fileClient;
+    @Autowired
+    private ICurrencyInfoService currencyInfoService;
+    @Autowired
+    private ICostInfoService costInfoService;
 
     /**
      * 根据订单编码查询录用费用明细
@@ -46,6 +57,20 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
     public List<DriverEmploymentFee> getEmploymentFee(String orderNo, Long driverId, String status) {
         QueryWrapper<DriverEmploymentFee> condition = new QueryWrapper<>();
         condition.lambda().eq(DriverEmploymentFee::getOrderNo, orderNo);
+        if (!StringUtils.isEmpty(status)) {
+            condition.lambda().eq(DriverEmploymentFee::getStatus, status);
+        }
+        if (driverId != null) {
+            condition.lambda().eq(DriverEmploymentFee::getDriverId, driverId);
+        }
+        return this.baseMapper.selectList(condition);
+    }
+
+
+    @Override
+    public List<DriverEmploymentFee> getEmploymentFee(Long orderId, Long driverId, String status) {
+        QueryWrapper<DriverEmploymentFee> condition = new QueryWrapper<>();
+        condition.lambda().eq(DriverEmploymentFee::getOrderId, orderId);
         if (!StringUtils.isEmpty(status)) {
             condition.lambda().eq(DriverEmploymentFee::getStatus, status);
         }
@@ -115,6 +140,25 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
             condition.lambda().eq(DriverEmploymentFee::getStatus, status);
         }
         return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public List<DriverEmploymentFeeVO> getCost(Long orderId, Long driverId, String status) {
+
+        List<DriverEmploymentFee> employmentFees = this.getEmploymentFee(orderId, driverId, status);
+        List<DriverEmploymentFeeVO> employmentFeeVOS = new ArrayList<>();
+        Map<String, String> currencyMap = currencyInfoService.initCurrencyInfo().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+        Map<String, String> costInfoMap = costInfoService.list().stream().collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName()));
+        Object url = fileClient.getBaseUrl().getData();
+        for (DriverEmploymentFee employmentFee : employmentFees) {
+            DriverEmploymentFeeVO tmp = ConvertUtil.convert(employmentFee, DriverEmploymentFeeVO.class);
+            tmp.setFileDetails(com.jayud.common.utils.StringUtils.getFileViews(tmp.getFiles(), tmp.getFileName(), url.toString()));
+            tmp.setCurrency(currencyMap.get(tmp.getCurrencyCode()));
+            tmp.setCostName(costInfoMap.get(tmp.getCostCode()));
+            employmentFeeVOS.add(tmp);
+        }
+
+        return employmentFeeVOS;
     }
 
 

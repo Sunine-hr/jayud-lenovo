@@ -47,10 +47,16 @@ public class DriverEmploymentFeeVO extends Model<DriverEmploymentFeeVO> {
     private String orderNo;
 
     @ApiModelProperty(value = "费用代码")
+    private String costCode;
+
+    @ApiModelProperty(value = "费用名称")
     private String costName;
 
     @ApiModelProperty(value = "费用金额")
     private BigDecimal amount;
+
+    @ApiModelProperty(value = "币种代码")
+    private String currencyCode;
 
     @ApiModelProperty(value = "币种")
     private String currency;
@@ -67,7 +73,7 @@ public class DriverEmploymentFeeVO extends Model<DriverEmploymentFeeVO> {
     @ApiModelProperty(value = "供应商")
     private String supplierName;
 
-    @ApiModelProperty(value = "状态(0:待提交，1:已提交)")
+    @ApiModelProperty(value = "状态(0:待提交，1:已提交, 2:草稿)")
     @JsonIgnore
     private String status;
 

@@ -33,7 +33,8 @@
         ci.create_time createTime,
         ci.create_user createdUser,
         ci.update_time updateTime,
-        ci.update_user updateUser
+        ci.update_user updateUser,
+        ci.is_driver_show
         FROM
         cost_info ci
         <where>

@@ -27,6 +27,15 @@ public interface IDriverEmploymentFeeService extends IService<DriverEmploymentFe
     List<DriverEmploymentFee> getEmploymentFee(String orderNo, Long driverId, String status);
 
     /**
+     * 根据订单编码查询录用费用明细
+     * @param orderId
+     * @param driverId
+     * @param status
+     * @return
+     */
+    List<DriverEmploymentFee> getEmploymentFee(Long orderId, Long driverId, String status);
+
+    /**
      * 司机费用项是否存在
      */
     boolean isExist(Long driverId, Long orderId, String status);
@@ -47,4 +56,7 @@ public interface IDriverEmploymentFeeService extends IService<DriverEmploymentFe
     List<DriverEmploymentFee> getByCondition(DriverEmploymentFee driverEmploymentFee);
 
     List<DriverEmploymentFee> getByOrderNos(List<String> orderNos, String status);
+
+
+    List<DriverEmploymentFeeVO> getCost(Long orderId, Long driverId, String status);
 }

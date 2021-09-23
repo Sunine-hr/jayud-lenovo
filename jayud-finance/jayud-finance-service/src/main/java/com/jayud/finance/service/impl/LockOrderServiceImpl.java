@@ -3,6 +3,7 @@ package com.jayud.finance.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
+import com.jayud.common.enums.StatusEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.finance.bo.AddLockOrderForm;
 import com.jayud.finance.mapper.LockOrderMapper;
@@ -46,6 +47,7 @@ public class LockOrderServiceImpl extends ServiceImpl<LockOrderMapper, LockOrder
 
     /**
      * 检查是否存在锁单区间
+     *
      * @param type
      * @param accountTerm
      * @return
@@ -55,6 +57,7 @@ public class LockOrderServiceImpl extends ServiceImpl<LockOrderMapper, LockOrder
         QueryWrapper<LockOrder> condition = new QueryWrapper<>();
         condition.lambda().le(LockOrder::getStartTime, accountTerm)
                 .ge(LockOrder::getEndTime, accountTerm).eq(LockOrder::getType, type);
+//                .eq(LockOrder::getStatus, StatusEnum.ENABLE.getCode());
         return this.count(condition) > 0;
     }
 }

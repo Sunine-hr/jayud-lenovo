@@ -2,6 +2,7 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jayud.common.ApiResult;
@@ -194,7 +195,9 @@ public class MiniAppController {
         if (orderId == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        List<CostInfo> costInfos = this.costInfoService.getCostInfoByStatus(StatusEnum.ENABLE.getCode());
+        //查询司机的费用
+        List<CostInfo> costInfos = this.costInfoService.list(new QueryWrapper<>(new CostInfo().setStatus(StatusEnum.ENABLE.getCode()).setIsDriverShow(true)));
+//        List<CostInfo> costInfos = this.costInfoService.getCostInfoByStatus(StatusEnum.ENABLE.getCode());
         List<InitComboxStrVO> boxOne = new ArrayList<>();
         for (CostInfo costInfo : costInfos) {
             InitComboxStrVO comboxStrVO = new InitComboxStrVO();
@@ -203,7 +206,6 @@ public class MiniAppController {
             boxOne.add(comboxStrVO);
         }
 
-//        this.tmsClient.get
         Object data = this.tmsClient.getTmsById(orderId).getData();
         cn.hutool.json.JSONObject jsonObject = new cn.hutool.json.JSONObject(data);
         //币种
@@ -263,7 +265,7 @@ public class MiniAppController {
         Object sendCarsObj = this.tmsClient.getOrderSendCarsByOrderNo(orderNo).getData();
         cn.hutool.json.JSONObject jsonObject = new cn.hutool.json.JSONObject(sendCarsObj);
 
-        //根据子订单ID去找派车信息，然后找到车辆供应商信息 待开发 TODO
+        //根据子订单ID去找派车信息，然后找到车辆供应商信息
         DriverInfoLinkVO driverInfoLink = this.driverInfoService.getDriverInfoLink(driverId);
         List<VehicleInfoVO> vehicleInfoVOList = driverInfoLink.getVehicleInfoVOList();
         String supplierCode = "";
@@ -848,4 +850,30 @@ public class MiniAppController {
         return CommonResult.success(list);
     }
 
+
+    @ApiOperation(value = "查询费用")
+    @PostMapping(value = "/getCost")
+    public CommonResult getCost(@RequestBody Map<String, Object> map) {
+        Long orderId = MapUtil.getLong(map, "orderId");
+        if (orderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        //获取司机id
+        Long driverId = Long.parseLong(SecurityUtil.getUserInfo());
+        List<DriverEmploymentFeeVO> employmentFees= this.driverEmploymentFeeService.getCost(orderId,driverId,EmploymentFeeStatusEnum.DRAFT.getCode());
+        return CommonResult.success(employmentFees);
+    }
+
+    @ApiOperation(value = "暂存费用")
+    @PostMapping(value = "/temporaryStorageCost")
+    public CommonResult temporaryStorageCost(@RequestBody Map<String, Object> map) {
+        Long orderId = MapUtil.getLong(map, "orderId");
+        if (orderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        //获取司机id
+        Long driverId = Long.parseLong(SecurityUtil.getUserInfo());
+        List<DriverEmploymentFeeVO> employmentFees= this.driverEmploymentFeeService.getCost(orderId,driverId,EmploymentFeeStatusEnum.DRAFT.getCode());
+        return CommonResult.success(employmentFees);
+    }
 }

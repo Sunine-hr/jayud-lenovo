@@ -67,7 +67,7 @@ public class DriverEmploymentFee extends Model<DriverEmploymentFee> {
     @ApiModelProperty(value = "供应商")
     private String supplierName;
 
-    @ApiModelProperty(value = "状态(0:待提交，1:已提交)")
+    @ApiModelProperty(value = "状态(0:待提交，1:已提交, 2:草稿)")
     private String status;
 
     @ApiModelProperty(value = "创建时间")
@@ -75,6 +75,8 @@ public class DriverEmploymentFee extends Model<DriverEmploymentFee> {
 
     @ApiModelProperty(value = "汇率")
     private BigDecimal exchangeRate;
+
+
 
     @Override
     protected Serializable pkVal() {

@@ -30,5 +30,6 @@ public interface OrderInlandTransportMapper extends BaseMapper<OrderInlandTransp
     List<OrderInlandTransportDetails> getOrderInfoByMainOrderNos(@Param("mainOrderNos") List<String> mainOrderNos);
 
     Integer getNumByStatus(@Param("status") String status, @Param("legalIds") List<Long> legalIds);
-    
+
+    List<OrderInlandTransportFormVO> getOrderInlandTransportList(@Param("pickUpTimeStart") String pickUpTimeStart, @Param("pickUpTimeEnd") String pickUpTimeEnd, @Param("orderNo") String orderNo);
 }

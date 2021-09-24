@@ -980,5 +980,10 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         return inputOrderTransportVO;
     }
 
+    @Override
+    public List<OrderTransportVO> getOrderTransportList(String pickUpTimeStart, String pickUpTimeEnd, String orderNo) {
+        return baseMapper.getOrderTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);
+    }
+
 
 }

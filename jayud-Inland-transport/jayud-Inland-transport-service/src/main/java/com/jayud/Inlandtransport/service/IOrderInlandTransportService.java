@@ -102,4 +102,13 @@ public interface IOrderInlandTransportService extends IService<OrderInlandTransp
     List<OrderInlandTransport> getByLegalEntityId(List<Long> legalIds);
 
     void editGoods(OrderInlandTransportDetails from);
+
+    /**
+     * 获取内陆订单list
+     * @param pickUpTimeStart 提货时间Start
+     * @param pickUpTimeEnd 提后时间End
+     * @param orderNo 订单号
+     * @return
+     */
+    List<OrderInlandTransportFormVO> getOrderInlandTransportList(String pickUpTimeStart, String pickUpTimeEnd, String orderNo);
 }

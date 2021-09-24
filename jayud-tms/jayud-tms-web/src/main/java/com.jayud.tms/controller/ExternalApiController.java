@@ -521,6 +521,15 @@ public class ExternalApiController {
         return this.omsClient.batchSyncGPSHistoryPositioning(req);
     }
 
+    /**
+     * 获取中港订单
+     */
+    @RequestMapping(value = "/api/getOrderTransportList")
+    public ApiResult getOrderTransportList(@RequestParam("pickUpTimeStart") String pickUpTimeStart, @RequestParam("pickUpTimeEnd") String pickUpTimeEnd, @RequestParam(value = "orderNo", required = false) String orderNo){
+        List<OrderTransportVO> list = orderTransportService.getOrderTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);
+        return ApiResult.ok(list);
+    }
+
 }
 
 

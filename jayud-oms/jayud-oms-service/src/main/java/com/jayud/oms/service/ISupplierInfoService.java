@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -110,4 +111,26 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
 
 
     List<SupplierInfo> getByCondition(SupplierInfo supplierInfo);
+
+    /**
+     * 查询供应商及其车辆tree
+     * @return 供应商及其车辆tree
+     */
+    List<Map<String, Object>> getSupplierVehicleTree();
+
+    /**
+     * 查询供应商
+     * @return 供应商list
+     */
+    List<Map<String, Object>> getList();
+
+    /**
+     * 查询订单tree
+     * @param orderTypeCode 单据类型
+     * @param pickUpTimeStart 提货时间Start
+     * @param pickUpTimeEnd 提货时间End
+     * @param orderNo 订单号
+     * @return 订单tree
+     */
+    List<Map<String, Object>> getOrderTree(String orderTypeCode, String pickUpTimeStart, String pickUpTimeEnd, String orderNo);
 }

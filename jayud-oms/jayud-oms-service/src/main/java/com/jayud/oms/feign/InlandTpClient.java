@@ -55,4 +55,11 @@ public interface InlandTpClient {
      */
     @RequestMapping(value = "/api/closeOrder")
     public ApiResult closeOrder(@RequestBody List<SubOrderCloseOpt> form);
+
+    /**
+     * 获取内陆订单list
+     */
+    @RequestMapping(value = "/api/getOrderInlandTransportList")
+    public ApiResult getOrderInlandTransportList(@RequestParam("pickUpTimeStart") String pickUpTimeStart, @RequestParam("pickUpTimeEnd") String pickUpTimeEnd, @RequestParam(value = "orderNo", required = false) String orderNo);
+
 }

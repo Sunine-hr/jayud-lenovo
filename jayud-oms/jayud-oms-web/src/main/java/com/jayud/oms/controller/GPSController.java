@@ -527,6 +527,30 @@ public class GPSController {
         return CommonResult.success(convert);
     }
 
+    /**
+     * 根据车牌号，获取车辆最后GPS定位坐标
+     */
+    @ApiOperation(value = "根据车牌号，获取车辆最后GPS定位坐标")
+    @PostMapping("/getPositionByPlateNumber")
+    public CommonResult getPositionByPlateNumber(@RequestBody Map<String, Object> map) {
+        String plateNumber = MapUtil.getStr(map, "plateNumber");
+        List<GpsPositioning> gpsPositionings = gpsPositioningService.getByPlateNumber(plateNumber, 1);
+        PositionVO convert = new PositionVO();
+        if (!CollectionUtils.isEmpty(gpsPositionings)) {
+            //convert = ConvertUtil.convert(orderTransportForm, PositionVO.class);  这里指需要定位坐标，不需要订单信息
+            GpsPositioning positioning = gpsPositionings.get(0);
+            convert = ConvertUtil.convert(positioning, PositionVO.class);
+            double[] doubles = GPSUtil.gps84_To_Gcj02(Double.parseDouble(positioning.getLatitude()), Double.parseDouble(positioning.getLongitude()));
+            convert.setLatitude(doubles[0]);
+            convert.setLongitude(doubles[1]);
+            convert.setReportTime(DateUtils.LocalDateTime2Str(positioning.getGpsTime(), DateUtils.DATE_TIME_PATTERN));
+            convert.setSpeed(Double.valueOf(positioning.getSpeed()));
+
+            convert.setLicensePlate(positioning.getPlateNumber());//车牌号 -> 大陆车牌
+        }
+        return CommonResult.success(convert);
+    }
+
     @ApiOperation(value = "获取车辆历史轨迹")
     @PostMapping("/getHistory")
     public CommonResult getHistory(@RequestBody Map<String, Object> map) {

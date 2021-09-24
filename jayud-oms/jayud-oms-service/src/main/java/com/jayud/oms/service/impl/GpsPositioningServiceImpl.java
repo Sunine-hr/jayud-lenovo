@@ -51,4 +51,15 @@ public class GpsPositioningServiceImpl extends ServiceImpl<GpsPositioningMapper,
         condition.lambda().groupBy(GpsPositioning::getOrderNo);
         return this.baseMapper.selectList(condition);
     }
+
+    @Override
+    public List<GpsPositioning> getByPlateNumber(String plateNumber, Integer status) {
+        QueryWrapper<GpsPositioning> condition = new QueryWrapper<>();
+        condition.lambda().eq(GpsPositioning::getPlateNumber, plateNumber);
+        if (status != null) {
+            condition.lambda().eq(GpsPositioning::getStatus, status);
+        }
+        condition.lambda().orderByDesc(GpsPositioning::getGpsTime);
+        return this.baseMapper.selectList(condition);
+    }
 }

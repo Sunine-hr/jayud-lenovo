@@ -291,7 +291,7 @@ public class MiniAppController {
                 .setSupplierCode(supplierCode)
                 .setSupplierName(supplierName)
                 .setCreateTime(LocalDateTime.now())
-                .setStatus(EmploymentFeeStatusEnum.SUBMIT.getCode())
+                .setStatus(EmploymentFeeStatusEnum.DRAFT.getCode())
                 .setDriverId(driverId)
                 .setExchangeRate(form.getExchangeRate());
 
@@ -853,27 +853,47 @@ public class MiniAppController {
 
     @ApiOperation(value = "查询费用")
     @PostMapping(value = "/getCost")
-    public CommonResult getCost(@RequestBody Map<String, Object> map) {
+    public CommonResult<List<DriverEmploymentFeeVO>> getCost(@RequestBody Map<String, Object> map) {
         Long orderId = MapUtil.getLong(map, "orderId");
         if (orderId == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         //获取司机id
         Long driverId = Long.parseLong(SecurityUtil.getUserInfo());
-        List<DriverEmploymentFeeVO> employmentFees= this.driverEmploymentFeeService.getCost(orderId,driverId,EmploymentFeeStatusEnum.DRAFT.getCode());
+        List<DriverEmploymentFeeVO> employmentFees = this.driverEmploymentFeeService.getCost(orderId, driverId, EmploymentFeeStatusEnum.DRAFT.getCode());
+        employmentFees.forEach(DriverEmploymentFeeVO::assembleSrc);
+
         return CommonResult.success(employmentFees);
     }
 
-    @ApiOperation(value = "暂存费用")
-    @PostMapping(value = "/temporaryStorageCost")
-    public CommonResult temporaryStorageCost(@RequestBody Map<String, Object> map) {
+    @ApiOperation(value = "提交费用")
+    @PostMapping(value = "/submitCost")
+    public CommonResult submitCost(@RequestBody Map<String, Object> map) {
         Long orderId = MapUtil.getLong(map, "orderId");
         if (orderId == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         //获取司机id
         Long driverId = Long.parseLong(SecurityUtil.getUserInfo());
-        List<DriverEmploymentFeeVO> employmentFees= this.driverEmploymentFeeService.getCost(orderId,driverId,EmploymentFeeStatusEnum.DRAFT.getCode());
-        return CommonResult.success(employmentFees);
+        List<DriverEmploymentFee> employmentFees = this.driverEmploymentFeeService.getEmploymentFee(orderId, driverId, EmploymentFeeStatusEnum.DRAFT.getCode());
+        List<DriverEmploymentFee> updateOpt = new ArrayList<>();
+        employmentFees.forEach(e -> {
+            DriverEmploymentFee tmp = new DriverEmploymentFee().setId(e.getId()).setStatus(EmploymentFeeStatusEnum.SUBMIT.getCode());
+            updateOpt.add(tmp);
+        });
+        this.driverEmploymentFeeService.updateBatchById(updateOpt);
+        return CommonResult.success();
+    }
+
+
+    @ApiOperation(value = "删除费用(草稿状态)")
+    @PostMapping(value = "/deleteCost")
+    public CommonResult deleteCost(@RequestBody Map<String, Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        if (id == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        this.driverEmploymentFeeService.removeById(id);
+        return CommonResult.success();
     }
 }

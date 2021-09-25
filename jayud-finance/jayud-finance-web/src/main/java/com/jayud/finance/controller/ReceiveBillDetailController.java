@@ -22,6 +22,7 @@ import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.po.OrderReceivableBillDetail;
 import com.jayud.finance.service.CommonService;
+import com.jayud.finance.service.ILockOrderService;
 import com.jayud.finance.service.IOrderBillCostTotalService;
 import com.jayud.finance.service.IOrderReceivableBillDetailService;
 import com.jayud.finance.util.StringUtils;
@@ -57,6 +58,8 @@ public class ReceiveBillDetailController {
     private OmsClient omsClient;
     @Autowired
     private CommonService commonService;
+    @Autowired
+    private ILockOrderService lockOrderService;
 
     @ApiOperation(value = "应收对账单列表,应收对账单审核列表,财务应收对账单列表")
     @PostMapping("/findReceiveBillDetailByPage")
@@ -228,6 +231,10 @@ public class ReceiveBillDetailController {
     public CommonResult editSBill(@RequestBody EditSBillForm form) {
         //参数校验
         form.checkEditSBill();
+        //检查是否锁单区间
+        if (this.lockOrderService.checkLockingInterval(0,form.getAccountTermStr())) {
+            return CommonResult.error(400,"该核算期已经被锁定");
+        }
         return billDetailService.editSBill(form);
     }
 

@@ -5,11 +5,13 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.Utilities;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
@@ -17,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -83,6 +86,12 @@ public class DriverEmploymentFeeVO extends Model<DriverEmploymentFeeVO> {
     @ApiModelProperty(value = "附件详情")
     private List<FileView> fileDetails;
 
+    @ApiModelProperty(value = "图片地址")
+    private List<String> src;
+
+    public static void main(String[] args) {
+        System.out.println(Utilities.printFieldsInfo(DriverEmploymentFeeVO.class));
+    }
 
     @Override
     protected Serializable pkVal() {
@@ -102,6 +111,11 @@ public class DriverEmploymentFeeVO extends Model<DriverEmploymentFeeVO> {
             }
 
         }
+    }
+
+    public void assembleSrc() {
+        if (CollectionUtils.isEmpty(fileDetails)) return;
+        this.src = fileDetails.stream().map(FileView::getAbsolutePath).collect(Collectors.toList());
     }
 
 }

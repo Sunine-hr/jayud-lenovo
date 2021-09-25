@@ -148,7 +148,7 @@ public class CustomerUnitController {
         List<CustomerUnit> list = this.customerUnitService.getByCondition(new CustomerUnit().setCustomerId(customerInfo.getId()).setStatus(StatusEnum.ENABLE.getCode())
                 .setBusinessType(type).setOptDepartmentId(departmentId));
 
-        return CommonResult.success();
+        return CommonResult.success(list.size() > 0 ? list.get(0).getUnitCode() : "");
     }
 }
 

@@ -56,8 +56,8 @@ public class LockOrderServiceImpl extends ServiceImpl<LockOrderMapper, LockOrder
     public boolean checkLockingInterval(int type, String accountTerm) {
         QueryWrapper<LockOrder> condition = new QueryWrapper<>();
         condition.lambda().le(LockOrder::getStartTime, accountTerm)
-                .ge(LockOrder::getEndTime, accountTerm).eq(LockOrder::getType, type);
-//                .eq(LockOrder::getStatus, StatusEnum.ENABLE.getCode());
+                .ge(LockOrder::getEndTime, accountTerm).eq(LockOrder::getType, type)
+                .eq(LockOrder::getStatus, StatusEnum.ENABLE.getCode());
         return this.count(condition) > 0;
     }
 }

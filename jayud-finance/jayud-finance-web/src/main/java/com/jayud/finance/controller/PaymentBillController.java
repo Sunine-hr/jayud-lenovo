@@ -94,7 +94,7 @@ public class PaymentBillController {
         form.checkCreateReceiveBill();
 
         //检查是否锁单区间
-        if (this.lockOrderService.checkLockingInterval(0, form.getAccountTermStr())) {
+        if (this.lockOrderService.checkLockingInterval(1, form.getAccountTermStr())) {
             return CommonResult.error(400, "该核算期已经被锁定");
         }
         //订单维度补充数据

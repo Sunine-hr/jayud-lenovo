@@ -31,4 +31,6 @@ public interface IFeeService extends IService<Fee> {
     List<Long> getFeeByFeeModelId(Integer id);
 
     boolean copyFee(Integer id);
+
+    List<FeeVO> getFeeVOByFeeModelId(Integer id);
 }

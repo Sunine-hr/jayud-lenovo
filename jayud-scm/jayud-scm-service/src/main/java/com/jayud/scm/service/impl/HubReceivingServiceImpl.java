@@ -133,6 +133,7 @@ public class HubReceivingServiceImpl extends ServiceImpl<HubReceivingMapper, Hub
             List<CheckOrderEntry> checkOrderEntryByCheckOrderId = checkOrderEntryService.getCheckOrderEntryByCheckOrderId(checkOrder.getId().longValue());
             List<HubReceivingEntry> hubReceivingEntries = ConvertUtil.convertList(checkOrderEntryByCheckOrderId, HubReceivingEntry.class);
             for (HubReceivingEntry hubReceivingEntry : hubReceivingEntries) {
+                hubReceivingEntry.setReceivingId(hubReceiving.getId());
                 hubReceivingEntry.setCrtBy(systemUser.getId().intValue());
                 hubReceivingEntry.setCrtByDtm(LocalDateTime.now());
                 hubReceivingEntry.setCrtByName(systemUser.getUserName());

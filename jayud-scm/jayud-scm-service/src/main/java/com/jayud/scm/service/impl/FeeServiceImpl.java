@@ -191,5 +191,15 @@ public class FeeServiceImpl extends ServiceImpl<FeeMapper, Fee> implements IFeeS
         return save;
     }
 
+    @Override
+    public List<FeeVO> getFeeVOByFeeModelId(Integer id) {
+        QueryWrapper<Fee> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Fee::getFeeModelId,id);
+        queryWrapper.lambda().eq(Fee::getVoided,0);
+        List<Fee> list = this.list(queryWrapper);
+        List<FeeVO> feeVOS = ConvertUtil.convertList(list, FeeVO.class);
+        return feeVOS;
+    }
+
 
 }

@@ -159,4 +159,8 @@
         where customer_id = #{customerId} and model_type = #{modelType}
     </select>
 
+    <select id="getClassById" resultType="map">
+        select * from ${form.table} c where c.id = #{form.id}
+    </select>
+
 </mapper>

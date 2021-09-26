@@ -42,7 +42,7 @@ public class AddCustomerForm {
     private String customerType;
 
     @ApiModelProperty(value = "简称")
-    @NotNull(message = "客户简称不为空")
+//    @NotNull(message = "客户简称不为空")
     private String customerAbbr;
 
 //    @ApiModelProperty(value = "跟单商务id")
@@ -73,11 +73,11 @@ public class AddCustomerForm {
     private String taxNo;
 
     @ApiModelProperty(value = "海关代码")
-    @NotNull(message = "海关代码不为空")
+//    @NotNull(message = "海关代码不为空")
     private String customsCode;
 
     @ApiModelProperty(value = "类型")
-    @NotNull(message = "类型不为空")
+//    @NotNull(message = "类型不为空")
     private String type;
 
     @ApiModelProperty(value = "网址")
@@ -102,7 +102,7 @@ public class AddCustomerForm {
     private String enCustomerAddress;
 
     @ApiModelProperty(value = "客户类型(融资客户/垫资客户/账期客户)")
-    @NotNull(message = "客户类型不为空")
+//    @NotNull(message = "客户类型不为空")
     private String customerStyle;
 
     @ApiModelProperty(value = "传真")
@@ -169,7 +169,7 @@ public class AddCustomerForm {
     private Integer isCommitBms;
 
     @ApiModelProperty(value = "区域")
-    @NotNull(message = "区域不为空")
+//    @NotNull(message = "区域不为空")
     private String area;
 
     @ApiModelProperty(value = "代理品牌")
@@ -190,7 +190,7 @@ public class AddCustomerForm {
     private BigDecimal eAchievement;
 
     @ApiModelProperty(value = "客户来源")
-    @NotNull(message = "客户来源不为空")
+//    @NotNull(message = "客户来源不为空")
     private String customerFrom;
 
     @ApiModelProperty(value = "目前合作供应链")

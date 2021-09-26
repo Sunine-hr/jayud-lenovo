@@ -11,6 +11,7 @@ import com.jayud.scm.model.vo.CustomerOperatorVO;
 import com.jayud.scm.model.vo.CustomerVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -55,4 +56,6 @@ public interface ICustomerService extends IService<Customer> {
      * @return
      */
     CustomerOperatorVO findCustomerOperatorByCustomerId(Integer customerId,Integer modelType);
+
+    Map getClassById(QueryCommonForm form);
 }

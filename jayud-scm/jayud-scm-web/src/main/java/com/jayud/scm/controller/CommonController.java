@@ -13,6 +13,7 @@ import com.jayud.common.UserOperator;
 import com.jayud.scm.model.bo.AddCommodityModelForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.PermissionForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.TableEnum;
 import com.jayud.scm.model.po.*;
@@ -21,6 +22,7 @@ import com.jayud.scm.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSupport;
+import net.sf.saxon.expr.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -124,6 +126,14 @@ public class CommonController {
 
     @Autowired
     private IAcctPayService acctPayService;
+
+    @ApiOperation(value = "根据id通用查询方法")
+    @PostMapping(value = "/getClassById")
+    public CommonResult<Map> getClassById(@Valid @RequestBody QueryCommonForm form) {
+        form.setTable(TableEnum.getDesc(form.getKey()));
+        Map map = customerService.getClassById(form);
+        return CommonResult.success(map);
+    }
 
     @ApiOperation(value = "删除通用方法")
     @PostMapping(value = "/delete")

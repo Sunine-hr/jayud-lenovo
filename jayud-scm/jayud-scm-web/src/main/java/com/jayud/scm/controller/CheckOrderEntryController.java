@@ -6,14 +6,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.common.utils.Query;
 import com.jayud.scm.model.bo.AddCheckOrderEntryForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.CheckOrderEntry;
-import com.jayud.scm.model.po.HubShippingEntry;
 import com.jayud.scm.model.vo.BookingOrderEntryVO;
 import com.jayud.scm.model.vo.CheckOrderEntryVO;
-import com.jayud.scm.model.vo.CustomerTaxVO;
 import com.jayud.scm.service.IBookingOrderEntryService;
 import com.jayud.scm.service.ICheckOrderEntryService;
 import io.swagger.annotations.Api;
@@ -25,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +105,7 @@ public class CheckOrderEntryController {
         return CommonResult.success(bookingOrderEntryByBookingId);
     }
 
-    @ApiOperation(value = "获取新增的提验货明细列表")
+    @ApiOperation(value = "获取新增的提验货明细列表通过委托单id")
     @PostMapping(value = "/findBookingOrderEntryByBookingId")
     public CommonResult<List<BookingOrderEntryVO>> findBookingOrderEntryByBookingId(@RequestBody Map<String,Object> map) {
         Integer bookingId = MapUtil.getInt(map, "bookingId");

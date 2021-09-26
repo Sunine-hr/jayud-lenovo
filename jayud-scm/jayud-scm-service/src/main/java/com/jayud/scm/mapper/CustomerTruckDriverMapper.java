@@ -7,6 +7,7 @@ import com.jayud.scm.model.po.CustomerTruckDriver;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.scm.model.vo.CustomerTruckDriverVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -19,5 +20,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface CustomerTruckDriverMapper extends BaseMapper<CustomerTruckDriver> {
 
-    IPage<CustomerTruckDriverVO> findByPage(Page<CustomerTruckDriverVO> page, QueryForm form);
+    IPage<CustomerTruckDriverVO> findByPage(@Param("page") Page<CustomerTruckDriverVO> page, @Param("form")QueryForm form);
 }

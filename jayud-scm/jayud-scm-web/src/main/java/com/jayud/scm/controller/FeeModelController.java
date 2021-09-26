@@ -5,15 +5,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.scm.model.bo.AddCustomerRelationerForm;
-import com.jayud.scm.model.bo.AddFeeModelForm;
-import com.jayud.scm.model.bo.DeleteForm;
-import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.common.UserOperator;
+import com.jayud.scm.model.bo.*;
+import com.jayud.scm.model.enums.TableEnum;
+import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.CustomerAgreementVO;
 import com.jayud.scm.model.vo.CustomerRelationerVO;
 import com.jayud.scm.model.vo.FeeModelVO;
-import com.jayud.scm.service.IBDataDicEntryService;
-import com.jayud.scm.service.IFeeModelService;
+import com.jayud.scm.model.vo.FeeVO;
+import com.jayud.scm.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>
@@ -41,6 +43,15 @@ public class FeeModelController {
 
     @Autowired
     private IBDataDicEntryService ibDataDicEntryService;
+
+    @Autowired
+    private ICustomerService customerService;
+
+    @Autowired
+    private ISystemUserService systemUserService;
+
+    @Autowired
+    private IFeeService feeService;
 
     @ApiOperation(value = "根据条件分页查询所有该客户的结算设置")
     @PostMapping(value = "/findByPage")
@@ -84,6 +95,27 @@ public class FeeModelController {
             return CommonResult.error(444,"删除结算方案失败");
         }
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "审核结算方案")
+    @PostMapping(value = "/approveSettlementScheme")
+    public CommonResult approveSettlementScheme(@RequestBody PermissionForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        List<FeeVO> fee = feeService.getFeeVOByFeeModelId(form.getId());
+        if(CollectionUtils.isEmpty(fee)){
+            return CommonResult.error(444,"该结算方案没有结算条款，无法进行审核");
+        }
+        for (FeeVO feeVO : fee) {
+            if(CollectionUtils.isEmpty(feeVO.getFeeListVOS())){
+                return CommonResult.error(444,"该结算条款没有设置结算公式，无法进行审核");
+            }
+        }
+
+        form.setTable(TableEnum.getDesc(form.getKey()));
+        form.setUserId(systemUser.getId().intValue());
+        form.setUserName(systemUser.getUserName());
+        return customerService.toExamine(form);
     }
 
 }

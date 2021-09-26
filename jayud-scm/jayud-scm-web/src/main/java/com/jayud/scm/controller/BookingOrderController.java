@@ -61,6 +61,9 @@ public class BookingOrderController {
     @Autowired
     private ICustomerMaintenanceSetupService customerMaintenanceSetupService;
 
+    @Autowired
+    private IHgBillService hgBillService;
+
     /*
         TODO 出口委托单：主表 查询 新增 修改 删除 查看 审核 反审 打印 复制
     */
@@ -463,6 +466,15 @@ public class BookingOrderController {
         return commonResult;
     }
 
+    @ApiOperation(value = "生成报关单")
+    @PostMapping(value = "/generateCustomsDeclaration")
+    public CommonResult generateCustomsDeclaration(@Valid @RequestBody QueryCommonForm form){
+        boolean result = hgBillService.addHgBill(form.getId());
+        if(!result){
+            return CommonResult.error(444,"生成报关单失败");
+        }
+        return CommonResult.success();
+    }
 
 }
 

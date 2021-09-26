@@ -2,6 +2,7 @@ package com.jayud.scm.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.bo.QueryCustomerForm;
 import com.jayud.scm.model.po.Customer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -39,4 +40,6 @@ public interface CustomerMapper extends BaseMapper<Customer> {
      * @return
      */
     List<VFeeModel> findVFeeModelByCustomerId(@Param("customerId") Integer customerId,@Param("modelType")Integer modelType);
+
+    Map getClassById(@Param("form") QueryCommonForm form);
 }

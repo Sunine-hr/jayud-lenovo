@@ -309,8 +309,9 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         BookingOrder bookingOrder = ConvertUtil.convert(bookingOrderVO, BookingOrder.class);
         bookingOrder.setId(null);
         bookingOrder.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(), LocalDateTime.now()));//单号的生成规则
-        bookingOrder.setCheckStateFlag("NO");
+        bookingOrder.setCheckStateFlag("N0");
         bookingOrder.setStateFlag(0);
+        bookingOrder.setFStep(0);
         this.saveOrUpdate(bookingOrder);
 
         BookingOrderVO bookingOrderVO1 = ConvertUtil.convert(bookingOrder, BookingOrderVO.class);

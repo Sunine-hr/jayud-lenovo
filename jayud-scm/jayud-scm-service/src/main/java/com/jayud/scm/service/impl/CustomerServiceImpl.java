@@ -370,4 +370,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         customerOperatorVO.setBuyerList(buyerList);
         return customerOperatorVO;
     }
+
+    @Override
+    public Map getClassById(QueryCommonForm form) {
+
+        return this.baseMapper.getClassById(form);
+    }
 }

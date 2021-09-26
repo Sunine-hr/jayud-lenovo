@@ -35,7 +35,7 @@ public class HubReceivingEntryController {
 
     @ApiOperation(value = "根据入库单id获取入库单详情")
     @PostMapping(value = "/findByPage")
-    public CommonResult findByPage(@RequestBody QueryCommonForm form) {
+    public CommonResult<CommonPageResult<HubReceivingEntryVO>> findByPage(@RequestBody QueryCommonForm form) {
         IPage<HubReceivingEntryVO> page = this.hubReceivingEntryService.findByPage(form);
 //        for (HubReceivingEntryVO record : page.getRecords()) {
 //

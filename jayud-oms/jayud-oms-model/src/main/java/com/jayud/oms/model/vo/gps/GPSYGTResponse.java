@@ -34,5 +34,6 @@ public class GPSYGTResponse {
     @ApiModelProperty(value = "终端上报位置的时间")
     private LocalDateTime ReportTime;
 
-
+    @ApiModelProperty(value = "终端记录的总里程,km，精确到小数点后 2 位")
+    private Double StarkMileage;
 }

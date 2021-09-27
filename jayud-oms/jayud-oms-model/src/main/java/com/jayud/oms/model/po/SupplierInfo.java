@@ -142,7 +142,8 @@ public class SupplierInfo extends Model<SupplierInfo> {
     @ApiModelProperty(value = "gps厂商(1:云港通,2:北斗)")
     private Integer gpsType;
 
-
+    @ApiModelProperty(value = "gps请求参数(json格式)")
+    private String gpsReqParam;
 
     @Override
     protected Serializable pkVal() {

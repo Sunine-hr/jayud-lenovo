@@ -1,17 +1,16 @@
-package com.jayud.oms.model.po;
+package com.jayud.oms.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
-
-import java.time.LocalDateTime;
-import java.io.Serializable;
-
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -25,7 +24,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value = "GpsPositioning对象", description = "")
-public class GpsPositioning extends Model<GpsPositioning> {
+public class GpsPositioningVO extends Model<GpsPositioningVO> {
 
     private static final long serialVersionUID = 1L;
 
@@ -86,6 +85,12 @@ public class GpsPositioning extends Model<GpsPositioning> {
 
     @ApiModelProperty(value = "停车时长")
     private String stopLong;
+
+    @ApiModelProperty(value = "高德纬度")
+    private String gLatitude;
+
+    @ApiModelProperty(value = "高德经度")
+    private String gLongitude;
 
     @Override
     protected Serializable pkVal() {

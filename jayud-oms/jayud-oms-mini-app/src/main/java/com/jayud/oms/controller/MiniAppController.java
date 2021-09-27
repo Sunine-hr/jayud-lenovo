@@ -291,7 +291,7 @@ public class MiniAppController {
                 .setSupplierCode(supplierCode)
                 .setSupplierName(supplierName)
                 .setCreateTime(LocalDateTime.now())
-                .setStatus(EmploymentFeeStatusEnum.DRAFT.getCode())
+                .setStatus(EmploymentFeeStatusEnum.SUBMIT.getCode())
                 .setDriverId(driverId)
                 .setExchangeRate(form.getExchangeRate());
 
@@ -860,7 +860,7 @@ public class MiniAppController {
         }
         //获取司机id
         Long driverId = Long.parseLong(SecurityUtil.getUserInfo());
-        List<DriverEmploymentFeeVO> employmentFees = this.driverEmploymentFeeService.getCost(orderId, driverId, EmploymentFeeStatusEnum.DRAFT.getCode());
+        List<DriverEmploymentFeeVO> employmentFees = this.driverEmploymentFeeService.getCost(orderId, driverId, EmploymentFeeStatusEnum.SUBMIT.getCode());
         employmentFees.forEach(DriverEmploymentFeeVO::assembleSrc);
 
         return CommonResult.success(employmentFees);
@@ -875,13 +875,15 @@ public class MiniAppController {
         }
         //获取司机id
         Long driverId = Long.parseLong(SecurityUtil.getUserInfo());
-        List<DriverEmploymentFee> employmentFees = this.driverEmploymentFeeService.getEmploymentFee(orderId, driverId, EmploymentFeeStatusEnum.DRAFT.getCode());
-        List<DriverEmploymentFee> updateOpt = new ArrayList<>();
-        employmentFees.forEach(e -> {
-            DriverEmploymentFee tmp = new DriverEmploymentFee().setId(e.getId()).setStatus(EmploymentFeeStatusEnum.SUBMIT.getCode());
-            updateOpt.add(tmp);
-        });
-        this.driverEmploymentFeeService.updateBatchById(updateOpt);
+        //查询是否存在录用费用项
+        if (!this.driverEmploymentFeeService.isExist(driverId, orderId,
+                EmploymentFeeStatusEnum.SUBMIT.getCode())) {
+            return CommonResult.error(400, "不存在录用费用项,不能费用提交");
+        }
+        //查询所有提交的费用项
+        List<DriverEmploymentFee> employmentFees = this.driverEmploymentFeeService.getEmploymentFee(orderId, driverId, EmploymentFeeStatusEnum.SUBMIT.getCode());
+        //批量费用提交
+        this.driverEmploymentFeeService.feeSubmission(employmentFees);
         return CommonResult.success();
     }
 

@@ -1647,7 +1647,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
 
     @Override
-//    @Transactional
     public boolean createOrder(InputOrderForm form) {
         //保存主订单
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();

@@ -15,6 +15,7 @@ import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.GPSUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.GetOrderDetailForm;
+import com.jayud.oms.model.bo.QueryGPSRecord;
 import com.jayud.oms.model.po.GpsPositioning;
 import com.jayud.oms.model.po.LogisticsTrack;
 import com.jayud.oms.model.vo.*;
@@ -609,6 +610,13 @@ public class GPSController {
 //        JSONArray data = jsonObject.getJSONArray("Data");
 
         return CommonResult.success();
+    }
+
+
+    @ApiOperation(value = "查询车辆历史轨迹详情")
+    @PostMapping(value = "getVehicleHistoryTrackInfo")
+    public CommonResult<TrackPlaybackVO> getVehicleHistoryTrackInfo(@RequestBody QueryGPSRecord form) {
+        return CommonResult.success(this.gpsPositioningService.getVehicleHistoryTrackInfo(form));
     }
 
     public String Post(String url, JSONObject params) {

@@ -3,6 +3,8 @@ package com.jayud.oms.model.po;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -72,6 +74,12 @@ public class GpsPositioning extends Model<GpsPositioning> {
 
     @ApiModelProperty(value = "gps定位时间")
     private LocalDateTime gpsTime;
+
+    @ApiModelProperty(value = "地理位置")
+    private String addr;
+
+    @ApiModelProperty(value = "行驶里程")
+    private BigDecimal mile;
 
     @Override
     protected Serializable pkVal() {

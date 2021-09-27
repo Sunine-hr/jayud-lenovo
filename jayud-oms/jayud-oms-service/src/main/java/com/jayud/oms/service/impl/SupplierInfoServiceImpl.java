@@ -587,21 +587,26 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         List<Map<String, Object>> supplierVehicleTree = new ArrayList<>();
         supplierInfos.forEach(supplierInfo -> {
             Map<String, Object> supMap = new HashMap<>();
-            supMap.put("supId", supplierInfo.getId());
-            supMap.put("supName", supplierInfo.getSupplierChName());
-            List<Map<String, Object>> vehList = new ArrayList<>();
+            supMap.put("id", supplierInfo.getId());//id
+            supMap.put("label", supplierInfo.getSupplierChName());//name
+            supMap.put("level", 1);//level
+            supMap.put("description", "供应商");//description
+            List<Map<String, Object>> children = new ArrayList<>();
             vehicleInfos.forEach(vehicleInfo -> {
                 //车辆供应商id，相同
                 if(supplierInfo.getId().equals(vehicleInfo.getSupplierId())){
                     Map<String, Object> vehMap = new HashMap<>();
-                    vehMap.put("vehId", vehicleInfo.getId());
-                    vehMap.put("vehName", vehicleInfo.getPlateNumber());
-                    vehList.add(vehMap);
+                    vehMap.put("id", vehicleInfo.getId());
+                    vehMap.put("label", vehicleInfo.getPlateNumber());
+                    vehMap.put("level", 2);//level
+                    vehMap.put("description", "供应商车辆");//description
+                    vehMap.put("children", new ArrayList<>());
+                    children.add(vehMap);
                 }
             });
             //仅展示有车辆的供应商
-            if(CollUtil.isNotEmpty(vehList)){
-                supMap.put("vehList", vehList);
+            if(CollUtil.isNotEmpty(children)){
+                supMap.put("children", children);
                 supplierVehicleTree.add(supMap);
             }
         });

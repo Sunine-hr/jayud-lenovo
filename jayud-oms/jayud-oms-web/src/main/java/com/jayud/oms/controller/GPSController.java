@@ -541,12 +541,18 @@ public class GPSController {
             GpsPositioning positioning = gpsPositionings.get(0);
             convert = ConvertUtil.convert(positioning, PositionVO.class);
             double[] doubles = GPSUtil.gps84_To_Gcj02(Double.parseDouble(positioning.getLatitude()), Double.parseDouble(positioning.getLongitude()));
-            convert.setLatitude(doubles[0]);
-            convert.setLongitude(doubles[1]);
-            convert.setReportTime(DateUtils.LocalDateTime2Str(positioning.getGpsTime(), DateUtils.DATE_TIME_PATTERN));
-            convert.setSpeed(Double.valueOf(positioning.getSpeed()));
+            //地址、车牌号、经纬度、行驶速度、定位时间、定位状态、车辆状态，今日里程
+            convert.setLatitude(doubles[0]);//经度
+            convert.setLongitude(doubles[1]);//纬度
+            convert.setReportTime(DateUtils.LocalDateTime2Str(positioning.getGpsTime(), DateUtils.DATE_TIME_PATTERN));//终端上报位置的时间
+            convert.setSpeed(Double.valueOf(positioning.getSpeed()));//速度
 
             convert.setLicensePlate(positioning.getPlateNumber());//车牌号 -> 大陆车牌
+            convert.setAddr(positioning.getAddr());//地理位置
+            convert.setMile(positioning.getMile());//行驶里程
+            convert.setVehicleStatus(positioning.getVehicleStatus());//行驶里程
+        }else{
+            return CommonResult.error(-1, "【"+plateNumber+"】，暂无GPS坐标信息");
         }
         return CommonResult.success(convert);
     }

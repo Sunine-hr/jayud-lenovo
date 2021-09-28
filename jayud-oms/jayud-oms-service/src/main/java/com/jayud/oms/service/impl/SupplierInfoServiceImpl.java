@@ -723,8 +723,10 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     private Map<String, Object> zgysExtracted(String pickUpTimeStart, String pickUpTimeEnd, String orderNo) {
         //查询中港订单
         Map<String, Object> zgys = new HashMap<>();
-        zgys.put("code", SubOrderSignEnum.ZGYS.getSignTwo());
-        zgys.put("text", SubOrderSignEnum.ZGYS.getDesc());
+        zgys.put("id", SubOrderSignEnum.ZGYS.getSignTwo());
+        zgys.put("label", SubOrderSignEnum.ZGYS.getDesc());
+        zgys.put("level", 1);//level
+        zgys.put("description", "中港订单");//description
 
         ApiResult orderTransport = tmsClient.getOrderTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);
         String s = JSON.toJSONString(orderTransport.getData());
@@ -763,19 +765,29 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
                 String takeTimeStr = MapUtil.getStr(m, "takeTimeStr");
                 String signTime = MapUtil.getStr(m, "signTime");
                 Map<String, Object> orderMap = new HashMap<>();
-                orderMap.put("orderId", orderId);
-                orderMap.put("mainOrderNo", mainOrderNo);
-                orderMap.put("orderNo", orderNo1);
-                orderMap.put("takeTimeStr", takeTimeStr);//提货时间
-                orderMap.put("signTime", signTime);//签收时间
+                orderMap.put("id", orderId);
+                orderMap.put("label", orderNo1);
+                orderMap.put("level", 3);//level
+                orderMap.put("description", "订单号");
+                orderMap.put("children", new ArrayList<>());
+                //扩展字段
+                JSONObject extend = new JSONObject();
+                extend.put("mainOrderNo", mainOrderNo);//主订单号
+                extend.put("takeTimeStr", takeTimeStr);//提货时间
+                extend.put("signTime", signTime);//签收时间
+                orderMap.put("extend", extend);//扩展字段
                 orderList.add(orderMap);
             });
+
             Map<String, Object> time = new HashMap<>();
-            time.put("time", s1);
-            time.put("orderList", orderList);
+            time.put("id", s1);
+            time.put("label", s1);
+            time.put("level", 2);//level
+            time.put("description", "签收时间");
+            time.put("children", orderList);
             pickUpTimeList.add(time);
         }
-        zgys.put("pickUpTimeList", pickUpTimeList);//提货时间
+        zgys.put("children", pickUpTimeList);//提货时间
         return zgys;
     }
 
@@ -788,23 +800,37 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     private Map<String, Object> nlExtracted(String pickUpTimeStart, String pickUpTimeEnd, String orderNo) {
         //查询内陆订单
         Map<String, Object> nl = new HashMap<>();
-        nl.put("code", SubOrderSignEnum.NL.getSignTwo());
-        nl.put("text", SubOrderSignEnum.NL.getDesc());
+        nl.put("id", SubOrderSignEnum.NL.getSignTwo());
+        nl.put("label", SubOrderSignEnum.NL.getDesc());
+        nl.put("level", 1);//level
+        nl.put("description", "内陆订单");//description
 
         ApiResult orderInlandTransportList = inlandTpClient.getOrderInlandTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);
-        String s2 = JSON.toJSONString(orderInlandTransportList.getData());
-        JSONArray jsonArray2 = JSON.parseArray(s2);//对list进行分组
+        String s = JSON.toJSONString(orderInlandTransportList.getData());
 
-        List<Map<String, Object>> maps2 =new ArrayList<>();
-        for(int i = 0; i < jsonArray2.size(); i++) {
-            JSONObject jsonObject = jsonArray2.getJSONObject(i);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
+        JSONArray jsonArray = JSON.parseArray(s);//对list进行分组
+
+        List<Map<String, Object>> maps1 =new ArrayList<>();
+        for(int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
             Map<String, Object> jsonMap = JSONObject.toJavaObject(jsonObject, Map.class);
-            maps2.add(jsonMap);
+            maps1.add(jsonMap);
         }
         //LinkedHashMap 按照输入的顺序分组
-        Map<String, List<Map<String, Object>>> pickUpTime2 = maps2.stream().collect(Collectors.groupingBy(m -> MapUtil.getStr(m, "deliveryDate"), LinkedHashMap::new, Collectors.toList()));
+        Map<String, List<Map<String, Object>>> pickUpTime2 = maps1.stream().collect(Collectors.groupingBy(
+                m -> {
+                    String signTime = MapUtil.getStr(m, "signTime");//签收时间
+                    LocalDateTime signTime2 = LocalDateTime.parse(signTime, formatter);//string 转 localDateTime
+                    String signTime3 = signTime2.format(formatter2);//localDateTime 转 string
+                    return signTime3;
+                },
+                LinkedHashMap::new,
+                Collectors.toList()));
 
-        List<Map<String, Object>> pickUpTimeList2 = new ArrayList<>();
+        List<Map<String, Object>> pickUpTimeList = new ArrayList<>();
         for (String s1 : pickUpTime2.keySet()) {
             List<Map<String, Object>> list = pickUpTime2.get(s1);
             List<Map<String, Object>> orderList = new ArrayList<>();
@@ -812,18 +838,31 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
                 String orderId = MapUtil.getStr(m, "id");
                 String mainOrderNo = MapUtil.getStr(m, "mainOrderNo");
                 String orderNo1 = MapUtil.getStr(m, "orderNo");
+                String takeTimeStr = MapUtil.getStr(m, "deliveryDate");
+                String signTime = MapUtil.getStr(m, "signTime");
                 Map<String, Object> orderMap = new HashMap<>();
-                orderMap.put("orderId", orderId);
-                orderMap.put("mainOrderNo", mainOrderNo);
-                orderMap.put("orderNo", orderNo1);
+                orderMap.put("id", orderId);
+                orderMap.put("label", orderNo1);
+                orderMap.put("level", 3);//level
+                orderMap.put("description", "订单号");
+                orderMap.put("children", new ArrayList<>());
+                //扩展字段
+                JSONObject extend = new JSONObject();
+                extend.put("mainOrderNo", mainOrderNo);//主订单号
+                extend.put("takeTimeStr", takeTimeStr);//提货时间
+                extend.put("signTime", signTime);//签收时间
+                orderMap.put("extend", extend);//扩展字段
                 orderList.add(orderMap);
             });
             Map<String, Object> time = new HashMap<>();
-            time.put("time", s1);
-            time.put("orderList", orderList);
-            pickUpTimeList2.add(time);
+            time.put("id", s1);
+            time.put("label", s1);
+            time.put("level", 2);//level
+            time.put("description", "签收时间");
+            time.put("children", orderList);
+            pickUpTimeList.add(time);
         }
-        nl.put("pickUpTimeList", pickUpTimeList2);//提货时间
+        nl.put("children", pickUpTimeList);//提货时间
         return nl;
     }
 

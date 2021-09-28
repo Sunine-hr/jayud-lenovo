@@ -215,17 +215,25 @@
                 END
                 ) cost,
             i.department_id,
-            DATE_FORMAT(oa.delivery_date, '%Y-%m-%d') delivery_date
+            oa.delivery_date delivery_date,
+            lt.operator_time signTime
         FROM
         order_inland_transport i
         LEFT JOIN order_inland_send_cars ic ON i.order_no = ic.order_no
         left join order_address oa on i.id = oa.business_id
+        left join (select  main_order_id,order_id,operator_time from  logistics_track where type = 5 and status = 'NL_6') lt on i.`id` = lt.order_id
         WHERE 1=1
-        and oa.type=3 AND oa.business_type=5 AND (oa.delivery_date BETWEEN #{pickUpTimeStart} AND #{pickUpTimeEnd} )
+        and oa.type=3 AND oa.business_type=5
         <if test="orderNo != null and orderNo != ''">
             and i.order_no like concat('%',#{orderNo},'%')
         </if>
-        order by oa.delivery_date desc
+        <if test="pickUpTimeStart != null and pickUpTimeStart !=''">
+            and DATE_FORMAT(lt.operator_time,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{pickUpTimeStart}
+        </if>
+        <if test="pickUpTimeEnd != null and pickUpTimeEnd !=''">
+            and DATE_FORMAT(lt.operator_time,'%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> #{pickUpTimeEnd}
+        </if>
+        order by lt.operator_time desc
     </select>
 
 </mapper>

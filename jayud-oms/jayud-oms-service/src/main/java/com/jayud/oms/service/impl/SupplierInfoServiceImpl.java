@@ -624,7 +624,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     }
 
     /**
-     * 查询供应商
+     * 查询供应商（仅展示有车辆的供应商）
      * @return 供应商list
      */
     @Override
@@ -632,12 +632,33 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         //查询，供应商信息
         QueryWrapper<SupplierInfo> supplierInfoQueryWrapper = new QueryWrapper<>();
         List<SupplierInfo> supplierInfos = baseMapper.selectList(supplierInfoQueryWrapper);
+        //查询，供应商对应车辆信息
+        QueryWrapper<VehicleInfo> vehicleInfoQueryWrapper = new QueryWrapper<>();
+        List<VehicleInfo> vehicleInfos = vehicleInfoMapper.selectList(vehicleInfoQueryWrapper);
+
         List<Map<String, Object>> list = new ArrayList<>();
+
         supplierInfos.forEach(supplierInfo -> {
             Map<String, Object> supMap = new HashMap<>();
             supMap.put("supId", supplierInfo.getId());
             supMap.put("supName", supplierInfo.getSupplierChName());
-            list.add(supMap);
+            List<Map<String, Object>> children = new ArrayList<>();
+            vehicleInfos.forEach(vehicleInfo -> {
+                //车辆供应商id，相同
+                if(supplierInfo.getId().equals(vehicleInfo.getSupplierId())){
+                    Map<String, Object> vehMap = new HashMap<>();
+                    vehMap.put("id", vehicleInfo.getId());
+                    vehMap.put("label", vehicleInfo.getPlateNumber());
+                    vehMap.put("level", 2);//level
+                    vehMap.put("description", "供应商车辆");//description
+                    vehMap.put("children", new ArrayList<>());
+                    children.add(vehMap);
+                }
+            });
+            //仅展示有车辆的供应商
+            if(CollUtil.isNotEmpty(children)){
+                list.add(supMap);
+            }
         });
         return list;
     }

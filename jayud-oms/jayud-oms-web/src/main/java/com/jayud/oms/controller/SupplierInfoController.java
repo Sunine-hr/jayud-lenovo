@@ -424,7 +424,7 @@ public class SupplierInfoController {
     }
 
     /**
-     * 轨迹管理，轨迹回放，按车辆，查询供应商list
+     * 轨迹管理，轨迹回放，按车辆，查询供应商list（仅展示有车辆的供应商）
      */
     @ApiOperation("查询供应商list")
     @PostMapping(value = "/getList")

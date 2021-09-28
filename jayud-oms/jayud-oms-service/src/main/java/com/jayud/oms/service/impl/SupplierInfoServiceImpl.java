@@ -577,12 +577,22 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
      * @return 供应商及其车辆tree
      */
     @Override
-    public List<Map<String, Object>> getSupplierVehicleTree() {
+    public List<Map<String, Object>> getSupplierVehicleTree(Map<String, Object> param) {
+
+        String supName = MapUtil.getStr(param, "supName");
+        String plateNumber = MapUtil.getStr(param, "plateNumber");
+
         //查询，供应商信息
         QueryWrapper<SupplierInfo> supplierInfoQueryWrapper = new QueryWrapper<>();
+        if(StrUtil.isNotEmpty(supName)){
+            supplierInfoQueryWrapper.lambda().like(SupplierInfo::getSupplierChName, supName);
+        }
         List<SupplierInfo> supplierInfos = baseMapper.selectList(supplierInfoQueryWrapper);
         //查询，供应商对应车辆信息
         QueryWrapper<VehicleInfo> vehicleInfoQueryWrapper = new QueryWrapper<>();
+        if(StrUtil.isNotEmpty(plateNumber)){
+            vehicleInfoQueryWrapper.lambda().like(VehicleInfo::getPlateNumber, plateNumber);
+        }
         List<VehicleInfo> vehicleInfos = vehicleInfoMapper.selectList(vehicleInfoQueryWrapper);
         List<Map<String, Object>> supplierVehicleTree = new ArrayList<>();
         supplierInfos.forEach(supplierInfo -> {
@@ -698,6 +708,10 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         ApiResult orderTransport = tmsClient.getOrderTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);
         String s = JSON.toJSONString(orderTransport.getData());
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
+
         JSONArray jsonArray = JSON.parseArray(s);//对list进行分组
 
         List<Map<String, Object>> maps1 =new ArrayList<>();
@@ -707,7 +721,15 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             maps1.add(jsonMap);
         }
         //LinkedHashMap 按照输入的顺序分组
-        Map<String, List<Map<String, Object>>> pickUpTime = maps1.stream().collect(Collectors.groupingBy(m -> MapUtil.getStr(m, "takeTimeStr"), LinkedHashMap::new, Collectors.toList()));
+        Map<String, List<Map<String, Object>>> pickUpTime = maps1.stream().collect(Collectors.groupingBy(
+                m -> {
+                    String signTime = MapUtil.getStr(m, "signTime");//签收时间
+                    LocalDateTime signTime2 = LocalDateTime.parse(signTime, formatter);//string 转 localDateTime
+                    String signTime3 = signTime2.format(formatter2);//localDateTime 转 string
+                    return signTime3;
+                },
+                LinkedHashMap::new,
+                Collectors.toList()));
 
         List<Map<String, Object>> pickUpTimeList = new ArrayList<>();
         for (String s1 : pickUpTime.keySet()) {
@@ -717,10 +739,14 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
                 String orderId = MapUtil.getStr(m, "id");
                 String mainOrderNo = MapUtil.getStr(m, "mainOrderNo");
                 String orderNo1 = MapUtil.getStr(m, "orderNo");
+                String takeTimeStr = MapUtil.getStr(m, "takeTimeStr");
+                String signTime = MapUtil.getStr(m, "signTime");
                 Map<String, Object> orderMap = new HashMap<>();
                 orderMap.put("orderId", orderId);
                 orderMap.put("mainOrderNo", mainOrderNo);
                 orderMap.put("orderNo", orderNo1);
+                orderMap.put("takeTimeStr", takeTimeStr);//提货时间
+                orderMap.put("signTime", signTime);//签收时间
                 orderList.add(orderMap);
             });
             Map<String, Object> time = new HashMap<>();

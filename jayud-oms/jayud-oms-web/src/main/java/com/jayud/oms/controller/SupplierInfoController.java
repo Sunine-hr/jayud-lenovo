@@ -418,8 +418,8 @@ public class SupplierInfoController {
      */
     @ApiOperation("查询供应商及其车辆tree")
     @PostMapping(value = "/getSupplierVehicleTree")
-    public CommonResult getSupplierVehicleTree(){
-        List<Map<String, Object>> supplierVehicleTree = supplierInfoService.getSupplierVehicleTree();
+    public CommonResult getSupplierVehicleTree(@RequestBody Map<String, Object> param){
+        List<Map<String, Object>> supplierVehicleTree = supplierInfoService.getSupplierVehicleTree(param);
         return CommonResult.success(supplierVehicleTree);
     }
 

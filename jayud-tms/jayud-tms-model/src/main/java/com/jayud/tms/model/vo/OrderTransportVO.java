@@ -240,6 +240,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "对接GPS公用路径前缀")
     private String gpsAddress;
 
+    @ApiModelProperty(value = "签收时间")
+    private String signTime;
+
     /**
      * 组装商品信息
      */

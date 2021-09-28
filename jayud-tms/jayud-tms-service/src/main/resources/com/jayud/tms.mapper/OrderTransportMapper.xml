@@ -941,28 +941,28 @@
         os.driver_info_id driverInfoId,
         vi.plate_number plateNumber,
         ot.supplier_vehicle_size,
-        DATE_FORMAT(ota.`take_time`, '%Y-%m-%d') takeTimeStr,
-        ot.department_id
+        ota.`take_time` takeTimeStr,
+        ot.department_id,
+        lt.operator_time signTime
         FROM
         order_transport ot
-        LEFT JOIN order_info oi
-        ON ot.`main_order_no` = oi.`order_no`
+        LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no`
         LEFT JOIN order_send_cars os ON os.order_no = ot.order_no
         LEFT JOIN vehicle_info vi ON vi.id=os.vehicle_id
         LEFT JOIN supplier_info si ON si.id=vi.supplier_id
-        left join (select tmp.order_no,tmp.take_time from order_take_adr tmp where tmp.opr_type=1 group by tmp.order_no)
-        ota on ota.order_no = ot.order_no
+        left join (select tmp.order_no,tmp.take_time from order_take_adr tmp where tmp.opr_type=1 group by tmp.order_no) ota on ota.order_no = ot.order_no
+        left join (select  main_order_id,order_id,operator_time from  logistics_track where type = 2 and status = 'T_15') lt on ot.`id` = lt.order_id
         where 1=1
         <if test="orderNo != null and orderNo != ''">
             and ot.order_no like concat('%',#{orderNo},'%')
         </if>
         <if test="pickUpTimeStart != null and pickUpTimeStart !=''">
-            and DATE_FORMAT(ota.`take_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{pickUpTimeStart}
+            and DATE_FORMAT(lt.operator_time,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{pickUpTimeStart}
         </if>
         <if test="pickUpTimeEnd != null and pickUpTimeEnd !=''">
-            and DATE_FORMAT(ota.`take_time`,'%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> #{pickUpTimeEnd}
+            and DATE_FORMAT(lt.operator_time,'%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> #{pickUpTimeEnd}
         </if>
-        order by ota.`take_time` desc
+        order by lt.operator_time desc
     </select>
 
 

@@ -116,7 +116,7 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      * 查询供应商及其车辆tree
      * @return 供应商及其车辆tree
      */
-    List<Map<String, Object>> getSupplierVehicleTree();
+    List<Map<String, Object>> getSupplierVehicleTree(Map<String, Object> param);
 
     /**
      * 查询供应商

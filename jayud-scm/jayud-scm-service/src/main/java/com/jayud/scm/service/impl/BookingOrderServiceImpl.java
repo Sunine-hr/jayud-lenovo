@@ -23,10 +23,7 @@ import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.enums.StateFlagEnum;
 import com.jayud.scm.model.enums.VoidedEnum;
-import com.jayud.scm.model.po.BookingOrder;
-import com.jayud.scm.model.po.BookingOrderEntry;
-import com.jayud.scm.model.po.BookingOrderFollow;
-import com.jayud.scm.model.po.SystemUser;
+import com.jayud.scm.model.po.*;
 import com.jayud.scm.model.vo.BookingOrderEntryVO;
 import com.jayud.scm.model.vo.BookingOrderVO;
 import com.jayud.scm.model.vo.QtyVO;
@@ -66,6 +63,9 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
     ICommodityService commodityService;//商品表
     @Autowired
     ICustomerService customerService;//客户表
+
+    @Autowired
+    private IBYbfService ybfService;
 
     @Autowired
     private IBookingOrderFollowService bookingOrderFollowService;
@@ -225,6 +225,23 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
             if(commonResult1.getCode().equals(1)){
                 log.warn(commonResult1.getMsg());
             }
+            BYbf bYbf = ybfService.getBYbfByDtaTime(LocalDateTime.now());
+            List<BookingOrderEntryVO> bookingOrderEntryVOS = bookingOrderEntryMapper.findBookingOrderEntryByBookingId(bookingId);
+            if(bookingOrder.getIncoterms().equals("CIF")){
+                for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryVOS) {
+                    bookingOrderEntryVO.setCipPrice(bYbf.getCif().multiply(bookingOrderEntryVO.getHgPrice()));
+                }
+            }else{
+                for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryVOS) {
+                    bookingOrderEntryVO.setCipPrice(bookingOrderEntryVO.getHgPrice());
+                }
+            }
+
+            boolean result = this.bookingOrderEntryService.updateBatchById(ConvertUtil.convertList(bookingOrderEntryVOS,BookingOrderEntry.class));
+            if(result){
+                log.warn("修改运保费单价成功");
+            }
+
         }
 
         //2.记录 委托单跟踪记录表

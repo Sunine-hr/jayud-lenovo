@@ -26,11 +26,13 @@ import java.util.Map;
 public class MysqlGenerator {
 
     public static void main(String[] args) {
-        String[] models = {"jayud-scm\\jayud-scm-model",
-                "jayud-scm\\jayud-scm-service",
-                "jayud-scm\\jayud-scm-web"};
+        String[] models = {"jayud-freight-air\\jayud-freight-air-model",
+                "jayud-freight-air\\jayud-freight-air-service",
+                "jayud-freight-air\\jayud-freight-air-api"};
         for (String model : models) {
-            shell(model,"b_ybf");
+            shell(model,"general_api_log");
+
+
         }
     }
 
@@ -48,7 +50,7 @@ public class MysqlGenerator {
         gc.setBaseResultMap(true);// XML ResultMap
         gc.setBaseColumnList(true);// XML columList
         gc.setSwagger2(true);
-        gc.setAuthor("LLJ");
+        gc.setAuthor("william.chen");
 
         // 自定义文件命名，注意 %s 会自动填充表实体属性！
         gc.setMapperName("%sMapper");
@@ -62,9 +64,9 @@ public class MysqlGenerator {
         DataSourceConfig dsc = new DataSourceConfig();
         dsc.setDbType(DbType.MYSQL);
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
-        dsc.setUsername("jyd_scm");
-        dsc.setPassword("Jyd!@#$%^");
-        dsc.setUrl("jdbc:mysql://113.100.140.250:6306/jyd_scm?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
+        dsc.setUsername("root");
+        dsc.setPassword("Root!!2020");
+        dsc.setUrl("jdbc:mysql://113.100.140.250:8098/jayud_platform?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC");
         mpg.setDataSource(dsc);
 
         // 策略配置
@@ -77,7 +79,7 @@ public class MysqlGenerator {
         String pack = "";
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.jayud.scm");
+        pc.setParent("com.jayud.airfreight");
         pc.setEntity("model.po");
         pc.setController("controller");
         pc.setMapper("mapper");
@@ -100,7 +102,7 @@ public class MysqlGenerator {
             focList.add(new FileOutConfig("/templates/mapper.xml.vm") {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
-                    return path + "/src/main/resources/com/jayud/scm/mapper"
+                    return path + "/src/main/resources/com/jayud/airfreight/mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
                 }
             });
@@ -116,7 +118,7 @@ public class MysqlGenerator {
         } else if (model.endsWith("service")) {
             tc.setController(null);
             tc.setEntity(null);
-        } else if (model.endsWith("web")) {
+        } else if (model.endsWith("api")) {
             tc.setMapper(null);
             tc.setService(null);
             tc.setServiceImpl(null);

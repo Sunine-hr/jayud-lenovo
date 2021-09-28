@@ -167,6 +167,7 @@ public class AcctPayServiceImpl extends ServiceImpl<AcctPayMapper, AcctPay> impl
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
         AcctPay acctPay = ConvertUtil.convert(form, AcctPay.class);
 
+        acctPay.setStateFlag(1);
         acctPay.setMdyBy(systemUser.getId().intValue());
         acctPay.setMdyByDtm(LocalDateTime.now());
         acctPay.setMdyByName(systemUser.getUserName());
@@ -211,6 +212,34 @@ public class AcctPayServiceImpl extends ServiceImpl<AcctPayMapper, AcctPay> impl
             boolean save = this.acctPayFollowService.save(acctPayFollow);
             if (save) {
                 log.warn("确认付款操作,操作记录添加成功");
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean cancelPayment(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+        AcctPay acctPay = new AcctPay();
+
+        acctPay.setId(form.getId());
+        acctPay.setStateFlag(0);
+        acctPay.setMdyBy(systemUser.getId().intValue());
+        acctPay.setMdyByDtm(LocalDateTime.now());
+        acctPay.setMdyByName(systemUser.getUserName());
+        boolean result = this.updateById(acctPay);
+        if (result) {
+            log.warn("取消付款成功");
+            AcctPayFollow acctPayFollow = new AcctPayFollow();
+            acctPayFollow.setSType(OperationEnum.UPDATE.getCode());
+            acctPayFollow.setFollowContext(systemUser.getUserName() + "进行取消付款操作");
+            acctPayFollow.setCrtBy(systemUser.getId().intValue());
+            acctPayFollow.setCrtByDtm(LocalDateTime.now());
+            acctPayFollow.setCrtByName(systemUser.getUserName());
+            acctPayFollow.setPayId(acctPay.getId());
+            boolean save = this.acctPayFollowService.save(acctPayFollow);
+            if (save) {
+                log.warn("取消付款操作,操作记录添加成功");
             }
         }
         return result;

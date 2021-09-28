@@ -21,6 +21,7 @@
         <module>jayud-scm-service</module>
         <module>jayud-scm-web</module>
         <module>jayud-report</module>
+        <module>jayud-scm-api</module>
     </modules>
 
     <dependencies>

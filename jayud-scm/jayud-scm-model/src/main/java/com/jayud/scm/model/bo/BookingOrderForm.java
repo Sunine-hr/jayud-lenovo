@@ -41,7 +41,7 @@ public class BookingOrderForm {
     private Integer supplierId;
 
     @ApiModelProperty(value = "境外客户id")
-    @NotNull(message = "境外客户id，不能为空")
+//    @NotNull(message = "境外客户id，不能为空")
     private Integer overseasCustomersId;
 
     @ApiModelProperty(value = "商务id")

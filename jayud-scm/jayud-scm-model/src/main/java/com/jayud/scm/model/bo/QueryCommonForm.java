@@ -32,6 +32,9 @@ public class QueryCommonForm extends BasePageForm{
     @ApiModelProperty("车次状态")
     private Integer status;
 
+    @ApiModelProperty("车次状态")
+    private String trainStatus;
+
     @ApiModelProperty("权限code")
     private String actionCode;
 
@@ -43,6 +46,9 @@ public class QueryCommonForm extends BasePageForm{
 
     @ApiModelProperty(value = "封条颜色")
     private String lockColour;
+
+    @ApiModelProperty(value = "车次编号")
+    private String truckNo;
 
 
     //报关日期录入

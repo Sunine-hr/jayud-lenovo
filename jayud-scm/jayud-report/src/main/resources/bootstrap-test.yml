@@ -1,10 +1,10 @@
 jayud:
   nacos:
-    server-addr: 113.100.140.250:8848
+    server-addr: 192.168.0.231:8848
     config:
-      namespace: 8f1f1f76-aaa3-4fc9-81b8-e61963b11d7b
+      namespace: fc5bdf96-1d6b-4ef7-ad26-37877b306745
 mybatis-plus:
-  mapper-locations: classpath:com.jayud.report.mapper/*.xml
+  mapper-locations: classpath:com.jayud.airfreight.mapper/*.xml
   typeAliasesPackage: com.jayud.model
   configuration:
     map-underscore-to-camel-case: true

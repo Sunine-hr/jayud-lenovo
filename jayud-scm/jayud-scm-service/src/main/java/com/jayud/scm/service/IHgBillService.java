@@ -26,6 +26,6 @@ public interface IHgBillService extends IService<HgBill> {
 
     boolean entryCustomDate(QueryCommonForm form);
 
-    boolean addHgBill(Integer bookingId);
+    Integer addHgBill(Integer bookingId);
 
 }

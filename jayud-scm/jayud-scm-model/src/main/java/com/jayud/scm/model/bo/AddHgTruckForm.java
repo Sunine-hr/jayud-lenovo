@@ -31,33 +31,33 @@ public class AddHgTruckForm {
     private Integer id;
 
     @ApiModelProperty(value = "业务类型")
-    @NotNull(message = "业务类型不为空")
+//    @NotNull(message = "业务类型不为空")
     private Integer modelType;
 
     @ApiModelProperty(value = "车次编号")
     private String truckNo;
 
     @ApiModelProperty(value = "车次日期")
-    @NotNull(message = "车次时间不为空")
+//    @NotNull(message = "车次时间不为空")
     private String truckDate;
 
     @ApiModelProperty(value = "车次时间(上午9：00，下午6：00等)")
     private String truckTime;
 
     @ApiModelProperty(value = "运输公司ID")
-    @NotNull(message = "运输公司不为空")
+//    @NotNull(message = "运输公司不为空")
     private Integer truckCompanyId;
 
     @ApiModelProperty(value = "运输公司")
     private String truckCompany;
 
     @ApiModelProperty(value = "车辆类型（0正常，1：加车，2包车）")
-    @NotNull(message = "车辆类型不为空")
+//    @NotNull(message = "车辆类型不为空")
     @JsonProperty(value = "sType")
     private String sType;
 
     @ApiModelProperty(value = "预订车次类型")
-    @NotNull(message = "车次类型不为空")
+//    @NotNull(message = "车次类型不为空")
     private String preTruckStyle;
 
     @ApiModelProperty(value = "起运地")
@@ -76,7 +76,7 @@ public class AddHgTruckForm {
     private String truckType;
 
     @ApiModelProperty(value = "司机姓名")
-    @NotNull(message = "司机姓名不为空")
+//    @NotNull(message = "司机姓名不为空")
     private String driverName;
 
     @ApiModelProperty(value = "司机电话")
@@ -86,7 +86,7 @@ public class AddHgTruckForm {
     private String outPort;
 
     @ApiModelProperty(value = "载货清单")
-    @NotNull(message = "载货清单不为空")
+//    @NotNull(message = "载货清单不为空")
     private String exHkNo;
 
     @ApiModelProperty(value = "车辆编号")
@@ -96,7 +96,7 @@ public class AddHgTruckForm {
     private String hsCode;
 
     @ApiModelProperty(value = "币别")
-    @NotNull(message = "币别不为空")
+//    @NotNull(message = "币别不为空")
     private String currencyName;
 
     @ApiModelProperty(value = "实付款运费")
@@ -131,11 +131,11 @@ public class AddHgTruckForm {
     private String cabinetNo;
 
     @ApiModelProperty(value = "自动出库标志")
-    @NotNull(message = "自动完成出库不为空")
+//    @NotNull(message = "自动完成出库不为空")
     private BigDecimal autoShippingFlag;
 
     @ApiModelProperty(value = "出库目标仓库")
-    @NotNull(message = "出库目标仓库不为空")
+//    @NotNull(message = "出库目标仓库不为空")
     private String shippingHubName;
 
     @ApiModelProperty(value = "出库目标仓库id")

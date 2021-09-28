@@ -36,7 +36,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/feeModel")
 @Api(tags = "结算方案")
-public class FeeModelController {
+public class
+FeeModelController {
 
     @Autowired
     private IFeeModelService feeModelService;

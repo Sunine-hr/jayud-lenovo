@@ -245,7 +245,7 @@
 
     <select id="reverseCalculation" parameterType="map" statementType="CALLABLE" resultType="java.util.HashMap">
         {
-        call up_e_order_priceRMB_sp(
+        call up_e_order_rmb_price_sp(
         #{id,mode=IN},
         #{state,mode=OUT,jdbcType=INTEGER},
         #{string,mode=OUT,jdbcType=VARCHAR}

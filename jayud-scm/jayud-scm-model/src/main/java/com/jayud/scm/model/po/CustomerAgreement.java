@@ -117,7 +117,7 @@ public class CustomerAgreement extends Model<CustomerAgreement> {
 
     private String voidedByName;
 
-    private LocalDateTime voidedDtm;
+    private LocalDateTime voidedByDtm;
 
     private Integer voided;
 

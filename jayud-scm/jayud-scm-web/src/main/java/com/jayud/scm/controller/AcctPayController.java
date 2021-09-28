@@ -6,6 +6,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddAcctPayForm;
 import com.jayud.scm.model.bo.AddExportTaxInvoiceForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.po.AcctPay;
 import com.jayud.scm.model.vo.AcctPayVO;
 import com.jayud.scm.model.vo.ExportTaxInvoiceVO;
 import com.jayud.scm.service.IAcctPayService;
@@ -57,6 +58,12 @@ public class AcctPayController {
     @ApiOperation(value = "付款")
     @PostMapping(value = "/payment")
     public CommonResult payment(@RequestBody AddAcctPayForm form) {
+
+        AcctPay acctPay = acctPayService.getById(form.getId());
+        if(acctPay.getIsPay() != null && acctPay.getIsPay().equals(1)){
+            return CommonResult.error(444,"该订单已经确认付款，无法进行付款");
+        }
+
         boolean result = acctPayService.payment(form);
         if(!result){
             return CommonResult.error(444,"付款失败");
@@ -70,6 +77,22 @@ public class AcctPayController {
         boolean result = acctPayService.confirmPayment(form);
         if(!result){
             return CommonResult.error(444,"付款失败");
+        }
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "取消付款")
+    @PostMapping(value = "/cancelPayment")
+    public CommonResult cancelPayment(@RequestBody QueryCommonForm form) {
+
+        AcctPay acctPay = acctPayService.getById(form.getId());
+        if(acctPay.getIsPay() != null && acctPay.getIsPay().equals(1)){
+            return CommonResult.error(444,"该订单已经确认付款，无法进行取消付款");
+        }
+
+        boolean result = acctPayService.cancelPayment(form);
+        if(!result){
+            return CommonResult.error(444,"取消付款失败");
         }
         return CommonResult.success();
     }

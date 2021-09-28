@@ -13,6 +13,7 @@ import com.jayud.scm.service.IHgBillService;
 import com.jayud.scm.service.IHubReceivingService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,9 +107,18 @@ public class CheckOrderController {
         }
         //判断是否入库完成，入库完成增加一个报关单
         boolean result1 = bookingOrderService.isCommplete(checkOrder.getBookingId());
-        if(result1){
+        BookingOrder bookingOrder = bookingOrderService.getById(checkOrder.getBookingId());
+
+        if(result1 && bookingOrder.getBillId() == null){
             //新增一个报关单
-            boolean save = hgBillService.addHgBill(checkOrder.getBookingId());
+            Integer save = hgBillService.addHgBill(checkOrder.getBookingId());
+            BookingOrder bookingOrder1 = new BookingOrder();
+            bookingOrder1.setId(form.getId());
+            bookingOrder1.setBillId(save);
+            boolean result2 = bookingOrderService.updateById(bookingOrder1);
+            if(result2){
+                log.warn("修改委托单billId");
+            }
         }
         return CommonResult.success();
     }

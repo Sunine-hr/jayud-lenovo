@@ -1,20 +1,11 @@
-server:
-  port: 8192
 spring:
+  application:
+    name: jayud-scm-api
   profiles:
     active: dev
-  application:
-    name: jayud-report
-  main:
-    allow-bean-definition-overriding: true
-  mvc:
-    servlet:
-      load-on-startup: 0
   cloud:
     nacos:
       config:
-        shared-dataids: jyd-report.yaml
-        refreshable-dataids: jyd-report.yaml
         server-addr: ${jayud.nacos.server-addr}
         # 配置文件后缀名为yaml
         file-extension: yaml

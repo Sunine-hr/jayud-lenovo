@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddHgTruckForm;
@@ -199,6 +200,7 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
         boolean update = this.updateById(hgTruck);
         if(update){
             HgTruckFollow hgTruckFollow = new HgTruckFollow();
+            hgTruckFollow.setHgTruckId(hgTruck.getId());
             hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
             hgTruckFollow.setFollowContext(systemUser.getUserName()+"操作绑车车牌");
             hgTruckFollow.setCrtBy(systemUser.getId().intValue());
@@ -264,5 +266,31 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
             log.warn("操作记录表添加失败"+hgTruckFollows);
         }
         return b1;
+    }
+
+    @Override
+    public boolean getManifest(String exHkNo, String truckNo) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        QueryWrapper<HgTruck> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(HgTruck::getTruckNo,truckNo);
+        queryWrapper.lambda().eq(HgTruck::getVoided,0);
+        HgTruck hgTruck = this.getOne(queryWrapper);
+        hgTruck.setExHkNo(exHkNo);
+        boolean result = this.updateById(hgTruck);
+        if(result){
+            HgTruckFollow hgTruckFollow = new HgTruckFollow();
+            hgTruckFollow.setHgTruckId(hgTruck.getId());
+            hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
+            hgTruckFollow.setFollowContext("数据接收成功，"+systemUser.getUserName()+"修改载货清单");
+            hgTruckFollow.setCrtBy(systemUser.getId().intValue());
+            hgTruckFollow.setCrtByDtm(LocalDateTime.now());
+            hgTruckFollow.setCrtByName(systemUser.getUserName());
+            boolean save = hgTruckFollowService.save(hgTruckFollow);
+            if(save){
+                log.warn("修改载货清单数据操作日志，添加成功");
+            }
+        }
+        return result;
     }
 }

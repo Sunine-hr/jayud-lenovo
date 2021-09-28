@@ -33,4 +33,6 @@ public interface IHgTruckService extends IService<HgTruck> {
     boolean unboundTrainNumber(QueryCommonForm form);
 
     boolean delete(DeleteForm deleteForm);
+
+    boolean getManifest(String exHkNo, String truckNo);
 }

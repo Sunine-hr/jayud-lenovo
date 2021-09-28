@@ -198,6 +198,10 @@ public class FeeServiceImpl extends ServiceImpl<FeeMapper, Fee> implements IFeeS
         queryWrapper.lambda().eq(Fee::getVoided,0);
         List<Fee> list = this.list(queryWrapper);
         List<FeeVO> feeVOS = ConvertUtil.convertList(list, FeeVO.class);
+        for (FeeVO feeVO : feeVOS) {
+            List<FeeListVO> feeListByFeeId = feeListService.getFeeListByFeeId(feeVO.getId());
+            feeVO.setFeeListVOS(feeListByFeeId);
+        }
         return feeVOS;
     }
 

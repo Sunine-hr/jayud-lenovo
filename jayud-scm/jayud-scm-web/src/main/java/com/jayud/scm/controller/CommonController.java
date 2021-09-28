@@ -10,6 +10,7 @@ import com.alibaba.excel.write.metadata.WriteSheet;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.utils.Query;
 import com.jayud.scm.model.bo.AddCommodityModelForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.PermissionForm;
@@ -162,6 +163,21 @@ public class CommonController {
                 }
             }
 
+        }
+
+        for (Long id : deleteForm.getIds()) {
+            QueryCommonForm form = new QueryCommonForm();
+            form.setId(id.intValue());
+            form.setTable(deleteForm.getTable());
+            Map map = customerService.getClassById(form);
+            if(map.get("checkStateFlag") != null && !map.get("checkStateFlag").equals("N0")){
+                return CommonResult.error(444,"该数据已审核，无法进行删除");
+            }
+            if(deleteForm.getKey().equals(1)){
+                if(map.get("stateFlag") != null && !map.get("stateFlag").equals(2)){
+                    return CommonResult.error(444,"该数据已审核，无法进行删除");
+                }
+            }
         }
 
         boolean result = commodityService.commonDelete(deleteForm);

@@ -124,7 +124,7 @@ public class HgBillServiceImpl extends ServiceImpl<HgBillMapper, HgBill> impleme
     }
 
     @Override
-    public boolean addHgBill(Integer bookingId) {
+    public Integer addHgBill(Integer bookingId) {
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
         BookingOrderVO bookingOrderById = bookingOrderService.getBookingOrderById(bookingId);
@@ -160,7 +160,7 @@ public class HgBillServiceImpl extends ServiceImpl<HgBillMapper, HgBill> impleme
                 log.warn("新增报关单，操作记录添加成功");
             }
         }
-        return save;
+        return hgBill.getId();
     }
 
 }

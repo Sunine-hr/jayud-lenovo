@@ -20,6 +20,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.util.ArrayListWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +43,7 @@ import java.util.Map;
 @Api(tags = "委托订单")
 @RestController
 @RequestMapping("/bookingOrder")
+@Slf4j
 public class BookingOrderController {
 
     @Autowired
@@ -169,6 +171,9 @@ public class BookingOrderController {
                 bookingOrderService.auditBookingOrder(form);
             }
         }
+
+
+
         return CommonResult.success("操作成功!");
     }
 
@@ -469,8 +474,23 @@ public class BookingOrderController {
     @ApiOperation(value = "生成报关单")
     @PostMapping(value = "/generateCustomsDeclaration")
     public CommonResult generateCustomsDeclaration(@Valid @RequestBody QueryCommonForm form){
-        boolean result = hgBillService.addHgBill(form.getId());
-        if(!result){
+
+        BookingOrder bookingOrder = bookingOrderService.getById(form.getId());
+        if(bookingOrder.getBillId() != null){
+            return CommonResult.error(444,"该委托单已经生成报关单");
+        }
+
+        Integer result = hgBillService.addHgBill(form.getId());
+
+        BookingOrder bookingOrder1 = new BookingOrder();
+        bookingOrder1.setId(form.getId());
+        bookingOrder1.setBillId(result);
+        boolean result1 = bookingOrderService.updateById(bookingOrder1);
+        if(result1){
+            log.warn("修改委托单billId");
+        }
+
+        if(result == null){
             return CommonResult.error(444,"生成报关单失败");
         }
         return CommonResult.success();

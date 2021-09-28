@@ -195,4 +195,13 @@ public interface IOrderTransportService extends IService<OrderTransport> {
     Boolean isVirtualWarehouseByOrderNo(String orderNo);
 
     InputOrderTransportVO getOrderDetails(String mainOrderNo, String orderNo);
+
+    /**
+     * 查询中港订单
+     * @param pickUpTimeStart 提货时间Start
+     * @param pickUpTimeEnd 提货时间Start
+     * @param orderNo 订单号
+     * @return
+     */
+    List<OrderTransportVO> getOrderTransportList(String pickUpTimeStart, String pickUpTimeEnd, String orderNo);
 }

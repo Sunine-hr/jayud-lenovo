@@ -90,7 +90,7 @@
             <if test="form.orderNo !=null and form.orderNo!=''">
                 and i.order_no like concat('%',#{form.orderNo},'%')
             </if>
-            <if test="form.mainOrderNo !=null and form.mainOrderNos !=''">
+            <if test="form.mainOrderNo !=null and form.mainOrderNo !=''">
                 and i.main_order_no like concat('%',#{form.mainOrderNo},'%')
             </if>
             <if test="form.mainOrderNos !=null and form.mainOrderNos.size > 0">
@@ -192,4 +192,40 @@
             group by status
         </where>
     </select>
+
+
+    <select id="getOrderInlandTransportList" resultType="com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO">
+        SELECT
+            i.id,
+            i.main_order_no mainOrderNo,
+            i.order_no orderNo,
+            i.STATUS,
+            i.process_status processStatus,
+            i.create_user createUser,
+            i.create_time createTime,
+            i.unit_code subUnitCode,
+            i.legal_entity_id,
+            i.legal_name subLegalName,
+            i.vehicle_size vehicleSize,
+            ic.supplier_id supplierId,
+            ic.license_plate license_plate,
+            (
+                CASE WHEN ( SELECT COUNT( 1 ) FROM order_payment_cost opc WHERE opc.order_no = i.`order_no` ) + ( SELECT COUNT( 1 ) FROM order_receivable_cost orc WHERE orc.order_no = i.`order_no` )> 0 THEN
+                TRUE ELSE FALSE
+                END
+                ) cost,
+            i.department_id,
+            DATE_FORMAT(oa.delivery_date, '%Y-%m-%d') delivery_date
+        FROM
+        order_inland_transport i
+        LEFT JOIN order_inland_send_cars ic ON i.order_no = ic.order_no
+        left join order_address oa on i.id = oa.business_id
+        WHERE 1=1
+        and oa.type=3 AND oa.business_type=5 AND (oa.delivery_date BETWEEN #{pickUpTimeStart} AND #{pickUpTimeEnd} )
+        <if test="orderNo != null and orderNo != ''">
+            and i.order_no like concat('%',#{orderNo},'%')
+        </if>
+        order by oa.delivery_date desc
+    </select>
+
 </mapper>

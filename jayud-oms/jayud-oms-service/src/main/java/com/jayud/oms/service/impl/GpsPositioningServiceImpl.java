@@ -229,4 +229,16 @@ public class GpsPositioningServiceImpl extends ServiceImpl<GpsPositioningMapper,
         dateTimeMap.put("endTime", endTime);
         return dateTimeMap;
     }
+
+    @Override
+    public List<GpsPositioning> getByPlateNumber(String plateNumber, Integer status) {
+        QueryWrapper<GpsPositioning> condition = new QueryWrapper<>();
+        condition.lambda().eq(GpsPositioning::getPlateNumber, plateNumber);
+        if (status != null) {
+            condition.lambda().eq(GpsPositioning::getStatus, status);
+        }
+        condition.lambda().orderByDesc(GpsPositioning::getGpsTime);
+        return this.baseMapper.selectList(condition);
+    }
+
 }

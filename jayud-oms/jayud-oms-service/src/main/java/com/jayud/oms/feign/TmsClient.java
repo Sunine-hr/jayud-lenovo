@@ -10,6 +10,7 @@ import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputOrderTransportVO;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -185,5 +186,11 @@ public interface TmsClient {
      */
     @RequestMapping(value = "/api/getDriverPendingOrder")
     public ApiResult getDriverPendingOrder(@RequestParam("orderNos") List<String> orderNos);
+
+    /**
+     * 获取中港订单list
+     */
+    @RequestMapping(value = "/api/getOrderTransportList")
+    public ApiResult getOrderTransportList(@RequestParam("pickUpTimeStart") String pickUpTimeStart, @RequestParam("pickUpTimeEnd") String pickUpTimeEnd, @RequestParam(value = "orderNo", required = false) String orderNo);
 
 }

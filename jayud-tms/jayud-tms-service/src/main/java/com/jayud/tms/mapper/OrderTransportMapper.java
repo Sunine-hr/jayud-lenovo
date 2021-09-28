@@ -156,4 +156,9 @@ public interface OrderTransportMapper extends BaseMapper<OrderTransport> {
                                                        @Param("form") QuerySupplierBillInfo form);
 
     Integer isVirtualWarehouseByOrderNo(String orderNo);
+
+    /**
+     * 查询中港订单
+     */
+    List<OrderTransportVO> getOrderTransportList(@Param("pickUpTimeStart") String pickUpTimeStart, @Param("pickUpTimeEnd") String pickUpTimeEnd, @Param("orderNo") String orderNo);
 }

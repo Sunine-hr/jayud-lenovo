@@ -2,6 +2,7 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -43,6 +44,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -460,8 +462,17 @@ public class SupplierInfoController {
     @PostMapping(value = "/getOrderTree")
     public CommonResult getOrderTree(@RequestBody Map<String, Object> param){
         String orderTypeCode = MapUtil.getStr(param, "orderTypeCode");//单据类型
-        String pickUpTimeStart = MapUtil.getStr(param, "pickUpTimeStart");//提货时间Start
-        String pickUpTimeEnd = MapUtil.getStr(param, "pickUpTimeEnd");//提货时间End
+
+        //签收时间 开始~结束
+        String pickUpTimeStart = "";
+        String pickUpTimeEnd = "";
+        ArrayList times = MapUtil.get(param, "times", ArrayList.class);
+        if(ObjectUtil.isNotEmpty(times)){
+            Object a = times.get(0);
+            Object b = times.get(1);
+            pickUpTimeStart = a.toString();
+            pickUpTimeEnd = b.toString();
+        }
         String orderNo = MapUtil.getStr(param, "orderNo");//订单号
         List<Map<String, Object>> orderTree = supplierInfoService.getOrderTree(orderTypeCode, pickUpTimeStart, pickUpTimeEnd, orderNo);
         return CommonResult.success(orderTree);

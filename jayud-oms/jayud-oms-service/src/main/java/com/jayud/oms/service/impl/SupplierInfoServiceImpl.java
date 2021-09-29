@@ -2,6 +2,7 @@ package com.jayud.oms.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -692,23 +693,29 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             //查询全部
             //查询中港订单
             Map<String, Object> zgys = zgysExtracted(pickUpTimeStart, pickUpTimeEnd, orderNo);
-            orderTree.add(zgys);
-
+            if(ObjectUtil.isNotEmpty(zgys)){
+                orderTree.add(zgys);
+            }
             //查询内陆订单
             Map<String, Object> nl = nlExtracted(pickUpTimeStart, pickUpTimeEnd, orderNo);
-            orderTree.add(nl);
-
+            if(ObjectUtil.isNotEmpty(nl)){
+                orderTree.add(nl);
+            }
         }
         else if(StrUtil.isNotEmpty(orderTypeCode) && orderTypeCode.equals(SubOrderSignEnum.ZGYS.getSignTwo())){
             //查询中港订单
-            //查询中港订单
             Map<String, Object> zgys = zgysExtracted(pickUpTimeStart, pickUpTimeEnd, orderNo);
-            orderTree.add(zgys);
+            if(ObjectUtil.isNotEmpty(zgys)){
+                orderTree.add(zgys);
+            }
+
         }
         else if(StrUtil.isNotEmpty(orderTypeCode) && orderTypeCode.equals(SubOrderSignEnum.NL.getSignTwo())){
             //查询内陆订单
             Map<String, Object> nl = nlExtracted(pickUpTimeStart, pickUpTimeEnd, orderNo);
-            orderTree.add(nl);
+            if(ObjectUtil.isNotEmpty(nl)){
+                orderTree.add(nl);
+            }
         }
 
         return orderTree;
@@ -775,6 +782,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
                 extend.put("mainOrderNo", mainOrderNo);//主订单号
                 extend.put("takeTimeStr", takeTimeStr);//提货时间
                 extend.put("signTime", signTime);//签收时间
+                extend.put("subType", SubOrderSignEnum.ZGYS.getSignOne());//标志
                 orderMap.put("extend", extend);//扩展字段
                 orderList.add(orderMap);
             });
@@ -787,8 +795,13 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             time.put("children", orderList);
             pickUpTimeList.add(time);
         }
-        zgys.put("children", pickUpTimeList);//提货时间
-        return zgys;
+        if(CollUtil.isNotEmpty(pickUpTimeList)){
+            zgys.put("children", pickUpTimeList);
+            return zgys;
+        }else{
+            //没有订单，返回空
+            return null;
+        }
     }
 
     /**
@@ -851,6 +864,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
                 extend.put("mainOrderNo", mainOrderNo);//主订单号
                 extend.put("takeTimeStr", takeTimeStr);//提货时间
                 extend.put("signTime", signTime);//签收时间
+                extend.put("subType", SubOrderSignEnum.NL.getSignOne());//标志
                 orderMap.put("extend", extend);//扩展字段
                 orderList.add(orderMap);
             });
@@ -862,8 +876,13 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             time.put("children", orderList);
             pickUpTimeList.add(time);
         }
-        nl.put("children", pickUpTimeList);//提货时间
-        return nl;
+        if(CollUtil.isNotEmpty(pickUpTimeList)){
+            nl.put("children", pickUpTimeList);
+            return nl;
+        }else{
+            //没有订单，返回空
+            return null;
+        }
     }
 
 

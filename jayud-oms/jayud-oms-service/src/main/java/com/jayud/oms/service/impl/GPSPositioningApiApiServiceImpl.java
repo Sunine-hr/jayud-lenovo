@@ -100,7 +100,11 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
                 .execute();
         String feedback = response.body();
         JSONObject responseJson = new JSONObject(feedback);
+
         if (!responseJson.getBool("Success")) {
+            if (responseJson.getInt("ResultCode").equals(-7)) {
+                throw new JayudBizException("请求频繁,请两分钟后再次请求");
+            }
             throw new JayudBizException(400, responseJson.getStr("Message"));
         }
         JSONArray positions = responseJson.getJSONArray("Data");

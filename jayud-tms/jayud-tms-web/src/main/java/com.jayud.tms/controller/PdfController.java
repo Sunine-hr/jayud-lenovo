@@ -2,6 +2,7 @@ package com.jayud.tms.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONObject;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.ResultEnum;
@@ -16,10 +17,7 @@ import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
@@ -122,6 +120,25 @@ public class PdfController {
                 out.close();
             }
         }
+    }
+
+
+    @ApiOperation(value = "派车单pdf报表,确认派车 orderNo=订单号(主/子),entranceType=入口类型(1主订单,2子订单)")
+    @GetMapping(value = "/initPdfReport")
+    public SendCarPdfVO initPdfReport(@RequestParam("orderNo") String orderNo, @RequestParam("entranceType") Integer entranceType) {
+        if (StringUtil.isNullOrEmpty(orderNo) && entranceType == null) {
+//            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        if (entranceType == 1) {
+            List<OrderTransport> subOrders = this.orderTransportService.getOrderTmsByCondition(new OrderTransport().setMainOrderNo(orderNo));
+            if (CollectionUtil.isEmpty(subOrders)) {
+//                return CommonResult.error(400, "不存在该订单信息");
+            } else {
+                orderNo = subOrders.get(0).getOrderNo();
+            }
+        }
+        SendCarPdfVO sendCarPdfVO = orderTransportService.initPdfData(orderNo, CommonConstant.ZGYS);
+        return sendCarPdfVO;
     }
 
 

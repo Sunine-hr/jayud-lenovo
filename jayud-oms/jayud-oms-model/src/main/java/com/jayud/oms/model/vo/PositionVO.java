@@ -124,6 +124,6 @@ public class PositionVO {
     private String vehicleStatus;
 
     @ApiModelProperty(value = "行驶里程")
-    private BigDecimal mile;
+    private Double mile;
 
 }

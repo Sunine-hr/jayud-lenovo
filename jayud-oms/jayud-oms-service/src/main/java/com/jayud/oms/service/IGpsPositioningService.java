@@ -4,6 +4,7 @@ import com.jayud.oms.model.bo.QueryGPSRecord;
 import com.jayud.oms.model.po.GpsPositioning;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.vo.TrackPlaybackVO;
+import com.jayud.oms.model.vo.gps.GPSOrderInfoVO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -66,13 +67,14 @@ public interface IGpsPositioningService extends IService<GpsPositioning> {
      *
      * @return
      */
-    public List<GpsPositioning> getVehicleHistoryTrack(QueryGPSRecord form);
+    public List<GpsPositioning> getVehicleHistoryTrack(QueryGPSRecord form, GPSOrderInfoVO gpsOrderInfoVO);
 
 
     /**
      * 根据车牌号，获取车辆最后GPS定位坐标
+     *
      * @param plateNumber 车牌号
-     * @param status 状态(1:实时,2:历史轨迹)
+     * @param status      状态(1:实时,2:历史轨迹)
      * @return
      */
     List<GpsPositioning> getByPlateNumber(String plateNumber, Integer status);

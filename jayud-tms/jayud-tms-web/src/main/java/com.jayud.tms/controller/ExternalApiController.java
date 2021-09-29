@@ -385,6 +385,18 @@ public class ExternalApiController {
         return ApiResult.ok(details);
     }
 
+    /**
+     * 根据子订单号获取中港单详情
+     */
+    @RequestMapping(value = "/api/getTmsInfoBySubOrderNo")
+    public ApiResult<OrderTransportInfoVO> getTmsInfoBySubOrderNo(@RequestParam("orderNo") String orderNo) {
+        QueryWrapper<OrderTransport> condition = new QueryWrapper<>();
+        condition.lambda().select(OrderTransport::getId).eq(OrderTransport::getOrderNo, orderNo);
+        OrderTransport tmsOrder = this.orderTransportService.getOne(condition);
+        OrderTransportInfoVO details = this.orderTransportService.getDetailsById(tmsOrder.getId());
+        return ApiResult.ok(details);
+    }
+
 
     /**
      * 根据主订单查询是否虚拟仓

@@ -4,33 +4,31 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
-import com.jayud.common.enums.GPSTypeEnum;
+import com.jayud.common.enums.BusinessTypeEnum;
+import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.GPSUtil;
-import com.jayud.common.utils.StringUtils;
+import com.jayud.oms.feign.TmsClient;
 import com.jayud.oms.model.bo.QueryGPSRecord;
 import com.jayud.oms.model.po.GpsPositioning;
 import com.jayud.oms.mapper.GpsPositioningMapper;
+import com.jayud.oms.model.po.LogisticsTrack;
 import com.jayud.oms.model.po.SupplierInfo;
+import com.jayud.oms.model.po.VehicleInfo;
 import com.jayud.oms.model.vo.GpsPositioningVO;
-import com.jayud.oms.model.vo.SupplierInfoVO;
 import com.jayud.oms.model.vo.TrackPlaybackVO;
-import com.jayud.oms.model.vo.VehicleDetailsVO;
-import com.jayud.oms.service.GPSPositioningApiService;
-import com.jayud.oms.service.IGpsPositioningService;
+import com.jayud.oms.model.vo.gps.GPSOrderInfoVO;
+import com.jayud.oms.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.oms.service.ISupplierInfoService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -47,6 +45,12 @@ public class GpsPositioningServiceImpl extends ServiceImpl<GpsPositioningMapper,
     private ISupplierInfoService supplierInfoService;
     @Autowired
     private GPSPositioningApiService gpsPositioningApiService;
+    @Autowired
+    private IVehicleInfoService vehicleInfoService;
+    @Autowired
+    private TmsClient tmsClient;
+    @Autowired
+    private ILogisticsTrackService logisticsTrackService;
 
     @Override
     public List<GpsPositioning> getByPlateNumbers(Set<String> licensePlateSet, Integer status) {
@@ -87,7 +91,8 @@ public class GpsPositioningServiceImpl extends ServiceImpl<GpsPositioningMapper,
      */
     @Override
     public TrackPlaybackVO getVehicleHistoryTrackInfo(QueryGPSRecord form) {
-        List<GpsPositioning> gpsPositionings = this.getVehicleHistoryTrack(form);
+        GPSOrderInfoVO gpsOrderInfoVO = new GPSOrderInfoVO();
+        List<GpsPositioning> gpsPositionings = this.getVehicleHistoryTrack(form, gpsOrderInfoVO);
         TrackPlaybackVO trackPlaybackVO = new TrackPlaybackVO();
         List<List<Double>> pointPositions = new ArrayList<>();
         List<GpsPositioningVO> tmps = new ArrayList<>();
@@ -105,6 +110,7 @@ public class GpsPositioningServiceImpl extends ServiceImpl<GpsPositioningMapper,
         }
         trackPlaybackVO.setPointPositions(pointPositions);
         trackPlaybackVO.setGpsPositioningVOs(tmps);
+        trackPlaybackVO.assemblyBasicData(gpsOrderInfoVO);
         return trackPlaybackVO;
     }
 
@@ -115,10 +121,15 @@ public class GpsPositioningServiceImpl extends ServiceImpl<GpsPositioningMapper,
      * @return
      */
     @Override
-    public List<GpsPositioning> getVehicleHistoryTrack(QueryGPSRecord form) {
+    public List<GpsPositioning> getVehicleHistoryTrack(QueryGPSRecord form, GPSOrderInfoVO gpsOrderInfoVO) {
+        GPSOrderInfoVO orderGPSInfo = this.getOrderGPSInfo(form);
 
+        List<VehicleInfo> vehicleInfos = this.vehicleInfoService.getByCondition(new VehicleInfo().setPlateNumber(form.getLicensePlate()));
+        if (CollectionUtils.isEmpty(vehicleInfos)) {
+            throw new JayudBizException(400, "该车辆不存在");
+        }
         //查询供应商
-        SupplierInfo supplierInfo = this.supplierInfoService.getById(form.getSupplierId());
+        SupplierInfo supplierInfo = this.supplierInfoService.getById(vehicleInfos.get(0).getSupplierId());
         String gpsReqParam = supplierInfo.getGpsReqParam();
         Map<String, Object> paraMap = JSONUtil.toBean(gpsReqParam, Map.class);
         paraMap.put("gpsAddress", supplierInfo.getGpsAddress());
@@ -126,22 +137,26 @@ public class GpsPositioningServiceImpl extends ServiceImpl<GpsPositioningMapper,
         if (supplierInfo.getGpsType() == null) {
             throw new JayudBizException(400, "供应商没有配置gps厂商");
         }
-
         //车辆维度
         switch (form.getType()) {
             case 1: //车辆维度
-                Object obj = this.gpsPositioningApiService.getBeiDouHistory(form.getLicensePlate(),
+                Object obj = this.gpsPositioningApiService.getHistory(form.getLicensePlate(),
                         DateUtils.str2LocalDateTime(form.getStartTime(), null),
-                        DateUtils.str2LocalDateTime(form.getEndTime(), null), paraMap);
+                        DateUtils.str2LocalDateTime(form.getEndTime(), null), supplierInfo.getGpsType(), paraMap);
                 return this.gpsPositioningApiService.convertDatas(obj);
             case 2: //订单维度
-                Map<String, LocalDateTime> dateMap = this.getOrderGPSTimeInterval(form.getSubType(), form.getOrderNo());
-                LocalDateTime startTime = dateMap.get("startTime");
-                LocalDateTime endTime = dateMap.get("endTime");
-                obj = this.gpsPositioningApiService.getBeiDouHistory(form.getLicensePlate(),
-                        startTime, endTime, paraMap);
+                obj = this.gpsPositioningApiService.getHistory(form.getLicensePlate(),
+                        orderGPSInfo.getStartTime(), orderGPSInfo.getEndTime(), supplierInfo.getGpsType(), paraMap);
+
+                gpsOrderInfoVO.setGoodsInfo(orderGPSInfo.getGoodsInfo());
+                gpsOrderInfoVO.setCustomerName(orderGPSInfo.getCustomerName());
+                gpsOrderInfoVO.setDriverName(orderGPSInfo.getDriverName());
+                gpsOrderInfoVO.setPlateNumber(orderGPSInfo.getPlateNumber());
+//                gpsOrderInfoVO = ConvertUtil.convert(orderGPSInfo, GPSOrderInfoVO.class);
                 return this.gpsPositioningApiService.convertDatas(obj);
+
         }
+
         return new ArrayList<>();
 
 
@@ -155,7 +170,7 @@ public class GpsPositioningServiceImpl extends ServiceImpl<GpsPositioningMapper,
 //            licensePlateList.add(k);
 //            v.forEach(e -> {
 //                String orderNo = MapUtil.getStr(e, "orderNo");
-//                orderNos.add(orderNo);
+//                orderNos.add(orderNo) ;
 //            });
 //        });
 //        //获取供应商
@@ -213,22 +228,30 @@ public class GpsPositioningServiceImpl extends ServiceImpl<GpsPositioningMapper,
 //        });
     }
 
-
-    private Map<String, LocalDateTime> getOrderGPSTimeInterval(String subType, String orderNo) {
-        SubOrderSignEnum subOrderEnum = SubOrderSignEnum.getEnum(subType);
-        Map<String, LocalDateTime> dateTimeMap = new HashMap<>();
-        LocalDateTime startTime = null;
-        LocalDateTime endTime = null;
+    private GPSOrderInfoVO getOrderGPSInfo(QueryGPSRecord form) {
+        if (form.getType() != 2) {
+            return new GPSOrderInfoVO();
+        }
+        SubOrderSignEnum subOrderEnum = SubOrderSignEnum.getEnum(form.getSubType());
+        GPSOrderInfoVO gpsOrderInfoVO = new GPSOrderInfoVO();
         switch (subOrderEnum) {
             case ZGYS:
-
+                //获取车辆信息
+                Object data = this.tmsClient.getTmsInfoBySubOrderNo(form.getOrderNo()).getData();
+                gpsOrderInfoVO.assemblyTmsOrder(data);
+                LogisticsTrack lt = this.logisticsTrackService.getLogisticsTrackByOrderIdAndStatusAndType(gpsOrderInfoVO.getSubOrderId(),
+                        OrderStatusEnum.TMS_T_15.getCode(),
+                        BusinessTypeEnum.ZGYS.getCode());
+                gpsOrderInfoVO.setEndTime(lt.getOperatorTime());
                 break;
+            default:
+                throw new JayudBizException("暂时不支持该单据");
         }
 
-        dateTimeMap.put("startTime", startTime);
-        dateTimeMap.put("endTime", endTime);
-        return dateTimeMap;
+        return gpsOrderInfoVO;
+
     }
+
 
     @Override
     public List<GpsPositioning> getByPlateNumber(String plateNumber, Integer status) {

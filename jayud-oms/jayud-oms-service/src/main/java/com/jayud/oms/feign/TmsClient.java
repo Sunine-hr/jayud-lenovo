@@ -193,4 +193,10 @@ public interface TmsClient {
     @RequestMapping(value = "/api/getOrderTransportList")
     public ApiResult getOrderTransportList(@RequestParam("pickUpTimeStart") String pickUpTimeStart, @RequestParam("pickUpTimeEnd") String pickUpTimeEnd, @RequestParam(value = "orderNo", required = false) String orderNo);
 
+
+    /**
+     * 根据子订单号获取中港单详情
+     */
+    @RequestMapping(value = "/api/getTmsInfoBySubOrderNo")
+    public ApiResult getTmsInfoBySubOrderNo(@RequestParam("orderNo") String orderNo);
 }

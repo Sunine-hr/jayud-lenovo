@@ -552,8 +552,8 @@ public class GPSController {
             convert.setAddr(positioning.getAddr());//地理位置
             convert.setMile(positioning.getMile());//行驶里程
             convert.setVehicleStatus(positioning.getVehicleStatus());//行驶里程
-        }else{
-            return CommonResult.error(-1, "【"+plateNumber+"】，暂无GPS坐标信息");
+        } else {
+            return CommonResult.error(-1, "【" + plateNumber + "】，暂无GPS坐标信息");
         }
         return CommonResult.success(convert);
     }
@@ -594,6 +594,9 @@ public class GPSController {
         List<OrderTakeAdrVO> orderTakeAdrVOS1 = ConvertUtil.convertList(orderTransportForm.getOrderTakeAdrForms2(), OrderTakeAdrVO.class);
         for (OrderTakeAdrVO orderTakeAdrVO : orderTakeAdrVOS) {
             String s = httpURLConectionGET(orderTakeAdrVO.getAddress());
+            if (StringUtils.isEmpty(s)) {
+                continue;
+            }
             String[] split1 = s.split(",");
             orderTakeAdrVO.setLatitude(Double.parseDouble(split1[1]));
             orderTakeAdrVO.setLongitude(Double.parseDouble(split1[0]));
@@ -646,6 +649,7 @@ public class GPSController {
     @ApiOperation(value = "查询车辆历史轨迹详情")
     @PostMapping(value = "getVehicleHistoryTrackInfo")
     public CommonResult<TrackPlaybackVO> getVehicleHistoryTrackInfo(@RequestBody QueryGPSRecord form) {
+        form.checkParam();
         return CommonResult.success(this.gpsPositioningService.getVehicleHistoryTrackInfo(form));
     }
 

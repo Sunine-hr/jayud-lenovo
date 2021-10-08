@@ -243,6 +243,7 @@ public class GpsPositioningServiceImpl extends ServiceImpl<GpsPositioningMapper,
                         OrderStatusEnum.TMS_T_15.getCode(),
                         BusinessTypeEnum.ZGYS.getCode());
                 gpsOrderInfoVO.setEndTime(lt.getOperatorTime());
+                form.setLicensePlate(gpsOrderInfoVO.getPlateNumber());
                 break;
             default:
                 throw new JayudBizException("暂时不支持该单据");

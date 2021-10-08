@@ -58,6 +58,7 @@ public class CustomsDeclarationFilingServiceImpl extends ServiceImpl<CustomsDecl
             convert.setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
             this.updateById(convert);
             this.customsDeclFilingRecordService.removeByCondition(new CustomsDeclFilingRecord().setCustomsDeclFilingId(form.getId()));
+            nums.forEach(e -> e.setCustomsDeclFilingId(form.getId()));
             this.customsDeclFilingRecordService.saveBatch(nums);
         }
 

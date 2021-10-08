@@ -70,3 +70,13 @@ spring:
 #  ConnectTimeout: 3000000
 #
 
+
+mybatis-plus:
+  mapper-locations: classpath:com.jyd.user.mappe/*.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.jyd.user.mode
+  configuration:
+    #开启下划线转驼峰
+    map-underscore-to-camel-case: true
+    # 显示空值null
+    call-setters-on-nulls: true

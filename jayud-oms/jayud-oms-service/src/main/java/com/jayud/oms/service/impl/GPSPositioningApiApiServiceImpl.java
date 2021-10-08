@@ -132,6 +132,10 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
         JSONObject responseJson = new JSONObject(feedback);
         if (!responseJson.getBool("rspCode")) {
             log.warn("历史轨迹更新失败,车牌号={},错误信息={}", plateNumber, responseJson.getStr("rspDesc"));
+            throw new JayudBizException(400, String.format("历史轨迹更新失败,车牌号={},错误信息={}", plateNumber, responseJson.getStr("rspDesc")));
+        }
+        if (responseJson.get("list") == null) {
+            throw new JayudBizException(400, "该范围不存在历历史轨迹");
         }
         GPSBeiDouResponse.historicalPos historicalPos = responseJson.toBean(GPSBeiDouResponse.historicalPos.class);
         List<GPSBeiDouResponse.historicalPos> list = new ArrayList<>();

@@ -75,7 +75,7 @@ public class ExternalApiController {
             initChangeStatusVO.setOrderNo(tmp.getOrderNo());
             initChangeStatusVO.setOrderType(CommonConstant.NLYS);
             initChangeStatusVO.setOrderTypeDesc(CommonConstant.NLYS_DESC);
-            initChangeStatusVO.setStatus(tmp.getProcessStatus() + "");
+            initChangeStatusVO.setStatus(tmp.getProcessStatus() == 3 ? "CLOSE" : tmp.getProcessStatus().toString());
             initChangeStatusVO.setNeedInputCost(tmp.getNeedInputCost());
             return ApiResult.ok(initChangeStatusVO);
         }

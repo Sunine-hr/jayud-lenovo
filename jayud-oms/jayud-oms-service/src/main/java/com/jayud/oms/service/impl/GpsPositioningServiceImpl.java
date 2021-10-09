@@ -96,6 +96,9 @@ public class GpsPositioningServiceImpl extends ServiceImpl<GpsPositioningMapper,
         TrackPlaybackVO trackPlaybackVO = new TrackPlaybackVO();
         List<List<Double>> pointPositions = new ArrayList<>();
         List<GpsPositioningVO> tmps = new ArrayList<>();
+        if (CollectionUtils.isEmpty(gpsPositionings)) {
+            return trackPlaybackVO;
+        }
         for (GpsPositioning gpsPositioning : gpsPositionings) {
             GpsPositioningVO gpsPositioningVO = ConvertUtil.convert(gpsPositioning, GpsPositioningVO.class);
             double[] doubles = GPSUtil.gps84_To_Gcj02(Double.parseDouble(gpsPositioningVO.getLatitude()),

@@ -6,25 +6,26 @@ import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.model.enums.EmploymentFeeStatusEnum;
+import com.jayud.oms.model.po.CostType;
 import com.jayud.oms.model.po.DriverEmploymentFee;
 import com.jayud.oms.mapper.DriverEmploymentFeeMapper;
 import com.jayud.oms.model.po.OrderPaymentCost;
 import com.jayud.oms.model.vo.DriverEmploymentFeeVO;
-import com.jayud.oms.service.ICostInfoService;
-import com.jayud.oms.service.ICurrencyInfoService;
-import com.jayud.oms.service.IDriverEmploymentFeeService;
+import com.jayud.oms.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jayud.oms.service.IOrderPaymentCostService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -46,6 +47,10 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
     private ICurrencyInfoService currencyInfoService;
     @Autowired
     private ICostInfoService costInfoService;
+    @Autowired
+    private ICostTypeService costTypeService;
+    @Autowired
+    private ICostGenreService costGenreService;
 
     /**
      * 根据订单编码查询录用费用明细
@@ -103,12 +108,22 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
         LocalDateTime now = LocalDateTime.now();
         for (DriverEmploymentFee driverEmploymentFee : driverEmploymentFees) {
             OrderPaymentCost paymentCost = ConvertUtil.convert(driverEmploymentFee, OrderPaymentCost.class);
+            List<CostType> costTypes = this.costTypeService.getByCondition(new CostType().setCodeName("陆运"));
+            Long costGenreId = this.costGenreService.getIdByName("陆运");
+            Long costTypeId = null;
+            if (CollectionUtils.isEmpty(costTypes)) {
+                costTypeId = costTypes.get(0).getId();
+            }
             paymentCost.setCustomerCode(driverEmploymentFee.getSupplierCode())
                     .setCustomerName(driverEmploymentFee.getSupplierName())
                     .setSubType(SubOrderSignEnum.ZGYS.getSignOne())
                     .setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode()))
                     .setDriverCostId(driverEmploymentFee.getId())
-                    .setExchangeRate(driverEmploymentFee.getExchangeRate());
+                    .setExchangeRate(driverEmploymentFee.getExchangeRate())
+                    .setUnitPrice(driverEmploymentFee.getAmount())
+                    .setUnit("PCS").setNumber(new BigDecimal(1))
+                    .setCostTypeId(costTypeId)
+                    .setCostGenreId(costGenreId);
 
             DriverEmploymentFee employmentFee = new DriverEmploymentFee()
                     .setId(driverEmploymentFee.getId())

@@ -59,4 +59,6 @@ public interface ICostGenreService extends IService<CostGenre> {
     boolean checkUnique(CostGenre costGenre);
 
     boolean saveOrUpdate(AddCostGenreForm form);
+
+    Long getIdByName(String name);
 }

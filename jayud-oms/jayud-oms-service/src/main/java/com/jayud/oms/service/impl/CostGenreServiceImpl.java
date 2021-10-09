@@ -169,4 +169,15 @@ public class CostGenreServiceImpl extends ServiceImpl<CostGenreMapper, CostGenre
             return opt;
         }
     }
+
+    @Override
+    public Long getIdByName(String name) {
+        QueryWrapper<CostGenre> condition = new QueryWrapper<>();
+        condition.lambda().eq(CostGenre::getName, name);
+        List<CostGenre> costGenres = this.baseMapper.selectList(condition);
+        if (CollectionUtils.isEmpty(costGenres)) {
+            return null;
+        }
+        return costGenres.get(0).getId();
+    }
 }

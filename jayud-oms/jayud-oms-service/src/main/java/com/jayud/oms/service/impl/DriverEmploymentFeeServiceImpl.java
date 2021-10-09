@@ -109,9 +109,9 @@ public class DriverEmploymentFeeServiceImpl extends ServiceImpl<DriverEmployment
         for (DriverEmploymentFee driverEmploymentFee : driverEmploymentFees) {
             OrderPaymentCost paymentCost = ConvertUtil.convert(driverEmploymentFee, OrderPaymentCost.class);
             List<CostType> costTypes = this.costTypeService.getByCondition(new CostType().setCodeName("陆运"));
-            Long costGenreId = this.costGenreService.getIdByName("陆运");
+            Long costGenreId = this.costGenreService.getIdByName("跨境陆运");
             Long costTypeId = null;
-            if (CollectionUtils.isEmpty(costTypes)) {
+            if (!CollectionUtils.isEmpty(costTypes)) {
                 costTypeId = costTypes.get(0).getId();
             }
             paymentCost.setCustomerCode(driverEmploymentFee.getSupplierCode())

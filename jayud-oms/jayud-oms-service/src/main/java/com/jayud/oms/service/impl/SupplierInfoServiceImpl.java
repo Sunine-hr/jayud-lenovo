@@ -588,6 +588,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         if(StrUtil.isNotEmpty(supName)){
             supplierInfoQueryWrapper.lambda().like(SupplierInfo::getSupplierChName, supName);
         }
+        supplierInfoQueryWrapper.lambda().ne(SupplierInfo::getGpsAddress, "");
         List<SupplierInfo> supplierInfos = baseMapper.selectList(supplierInfoQueryWrapper);
         //查询，供应商对应车辆信息
         QueryWrapper<VehicleInfo> vehicleInfoQueryWrapper = new QueryWrapper<>();
@@ -632,6 +633,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     public List<Map<String, Object>> getList() {
         //查询，供应商信息
         QueryWrapper<SupplierInfo> supplierInfoQueryWrapper = new QueryWrapper<>();
+        supplierInfoQueryWrapper.lambda().ne(SupplierInfo::getGpsAddress, "");
         List<SupplierInfo> supplierInfos = baseMapper.selectList(supplierInfoQueryWrapper);
         //查询，供应商对应车辆信息
         QueryWrapper<VehicleInfo> vehicleInfoQueryWrapper = new QueryWrapper<>();

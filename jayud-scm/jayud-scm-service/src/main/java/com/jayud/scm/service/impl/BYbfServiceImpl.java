@@ -24,8 +24,8 @@ public class BYbfServiceImpl extends ServiceImpl<BYbfMapper, BYbf> implements IB
     public BYbf getBYbfByDtaTime(LocalDateTime now) {
         QueryWrapper<BYbf> queryWrapper = new QueryWrapper();
 
-        queryWrapper.lambda().ge(BYbf::getBeginDtm,now);
-        queryWrapper.lambda().le(BYbf::getEndDtm,now);
+        queryWrapper.lambda().le(BYbf::getBeginDtm,now);
+        queryWrapper.lambda().ge(BYbf::getEndDtm,now);
         return this.list(queryWrapper).get(0);
     }
 }

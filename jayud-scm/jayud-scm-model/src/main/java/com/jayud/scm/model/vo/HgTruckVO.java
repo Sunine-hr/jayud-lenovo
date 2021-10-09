@@ -3,6 +3,7 @@ package com.jayud.scm.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -47,6 +48,7 @@ public class HgTruckVO {
     private String truckCompany;
 
     @ApiModelProperty(value = "车辆类型（0正常，1：加车，2包车）")
+    @JsonProperty(value = "sType")
     private String sType;
 
     @ApiModelProperty(value = "预订车次类型")

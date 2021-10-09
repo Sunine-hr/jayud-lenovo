@@ -105,4 +105,7 @@ public class QueryCommonForm extends BasePageForm{
     @ApiModelProperty(value = "费用名称")
     private String itemName;
 
+    @ApiModelProperty(value = "用户名")
+    private String userName;
+
 }

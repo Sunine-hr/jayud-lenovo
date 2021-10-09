@@ -1,5 +1,7 @@
 package com.jayud.scm.model.vo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -24,6 +26,7 @@ import java.util.List;
 public class HubReceivingVO {
 
     @ApiModelProperty(value = "自动ID")
+    @TableId(value = "id", type = IdType.AUTO)
       private Integer id;
 
     @ApiModelProperty(value = "入库单号")

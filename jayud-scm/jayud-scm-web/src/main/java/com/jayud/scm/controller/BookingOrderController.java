@@ -3,6 +3,7 @@ package com.jayud.scm.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
@@ -102,6 +103,16 @@ public class BookingOrderController {
         CustomerMaintenanceSetup customerMaintenanceSetup1 = customerMaintenanceSetupService.getById(form.getFollowerId());
         form.setFsalesName(customerMaintenanceSetup.getWhUserName());
         form.setFollowerName(customerMaintenanceSetup1.getWhUserName());
+
+        QueryWrapper<BookingOrder> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(BookingOrder::getContractNo,form.getContractNo());
+        queryWrapper.lambda().eq(BookingOrder::getVoided,0);
+        BookingOrder bookingOrder = bookingOrderService.getOne(queryWrapper);
+
+        if(bookingOrder != null){
+            return CommonResult.error(444,"该客户合同号已存在");
+        }
+
         bookingOrderService.saveBookingOrder(form);
         return CommonResult.success("保存成功!");
 
@@ -171,8 +182,6 @@ public class BookingOrderController {
                 bookingOrderService.auditBookingOrder(form);
             }
         }
-
-
 
         return CommonResult.success("操作成功!");
     }

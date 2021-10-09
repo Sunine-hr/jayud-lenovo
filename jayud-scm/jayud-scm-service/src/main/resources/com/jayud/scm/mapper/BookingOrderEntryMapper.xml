@@ -103,6 +103,7 @@
         where 1=1
         and t.voided = 0
         and t.`booking_id` = #{bookingId}
+        order by t.id desc
     </select>
 
     <select id="getBookingOrderEntryById" parameterType="java.lang.Integer" resultType="com.jayud.scm.model.vo.BookingOrderEntryVO">

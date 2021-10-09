@@ -102,7 +102,13 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
             //新增
             BookingOrder bookingOrder = ConvertUtil.convert(form, BookingOrder.class);
             //设置创建人信息
-            bookingOrder.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(),LocalDateTime.now()));
+            if(bookingOrder.getModelType().equals(1)){
+                bookingOrder.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D002.getCode(),LocalDateTime.now()));
+            }
+            if(bookingOrder.getModelType().equals(2)){
+                bookingOrder.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(),LocalDateTime.now()));
+            }
+
             bookingOrder.setCrtBy(systemUser.getId().intValue());
             bookingOrder.setCrtByName(systemUser.getUserName());
             bookingOrder.setCrtByDtm(LocalDateTime.now());
@@ -329,6 +335,8 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         bookingOrder.setCheckStateFlag("N0");
         bookingOrder.setStateFlag(0);
         bookingOrder.setFStep(0);
+        bookingOrder.setBillId(null);
+        bookingOrder.setContractNo(null);
         this.saveOrUpdate(bookingOrder);
 
         BookingOrderVO bookingOrderVO1 = ConvertUtil.convert(bookingOrder, BookingOrderVO.class);

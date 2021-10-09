@@ -1,5 +1,7 @@
 package com.jayud.scm.model.bo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -22,6 +24,7 @@ import java.time.LocalDateTime;
 public class AddCustomerAgreementForm {
 
     @ApiModelProperty(value = "自动id")
+    @TableId(value = "id", type = IdType.AUTO)
       private Integer id;
 
     @ApiModelProperty(value = "客户签约主体")

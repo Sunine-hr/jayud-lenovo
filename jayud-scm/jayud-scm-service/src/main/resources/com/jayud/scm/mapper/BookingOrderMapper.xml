@@ -157,6 +157,9 @@
         left join export_tax_invoice e on t.id = e.order_id
         where 1=1
         and t.voided = 0
+<!--        <if test="form.key !=null and form.key!=''">-->
+<!--            and ${form.key} like concat('%',#{form.condition},'%') ESCAPE '/'-->
+<!--        </if>-->
         <if test="form.bookingNo !=null and form.bookingNo!=''">
             and t.`booking_no` like concat('%',#{form.bookingNo},'%')
         </if>

@@ -85,6 +85,7 @@ public class BookingOrderForm {
     private String hkCoFax;
 
     @ApiModelProperty(value = "客户合同号")
+    @NotNull(message = "客户合同号，不能为空")
     private String contractNo;
 
     @ApiModelProperty(value = "客户邮箱")
@@ -130,7 +131,7 @@ public class BookingOrderForm {
     private String deputyStyle;
 
     @ApiModelProperty(value = "境内货源地 -> 对应字段`出口境内货源地`") //TODO 境内货源地 -> 对应字段`出口境内货源地`
-    @NotNull(message = "出口境内货源地，不能为空")
+//    @NotNull(message = "出口境内货源地，不能为空")
     private String originArea;
 
     @ApiModelProperty(value = "是否报关(需要报关，等通知报关)")//TODO 是否报关(需要报关，等通知报关) 下拉取值

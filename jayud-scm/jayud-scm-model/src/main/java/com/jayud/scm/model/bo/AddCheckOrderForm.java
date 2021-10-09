@@ -129,7 +129,7 @@ public class AddCheckOrderForm extends Model<AddCheckOrderForm> {
     private Integer supplierId;
 
     @ApiModelProperty(value = "供应商")
-    private String supplerName;
+    private String supplierName;
 
     @ApiModelProperty(value = "验货出发时间")
     private String startDate;

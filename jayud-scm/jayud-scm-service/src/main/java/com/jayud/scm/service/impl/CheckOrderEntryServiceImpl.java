@@ -46,6 +46,7 @@ public class CheckOrderEntryServiceImpl extends ServiceImpl<CheckOrderEntryMappe
         QueryWrapper<CheckOrderEntry> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(CheckOrderEntry::getCheckId,id);
         queryWrapper.lambda().eq(CheckOrderEntry::getVoided,0);
+        queryWrapper.lambda().orderByDesc(CheckOrderEntry::getBookingEntryId);
         return this.list(queryWrapper);
     }
 

@@ -78,7 +78,7 @@ public class CheckOrderController {
                 checkOrder.setCheckState(CheckStateEnum.CHECK_STATE_1.getCode().toString());
                 break;
             case 4:
-                if(!checkState.equals("4")){
+                if(!checkState.equals("5")){
                     return CommonResult.error(444,"只有当前状态为验货完成的单，才能进行验货撤销");
                 }
                 checkOrder.setCheckState(CheckStateEnum.CHECK_STATE_3.getCode().toString());
@@ -91,7 +91,7 @@ public class CheckOrderController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "入库") // TODO: 2021/8/23  入库操作未完成
+    @ApiOperation(value = "入库") //
     @PostMapping(value = "/warehousing")
     @Transactional
     public CommonResult warehousing(@RequestBody QueryCommonForm form) {
@@ -139,6 +139,11 @@ public class CheckOrderController {
     @ApiOperation(value = "自动生成提验货单")
     @PostMapping(value = "/automaticGenerationCheckOrder")
     public CommonResult automaticGenerationCheckOrder(@RequestBody QueryCommonForm form) {
+        //判断委托单是否审核
+        BookingOrder bookingOrder = bookingOrderService.getById(form.getId());
+        if(!bookingOrder.getCheckStateFlag().equals("Y")){
+            return CommonResult.error(444,"委托单未审核，不能进行操作");
+        }
         return checkOrderService.automaticGenerationCheckOrder(form);
 
     }

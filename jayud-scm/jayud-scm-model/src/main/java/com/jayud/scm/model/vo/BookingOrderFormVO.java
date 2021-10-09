@@ -1,5 +1,7 @@
 package com.jayud.scm.model.vo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
@@ -16,6 +18,7 @@ import java.util.List;
 public class BookingOrderFormVO {
 
     @ApiModelProperty(value = "自动id")
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     @ApiModelProperty(value = "委托单号")

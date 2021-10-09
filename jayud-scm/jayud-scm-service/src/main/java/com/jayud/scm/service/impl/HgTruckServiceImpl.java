@@ -163,6 +163,32 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
     }
 
     @Override
+    public boolean updateTrainNumberStatus1(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(form.getUserName());
+
+        HgTruck hgTruck = new HgTruck();
+        hgTruck.setId(form.getId());
+        hgTruck.setStateFlag(form.getStatus());
+        hgTruck.setMdyBy(systemUser.getId().intValue());
+        hgTruck.setMdyByDtm(LocalDateTime.now());
+        hgTruck.setMdyByName(systemUser.getUserName());
+        boolean update = this.updateById(hgTruck);
+        if(update){
+            HgTruckFollow hgTruckFollow = new HgTruckFollow();
+            hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
+            hgTruckFollow.setFollowContext(systemUser.getUserName()+"修改车次状态为"+form.getStatus());
+            hgTruckFollow.setCrtBy(systemUser.getId().intValue());
+            hgTruckFollow.setCrtByDtm(LocalDateTime.now());
+            hgTruckFollow.setCrtByName(systemUser.getUserName());
+            boolean save = hgTruckFollowService.save(hgTruckFollow);
+            if(save){
+                log.warn("修改车次操作成功,操作日志添加成功");
+            }
+        }
+        return update;
+    }
+
+    @Override
     public boolean sealInformationEntry(QueryCommonForm form) {
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
@@ -269,8 +295,8 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
     }
 
     @Override
-    public boolean getManifest(String exHkNo, String truckNo) {
-        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+    public boolean getManifest(String exHkNo, String truckNo,String userName) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(userName);
 
         QueryWrapper<HgTruck> queryWrapper = new QueryWrapper();
         queryWrapper.lambda().eq(HgTruck::getTruckNo,truckNo);
@@ -292,5 +318,39 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
             }
         }
         return result;
+    }
+
+    @Override
+    public boolean acceptTransportationInformation(AddHgTruckForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(form.getUserName());
+
+        HgTruckFollow hgTruckFollow = new HgTruckFollow();
+        HgTruck hgTruck = ConvertUtil.convert(form, HgTruck.class);
+        if(hgTruck.getId() != null){
+            hgTruck.setMdyBy(systemUser.getId().intValue());
+            hgTruck.setMdyByDtm(LocalDateTime.now());
+            hgTruck.setMdyByName(systemUser.getUserName());
+            hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
+            hgTruckFollow.setFollowContext(OperationEnum.UPDATE.getCode()+hgTruck.getId());
+        }else{
+            hgTruck.setTruckNo(commodityService.getOrderNo(NoCodeEnum.HG_TRUCK.getCode(),LocalDateTime.now()));
+            hgTruck.setCrtBy(systemUser.getId().intValue());
+            hgTruck.setCrtByDtm(LocalDateTime.now());
+            hgTruck.setCrtByName(systemUser.getUserName());
+            hgTruckFollow.setSType(OperationEnum.INSERT.getCode());
+            hgTruckFollow.setFollowContext(OperationEnum.INSERT.getCode()+hgTruck.getTruckNo());
+        }
+        boolean update = this.saveOrUpdate(hgTruck);
+        if(update){
+            log.warn("添加或修改港车运输信息成功"+hgTruck);
+            hgTruckFollow.setMdyBy(systemUser.getId().intValue());
+            hgTruckFollow.setMdyByDtm(LocalDateTime.now());
+            hgTruckFollow.setMdyByName(systemUser.getUserName());
+            boolean save = hgTruckFollowService.save(hgTruckFollow);
+            if(save){
+                log.warn("添加或修改港车运输信息,操作日志添加成功");
+            }
+        }
+        return update;
     }
 }

@@ -174,7 +174,7 @@ public class CommonController {
                 return CommonResult.error(444,"该数据已审核，无法进行删除");
             }
             if(deleteForm.getKey().equals(1)){
-                if(map.get("stateFlag") != null && !map.get("stateFlag").equals(2)){
+                if(map.get("stateFlag") != null && map.get("stateFlag").equals(2)){
                     return CommonResult.error(444,"该数据已审核，无法进行删除");
                 }
             }

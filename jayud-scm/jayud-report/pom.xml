@@ -178,6 +178,8 @@
             <groupId>org.jeecgframework.jimureport</groupId>
             <artifactId>jimureport-spring-boot-starter</artifactId>
             <version>1.3.78</version>
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${project.basedir}/lib/jimureport-spring-boot-starter-1.3.78.jar</systemPath>-->
         </dependency>
 
         <dependency>

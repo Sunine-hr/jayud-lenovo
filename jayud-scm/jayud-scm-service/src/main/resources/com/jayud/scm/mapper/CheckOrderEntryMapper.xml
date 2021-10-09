@@ -59,6 +59,7 @@
         pallets, cartons, lcartons, remark, check_remark checkRemark, crt_by_name crtByName,
         crt_by_dtm crtByDtm, mdy_by_name mdyByName, mdy_by_dtm mdyByDtm
         from check_order_entry coe where coe.voided = 0 and coe.check_id = #{form.id}
+        order by id desc
     </select>
 
 </mapper>

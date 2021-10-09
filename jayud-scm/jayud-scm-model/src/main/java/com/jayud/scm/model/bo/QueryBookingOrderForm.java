@@ -1,5 +1,6 @@
 package com.jayud.scm.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -7,6 +8,7 @@ import lombok.Data;
 public class QueryBookingOrderForm extends BasePageForm {
 
     //委托单日期
+
 
     //确认报关日期
 
@@ -37,5 +39,29 @@ public class QueryBookingOrderForm extends BasePageForm {
 
     @ApiModelProperty(value = "用于判断是否为进项票新增")
     private Integer isExportTaxInvoice;
+
+//    @ApiModelProperty("搜索条件")
+//    private String condition;
+//
+//    @ApiModelProperty("搜索key")
+//    private String key;
+//
+//    @ApiModelProperty("入库日期")
+//    private String[] createTime;
+//
+//    @ApiModelProperty("开始时间")
+//    @JsonIgnore
+//    private String startTime;
+//
+//    @ApiModelProperty("结束时间")
+//    @JsonIgnore
+//    private String endTime;
+//
+//    public void setTime(){
+//        if(createTime != null && createTime.length>0){
+//            startTime = createTime[0];
+//            endTime = createTime[1];
+//        }
+//    }
 
 }

@@ -34,5 +34,9 @@ public interface IHgTruckService extends IService<HgTruck> {
 
     boolean delete(DeleteForm deleteForm);
 
-    boolean getManifest(String exHkNo, String truckNo);
+    boolean getManifest(String exHkNo, String truckNo,String userName);
+
+    boolean acceptTransportationInformation(AddHgTruckForm form);
+
+    boolean updateTrainNumberStatus1(QueryCommonForm form);
 }

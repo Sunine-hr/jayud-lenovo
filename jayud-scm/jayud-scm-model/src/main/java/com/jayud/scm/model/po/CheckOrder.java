@@ -131,7 +131,7 @@ public class CheckOrder extends Model<CheckOrder> {
     private Integer supplierId;
 
     @ApiModelProperty(value = "供应商")
-    private String supplerName;
+    private String supplierName;
 
     @ApiModelProperty(value = "验货出发时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")

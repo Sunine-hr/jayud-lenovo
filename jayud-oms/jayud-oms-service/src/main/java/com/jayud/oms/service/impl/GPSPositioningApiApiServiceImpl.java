@@ -94,6 +94,7 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
         requestParam.put("LicenceNumber", plateNumber);
         requestParam.put("Begin", DateUtils.LocalDateTime2Str(startTime, DateUtils.DATE_PATTERN));
         requestParam.put("End", DateUtils.LocalDateTime2Str(endTime, DateUtils.DATE_PATTERN));
+
         //组装请求的参数
         HttpResponse response = HttpRequest.post(gpsAddress + "/GetHistory")
                 .body(requestParam.toString())
@@ -126,7 +127,8 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
         String endTimeStr = DateUtils.LocalDateTime2Str(endTime, DateUtils.TIMESTAMP_PATTERN);
         //组装请求的参数
         HttpResponse response = HttpRequest.get(gpsAddress + "/gps-web/api/get_gps_h_plate.jsp?" +
-                "carPlate=" + plateNumber + "&startTime=" + startTimeStr + "&endTime=" + endTimeStr + " &userId=" + userId + "&sessionId=" + sessionId + "&loginType=" + loginType + "&loginWay=" + loginWay)
+                "carPlate=" + plateNumber + "&startTime=" + startTimeStr + "&endTime=" + endTimeStr + " &userId=" + userId + "&sessionId=" + sessionId + "&loginType=" + loginType +
+                "&loginWay=" + loginWay+"filter0="+false)
                 .execute();
         String feedback = response.body();
         JSONObject responseJson = new JSONObject(feedback);
@@ -200,7 +202,7 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
                     gpsPositioning.setTotalMileage(historyList.getMile());
                     gpsPositioning.setAddr(historyList.getAddr());
                     gpsPositioning.setMile(tmp.getCountData().getMile());
-                    gpsPositioning.setStopLong(tmp.getCountData().getStop_long());
+//                    gpsPositioning.setStopLong(tmp.getCountData().getStop_long());
                     gpsPositioning.setStatus(2);
                     gpsPositioning.setVehicleStatus("无");
                     positionings.add(gpsPositioning);

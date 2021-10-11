@@ -116,7 +116,7 @@ public class CustomsFinanceCoRelationServiceImpl extends ServiceImpl<CustomsFina
         //定义分页参数
         Page<CustomsFinanceCoRelation> page = new Page(form.getPageNum(), form.getPageSize());
         //定义排序规则
-        //page.addOrder(OrderItem.desc("temp.createTimeStr"));
+        page.addOrder(OrderItem.desc("id"));
         IPage<CustomsFinanceCoRelation> pageInfo = baseMapper.findCompanyRelationPage(page, form);
         return pageInfo;
     }

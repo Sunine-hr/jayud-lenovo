@@ -24,10 +24,10 @@
             and yunbaoguan_name like concat('%',#{form.yunbaoguanName},'%')
         </if>
         <if test="form.kingdeeName != null and form.kingdeeName != ''">
-            and kingdee_name like concat('%',#{kingdeeName},'%')
+            and kingdee_name like concat('%',#{form.kingdeeName},'%')
         </if>
         <if test="form.kingdeeCode != null and form.kingdeeCode != ''">
-            and kingdee_code like concat('%',#{form.yunbaoguanName},'%')
+            and kingdee_code like concat('%',#{form.kingdeeCode},'%')
         </if>
         <if test="form.deprecated != null">
             and deprecated = #{form.deprecated}

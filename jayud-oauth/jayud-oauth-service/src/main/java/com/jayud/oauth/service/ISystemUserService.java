@@ -150,4 +150,11 @@ public interface ISystemUserService extends IService<SystemUser> {
     List<SystemUser> getByCondition(SystemUser setUserType);
 
     List<SystemUserVO> getSystemUserList();
+
+    /**
+     * 添加登录记录
+     *
+     * @param user 用户
+     */
+    void insertLoginLog(SystemUser user);
 }

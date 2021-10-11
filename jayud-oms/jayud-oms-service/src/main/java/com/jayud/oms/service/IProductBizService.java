@@ -69,4 +69,11 @@ public interface IProductBizService extends IService<ProductBiz> {
      * 获取启用业务类型
      */
     public List<ProductBiz> getEnableProductBiz();
+
+    /**
+     * 根据业务名称获取业务编码
+     * @param name
+     * @return
+     */
+    String getProductBizIdCodeByName(String name);
 }

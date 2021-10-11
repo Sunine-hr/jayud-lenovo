@@ -53,4 +53,16 @@ public interface OauthClient {
      */
     @RequestMapping(value = "/api/findDepartment")
     ApiResult<List<InitComboxVO>> findDepartment();
+
+    /**
+     * 根据登录名查询用户信息
+     */
+    @RequestMapping(value = "/api/getSystemUserByName")
+    ApiResult getSystemUserByName(@RequestParam("name") String name);
+
+    /**
+     * 根据法人主体id查询法人主体名称
+     */
+    @RequestMapping(value = "/api/getLegalNameByLegalId")
+    public ApiResult<String> getLegalNameByLegalId(@RequestParam("legalId") Long legalId);
 }

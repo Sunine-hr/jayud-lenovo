@@ -309,4 +309,5 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return
      */
     Integer pendingExternalCustomsDeclarationNum(List<Long> legalIds, String userName);
+
 }

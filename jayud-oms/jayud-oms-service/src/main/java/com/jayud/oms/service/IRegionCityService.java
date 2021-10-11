@@ -27,4 +27,19 @@ public interface IRegionCityService extends IService<RegionCity> {
      * 获取地址名称
      */
     List<RegionCity> getAddrName(Long... id);
+
+    /**
+     * 通过省份名称获取省份ID
+     * @param provinceName
+     * @return
+     */
+    RegionCity getProvinceIdByName(String provinceName);
+
+    /**
+     * 通过城市或区域名称获取ID
+     * @param parentId
+     * @param cityName
+     * @return
+     */
+    RegionCity getCityOrAreaIdByName(Long parentId, String cityName);
 }

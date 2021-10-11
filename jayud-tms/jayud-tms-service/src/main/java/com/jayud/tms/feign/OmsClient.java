@@ -9,6 +9,7 @@ import com.jayud.common.entity.LogisticsTrackVO;
 import com.jayud.common.entity.MapEntity;
 import com.jayud.tms.model.bo.AuditInfoForm;
 import com.jayud.tms.model.bo.HandleSubProcessForm;
+import com.jayud.tms.model.bo.InputOrderForm;
 import com.jayud.tms.model.bo.OprStatusForm;
 import com.jayud.tms.model.vo.InitComboxVO;
 import com.jayud.tms.model.vo.OrderStatusVO;
@@ -358,4 +359,52 @@ public interface OmsClient {
     public ApiResult<List<LogisticsTrackVO>> getLogisticsTrackByOrderIds(@RequestParam("subOrderIds") List<Long> subOrderIds,
                                                                          @RequestParam("status") List<String> status,
                                                                          @RequestParam("type") Integer type);
+    /**
+     * 保存或更新TMS创建的主订单
+     * @param inputOrderForm
+     */
+    @RequestMapping(value = "/api/saveOrUpdateOutMainOrderForm")
+    ApiResult<Boolean> saveOrUpdateOutMainOrderForm(@RequestBody InputOrderForm inputOrderForm);
+
+    /**
+     * 根据客户id查询客户信息
+     */
+    @RequestMapping(value = "/api/getCustomerInfoById")
+    ApiResult getCustomerInfoById(@RequestParam("id") Long id);
+
+    /**
+     * 根据编码获取港口名称
+     */
+    @RequestMapping(value = "/api/getPortCodeByName")
+    public ApiResult getPortCodeByName(@RequestBody String name);
+
+    /**
+     * 根据业务名称获取业务编码
+     */
+    @RequestMapping(value = "/api/getProductBizIdCodeByName")
+    public ApiResult getProductBizIdCodeByName(@RequestBody String name);
+
+    /**
+     * 根据客户id查询客户信息VO
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/api/getCustomerInfoVOById")
+    public ApiResult getCustomerInfoVOById(@RequestParam("id") Long id);
+
+    /**
+     * 根据仓库名称获取仓库ID
+     * @param warehouseName
+     * @return
+     */
+    @RequestMapping(value = "/api/getWarehouseIdByName")
+    ApiResult<Long> getWarehouseIdByName(@RequestParam(value = "warehouseName", required = true) String warehouseName);
+
+    /**
+     * 根据省市区名称列表获取Map
+     */
+    @RequestMapping(value = "/api/getRegionCityIdMapByName")
+    public ApiResult<Map<String, Long>> getRegionCityIdMapByName(@RequestParam(value = "provinceName", required = true) String provinceName,
+                                              @RequestParam(value = "cityName", required = true) String cityName,
+                                              @RequestParam(value = "areaName", required = true) String areaName);
 }

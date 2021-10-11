@@ -40,10 +40,6 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 
@@ -122,6 +118,8 @@ public class ExternalApiController {
     private IGpsPositioningService gpsPositioningService;
     @Autowired
     private ICostGenreTaxRateService costGenreTaxRateService;
+    @Autowired
+    private IRegionCityService regionCityService;
     @Autowired
     private FinanceClient financeClient;
 
@@ -2240,17 +2238,74 @@ public class ExternalApiController {
         return ApiResult.ok(costIds);
     }
 
+    /**
+     * 保存或更新
+     * @param form
+     */
+    @RequestMapping(value = "/api/saveOrUpdateOutMainOrderForm")
+    public ApiResult<Boolean> saveOrUpdateOutMainOrderForm(@RequestBody InputOrderForm form) {
+        return ApiResult.ok(orderInfoService.createOrder(form));
+    }
+
+    /**
+     * 根据业务名称获取业务编码
+     */
+    @RequestMapping(value = "/api/getProductBizIdCodeByName")
+    public ApiResult<String> getProductBizIdCodeByName(@RequestBody String name) {
+        return ApiResult.ok(this.productBizService.getProductBizIdCodeByName(name));
+    }
+
+    /**
+     * 根据客户id查询客户信息VO
+     */
+    @RequestMapping(value = "/api/getCustomerInfoVOById")
+    public ApiResult getCustomerInfoVOById(@RequestParam("id") Long id) {
+        CustomerInfoVO customerInfoVO = this.customerInfoService.getCustomerInfoById(id);
+        return ApiResult.ok(customerInfoVO);
+    }
+
+    /**
+     * 根据仓库名称获取仓库ID
+     * @param warehouseName
+     * @return
+     */
+    @RequestMapping(value = "/api/getWarehouseIdByName")
+    public ApiResult<Long> getWarehouseIdByName(@RequestParam(value = "warehouseName", required = true) String warehouseName) {
+        return ApiResult.ok(this.warehouseInfoService.getWarehouseIdByName(warehouseName));
+    }
+
+    /**
+     * 根据省市区名称列表获取Map
+     */
+    @RequestMapping(value = "/api/getRegionCityIdMapByName")
+    public ApiResult<Map<String, Long>> getRegionCityIdMapByName(@RequestParam(value = "provinceName", required = true) String provinceName,
+                                               @RequestParam(value = "cityName", required = true) String cityName,
+                                               @RequestParam(value = "areaName", required = true) String areaName) {
+
+        if (StringUtils.isEmpty(provinceName) || StringUtils.isEmpty(cityName) || StringUtils.isEmpty(areaName)) {
+            return ApiResult.error("省市区信息不完整");
+        }
+
+        RegionCity province = regionCityService.getProvinceIdByName(provinceName);
+        if (province == null) {
+            return ApiResult.error("找不到对应的省份信息");
+        }
+
+        RegionCity city = regionCityService.getCityOrAreaIdByName(province.getId(), cityName);
+        if (city == null) {
+            return ApiResult.error("找不到对应的城市信息");
+        }
+
+        RegionCity area = regionCityService.getCityOrAreaIdByName(city.getId(), areaName);
+        if (area == null) {
+            return ApiResult.error("找不到对应的区域信息");
+        }
+
+        Map<String, Long> regionCityMap = new HashMap<>();
+        regionCityMap.put(provinceName, province.getId());
+        regionCityMap.put(cityName, city.getId());
+        regionCityMap.put(areaName, area.getId());
+        return ApiResult.ok(regionCityMap);
+    }
+
 }
-
-
-
-
-
-
-
-
-
-    
-
-
-

@@ -31,7 +31,7 @@ public class QueryTrailerOrderForm extends BasePageForm {
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 
-    @ApiModelProperty(value = "进出口类型",required = true)
+    @ApiModelProperty(value = "进出口类型", required = true)
     private Integer impAndExpType;
 
     @ApiModelProperty(value = "车型大小")
@@ -87,7 +87,7 @@ public class QueryTrailerOrderForm extends BasePageForm {
     private String loginUserName;
 
     @ApiModelProperty(value = "提货时间")
-    private String[] takeTimeStr;
+    private String[] takeTimeStr = null;
 
     @ApiModelProperty(value = "子订单号")
     private Set<String> subOrderNos = new HashSet<>();
@@ -100,15 +100,17 @@ public class QueryTrailerOrderForm extends BasePageForm {
         }
     }
 
-    public void setStartTime(){
+    public void setStartTime() {
         String[] time = this.createTime;
-        if(time != null && time.length>0){
+        if (time != null && time.length > 0) {
             this.startTime = time[0];
             this.endTime = time[1];
         }
     }
 
     public void setTakeTimeStr(String[] takeTimeStr) {
-        this.takeTimeStr = new String[]{takeTimeStr[0]+" 00:00:00",takeTimeStr[1]+" 23:59:59"};
+        if (takeTimeStr != null && takeTimeStr.length > 0) {
+            this.takeTimeStr = new String[]{takeTimeStr[0] + " 00:00:00", takeTimeStr[1] + " 23:59:59"};
+        }
     }
 }

@@ -16,4 +16,22 @@
         id, yunbaoguan_name, kingdee_name, kingdee_code, deprecated
     </sql>
 
+
+    <select id="findCompanyRelationPage" resultType="com.jayud.finance.po.CustomsFinanceCoRelation">
+        select * from customs_finance_co_relation
+        where 1=1
+        <if test="form.yunbaoguanName != null and form.yunbaoguanName != ''">
+            and yunbaoguan_name like concat('%',#{form.yunbaoguanName},'%')
+        </if>
+        <if test="form.kingdeeName != null and form.kingdeeName != ''">
+            and kingdee_name like concat('%',#{kingdeeName},'%')
+        </if>
+        <if test="form.kingdeeCode != null and form.kingdeeCode != ''">
+            and kingdee_code like concat('%',#{form.yunbaoguanName},'%')
+        </if>
+        <if test="form.deprecated != null">
+            and deprecated = #{form.deprecated}
+        </if>
+    </select>
+
 </mapper>

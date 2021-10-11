@@ -7,11 +7,16 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.RedisUtils;
+import com.jayud.finance.bo.QueryCustomsFinanceCoRelationForm;
 import com.jayud.finance.po.CustomsFinanceCoRelation;
 import com.jayud.finance.mapper.CustomsFinanceCoRelationMapper;
 import com.jayud.finance.service.ICustomsFinanceCoRelationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.finance.vo.FinanceAccountVO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,7 +69,10 @@ public class CustomsFinanceCoRelationServiceImpl extends ServiceImpl<CustomsFina
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveCustomsFinanceCoRelation(CustomsFinanceCoRelation customsFinanceCoRelation) {
+        //先保存
         this.saveOrUpdate(customsFinanceCoRelation);
+        //再清理redis
+        clearCompanyRelationMap();
     }
 
     @Override
@@ -101,6 +109,16 @@ public class CustomsFinanceCoRelationServiceImpl extends ServiceImpl<CustomsFina
             log.error("客户关系表基础数据加载失败！");
         }
         return coRelationMap;
+    }
+
+    @Override
+    public IPage<CustomsFinanceCoRelation> findCompanyRelationPage(QueryCustomsFinanceCoRelationForm form) {
+        //定义分页参数
+        Page<CustomsFinanceCoRelation> page = new Page(form.getPageNum(), form.getPageSize());
+        //定义排序规则
+        //page.addOrder(OrderItem.desc("temp.createTimeStr"));
+        IPage<CustomsFinanceCoRelation> pageInfo = baseMapper.findCompanyRelationPage(page, form);
+        return pageInfo;
     }
 
 }

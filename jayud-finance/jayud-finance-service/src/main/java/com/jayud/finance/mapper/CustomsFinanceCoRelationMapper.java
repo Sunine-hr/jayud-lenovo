@@ -1,7 +1,11 @@
 package com.jayud.finance.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.finance.bo.QueryCustomsFinanceCoRelationForm;
 import com.jayud.finance.po.CustomsFinanceCoRelation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -13,4 +17,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface CustomsFinanceCoRelationMapper extends BaseMapper<CustomsFinanceCoRelation> {
 
+    /**
+     * page
+     * @param page
+     * @param form
+     * @return
+     */
+    IPage<CustomsFinanceCoRelation> findCompanyRelationPage(@Param("page") Page<CustomsFinanceCoRelation> page, @Param("form") QueryCustomsFinanceCoRelationForm form);
 }

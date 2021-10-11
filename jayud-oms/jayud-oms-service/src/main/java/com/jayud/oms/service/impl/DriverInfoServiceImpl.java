@@ -12,6 +12,7 @@ import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.DriverInfo;
 import com.jayud.oms.model.vo.DriverInfoLinkVO;
 import com.jayud.oms.model.vo.DriverInfoVO;
+import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.service.IDriverInfoService;
 import com.jayud.oms.service.IVehicleInfoService;
@@ -174,5 +175,25 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
         driverInfos.forEach(e -> sb.append(e.getName()).append(","));
         return sb.toString();
     }
+
+    /**
+     * 下拉有效司机
+     */
+    @Override
+    public List<InitComboxStrVO> initEffectiveDriver() {
+        QueryWrapper<DriverInfo> condition = new QueryWrapper<>();
+        //TODO 还有缺少有效时间条件,等司机管理追加字段
+        condition.lambda().eq(DriverInfo::getStatus, StatusEnum.ENABLE.getCode());
+        List<DriverInfo> driverInfos = this.baseMapper.selectList(condition);
+        List<InitComboxStrVO> list = new ArrayList<>();
+        driverInfos.forEach(e -> {
+            InitComboxStrVO tmp = new InitComboxStrVO();
+            tmp.setId(e.getId());
+            tmp.setName(e.getName());
+            list.add(tmp);
+        });
+        return list;
+    }
+
 
 }

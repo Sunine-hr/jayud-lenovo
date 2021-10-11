@@ -84,15 +84,15 @@ public class OrderComboxController {
     private FreightAirClient freightAirClient;
     @Autowired
     private ICustomerRelaLegalService relaLegalService;
-
     @Autowired
     private IServiceTypeService serviceTypeService;
-
     @Autowired
     private IDictService dictService;
-
     @Autowired
     private IVehicleInfoService vehicleInfoService;
+    @Autowired
+    private IDriverInfoService driverInfoService;
+
 
     @ApiOperation(value = "创建订单-客户,业务员,合同,业务所属部门,通关口岸")
     @PostMapping(value = "/initCombox1")
@@ -395,7 +395,7 @@ public class OrderComboxController {
     @ApiOperation(value = "根据费用名称code下拉作业环节,idCode=费用名称的隐藏值")
     @PostMapping(value = "/initCostTypeByCostInfoCode")
     public CommonResult<Map<String, List<InitComboxVO>>> initCostTypeByCostInfoCode(@RequestBody Map<String, Object> param) {
-        Map<String, List<InitComboxVO>> map=this.costInfoService.initCostTypeByCostInfoCode();
+        Map<String, List<InitComboxVO>> map = this.costInfoService.initCostTypeByCostInfoCode();
         return CommonResult.success(map);
     }
 
@@ -682,6 +682,16 @@ public class OrderComboxController {
             initComboxStrVO.setCode(costType.getCode());
             list.add(initComboxStrVO);
         }
+        return CommonResult.success(list);
+    }
+
+    /**
+     * 查询有效司机
+     */
+    @ApiOperation("查询有效司机")
+    @PostMapping(value = "/initEffectiveDriver")
+    public CommonResult<List<InitComboxStrVO>> initEffectiveDriver() {
+        List<InitComboxStrVO> list = this.driverInfoService.initEffectiveDriver();
         return CommonResult.success(list);
     }
 }

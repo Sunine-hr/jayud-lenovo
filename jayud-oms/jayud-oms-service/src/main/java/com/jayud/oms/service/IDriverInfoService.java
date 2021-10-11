@@ -6,6 +6,7 @@ import com.jayud.oms.model.po.DriverInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.vo.DriverInfoLinkVO;
 import com.jayud.oms.model.vo.DriverInfoVO;
+import com.jayud.oms.model.vo.InitComboxStrVO;
 
 import java.util.List;
 
@@ -65,4 +66,7 @@ public interface IDriverInfoService extends IService<DriverInfo> {
      * 根据司机id集合拼装司机名称
      */
     public String assemblyDriverName(List<Long> ids);
+
+    List<InitComboxStrVO> initEffectiveDriver();
+
 }

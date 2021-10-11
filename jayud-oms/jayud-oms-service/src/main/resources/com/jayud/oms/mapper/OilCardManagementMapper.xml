@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.OilCardManagementMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.OilCardManagement">
+        <id column="id" property="id"/>
+        <result column="oil_card_num" property="oilCardNum"/>
+        <result column="oil_name" property="oilName"/>
+        <result column="driver_id" property="driverId"/>
+        <result column="vehicle_id" property="vehicleId"/>
+        <result column="balance" property="balance"/>
+        <result column="oil_type" property="oilType"/>
+        <result column="oil_pwd" property="oilPwd"/>
+        <result column="oil_status" property="oilStatus"/>
+        <result column="recharge_type" property="rechargeType"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="remarks" property="remarks"/>
+        <result column="return_date" property="returnDate"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, oil_card_num, oil_name, driver_id, vehicle_id, balance, oil_type, oil_pwd, oil_status, recharge_type, status, create_time, create_user, update_time, update_user, remarks, return_date
+    </sql>
+    <select id="findByPage" resultType="com.jayud.oms.model.vo.OilCardManagementVO">
+        select * from oil_card_management
+        <where>
+            <if test="form.oilCardNum!=null and form.oilCardNum!=''">
+                oil_card_num like concat('%',#{form.oilCardNum},'%')
+            </if>
+            <if test="form.oilCardNum!=null and form.oilCardNum!=''">
+                oil_name like concat('%',#{form.oilName},'%')
+            </if>
+        </where>
+
+    </select>
+
+</mapper>

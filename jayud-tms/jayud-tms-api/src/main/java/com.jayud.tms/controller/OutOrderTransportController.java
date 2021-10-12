@@ -59,7 +59,9 @@ public class OutOrderTransportController {
     @ApiOperation(value = "供应链外部创建中港订单")
     @RequestMapping(value = "/createOutOrderTransport")
     ApiResult createOutOrderTransport(@RequestBody InputOrderOutTransportForm form) {
-
+        if (log.isInfoEnabled()) {
+            log.info("供应链调用创建中港订单接口：{}", JSONUtil.toJsonStr(form));
+        }
         //通用参数校验
         if (form == null) {
             return ApiResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
@@ -80,6 +82,9 @@ public class OutOrderTransportController {
     @ApiOperation(value = "供应链外部修改中港订单")
     @RequestMapping(value = "/updateOutOrderTransport")
     ApiResult updateOutOrderTransport(@RequestBody InputOrderOutTransportForm form) {
+        if (log.isInfoEnabled()) {
+            log.info("供应链调用修改中港订单接口：{}", JSONUtil.toJsonStr(form));
+        }
 
         //通用参数校验
         if (form == null) {

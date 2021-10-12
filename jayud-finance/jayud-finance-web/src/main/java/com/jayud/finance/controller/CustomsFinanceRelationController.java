@@ -1,8 +1,12 @@
 package com.jayud.finance.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.finance.bo.QueryCustomsFinanceCoRelationForm;
 import com.jayud.finance.po.CustomsFinanceCoRelation;
 import com.jayud.finance.service.ICustomsFinanceCoRelationService;
+import com.jayud.finance.vo.FinanceAccountVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +26,15 @@ public class CustomsFinanceRelationController {
     @Autowired
     private ICustomsFinanceCoRelationService customsFinanceCoRelationService;
 
-    @ApiOperation(value = "查询公司关联")
+    @ApiOperation(value = "查询公司关联page")
+    @PostMapping("/findCompanyRelationPage")
+    public CommonResult<CommonPageResult<CustomsFinanceCoRelation>> findCompanyRelationPage(@RequestBody QueryCustomsFinanceCoRelationForm form){
+        IPage<CustomsFinanceCoRelation> pageList = customsFinanceCoRelationService.findCompanyRelationPage(form);
+        CommonPageResult<CustomsFinanceCoRelation> pageVO = new CommonPageResult(pageList);
+        return CommonResult.success(pageVO);
+    }
+
+    @ApiOperation(value = "查询公司关联list")
     @PostMapping("/companyRelationList")
     public CommonResult<List<CustomsFinanceCoRelation>> companyRelationList(){
         List<CustomsFinanceCoRelation> list = customsFinanceCoRelationService.list();

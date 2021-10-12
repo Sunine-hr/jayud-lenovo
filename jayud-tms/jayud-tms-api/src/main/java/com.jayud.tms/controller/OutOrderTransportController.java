@@ -158,9 +158,10 @@ public class OutOrderTransportController {
         inputOrderTransportForm.setGoodsType(form.getGoodsTypeVal());
         inputOrderTransportForm.setUnitCode(mainOrderForm.getUnitCode());
         inputOrderTransportForm.setThirdPartyOrderNo(form.getOrderNo());
-        inputOrderTransportForm.setVehicleType(form.getVehicleTypeVal());
         inputOrderTransportForm.setIsVehicleWeigh(form.getIsVehicleWeigh());
+        inputOrderTransportForm.setVehicleType(form.getVehicleTypeVal());
         inputOrderTransportForm.setVehicleSize(form.getPreTruckStyle());
+        inputOrderTransportForm.setCreateUserType(mainOrderForm.getCreateUserType());
         // 中转仓库
         ApiResult<Long> warehouseIdResult = omsClient.getWarehouseIdByName(form.getWarehouseInfo());
         if (warehouseIdResult.getCode() != HttpStatus.SC_OK) {
@@ -171,6 +172,7 @@ public class OutOrderTransportController {
             log.warn("找不到对应的仓库 message={}", warehouseIdResult.getMsg());
             return ApiResult.error("找不到对应的中转仓库");
         }
+        inputOrderTransportForm.setWarehouseInfoId(warehouseIdResult.getData());
 
         LocalDateTime truckDate = LocalDateTime.parse(form.getTruckDate(), DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         LocalDateTime receivingDate = truckDate.withHour(18).withMinute(0).withSecond(0);
@@ -254,47 +256,6 @@ public class OutOrderTransportController {
 
         // 保存或修改订单消息
         return omsClient.saveOrUpdateOutMainOrderForm(orderForm);
-    }
-
-    @ApiOperation(value = "同步接单状态测试")
-    @RequestMapping(value = "/test")
-    ApiResult test() {
-
-        // 已装车&已发车
-//        OprStatusForm form = new OprStatusForm();
-//        form.setCmd(CommonConstant.CAR_TAKE_GOODS);
-//        OrderTransport orderTransport = new OrderTransport();
-//        orderTransport.setThirdPartyOrderNo("T2109000003");
-//        orderTransport.setCreateUserType(2);
-//        this.orderTransportService.pushManifest(orderTransport, form, false);
-
-        // 已过关
-//        OprStatusForm form = new OprStatusForm();
-//        form.setCmd(CommonConstant.CAR_GO_CUSTOMS);
-//        OrderTransport orderTransport = new OrderTransport();
-//        orderTransport.setThirdPartyOrderNo("T2109000003");
-//        orderTransport.setCreateUserType(2);
-//        this.orderTransportService.pushManifest(orderTransport, form, false);
-
-        // 已到货
-//        OprStatusForm form = new OprStatusForm();
-//        form.setCmd(CommonConstant.CONFIRM_SIGN_IN);
-//        OrderTransport orderTransport = new OrderTransport();
-//        orderTransport.setThirdPartyOrderNo("T2109000003");
-//        orderTransport.setCreateUserType(2);
-//        this.orderTransportService.pushManifest(orderTransport, form, false);
-
-        // 推送公司信息
-        SendCarForm sendCarForm = new SendCarForm();
-        sendCarForm.setDriverInfoId(12L);
-        sendCarForm.setVehicleId(9L);
-        sendCarForm.setCmd(CommonConstant.SEND_CAR);
-        OrderTransport orderTransport = new OrderTransport();
-        orderTransport.setCreateUserType(2);
-        orderTransport.setThirdPartyOrderNo("T2109000003");
-        this.orderTransportService.pushTransportationInformation(orderTransport, sendCarForm);
-
-        return ApiResult.ok();
     }
 
 }

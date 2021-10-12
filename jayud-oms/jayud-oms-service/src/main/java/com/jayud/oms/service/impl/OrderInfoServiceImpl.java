@@ -1405,6 +1405,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         InputOrderVO inputOrderVO = new InputOrderVO();
         //获取主订单信息
         InputMainOrderVO inputMainOrderVO = getMainOrderById(form.getMainOrderId());
+        inputMainOrderVO.setCreateUserTypeName(CreateUserTypeEnum.getDesc(inputMainOrderVO.getCreateUserType()));
         inputOrderVO.setOrderForm(inputMainOrderVO);
 
         Map<Long, String> departmentMap = this.oauthClient.findDepartment().getData().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));

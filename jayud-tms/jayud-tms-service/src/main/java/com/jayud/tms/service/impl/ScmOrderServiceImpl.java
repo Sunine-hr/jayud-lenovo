@@ -48,8 +48,8 @@ public class ScmOrderServiceImpl implements IScmOrderService {
     @Value("${scm.urls.token:}")
     private String urlToken;
     // 设置车次状态
-    @Value("${scm.urls.set-manifest:}")
-    private String urlSetManifest;
+    @Value("${scm.urls.set-train-number-status:}")
+    private String setTrainNumberStatus;
     // 设置运输公司信息
     @Value("${scm.urls.accept-transportation-information:}")
     private String urlAcceptTransportationInformation;
@@ -71,7 +71,7 @@ public class ScmOrderServiceImpl implements IScmOrderService {
         form.put("trainStatus", trainStatus);
         form.put("truckNo", truckNo);
         form.put("userName", defaultUsername);
-        return doPost(JSONObject.toJSONString(form), urlBase + urlSetManifest);
+        return doPost(JSONObject.toJSONString(form), urlBase + setTrainNumberStatus);
     }
 
     /**

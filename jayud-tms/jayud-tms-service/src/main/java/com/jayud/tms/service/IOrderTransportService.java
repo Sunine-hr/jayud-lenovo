@@ -222,4 +222,11 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      */
     void pushTransportationInformation(OrderTransport orderTransport, SendCarForm form);
 
+    /**
+     * 获取创建人的类型
+     * @param id
+     * @return
+     */
+    Integer getCreateUserTypeById(Long id);
+
 }

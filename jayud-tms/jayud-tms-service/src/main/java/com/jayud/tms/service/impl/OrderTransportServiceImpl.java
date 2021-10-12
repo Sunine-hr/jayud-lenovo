@@ -1048,7 +1048,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
      */
     @Override
     public void pushManifest(OrderTransport orderTransport, OprStatusForm form, boolean isRetry) {
-        if (orderTransport.getCreateUserType() != CreateUserTypeEnum.SCM.getCode()) {
+        Integer createUserTypeById = orderTransportService.getCreateUserTypeById(orderTransport.getId());
+        if (createUserTypeById != CreateUserTypeEnum.SCM.getCode()) {
             return;
         }
         if (isRetry) {
@@ -1085,7 +1086,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
      */
     @Override
     public void pushTransportationInformation(OrderTransport orderTransport, SendCarForm form) {
-        if (orderTransport.getCreateUserType() != CreateUserTypeEnum.SCM.getCode() ||
+        Integer createUserTypeById = orderTransportService.getCreateUserTypeById(orderTransport.getId());
+        if (createUserTypeById != CreateUserTypeEnum.SCM.getCode() ||
                 !CommonConstant.SEND_CAR.equals(form.getCmd()) ) {
             return;
         }
@@ -1114,6 +1116,19 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             e.printStackTrace();
             logger.warn("推送运输公司消息到供应链失败，原因：{}", e.getMessage());
         }
+    }
+
+    /**
+     * 获取创建人的类型
+     * @param id
+     * @return
+     */
+    @Override
+    public Integer getCreateUserTypeById(Long id) {
+        OrderTransport orderTransport = this.getOne(new QueryWrapper<OrderTransport>().lambda()
+                .select(OrderTransport::getCreateUserType)
+                .eq(OrderTransport::getId, id));
+        return orderTransport.getCreateUserType();
     }
 
 }

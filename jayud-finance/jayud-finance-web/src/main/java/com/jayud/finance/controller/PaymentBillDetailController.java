@@ -19,10 +19,7 @@ import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.enums.BillTemplateEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.po.OrderPaymentBillDetail;
-import com.jayud.finance.service.BillTemplateService;
-import com.jayud.finance.service.CommonService;
-import com.jayud.finance.service.IOrderBillCostTotalService;
-import com.jayud.finance.service.IOrderPaymentBillDetailService;
+import com.jayud.finance.service.*;
 import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
 import io.netty.util.internal.StringUtil;
@@ -54,6 +51,8 @@ public class PaymentBillDetailController {
     private IOrderBillCostTotalService orderBillCostTotalService;
     @Autowired
     private CommonService commonService;
+    @Autowired
+    private ILockOrderService lockOrderService;
 
     @ApiOperation(value = "应付对账单列表,应付对账单审核列表,财务应付对账单列表")
     @PostMapping("/findPaymentBillDetailByPage")
@@ -223,6 +222,10 @@ public class PaymentBillDetailController {
     public CommonResult editBill(@RequestBody EditBillForm form) {
         //参数校验
         form.checkEditSBill();
+        //检查是否锁单区间
+        if (this.lockOrderService.checkLockingInterval(1,form.getAccountTermStr())) {
+            return CommonResult.error(400,"该核算期已经被锁定");
+        }
         return billDetailService.editBill(form);
     }
 

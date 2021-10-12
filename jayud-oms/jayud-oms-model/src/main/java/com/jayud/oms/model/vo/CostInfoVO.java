@@ -55,5 +55,8 @@ public class CostInfoVO {
     @ApiModelProperty(value = "更新人")
     private String updateUser;
 
+    @ApiModelProperty(value = "是否展示给司机")
+    private Boolean isDriverShow;
+
 
 }

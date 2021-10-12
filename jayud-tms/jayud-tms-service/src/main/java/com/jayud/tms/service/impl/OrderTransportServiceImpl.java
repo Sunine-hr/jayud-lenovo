@@ -16,6 +16,7 @@ import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.entity.LogisticsTrackVO;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
@@ -955,6 +956,11 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         String portName = this.omsClient.getPortNameByCode(inputOrderTransportVO.getPortCode()).getData();
         //报关资料
         Object customsInfo = this.omsClient.initGoCustomsAudit(mainOrderNo).getData();
+        //查询节点资料
+        List<LogisticsTrackVO> logisticsTrackVOS = this.omsClient.getLogisticsTrackByOrderIds(Arrays.asList(orderTransport.getId()), Arrays.asList(OrderStatusEnum.TMS_T_9.getCode()), 2).getData();
+        if (!CollectionUtils.isEmpty(logisticsTrackVOS)){
+            inputOrderTransportVO.setGoCustomsRemarks(logisticsTrackVOS.get(0).getRemarks());
+        }
 
         //六联单号
 //        Object mainOrderInfos = this.omsClient.getMainOrderByOrderNos(Arrays.asList(mainOrderNo)).getData();
@@ -1140,5 +1146,10 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                 .eq(OrderTransport::getId, id));
         return orderTransport.getCreateUserType();
     }
+    @Override
+    public List<OrderTransportVO> getOrderTransportList(String pickUpTimeStart, String pickUpTimeEnd, String orderNo) {
+        return baseMapper.getOrderTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);
+    }
+
 
 }

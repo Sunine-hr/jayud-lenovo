@@ -9,6 +9,7 @@ import com.jayud.Inlandtransport.model.bo.AddOrderInlandTransportForm;
 import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
 import com.jayud.Inlandtransport.model.vo.InputOrderInlandTPVO;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportDetails;
+import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
 import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
@@ -74,7 +75,7 @@ public class ExternalApiController {
             initChangeStatusVO.setOrderNo(tmp.getOrderNo());
             initChangeStatusVO.setOrderType(CommonConstant.NLYS);
             initChangeStatusVO.setOrderTypeDesc(CommonConstant.NLYS_DESC);
-            initChangeStatusVO.setStatus(tmp.getProcessStatus() + "");
+            initChangeStatusVO.setStatus(tmp.getProcessStatus() == 3 ? "CLOSE" : tmp.getProcessStatus().toString());
             initChangeStatusVO.setNeedInputCost(tmp.getNeedInputCost());
             return ApiResult.ok(initChangeStatusVO);
         }
@@ -161,4 +162,17 @@ public class ExternalApiController {
         }
         return ApiResult.ok(result);
     }
+
+
+    /**
+     * 获取内陆订单list
+     */
+    @RequestMapping(value = "/api/getOrderInlandTransportList")
+    public ApiResult getOrderInlandTransportList(@RequestParam("pickUpTimeStart") String pickUpTimeStart, @RequestParam("pickUpTimeEnd") String pickUpTimeEnd, @RequestParam(value = "orderNo", required = false) String orderNo){
+        List<OrderInlandTransportFormVO> list = orderInlandTransportService.getOrderInlandTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);
+        return ApiResult.ok(list);
+    }
+
+
+
 }

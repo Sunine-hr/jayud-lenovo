@@ -11,6 +11,7 @@ public enum EmploymentFeeStatusEnum {
 
     SUBMIT("0", "待提交"),
     SUBMITTED("1", "已提交"),
+    DRAFT("2", "草稿"),
     ;
 
     private String code;

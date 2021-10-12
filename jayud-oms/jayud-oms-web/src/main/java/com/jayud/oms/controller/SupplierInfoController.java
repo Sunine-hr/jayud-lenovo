@@ -2,6 +2,7 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -12,6 +13,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.BeanUtils;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.feign.FileClient;
@@ -42,6 +44,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -411,5 +414,70 @@ public class SupplierInfoController {
         boolean result = supplierInfoService.checkMes(userName);
         return CommonResult.success(result);
     }
+
+    /**
+     * 轨迹管理，实时定位，查询供应商及其车辆tree
+     */
+    @ApiOperation("查询供应商及其车辆tree")
+    @PostMapping(value = "/getSupplierVehicleTree")
+    public CommonResult getSupplierVehicleTree(@RequestBody Map<String, Object> param){
+        List<Map<String, Object>> supplierVehicleTree = supplierInfoService.getSupplierVehicleTree(param);
+        return CommonResult.success(supplierVehicleTree);
+    }
+
+    /**
+     * 轨迹管理，轨迹回放，按车辆，查询供应商list（仅展示有车辆的供应商）
+     */
+    @ApiOperation("查询供应商list")
+    @PostMapping(value = "/getList")
+    public CommonResult getList(){
+        List<Map<String, Object>> list = supplierInfoService.getList();
+        return CommonResult.success(list);
+    }
+
+    /**
+     * 轨迹管理，轨迹回放，按车辆，获取单据类型
+     */
+    @ApiOperation("获取单据类型")
+    @PostMapping(value = "/getOrderSignEnum")
+    public CommonResult getOrderSignEnum(){
+        List<Map<String, Object>> list = new ArrayList<>();
+        //ZGYS("zgys", "order_transport", "中港运输"),
+        Map<String, Object> zgys = new HashMap<>();
+        zgys.put("code", SubOrderSignEnum.ZGYS.getSignTwo());
+        zgys.put("text", SubOrderSignEnum.ZGYS.getDesc());
+        list.add(zgys);
+        //NL("nl", "order_inland_transport", "内陆运输"),
+        Map<String, Object> nl = new HashMap<>();
+        nl.put("code", SubOrderSignEnum.NL.getSignTwo());
+        nl.put("text", SubOrderSignEnum.NL.getDesc());
+        list.add(nl);
+        return CommonResult.success(list);
+    }
+
+    /**
+     * 轨迹管理，轨迹回放，按单据，查询订单tree
+     */
+    @ApiOperation("查询订单tree")
+    @PostMapping(value = "/getOrderTree")
+    public CommonResult getOrderTree(@RequestBody Map<String, Object> param){
+        String orderTypeCode = MapUtil.getStr(param, "orderTypeCode");//单据类型
+
+        //签收时间 开始~结束
+        String pickUpTimeStart = "";
+        String pickUpTimeEnd = "";
+        ArrayList times = MapUtil.get(param, "times", ArrayList.class);
+        if(ObjectUtil.isNotEmpty(times)){
+            Object a = times.get(0);
+            Object b = times.get(1);
+            pickUpTimeStart = a.toString();
+            pickUpTimeEnd = b.toString();
+        }
+        String orderNo = MapUtil.getStr(param, "orderNo");//订单号
+        List<Map<String, Object>> orderTree = supplierInfoService.getOrderTree(orderTypeCode, pickUpTimeStart, pickUpTimeEnd, orderNo);
+        return CommonResult.success(orderTree);
+    }
+
+
 }
 

@@ -3,8 +3,11 @@ package com.jayud.oms.model.po;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
+
+
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,7 +16,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author LDR
@@ -22,7 +25,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="GpsPositioning对象", description="")
+@ApiModel(value = "GpsPositioning对象", description = "")
 public class GpsPositioning extends Model<GpsPositioning> {
 
     private static final long serialVersionUID = 1L;
@@ -72,6 +75,18 @@ public class GpsPositioning extends Model<GpsPositioning> {
 
     @ApiModelProperty(value = "gps定位时间")
     private LocalDateTime gpsTime;
+
+    @ApiModelProperty(value = "总里程")
+    private Double totalMileage;
+
+    @ApiModelProperty(value = "地理位置")
+    private String addr;
+
+    @ApiModelProperty(value = "行驶里程")
+    private Double mile;
+
+    @ApiModelProperty(value = "停车时长")
+    private String stopLong;
 
     @Override
     protected Serializable pkVal() {

@@ -904,4 +904,66 @@
             and w.is_virtual = true
         </where>
     </select>
+
+    <select id="getOrderTransportList"
+            resultType="com.jayud.tms.model.vo.OrderTransportVO">
+        SELECT
+        ot.`id`,
+        oi.`id` mainOrderId,
+        oi.`order_no` mainOrderNo,
+        oi.`biz_code` bizCode,
+        ot.`order_no` orderNo,
+        ot.port_code,
+        ot.`goods_type` goodsType,
+        oi.`status`,
+        oi.`class_code` classCode,
+        oi.`customer_name` customerName,
+        oi.`customer_code` customerCode,
+        oi.`remarks` mainOrderRemarks,
+        ot.`created_user` createdUser,
+        ot.warehouse_info_id warehouseInfoId,
+        ot.`created_time` createdTimeStr,
+        ot.`vehicle_type` vehicleType,
+        ot.`vehicle_size` vehicleSize,
+        ot.`cntr_no` cntrNo,
+        oi.`need_input_cost` needInputCost,
+        ot.`status` subTmsStatus,
+        oi.legal_name legalName,
+        oi.unit_code unitCode,
+        ot.`legal_name` subLegalName,
+        ot.unit_code subUnitCode,
+        oi.selected_server selectedServer,
+        ot.car_weigh_num carWeighNum,
+        si.supplier_code defaultSupplierCode,
+        si.app_key appKey,
+        si.gps_address gpsAddress,
+        os.vehicle_id vehicleId,
+        os.driver_info_id driverInfoId,
+        vi.plate_number plateNumber,
+        ot.supplier_vehicle_size,
+        ota.`take_time` takeTimeStr,
+        ot.department_id,
+        lt.operator_time signTime
+        FROM
+        order_transport ot
+        LEFT JOIN order_info oi ON ot.`main_order_no` = oi.`order_no`
+        LEFT JOIN order_send_cars os ON os.order_no = ot.order_no
+        LEFT JOIN vehicle_info vi ON vi.id=os.vehicle_id
+        LEFT JOIN supplier_info si ON si.id=vi.supplier_id
+        left join (select tmp.order_no,tmp.take_time from order_take_adr tmp where tmp.opr_type=1 group by tmp.order_no) ota on ota.order_no = ot.order_no
+        left join (select  main_order_id,order_id,operator_time from  logistics_track where type = 2 and status = 'T_15') lt on ot.`id` = lt.order_id
+        where 1=1
+        <if test="orderNo != null and orderNo != ''">
+            and ot.order_no like concat('%',#{orderNo},'%')
+        </if>
+        <if test="pickUpTimeStart != null and pickUpTimeStart !=''">
+            and DATE_FORMAT(lt.operator_time,'%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> #{pickUpTimeStart}
+        </if>
+        <if test="pickUpTimeEnd != null and pickUpTimeEnd !=''">
+            and DATE_FORMAT(lt.operator_time,'%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> #{pickUpTimeEnd}
+        </if>
+        order by lt.operator_time desc
+    </select>
+
+
 </mapper>

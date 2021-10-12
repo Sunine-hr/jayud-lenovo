@@ -161,6 +161,9 @@ public class OrderInlandTransportFormVO extends Model<OrderInlandTransportFormVO
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
 
+    @ApiModelProperty(value = "签收时间")
+    private String signTime;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

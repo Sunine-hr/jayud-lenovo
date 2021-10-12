@@ -3,11 +3,14 @@ package com.jayud.tms.model.vo;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -211,10 +214,14 @@ public class InputOrderTransportVO {
     private List<FileView> customsOrderAttachment = new ArrayList<>();
 
     @ApiModelProperty(value = "通关时间")
-    private String goCustomsTime;
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    private LocalDateTime goCustomsTime;
 
     @ApiModelProperty(value = "派车备注")
     private String sendCarDescribes;
+
+    @ApiModelProperty(value = "通关备注")
+    private String goCustomsRemarks;
 
     public String getSubTmsStatus() {
         return subTmsStatus = this.status;
@@ -242,7 +249,7 @@ public class InputOrderTransportVO {
         return "";
     }
 
-    public void setIsVehicleWeigh(Boolean isVehicleWeigh){
+    public void setIsVehicleWeigh(Boolean isVehicleWeigh) {
         this.isVehicleWeigh = isVehicleWeigh;
         this.isVehicleWeighDesc = isVehicleWeigh ? "是" : "否";
     }
@@ -257,7 +264,7 @@ public class InputOrderTransportVO {
         this.jockey = orderSendCars.getJockey();
         this.transportNo = orderSendCars.getTransportNo();
         this.remarks = orderSendCars.getRemarks();
-        this.sendCarDescribes=orderSendCars.getDescribes();
+        this.sendCarDescribes = orderSendCars.getDescribes();
     }
 
     public void assemblyCustomerInfo(Object customerInfos) {

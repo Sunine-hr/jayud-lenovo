@@ -7,6 +7,7 @@ import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,5 +116,14 @@ public class PositionVO {
 
     @ApiModelProperty(value = "提货地址货物信息")
     private String goodInfo;
+
+    @ApiModelProperty(value = "地理位置")
+    private String addr;
+
+    @ApiModelProperty(value = "车辆状态")
+    private String vehicleStatus;
+
+    @ApiModelProperty(value = "行驶里程")
+    private Double mile;
 
 }

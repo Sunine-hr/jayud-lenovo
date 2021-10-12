@@ -1,11 +1,13 @@
 package com.jayud.tms.service;
 
 import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.entity.DataControl;
-import com.jayud.tms.model.bo.*;
+import com.jayud.tms.model.bo.InputOrderTransportForm;
+import com.jayud.tms.model.bo.OprStatusForm;
+import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
+import com.jayud.tms.model.bo.QueryOrderTmsForm;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
 import com.jayud.tms.model.vo.supplier.QuerySupplierBill;
@@ -229,4 +231,13 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      */
     Integer getCreateUserTypeById(Long id);
 
+
+    /**
+     * 查询中港订单
+     * @param pickUpTimeStart 提货时间Start
+     * @param pickUpTimeEnd 提货时间Start
+     * @param orderNo 订单号
+     * @return
+     */
+    List<OrderTransportVO> getOrderTransportList(String pickUpTimeStart, String pickUpTimeEnd, String orderNo);
 }

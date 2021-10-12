@@ -1,18 +1,30 @@
 package com.jayud.oms.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.config.ImportExcelUtil;
 import com.jayud.oms.config.LoadExcelUtil;
 import com.jayud.oms.feign.FileClient;
+import com.jayud.oms.feign.InlandTpClient;
 import com.jayud.oms.feign.OauthClient;
+import com.jayud.oms.feign.TmsClient;
 import com.jayud.oms.mapper.SupplierInfoMapper;
+import com.jayud.oms.mapper.VehicleInfoMapper;
 import com.jayud.oms.model.bo.AddSupplierInfoForm;
 import com.jayud.oms.model.bo.QueryAuditSupplierInfoForm;
 import com.jayud.oms.model.bo.QuerySupplierInfoForm;
@@ -38,6 +50,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -62,6 +76,12 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     private ISupplierRelaLegalService supplierRelaLegalServic;
     @Autowired
     private FileClient fileClient;
+    @Autowired
+    private VehicleInfoMapper vehicleInfoMapper;
+    @Autowired
+    private TmsClient tmsClient;
+    @Autowired
+    private InlandTpClient inlandTpClient;
 
     /**
      * 列表分页查询
@@ -552,5 +572,320 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
     public List<SupplierInfo> getByCondition(SupplierInfo supplierInfo) {
         return this.baseMapper.selectList(new QueryWrapper<>(supplierInfo));
     }
+
+    /**
+     * 查询供应商及其车辆tree
+     * @return 供应商及其车辆tree
+     */
+    @Override
+    public List<Map<String, Object>> getSupplierVehicleTree(Map<String, Object> param) {
+
+        String supName = MapUtil.getStr(param, "supName");
+        String plateNumber = MapUtil.getStr(param, "plateNumber");
+
+        //查询，供应商信息
+        QueryWrapper<SupplierInfo> supplierInfoQueryWrapper = new QueryWrapper<>();
+        if(StrUtil.isNotEmpty(supName)){
+            supplierInfoQueryWrapper.lambda().like(SupplierInfo::getSupplierChName, supName);
+        }
+        supplierInfoQueryWrapper.lambda().ne(SupplierInfo::getGpsAddress, "");
+        List<SupplierInfo> supplierInfos = baseMapper.selectList(supplierInfoQueryWrapper);
+        //查询，供应商对应车辆信息
+        QueryWrapper<VehicleInfo> vehicleInfoQueryWrapper = new QueryWrapper<>();
+        if(StrUtil.isNotEmpty(plateNumber)){
+            vehicleInfoQueryWrapper.lambda().like(VehicleInfo::getPlateNumber, plateNumber);
+        }
+        List<VehicleInfo> vehicleInfos = vehicleInfoMapper.selectList(vehicleInfoQueryWrapper);
+        List<Map<String, Object>> supplierVehicleTree = new ArrayList<>();
+        supplierInfos.forEach(supplierInfo -> {
+            Map<String, Object> supMap = new HashMap<>();
+            supMap.put("id", supplierInfo.getId());//id
+            supMap.put("label", supplierInfo.getSupplierChName());//name
+            supMap.put("level", 1);//level
+            supMap.put("description", "供应商");//description
+            List<Map<String, Object>> children = new ArrayList<>();
+            vehicleInfos.forEach(vehicleInfo -> {
+                //车辆供应商id，相同
+                if(supplierInfo.getId().equals(vehicleInfo.getSupplierId())){
+                    Map<String, Object> vehMap = new HashMap<>();
+                    vehMap.put("id", vehicleInfo.getId());
+                    vehMap.put("label", vehicleInfo.getPlateNumber());
+                    vehMap.put("level", 2);//level
+                    vehMap.put("description", "供应商车辆");//description
+                    vehMap.put("children", new ArrayList<>());
+                    children.add(vehMap);
+                }
+            });
+            //仅展示有车辆的供应商
+            if(CollUtil.isNotEmpty(children)){
+                supMap.put("children", children);
+                supplierVehicleTree.add(supMap);
+            }
+        });
+        return supplierVehicleTree;
+    }
+
+    /**
+     * 查询供应商（仅展示有车辆的供应商）
+     * @return 供应商list
+     */
+    @Override
+    public List<Map<String, Object>> getList() {
+        //查询，供应商信息
+        QueryWrapper<SupplierInfo> supplierInfoQueryWrapper = new QueryWrapper<>();
+        supplierInfoQueryWrapper.lambda().ne(SupplierInfo::getGpsAddress, "");
+        List<SupplierInfo> supplierInfos = baseMapper.selectList(supplierInfoQueryWrapper);
+        //查询，供应商对应车辆信息
+        QueryWrapper<VehicleInfo> vehicleInfoQueryWrapper = new QueryWrapper<>();
+        List<VehicleInfo> vehicleInfos = vehicleInfoMapper.selectList(vehicleInfoQueryWrapper);
+
+        List<Map<String, Object>> list = new ArrayList<>();
+
+        supplierInfos.forEach(supplierInfo -> {
+            Map<String, Object> supMap = new HashMap<>();
+            supMap.put("supId", supplierInfo.getId());
+            supMap.put("supName", supplierInfo.getSupplierChName());
+            List<Map<String, Object>> children = new ArrayList<>();
+            vehicleInfos.forEach(vehicleInfo -> {
+                //车辆供应商id，相同
+                if(supplierInfo.getId().equals(vehicleInfo.getSupplierId())){
+                    Map<String, Object> vehMap = new HashMap<>();
+                    vehMap.put("id", vehicleInfo.getId());
+                    vehMap.put("label", vehicleInfo.getPlateNumber());
+                    vehMap.put("level", 2);//level
+                    vehMap.put("description", "供应商车辆");//description
+                    vehMap.put("children", new ArrayList<>());
+                    children.add(vehMap);
+                }
+            });
+            //仅展示有车辆的供应商
+            if(CollUtil.isNotEmpty(children)){
+                list.add(supMap);
+            }
+        });
+        return list;
+    }
+
+    /**
+     * 查询订单tree
+     * @param orderTypeCode 单据类型
+     * @param pickUpTimeStart 提货时间Start
+     * @param pickUpTimeEnd 提货时间End
+     * @param orderNo 订单号
+     * @return 订单tree
+     */
+    @Override
+    public List<Map<String, Object>> getOrderTree(String orderTypeCode, String pickUpTimeStart, String pickUpTimeEnd, String orderNo) {
+        //ZGYS("zgys", "order_transport", "中港运输"),
+        //NL("nl", "order_inland_transport", "内陆运输"),
+        LocalDateTime localDate = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        if(StrUtil.isEmpty(pickUpTimeStart)){
+            //减30天
+            LocalDateTime minus = localDate.minus(30, ChronoUnit.DAYS);
+            pickUpTimeStart = minus.format(formatter);
+        }
+        if(StrUtil.isEmpty(pickUpTimeEnd)){
+            pickUpTimeEnd = localDate.format(formatter);
+        }
+
+        List<Map<String, Object>> orderTree = new ArrayList<>();
+        if(StrUtil.isEmpty(orderTypeCode)){
+            //查询全部
+            //查询中港订单
+            Map<String, Object> zgys = zgysExtracted(pickUpTimeStart, pickUpTimeEnd, orderNo);
+            if(ObjectUtil.isNotEmpty(zgys)){
+                orderTree.add(zgys);
+            }
+            //查询内陆订单
+            Map<String, Object> nl = nlExtracted(pickUpTimeStart, pickUpTimeEnd, orderNo);
+            if(ObjectUtil.isNotEmpty(nl)){
+                orderTree.add(nl);
+            }
+        }
+        else if(StrUtil.isNotEmpty(orderTypeCode) && orderTypeCode.equals(SubOrderSignEnum.ZGYS.getSignTwo())){
+            //查询中港订单
+            Map<String, Object> zgys = zgysExtracted(pickUpTimeStart, pickUpTimeEnd, orderNo);
+            if(ObjectUtil.isNotEmpty(zgys)){
+                orderTree.add(zgys);
+            }
+
+        }
+        else if(StrUtil.isNotEmpty(orderTypeCode) && orderTypeCode.equals(SubOrderSignEnum.NL.getSignTwo())){
+            //查询内陆订单
+            Map<String, Object> nl = nlExtracted(pickUpTimeStart, pickUpTimeEnd, orderNo);
+            if(ObjectUtil.isNotEmpty(nl)){
+                orderTree.add(nl);
+            }
+        }
+
+        return orderTree;
+    }
+
+    /**
+     * 中港运输单
+     * @param pickUpTimeStart 提货时间Start
+     * @param pickUpTimeEnd 提货时间End
+     * @param orderNo 订单号
+     */
+    private Map<String, Object> zgysExtracted(String pickUpTimeStart, String pickUpTimeEnd, String orderNo) {
+        //查询中港订单
+        Map<String, Object> zgys = new HashMap<>();
+        zgys.put("id", SubOrderSignEnum.ZGYS.getSignTwo());
+        zgys.put("label", SubOrderSignEnum.ZGYS.getDesc());
+        zgys.put("level", 1);//level
+        zgys.put("description", "中港订单");//description
+
+        ApiResult orderTransport = tmsClient.getOrderTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);
+        String s = JSON.toJSONString(orderTransport.getData());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
+
+        JSONArray jsonArray = JSON.parseArray(s);//对list进行分组
+
+        List<Map<String, Object>> maps1 =new ArrayList<>();
+        for(int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            Map<String, Object> jsonMap = JSONObject.toJavaObject(jsonObject, Map.class);
+            maps1.add(jsonMap);
+        }
+        //LinkedHashMap 按照输入的顺序分组
+        Map<String, List<Map<String, Object>>> pickUpTime = maps1.stream().collect(Collectors.groupingBy(
+                m -> {
+                    String signTime = MapUtil.getStr(m, "signTime");//签收时间
+                    LocalDateTime signTime2 = LocalDateTime.parse(signTime, formatter);//string 转 localDateTime
+                    String signTime3 = signTime2.format(formatter2);//localDateTime 转 string
+                    return signTime3;
+                },
+                LinkedHashMap::new,
+                Collectors.toList()));
+
+        List<Map<String, Object>> pickUpTimeList = new ArrayList<>();
+        for (String s1 : pickUpTime.keySet()) {
+            List<Map<String, Object>> list = pickUpTime.get(s1);
+            List<Map<String, Object>> orderList = new ArrayList<>();
+            list.forEach(m -> {
+                String orderId = MapUtil.getStr(m, "id");
+                String mainOrderNo = MapUtil.getStr(m, "mainOrderNo");
+                String orderNo1 = MapUtil.getStr(m, "orderNo");
+                String takeTimeStr = MapUtil.getStr(m, "takeTimeStr");
+                String signTime = MapUtil.getStr(m, "signTime");
+                Map<String, Object> orderMap = new HashMap<>();
+                orderMap.put("id", orderId);
+                orderMap.put("label", orderNo1);
+                orderMap.put("level", 3);//level
+                orderMap.put("description", "订单号");
+                orderMap.put("children", new ArrayList<>());
+                //扩展字段
+                JSONObject extend = new JSONObject();
+                extend.put("mainOrderNo", mainOrderNo);//主订单号
+                extend.put("takeTimeStr", takeTimeStr);//提货时间
+                extend.put("signTime", signTime);//签收时间
+                extend.put("subType", SubOrderSignEnum.ZGYS.getSignOne());//标志
+                orderMap.put("extend", extend);//扩展字段
+                orderList.add(orderMap);
+            });
+
+            Map<String, Object> time = new HashMap<>();
+            time.put("id", s1);
+            time.put("label", s1);
+            time.put("level", 2);//level
+            time.put("description", "签收时间");
+            time.put("children", orderList);
+            pickUpTimeList.add(time);
+        }
+        if(CollUtil.isNotEmpty(pickUpTimeList)){
+            zgys.put("children", pickUpTimeList);
+            return zgys;
+        }else{
+            //没有订单，返回空
+            return null;
+        }
+    }
+
+    /**
+     * 内陆运输单
+     * @param pickUpTimeStart 提货时间Start
+     * @param pickUpTimeEnd 提货时间End
+     * @param orderNo 订单号
+     */
+    private Map<String, Object> nlExtracted(String pickUpTimeStart, String pickUpTimeEnd, String orderNo) {
+        //查询内陆订单
+        Map<String, Object> nl = new HashMap<>();
+        nl.put("id", SubOrderSignEnum.NL.getSignTwo());
+        nl.put("label", SubOrderSignEnum.NL.getDesc());
+        nl.put("level", 1);//level
+        nl.put("description", "内陆订单");//description
+
+        ApiResult orderInlandTransportList = inlandTpClient.getOrderInlandTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);
+        String s = JSON.toJSONString(orderInlandTransportList.getData());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
+        JSONArray jsonArray = JSON.parseArray(s);//对list进行分组
+
+        List<Map<String, Object>> maps1 =new ArrayList<>();
+        for(int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            Map<String, Object> jsonMap = JSONObject.toJavaObject(jsonObject, Map.class);
+            maps1.add(jsonMap);
+        }
+        //LinkedHashMap 按照输入的顺序分组
+        Map<String, List<Map<String, Object>>> pickUpTime2 = maps1.stream().collect(Collectors.groupingBy(
+                m -> {
+                    String signTime = MapUtil.getStr(m, "signTime");//签收时间
+                    LocalDateTime signTime2 = LocalDateTime.parse(signTime, formatter);//string 转 localDateTime
+                    String signTime3 = signTime2.format(formatter2);//localDateTime 转 string
+                    return signTime3;
+                },
+                LinkedHashMap::new,
+                Collectors.toList()));
+
+        List<Map<String, Object>> pickUpTimeList = new ArrayList<>();
+        for (String s1 : pickUpTime2.keySet()) {
+            List<Map<String, Object>> list = pickUpTime2.get(s1);
+            List<Map<String, Object>> orderList = new ArrayList<>();
+            list.forEach(m -> {
+                String orderId = MapUtil.getStr(m, "id");
+                String mainOrderNo = MapUtil.getStr(m, "mainOrderNo");
+                String orderNo1 = MapUtil.getStr(m, "orderNo");
+                String takeTimeStr = MapUtil.getStr(m, "deliveryDate");
+                String signTime = MapUtil.getStr(m, "signTime");
+                Map<String, Object> orderMap = new HashMap<>();
+                orderMap.put("id", orderId);
+                orderMap.put("label", orderNo1);
+                orderMap.put("level", 3);//level
+                orderMap.put("description", "订单号");
+                orderMap.put("children", new ArrayList<>());
+                //扩展字段
+                JSONObject extend = new JSONObject();
+                extend.put("mainOrderNo", mainOrderNo);//主订单号
+                extend.put("takeTimeStr", takeTimeStr);//提货时间
+                extend.put("signTime", signTime);//签收时间
+                extend.put("subType", SubOrderSignEnum.NL.getSignOne());//标志
+                orderMap.put("extend", extend);//扩展字段
+                orderList.add(orderMap);
+            });
+            Map<String, Object> time = new HashMap<>();
+            time.put("id", s1);
+            time.put("label", s1);
+            time.put("level", 2);//level
+            time.put("description", "签收时间");
+            time.put("children", orderList);
+            pickUpTimeList.add(time);
+        }
+        if(CollUtil.isNotEmpty(pickUpTimeList)){
+            nl.put("children", pickUpTimeList);
+            return nl;
+        }else{
+            //没有订单，返回空
+            return null;
+        }
+    }
+
 
 }

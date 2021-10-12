@@ -41,6 +41,9 @@ public class AddCostInfoForm {
     @ApiModelProperty(value = "费用类型id集合", required = true)
     private List<Long> cids;
 
+    @ApiModelProperty(value = "是否展示给司机")
+    private Boolean isDriverShow;
+
 //    @ApiModelProperty(value = "费用类别")
 //    @NotNull(message = "cids is required")
 //    private List<CostTypeVO> costTypeVOs;

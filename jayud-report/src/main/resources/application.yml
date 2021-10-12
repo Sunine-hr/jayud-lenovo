@@ -1,0 +1,82 @@
+server:
+  port: 8192
+  servlet:
+    context-path: ${report.content.path}
+  max-http-header-size: 4048576
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB
+#  redis:
+#    host: ${redis.server.url}
+#    port: ${redis.server.port}
+#    password: ${redis.server.password}
+#    timeout: 2000s
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    druid:
+      url: jdbc:mysql://${jayud.datasource.ip}:${jayud.datasource.port}/${business.report.datasource.name}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&autoReconnect=true
+      username: ${jayud.datasource.username}
+      password: ${jayud.datasource.password}
+#      url: jdbc:mysql://113.100.140.250:8097/jayud_report?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&autoReconnect=true
+#      username: root
+#      password: Jayud2021!@#
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        login-username: admin
+        login-password: admin
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          config:
+            multi-statement-allow: true
+
+#swagger:
+#  enable: true
+#logging:
+#  path: /data/log/tms
+#feign:
+#  httpclient:
+#    connection-timeout: 5000
+#hystrix:
+#  command:
+#    default:
+#      execution:
+#        timeout:
+#          enabled: true
+#        isolation:
+#          thread:
+#            timeoutInMilliseconds: 3000000
+#ribbon:
+#  ReadTimeout: 3000000
+#  ConnectTimeout: 3000000
+#
+
+
+mybatis-plus:
+  mapper-locations: classpath:com.jyd.user.mappe/*.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.jyd.user.mode
+  configuration:
+    #开启下划线转驼峰
+    map-underscore-to-camel-case: true
+    # 显示空值null
+    call-setters-on-nulls: true

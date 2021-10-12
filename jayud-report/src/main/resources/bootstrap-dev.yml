@@ -1,0 +1,26 @@
+#server:
+#  port: 8192
+#
+#spring:
+#  cloud:
+#    nacos:
+#      config:
+#        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+#        file-extension: yaml
+#        namespace: ${spring.cloud.nacos.discovery.namespace}
+#      discovery:
+#        server-addr: 113.100.140.250:8848
+##        namespace: 3c86eb07-83e4-46cf-8c1f-291dc95d657b # jyd-wms-mfc
+#        namespace: 8f1f1f76-aaa3-4fc9-81b8-e61963b11d7b
+#
+#logging:
+#  level:
+#    root: debug
+
+jayud:
+  nacos:
+    server-addr: 113.100.140.250:8848
+    config:
+      namespace: 65ed253a-22cf-49e9-8e95-72402f722631
+#      namespace: 8f1f1f76-aaa3-4fc9-81b8-e61963b11d7b
+

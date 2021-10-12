@@ -84,9 +84,6 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
         return null;
     }
 
-    public static void main(String[] args) {
-        System.out.println(DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.TIMESTAMP_PATTERN));
-    }
 
     @Override
     public List<GPSYGTResponse> getYGTHistory(String plateNumber, LocalDateTime startTime, LocalDateTime endTime, Map<String, Object> params) {
@@ -97,13 +94,18 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
         requestParam.put("LicenceNumber", plateNumber);
         requestParam.put("Begin", DateUtils.LocalDateTime2Str(startTime, DateUtils.DATE_PATTERN));
         requestParam.put("End", DateUtils.LocalDateTime2Str(endTime, DateUtils.DATE_PATTERN));
+
         //组装请求的参数
         HttpResponse response = HttpRequest.post(gpsAddress + "/GetHistory")
                 .body(requestParam.toString())
                 .execute();
         String feedback = response.body();
         JSONObject responseJson = new JSONObject(feedback);
+
         if (!responseJson.getBool("Success")) {
+            if (responseJson.getInt("ResultCode").equals(-7)) {
+                throw new JayudBizException("请求频繁,请两分钟后再次请求");
+            }
             throw new JayudBizException(400, responseJson.getStr("Message"));
         }
         JSONArray positions = responseJson.getJSONArray("Data");
@@ -125,18 +127,24 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
         String endTimeStr = DateUtils.LocalDateTime2Str(endTime, DateUtils.TIMESTAMP_PATTERN);
         //组装请求的参数
         HttpResponse response = HttpRequest.get(gpsAddress + "/gps-web/api/get_gps_h_plate.jsp?" +
-                "carPlate=" + plateNumber + "&startTime=" + startTimeStr + "&endTime=" + endTimeStr + " &userId=" + userId + "&sessionId=" + sessionId + "&loginType=" + loginType + "&loginWay=" + loginWay)
+                "carPlate=" + plateNumber + "&startTime=" + startTimeStr + "&endTime=" + endTimeStr + " &userId=" + userId + "&sessionId=" + sessionId + "&loginType=" + loginType +
+                "&loginWay=" + loginWay+"filter0="+false)
                 .execute();
         String feedback = response.body();
         JSONObject responseJson = new JSONObject(feedback);
         if (!responseJson.getBool("rspCode")) {
             log.warn("历史轨迹更新失败,车牌号={},错误信息={}", plateNumber, responseJson.getStr("rspDesc"));
+            throw new JayudBizException(400, String.format("历史轨迹更新失败,车牌号={},错误信息={}", plateNumber, responseJson.getStr("rspDesc")));
         }
-        JSONArray jsonArray = responseJson.getJSONArray("list");
+        if (responseJson.get("list") == null) {
+            throw new JayudBizException(400, "该范围不存在历历史轨迹");
+        }
+        GPSBeiDouResponse.historicalPos historicalPos = responseJson.toBean(GPSBeiDouResponse.historicalPos.class);
         List<GPSBeiDouResponse.historicalPos> list = new ArrayList<>();
-        if (jsonArray != null) {
-            list = jsonArray.toList(GPSBeiDouResponse.historicalPos.class);
-        }
+        list.add(historicalPos);
+//        if (jsonArray != null) {
+//            list = jsonArray.toList(GPSBeiDouResponse.historicalPos.class);
+//        }
         return list;
     }
 
@@ -158,6 +166,7 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
                 gpsPositioning.setPlateNumber(tmp.getLicenceNumber());
                 gpsPositioning.setType(GPSTypeEnum.ONE.getCode());
                 gpsPositioning.setGpsTime(tmp.getReportTime());
+                gpsPositioning.setTotalMileage(tmp.getStarkMileage());
                 positionings.add(gpsPositioning);
             }
         } else if (obj instanceof GPSBeiDouResponse.realTimePos) {
@@ -172,20 +181,32 @@ public class GPSPositioningApiApiServiceImpl implements GPSPositioningApiService
                 gpsPositioning.setPlateNumber(tmp.getCarPlate());
                 gpsPositioning.setType(GPSTypeEnum.TWO.getCode());
                 gpsPositioning.setGpsTime(tmp.getTime());
+                gpsPositioning.setTotalMileage(tmp.getMile());
+                gpsPositioning.setStopLong(tmp.getRunStopTime());
+                gpsPositioning.setAddr(tmp.getAddr());
+                gpsPositioning.setMile(tmp.getPreMile());
                 positionings.add(gpsPositioning);
             }
         } else if (obj instanceof GPSBeiDouResponse.historicalPos) {
             for (Object o : tmps) {
                 GPSBeiDouResponse.historicalPos tmp = (GPSBeiDouResponse.historicalPos) o;
-                GpsPositioning gpsPositioning = new GpsPositioning();
-                gpsPositioning.setDirection(tmp.getDrct());
-                gpsPositioning.setLatitude(tmp.getLat());
-                gpsPositioning.setLongitude(tmp.getLng());
-                gpsPositioning.setSpeed(tmp.getSpeed());
-                gpsPositioning.setPlateNumber(tmp.getCarPlate());
-                gpsPositioning.setType(GPSTypeEnum.TWO.getCode());
-                gpsPositioning.setGpsTime(tmp.getTime());
-                positionings.add(gpsPositioning);
+                for (GPSBeiDouResponse.HistoryList historyList : tmp.getList()) {
+                    GpsPositioning gpsPositioning = new GpsPositioning();
+                    gpsPositioning.setDirection(historyList.getDrct());
+                    gpsPositioning.setLatitude(historyList.getLat());
+                    gpsPositioning.setLongitude(historyList.getLng());
+                    gpsPositioning.setSpeed(historyList.getSpeed());
+                    gpsPositioning.setPlateNumber(historyList.getCarPlate());
+                    gpsPositioning.setType(GPSTypeEnum.TWO.getCode());
+                    gpsPositioning.setGpsTime(historyList.getTime());
+                    gpsPositioning.setTotalMileage(historyList.getMile());
+                    gpsPositioning.setAddr(historyList.getAddr());
+                    gpsPositioning.setMile(tmp.getCountData().getMile());
+//                    gpsPositioning.setStopLong(tmp.getCountData().getStop_long());
+                    gpsPositioning.setStatus(2);
+                    gpsPositioning.setVehicleStatus("无");
+                    positionings.add(gpsPositioning);
+                }
             }
         }
 

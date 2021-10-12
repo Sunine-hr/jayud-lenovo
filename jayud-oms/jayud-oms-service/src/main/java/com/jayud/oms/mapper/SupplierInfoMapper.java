@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -41,4 +42,5 @@ public interface SupplierInfoMapper extends BaseMapper<SupplierInfo> {
      * @return
      */
     Integer getNumByStatus(@Param("status") String status, @Param("legalIds")List<Long> legalIds);
+
 }

@@ -36,6 +36,8 @@
         <module>jayud-email</module>
         <module>jayud-xxjob-task</module>
 
+        <module>jayud-report</module>
+
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -222,11 +224,11 @@
             <artifactId>commons-logging-api</artifactId>
             <version>1.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.68</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba</groupId>-->
+<!--            <artifactId>fastjson</artifactId>-->
+<!--            <version>1.2.68</version>-->
+<!--        </dependency>-->
         <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

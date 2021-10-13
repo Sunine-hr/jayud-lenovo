@@ -24,6 +24,7 @@ import com.jayud.oms.model.vo.OilCardTrackingInfoVO;
 import com.jayud.oms.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +136,7 @@ public class OilCardManagementController {
                 .append("当前余额:").append(BigDecimalUtil.add(oldTmp.getBalance(), oilCardManagement.getRechargeAmount()));
 
         this.oilCardTrackingInfoService.save(new OilCardTrackingInfo()
-                .setOilCardId(oldTmp.getId()).setContent(sb.toString())
+                .setOilCardId(oldTmp.getId()).setContent(sb.toString()).setType("系统")
                 .setCreateUser(UserOperator.getToken()).setCreateTime(LocalDateTime.now()));
         return CommonResult.success();
     }
@@ -211,7 +213,7 @@ public class OilCardManagementController {
         sb.append("归还日期:").append(DateUtils.LocalDateTime2Str(returnDate, DateUtils.DATE_PATTERN));
 
         this.oilCardTrackingInfoService.save(new OilCardTrackingInfo()
-                .setOilCardId(oldTmp.getId()).setContent(sb.toString())
+                .setOilCardId(oldTmp.getId()).setContent(sb.toString()).setType("系统")
                 .setCreateUser(UserOperator.getToken()).setCreateTime(LocalDateTime.now()));
         return CommonResult.success();
     }
@@ -247,6 +249,7 @@ public class OilCardManagementController {
         }
         List<OilCardTrackingInfo> list = this.oilCardTrackingInfoService.getByCondition(new OilCardTrackingInfo().setOilCardId(id));
         List<OilCardTrackingInfoVO> tmps = ConvertUtil.convertList(list, OilCardTrackingInfoVO.class);
+        tmps.stream().sorted(Comparator.comparing(OilCardTrackingInfoVO::getId).reversed());
         return CommonResult.success(tmps);
     }
 
@@ -263,13 +266,27 @@ public class OilCardManagementController {
 
     @ApiOperation(value = "删除油卡管理信息")
     @PostMapping("/delete")
-    public CommonResult delete(Map<String, Object> map) {
+    public CommonResult delete(@RequestBody Map<String, Object> map) {
         Long id = MapUtil.getLong(map, "id");
         if (id == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         this.oilCardManagementService.updateById(new OilCardManagement().setId(id).setStatus(StatusEnum.DELETE.getCode()));
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "启用/禁用")
+    @PostMapping(value = "/enableOrDisable")
+    public CommonResult enableOrDisable(@RequestBody Map<String, String> map) {
+        if (StringUtils.isEmpty(map.get("id"))) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        Long id = Long.parseLong(map.get("id"));
+        if (this.oilCardManagementService.enableOrDisable(id)) {
+            return CommonResult.success();
+        } else {
+            return CommonResult.error(ResultEnum.OPR_FAIL);
+        }
     }
 }
 

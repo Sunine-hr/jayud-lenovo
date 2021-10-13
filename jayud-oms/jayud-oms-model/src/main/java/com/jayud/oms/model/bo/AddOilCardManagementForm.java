@@ -3,6 +3,8 @@ package com.jayud.oms.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.utils.DateUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -72,8 +74,12 @@ public class AddOilCardManagementForm extends Model<AddOilCardManagementForm> {
     private String remarks;
 
     @ApiModelProperty(value = "归还日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtils.DATE_TIME_PATTERN)
     private LocalDateTime returnDate;
 
+    @ApiModelProperty(value = "领用日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtils.DATE_TIME_PATTERN)
+    private LocalDateTime consumingDate;
 
     @Override
     protected Serializable pkVal() {

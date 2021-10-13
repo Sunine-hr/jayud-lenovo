@@ -16,16 +16,16 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 油卡管理
+ * 维修管理
  * </p>
  *
  * @author LDR
- * @since 2021-10-11
+ * @since 2021-10-13
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "OilCardManagement对象", description = "油卡管理")
-public class QueryOilCardManagementForm extends BasePageForm {
+@ApiModel(value = "MaintenanceManagement对象", description = "维修管理")
+public class AddMaintenanceManagementForm extends Model<AddMaintenanceManagementForm> {
 
     private static final long serialVersionUID = 1L;
 
@@ -33,13 +33,25 @@ public class QueryOilCardManagementForm extends BasePageForm {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "油卡卡号")
-    private String oilCardNum;
+    @ApiModelProperty(value = "配件名称")
+    @NotBlank(message = "配件名称不能为空")
+    private String fittingName;
 
-    @ApiModelProperty(value = "油卡名称")
-    private String oilName;
+    @ApiModelProperty(value = "车牌")
+    @NotNull(message = "请选择车牌")
+    private String plateNumber;
 
-    @ApiModelProperty(value = "状态(0:禁用 1:启用, 2:删除)")
-    private Integer status;
+    @ApiModelProperty(value = "维修金额")
+    @NotNull(message = "请填写维修金额")
+    private BigDecimal repairAmount;
+
+    @ApiModelProperty(value = "备注")
+    private String remarks;
+
+
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
 
 }

@@ -1,23 +1,22 @@
 package com.jayud.oms.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
+import com.jayud.common.enums.StatusEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.oms.mapper.OilCardManagementMapper;
 import com.jayud.oms.model.bo.AddOilCardManagementForm;
 import com.jayud.oms.model.bo.QueryOilCardManagementForm;
 import com.jayud.oms.model.enums.OilCardRechargeTypeEnum;
 import com.jayud.oms.model.enums.OilCardStatusEnum;
 import com.jayud.oms.model.enums.OilCardTypeEnum;
-import com.jayud.oms.model.po.DictType;
 import com.jayud.oms.model.po.OilCardManagement;
-import com.jayud.oms.mapper.OilCardManagementMapper;
 import com.jayud.oms.model.vo.OilCardManagementVO;
-import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.service.IDriverInfoService;
-import com.jayud.oms.service.IDriverOrderInfoService;
 import com.jayud.oms.service.IOilCardManagementService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oms.service.IVehicleInfoService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,5 +73,26 @@ public class OilCardManagementServiceImpl extends ServiceImpl<OilCardManagementM
         });
 
         return iPage;
+    }
+
+    /**
+     * 更改启用/禁用状态
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public boolean enableOrDisable(Long id) {
+        //查询当前状态
+        QueryWrapper<OilCardManagement> condition = new QueryWrapper<>();
+        condition.lambda().select(OilCardManagement::getStatus).eq(OilCardManagement::getId, id);
+        OilCardManagement tmp = this.baseMapper.selectOne(condition);
+
+        Integer status = 1 == tmp.getStatus() ? StatusEnum.DISABLE.getCode():StatusEnum.ENABLE.getCode();
+
+        OilCardManagement costType = new OilCardManagement().setId(id).setStatus(status)
+                .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
+
+        return this.updateById(costType);
     }
 }

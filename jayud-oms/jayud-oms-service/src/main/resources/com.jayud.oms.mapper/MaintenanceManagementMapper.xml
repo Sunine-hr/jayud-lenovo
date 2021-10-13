@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.MaintenanceManagementMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.MaintenanceManagement">
+        <id column="id" property="id" />
+        <result column="fitting_name" property="fittingName" />
+        <result column="plate_number" property="plateNumber" />
+        <result column="repair_amount" property="repairAmount" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="remarks" property="remarks" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, fitting_name, plate_number, repair_amount, status, create_time, create_user, update_time, update_user, remarks
+    </sql>
+    <select id="findByPage" resultType="com.jayud.oms.model.vo.MaintenanceManagementVO">
+        select
+        id, fitting_name, plate_number, repair_amount, status,
+        create_time, create_user, update_time, update_user, remarks
+        from
+        maintenance_management
+        <where>
+            <if test="form.fittingName!=null and form.fittingName!=''">
+                and fitting_name like concat('%',#{form.fittingName},'%')
+            </if>
+            <if test="form.plateNumber!=null and form.plateNumber!=''">
+                and plate_number like concat('%',#{form.plateNumber},'%')
+            </if>
+            <if test="form.status!=null">
+                and status =#{form.status}
+            </if>
+        </where>
+    </select>
+
+</mapper>

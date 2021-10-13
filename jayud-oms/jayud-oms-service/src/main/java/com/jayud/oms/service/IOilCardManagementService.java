@@ -20,4 +20,6 @@ public interface IOilCardManagementService extends IService<OilCardManagement> {
     void saveOrUpdate(AddOilCardManagementForm form);
 
     IPage<OilCardManagementVO> findByPage(QueryOilCardManagementForm form);
+
+    boolean enableOrDisable(Long id);
 }

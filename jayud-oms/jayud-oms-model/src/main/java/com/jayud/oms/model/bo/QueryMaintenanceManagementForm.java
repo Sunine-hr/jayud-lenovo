@@ -7,37 +7,33 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
  * <p>
- * 油卡管理
+ * 维修管理
  * </p>
  *
  * @author LDR
- * @since 2021-10-11
+ * @since 2021-10-13
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "OilCardManagement对象", description = "油卡管理")
-public class QueryOilCardManagementForm extends BasePageForm {
+@Accessors(chain = true)
+@ApiModel(value = "MaintenanceManagement对象", description = "维修管理")
+public class QueryMaintenanceManagementForm extends BasePageForm {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键")
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    @ApiModelProperty(value = "配件名称")
+    private String fittingName;
 
-    @ApiModelProperty(value = "油卡卡号")
-    private String oilCardNum;
-
-    @ApiModelProperty(value = "油卡名称")
-    private String oilName;
+    @ApiModelProperty(value = "车牌")
+    private String plateNumber;
 
     @ApiModelProperty(value = "状态(0:禁用 1:启用, 2:删除)")
     private Integer status;

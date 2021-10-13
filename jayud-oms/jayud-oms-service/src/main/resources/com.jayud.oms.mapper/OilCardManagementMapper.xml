@@ -31,16 +31,16 @@
         select * from oil_card_management
         <where>
             <if test="form.oilCardNum!=null and form.oilCardNum!=''">
-                oil_card_num like concat('%',#{form.oilCardNum},'%')
+                and oil_card_num like concat('%',#{form.oilCardNum},'%')
             </if>
-            <if test="form.oilCardNum!=null and form.oilCardNum!=''">
-                oil_name like concat('%',#{form.oilName},'%')
+            <if test="form.oilName!=null and form.oilName!=''">
+                and oil_name like concat('%',#{form.oilName},'%')
             </if>
             <if test="form.status!=null">
-                status =#{form.status}
+                and status =#{form.status}
             </if>
         </where>
-
+        order by id desc
     </select>
 
 </mapper>

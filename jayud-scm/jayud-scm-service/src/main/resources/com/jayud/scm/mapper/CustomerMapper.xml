@@ -84,7 +84,7 @@
         reg_tel regTel, tax_no taxNo, company_net companyNet, province_name provinceName, city_name cityName,county_name countyName,
         crt_by_name crtByName, crt_by_dtm crtByDtm, mdy_by_name mdyByName, mdy_by_dtm mdyByDtm,
         province_name provinceName, city_name cityName, county_name countyName,
-        check_state_flag checkStateFlag,  fsales_man fsalesMan,
+        check_state_flag checkStateFlag,  fsales_man fsalesMan,follower_id followerId,fsales_id fsalesId,
         en_customer_name enCustomerName, en_customer_address enCustomerAddress,
         customer_style customerStyle,
         customer_state customerState,remark,  area, agency_brand agencyBrand,
@@ -110,6 +110,9 @@
         </if>
         <if test="form.businessType !=null and form.businessType!=''">
             and co.id in (select customer_id from fee_model where model_type = #{form.businessType})
+        </if>
+        <if test="form.customerName !=null and form.customerName!=''">
+            and co.customer_name like concat('%',#{form.customerName},'%')
         </if>
         <if test="form.type !=null and form.type!=''">
             and co.id in (select customer_id from customer_class where class_name = #{form.type})

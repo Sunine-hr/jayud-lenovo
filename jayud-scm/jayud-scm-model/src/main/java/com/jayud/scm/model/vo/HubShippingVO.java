@@ -92,6 +92,9 @@ public class HubShippingVO {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
+    @ApiModelProperty(value = "总数量")
+    private BigDecimal totalQty;
+
     @ApiModelProperty(value = "总毛重")
     private BigDecimal totalGw;
 

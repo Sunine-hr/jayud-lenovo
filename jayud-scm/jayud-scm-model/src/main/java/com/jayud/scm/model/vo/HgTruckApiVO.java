@@ -3,6 +3,7 @@ package com.jayud.scm.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.jayud.scm.model.bo.AddAddressForm;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -48,6 +50,12 @@ public class HgTruckApiVO {
     private Boolean isVehicleWeigh;
 
     @ApiModelProperty(value = "车次日期")
-    private LocalDateTime truckDate;
+    private String truckDate;
+
+    @ApiModelProperty(value = "提货地址")
+    private List<AddAddressForm> takeAdrForms1;
+
+    @ApiModelProperty(value = "送货地址")
+    private List<AddAddressForm> takeAdrForms2;
 
 }

@@ -24,9 +24,8 @@ import java.time.LocalDateTime;
 @Data
 public class InvoiceDetailVO {
 
-    @ApiModelProperty(value = "自动ID")
-      @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    @ApiModelProperty(value = "应收款明细ID")
+    private Integer invoiceEntryId;
 
     @ApiModelProperty(value = "发票号码")
     @JsonProperty(value = "fBillNo")

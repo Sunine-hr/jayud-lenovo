@@ -65,6 +65,12 @@ public class AccountBankBillController {
     @ApiOperation(value = "新增或修改水单信息")
     @PostMapping(value = "/saveOrUpdateAccountBankBill")
     public CommonResult saveOrUpdateAccountBankBill(@RequestBody AddAccountBankBillForm form) {
+
+
+        if(form.getVerificationMoney()!= null && form.getBillMoney().compareTo(form.getVerificationMoney()) == -1){
+            return CommonResult.error(444,"核销金额应小于等于水单金额");
+        }
+
         boolean result = accountBankBillService.saveOrUpdateAccountBankBill(form);
         if(!result){
             return CommonResult.error(444,"添加或修改水单失败");
@@ -148,6 +154,9 @@ public class AccountBankBillController {
         }
         if(acctReceipt != null){
             return CommonResult.error(1,"该水单已经生成收款单，无法进行到账操作");
+        }
+        if(accountBankBill.getBillArMoney()!= null && accountBankBill.getBillMoney().compareTo(accountBankBill.getBillArMoney()) > -1){
+            return CommonResult.error(444,"到账金额应小于等于水单金额");
         }
         boolean result = accountBankBillService.arrival(form);
         if(!result){

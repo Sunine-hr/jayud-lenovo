@@ -1,6 +1,7 @@
 package com.jayud.scm.service;
 
 import com.jayud.scm.model.bo.AddAccountBankBillEntryForm;
+import com.jayud.scm.model.bo.AddAccountBankBillEntryForm2;
 import com.jayud.scm.model.po.AccountBankBillEntry;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -18,5 +19,5 @@ public interface IAccountBankBillEntryService extends IService<AccountBankBillEn
 
     List<AccountBankBillEntry> getListByAccountBankBillId(Long id);
 
-    boolean addAccountBankBillEntry(List<AddAccountBankBillEntryForm> form);
+    boolean addAccountBankBillEntry(AddAccountBankBillEntryForm2 form);
 }

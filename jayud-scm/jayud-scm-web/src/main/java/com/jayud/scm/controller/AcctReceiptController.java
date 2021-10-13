@@ -4,13 +4,13 @@ package com.jayud.scm.controller;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
+import com.jayud.common.UserOperator;
 import com.jayud.scm.model.bo.*;
-import com.jayud.scm.model.po.AcctPay;
-import com.jayud.scm.model.po.AcctReceipt;
+import com.jayud.scm.model.enums.TableEnum;
+import com.jayud.scm.model.po.*;
 import com.jayud.scm.model.vo.AccountBankBillVO;
 import com.jayud.scm.model.vo.AcctReceiptVO;
-import com.jayud.scm.service.IAcctPayService;
-import com.jayud.scm.service.IAcctReceiptService;
+import com.jayud.scm.service.*;
 import com.jayud.scm.utils.ExcelTemplateUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,15 @@ public class AcctReceiptController {
 
     @Autowired
     private IAcctPayService acctPayService;
+
+    @Autowired
+    private ISystemUserService systemUserService;
+
+    @Autowired
+    private ISystemRoleActionService systemRoleActionService;
+
+    @Autowired
+    private ISystemUserRoleRelationService systemUserRoleRelationService;
 
     @ApiOperation(value = "根据id查询收款单信息")
     @PostMapping(value = "/getAcctReceiptById")
@@ -159,6 +169,39 @@ public class AcctReceiptController {
         System.out.println(originalFilename);
         acctReceiptService.importAcctReceipt(file);
         return CommonResult.success("导入成功!");
+    }
+
+    @ApiOperation(value = "反审")
+    @PostMapping(value = "/reverseReviewAcctReceipt")
+    public CommonResult reverseReviewAcctReceipt(@RequestBody PermissionForm form) {
+        //获取登录用户
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        //获取按钮权限
+//        SystemAction systemAction = systemActionService.getSystemActionByActionCode(form.getActionCode());
+
+        if(!systemUser.getUserName().equals("admin")){
+            //获取登录用户所属角色
+            List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
+            for (SystemRole systemRole : enabledRolesByUserId) {
+                SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),form.getActionCode());
+                if(systemRoleAction == null){
+                    return CommonResult.error(444,"该用户没有该按钮权限");
+                }
+            }
+        }
+
+        //拥有按钮权限，判断是否为审核按钮
+
+        form.setTable(TableEnum.getDesc(form.getKey()));
+        form.setUserId(systemUser.getId().intValue());
+        form.setUserName(systemUser.getUserName());
+        AcctReceipt acctReceipt = acctReceiptService.getById(form.getId());
+        if(acctReceipt.getIsClaim().equals(1)){
+            return CommonResult.error(444,"该收款单已认领，无法反审，请取消认领后在审核");
+        }
+
+        return acctReceiptService.reverseReviewAcctReceipt(form);
     }
 }
 

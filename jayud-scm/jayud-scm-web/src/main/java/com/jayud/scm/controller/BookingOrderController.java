@@ -1,6 +1,7 @@
 package com.jayud.scm.controller;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -24,11 +25,13 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.util.ArrayListWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +70,9 @@ public class BookingOrderController {
     @Autowired
     private IHgBillService hgBillService;
 
+    @Autowired
+    private ICheckOrderEntryService checkOrderEntryService;
+
     /*
         TODO 出口委托单：主表 查询 新增 修改 删除 查看 审核 反审 打印 复制
     */
@@ -104,14 +110,17 @@ public class BookingOrderController {
         form.setFsalesName(customerMaintenanceSetup.getWhUserName());
         form.setFollowerName(customerMaintenanceSetup1.getWhUserName());
 
-        QueryWrapper<BookingOrder> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(BookingOrder::getContractNo,form.getContractNo());
-        queryWrapper.lambda().eq(BookingOrder::getVoided,0);
-        BookingOrder bookingOrder = bookingOrderService.getOne(queryWrapper);
+        if(form.getId() == null){
+            QueryWrapper<BookingOrder> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(BookingOrder::getContractNo,form.getContractNo());
+            queryWrapper.lambda().eq(BookingOrder::getVoided,0);
+            BookingOrder bookingOrder = bookingOrderService.getOne(queryWrapper);
 
-        if(bookingOrder != null){
-            return CommonResult.error(444,"该客户合同号已存在");
+            if(bookingOrder != null){
+                return CommonResult.error(444,"该客户合同号已存在");
+            }
         }
+
 
         bookingOrderService.saveBookingOrder(form);
         return CommonResult.success("保存成功!");
@@ -168,7 +177,7 @@ public class BookingOrderController {
         }
 
         //调用存储过程，查看委托单是否能审核或反审
-        CommonResult commonResult = bookingOrderService.upOrderCheckValidate(form.getId());
+        CommonResult commonResult = bookingOrderService.upOrderCheckValidate(form.getId(),1);
         if(commonResult.getCode().equals(1)){
             return commonResult;
         }
@@ -206,7 +215,7 @@ public class BookingOrderController {
         }
 
         //调用存储过程，查看委托单是否能审核或反审
-        CommonResult commonResult = bookingOrderService.upOrderCheckValidate(form.getId());
+        CommonResult commonResult = bookingOrderService.upOrderCheckValidate(form.getId(),0);
         if(commonResult.getCode().equals(1)){
             return commonResult;
         }
@@ -503,6 +512,47 @@ public class BookingOrderController {
             return CommonResult.error(444,"生成报关单失败");
         }
         return CommonResult.success();
+    }
+
+    /*
+        新增提验货获取委托单商品明细
+    */
+    @ApiOperation(value = "新增提验货获取委托单商品明细")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="bookingId", dataType = "Integer", value = "委托单id", required = true)
+    })
+    @PostMapping(value = "/findBookingOrderEntryByBookingIdAnd")
+    public CommonResult<List<BookingOrderEntryVO>>  findBookingOrderEntryByBookingIdAnd(@Valid @RequestBody Map<String,Object> map){
+        Integer bookingId = MapUtil.getInt(map, "bookingId");
+        if(ObjectUtil.isEmpty(bookingId)){
+            return CommonResult.error(-1,"委托单id不能为空");
+        }
+        List<BookingOrderEntryVO> bookingOrderEntryList = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingId);
+        for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryList) {
+            List<CheckOrderEntry> checkOrderEntries = checkOrderEntryService.getCheckOrderEntryByBookingEntryId(bookingOrderEntryVO.getId());
+            if(CollectionUtil.isNotEmpty(checkOrderEntries)){
+                CheckOrderEntry checkOrderEntry1 = new CheckOrderEntry();
+                for (CheckOrderEntry checkOrderEntry : checkOrderEntries) {
+                    checkOrderEntry1.setQty((checkOrderEntry1.getQty()!=null ?checkOrderEntry1.getQty():new BigDecimal(0)).add(checkOrderEntry.getQty()!=null ?checkOrderEntry.getQty():new BigDecimal(0)));
+                    checkOrderEntry1.setCbm((checkOrderEntry1.getCbm()!=null ?checkOrderEntry1.getCbm():new BigDecimal(0)).add(checkOrderEntry.getCbm()!=null ?checkOrderEntry.getCbm():new BigDecimal(0)));
+                    checkOrderEntry1.setGw((checkOrderEntry1.getGw()!=null ?checkOrderEntry1.getGw():new BigDecimal(0)).add(checkOrderEntry.getGw()!=null ?checkOrderEntry.getGw():new BigDecimal(0)));
+                    checkOrderEntry1.setNw((checkOrderEntry1.getNw()!=null ?checkOrderEntry1.getNw():new BigDecimal(0)).add(checkOrderEntry.getNw()!=null ?checkOrderEntry.getNw():new BigDecimal(0)));
+                }
+                if(checkOrderEntry1.getQty().compareTo(bookingOrderEntryVO.getQty()) > -1){
+                    bookingOrderEntryList.remove(bookingOrderEntryVO);
+                }else{
+                    bookingOrderEntryVO.setQty(bookingOrderEntryVO.getQty().subtract(checkOrderEntry1.getQty()));
+                    bookingOrderEntryVO.setNw((bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0)).subtract(checkOrderEntry1.getNw()));
+                    bookingOrderEntryVO.setCbm((bookingOrderEntryVO.getCbm()!=null ?bookingOrderEntryVO.getCbm():new BigDecimal(0)).subtract(checkOrderEntry1.getCbm()));
+                    bookingOrderEntryVO.setGw((bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0)).subtract(checkOrderEntry1.getGw()));
+                    bookingOrderEntryVO.setBookingEntryId(bookingOrderEntryVO.getId());
+                }
+            }
+        }
+        if(CollectionUtils.isEmpty(bookingOrderEntryList)){
+            return CommonResult.success();
+        }
+        return CommonResult.success(bookingOrderEntryList);
     }
 
 }

@@ -21,6 +21,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -147,6 +148,16 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
         HubShipping hubShipping = ConvertUtil.convert(form, HubShipping.class);
         HubShippingFollow hubShippingFollow = new HubShippingFollow();
 
+        List<AddHubShippingEntryForm> addHubShippingEntryFormList = form.getAddHubShippingEntryFormList();
+        for (AddHubShippingEntryForm addHubShippingEntryForm : addHubShippingEntryFormList) {
+            hubShipping.setTotalQty((addHubShippingEntryForm.getQty()!=null ?addHubShippingEntryForm.getQty():new BigDecimal(0)).add(addHubShippingEntryForm.getQty()!=null ?addHubShippingEntryForm.getQty():new BigDecimal(0)));
+            hubShipping.setTotaCbm((addHubShippingEntryForm.getCbm()!=null ?addHubShippingEntryForm.getCbm():new BigDecimal(0)).add(addHubShippingEntryForm.getCbm()!=null ?addHubShippingEntryForm.getCbm():new BigDecimal(0)));
+            hubShipping.setTotalGw((addHubShippingEntryForm.getGw()!=null ?addHubShippingEntryForm.getGw():new BigDecimal(0)).add(addHubShippingEntryForm.getGw()!=null ?addHubShippingEntryForm.getGw():new BigDecimal(0)));
+            hubShipping.setTotaNw((addHubShippingEntryForm.getNw()!=null ?addHubShippingEntryForm.getNw():new BigDecimal(0)).add(addHubShippingEntryForm.getNw()!=null ?addHubShippingEntryForm.getNw():new BigDecimal(0)));
+            hubShipping.setTotaPackages((addHubShippingEntryForm.getPackages()!=null ?addHubShippingEntryForm.getPackages(): 0) + (addHubShippingEntryForm.getPackages()!=null ?addHubShippingEntryForm.getPackages():0));
+            hubShipping.setTotaPallets((addHubShippingEntryForm.getPallets()!=null ?addHubShippingEntryForm.getPallets():0) + (addHubShippingEntryForm.getPallets()!=null ?addHubShippingEntryForm.getPallets():0));
+        }
+
         if(hubShipping.getId() != null){
             hubShipping.setMdyByName(systemUser.getUserName());
             hubShipping.setMdyBy(systemUser.getId().intValue());
@@ -164,7 +175,7 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
         boolean update = this.saveOrUpdate(hubShipping);
         if(update){
             log.warn("修改或新增出库单成功"+hubShipping);
-            List<AddHubShippingEntryForm> addHubShippingEntryFormList = form.getAddHubShippingEntryFormList();
+
             List<HubShippingEntry> hubShippingEntries = ConvertUtil.convertList(addHubShippingEntryFormList, HubShippingEntry.class);
             for (HubShippingEntry hubShippingEntry : hubShippingEntries) {
                 if(hubShippingEntry.getId() != null){

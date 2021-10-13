@@ -19,4 +19,10 @@ public class QueryForm extends BasePageForm{
     @ApiModelProperty("id")
     private Integer id;
 
+    @ApiModelProperty("id")
+    private Integer customerId;
+
+    @ApiModelProperty("id")
+    private Integer modelType;
+
 }

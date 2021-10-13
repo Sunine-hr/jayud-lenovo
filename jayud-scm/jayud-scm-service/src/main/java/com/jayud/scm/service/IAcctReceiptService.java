@@ -1,9 +1,7 @@
 package com.jayud.scm.service;
 
-import com.jayud.scm.model.bo.AddAcctReceiptClaimForm;
-import com.jayud.scm.model.bo.AddAcctReceiptForm;
-import com.jayud.scm.model.bo.DeleteForm;
-import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.common.CommonResult;
+import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.po.AccountBankBill;
 import com.jayud.scm.model.po.AcctReceipt;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -41,4 +39,6 @@ public interface IAcctReceiptService extends IService<AcctReceipt> {
     void importAcctReceipt(MultipartFile file);
 
     boolean claim(AddAcctReceiptClaimForm form);
+
+    CommonResult reverseReviewAcctReceipt(PermissionForm form);
 }

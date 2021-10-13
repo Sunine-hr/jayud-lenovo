@@ -51,6 +51,9 @@ public class AcctReceiptServiceImpl extends ServiceImpl<AcctReceiptMapper, AcctR
     @Autowired
     private IBDataDicEntryService ibDataDicEntryService;
 
+    @Autowired
+    private ICustomerService customerService;
+
     @Override
     public AcctReceipt getAcctReceiptByJoinBillId(Integer id) {
         QueryWrapper<AcctReceipt> queryWrapper = new QueryWrapper();
@@ -340,5 +343,27 @@ public class AcctReceiptServiceImpl extends ServiceImpl<AcctReceiptMapper, AcctR
             }
         }
         return result;
+    }
+
+    @Override
+    public CommonResult reverseReviewAcctReceipt(PermissionForm form) {
+        AcctReceiptFollow acctReceiptFollow = new AcctReceiptFollow();
+        acctReceiptFollow.setReceiptId(form.getId().intValue());
+        acctReceiptFollow.setSType(OperationEnum.UPDATE.getCode());
+        acctReceiptFollow.setCrtBy(form.getId().intValue());
+        acctReceiptFollow.setCrtByDtm(LocalDateTime.now());
+        acctReceiptFollow.setCrtByName(form.getUserName());
+
+        CommonResult commonResult = customerService.deApproval(form);
+        if(commonResult.getCode().equals(0)){
+            acctReceiptFollow.setFollowContext("收款单反审成功");
+        }else {
+            acctReceiptFollow.setFollowContext("收款单反审失败");
+        }
+        boolean save = this.acctReceiptFollowService.save(acctReceiptFollow);
+        if(save){
+            log.warn("收款单，操作日志添加成功");
+        }
+        return commonResult;
     }
 }

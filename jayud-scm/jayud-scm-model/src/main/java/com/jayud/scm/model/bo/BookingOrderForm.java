@@ -96,6 +96,9 @@ public class BookingOrderForm {
     @NotNull(message = "结算id，不能为空")
     private Integer arfeeId;
 
+    @ApiModelProperty(value = "结算方案备注")
+    private String arfeeRemark;
+
     @ApiModelProperty(value = "综合费率")
     @NotNull(message = "综合费率，不能为空")
     private BigDecimal proxyFee;

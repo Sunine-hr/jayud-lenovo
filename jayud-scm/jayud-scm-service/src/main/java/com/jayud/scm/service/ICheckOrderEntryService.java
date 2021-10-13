@@ -28,4 +28,6 @@ public interface ICheckOrderEntryService extends IService<CheckOrderEntry> {
     IPage<CheckOrderEntryVO> findByPage(QueryCommonForm form);
 
     List<CheckOrderEntry> getCheckOrderEntryByBookingId(Integer bookingId);
+
+    List<CheckOrderEntry> getCheckOrderEntryByBookingEntryId(Integer id);
 }

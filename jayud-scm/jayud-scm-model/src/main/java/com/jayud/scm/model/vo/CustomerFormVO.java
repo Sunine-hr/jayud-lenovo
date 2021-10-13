@@ -45,6 +45,12 @@ public class CustomerFormVO {
     @ApiModelProperty(value = "商务")
     private String followerName;
 
+    @ApiModelProperty(value = "商务id")
+    private String followerId;
+
+    @ApiModelProperty(value = "业务id")
+    private String fsalesId;
+
     @ApiModelProperty(value = "业务类型")
     private String businessType;
 

@@ -15,20 +15,13 @@ import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.TokenGenerator;
-import com.jayud.scm.model.bo.AddHgTruckForm;
-import com.jayud.scm.model.bo.BizData;
-import com.jayud.scm.model.bo.OutAuthenticationForm;
-import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.bo.*;
+import com.jayud.scm.model.po.BDataDicEntry;
 import com.jayud.scm.model.po.BookingOrder;
 import com.jayud.scm.model.po.HgTruck;
 import com.jayud.scm.model.po.SystemUser;
-import com.jayud.scm.model.vo.HgTruckApiVO;
-import com.jayud.scm.model.vo.HgTruckVO;
-import com.jayud.scm.model.vo.SystemUserVO;
-import com.jayud.scm.model.vo.UserLoginToken;
-import com.jayud.scm.service.IBookingOrderService;
-import com.jayud.scm.service.IHgTruckService;
-import com.jayud.scm.service.ISystemUserService;
+import com.jayud.scm.model.vo.*;
+import com.jayud.scm.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -41,10 +34,9 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @RequestMapping("/api")
 @Api(tags = "港车对外接口")
@@ -72,6 +64,15 @@ public class HgTruckApi {
 
     @Autowired
     private IBookingOrderService bookingOrderService;
+
+    @Autowired
+    private IBookingOrderEntryService bookingOrderEntryService;
+
+    @Autowired
+    private IBDataDicEntryService ibDataDicEntryService;
+
+    @Autowired
+    private IHubShippingService hubShippingService;
 
     @ApiOperation(value = "对外授权", notes = "sign签名方法: md5(账号+时间轴转json+密码)")
     @PostMapping(value = "/login")
@@ -162,7 +163,9 @@ public class HgTruckApi {
         hgTruckApiVO.setPortName(hgTruckVO.getOutPort());
         hgTruckApiVO.setOrderNo(hgTruckVO.getTruckNo());
         hgTruckApiVO.setPreTruckStyle(hgTruckVO.getPreTruckStyle());
-        hgTruckApiVO.setTruckDate(hgTruckVO.getTruckDate());
+        DateTimeFormatter dtf3 = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String date = dtf3.format(hgTruckVO.getTruckDate());
+        hgTruckApiVO.setTruckDate(date);
         hgTruckApiVO.setWarehouseInfo(hgTruckVO.getShippingHubName());
 
 
@@ -180,10 +183,11 @@ public class HgTruckApi {
                 .header("token",s)
                 .body(JSONUtil.toJsonStr(hgTruckApiVO))
                 .execute().body();
+        System.out.println("carBookingSubmissionfeedback:"+feedback);
         //获取token
         Map map1 = JSONUtil.toBean(feedback, Map.class);
         System.out.println(map1);
-        if(map1.get("code").equals(0)){
+        if(map1.get("code").equals(200)){
             return CommonResult.success();
         }
         return CommonResult.error((Integer)map1.get("code"),(String)map1.get("msg"));
@@ -196,11 +200,120 @@ public class HgTruckApi {
         Integer id = MapUtil.getInt(map, "id");
         HgTruckVO hgTruckVO = hgTruckService.getHgTruckById(id);
         HgTruckApiVO hgTruckApiVO = new HgTruckApiVO();
+        if(hgTruckVO.getModelType().equals(1)){
+            hgTruckApiVO.setBizType("进口");
+        }else if(hgTruckVO.getModelType().equals(2)){
+            hgTruckApiVO.setBizType("出口");
+        }else {
+            return CommonResult.error(444,"只有进出口的单才能进行该操作");
+        }
+        hgTruckApiVO.setIsVehicleWeigh(false);
+        hgTruckApiVO.setPortName(hgTruckVO.getOutPort());
         hgTruckApiVO.setOrderNo(hgTruckVO.getTruckNo());
+        hgTruckApiVO.setPreTruckStyle(hgTruckVO.getPreTruckStyle());
+        DateTimeFormatter dtf3 = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String date = dtf3.format(hgTruckVO.getTruckDate());
+        hgTruckApiVO.setTruckDate(date);
+        hgTruckApiVO.setWarehouseInfo(hgTruckVO.getShippingHubName());
 
         List<BookingOrder> bookingOrderByHgTrackId = bookingOrderService.getBookingOrderByHgTrackId(id);
         if(CollectionUtils.isEmpty(bookingOrderByHgTrackId)){
             return CommonResult.error(444,"该港车单未绑定委托单");
+        }
+
+        if(hgTruckVO.getModelType().equals(1)){
+            List<AddAddressForm> takeAdrForms1 = new ArrayList<>();
+            List<AddAddressForm> takeAdrForms2 = new ArrayList<>();
+            BDataDicEntry dicEntryByDicCode = ibDataDicEntryService.getBDataDicEntryByDicCode("1049", "香港仓");
+            BDataDicEntry dicEntryByDicCode1 = ibDataDicEntryService.getBDataDicEntryByDicCode("1049", "深圳仓");
+
+            for (BookingOrder bookingOrder : bookingOrderByHgTrackId) {
+                List<BookingOrderEntryVO> bookingOrderEntryByBookingId = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingOrder.getId());
+                AddAddressForm addAddressForm = new AddAddressForm();
+                AddAddressForm addAddressForm1 = new AddAddressForm();
+                for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryByBookingId) {
+                    addAddressForm.setPieceAmount(((bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0)).add(bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0))).intValue());
+                    addAddressForm.setWeight(((bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0)).add(bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0))).doubleValue());
+                    addAddressForm.setVolume(((bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0)).add(bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0))).doubleValue());
+                    addAddressForm1.setPieceAmount(((bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0)).add(bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0))).intValue());
+                    addAddressForm1.setWeight(((bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0)).add(bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0))).doubleValue());
+                    addAddressForm1.setVolume(((bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0)).add(bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0))).doubleValue());
+                }
+                addAddressForm.setCityName(dicEntryByDicCode.getReserved3());
+                if(dicEntryByDicCode.getReserved4() != null){
+                    addAddressForm.setAreaName(dicEntryByDicCode.getReserved4());
+                }
+                addAddressForm.setProvinceName(dicEntryByDicCode.getReserved2());
+                addAddressForm.setAddress(dicEntryByDicCode.getReserved5());
+                String[] s = dicEntryByDicCode.getReserved1().split(" ");
+                addAddressForm.setContacts(s[0]);
+                addAddressForm.setPhone(s[1]);
+                addAddressForm.setGoodsDesc(bookingOrderEntryByBookingId.get(0).getItemName());
+
+                addAddressForm1.setCityName(dicEntryByDicCode1.getReserved3());
+                if(dicEntryByDicCode1.getReserved4() != null){
+                    addAddressForm1.setAreaName(dicEntryByDicCode1.getReserved4());
+                }
+                addAddressForm1.setProvinceName(dicEntryByDicCode1.getReserved2());
+                addAddressForm1.setAddress(dicEntryByDicCode1.getReserved5());
+                String[] s1 = dicEntryByDicCode.getReserved1().split(" ");
+                addAddressForm1.setContacts(s1[0]);
+                addAddressForm1.setPhone(s1[1]);
+                addAddressForm1.setGoodsDesc(bookingOrderEntryByBookingId.get(0).getItemName());
+                takeAdrForms1.add(addAddressForm);
+                takeAdrForms2.add(addAddressForm1);
+            }
+            hgTruckApiVO.setTakeAdrForms1(takeAdrForms1);
+            hgTruckApiVO.setTakeAdrForms2(takeAdrForms2);
+        }else if(hgTruckVO.getModelType().equals(2)) {
+            List<AddAddressForm> takeAdrForms1 = new ArrayList<>();
+            List<AddAddressForm> takeAdrForms2 = new ArrayList<>();
+            List<Integer> integers = new ArrayList<>();
+            BDataDicEntry dicEntryByDicCode1 = ibDataDicEntryService.getBDataDicEntryByDicCode("1049", "深圳仓");
+            for (BookingOrder bookingOrder : bookingOrderByHgTrackId) {
+                List<BookingOrderEntryVO> bookingOrderEntryByBookingId = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingOrder.getId());
+                AddAddressForm addAddressForm = new AddAddressForm();
+                for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryByBookingId) {
+                    addAddressForm.setPieceAmount(((bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0)).add(bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0))).intValue());
+                    addAddressForm.setWeight(((bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0)).add(bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0))).doubleValue());
+                    addAddressForm.setVolume(((bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0)).add(bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0))).doubleValue());
+                }
+
+                //拼接地址  填充地址信息
+                addAddressForm.setCityName(dicEntryByDicCode1.getReserved3());
+                if(dicEntryByDicCode1.getReserved4() != null){
+                    addAddressForm.setAreaName(dicEntryByDicCode1.getReserved4());
+                }
+                addAddressForm.setProvinceName(dicEntryByDicCode1.getReserved2());
+                addAddressForm.setAddress(dicEntryByDicCode1.getReserved5());
+                String[] s1 = dicEntryByDicCode1.getReserved1().split(" ");
+                addAddressForm.setContacts(s1[0]);
+                addAddressForm.setPhone(s1[1]);
+                addAddressForm.setGoodsDesc(bookingOrderEntryByBookingId.get(0).getItemName());
+                takeAdrForms1.add(addAddressForm);
+
+                integers.add(bookingOrder.getId());
+
+            }
+            QueryCommonForm queryCommonForm = new QueryCommonForm();
+            queryCommonForm.setIds(integers);
+            List<HubShippingVO> hubShippingByBookingId = hubShippingService.getHubShippingByBookingId(queryCommonForm);
+            if(CollectionUtils.isEmpty(hubShippingByBookingId)){
+                return CommonResult.error(444,"该委托单还没有出库单");
+            }
+            for (HubShippingVO hubShippingVO : hubShippingByBookingId) {
+                AddAddressForm addAddressForm = new AddAddressForm();
+                addAddressForm.setPieceAmount(hubShippingVO.getTotalQty().intValue());
+                addAddressForm.setWeight(hubShippingVO.getTotalGw().doubleValue());
+                addAddressForm.setVolume(hubShippingVO.getTotaCbm().doubleValue());
+                addAddressForm.setContacts(hubShippingVO.getWhName());
+                addAddressForm.setPhone(hubShippingVO.getWhTel());
+                addAddressForm.setGoodsDesc(hubShippingByBookingId.get(0).getAddHubShippingEntryFormList().get(0).getItemName());
+                addAddressForm.setAddress(hubShippingVO.getWhAddress());
+                takeAdrForms2.add(addAddressForm);
+            }
+            hgTruckApiVO.setTakeAdrForms1(takeAdrForms1);
+            hgTruckApiVO.setTakeAdrForms2(takeAdrForms2);
         }
 
         OutAuthenticationForm outAuthenticationForm = new OutAuthenticationForm();
@@ -217,15 +330,14 @@ public class HgTruckApi {
                 .header("token",s)
                 .body(JSONUtil.toJsonStr(hgTruckApiVO))
                 .execute().body();
+        System.out.println("detailSubmissionfeedback:"+feedback);
         //获取token
         Map map1 = JSONUtil.toBean(feedback, Map.class);
-        if(map1.get("code").equals(0)){
+        if(map1.get("code").equals(200)){
             return CommonResult.success();
         }
         return CommonResult.error(444,"明细提交失败");
     }
-
-
 
 
     @ApiOperation(value = "获取车次状态")
@@ -344,6 +456,7 @@ public class HgTruckApi {
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .body(JSONUtil.toJsonStr(requestMap))
                 .execute().body();
+        System.out.println("loginnamefeedback:"+feedback);
         //获取token
         Map map = JSONUtil.toBean(feedback, Map.class);
         String data = MapUtil.getStr(map, "data");

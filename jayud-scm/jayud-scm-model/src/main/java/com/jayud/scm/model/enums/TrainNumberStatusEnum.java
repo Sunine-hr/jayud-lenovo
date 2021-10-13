@@ -29,4 +29,13 @@ public enum TrainNumberStatusEnum {
         }
         return "";
     }
+
+    public static Integer getCode(String desc) {
+        for (TrainNumberStatusEnum value : values()) {
+            if (Objects.equals(desc, value.getDesc())) {
+                return value.getCode();
+            }
+        }
+        return null;
+    }
 }

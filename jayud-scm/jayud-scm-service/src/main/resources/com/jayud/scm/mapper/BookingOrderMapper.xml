@@ -203,7 +203,7 @@
             and t.`hg_truck_id` = #{form.hgTruckId}
         </if>
         <if test="form.customerName !=null and form.customerName !=''">
-            and t.`customer_name` = #{form.customerName}
+            and t.`customer_name` = like concat('%',#{form.customerName},'%')
         </if>
     </select>
 

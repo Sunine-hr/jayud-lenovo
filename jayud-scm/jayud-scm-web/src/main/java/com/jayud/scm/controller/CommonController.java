@@ -198,9 +198,9 @@ public class CommonController {
             case 7:
                 result = customerService.delete(deleteForm);
                 break;
-            case 17:
-                result = hubReceivingService.delete(deleteForm);
-                break;
+//            case 17:
+//                result = hubReceivingService.delete(deleteForm);
+//                break;
             case 18:
                 result = hubShippingService.delete(deleteForm);
                 break;

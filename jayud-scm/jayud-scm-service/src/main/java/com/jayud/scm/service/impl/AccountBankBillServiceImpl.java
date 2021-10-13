@@ -179,12 +179,13 @@ public class AccountBankBillServiceImpl extends ServiceImpl<AccountBankBillMappe
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
         AccountBankBill accountBankBill = this.getById(form.getId());
+        accountBankBill.setBillArMoney(form.getBillArMoney());
 
         if(accountBankBill.getVerificationMoney() == null || accountBankBill.getVerificationMoney().compareTo(new BigDecimal(0)) < 1 || accountBankBill.getBillArMoney().compareTo(accountBankBill.getVerificationMoney()) ==0){
             accountBankBill.setVerificationMoney(form.getBillArMoney());
         }
 
-        accountBankBill.setBillArMoney(form.getBillArMoney());
+        accountBankBill.setShouFee(accountBankBill.getBillMoney().subtract(accountBankBill.getBillArMoney()));
         accountBankBill.setAccountDate(DateUtil.stringToLocalDateTime(form.getAccountDate(),"yyyy-MM-dd HH:mm:ss"));
         accountBankBill.setMdyBy(form.getId().intValue());
         accountBankBill.setMdyByDtm(LocalDateTime.now());

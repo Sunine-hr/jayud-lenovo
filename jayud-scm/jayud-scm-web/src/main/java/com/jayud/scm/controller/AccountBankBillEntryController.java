@@ -4,6 +4,7 @@ package com.jayud.scm.controller;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddAccountBankBillEntryForm;
+import com.jayud.scm.model.bo.AddAccountBankBillEntryForm2;
 import com.jayud.scm.model.bo.AddCheckOrderEntryForm;
 import com.jayud.scm.model.po.AccountBankBillEntry;
 import com.jayud.scm.service.IAccountBankBillEntryService;
@@ -34,11 +35,11 @@ public class AccountBankBillEntryController {
     @Autowired
     private IAccountBankBillEntryService accountBankBillEntryService;
 
-    @ApiOperation(value = "新增提货验货单明细")
+    @ApiOperation(value = "新增水单明细")
     @PostMapping(value = "/addCheckOrderEntry")
-    public CommonResult addAccountBankBillEntry(@RequestBody List<AddAccountBankBillEntryForm> form) {
+    public CommonResult addAccountBankBillEntry(@RequestBody AddAccountBankBillEntryForm2 form) {
 
-        if(CollectionUtils.isEmpty(form)){
+        if(CollectionUtils.isEmpty(form.getAddAccountBankBillEntryForms())){
             return CommonResult.error(444,"新增数据不能为空");
         }
 

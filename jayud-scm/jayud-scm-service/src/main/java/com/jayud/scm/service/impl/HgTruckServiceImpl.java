@@ -9,6 +9,7 @@ import com.jayud.scm.model.bo.HgTruckLicensePlateForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
+import com.jayud.scm.model.enums.TrainNumberStatusEnum;
 import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.HgTruckMapper;
 import com.jayud.scm.model.vo.HgTruckVO;
@@ -168,7 +169,7 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
 
         HgTruck hgTruck = new HgTruck();
         hgTruck.setId(form.getId());
-        hgTruck.setStateFlag(form.getStatus());
+        hgTruck.setStateFlag(TrainNumberStatusEnum.getCode(form.getTrainStatus()));
         hgTruck.setMdyBy(systemUser.getId().intValue());
         hgTruck.setMdyByDtm(LocalDateTime.now());
         hgTruck.setMdyByName(systemUser.getUserName());
@@ -244,30 +245,36 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
     public boolean unboundTrainNumber(QueryCommonForm form) {
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
-        BookingOrder bookingOrder = new BookingOrder();
-        bookingOrder.setId(form.getId());
-        bookingOrder.setHgTruckId(null);
-        bookingOrder.setHgTruckNo(null);
-        bookingOrder.setMdyBy(systemUser.getId().intValue());
-        bookingOrder.setMdyByDtm(LocalDateTime.now());
-        bookingOrder.setMdyByName(systemUser.getUserName());
-        boolean update = this.bookingOrderService.updateById(bookingOrder);
+        List<BookingOrder> bookingOrders = new ArrayList<>();
+        List<BookingOrderFollow> bookingOrderFollows = new ArrayList<>();
+        for (Integer id : form.getIds()) {
+            BookingOrder bookingOrder = new BookingOrder();
+            bookingOrder.setId(id);
+            bookingOrder.setHgTruckId(null);
+            bookingOrder.setHgTruckNo(null);
+            bookingOrder.setMdyBy(systemUser.getId().intValue());
+            bookingOrder.setMdyByDtm(LocalDateTime.now());
+            bookingOrder.setMdyByName(systemUser.getUserName());
+            bookingOrders.add(bookingOrder);
 
-        if(update){
-            log.warn("解绑车次成功");
+
             BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
-            bookingOrderFollow.setBookingId(form.getId());
+            bookingOrderFollow.setBookingId(id);
             bookingOrderFollow.setSType(OperationEnum.UPDATE.getCode());
             bookingOrderFollow.setFollowContext("解绑车次");
             bookingOrderFollow.setCrtBy(systemUser.getId().intValue());
             bookingOrderFollow.setCrtByDtm(LocalDateTime.now());
             bookingOrderFollow.setCrtByName(systemUser.getUserName());
-            boolean save = this.bookingOrderFollowService.save(bookingOrderFollow);
-            if(!save){
+            bookingOrderFollows.add(bookingOrderFollow);
+        }
+        boolean update = this.bookingOrderService.updateBatchById(bookingOrders);
+        if(update){
+            log.warn("解绑车次成功");
+            boolean save = this.bookingOrderFollowService.saveBatch(bookingOrderFollows);
+            if (!save) {
                 log.warn("解绑车次成功，委托单日志添加成功");
             }
         }
-
         return update;
     }
 

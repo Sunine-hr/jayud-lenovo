@@ -20,6 +20,9 @@ public class BookingOrderEntryVO {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    @ApiModelProperty(value = "自动id")
+    private Integer bookingEntryId;
+
     @ApiModelProperty(value = "委托单id")
     private Integer bookingId;
 

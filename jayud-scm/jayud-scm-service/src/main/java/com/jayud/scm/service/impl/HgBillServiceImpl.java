@@ -8,6 +8,7 @@ import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.HgBillMapper;
+import com.jayud.scm.model.vo.BookingOrderEntryVO;
 import com.jayud.scm.model.vo.BookingOrderVO;
 import com.jayud.scm.model.vo.HgBillVO;
 import com.jayud.scm.model.vo.HubShippingVO;
@@ -44,6 +45,9 @@ public class HgBillServiceImpl extends ServiceImpl<HgBillMapper, HgBill> impleme
 
     @Autowired
     private IBookingOrderService bookingOrderService;
+
+    @Autowired
+    private ICommodityService commodityService;
 
     @Override
     public List<HgBillVO> getHgBillByBookingId(QueryCommonForm form) {
@@ -128,12 +132,17 @@ public class HgBillServiceImpl extends ServiceImpl<HgBillMapper, HgBill> impleme
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
         BookingOrderVO bookingOrderById = bookingOrderService.getBookingOrderById(bookingId);
+        List<BookingOrderEntryVO> bookingOrderEntryList = bookingOrderById.getBookingOrderEntryList();
 
         HgBill hgBill = ConvertUtil.convert(bookingOrderById, HgBill.class);
         hgBill.setCrtBy(systemUser.getId().intValue());
         hgBill.setCrtByDtm(LocalDateTime.now());
         hgBill.setCrtByName(systemUser.getUserName());
         hgBill.setCheckStateFlag("N0");
+        hgBill.setCustomsNo(bookingOrderById.getContractNo());
+        hgBill.setBillDate(LocalDateTime.now());
+        hgBill.setBillNo(commodityService.getOrderNo(NoCodeEnum.HG_BILL.getCode(),LocalDateTime.now()));
+        hgBill.setCustomerBillNo(bookingOrderById.getContractNo());
 
         boolean save = this.save(hgBill);
         if(save){

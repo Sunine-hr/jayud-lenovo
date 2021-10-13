@@ -85,6 +85,9 @@
         <if test="form.key !=null and form.key!=''">
             and ${form.key} like concat('%',#{form.condition},'%') ESCAPE '/'
         </if>
+        <if test="form.skuModel !=null and form.skuModel!=''">
+            and co.sku_model like concat('%',#{form.skuModel},'%') or co.sku_name like concat('%',#{form.skuModel},'%') or co.sku_brand like concat('%',#{form.skuModel},'%')
+        </if>
         <if test="form.auditStatus !=null and form.auditStatus!=''">
             and co.state_flag = #{form.auditStatus}
         </if>

@@ -115,4 +115,12 @@ public class CheckOrderEntryServiceImpl extends ServiceImpl<CheckOrderEntryMappe
         queryWrapper.lambda().eq(CheckOrderEntry::getVoided,0);
         return this.list(queryWrapper);
     }
+
+    @Override
+    public List<CheckOrderEntry> getCheckOrderEntryByBookingEntryId(Integer id) {
+        QueryWrapper<CheckOrderEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CheckOrderEntry::getBookingEntryId,id);
+        queryWrapper.lambda().eq(CheckOrderEntry::getVoided,0);
+        return this.list(queryWrapper);
+    }
 }

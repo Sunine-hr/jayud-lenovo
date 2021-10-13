@@ -178,6 +178,9 @@ public class BookingOrder extends Model<BookingOrder> {
     @ApiModelProperty(value = "结算id")
     private Integer arfeeId;
 
+    @ApiModelProperty(value = "结算方案备注")
+    private String arfeeRemark;
+
     @ApiModelProperty(value = "代理方式/协议类型")
     private String deputyStyle;
 

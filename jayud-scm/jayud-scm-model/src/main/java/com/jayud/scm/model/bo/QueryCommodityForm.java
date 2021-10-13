@@ -28,6 +28,9 @@ QueryCommodityForm extends BasePageForm{
     @ApiModelProperty("是否归类")
     private Boolean classify;
 
+    @ApiModelProperty(value = "型号")
+    private String skuModel;
+
 //    @ApiModelProperty("是否归类")
 //    private String isClassification;
 

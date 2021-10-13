@@ -4,6 +4,7 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.enums.CheckStateEnum;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
@@ -145,6 +146,59 @@ public class HubReceivingServiceImpl extends ServiceImpl<HubReceivingMapper, Hub
         }
 
         return save;
+    }
+
+    @Override
+    public boolean deleteHubReceiving(Integer id) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        HubReceiving hubReceiving = new HubReceiving();
+        hubReceiving.setId(id);
+        hubReceiving.setVoidedBy(systemUser.getId().intValue());
+        hubReceiving.setVoidedByDtm(LocalDateTime.now());
+        hubReceiving.setVoidedByName(systemUser.getName());
+        hubReceiving.setVoided(1);
+
+        boolean result = this.updateById(hubReceiving);
+        if(result){
+            if(hubReceiving.getCheckId() != null){
+                CheckOrder checkOrder = new CheckOrder();
+                checkOrder.setId(hubReceiving.getCheckId());
+                checkOrder.setCheckState(CheckStateEnum.CHECK_STATE_5.getDesc());
+                boolean result1 = checkOrderService.saveOrUpdate(checkOrder);
+                if(result1){
+                    log.warn("修改提验货状态成功");
+                }
+            }
+
+            List<HubReceivingEntry> hubShippingEntries1 = hubReceivingEntryService.getReceivingEntryByReceivingId(id.longValue());
+            for (HubReceivingEntry hubReceivingEntry : hubShippingEntries1) {
+                hubReceivingEntry.setVoidedBy(systemUser.getId().intValue());
+                hubReceivingEntry.setVoidedByDtm(LocalDateTime.now());
+                hubReceivingEntry.setVoidedByName(systemUser.getName());
+                hubReceivingEntry.setVoided(1);
+            }
+
+            HubReceivingFollow hubReceivingFollow = new HubReceivingFollow();
+            hubReceivingFollow.setReceivingId(id.intValue());
+            hubReceivingFollow.setSType(OperationEnum.DELETE.getCode());
+            hubReceivingFollow.setFollowContext("删除入库订单"+OperationEnum.DELETE.getDesc()+id);
+            hubReceivingFollow.setCrtBy(systemUser.getId().intValue());
+            hubReceivingFollow.setCrtByDtm(LocalDateTime.now());
+            hubReceivingFollow.setCrtByName(systemUser.getName());
+            //删除出库明细
+            boolean update = hubReceivingEntryService.updateBatchById(hubShippingEntries1);
+            if(!update){
+                log.warn("删除出库订单详情失败");
+            }
+
+            boolean b1 = hubReceivingFollowService.save(hubReceivingFollow);
+            if(!b1){
+                log.warn("操作记录表添加失败"+hubReceivingFollow);
+            }
+        }
+
+        return result;
     }
 
 }

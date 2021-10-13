@@ -68,7 +68,7 @@ public class HgTruckController {
     @ApiOperation(value = "添加或修改港车运输信息")
     @PostMapping(value = "/saveOrUpdateHgTruck")
     public CommonResult saveOrUpdateHgTruck(@RequestBody @Valid AddHgTruckForm form) {
-        form.setTruckCompany(customerService.getCustomerById(form.getTruckCompanyId()).getCustomerName());
+//        form.setTruckCompany(customerService.getCustomerById(form.getTruckCompanyId()).getCustomerName());
         boolean result = hgTruckService.saveOrUpdateHgTruck(form);
         if(!result){
             return CommonResult.error(444,"添加或修改港车运输失败");

@@ -21,4 +21,6 @@ public interface IHubReceivingService extends IService<HubReceiving> {
     HubReceivingVO getHubReceivingById(Integer id);
 
     boolean addHubReceiving(QueryCommonForm form);
+
+    boolean deleteHubReceiving(Integer id);
 }

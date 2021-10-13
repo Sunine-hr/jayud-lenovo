@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddAccountBankBillEntryForm;
+import com.jayud.scm.model.bo.AddAccountBankBillEntryForm2;
 import com.jayud.scm.model.po.AccountBankBillEntry;
 import com.jayud.scm.mapper.AccountBankBillEntryMapper;
 import com.jayud.scm.model.po.SystemUser;
@@ -40,11 +41,12 @@ public class AccountBankBillEntryServiceImpl extends ServiceImpl<AccountBankBill
     }
 
     @Override
-    public boolean addAccountBankBillEntry(List<AddAccountBankBillEntryForm> form) {
+    public boolean addAccountBankBillEntry(AddAccountBankBillEntryForm2 form) {
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
-        List<AccountBankBillEntry> accountBankBillEntries = ConvertUtil.convertList(form, AccountBankBillEntry.class);
+        List<AccountBankBillEntry> accountBankBillEntries = ConvertUtil.convertList(form.getAddAccountBankBillEntryForms(), AccountBankBillEntry.class);
 
         for (AccountBankBillEntry accountBankBillEntry : accountBankBillEntries) {
+            accountBankBillEntry.setBankBillId(form.getBankBillId());
             accountBankBillEntry.setCrtBy(systemUser.getId().intValue());
             accountBankBillEntry.setCrtByDtm(LocalDateTime.now());
             accountBankBillEntry.setCrtByName(systemUser.getUserName());

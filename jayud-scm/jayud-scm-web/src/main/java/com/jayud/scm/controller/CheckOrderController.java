@@ -155,6 +155,8 @@ public class CheckOrderController {
 //        for (AddCheckOrderEntryForm checkOrderEntryForm : checkOrderEntryForms) {
 //
 //        }
+        //根据委托单号判断是否已生成提验货
+
         boolean result = checkOrderService.saveOrUpdateCheckOrder(form);
         if(!result){
             return CommonResult.error(444,"新增或修改提货验货单失败");

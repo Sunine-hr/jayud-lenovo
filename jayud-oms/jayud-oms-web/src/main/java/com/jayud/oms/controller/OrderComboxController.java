@@ -29,10 +29,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -689,9 +686,32 @@ public class OrderComboxController {
      * 查询有效司机
      */
     @ApiOperation("查询有效司机")
-    @PostMapping(value = "/initEffectiveDriver")
-    public CommonResult<List<InitComboxStrVO>> initEffectiveDriver() {
+    @PostMapping(value = "/initEffectiveDrivers")
+    public CommonResult<List<InitComboxStrVO>> initEffectiveDrivers() {
         List<InitComboxStrVO> list = this.driverInfoService.initEffectiveDriver();
+        return CommonResult.success(list);
+    }
+
+    /**
+     * 根据司机id查询所有绑定车辆
+     *
+     * @return
+     */
+    @ApiOperation("根据司机id查询所有绑定车辆")
+    @PostMapping(value = "/initVehicleInfoByDriverId")
+    public CommonResult<List<InitComboxStrVO>> initVehicleInfoByDriverId(@RequestBody Map<String, Object> map) {
+        Long driverId = MapUtil.getLong(map, "driverId");
+        if (driverId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        List<VehicleInfo> vehicleInfos = vehicleInfoService.getVehicleInfoByDriverId(driverId, StatusEnum.ENABLE.getCode());
+        List<InitComboxStrVO> list = new ArrayList<>();
+        vehicleInfos.forEach(e -> {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setName(e.getPlateNumber());
+            initComboxStrVO.setId(e.getId());
+            list.add(initComboxStrVO);
+        });
         return CommonResult.success(list);
     }
 }

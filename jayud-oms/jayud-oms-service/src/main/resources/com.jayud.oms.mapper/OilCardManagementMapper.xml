@@ -36,6 +36,9 @@
             <if test="form.oilCardNum!=null and form.oilCardNum!=''">
                 oil_name like concat('%',#{form.oilName},'%')
             </if>
+            <if test="form.status!=null">
+                status =#{form.status}
+            </if>
         </where>
 
     </select>

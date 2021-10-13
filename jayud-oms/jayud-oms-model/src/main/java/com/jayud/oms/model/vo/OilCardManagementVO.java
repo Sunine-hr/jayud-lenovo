@@ -4,6 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.utils.DateUtils;
+import com.jayud.oms.model.enums.OilCardRechargeTypeEnum;
+import com.jayud.oms.model.enums.OilCardStatusEnum;
+import com.jayud.oms.model.enums.OilCardTypeEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -59,7 +63,7 @@ public class OilCardManagementVO extends Model<OilCardManagementVO> {
     private Integer oilType;
 
     @ApiModelProperty(value = "油卡类型(1:充值卡,2:共享卡)")
-    private Integer oilTypeDesc;
+    private String oilTypeDesc;
 
     @ApiModelProperty(value = "油卡密码")
     private String oilPwd;
@@ -80,12 +84,14 @@ public class OilCardManagementVO extends Model<OilCardManagementVO> {
     private Integer status;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtils.DATE_TIME_PATTERN)
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "创建人")
     private String createUser;
 
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtils.DATE_TIME_PATTERN)
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "更新人")
@@ -95,8 +101,26 @@ public class OilCardManagementVO extends Model<OilCardManagementVO> {
     private String remarks;
 
     @ApiModelProperty(value = "归还日期")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtils.DATE_TIME_PATTERN)
     private LocalDateTime returnDate;
+
+    @ApiModelProperty(value = "领用日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtils.DATE_TIME_PATTERN)
+    private LocalDateTime consumingDate;
+
+    @ApiModelProperty(value = "充值日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtils.DATE_TIME_PATTERN)
+    private LocalDateTime rechargeDate;
+
+    @ApiModelProperty(value = "充值金额")
+    private BigDecimal rechargeAmount;
+
+    @ApiModelProperty(value = "消费日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtils.DATE_TIME_PATTERN)
+    private LocalDateTime consumptionDate;
+
+    @ApiModelProperty(value = "消费金额")
+    private BigDecimal consumptionAmount;
 
 
     @Override
@@ -104,4 +128,19 @@ public class OilCardManagementVO extends Model<OilCardManagementVO> {
         return this.id;
     }
 
+
+//    public void setOilType(Integer oilType) {
+//        this.oilType = oilType;
+//        this.oilTypeDesc = OilCardTypeEnum.getDesc(oilType);
+//    }
+//
+//    public void setOilStatus(Integer oilStatus) {
+//        this.oilStatus = oilStatus;
+//        this.oilStatusDesc = OilCardStatusEnum.getDesc(oilStatus);
+//    }
+//
+//    public void setRechargeType(Integer rechargeType) {
+//        this.rechargeType = rechargeType;
+//        this.rechargeTypeDesc = OilCardRechargeTypeEnum.getDesc(rechargeType);
+//    }
 }

@@ -61,14 +61,14 @@ public class OilCardManagementServiceImpl extends ServiceImpl<OilCardManagementM
         IPage<OilCardManagementVO> iPage = this.baseMapper.findByPage(page, form);
         List<OilCardManagementVO> records = iPage.getRecords();
         if (CollectionUtils.isEmpty(records)) {
-            return null;
+            return new Page<>();
         }
         Map<Long, String> driverInfoMap = this.driverInfoService.list().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
         Map<Long, String> vehicleInfoMap = this.vehicleInfoService.list().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getPlateNumber()));
         records.forEach(e -> {
             e.setDriverName(driverInfoMap.get(e.getDriverId()))
                     .setVehicleName(vehicleInfoMap.get(e.getVehicleId()))
-                    .setOilTypeDesc(OilCardTypeEnum.getCode(e.getOilType()))
+                    .setOilTypeDesc(OilCardTypeEnum.getDesc(e.getOilType()))
                     .setOilStatusDesc(OilCardStatusEnum.getDesc(e.getOilStatus()))
                     .setRechargeTypeDesc(OilCardRechargeTypeEnum.getDesc(e.getRechargeType()));
         });

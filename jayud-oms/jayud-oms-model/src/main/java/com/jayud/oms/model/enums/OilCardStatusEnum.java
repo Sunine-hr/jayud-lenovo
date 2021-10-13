@@ -49,11 +49,11 @@ public enum OilCardStatusEnum {
     }
 
 
-    public static List<InitComboxStrVO> initType() {
+    public static List<InitComboxStrVO> initStatus() {
         List<InitComboxStrVO> list = new ArrayList<>();
         for (OilCardStatusEnum value : values()) {
             InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
-            initComboxStrVO.setCode(value.getCode() + "");
+            initComboxStrVO.setId(value.getCode().longValue());
             initComboxStrVO.setName(value.getDesc());
             list.add(initComboxStrVO);
         }

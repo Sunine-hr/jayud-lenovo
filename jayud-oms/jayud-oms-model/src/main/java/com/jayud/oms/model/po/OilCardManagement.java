@@ -85,6 +85,21 @@ public class OilCardManagement extends Model<OilCardManagement> {
     @ApiModelProperty(value = "归还日期")
     private LocalDateTime returnDate;
 
+    @ApiModelProperty(value = "领用日期")
+    private LocalDateTime consumingDate;
+
+    @ApiModelProperty(value = "充值日期")
+    private LocalDateTime rechargeDate;
+
+    @ApiModelProperty(value = "充值金额")
+    private BigDecimal rechargeAmount;
+
+    @ApiModelProperty(value = "消费日期")
+    private LocalDateTime consumptionDate;
+
+    @ApiModelProperty(value = "消费金额")
+    private BigDecimal consumptionAmount;
+
 
     @Override
     protected Serializable pkVal() {

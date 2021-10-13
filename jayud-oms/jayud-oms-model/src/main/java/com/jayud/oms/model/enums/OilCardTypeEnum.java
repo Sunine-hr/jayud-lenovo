@@ -53,7 +53,7 @@ public enum OilCardTypeEnum {
         List<InitComboxStrVO> list = new ArrayList<>();
         for (OilCardTypeEnum value : values()) {
             InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
-            initComboxStrVO.setCode(value.getCode() + "");
+            initComboxStrVO.setId(value.getCode().longValue());
             initComboxStrVO.setName(value.getDesc());
             list.add(initComboxStrVO);
         }

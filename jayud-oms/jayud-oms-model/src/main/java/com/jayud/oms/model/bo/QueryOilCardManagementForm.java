@@ -39,5 +39,7 @@ public class QueryOilCardManagementForm extends BasePageForm {
     @ApiModelProperty(value = "油卡名称")
     private String oilName;
 
+    @ApiModelProperty(value = "状态")
+    private Integer status;
 
 }

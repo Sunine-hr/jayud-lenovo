@@ -172,4 +172,19 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
         return this.baseMapper.getDetailsByPlateNum(plateNum);
     }
 
+    @Override
+    public List<VehicleInfo> getVehicleInfoByDriverId(Long driverId, String status) {
+        VehicleInfo tmp = new VehicleInfo();
+        tmp.setStatus(status);
+        QueryWrapper<VehicleInfo> condition = new QueryWrapper<>(tmp);
+        List<VehicleInfo> vehicleInfos = this.baseMapper.selectList(condition);
+        List<VehicleInfo> list = new ArrayList<>();
+        for (VehicleInfo vehicleInfo : vehicleInfos) {
+            if (vehicleInfo.getDriverInfoIds() != null && vehicleInfo.getDriverInfoIds().contains(driverId.toString())) {
+                list.add(vehicleInfo);
+            }
+        }
+        return list;
+    }
+
 }

@@ -84,4 +84,6 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
      * @return
      */
     List<VehicleDetailsVO> getDetailsByPlateNum(List<String> plateNum);
+
+    List<VehicleInfo> getVehicleInfoByDriverId(Long driverId, String status);
 }

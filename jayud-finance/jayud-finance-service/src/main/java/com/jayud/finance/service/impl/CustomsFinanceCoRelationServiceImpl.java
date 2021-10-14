@@ -1,5 +1,6 @@
 package com.jayud.finance.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -11,6 +12,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.exception.Asserts;
 import com.jayud.finance.bo.QueryCustomsFinanceCoRelationForm;
 import com.jayud.finance.po.CustomsFinanceCoRelation;
 import com.jayud.finance.mapper.CustomsFinanceCoRelationMapper;
@@ -69,6 +72,30 @@ public class CustomsFinanceCoRelationServiceImpl extends ServiceImpl<CustomsFina
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveCustomsFinanceCoRelation(CustomsFinanceCoRelation customsFinanceCoRelation) {
+        Integer id = customsFinanceCoRelation.getId();
+        String yunbaoguanName = customsFinanceCoRelation.getYunbaoguanName();
+        if(StrUtil.isEmpty(yunbaoguanName)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "云报关名称不能为空");
+        }
+        //判断 云报关 名称是否有重复的
+        if(ObjectUtil.isEmpty(id)){
+            //新增
+            QueryWrapper<CustomsFinanceCoRelation> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(CustomsFinanceCoRelation::getYunbaoguanName, yunbaoguanName);
+            List<CustomsFinanceCoRelation> list = this.list(queryWrapper);
+            if(CollUtil.isNotEmpty(list)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "云报关名称已存在");
+            }
+        }else{
+            //修改
+            QueryWrapper<CustomsFinanceCoRelation> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(CustomsFinanceCoRelation::getYunbaoguanName, yunbaoguanName);
+            queryWrapper.lambda().ne(CustomsFinanceCoRelation::getId, id);
+            List<CustomsFinanceCoRelation> list = this.list(queryWrapper);
+            if(CollUtil.isNotEmpty(list)){
+                Asserts.fail(ResultEnum.UNKNOWN_ERROR, "云报关名称已存在");
+            }
+        }
         //先保存
         this.saveOrUpdate(customsFinanceCoRelation);
         //再清理redis

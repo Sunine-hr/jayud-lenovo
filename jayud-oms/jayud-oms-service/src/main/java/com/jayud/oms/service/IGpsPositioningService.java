@@ -79,4 +79,10 @@ public interface IGpsPositioningService extends IService<GpsPositioning> {
      */
     List<GpsPositioning> getByPlateNumber(String plateNumber, Integer status);
 
+    /**
+     * 根据供应商id，获取供应商所有车辆最后GPS定位坐标
+     * @param supplierId
+     * @return
+     */
+    List<GpsPositioning> getPositionBySupplierId(Integer supplierId);
 }

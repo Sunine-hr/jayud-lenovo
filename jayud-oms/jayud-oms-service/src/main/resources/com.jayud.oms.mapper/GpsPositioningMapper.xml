@@ -22,4 +22,21 @@
         id, order_no, vehicle_status, direction, latitude, longitude, speed, status, type, create_time, update_time
     </sql>
 
+    <select id="findGpsPositioningByPlateNumbers" resultType="com.jayud.oms.model.po.GpsPositioning">
+        select *
+        FROM
+        gps_positioning  b
+        WHERE
+        b.gps_time = (SELECT
+        MAX(a.gps_time)
+        FROM
+        gps_positioning a
+        WHERE a.status = 1 and	a.plate_number = b.plate_number)
+        and b.plate_number in
+        <foreach collection="plateNumbers" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by b.plate_number desc
+    </select>
+
 </mapper>

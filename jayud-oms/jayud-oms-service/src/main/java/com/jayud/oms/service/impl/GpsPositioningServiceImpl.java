@@ -1,6 +1,7 @@
 package com.jayud.oms.service.impl;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
@@ -12,6 +13,8 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.GPSUtil;
 import com.jayud.oms.feign.TmsClient;
+import com.jayud.oms.mapper.SupplierInfoMapper;
+import com.jayud.oms.mapper.VehicleInfoMapper;
 import com.jayud.oms.model.bo.QueryGPSRecord;
 import com.jayud.oms.model.po.GpsPositioning;
 import com.jayud.oms.mapper.GpsPositioningMapper;
@@ -51,6 +54,12 @@ public class GpsPositioningServiceImpl extends ServiceImpl<GpsPositioningMapper,
     private TmsClient tmsClient;
     @Autowired
     private ILogisticsTrackService logisticsTrackService;
+
+    @Autowired
+    private SupplierInfoMapper supplierInfoMapper;
+    @Autowired
+    private VehicleInfoMapper vehicleInfoMapper;
+
 
     @Override
     public List<GpsPositioning> getByPlateNumbers(Set<String> licensePlateSet, Integer status) {
@@ -266,6 +275,24 @@ public class GpsPositioningServiceImpl extends ServiceImpl<GpsPositioningMapper,
         }
         condition.lambda().orderByDesc(GpsPositioning::getGpsTime);
         return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public List<GpsPositioning> getPositionBySupplierId(Integer supplierId) {
+        //查询供应商信息
+        SupplierInfo supplierInfo = supplierInfoMapper.selectById(supplierId);
+        //查询供应商下的车辆信息
+        QueryWrapper<VehicleInfo> vehicleInfoQueryWrapper = new QueryWrapper<>();
+        vehicleInfoQueryWrapper.lambda().eq(VehicleInfo::getSupplierId, supplierInfo.getId());
+        List<VehicleInfo> vehicleInfos = vehicleInfoMapper.selectList(vehicleInfoQueryWrapper);
+        List<String> plateNumbers = new ArrayList<>();
+        vehicleInfos.forEach(vehicleInfo -> {
+            String plateNumber = vehicleInfo.getPlateNumber();
+            plateNumbers.add(plateNumber);
+        });
+        //查询车牌对应的GPS位置信息
+        List<GpsPositioning> list = this.baseMapper.findGpsPositioningByPlateNumbers(plateNumbers);
+        return list;
     }
 
 }

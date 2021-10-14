@@ -558,6 +558,32 @@ public class GPSController {
         return CommonResult.success(convert);
     }
 
+    /**
+     * 根据供应商id，获取供应商所有车辆最后GPS定位坐标
+     */
+    @ApiOperation(value = "根据供应商id，获取供应商所有车辆最后GPS定位坐标")
+    @PostMapping("/getPositionBySupplierId")
+    public CommonResult getPositionBySupplierId(@RequestBody Map<String, Object> map){
+        Integer supplierId = MapUtil.getInt(map, "supplierId");
+        List<GpsPositioning> gpsPositionings = gpsPositioningService.getPositionBySupplierId(supplierId);
+        List<PositionVO> positionVOS = new ArrayList<>();
+        gpsPositionings.forEach(positioning -> {
+            PositionVO convert = ConvertUtil.convert(positioning, PositionVO.class);
+            double[] doubles = GPSUtil.gps84_To_Gcj02(Double.parseDouble(positioning.getLatitude()), Double.parseDouble(positioning.getLongitude()));
+            //地址、车牌号、经纬度、行驶速度、定位时间、定位状态、车辆状态，今日里程
+            convert.setLatitude(doubles[0]);//经度
+            convert.setLongitude(doubles[1]);//纬度
+            convert.setReportTime(DateUtils.LocalDateTime2Str(positioning.getGpsTime(), DateUtils.DATE_TIME_PATTERN));//终端上报位置的时间
+            convert.setSpeed(Double.valueOf(positioning.getSpeed()));//速度
+            convert.setLicensePlate(positioning.getPlateNumber());//车牌号 -> 大陆车牌
+            convert.setAddr(positioning.getAddr());//地理位置
+            convert.setMile(positioning.getMile());//行驶里程
+            convert.setVehicleStatus(positioning.getVehicleStatus());//行驶里程
+            positionVOS.add(convert);
+        });
+        return CommonResult.success(positionVOS);
+    }
+
     @ApiOperation(value = "获取车辆历史轨迹")
     @PostMapping("/getHistory")
     public CommonResult getHistory(@RequestBody Map<String, Object> map) {

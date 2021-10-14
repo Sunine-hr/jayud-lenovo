@@ -106,7 +106,7 @@
         <!--            and orc.sub_type = 'ky'-->
         <!--            and orc.order_no = #{form.subOrderNo}-->
         <!--        </if>-->
-        order by  orc.cost_code, orc.created_time desc;
+        order by orc.customer_code, orc.cost_code, orc.created_time desc;
     </select>
 
     <select id="getWriteBackSCostData" parameterType="java.lang.Long"

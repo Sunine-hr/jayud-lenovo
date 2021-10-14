@@ -35,3 +35,36 @@ CREATE TABLE `oil_card_tracking_info` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='油卡跟踪信息';
+
+
+CREATE TABLE `maintenance_management` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `fitting_name` varchar(255) NOT NULL COMMENT '配件名称',
+  `plate_number` varchar(50) NOT NULL COMMENT '车牌',
+  `repair_amount` decimal(20,2) NOT NULL COMMENT '维修金额',
+  `status` int(5) DEFAULT '1' COMMENT '状态（0禁用 1启用 2:删除）',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `create_user` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `update_user` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `remarks` varchar(255) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='维修管理';
+
+
+CREATE TABLE `fleet_management` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `code` varchar(50) NOT NULL COMMENT '车队编号',
+  `driver_id` bigint(20) NOT NULL COMMENT '司机id',
+  `name` varchar(50) NOT NULL COMMENT '车队名称',
+  `phone` varchar(20) NOT NULL COMMENT '联系电话',
+  `contacts` varchar(20) NOT NULL COMMENT '联系人',
+  `address` varchar(255) NOT NULL COMMENT '地址',
+  `status` int(5) DEFAULT '1' COMMENT '状态（0:禁用 1:启用 2:删除）',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `create_user` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `update_user` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `remarks` varchar(255) DEFAULT NULL COMMENT '描述',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车队管理';

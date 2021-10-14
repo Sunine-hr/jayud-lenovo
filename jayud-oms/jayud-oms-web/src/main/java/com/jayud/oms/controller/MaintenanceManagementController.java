@@ -60,7 +60,7 @@ public class MaintenanceManagementController {
 
     @ApiOperation(value = "删除维修信息")
     @PostMapping("/delete")
-    public CommonResult delete(Map<String, Object> map) {
+    public CommonResult delete(@RequestBody Map<String, Object> map) {
         Long id = MapUtil.getLong(map, "id");
         if (id == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);

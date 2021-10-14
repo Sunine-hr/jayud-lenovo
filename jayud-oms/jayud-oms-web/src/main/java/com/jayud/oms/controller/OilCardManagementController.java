@@ -64,6 +64,13 @@ public class OilCardManagementController {
     @ApiOperation(value = "新增/编辑油卡信息")
     @PostMapping("/saveOrUpdate")
     public CommonResult saveOrUpdate(@RequestBody @Valid AddOilCardManagementForm form) {
+        if (form.getId() != null) {
+            OilCardManagement tmp = this.oilCardManagementService.getById(form.getId());
+            if (!StatusEnum.ENABLE.getCode().equals(tmp.getStatus())) {
+                return CommonResult.error(400, "禁用数据无法操作");
+            }
+        }
+
         this.oilCardManagementService.saveOrUpdate(form);
         return CommonResult.success();
     }
@@ -121,6 +128,10 @@ public class OilCardManagementController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         OilCardManagement oldTmp = this.oilCardManagementService.getById(oilCardManagement.getId());
+        if (!StatusEnum.ENABLE.getCode().equals(oldTmp.getStatus())) {
+            return CommonResult.error(400, "禁用数据无法操作");
+        }
+
         this.oilCardManagementService.updateById(new OilCardManagement()
                 .setId(oilCardManagement.getId()).setRechargeDate(oilCardManagement.getRechargeDate())
                 .setRechargeAmount(oilCardManagement.getRechargeAmount())
@@ -152,6 +163,9 @@ public class OilCardManagementController {
             return CommonResult.error(400, "当前余额不够");
         }
 
+        if (!StatusEnum.ENABLE.getCode().equals(oldTmp.getStatus())) {
+            return CommonResult.error(400, "禁用数据无法操作");
+        }
         this.oilCardManagementService.updateById(new OilCardManagement()
                 .setId(oilCardManagement.getId()).setConsumptionDate(consumptionDate).setConsumptionAmount(consumptionAmount)
                 .setBalance(amount).setConsumptionAmount(BigDecimalUtil.add(oldTmp.getConsumptionAmount(), oilCardManagement.getConsumptionAmount())));
@@ -178,7 +192,9 @@ public class OilCardManagementController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         OilCardManagement oldTmp = this.oilCardManagementService.getById(oilCardManagement.getId());
-
+        if (!StatusEnum.ENABLE.getCode().equals(oldTmp.getStatus())) {
+            return CommonResult.error(400, "禁用数据无法操作");
+        }
         this.oilCardManagementService.updateById(new OilCardManagement()
                 .setId(oilCardManagement.getId()).setConsumingDate(consumingDate)
                 .setDriverId(driverId).setVehicleId(vehicleId));
@@ -203,6 +219,9 @@ public class OilCardManagementController {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         OilCardManagement oldTmp = this.oilCardManagementService.getById(oilCardManagement.getId());
+        if (!StatusEnum.ENABLE.getCode().equals(oldTmp.getStatus())) {
+            return CommonResult.error(400, "禁用数据无法操作");
+        }
         this.oilCardManagementService.updateById(new OilCardManagement()
                 .setId(oilCardManagement.getId()).setReturnDate(returnDate));
         //记录跟踪信息
@@ -219,13 +238,16 @@ public class OilCardManagementController {
     @ApiOperation(value = "修改密码")
     @PostMapping("/updatePwd")
     public CommonResult updatePwd(@RequestBody OilCardManagementVO oilCardManagement) {
-        String oilPwd = oilCardManagement.getOilPwd();
-        if (oilPwd == null) {
+        String newOilPwd = oilCardManagement.getNewOilPwd();
+        if (newOilPwd == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
         OilCardManagement oldTmp = this.oilCardManagementService.getById(oilCardManagement.getId());
+        if (!StatusEnum.ENABLE.getCode().equals(oldTmp.getStatus())) {
+            return CommonResult.error(400, "禁用数据无法操作");
+        }
         this.oilCardManagementService.updateById(new OilCardManagement()
-                .setId(oilCardManagement.getId()).setOilPwd(oilPwd));
+                .setId(oilCardManagement.getId()).setOilPwd(newOilPwd));
         //记录跟踪信息
 //        StringBuilder sb = new StringBuilder();
 //        sb.append("修改密码:").append(oilPwd);

@@ -68,6 +68,9 @@ public class OilCardManagementVO extends Model<OilCardManagementVO> {
     @ApiModelProperty(value = "油卡密码")
     private String oilPwd;
 
+    @ApiModelProperty(value = "新油卡密码")
+    private String newOilPwd;
+
     @ApiModelProperty(value = "油卡状态(1:使用中,2:闲置中)")
     private Integer oilStatus;
 

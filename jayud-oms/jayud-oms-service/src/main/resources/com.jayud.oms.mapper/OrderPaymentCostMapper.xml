@@ -126,7 +126,7 @@
         <!--            and opc.`status` in ('2','3')-->
         <!--            and opc.sub_type = 'ky'-->
         <!--        </if>-->
-        order by  opc.cost_code, opc.created_time desc;
+        order by opc.customer_code, opc.cost_code, opc.created_time desc;
     </select>
 
     <select id="getDriverOrderPaymentCost" parameterType="string"

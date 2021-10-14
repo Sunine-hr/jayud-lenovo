@@ -74,7 +74,7 @@ public class FleetManagementController {
     }
 
 
-    @ApiOperation(value = "删除维修信息")
+    @ApiOperation(value = "获取车队详情信息")
     @PostMapping("/getById")
     public CommonResult<FleetManagement> getById(Map<String, Object> map) {
         Long id = MapUtil.getLong(map, "id");
@@ -96,6 +96,12 @@ public class FleetManagementController {
         } else {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
+    }
+
+    @ApiOperation(value = "自动生成编号")
+    @PostMapping(value = "/autoGenerateNum")
+    public CommonResult autoGenerateNum() {
+        return CommonResult.success(this.fleetManagementService.autoGenerateNum());
     }
 }
 

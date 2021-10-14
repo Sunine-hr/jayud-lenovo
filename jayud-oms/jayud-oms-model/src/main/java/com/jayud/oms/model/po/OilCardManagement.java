@@ -58,7 +58,7 @@ public class OilCardManagement extends Model<OilCardManagement> {
     @ApiModelProperty(value = "油卡密码")
     private String oilPwd;
 
-    @ApiModelProperty(value = "油卡状态(1:使用中,2:闲置中)")
+    @ApiModelProperty(value = "油卡状态(1:领用中,2:闲置中)")
     private Integer oilStatus;
 
     @ApiModelProperty(value = "充值方式(1:微信,2:支付宝,3:现金)")

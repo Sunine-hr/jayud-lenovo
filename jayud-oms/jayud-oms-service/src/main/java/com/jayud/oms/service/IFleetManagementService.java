@@ -22,4 +22,7 @@ public interface IFleetManagementService extends IService<FleetManagement> {
     IPage<FleetManagementVO> findByPage(QueryFleetManagementForm form);
 
     boolean enableOrDisable(Long id);
+
+    String autoGenerateNum();
+
 }

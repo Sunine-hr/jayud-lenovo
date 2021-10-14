@@ -36,8 +36,12 @@
             <if test="form.oilName!=null and form.oilName!=''">
                 and oil_name like concat('%',#{form.oilName},'%')
             </if>
-            <if test="form.status!=null">
-                and status =#{form.status}
+            <if test="form.status!=null and form.status.size>0">
+                and status in
+                <foreach collection="form.status" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+
             </if>
         </where>
         order by id desc

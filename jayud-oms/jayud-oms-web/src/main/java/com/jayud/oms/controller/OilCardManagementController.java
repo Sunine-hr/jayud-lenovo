@@ -35,10 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -110,7 +107,7 @@ public class OilCardManagementController {
     @ApiOperation(value = "分页查询油卡信息")
     @PostMapping("/findByPage")
     public CommonResult<CommonPageResult<OilCardManagementVO>> findByPage(@RequestBody QueryOilCardManagementForm form) {
-        form.setStatus(StatusEnum.ENABLE.getCode());
+        form.setStatus(Arrays.asList(StatusEnum.ENABLE.getCode(), StatusEnum.DISABLE.getCode()));
         IPage<OilCardManagementVO> iPage = this.oilCardManagementService.findByPage(form);
         return CommonResult.success(new CommonPageResult<>(iPage));
     }

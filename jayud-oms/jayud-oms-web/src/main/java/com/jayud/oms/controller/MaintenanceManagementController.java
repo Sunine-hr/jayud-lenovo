@@ -13,6 +13,7 @@ import com.jayud.oms.model.po.OilCardManagement;
 import com.jayud.oms.model.vo.MaintenanceManagementVO;
 import com.jayud.oms.model.vo.OilCardManagementVO;
 import com.jayud.oms.service.IMaintenanceManagementService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,6 +36,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/maintenanceManagement")
+@Api(tags = "维修管理")
 public class MaintenanceManagementController {
 
     @Autowired
@@ -64,6 +67,16 @@ public class MaintenanceManagementController {
         }
         this.maintenanceManagementService.updateById(new MaintenanceManagement().setId(id).setStatus(StatusEnum.DELETE.getCode()));
         return CommonResult.success();
+    }
+
+    @ApiOperation(value = "获取维修详情")
+    @PostMapping("/getById")
+    public CommonResult<MaintenanceManagement> getById(@RequestBody Map<String, Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        if (id == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        return CommonResult.success(this.maintenanceManagementService.getById(id));
     }
 }
 

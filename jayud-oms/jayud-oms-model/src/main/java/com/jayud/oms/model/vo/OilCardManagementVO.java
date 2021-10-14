@@ -101,22 +101,22 @@ public class OilCardManagementVO extends Model<OilCardManagementVO> {
     private String remarks;
 
     @ApiModelProperty(value = "归还日期")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtils.DATE_TIME_PATTERN)
+    @JsonFormat(timezone = "GMT+8", pattern = DateUtils.DATE_TIME_PATTERN)
     private LocalDateTime returnDate;
 
     @ApiModelProperty(value = "领用日期")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtils.DATE_TIME_PATTERN)
+    @JsonFormat(timezone = "GMT+8", pattern = DateUtils.DATE_TIME_PATTERN)
     private LocalDateTime consumingDate;
 
     @ApiModelProperty(value = "充值日期")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtils.DATE_TIME_PATTERN)
+    @JsonFormat(timezone = "GMT+8", pattern = DateUtils.DATE_TIME_PATTERN)
     private LocalDateTime rechargeDate;
 
     @ApiModelProperty(value = "充值金额")
     private BigDecimal rechargeAmount;
 
     @ApiModelProperty(value = "消费日期")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtils.DATE_TIME_PATTERN)
+    @JsonFormat(timezone = "GMT+8", pattern = DateUtils.DATE_TIME_PATTERN)
     private LocalDateTime consumptionDate;
 
     @ApiModelProperty(value = "消费金额")

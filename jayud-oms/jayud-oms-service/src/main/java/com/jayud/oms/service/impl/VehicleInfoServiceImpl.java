@@ -6,15 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.Query;
 import com.jayud.oms.mapper.VehicleInfoMapper;
 import com.jayud.oms.model.bo.QueryVehicleInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.DriverInfo;
 import com.jayud.oms.model.po.VehicleInfo;
-import com.jayud.oms.model.vo.DriverInfoVO;
-import com.jayud.oms.model.vo.VehicleDetailsVO;
-import com.jayud.oms.model.vo.VehicleInfoVO;
-import com.jayud.oms.model.vo.VehicleSizeInfoVO;
+import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.IDriverInfoService;
 import com.jayud.oms.service.IVehicleInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -184,6 +182,21 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
                 list.add(vehicleInfo);
             }
         }
+        return list;
+    }
+
+    @Override
+    public List<InitComboxStrVO> initVehicleInfo(Integer status) {
+        QueryWrapper<VehicleInfo> condition = new QueryWrapper<>();
+        condition.lambda().eq(VehicleInfo::getStatus, status);
+        List<VehicleInfo> vehicleInfos = this.baseMapper.selectList(condition);
+        List<InitComboxStrVO> list = new ArrayList<>();
+        vehicleInfos.forEach(e -> {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setId(e.getId());
+            initComboxStrVO.setName(e.getPlateNumber());
+            list.add(initComboxStrVO);
+        });
         return list;
     }
 

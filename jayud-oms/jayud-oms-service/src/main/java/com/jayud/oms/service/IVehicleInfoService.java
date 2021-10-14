@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.bo.QueryVehicleInfoForm;
 import com.jayud.oms.model.po.VehicleInfo;
+import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.model.vo.VehicleDetailsVO;
 import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.model.vo.VehicleSizeInfoVO;
@@ -80,10 +81,13 @@ public interface IVehicleInfoService extends IService<VehicleInfo> {
 
     /**
      * 根据车牌集合获取供应商和车辆信息
+     *
      * @param plateNum
      * @return
      */
     List<VehicleDetailsVO> getDetailsByPlateNum(List<String> plateNum);
 
     List<VehicleInfo> getVehicleInfoByDriverId(Long driverId, String status);
+
+    public List<InitComboxStrVO> initVehicleInfo(Integer status);
 }

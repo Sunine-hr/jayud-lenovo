@@ -90,9 +90,9 @@ public class OilCardManagementServiceImpl extends ServiceImpl<OilCardManagementM
 
         Integer status = 1 == tmp.getStatus() ? StatusEnum.DISABLE.getCode():StatusEnum.ENABLE.getCode();
 
-        OilCardManagement costType = new OilCardManagement().setId(id).setStatus(status)
+        OilCardManagement update = new OilCardManagement().setId(id).setStatus(status)
                 .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
 
-        return this.updateById(costType);
+        return this.updateById(update);
     }
 }

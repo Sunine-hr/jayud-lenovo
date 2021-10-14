@@ -714,5 +714,17 @@ public class OrderComboxController {
         });
         return CommonResult.success(list);
     }
+
+
+    /**
+     * 下拉车牌
+     * @return
+     */
+    @ApiOperation("下拉车牌")
+    @PostMapping(value = "/initVehicleInfo")
+    public CommonResult<List<InitComboxStrVO>> initVehicleInfo() {
+        return CommonResult.success(this.vehicleInfoService.initVehicleInfo(com.jayud.common.enums.StatusEnum.ENABLE.getCode()));
+    }
+
 }
 

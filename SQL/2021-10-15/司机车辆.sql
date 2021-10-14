@@ -19,10 +19,10 @@ CREATE TABLE `oil_card_management` (
   `consuming_date` datetime DEFAULT NULL COMMENT '领用日期',
   `recharge_date` datetime DEFAULT NULL COMMENT '充值日期',
   `recharge_amount` decimal(20,2) DEFAULT NULL COMMENT '充值金额',
-  `consumption_date` decimal(20,2) DEFAULT NULL COMMENT '消费日期',
+  `consumption_date` datetime DEFAULT NULL COMMENT '消费日期',
   `consumption_amount` decimal(20,2) DEFAULT NULL COMMENT '消费金额',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='油卡管理';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COMMENT='油卡管理';
 
 
 CREATE TABLE `oil_card_tracking_info` (

@@ -22,4 +22,6 @@ public interface IOilCardManagementService extends IService<OilCardManagement> {
     IPage<OilCardManagementVO> findByPage(QueryOilCardManagementForm form);
 
     boolean enableOrDisable(Long id);
+
+    boolean exitByOilCardNum(String oilCardNum);
 }

@@ -64,18 +64,16 @@ public class OilCardManagementController {
     @ApiOperation(value = "新增/编辑油卡信息")
     @PostMapping("/saveOrUpdate")
     public CommonResult saveOrUpdate(@RequestBody @Valid AddOilCardManagementForm form) {
-//        if (form.getId() != null) {
-//            OilCardManagement tmp = this.oilCardManagementService.getById(form.getId());
-//            if (!StatusEnum.ENABLE.getCode().equals(tmp.getStatus())) {
-//                return CommonResult.error(400, "禁用数据无法操作");
-//            }
-//        }
-
-        if (form.getDriverId() != null) {
-            form.setOilStatus(1);
-        } else {
-            form.setOilStatus(2);
+        if (form.getId() == null) {
+            if (this.oilCardManagementService.exitByOilCardNum(form.getOilCardNum())) {
+                return CommonResult.error(400, "油卡卡号已存在");
+            }
         }
+//        if (form.getDriverId() != null) {
+//            form.setOilStatus(1);
+//        } else {
+//            form.setOilStatus(2);
+//        }
 
         this.oilCardManagementService.saveOrUpdate(form);
         return CommonResult.success();
@@ -165,7 +163,7 @@ public class OilCardManagementController {
         }
         OilCardManagement oldTmp = this.oilCardManagementService.getById(oilCardManagement.getId());
         BigDecimal amount = BigDecimalUtil.subtract(oldTmp.getBalance(), consumptionAmount);
-        if (consumptionAmount.compareTo(new BigDecimal(0)) < 0) {
+        if (amount.compareTo(new BigDecimal(0)) < 0) {
             return CommonResult.error(400, "当前余额不够");
         }
 
@@ -229,6 +227,9 @@ public class OilCardManagementController {
         if (!StatusEnum.ENABLE.getCode().equals(oldTmp.getStatus())) {
             return CommonResult.error(400, "禁用数据无法操作");
         }
+        if (!oldTmp.getOilStatus().equals(1)){
+            return CommonResult.error(400, "请执行领用操作");
+        }
         this.oilCardManagementService.updateById(new OilCardManagement()
                 .setId(oilCardManagement.getId()).setReturnDate(returnDate).setOilStatus(2));
         //记录跟踪信息
@@ -256,12 +257,13 @@ public class OilCardManagementController {
         this.oilCardManagementService.updateById(new OilCardManagement()
                 .setId(oilCardManagement.getId()).setOilPwd(newOilPwd));
         //记录跟踪信息
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("修改密码:").append(oilPwd);
-//
-//        this.oilCardTrackingInfoService.save(new OilCardTrackingInfo()
-//                .setOilCardId(oldTmp.getId()).setContent(sb.toString())
-//                .setCreateUser(UserOperator.getToken()).setCreateTime(LocalDateTime.now()));
+        StringBuilder sb = new StringBuilder();
+        sb.append("修改密码:").append("原密码").append(oldTmp.getOilPwd()).append(";")
+                .append("新密码").append(newOilPwd);
+
+        this.oilCardTrackingInfoService.save(new OilCardTrackingInfo()
+                .setOilCardId(oldTmp.getId()).setContent(sb.toString()).setType("系统")
+                .setCreateUser(UserOperator.getToken()).setCreateTime(LocalDateTime.now()));
         return CommonResult.success();
     }
 

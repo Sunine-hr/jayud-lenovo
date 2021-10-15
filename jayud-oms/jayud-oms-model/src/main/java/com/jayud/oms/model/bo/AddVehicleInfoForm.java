@@ -104,7 +104,7 @@ public class AddVehicleInfoForm {
                 if (this.supplierId == null) {
                     throw new JayudBizException("运输供应商" + msg);
                 }
-                if (StringUtils.isEmpty(this.vehicleTonnage)) {
+                if (carType == 1 && StringUtils.isEmpty(this.vehicleTonnage)) {
                     throw new JayudBizException("请选择车型尺寸");
                 }
                 if (CollectionUtils.isEmpty(this.driverInfos)) {

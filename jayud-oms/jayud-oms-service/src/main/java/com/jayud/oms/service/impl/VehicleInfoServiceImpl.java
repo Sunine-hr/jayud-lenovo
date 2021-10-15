@@ -178,8 +178,13 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
         List<VehicleInfo> vehicleInfos = this.baseMapper.selectList(condition);
         List<VehicleInfo> list = new ArrayList<>();
         for (VehicleInfo vehicleInfo : vehicleInfos) {
-            if (vehicleInfo.getDriverInfoIds() != null && vehicleInfo.getDriverInfoIds().contains(driverId.toString())) {
-                list.add(vehicleInfo);
+            if (vehicleInfo.getDriverInfoIds() != null) {
+                String[] tmps = vehicleInfo.getDriverInfoIds().split(",");
+                for (String str : tmps) {
+                    if (str.equals(driverId.toString())){
+                        list.add(vehicleInfo);
+                    }
+                }
             }
         }
         return list;

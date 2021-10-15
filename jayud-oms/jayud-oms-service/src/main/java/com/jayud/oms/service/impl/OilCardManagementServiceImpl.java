@@ -88,11 +88,18 @@ public class OilCardManagementServiceImpl extends ServiceImpl<OilCardManagementM
         condition.lambda().select(OilCardManagement::getStatus).eq(OilCardManagement::getId, id);
         OilCardManagement tmp = this.baseMapper.selectOne(condition);
 
-        Integer status = 1 == tmp.getStatus() ? StatusEnum.DISABLE.getCode():StatusEnum.ENABLE.getCode();
+        Integer status = 1 == tmp.getStatus() ? StatusEnum.DISABLE.getCode() : StatusEnum.ENABLE.getCode();
 
         OilCardManagement update = new OilCardManagement().setId(id).setStatus(status)
                 .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
 
         return this.updateById(update);
+    }
+
+    @Override
+    public boolean exitByOilCardNum(String oilCardNum) {
+        QueryWrapper<OilCardManagement> condition = new QueryWrapper<>();
+        condition.lambda().eq(OilCardManagement::getOilCardNum, oilCardNum);
+        return this.count(condition) > 0;
     }
 }

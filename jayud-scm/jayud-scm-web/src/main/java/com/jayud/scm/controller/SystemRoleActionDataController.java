@@ -36,7 +36,7 @@ public class SystemRoleActionDataController {
     @Autowired
     private ISystemRoleActionDataService systemRoleActionDataService;
 
-    @ApiOperation(value = "根据条件分页查询角色审核权限")
+    @ApiOperation(value = "根据条件分页查询角色数据权限")
     @PostMapping(value = "/findByPage")
     public CommonResult findByPage(@RequestBody QueryForm form) {
         if (form.getKey() != null && CorrespondEnum.getName(form.getKey()) == null) {
@@ -53,7 +53,7 @@ public class SystemRoleActionDataController {
         }
     }
 
-    @ApiOperation(value = "添加角色审核权限")
+    @ApiOperation(value = "添加角色数据权限")
     @PostMapping(value = "/addSystemRoleActionData")
     public CommonResult addSystemRoleActionData(@RequestBody AddSystemRoleActionDataForm form) {
 

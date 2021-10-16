@@ -31,7 +31,7 @@
         from b_tax_class_code bt
         where bt.voided = 0
         <if test="form.key !=null and form.key!=''">
-            and bt.#{form.key} like concat('%',#{form.condition},'%')  ESCAPE '/'
+            and ${form.key} like concat('%',#{form.condition},'%')  ESCAPE '/'
         </if>
     </select>
 

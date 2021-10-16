@@ -92,6 +92,8 @@ public interface IBookingOrderService extends IService<BookingOrder> {
 
     CommonResult settlement(QueryCommonForm form);
 
+    CommonResult importSettlement(QueryCommonForm form);
+
     CommonResult estimatedUnitPrice(Integer id);
 
     CommonResult reverseCalculation(Integer id);

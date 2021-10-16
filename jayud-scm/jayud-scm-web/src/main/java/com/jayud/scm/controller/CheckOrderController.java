@@ -2,21 +2,20 @@ package com.jayud.scm.controller;
 
 
 import com.jayud.common.CommonResult;
+import com.jayud.common.UserOperator;
 import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.CheckStateEnum;
-import com.jayud.scm.model.po.BookingOrder;
-import com.jayud.scm.model.po.CheckOrder;
+import com.jayud.scm.model.enums.TableEnum;
+import com.jayud.scm.model.po.*;
 import com.jayud.scm.model.vo.CheckOrderVO;
-import com.jayud.scm.service.IBookingOrderService;
-import com.jayud.scm.service.ICheckOrderService;
-import com.jayud.scm.service.IHgBillService;
-import com.jayud.scm.service.IHubReceivingService;
+import com.jayud.scm.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +51,18 @@ public class CheckOrderController {
 
     @Autowired
     private IHgBillService hgBillService;
+
+    @Autowired
+    private ICustomerService customerService;
+
+    @Autowired
+    private ISystemUserService systemUserService;
+
+    @Autowired
+    private ISystemRoleActionService systemRoleActionService;
+
+    @Autowired
+    private ISystemUserRoleRelationService systemUserRoleRelationService;
 
     @ApiOperation(value = "下一步操作 1提货完成、2验货完成、3提货撤销、4验货撤销")
     @PostMapping(value = "/nextOperation")
@@ -112,10 +123,8 @@ public class CheckOrderController {
         if(result1 && bookingOrder.getBillId() == null){
             //新增一个报关单
             Integer save = hgBillService.addHgBill(checkOrder.getBookingId());
-            BookingOrder bookingOrder1 = new BookingOrder();
-            bookingOrder1.setId(form.getId());
-            bookingOrder1.setBillId(save);
-            boolean result2 = bookingOrderService.updateById(bookingOrder1);
+            bookingOrder.setBillId(save);
+            boolean result2 = bookingOrderService.updateById(bookingOrder);
             if(result2){
                 log.warn("修改委托单billId");
             }
@@ -156,6 +165,9 @@ public class CheckOrderController {
 //
 //        }
         //根据委托单号判断是否已生成提验货
+        if(CollectionUtils.isEmpty(form.getBookingOrderEntryList())){
+            return CommonResult.error(444,"提验货详情不为空");
+        }
 
         boolean result = checkOrderService.saveOrUpdateCheckOrder(form);
         if(!result){
@@ -168,6 +180,36 @@ public class CheckOrderController {
     @PostMapping(value = "/getCheckOrderById")
     public CommonResult<CheckOrderVO> getCheckOrderById(@RequestBody QueryForm form) {
         return CommonResult.success(this.checkOrderService.getCheckOrderById(form.getId()));
+    }
+
+    @ApiOperation(value = "提验货反审")
+    @PostMapping(value = "/checkOrderAudit")
+    public CommonResult checkOrderAudit(@RequestBody PermissionForm form) {
+
+        CheckOrder checkOrder = checkOrderService.getById(form.getId());
+        if(!checkOrder.getCheckState().equals("1")){
+            return CommonResult.error(444,"状态只有为已提交，才能进行反审");
+        }
+
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        if(!systemUser.getUserName().equals("admin")){
+            //获取登录用户所属角色
+            List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
+            for (SystemRole systemRole : enabledRolesByUserId) {
+                SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),form.getActionCode());
+                if(systemRoleAction == null){
+                    return CommonResult.error(444,"该用户没有该按钮权限");
+                }
+            }
+        }
+
+        form.setTable(TableEnum.getDesc(form.getKey()));
+        form.setUserId(systemUser.getId().intValue());
+        form.setUserName(systemUser.getUserName());
+
+        return customerService.deApproval(form);
+
     }
 
 }

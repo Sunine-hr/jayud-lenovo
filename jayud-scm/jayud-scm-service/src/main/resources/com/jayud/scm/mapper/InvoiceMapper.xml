@@ -53,15 +53,16 @@
     </sql>
 
     <select id="findByPage" resultType="com.jayud.scm.model.vo.InvoiceDetailVO">
-        select i.id invoiceEntryId, i.f_bill_no fBillNo, i.f_date fDate, order_id orderId, order_no orderNo, customer_id customerId,
-        customer_name customerName, currency_name currencyName, model_type modelType, deputy_style deputyStyle, pay_style payStyle,
-        rec_style recStyle, i.rate, is_send_email isSendEmail, send_time sendTime, land_tax_flag landTaxFlag, is_print isPrint,
-        check_state_flag checkStateFlag, tax_remark taxRemark,i.pay_id payId, inv_customer_id invCustomerId, inv_customer_name invCustomerName, is_hgbill isHgbill, bank_id bankId, is_red isRed,
-        ie.id bid, invoice_id invoiceId, ie.f_date bfDate, order_entry_id orderEntryId, item_name itemName, item_model itemModel,
-        item_unit itemUnit, qty, ie.rate brate, fees_id feesId, formula, far_date farDate, fee_name feeName, ar_money arMoney,
-        fee_alias feeAlias, fc_date fcDate, far_date_old farDateOld, other_cost_id otherCostId, item_name_inv itemNameInv,
-        item_model_inv itemModelInv, ie.pay_id bpayId, pay_date payDate, pay_rate payRate, is_bill isBill, is_ar isAr
-        from invoice i left join invoice_entry ie on i.id = ie.invoice_id and ie.voided = 0
+--         select i.id invoiceEntryId, i.f_bill_no fBillNo, i.f_date fDate, order_id orderId, order_no orderNo, customer_id customerId,
+--         customer_name customerName, currency_name currencyName, model_type modelType, deputy_style deputyStyle, pay_style payStyle,
+--         rec_style recStyle, i.rate, is_send_email isSendEmail, send_time sendTime, land_tax_flag landTaxFlag, is_print isPrint,
+--         check_state_flag checkStateFlag, tax_remark taxRemark,i.pay_id payId, inv_customer_id invCustomerId, inv_customer_name invCustomerName, is_hgbill isHgbill, bank_id bankId, is_red isRed,
+--         ie.id bid, invoice_id invoiceId, ie.f_date bfDate, order_entry_id orderEntryId, item_name itemName, item_model itemModel,
+--         item_unit itemUnit, qty, ie.rate brate, fees_id feesId, formula, far_date farDate, fee_name feeName, ar_money arMoney,
+--         fee_alias feeAlias, fc_date fcDate, far_date_old farDateOld, other_cost_id otherCostId, item_name_inv itemNameInv,
+--         item_model_inv itemModelInv, ie.pay_id bpayId, pay_date payDate, pay_rate payRate, is_bill isBill, is_ar isAr
+--         from invoice i left join invoice_entry ie on i.id = ie.invoice_id and ie.voided = 0
+        select * from v_account_bank_entry_list_add i
         where i.voided = 0 and i.check_state_flag = 'Y'
         <if test="form.key !=null and form.key == 'fBillNo'">
             and i.f_bill_no like concat('%',#{form.condition},'%')

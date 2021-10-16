@@ -34,6 +34,14 @@ public class HubReceivingEntryServiceImpl extends ServiceImpl<HubReceivingEntryM
     }
 
     @Override
+    public List<HubReceivingEntry> getReceivingEntryByBookingEntryId(Integer id) {
+        QueryWrapper<HubReceivingEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(HubReceivingEntry::getBookingEntryId,id);
+        queryWrapper.lambda().eq(HubReceivingEntry::getVoided,0);
+        return this.list(queryWrapper);
+    }
+
+    @Override
     public IPage<HubReceivingEntryVO> findByPage(QueryCommonForm form) {
         Page<HubReceivingEntryVO> page = new Page<>(form.getPageNum(), form.getPageSize());
         return this.baseMapper.findByPage(page, form);

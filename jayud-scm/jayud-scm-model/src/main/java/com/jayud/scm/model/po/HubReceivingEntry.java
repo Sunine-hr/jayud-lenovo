@@ -1,7 +1,10 @@
 package com.jayud.scm.model.po;
 
 import java.math.BigDecimal;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
@@ -108,6 +111,7 @@ public class HubReceivingEntry extends Model<HubReceivingEntry> {
     private String ctnsNo;
 
     @ApiModelProperty(value = "报关表ID")
+    @TableField(fill = FieldFill.UPDATE)
     private Integer billId;
 
     @ApiModelProperty(value = "报关编号")

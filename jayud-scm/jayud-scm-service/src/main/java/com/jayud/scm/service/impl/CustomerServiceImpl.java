@@ -116,7 +116,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             }
 
             CustomerMaintenanceSetup customerMaintenanceSetup1 = new CustomerMaintenanceSetup();
-            customerMaintenanceSetup.setCustomerId(customer.getId());
+            customerMaintenanceSetup1.setCustomerId(customer.getId());
             customerMaintenanceSetup1.setRoleName("业务");
             customerMaintenanceSetup1.setRoleId(7);
             customerMaintenanceSetup1.setWhUserId(systemUser.getId().intValue());

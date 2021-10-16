@@ -133,7 +133,7 @@ public class AccountBankBillController {
         form.setUserId(systemUser.getId().intValue());
         form.setUserName(systemUser.getUserName());
         AccountBankBill accountBankBill = accountBankBillService.getById(form.getId());
-        if(accountBankBill.getBillArMoney() != null || accountBankBill.getBillArMoney().compareTo(new BigDecimal(0)) == 1){
+        if(accountBankBill.getBillArMoney() != null && accountBankBill.getBillArMoney().compareTo(new BigDecimal(0)) == 1){
             return CommonResult.error(1,"该水单已经到账，无法进行反审");
         }
         AcctReceipt acctReceipt = acctReceiptService.getAcctReceiptByJoinBillId(accountBankBill.getId());
@@ -155,7 +155,7 @@ public class AccountBankBillController {
         if(acctReceipt != null){
             return CommonResult.error(1,"该水单已经生成收款单，无法进行到账操作");
         }
-        if(accountBankBill.getBillArMoney()!= null && accountBankBill.getBillMoney().compareTo(accountBankBill.getBillArMoney()) > -1){
+        if(form.getBillArMoney()!= null && accountBankBill.getBillMoney().compareTo(form.getBillArMoney()) == -1){
             return CommonResult.error(444,"到账金额应小于等于水单金额");
         }
         boolean result = accountBankBillService.arrival(form);

@@ -183,6 +183,7 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
                     hubShippingEntry.setMdyBy(systemUser.getId().intValue());
                     hubShippingEntry.setMdyByDtm(LocalDateTime.now());
                     hubShippingEntry.setMdyByName(systemUser.getUserName());
+
                 }else{
                     hubShippingEntry.setShippingId(hubShipping.getId());
                     hubShippingEntry.setCrtBy(systemUser.getId().intValue());

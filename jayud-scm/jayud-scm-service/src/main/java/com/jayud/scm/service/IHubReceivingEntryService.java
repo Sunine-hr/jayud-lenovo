@@ -5,6 +5,7 @@ import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.HubReceivingEntry;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.HubReceivingEntryVO;
+import io.swagger.models.auth.In;
 
 import java.util.List;
 
@@ -19,6 +20,8 @@ import java.util.List;
 public interface IHubReceivingEntryService extends IService<HubReceivingEntry> {
 
     List<HubReceivingEntry> getReceivingEntryByReceivingId(Long id);
+
+    List<HubReceivingEntry> getReceivingEntryByBookingEntryId(Integer id);
 
     IPage<HubReceivingEntryVO> findByPage(QueryCommonForm form);
 

@@ -44,9 +44,13 @@ public interface BookingOrderMapper extends BaseMapper<BookingOrder> {
 
     QtyVO isCommplete(@Param("bookingId")Integer bookingId);
 
+    QtyVO isCommplete2(@Param("bookingId")Integer bookingId);
+
     void settlement( Map<String, Object> map);
 
     void estimatedUnitPrice(Map<String, Object> map);
 
     void reverseCalculation(Map<String, Object> map);
+
+    void importSettlement(Map<String, Object> map);
 }

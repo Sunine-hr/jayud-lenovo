@@ -90,7 +90,7 @@
         customer_state customerState,remark,  area, agency_brand agencyBrand,
         (SELECT GROUP_CONCAT(c.model_type separator ',') FROM (select distinct model_type , customer_id from fee_model ) c where c.customer_id = co.id) businessType,
         (SELECT GROUP_CONCAT(class_name separator ',') FROM customer_class where customer_id = co.id ) type
-        from customer co where co.voided = 0
+        from customer co where co.voided = 0 and co.check_state_flag = 'Y'
         <if test="form.key !=null and form.key!=''">
             and ${form.key} like concat('%',#{form.condition},'%') ESCAPE '/'
         </if>

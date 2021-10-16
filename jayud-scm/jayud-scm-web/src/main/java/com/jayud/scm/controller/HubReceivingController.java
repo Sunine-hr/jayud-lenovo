@@ -69,7 +69,7 @@ public class HubReceivingController {
         }
 
         boolean result = hubReceivingService.deleteHubReceiving(id);
-        if(result){
+        if(!result){
             return CommonResult.error(444,"删除入库单失败");
         }
         return CommonResult.success();

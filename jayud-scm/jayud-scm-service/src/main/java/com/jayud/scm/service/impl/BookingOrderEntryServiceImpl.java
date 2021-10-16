@@ -198,14 +198,14 @@ public class BookingOrderEntryServiceImpl extends ServiceImpl<BookingOrderEntryM
         //型号	商品名称	品牌	产地	单位	海关编码	数量	报关单价	报关总价	件数	料号	批号	毛重	净重	材积	唛头	入仓单号	外箱型号	包装方式	申报要素	商品报关备注	商品描述	PO	配件	箱号	目的国	境内货源地
         Map<String,String> aliasMap=new HashMap<>();
         aliasMap.put("型号", "itemModel");
-        aliasMap.put("商品名称", "itemBrand");
+        aliasMap.put("商品名称", "itemName");
         aliasMap.put("品牌", "itemOrigin");
-        aliasMap.put("产地", "unit");
-        aliasMap.put("单位", "customsCode");
-        aliasMap.put("海关编码", "qty");
-        aliasMap.put("数量", "hgPrice");
-        aliasMap.put("报关单价", "totalHgMoney");
-        aliasMap.put("报关总价", "packages");
+        aliasMap.put("产地", "itemOrigin");
+        aliasMap.put("单位", "unit");
+        aliasMap.put("海关编码", "customsCode");
+        aliasMap.put("数量", "qty");
+        aliasMap.put("报关单价", "hgPrice");
+        aliasMap.put("报关总价", "totalHgMoney");
         aliasMap.put("件数", "packages");
         aliasMap.put("料号", "pn");
         aliasMap.put("批号", "bn");

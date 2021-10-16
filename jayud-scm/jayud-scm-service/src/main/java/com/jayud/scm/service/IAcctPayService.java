@@ -33,4 +33,6 @@ public interface IAcctPayService extends IService<AcctPay> {
     boolean confirmPayment(QueryCommonForm form);
 
     boolean cancelPayment(QueryCommonForm form);
+
+    Integer saveAcctPay(AddAcctPayForm addAcctPayForm);
 }

@@ -62,14 +62,23 @@ public class HgBillServiceImpl extends ServiceImpl<HgBillMapper, HgBill> impleme
     public boolean delete(DeleteForm deleteForm) {
         List<HubReceivingEntry> hubReceivingEntries = new ArrayList<>();
         List<HgBillFollow> hgBillFollows = new ArrayList<>();
+        List<BookingOrder> bookingOrders = new ArrayList<>();
         for (Long id : deleteForm.getIds()) {
+
+            //去掉委托单中的报关id
+            BookingOrder bookingOrderByBillId = bookingOrderService.getBookingOrderByBillId(id.intValue());
+            bookingOrderByBillId.setBillId(null);
+            bookingOrderByBillId.setMdyBy(deleteForm.getId().intValue());
+            bookingOrderByBillId.setMdyByDtm(deleteForm.getDeleteTime());
+            bookingOrderByBillId.setMdyByName(deleteForm.getName());
+            bookingOrders.add(bookingOrderByBillId);
 
             List<HubReceivingEntry> hubReceivingEntries1 = hubReceivingEntryService.getListByBillId(id);
             for (HubReceivingEntry hubReceivingEntry : hubReceivingEntries1) {
-                hubReceivingEntry.setVoidedBy(deleteForm.getId().intValue());
-                hubReceivingEntry.setVoidedByDtm(deleteForm.getDeleteTime());
-                hubReceivingEntry.setVoidedByName(deleteForm.getName());
-                hubReceivingEntry.setVoided(1);
+                hubReceivingEntry.setBillId(null);
+                hubReceivingEntry.setMdyBy(deleteForm.getId().intValue());
+                hubReceivingEntry.setMdyByDtm(deleteForm.getDeleteTime());
+                hubReceivingEntry.setMdyByName(deleteForm.getName());
                 hubReceivingEntries.add(hubReceivingEntry);
             }
 
@@ -82,6 +91,13 @@ public class HgBillServiceImpl extends ServiceImpl<HgBillMapper, HgBill> impleme
             hgBillFollow.setCrtByName(deleteForm.getName());
             hgBillFollows.add(hgBillFollow);
         }
+
+        //去掉委托单中的报关id
+        boolean result = bookingOrderService.updateBatchById(bookingOrders);
+        if(!result){
+            log.warn("修改委托单报关id失败");
+        }
+
         //删除出库明细
         boolean update = hubReceivingEntryService.updateBatchById(hubReceivingEntries);
         if(!update){
@@ -139,6 +155,8 @@ public class HgBillServiceImpl extends ServiceImpl<HgBillMapper, HgBill> impleme
         hgBill.setCrtByDtm(LocalDateTime.now());
         hgBill.setCrtByName(systemUser.getUserName());
         hgBill.setCheckStateFlag("N0");
+        hgBill.setFStep(0);
+        hgBill.setFLevel(2);
         hgBill.setCustomsNo(bookingOrderById.getContractNo());
         hgBill.setBillDate(LocalDateTime.now());
         hgBill.setBillNo(commodityService.getOrderNo(NoCodeEnum.HG_BILL.getCode(),LocalDateTime.now()));

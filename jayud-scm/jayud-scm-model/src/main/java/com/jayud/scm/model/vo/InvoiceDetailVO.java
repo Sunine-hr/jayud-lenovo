@@ -3,6 +3,7 @@ package com.jayud.scm.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -30,6 +31,10 @@ public class InvoiceDetailVO {
     @ApiModelProperty(value = "发票号码")
     @JsonProperty(value = "fBillNo")
     private String fBillNo;
+
+    @ApiModelProperty(value = "应收款号码号码")
+    @JsonProperty(value = "invoiceNo")
+    private String invoiceNo;
 
     @ApiModelProperty(value = "日期")
     @JsonProperty(value = "fDate")
@@ -144,7 +149,7 @@ public class InvoiceDetailVO {
     @ApiModelProperty(value = "费用名称")
     private String feeName;
 
-    @ApiModelProperty(value = "金额")
+    @ApiModelProperty(value = "应收金额")
     @JsonProperty(value = "arMoney")
     private BigDecimal arMoney;
 
@@ -182,5 +187,25 @@ public class InvoiceDetailVO {
 
     @ApiModelProperty(value = "是否用于实收核销")
     private Integer isAr;
+
+    @ApiModelProperty(value = "已核金额")
+    @JsonProperty(value = "acMoney")
+    private BigDecimal acMoney;
+
+    @ApiModelProperty(value = "未核金额")
+    @JsonProperty(value = "atMoney")
+    private BigDecimal atMoney;
+
+    @ApiModelProperty(value = "应收代理费")
+    @JsonProperty(value = "pArMoney")
+    private BigDecimal pArMoney;
+
+    @ApiModelProperty(value = " 已收代理费")
+    @JsonProperty(value = "pAcMoney")
+    private BigDecimal pAcMoney;
+
+    @ApiModelProperty(value = " 未收代理费")
+    @JsonProperty(value = "pAtMoney")
+    private BigDecimal pAtMoney;
 
 }

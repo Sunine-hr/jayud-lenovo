@@ -1,10 +1,12 @@
 package com.jayud.scm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddAccountBankBillEntryForm;
 import com.jayud.scm.model.bo.AddAccountBankBillEntryForm2;
+import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.po.AccountBankBillEntry;
 import com.jayud.scm.mapper.AccountBankBillEntryMapper;
 import com.jayud.scm.model.po.SystemUser;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.xml.ws.Action;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,5 +57,25 @@ public class AccountBankBillEntryServiceImpl extends ServiceImpl<AccountBankBill
 
         boolean result = this.saveBatch(accountBankBillEntries);
         return result;
+    }
+
+    @Override
+    public boolean deleteAccountBankBillEntry(DeleteForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+        List<AccountBankBillEntry> accountBankBillEntries = new ArrayList<>();
+        for (Long id : form.getIds()) {
+            AccountBankBillEntry accountBankBillEntry = new AccountBankBillEntry();
+            accountBankBillEntry.setId(id.intValue());
+            accountBankBillEntry.setVoided(1);
+            accountBankBillEntry.setVoidedBy(systemUser.getId().intValue());
+            accountBankBillEntry.setVoidedByDtm(LocalDateTime.now());
+            accountBankBillEntry.setVoidedByName(systemUser.getUserName());
+            accountBankBillEntries.add(accountBankBillEntry);
+        }
+        boolean result = this.updateBatchById(accountBankBillEntries);
+        if(result){
+            log.warn("删除水单明细失败");
+        }
+        return false;
     }
 }

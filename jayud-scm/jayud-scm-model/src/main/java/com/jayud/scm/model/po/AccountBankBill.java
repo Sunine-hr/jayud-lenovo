@@ -1,7 +1,10 @@
 package com.jayud.scm.model.po;
 
 import java.math.BigDecimal;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
@@ -39,6 +42,9 @@ public class AccountBankBill extends Model<AccountBankBill> {
 
     @ApiModelProperty(value = "水单编号")
     private String bankBillNo;
+
+    @ApiModelProperty(value = "付款编号")
+    private String payNo;
 
     @ApiModelProperty(value = "水单日期")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
@@ -107,6 +113,7 @@ public class AccountBankBill extends Model<AccountBankBill> {
     private String payCustomerName;
 
     @ApiModelProperty(value = "核销金额")
+    @TableField(fill = FieldFill.UPDATE)
     private BigDecimal verificationMoney;
 
     @ApiModelProperty(value = "核销金额是否取到账金额(0取1不取)")

@@ -3,6 +3,7 @@ package com.jayud.scm.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.scm.model.bo.AddHubShippingEntryForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.po.HubReceivingEntry;
 import com.jayud.scm.model.po.HubShippingEntry;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.HubShippingEntryVO;
@@ -24,4 +25,6 @@ public interface IHubShippingEntryService extends IService<HubShippingEntry> {
     IPage<HubShippingEntryVO> findByPage(QueryCommonForm form);
 
     boolean saveOrUpdateHubShippingEntry(List<AddHubShippingEntryForm> form);
+
+    List<HubShippingEntry> getShippingEntryByBookingEntryId(Integer id);
 }

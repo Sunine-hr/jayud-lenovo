@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import com.alibaba.druid.sql.visitor.functions.Isnull;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
@@ -66,18 +67,19 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
             hgTruck.setMdyByDtm(LocalDateTime.now());
             hgTruck.setMdyByName(systemUser.getUserName());
             hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
-            hgTruckFollow.setFollowContext(OperationEnum.UPDATE.getCode()+hgTruck.getId());
+            hgTruckFollow.setFollowContext("修改港车单"+hgTruck.getId());
         }else{
             hgTruck.setTruckNo(commodityService.getOrderNo(NoCodeEnum.HG_TRUCK.getCode(),LocalDateTime.now()));
             hgTruck.setCrtBy(systemUser.getId().intValue());
             hgTruck.setCrtByDtm(LocalDateTime.now());
             hgTruck.setCrtByName(systemUser.getUserName());
             hgTruckFollow.setSType(OperationEnum.INSERT.getCode());
-            hgTruckFollow.setFollowContext(OperationEnum.INSERT.getCode()+hgTruck.getTruckNo());
+            hgTruckFollow.setFollowContext("增加港车单"+hgTruck.getTruckNo());
         }
         boolean update = this.saveOrUpdate(hgTruck);
         if(update){
            log.warn("添加或修改港车运输信息成功"+hgTruck);
+           hgTruckFollow.setHgTruckId(hgTruck.getId());
             hgTruckFollow.setMdyBy(systemUser.getId().intValue());
             hgTruckFollow.setMdyByDtm(LocalDateTime.now());
             hgTruckFollow.setMdyByName(systemUser.getUserName());
@@ -124,6 +126,7 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
             boolean b1 = this.bookingOrderFollowService.saveBatch(bookingOrderFollowList);
             log.warn("修改委托单成功");
             HgTruckFollow hgTruckFollow = new HgTruckFollow();
+            hgTruckFollow.setHgTruckId(hgTruck.getId());
             hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
             hgTruckFollow.setFollowContext(systemUser.getUserName()+"绑车"+form.getIds());
             hgTruckFollow.setCrtBy(systemUser.getId().intValue());
@@ -150,6 +153,7 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
         boolean update = this.updateById(hgTruck);
         if(update){
             HgTruckFollow hgTruckFollow = new HgTruckFollow();
+            hgTruckFollow.setHgTruckId(hgTruck.getId());
             hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
             hgTruckFollow.setFollowContext(systemUser.getUserName()+"修改车次状态为"+form.getStatus());
             hgTruckFollow.setCrtBy(systemUser.getId().intValue());
@@ -176,6 +180,7 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
         boolean update = this.updateById(hgTruck);
         if(update){
             HgTruckFollow hgTruckFollow = new HgTruckFollow();
+            hgTruckFollow.setHgTruckId(hgTruck.getId());
             hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
             hgTruckFollow.setFollowContext(systemUser.getUserName()+"修改车次状态为"+form.getStatus());
             hgTruckFollow.setCrtBy(systemUser.getId().intValue());
@@ -203,6 +208,7 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
         boolean update = this.updateById(hgTruck);
         if(update){
             HgTruckFollow hgTruckFollow = new HgTruckFollow();
+            hgTruckFollow.setHgTruckId(hgTruck.getId());
             hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
             hgTruckFollow.setFollowContext(systemUser.getUserName()+"录入封条信息");
             hgTruckFollow.setCrtBy(systemUser.getId().intValue());
@@ -338,18 +344,19 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
             hgTruck.setMdyByDtm(LocalDateTime.now());
             hgTruck.setMdyByName(systemUser.getUserName());
             hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
-            hgTruckFollow.setFollowContext(OperationEnum.UPDATE.getCode()+hgTruck.getId());
+            hgTruckFollow.setFollowContext("修改港车单"+hgTruck.getId());
         }else{
             hgTruck.setTruckNo(commodityService.getOrderNo(NoCodeEnum.HG_TRUCK.getCode(),LocalDateTime.now()));
             hgTruck.setCrtBy(systemUser.getId().intValue());
             hgTruck.setCrtByDtm(LocalDateTime.now());
             hgTruck.setCrtByName(systemUser.getUserName());
             hgTruckFollow.setSType(OperationEnum.INSERT.getCode());
-            hgTruckFollow.setFollowContext(OperationEnum.INSERT.getCode()+hgTruck.getTruckNo());
+            hgTruckFollow.setFollowContext("增加港车单"+hgTruck.getTruckNo());
         }
         boolean update = this.saveOrUpdate(hgTruck);
         if(update){
             log.warn("添加或修改港车运输信息成功"+hgTruck);
+            hgTruckFollow.setHgTruckId(hgTruck.getId());
             hgTruckFollow.setMdyBy(systemUser.getId().intValue());
             hgTruckFollow.setMdyByDtm(LocalDateTime.now());
             hgTruckFollow.setMdyByName(systemUser.getUserName());

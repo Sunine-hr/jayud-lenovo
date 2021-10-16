@@ -77,6 +77,11 @@ public class AccountBankBillServiceImpl extends ServiceImpl<AccountBankBillMappe
             accountBankBillFollow.setSType(OperationEnum.INSERT.getCode());
             accountBankBillFollow.setFollowContext("新增水单信息，水单编号为"+accountBankBill.getBankBillNo());
         }
+        if(accountBankBill.getVerificationMoney() == null || accountBankBill.getVerificationMoney().equals(new BigDecimal(0))){
+            accountBankBill.setIsVerification(0);
+        }else{
+            accountBankBill.setIsVerification(1);
+        }
         boolean result = this.saveOrUpdate(accountBankBill);
         if(result){
             log.warn("新增或修改水单信息成功");
@@ -181,7 +186,7 @@ public class AccountBankBillServiceImpl extends ServiceImpl<AccountBankBillMappe
         AccountBankBill accountBankBill = this.getById(form.getId());
         accountBankBill.setBillArMoney(form.getBillArMoney());
 
-        if(accountBankBill.getVerificationMoney() == null || accountBankBill.getVerificationMoney().compareTo(new BigDecimal(0)) < 1 || accountBankBill.getBillArMoney().compareTo(accountBankBill.getVerificationMoney()) ==0){
+        if(accountBankBill.getIsVerification().equals(0)){
             accountBankBill.setVerificationMoney(form.getBillArMoney());
         }
 

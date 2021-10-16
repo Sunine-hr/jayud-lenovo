@@ -192,9 +192,6 @@ public class AddAcctPayForm {
     @ApiModelProperty(value = "收款金额")
     private BigDecimal receiptMoney;
 
-    @ApiModelProperty(value = "审核状态")
-    private String checkStateFlag;
-
     @ApiModelProperty(value = "备注")
     private String remark;
 

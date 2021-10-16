@@ -152,7 +152,7 @@ public class HubReceivingServiceImpl extends ServiceImpl<HubReceivingMapper, Hub
     public boolean deleteHubReceiving(Integer id) {
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
-        HubReceiving hubReceiving = new HubReceiving();
+        HubReceiving hubReceiving = this.getById(id);
         hubReceiving.setId(id);
         hubReceiving.setVoidedBy(systemUser.getId().intValue());
         hubReceiving.setVoidedByDtm(LocalDateTime.now());
@@ -164,7 +164,7 @@ public class HubReceivingServiceImpl extends ServiceImpl<HubReceivingMapper, Hub
             if(hubReceiving.getCheckId() != null){
                 CheckOrder checkOrder = new CheckOrder();
                 checkOrder.setId(hubReceiving.getCheckId());
-                checkOrder.setCheckState(CheckStateEnum.CHECK_STATE_5.getDesc());
+                checkOrder.setCheckState(CheckStateEnum.CHECK_STATE_5.getCode().toString());
                 boolean result1 = checkOrderService.saveOrUpdate(checkOrder);
                 if(result1){
                     log.warn("修改提验货状态成功");
@@ -189,7 +189,7 @@ public class HubReceivingServiceImpl extends ServiceImpl<HubReceivingMapper, Hub
             //删除出库明细
             boolean update = hubReceivingEntryService.updateBatchById(hubShippingEntries1);
             if(!update){
-                log.warn("删除出库订单详情失败");
+                log.warn("删除入库订单详情失败");
             }
 
             boolean b1 = hubReceivingFollowService.save(hubReceivingFollow);

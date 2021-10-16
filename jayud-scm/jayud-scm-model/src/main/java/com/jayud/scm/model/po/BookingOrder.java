@@ -1,6 +1,8 @@
 package com.jayud.scm.model.po;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -129,9 +131,11 @@ public class BookingOrder extends Model<BookingOrder> {
     private Integer hgTruckBookId;
 
     @ApiModelProperty(value = "报关车次id")
+    @TableField(fill = FieldFill.UPDATE)
     private Integer hgTruckId;
 
     @ApiModelProperty(value = "报关车次编号")
+    @TableField(fill = FieldFill.UPDATE)
     private String hgTruckNo;
 
     @ApiModelProperty(value = "审核人")
@@ -288,6 +292,7 @@ public class BookingOrder extends Model<BookingOrder> {
     private String productClass;
 
     @ApiModelProperty(value = "报关单id")
+    @TableField(fill = FieldFill.UPDATE)
     private Integer billId;
 
     @ApiModelProperty(value = "报关抬头方式（单抬头、双抬头）")

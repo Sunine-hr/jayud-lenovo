@@ -81,4 +81,12 @@ public class HubShippingEntryServiceImpl extends ServiceImpl<HubShippingEntryMap
 
         return b;
     }
+
+    @Override
+    public List<HubShippingEntry> getShippingEntryByBookingEntryId(Integer id) {
+        QueryWrapper<HubShippingEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(HubShippingEntry::getBookingEntryId,id);
+        queryWrapper.lambda().eq(HubShippingEntry::getVoided,0);
+        return this.list(queryWrapper);
+    }
 }

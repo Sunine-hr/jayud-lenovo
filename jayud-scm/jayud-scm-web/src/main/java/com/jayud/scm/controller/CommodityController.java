@@ -175,10 +175,10 @@ public class CommodityController {
     @PostMapping(value = "/taxClassification")
     public CommonResult taxClassification(@RequestBody TaxCommodityForm form) {
         boolean result = this.commodityService.taxClassification(form);
-        if(result){
-            return CommonResult.success();
+        if(!result){
+            return CommonResult.error(444,"商品税收归类失败");
         }
-        return CommonResult.error(444,"商品税收归类失败");
+        return CommonResult.success();
 
     }
 
@@ -259,7 +259,7 @@ public class CommodityController {
         for (AddCommodityModelForm addCommodityModelForm : list) {
             Commodity commodityBySkuModelAndSkuBrand = commodityService.getCommodityBySkuModelAndSkuBrand(addCommodityModelForm.getSkuModel(), addCommodityModelForm.getSkuBrand());
             if(commodityBySkuModelAndSkuBrand != null){
-                return CommonResult.error(444,addCommodityModelForm.getSkuModel()+":"+addCommodityModelForm.getSkuBrand()+"商品型号和品牌已存在");
+                return CommonResult.error(444,addCommodityModelForm.getSkuModel()+"/"+addCommodityModelForm.getSkuBrand()+":商品型号和品牌已存在");
             }
         }
 

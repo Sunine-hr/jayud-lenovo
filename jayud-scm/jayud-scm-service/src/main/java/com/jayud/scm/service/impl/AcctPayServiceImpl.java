@@ -125,10 +125,7 @@ public class AcctPayServiceImpl extends ServiceImpl<AcctPayMapper, AcctPay> impl
 
             List<AcctPayEntry> acctPayEntries1 = acctPayEntryService.getListByAcctPayId(id);
             for (AcctPayEntry acctPayEntry : acctPayEntries1) {
-                acctPayEntry.setVoidedBy(deleteForm.getId().intValue());
-                acctPayEntry.setVoidedByDtm(deleteForm.getDeleteTime());
-                acctPayEntry.setVoidedByName(deleteForm.getName());
-                acctPayEntry.setVoided(1);
+                acctPayEntry.setPayId(null);
                 acctPayEntries.add(acctPayEntry);
             }
 
@@ -141,7 +138,7 @@ public class AcctPayServiceImpl extends ServiceImpl<AcctPayMapper, AcctPay> impl
             acctPayFollow.setCrtByName(deleteForm.getName());
             acctPayFollows.add(acctPayFollow);
         }
-        //删除应收款单明细
+        //修改应收款单明细
         boolean update = this.acctPayEntryService.updateBatchById(acctPayEntries);
         if(!update){
             log.warn("删除付款单详情失败");
@@ -243,6 +240,35 @@ public class AcctPayServiceImpl extends ServiceImpl<AcctPayMapper, AcctPay> impl
             }
         }
         return result;
+    }
+
+    @Override
+    public Integer saveAcctPay(AddAcctPayForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        AcctPayFollow acctPayFollow = new AcctPayFollow();
+        AcctPay acctPay = ConvertUtil.convert(form, AcctPay.class);
+
+        acctPay.setPayNo(commodityService.getOrderNo(NoCodeEnum.ACCT_PAY.getCode(), LocalDateTime.now()));
+        acctPay.setCrtBy(systemUser.getId().intValue());
+        acctPay.setCrtByDtm(LocalDateTime.now());
+        acctPay.setCrtByName(systemUser.getUserName());
+        acctPayFollow.setSType(OperationEnum.INSERT.getCode());
+        acctPayFollow.setFollowContext(systemUser.getUserName() + "新增付款单信息");
+
+        boolean result = this.saveOrUpdate(acctPay);
+        if(result){
+            log.warn("新增或修改付款单成功");
+            acctPayFollow.setCrtBy(systemUser.getId().intValue());
+            acctPayFollow.setCrtByDtm(LocalDateTime.now());
+            acctPayFollow.setCrtByName(systemUser.getUserName());
+            acctPayFollow.setPayId(acctPay.getId());
+            boolean save = this.acctPayFollowService.save(acctPayFollow);
+            if(save){
+                log.warn("新增或修改付款单,操作记录添加成功");
+            }
+        }
+        return acctPay.getId();
     }
 
 }

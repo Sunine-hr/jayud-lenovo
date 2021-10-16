@@ -238,52 +238,11 @@ public class AddHubShippingForm {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    @ApiModelProperty(value = "审核人")
-    @JsonProperty(value = "fMultiLevel0")
-    private String fMultiLevel0;
-
-    @ApiModelProperty(value = "审核 时间")
-    @JsonProperty(value = "fDateTime0")
-    private LocalDateTime fDateTime0;
-
-    @ApiModelProperty(value = "审核人")
-    @JsonProperty(value = "fMultiLevel1")
-    private String fMultiLevel1;
-
-    @ApiModelProperty(value = "审核 时间")
-    @JsonProperty(value = "fDateTime1")
-    private LocalDateTime fDateTime1;
-
-    @ApiModelProperty(value = "审核人")
-    @JsonProperty(value = "fMultiLevel2")
-    private String fMultiLevel2;
-
-    @ApiModelProperty(value = "审核 时间")
-    @JsonProperty(value = "fDateTime2")
-    private LocalDateTime fDateTime2;
-
-    @ApiModelProperty(value = "审核人")
-    @JsonProperty(value = "fMultiLevel3")
-    private String fMultiLevel3;
-
-    @ApiModelProperty(value = "审核 时间")
-    @JsonProperty(value = "fDateTime3")
-    private LocalDateTime fDateTime3;
-
     @ApiModelProperty(value = "审核状态")
     private String checkStateFlag;
 
     @ApiModelProperty(value = "出库状态（0未出库，1已安排，2已出库，3已完成）")
     private Integer stateFlag;
-
-    @ApiModelProperty(value = "备用1")
-    private String temp01;
-
-    @ApiModelProperty(value = "备用2")
-    private String temp02;
-
-    @ApiModelProperty(value = "备用3")
-    private String temp03;
 
     @ApiModelProperty(value = "出库明细集合")
     private List<AddHubShippingEntryForm> addHubShippingEntryFormList;

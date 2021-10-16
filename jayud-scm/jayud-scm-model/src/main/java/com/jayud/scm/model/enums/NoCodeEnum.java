@@ -29,6 +29,7 @@ public enum NoCodeEnum {
     ACCT_PAY("1011","付款编号"),
     VERIFICATION_REOCRDS("1012","核销单号"),
     EXPORT_TAX_INVOICE("1013","进项票单号"),
+    ACCT_ENTRY_PAY("1015","应付款编号"),
     ;
 
     private String code;

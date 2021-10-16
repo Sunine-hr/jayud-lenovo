@@ -91,6 +91,10 @@ public class QueryCommonForm extends BasePageForm{
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private String accountDate;
 
+    @ApiModelProperty(value = "付款日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private String payDate;
+
     //收款单管理
     @ApiModelProperty(value = "锁定金额")
     private BigDecimal lockMoney;

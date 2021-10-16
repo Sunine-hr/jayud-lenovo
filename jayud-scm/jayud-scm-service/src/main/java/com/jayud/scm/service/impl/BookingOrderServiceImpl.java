@@ -331,7 +331,12 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         //1.复制委托单主单
         BookingOrder bookingOrder = ConvertUtil.convert(bookingOrderVO, BookingOrder.class);
         bookingOrder.setId(null);
-        bookingOrder.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(), LocalDateTime.now()));//单号的生成规则
+        if(bookingOrder.getModelType().equals(2)){
+            bookingOrder.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(), LocalDateTime.now()));//单号的生成规则
+        }else if(bookingOrder.getModelType().equals(1)){
+            bookingOrder.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D002.getCode(), LocalDateTime.now()));//单号的生成规则
+        }
+
         bookingOrder.setCheckStateFlag("N0");
         bookingOrder.setStateFlag(0);
         bookingOrder.setFStep(0);
@@ -416,7 +421,8 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
     @Override
     public boolean isCommplete(Integer bookingId) {
         QtyVO qtyVO = this.baseMapper.isCommplete(bookingId);
-        if(qtyVO.getBookingQty().compareTo(qtyVO.getReceivingQty()) < 1){
+        QtyVO qtyVO1 = this.baseMapper.isCommplete2(bookingId);
+        if(qtyVO.getBookingQty().compareTo(qtyVO1.getReceivingQty()) == 0){
             return true;
         }
         return false;
@@ -431,6 +437,21 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         map.put("userId",systemUser.getId());
         map.put("userName",systemUser.getUserName());
         this.baseMapper.settlement(map);
+        if(map.get("state").equals(1)){
+            return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
+        }
+        return CommonResult.success();
+    }
+
+    @Override
+    public CommonResult importSettlement(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",form.getId());
+        map.put("userId",systemUser.getId());
+        map.put("userName",systemUser.getUserName());
+        this.baseMapper.importSettlement(map);
         if(map.get("state").equals(1)){
             return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
         }

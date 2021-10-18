@@ -6,6 +6,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
+import com.jayud.common.aop.annotations.RepeatSubmitLimit;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.enums.CreateUserTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
@@ -23,7 +24,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisStringCommands;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +39,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 外部中港订单接口，该接口由供应商系统发起调用
@@ -56,6 +63,9 @@ public class OutOrderTransportController {
     @Autowired
     IOrderSendCarsService orderSendCarsService;
 
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
+
     @ApiOperation(value = "供应链外部创建中港订单")
     @RequestMapping(value = "/createOutOrderTransport")
     ApiResult createOutOrderTransport(@RequestBody InputOrderOutTransportForm form) {
@@ -66,17 +76,34 @@ public class OutOrderTransportController {
         if (form == null) {
             return ApiResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
         }
-
         //订单验证
         form.checkOrderTransportParam();
 
-        OutOrderTransportVO outOrderTransportVO = orderTransportService.getOutOrderTransportVOByThirdPartyOrderNo(form.getOrderNo());
-        if (outOrderTransportVO != null) {
+        String key = "SCM-" + form.getOrderNo();
+        int limit = redisTemplate.opsForValue().increment(key, 1).intValue();
+        redisTemplate.expire(key, 20, TimeUnit.SECONDS);
+        if (limit > 1) {
             log.warn("创建订单失败 message=第三方订单号已存在");
             return ApiResult.error("第三方订单号已存在");
         }
 
-        return this.createOrUpdateOutOrderTransport(form, outOrderTransportVO, false);
+        ApiResult apiResult = null;
+        try {
+            OutOrderTransportVO outOrderTransportVO = orderTransportService.getOutOrderTransportVOByThirdPartyOrderNo(form.getOrderNo());
+            if (outOrderTransportVO != null) {
+                log.warn("创建订单失败 message=第三方订单号已存在");
+                return ApiResult.error("第三方订单号已存在");
+            }
+            apiResult = this.createOrUpdateOutOrderTransport(form, outOrderTransportVO, false);
+        } catch (Exception e) {
+            redisUtils.delete(key);
+            throw e;
+        } finally {
+            if (apiResult != null && apiResult.getCode() != HttpStatus.SC_OK) {
+                redisUtils.delete(key);
+            }
+        }
+        return apiResult;
     }
 
     @ApiOperation(value = "供应链外部修改中港订单")
@@ -145,6 +172,7 @@ public class OutOrderTransportController {
         mainOrderForm.setUnitCode(customerInfo.getStr("idCode"));
         mainOrderForm.setOperationTime(LocalDateTime.now());
         mainOrderForm.setCmd("submit");
+        mainOrderForm.setReferenceNo(form.getOrderNo());
 
         //组装中港订单
         InputOrderTransportForm inputOrderTransportForm = new InputOrderTransportForm();
@@ -167,6 +195,8 @@ public class OutOrderTransportController {
         inputOrderTransportForm.setVehicleType(form.getVehicleTypeVal());
         inputOrderTransportForm.setVehicleSize(form.getPreTruckStyle());
         inputOrderTransportForm.setCreateUserType(mainOrderForm.getCreateUserType());
+        inputOrderTransportForm.setIsLoadGoods("0");
+        inputOrderTransportForm.setIsUnloadGoods("0");
         // 中转仓库
         ApiResult<Long> warehouseIdResult = omsClient.getWarehouseIdByName(form.getWarehouseInfo());
         if (warehouseIdResult.getCode() != HttpStatus.SC_OK) {
@@ -188,23 +218,27 @@ public class OutOrderTransportController {
             for (InputOrderOutTakeAdrForm orderTakeAdrForm1 : form.getTakeAdrForms1()) {
                 InputOrderTakeAdrForm inputOrderTakeAdrForm = ConvertUtil.convert(orderTakeAdrForm1, InputOrderTakeAdrForm.class);
 
-                ApiResult<Map<String, Long>> regionCityIdMap = omsClient.getRegionCityIdMapByName(orderTakeAdrForm1.getProvinceName(),
-                        orderTakeAdrForm1.getCityName(), orderTakeAdrForm1.getAreaName());
-                if (regionCityIdMap.getCode() != HttpStatus.SC_OK) {
-                    log.warn("根据省市区名称列表获取提货信息Map接口请求失败 message={}", regionCityIdMap.getMsg());
-                    return ApiResult.error(regionCityIdMap.getMsg());
-                }
-                if (regionCityIdMap.getData() == null) {
-                    log.warn("找不到对应省市区 message={}", regionCityIdMap.getMsg());
-                    return ApiResult.error("找不到对应省市区");
+                if (!StringUtils.isAnyBlank(orderTakeAdrForm1.getProvinceName(),
+                        orderTakeAdrForm1.getAreaName(),
+                        orderTakeAdrForm1.getCityName())) {
+                    ApiResult<Map<String, Long>> regionCityIdMap = omsClient.getRegionCityIdMapByName(orderTakeAdrForm1.getProvinceName(),
+                            orderTakeAdrForm1.getCityName(), orderTakeAdrForm1.getAreaName());
+                    if (regionCityIdMap.getCode() != HttpStatus.SC_OK) {
+                        log.warn("根据省市区名称列表获取提货信息Map接口请求失败 message={}", regionCityIdMap.getMsg());
+                        return ApiResult.error(regionCityIdMap.getMsg());
+                    }
+                    if (regionCityIdMap.getData() == null) {
+                        log.warn("找不到对应省市区 message={}", regionCityIdMap.getMsg());
+                        return ApiResult.error("找不到对应省市区");
+                    }
+
+                    inputOrderTakeAdrForm.setProvince(regionCityIdMap.getData().get(orderTakeAdrForm1.getProvinceName()));
+                    inputOrderTakeAdrForm.setCity(regionCityIdMap.getData().get(orderTakeAdrForm1.getCityName()));
+                    inputOrderTakeAdrForm.setArea(regionCityIdMap.getData().get(orderTakeAdrForm1.getAreaName()));
                 }
 
                 // 提货时间
                 inputOrderTakeAdrForm.setTakeTimeStr(truckDate);
-
-                inputOrderTakeAdrForm.setProvince(regionCityIdMap.getData().get(orderTakeAdrForm1.getProvinceName()));
-                inputOrderTakeAdrForm.setCity(regionCityIdMap.getData().get(orderTakeAdrForm1.getCityName()));
-                inputOrderTakeAdrForm.setArea(regionCityIdMap.getData().get(orderTakeAdrForm1.getAreaName()));
                 orderTakeAdrForms1.add(inputOrderTakeAdrForm);
             }
             inputOrderTransportForm.setTakeAdrForms1(orderTakeAdrForms1);
@@ -216,23 +250,26 @@ public class OutOrderTransportController {
             for (InputOrderOutTakeAdrForm orderTakeAdrForm2 : form.getTakeAdrForms2()) {
                 InputOrderTakeAdrForm inputOrderTakeAdrForm = ConvertUtil.convert(orderTakeAdrForm2, InputOrderTakeAdrForm.class);
 
-                ApiResult<Map<String, Long>> regionCityIdMap = omsClient.getRegionCityIdMapByName(orderTakeAdrForm2.getProvinceName(),
-                        orderTakeAdrForm2.getCityName(), orderTakeAdrForm2.getAreaName());
-                if (regionCityIdMap.getCode() != HttpStatus.SC_OK) {
-                    log.warn("根据省市区名称列表获取送货信息Map接口请求失败 message={}", regionCityIdMap.getMsg());
-                    return ApiResult.error(regionCityIdMap.getMsg());
-                }
-                if (regionCityIdMap.getData() == null) {
-                    log.warn("找不到对应省市区 message={}", regionCityIdMap.getMsg());
-                    return ApiResult.error("找不到对应省市区");
+                if (!StringUtils.isAnyBlank(orderTakeAdrForm2.getProvinceName(),
+                        orderTakeAdrForm2.getAreaName(),
+                        orderTakeAdrForm2.getCityName())) {
+                    ApiResult<Map<String, Long>> regionCityIdMap = omsClient.getRegionCityIdMapByName(orderTakeAdrForm2.getProvinceName(),
+                            orderTakeAdrForm2.getCityName(), orderTakeAdrForm2.getAreaName());
+                    if (regionCityIdMap.getCode() != HttpStatus.SC_OK) {
+                        log.warn("根据省市区名称列表获取送货信息Map接口请求失败 message={}", regionCityIdMap.getMsg());
+                        return ApiResult.error(regionCityIdMap.getMsg());
+                    }
+                    if (regionCityIdMap.getData() == null) {
+                        log.warn("找不到对应省市区 message={}", regionCityIdMap.getMsg());
+                        return ApiResult.error("找不到对应省市区");
+                    }
+                    inputOrderTakeAdrForm.setProvince(regionCityIdMap.getData().get(orderTakeAdrForm2.getProvinceName()));
+                    inputOrderTakeAdrForm.setCity(regionCityIdMap.getData().get(orderTakeAdrForm2.getCityName()));
+                    inputOrderTakeAdrForm.setArea(regionCityIdMap.getData().get(orderTakeAdrForm2.getAreaName()));
                 }
 
                 // 送货时间
                 inputOrderTakeAdrForm.setTakeTimeStr(receivingDate);
-
-                inputOrderTakeAdrForm.setProvince(regionCityIdMap.getData().get(orderTakeAdrForm2.getProvinceName()));
-                inputOrderTakeAdrForm.setCity(regionCityIdMap.getData().get(orderTakeAdrForm2.getCityName()));
-                inputOrderTakeAdrForm.setArea(regionCityIdMap.getData().get(orderTakeAdrForm2.getAreaName()));
                 orderTakeAdrForms2.add(inputOrderTakeAdrForm);
             }
             inputOrderTransportForm.setTakeAdrForms2(orderTakeAdrForms2);

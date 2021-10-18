@@ -40,6 +40,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -1021,7 +1022,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public OutOrderTransportVO getOutOrderTransportVOByThirdPartyOrderNo(String thirdPartyOrderNo) {
         QueryWrapper<OrderTransport> condition = new QueryWrapper<>();
-        condition.lambda().in(OrderTransport::getThirdPartyOrderNo, thirdPartyOrderNo);
+        condition.lambda().select(OrderTransport::getMainOrderNo, OrderTransport::getId, OrderTransport::getOrderNo).in(OrderTransport::getThirdPartyOrderNo, thirdPartyOrderNo);
         OrderTransport orderTransport = this.getOne(condition, false);
         if (orderTransport == null) {
             return null;
@@ -1066,23 +1067,26 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                     .select(OrderTransport::getThirdPartyOrderNo)
                     .eq(OrderTransport::getId, orderTransport.getId()));
 
-			Map<String, Object> res = null;
-            if (CommonConstant.CAR_TAKE_GOODS.equals(form.getCmd())) {//车辆提货
-                res = scmOrderService.setManifest(ScmOrderStatusEnum.ASSEMBLY_VEHICLE.getCode(), orderTransportTemp.getThirdPartyOrderNo());
-                if (MapUtil.getInt(res, "code") != 0) {
+            new Thread(() -> {
+                Map<String, Object> res = null;
+
+                if (CommonConstant.CAR_TAKE_GOODS.equals(form.getCmd())) {//车辆提货
+                    res = scmOrderService.setManifest(ScmOrderStatusEnum.ASSEMBLY_VEHICLE.getCode(), orderTransportTemp.getThirdPartyOrderNo());
+                    if (MapUtil.getInt(res, "code") != 0) {
+                        logger.warn("推送订单状态到供应链失败，原因：{}", res.get("msg"));
+                    }
+                    res = scmOrderService.setManifest(ScmOrderStatusEnum.DEPART_VEHICLE.getCode(), orderTransportTemp.getThirdPartyOrderNo());
+                } else if (CommonConstant.CAR_GO_CUSTOMS.equals(form.getCmd())) {//车辆通关
+                    res = scmOrderService.setManifest(ScmOrderStatusEnum.THROUGH_CUSTOMS.getCode(), orderTransportTemp.getThirdPartyOrderNo());
+                } else if (CommonConstant.CONFIRM_SIGN_IN.equals(form.getCmd())) {//确认签收
+                    res = scmOrderService.setManifest(ScmOrderStatusEnum.ARRIVED.getCode(), orderTransportTemp.getThirdPartyOrderNo());
+                }
+
+                if (res != null && MapUtil.getInt(res, "code") != 0) {
                     logger.warn("推送订单状态到供应链失败，原因：{}", res.get("msg"));
                 }
-                res = scmOrderService.setManifest(ScmOrderStatusEnum.DEPART_VEHICLE.getCode(), orderTransportTemp.getThirdPartyOrderNo());
-            } else if (CommonConstant.CAR_GO_CUSTOMS.equals(form.getCmd())) {//车辆通关
-				res = scmOrderService.setManifest(ScmOrderStatusEnum.THROUGH_CUSTOMS.getCode(), orderTransportTemp.getThirdPartyOrderNo());
-            } else if (CommonConstant.CONFIRM_SIGN_IN.equals(form.getCmd())) {//确认签收
-				res = scmOrderService.setManifest(ScmOrderStatusEnum.ARRIVED.getCode(), orderTransportTemp.getThirdPartyOrderNo());
-			}
 
-            if (res != null && MapUtil.getInt(res, "code") != 0) {
-                logger.warn("推送订单状态到供应链失败，原因：{}", res.get("msg"));
-            }
-
+            }).start();
         } catch(Exception e){
             e.printStackTrace();
             logger.warn("推送订单状态到供应链失败，原因：{}", e.getMessage());
@@ -1094,6 +1098,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
      * @param orderTransport
      * @param form
      */
+    @Async
     @Override
     public void pushTransportationInformation(OrderTransport orderTransport, SendCarForm form) {
         Integer createUserTypeById = orderTransportService.getCreateUserTypeById(orderTransport.getId());
@@ -1124,10 +1129,13 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             // 直接传法人主体名称，对于供应链来说车辆供应商是物流科技
             scmTransportationInformationForm.setTruckCompany(orderTransportTemp.getLegalName());
 
-            Map<String, Object> res = scmOrderService.acceptTransportationInformation(scmTransportationInformationForm);
-            if (MapUtil.getInt(res, "code") != 0) {
-                logger.warn("推送运输公司消息到供应链失败，原因：{}", res.get("msg"));
-            }
+            new Thread(() -> {
+                Map<String, Object> res = scmOrderService.acceptTransportationInformation(scmTransportationInformationForm);
+                if (MapUtil.getInt(res, "code") != 0) {
+                    logger.warn("推送运输公司消息到供应链失败，原因：{}", res.get("msg"));
+                }
+            }).start();
+
         } catch(Exception e){
             e.printStackTrace();
             logger.warn("推送运输公司消息到供应链失败，原因：{}", e.getMessage());

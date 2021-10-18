@@ -106,7 +106,7 @@ public class ScmOrderServiceImpl implements IScmOrderService {
      * @return
      */
     private Map<String, Object> doPost(String form, String url) {
-        log.info("请求供应链参数:" + form);
+        log.info("请求供应链 url: {} 参数: {}", url, form);
         String token = login(null, null);
 
         HttpResponse response = HttpRequest.post(url)

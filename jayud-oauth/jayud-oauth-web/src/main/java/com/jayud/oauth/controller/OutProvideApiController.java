@@ -116,7 +116,7 @@ public class OutProvideApiController {
         bizData.setOprTime(date);
         System.out.println(date);
         String jsonStr = JSONObject.toJSONString(bizData);
-        String encodeValue = DigestUtils.md5DigestAsHex(("cyc" + jsonStr + "123456AAA").getBytes());
+        String encodeValue = DigestUtils.md5DigestAsHex(("蔡永春" + jsonStr + "123456").getBytes());
         System.out.println(encodeValue);
         String token = TokenGenerator.generateValue(encodeValue);
         System.out.println(token);

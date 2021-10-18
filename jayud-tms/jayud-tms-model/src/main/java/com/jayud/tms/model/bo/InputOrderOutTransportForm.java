@@ -104,27 +104,9 @@ public class InputOrderOutTransportForm {
         if (StringUtil.isNullOrEmpty(this.getTruckDate())) {
             sb.append("车次时间").append("参数不能为空").append(",");
             isSuccess = false;
-        }
-        if (!Pattern.compile("^[0-9]{14}$").matcher(this.getTruckDate()).matches()) {
+        } else if (!Pattern.compile("^[0-9]{14}$").matcher(this.getTruckDate()).matches()) {
             sb.append("车次时间").append("格式不正确").append(",");
             isSuccess = false;
-        }
-
-        // 检查提货/送货地址
-        if (CollectionUtil.isNotEmpty(this.getTakeAdrForms1()) ) {
-            boolean isFail = checkOrderTakeAdrForm(this.getTakeAdrForms1());
-            if (isFail) {
-                isSuccess = false;
-                sb.append("提货地址").append("存在遗漏参数").append(",");
-            }
-        }
-
-        if (CollectionUtil.isNotEmpty(this.getTakeAdrForms2())) {
-            boolean isFail = checkOrderTakeAdrForm(this.getTakeAdrForms2());
-            if (isFail) {
-                isSuccess = false;
-                sb.append("送货地址").append("存在遗漏参数").append(",");
-            }
         }
 
         if (!isSuccess) {

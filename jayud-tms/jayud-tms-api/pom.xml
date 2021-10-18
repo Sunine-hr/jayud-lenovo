@@ -30,7 +30,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.jayud.tms.JayudTmsApplication</mainClass>
+                    <mainClass>com.jayud.tms.JayudTmsApiApplication</mainClass>
                     <layout>ZIP</layout>
                 </configuration>
                 <executions>

@@ -53,10 +53,8 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
 
     @Autowired
     private OmsClient omsClient;
-
     @Autowired
     private OauthClient oauthClient;
-
     @Autowired
     private FileClient fileClient;
 
@@ -256,7 +254,11 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
         Page<TrailerOrderFormVO> page = new Page<>(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findByPage(page, form, legalIds);
+        IPage<TrailerOrderFormVO> iPage = this.baseMapper.findByPage(page, form, legalIds);
+        iPage.getRecords().forEach(e->{
+
+        });
+        return null;
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.jayud.oms.model.bo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
@@ -11,6 +12,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,6 +91,47 @@ public class AddVehicleInfoForm {
 
     @ApiModelProperty(value = "车辆类型(0:中港车,1:内陆车)")
     private Integer type;
+
+
+    @ApiModelProperty(value = "保险公司")
+    private String insuranceCompany;
+
+    @ApiModelProperty(value = "是否保险")
+    private Boolean isInsured;
+
+    @ApiModelProperty(value = "品牌")
+    private String brand;
+
+    @ApiModelProperty(value = "车架号")
+    private String frameNum;
+
+    @ApiModelProperty(value = "最近一次年审日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime lastAnnualReviewDate;
+
+    @ApiModelProperty(value = "下次年审日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime nextAnnualReviewDate;
+
+    @ApiModelProperty(value = "购置日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime purchaseDate;
+
+    @ApiModelProperty(value = "最近一次季审日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime lastQuarterlyReviewDate;
+
+    @ApiModelProperty(value = "下一次季审日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime nextQuarterlyReviewDate;
+
+    @ApiModelProperty(value = "商业险到期日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime commercialInsuranceExpiration;
+
+    @ApiModelProperty(value = "强制险到期日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime compulsoryInsuranceDateExpiry;
 
     public void checkCreateOrUpdate() {
         String msg = "必填";

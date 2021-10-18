@@ -177,8 +177,9 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = tor.`order_no`)>0 THEN TRUE
         ELSE FALSE
         END) cost,
-        tor.department_id
-        from trailer_order tor
+        tor.department_id,
+        td.supplier_name
+        from trailer_order tor left join trailer_dispatch td on tor.id=td.order_id
         <where>
             <if test="form.orderNo !=null and form.orderNo!=''">
                 and tor.order_no like concat('%',#{form.orderNo},'%')

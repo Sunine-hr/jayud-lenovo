@@ -275,6 +275,11 @@ public class TrailerOrderFormVO extends Model<TrailerOrderFormVO> {
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
 
+    @ApiModelProperty(value = "供应商名称")
+    private String supplierName;
+
+    @ApiModelProperty(value = "供应商代码")
+    private String supplierCode;
 
 
     /**

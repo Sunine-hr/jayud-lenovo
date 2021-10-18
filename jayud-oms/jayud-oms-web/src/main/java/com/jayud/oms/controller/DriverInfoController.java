@@ -74,6 +74,10 @@ public class DriverInfoController {
 //        }
 
         DriverInfo driverInfo = ConvertUtil.convert(form, DriverInfo.class);
+        driverInfo.setDriverLicenseImg(com.jayud.common.utils.StringUtils.getFileStr(form.getDriverLicenseImgs()));
+        driverInfo.setDriverLicenseImgName(com.jayud.common.utils.StringUtils.getFileNameStr(form.getDriverLicenseImgs()));
+        driverInfo.setIdCardImg(com.jayud.common.utils.StringUtils.getFileStr(form.getIdCardImgs()));
+        driverInfo.setIdCardImgName(com.jayud.common.utils.StringUtils.getFileNameStr(form.getDriverLicenseImgs()));
         driverInfo.setPassword("E10ADC3949BA59ABBE56E057F20F883E");
         if (this.driverInfoService.saveOrUpdateDriverInfo(driverInfo)) {
             return CommonResult.success();

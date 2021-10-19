@@ -90,9 +90,6 @@ public class DriverInfo extends Model<DriverInfo> {
     @ApiModelProperty(value = "账户状态(0:禁用,1:启用)")
     private Integer accountStatus;
 
-    @ApiModelProperty(value = "驾驶证号")
-    private String driverLicenseNum;
-
     @ApiModelProperty(value = "驾龄")
     private Integer drivingAge;
 

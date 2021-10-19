@@ -74,7 +74,7 @@ public class FleetManagementServiceImpl extends ServiceImpl<FleetManagementMappe
         condition.lambda().select(FleetManagement::getStatus).eq(FleetManagement::getId, id);
         FleetManagement tmp = this.baseMapper.selectOne(condition);
 
-        Integer status = 1 == tmp.getStatus() ? StatusEnum.DISABLE.getCode() : StatusEnum.ENABLE.getCode();
+        Integer status = tmp.getStatus().equals(1) ? StatusEnum.DISABLE.getCode() : StatusEnum.ENABLE.getCode();
 
         FleetManagement update = new FleetManagement().setId(id).setStatus(status)
                 .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());

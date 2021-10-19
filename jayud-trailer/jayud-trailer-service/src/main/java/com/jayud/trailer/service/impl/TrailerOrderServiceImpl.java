@@ -255,10 +255,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
 
         Page<TrailerOrderFormVO> page = new Page<>(form.getPageNum(), form.getPageSize());
         IPage<TrailerOrderFormVO> iPage = this.baseMapper.findByPage(page, form, legalIds);
-        iPage.getRecords().forEach(e->{
-
-        });
-        return null;
+        return iPage;
     }
 
     /**

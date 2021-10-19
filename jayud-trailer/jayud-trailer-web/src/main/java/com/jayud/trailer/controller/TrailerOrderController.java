@@ -223,6 +223,8 @@ public class TrailerOrderController {
 
         //获取车型信息
         ApiResult cabinetSizeInfo = this.omsClient.getVehicleSizeInfo();
+        //查询供应商code
+        Map<String, String> supplierCodes = this.omsClient.getSupplierCodesByName().getData();
 
         //查询主订单信息
         ApiResult result = omsClient.getMainOrderByOrderNos(mainOrder);
@@ -243,8 +245,9 @@ public class TrailerOrderController {
             record.assemblyMainOrderData(result.getData());
             //组装法人名称
             record.assemblyLegalEntity(legalEntityResult);
+            record.setDefaultSupplierCode(supplierCodes.get(record.getSupplierName()));
             //拼装供应商
-            //record.assemblySupplierInfo(supplierInfo);
+//            record.assemblySupplierInfo(supplierInfo);
             //拼接附件信息
             record.getFile(prePath);
 
@@ -280,7 +283,7 @@ public class TrailerOrderController {
                 }
                 record.assemblyGoodsInfo(goodsVOS);
                 record.setOrderAddressForms(trailerOrderAddressVOS);
-                if(CollectionUtils.isNotEmpty(record.getOrderAddressForms())){
+                if (CollectionUtils.isNotEmpty(record.getOrderAddressForms())) {
                     record.assemblyDateStr();
                     record.setDeliveryDate(record.getOrderAddressForms().get(0).getDeliveryDate());
                 }
@@ -400,7 +403,7 @@ public class TrailerOrderController {
         String trailerOrderNo = MapUtil.getStr(map, "orderNo");
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("trailer_order_no", trailerOrderNo);
-        queryWrapper.eq("status",1);
+        queryWrapper.eq("status", 1);
         TrailerDispatch one = trailerDispatchService.getOne(queryWrapper);
         if (one != null) {
             return CommonResult.success(one);
@@ -654,52 +657,52 @@ public class TrailerOrderController {
             JSONArray mainOrders = new JSONArray(JSON.toJSONString(mainOrderByOrderNos.getData()));
             JSONObject json = mainOrders.getJSONObject(0);
             String customerName = json.getStr("customerName");
-            map.put("customerName",customerName);
-            if(trailerOrderByOrderNO.getSo() != null){
-                map.put("so",trailerOrderByOrderNO.getSo());
+            map.put("customerName", customerName);
+            if (trailerOrderByOrderNO.getSo() != null) {
+                map.put("so", trailerOrderByOrderNO.getSo());
             }
-            if(trailerOrderByOrderNO.getCabinetSizeName() != null){
-                map.put("cabinetSizeName",trailerOrderByOrderNO.getCabinetSizeName());
+            if (trailerOrderByOrderNO.getCabinetSizeName() != null) {
+                map.put("cabinetSizeName", trailerOrderByOrderNO.getCabinetSizeName());
             }
-            if(trailerOrderByOrderNO.getCabinetNumber() != null){
-                map.put("cabinetNumber",trailerOrderByOrderNO.getCabinetNumber());
+            if (trailerOrderByOrderNO.getCabinetNumber() != null) {
+                map.put("cabinetNumber", trailerOrderByOrderNO.getCabinetNumber());
             }
-            if(trailerOrderByOrderNO.getPaperStripSeal() != null){
-                map.put("paperStripSeal",trailerOrderByOrderNO.getPaperStripSeal());
+            if (trailerOrderByOrderNO.getPaperStripSeal() != null) {
+                map.put("paperStripSeal", trailerOrderByOrderNO.getPaperStripSeal());
             }
-            if(trailerDispatchVO.getPlateNumber() != null){
+            if (trailerDispatchVO.getPlateNumber() != null) {
                 VehicleInfoLinkVO data = omsClient.initVehicleInfo(trailerDispatchVO.getPlateNumber()).getData();
                 trailerDispatchVO.setPlateNumberName(data.getPlateNumber());
                 for (DriverInfoVO driverInfo : data.getDriverInfos()) {
                     if (trailerDispatchVO.getName().equals(driverInfo.getId())) {
-                        map.put("driverName",driverInfo.getName());
-                        map.put("phone",driverInfo.getPhone());
-                        map.put("idNo",driverInfo.getIdNo());
+                        map.put("driverName", driverInfo.getName());
+                        map.put("phone", driverInfo.getPhone());
+                        map.put("idNo", driverInfo.getIdNo());
                     }
                 }
-                map.put("plateNumberName",trailerDispatchVO.getPlateNumberName());
+                map.put("plateNumberName", trailerDispatchVO.getPlateNumberName());
             }
-            if(trailerDispatchVO.getCabinetWeight() != null){
-                map.put("cabinetWeight",trailerDispatchVO.getCabinetWeight());
+            if (trailerDispatchVO.getCabinetWeight() != null) {
+                map.put("cabinetWeight", trailerDispatchVO.getCabinetWeight());
             }
-            if(trailerDispatchVO.getCabinetWeight() != null){
-                map.put("weighing",trailerDispatchVO.getWeighing());
+            if (trailerDispatchVO.getCabinetWeight() != null) {
+                map.put("weighing", trailerDispatchVO.getWeighing());
             }
             List<TrailerOrderAddressVO> orderAddressForms = trailerOrderByOrderNO.getOrderAddressForms();
-            if(CollectionUtils.isNotEmpty(orderAddressForms)){
+            if (CollectionUtils.isNotEmpty(orderAddressForms)) {
                 StringBuffer stringBuffer = new StringBuffer();
                 for (TrailerOrderAddressVO orderAddressForm : orderAddressForms) {
-                    if(orderAddressForm.getAddress() != null){
+                    if (orderAddressForm.getAddress() != null) {
                         stringBuffer.append(orderAddressForm.getAddress()).append("/");
                     }
                 }
-                map.put("address",stringBuffer.toString().substring(0,stringBuffer.length()-1));
+                map.put("address", stringBuffer.toString().substring(0, stringBuffer.length() - 1));
             }
-            if(trailerDispatchVO.getCreateTime() != null){
+            if (trailerDispatchVO.getCreateTime() != null) {
                 DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
-                map.put("createTime",df.format(trailerDispatchVO.getCreateTime()).substring(5,11));
+                map.put("createTime", df.format(trailerDispatchVO.getCreateTime()).substring(5, 11));
             }
-            map.put("legalName",trailerOrderByOrderNO.getLegalName());
+            map.put("legalName", trailerOrderByOrderNO.getLegalName());
 
             excelWriter.fill(map, writeSheet);
 

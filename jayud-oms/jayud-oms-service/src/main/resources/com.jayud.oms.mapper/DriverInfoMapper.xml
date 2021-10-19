@@ -54,6 +54,7 @@
 <!--                v.hk_number like concat('%',#{form.carNumber},'%'))-->
 <!--            </if>-->
         </where>
+        order by id desc
     </select>
 
 </mapper>

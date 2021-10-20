@@ -129,6 +129,9 @@ public class FeeVO {
     @ApiModelProperty(value = "是否扣减代理费（1、货款中扣减，2、退税款中扣减，3、暂不扣减）")
     private Integer proxyCharge;
 
+    @ApiModelProperty(value = "是否扣减代理费（1、货款中扣减，2、退税款中扣减，3、暂不扣减）")
+    private String proxyChargeDesc;
+
     @ApiModelProperty(value = "出库收款方式")
     private String shippingFeeStyle;
 

@@ -53,6 +53,12 @@ public class HgTruckApi {
     @Value("${scmApi.url.loginUrl}")
     private String loginUrl;
 
+    @Value("${scmApi.password}")
+    private String password;
+
+    @Value("${scmApi.loginName}")
+    private String loginName;
+
     @Autowired
     private IHgTruckService hgTruckService;
 
@@ -438,6 +444,8 @@ public class HgTruckApi {
 
     //登录
     public String doLogin(OutAuthenticationForm form) {
+        form.setLoginname(loginName);
+        form.setPassword(password);
         //入参键值对
         Map<String, Object> requestMap = new HashMap<>(4);
         requestMap.put("loginname", form.getLoginname());

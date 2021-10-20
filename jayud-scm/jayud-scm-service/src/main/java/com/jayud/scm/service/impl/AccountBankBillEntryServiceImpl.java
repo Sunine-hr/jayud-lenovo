@@ -76,6 +76,6 @@ public class AccountBankBillEntryServiceImpl extends ServiceImpl<AccountBankBill
         if(result){
             log.warn("删除水单明细失败");
         }
-        return false;
+        return result;
     }
 }

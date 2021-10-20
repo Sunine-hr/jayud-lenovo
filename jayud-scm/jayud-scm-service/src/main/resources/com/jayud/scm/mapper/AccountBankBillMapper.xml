@@ -54,4 +54,16 @@
         id, model_type, bank_bill_no, bank_bill_date, customer_id, customer_name, fsaler_id, fsaler_name, follower_id, follower_name, currency_name, bill_money, bill_ar_money, shou_fee_cdf, shou_fee, account_date, account_time, bank_id, bank_name, bank_num, bank_bill_type, pay_customer_id, pay_customer_name, verification_money, is_verification, verification_currency, verification_rate, discount_rate, state_flag, f_level, f_step, check_state_flag, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
     </sql>
 
+    <select id="automaticallyGeneratePayment" parameterType="map" statementType="CALLABLE" resultType="java.util.HashMap">
+        {
+        call up_bank_bill_ver_sp(
+        #{id,mode=IN},
+        #{userId,mode=IN},
+        #{userName,mode=IN},
+        #{state,mode=OUT,jdbcType=INTEGER},
+        #{string,mode=OUT,jdbcType=VARCHAR}
+        )
+        }
+    </select>
+
 </mapper>

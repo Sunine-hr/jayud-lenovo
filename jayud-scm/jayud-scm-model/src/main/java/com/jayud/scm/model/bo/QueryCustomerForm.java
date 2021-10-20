@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class QueryCustomerForm extends BasePageForm{
 
@@ -21,6 +23,9 @@ public class QueryCustomerForm extends BasePageForm{
 
     @ApiModelProperty("类型")
     private String classType;
+
+    @ApiModelProperty("客户类型")
+    private List<String> classTypes;
 
     @ApiModelProperty("客户名称")
     private String customerName;

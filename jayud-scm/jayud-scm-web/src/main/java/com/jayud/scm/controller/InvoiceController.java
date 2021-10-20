@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,6 +43,15 @@ public class InvoiceController {
     @PostMapping(value = "/findByPage")
     public CommonResult<CommonPageResult<InvoiceDetailVO>> findByPage(@RequestBody QueryForm form) {
         IPage<InvoiceDetailVO> page = this.iInvoiceService.findByPage(form);
+
+        List<InvoiceDetailVO> invoiceDetailVOS = new ArrayList<>();
+
+        for (InvoiceDetailVO record : page.getRecords()) {
+            if(record.getAtMoney() != null && !record.getAtMoney().equals(new BigDecimal(0))){
+                invoiceDetailVOS.add(record);
+            }
+        }
+        page.setRecords(invoiceDetailVOS);
 
         CommonPageResult pageVO = new CommonPageResult(page);
         return CommonResult.success(pageVO);

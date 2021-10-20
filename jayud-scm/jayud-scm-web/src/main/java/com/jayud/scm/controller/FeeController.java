@@ -58,6 +58,7 @@ public class FeeController {
             for (FeeVO record : page.getRecords()) {
                 List<FeeListVO> feeListVOS = feeListService.getFeeListByFeeId(record.getId());
                 record.setFeeListVOS(feeListVOS);
+
 //                record.setDeputyStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1019",record.getDeputyStyle()));
 //                record.setIncoterms(ibDataDicEntryService.getTextByDicCodeAndDataValue("1002",record.getIncoterms()));
 //                record.setPayStyle(ibDataDicEntryService.getTextByDicCodeAndDataValue("1020",record.getPayStyle()));

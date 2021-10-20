@@ -9,6 +9,7 @@ import com.jayud.scm.model.bo.AddAcctPayEntryForm;
 import com.jayud.scm.model.bo.AddAcctPayForm;
 import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.po.AcctPay;
 import com.jayud.scm.model.po.AcctPayEntry;
 import com.jayud.scm.model.vo.AcctPayEntryVO;
 import com.jayud.scm.model.vo.BookingOrderEntryVO;
@@ -59,6 +60,33 @@ public class AcctPayEntryController {
     @ApiOperation(value = "新增应付款单")
     @PostMapping(value = "/saveOrUpdateAcctPayEntry")
     public CommonResult saveOrUpdateAcctPayEntry(@RequestBody AddAcctPayEntryForm form) {
+
+        if(form.getPayId() != null){
+            AcctPay acctPay = acctPayService.getById(form.getPayId());
+            if(form.getApMoney().compareTo(acctPay.getApMoney()) == 1){
+                return CommonResult.error(444,"应付款金额不能大于预付付款单金额");
+            }
+        }
+
+        BookingOrderVO bookingOrderVO = bookingOrderService.getBookingOrderById(form.getOrderId());
+        List<AcctPayEntry> acctPayEntries = acctPayEntryService.getAcctPayEntryByOrderId(bookingOrderVO.getId());
+        BigDecimal acctPayEntrySum = new BigDecimal(0);
+        BigDecimal bookingOrderSum = new BigDecimal(0);
+        if(CollectionUtil.isNotEmpty(acctPayEntries)){
+            for (AcctPayEntry acctPayEntry : acctPayEntries) {
+                acctPayEntrySum = acctPayEntrySum.add(acctPayEntry.getApMoney());
+            }
+        }
+        if(CollectionUtil.isNotEmpty(bookingOrderVO.getBookingOrderEntryList())){
+            for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderVO.getBookingOrderEntryList()) {
+                bookingOrderSum = bookingOrderSum.add(bookingOrderEntryVO.getTotalHgMoney());
+            }
+        }
+        acctPayEntrySum = acctPayEntrySum.add(form.getApMoney());
+        if(acctPayEntrySum.compareTo(bookingOrderSum) == 1){
+            return CommonResult.error(444,"应付款金额总和已大于委托单报关总价格");
+        }
+
         boolean result = acctPayEntryService.saveOrUpdateAcctPay(form);
         if(!result){
             return CommonResult.error(444,"添加或修改应付款单失败");
@@ -105,7 +133,7 @@ public class AcctPayEntryController {
         addAcctPayForm.setCustomerId(bookingOrderVO.getCustomerId());
         addAcctPayForm.setCustomerName(bookingOrderVO.getCustomerName());
         Integer result = acctPayService.saveAcctPay(addAcctPayForm);
-        if(result != null){
+        if(result == null){
             log.warn("付款操作，付款单保存失败");
             return CommonResult.error(444,"付款失败");
         }
@@ -130,6 +158,7 @@ public class AcctPayEntryController {
         String acctCode = acctPayEntries.get(0).getAcctCode();
         BigDecimal apMoney = new BigDecimal(0);
         BigDecimal proxyMoney = new BigDecimal(0);
+        BigDecimal currencyName = new BigDecimal(0);
         for (AcctPayEntry acctPayEntry : acctPayEntries) {
             if(!acctPayEntry.getPaySupplierName().equals(paySupplierName)){
                 return CommonResult.error(444,"收款供应商不一致，无法合并付款");
@@ -137,10 +166,16 @@ public class AcctPayEntryController {
             if(!acctPayEntry.getAcctCode().equals(acctCode)){
                 return CommonResult.error(444,"收款银行账号不一致，无法合并付款");
             }
-            apMoney.add(acctPayEntry.getApMoney());
-            proxyMoney.add((acctPayEntry.getProxyMoney() != null ? acctPayEntry.getProxyMoney() : new BigDecimal(0)));
+            if(acctPayEntry.getCurrencyName().equals(currencyName)){
+                return CommonResult.error(444,"币种不一致，无法合并付款");
+            }
+            apMoney = apMoney.add(acctPayEntry.getApMoney());
+            proxyMoney = proxyMoney.add((acctPayEntry.getProxyMoney() != null ? acctPayEntry.getProxyMoney() : new BigDecimal(0)));
         }
         AddAcctPayForm acctPayForm = ConvertUtil.convert(acctPayEntries.get(0), AddAcctPayForm.class);
+        acctPayForm.setId(null);
+        acctPayForm.setApMoney(apMoney);
+        acctPayForm.setProxyMoney(proxyMoney);
         Integer integer = acctPayService.saveAcctPay(acctPayForm);
         if(integer == null){
             log.warn("合并付款操作，付款单保存失败");
@@ -166,12 +201,12 @@ public class AcctPayEntryController {
         BigDecimal bookingOrderSum = new BigDecimal(0);
         if(CollectionUtil.isNotEmpty(acctPayEntries)){
             for (AcctPayEntry acctPayEntry : acctPayEntries) {
-                acctPayEntrySum.add(acctPayEntry.getApMoney());
+                acctPayEntrySum = acctPayEntrySum.add(acctPayEntry.getApMoney());
             }
         }
         if(CollectionUtil.isNotEmpty(bookingOrderVO.getBookingOrderEntryList())){
             for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderVO.getBookingOrderEntryList()) {
-                bookingOrderSum.add(bookingOrderEntryVO.getTotalHgMoney());
+                bookingOrderSum = bookingOrderSum.add(bookingOrderEntryVO.getTotalHgMoney());
             }
         }
 

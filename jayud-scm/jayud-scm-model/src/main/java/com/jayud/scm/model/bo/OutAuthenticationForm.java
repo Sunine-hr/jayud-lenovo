@@ -10,10 +10,10 @@ import lombok.Data;
 public class OutAuthenticationForm {
 
     @ApiModelProperty(value = "账号",required = true)
-    private String loginname = "cyc";
+    private String loginname;
 
     @ApiModelProperty(value = "密码",required = true)
-    private String password = "123456";
+    private String password;
 
     @ApiModelProperty(value = "加密后的值，loginname+时间轴+password",required = true)
     private String sign;

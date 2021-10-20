@@ -120,6 +120,14 @@
         <if test="form.classType !=null and form.classType!=''">
             and co.id in (select customer_id from customer_class where class_name = #{form.classType})
         </if>
+
+        <if test="form.classTypes !=null and form.classTypes!=''">
+            and co.id in (select customer_id from customer_class where class_name in
+            <foreach collection="form.classTypes" item="classType" open="(" separator="," close=")">
+             #{classType}
+            </foreach> )
+        </if>
+
         <if test="form.startTime !=null and form.startTime!=''">
             and co.crt_by_dtm <![CDATA[>= ]]> #{form.startTime}
         </if>

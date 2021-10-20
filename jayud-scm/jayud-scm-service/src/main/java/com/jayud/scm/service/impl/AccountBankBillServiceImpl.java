@@ -22,7 +22,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -214,4 +216,19 @@ public class AccountBankBillServiceImpl extends ServiceImpl<AccountBankBillMappe
 
         return result;
     }
+
+    @Override
+    public CommonResult automaticallyGeneratePayment(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",form.getId());
+        map.put("userId",systemUser.getId());
+        map.put("userName",systemUser.getUserName());
+        this.baseMapper.automaticallyGeneratePayment(map);
+        if(map.get("state").equals(1)){
+            return CommonResult.error((Integer)map.get("state"),(String)map.get("string"));
+        }
+        return CommonResult.success();
+    }
+
 }

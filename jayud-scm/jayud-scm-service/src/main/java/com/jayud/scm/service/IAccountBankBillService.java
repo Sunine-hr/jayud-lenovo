@@ -30,4 +30,6 @@ public interface IAccountBankBillService extends IService<AccountBankBill> {
     CommonResult reverseReviewWaterBill(PermissionForm form);
 
     boolean arrival(QueryCommonForm form);
+
+    CommonResult automaticallyGeneratePayment(QueryCommonForm form);
 }

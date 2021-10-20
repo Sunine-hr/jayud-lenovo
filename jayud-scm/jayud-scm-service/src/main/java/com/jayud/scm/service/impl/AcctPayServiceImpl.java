@@ -249,6 +249,7 @@ public class AcctPayServiceImpl extends ServiceImpl<AcctPayMapper, AcctPay> impl
         AcctPayFollow acctPayFollow = new AcctPayFollow();
         AcctPay acctPay = ConvertUtil.convert(form, AcctPay.class);
 
+        acctPay.setId(null);
         acctPay.setPayNo(commodityService.getOrderNo(NoCodeEnum.ACCT_PAY.getCode(), LocalDateTime.now()));
         acctPay.setCrtBy(systemUser.getId().intValue());
         acctPay.setCrtByDtm(LocalDateTime.now());
@@ -261,6 +262,7 @@ public class AcctPayServiceImpl extends ServiceImpl<AcctPayMapper, AcctPay> impl
             log.warn("新增或修改付款单成功");
             acctPayFollow.setCrtBy(systemUser.getId().intValue());
             acctPayFollow.setCrtByDtm(LocalDateTime.now());
+
             acctPayFollow.setCrtByName(systemUser.getUserName());
             acctPayFollow.setPayId(acctPay.getId());
             boolean save = this.acctPayFollowService.save(acctPayFollow);

@@ -366,4 +366,5 @@ public class AcctReceiptServiceImpl extends ServiceImpl<AcctReceiptMapper, AcctR
         }
         return commonResult;
     }
+
 }

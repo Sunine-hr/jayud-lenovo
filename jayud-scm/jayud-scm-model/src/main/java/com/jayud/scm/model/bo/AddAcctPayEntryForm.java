@@ -34,7 +34,7 @@ public class AddAcctPayEntryForm {
 
     @ApiModelProperty(value = "应付款日期")
     @JsonProperty(value = "fDate")
-    private LocalDateTime fDate;
+    private String fDate;
 
     @ApiModelProperty(value = "订单ID")
     private Integer orderId;

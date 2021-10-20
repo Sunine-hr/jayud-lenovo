@@ -22,4 +22,11 @@ public interface IOrderTypeNumberService extends IService<OrderTypeNumber> {
     String getOrderNo(String preOrderNO, String classCode);
 
     String getWarehouseNumber(String preOrder);
+
+    /**
+     * 按年月日规则获取编号
+     * @param preOrder
+     * @return
+     */
+    String getNumberOfDay(String preOrder);
 }

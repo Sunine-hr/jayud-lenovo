@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.CustomerLineRelationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.CustomerLineRelation">
+        <id column="id" property="id" />
+        <result column="customer_line_id" property="customerLineId" />
+        <result column="customer_id" property="customerId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_line_id, customer_id
+    </sql>
+
+    <select id="getListByCustomerLineId" parameterType="java.util.HashMap"
+            resultType="com.jayud.oms.model.po.CustomerLineRelation">
+        select clr.id, clr.customer_line_id, clr.customer_id, ci.id_code as customerCode, ci.name as customerName
+        from customer_line_relation as clr left join customer_info as ci on clr.customer_id = ci.id
+        where clr.customer_line_id = #{id}
+    </select>
+
+</mapper>

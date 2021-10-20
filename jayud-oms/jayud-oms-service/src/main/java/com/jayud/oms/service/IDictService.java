@@ -8,6 +8,7 @@ import com.jayud.oms.model.po.Dict;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.po.DictType;
 import com.jayud.oms.model.vo.DictVO;
+import com.jayud.oms.model.vo.InitComboxStrVO;
 
 import java.util.List;
 
@@ -37,4 +38,11 @@ public interface IDictService extends IService<Dict> {
      * 根据字典类型code查询
      */
     public List<Dict> getByDictTypeCode(String dictTypeCode);
+
+    /**
+     * 根据字典类型code查询，返回下拉选择数据
+     * @param lineType
+     * @return
+     */
+    List<InitComboxStrVO> getInitComboxByDictTypeCode(String lineType);
 }

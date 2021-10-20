@@ -10,11 +10,13 @@ import com.jayud.oms.model.po.CostGenre;
 import com.jayud.oms.model.po.Dict;
 import com.jayud.oms.mapper.DictMapper;
 import com.jayud.oms.model.vo.DictVO;
+import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.service.IDictService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -95,5 +97,23 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements ID
         condition.lambda().eq(Dict::getDictTypeCode, dictTypeCode)
                 .eq(Dict::getStatus, StatusEnum.ENABLE.getCode());
         return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 根据字典类型code查询，返回下拉选择数据
+     * @param code
+     * @return
+     */
+    @Override
+    public List<InitComboxStrVO> getInitComboxByDictTypeCode(String code) {
+        List<Dict> list = this.getByDictTypeCode(code);
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        for (Dict dict : list) {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setName(dict.getValue());
+            initComboxStrVO.setCode(dict.getCode());
+            initComboxStrVOS.add(initComboxStrVO);
+        }
+        return initComboxStrVOS;
     }
 }

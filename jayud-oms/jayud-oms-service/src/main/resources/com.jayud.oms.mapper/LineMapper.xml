@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.LineMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.Line">
+        <id column="id" property="id" />
+        <result column="create_time" property="createTime" />
+        <result column="created_user" property="createdUser" />
+        <result column="up_time" property="upTime" />
+        <result column="up_user" property="upUser" />
+        <result column="line_code" property="lineCode" />
+        <result column="line_type" property="lineType" />
+        <result column="line_name" property="lineName" />
+        <result column="from_country" property="fromCountry" />
+        <result column="from_province" property="fromProvince" />
+        <result column="from_city" property="fromCity" />
+        <result column="from_region" property="fromRegion" />
+        <result column="to_province" property="toProvince" />
+        <result column="to_city" property="toCity" />
+        <result column="to_region" property="toRegion" />
+        <result column="route_attribute" property="routeAttribute" />
+        <result column="mileage" property="mileage" />
+        <result column="prescription" property="prescription" />
+        <result column="average_mileage" property="averageMileage" />
+        <result column="audit_status" property="auditStatus" />
+        <result column="passing" property="passing" />
+        <result column="line_route" property="lineRoute" />
+        <result column="remarks" property="remarks" />
+        <result column="from_address" property="fromAddress" />
+        <result column="to_address" property="toAddress" />
+        <result column="audit_time" property="auditTime" />
+        <result column="audit_comment" property="auditComment" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, create_time, created_user, up_time, up_user, line_code, line_type, line_name, from_country, from_province, from_city,
+        from_region, to_province, to_city, to_region, route_attribute, mileage, prescription, average_mileage,
+        audit_status, passing, line_route, remarks, from_address, to_address
+    </sql>
+
+    <select id="findLineByPage" parameterType="com.jayud.oms.model.bo.QueryLineForm"
+            resultType="com.jayud.oms.model.vo.LineVO">
+        select id, line_code, line_name, line_type, audit_status, route_attribute, passing, line_route,
+        mileage, prescription, average_mileage, remarks, created_user, create_time,
+        up_time, up_user, from_address, to_address,
+        (
+            case audit_status
+            when 1 then '待审核'
+            when 2 then '审核通过'
+            when 3 then '终止'
+            when 0 then '拒绝'
+            end
+        ) as auditStatusDesc
+        from line
+        <where>
+            <if test="form.auditStatus != null and form.auditStatus != ''">
+                and audit_status = #{form.auditStatus}
+            </if>
+            <if test="form.lineName != null and form.lineName != ''">
+                and line_name like concat('%',#{form.lineName},'%')
+            </if>
+            <if test="form.createTime != null and form.createTime.size>0">
+                and date_format(create_time,'%Y-%m-%d')
+                BETWEEN #{form.createTime[0]} AND #{form.createTime[1]}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="getLineDetails" parameterType="java.util.HashMap"
+            resultType="com.jayud.oms.model.vo.LineDetailsVO">
+        select id, line_code, line_name, line_type, audit_status, route_attribute,
+        passing, line_route, mileage, prescription, average_mileage, remarks, created_user, create_time,
+        up_time, up_user, from_address, to_address, from_country, from_province, from_city, from_region, to_province, to_city, to_region
+        from line where id = #{id}
+    </select>
+
+</mapper>

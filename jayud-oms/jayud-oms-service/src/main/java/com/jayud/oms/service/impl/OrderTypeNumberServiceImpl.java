@@ -94,6 +94,42 @@ public class OrderTypeNumberServiceImpl extends ServiceImpl<OrderTypeNumberMappe
         }
     }
 
+    /**
+     * 按年月日规则获取编号
+     * @param preOrder
+     * @return
+     */
+    @Override
+    public String getNumberOfDay(String preOrder) {
+        OrderTypeNumber orderTypeNumber = this.baseMapper.getMaxNumberData(preOrder, getDateData2(DateUtils.getLocalToStr(LocalDateTime.now()),0,8));
+        OrderTypeNumber typeNumber = new OrderTypeNumber();
+        String dateData2 = getDateData2(DateUtils.getLocalToStr(LocalDateTime.now()), 0, 8);
+        if (orderTypeNumber != null) {
+            if (orderTypeNumber.getDate().equals(dateData2)) {//
+                typeNumber.setClassCode(preOrder);
+                typeNumber.setDate(orderTypeNumber.getDate());
+                typeNumber.setNumber(orderTypeNumber.getNumber() + 1);
+                String orderNo = preOrder + dateData2 + String.format("%04d", typeNumber.getNumber());
+                this.saveOrUpdate(typeNumber);
+                return orderNo;
+            } else {//
+                typeNumber.setClassCode(preOrder);
+                typeNumber.setDate(dateData2);
+                typeNumber.setNumber(1);
+                String orderNo = preOrder + dateData2 + String.format("%04d", typeNumber.getNumber());
+                this.saveOrUpdate(typeNumber);
+                return orderNo;
+            }
+        } else {//
+            typeNumber.setClassCode(preOrder);
+            typeNumber.setDate(dateData2);
+            typeNumber.setNumber(1);
+            String orderNo = preOrder + dateData2 + String.format("%04d", typeNumber.getNumber());
+            this.saveOrUpdate(typeNumber);
+            return orderNo;
+        }
+    }
+
     //判断是否为本月第一天
     public boolean isFirstDayofMonth(LocalDateTime localDateTime) {
         int dayOfMonth = localDateTime.getDayOfMonth();

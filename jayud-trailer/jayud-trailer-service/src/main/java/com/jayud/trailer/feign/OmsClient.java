@@ -248,6 +248,7 @@ public interface OmsClient {
 
     /**
      * 根据提货时间获取订单号
+     *
      * @param takeTimeStr
      * @param code
      * @return
@@ -275,6 +276,7 @@ public interface OmsClient {
 
     /**
      * 批量保存拖车地址和商品信息
+     *
      * @param orderAddressForms
      * @return
      */
@@ -291,4 +293,10 @@ public interface OmsClient {
     public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
                                                    @RequestParam("legalIds") List<Long> legalIds,
                                                    @RequestParam("orderNos") List<String> orderNos);
+
+    /**
+     * 查询供应商code
+     */
+    @RequestMapping(value = "/api/getSupplierCodesByName")
+    ApiResult<Map<String, String>> getSupplierCodesByName();
 }

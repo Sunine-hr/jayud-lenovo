@@ -1336,7 +1336,7 @@ public class ExternalApiController {
                         num = reBillNumMap.get("B_1");
                         break;
                     case "mainPayCheck":
-                        num=payBillNumMap.get("B_1");
+                        num = payBillNumMap.get("B_1");
                         break;
                 }
 
@@ -2240,6 +2240,16 @@ public class ExternalApiController {
         return ApiResult.ok(costIds);
     }
 
+
+    /**
+     * 查询供应商code
+     */
+    @RequestMapping(value = "/api/getSupplierCodesByName")
+    ApiResult<Map<String, String>> getSupplierCodesByName() {
+        List<SupplierInfo> supplierInfos = this.supplierInfoService.list();
+        Map<String, String> map = supplierInfos.stream().collect(Collectors.toMap(e -> e.getSupplierChName(), e -> e.getSupplierCode()));
+        return ApiResult.ok(map);
+    }
 }
 
 

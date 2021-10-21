@@ -3231,7 +3231,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     //只同步草稿状态
                     continue;
                 }
-                convert.setId(bind.getId()).setReceivableId(receivableCost.getId());
+                convert.setId(bind.getId()).setReceivableId(receivableCost.getId()).setCustomerName(null)
+                        .setCustomerCode(null);
             } else {
                 convert.setId(null).setReceivableId(receivableCost.getId())
                         .setCreatedTime(LocalDateTime.now()).setCreatedUser(UserOperator.getToken());

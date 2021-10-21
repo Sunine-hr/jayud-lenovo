@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jayud.common.utils.FileView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -82,6 +83,41 @@ public class DriverInfoVO {
 
     @ApiModelProperty(value = "密码（微信登录使用）")
     private String password;
+
+    @ApiModelProperty(value = "驾龄")
+    private Integer drivingAge;
+
+    @ApiModelProperty(value = "初次领证日期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime dateCollection;
+
+    @ApiModelProperty(value = "有效期")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime validPeriod;
+
+    @ApiModelProperty(value = "驾驶证档案号")
+    private String driverLicenseFileNum;
+
+    @ApiModelProperty(value = "发证机关")
+    private String issuingAuthority;
+
+//    @ApiModelProperty(value = "驾驶证图片路径")
+//    private String driverLicenseImg;
+//
+//    @ApiModelProperty(value = "驾驶证图片名称")
+//    private String driverLicenseImgName;
+//
+//    @ApiModelProperty(value = "身份证图片路径")
+//    private String idCardImg;
+//
+//    @ApiModelProperty(value = "身份证图片名称")
+//    private String idCardImgName;
+
+    @ApiModelProperty(value = "驾驶证图片路径")
+    private List<FileView> driverLicenseImgs;
+
+    @ApiModelProperty(value = "身份证图片路径")
+    private List<FileView> idCardImgs;
 
 
     /**

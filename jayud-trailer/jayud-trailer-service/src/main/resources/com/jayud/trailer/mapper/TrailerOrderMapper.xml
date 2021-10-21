@@ -148,7 +148,7 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
     </select>
 
     <select id="findByPage" resultType="com.jayud.trailer.vo.TrailerOrderFormVO">
-        select tor.id orderId,tor.order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
+        select tor.id orderId,tor.order_no orderNo,main_order_no mainOrderNo,tor.status, process_status processStatus,
         legal_entity_id legalEntityId,legal_name subLegalName,imp_and_exp_type impAndExpType,
         unit_code unitCode,unit_code_name unitCodeName,port_code portCode,
         cabinet_size cabinetSize,
@@ -168,17 +168,18 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
         is_weighed isWeighed,
         is_make_up isMakeUp,
         process_description processDescription,
-        create_user createUser,
-        create_time createTime,create_time createdTimeStr,
-        update_user updateUser,
-        update_time updateTime,need_input_cost needInputCost,order_taker orderTaker,
+        tor.create_user createUser,
+        tor.create_time createTime,tor.create_time createdTimeStr,
+        tor.update_user updateUser,
+        tor.update_time updateTime,need_input_cost needInputCost,order_taker orderTaker,
         receiving_orders_date receivingOrdersDate,
         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = tor.`order_no`) +
         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = tor.`order_no`)>0 THEN TRUE
         ELSE FALSE
         END) cost,
-        tor.department_id
-        from trailer_order tor
+        tor.department_id,
+        td.supplier_name
+        from trailer_order tor left join trailer_dispatch td on tor.id=td.order_id
         <where>
             <if test="form.orderNo !=null and form.orderNo!=''">
                 and tor.order_no like concat('%',#{form.orderNo},'%')

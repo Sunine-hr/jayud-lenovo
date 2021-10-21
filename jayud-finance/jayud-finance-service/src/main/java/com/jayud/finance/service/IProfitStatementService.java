@@ -7,6 +7,7 @@ import com.jayud.finance.po.ProfitStatement;
 import com.jayud.finance.vo.ProfitStatementBillVO;
 import com.jayud.finance.vo.ProfitStatementVO;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -49,5 +50,5 @@ public interface IProfitStatementService extends IService<ProfitStatement> {
      * @param jsonArray
      * @param isOpenInternal
      */
-    void exportData(JSONArray jsonArray, Boolean isOpenInternal);
+    void exportData(JSONArray jsonArray, Boolean isOpenInternal) throws IOException;
 }

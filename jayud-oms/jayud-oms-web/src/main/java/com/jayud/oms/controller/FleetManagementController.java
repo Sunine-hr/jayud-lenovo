@@ -64,7 +64,7 @@ public class FleetManagementController {
 
     @ApiOperation(value = "删除维修信息")
     @PostMapping("/delete")
-    public CommonResult delete(Map<String, Object> map) {
+    public CommonResult delete(@RequestBody Map<String, Object> map) {
         Long id = MapUtil.getLong(map, "id");
         if (id == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
@@ -76,7 +76,7 @@ public class FleetManagementController {
 
     @ApiOperation(value = "获取车队详情信息")
     @PostMapping("/getById")
-    public CommonResult<FleetManagement> getById(Map<String, Object> map) {
+    public CommonResult<FleetManagement> getById(@RequestBody Map<String, Object> map) {
         Long id = MapUtil.getLong(map, "id");
         if (id == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);

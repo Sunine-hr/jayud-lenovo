@@ -108,7 +108,38 @@ public class VehicleInfo extends Model<VehicleInfo> {
     @ApiModelProperty(value = "车辆类型(0:中港车,1:内陆车)")
     private Integer type;
 
+    @ApiModelProperty(value = "保险公司")
+    private String insuranceCompany;
 
+    @ApiModelProperty(value = "是否保险")
+    private Boolean isInsured;
+
+    @ApiModelProperty(value = "品牌")
+    private String brand;
+
+    @ApiModelProperty(value = "车架号")
+    private String frameNum;
+
+    @ApiModelProperty(value = "最近一次年审日期")
+    private LocalDateTime lastAnnualReviewDate;
+
+    @ApiModelProperty(value = "下次年审日期")
+    private LocalDateTime nextAnnualReviewDate;
+
+    @ApiModelProperty(value = "购置日期")
+    private LocalDateTime purchaseDate;
+
+    @ApiModelProperty(value = "最近一次季审日期")
+    private LocalDateTime lastQuarterlyReviewDate;
+
+    @ApiModelProperty(value = "下一次季审日期")
+    private LocalDateTime nextQuarterlyReviewDate;
+
+    @ApiModelProperty(value = "商业险到期日期")
+    private LocalDateTime commercialInsuranceExpiration;
+
+    @ApiModelProperty(value = "强制险到期日期")
+    private LocalDateTime compulsoryInsuranceDateExpiry;
 
     @Override
     protected Serializable pkVal() {

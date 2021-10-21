@@ -572,7 +572,7 @@
         opc.order_no
     </select>
     <select id="viewPaymentBill" parameterType="java.util.List" resultType="com.jayud.finance.vo.ViewFBilToOrderVO">
-        SELECT DISTINCT
+        SELECT
         DATE_FORMAT( oi.create_time, '%Y-%m-%d' ) createdTimeStr,
         oi.order_no orderNo,
         t.order_no subOrderNo,
@@ -610,6 +610,7 @@
         <if test="costIds = null or costIds.size == 0">
             and 1 = 0
         </if>
+        group by orderNo,subOrderNo
     </select>
     <select id="getViewBillByCostIds" parameterType="java.util.Map" resultType="com.jayud.finance.vo.ViewBillVO">
 

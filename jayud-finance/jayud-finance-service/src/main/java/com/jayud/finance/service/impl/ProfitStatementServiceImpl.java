@@ -1,5 +1,6 @@
 package com.jayud.finance.service.impl;
 
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -9,6 +10,7 @@ import com.jayud.common.utils.BigDecimalUtil;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.HttpUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.excel.EasyExcelEntity;
 import com.jayud.common.utils.excel.EasyExcelUtils;
 import com.jayud.finance.bo.QueryProfitStatementForm;
 import com.jayud.finance.feign.OauthClient;
@@ -21,11 +23,15 @@ import com.jayud.finance.vo.ProfitStatementBasicData;
 import com.jayud.finance.vo.ProfitStatementBillDetailsVO;
 import com.jayud.finance.vo.ProfitStatementBillVO;
 import com.jayud.finance.vo.ProfitStatementVO;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -58,7 +64,6 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
     private String depart;
     @Value("${proStatement.oprDepart}")
     private String oprDepart;
-
 
 
     /**
@@ -371,7 +376,7 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 
 
     @Override
-    public void exportData(JSONArray jsonArray, Boolean isOpenInternal) {
+    public void exportData(JSONArray jsonArray, Boolean isOpenInternal) throws IOException {
         if (jsonArray.size() == 0) {
             return;
         }
@@ -381,6 +386,9 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
         BigDecimal payEquivalentAmount = new BigDecimal(0);
         BigDecimal profit = new BigDecimal(0);
         Boolean isMain = jsonArray.getJSONObject(0).getBool("isMain");
+        Map<String, String> currencyMap = this.omsClient.initCurrencyInfo().getData().stream().collect(Collectors.toMap(e -> e.getName(), e -> e.getCode()));
+        Map<String, String> reDynamicHead = new HashMap<>();
+        Map<String, String> payDynamicHead = new HashMap<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
 
@@ -393,38 +401,120 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
                 jsonObject.put("profit", jsonObject.getBigDecimal("inProfit"));
                 jsonObject.put("reAmount", jsonObject.getStr("reInAmount"));
                 jsonObject.put("payAmount", jsonObject.getStr("payInAmount"));
+
             } else {
                 reEquivalentAmount = BigDecimalUtil.add(reEquivalentAmount, jsonObject.getBigDecimal("reEquivalentAmount"));
                 payEquivalentAmount = BigDecimalUtil.add(payEquivalentAmount, jsonObject.getBigDecimal("payEquivalentAmount"));
             }
             profit = BigDecimalUtil.add(profit, jsonObject.getBigDecimal("profit"));
+            String reAmount = jsonObject.getStr("reAmount");
+            for (String reInAmount : reAmount.split(",")) {
+                if (!StringUtils.isEmpty(reInAmount)) {
+                    String currency = reInAmount.split(" ")[1];
+                    String amount = reInAmount.split(" ")[0];
+                    reDynamicHead.put("re~" + currencyMap.get(currency), "应收金额(" + currency + ")");
+                    jsonObject.put("re~" + currencyMap.get(currency), new BigDecimal(amount));
+                }
+            }
+            String payAmount = jsonObject.getStr("payAmount");
+            for (String reInAmount : payAmount.split(",")) {
+                if (!StringUtils.isEmpty(reInAmount)) {
+                    String currency = reInAmount.split(" ")[1];
+                    String amount = reInAmount.split(" ")[0];
+                    payDynamicHead.put("pay~" + currencyMap.get(currency), "应付金额(" + currency + ")");
+                    jsonObject.put("pay~" + currencyMap.get(currency), new BigDecimal(amount));
+                }
+            }
+
             reAmounts.add(jsonObject.getStr("reAmount"));
             payAmounts.add(jsonObject.getStr("payAmount"));
         }
+        LinkedHashMap<String, String> head = new LinkedHashMap<>();
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("re", jsonArray);
-        Map<String, List<Object>> response = new HashMap<>();
-        response.put("pro", jsonObject.get("re", List.class));
-        JSONObject json = new JSONObject();
+        head.put("mainOrderNo", "主订单");
+        head.put("bizType", "业务类型");
+        head.put("legalName", "法人主体");
+        head.put("department", "所属部门");
+        head.put("customerName", "客户");
+        head.put("bizUname", "业务员");
+        head.put("createUser", "创建人");
+        head.put("createTime", "创建时间");
+        head.putAll(reDynamicHead);
+        head.put("reEquivalentAmount", "应收折合(RMB)");
+        head.putAll(payDynamicHead);
+        head.put("payEquivalentAmount", "应付折合(RMB)");
+        head.put("profit", "利润（RMB）");
 
-        json.put("totalReAmount", this.commonService.calculatingCosts(reAmounts));
-        json.put("totalReEquivalentAmount", reEquivalentAmount);
-        json.put("totalPayAmount", this.commonService.calculatingCosts(payAmounts));
-        json.put("totalPayEquivalentAmount", payEquivalentAmount);
-        json.put("totalProfit", profit);
-
-        String path;
-        String fileName;
-        if (isMain) {
-            path = depart;
-            fileName = "所属部门利润报表";
-        } else {
-            path = oprDepart;
-            fileName = "操作部门利润报表";
+        EasyExcelEntity entity = new EasyExcelEntity();
+        entity.setTableHead(head);
+        entity.setTableData(jsonArray);
+        //合计
+        LinkedHashMap<String, BigDecimal> costTotal = new LinkedHashMap<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            reDynamicHead.forEach((k, v) -> {
+                BigDecimal cost = jsonObject.getBigDecimal(k);
+                if (costTotal.get(k) == null) {
+                    costTotal.put(k, cost);
+                } else {
+                    costTotal.put(k, costTotal.get(k).add(cost == null ? new BigDecimal(0) : cost));
+                }
+            });
         }
-        EasyExcelUtils.fillTemplate1(json, response, path,
-                null, fileName, HttpUtils.getHttpResponseServletContext());
+        costTotal.put("reEquivalentAmount", reEquivalentAmount);
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            payDynamicHead.forEach((k, v) -> {
+                BigDecimal cost = jsonObject.getBigDecimal(k);
+                if (costTotal.get(k) == null) {
+                    costTotal.put(k, cost);
+                } else {
+                    costTotal.put(k, costTotal.get(k).add(cost == null ? new BigDecimal(0) : cost));
+                }
+            });
+        }
+        costTotal.put("payEquivalentAmount", payEquivalentAmount);
+        costTotal.put("profit", profit);
 
+        entity.setTotalData(costTotal);
+        entity.setTotalIndex(7);
+
+
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("re", jsonArray);
+//        Map<String, List<Object>> response = new HashMap<>();
+//        response.put("pro", jsonObject.get("re", List.class));
+//        JSONObject json = new JSONObject();
+//
+//        json.put("totalReAmount", this.commonService.calculatingCosts(reAmounts));
+//        json.put("totalReEquivalentAmount", reEquivalentAmount);
+//        json.put("totalPayAmount", this.commonService.calculatingCosts(payAmounts));
+//        json.put("totalPayEquivalentAmount", payEquivalentAmount);
+//        json.put("totalProfit", profit);
+//
+//        String path;
+//        String fileName;
+//        if (isMain) {
+//            path = depart;
+//            fileName = "所属部门利润报表";
+//        } else {
+//            path = oprDepart;
+//            fileName = "操作部门利润报表";
+//        }
+//        EasyExcelUtils.fillTemplate1(json, response, path,
+//                null, fileName, HttpUtils.getHttpResponseServletContext());
+
+        Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
+
+        HttpServletResponse response = HttpUtils.getHttpResponseServletContext();
+
+        ServletOutputStream out = response.getOutputStream();
+        String name = com.jayud.finance.util.StringUtils.toUtf8String("利润报表");
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+        response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xlsx");
+
+        workbook.write(out);
+        workbook.close();
+        IoUtil.close(out);
     }
 }

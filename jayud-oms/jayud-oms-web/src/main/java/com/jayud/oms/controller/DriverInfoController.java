@@ -7,6 +7,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.model.bo.AddDriverInfoForm;
 import com.jayud.oms.model.bo.QueryDriverInfoForm;
 import com.jayud.oms.model.po.DriverInfo;
@@ -40,6 +41,8 @@ public class DriverInfoController {
 
     @Autowired
     private IDriverInfoService driverInfoService;
+    @Autowired
+    private FileClient fileClient;
 
     @ApiOperation(value = "分页查询司机信息")
     @PostMapping(value = "/findDriverInfoByPage")
@@ -74,6 +77,10 @@ public class DriverInfoController {
 //        }
 
         DriverInfo driverInfo = ConvertUtil.convert(form, DriverInfo.class);
+        driverInfo.setDriverLicenseImg(com.jayud.common.utils.StringUtils.getFileStr(form.getDriverLicenseImgs()));
+        driverInfo.setDriverLicenseImgName(com.jayud.common.utils.StringUtils.getFileNameStr(form.getDriverLicenseImgs()));
+        driverInfo.setIdCardImg(com.jayud.common.utils.StringUtils.getFileStr(form.getIdCardImgs()));
+        driverInfo.setIdCardImgName(com.jayud.common.utils.StringUtils.getFileNameStr(form.getIdCardImgs()));
         driverInfo.setPassword("E10ADC3949BA59ABBE56E057F20F883E");
         if (this.driverInfoService.saveOrUpdateDriverInfo(driverInfo)) {
             return CommonResult.success();
@@ -102,7 +109,11 @@ public class DriverInfoController {
         }
         Long id = Long.parseLong(map.get("id"));
         DriverInfo driverInfo = this.driverInfoService.getById(id);
-        return CommonResult.success(ConvertUtil.convert(driverInfo, DriverInfoVO.class));
+        DriverInfoVO convert = ConvertUtil.convert(driverInfo, DriverInfoVO.class);
+        Object url = this.fileClient.getBaseUrl().getData();
+        convert.setIdCardImgs(com.jayud.common.utils.StringUtils.getFileViews(driverInfo.getIdCardImg(), driverInfo.getIdCardImgName(), url.toString()));
+        convert.setDriverLicenseImgs(com.jayud.common.utils.StringUtils.getFileViews(driverInfo.getDriverLicenseImg(), driverInfo.getDriverLicenseImgName(), url.toString()));
+        return CommonResult.success(convert);
     }
 
     @ApiOperation(value = "更改启用/禁用车辆状态,id是车辆信息主键")

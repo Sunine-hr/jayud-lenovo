@@ -75,6 +75,48 @@ public class DriverInfo extends Model<DriverInfo> {
     @ApiModelProperty(value = "小程序id")
     private String appletId;
 
+    @ApiModelProperty(value = "账户名")
+    private String accountName;
+
+    @ApiModelProperty(value = "账号")
+    private String account;
+
+    @ApiModelProperty(value = "开户行")
+    private String accountBank;
+
+    @ApiModelProperty(value = "结算周期(1:当月,2:次月)")
+    private Integer billingCycle;
+
+    @ApiModelProperty(value = "账户状态(0:禁用,1:启用)")
+    private Integer accountStatus;
+
+    @ApiModelProperty(value = "驾龄")
+    private String drivingAge;
+
+    @ApiModelProperty(value = "初次领证日期")
+    private LocalDateTime dateCollection;
+
+    @ApiModelProperty(value = "有效期")
+    private LocalDateTime validPeriod;
+
+    @ApiModelProperty(value = "驾驶证档案号")
+    private String driverLicenseFileNum;
+
+    @ApiModelProperty(value = "发证机关")
+    private String issuingAuthority;
+
+    @ApiModelProperty(value = "驾驶证图片路径")
+    private String driverLicenseImg;
+
+    @ApiModelProperty(value = "驾驶证图片名称")
+    private String driverLicenseImgName;
+
+    @ApiModelProperty(value = "身份证图片路径")
+    private String idCardImg;
+
+    @ApiModelProperty(value = "身份证图片名称")
+    private String idCardImgName;
+
 
     @Override
     protected Serializable pkVal() {

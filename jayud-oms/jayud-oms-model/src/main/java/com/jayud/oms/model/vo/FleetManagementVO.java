@@ -55,7 +55,7 @@ public class FleetManagementVO extends Model<FleetManagementVO> {
     private String address;
 
     @ApiModelProperty(value = "状态（0无效 1有效）")
-    private String status;
+    private Integer status;
 
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")

@@ -718,6 +718,7 @@ public class OrderComboxController {
 
     /**
      * 下拉车牌
+     *
      * @return
      */
     @ApiOperation("下拉车牌")
@@ -725,6 +726,43 @@ public class OrderComboxController {
     public CommonResult<List<InitComboxStrVO>> initVehicleInfo() {
         return CommonResult.success(this.vehicleInfoService.initVehicleInfo(com.jayud.common.enums.StatusEnum.ENABLE.getCode()));
     }
+
+    /**
+     * 下拉业务类型
+     *
+     * @return
+     */
+    @ApiOperation("下拉业务类型")
+    @PostMapping(value = "/initBusinessType")
+    public CommonResult<List<Map<String, Object>>> initBusinessType(@RequestBody InputOrderVO inputOrderVO) {
+        List<Map<String, Object>> maps = new ArrayList<>();
+        for (BusinessTypeEnum enumType : BusinessTypeEnum.values()) {
+            com.jayud.common.entity.InitComboxStrVO tmp = new com.jayud.common.entity.InitComboxStrVO();
+            switch (enumType) {
+                case KY:
+                    break;
+                case ZGYS:
+                    tmp.setId(enumType.getCode().longValue());
+                    tmp.setName(enumType.getDesc());
+                    tmp.setCode(Optional.ofNullable(inputOrderVO.getOrderTransportForm()).get().getId().toString());
+                    break;
+                case BG:
+                    break;
+                case NL:
+                    break;
+                case RK:
+                    break;
+                case CK:
+                    break;
+                case TC:
+                    break;
+                case IO:
+                    break;
+            }
+        }
+        return CommonResult.success();
+    }
+
 
 }
 

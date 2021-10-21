@@ -166,6 +166,7 @@ public class InlandTPTemplate {
 //                    .append(",");
             totalNum += deliveryAddr.getBulkCargoAmount() == null ? 0 : deliveryAddr.getBulkCargoAmount();
             totalWeight += deliveryAddr.getTotalWeight() == null ? 0 : deliveryAddr.getTotalWeight();
+            goodsInfo.append(deliveryAddr.getGoodsName()).append(",");
         }
 
         this.pickUpAddress = addrs.length() > 6 ? addrs.substring(0, 6) : addrs.toString();
@@ -175,7 +176,7 @@ public class InlandTPTemplate {
                 Optional.ofNullable(pickUpAddressList.get(0))
                         .map(OrderDeliveryAddress::getDeliveryDate).orElse(""),
                 "yyyy-MM-dd");
-        //        this.goodsInfo = goodsInfo.toString();
+        this.goodsInfo = goodsInfo.toString();
     }
 
     public void assemblyDeliveryAddrInfo() {

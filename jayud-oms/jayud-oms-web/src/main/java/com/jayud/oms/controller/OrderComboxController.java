@@ -27,6 +27,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -728,39 +729,101 @@ public class OrderComboxController {
     }
 
     /**
-     * 下拉业务类型
+     * 下拉详情业务类型
      *
      * @return
      */
-    @ApiOperation("下拉业务类型")
-    @PostMapping(value = "/initBusinessType")
-    public CommonResult<List<Map<String, Object>>> initBusinessType(@RequestBody InputOrderVO inputOrderVO) {
+    @ApiOperation("下拉详情业务类型")
+    @PostMapping(value = "/initDetailsBusinessType")
+    public CommonResult<List<Map<String, Object>>> initDetailsBusinessType(@RequestBody Map<String, Object> params) {
         List<Map<String, Object>> maps = new ArrayList<>();
         for (BusinessTypeEnum enumType : BusinessTypeEnum.values()) {
-            com.jayud.common.entity.InitComboxStrVO tmp = new com.jayud.common.entity.InitComboxStrVO();
+            Map<String, Object> map = new HashMap<>();
+            List<Map<String, Object>> objs = new ArrayList<>();
+            Map<String, Object> obj = new HashMap<>();
             switch (enumType) {
                 case KY:
                     break;
                 case ZGYS:
-                    tmp.setId(enumType.getCode().longValue());
-                    tmp.setName(enumType.getDesc());
-                    tmp.setCode(Optional.ofNullable(inputOrderVO.getOrderTransportForm()).get().getId().toString());
+                    InputOrderTransportVO transportVO = MapUtil.get(params, "orderTransportForm", InputOrderTransportVO.class);
+                    if (transportVO == null) continue;
+                    map.put("name", enumType.getDesc());
+                    obj.put("id", transportVO.getId());
+                    obj.put("type", enumType.getCode());
+                    obj.put("orderNo", transportVO.getOrderNo());
+                    objs.add(obj);
+                    map.put("data", objs);
                     break;
                 case BG:
+                    InputOrderCustomsVO orderCustomsForm = MapUtil.get(params, "orderCustomsForm", InputOrderCustomsVO.class);
+                    if (orderCustomsForm == null) continue;
+                    map.put("name", enumType.getDesc());
+                    orderCustomsForm.getSubOrders().forEach(e -> {
+                        obj.put("id", e.getSubOrderId());
+                        obj.put("type", enumType.getCode());
+                        obj.put("orderNo", e.getOrderNo());
+                        objs.add(obj);
+                    });
+                    map.put("data", objs);
                     break;
                 case NL:
+                    InputOrderInlandTPVO inputOrderInlandTPVO = MapUtil.get(params, "orderInlandTransportForm", InputOrderInlandTPVO.class);
+                    if (inputOrderInlandTPVO == null) continue;
+                    map.put("name", enumType.getDesc());
+                    obj.put("id", inputOrderInlandTPVO.getId());
+                    obj.put("type", enumType.getCode());
+                    obj.put("orderNo", inputOrderInlandTPVO.getOrderNo());
+                    objs.add(obj);
+                    map.put("data", objs);
                     break;
                 case RK:
+                    InputStorageInputOrderVO rk = MapUtil.get(params, "storageInputOrderForm", InputStorageInputOrderVO.class);
+                    if (rk == null) continue;
+                    map.put("name", enumType.getDesc());
+                    obj.put("id", rk.getId());
+                    obj.put("type", enumType.getCode());
+                    obj.put("orderNo", rk.getOrderNo());
+                    objs.add(obj);
+                    map.put("data", objs);
                     break;
                 case CK:
+                    InputStorageOutOrderVO ck = MapUtil.get(params, "storageOutOrderForm", InputStorageOutOrderVO.class);
+                    if (ck == null) continue;
+                    obj.put("id", ck.getId());
+                    obj.put("type", enumType.getCode());
+                    obj.put("orderNo", ck.getOrderNo());
+                    objs.add(obj);
+                    map.put("data", objs);
                     break;
                 case TC:
+                    List<InputTrailerOrderVO> trailerOrderForms = MapUtil.get(params, "trailerOrderForm", List.class);
+                    if (CollectionUtils.isEmpty(trailerOrderForms)) continue;
+                    map.put("name", enumType.getDesc());
+                    trailerOrderForms.forEach(e -> {
+                        obj.put("id", e.getId());
+                        obj.put("type", enumType.getCode());
+                        obj.put("orderNo", e.getOrderNo());
+                        objs.add(obj);
+                    });
+                    map.put("data", objs);
                     break;
                 case IO:
+                    InputStorageFastOrderVO io = MapUtil.get(params, "storageFastOrderForm", InputStorageFastOrderVO.class);
+                    if (io == null) continue;
+                    map.put("name", enumType.getDesc());
+                    obj.put("id", io.getId());
+                    obj.put("type", enumType.getCode());
+                    obj.put("orderNo", io.getOrderNo());
+                    objs.add(obj);
+                    map.put("data", objs);
                     break;
             }
+            if (map.size()>0){
+                maps.add(map);
+            }
+
         }
-        return CommonResult.success();
+        return CommonResult.success(maps);
     }
 
 

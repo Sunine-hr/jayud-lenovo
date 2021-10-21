@@ -2,6 +2,8 @@ package com.jayud.oms.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.utils.StringUtils;
@@ -43,22 +45,34 @@ public class FileManagementController {
     @ApiOperation(value = "查询文件")
     @PostMapping("/list")
     public CommonResult<List<Map<String, Object>>> list(@RequestBody Map<String, Object> map) {
-        Long id = MapUtil.getLong(map, "id");
-        Integer type = MapUtil.getInt(map, "type");
-        if (id == null || type == null) {
+        JSONObject jsonObject = new JSONObject(map);
+        if (jsonObject.isNull("data")) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        List<LogisticsTrack> list = logisticsTrackService.getLogisticsTrackByType(Collections.singletonList(id), type);
+        JSONArray datas = jsonObject.getJSONArray("data");
+        Map<Long, String> orderNo = new HashMap<>();
+        List<Long> ids = new ArrayList<>();
+        Integer type = 0;
+        for (int i = 0; i < datas.size(); i++) {
+            JSONObject object = datas.getJSONObject(i);
+            ids.add(object.getLong("id"));
+            type = object.getInt("type");
+            orderNo.put(object.getLong("id"), object.getStr("orderNo"));
+        }
+        List<LogisticsTrack> list = logisticsTrackService.getLogisticsTrackByType(ids, type);
         Object url = fileClient.getBaseUrl().getData();
 
         List<Map<String, Object>> responses = new ArrayList<>();
         list.forEach(e -> {
-            Map<String, Object> tmp = new HashMap<>();
-            tmp.put("type", e.getStatusName());
-            tmp.put("fileName", StringUtils.getFileViews(e.getStatusPic(), e.getStatusPicName(), url.toString()));
-            tmp.put("createdUser", e.getCreatedUser());
-            tmp.put("createdTime", e.getCreatedTime());
-            responses.add(tmp);
+            if (!StringUtils.isEmpty(e.getStatusPic())) {
+                Map<String, Object> tmp = new HashMap<>();
+                tmp.put("type", e.getStatusName());
+                tmp.put("fileViews", StringUtils.getFileViews(e.getStatusPic(), e.getStatusPicName(), url.toString()));
+                tmp.put("createdUser", e.getCreatedUser());
+                tmp.put("createdTime", e.getCreatedTime());
+                tmp.put("orderNo", orderNo.get(e.getOrderId()));
+                responses.add(tmp);
+            }
         });
 
         return CommonResult.success(responses);

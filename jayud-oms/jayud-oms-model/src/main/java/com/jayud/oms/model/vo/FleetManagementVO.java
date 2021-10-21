@@ -12,6 +12,8 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -36,8 +38,11 @@ public class FleetManagementVO extends Model<FleetManagementVO> {
     @ApiModelProperty(value = "车队编号")
     private String code;
 
+    @ApiModelProperty(value = "司机id字符")
+    private String driverId;
+
     @ApiModelProperty(value = "司机id")
-    private Long driverId;
+    private List<Long> driverIds;
 
     @ApiModelProperty(value = "司机名称")
     private String driverName;
@@ -74,6 +79,14 @@ public class FleetManagementVO extends Model<FleetManagementVO> {
     @ApiModelProperty(value = "描述")
     private String remarks;
 
+
+    public void setDriverId(String driverId) {
+        this.driverIds = new ArrayList<>();
+        for (String driverIdStr : driverId.split(",")) {
+            this.driverIds.add(Long.valueOf(driverIdStr));
+        }
+        this.driverId = driverId;
+    }
 
     @Override
     protected Serializable pkVal() {

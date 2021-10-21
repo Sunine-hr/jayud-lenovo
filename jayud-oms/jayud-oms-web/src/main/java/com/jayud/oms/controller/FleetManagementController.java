@@ -7,6 +7,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.StatusEnum;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.AddFleetManagementForm;
 import com.jayud.oms.model.bo.AddMaintenanceManagementForm;
 import com.jayud.oms.model.bo.QueryFleetManagementForm;
@@ -53,7 +54,7 @@ public class FleetManagementController {
         return CommonResult.success();
     }
 
-    @ApiOperation(value = "分页查询油卡信息")
+    @ApiOperation(value = "分页查询信息")
     @PostMapping("/findByPage")
     public CommonResult<CommonPageResult<FleetManagementVO>> findByPage(@RequestBody QueryFleetManagementForm form) {
         form.setStatus(Arrays.asList(StatusEnum.ENABLE.getCode(), StatusEnum.DISABLE.getCode()));
@@ -62,7 +63,7 @@ public class FleetManagementController {
     }
 
 
-    @ApiOperation(value = "删除维修信息")
+    @ApiOperation(value = "删除信息")
     @PostMapping("/delete")
     public CommonResult delete(@RequestBody Map<String, Object> map) {
         Long id = MapUtil.getLong(map, "id");
@@ -76,12 +77,14 @@ public class FleetManagementController {
 
     @ApiOperation(value = "获取车队详情信息")
     @PostMapping("/getById")
-    public CommonResult<FleetManagement> getById(@RequestBody Map<String, Object> map) {
+    public CommonResult<FleetManagementVO> getById(@RequestBody Map<String, Object> map) {
         Long id = MapUtil.getLong(map, "id");
         if (id == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        return CommonResult.success(this.fleetManagementService.getById(id));
+        FleetManagement fleetManagement = this.fleetManagementService.getById(id);
+        FleetManagementVO convert = ConvertUtil.convert(fleetManagement, FleetManagementVO.class);
+        return CommonResult.success(convert);
     }
 
     @ApiOperation(value = "启用/禁用")

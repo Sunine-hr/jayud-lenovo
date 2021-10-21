@@ -26,7 +26,8 @@ public class CustomerLineRelationServiceImpl extends ServiceImpl<CustomerLineRel
      */
     @Override
     public void deleteByCustomerLineId(Long customerLineId) {
-        this.remove(new QueryWrapper<CustomerLineRelation>().lambda().eq(CustomerLineRelation::getCustomerLineId, customerLineId));
+        this.remove(new QueryWrapper<CustomerLineRelation>().lambda()
+                .eq(CustomerLineRelation::getCustomerLineId, customerLineId));
     }
 
     /**
@@ -38,4 +39,5 @@ public class CustomerLineRelationServiceImpl extends ServiceImpl<CustomerLineRel
     public List<CustomerLineRelation> getListByCustomerLineId(Long id) {
         return this.baseMapper.getListByCustomerLineId(id);
     }
+
 }

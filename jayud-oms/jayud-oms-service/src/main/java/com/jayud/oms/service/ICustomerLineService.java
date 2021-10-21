@@ -73,4 +73,11 @@ public interface ICustomerLineService extends IService<CustomerLine> {
      * @return
      */
     boolean exitCode(Long id, String customerLineCode);
+
+    /**
+     * 该线路存在客户线路关联数据
+     * @param lineId
+     * @return
+     */
+    boolean isExistLineRelation(Long lineId);
 }

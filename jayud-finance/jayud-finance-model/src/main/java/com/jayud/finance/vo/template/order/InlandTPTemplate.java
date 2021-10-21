@@ -52,6 +52,9 @@ public class InlandTPTemplate {
     @ApiModelProperty(value = "车型尺寸", required = true)
     private String vehicleSize;
 
+    @ApiModelProperty(value = "货物信息", required = true)
+    private String goodsInfo;
+
     @ApiModelProperty(value = "件数", required = true)
     private Integer totalNum;
 
@@ -63,9 +66,6 @@ public class InlandTPTemplate {
 
     @ApiModelProperty(value = "结算单位")
     private String unitName;
-
-    @ApiModelProperty(value = "货物信息", required = true)
-    private String goodsInfo;
 
 //    @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")
 //    private Integer processStatus;

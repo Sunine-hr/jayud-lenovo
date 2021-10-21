@@ -18,10 +18,7 @@ import com.jayud.oms.model.po.Line;
 import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.model.vo.LineDetailsVO;
 import com.jayud.oms.model.vo.LineVO;
-import com.jayud.oms.service.IDictService;
-import com.jayud.oms.service.ILineService;
-import com.jayud.oms.service.IOrderInfoService;
-import com.jayud.oms.service.IOrderTypeNumberService;
+import com.jayud.oms.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiOperationSupport;
@@ -55,6 +52,9 @@ public class LineController {
 
     @Autowired
     private IOrderTypeNumberService orderTypeNumberService;
+
+    @Autowired
+    private ICustomerLineService customerLineService;
 
     @ApiOperation(value = "分页查询线路")
     @PostMapping(value = "/findLineByPage")
@@ -100,6 +100,11 @@ public class LineController {
         Long id = MapUtil.getLong(map, "id");
         if (!lineService.checkExists(id)) {
             return CommonResult.error(400, "线路不存在");
+        }
+        // 检查客户线路关联数据
+        boolean result = customerLineService.isExistLineRelation(id);
+        if (!result) {
+            return CommonResult.error(400, "该线路存在客户线路关联数据，不允许删除");
         }
         lineService.delLine(id);
         return CommonResult.success();

@@ -74,7 +74,9 @@ public class CustomerLineServiceImpl extends ServiceImpl<CustomerLineMapper, Cus
      * @param id
      */
     @Override
+    @Transactional
     public void delLine(Long id) {
+        customerLineRelationService.deleteByCustomerLineId(id);
         this.remove(new QueryWrapper<CustomerLine>().lambda().eq(CustomerLine::getId, id));
     }
 
@@ -199,6 +201,20 @@ public class CustomerLineServiceImpl extends ServiceImpl<CustomerLineMapper, Cus
         condition.lambda().eq(CustomerLine::getCustomerLineName, customerLineCode);
         if (id != null) {
             condition.lambda().ne(CustomerLine::getId, id);
+        }
+        return this.count(condition) > 0;
+    }
+
+    /**
+     * 该线路存在客户线路关联数据
+     * @param id
+     * @return
+     */
+    @Override
+    public boolean isExistLineRelation(Long id) {
+        QueryWrapper<CustomerLine> condition = new QueryWrapper<>();
+        if (id != null) {
+            condition.lambda().eq(CustomerLine::getLineId, id);
         }
         return this.count(condition) > 0;
     }

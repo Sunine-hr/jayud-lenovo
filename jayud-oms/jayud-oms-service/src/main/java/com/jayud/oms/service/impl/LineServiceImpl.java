@@ -120,8 +120,18 @@ public class LineServiceImpl extends ServiceImpl<LineMapper, Line> implements IL
             line.setAuditStatus(LineStatusEnum.WAIT_AUDIT.getCode());
         }
 
-        line.setFromAddress(getAddrNames(line.getFromCountry(), line.getFromCity(), line.getFromRegion()));
-        line.setToAddress(getAddrNames(line.getToProvince(), line.getToCity(), line.getToRegion()));
+        List<String> fromAddressList = getAddrNames(line.getFromCountry(), line.getFromCity(), line.getFromRegion());
+        List<String> toAddressList = getAddrNames(line.getToProvince(), line.getToCity(), line.getToRegion());
+        line.setFromAddress(CollUtil.join(fromAddressList, ","));
+        line.setToAddress(CollUtil.join(toAddressList, ","));
+        // 线路路由处理
+        StringBuffer lineRoute = new StringBuffer();
+        lineRoute.append(CollUtil.join(fromAddressList, "")).append(">");
+        if (!StringUtils.isEmpty(line.getPassing())) {
+            lineRoute.append(line.getPassing()).append(">");
+        }
+        lineRoute.append(CollUtil.join(toAddressList, ""));
+        line.setLineRoute(lineRoute.toString());
 
         if (Objects.isNull(line.getId())) {
             line.setCreateTime(LocalDateTime.now())
@@ -143,15 +153,14 @@ public class LineServiceImpl extends ServiceImpl<LineMapper, Line> implements IL
      * @param region
      * @return
      */
-    private String getAddrNames(Long country, Long city, Long region) {
+    private List<String> getAddrNames(Long country, Long city, Long region) {
         List<RegionCity> addrNames = null;
         if (Objects.isNull(region)) {
             addrNames = regionCityService.getAddrName(country, city);
         } else {
             addrNames = regionCityService.getAddrName(country, city, region);
         }
-        List<String> names = addrNames.stream().map(RegionCity::getName).collect(Collectors.toList());
-        return CollUtil.join(names, ",");
+        return addrNames.stream().map(RegionCity::getName).collect(Collectors.toList());
     }
 
     /**

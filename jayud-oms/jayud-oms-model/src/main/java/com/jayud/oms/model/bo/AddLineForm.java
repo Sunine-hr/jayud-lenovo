@@ -76,9 +76,6 @@ public class AddLineForm {
     @ApiModelProperty(value = "途经点")
     private String passing;
 
-    @ApiModelProperty(value = "路线路由")
-    private String lineRoute;
-
     @ApiModelProperty(value = "备注")
     private String remarks;
 

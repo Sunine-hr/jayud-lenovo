@@ -91,7 +91,7 @@ public class DriverInfo extends Model<DriverInfo> {
     private Integer accountStatus;
 
     @ApiModelProperty(value = "驾龄")
-    private Integer drivingAge;
+    private String drivingAge;
 
     @ApiModelProperty(value = "初次领证日期")
     private LocalDateTime dateCollection;

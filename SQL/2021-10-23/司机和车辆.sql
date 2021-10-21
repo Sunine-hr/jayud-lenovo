@@ -29,3 +29,8 @@ ADD COLUMN `last_quarterly_review_date` datetime NULL COMMENT '最近一次季�
 ADD COLUMN `next_quarterly_review_date` datetime NULL COMMENT '下一次季审日期' AFTER `last_quarterly_review_date`,
 ADD COLUMN `commercial_insurance_expiration` datetime NULL COMMENT '商业险到期日期' AFTER `next_quarterly_review_date`,
 ADD COLUMN `compulsory_insurance_date_expiry` datetime NULL COMMENT '强制险到期日期' AFTER `commercial_insurance_expiration`;
+
+
+
+ALTER TABLE `driver_info`
+MODIFY COLUMN `driving_age` varchar(20) NULL DEFAULT NULL COMMENT '驾龄' AFTER `driver_license_num`;

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -85,7 +86,7 @@ public class ProfitStatementController {
 
     @ApiOperation(value = "导出利润报表")
     @PostMapping("exportData")
-    private CommonResult exportData(@RequestBody Map<String, Object> map) {
+    private CommonResult exportData(@RequestBody Map<String, Object> map) throws IOException {
         Object templateDataObj = map.get("templateData");
         Boolean isOpenInternal = MapUtil.getBool(map, "isOpenInternal", false);
         if (templateDataObj == null) {

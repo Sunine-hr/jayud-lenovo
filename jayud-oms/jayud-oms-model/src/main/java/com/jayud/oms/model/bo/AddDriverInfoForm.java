@@ -71,7 +71,7 @@ public class AddDriverInfoForm {
     private String driverLicenseNum;
 
     @ApiModelProperty(value = "驾龄")
-    private Integer drivingAge;
+    private String drivingAge;
 
     @ApiModelProperty(value = "初次领证日期")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")

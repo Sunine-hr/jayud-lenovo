@@ -49,9 +49,6 @@ public class CustomerLineController {
     private IDictService dictService;
 
     @Autowired
-    private IOrderTypeNumberService orderTypeNumberService;
-
-    @Autowired
     private ICustomerLineService customerLineService;
 
     @Autowired
@@ -75,6 +72,12 @@ public class CustomerLineController {
     public CommonResult saveOrUpdateCustomerLine(@Valid @RequestBody AddCustomerLineForm form) {
         CustomerLine customerLineTemp = new CustomerLine().setId(form.getId()).setCustomerLineName(form.getCustomerLineName());
         customerLineService.checkUnique(customerLineTemp);
+
+        if (customerLineService.exitCode(form.getId(), form.getCustomerLineCode())
+                && form.getId() == null) {
+            // 客户线路编号已存在自动获取新的编号
+            form.setCustomerLineCode(this.customerLineService.autoGenerateNum());
+        }
 
         if (this.customerLineService.saveOrUpdateCustomerLine(form)) {
             return CommonResult.success();
@@ -116,8 +119,7 @@ public class CustomerLineController {
     @ApiOperation(value = "获取客户线路编号")
     @PostMapping(value = "/getCustomerLineCode")
     public CommonResult getCustomerLineCode() {
-        String orderNo = orderTypeNumberService.getNumberOfDay( "KH");
-        return CommonResult.success(orderNo);
+        return CommonResult.success(this.customerLineService.autoGenerateNum());
     }
 
     @ApiOperation(value = "客户线路新增-下拉框合并返回")

@@ -88,4 +88,10 @@ public interface ILineService extends IService<Line> {
      * @return
      */
     List<InitComboxLineVO> initEnableLine(String lineName);
+
+    /**
+     * 获取线路编号
+     * @return
+     */
+    String autoGenerateNum();
 }

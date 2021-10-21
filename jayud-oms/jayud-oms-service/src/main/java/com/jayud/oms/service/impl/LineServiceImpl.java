@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.mapper.LineMapper;
 import com.jayud.oms.model.bo.AddLineForm;
@@ -247,5 +248,24 @@ public class LineServiceImpl extends ServiceImpl<LineMapper, Line> implements IL
             initComboxVOS.add(initComboxVO);
         }
         return initComboxVOS;
+    }
+
+    /**
+     * 获取线路编号
+     * @return
+     */
+    @Override
+    public String autoGenerateNum() {
+        StringBuilder orderNo = new StringBuilder();
+        Line line = this.getOne(new QueryWrapper<Line>().lambda()
+                .select(Line::getLineCode).orderByDesc(Line::getCreateTime).last("limit 1"), false);
+        int index = 1;
+        if (line != null) {
+            String sn = line.getLineCode().substring(10);
+            index = Integer.parseInt(sn) + 1;
+        }
+        orderNo.append("XL").append(DateUtils.LocalDateTime2Str(LocalDateTime.now(), "yyyyMMdd"))
+                .append(StringUtils.zeroComplement(4, index));
+        return orderNo.toString();
     }
 }

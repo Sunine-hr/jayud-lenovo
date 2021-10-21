@@ -51,9 +51,6 @@ public class LineController {
     private IDictService dictService;
 
     @Autowired
-    private IOrderTypeNumberService orderTypeNumberService;
-
-    @Autowired
     private ICustomerLineService customerLineService;
 
     @ApiOperation(value = "分页查询线路")
@@ -72,8 +69,9 @@ public class LineController {
         }
 
         lineTemp = new Line().setId(form.getId()).setLineCode(form.getLineCode());
-        if (this.lineService.checkUniqueByCode(lineTemp)) {
-            return CommonResult.error(400, "线路编号已存在");
+        if (this.lineService.checkUniqueByCode(lineTemp) && form.getId() == null) {
+            // 线路编号已存在自动获取新的编号
+            form.setLineCode(this.lineService.autoGenerateNum());
         }
 
         Line line = ConvertUtil.convert(form, Line.class);
@@ -127,8 +125,7 @@ public class LineController {
     @ApiOperation(value = "获取线路编号")
     @PostMapping(value = "/getLineCode")
     public CommonResult getLineCode() {
-        String orderNo = orderTypeNumberService.getNumberOfDay( "XL");
-        return CommonResult.success(orderNo);
+        return CommonResult.success(this.lineService.autoGenerateNum());
     }
 
     @ApiOperation(value = "线路新增-下拉选择-线路类型")

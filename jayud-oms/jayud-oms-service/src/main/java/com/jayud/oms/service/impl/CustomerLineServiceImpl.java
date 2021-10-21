@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.UserOperator;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.AddCustomerLineForm;
 import com.jayud.oms.model.bo.QueryCustomerLineForm;
 import com.jayud.oms.model.po.*;
@@ -167,10 +169,6 @@ public class CustomerLineServiceImpl extends ServiceImpl<CustomerLineMapper, Cus
         if (exists) {
             throw new JayudBizException(400, "客户线路名称已存在");
         }
-        exists = exitCode(customerLineTemp.getId(), customerLineTemp.getCustomerLineCode());
-        if (exists) {
-            throw new JayudBizException(400, "客户线路编号已存在");
-        }
     }
 
     /**
@@ -198,7 +196,7 @@ public class CustomerLineServiceImpl extends ServiceImpl<CustomerLineMapper, Cus
     @Override
     public boolean exitCode(Long id, String customerLineCode) {
         QueryWrapper<CustomerLine> condition = new QueryWrapper<>();
-        condition.lambda().eq(CustomerLine::getCustomerLineName, customerLineCode);
+        condition.lambda().eq(CustomerLine::getCustomerLineCode, customerLineCode);
         if (id != null) {
             condition.lambda().ne(CustomerLine::getId, id);
         }
@@ -217,5 +215,24 @@ public class CustomerLineServiceImpl extends ServiceImpl<CustomerLineMapper, Cus
             condition.lambda().eq(CustomerLine::getLineId, id);
         }
         return this.count(condition) > 0;
+    }
+
+    /**
+     * 获取客户线路编号
+     * @return
+     */
+    @Override
+    public String autoGenerateNum() {
+        StringBuilder orderNo = new StringBuilder();
+        CustomerLine customerLine = this.getOne(new QueryWrapper<CustomerLine>().lambda()
+                .select(CustomerLine::getCustomerLineCode).orderByDesc(CustomerLine::getCreateTime).last("limit 1"), false);
+        int index = 1;
+        if (customerLine != null) {
+            String sn = customerLine.getCustomerLineCode().substring(10);
+            index = Integer.parseInt(sn) + 1;
+        }
+        orderNo.append("KH").append(DateUtils.LocalDateTime2Str(LocalDateTime.now(), "yyyyMMdd"))
+                .append(StringUtils.zeroComplement(4, index));
+        return orderNo.toString();
     }
 }

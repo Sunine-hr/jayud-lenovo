@@ -80,4 +80,10 @@ public interface ICustomerLineService extends IService<CustomerLine> {
      * @return
      */
     boolean isExistLineRelation(Long lineId);
+
+    /**
+     * 获取客户线路编号
+     * @return
+     */
+    String autoGenerateNum();
 }

@@ -160,4 +160,11 @@
         </foreach>
 
     </select>
+
+    <select id="getPlateNumberListByDriverId" resultType="com.jayud.oms.model.vo.InitVehicleInfoVO">
+        SELECT DISTINCT v.plate_number, v.id FROM vehicle_info v
+        where find_in_set(#{driverId}, v.driver_info_ids)
+        order by v.id desc
+    </select>
+
 </mapper>

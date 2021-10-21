@@ -18,7 +18,10 @@ import com.jayud.oms.model.enums.LineStatusEnum;
 import com.jayud.oms.model.enums.StatusEnum;
 import com.jayud.oms.model.po.DriverInfo;
 import com.jayud.oms.model.po.Line;
+import com.jayud.oms.model.po.OrderCostTemplate;
 import com.jayud.oms.model.po.RegionCity;
+import com.jayud.oms.model.vo.InitComboxLineVO;
+import com.jayud.oms.model.vo.InitComboxStrVO;
 import com.jayud.oms.model.vo.LineDetailsVO;
 import com.jayud.oms.model.vo.LineVO;
 import com.jayud.oms.service.ILineService;
@@ -29,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -215,7 +219,7 @@ public class LineServiceImpl extends ServiceImpl<LineMapper, Line> implements IL
      * @return
      */
     @Override
-    public List<Line> getEnableLine(String lineName) {
+    public List<InitComboxLineVO> initEnableLine(String lineName) {
         QueryWrapper<Line> condition = new QueryWrapper<>();
         condition.lambda()
                 .select(Line::getId, Line::getLineName)
@@ -225,6 +229,14 @@ public class LineServiceImpl extends ServiceImpl<LineMapper, Line> implements IL
             condition.lambda().like(Line::getLineName, lineName);
         }
         condition.lambda().orderByDesc(Line::getCreateTime);
-        return this.baseMapper.selectList(condition);
+        List<Line> tmps =  this.baseMapper.selectList(condition);
+        List<InitComboxLineVO> initComboxVOS = new ArrayList<>();
+        for (Line tmp : tmps) {
+            InitComboxLineVO initComboxVO = new InitComboxLineVO();
+            initComboxVO.setLineName(tmp.getLineName());
+            initComboxVO.setId(tmp.getId());
+            initComboxVOS.add(initComboxVO);
+        }
+        return initComboxVOS;
     }
 }

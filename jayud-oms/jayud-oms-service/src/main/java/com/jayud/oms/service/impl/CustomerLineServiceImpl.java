@@ -9,15 +9,15 @@ import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.oms.model.bo.AddCustomerLineForm;
 import com.jayud.oms.model.bo.QueryCustomerLineForm;
-import com.jayud.oms.model.po.CustomerInfo;
-import com.jayud.oms.model.po.CustomerLine;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.mapper.CustomerLineMapper;
-import com.jayud.oms.model.po.CustomerLineRelation;
 import com.jayud.oms.model.vo.CustomerLineDetailsVO;
 import com.jayud.oms.model.vo.CustomerLineVO;
 import com.jayud.oms.service.ICustomerLineRelationService;
 import com.jayud.oms.service.ICustomerLineService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.oms.service.IDriverInfoService;
+import com.jayud.oms.service.ILineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Transient;
 import org.springframework.stereotype.Service;
@@ -41,6 +41,12 @@ public class CustomerLineServiceImpl extends ServiceImpl<CustomerLineMapper, Cus
 
     @Autowired
     private ICustomerLineRelationService customerLineRelationService;
+
+    @Autowired
+    private IDriverInfoService driverInfoService;
+
+    @Autowired
+    private ILineService lineService;
 
     /**
      * 分页查询客户线路
@@ -93,6 +99,23 @@ public class CustomerLineServiceImpl extends ServiceImpl<CustomerLineMapper, Cus
 
         CustomerLine customerLine = ConvertUtil.convert(form, CustomerLine.class);
 
+        // 司机信息
+        DriverInfo driverInfo = driverInfoService.getOne(new QueryWrapper<DriverInfo>().lambda()
+                .select(DriverInfo::getName)
+                .eq(DriverInfo::getId, form.getDriverInfoId()));
+        if (driverInfo == null) {
+            throw new JayudBizException(400, "查询不到司机信息");
+        }
+        // 线路信息
+        Line line = lineService.getOne(new QueryWrapper<Line>().lambda()
+                .select(Line::getLineName)
+                .eq(Line::getId, form.getLineId()));
+        if (line == null) {
+            throw new JayudBizException(400, "查询不到线路信息");
+        }
+        customerLine.setDriverName(driverInfo.getName());
+        customerLine.setLineName(line.getLineName());
+
         boolean result = false;
         boolean isSave = false;
         if (Objects.isNull(customerLine.getId())) {
@@ -119,7 +142,7 @@ public class CustomerLineServiceImpl extends ServiceImpl<CustomerLineMapper, Cus
             }
         } else {
             // 先清除列表
-            customerLineRelationService.deleteByCustomerLineId(form.getLineId());
+            customerLineRelationService.deleteByCustomerLineId(form.getId());
             if (CollUtil.isNotEmpty(form.getCustomerLineRelations())) {
                 for (CustomerLineRelation customerLineRelation : form.getCustomerLineRelations()) {
                     customerLineRelation.setId(null);

@@ -38,17 +38,9 @@ public class AddCustomerLineForm {
     @NotNull(message = "司机ID不能为空")
     private Long driverInfoId;
 
-    @ApiModelProperty(value = "司机姓名", required = true)
-    @NotEmpty(message = "司机姓名不能为空")
-    private String driverName;
-
     @ApiModelProperty(value = "线路ID", required = true)
     @NotNull(message = "线路ID不能为空")
     private Long lineId;
-
-    @ApiModelProperty(value = "线路名称")
-    @NotEmpty(message = "线路名称不能为空")
-    private String lineName;
 
     @ApiModelProperty(value = "线路规则(周一/周日等，多个用,拼接，-数据字典配置)")
     @NotEmpty(message = "线路规则不能为空")

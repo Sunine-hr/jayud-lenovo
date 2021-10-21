@@ -6,6 +6,7 @@ import com.jayud.oms.model.bo.AuditLineForm;
 import com.jayud.oms.model.bo.LineBatchOprForm;
 import com.jayud.oms.model.bo.QueryLineForm;
 import com.jayud.oms.model.po.Line;
+import com.jayud.oms.model.vo.InitComboxLineVO;
 import com.jayud.oms.model.vo.LineDetailsVO;
 import com.jayud.oms.model.vo.LineVO;
 
@@ -86,5 +87,5 @@ public interface ILineService extends IService<Line> {
      * @param lineName
      * @return
      */
-    List<Line> getEnableLine(String lineName);
+    List<InitComboxLineVO> initEnableLine(String lineName);
 }

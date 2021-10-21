@@ -205,4 +205,14 @@ public class VehicleInfoServiceImpl extends ServiceImpl<VehicleInfoMapper, Vehic
         return list;
     }
 
+    /**
+     * 根据司机ID获取车辆车牌列表
+     * @param driverId
+     * @return
+     */
+    @Override
+    public List<InitVehicleInfoVO> getPlateNumberListByDriverId(Long driverId) {
+        return this.baseMapper.getPlateNumberListByDriverId(driverId);
+    }
+
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.oms.model.bo.QueryVehicleInfoForm;
 import com.jayud.oms.model.po.VehicleInfo;
+import com.jayud.oms.model.vo.InitVehicleInfoVO;
 import com.jayud.oms.model.vo.VehicleDetailsVO;
 import com.jayud.oms.model.vo.VehicleInfoVO;
 import com.jayud.oms.model.vo.VehicleSizeInfoVO;
@@ -56,5 +57,12 @@ public interface VehicleInfoMapper extends BaseMapper<VehicleInfo> {
      * @return
      */
     List<VehicleDetailsVO> getDetailsByPlateNum(@Param("plateNumbers") List<String> plateNumbers);
+
+    /**
+     * 根据司机ID获取车辆车牌列表
+     * @param driverId
+     * @return
+     */
+    List<InitVehicleInfoVO> getPlateNumberListByDriverId(@Param("driverId") Long driverId);
 }
 

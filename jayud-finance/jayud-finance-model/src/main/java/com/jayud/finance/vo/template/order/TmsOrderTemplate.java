@@ -69,6 +69,9 @@ public class TmsOrderTemplate {
 //    @ApiModelProperty(value = "结算单位", required = true)
 //    private String unitName;
 
+    @ApiModelProperty(value = "货物信息", required = true)
+    private String goodsInfo;
+
     @ApiModelProperty(value = "件数", required = true)
     private Integer totalPieceAmount;
 
@@ -80,9 +83,6 @@ public class TmsOrderTemplate {
 
 //    @ApiModelProperty(value = "报关单号", required = true)
 //    private String yunCustomsNo;
-
-    @ApiModelProperty(value = "货物信息", required = false)
-    private String goodsInfo;
 
     @ApiModelProperty("通关口岸CODE")
     private String portCode;

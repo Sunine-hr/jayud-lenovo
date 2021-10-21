@@ -47,7 +47,7 @@
 
     <select id="getCustomerLineDetails" parameterType="java.util.HashMap"
             resultType="com.jayud.oms.model.vo.CustomerLineDetailsVO">
-        select id, customer_line_name, customer_line_code, driver_name, line_name,
+        select id, customer_line_name, customer_line_code, driver_info_id, driver_name, line_id, line_name,
         line_rule, vehicle_no, remarks, create_time, created_user, up_time, up_user
         from customer_line where id = #{id}
     </select>

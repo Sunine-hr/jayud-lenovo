@@ -64,7 +64,7 @@ public class InlandTPTemplate {
     @ApiModelProperty(value = "结算单位")
     private String unitName;
 
-    @ApiModelProperty(value = "货物信息")
+    @ApiModelProperty(value = "货物信息", required = true)
     private String goodsInfo;
 
 //    @ApiModelProperty(value = "流程状态(0:进行中,1:完成,2:草稿,3.关闭)")

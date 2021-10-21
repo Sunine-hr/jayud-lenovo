@@ -65,6 +65,9 @@ public class TrailerOrderTemplate {
     @ApiModelProperty(value = "车型尺寸", required = true)
     private String cabinetSize;
 
+    @ApiModelProperty(value = "货物信息", required = true)
+    private String goodsInfo;
+
     @ApiModelProperty(value = "件数", required = true)
     private Integer totalPieceAmount;
 
@@ -176,7 +179,7 @@ public class TrailerOrderTemplate {
         Double totalWeight = 0.0;
 //        Double volume = 0.0;
         StringBuilder addrs = new StringBuilder();
-//        StringBuilder goodsInfo = new StringBuilder();
+        StringBuilder goodsInfo = new StringBuilder();
 
         for (OrderDeliveryAddress deliveryAddress : this.deliveryAddresses) {
             Double weight = deliveryAddress.getTotalWeight() == null ? 0.0 : deliveryAddress.getTotalWeight();
@@ -184,6 +187,7 @@ public class TrailerOrderTemplate {
             totalWeight += weight;
             totalPieceAmount += bulkCargoAmount;
             addrs.append(deliveryAddress.getAddress()).append(",");
+            goodsInfo.append(deliveryAddress.getGoodsName()).append(",");
         }
 
         //进口：起运地是港口---目的地是送货地址
@@ -196,7 +200,7 @@ public class TrailerOrderTemplate {
             this.portDestination = this.portName;
         }
 
-//        this.goodsInfo = goodsInfo.toString();
+        this.goodsInfo = goodsInfo.toString();
 //        this.pickUpAddress = addrs.length() > 6 ? addrs.substring(0, 6) : addrs.toString();
         this.takeTimeStr = DateUtils.format(deliveryAddresses.get(0).getDeliveryDate(), "yyyy-MM-dd");
         this.totalPieceAmount = totalPieceAmount;

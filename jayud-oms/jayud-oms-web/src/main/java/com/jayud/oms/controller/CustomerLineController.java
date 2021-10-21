@@ -11,10 +11,7 @@ import com.jayud.oms.model.bo.AddCustomerLineForm;
 import com.jayud.oms.model.bo.AddLineForm;
 import com.jayud.oms.model.bo.QueryCustomerLineForm;
 import com.jayud.oms.model.bo.QueryLineForm;
-import com.jayud.oms.model.po.CustomerLine;
-import com.jayud.oms.model.po.CustomerLineRelation;
-import com.jayud.oms.model.po.DriverInfo;
-import com.jayud.oms.model.po.Line;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
 import io.swagger.annotations.Api;
@@ -62,6 +59,9 @@ public class CustomerLineController {
 
     @Autowired
     private IDriverInfoService driverInfoService;
+
+    @Autowired
+    private IVehicleInfoService vehicleInfoService;
 
     @ApiOperation(value = "分页查询客户线路")
     @PostMapping(value = "/findCustomerLineByPage")
@@ -149,9 +149,24 @@ public class CustomerLineController {
 
     @ApiOperation(value = "客户线路新增-下拉-审核通过的线路 lineName=查询审核通过的线路")
     @PostMapping(value = "/initEnableLine")
-    public CommonResult<List<Line>> initEnableLine(@RequestBody Map<String, Object> map) {
+    public CommonResult<List<InitComboxLineVO>> initEnableLine(@RequestBody Map<String, Object> map) {
         String lineName = MapUtil.getStr(map, "lineName");
-        return CommonResult.success(this.lineService.getEnableLine(lineName));
+        return CommonResult.success(this.lineService.initEnableLine(lineName));
+    }
+
+    @ApiOperation(value = "获取司机对应车辆车牌列表")
+    @PostMapping(value = "/getPlateNumberList")
+    public CommonResult getPlateNumberList(@RequestBody Map<String, String> map) {
+        if (StringUtils.isEmpty(map.get("id"))) {
+            return CommonResult.error(500, "id is required");
+        }
+        Long id = MapUtil.getLong(map, "id");
+        if (id == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+
+        List<InitVehicleInfoVO> vehicleInfos = vehicleInfoService.getPlateNumberListByDriverId(id);
+        return CommonResult.success(vehicleInfos);
     }
 
 }

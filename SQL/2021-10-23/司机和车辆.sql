@@ -34,3 +34,7 @@ ADD COLUMN `compulsory_insurance_date_expiry` datetime NULL COMMENT '强制险�
 
 ALTER TABLE `driver_info`
 MODIFY COLUMN `driving_age` varchar(20) NULL DEFAULT NULL COMMENT '驾龄' AFTER `driver_license_num`;
+
+
+ALTER TABLE `fleet_management`
+CHANGE COLUMN `driver_id` varchar(50) NOT NULL COMMENT '司机id(多个逗号隔开)' AFTER `code`;

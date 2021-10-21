@@ -13,8 +13,6 @@ import com.jayud.oms.model.bo.AddFleetManagementForm;
 import com.jayud.oms.model.bo.QueryFleetManagementForm;
 import com.jayud.oms.model.po.FleetManagement;
 import com.jayud.oms.mapper.FleetManagementMapper;
-import com.jayud.oms.model.po.MaintenanceManagement;
-import com.jayud.oms.model.po.OilCardManagement;
 import com.jayud.oms.model.vo.FleetManagementVO;
 import com.jayud.oms.service.IDriverInfoService;
 import com.jayud.oms.service.IFleetManagementService;
@@ -44,6 +42,11 @@ public class FleetManagementServiceImpl extends ServiceImpl<FleetManagementMappe
     public void saveOrUpdate(AddFleetManagementForm form) {
         //TODO 按规则生成车队编号
         FleetManagement tmp = ConvertUtil.convert(form, FleetManagement.class);
+        StringBuilder driverIds = new StringBuilder();
+        for (Long driverId : form.getDriverIds()) {
+            driverIds.append(driverId).append(",");
+        }
+        tmp.setDriverId(driverIds.toString());
         if (tmp.getId() == null) {
             QueryWrapper<FleetManagement> condition = new QueryWrapper<>(new FleetManagement().setCode(form.getCode()));
             if (this.count(condition) > 0) {
@@ -62,7 +65,11 @@ public class FleetManagementServiceImpl extends ServiceImpl<FleetManagementMappe
         IPage<FleetManagementVO> iPage = this.baseMapper.findByPage(page, form);
         Map<Long, String> driverMap = this.driverInfoService.list().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
         iPage.getRecords().stream().forEach(e -> {
-            e.setDriverName(driverMap.get(e.getDriverId()));
+            StringBuilder sb = new StringBuilder();
+            for (String driverId : e.getDriverId().split(",")) {
+                sb.append(driverMap.get(Long.valueOf(driverId))).append("/");
+            }
+            e.setDriverName(sb.toString());
         });
         return iPage;
     }

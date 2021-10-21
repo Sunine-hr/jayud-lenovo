@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -36,7 +37,7 @@ public class AddFleetManagementForm extends Model<AddFleetManagementForm> {
     private String code;
 
     @ApiModelProperty(value = "司机id")
-    private Long driverId;
+    private List<Long> driverIds;
 
     @ApiModelProperty(value = "车队名称")
     private String name;

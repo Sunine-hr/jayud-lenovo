@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import java.util.List;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -37,7 +38,7 @@ public class FleetManagement extends Model<FleetManagement> {
     private String code;
 
     @ApiModelProperty(value = "司机id")
-    private Long driverId;
+    private String driverId;
 
     @ApiModelProperty(value = "车队名称")
     private String name;

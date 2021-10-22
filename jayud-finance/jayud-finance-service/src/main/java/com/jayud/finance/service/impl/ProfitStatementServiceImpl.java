@@ -3,11 +3,9 @@ package com.jayud.finance.service.impl;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.utils.BigDecimalUtil;
-import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.HttpUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.excel.EasyExcelEntity;
@@ -16,7 +14,6 @@ import com.jayud.finance.bo.QueryProfitStatementForm;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.mapper.ProfitStatementMapper;
-import com.jayud.finance.po.OrderReceivableBill;
 import com.jayud.finance.po.ProfitStatement;
 import com.jayud.finance.service.*;
 import com.jayud.finance.vo.ProfitStatementBasicData;
@@ -35,7 +32,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -478,6 +474,7 @@ public class ProfitStatementServiceImpl extends ServiceImpl<ProfitStatementMappe
 
         entity.setTotalData(costTotal);
         entity.setTotalIndex(7);
+        entity.setSizeColumn(false);
 
 
 //        JSONObject jsonObject = new JSONObject();

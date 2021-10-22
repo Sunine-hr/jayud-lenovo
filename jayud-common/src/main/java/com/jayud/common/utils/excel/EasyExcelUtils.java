@@ -71,7 +71,10 @@ public class EasyExcelUtils {
 //        setColumnWidth(entity, sheet);
 
         // 处理中文不能自动调整列宽的问题
-        setSizeColumn(sheet, entity.getTableHead().size());
+        if (entity.isSizeColumn()) {
+            setSizeColumn(sheet, entity.getTableHead().size());
+        }
+
 //        workbook.write(out);
 //        workbook.close();
 
@@ -223,13 +226,18 @@ public class EasyExcelUtils {
                 int cellNum = j.get();
                 Cell cell = row.createCell(cellNum);
                 cell.setCellStyle(cellStyle);
-                String data = datas.getStr(k);
+                Object data = datas.get(k);
                 if (entity.getTotalIndex() != null) { //费用等与空返回0
                     if (cellNum > entity.getTotalIndex()) {
-                        data = data == null ? "0" : data;
+                        data = data == null ? new BigDecimal(0) : data;
                     }
                 }
-                cell.setCellValue(data);
+//                if (data instanceof BigDecimal) {
+//                    cell.setCellValue(((BigDecimal) data).doubleValue());
+//                } else {
+//                    cell.setCellValue(data.toString());
+//                }
+                cell.setCellValue(data == null ? "" : data.toString());
                 j.incrementAndGet();
             });
             ++rowNum;
@@ -482,7 +490,7 @@ public class EasyExcelUtils {
 
     @SneakyThrows
     public static <T> void fillTemplate1(JSONObject json, Map<String, List<T>> list,
-                                        String templateFilePath, String outputPath, String fileName, HttpServletResponse response) {
+                                         String templateFilePath, String outputPath, String fileName, HttpServletResponse response) {
         String templateFileName = URLDecoder.decode(templateFilePath, "utf-8");
 
         XSSFWorkbook templateWorkbook = new XSSFWorkbook(new FileInputStream(templateFileName));
@@ -507,7 +515,7 @@ public class EasyExcelUtils {
         // 如果有多个list 模板上必须有{前缀.} 这里的前缀就是 data1，然后多个list必须用 FillWrapper包裹
         ExcelWriter finalExcelWriter = excelWriter;
         list.forEach((k, v) -> {
-            finalExcelWriter.fill(new FillWrapper(k, v),fillConfig, writeSheet);
+            finalExcelWriter.fill(new FillWrapper(k, v), fillConfig, writeSheet);
         });
 
         Map<String, Object> map = new HashMap<>();
@@ -519,7 +527,7 @@ public class EasyExcelUtils {
 
     @SneakyThrows
     public static <T> void fillTemplate2(JSONObject json, Map<String, List<T>> list,
-                                        String templateFilePath, String outputPath,String fileName, HttpServletResponse response) {
+                                         String templateFilePath, String outputPath, String fileName, HttpServletResponse response) {
         // 模板注意 用{} 来表示你要用的变量 如果本来就有"{","}" 特殊字符 用"\{","\}"代替
         // {} 代表普通变量 {.} 代表是list的变量 {前缀.} 前缀可以区分不同的list
 

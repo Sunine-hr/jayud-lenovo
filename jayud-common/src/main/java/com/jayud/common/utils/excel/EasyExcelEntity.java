@@ -43,4 +43,6 @@ public class EasyExcelEntity {
 
     //工作表名称
     private String sheetName;
+
+    private boolean sizeColumn = true;
 }

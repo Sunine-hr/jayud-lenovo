@@ -166,5 +166,6 @@
                 and is_main = #{form.statisticalType}
             </if>
         </where>
+        order by main_order_no desc
     </select>
 </mapper>

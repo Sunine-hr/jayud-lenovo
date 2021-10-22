@@ -118,6 +118,9 @@ public class LineController {
         if (id == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
+        if (!lineService.checkExists(id)) {
+            return CommonResult.error(400, "线路不存在");
+        }
         LineDetailsVO lineDetailsVO = this.lineService.getLineDetails(id);
         return CommonResult.success(lineDetailsVO);
     }

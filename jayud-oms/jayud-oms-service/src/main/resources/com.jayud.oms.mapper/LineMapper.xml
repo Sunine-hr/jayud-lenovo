@@ -77,4 +77,9 @@
         from line where id = #{id}
     </select>
 
+    <select id="getLastCodeByCreateTime" parameterType="java.util.HashMap"
+            resultType="java.util.HashMap">
+        select line_code as code from line where date_format(create_time,'%Y%m%d') = #{curDate} order by create_time desc limit 1
+    </select>
+
 </mapper>

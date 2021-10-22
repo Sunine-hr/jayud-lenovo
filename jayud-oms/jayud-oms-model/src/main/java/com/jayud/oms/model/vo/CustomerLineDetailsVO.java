@@ -42,6 +42,9 @@ public class CustomerLineDetailsVO {
     @ApiModelProperty(value = "线路规则(周一/周日等，多个用,拼接，-数据字典配置)")
     private String lineRule;
 
+    @ApiModelProperty(value = "线路规则数组")
+    private List<String> lineRules;
+
     @ApiModelProperty(value = "车牌号")
     private String vehicleNo;
 

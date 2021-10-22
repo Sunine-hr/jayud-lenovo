@@ -1,6 +1,7 @@
 package com.jayud.oms.controller;
 
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
@@ -25,9 +26,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -110,9 +113,16 @@ public class CustomerLineController {
         if (id == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
+        if (!customerLineService.checkExists(id)) {
+            return CommonResult.error(400, "客户线路不存在");
+        }
         CustomerLineDetailsVO lineDetailsVO = this.customerLineService.getCustomerLineDetails(id);
         List<CustomerLineRelation> customerLineRelations = customerLineRelationService.getListByCustomerLineId(lineDetailsVO.getId());
         lineDetailsVO.setCustomerLineRelations(customerLineRelations);
+        if (!StringUtils.isEmpty(lineDetailsVO.getLineRule())) {
+            lineDetailsVO.setLineRules(Arrays.asList(lineDetailsVO.getLineRule().split(","))
+                    .stream().collect(Collectors.toList()));
+        }
         return CommonResult.success(lineDetailsVO);
     }
 

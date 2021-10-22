@@ -10,6 +10,8 @@ import com.jayud.oms.model.vo.LineVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Map;
+
 /**
  * <p>
  *  线路管理 Mapper 接口
@@ -24,4 +26,6 @@ public interface LineMapper extends BaseMapper<Line> {
     IPage<LineVO> findLineByPage(Page page, @Param("form") QueryLineForm form);
 
     LineDetailsVO getLineDetails(@Param("id") Long id);
+
+    Map<String, Object> getLastCodeByCreateTime(@Param("curDate") String curDate);
 }

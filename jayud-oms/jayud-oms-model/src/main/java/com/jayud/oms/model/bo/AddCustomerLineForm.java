@@ -5,8 +5,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -43,8 +45,13 @@ public class AddCustomerLineForm {
     private Long lineId;
 
     @ApiModelProperty(value = "线路规则(周一/周日等，多个用,拼接，-数据字典配置)")
-    @NotEmpty(message = "线路规则不能为空")
     private String lineRule;
+
+    @Valid
+    @ApiModelProperty(value = "线路规则(周一/周日等，多个用,拼接，-数据字典配置)")
+    @NotNull(message = "线路规则不能为空")
+    @Size(min = 1, message = "线路规则不能为空")
+    private List<String> lineRules;
 
     @ApiModelProperty(value = "车牌号")
     private String vehicleNo;

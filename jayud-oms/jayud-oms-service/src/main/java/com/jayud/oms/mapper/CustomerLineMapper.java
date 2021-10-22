@@ -10,6 +10,8 @@ import com.jayud.oms.model.vo.CustomerLineVO;
 import com.jayud.oms.model.vo.LineDetailsVO;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Map;
+
 /**
  * <p>
  * 客户线路管理 Mapper 接口
@@ -24,4 +26,5 @@ public interface CustomerLineMapper extends BaseMapper<CustomerLine> {
 
     CustomerLineDetailsVO getCustomerLineDetails(@Param("id") Long id);
 
+    Map<String, Object> getLastCodeByCreateTime(@Param("curDate") String curDate);
 }

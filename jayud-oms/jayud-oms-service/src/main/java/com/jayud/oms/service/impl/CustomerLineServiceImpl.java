@@ -1,6 +1,7 @@
 package com.jayud.oms.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -119,6 +121,11 @@ public class CustomerLineServiceImpl extends ServiceImpl<CustomerLineMapper, Cus
         }
         customerLine.setDriverName(driverInfo.getName());
         customerLine.setLineName(line.getLineName());
+
+        // 线路规则
+        if (form.getLineRules() != null && form.getLineRules().size() > 0) {
+            customerLine.setLineRule(CollUtil.join(form.getLineRules(), ","));
+        }
 
         boolean result = false;
         boolean isSave = false;
@@ -224,15 +231,14 @@ public class CustomerLineServiceImpl extends ServiceImpl<CustomerLineMapper, Cus
     @Override
     public String autoGenerateNum() {
         StringBuilder orderNo = new StringBuilder();
-        CustomerLine customerLine = this.getOne(new QueryWrapper<CustomerLine>().lambda()
-                .select(CustomerLine::getCustomerLineCode).orderByDesc(CustomerLine::getCreateTime).last("limit 1"), false);
+        String curDate = DateUtils.LocalDateTime2Str(LocalDateTime.now(), "yyyyMMdd");
+        Map<String, Object> customerLine = this.baseMapper.getLastCodeByCreateTime(curDate);
         int index = 1;
         if (customerLine != null) {
-            String sn = customerLine.getCustomerLineCode().substring(10);
+            String sn = MapUtil.getStr(customerLine, "code").substring(10);
             index = Integer.parseInt(sn) + 1;
         }
-        orderNo.append("KH").append(DateUtils.LocalDateTime2Str(LocalDateTime.now(), "yyyyMMdd"))
-                .append(StringUtils.zeroComplement(4, index));
+        orderNo.append("KH").append(curDate).append(StringUtils.zeroComplement(4, index));
         return orderNo.toString();
     }
 }

@@ -1,6 +1,7 @@
 package com.jayud.oms.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -35,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -257,15 +259,14 @@ public class LineServiceImpl extends ServiceImpl<LineMapper, Line> implements IL
     @Override
     public String autoGenerateNum() {
         StringBuilder orderNo = new StringBuilder();
-        Line line = this.getOne(new QueryWrapper<Line>().lambda()
-                .select(Line::getLineCode).orderByDesc(Line::getCreateTime).last("limit 1"), false);
+        String curDate = DateUtils.LocalDateTime2Str(LocalDateTime.now(), "yyyyMMdd");
+        Map<String, Object> line = this.baseMapper.getLastCodeByCreateTime(curDate);
         int index = 1;
         if (line != null) {
-            String sn = line.getLineCode().substring(10);
+            String sn = MapUtil.getStr(line, "code").substring(10);
             index = Integer.parseInt(sn) + 1;
         }
-        orderNo.append("XL").append(DateUtils.LocalDateTime2Str(LocalDateTime.now(), "yyyyMMdd"))
-                .append(StringUtils.zeroComplement(4, index));
+        orderNo.append("XL").append(curDate).append(StringUtils.zeroComplement(4, index));
         return orderNo.toString();
     }
 }

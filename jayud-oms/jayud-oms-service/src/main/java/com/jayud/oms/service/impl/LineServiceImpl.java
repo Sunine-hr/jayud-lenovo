@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.mapper.LineMapper;
@@ -125,8 +126,8 @@ public class LineServiceImpl extends ServiceImpl<LineMapper, Line> implements IL
 
         List<String> fromAddressList = getAddrNames(line.getFromCountry(), line.getFromCity(), line.getFromRegion());
         List<String> toAddressList = getAddrNames(line.getToProvince(), line.getToCity(), line.getToRegion());
-        line.setFromAddress(CollUtil.join(fromAddressList, ","));
-        line.setToAddress(CollUtil.join(toAddressList, ","));
+        line.setFromAddress(CollUtil.join(fromAddressList, ""));
+        line.setToAddress(CollUtil.join(toAddressList, ""));
         // 线路路由处理
         StringBuffer lineRoute = new StringBuffer();
         lineRoute.append(CollUtil.join(fromAddressList, "")).append(">");
@@ -172,13 +173,29 @@ public class LineServiceImpl extends ServiceImpl<LineMapper, Line> implements IL
      */
     @Override
     public void batchOprLine(LineBatchOprForm form) {
+
+        List<Long> ids = form.getList().stream().map(AddLineForm::getId).collect(Collectors.toList());
+        if (Integer.parseInt(form.getAuditStatus()) == (LineStatusEnum.AUDIT_SUCCESS.getCode())) {
+            if (this.count(new QueryWrapper<Line>().lambda()
+                    .ne(Line::getAuditStatus, LineStatusEnum.WAIT_AUDIT.getCode())
+                    .in(Line::getId, ids)) > 0) {
+                throw new JayudBizException(400, "请选择待审核状态的线路");
+            }
+        } else if (Integer.parseInt(form.getAuditStatus()) == (LineStatusEnum.STOP.getCode())) {
+            if (this.count(new QueryWrapper<Line>().lambda()
+                    .eq(Line::getAuditStatus, LineStatusEnum.STOP.getCode())
+                    .in(Line::getId, ids)) > 0) {
+                throw new JayudBizException(400, "请选择非终止状态的线路");
+            }
+        }
+
         LocalDateTime now = LocalDateTime.now();
         this.update(new UpdateWrapper<Line>().lambda()
                 .set(Line::getAuditStatus, form.getAuditStatus())
                 .set(Line::getAuditTime, now)
                 .set(Line::getUpTime, now)
                 .set(Line::getUpUser, UserOperator.getToken())
-                .in(Line::getId, form.getList().stream().map(AddLineForm::getId).collect(Collectors.toList())));
+                .in(Line::getId, ids));
     }
 
     /**

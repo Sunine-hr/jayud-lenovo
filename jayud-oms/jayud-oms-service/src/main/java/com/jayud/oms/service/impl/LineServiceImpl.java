@@ -174,7 +174,15 @@ public class LineServiceImpl extends ServiceImpl<LineMapper, Line> implements IL
     @Override
     public void batchOprLine(LineBatchOprForm form) {
 
-        List<Long> ids = form.getList().stream().map(AddLineForm::getId).collect(Collectors.toList());
+        List<Long> ids = new ArrayList<>();
+        form.getList().stream().forEach(tmp -> {
+            Long id = MapUtil.getLong(tmp, "id");
+            if (Objects.isNull(id)) {
+                throw new JayudBizException(400, "线路ID不能为空");
+            }
+            ids.add(id);
+        });
+
         if (Integer.parseInt(form.getAuditStatus()) == (LineStatusEnum.AUDIT_SUCCESS.getCode())) {
             if (this.count(new QueryWrapper<Line>().lambda()
                     .ne(Line::getAuditStatus, LineStatusEnum.WAIT_AUDIT.getCode())

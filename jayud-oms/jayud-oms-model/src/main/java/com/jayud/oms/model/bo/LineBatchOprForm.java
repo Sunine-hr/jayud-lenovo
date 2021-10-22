@@ -11,6 +11,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 线路-批量操作
@@ -27,6 +28,6 @@ public class LineBatchOprForm implements Serializable {
     @ApiModelProperty(value = "批量操作ID数组对象")
     @NotNull(message = "ID数组不能为空")
     @Size(min = 1, message = "ID数组不能为空")
-    private List<AddLineForm> list;
+    private List<Map<String, Object>> list;
 
 }

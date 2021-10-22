@@ -3,6 +3,7 @@ package com.jayud.scm.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -31,6 +32,7 @@ public class AddInvoiceEntryForm {
     private Integer invoiceId;
 
     @ApiModelProperty(value = "日期")
+    @JsonProperty(value = "fDate")
     private LocalDateTime fDate;
 
     @ApiModelProperty(value = "订单明细ID")
@@ -58,7 +60,7 @@ public class AddInvoiceEntryForm {
     private String formula;
 
     @ApiModelProperty(value = "应收日期")
-    private LocalDateTime farDate;
+    private String farDate;
 
     @ApiModelProperty(value = "费用名称")
     private String feeName;
@@ -70,10 +72,10 @@ public class AddInvoiceEntryForm {
     private String feeAlias;
 
     @ApiModelProperty(value = "首次完全核销日期")
-    private LocalDateTime fcDate;
+    private String fcDate;
 
     @ApiModelProperty(value = "发票生成时应收日期")
-    private LocalDateTime farDateOld;
+    private String farDateOld;
 
     @ApiModelProperty(value = "其它费用ID")
     private Integer otherCostId;

@@ -47,7 +47,7 @@ public class InvoiceController {
         List<InvoiceDetailVO> invoiceDetailVOS = new ArrayList<>();
 
         for (InvoiceDetailVO record : page.getRecords()) {
-            if(record.getAtMoney() != null && !record.getAtMoney().equals(new BigDecimal(0))){
+            if(record.getAtMoney() != null && record.getAtMoney().compareTo(new BigDecimal(0)) == 1){
                 invoiceDetailVOS.add(record);
             }
         }

@@ -62,7 +62,7 @@ public class AccountBankBillEntryController {
             total = total.add(addAccountBankBillEntryForm.getAcMoney());
         }
         AccountBankBill bankBill = accountBankBillService.getById(form.getBankBillId());
-        if(bankBill.getVerificationMoney().compareTo(total) == -1){
+        if(bankBill.getVerificationMoney() == null || bankBill.getVerificationMoney().compareTo(total) == -1){
             return CommonResult.error(444,"水单明细总金额不能大于水单主表金额");
         }
 

@@ -9,6 +9,7 @@ import com.jayud.scm.model.bo.QueryForm;
 import com.jayud.scm.model.vo.InvoiceDetailVO;
 import com.jayud.scm.model.vo.InvoiceEntryVO;
 import com.jayud.scm.service.IInvoiceEntryService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/invoiceEntry")
+@Api(tags = "应收款明细")
 public class InvoiceEntryController {
 
     @Autowired

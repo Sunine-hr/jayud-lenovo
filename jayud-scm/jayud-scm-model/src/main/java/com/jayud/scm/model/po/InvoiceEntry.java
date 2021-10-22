@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -34,6 +36,7 @@ public class InvoiceEntry extends Model<InvoiceEntry> {
     private Integer invoiceId;
 
     @ApiModelProperty(value = "日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fDate;
 
     @ApiModelProperty(value = "订单明细ID")
@@ -61,6 +64,7 @@ public class InvoiceEntry extends Model<InvoiceEntry> {
     private String formula;
 
     @ApiModelProperty(value = "应收日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime farDate;
 
     @ApiModelProperty(value = "费用名称")
@@ -73,9 +77,11 @@ public class InvoiceEntry extends Model<InvoiceEntry> {
     private String feeAlias;
 
     @ApiModelProperty(value = "首次完全核销日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fcDate;
 
     @ApiModelProperty(value = "发票生成时应收日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime farDateOld;
 
     @ApiModelProperty(value = "其它费用ID")
@@ -91,6 +97,7 @@ public class InvoiceEntry extends Model<InvoiceEntry> {
     private Integer payId;
 
     @ApiModelProperty(value = "付款日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private String payDate;
 
     @ApiModelProperty(value = "付款汇率")
@@ -112,6 +119,7 @@ public class InvoiceEntry extends Model<InvoiceEntry> {
     private String crtByName;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime crtByDtm;
 
     @ApiModelProperty(value = "最后修改人ID")
@@ -121,6 +129,7 @@ public class InvoiceEntry extends Model<InvoiceEntry> {
     private String mdyByName;
 
     @ApiModelProperty(value = "最后修改时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime mdyByDtm;
 
     @ApiModelProperty(value = "删除标记")

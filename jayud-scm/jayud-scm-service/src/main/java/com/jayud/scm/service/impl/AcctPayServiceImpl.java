@@ -50,6 +50,12 @@ public class AcctPayServiceImpl extends ServiceImpl<AcctPayMapper, AcctPay> impl
 
         AcctPay acctPay = ConvertUtil.convert(form, AcctPay.class);
         acctPay.setPayNo(commodityService.getOrderNo(NoCodeEnum.ACCT_PAY.getCode(), LocalDateTime.now()));
+        acctPay.setId(null);
+        acctPay.setPayType("T/T");
+        acctPay.setCustomerId(form.getSupplierId());
+        acctPay.setCustomerName(form.getSupplierName());
+        acctPay.setSupplierId(form.getSupplierId());
+        acctPay.setSupplierName(form.getSupplierName());
         acctPay.setCrtBy(systemUser.getId().intValue());
         acctPay.setCrtByDtm(LocalDateTime.now());
         acctPay.setCrtByName(systemUser.getUserName());

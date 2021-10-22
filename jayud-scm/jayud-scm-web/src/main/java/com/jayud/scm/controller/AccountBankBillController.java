@@ -187,11 +187,10 @@ public class AccountBankBillController {
     }
 
     @ApiOperation(value = "出口水单核销自动生成付款单")
-    @PostMapping(value = "/automaticallyGeneratePayment ")
+    @PostMapping(value = "/automaticallyGeneratePayment")
     public CommonResult automaticallyGeneratePayment(@RequestBody QueryCommonForm form) {
         return accountBankBillService.automaticallyGeneratePayment(form);
 
     }
 
 }
-

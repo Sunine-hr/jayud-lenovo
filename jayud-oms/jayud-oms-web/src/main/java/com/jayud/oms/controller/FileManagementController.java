@@ -6,6 +6,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.jayud.common.CommonResult;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.utils.JDKUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.model.po.LogisticsTrack;
@@ -60,6 +61,7 @@ public class FileManagementController {
             orderNo.put(object.getLong("id"), object.getStr("orderNo"));
         }
         List<LogisticsTrack> list = logisticsTrackService.getLogisticsTrackByType(ids, type);
+        list = JDKUtils.getGroupByLastData(list, LogisticsTrack::getCreatedTime, LogisticsTrack::getStatus);
         Object url = fileClient.getBaseUrl().getData();
 
         List<Map<String, Object>> responses = new ArrayList<>();

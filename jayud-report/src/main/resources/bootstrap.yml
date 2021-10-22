@@ -16,10 +16,10 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        server-addr: ${jayud.nacos.server-addr}
+        # 配置文件后缀名为yaml
         file-extension: yaml
-        namespace: ${spring.cloud.nacos.discovery.namespace}
+        namespace: ${jayud.nacos.config.namespace}
       discovery:
-        server-addr: 113.100.140.250:8848
-        #        namespace: 3c86eb07-83e4-46cf-8c1f-291dc95d657b # jyd-wms-mfc
-        namespace: 65ed253a-22cf-49e9-8e95-72402f722631
+        server-addr: ${jayud.nacos.server-addr}
+        namespace: ${jayud.nacos.config.namespace}

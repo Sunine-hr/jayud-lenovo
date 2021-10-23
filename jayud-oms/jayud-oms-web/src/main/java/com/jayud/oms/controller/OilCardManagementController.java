@@ -3,6 +3,7 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
@@ -68,7 +69,14 @@ public class OilCardManagementController {
             if (this.oilCardManagementService.exitByOilCardNum(form.getOilCardNum())) {
                 return CommonResult.error(400, "油卡卡号已存在");
             }
+            if (form.getOilStatus().equals(1)) {
+                if (form.getDriverId() == null && form.getConsumingDate() == null) {
+                    return CommonResult.error(400, "请填写领用人和领用时间");
+                }
+            }
         }
+
+
 //        if (form.getDriverId() != null) {
 //            form.setOilStatus(1);
 //        } else {
@@ -227,11 +235,16 @@ public class OilCardManagementController {
         if (!StatusEnum.ENABLE.getCode().equals(oldTmp.getStatus())) {
             return CommonResult.error(400, "禁用数据无法操作");
         }
-        if (!oldTmp.getOilStatus().equals(1)){
+        if (!oldTmp.getOilStatus().equals(1)) {
             return CommonResult.error(400, "请执行领用操作");
         }
-        this.oilCardManagementService.updateById(new OilCardManagement()
-                .setId(oilCardManagement.getId()).setReturnDate(returnDate).setOilStatus(2));
+        this.oilCardManagementService.update(null,
+                Wrappers.<OilCardManagement>lambdaUpdate()
+                        .set(OilCardManagement::getReturnDate, returnDate)
+                        .set(OilCardManagement::getOilStatus, 2)
+                        .set(OilCardManagement::getDriverId, null)
+                        .set(OilCardManagement::getVehicleId, null)
+                        .eq(OilCardManagement::getId, oilCardManagement.getId()));
         //记录跟踪信息
         StringBuilder sb = new StringBuilder();
         sb.append("归还日期:").append(DateUtils.LocalDateTime2Str(returnDate, DateUtils.DATE_PATTERN));

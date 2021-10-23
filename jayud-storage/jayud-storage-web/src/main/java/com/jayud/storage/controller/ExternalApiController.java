@@ -5,17 +5,16 @@ import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.entity.InitChangeStatusVO;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
-import com.jayud.storage.model.bo.StorageFastOrderForm;
-import com.jayud.storage.model.bo.StorageInputOrderForm;
-import com.jayud.storage.model.bo.StorageOutOrderForm;
-import com.jayud.storage.model.bo.WarehouseGoodsForm;
+import com.jayud.storage.model.bo.*;
 import com.jayud.storage.model.po.*;
 import com.jayud.storage.model.vo.StorageFastOrderVO;
 import com.jayud.storage.model.vo.StorageInputOrderVO;
 import com.jayud.storage.model.vo.StorageOutOrderVO;
+import com.jayud.storage.model.vo.WarehouseVO;
 import com.jayud.storage.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
@@ -26,7 +25,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -63,6 +64,9 @@ public class ExternalApiController {
 
     @Autowired
     private IGoodsLocationRecordService goodsLocationRecordService;
+
+    @Autowired
+    IWarehouseService warehouseService;
 
     @ApiOperation("创建入库订单")
     @RequestMapping(value = "/api/storage/createInOrder")
@@ -298,5 +302,28 @@ public class ExternalApiController {
 
         }
         return ApiResult.ok();
+    }
+
+    @ApiOperation(value = "下拉启用的仓库")
+    @RequestMapping(value = "/api/storage/initEnableWarehouse")
+    public CommonResult<List<InitComboxStrVO>> initEnableWarehouse(@RequestParam(value = "name") String name) {
+        List<Warehouse> list = warehouseService.initEnableWarehouse(name);
+        List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
+        for (Warehouse warehouse : list) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setId(warehouse.getId());
+            comboxStrVO.setCode(warehouse.getCode());
+            comboxStrVO.setName(warehouse.getName());
+            comboxStrVOS.add(comboxStrVO);
+        }
+
+        return CommonResult.success(comboxStrVOS);
+    }
+
+    @ApiOperation(value = "根据id查询仓库名称")
+    @RequestMapping("/api/storage/findWarehouseNameById")
+    public CommonResult<Warehouse> findWarehouseNameById(@RequestParam(value = "id", required = true) Long id){
+        Warehouse warehouse = warehouseService.findWarehouseNameById(id);
+        return CommonResult.success(warehouse);
     }
 }

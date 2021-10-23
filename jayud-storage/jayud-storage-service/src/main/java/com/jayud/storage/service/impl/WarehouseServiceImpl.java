@@ -1,6 +1,7 @@
 package com.jayud.storage.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,6 +10,7 @@ import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.storage.mapper.WarehouseMapper;
 import com.jayud.storage.model.bo.OperationWarehouseForm;
 import com.jayud.storage.model.bo.QueryWarehouseForm;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -95,4 +98,36 @@ public class WarehouseServiceImpl extends ServiceImpl<WarehouseMapper, Warehouse
     public WarehouseVO findWarehouseById(Long id) {
         return this.baseMapper.findWarehouseById(id);
     }
+
+    /**
+     * 下拉启用的仓库
+     * @param name
+     * @return
+     */
+    @Override
+    public List<Warehouse> initEnableWarehouse(String name) {
+        QueryWrapper<Warehouse> condition = new QueryWrapper<>();
+        condition.lambda()
+                .select(Warehouse::getId, Warehouse::getCode, Warehouse::getName)
+                .eq(Warehouse::getStatus, WarehouseStatusEnum.ENABLE.getCode());
+        if (!StringUtils.isEmpty(name)) {
+            condition.lambda().like(Warehouse::getName, name);
+        }
+        return this.baseMapper.selectList(condition);
+    }
+
+    /**
+     * 根据id查询仓库名称
+     * @param id
+     * @return
+     */
+    @Override
+    public Warehouse findWarehouseNameById(Long id) {
+        QueryWrapper<Warehouse> condition = new QueryWrapper<>();
+        condition.lambda()
+                .select(Warehouse::getId, Warehouse::getCode, Warehouse::getName)
+                .eq(Warehouse::getId, id);
+        return this.getOne(condition);
+    }
+
 }

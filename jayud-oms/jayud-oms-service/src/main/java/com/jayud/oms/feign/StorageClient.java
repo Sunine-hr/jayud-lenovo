@@ -1,6 +1,7 @@
 package com.jayud.oms.feign;
 
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.vo.*;
@@ -104,4 +105,20 @@ public interface StorageClient {
      */
     @RequestMapping(value = "/api/storage/closeFastOrder")
     public ApiResult closeFastOrder(@RequestBody List<SubOrderCloseOpt> form);
+
+    /**
+     * 下拉启用的仓库
+     * @param name
+     * @return
+     */
+    @RequestMapping(value = "/api/storage/initEnableWarehouse")
+    CommonResult<List<InitComboxStrVO>> initEnableWarehouse(@RequestParam(value = "name") String name);
+
+    /**
+     * 根据id查询仓库名称
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/api/storage/findWarehouseNameById")
+    CommonResult findWarehouseNameById(@RequestParam(value = "id", required = true) Long id);
 }

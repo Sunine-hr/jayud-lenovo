@@ -2252,7 +2252,7 @@ public class ExternalApiController {
         Map<String, String> map = supplierInfos.stream().collect(Collectors.toMap(e -> e.getSupplierChName(), e -> e.getSupplierCode()));
         return ApiResult.ok(map);
     }
-}
+
     /**
      * 保存或更新
      * @param form

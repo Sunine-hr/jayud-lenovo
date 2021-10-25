@@ -112,7 +112,7 @@ public interface StorageClient {
      * @return
      */
     @RequestMapping(value = "/api/storage/initEnableWarehouse")
-    CommonResult<List<InitComboxStrVO>> initEnableWarehouse(@RequestParam(value = "name") String name);
+    CommonResult<List<InitComboxStrVO>> initEnableWarehouse(@RequestParam(value = "name", required = false) String name);
 
     /**
      * 根据id查询仓库名称

@@ -39,8 +39,10 @@ public class PlatformVO {
     private String remarks;
 
     @ApiModelProperty(value = "月台状态(0-空闲中1-排版中2-使用中)")
-    @Pattern(regexp = "^$|^([0-2])$", message = "platformStatus requires '1' or '2' or '0' only")
     private String platformStatus;
+
+    @ApiModelProperty(value = "月台状态")
+    private String platformStatusDesc;
 
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")

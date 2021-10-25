@@ -306,7 +306,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "下拉启用的仓库")
     @RequestMapping(value = "/api/storage/initEnableWarehouse")
-    public CommonResult<List<InitComboxStrVO>> initEnableWarehouse(@RequestParam(value = "name") String name) {
+    public CommonResult<List<InitComboxStrVO>> initEnableWarehouse(@RequestParam(value = "name", required = false) String name) {
         List<Warehouse> list = warehouseService.initEnableWarehouse(name);
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         for (Warehouse warehouse : list) {

@@ -24,7 +24,15 @@
 
     <select id="findPlatformByPage" parameterType="com.jayud.oms.model.bo.QueryPlatformForm"
             resultType="com.jayud.oms.model.vo.PlatformVO">
-        select id, platform_code, platform_name, warehouse_name, camera_url, platform_status, remarks, create_time, created_user, up_time, up_user
+        select id, platform_code, platform_name, warehouse_name, camera_url, platform_status, remarks,
+        create_time, created_user, up_time, up_user,
+        (
+        case platform_status
+        when 1 then '排版中'
+        when 2 then '使用中'
+        when 0 then '空闲中'
+        end
+        ) as platformStatusDesc
         from platform
         <where>
             <if test="form.platformName != null and form.platformName != ''">

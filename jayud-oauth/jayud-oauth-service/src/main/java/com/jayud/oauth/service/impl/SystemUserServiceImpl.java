@@ -427,7 +427,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
      *
      * @param user 用户
      */
-    private void insertLoginLog(SystemUser user) {
+    public void insertLoginLog(SystemUser user) {
         SystemUserLoginLog loginLog = new SystemUserLoginLog();
         loginLog.setSystemUserId(user.getId());
         loginLog.setCreateTime(LocalDateTime.now());

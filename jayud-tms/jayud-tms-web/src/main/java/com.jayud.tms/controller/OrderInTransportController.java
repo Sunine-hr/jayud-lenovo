@@ -3,7 +3,6 @@ package com.jayud.tms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.*;
@@ -40,7 +39,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -210,6 +208,9 @@ public class OrderInTransportController {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }
         this.orderTransportService.msgPush(orderTransport);
+        // 同步操作到scm供应链
+        this.orderTransportService.pushManifest(orderTransport, form, false);
+
         return CommonResult.success();
     }
 
@@ -315,6 +316,8 @@ public class OrderInTransportController {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         this.orderTransportService.msgPush(orderTransport);
+        // 同步操作到scm供应链
+        this.orderTransportService.pushManifest(orderTransport, form, false);
         return CommonResult.success();
     }
 
@@ -507,6 +510,8 @@ public class OrderInTransportController {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         this.orderTransportService.msgPush(orderTransport);
+        // 推送运输公司消息到供应链
+        this.orderTransportService.pushTransportationInformation(orderTransport, form);
         return CommonResult.success();
     }
 

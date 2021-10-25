@@ -9,6 +9,7 @@ import com.jayud.common.UserOperator;
 import com.jayud.oms.mapper.WarehouseInfoMapper;
 import com.jayud.oms.model.bo.QueryWarehouseInfoForm;
 import com.jayud.oms.model.enums.StatusEnum;
+import com.jayud.oms.model.po.ProductBiz;
 import com.jayud.oms.model.po.WarehouseInfo;
 import com.jayud.oms.model.vo.WarehouseInfoVO;
 import com.jayud.oms.service.IWarehouseInfoService;
@@ -85,6 +86,16 @@ public class WarehouseInfoServiceImpl extends ServiceImpl<WarehouseInfoMapper, W
 
         WarehouseInfo warehouseInfo = new WarehouseInfo().setId(id).setStatus(status);
         return this.updateById(warehouseInfo);
+    }
+
+    @Override
+    public Long getWarehouseIdByName(String warehouseName) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.select("id");
+        queryWrapper.eq("status", "1");//有效的
+        queryWrapper.eq("warehouse_name", warehouseName);
+        WarehouseInfo warehouseInfo = baseMapper.selectOne(queryWrapper);
+        return warehouseInfo != null ? warehouseInfo.getId() : null;
     }
 
 

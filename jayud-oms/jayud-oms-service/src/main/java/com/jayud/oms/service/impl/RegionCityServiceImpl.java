@@ -45,4 +45,35 @@ public class RegionCityServiceImpl extends ServiceImpl<RegionCityMapper, RegionC
         condition.lambda().in(RegionCity::getId, id);
         return this.baseMapper.selectList(condition);
     }
+
+    /**
+     * 通过省份名称获取省份ID
+     * @param provinceName
+     * @return
+     */
+    @Override
+    public RegionCity getProvinceIdByName(String provinceName) {
+        QueryWrapper<RegionCity> condition = new QueryWrapper<>();
+        condition.lambda()
+                .select(RegionCity::getId, RegionCity::getName)
+                .eq(RegionCity::getParentId, 0)
+                .in(RegionCity::getName, provinceName);
+        return this.getOne(condition, false);
+    }
+
+    /**
+     * 通过城市或区域名称获取ID
+     * @param parentId
+     * @param cityName
+     * @return
+     */
+    @Override
+    public RegionCity getCityOrAreaIdByName(Long parentId, String cityName) {
+        QueryWrapper<RegionCity> condition = new QueryWrapper<>();
+        condition.lambda()
+                .select(RegionCity::getId, RegionCity::getName)
+                .eq(RegionCity::getParentId, parentId)
+                .in(RegionCity::getName, cityName);
+        return this.getOne(condition, false);
+    }
 }

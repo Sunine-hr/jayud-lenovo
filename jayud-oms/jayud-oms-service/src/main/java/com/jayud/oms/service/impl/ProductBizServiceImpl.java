@@ -192,4 +192,19 @@ public class ProductBizServiceImpl extends ServiceImpl<ProductBizMapper, Product
         return this.baseMapper.selectList(condition);
     }
 
+    /**
+     * 根据业务名称获取业务编码
+     * @param name
+     * @return
+     */
+    @Override
+    public String getProductBizIdCodeByName(String name) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.select("id_code");
+        queryWrapper.eq("status", "1");//有效的
+        queryWrapper.eq("name", name);
+        ProductBiz productBiz = baseMapper.selectOne(queryWrapper);
+        return productBiz != null ? productBiz.getIdCode() : null;
+    }
+
 }

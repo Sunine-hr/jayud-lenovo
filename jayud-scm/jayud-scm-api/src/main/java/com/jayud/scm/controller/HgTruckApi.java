@@ -196,7 +196,7 @@ public class HgTruckApi {
         if(map1.get("code").equals(200)){
             return CommonResult.success();
         }
-        return CommonResult.error((Integer)map1.get("code"),(String)map1.get("msg"));
+        return CommonResult.error((Integer)map1.get("code"),(String)(map1.get("msg")!=null?map1.get("msg"):""));
     }
 
     @ApiOperation(value = "明细提交")

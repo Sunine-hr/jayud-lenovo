@@ -1,12 +1,10 @@
 package com.jayud.scm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.scm.model.bo.AddAcctPayForm;
-import com.jayud.scm.model.bo.AddAcctPayReceiptForm;
-import com.jayud.scm.model.bo.DeleteForm;
-import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
@@ -44,6 +42,9 @@ public class AcctPayServiceImpl extends ServiceImpl<AcctPayMapper, AcctPay> impl
     @Autowired
     private IAcctPayEntryService acctPayEntryService;
 
+    @Autowired
+    private ICustomerService customerService;
+
     @Override
     public boolean generatePaymentDocument(AddAcctPayReceiptForm form) {
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
@@ -56,11 +57,15 @@ public class AcctPayServiceImpl extends ServiceImpl<AcctPayMapper, AcctPay> impl
         acctPay.setCustomerName(form.getSupplierName());
         acctPay.setSupplierId(form.getSupplierId());
         acctPay.setSupplierName(form.getSupplierName());
+        acctPay.setPayDate(LocalDateTime.now());
         acctPay.setCrtBy(systemUser.getId().intValue());
         acctPay.setCrtByDtm(LocalDateTime.now());
         acctPay.setCrtByName(systemUser.getUserName());
-        if(form.getProxyMoney() != null){
-            acctPay.setApMoney(acctPay.getApMoney().subtract(form.getProxyMoney()));
+//        if(form.getProxyMoney() != null){
+//            acctPay.setApMoney(acctPay.getApMoney().subtract(form.getProxyMoney()));
+//        }
+        if(form.getPayType() != null && form.getPayType().equals("预收")){
+            acctPay.setIsYuFee(1);
         }
         boolean save = this.save(acctPay);
         if(save){
@@ -277,6 +282,28 @@ public class AcctPayServiceImpl extends ServiceImpl<AcctPayMapper, AcctPay> impl
             }
         }
         return acctPay.getId();
+    }
+
+    @Override
+    public CommonResult reverseAcctPay(PermissionForm form) {
+        AcctPayFollow acctPayFollow = new AcctPayFollow();
+        acctPayFollow.setPayId(form.getId().intValue());
+        acctPayFollow.setSType(OperationEnum.UPDATE.getCode());
+        acctPayFollow.setCrtBy(form.getId().intValue());
+        acctPayFollow.setCrtByDtm(LocalDateTime.now());
+        acctPayFollow.setCrtByName(form.getUserName());
+
+        CommonResult commonResult = customerService.deApproval(form);
+        if(commonResult.getCode().equals(0)){
+            acctPayFollow.setFollowContext("水单审核成功");
+        }else {
+            acctPayFollow.setFollowContext("水单审核失败");
+        }
+        boolean save = this.acctPayFollowService.save(acctPayFollow);
+        if(save){
+            log.warn("审核，操作日志添加成功");
+        }
+        return commonResult;
     }
 
 }

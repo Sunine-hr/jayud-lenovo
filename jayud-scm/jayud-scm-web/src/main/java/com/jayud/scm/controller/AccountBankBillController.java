@@ -54,6 +54,9 @@ public class AccountBankBillController {
     @Autowired
     private IAcctReceiptService acctReceiptService;
 
+    @Autowired
+    private IAcctPayService acctPayService;
+
     @ApiOperation(value = "根据id查询水单信息")
     @PostMapping(value = "/getAccountBankBillById")
     public CommonResult<AccountBankBillVO> getAccountBankBillById(@RequestBody Map<String,Object> map) {
@@ -189,6 +192,13 @@ public class AccountBankBillController {
     @ApiOperation(value = "出口水单核销自动生成付款单")
     @PostMapping(value = "/automaticallyGeneratePayment")
     public CommonResult automaticallyGeneratePayment(@RequestBody QueryCommonForm form) {
+
+        AcctReceipt acctReceipt = acctReceiptService.getAcctReceiptByJoinBillId(form.getId());
+        AcctPay acctPay = acctPayService.getAcctPayByPayToMeId(acctReceipt.getId());
+        if (acctPay != null) {
+            return CommonResult.error(444,"该水单已经生成付款单，不能重复生成");
+        }
+
         return accountBankBillService.automaticallyGeneratePayment(form);
 
     }

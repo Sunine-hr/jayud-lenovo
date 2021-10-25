@@ -87,6 +87,15 @@ public class AcctReceiptServiceImpl extends ServiceImpl<AcctReceiptMapper, AcctR
         acctReceipt.setCurrencyName(accountBankBill.getVerificationCurrency());
         acctReceipt.setMoney(accountBankBill.getVerificationMoney());
         acctReceipt.setDiscountRate(new BigDecimal(1));
+        if(accountBankBill.getBankBillType().equals("预收款")){
+            acctReceipt.setPayType("预收");
+        }
+        if(accountBankBill.getBankBillType().equals("水单")){
+            acctReceipt.setPayType("正常");
+        }
+        if(accountBankBill.getBankBillType().equals("信用证")){
+            acctReceipt.setPayType("押金");
+        }
         boolean save = this.save(acctReceipt);
         log.warn("生成收款单成功");
         return save;

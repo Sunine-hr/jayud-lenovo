@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.scm.model.bo.DeleteForm;
@@ -13,6 +14,7 @@ import com.jayud.scm.service.IInvoiceEntryService;
 import com.jayud.scm.service.IInvoiceFollowService;
 import com.jayud.scm.service.IInvoiceService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -77,5 +79,13 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             log.warn("操作记录表添加失败"+invoiceFollows);
         }
         return b1;
+    }
+
+    @Override
+    public List<Invoice> getByOrderId(Integer id) {
+        QueryWrapper<Invoice> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(Invoice::getOrderId,id);
+        queryWrapper.lambda().eq(Invoice::getVoided,0);
+        return this.list(queryWrapper);
     }
 }

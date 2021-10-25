@@ -54,6 +54,16 @@ public class CustomerRelationerServiceImpl extends ServiceImpl<CustomerRelatione
 
         CustomerRelationer customerRelationer = ConvertUtil.convert(form, CustomerRelationer.class);
         if(form.getId() != null){
+            if(customerRelationer.getIsDefault().equals(1)){
+                QueryWrapper<CustomerRelationer> queryWrapper = new QueryWrapper<>();
+                queryWrapper.lambda().eq(CustomerRelationer::getCustomerId,form.getCustomerId());
+                queryWrapper.lambda().eq(CustomerRelationer::getSType,form.getSType());
+                queryWrapper.lambda().eq(CustomerRelationer::getIsDefault,1);
+                CustomerRelationer one = this.getOne(queryWrapper);
+                if(one != null){
+                    customerRelationer.setIsDefault(0);
+                }
+            }
             customerRelationer.setMdyBy(systemUser.getId().intValue());
             customerRelationer.setMdyByDtm(LocalDateTime.now());
             customerRelationer.setMdyByName(systemUser.getUserName());

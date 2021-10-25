@@ -7,6 +7,8 @@ import com.jayud.scm.model.po.Invoice;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.InvoiceDetailVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 结算单（应收款）主表 服务类
@@ -20,4 +22,6 @@ public interface IInvoiceService extends IService<Invoice> {
     IPage<InvoiceDetailVO> findByPage(QueryForm form);
 
     boolean delete(DeleteForm deleteForm);
+
+    List<Invoice> getByOrderId(Integer id);
 }

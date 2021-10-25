@@ -20,6 +20,9 @@ public class AddAcctPayReceiptForm {
     @ApiModelProperty(value = "收款单Id")
     private Integer payToMeId;
 
+    @ApiModelProperty(value = "收款类型(正常,预收,押金)")
+    private String payType;
+
     @ApiModelProperty(value = "供应商ID")
     private Integer supplierId;
 
@@ -76,6 +79,7 @@ public class AddAcctPayReceiptForm {
 
     @ApiModelProperty(value = "出口结汇汇率")
     private BigDecimal accRate;
+
 
 
 }

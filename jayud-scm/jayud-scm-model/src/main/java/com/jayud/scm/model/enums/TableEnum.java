@@ -44,6 +44,7 @@ public enum TableEnum {
     acct_pay_entry(33,"acct_pay_entry"),//付款单明细
     other_cost(34,"other_cost"),//其他费用
     reports(35,"reports"),//打印报表
+    tax_invoice(36,"tax_invoice"),//销项票
     ;
 
     private Integer code;

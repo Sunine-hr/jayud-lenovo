@@ -1,9 +1,7 @@
 package com.jayud.scm.service;
 
-import com.jayud.scm.model.bo.AddAcctPayForm;
-import com.jayud.scm.model.bo.AddAcctPayReceiptForm;
-import com.jayud.scm.model.bo.DeleteForm;
-import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.common.CommonResult;
+import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.po.AcctPay;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.AcctPayVO;
@@ -35,4 +33,6 @@ public interface IAcctPayService extends IService<AcctPay> {
     boolean cancelPayment(QueryCommonForm form);
 
     Integer saveAcctPay(AddAcctPayForm addAcctPayForm);
+
+    CommonResult reverseAcctPay(PermissionForm form);
 }

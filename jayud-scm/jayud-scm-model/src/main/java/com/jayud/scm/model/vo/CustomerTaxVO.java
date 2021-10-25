@@ -65,4 +65,10 @@ public class CustomerTaxVO extends Model<CustomerTaxVO> {
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime crtByDtm;
+
+    @ApiModelProperty(value = "最后修改人名称")
+    private String mdyByName;
+
+    @ApiModelProperty(value = "最后修改时间")
+    private LocalDateTime mdyByDtm;
 }

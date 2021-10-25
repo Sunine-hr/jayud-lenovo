@@ -79,6 +79,9 @@ public class BookingOrderController {
     @Autowired
     private IHubShippingEntryService hubShippingEntryService;
 
+    @Autowired
+    private IInvoiceService invoiceService;
+
     /*
         TODO 出口委托单：主表 查询 新增 修改 删除 查看 审核 反审 打印 复制
     */
@@ -478,6 +481,12 @@ public class BookingOrderController {
     @ApiOperation(value = "结算")
     @PostMapping(value = "/settlement")
     public CommonResult settlement(@Valid @RequestBody QueryCommonForm form){
+
+        List<Invoice> list = invoiceService.getByOrderId(form.getId());
+        if(CollectionUtil.isNotEmpty(list)){
+            return CommonResult.error(444,"该订单已经结算，无法重复结算");
+        }
+
         CommonResult commonResult = bookingOrderService.settlement(form);
         return commonResult;
     }
@@ -485,6 +494,12 @@ public class BookingOrderController {
     @ApiOperation(value = "进口结算")
     @PostMapping(value = "/importSettlement")
     public CommonResult importSettlement(@Valid @RequestBody QueryCommonForm form){
+
+        List<Invoice> list = invoiceService.getByOrderId(form.getId());
+        if(CollectionUtil.isNotEmpty(list)){
+            return CommonResult.error(444,"该订单已经结算，无法重复结算");
+        }
+
         CommonResult commonResult = bookingOrderService.importSettlement(form);
         return commonResult;
     }

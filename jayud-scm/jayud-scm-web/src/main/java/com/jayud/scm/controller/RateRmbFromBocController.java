@@ -61,7 +61,7 @@ public class RateRmbFromBocController {
 
     @ApiOperation(value = "定时任务抓取中行汇率")
     @PostMapping(value = "/grabExchangeRate")
-    @Scheduled(cron = "0 0/5 * * * ?")
+//    @Scheduled(cron = "0 0/5 * * * ?")
     public ApiResult grabExchangeRate() {
         String[] split = RATE_ADDRESS.split(";");
         List<RateRmbFromBoc> rateRmbFromBocs = new ArrayList<>();

@@ -83,4 +83,13 @@ public class InputMainOrderVO {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private LocalDateTime operationTime;
 
+    @ApiModelProperty(value = "订单来源")
+    private String orderSource;
+
+    @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo.... 参照CreateUserTypeEnum)")
+    private Integer createUserType;
+
+    @ApiModelProperty(value = "创建人的类型名称")
+    private String createUserTypeName;
+
 }

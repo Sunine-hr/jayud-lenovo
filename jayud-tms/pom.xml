@@ -22,6 +22,7 @@
         <module>jayud-tms-model</module>
         <module>jayud-tms-service</module>
         <module>jayud-tms-web</module>
+        <module>jayud-tms-api</module>
     </modules>
 
     <dependencies>

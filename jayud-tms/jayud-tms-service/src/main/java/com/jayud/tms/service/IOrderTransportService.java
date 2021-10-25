@@ -1,13 +1,11 @@
 package com.jayud.tms.service;
 
 import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.entity.DataControl;
-import com.jayud.tms.model.bo.InputOrderTransportForm;
-import com.jayud.tms.model.bo.OprStatusForm;
-import com.jayud.tms.model.bo.QueryDriverOrderTransportForm;
-import com.jayud.tms.model.bo.QueryOrderTmsForm;
+import com.jayud.tms.model.bo.*;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
 import com.jayud.tms.model.vo.supplier.QuerySupplierBill;
@@ -195,6 +193,42 @@ public interface IOrderTransportService extends IService<OrderTransport> {
     Boolean isVirtualWarehouseByOrderNo(String orderNo);
 
     InputOrderTransportVO getOrderDetails(String mainOrderNo, String orderNo);
+
+    /**
+     * 根据登录用户查询客户信息
+     * @return
+     */
+    JSONObject getCustomerInfoByLoginUserName();
+
+    /**
+     * 根据第三方订单号查询中港订单信息
+     * @param thirdPartyOrderNo
+     * @return
+     */
+    OutOrderTransportVO getOutOrderTransportVOByThirdPartyOrderNo(String thirdPartyOrderNo);
+
+    /**
+     * 推送订单状态到供应链
+     * @param orderTransport
+     * @param form
+     * @param isRetry
+     */
+    void pushManifest(OrderTransport orderTransport, OprStatusForm form, boolean isRetry);
+
+    /**
+     * 推送运输公司信息到供应链
+     * @param orderTransport
+     * @param form
+     */
+    void pushTransportationInformation(OrderTransport orderTransport, SendCarForm form);
+
+    /**
+     * 获取创建人的类型
+     * @param id
+     * @return
+     */
+    Integer getCreateUserTypeById(Long id);
+
 
     /**
      * 查询中港订单

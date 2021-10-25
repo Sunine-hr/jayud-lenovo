@@ -23,4 +23,6 @@ public interface IWarehouseInfoService extends IService<WarehouseInfo> {
     boolean saveOrUpdateWarehouseInfo(WarehouseInfo warehouseInfo);
 
     boolean enableOrDisableWarehouse(Long id);
+
+    Long getWarehouseIdByName(String warehouseName);
 }

@@ -12,7 +12,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum CreateUserTypeEnum {
 
-    LOCAL(0, "本系统"), VIVO(1, "vivo");
+    LOCAL(0, "本系统"), VIVO(1, "vivo"), SCM(2, "供应链");
     private Integer code;
     private String desc;
 

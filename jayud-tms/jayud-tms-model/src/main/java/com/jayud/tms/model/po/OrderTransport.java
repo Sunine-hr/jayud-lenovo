@@ -137,7 +137,7 @@ public class OrderTransport extends Model<OrderTransport> {
     @ApiModelProperty(value = "是否车辆过磅")
     private Boolean isVehicleWeigh;
 
-    @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo)")
+    @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo,2:供应链)")
     private Integer createUserType;
 
     @ApiModelProperty(value = "指派供应id")

@@ -155,7 +155,7 @@ public class GPSController {
         }
         if (province != null) {
             Map<Long, String> regionCityMap = regionCityService.list().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
-            addr = regionCityMap.get(province) + regionCityMap.get(city) + MapUtil.getStr(regionCityMap, "") + addr;
+            addr = regionCityMap.get(province) + regionCityMap.get(city) + MapUtil.getStr(regionCityMap, area) + addr;
         }
 
         String response = httpURLConectionGET(addr);

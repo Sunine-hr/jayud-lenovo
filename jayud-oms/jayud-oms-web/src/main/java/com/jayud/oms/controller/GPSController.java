@@ -164,8 +164,9 @@ public class GPSController {
         }
         String[] split = response.split(",");
         Map<String, Object> tmp = new HashMap<>();
-        tmp.put("latitude", split[1]);
-        tmp.put("longitude", split[0]);
+
+        tmp.put("la", split[1]);
+        tmp.put("lo", split[0]);
         return CommonResult.success(tmp);
     }
 

@@ -37,5 +37,5 @@ public interface IContractInfoService extends IService<ContractInfo> {
     List<ContractInfo> findContractByCondition(Map<String,Object> param);
 
 
-
+    List<ContractInfo> getByCondition(ContractInfo contractInfo);
 }

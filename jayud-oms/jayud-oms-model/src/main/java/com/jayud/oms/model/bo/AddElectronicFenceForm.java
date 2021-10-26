@@ -58,11 +58,11 @@ public class AddElectronicFenceForm extends Model<AddElectronicFenceForm> {
     private String addr;
 
     @ApiModelProperty(value = "经度")
-    @NotBlank(message = "经度不能为空")
+    @NotBlank(message = "该地址不存在")
     private String lo;
 
     @ApiModelProperty(value = "纬度")
-    @NotBlank(message = "纬度不能为空")
+    @NotBlank(message = "该地址不存在")
     private String la;
 
     @ApiModelProperty(value = "经纬度(高德)")

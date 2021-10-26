@@ -26,11 +26,10 @@ public class QueryElectronicFenceForm extends BasePageForm {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "围栏编号")
+    private String number;
+
     @ApiModelProperty(value = "围栏名称")
     private String name;
-
-    @ApiModelProperty(value = "详细地址")
-    private String addr;
-
 
 }

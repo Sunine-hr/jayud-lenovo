@@ -46,9 +46,9 @@ public class ContractInfoServiceImpl extends ServiceImpl<ContractInfoMapper, Con
 
         //获取当前用户所属法人主体
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
-        List<Long> legalIds = (List<Long>)legalEntityByLegalName.getData();
+        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
-        IPage<ContractInfoVO> pageInfo = baseMapper.findContractInfoByPage(page, form,legalIds);
+        IPage<ContractInfoVO> pageInfo = baseMapper.findContractInfoByPage(page, form, legalIds);
         List<ContractInfoVO> contractInfoVOS = pageInfo.getRecords();
         List<ProductClassify> productBizs = productClassifyService.getEnableParentProductClassify(StatusEnum.ENABLE.getCode());//服务类型
         for (ContractInfoVO contractInfoVO : contractInfoVOS) {
@@ -72,6 +72,12 @@ public class ContractInfoServiceImpl extends ServiceImpl<ContractInfoMapper, Con
             queryWrapper.eq(key, value);
         }
         return baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<ContractInfo> getByCondition(ContractInfo contractInfo) {
+        QueryWrapper<ContractInfo> condition = new QueryWrapper<>(contractInfo);
+        return this.baseMapper.selectList(condition);
     }
 
 

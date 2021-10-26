@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.ContractQuotationDetailsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.ContractQuotationDetails">
+        <id column="id" property="id" />
+        <result column="sub_type" property="subType" />
+        <result column="type" property="type" />
+        <result column="starting_place" property="startingPlace" />
+        <result column="destination" property="destination" />
+        <result column="vehicle_size" property="vehicleSize" />
+        <result column="cost_code" property="costCode" />
+        <result column="unit_price" property="unitPrice" />
+        <result column="unit" property="unit" />
+        <result column="currency_code" property="currencyCode" />
+        <result column="cost_type_id" property="costTypeId" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="remarks" property="remarks" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sub_type, type, starting_place, destination, vehicle_size, cost_code, unit_price, unit, currency_code, cost_type_id, status, create_time, create_user, update_time, update_user, remarks
+    </sql>
+
+</mapper>

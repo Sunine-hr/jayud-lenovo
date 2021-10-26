@@ -30,7 +30,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -818,7 +821,7 @@ public class OrderComboxController {
                     map.put("data", objs);
                     break;
             }
-            if (map.size()>0){
+            if (map.size() > 0) {
                 maps.add(map);
             }
 
@@ -826,6 +829,47 @@ public class OrderComboxController {
         return CommonResult.success(maps);
     }
 
+    /**
+     * 下拉合同客户
+     *
+     * @return
+     */
+    @ApiOperation("下拉合同客户")
+    @PostMapping(value = "/initContractCustomer")
+    public CommonResult<List<InitComboxStrVO>> initContractCustomer() {
+        List<ContractInfo> list = this.contractInfoService.getByCondition(new ContractInfo().setType("0").setStatus(com.jayud.common.enums.StatusEnum.ENABLE.getCode() + ""));
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        for (ContractInfo contractInfo : list) {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setName(contractInfo.getName());
+            initComboxStrVO.setId(contractInfo.getBindId());
+            initComboxStrVOS.add(initComboxStrVO);
+        }
+        return CommonResult.success(initComboxStrVOS);
+    }
 
+    /**
+     * 下拉合同编号
+     *
+     * @return
+     */
+    @ApiOperation("下拉合同编号")
+    @PostMapping(value = "/initContractByCustomerId")
+    public CommonResult<List<InitComboxStrVO>> initContractByCustomerId(@RequestBody Map<String, Object> map) {
+        Long customerId = MapUtil.getLong(map, "customerId");
+        if (customerId == null) {
+            return CommonResult.error(400, "请选择客户");
+        }
+        List<ContractInfo> list = this.contractInfoService.getByCondition(new ContractInfo().setType("0").setStatus(com.jayud.common.enums.StatusEnum.ENABLE.getCode() + "")
+                .setBindId(customerId));
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        for (ContractInfo contractInfo : list) {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setName(contractInfo.getContractNo());
+            initComboxStrVO.setCode(contractInfo.getContractNo());
+            initComboxStrVOS.add(initComboxStrVO);
+        }
+        return CommonResult.success(initComboxStrVOS);
+    }
 }
 

@@ -34,11 +34,12 @@
             <if test="form.name!=null and form.name!=''">
                and name like concat('%',#{form.name},'%')
             </if>
-            <if test="form.addr!=null and form.addr!=''">
-               and addr like concat('%',#{form.addr},'%')
+            <if test="form.number!=null and form.number!=''">
+               and number like concat('%',#{form.number},'%')
             </if>
             and status in (1)
         </where>
+        order by id desc
     </select>
 
 </mapper>

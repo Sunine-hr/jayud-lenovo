@@ -1,12 +1,9 @@
 package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-
-import com.google.gson.JsonObject;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.OrderStatusEnum;
@@ -22,6 +19,7 @@ import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.IGpsPositioningService;
 import com.jayud.oms.service.ILogisticsTrackService;
 import com.jayud.oms.service.IOrderInfoService;
+import com.jayud.oms.service.IRegionCityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.SneakyThrows;
@@ -37,12 +35,10 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.connection.lettuce.DefaultLettucePool;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.spring.web.json.Json;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,10 +48,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * GPS管理 前端控制器
@@ -82,6 +76,8 @@ public class GPSController {
     private IGpsPositioningService gpsPositioningService;
     @Autowired
     private RedisUtils redisUtils;
+    @Autowired
+    private IRegionCityService regionCityService;
 
 //    @ApiOperation(value = "获取车辆实时定位")
 //    @PostMapping("/getPosition")
@@ -146,6 +142,32 @@ public class GPSController {
 //
 //        return CommonResult.success(positionVO);
 //    }
+
+    @ApiOperation(value = "根据地址获取高德经纬度")
+    @PostMapping("/getGaudeMapLoAndLaByAddr")
+    public CommonResult getGaudeMapLoAndLaByAddr(@RequestBody Map<String, Object> map) {
+        String addr = MapUtil.getStr(map, "addr");
+        Long province = MapUtil.getLong(map, "province");
+        Long city = MapUtil.getLong(map, "city");
+        Long area = MapUtil.getLong(map, "area");
+        if (StringUtils.isEmpty(addr)) {
+            return CommonResult.error(400, "请输入地址");
+        }
+        if (province != null) {
+            Map<Long, String> regionCityMap = regionCityService.list().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
+            addr = regionCityMap.get(province) + regionCityMap.get(city) + MapUtil.getStr(regionCityMap, "") + addr;
+        }
+
+        String response = httpURLConectionGET(addr);
+        if (StringUtils.isEmpty(response)) {
+            return CommonResult.error(400, "该地址无法搜索");
+        }
+        String[] split = response.split(",");
+        Map<String, Object> tmp = new HashMap<>();
+        tmp.put("latitude", split[1]);
+        tmp.put("longitude", split[0]);
+        return CommonResult.success(tmp);
+    }
 
     /**
      * 根据供应商获取实时位置返回对象
@@ -282,107 +304,6 @@ public class GPSController {
         return location1;
     }
 
-//    @ApiOperation(value = "获取车辆历史轨迹")
-//    @PostMapping("/getHistory")
-//    public CommonResult getHistory(@RequestBody Map<String, Object> map) {
-//
-//        Long mainOrderId = MapUtil.getLong(map, "mainOrderId");
-//        String classCode = MapUtil.getStr(map, "classCode");
-//        GetOrderDetailForm getOrderDetailForm = new GetOrderDetailForm();
-//        getOrderDetailForm.setMainOrderId(mainOrderId);
-//        getOrderDetailForm.setClassCode(classCode);
-//        InputOrderVO orderDetail = orderInfoService.getOrderDetail(getOrderDetailForm);
-//        InputOrderTransportVO orderTransportForm = orderDetail.getOrderTransportForm();
-//
-//        LogisticsTrack logisticsTrackByOrderIdAndStatusAndType = logisticsTrackService.getLogisticsTrackByOrderIdAndStatusAndType(orderTransportForm.getId(), orderTransportForm.getStatus(), 2);
-//        if (null == logisticsTrackByOrderIdAndStatusAndType) {
-//            return CommonResult.error(444, "该订单还没有确认派车");
-//        }
-//
-//
-//        String url = orderTransportForm.getGpsAddress();
-//        String urlParam = "";
-//        String[] split = historyAddress.split(",");
-//        for (String s : split) {
-//            String[] s1 = s.split("_");
-//            if (orderTransportForm.getDefaultSupplierCode().equals(s1[0])) {
-//                url = url + s1[1];
-//                urlParam = s;
-//                break;
-//            }
-//        }
-//        JSONObject params = new JSONObject();
-//        try {
-////            params.put("AccessToken", orderTransportForm.getAppKey());
-////            params.put("LicenceNumber",new String (orderTransportForm.getLicensePlate().getBytes(),"ISO-8859-1"));
-//////            params.put("Begin",logisticsTrackByOrderIdAndStatusAndType.getOperatorTime().toString().replace("T"," "));
-//////            params.put("End",endTime);
-////            params.put("Begin","2021-07-23 00:00:00");
-////            params.put("End","2021-07-23 23:59:59");
-//            params = this.getJsonObjectParam(urlParam, orderDetail);
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//
-//        log.warn("订单信息：" + orderDetail);
-//        log.warn("请求地址：" + url);
-//        log.warn("请求数据：" + params);
-//
-//        String post = Post(url, params);
-//        JSONObject jsonObject = JSON.parseObject(post);
-//
-////        System.out.println("jsonObject===="+jsonObject);
-////        JSONArray data = jsonObject.getJSONArray("Data");
-////
-////        List<HistoryVO> historyVOS = new ArrayList<>();
-////        List<List<Double>> lists = new ArrayList<>();
-////        if(data != null){
-////            for (int i = 0; i < data.size(); i++) {
-////                JSONObject json = data.getJSONObject(i);
-//////                HistoryVO historyVO = new HistoryVO();
-//////                historyVO.setAccState(json.getInteger("AccState"));
-//////                historyVO.setDirection(json.getInteger("Direction"));
-//////                String s = httpURLConvertGET(json.getDouble("Longitude").toString() + "," + json.getDouble("Latitude").toString());
-//////                String[] split1 = s.split(",");
-////                List<Double> list = new ArrayList<>();
-//////                list.add(split1[0]);
-//////                list.add(split1[1]);
-////                double[] doubles = GPSUtil.gps84_To_Gcj02( json.getDouble("Latitude"),json.getDouble("Longitude"));
-////                list.add(Double.valueOf(doubles[1]));
-////                list.add(Double.valueOf(doubles[0]));
-//////                historyVO.setReportTime(json.getString("ReportTime"));
-//////                historyVO.setSpeed(json.getDouble("Speed"));
-//////                historyVO.setStarkMileage(json.getDouble("StarkMileage"));
-////                lists.add(list);
-////            }
-////        }
-////
-////        List<OrderTakeAdrVO> orderTakeAdrVOS = ConvertUtil.convertList(orderTransportForm.getOrderTakeAdrForms1(), OrderTakeAdrVO.class);
-////        List<OrderTakeAdrVO> orderTakeAdrVOS1 = ConvertUtil.convertList(orderTransportForm.getOrderTakeAdrForms2(), OrderTakeAdrVO.class);
-////        for (OrderTakeAdrVO orderTakeAdrVO : orderTakeAdrVOS) {
-////            String s = httpURLConectionGET(orderTakeAdrVO.getAddress());
-////            String[] split1 = s.split(",");
-////            orderTakeAdrVO.setLatitude(Double.parseDouble(split1[1]));
-////            orderTakeAdrVO.setLongitude(Double.parseDouble(split1[0]));
-////        }
-////        for (OrderTakeAdrVO orderTakeAdrVO : orderTakeAdrVOS1) {
-////            String s = httpURLConectionGET(orderTakeAdrVO.getAddress());
-////            String[] split1 = s.split(",");
-////            orderTakeAdrVO.setLatitude(Double.parseDouble(split1[1]));
-////            orderTakeAdrVO.setLongitude(Double.parseDouble(split1[0]));
-////        }
-////
-////        HistoryPositionVO historyPositionVO = new HistoryPositionVO();
-////        historyPositionVO.setLists(lists);
-//////        historyPositionVO.setData(data);
-////        historyPositionVO.setOrderTakeAdrForms1(orderTakeAdrVOS);
-////        historyPositionVO.setOrderTakeAdrForms2(orderTakeAdrVOS1);
-//
-//        HistoryPositionVO historyPositionVO = this.getHistoryResult(urlParam, orderDetail, jsonObject);
-//        log.warn("响应数据：" + jsonObject);
-//
-//        return CommonResult.success(historyPositionVO);
-//    }
 
     /**
      * 高德地图通过地址获取经纬度
@@ -563,7 +484,7 @@ public class GPSController {
      */
     @ApiOperation(value = "根据供应商id，获取供应商所有车辆最后GPS定位坐标")
     @PostMapping("/getPositionBySupplierId")
-    public CommonResult getPositionBySupplierId(@RequestBody Map<String, Object> map){
+    public CommonResult getPositionBySupplierId(@RequestBody Map<String, Object> map) {
         Integer supplierId = MapUtil.getInt(map, "supplierId");
         List<GpsPositioning> gpsPositionings = gpsPositioningService.getPositionBySupplierId(supplierId);
         List<PositionVO> positionVOS = new ArrayList<>();

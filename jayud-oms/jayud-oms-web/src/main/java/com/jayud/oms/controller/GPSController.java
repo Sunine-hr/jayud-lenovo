@@ -1,5 +1,6 @@
 package com.jayud.oms.controller;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 
 import com.alibaba.fastjson.JSON;
@@ -581,6 +582,10 @@ public class GPSController {
             convert.setVehicleStatus(positioning.getVehicleStatus());//行驶里程
             positionVOS.add(convert);
         });
+
+        if(CollUtil.isEmpty(positionVOS)){
+            return CommonResult.error(-1, "该供应商下的车辆，暂无GPS坐标信息");
+        }
         return CommonResult.success(positionVOS);
     }
 

@@ -1071,15 +1071,20 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                 Map<String, Object> res = null;
 
                 if (CommonConstant.CAR_TAKE_GOODS.equals(form.getCmd())) {//车辆提货
-                    res = scmOrderService.setManifest(ScmOrderStatusEnum.ASSEMBLY_VEHICLE.getCode(), orderTransportTemp.getThirdPartyOrderNo());
+                    res = scmOrderService.setManifest(ScmOrderStatusEnum.ASSEMBLY_VEHICLE.getCode(),
+                            orderTransportTemp.getThirdPartyOrderNo());
                     if (MapUtil.getInt(res, "code") != 0) {
                         logger.warn("推送订单状态到供应链失败，原因：{}", res.get("msg"));
                     }
-                    res = scmOrderService.setManifest(ScmOrderStatusEnum.DEPART_VEHICLE.getCode(), orderTransportTemp.getThirdPartyOrderNo());
-                } else if (CommonConstant.CAR_GO_CUSTOMS.equals(form.getCmd())) {//车辆通关
-                    res = scmOrderService.setManifest(ScmOrderStatusEnum.THROUGH_CUSTOMS.getCode(), orderTransportTemp.getThirdPartyOrderNo());
+                    res = scmOrderService.setManifest(ScmOrderStatusEnum.DEPART_VEHICLE.getCode(),
+                            orderTransportTemp.getThirdPartyOrderNo());
+                } else if (CommonConstant.CAR_GO_CUSTOMS.equals(form.getCmd()) &&
+                        form.getStatus().equals(OrderStatusEnum.TMS_T_9.getCode())) {//车辆通关
+                    res = scmOrderService.setManifest(ScmOrderStatusEnum.THROUGH_CUSTOMS.getCode(),
+                            orderTransportTemp.getThirdPartyOrderNo());
                 } else if (CommonConstant.CONFIRM_SIGN_IN.equals(form.getCmd())) {//确认签收
-                    res = scmOrderService.setManifest(ScmOrderStatusEnum.ARRIVED.getCode(), orderTransportTemp.getThirdPartyOrderNo());
+                    res = scmOrderService.setManifest(ScmOrderStatusEnum.ARRIVED.getCode(),
+                            orderTransportTemp.getThirdPartyOrderNo());
                 }
 
                 if (res != null && MapUtil.getInt(res, "code") != 0) {

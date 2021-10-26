@@ -39,7 +39,7 @@ public class ShiroConfig {
     private int port = 6379;
     private String password;
     private Duration timeout;
-    private int sessionTimeout = 3600*24;
+    private int sessionTimeout = 3600*2; // 2小时
 
     /**
      * Filter工厂，设置对应的过滤条件和跳转条件

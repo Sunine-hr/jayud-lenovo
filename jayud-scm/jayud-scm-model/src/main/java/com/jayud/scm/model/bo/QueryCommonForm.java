@@ -51,6 +51,13 @@ public class QueryCommonForm extends BasePageForm{
     private String truckNo;
 
 
+    //提交单一窗口
+    @ApiModelProperty(value = "报关合同号")
+    private String billNo;
+
+    @ApiModelProperty(value = "关联关检号")
+    private String seqNo;
+
     //报关日期录入
     @ApiModelProperty(value = "报关日期")
     private String customsDate;
@@ -111,5 +118,6 @@ public class QueryCommonForm extends BasePageForm{
 
     @ApiModelProperty(value = "用户名")
     private String userName;
+
 
 }

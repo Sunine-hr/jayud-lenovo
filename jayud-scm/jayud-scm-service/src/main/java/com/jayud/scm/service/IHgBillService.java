@@ -7,6 +7,7 @@ import com.jayud.scm.model.po.HgBill;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.HgBillVO;
 import com.jayud.scm.model.vo.HubShippingVO;
+import com.jayud.scm.model.vo.SingleWindowData;
 
 import java.util.List;
 
@@ -28,4 +29,5 @@ public interface IHgBillService extends IService<HgBill> {
 
     Integer addHgBill(Integer bookingId);
 
+    SingleWindowData getSingleWindowData(QueryCommonForm form);
 }

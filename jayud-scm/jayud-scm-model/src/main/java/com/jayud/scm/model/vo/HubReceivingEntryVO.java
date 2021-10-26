@@ -137,15 +137,6 @@ public class HubReceivingEntryVO {
     @ApiModelProperty(value = "入库明细状态(0：待验货，1：已验货，2：验货异常，3：已复核，4：已入库)")
     private BigDecimal stateFlag;
 
-    @ApiModelProperty(value = "在线id")
-    private String onlId;
-
-    @ApiModelProperty(value = "在线编号")
-    private String onlNo;
-
-    @ApiModelProperty(value = "是否同步在线")
-    private BigDecimal isOnl;
-
     @ApiModelProperty(value = "备注")
     private String remark;
 

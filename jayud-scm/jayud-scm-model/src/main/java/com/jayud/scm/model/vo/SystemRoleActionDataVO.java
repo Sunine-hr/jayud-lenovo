@@ -32,6 +32,9 @@ public class SystemRoleActionDataVO {
     @ApiModelProperty(value = "角色ID")
     private Integer roleId;
 
+    @ApiModelProperty(value = "角色名称")
+    private Integer name;
+
     @ApiModelProperty(value = "权限ID")
     private Integer actionId;
 
@@ -40,6 +43,9 @@ public class SystemRoleActionDataVO {
 
     @ApiModelProperty(value = "菜单CODE")
     private String menuCode;
+
+    @ApiModelProperty(value = "菜单名称")
+    private String title;
 
     @ApiModelProperty(value = "权限类型（0无权限，1个人权限，2团队权限，3所有数据权限）")
     private Integer dateType;

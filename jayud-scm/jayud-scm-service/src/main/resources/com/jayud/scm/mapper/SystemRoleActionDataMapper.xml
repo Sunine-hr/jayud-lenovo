@@ -38,7 +38,7 @@
         from system_role_action_data sra
         left join system_role sr on sra.role_id = sr.id
         left join system_menu sm on sra.action_id = sm.id
-        where srac.voided = 0
+        where sra.voided = 0
         <if test="form.key != null and form.key != ''">
             and
             <if test="form.key == 'action_code' ">

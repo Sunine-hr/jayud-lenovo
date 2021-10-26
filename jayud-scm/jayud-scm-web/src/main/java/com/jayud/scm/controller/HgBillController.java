@@ -6,6 +6,7 @@ import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.BookingOrder;
 import com.jayud.scm.model.vo.HgBillVO;
 import com.jayud.scm.model.vo.HubShippingVO;
+import com.jayud.scm.model.vo.SingleWindowData;
 import com.jayud.scm.service.IBookingOrderService;
 import com.jayud.scm.service.IHgBillService;
 import io.swagger.annotations.Api;
@@ -61,6 +62,26 @@ public class HgBillController {
         if(!update){
             return CommonResult.error(444,"报关单号日期录入操作失败");
         }
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "获取推送单一窗口的数据")
+    @PostMapping(value = "/getSingleWindowData")
+    public CommonResult getSingleWindowData(@RequestBody QueryCommonForm form) {
+        SingleWindowData singleWindowData = hgBillService.getSingleWindowData(form);
+        return CommonResult.success(singleWindowData);
+    }
+
+
+    @ApiOperation(value = "提交单一窗口")
+    @PostMapping(value = "/submitSingleWindow")
+    public CommonResult submitSingleWindow(@RequestBody QueryCommonForm form) {
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "修改状态或者报关数据")
+    @PostMapping(value = "/updateHgBill")
+    public CommonResult updateHgBill(@RequestBody QueryCommonForm form) {
         return CommonResult.success();
     }
 

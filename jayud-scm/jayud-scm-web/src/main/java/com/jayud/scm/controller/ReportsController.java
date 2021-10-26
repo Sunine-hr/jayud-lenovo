@@ -72,7 +72,7 @@ public class ReportsController {
         stringBuffer.append(rptPath).append("?");
 
         stringBuffer.append(paraStr).append("="+form.getRecordId());
-        return CommonResult.success(stringBuffer.substring(0,stringBuffer.length()-1));
+        return CommonResult.success(stringBuffer);
     }
 
 }

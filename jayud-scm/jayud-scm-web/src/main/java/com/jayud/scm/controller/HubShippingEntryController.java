@@ -1,7 +1,9 @@
 package com.jayud.scm.controller;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonPageResult;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -86,27 +89,40 @@ public class HubShippingEntryController {
     public CommonResult<List<BookingOrderEntryVO>> getHubShippingEntryList(@RequestBody Map<String,Object> map) {
         Integer shippingId = MapUtil.getInt(map, "shippingId");
         Integer bookingId = MapUtil.getInt(map, "bookingId");
-        List<BookingOrderEntryVO> bookingOrderEntryByBookingId = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingId);
-        List<HubShippingEntry> shippingEntryByShippingId = hubShippingEntryService.getShippingEntryByShippingId(shippingId.longValue());
-        for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryByBookingId) {
-            for (HubShippingEntry hubShippingEntry : shippingEntryByShippingId) {
-                if(bookingOrderEntryVO.getId().equals(hubShippingEntry.getBookingEntryId())){
-                    if(bookingOrderEntryVO.getQty().compareTo(hubShippingEntry.getQty()) == -1){
-                        bookingOrderEntryVO.setQty(bookingOrderEntryVO.getQty().subtract(hubShippingEntry.getQty()));
-                        bookingOrderEntryVO.setPackages(bookingOrderEntryVO.getPackages().subtract(BigDecimal.valueOf(hubShippingEntry.getPackages())));
-                        bookingOrderEntryVO.setGw(bookingOrderEntryVO.getGw().subtract(hubShippingEntry.getGw()));
-                        bookingOrderEntryVO.setNw(bookingOrderEntryVO.getNw().subtract(hubShippingEntry.getNw()));
-                        bookingOrderEntryVO.setCbm(bookingOrderEntryVO.getCbm().subtract(hubShippingEntry.getCbm()));
-                    }else{
-                        bookingOrderEntryByBookingId.remove(bookingOrderEntryVO);
-                    }
+        if(ObjectUtil.isEmpty(bookingId)){
+            return CommonResult.error(-1,"委托单id不能为空");
+        }
+        List<BookingOrderEntryVO> bookingOrderEntryList = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingId);
+
+        List<BookingOrderEntryVO> bookingOrderEntryList1 = new ArrayList<>();
+        for (int i = 0; i < bookingOrderEntryList.size(); i++) {
+            BookingOrderEntryVO bookingOrderEntryVO = bookingOrderEntryList.get(i);
+            List<HubShippingEntry> hubShippingEntries = hubShippingEntryService.getShippingEntryByBookingEntryId(bookingOrderEntryVO.getId());
+            if(CollectionUtil.isNotEmpty(hubShippingEntries)){
+                HubShippingEntry hubShippingEntry1 = new HubShippingEntry();
+                for (HubShippingEntry hubShippingEntry : hubShippingEntries) {
+                    hubShippingEntry1.setQty((hubShippingEntry1.getQty()!=null ?hubShippingEntry1.getQty():new BigDecimal(0)).add(hubShippingEntry.getQty()!=null ?hubShippingEntry.getQty():new BigDecimal(0)));
+                    hubShippingEntry1.setCbm((hubShippingEntry1.getCbm()!=null ?hubShippingEntry1.getCbm():new BigDecimal(0)).add(hubShippingEntry.getCbm()!=null ?hubShippingEntry.getCbm():new BigDecimal(0)));
+                    hubShippingEntry1.setGw((hubShippingEntry1.getGw()!=null ?hubShippingEntry1.getGw():new BigDecimal(0)).add(hubShippingEntry.getGw()!=null ?hubShippingEntry.getGw():new BigDecimal(0)));
+                    hubShippingEntry1.setNw((hubShippingEntry1.getNw()!=null ?hubShippingEntry1.getNw():new BigDecimal(0)).add(hubShippingEntry.getNw()!=null ?hubShippingEntry.getNw():new BigDecimal(0)));
+                }
+
+                if(hubShippingEntry1.getQty().compareTo(bookingOrderEntryVO.getQty()) > -1){
+                    continue;
+                }else{
+                    bookingOrderEntryVO.setQty(bookingOrderEntryVO.getQty().subtract(hubShippingEntry1.getQty()));
+                    bookingOrderEntryVO.setNw((bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0)).subtract(hubShippingEntry1.getNw()));
+                    bookingOrderEntryVO.setCbm((bookingOrderEntryVO.getCbm()!=null ?bookingOrderEntryVO.getCbm():new BigDecimal(0)).subtract(hubShippingEntry1.getCbm()));
+                    bookingOrderEntryVO.setGw((bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0)).subtract(hubShippingEntry1.getGw()));
                 }
             }
-            if(CollectionUtils.isEmpty(bookingOrderEntryByBookingId)){
-                return CommonResult.success();
-            }
+            bookingOrderEntryVO.setBookingEntryId(bookingOrderEntryVO.getId());
+            bookingOrderEntryList1.add(bookingOrderEntryVO);
         }
-        return CommonResult.success(bookingOrderEntryByBookingId);
+        if(org.springframework.util.CollectionUtils.isEmpty(bookingOrderEntryList1)){
+            return CommonResult.success();
+        }
+        return CommonResult.success(bookingOrderEntryList1);
     }
 }
 

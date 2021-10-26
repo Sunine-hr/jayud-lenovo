@@ -8,11 +8,9 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.TableEnum;
+import com.jayud.scm.model.po.FeeModel;
 import com.jayud.scm.model.po.SystemUser;
-import com.jayud.scm.model.vo.CustomerAgreementVO;
-import com.jayud.scm.model.vo.CustomerRelationerVO;
-import com.jayud.scm.model.vo.FeeModelVO;
-import com.jayud.scm.model.vo.FeeVO;
+import com.jayud.scm.model.vo.*;
 import com.jayud.scm.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -103,6 +101,7 @@ FeeModelController {
     public CommonResult approveSettlementScheme(@RequestBody PermissionForm form) {
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
+        FeeModel feeModel = feeModelService.getById(form.getId());
         List<FeeVO> fee = feeService.getFeeVOByFeeModelId(form.getId());
         if(CollectionUtils.isEmpty(fee)){
             return CommonResult.error(444,"该结算方案没有结算条款，无法进行审核");
@@ -111,7 +110,21 @@ FeeModelController {
             if(CollectionUtils.isEmpty(feeVO.getFeeListVOS())){
                 return CommonResult.error(444,"该结算条款没有设置结算公式，无法进行审核");
             }
+            if(feeModel.getModelType().equals(2)){
+                int count = 0;
+                for (FeeListVO feeListVO : feeVO.getFeeListVOS()) {
+                    if(feeListVO.getFeeAlias().equals("代理费")){
+                        count++;
+                    }
+                }
+                if(count<1){
+                    return CommonResult.error(444,"出口的结算方案，没有代理费的结算公式，无法审核");
+                }
+            }
+
         }
+
+
 
         form.setTable(TableEnum.getDesc(form.getKey()));
         form.setUserId(systemUser.getId().intValue());
@@ -120,4 +133,5 @@ FeeModelController {
     }
 
 }
+
 

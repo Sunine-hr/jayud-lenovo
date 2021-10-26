@@ -329,6 +329,7 @@
         oi.`is_data_all` isDataAll,
         oi.`status` status,
         oi.legal_entity_id legalEntityId,
+        oi.create_user_type createUserType,
         ci.id customerId,
         oi.operation_time
         FROM

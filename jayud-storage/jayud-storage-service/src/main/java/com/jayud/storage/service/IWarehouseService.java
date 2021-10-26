@@ -29,4 +29,18 @@ public interface IWarehouseService extends IService<Warehouse> {
     void saveWarehouse(SaveWarehouseForm form);
 
     WarehouseVO findWarehouseById(Long id);
+
+    /**
+     * 下拉启用的仓库
+     * @param name
+     * @return
+     */
+    List<Warehouse> initEnableWarehouse(String name);
+
+    /**
+     * 根据id查询仓库名称
+     * @param id
+     * @return
+     */
+    Warehouse findWarehouseNameById(Long id);
 }

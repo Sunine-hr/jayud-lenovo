@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.PlatformMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.Platform">
+        <id column="id" property="id" />
+        <result column="platform_code" property="platformCode" />
+        <result column="platform_name" property="platformName" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="camera_url" property="cameraUrl" />
+        <result column="remarks" property="remarks" />
+        <result column="create_time" property="createTime" />
+        <result column="created_user" property="createdUser" />
+        <result column="up_time" property="upTime" />
+        <result column="up_user" property="upUser" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, platform_code, platform_name, warehouse_id, warehouse_name, camera_url, remarks, create_time, created_user, up_time, up_user
+    </sql>
+
+    <select id="findPlatformByPage" parameterType="com.jayud.oms.model.bo.QueryPlatformForm"
+            resultType="com.jayud.oms.model.vo.PlatformVO">
+        select id, platform_code, platform_name, warehouse_name, camera_url, platform_status, remarks,
+        create_time, created_user, up_time, up_user,
+        (
+        case platform_status
+        when 1 then '排版中'
+        when 2 then '使用中'
+        when 0 then '空闲中'
+        end
+        ) as platformStatusDesc
+        from platform
+        <where>
+            <if test="form.platformName != null and form.platformName != ''">
+                and platform_name like concat('%',#{form.platformName},'%')
+            </if>
+            <if test="form.warehouseName != null and form.warehouseName != ''">
+                and warehouse_name like concat('%',#{form.warehouseName},'%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="getLastCodeByCreateTime" parameterType="java.util.HashMap"
+            resultType="java.util.HashMap">
+        select platform_code as code from platform where date_format(create_time,'%Y%m%d') = #{curDate} order by create_time desc limit 1
+    </select>
+
+    <select id="getPlatformDetails" parameterType="java.util.HashMap"
+            resultType="com.jayud.oms.model.vo.PlatformDetailsVO">
+        select id, platform_code, platform_name, warehouse_id, warehouse_name, camera_url, platform_status, remarks, create_time, created_user, up_time, up_user
+        from platform where id = #{id}
+    </select>
+
+</mapper>

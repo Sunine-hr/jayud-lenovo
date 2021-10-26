@@ -4,6 +4,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -17,12 +18,14 @@ import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.LogisticsTrackVO;
 import com.jayud.common.enums.*;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.feign.*;
 import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.*;
+import com.jayud.tms.model.enums.ScmOrderStatusEnum;
 import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
@@ -31,16 +34,17 @@ import com.jayud.tms.model.vo.supplier.QuerySupplierBill;
 import com.jayud.tms.model.vo.supplier.QuerySupplierBillInfo;
 import com.jayud.tms.model.vo.supplier.SupplierBill;
 import com.jayud.tms.model.vo.supplier.SupplierBillInfo;
-import com.jayud.tms.service.IDeliveryAddressService;
-import com.jayud.tms.service.IOrderSendCarsService;
-import com.jayud.tms.service.IOrderTakeAdrService;
-import com.jayud.tms.service.IOrderTransportService;
+import com.jayud.tms.service.*;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -70,6 +74,8 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     IOrderTransportService orderTransportService;
     @Autowired
     IOrderSendCarsService orderSendCarsService;
+    @Autowired
+    IScmOrderService scmOrderService;
     @Autowired
     OmsClient omsClient;
     @Autowired
@@ -980,6 +986,179 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         return inputOrderTransportVO;
     }
 
+    /**
+     * 根据登录用户查询客户名称
+     */
+    @Override
+    public JSONObject getCustomerInfoByLoginUserName() {
+        String user = UserOperator.getToken();
+        if (StringUtils.isEmpty(user)) {
+            log.warn("查询不到用户信息");
+            throw new JayudBizException("查询不到用户信息");
+        }
+        //查询客户id
+        ApiResult result = this.oauthClient.getSystemUserByName(user);
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("远程调用查询用户信息失败 message=" + result.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        JSONObject systemUser = JSONUtil.parseObj(result.getData());
+        Long companyId = systemUser.getLong("companyId");
+
+        result = omsClient.getCustomerInfoVOById(companyId);
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("远程调用查询客户信息失败 message=" + result.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        JSONObject customerInfo = JSONUtil.parseObj(result.getData());
+        return customerInfo;
+    }
+
+    /**
+     * 根据第三方订单号查询中港订单信息
+     * @param thirdPartyOrderNo
+     * @return
+     */
+    @Override
+    public OutOrderTransportVO getOutOrderTransportVOByThirdPartyOrderNo(String thirdPartyOrderNo) {
+        QueryWrapper<OrderTransport> condition = new QueryWrapper<>();
+        condition.lambda().select(OrderTransport::getMainOrderNo, OrderTransport::getId, OrderTransport::getOrderNo).in(OrderTransport::getThirdPartyOrderNo, thirdPartyOrderNo);
+        OrderTransport orderTransport = this.getOne(condition, false);
+        if (orderTransport == null) {
+            return null;
+        }
+
+        OutOrderTransportVO outOrderTransportVO = ConvertUtil.convert(orderTransport, OutOrderTransportVO.class);
+        if (outOrderTransportVO == null) {
+            return null;
+        }
+
+        //查询主订单信息
+        ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(orderTransport.getMainOrderNo()));
+        if (result == null) {
+            return null;
+        }
+
+        JSONArray mainOrders = new JSONArray(JSON.toJSONString(result.getData()));
+        JSONObject json = mainOrders.getJSONObject(0);
+        outOrderTransportVO.setMainOrderNo(json.getStr("orderNo"));
+        outOrderTransportVO.setMainOrderId(json.getLong("id"));
+
+        return outOrderTransportVO;
+    }
+
+    /**
+     * 推送订单状态到供应链
+     * @param orderTransport
+     * @param form
+     * @param isRetry
+     */
+    @Override
+    public void pushManifest(OrderTransport orderTransport, OprStatusForm form, boolean isRetry) {
+        Integer createUserTypeById = orderTransportService.getCreateUserTypeById(orderTransport.getId());
+        if (createUserTypeById != CreateUserTypeEnum.SCM.getCode()) {
+            return;
+        }
+        if (isRetry) {
+            scmOrderService.refreshToken();
+        }
+        try {
+            OrderTransport orderTransportTemp = this.getOne(new QueryWrapper<OrderTransport>().lambda()
+                    .select(OrderTransport::getThirdPartyOrderNo)
+                    .eq(OrderTransport::getId, orderTransport.getId()));
+
+            new Thread(() -> {
+                Map<String, Object> res = null;
+
+                if (CommonConstant.CAR_TAKE_GOODS.equals(form.getCmd())) {//车辆提货
+                    res = scmOrderService.setManifest(ScmOrderStatusEnum.ASSEMBLY_VEHICLE.getCode(),
+                            orderTransportTemp.getThirdPartyOrderNo());
+                    if (MapUtil.getInt(res, "code") != 0) {
+                        logger.warn("推送订单状态到供应链失败，原因：{}", res.get("msg"));
+                    }
+                    res = scmOrderService.setManifest(ScmOrderStatusEnum.DEPART_VEHICLE.getCode(),
+                            orderTransportTemp.getThirdPartyOrderNo());
+                } else if (CommonConstant.CAR_GO_CUSTOMS.equals(form.getCmd()) &&
+                        form.getStatus().equals(OrderStatusEnum.TMS_T_9.getCode())) {//车辆通关
+                    res = scmOrderService.setManifest(ScmOrderStatusEnum.THROUGH_CUSTOMS.getCode(),
+                            orderTransportTemp.getThirdPartyOrderNo());
+                } else if (CommonConstant.CONFIRM_SIGN_IN.equals(form.getCmd())) {//确认签收
+                    res = scmOrderService.setManifest(ScmOrderStatusEnum.ARRIVED.getCode(),
+                            orderTransportTemp.getThirdPartyOrderNo());
+                }
+
+                if (res != null && MapUtil.getInt(res, "code") != 0) {
+                    logger.warn("推送订单状态到供应链失败，原因：{}", res.get("msg"));
+                }
+
+            }).start();
+        } catch(Exception e){
+            e.printStackTrace();
+            logger.warn("推送订单状态到供应链失败，原因：{}", e.getMessage());
+        }
+    }
+
+    /**
+     * 推送运输公司信息到供应链
+     * @param orderTransport
+     * @param form
+     */
+    @Async
+    @Override
+    public void pushTransportationInformation(OrderTransport orderTransport, SendCarForm form) {
+        Integer createUserTypeById = orderTransportService.getCreateUserTypeById(orderTransport.getId());
+        if (createUserTypeById != CreateUserTypeEnum.SCM.getCode() ||
+                !CommonConstant.SEND_CAR.equals(form.getCmd()) ) {
+            return;
+        }
+
+        try {
+            OrderTransport orderTransportTemp = this.getOne(new QueryWrapper<OrderTransport>().lambda()
+                    .select(OrderTransport::getLegalName, OrderTransport::getThirdPartyOrderNo)
+                    .eq(OrderTransport::getId, orderTransport.getId()));
+
+            ScmTransportationInformationForm scmTransportationInformationForm = new ScmTransportationInformationForm();
+            scmTransportationInformationForm.setTruckNo(orderTransportTemp.getThirdPartyOrderNo());
+
+            //司机信息
+            ApiResult driver = this.omsClient.getDriverById(form.getDriverInfoId());
+            JSONObject driverObject = new JSONObject(driver.getData());
+            scmTransportationInformationForm.setDriverName(driverObject.getStr("name"));
+            scmTransportationInformationForm.setDriverTel(driverObject.getStr("phone"));
+            // 车辆
+            ApiResult vehicleInfo = omsClient.getVehicleInfoById(form.getVehicleId());
+            JSONObject vehicleInfoObject = new JSONObject(vehicleInfo.getData());
+            scmTransportationInformationForm.setHkTruckNo(vehicleInfoObject.getStr("hkNumber"));
+            scmTransportationInformationForm.setCnTruckNo(vehicleInfoObject.getStr("plateNumber"));
+
+            // 直接传法人主体名称，对于供应链来说车辆供应商是物流科技
+            scmTransportationInformationForm.setTruckCompany(orderTransportTemp.getLegalName());
+
+            new Thread(() -> {
+                Map<String, Object> res = scmOrderService.acceptTransportationInformation(scmTransportationInformationForm);
+                if (MapUtil.getInt(res, "code") != 0) {
+                    logger.warn("推送运输公司消息到供应链失败，原因：{}", res.get("msg"));
+                }
+            }).start();
+
+        } catch(Exception e){
+            e.printStackTrace();
+            logger.warn("推送运输公司消息到供应链失败，原因：{}", e.getMessage());
+        }
+    }
+
+    /**
+     * 获取创建人的类型
+     * @param id
+     * @return
+     */
+    @Override
+    public Integer getCreateUserTypeById(Long id) {
+        OrderTransport orderTransport = this.getOne(new QueryWrapper<OrderTransport>().lambda()
+                .select(OrderTransport::getCreateUserType)
+                .eq(OrderTransport::getId, id));
+        return orderTransport.getCreateUserType();
+    }
     @Override
     public List<OrderTransportVO> getOrderTransportList(String pickUpTimeStart, String pickUpTimeEnd, String orderNo) {
         return baseMapper.getOrderTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);

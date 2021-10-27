@@ -1,14 +1,15 @@
-package com.jayud.oms.model.po;
+package com.jayud.oms.model.vo;
 
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import java.time.LocalDateTime;
-import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -22,12 +23,12 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="ContractQuotationDetails对象", description="合同报价详情")
-public class ContractQuotationDetails extends Model<ContractQuotationDetails> {
+public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO> {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键")
-      private Long id;
+    private Long id;
 
     @ApiModelProperty(value = "子订单类型")
     private String subType;

@@ -3,6 +3,7 @@ package com.jayud.oms.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
@@ -39,10 +40,13 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
     private String number;
 
     @ApiModelProperty(value = "客户id")
-    private String customerId;
+    private Long customerId;
 
     @ApiModelProperty(value = "合同编号")
     private List<String> contractNos;
+
+    @ApiModelProperty(value = "合同编号")
+    private String contractNo;
 
     @ApiModelProperty(value = "报价名称")
     private String name;
@@ -60,6 +64,15 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
         System.out.println(Utilities.printCheckCode(AddContractQuotationForm.class));
     }
 
+    public void setContractNos(List<String> contractNos) {
+        this.contractNos = contractNos;
+        StringBuilder sb = new StringBuilder();
+        contractNos.forEach(e -> {
+            sb.append(e).append(",");
+        });
+        contractNo = sb.toString();
+    }
+
     @Override
     protected Serializable pkVal() {
         return this.id;
@@ -69,7 +82,7 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
         if (StringUtils.isEmpty(number)) {
             throw new JayudBizException(400, "报价编号不能为空");
         }
-        if (StringUtils.isEmpty(customerId)) {
+        if (customerId == null) {
             throw new JayudBizException(400, "客户不能为空");
         }
         if (StringUtils.isEmpty(name)) {
@@ -82,7 +95,10 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
             throw new JayudBizException(400, "有效结束时间不能为空");
         }
         if (tmsDetails != null) {
-            tmsDetails.forEach(AddContractQuotationDetailsForm::checkParam);
+            tmsDetails.forEach(e -> {
+                e.setSubType(SubOrderSignEnum.ZGYS.getSignOne());
+                e.checkParam();
+            });
         }
 
     }

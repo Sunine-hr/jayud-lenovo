@@ -4,25 +4,45 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.ContractQuotation">
-        <id column="id" property="id" />
-        <result column="number" property="number" />
-        <result column="customer_code" property="customerCode" />
-        <result column="contract_no" property="contractNo" />
-        <result column="name" property="name" />
-        <result column="start_time" property="startTime" />
-        <result column="end_time" property="endTime" />
-        <result column="audit_status" property="auditStatus" />
-        <result column="status" property="status" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="remarks" property="remarks" />
+        <id column="id" property="id"/>
+        <result column="number" property="number"/>
+        <result column="customer_code" property="customerCode"/>
+        <result column="contract_no" property="contractNo"/>
+        <result column="name" property="name"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="remarks" property="remarks"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, number, customer_code, contract_no, name, start_time, end_time, audit_status, status, create_time, create_user, update_time, update_user, remarks
     </sql>
+    <select id="findByPage" resultType="com.jayud.oms.model.vo.ContractQuotationVO">
+        select
+        cq.id, cq.number, cq.customer_code,
+        cq.contract_no, cq.name, cq.start_time,
+        cq.end_time, cq.audit_status, cq.status,
+        cq.create_time, cq.create_user,
+        ci.name customerName
+        from
+        contract_quotation cq
+        left join customer_info ci on cq.customer_code=ci.id_code
+        <where>
+            <if test="form.name !=null and form.name !=''">
+                and cq.name like concat('%',#{form.name},'%')
+            </if>
+            <if test="form.customerName != null and form.customerName!=''">
+                and ci.name like concat('%',#{form.customerName},'%')
+            </if>
+            and cq.status in (1)
+        </where>
+    </select>
 
 </mapper>

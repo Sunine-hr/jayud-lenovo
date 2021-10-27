@@ -1,7 +1,12 @@
 package com.jayud.oms.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.oms.model.bo.QueryContractQuotationForm;
 import com.jayud.oms.model.po.ContractQuotation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.oms.model.vo.ContractQuotationVO;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -13,4 +18,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface ContractQuotationMapper extends BaseMapper<ContractQuotation> {
 
+    IPage<ContractQuotationVO> findByPage(@Param("page") Page<ContractQuotation> page, @Param("form") QueryContractQuotationForm form);
 }

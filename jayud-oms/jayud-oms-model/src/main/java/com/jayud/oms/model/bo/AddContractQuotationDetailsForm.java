@@ -33,7 +33,10 @@ public class AddContractQuotationDetailsForm extends Model<AddContractQuotationD
     private Long id;
 
     @ApiModelProperty(value = "子订单类型")
-    private String subType = SubOrderSignEnum.ZGYS.getSignOne();
+    private String subType ;
+
+    @ApiModelProperty(value = "合同报价id")
+    private Long contractQuotationId;
 
     @ApiModelProperty(value = "类型(1:整车 2:其他)")
     private Integer type;
@@ -62,8 +65,23 @@ public class AddContractQuotationDetailsForm extends Model<AddContractQuotationD
     @ApiModelProperty(value = "费用类别(作业环节)")
     private Long costTypeId;
 
+    @ApiModelProperty(value = "标识某些字段不能不修改")
+    private Boolean disable;
+
     public static void main(String[] args) {
         System.out.println(Utilities.printCheckCode(AddContractQuotationDetailsForm.class));
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+        switch (type) {
+            case 1:
+                disable = false;
+                break;
+            case 2:
+                disable = true;
+                break;
+        }
     }
 
     @Override
@@ -74,13 +92,17 @@ public class AddContractQuotationDetailsForm extends Model<AddContractQuotationD
     public void checkParam() {
         if (type == null) {
             throw new JayudBizException(400, "类型不能为空");
+        } else {
+            switch (type) {
+                case 1:
+                    if (StringUtils.isEmpty(startingPlace)) throw new JayudBizException(400, "起始地不能为空");
+                    if (StringUtils.isEmpty(destination)) throw new JayudBizException(400, "目的地不能为空");
+                    if (StringUtils.isEmpty(vehicleSize)) throw new JayudBizException(400, "车型尺寸不能为空");
+                    break;
+            }
+
         }
-        if (StringUtils.isEmpty(startingPlace)) {
-            throw new JayudBizException(400, "起始地不能为空");
-        }
-        if (StringUtils.isEmpty(destination)) {
-            throw new JayudBizException(400, "目的地不能为空");
-        }
+
         if (StringUtils.isEmpty(vehicleSize)) {
             throw new JayudBizException(400, "车型不能为空");
         }

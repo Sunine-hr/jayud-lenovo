@@ -218,9 +218,8 @@ public interface IOrderTransportService extends IService<OrderTransport> {
     /**
      * 推送运输公司信息到供应链
      * @param orderTransport
-     * @param form
      */
-    void pushTransportationInformation(OrderTransport orderTransport, SendCarForm form);
+    void pushTransportationInformation(OrderTransport orderTransport);
 
     /**
      * 获取创建人的类型

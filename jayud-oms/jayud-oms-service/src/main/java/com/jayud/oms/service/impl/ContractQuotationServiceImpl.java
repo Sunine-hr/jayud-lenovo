@@ -14,10 +14,10 @@ import com.jayud.oms.model.bo.AddContractQuotationForm;
 import com.jayud.oms.model.bo.QueryContractQuotationForm;
 import com.jayud.oms.model.po.ContractQuotation;
 import com.jayud.oms.model.po.ContractQuotationDetails;
+import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.vo.ContractQuotationVO;
-import com.jayud.oms.service.IContractQuotationDetailsService;
-import com.jayud.oms.service.IContractQuotationService;
-import com.jayud.oms.service.ICustomerInfoService;
+import com.jayud.oms.model.vo.InitComboxVO;
+import com.jayud.oms.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +43,8 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
     private ICustomerInfoService customerInfoService;
     @Autowired
     private IContractQuotationDetailsService contractQuotationDetailsService;
+    @Autowired
+    private ICostInfoService costInfoService;
 
     @Override
     @Transactional
@@ -56,6 +58,9 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
             contractQuotation.setCreateTime(LocalDateTime.now()).setCreateUser(UserOperator.getToken());
 
         } else {
+            if (form.getAuditStatus().equals(1)) {
+                throw new JayudBizException(400, "已审核的信息无法修改,请进行反审核");
+            }
             contractQuotation.setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
         }
         this.saveOrUpdate(contractQuotation);
@@ -110,5 +115,17 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
     public IPage<ContractQuotationVO> findByPage(QueryContractQuotationForm form) {
         Page<ContractQuotation> page = new Page<>(form.getPageNum(), form.getPageSize());
         return this.baseMapper.findByPage(page, form);
+    }
+
+    @Override
+    public ContractQuotationVO getEditInfoById(Long id) {
+        ContractQuotation contractQuotation = this.getById(id);
+        ContractQuotationVO tmp = ConvertUtil.convert(contractQuotation, ContractQuotationVO.class);
+        CustomerInfo customerInfo = customerInfoService.getByCode(tmp.getCustomerCode());
+        tmp.setCustomerId(customerInfo.getId());
+        List<ContractQuotationDetails> details = this.contractQuotationDetailsService.getByCondition(new ContractQuotationDetails().setStatus(StatusEnum.ENABLE.getCode()).setContractQuotationId(id));
+        Map<String, List<InitComboxVO>> costType = this.costInfoService.initCostTypeByCostInfoCode();
+        tmp.assembleDetails(details, costType);
+        return tmp;
     }
 }

@@ -57,6 +57,9 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
     @ApiModelProperty(value = "有效结束时间")
     private LocalDate endTime;
 
+    @ApiModelProperty(value = "审核状态(1:已审核,2:未审核)")
+    private Integer auditStatus;
+
     @ApiModelProperty(value = "运输")
     private List<AddContractQuotationDetailsForm> tmsDetails;
 

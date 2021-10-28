@@ -836,9 +836,9 @@ public class OrderComboxController {
      */
     @ApiOperation("下拉合同客户")
     @PostMapping(value = "/initContractCustomer")
-    public CommonResult<List<InitComboxStrVO>> initContractCustomer() {
+    public CommonResult<Set<InitComboxStrVO>> initContractCustomer() {
         List<ContractInfo> list = this.contractInfoService.getByCondition(new ContractInfo().setType("0").setStatus(com.jayud.common.enums.StatusEnum.ENABLE.getCode() + ""));
-        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        Set<InitComboxStrVO> initComboxStrVOS = new HashSet<>();
         for (ContractInfo contractInfo : list) {
             InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
             initComboxStrVO.setName(contractInfo.getName());
@@ -871,5 +871,26 @@ public class OrderComboxController {
         }
         return CommonResult.success(initComboxStrVOS);
     }
+
+    /**
+     * 下拉所有车型
+     *
+     * @return
+     */
+    @ApiOperation("下拉所有车型")
+    @PostMapping(value = "/initVehicleSize")
+    public CommonResult<List<com.jayud.common.entity.InitComboxStrVO>> initVehicleSize(@RequestBody Map<String, Object> map) {
+        //获取下拉车型
+        List<VehicleSizeInfoVO> vehicleSizeInfoVOS = vehicleInfoService.findVehicleSize();
+        List<com.jayud.common.entity.InitComboxStrVO> cabinetSizes = new ArrayList<>();
+        for (VehicleSizeInfoVO obj : vehicleSizeInfoVOS) {
+            com.jayud.common.entity.InitComboxStrVO initComboxVO = new com.jayud.common.entity.InitComboxStrVO();
+            initComboxVO.setId(obj.getId());
+            initComboxVO.setName(obj.getVehicleSize());
+            cabinetSizes.add(initComboxVO);
+        }
+        return CommonResult.success(cabinetSizes);
+    }
+
 }
 

@@ -3,6 +3,8 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
+import com.jayud.common.entity.TreeNode;
+import com.jayud.common.utils.TreeUtil;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.po.RegionCity;
 import com.jayud.oms.model.vo.InitComboxVO;
@@ -50,5 +52,22 @@ public class RegionCityController {
         }
         return CommonResult.success(initComboxVOS);
     }
+
+
+    @ApiOperation(value = "获取省市区层级")
+    @PostMapping(value = "/list")
+    public CommonResult<List<TreeNode>> list() {
+        List<RegionCity> list = this.regionCityService.list();
+        List<TreeNode> treeNodes = new ArrayList<>();
+        list.forEach(e -> {
+            TreeNode treeNode = new TreeNode();
+            treeNode.setId(e.getId()).setLabel(e.getName()).setParentId(e.getParentId());
+            treeNodes.add(treeNode);
+        });
+        List<TreeNode> tree = TreeUtil.getTree(treeNodes, 0L);
+        return CommonResult.success(tree);
+    }
+
+
 }
 

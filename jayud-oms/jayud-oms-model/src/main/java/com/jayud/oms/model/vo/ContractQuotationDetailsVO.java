@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -22,7 +23,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="ContractQuotationDetails对象", description="合同报价详情")
+@ApiModel(value = "ContractQuotationDetails对象", description = "合同报价详情")
 public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO> {
 
     private static final long serialVersionUID = 1L;
@@ -78,14 +79,30 @@ public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO
     @ApiModelProperty(value = "描述")
     private String remarks;
 
-
     @ApiModelProperty(value = "合同报价id")
     private Long contractQuotationId;
 
+    @ApiModelProperty(value = "作业环节")
+    private List<InitComboxVO> categorys;
+
+    @ApiModelProperty(value = "标识某些字段不能不修改")
+    private Boolean disable;
 
     @Override
     protected Serializable pkVal() {
         return this.id;
     }
 
+
+    public void setType(Integer type) {
+        this.type = type;
+        switch (type) {
+            case 1:
+                disable = false;
+                break;
+            case 2:
+                disable = true;
+                break;
+        }
+    }
 }

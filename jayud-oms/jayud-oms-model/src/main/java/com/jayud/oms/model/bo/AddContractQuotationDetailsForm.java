@@ -9,10 +9,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -47,6 +49,18 @@ public class AddContractQuotationDetailsForm extends Model<AddContractQuotationD
     @ApiModelProperty(value = "目的地")
     private String destination;
 
+    @ApiModelProperty(value = "起始地Id")
+    private String startingPlaceId;
+
+    @ApiModelProperty(value = "目的地id")
+    private String destinationId;
+
+    @ApiModelProperty(value = "起始地Id")
+    private List<Long> startingPlaceIds;
+
+    @ApiModelProperty(value = "目的地id")
+    private List<Long> destinationIds;
+
     @ApiModelProperty(value = "车型(3T 5T 8T 10T 12T 20GP 40GP 45GP)")
     private String vehicleSize;
 
@@ -65,22 +79,31 @@ public class AddContractQuotationDetailsForm extends Model<AddContractQuotationD
     @ApiModelProperty(value = "费用类别(作业环节)")
     private Long costTypeId;
 
-    @ApiModelProperty(value = "标识某些字段不能不修改")
-    private Boolean disable;
+
 
     public static void main(String[] args) {
         System.out.println(Utilities.printCheckCode(AddContractQuotationDetailsForm.class));
     }
 
-    public void setType(Integer type) {
-        this.type = type;
-        switch (type) {
-            case 1:
-                disable = false;
-                break;
-            case 2:
-                disable = true;
-                break;
+    public void setStartingPlaceIds(List<Long> startingPlaceIds) {
+        this.startingPlaceIds = startingPlaceIds;
+        if (!CollectionUtils.isEmpty(startingPlaceIds)){
+            StringBuilder sb=new StringBuilder();
+            for (Long startPlaceId : startingPlaceIds) {
+                sb.append(startPlaceId).append(",");
+            }
+            startingPlaceId=sb.toString();
+        }
+    }
+
+    public void setDestinationIds(List<Long> destinationIds) {
+        this.destinationIds = destinationIds;
+        if (!CollectionUtils.isEmpty(destinationIds)){
+            StringBuilder sb=new StringBuilder();
+            for (Long destinationId : destinationIds) {
+                sb.append(destinationId).append(",");
+            }
+            destinationId=sb.toString();
         }
     }
 
@@ -101,10 +124,6 @@ public class AddContractQuotationDetailsForm extends Model<AddContractQuotationD
                     break;
             }
 
-        }
-
-        if (StringUtils.isEmpty(vehicleSize)) {
-            throw new JayudBizException(400, "车型不能为空");
         }
         if (StringUtils.isEmpty(costCode)) {
             throw new JayudBizException(400, "费用名称不能为空");

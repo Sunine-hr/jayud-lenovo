@@ -5,7 +5,9 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
+import com.jayud.common.UserOperator;
 import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.StatusEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.AddContractQuotationForm;
@@ -71,13 +73,50 @@ public class ContractQuotationController {
     }
 
     @ApiOperation("获取编辑详情")
-    @PostMapping("/getById")
-    public CommonResult<ContractQuotationVO> getById(@RequestBody Map<String, Object> map) {
+    @PostMapping("/getEditInfoById")
+    public CommonResult<ContractQuotationVO> getEditInfoById(@RequestBody Map<String, Object> map) {
         Long id = MapUtil.getLong(map, "id");
         if (id == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        return null;
+        ContractQuotationVO tmp = this.contractQuotationService.getEditInfoById(id);
+        return CommonResult.success(tmp);
+    }
+
+    @ApiOperation("删除合同报价信息")
+    @PostMapping("/deleteById")
+    public CommonResult<ContractQuotationVO> deleteById(@RequestBody Map<String, Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        if (id == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        this.contractQuotationService.updateById(new ContractQuotation().setId(id).setStatus(StatusEnum.DELETE.getCode()));
+        return CommonResult.success();
+    }
+
+
+    @ApiOperation("审核操作")
+    @PostMapping("/auditOpt")
+    public CommonResult<ContractQuotationVO> auditOpt(@RequestBody Map<String, Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        if (id == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        this.contractQuotationService.updateById(new ContractQuotation().setId(id).setAuditStatus(1)
+                .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken()));
+        return CommonResult.success();
+    }
+
+    @ApiOperation("反审核操作")
+    @PostMapping("/antiAuditOpt")
+    public CommonResult<ContractQuotationVO> antiAuditOpt(@RequestBody Map<String, Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        if (id == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        this.contractQuotationService.updateById(new ContractQuotation().setId(id).setAuditStatus(2)
+                .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken()));
+        return CommonResult.success();
     }
 
 }

@@ -24,4 +24,6 @@ public interface IContractQuotationService extends IService<ContractQuotation> {
     boolean exitName(Long id, String name);
 
     IPage<ContractQuotationVO> findByPage(QueryContractQuotationForm form);
+
+    ContractQuotationVO getEditInfoById(Long id);
 }

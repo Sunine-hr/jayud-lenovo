@@ -1,5 +1,6 @@
 package com.jayud.oms.service.impl;
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.UserOperator;
@@ -57,7 +58,7 @@ public class ElectronicFenceServiceImpl extends ServiceImpl<ElectronicFenceMappe
 
         Map<Long, String> regionMap = regionCityService.list().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
         iPage.getRecords().forEach(e -> {
-            e.setProvinceDesc(regionMap.get(e.getProvince())).setCityDesc(regionMap.get(e.getCity())).setAreaDesc(regionMap.get(e.getArea()))
+            e.setProvinceDesc(regionMap.get(e.getProvince())).setCityDesc(regionMap.get(e.getCity())).setAreaDesc(MapUtil.getStr(regionMap, e.getArea(), ""))
                     .setAddr(e.getProvinceDesc() + e.getCityDesc() + e.getAreaDesc() + e.getAddr());
         });
         return iPage;

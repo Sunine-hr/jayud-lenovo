@@ -4,7 +4,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.StringUtils;
+import com.jayud.oms.model.po.ContractQuotationDetails;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,6 +18,10 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -38,11 +46,18 @@ public class ContractQuotationVO extends Model<ContractQuotationVO> {
     @ApiModelProperty(value = "报价编号")
     private String number;
 
-    //    @ApiModelProperty(value = "客户code")
-//    private String customerCode;
+    @ApiModelProperty(value = "客户code")
+    private String customerCode;
+
+    @ApiModelProperty(value = "客户id")
+    private Long customerId;
 
     @ApiModelProperty(value = "客户名称")
     private String customerName;
+
+
+    @ApiModelProperty(value = "合同编号集合")
+    private List<String> contractNos;
 
     @ApiModelProperty(value = "合同编号")
     private String contractNo;
@@ -74,6 +89,9 @@ public class ContractQuotationVO extends Model<ContractQuotationVO> {
     @ApiModelProperty(value = "创建人")
     private String createUser;
 
+    @ApiModelProperty(value = "中港运输报价详情")
+    private List<ContractQuotationDetailsVO> tmsDetails = new ArrayList<>();
+
     public void setAuditStatus(Integer auditStatus) {
         this.auditStatus = auditStatus;
         switch (auditStatus) {
@@ -96,9 +114,29 @@ public class ContractQuotationVO extends Model<ContractQuotationVO> {
 //    private String remarks;
 
 
+    public void setContractNo(String contractNo) {
+        this.contractNo = contractNo;
+        if (!StringUtils.isEmpty(contractNo)) {
+            String[] split = contractNo.split(",");
+            contractNos = Arrays.asList(split);
+        }
+    }
+
     @Override
     protected Serializable pkVal() {
         return this.id;
     }
 
+    public void assembleDetails(List<ContractQuotationDetails> details, Map<String, List<InitComboxVO>> costType) {
+        for (ContractQuotationDetails detail : details) {
+            switch (SubOrderSignEnum.getEnum(detail.getSubType())) {
+                case ZGYS:
+                    ContractQuotationDetailsVO convert = ConvertUtil.convert(detail, ContractQuotationDetailsVO.class);
+                    convert.setCategorys(costType.get(convert.getCostCode()));
+                    tmsDetails.add(convert);
+                    break;
+            }
+        }
+
+    }
 }

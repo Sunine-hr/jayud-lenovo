@@ -1,7 +1,8 @@
 CREATE TABLE `electronic_fence` (
-  `id` bigint(20) NOT NULL COMMENT '主键',
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `name` varchar(255) NOT NULL COMMENT '围栏名称',
-  `range` double(20,2) NOT NULL COMMENT '范围',
+  `number` varchar(20) DEFAULT NULL COMMENT '围栏编号',
+  `scope` double(20,2) NOT NULL COMMENT '范围',
   `status` int(5) NOT NULL DEFAULT '1' COMMENT '状态（0:禁用 1:启用 2:删除）',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `create_user` varchar(50) DEFAULT NULL COMMENT '创建人',
@@ -14,4 +15,4 @@ CREATE TABLE `electronic_fence` (
   `addr` varchar(255) DEFAULT NULL COMMENT '详细地址',
   `lo_and_la` varchar(100) CHARACTER SET utf8 DEFAULT NULL COMMENT '经纬度(高德)',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='电子围栏';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COMMENT='电子围栏';

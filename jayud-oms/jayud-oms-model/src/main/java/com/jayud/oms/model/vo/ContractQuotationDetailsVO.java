@@ -1,6 +1,7 @@
 package com.jayud.oms.model.vo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,6 +11,8 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -42,6 +45,18 @@ public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO
 
     @ApiModelProperty(value = "目的地")
     private String destination;
+
+    @ApiModelProperty(value = "起始地Id")
+    private String startingPlaceId;
+
+    @ApiModelProperty(value = "目的地id")
+    private String destinationId;
+
+    @ApiModelProperty(value = "起始地Id")
+    private List<Long> startingPlaceIds;
+
+    @ApiModelProperty(value = "目的地id")
+    private List<Long> destinationIds;
 
     @ApiModelProperty(value = "车型(3T 5T 8T 10T 12T 20GP 40GP 45GP)")
     private String vehicleSize;
@@ -103,6 +118,29 @@ public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO
             case 2:
                 disable = true;
                 break;
+        }
+    }
+
+    public void setStartingPlaceId(String startingPlaceId) {
+        this.startingPlaceId = startingPlaceId;
+        if (!StringUtils.isEmpty(startingPlaceId)) {
+            String[] split = startingPlaceId.split(",");
+            this.startingPlaceIds = new ArrayList<>();
+            for (String s : split) {
+                startingPlaceIds.add(Long.valueOf(s));
+            }
+        }
+    }
+
+    public void setDestinationId(String destinationId) {
+        this.destinationId = destinationId;
+        if (!StringUtils.isEmpty(destinationId)) {
+            this.startingPlaceIds = new ArrayList<>();
+            String[] split = destinationId.split(",");
+            this.destinationIds = new ArrayList<>();
+            for (String s : split) {
+                destinationIds.add(Long.valueOf(s));
+            }
         }
     }
 }

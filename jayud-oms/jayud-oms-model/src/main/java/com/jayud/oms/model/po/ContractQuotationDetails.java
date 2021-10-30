@@ -41,6 +41,12 @@ public class ContractQuotationDetails extends Model<ContractQuotationDetails> {
     @ApiModelProperty(value = "目的地")
     private String destination;
 
+    @ApiModelProperty(value = "起始地Id")
+    private String startingPlaceId;
+
+    @ApiModelProperty(value = "目的地id")
+    private String destinationId;
+
     @ApiModelProperty(value = "车型(3T 5T 8T 10T 12T 20GP 40GP 45GP)")
     private String vehicleSize;
 

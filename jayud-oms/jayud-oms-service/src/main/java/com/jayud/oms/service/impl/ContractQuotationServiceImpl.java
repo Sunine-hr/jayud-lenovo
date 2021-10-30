@@ -1,13 +1,18 @@
 package com.jayud.oms.service.impl;
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
 import com.jayud.common.enums.StatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.enums.TrackingInfoBisTypeEnum;
 import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.ComparisonOptUtil;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.mapper.ContractQuotationMapper;
 import com.jayud.oms.model.bo.AddContractQuotationDetailsForm;
 import com.jayud.oms.model.bo.AddContractQuotationForm;
@@ -15,6 +20,8 @@ import com.jayud.oms.model.bo.QueryContractQuotationForm;
 import com.jayud.oms.model.po.ContractQuotation;
 import com.jayud.oms.model.po.ContractQuotationDetails;
 import com.jayud.oms.model.po.CustomerInfo;
+import com.jayud.oms.model.po.TrackingInfo;
+import com.jayud.oms.model.vo.ContractQuotationDetailsVO;
 import com.jayud.oms.model.vo.ContractQuotationVO;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.service.*;
@@ -24,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,6 +53,12 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
     private IContractQuotationDetailsService contractQuotationDetailsService;
     @Autowired
     private ICostInfoService costInfoService;
+    @Autowired
+    private ICostTypeService costTypeService;
+    @Autowired
+    private ICurrencyInfoService currencyInfoService;
+    @Autowired
+    private ITrackingInfoService trackingInfoService;
 
     @Override
     @Transactional
@@ -75,24 +89,82 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
         List<ContractQuotationDetails> oldTmp = this.contractQuotationDetailsService.getByCondition(new ContractQuotationDetails()
                 .setContractQuotationId(form.getId()).setStatus(StatusEnum.ENABLE.getCode()));
         Map<Long, ContractQuotationDetails> oldMap = oldTmp.stream().collect(Collectors.toMap(e -> e.getId(), e -> e));
+        Map<String, String> costInfoMap = this.costInfoService.list().stream().collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName()));
+        Map<Long, String> costTypeMap = costTypeService.list().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getCodeName()));
+        Map<String, String> currencyInfoMap = this.currencyInfoService.initCurrencyInfo().stream().collect(Collectors.toMap(e -> e.getCode(), e -> e.getName()));
+        Map<String, String> map = new HashMap<>();
         list.forEach(e -> {
             ContractQuotationDetails convert = ConvertUtil.convert(e, ContractQuotationDetails.class);
-            oldMap.remove(e.getId());
+            ContractQuotationDetails remove = oldMap.remove(e.getId());
             if (e.getId() == null) {
                 convert.setContractQuotationId(form.getId()).setCreateTime(LocalDateTime.now()).setCreateUser(UserOperator.getToken());
             } else {
+                String value = ComparisonOptUtil.getDifferentValuesStr(remove, e);
+                this.mappingOpt(value, map, convert, remove, costInfoMap, costTypeMap, currencyInfoMap);
                 convert.setContractQuotationId(form.getId()).setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
             }
             details.add(convert);
-        });
 
+        });
+        List<TrackingInfo> trackingInfos = new ArrayList<>();
+        map.forEach((k, v) -> {
+            TrackingInfo t = new TrackingInfo();
+            t.setType(SubOrderSignEnum.getEnum(k).getDesc());
+            t.setContent(v);
+            t.setBusinessId(form.getId());
+            t.setBusinessType(TrackingInfoBisTypeEnum.ONE.getCode());
+            t.setCreateTime(LocalDateTime.now());
+            t.setCreateUser(UserOperator.getToken());
+            t.setOptType(1);
+            trackingInfos.add(t);
+        });
+        ContractQuotationDetails tmp = new ContractQuotationDetails();
+        Map<String, String> deleteMap = new HashMap<>();
         oldMap.forEach((k, v) -> {
             ContractQuotationDetails delete = new ContractQuotationDetails();
+            AddContractQuotationDetailsForm convert = ConvertUtil.convert(v, AddContractQuotationDetailsForm.class);
             delete.setId(k).setStatus(StatusEnum.DELETE.getCode());
+            String value = ComparisonOptUtil.getDifferentValuesStr(tmp, convert);
+            this.mappingOpt(value, deleteMap, v, tmp, costInfoMap, costTypeMap, currencyInfoMap);
             details.add(delete);
         });
+        deleteMap.forEach((k, v) -> {
+            TrackingInfo t = new TrackingInfo();
+            t.setType(SubOrderSignEnum.getEnum(k).getDesc());
+            t.setContent(v);
+            t.setBusinessId(form.getId());
+            t.setBusinessType(TrackingInfoBisTypeEnum.ONE.getCode());
+            t.setCreateTime(LocalDateTime.now());
+            t.setCreateUser(UserOperator.getToken());
+            t.setOptType(2);
+            trackingInfos.add(t);
+        });
         this.contractQuotationDetailsService.saveOrUpdateBatch(details);
+        this.trackingInfoService.saveBatch(trackingInfos);
     }
+
+    private void mappingOpt(String value, Map<String, String> map,
+                            ContractQuotationDetails newData, ContractQuotationDetails oldData,
+                            Map<String, String> costInfoMap, Map<Long, String> costTypeMap,
+                            Map<String, String> currencyInfoMap) {
+        if (!StringUtils.isEmpty(value)) {
+            value = value.replace(newData.getCostCode(), costInfoMap.get(newData.getCostCode()));
+            value = value.replace(oldData.getCostCode()+"", MapUtil.getStr(costInfoMap, oldData.getCostCode(), ""));
+            value = value.replace(newData.getCostTypeId() + "", costTypeMap.get(newData.getCostTypeId()));
+            value = value.replace(oldData.getCostTypeId() + "", MapUtil.getStr(costTypeMap, oldData.getCostTypeId(), ""));
+            value = value.replace(newData.getCurrencyCode(), currencyInfoMap.get(newData.getCurrencyCode()));
+            value = value.replace(oldData.getCurrencyCode()+"", MapUtil.getStr(currencyInfoMap, oldData.getCurrencyCode(), ""));
+
+            String msg = map.get(newData.getSubType());
+            if (StringUtils.isEmpty(msg)) {
+                map.put(newData.getSubType(), value);
+            } else {
+                map.put(newData.getSubType(), msg + "\n" + value);
+            }
+        }
+
+    }
+
 
     @Override
     public boolean exitNumber(String number) {

@@ -6,16 +6,21 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.StatusEnum;
+import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.enums.TrackingInfoBisTypeEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.AddContractQuotationForm;
 import com.jayud.oms.model.bo.QueryContractQuotationForm;
 import com.jayud.oms.model.bo.QueryCustomsQuestionnaireForm;
 import com.jayud.oms.model.po.ContractQuotation;
+import com.jayud.oms.model.po.TrackingInfo;
 import com.jayud.oms.model.vo.ContractQuotationVO;
 import com.jayud.oms.service.IContractQuotationService;
+import com.jayud.oms.service.ITrackingInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +31,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -43,6 +52,8 @@ public class ContractQuotationController {
 
     @Autowired
     private IContractQuotationService contractQuotationService;
+    @Autowired
+    private ITrackingInfoService trackingInfoService;
 
     @ApiOperation("分页查询合同报价")
     @PostMapping("/findByPage")
@@ -119,5 +130,47 @@ public class ContractQuotationController {
         return CommonResult.success();
     }
 
+
+    /**
+     * 获取跟踪信息
+     *
+     * @param map
+     * @return
+     */
+    @ApiOperation("获取跟踪信息")
+    @PostMapping("/getTrackingInfo")
+    public CommonResult<List<TrackingInfo>> getTrackingInfo(@RequestBody Map<String, Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        String type = MapUtil.getStr(map, "type");
+        if (id == null || StringUtils.isEmpty(type)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        List<TrackingInfo> list = this.trackingInfoService.getByCondition(new TrackingInfo().setType(type)
+                .setBusinessId(id).setBusinessType(TrackingInfoBisTypeEnum.ONE.getCode()));
+        list = list.stream().sorted(Comparator.comparing(TrackingInfo::getId).reversed()).collect(Collectors.toList());
+        return CommonResult.success(list);
+    }
+
+
+    /**
+     * 获取跟踪类型
+     *
+     * @return
+     */
+    @ApiOperation("获取跟踪类型")
+    @PostMapping("/getTrackingType")
+    public CommonResult<List<InitComboxStrVO>> getTrackingType() {
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        for (SubOrderSignEnum value : SubOrderSignEnum.values()) {
+            switch (value) {
+                case ZGYS:
+                    InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+                    initComboxStrVO.setCode(value.getDesc());
+                    initComboxStrVO.setName(value.getDesc());
+                    initComboxStrVOS.add(initComboxStrVO);
+            }
+        }
+        return CommonResult.success(initComboxStrVOS);
+    }
 }
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.TrackingInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.TrackingInfo">
+        <id column="id" property="id" />
+        <result column="type" property="type" />
+        <result column="content" property="content" />
+        <result column="create_user" property="createUser" />
+        <result column="remarks" property="remarks" />
+        <result column="business_id" property="businessId" />
+        <result column="business_type" property="businessType" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, type, content, create_user, remarks, business_id, business_type, create_time
+    </sql>
+
+</mapper>

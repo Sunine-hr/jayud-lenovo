@@ -138,6 +138,8 @@ public class ProfitStatement extends Model<ProfitStatement> {
     @ApiModelProperty(value = "订单类别(product_classify表)")
     private String classCode;
 
+    @ApiModelProperty(value = "操作时间")
+    private LocalDateTime operationTime;
 
     @Override
     protected Serializable pkVal() {

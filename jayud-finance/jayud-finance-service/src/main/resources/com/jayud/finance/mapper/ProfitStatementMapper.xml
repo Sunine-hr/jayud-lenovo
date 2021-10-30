@@ -70,6 +70,7 @@
             oi.create_time,
             oi.unit_code mainUnitCode,
             oi.unit_account mainUnitName,
+            oi.operation_time,
             obct.money_type,
             IFNULL(NULL, 2) AS type
         FROM
@@ -106,9 +107,10 @@
             oi.biz_uname,
             oi.created_user createUser,
             oi.create_time,
-            obct.money_type,
             oi.unit_code mainUnitCode,
             oi.unit_account mainUnitName,
+            oi.operation_time,
+            obct.money_type,
             IFNULL(NULL, 1) AS type
         FROM
             order_payment_cost tmp1
@@ -161,6 +163,9 @@
             </if>
             <if test="form.createTime!=null and form.createTime.size>0">
                 and DATE_FORMAT(create_time, '%Y-%m-%d' ) between #{form.createTime[0]} and #{form.createTime[1]}
+            </if>
+            <if test="form.createTime!=null and form.createTime.size>0">
+                and DATE_FORMAT(operation_time, '%Y-%m-%d' ) between #{form.operationTime[0]} and #{form.operationTime[1]}
             </if>
             <if test="form.statisticalType!=null">
                 and is_main = #{form.statisticalType}

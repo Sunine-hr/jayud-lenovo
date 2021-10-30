@@ -54,6 +54,8 @@ public class QueryProfitStatementForm extends BasePageForm {
     @ApiModelProperty(value = "是否打开内部往来费用")
     private Boolean isOpenInternal = false;
 
+    @ApiModelProperty(value = "操作时间")
+    private List<String> operationTime;
 
     public void setStatisticalType(Integer statisticalType) {
 

@@ -125,6 +125,9 @@ public class ProfitStatementBasicData extends Model<ProfitStatementBasicData> {
     @ApiModelProperty(value = "订单结算单位名称")
     private String unitName;
 
+    @ApiModelProperty(value = "操作时间")
+    private LocalDateTime operationTime;
+
 
     public ProfitStatement convert(Class<ProfitStatement> clazz) {
         ProfitStatement profitStatement = ConvertUtil.convert(this, clazz);

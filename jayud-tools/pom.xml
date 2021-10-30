@@ -10,6 +10,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>jayud-tools</artifactId>
+    <version>1.3.0</version>
+    <name>jayud-tools</name>
+    <description>一款简单的jayud工具(仓库，Excel，流媒体服务)</description>
     <dependencies>
         <dependency>
             <groupId>com.jayud</groupId>
@@ -49,6 +52,53 @@
             <groupId>com.alibaba</groupId>
             <artifactId>easyexcel</artifactId>
             <version>2.1.4</version>
+        </dependency>
+
+        <!--
+            netty负责播放地址解析及视频传输，通过javacv推拉流存到内存里，直接通过输出到前端播放
+            springboot、netty，集成websocket
+            javacv、ffmpeg
+        -->
+        <!-- 全量引入 ，包含javacv、ffmpeg、opencv等 -->
+        <!-- <dependency> <groupId>org.bytedeco</groupId> <artifactId>javacv-platform</artifactId>
+          <version>1.5.6</version> </dependency> -->
+
+        <!-- 媒体只用到以下两个，javacv、ffmpeg -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+
+
+        <!-- ffmpeg全平台引入 -->
+        <!-- <dependency>
+          <groupId>org.bytedeco</groupId>
+          <artifactId>ffmpeg-platform</artifactId>
+          <version>4.4-1.5.6</version>
+        </dependency> -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>ffmpeg</artifactId>
+            <version>4.4-1.5.6</version>
+            <classifier>windows-x86_64</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>ffmpeg</artifactId>
+            <version>4.4-1.5.6</version>
+            <classifier>linux-x86_64</classifier>
+        </dependency>
+
+        <!-- netty -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.59.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
 

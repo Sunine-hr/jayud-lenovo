@@ -510,8 +510,6 @@ public class OrderInTransportController {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         this.orderTransportService.msgPush(orderTransport);
-        // 推送运输公司消息到供应链
-        this.orderTransportService.pushTransportationInformation(orderTransport, form);
         return CommonResult.success();
     }
 
@@ -742,6 +740,8 @@ public class OrderInTransportController {
             return CommonResult.error(ResultEnum.OPR_FAIL.getCode(), ResultEnum.OPR_FAIL.getMessage());
         }
         this.orderTransportService.msgPush(orderTransport);
+        // 推送运输公司消息到供应链
+        this.orderTransportService.pushTransportationInformation(orderTransport);
         return CommonResult.success();
     }
 

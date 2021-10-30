@@ -283,8 +283,8 @@ public class OutOrderTransportController {
         // 接单法人
         mainOrderForm.setLegalName(inputOrderTransportForm.getLegalName());
         mainOrderForm.setLegalEntityId(inputOrderTransportForm.getLegalEntityId());
-        // 非报关的订单都是资料齐全
-        mainOrderForm.setIsDataAll("1");
+        // 1表示需要齐全的报关数据
+        mainOrderForm.setIsDataAll("");
 
         if (isEdit) {
             // 填充修改信息

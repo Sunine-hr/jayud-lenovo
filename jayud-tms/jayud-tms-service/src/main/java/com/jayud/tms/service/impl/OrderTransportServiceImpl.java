@@ -27,6 +27,7 @@ import com.jayud.tms.mapper.OrderTransportMapper;
 import com.jayud.tms.model.bo.*;
 import com.jayud.tms.model.enums.ScmOrderStatusEnum;
 import com.jayud.tms.model.po.DeliveryAddress;
+import com.jayud.tms.model.po.OrderSendCars;
 import com.jayud.tms.model.po.OrderTakeAdr;
 import com.jayud.tms.model.po.OrderTransport;
 import com.jayud.tms.model.vo.*;
@@ -1101,40 +1102,46 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     /**
      * 推送运输公司信息到供应链
      * @param orderTransport
-     * @param form
      */
     @Async
     @Override
-    public void pushTransportationInformation(OrderTransport orderTransport, SendCarForm form) {
+    public void pushTransportationInformation(OrderTransport orderTransport) {
         Integer createUserTypeById = orderTransportService.getCreateUserTypeById(orderTransport.getId());
-        if (createUserTypeById != CreateUserTypeEnum.SCM.getCode() ||
-                !CommonConstant.SEND_CAR.equals(form.getCmd()) ) {
+        if (createUserTypeById != CreateUserTypeEnum.SCM.getCode()) {
             return;
         }
 
         try {
-            OrderTransport orderTransportTemp = this.getOne(new QueryWrapper<OrderTransport>().lambda()
-                    .select(OrderTransport::getLegalName, OrderTransport::getThirdPartyOrderNo)
-                    .eq(OrderTransport::getId, orderTransport.getId()));
-
-            ScmTransportationInformationForm scmTransportationInformationForm = new ScmTransportationInformationForm();
-            scmTransportationInformationForm.setTruckNo(orderTransportTemp.getThirdPartyOrderNo());
-
-            //司机信息
-            ApiResult driver = this.omsClient.getDriverById(form.getDriverInfoId());
-            JSONObject driverObject = new JSONObject(driver.getData());
-            scmTransportationInformationForm.setDriverName(driverObject.getStr("name"));
-            scmTransportationInformationForm.setDriverTel(driverObject.getStr("phone"));
-            // 车辆
-            ApiResult vehicleInfo = omsClient.getVehicleInfoById(form.getVehicleId());
-            JSONObject vehicleInfoObject = new JSONObject(vehicleInfo.getData());
-            scmTransportationInformationForm.setHkTruckNo(vehicleInfoObject.getStr("hkNumber"));
-            scmTransportationInformationForm.setCnTruckNo(vehicleInfoObject.getStr("plateNumber"));
-
-            // 直接传法人主体名称，对于供应链来说车辆供应商是物流科技
-            scmTransportationInformationForm.setTruckCompany(orderTransportTemp.getLegalName());
-
             new Thread(() -> {
+                OrderTransport orderTransportTemp = this.getOne(new QueryWrapper<OrderTransport>().lambda()
+                        .select(OrderTransport::getLegalName, OrderTransport::getThirdPartyOrderNo, OrderTransport::getOrderNo)
+                        .eq(OrderTransport::getId, orderTransport.getId()));
+
+                OrderSendCars orderSendCarsTemp = orderSendCarsService.getOne(new QueryWrapper<OrderSendCars>().lambda()
+                        .select(OrderSendCars::getVehicleId, OrderSendCars::getDriverInfoId)
+                        .eq(OrderSendCars::getOrderNo, orderTransportTemp.getOrderNo()), false);
+                if (orderSendCarsTemp == null) {
+                    logger.error("推送运输公司消息到供应链失败，原因：查询不到订单派车信息");
+                    return;
+                }
+
+                ScmTransportationInformationForm scmTransportationInformationForm = new ScmTransportationInformationForm();
+                scmTransportationInformationForm.setTruckNo(orderTransportTemp.getThirdPartyOrderNo());
+
+                //司机信息
+                ApiResult driver = this.omsClient.getDriverById(orderSendCarsTemp.getDriverInfoId());
+                JSONObject driverObject = new JSONObject(driver.getData());
+                scmTransportationInformationForm.setDriverName(driverObject.getStr("name"));
+                scmTransportationInformationForm.setDriverTel(driverObject.getStr("phone"));
+                // 车辆
+                ApiResult vehicleInfo = omsClient.getVehicleInfoById(orderSendCarsTemp.getVehicleId());
+                JSONObject vehicleInfoObject = new JSONObject(vehicleInfo.getData());
+                scmTransportationInformationForm.setHkTruckNo(vehicleInfoObject.getStr("hkNumber"));
+                scmTransportationInformationForm.setCnTruckNo(vehicleInfoObject.getStr("plateNumber"));
+
+                // 直接传法人主体名称，对于供应链来说车辆供应商是物流科技
+                scmTransportationInformationForm.setTruckCompany(orderTransportTemp.getLegalName());
+
                 Map<String, Object> res = scmOrderService.acceptTransportationInformation(scmTransportationInformationForm);
                 if (MapUtil.getInt(res, "code") != 0) {
                     logger.warn("推送运输公司消息到供应链失败，原因：{}", res.get("msg"));

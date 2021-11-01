@@ -6,15 +6,14 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.StringUtils;
-import com.jayud.common.utils.Utilities;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -64,18 +63,6 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
     @ApiModelProperty(value = "运输")
     private List<AddContractQuotationDetailsForm> tmsDetails;
 
-    public static void main(String[] args) {
-        System.out.println(Utilities.printCheckCode(AddContractQuotationForm.class));
-    }
-
-    public void setContractNos(List<String> contractNos) {
-        this.contractNos = contractNos;
-        StringBuilder sb = new StringBuilder();
-        contractNos.forEach(e -> {
-            sb.append(e).append(",");
-        });
-        contractNo = sb.toString();
-    }
 
     @Override
     protected Serializable pkVal() {
@@ -111,4 +98,13 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
 
     }
 
+    public void assemblyContractNo() {
+        if (!CollectionUtils.isEmpty(contractNos)) {
+            StringBuilder sb = new StringBuilder();
+            contractNos.forEach(e -> {
+                sb.append(e).append(",");
+            });
+            this.contractNo = sb.toString();
+        }
+    }
 }

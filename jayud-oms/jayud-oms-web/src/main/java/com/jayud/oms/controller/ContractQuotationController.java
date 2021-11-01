@@ -67,6 +67,7 @@ public class ContractQuotationController {
     @PostMapping("/saveOrUpdate")
     public CommonResult saveOrUpdate(@RequestBody AddContractQuotationForm form) {
         form.checkParam();
+        form.assemblyContractNo();
         if (this.contractQuotationService.exitName(form.getId(), form.getName())) {
             return CommonResult.error(400, "该报价名称已存在");
         }

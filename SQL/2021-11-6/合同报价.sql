@@ -35,8 +35,8 @@ CREATE TABLE `contract_quotation_details` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `update_user` varchar(50) DEFAULT NULL COMMENT '更新人',
   `remarks` varchar(255) DEFAULT NULL COMMENT '描述',
-  `starting_place_id` varchar(20) DEFAULT NULL COMMENT '起始地id(多个逗号隔开)',
-  `destination_id` varchar(20) DEFAULT NULL COMMENT '目的地id(多个逗号隔开)',
+  `starting_place_id` varchar(500) DEFAULT NULL COMMENT '起始地id(多个逗号隔开)',
+  `destination_id` varchar(500) DEFAULT NULL COMMENT '目的地id(多个逗号隔开)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COMMENT='合同报价详情';
 

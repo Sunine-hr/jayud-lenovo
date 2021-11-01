@@ -98,6 +98,10 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
         if (endTime == null) {
             throw new JayudBizException(400, "有效结束时间不能为空");
         }
+
+        if (endTime.compareTo(startTime) < 0) {
+            throw new JayudBizException(400, "结束时间不能小于开始时间");
+        }
         if (tmsDetails != null) {
             tmsDetails.forEach(e -> {
                 e.setSubType(SubOrderSignEnum.ZGYS.getSignOne());

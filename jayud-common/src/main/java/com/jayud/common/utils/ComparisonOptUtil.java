@@ -1,21 +1,17 @@
 package com.jayud.common.utils;
 
+import cn.hutool.core.map.MapUtil;
 import com.github.dadiyang.equator.Equator;
 import com.github.dadiyang.equator.FieldInfo;
 import com.github.dadiyang.equator.GetterBaseEquator;
 import com.jayud.common.aop.annotations.FieldLabel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.cglib.core.ClassInfo;
 
-import java.lang.annotation.Annotation;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -63,20 +59,20 @@ public class ComparisonOptUtil {
             //处理映射关系
             if (!StringUtils.isEmpty(annotation.mappingString())) {
                 Map<String, String> mappingMap = mappingStringToMap(annotation.mappingString());
-                String firstMappingVal = mappingMap.get(firstVal.toString());
+                String firstMappingVal = MapUtil.getStr(mappingMap, firstVal, "");
                 if (!StringUtils.isEmpty(firstMappingVal)) {
                     firstVal = String.format("%s", firstMappingVal);
                 }
-                String secondMappingVal = mappingMap.get(secondVal.toString());
+                String secondMappingVal = MapUtil.getStr(mappingMap, secondVal, "");
                 if (!StringUtils.isEmpty(secondMappingVal)) {
                     secondVal = String.format("%s", secondMappingVal);
                 }
             }
-            if (firstVal==null){
+            if (firstVal == null) {
                 sb.append(String.format("%s :  %s ", annotation.name(), secondVal));
-            }else if (secondVal==null){
+            } else if (secondVal == null) {
                 sb.append(String.format("%s :  %s ", annotation.name(), firstVal));
-            }else {
+            } else {
                 sb.append(String.format("%s :  %s  →  %s", annotation.name(), firstVal, secondVal));
             }
 

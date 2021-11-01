@@ -1,5 +1,6 @@
 package com.jayud.scm.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.db.meta.Table;
 import cn.hutool.poi.excel.ExcelReader;
@@ -350,11 +351,16 @@ public class CommonController {
         if(!systemUser.getUserName().equals("admin")){
             //获取登录用户所属角色
             List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
+            List<Long> longs = new ArrayList<>();
             for (SystemRole systemRole : enabledRolesByUserId) {
-                SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),form.getActionCode());
-                if(systemRoleAction == null){
-                    return CommonResult.error(444,"该用户没有该按钮权限");
-                }
+                longs.add(systemRole.getId());
+//                if(systemRoleAction == null){
+//                    return CommonResult.error(444,"该用户没有该按钮权限");
+//                }
+            }
+            List<SystemRoleAction> systemRoleActions = systemRoleActionService.getSystemRoleActionByRoleIdsAndActionCode(longs,form.getActionCode());
+            if(CollectionUtil.isEmpty(systemRoleActions)){
+                return CommonResult.error(444,"该用户没有该按钮权限");
             }
         }
 

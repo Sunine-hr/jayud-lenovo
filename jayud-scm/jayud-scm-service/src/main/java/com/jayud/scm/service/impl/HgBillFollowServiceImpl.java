@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.scm.model.bo.QueryCommonForm;
@@ -27,5 +28,14 @@ public class HgBillFollowServiceImpl extends ServiceImpl<HgBillFollowMapper, HgB
     public IPage<HgBillFollowVO> findListByHgBillId(QueryCommonForm form) {
         Page<HgBillFollowVO> page = new Page<>(form.getPageNum(), form.getPageSize());
         return this.baseMapper.findByPage(page, form);
+    }
+
+    @Override
+    public HgBillFollow getHgBillFollowByBillIdAndContent(Integer id, String toString) {
+        QueryWrapper<HgBillFollow> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(HgBillFollow::getBillId,id);
+        queryWrapper.lambda().eq(HgBillFollow::getFollowContext,toString);
+        queryWrapper.lambda().eq(HgBillFollow::getVoided,0);
+        return this.getOne(queryWrapper);
     }
 }

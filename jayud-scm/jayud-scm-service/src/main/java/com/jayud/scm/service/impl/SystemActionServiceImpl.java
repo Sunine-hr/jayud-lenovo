@@ -108,7 +108,6 @@ public class SystemActionServiceImpl extends ServiceImpl<SystemActionMapper, Sys
     public List<SystemAction> getSystemActionList(Long id) {
         QueryWrapper<SystemAction> queryWrapper = new QueryWrapper();
         queryWrapper.lambda().eq(SystemAction::getVoided,0);
-        queryWrapper.lambda().eq(SystemAction::getIsAudit,1);
         queryWrapper.lambda().eq(SystemAction::getParentId,id);
         return this.list(queryWrapper);
     }

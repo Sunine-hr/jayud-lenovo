@@ -68,7 +68,7 @@ public class RateRmbFromBocController {
         for (String s : split) {
             try {
                 List<RateRmbFromBoc> rateRmbFromBocs1 = this.listChinaBnakRate(s);
-                System.out.println("rateRmbFromBocs1"+ rateRmbFromBocs1);
+//                System.out.println("rateRmbFromBocs1"+ rateRmbFromBocs1);
                 rateRmbFromBocs.addAll(rateRmbFromBocs1);
             }catch (Exception e){
                 e.printStackTrace();

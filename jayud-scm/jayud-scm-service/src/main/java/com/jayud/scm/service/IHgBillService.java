@@ -5,9 +5,7 @@ import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.BookingOrder;
 import com.jayud.scm.model.po.HgBill;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.scm.model.vo.HgBillVO;
-import com.jayud.scm.model.vo.HubShippingVO;
-import com.jayud.scm.model.vo.SingleWindowData;
+import com.jayud.scm.model.vo.*;
 
 import java.util.List;
 
@@ -29,5 +27,19 @@ public interface IHgBillService extends IService<HgBill> {
 
     Integer addHgBill(Integer bookingId);
 
-    SingleWindowData getSingleWindowData(QueryCommonForm form);
+    List<SingleWindowData> getSingleWindowData(QueryCommonForm form);
+
+    List<HgBillVO> getHgBillDataByDeclareState(QueryCommonForm form);
+
+    boolean submitSingleWindow(QueryCommonForm form);
+
+    boolean updateHgBill(QueryCommonForm form);
+
+    boolean submitYunBaoGuan(HgBill hgBill);
+
+    List<YunBaoGuanData> getYunBaoGuanData(Integer id);
+
+    List<HgBill> getHgBillDataByCustomsState();
+
+    boolean updateHgBillByYunBaoGuan(HgBill hgBill);
 }

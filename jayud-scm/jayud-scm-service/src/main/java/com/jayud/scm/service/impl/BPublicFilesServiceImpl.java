@@ -37,8 +37,8 @@ import java.util.List;
 @Service
 public class BPublicFilesServiceImpl extends ServiceImpl<BPublicFilesMapper, BPublicFiles> implements IBPublicFilesService {
 
-    @Autowired
-    private FileClient fileClient;
+//    @Autowired
+//    private FileClient fileClient;
 
     @Autowired
     private ISystemUserService systemUserService;
@@ -53,7 +53,7 @@ public class BPublicFilesServiceImpl extends ServiceImpl<BPublicFilesMapper, BPu
     public List<BPublicFilesVO> getPublicFileList(Integer fileModel, Integer businessId) {
 
         //获取根路径
-        String path = (String)fileClient.getBaseUrl().getData();
+//        String path = (String)fileClient.getBaseUrl().getData();
 
         QueryWrapper<BPublicFiles> queryWrapper = new QueryWrapper();
         queryWrapper.lambda().eq(BPublicFiles::getFileModel,fileModel);
@@ -61,9 +61,11 @@ public class BPublicFilesServiceImpl extends ServiceImpl<BPublicFilesMapper, BPu
         queryWrapper.lambda().eq(BPublicFiles::getVoided,0);
         List<BPublicFiles> list = this.list(queryWrapper);
         List<BPublicFilesVO> bPublicFilesVOS = ConvertUtil.convertList(list, BPublicFilesVO.class);
-        for (BPublicFilesVO bPublicFilesVO : bPublicFilesVOS) {
-            bPublicFilesVO.setFileView(StringUtils.getFileViews(bPublicFilesVO.getSFilePath(),bPublicFilesVO.getSFileName(),path));
-        }
+//        for (BPublicFilesVO bPublicFilesVO : bPublicFilesVOS) {
+//            FileView fileView = new FileView();
+//
+//            bPublicFilesVO.setFileView(StringUtils.getFileViews(bPublicFilesVO.getSFilePath(),bPublicFilesVO.getSFileName(),path));
+//        }
         return bPublicFilesVOS;
     }
 
@@ -111,9 +113,9 @@ public class BPublicFilesServiceImpl extends ServiceImpl<BPublicFilesMapper, BPu
 
         for (FileView fileView : filesForm.getFileView()) {
             BPublicFiles files = ConvertUtil.convert(filesForm, BPublicFiles.class);
-            files.setFileType(filesForm.getFileModelCopy());
-            files.setSFileName(StringUtils.getFileNameStr(Collections.singletonList(fileView)));
-            files.setSFilePath(StringUtils.getFileStr(Collections.singletonList(fileView)));
+            files.setFileType(filesForm.getFileType());
+            files.setSFileName(fileView.getFileName());
+            files.setSFilePath(fileView.getAbsolutePath());
             files.setCrtBy(systemUser.getId().intValue());
             files.setCrtByDtm(LocalDateTime.now());
             files.setCrtByName(systemUser.getUserName());

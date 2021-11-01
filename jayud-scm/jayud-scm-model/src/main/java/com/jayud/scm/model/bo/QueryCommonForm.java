@@ -58,6 +58,9 @@ public class QueryCommonForm extends BasePageForm{
     @ApiModelProperty(value = "关联关检号")
     private String seqNo;
 
+    @ApiModelProperty(value = "报关单申报状态")
+    private Integer declareState;
+
     //报关日期录入
     @ApiModelProperty(value = "报关日期")
     private String customsDate;

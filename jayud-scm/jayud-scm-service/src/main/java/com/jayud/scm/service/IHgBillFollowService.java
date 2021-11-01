@@ -18,4 +18,6 @@ import com.jayud.scm.model.vo.HgBillVO;
 public interface IHgBillFollowService extends IService<HgBillFollow> {
 
     IPage<HgBillFollowVO> findListByHgBillId(QueryCommonForm form);
+
+    HgBillFollow getHgBillFollowByBillIdAndContent(Integer id, String toString);
 }

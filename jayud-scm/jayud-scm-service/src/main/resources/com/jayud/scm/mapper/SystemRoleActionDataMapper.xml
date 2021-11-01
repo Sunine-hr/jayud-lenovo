@@ -33,6 +33,7 @@
         sra.action_code actionCode,
         sm.title title,sr.name name,
         sra.date_type dataType,
+        sra.date_type dataTypeName,
         sra.crt_by_name crtByName,
         sra.crt_by_dtm crtByDtm
         from system_role_action_data sra
@@ -51,10 +52,8 @@
     </select>
 
     <select id="getRoleData" resultType="Integer">
-        select max (sra.date_type dataType)
-        from system_role_action_data sra
-        where sra.voided = 0
-        and sra.role_id in
+        select max(sra.date_type) dataType from system_role_action_data sra
+        where sra.voided = 0 and sra.role_id in
         <foreach collection="longs"  item="item" open="(" separator="," close=")"  >
             #{item}
         </foreach>

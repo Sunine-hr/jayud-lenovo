@@ -258,9 +258,15 @@ public class ExternalApiController {
         List<SystemRoleVO> roleList = this.roleService.getRoleList(systemUser.getId());
         SystemUserVO userVO = ConvertUtil.convert(systemUser, SystemUserVO.class);
         userVO.setPassword(null);
-        //TODO 暂时角色是一对一
+
+
         if (!CollectionUtils.isEmpty(roleList)) {
-            userVO.setRoleId(roleList.get(0).getId());
+            List<Long> longs = new ArrayList<>();
+            for (SystemRoleVO systemRoleVO : roleList) {
+                longs.add(systemRoleVO.getId());
+            }
+
+            userVO.setRoleId(longs);
         }
         return ApiResult.ok(userVO);
     }

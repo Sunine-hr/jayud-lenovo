@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.DeleteForm;
@@ -8,16 +9,15 @@ import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
 import com.jayud.scm.mapper.HgBillMapper;
-import com.jayud.scm.model.vo.BookingOrderEntryVO;
-import com.jayud.scm.model.vo.BookingOrderVO;
-import com.jayud.scm.model.vo.HgBillVO;
-import com.jayud.scm.model.vo.HubShippingVO;
+import com.jayud.scm.model.vo.*;
 import com.jayud.scm.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.scm.utils.DateUtil;
 import org.apache.poi.hdgf.HDGFDiagram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -119,8 +119,9 @@ public class HgBillServiceImpl extends ServiceImpl<HgBillMapper, HgBill> impleme
         hgBill.setId(form.getId());
         hgBill.setCustomsNo(form.getCustomsNo());
         hgBill.setHkBillNo(form.getHkBillNo());
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        hgBill.setCustomsDate(LocalDateTime.parse(form.getCustomsDate(),df));
+        LocalDate localDate = LocalDate.parse(form.getCustomsDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDateTime localDateTime = localDate.atStartOfDay();
+        hgBill.setCustomsDate(localDateTime);
         hgBill.setMdyBy(systemUser.getId().intValue());
         hgBill.setMdyByDtm(LocalDateTime.now());
         hgBill.setMdyByName(systemUser.getUserName());
@@ -188,6 +189,155 @@ public class HgBillServiceImpl extends ServiceImpl<HgBillMapper, HgBill> impleme
             }
         }
         return hgBill.getId();
+    }
+
+    @Override
+    public List<SingleWindowData> getSingleWindowData(QueryCommonForm form) {
+        List<SingleWindowData> singleWindowData = this.baseMapper.getSingleWindowData(form.getBillNo());
+        return singleWindowData;
+    }
+
+    @Override
+    public List<HgBillVO> getHgBillDataByDeclareState(QueryCommonForm form) {
+        QueryWrapper<HgBill> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(HgBill::getDeclareState,form.getDeclareState());
+        queryWrapper.lambda().eq(HgBill::getVoided,0);
+        List<HgBill> hgBills = this.list(queryWrapper);
+        List<HgBillVO> hgBillVOS = ConvertUtil.convertList(hgBills, HgBillVO.class);
+        return hgBillVOS;
+    }
+
+    @Override
+    public boolean submitSingleWindow(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        HgBill hgBill = new HgBill();
+        hgBill.setId(form.getId());
+        hgBill.setDeclareState(1);
+        boolean result = this.updateById(hgBill);
+        if(result){
+            log.warn("提交单一窗口成功");
+            HgBillFollow hgBillFollow = new HgBillFollow();
+            hgBillFollow.setBillId(hgBill.getId());
+            hgBillFollow.setSType(OperationEnum.UPDATE.getCode());
+            hgBillFollow.setFollowContext("提交单一窗口");
+            hgBillFollow.setCrtBy(systemUser.getId().intValue());
+            hgBillFollow.setCrtByDtm(LocalDateTime.now());
+            hgBillFollow.setCrtByName(systemUser.getUserName());
+            boolean save1 = hgBillFollowService.save(hgBillFollow);
+            if(save1){
+                log.warn("提交单一窗口，操作记录添加成功");
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean updateHgBill(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        boolean result = false;
+        HgBillFollow hgBillFollow = new HgBillFollow();
+        if(form.getDeclareState() != null && form.getDeclareState().equals(2)){
+            QueryWrapper<HgBill> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(HgBill::getBillNo,form.getBillNo());
+            queryWrapper.lambda().eq(HgBill::getVoided,0);
+            HgBill hgBill = this.getOne(queryWrapper);
+            hgBill.setDeclareState(form.getDeclareState());
+            hgBill.setSeqNo(form.getSeqNo());
+            result = this.updateById(hgBill);
+            if(result){
+                log.warn("修改状态为'提交成功'成功");
+                hgBillFollow.setBillId(hgBill.getId());
+                hgBillFollow.setSType(OperationEnum.UPDATE.getCode());
+                hgBillFollow.setFollowContext("修改状态为'提交成功'，关联关检号为"+hgBill.getSeqNo());
+            }
+        }
+        if(form.getDeclareState() != null && form.getDeclareState().equals(3)){
+            QueryWrapper<HgBill> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(HgBill::getSeqNo,form.getSeqNo());
+            queryWrapper.lambda().eq(HgBill::getVoided,0);
+            HgBill hgBill = this.getOne(queryWrapper);
+            hgBill.setDeclareState(form.getDeclareState());
+            hgBill.setCustomsNo(form.getCustomsNo());
+            hgBill.setCustomsDate(DateUtil.stringToLocalDateTime(form.getCustomsDate(),"yyyy-MM-dd HH:mm:ss"));
+            result = this.updateById(hgBill);
+
+            if(result){
+                log.warn("修改状态为'生成成功'成功");
+                hgBillFollow.setBillId(hgBill.getId());
+                hgBillFollow.setSType(OperationEnum.UPDATE.getCode());
+                hgBillFollow.setFollowContext("修改状态为'生成成功'，录入报关日期和报关单号");
+            }
+
+        }
+        if(result){
+
+//            hgBillFollow.setCrtBy(systemUser.getId().intValue());
+//            hgBillFollow.setCrtByDtm(LocalDateTime.now());
+//            hgBillFollow.setCrtByName(systemUser.getUserName());
+            boolean save1 = hgBillFollowService.save(hgBillFollow);
+            if(save1){
+                log.warn("操作记录添加成功");
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean submitYunBaoGuan(HgBill hgBill) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        boolean result = this.updateById(hgBill);
+        if(result){
+            log.warn("提交云报关成功");
+            HgBillFollow hgBillFollow = new HgBillFollow();
+            hgBillFollow.setBillId(hgBill.getId());
+            hgBillFollow.setSType(OperationEnum.UPDATE.getCode());
+            hgBillFollow.setFollowContext("提交云报关");
+            hgBillFollow.setCrtBy(systemUser.getId().intValue());
+            hgBillFollow.setCrtByDtm(LocalDateTime.now());
+            hgBillFollow.setCrtByName(systemUser.getUserName());
+            boolean save1 = hgBillFollowService.save(hgBillFollow);
+            if(save1){
+                log.warn("提交云报关，操作记录添加成功");
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<YunBaoGuanData> getYunBaoGuanData(Integer id) {
+        List<YunBaoGuanData> yunBaoGuanData = this.baseMapper.getYunBaoGuanData(id);
+        return yunBaoGuanData;
+    }
+
+    @Override
+    public List<HgBill> getHgBillDataByCustomsState() {
+        QueryWrapper<HgBill> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(HgBill::getCustomsState,1);
+        queryWrapper.lambda().eq(HgBill::getVoided,0);
+        return this.list(queryWrapper);
+    }
+
+    @Override
+    public boolean updateHgBillByYunBaoGuan(HgBill hgBill) {
+
+        boolean result = this.updateById(hgBill);
+        if(result){
+            log.warn("抓取报关单号和报关日期，并保存成功");
+            HgBillFollow hgBillFollow = new HgBillFollow();
+            hgBillFollow.setBillId(hgBill.getId());
+            hgBillFollow.setSType("系统");
+            hgBillFollow.setFollowContext("抓取报关单号和报关日期，修改报关单");
+            hgBillFollow.setCrtByDtm(LocalDateTime.now());
+            hgBillFollow.setCrtByName("系统");
+            boolean save1 = hgBillFollowService.save(hgBillFollow);
+            if(save1){
+                log.warn("抓取报关单号和报关日期，操作记录添加成功");
+            }
+        }
+        return result;
     }
 
 }

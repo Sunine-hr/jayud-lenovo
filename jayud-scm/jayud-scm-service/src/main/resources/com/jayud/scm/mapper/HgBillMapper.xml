@@ -91,4 +91,12 @@
         id, bill_no, bill_date, model_type, customs_no, customs_date, customer_bill_no, hg_truck_id, hg_truck_no, total_gw, total_nw, total_cbm, packages, pallets, cartons, l_cartons, is_merge, f_fee_type, f_fee_currency, f_fee_money, f_fee_per, b_fee_type, b_fee_currency, b_fee_money, b_fee_per, o_fee_type, o_fee_currency, o_fee_money, o_fee_per, hk_co_id, hk_co_name, hk_co_name_en, hk_co_address, hk_co_address_en, hk_co_relationer, hk_co_tel, hk_co_email, hk_co_fax, pick_up_no, cabinet_num, hk_bill_no, declare_state, seq_no, is_handle_control, check_state_flag, f_level, f_step, f_multi_level0, f_date_time0, f_multi_level1, f_date_time1, is_scan, scan_date_time, print_count, is_financial, hg_company_id, hg_company_name, hg_company_name_en, user_name, customer_sum, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm, custom_master, distinate_port, port, trade_country, trade_area_code, desp_port_code, goods_place, is_us_payment, is_confirm
     </sql>
 
+    <select id="getSingleWindowData" resultType="com.jayud.scm.model.vo.SingleWindowData">
+        select * from v_hg_bill_dyck v where v.bill_no = #{billNo}
+    </select>
+
+    <select id="getYunBaoGuanData" resultType="com.jayud.scm.model.vo.YunBaoGuanData">
+        select * from v_hg_bill_yunbaoguan v where v.bill_id = #{id}
+    </select>
+
 </mapper>

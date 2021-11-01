@@ -1,9 +1,12 @@
 package com.jayud.scm.controller;
 
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.po.BookingOrder;
+import com.jayud.scm.model.po.HgBill;
 import com.jayud.scm.model.vo.HgBillVO;
 import com.jayud.scm.model.vo.HubShippingVO;
 import com.jayud.scm.model.vo.SingleWindowData;
@@ -65,10 +68,21 @@ public class HgBillController {
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "获取所有状态为已提交的报关单")
+    @PostMapping(value = "/getHgBillDataByDeclareState")
+    public CommonResult getHgBillDataByDeclareState(QueryCommonForm form) {
+        form.setDeclareState(1);
+        List<HgBillVO> hgBillVOS = hgBillService.getHgBillDataByDeclareState(form);
+        return CommonResult.success(hgBillVOS);
+    }
+
     @ApiOperation(value = "获取推送单一窗口的数据")
     @PostMapping(value = "/getSingleWindowData")
     public CommonResult getSingleWindowData(@RequestBody QueryCommonForm form) {
-        SingleWindowData singleWindowData = hgBillService.getSingleWindowData(form);
+        List<SingleWindowData> singleWindowData = hgBillService.getSingleWindowData(form);
+        if(CollectionUtil.isEmpty(singleWindowData)){
+            return CommonResult.error(444,"不存在该单号数据，或者该报关单未审核");
+        }
         return CommonResult.success(singleWindowData);
     }
 
@@ -76,14 +90,34 @@ public class HgBillController {
     @ApiOperation(value = "提交单一窗口")
     @PostMapping(value = "/submitSingleWindow")
     public CommonResult submitSingleWindow(@RequestBody QueryCommonForm form) {
+        boolean update = hgBillService.submitSingleWindow(form);
+        if(!update){
+            return CommonResult.error(444,"提交单一窗口操作失败");
+        }
         return CommonResult.success();
     }
 
     @ApiOperation(value = "修改状态或者报关数据")
     @PostMapping(value = "/updateHgBill")
     public CommonResult updateHgBill(@RequestBody QueryCommonForm form) {
+
+        if(form.getBillNo() != null){
+            QueryWrapper<HgBill> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(HgBill::getBillNo,form.getBillNo());
+            queryWrapper.lambda().eq(HgBill::getVoided,0);
+            HgBill hgBill = hgBillService.getOne(queryWrapper);
+            if(hgBill == null){
+                return CommonResult.error(444,"该报关单不存在或该报关单已被删除");
+            }
+        }
+
+        boolean update = hgBillService.updateHgBill(form);
+        if(!update){
+            return CommonResult.error(444,"修改状态或者报关数据,操作失败");
+        }
         return CommonResult.success();
     }
+
 
 
 }

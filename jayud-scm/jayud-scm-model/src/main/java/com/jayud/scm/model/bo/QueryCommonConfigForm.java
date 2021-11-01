@@ -13,6 +13,10 @@ public class QueryCommonConfigForm extends BasePageForm{
     @NotBlank(message = "SQL代码，不能为空")
     private String sqlCode;
 
+    @ApiModelProperty(value = "菜单或按钮code")
+//    @NotBlank(message = "菜单或按钮code不为空")
+    private String actionCode;
+
     @ApiModelProperty(value = "条件参数{k-v},键值对")
     private Map<String, Object> condPara;
 

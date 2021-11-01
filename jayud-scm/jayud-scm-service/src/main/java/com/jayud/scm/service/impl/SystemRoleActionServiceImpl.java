@@ -45,6 +45,7 @@ public class SystemRoleActionServiceImpl extends ServiceImpl<SystemRoleActionMap
         QueryWrapper<SystemRoleAction> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(SystemRoleAction::getRoleId,id);
         queryWrapper.lambda().eq(SystemRoleAction::getActionCode,actionCode);
+        queryWrapper.lambda().eq(SystemRoleAction::getVoided,0);
 
         List<SystemRoleAction> systemRoleActionList = this.baseMapper.selectList(queryWrapper);
         SystemRoleAction systemRoleAction = null;
@@ -93,5 +94,16 @@ public class SystemRoleActionServiceImpl extends ServiceImpl<SystemRoleActionMap
             }
         });
         log.warn("增加角色按钮信息成功"+systemRole);
+    }
+
+    @Override
+    public List<SystemRoleAction> getSystemRoleActionByRoleIdsAndActionCode(List<Long> longs, String actionCode) {
+        QueryWrapper<SystemRoleAction> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().in(SystemRoleAction::getRoleId,longs);
+        queryWrapper.lambda().eq(SystemRoleAction::getActionCode,actionCode);
+        queryWrapper.lambda().eq(SystemRoleAction::getVoided,0);
+
+        List<SystemRoleAction> systemRoleActionList = this.baseMapper.selectList(queryWrapper);
+        return systemRoleActionList;
     }
 }

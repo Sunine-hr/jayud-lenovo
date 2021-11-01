@@ -351,6 +351,7 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         List<BookingOrderEntry> bookingOrderEntryList1 = ConvertUtil.convertList(bookingOrderEntryList, BookingOrderEntry.class);
         bookingOrderEntryList1.forEach(bookingOrderEntry -> {
             bookingOrderEntry.setId(null);
+            bookingOrderEntry.setExRmbPrice(null);
             bookingOrderEntry.setBookingId(bookingId);
         });
         if(CollUtil.isNotEmpty(bookingOrderEntryList1)){

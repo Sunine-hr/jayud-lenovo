@@ -2,4 +2,5 @@ jayud:
   nacos:
     server-addr: 172.18.239.242:8848
     config:
-      namespace:
+      namespace: fb8d8ad9-f058-4498-b9fa-426d7ad9745a
+

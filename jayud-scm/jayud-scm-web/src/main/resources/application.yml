@@ -71,6 +71,9 @@ secure:
       - /api/**
       - /commodity/exportCommodityTemplate
       - /common/getOrderNo
+      - /hgBill/getSingleWindowData
+      - /hgBill/getHgBillDataByDeclareState
+      - /hgBill/updateHgBill
 feign:
   httpclient:
     connection-timeout: 5000

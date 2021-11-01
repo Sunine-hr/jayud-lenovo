@@ -178,11 +178,22 @@ public class BookingOrderController {
         if(!systemUser.getUserName().equalsIgnoreCase("Admin")){
             //获取登录用户所属角色
             List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
+//            for (SystemRole systemRole : enabledRolesByUserId) {
+//                SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),form.getActionCode());
+//                if(systemRoleAction == null){
+//                    return CommonResult.error(444,"该用户没有该按钮权限");
+//                }
+//            }
+            List<Long> longs = new ArrayList<>();
             for (SystemRole systemRole : enabledRolesByUserId) {
-                SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),form.getActionCode());
-                if(systemRoleAction == null){
-                    return CommonResult.error(444,"该用户没有该按钮权限");
-                }
+                longs.add(systemRole.getId());
+//                if(systemRoleAction == null){
+//                    return CommonResult.error(444,"该用户没有该按钮权限");
+//                }
+            }
+            List<SystemRoleAction> systemRoleActions = systemRoleActionService.getSystemRoleActionByRoleIdsAndActionCode(longs,form.getActionCode());
+            if(CollectionUtil.isEmpty(systemRoleActions)){
+                return CommonResult.error(444,"该用户没有该按钮权限");
             }
         }
 
@@ -216,11 +227,22 @@ public class BookingOrderController {
         if(!systemUser.getUserName().equalsIgnoreCase("admin")){
             //获取登录用户所属角色
             List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
+//            for (SystemRole systemRole : enabledRolesByUserId) {
+//                SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),form.getActionCode());
+//                if(systemRoleAction == null){
+//                    return CommonResult.error(444,"该用户没有该按钮权限");
+//                }
+//            }
+            List<Long> longs = new ArrayList<>();
             for (SystemRole systemRole : enabledRolesByUserId) {
-                SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),form.getActionCode());
-                if(systemRoleAction == null){
-                    return CommonResult.error(444,"该用户没有该按钮权限");
-                }
+                longs.add(systemRole.getId());
+//                if(systemRoleAction == null){
+//                    return CommonResult.error(444,"该用户没有该按钮权限");
+//                }
+            }
+            List<SystemRoleAction> systemRoleActions = systemRoleActionService.getSystemRoleActionByRoleIdsAndActionCode(longs,form.getActionCode());
+            if(CollectionUtil.isEmpty(systemRoleActions)){
+                return CommonResult.error(444,"该用户没有该按钮权限");
             }
         }
 

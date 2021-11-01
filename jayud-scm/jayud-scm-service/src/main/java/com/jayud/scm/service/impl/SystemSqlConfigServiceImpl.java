@@ -1,6 +1,7 @@
 package com.jayud.scm.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
@@ -24,6 +25,7 @@ import com.jayud.scm.model.po.SystemSqlConfig;
 import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.SystemSqlConfigVO;
 import com.jayud.scm.model.vo.TableColumnVO;
+import com.jayud.scm.service.ISystemRoleActionDataService;
 import com.jayud.scm.service.ISystemSqlConfigService;
 import com.jayud.scm.service.ISystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,9 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
 
     @Autowired
     private ISystemUserService systemUserService;
+
+    @Autowired
+    private ISystemRoleActionDataService systemRoleActionDataService;
 
     @Override
     public IPage<SystemSqlConfigVO> findByPage(QuerySystemSqlConfigForm form) {
@@ -153,7 +158,7 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
     }
 
     @Override
-    public CommonPageResult<Map<String, Object>> findCommonByPage(QueryCommonConfigForm form) {
+    public CommonPageResult<Map<String, Object>>  findCommonByPage(QueryCommonConfigForm form) {
         String paraIdentifier = "@";//查询参数标识符
         //登录用户信息
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
@@ -208,9 +213,18 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
             }
             where = stringBuffer.toString();
         }
+
         String sqlDataStr = systemSqlConfigVO.getSqlDataStr();//数据权限查询
         if(StrUtil.isNotEmpty(sqlDataStr)){
-            where = where + " " + sqlDataStr.replaceAll("@userId", ""+systemUser.getId()+"");
+            List<Integer> roleData = systemRoleActionDataService.getRoleData(form.getActionCode());
+            if(CollectionUtil.isNotEmpty(roleData)){
+                StringBuffer stringBuffer = new StringBuffer();
+                for (Integer roleDatum : roleData) {
+                    stringBuffer.append(roleDatum).append(",");
+                }
+                where = where + " " + sqlDataStr.replaceAll("@userId", stringBuffer.substring(0,stringBuffer.length()-1));
+            }
+
         }
         if(StrUtil.isNotEmpty(sqlWhereCondition)){
             //where条件(and ...)

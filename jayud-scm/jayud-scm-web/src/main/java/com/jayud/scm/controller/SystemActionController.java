@@ -97,7 +97,7 @@ public class SystemActionController {
 
                 for (QueryMenuStructureVO childChild : child.getChildren()) {
                     //获取菜单下按钮
-                    List<SystemAction> systemActions = systemActionService.getSystemActionList(childChild.getId());
+                    List<SystemAction> systemActions = systemActionService.getSystemActionByIsAudit(childChild.getId());
 
                     List<QueryMenuStructureVO> menuStructureVOS1 = new ArrayList<>();
                     for (SystemAction systemAction : systemActions) {

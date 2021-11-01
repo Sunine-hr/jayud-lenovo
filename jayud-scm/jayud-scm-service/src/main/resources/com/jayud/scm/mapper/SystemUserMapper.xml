@@ -35,7 +35,7 @@
         <result column="department_id" property="departmentId"/>
         <result column="work_id" property="workId"/>
         <result column="workName" property="workName"/>
-        <result column="roleId" property="roleId"/>
+<!--        <result column="roleId" property="roleId"/>-->
         <result column="roleName" property="roleName"/>
         <result column="company_id" property="companyId"/>
         <result column="superior_id" property="superiorId"/>
@@ -92,7 +92,7 @@
         THEN '审核拒绝'
         END
         ) auditStatusDesc,
-        sr.`name` roleName,
+--         sr.`name` roleName,
 --         c.`company_name` companyName,
         su.`created_time` createdTime,
         DATE_FORMAT(su.`created_time`,'%Y-%m-%d %H:%i:%S') strCreatedTime,
@@ -103,7 +103,7 @@
         `system_user` t
         WHERE t.id = su.`superior_id`) superiorName,
         su.`work_name` workName,
-        sr.`id` roleId,
+--         sr.`id` roleId,
         su.note,
         su.`audit_status` auditStatus
 --         le.`id` lid,
@@ -111,10 +111,10 @@
 
         FROM
         `system_user` su
-        LEFT JOIN system_user_role_relation surr
-        ON surr.`user_id` = su.`id`
-        LEFT JOIN system_role sr
-        ON sr.`id` = surr.`role_id`
+--         LEFT JOIN system_user_role_relation surr
+--         ON surr.`user_id` = su.`id`
+--         LEFT JOIN system_role sr
+--         ON sr.`id` = surr.`role_id`
 --         LEFT JOIN company c
 --         ON su.`company_id` = c.`id`
 --         LEFT JOIN system_user_legal sul
@@ -191,8 +191,6 @@
           d.`name` departmentName,
           su.`work_id` workId,
           su.`work_name` workName,
-          sr.`id` roleId,
-          sr.`name` roleName,
           (SELECT
             c.company_name
           FROM
@@ -212,10 +210,6 @@
           `system_user` su
           LEFT JOIN department d
             ON su.`department_id` = d.`id`
-          LEFT JOIN system_user_role_relation surr
-            ON su.`id` = surr.`user_id`
-          LEFT JOIN system_role sr
-            ON sr.`id` = surr.`role_id`
         WHERE su.`id` = #{id}
     </select>
 
@@ -241,10 +235,10 @@
         su.status
         FROM
         `system_user` su
-        LEFT JOIN system_user_role_relation surr
-        ON su.`id` = surr.`user_id`
-        LEFT JOIN system_role sr
-        ON surr.`role_id` = sr.`id`
+--         LEFT JOIN system_user_role_relation surr
+--         ON su.`id` = surr.`user_id`
+--         LEFT JOIN system_role sr
+--         ON surr.`role_id` = sr.`id`
         LEFT JOIN company c
         ON su.`company_id` = c.`id`
         <where>

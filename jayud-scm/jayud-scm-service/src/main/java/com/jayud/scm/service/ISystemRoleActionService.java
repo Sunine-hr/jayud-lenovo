@@ -28,4 +28,6 @@ public interface ISystemRoleActionService extends IService<SystemRoleAction> {
     boolean removeSystemRoleActionByRoleId(List<Long> roleIds);
 
     void createSystemRoleAction(SystemRole systemRole, List<String> menuIds);
+
+    List<SystemRoleAction> getSystemRoleActionByRoleIdsAndActionCode(List<Long> longs, String actionCode);
 }

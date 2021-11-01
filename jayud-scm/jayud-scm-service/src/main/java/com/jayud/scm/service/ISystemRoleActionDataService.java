@@ -7,6 +7,8 @@ import com.jayud.scm.model.po.SystemRoleActionData;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.SystemRoleActionDataVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 角色数据权限 服务类
@@ -20,4 +22,6 @@ public interface ISystemRoleActionDataService extends IService<SystemRoleActionD
     IPage<SystemRoleActionDataVO> findByPage(QueryForm form);
 
     boolean addSystemRoleActionData(AddSystemRoleActionDataForm form);
+
+    List<Integer> getRoleData(String actionCode);
 }

@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -21,10 +22,7 @@ import com.jayud.scm.model.bo.AuditSystemUserForm;
 import com.jayud.scm.model.bo.OprSystemUserForm;
 import com.jayud.scm.model.bo.QueryAccountForm;
 import com.jayud.scm.model.bo.QuerySystemUserForm;
-import com.jayud.scm.model.po.Department;
-import com.jayud.scm.model.po.SystemUser;
-import com.jayud.scm.model.po.SystemUserLegal;
-import com.jayud.scm.model.po.SystemUserLoginLog;
+import com.jayud.scm.model.po.*;
 import com.jayud.scm.model.vo.*;
 import com.jayud.scm.service.*;
 import io.netty.util.internal.StringUtil;
@@ -187,11 +185,25 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         //定义排序规则
         page.addOrder(OrderItem.asc("su.id"));
         IPage<SystemUserVO> pageInfo = this.baseMapper.getPageList(page, form);
+
+        for (SystemUserVO record : pageInfo.getRecords()) {
+            List<Long> longs = new ArrayList<>();
+            List<SystemRole> enabledRolesByUserId = roleRelationService.getEnabledRolesByUserId(record.getId());
+            if(CollectionUtil.isNotEmpty(enabledRolesByUserId)){
+                StringBuffer stringBuffer = new StringBuffer();
+                for (SystemRole systemRole : enabledRolesByUserId) {
+                    stringBuffer.append(systemRole.getName()).append(",");
+                    longs.add(systemRole.getId());
+                }
+                record.setRoleName(stringBuffer.substring(0,stringBuffer.length()-1));
+                record.setRoleId(longs);
+            }
+        }
+
         if (form.getCompanyId() != null) {
             List<SystemUserVO> records = pageInfo.getRecords();
             List<SystemUserVO> records2 = new ArrayList<>();
             for (SystemUserVO record : records) {
-
                 List<Long> legalEntityIds = record.getLegalEntityIds();
                 for (Long legalEntityId : legalEntityIds) {
                     if (legalEntityId != null) {
@@ -201,6 +213,7 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
                     }
                 }
             }
+
             pageInfo.setRecords(records2);
             pageInfo.setTotal(records2.size());
             pageInfo.setPages(records2.size() % pageInfo.getSize() == 0 ? records2.size() / pageInfo.getSize() : records2.size() / pageInfo.getSize() + 1);
@@ -211,6 +224,14 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
     @Override
     public UpdateSystemUserVO getSystemUser(Long id) {
         UpdateSystemUserVO updateSystemUserVO = baseMapper.getSystemUser(id);
+        List<SystemRole> enabledRolesByUserId = roleRelationService.getEnabledRolesByUserId(updateSystemUserVO.getId());
+        if(CollectionUtil.isNotEmpty(enabledRolesByUserId)){
+            List<Long> longs = new ArrayList<>();
+            for (SystemRole systemRole : enabledRolesByUserId) {
+                longs.add(systemRole.getId());
+            }
+            updateSystemUserVO.setRoleId(longs);
+        }
         List<Long> legalId = systemUserLegalService.getLegalId(id);
         updateSystemUserVO.setLegalEntityIds(legalId);
         return updateSystemUserVO;

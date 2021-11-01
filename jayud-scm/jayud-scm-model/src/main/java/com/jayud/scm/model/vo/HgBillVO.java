@@ -162,11 +162,17 @@ public class HgBillVO {
     @ApiModelProperty(value = "香港报关单号")
     private String hkBillNo;
 
-    @ApiModelProperty(value = "报关单申报状态：0未提交，1已提交，2提交成功，3生成成功")
+    @ApiModelProperty(value = "报关单申报状态：0未提交，1已提交，2已完成")
     private Integer declareState;
 
     @ApiModelProperty(value = "关联关检号")
     private String seqNo;
+
+    @ApiModelProperty(value = "报关单申报状态：0未提交，1已提交，2提交成功，3生成成功")
+    private Integer customsState;
+
+    @ApiModelProperty(value = "云报关单id")
+    private String uid;
 
     @ApiModelProperty(value = "是否处理香港管制商品0:是1:否")
     private Integer isHandleControl;

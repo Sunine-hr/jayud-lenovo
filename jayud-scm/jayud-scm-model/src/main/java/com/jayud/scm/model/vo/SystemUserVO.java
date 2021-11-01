@@ -26,6 +26,9 @@ public class SystemUserVO {
     @ApiModelProperty(value = "审核状态")
     private String auditStatusDesc;
 
+    @ApiModelProperty(value = "审核状态")
+    private int auditStatus;
+
     @ApiModelProperty(value = "用户名")
     private String userName;
 
@@ -45,7 +48,7 @@ public class SystemUserVO {
     private String workName;
 
     @ApiModelProperty(value = "角色ID")
-    private Long roleId;
+    private List<Long> roleId;
 
     @ApiModelProperty(value = "角色名称")
     private String roleName;

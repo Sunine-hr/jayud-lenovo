@@ -33,7 +33,7 @@ public class SystemRoleActionDataVO {
     private Integer roleId;
 
     @ApiModelProperty(value = "角色名称")
-    private Integer name;
+    private String name;
 
     @ApiModelProperty(value = "权限ID")
     private Integer actionId;

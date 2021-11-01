@@ -54,6 +54,7 @@
                 and system_menu.type = #{type}
             </if>
         </where>
+        group by system_menu.id
         ORDER BY system_menu.sort,system_menu.created_time asc;
     </select>
 </mapper>

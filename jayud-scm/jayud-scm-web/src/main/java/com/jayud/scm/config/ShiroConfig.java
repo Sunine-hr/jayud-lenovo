@@ -40,6 +40,8 @@ public class ShiroConfig {
     private String password;
     private Duration timeout;
 
+    private int sessionTimeout = 3600 * 2;
+
     /**
      * Filter工厂，设置对应的过滤条件和跳转条件
      * create by: leigq
@@ -155,6 +157,7 @@ public class ShiroConfig {
     public SessionManager sessionManager() {
         MySessionManager mySessionManager = new MySessionManager();
         mySessionManager.setSessionDAO(redisSessionDAO());
+        mySessionManager.setGlobalSessionTimeout(sessionTimeout*10000);
         return mySessionManager;
     }
 

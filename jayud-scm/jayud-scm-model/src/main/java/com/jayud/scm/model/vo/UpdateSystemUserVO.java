@@ -39,7 +39,7 @@ public class UpdateSystemUserVO {
     private String workName;
 
     @ApiModelProperty(value = "角色id")
-    private Long roleId;
+    private List<Long> roleId = new ArrayList<>();
 
     @ApiModelProperty(value = "角色")
     private String roleName;

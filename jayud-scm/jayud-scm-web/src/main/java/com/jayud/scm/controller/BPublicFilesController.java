@@ -4,12 +4,14 @@ package com.jayud.scm.controller;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonResult;
+import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.scm.feign.FileClient;
 import com.jayud.scm.model.bo.AddBPublicFilesForm;
 import com.jayud.scm.model.vo.BPublicFilesVO;
 import com.jayud.scm.service.IBDataDicEntryService;
 import com.jayud.scm.service.IBPublicFilesService;
+import com.zaxxer.hikari.util.FastList;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +45,8 @@ public class BPublicFilesController {
     @Autowired
     private IBDataDicEntryService ibDataDicEntryService;
 
-    @Autowired
-    private FileClient fileClient;
+//    @Autowired
+//    private FileClient fileClient;
 
     @ApiOperation(value = "通过类型和订单id查询所有附件")
     @ApiImplicitParams({
@@ -52,13 +55,18 @@ public class BPublicFilesController {
     })
     @PostMapping(value = "/findPublicFile")
     public CommonResult<List<BPublicFilesVO>> findPublicFile(@RequestBody Map<String,Object> map) {
-        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
+//        String prePath = String.valueOf(fileClient.getBaseUrl().getData());
         Integer fileModel = MapUtil.getInt(map,"fileModel");
         Integer businessId = MapUtil.getInt(map, "businessId");
         List<BPublicFilesVO> bPublicFilesVOS = bPublicFilesService.getPublicFileList(fileModel,businessId);
         if(CollectionUtils.isNotEmpty(bPublicFilesVOS)){
             for (BPublicFilesVO bPublicFilesVO : bPublicFilesVOS) {
-                bPublicFilesVO.setFileView(StringUtils.getFileViews(bPublicFilesVO.getSFilePath(),bPublicFilesVO.getSFileName(),prePath));
+                List<FileView> fileViews = new ArrayList<>();
+                FileView fileView = new FileView();
+                fileView.setAbsolutePath(bPublicFilesVO.getSFilePath());
+                fileView.setFileName(bPublicFilesVO.getSFileName());
+                fileViews.add(fileView);
+                bPublicFilesVO.setFileView(fileViews);
             }
         }
 
@@ -74,6 +82,7 @@ public class BPublicFilesController {
         }
         return CommonResult.error(444,"添加附件失败");
     }
+
 
 }
 

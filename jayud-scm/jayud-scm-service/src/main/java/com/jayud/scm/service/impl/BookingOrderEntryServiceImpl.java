@@ -166,6 +166,7 @@ public class BookingOrderEntryServiceImpl extends ServiceImpl<BookingOrderEntryM
 
         //复制单条数据，设置新的id
         bookingOrderEntry.setId(null);//id设为null
+        bookingOrderEntry.setExRmbPrice(null);
         this.saveOrUpdate(bookingOrderEntry);//重新生成id
 
         BookingOrderEntryVO bookingOrderEntryVO1 = ConvertUtil.convert(bookingOrderEntry, BookingOrderEntryVO.class);

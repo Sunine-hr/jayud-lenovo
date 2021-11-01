@@ -139,12 +139,9 @@ public class AddContractQuotationDetailsForm extends Model<AddContractQuotationD
         if (unitPrice == null) {
             throw new JayudBizException(400, "单价不能为空");
         }
-//        if (StringUtils.isEmpty(unit)) {
-//            throw new JayudBizException(400, "单位不能为空");
-//        }
-//        if (StringUtils.isEmpty(currencyCode)) {
-//            throw new JayudBizException(400, "币种代码不能为空");
-//        }
+        if (StringUtils.isEmpty(currencyCode)) {
+            throw new JayudBizException(400, "币种代码不能为空");
+        }
         if (costTypeId == null) {
             throw new JayudBizException(400, "作业环节不能为空");
         }

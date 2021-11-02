@@ -2,6 +2,7 @@ package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.entity.DataControl;
 import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.*;
@@ -223,7 +224,7 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @param userName
      * @return
      */
-    public Set<Long> filterGoCustomsAudit(Map<String, Object> callbackParam, List<Long> legalIds, String userName);
+    public Set<Long> filterGoCustomsAudit(Map<String, Object> callbackParam, DataControl dataControl, String userName);
 
     /**
      * 供应商录入费用

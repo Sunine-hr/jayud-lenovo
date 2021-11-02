@@ -94,6 +94,9 @@ public class SystemUser extends Model<SystemUser> {
     @ApiModelProperty(value = "修改时间")
     private Timestamp updatedTime;
 
+    @ApiModelProperty(value = "兼职部门Id")
+    private String partTimeDepId;
+
 
     @Override
     protected Serializable pkVal() {

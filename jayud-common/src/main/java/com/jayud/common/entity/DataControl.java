@@ -16,4 +16,7 @@ public class DataControl {
 
     @ApiModelProperty(value = "用户(法人主体),供应商(供应商)")
     private List<Long> companyIds;
+
+    @ApiModelProperty(value = "部门id")
+    private List<Long> departmentId;
 }

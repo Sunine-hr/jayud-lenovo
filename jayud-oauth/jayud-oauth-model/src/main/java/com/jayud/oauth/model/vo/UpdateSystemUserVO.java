@@ -1,15 +1,17 @@
 package com.jayud.oauth.model.vo;
 
+import com.jayud.common.utils.StringUtils;
 import com.jayud.oauth.model.po.MsgUserChannel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- *
  * @author bocong.zheng
  */
 @Data
@@ -57,7 +59,7 @@ public class UpdateSystemUserVO {
 //    @ApiModelProperty(value = "所属上级")
 //    private String superiorName;
 
-    @ApiModelProperty(value = "法人主体ID集合",required = true)
+    @ApiModelProperty(value = "法人主体ID集合", required = true)
     @NotNull(message = "legalEntityIds is required")
     private List<Long> legalEntityIds = new ArrayList<>();
 
@@ -73,5 +75,22 @@ public class UpdateSystemUserVO {
 
     @ApiModelProperty(value = "消息渠道集合")
     private List<MsgUserChannel> msgUserChannelList;
+
+    @ApiModelProperty(value = "兼职部门Id", required = true)
+    private String partTimeDepId;
+
+    @ApiModelProperty(value = "兼职部门Ids", required = true)
+    private Set<Long> partTimeDepIds;
+
+    public void setPartTimeDepId(String partTimeDepId) {
+        this.partTimeDepId = partTimeDepId;
+        if (!StringUtils.isEmpty(partTimeDepId)) {
+            String[] split = partTimeDepId.split(",");
+            partTimeDepIds = new HashSet<>();
+            for (String id : split) {
+                partTimeDepIds.add(Long.valueOf(id));
+            }
+        }
+    }
 }
 

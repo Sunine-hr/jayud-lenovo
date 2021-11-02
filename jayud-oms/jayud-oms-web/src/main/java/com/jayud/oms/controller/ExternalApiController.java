@@ -1317,6 +1317,10 @@ public class ExternalApiController {
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
         Map<String, Integer> reBillNumMap = this.financeClient.getPendingBillStatusNum(null, legalIds, 0, true, SubOrderSignEnum.MAIN.getSignOne()).getData();
         Map<String, Integer> payBillNumMap = this.financeClient.getPendingBillStatusNum(null, legalIds, 1, true, SubOrderSignEnum.MAIN.getSignOne()).getData();
+
+
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.EMPLOYEE_TYPE.getCode()).getData();
+
         for (Map<String, Object> menus : menusList) {
 
             Map<String, Object> map = new HashMap<>();
@@ -1329,7 +1333,7 @@ public class ExternalApiController {
                         num = this.orderInfoService.pendingExternalCustomsDeclarationNum(legalIds);
                         break;
                     case "portPassCheck":
-                        num = this.orderInfoService.filterGoCustomsAudit(null, legalIds, null).size();
+                        num = this.orderInfoService.filterGoCustomsAudit(null, dataControl, null).size();
                         break;
                     case "feeCheck":
                         num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null, null);
@@ -2255,6 +2259,7 @@ public class ExternalApiController {
 
     /**
      * 保存或更新
+     *
      * @param form
      */
     @RequestMapping(value = "/api/saveOrUpdateOutMainOrderForm")
@@ -2281,6 +2286,7 @@ public class ExternalApiController {
 
     /**
      * 根据仓库名称获取仓库ID
+     *
      * @param warehouseName
      * @return
      */
@@ -2294,8 +2300,8 @@ public class ExternalApiController {
      */
     @RequestMapping(value = "/api/getRegionCityIdMapByName")
     public ApiResult<Map<String, Long>> getRegionCityIdMapByName(@RequestParam(value = "provinceName", required = true) String provinceName,
-                                               @RequestParam(value = "cityName", required = true) String cityName,
-                                               @RequestParam(value = "areaName", required = true) String areaName) {
+                                                                 @RequestParam(value = "cityName", required = true) String cityName,
+                                                                 @RequestParam(value = "areaName", required = true) String areaName) {
 
         if (StringUtils.isEmpty(provinceName) || StringUtils.isEmpty(cityName) || StringUtils.isEmpty(areaName)) {
             return ApiResult.error("省市区信息不完整");

@@ -284,20 +284,22 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
+        DataControl dataControl = this.oauthClient.getDataPermission(form.getLoginUserName(), UserTypeEnum.EMPLOYEE_TYPE.getCode()).getData();
+
         if (CommonConstant.GO_CUSTOMS_AUDIT.equals(form.getCmd())) {
             //定义排序规则
             page.addOrder(OrderItem.desc("oi.id"));
             Map<String, Object> callbackParam = new HashMap<>();
-            Set<Long> mainOrderIds = this.filterGoCustomsAudit(callbackParam, legalIds, null);
+            Set<Long> mainOrderIds = this.filterGoCustomsAudit(callbackParam, dataControl, null);
             pageInfo = baseMapper.findGoCustomsAuditByPage(page,
                     form.setMainOrderIds(new ArrayList<>(mainOrderIds)),
-                    legalIds);
+                    dataControl);
             //补充数据
             this.supplementaryGoCustomsAuditData(pageInfo, callbackParam);
         } else {
             //定义排序规则
             page.addOrder(OrderItem.desc("id"));
-            pageInfo = baseMapper.findOrderInfoByPage(page, form, legalIds);
+            pageInfo = baseMapper.findOrderInfoByPage(page, form, dataControl);
             //根据主订单查询子订单数据
             List<OrderInfoVO> orderInfoVOs = pageInfo.getRecords();
             if (CollectionUtil.isEmpty(orderInfoVOs)) {
@@ -2672,16 +2674,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return map;
     }
 
+
     /**
      * 过滤关前审核
      *
      * @param callbackParam
-     * @param legalIds
+     * @param dataControl
      * @param userName
      * @return
      */
     @Override
-    public Set<Long> filterGoCustomsAudit(Map<String, Object> callbackParam, List<Long> legalIds, String userName) {
+    public Set<Long> filterGoCustomsAudit(Map<String, Object> callbackParam, DataControl dataControl, String userName) {
         //1.完成过磅,2.选择没有过磅情况下完成提货,需要到通关前审核
         Object tmsOrders = this.tmsClient.preconditionsGoCustomsAudit().getData();
         if (tmsOrders == null) {
@@ -2708,8 +2711,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (!StringUtils.isEmpty(userName)) {
             condition.lambda().eq(OrderInfo::getCreatedUser, userName);
         }
-        if (CollectionUtil.isNotEmpty(legalIds)) {
-            condition.lambda().in(OrderInfo::getLegalEntityId, legalIds);
+        if (CollectionUtil.isNotEmpty(dataControl.getCompanyIds())) {
+            condition.lambda().in(OrderInfo::getLegalEntityId, dataControl.getCompanyIds());
+        }
+        if (CollectionUtils.isNotEmpty(dataControl.getDepartmentId())) {
+            condition.lambda().in(OrderInfo::getBizBelongDepart, dataControl.getDepartmentId());
         }
 
         List<OrderInfo> orderInfos = this.baseMapper.selectList(condition);

@@ -355,9 +355,8 @@ public class ExternalApiController {
         List<Long> companyIds = new ArrayList<>();
         companyIds.add(-1L); //没有就是-1
         DataControl dataControl = new DataControl().setCompanyIds(companyIds);
-        SystemUser systemUser;
+        SystemUser systemUser = userService.getSystemUserBySystemName(loginName);
         if (userType == null) {
-            systemUser = userService.getSystemUserBySystemName(loginName);
             userType = systemUser.getUserType();
         } else {
             List<SystemUser> list = userService.getByCondition(new SystemUser().setName(loginName).setUserType(userType));
@@ -379,6 +378,17 @@ public class ExternalApiController {
         switch (userTypeEnum) {
             case EMPLOYEE_TYPE:
                 companyIds = systemUserLegalService.getLegalId(systemUser.getId());
+                //部门
+                List<Long> departmentIds = new ArrayList<>();
+                Long departmentId = systemUser.getDepartmentId();
+                if (!StringUtils.isEmpty(systemUser.getPartTimeDepId())) {
+                    String[] departmentIdsStr = systemUser.getPartTimeDepId().split(",");
+                    for (String str : departmentIdsStr) {
+                        departmentIds.add(Long.valueOf(str));
+                    }
+                }
+                departmentIds.add(departmentId);
+                dataControl.setDepartmentId(departmentIds);
                 break;
             case CUSTOMER_TYPE:
                 break;
@@ -388,6 +398,7 @@ public class ExternalApiController {
                 break;
             default:
         }
+
         dataControl.setCompanyIds(companyIds).setAccountType(userTypeEnum.getCode());
         return ApiResult.ok(dataControl);
     }

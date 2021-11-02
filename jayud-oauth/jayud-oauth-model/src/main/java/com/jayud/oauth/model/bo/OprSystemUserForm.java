@@ -2,12 +2,14 @@ package com.jayud.oauth.model.bo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class OprSystemUserForm {
@@ -58,6 +60,20 @@ public class OprSystemUserForm {
     @Pattern(regexp = "update|delete",message = "cmd requires 'update' or 'delete' only")
     private String cmd;
 
+    @ApiModelProperty(value = "兼职部门Ids", required = true)
+    private Set<Long> partTimeDepIds;
 
+    @ApiModelProperty(value = "兼职部门Id", required = true)
+    private String partTimeDepId;
 
+    public void setPartTimeDepIds(Set<Long> partTimeDepIds) {
+        this.partTimeDepIds = partTimeDepIds;
+        if (!CollectionUtils.isEmpty(partTimeDepIds)) {
+            StringBuilder sb = new StringBuilder();
+            partTimeDepIds.forEach(e -> {
+                sb.append(e).append(",");
+            });
+            this.partTimeDepId = sb.toString();
+        }
+    }
 }

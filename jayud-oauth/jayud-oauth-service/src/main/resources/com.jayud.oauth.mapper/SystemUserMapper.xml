@@ -193,6 +193,7 @@
           su.`work_name` workName,
           sr.`id` roleId,
           sr.`name` roleName,
+          su.part_time_dep_id,
           (SELECT
             c.company_name
           FROM

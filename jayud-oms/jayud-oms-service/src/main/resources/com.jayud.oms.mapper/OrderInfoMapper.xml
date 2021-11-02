@@ -144,12 +144,24 @@
                     and oi.created_user = #{form.loginUserName}
                 </when>
                 <otherwise>
-                    <if test="legalIds != null and legalIds.size>0">
+                    <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
                         and oi.`legal_entity_id` in
-                        <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                            #{legalId}
+                        <foreach collection="dataControl.companyIds" item="companyId" open="(" separator="," close=")">
+                            #{companyId}
                         </foreach>
                     </if>
+                    <if test="dataControl.departmentId !=null and dataControl.departmentId.size>0">
+                        and oi.biz_belong_depart in
+                        <foreach collection="dataControl.departmentId" item="item" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                    </if>
+<!--                    <if test="legalIds != null and legalIds.size>0">-->
+<!--                        and oi.`legal_entity_id` in-->
+<!--                        <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+<!--                            #{legalId}-->
+<!--                        </foreach>-->
+<!--                    </if>-->
                 </otherwise>
             </choose>
         </where>

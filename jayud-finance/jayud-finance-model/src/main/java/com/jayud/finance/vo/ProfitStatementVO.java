@@ -160,6 +160,10 @@ public class ProfitStatementVO extends Model<ProfitStatementVO> {
     @ApiModelProperty(value = "订单类别(product_classify表)")
     private String classCode;
 
+    @ApiModelProperty(value = "操作时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime operationTime;
+
     public static void main(String[] args) {
         Utilities.printFieldsInfo(QueryProfitStatementForm.class);
     }

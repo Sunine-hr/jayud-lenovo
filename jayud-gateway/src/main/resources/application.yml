@@ -99,7 +99,7 @@ spring:
             - IgnoreGlobalFilterFactor
         - id: route-jayud-tools-ws   #佳裕达jayud-tools 佳裕达小工具项目 配置websocket转发
           # uri: lb:ws://jayud-tools
-          uri: ws://localhost:8877
+          uri: ws://localhost:10443
           predicates:
             - Path=/jayudToolsWs/**
           filters:

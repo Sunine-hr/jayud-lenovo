@@ -33,8 +33,8 @@ public class AddPlatformForm {
     @NotEmpty(message = "线路类型不能为空")
     private String platformName;
 
-    @ApiModelProperty(value = "所属仓库")
-    private Long warehouseId;
+//    @ApiModelProperty(value = "所属仓库")
+//    private Long warehouseId;
 
     @ApiModelProperty(value = "仓库名称")
     private String warehouseName;

@@ -2607,12 +2607,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     /**
      * 获取法人主体下的待外部报关数
      *
-     * @param legalIds
+     * @param dataControl
      * @return
      */
     @Override
-    public int pendingExternalCustomsDeclarationNum(List<Long> legalIds) {
-        return this.baseMapper.pendingExternalCustomsDeclarationNum(legalIds);
+    public int pendingExternalCustomsDeclarationNum(DataControl dataControl) {
+        return this.baseMapper.pendingExternalCustomsDeclarationNum(dataControl);
     }
 
     /**

@@ -3,6 +3,7 @@ package com.jayud.oms.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.entity.DataControl;
 import com.jayud.oms.model.bo.InitGoCustomsAuditForm;
 import com.jayud.oms.model.bo.QueryOrderInfoForm;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
@@ -33,18 +34,21 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      *
      * @param page
      * @param form
+     * @param dataControl
      * @return
      */
-    IPage<OrderInfoVO> findOrderInfoByPage(Page page, @Param("form") QueryOrderInfoForm form);
+    IPage<OrderInfoVO> findOrderInfoByPage(@Param("page") Page page, @Param("form") QueryOrderInfoForm form,
+                                           @Param("dataControl") DataControl dataControl);
 
     /**
      * 分页查询通关前审核
      *
      * @param page
      * @param form
+     * @param dataControl
      * @return
      */
-    IPage<OrderInfoVO> findGoCustomsAuditByPage(Page page, @Param("form") QueryOrderInfoForm form);
+    IPage<OrderInfoVO> findGoCustomsAuditByPage(@Param("page") Page page, @Param("form") QueryOrderInfoForm form, @Param("dataControl") DataControl dataControl);
 
     /**
      * 获取主订单信息
@@ -97,7 +101,7 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
     IPage<OrderInfoVO> findGoCustomsAuditByPage(Page<OrderInfoVO> page, @Param("form") QueryOrderInfoForm form, @Param("legalIds") List<Long> legalIds);
 
 
-    Integer pendingExternalCustomsDeclarationNum(@Param("legalIds") List<Long> legalIds);
+    Integer pendingExternalCustomsDeclarationNum(@Param("dataControl") DataControl dataControl);
 
     Integer pendingGoCustomsAuditNum(@Param("legalIds") List<Long> legalIds);
 

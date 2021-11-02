@@ -1,5 +1,6 @@
 package com.jayud.oms.service.impl;
 
+import com.jayud.common.entity.DataControl;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.mapper.OrderInfoMapper;
 import com.jayud.oms.model.po.OrderInfo;
@@ -30,13 +31,13 @@ public class CostCommonServiceImpl implements ICostCommonService {
      * 统计应收/应付待处理费用审核
      */
     @Override
-    public Integer auditPendingExpenses(String subType, List<Long> legalIds, List<String> orderNos, String userName) {
+    public Integer auditPendingExpenses(String subType, DataControl dataControl, List<String> orderNos, String userName) {
         Set<String> orderNosSet = new HashSet<>();
         String key = SubOrderSignEnum.MAIN.getSignOne().equals(subType) ? "mainOrderNo" : "orderNo";
         //查询应付待费用审核
-        List<Map<String, Object>> paymentCostMap = this.orderPaymentCostService.getPendingExpenseApproval(subType, orderNos, legalIds,userName);
+        List<Map<String, Object>> paymentCostMap = this.orderPaymentCostService.getPendingExpenseApproval(subType, orderNos, dataControl,userName);
         //查询应收待费用审核
-        List<Map<String, Object>> receivableCostMap = this.orderReceivableCostService.getPendingExpenseApproval(subType, orderNos, legalIds);
+        List<Map<String, Object>> receivableCostMap = this.orderReceivableCostService.getPendingExpenseApproval(subType, orderNos, dataControl);
         paymentCostMap.stream().filter(e -> e.get(key) != null).forEach(e -> orderNosSet.add(e.get(key).toString()));
         receivableCostMap.stream().filter(e -> e.get(key) != null).forEach(e -> orderNosSet.add(e.get(key).toString()));
         return orderNosSet.size();

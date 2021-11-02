@@ -2,6 +2,7 @@ package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.entity.DataControl;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.mapper.OrderPaymentCostMapper;
@@ -9,7 +10,6 @@ import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.CurrencyInfo;
 import com.jayud.oms.model.po.OrderPaymentCost;
-import com.jayud.oms.model.po.OrderReceivableCost;
 import com.jayud.oms.model.po.SupplierInfo;
 import com.jayud.oms.model.vo.DriverBillCostVO;
 import com.jayud.oms.model.vo.DriverOrderPaymentCostVO;
@@ -204,8 +204,8 @@ public class OrderPaymentCostServiceImpl extends ServiceImpl<OrderPaymentCostMap
      * 查询待处理费用审核
      */
     @Override
-    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds, String userName) {
-        return this.baseMapper.getPendingExpenseApproval(subType, orderNos, legalIds, userName);
+    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, DataControl dataControl, String userName) {
+        return this.baseMapper.getPendingExpenseApproval(subType, orderNos, dataControl, userName);
     }
 
     @Override

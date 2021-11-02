@@ -3,8 +3,10 @@ package com.jayud.oms.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.entity.DataControl;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.BigDecimalUtil;
 import com.jayud.common.utils.DateUtils;
@@ -104,7 +106,8 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
 //                countDownLatch.countDown();
 //            }
 //        }).start();
-
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.EMPLOYEE_TYPE.getCode()).getData();
+        dataControl.setDepartmentId(null);
         Map<String, Integer> receivableStatusNum = this.financeClient.getBillingStatusNum(userName, 0, true, SubOrderSignEnum.MAIN.getSignOne()).getData();
         Map<String, Integer> payStatusNum = this.financeClient.getBillingStatusNum(userName, 1, true, SubOrderSignEnum.MAIN.getSignOne()).getData();
         tmp.forEach((k, v) -> {
@@ -129,7 +132,7 @@ public class StatisticalReportServiceImpl implements StatisticalReportService {
                         num = unemployedFeesMap.get(v);
                         break;
                     case "feeCheck":
-                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null,userName);
+                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), dataControl, null, userName);
                         break;
                     case "pending":
                         if (orderInfos.get() != null) {

@@ -1,6 +1,7 @@
 package com.jayud.oms.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.entity.DataControl;
 import com.jayud.oms.model.bo.GetCostDetailForm;
 import com.jayud.oms.model.bo.QueryStatisticalReport;
 import com.jayud.oms.model.po.OrderReceivableCost;
@@ -87,7 +88,7 @@ public interface IOrderReceivableCostService extends IService<OrderReceivableCos
     /**
      * 查询待处理费用审核
      */
-    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds);
+    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, DataControl dataControl);
 
     List<OrderReceivableCost> getBySubType(String subType);
 

@@ -1,5 +1,6 @@
 package com.jayud.oms.service;
 
+import com.jayud.common.entity.DataControl;
 import com.jayud.oms.model.po.OrderInfo;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface ICostCommonService {
     /**
      * 统计应收/应付待处理费用审核
      */
-    public Integer auditPendingExpenses(String subType, List<Long> legalIds, List<String> orderNos, String userName);
+    public Integer auditPendingExpenses(String subType, DataControl dataControl, List<String> orderNos, String userName);
 
     /**
      * 查询所有未录用费用订单数量

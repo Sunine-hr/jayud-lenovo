@@ -1330,13 +1330,13 @@ public class ExternalApiController {
             if (cmd != null) {
                 switch (cmd) {
                     case "outPortPass":
-                        num = this.orderInfoService.pendingExternalCustomsDeclarationNum(legalIds);
+                        num = this.orderInfoService.pendingExternalCustomsDeclarationNum(dataControl);
                         break;
                     case "portPassCheck":
                         num = this.orderInfoService.filterGoCustomsAudit(null, dataControl, null).size();
                         break;
                     case "feeCheck":
-                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), legalIds, null, null);
+                        num = this.costCommonService.auditPendingExpenses(SubOrderSignEnum.MAIN.getSignOne(), dataControl, null, null);
                         break;
                     case "mainReceiverCheck":
                         num = reBillNumMap.get("B_1");
@@ -1589,7 +1589,9 @@ public class ExternalApiController {
     public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
                                                    @RequestParam("legalIds") List<Long> legalIds,
                                                    @RequestParam("orderNos") List<String> orderNos) {
-        Integer num = this.costCommonService.auditPendingExpenses(subType, legalIds, orderNos, null);
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.EMPLOYEE_TYPE.getCode()).getData();
+        dataControl.setDepartmentId(null);
+        Integer num = this.costCommonService.auditPendingExpenses(subType, dataControl, orderNos, null);
         return ApiResult.ok(num);
     }
 

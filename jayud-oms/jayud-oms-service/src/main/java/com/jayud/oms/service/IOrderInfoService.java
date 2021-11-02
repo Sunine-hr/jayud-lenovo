@@ -179,10 +179,10 @@ public interface IOrderInfoService extends IService<OrderInfo> {
     /**
      * 获取法人主体下的待外部报关数
      *
-     * @param legalIds
+     * @param dataControl
      * @return
      */
-    int pendingExternalCustomsDeclarationNum(List<Long> legalIds);
+    int pendingExternalCustomsDeclarationNum(DataControl dataControl);
 
     /**
      * 获取法人主体下的待通关前审核

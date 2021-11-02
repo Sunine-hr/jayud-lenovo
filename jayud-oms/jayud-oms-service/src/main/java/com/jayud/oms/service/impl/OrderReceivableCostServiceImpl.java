@@ -2,6 +2,7 @@ package com.jayud.oms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.entity.DataControl;
 import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.oms.mapper.OrderReceivableCostMapper;
@@ -252,8 +253,8 @@ public class OrderReceivableCostServiceImpl extends ServiceImpl<OrderReceivableC
      * 查询待处理费用审核
      */
     @Override
-    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, List<Long> legalIds) {
-        return this.baseMapper.getPendingExpenseApproval(subType, orderNos, legalIds);
+    public List<Map<String, Object>> getPendingExpenseApproval(String subType, List<String> orderNos, DataControl dataControl) {
+        return this.baseMapper.getPendingExpenseApproval(subType, orderNos, dataControl);
     }
 
     @Override

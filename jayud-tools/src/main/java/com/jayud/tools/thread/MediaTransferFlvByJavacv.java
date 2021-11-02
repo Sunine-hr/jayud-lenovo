@@ -150,6 +150,7 @@ public class MediaTransferFlvByJavacv extends MediaTransfer implements Runnable 
 			log.info("\r\n{}\r\n启动拉流器成功", cameraDto.getUrl());
 			return grabberStatus = true;
 		} catch (Exception e) {
+			e.printStackTrace();
 			MediaService.cameras.remove(cameraDto.getMediaKey());
 			log.error("\r\n{}\r\n启动拉流器失败，网络超时或视频源不可用", cameraDto.getUrl());
 //			e.printStackTrace();

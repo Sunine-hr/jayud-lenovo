@@ -11,6 +11,7 @@ import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.StatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.enums.TrackingInfoBisTypeEnum;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.AddContractQuotationForm;
@@ -19,6 +20,7 @@ import com.jayud.oms.model.bo.QueryCustomsQuestionnaireForm;
 import com.jayud.oms.model.po.ContractQuotation;
 import com.jayud.oms.model.po.TrackingInfo;
 import com.jayud.oms.model.vo.ContractQuotationVO;
+import com.jayud.oms.model.vo.TrackingInfoVO;
 import com.jayud.oms.service.IContractQuotationService;
 import com.jayud.oms.service.ITrackingInfoService;
 import io.swagger.annotations.Api;
@@ -140,7 +142,7 @@ public class ContractQuotationController {
      */
     @ApiOperation("获取跟踪信息")
     @PostMapping("/getTrackingInfo")
-    public CommonResult<List<TrackingInfo>> getTrackingInfo(@RequestBody Map<String, Object> map) {
+    public CommonResult<List<TrackingInfoVO>> getTrackingInfo(@RequestBody Map<String, Object> map) {
         Long id = MapUtil.getLong(map, "id");
         String type = MapUtil.getStr(map, "type");
         if (id == null || StringUtils.isEmpty(type)) {
@@ -149,7 +151,8 @@ public class ContractQuotationController {
         List<TrackingInfo> list = this.trackingInfoService.getByCondition(new TrackingInfo().setType(type)
                 .setBusinessId(id).setBusinessType(TrackingInfoBisTypeEnum.ONE.getCode()));
         list = list.stream().sorted(Comparator.comparing(TrackingInfo::getId).reversed()).collect(Collectors.toList());
-        return CommonResult.success(list);
+        List<TrackingInfoVO> tmps = ConvertUtil.convertList(list, TrackingInfoVO.class);
+        return CommonResult.success(tmps);
     }
 
 

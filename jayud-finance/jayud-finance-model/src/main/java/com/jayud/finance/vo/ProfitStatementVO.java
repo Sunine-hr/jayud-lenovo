@@ -161,7 +161,7 @@ public class ProfitStatementVO extends Model<ProfitStatementVO> {
     private String classCode;
 
     @ApiModelProperty(value = "操作时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private LocalDateTime operationTime;
 
     public static void main(String[] args) {

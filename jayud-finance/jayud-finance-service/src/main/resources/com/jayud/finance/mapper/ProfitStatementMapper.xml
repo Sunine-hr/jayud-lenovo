@@ -127,7 +127,7 @@
         pay_equivalent_amount, profit, re_in_amount, re_in_equivalent_amount, pay_in_amount,
         pay_in_equivalent_amount, in_profit, sync_time,
         re_cost_ids, pay_cost_ids,re_in_cost_ids, pay_in_cost_ids,main_order_id,class_code,
-        pay_sub_cost_ids,sub_profit,pay_sub_equivalent_amount,pay_sub_amount
+        pay_sub_cost_ids,sub_profit,pay_sub_equivalent_amount,pay_sub_amount,operation_time
         from
         profit_statement
         <where>
@@ -164,7 +164,7 @@
             <if test="form.createTime!=null and form.createTime.size>0">
                 and DATE_FORMAT(create_time, '%Y-%m-%d' ) between #{form.createTime[0]} and #{form.createTime[1]}
             </if>
-            <if test="form.createTime!=null and form.createTime.size>0">
+            <if test="form.operationTime!=null and form.operationTime.size>0">
                 and DATE_FORMAT(operation_time, '%Y-%m-%d' ) between #{form.operationTime[0]} and #{form.operationTime[1]}
             </if>
             <if test="form.statisticalType!=null">

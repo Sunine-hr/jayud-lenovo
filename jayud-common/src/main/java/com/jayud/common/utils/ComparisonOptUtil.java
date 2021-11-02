@@ -59,11 +59,11 @@ public class ComparisonOptUtil {
             //处理映射关系
             if (!StringUtils.isEmpty(annotation.mappingString())) {
                 Map<String, String> mappingMap = mappingStringToMap(annotation.mappingString());
-                String firstMappingVal = MapUtil.getStr(mappingMap, firstVal, "");
+                String firstMappingVal = MapUtil.getStr(mappingMap, firstVal.toString(), "");
                 if (!StringUtils.isEmpty(firstMappingVal)) {
                     firstVal = String.format("%s", firstMappingVal);
                 }
-                String secondMappingVal = MapUtil.getStr(mappingMap, secondVal, "");
+                String secondMappingVal = MapUtil.getStr(mappingMap, secondVal.toString(), "");
                 if (!StringUtils.isEmpty(secondMappingVal)) {
                     secondVal = String.format("%s", secondMappingVal);
                 }

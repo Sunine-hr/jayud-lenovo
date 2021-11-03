@@ -367,10 +367,22 @@
                     o1.created_user = #{form.loginUserName}
                 </when>
                 <otherwise>
-                    <if test="legalIds != null and legalIds.size>0">
-                        o1.`legal_entity_id` in
-                        <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                            #{legalId}
+<!--                    <if test="legalIds != null and legalIds.size>0">-->
+<!--                        o1.`legal_entity_id` in-->
+<!--                        <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+<!--                            #{legalId}-->
+<!--                        </foreach>-->
+<!--                    </if>-->
+                    <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
+                        and o1.`legal_entity_id` in
+                        <foreach collection="dataControl.companyIds" item="companyId" open="(" separator="," close=")">
+                            #{companyId}
+                        </foreach>
+                    </if>
+                    <if test="dataControl.departmentId !=null and dataControl.departmentId.size>0">
+                        and o1.biz_belong_depart in
+                        <foreach collection="dataControl.departmentId" item="item" open="(" separator="," close=")">
+                            #{item}
                         </foreach>
                     </if>
                 </otherwise>
@@ -388,10 +400,16 @@
                 and o2.created_user = #{form.loginUserName}
             </when>
             <otherwise>
-                <if test="legalIds != null and legalIds.size>0">
+                <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
                     and o2.`legal_entity_id` in
-                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                        #{legalId}
+                    <foreach collection="dataControl.companyIds" item="companyId" open="(" separator="," close=")">
+                        #{companyId}
+                    </foreach>
+                </if>
+                <if test="dataControl.departmentId !=null and dataControl.departmentId.size>0">
+                    and o2.biz_belong_depart in
+                    <foreach collection="dataControl.departmentId" item="item" open="(" separator="," close=")">
+                        #{item}
                     </foreach>
                 </if>
             </otherwise>
@@ -408,10 +426,16 @@
                 and o3.created_user = #{form.loginUserName}
             </when>
             <otherwise>
-                <if test="legalIds != null and legalIds.size>0">
+                <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
                     and o3.`legal_entity_id` in
-                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                        #{legalId}
+                    <foreach collection="dataControl.companyIds" item="companyId" open="(" separator="," close=")">
+                        #{companyId}
+                    </foreach>
+                </if>
+                <if test="dataControl.departmentId !=null and dataControl.departmentId.size>0">
+                    and o3.biz_belong_depart in
+                    <foreach collection="dataControl.departmentId" item="item" open="(" separator="," close=")">
+                        #{item}
                     </foreach>
                 </if>
             </otherwise>
@@ -428,10 +452,16 @@
                 and o6.created_user = #{form.loginUserName}
             </when>
             <otherwise>
-                <if test="legalIds != null and legalIds.size>0">
+                <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
                     and o6.`legal_entity_id` in
-                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                        #{legalId}
+                    <foreach collection="dataControl.companyIds" item="companyId" open="(" separator="," close=")">
+                        #{companyId}
+                    </foreach>
+                </if>
+                <if test="dataControl.departmentId !=null and dataControl.departmentId.size>0">
+                    and o6.biz_belong_depart in
+                    <foreach collection="dataControl.departmentId" item="item" open="(" separator="," close=")">
+                        #{item}
                     </foreach>
                 </if>
             </otherwise>
@@ -448,10 +478,16 @@
                 and o7.created_user = #{form.loginUserName}
             </when>
             <otherwise>
-                <if test="legalIds != null and legalIds.size>0">
+                <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
                     and o7.`legal_entity_id` in
-                    <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                        #{legalId}
+                    <foreach collection="dataControl.companyIds" item="companyId" open="(" separator="," close=")">
+                        #{companyId}
+                    </foreach>
+                </if>
+                <if test="dataControl.departmentId !=null and dataControl.departmentId.size>0">
+                    and o7.biz_belong_depart in
+                    <foreach collection="dataControl.departmentId" item="item" open="(" separator="," close=")">
+                        #{item}
                     </foreach>
                 </if>
             </otherwise>

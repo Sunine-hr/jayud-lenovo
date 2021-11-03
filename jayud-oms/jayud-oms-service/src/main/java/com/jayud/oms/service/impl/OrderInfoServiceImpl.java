@@ -2468,8 +2468,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+        DataControl dataControl = this.oauthClient.getDataPermission(form.getLoginUserName(), UserTypeEnum.EMPLOYEE_TYPE.getCode()).getData();
 
-        return baseMapper.countOrderData(form, legalIds);
+        return baseMapper.countOrderData(form, dataControl);
     }
 
     @Override

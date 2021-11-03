@@ -6,6 +6,7 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.UserOperator;
 import com.jayud.common.beetl.BeetlUtils;
 import com.jayud.common.entity.Email;
 import com.jayud.common.entity.EmailSysConf;
@@ -73,6 +74,10 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
     public int doAllReadOperation() {
         QueryWrapper<MsgPushRecord> condition = new QueryWrapper<>();
         condition.lambda().eq(MsgPushRecord::getOptStatus, 1);
+        String userName = UserOperator.getToken();
+        Object data = this.oauthClient.getSystemUserBySystemName(userName).getData();
+        JSONObject jsonObject = new JSONObject(data);
+        condition.lambda().eq(MsgPushRecord::getRecipientId, jsonObject.getLong("id"));
         return this.baseMapper.update(new MsgPushRecord().setOptStatus(2), condition);
     }
 
@@ -89,6 +94,10 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
     public int doAllDeleteOperation() {
         QueryWrapper<MsgPushRecord> condition = new QueryWrapper<>();
         condition.lambda().ne(MsgPushRecord::getOptStatus, 3);
+        String userName = UserOperator.getToken();
+        Object data = this.oauthClient.getSystemUserBySystemName(userName).getData();
+        JSONObject jsonObject = new JSONObject(data);
+        condition.lambda().eq(MsgPushRecord::getRecipientId, jsonObject.getLong("id"));
         return this.baseMapper.update(new MsgPushRecord().setOptStatus(3), condition);
     }
 

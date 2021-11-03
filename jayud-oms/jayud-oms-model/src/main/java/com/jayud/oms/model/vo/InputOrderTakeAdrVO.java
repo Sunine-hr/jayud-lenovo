@@ -73,4 +73,12 @@ public class InputOrderTakeAdrVO {
     @ApiModelProperty(value = "提货文件上传附件地址数组集合")
     private List<FileView> takeFiles = new ArrayList<>();
 
+    @ApiModelProperty(value = "省主键")
+    private Integer province;
+
+    @ApiModelProperty(value = "市主键")
+    private Integer city;
+
+    @ApiModelProperty(value = "区主键")
+    private Integer area;
 }

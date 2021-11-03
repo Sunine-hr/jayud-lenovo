@@ -102,8 +102,8 @@ public class MsgPushRecordController {
         MsgPushRecord msgPushRecord = this.msgPushRecordService.getById(id);
         //操作状态(1:未读,2:已读,3:删除)
         if (msgPushRecord.getOptStatus() == 1) {
-            this.msgPushRecordService.update(new MsgPushRecord().setId(id).setOptStatus(2),
-                    new QueryWrapper<>(new MsgPushRecord().setOptStatus(msgPushRecord.getOptStatus()).setInitialTime(msgPushRecord.getInitialTime())));
+            this.msgPushRecordService.update(new MsgPushRecord().setOptStatus(2),
+                    new QueryWrapper<>(new MsgPushRecord().setId(id).setOptStatus(msgPushRecord.getOptStatus()).setInitialTime(msgPushRecord.getInitialTime())));
 //            this.msgPushRecordService.updateById(new MsgPushRecord().setId(id).setOptStatus(2));
         }
         return CommonResult.success();
@@ -121,8 +121,8 @@ public class MsgPushRecordController {
             MsgPushRecord msgPushRecord = this.msgPushRecordService.getById(id);
             //操作状态(1:未读,2:已读,3:删除)
             if (msgPushRecord.getOptStatus() == 1) {
-                this.msgPushRecordService.update(new MsgPushRecord().setId(id).setOptStatus(2),
-                        new QueryWrapper<>(new MsgPushRecord().setOptStatus(msgPushRecord.getOptStatus()).setInitialTime(msgPushRecord.getInitialTime())));
+                this.msgPushRecordService.update(new MsgPushRecord().setOptStatus(2),
+                        new QueryWrapper<>(new MsgPushRecord().setId(id).setOptStatus(msgPushRecord.getOptStatus()).setInitialTime(msgPushRecord.getInitialTime())));
             }
         }
 
@@ -145,8 +145,8 @@ public class MsgPushRecordController {
         }
 //        List<MsgPushRecord> deletes = new ArrayList<>();
         for (MsgPushRecordVO msgPushRecordVO : list) {
-            this.msgPushRecordService.update(new MsgPushRecord().setId(msgPushRecordVO.getId()).setOptStatus(3),
-                    new QueryWrapper<>(new MsgPushRecord().setOptStatus(msgPushRecordVO.getOptStatus()).setInitialTime(msgPushRecordVO.getInitialTime())));
+            this.msgPushRecordService.update(new MsgPushRecord().setOptStatus(3),
+                    new QueryWrapper<>(new MsgPushRecord().setId(msgPushRecordVO.getId()).setOptStatus(msgPushRecordVO.getOptStatus()).setInitialTime(msgPushRecordVO.getInitialTime())));
             MsgPushRecord tmp = new MsgPushRecord();
             //操作状态(1:未读,2:已读,3:删除)
 //            tmp.setId(msgPushRecordVO.getId()).setOptStatus(3);

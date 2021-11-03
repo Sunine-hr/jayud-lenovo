@@ -1589,8 +1589,21 @@ public class ExternalApiController {
     public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
                                                    @RequestParam("legalIds") List<Long> legalIds,
                                                    @RequestParam("orderNos") List<String> orderNos) {
-        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.EMPLOYEE_TYPE.getCode()).getData();
-        dataControl.setDepartmentId(null);
+        DataControl dataControl = new DataControl();
+        dataControl.setCompanyIds(legalIds);
+        Integer num = this.costCommonService.auditPendingExpenses(subType, dataControl, orderNos, null);
+        return ApiResult.ok(num);
+    }
+
+    /**
+     * 查询待审核费用订单数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/auditPendingExpensesNum")
+    public ApiResult<Integer> auditPendingExpensesNum(@RequestParam("subType") String subType,
+                                                   @RequestParam("dataControl") DataControl dataControl,
+                                                   @RequestParam("orderNos") List<String> orderNos){
         Integer num = this.costCommonService.auditPendingExpenses(subType, dataControl, orderNos, null);
         return ApiResult.ok(num);
     }

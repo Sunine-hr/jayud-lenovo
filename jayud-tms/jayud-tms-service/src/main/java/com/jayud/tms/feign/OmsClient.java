@@ -3,10 +3,7 @@ package com.jayud.tms.feign;
 
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
-import com.jayud.common.entity.DelOprStatusForm;
-import com.jayud.common.entity.InitComboxStrVO;
-import com.jayud.common.entity.LogisticsTrackVO;
-import com.jayud.common.entity.MapEntity;
+import com.jayud.common.entity.*;
 import com.jayud.tms.model.bo.AuditInfoForm;
 import com.jayud.tms.model.bo.HandleSubProcessForm;
 import com.jayud.tms.model.bo.InputOrderForm;
@@ -254,6 +251,16 @@ public interface OmsClient {
     @RequestMapping(value = "/api/auditPendingExpenses")
     public ApiResult<Integer> auditPendingExpenses(@RequestParam("subType") String subType,
                                                    @RequestParam("legalIds") List<Long> legalIds,
+                                                   @RequestParam("orderNos") List<String> orderNos);
+
+    /**
+     * 查询待审核费用订单数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/auditPendingExpensesNum")
+    public ApiResult<Integer> auditPendingExpensesNum(@RequestParam("subType") String subType,
+                                                   @RequestParam("dataControl") DataControl dataControl,
                                                    @RequestParam("orderNos") List<String> orderNos);
 
     /**

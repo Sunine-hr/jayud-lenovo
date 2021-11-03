@@ -610,7 +610,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                 List<OrderTransport> list = this.getByLegalEntityId(legalIds);
                 if (CollectionUtils.isEmpty(list)) return num;
                 List<String> orderNos = list.stream().map(OrderTransport::getOrderNo).collect(Collectors.toList());
-                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.ZGYS.getSignOne(), legalIds, orderNos).getData();
+                num = this.omsClient.auditPendingExpensesNum(SubOrderSignEnum.ZGYS.getSignOne(), dataControl, orderNos).getData();
                 break;
             case "zgysReceiverCheck":
                 Map<String, Integer> costNum = (Map<String, Integer>) datas.get(status);

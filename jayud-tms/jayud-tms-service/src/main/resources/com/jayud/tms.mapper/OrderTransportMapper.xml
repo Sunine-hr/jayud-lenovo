@@ -571,6 +571,12 @@
                         #{legalId}
                     </foreach>
                 </if>
+                <if test="dataControl.departmentId !=null and dataControl.departmentId.size>0">
+                    and ot.department_id in
+                    <foreach collection="dataControl.departmentId" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
             </if>
             <if test="form.cmd == 'T_10'">
                 AND ot.`status` = 'T_9'
@@ -630,6 +636,12 @@
                         and ot.`supplier_id` in
                     </when>
                     <otherwise>
+                        <if test="dataControl.departmentId !=null and dataControl.departmentId.size>0">
+                            and ot.department_id in
+                            <foreach collection="dataControl.departmentId" item="item" open="(" separator="," close=")">
+                                #{item}
+                            </foreach>
+                        </if>
                         and ot.`legal_entity_id` in
                     </otherwise>
                 </choose>
@@ -764,6 +776,12 @@
                             #{legalId}
                         </foreach>
                     </if>
+                    <if test="dataControl.departmentId !=null and dataControl.departmentId.size>0">
+                        and ot.department_id in
+                        <foreach collection="dataControl.departmentId" item="item" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                    </if>
                 </when>
                 <otherwise>
                     and ot.status=#{status}
@@ -777,6 +795,12 @@
                         and ot.`supplier_id` in
                     </when>
                     <otherwise>
+                        <if test="dataControl.departmentId !=null and dataControl.departmentId.size>0">
+                            and ot.department_id in
+                            <foreach collection="dataControl.departmentId" item="item" open="(" separator="," close=")">
+                                #{item}
+                            </foreach>
+                        </if>
                         and ot.`legal_entity_id` in
                     </otherwise>
                 </choose>

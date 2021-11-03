@@ -94,6 +94,15 @@ public class InputOrderTakeAdrVO {
     @ApiModelProperty(value = "货物详情")
     private String goodsInfo;
 
+    @ApiModelProperty(value = "省主键")
+    private Integer province;
+
+    @ApiModelProperty(value = "市主键")
+    private Integer city;
+
+    @ApiModelProperty(value = "区主键")
+    private Integer area;
+
     public String getVehicleTypeDesc() {
         if (this.vehicleType != null) {
             if (this.vehicleType == 1) {

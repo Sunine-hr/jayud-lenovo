@@ -6,6 +6,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.CheckStateEnum;
+import com.jayud.scm.model.enums.StateFlagEnum;
 import com.jayud.scm.model.enums.TableEnum;
 import com.jayud.scm.model.po.*;
 import com.jayud.scm.model.vo.CheckOrderVO;
@@ -14,6 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sun.rmi.runtime.Log;
 
+import javax.swing.plaf.nimbus.State;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +55,9 @@ public class CheckOrderController {
     private IBookingOrderService bookingOrderService;
 
     @Autowired
+    private IBookingOrderFollowService bookingOrderFollowService;
+
+    @Autowired
     private IHgBillService hgBillService;
 
     @Autowired
@@ -68,7 +75,10 @@ public class CheckOrderController {
     @ApiOperation(value = "下一步操作 1提货完成、2验货完成、3提货撤销、4验货撤销")
     @PostMapping(value = "/nextOperation")
     public CommonResult nextOperation(@RequestBody QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
         CheckOrder checkOrder = checkOrderService.getById(form.getId());
+        BookingOrder bookingOrder = bookingOrderService.getById(checkOrder.getBookingId());
+        BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
         String checkState = checkOrder.getCheckState();
 //        if(checkState.equals("0")){
 //            return CommonResult.error(444,"订单未审核，请前往审核");
@@ -79,9 +89,17 @@ public class CheckOrderController {
         switch (form.getNext()){
             case 1:
                 checkOrder.setCheckState(CheckStateEnum.CHECK_STATE_3.getCode().toString());
+                bookingOrder.setStateFlag(StateFlagEnum.STATE_FLAG_2.getCode());
+                bookingOrderFollow.setBookingId(bookingOrder.getId());
+                bookingOrderFollow.setFollowContext("该订单已收货");
+                bookingOrderFollow.setSType("人工");
                 break;
             case 2:
                 checkOrder.setCheckState(CheckStateEnum.CHECK_STATE_5.getCode().toString());
+                bookingOrder.setStateFlag(StateFlagEnum.STATE_FLAG_2.getCode());
+                bookingOrderFollow.setBookingId(bookingOrder.getId());
+                bookingOrderFollow.setFollowContext("该订单已验货完成");
+                bookingOrderFollow.setSType("人工");
                 break;
             case 3:
                 if(!checkState.equals("3")){
@@ -100,6 +118,15 @@ public class CheckOrderController {
         if(!update){
             return CommonResult.error(444,"操作失败");
         }
+        boolean result = bookingOrderService.updateById(bookingOrder);
+        if(result){
+            if(bookingOrderFollow.getBookingId() != null){
+                boolean save = bookingOrderFollowService.save(bookingOrderFollow);
+                if(save){
+                    log.warn("委托单状态改变，操作记录添加成功");
+                }
+            }
+        }
         return CommonResult.success();
     }
 
@@ -107,6 +134,7 @@ public class CheckOrderController {
     @PostMapping(value = "/warehousing")
     @Transactional
     public CommonResult warehousing(@RequestBody QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
         CheckOrder checkOrder = checkOrderService.getById(form.getId());
         checkOrder.setCheckState(CheckStateEnum.CHECK_STATE_6.getCode().toString());
         boolean result = hubReceivingService.addHubReceiving(form);
@@ -125,6 +153,18 @@ public class CheckOrderController {
             //新增一个报关单
             Integer save = hgBillService.addHgBill(checkOrder.getBookingId());
             bookingOrder.setBillId(save);
+            bookingOrder.setStateFlag(StateFlagEnum.STATE_FLAG_4.getCode());
+            BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
+            bookingOrderFollow.setBookingId(bookingOrder.getId());
+            bookingOrderFollow.setSType("人工");
+            bookingOrderFollow.setFollowContext("订单入库成功");
+            bookingOrderFollow.setCrtBy(systemUser.getId().intValue());
+            bookingOrderFollow.setCrtByDtm(LocalDateTime.now());
+            bookingOrderFollow.setCrtByName(systemUser.getUserName());
+            boolean save1 = bookingOrderFollowService.save(bookingOrderFollow);
+            if(save1){
+                log.warn("委托单入库，操作记录添加成功");
+            }
             boolean result2 = bookingOrderService.updateById(bookingOrder);
             if(result2){
                 log.warn("修改委托单billId");

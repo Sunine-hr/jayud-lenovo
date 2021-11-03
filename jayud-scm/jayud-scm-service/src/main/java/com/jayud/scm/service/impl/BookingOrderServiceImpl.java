@@ -256,10 +256,18 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         bookingOrderFollow.setSType("1");//1系统 2人工
         if(commonResult.getCode().equals(ResultEnum.SUCCESS.getCode())){
             //操作成功
-            bookingOrderFollow.setFollowContext("出口委托单，审核，成功！");
+            if(bookingOrder.getModelType().equals(1)){
+                bookingOrderFollow.setFollowContext("进口委托单，审核，成功！");
+            }else if(bookingOrder.getModelType().equals(2)){
+                bookingOrderFollow.setFollowContext("出口委托单，审核，成功！");
+            }
         }else{
             //操作失败
-            bookingOrderFollow.setFollowContext("出口委托单，审核，异常！");
+            if(bookingOrder.getModelType().equals(1)){
+                bookingOrderFollow.setFollowContext("进口委托单，审核，异常！");
+            }else if(bookingOrder.getModelType().equals(2)){
+                bookingOrderFollow.setFollowContext("出口委托单，审核，异常！");
+            }
         }
         //设置创建人
         bookingOrderFollow.setCrtBy(systemUser.getId().intValue());

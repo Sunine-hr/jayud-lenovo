@@ -175,6 +175,11 @@ public class BookingOrderController {
         //获取登录用户
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
+        BookingOrder bookingOrder = this.bookingOrderService.getById(form.getId());
+        if(null == bookingOrder.getContractNo()){
+            return CommonResult.error(444,"该委托单没有客户合同号，无法审核");
+        }
+
         if(!systemUser.getUserName().equalsIgnoreCase("Admin")){
             //获取登录用户所属角色
             List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
@@ -551,10 +556,10 @@ public class BookingOrderController {
 
         Integer result = hgBillService.addHgBill(form.getId());
 
-        BookingOrder bookingOrder1 = new BookingOrder();
-        bookingOrder1.setId(form.getId());
-        bookingOrder1.setBillId(result);
-        boolean result1 = bookingOrderService.updateById(bookingOrder1);
+
+        bookingOrder.setId(form.getId());
+        bookingOrder.setBillId(result);
+        boolean result1 = bookingOrderService.updateById(bookingOrder);
         if(result1){
             log.warn("修改委托单billId");
         }

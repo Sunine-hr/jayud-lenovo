@@ -87,4 +87,27 @@ public class AcctPayEntryServiceImpl extends ServiceImpl<AcctPayEntryMapper, Acc
         queryWrapper.lambda().eq(AcctPayEntry::getVoided,0);
         return this.list(queryWrapper);
     }
+
+    @Override
+    public boolean deleteAcctPayEntryByExportVerificationId(List<Integer> ids) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        QueryWrapper<AcctPayEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().in(AcctPayEntry::getExportVerificationId,ids);
+        queryWrapper.lambda().eq(AcctPayEntry::getVoided,0);
+        List<AcctPayEntry> acctPayEntries = this.list(queryWrapper);
+
+        for (AcctPayEntry acctPayEntry : acctPayEntries) {
+            acctPayEntry.setVoided(1);
+            acctPayEntry.setVoidedBy(systemUser.getId().intValue());
+            acctPayEntry.setVoidedByDtm(LocalDateTime.now());
+            acctPayEntry.setVoidedByName(systemUser.getUserName());
+        }
+
+        boolean result = this.updateBatchById(acctPayEntries);
+        if(result){
+            log.warn("反核销成功，删除应收款成功");
+        }
+        return result;
+    }
 }

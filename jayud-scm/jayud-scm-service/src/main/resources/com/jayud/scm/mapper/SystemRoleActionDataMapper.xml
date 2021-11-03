@@ -32,8 +32,7 @@
         select sra.id ,
         sra.action_code actionCode,
         sm.title title,sr.name name,
-        sra.date_type dataType,
-        sra.date_type dataTypeName,
+        sra.date_type dateType,
         sra.crt_by_name crtByName,
         sra.crt_by_dtm crtByDtm
         from system_role_action_data sra

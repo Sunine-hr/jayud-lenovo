@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -93,7 +94,9 @@ public class HgBillApi {
                 customsHeadForm.setDeclareId(1);
             }
             customsHeadForm.setIndateDt(yunBaoGuanData1.getBillDate());
+            customsHeadForm.setNote("供应链系统推送");
 
+            List<CustomsGoodsForm> goodsForms = new ArrayList<>();
             for (YunBaoGuanData yunBaoGuanDatum : yunBaoGuanData) {
                 CustomsGoodsForm customsGoodsForm = new CustomsGoodsForm();
                 customsGoodsForm.setGoodsNo(yunBaoGuanDatum.getItemNo());
@@ -118,7 +121,10 @@ public class HgBillApi {
                 customsGoodsForm.setCiqName(yunBaoGuanDatum.getCiqName());
                 customsGoodsForm.setDistrictCode(yunBaoGuanDatum.getDistrictcode());
                 customsGoodsForm.setOriginCode(yunBaoGuanDatum.getOrigincode());
+                goodsForms.add(customsGoodsForm);
             }
+            pushOrderForm.setGdtl(goodsForms);
+            pushOrderForm.setHead(customsHeadForm);
         }
 
 
@@ -142,7 +148,8 @@ public class HgBillApi {
 
     @ApiOperation(value = "请求云报关更新状态")
     @PostMapping(value = "/updateHgBill")
-    public void updateHgBill(@RequestBody QueryCommonForm form) {
+    @Scheduled(cron = "0 0/10 * * * ?")
+    public void updateHgBill() {
         //查询所有状态为已提交的报关单
         List<HgBill> hgBills = hgBillService.getHgBillDataByCustomsState();
 

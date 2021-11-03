@@ -24,4 +24,6 @@ public interface IAcctPayEntryService extends IService<AcctPayEntry> {
     boolean deleteAcctPayEntry(DeleteForm form);
 
     List<AcctPayEntry> getAcctPayEntryByOrderId(Integer id);
+
+    boolean deleteAcctPayEntryByExportVerificationId(List<Integer> ids);
 }

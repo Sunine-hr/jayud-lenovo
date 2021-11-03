@@ -31,7 +31,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/otherCost")
 @Api(tags = "其他费用管理")
-public class OtherCostController {
+public class  OtherCostController {
 
     @Autowired
     private IOtherCostService otherCostService;

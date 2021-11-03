@@ -162,9 +162,9 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
         String paraIdentifier = "@";//查询参数标识符
         //登录用户信息
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
-        if(ObjectUtil.isEmpty(systemUser)){
-            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录!");
-        }
+//        if(ObjectUtil.isEmpty(systemUser)){
+//            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录!");
+//        }
         String sqlCode = form.getSqlCode();//SQL代码
         Map<String, Object> condPara = form.getCondPara();//条件参数{k-v},键值对
         if(ObjectUtil.isEmpty(condPara)){
@@ -215,9 +215,9 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
         }
 
         String sqlDataStr = systemSqlConfigVO.getSqlDataStr();//数据权限查询
-        if(StrUtil.isNotEmpty(sqlDataStr)){
+        if(StrUtil.isNotEmpty(sqlDataStr) && systemUser.getUserName().equals("admin")){
             List<Integer> roleData = systemRoleActionDataService.getRoleData(form.getActionCode());
-            if(CollectionUtil.isNotEmpty(roleData)){
+            if(CollectionUtil.isNotEmpty(roleData) && systemUser.getUserName().equals("admin")){
                 StringBuffer stringBuffer = new StringBuffer();
                 for (Integer roleDatum : roleData) {
                     stringBuffer.append(roleDatum).append(",");

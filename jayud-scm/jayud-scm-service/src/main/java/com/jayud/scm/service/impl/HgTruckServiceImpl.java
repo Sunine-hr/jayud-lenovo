@@ -68,6 +68,7 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
             hgTruck.setMdyByName(systemUser.getUserName());
             hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
             hgTruckFollow.setFollowContext("修改港车单"+hgTruck.getId());
+
         }else{
             hgTruck.setTruckNo(commodityService.getOrderNo(NoCodeEnum.HG_TRUCK.getCode(),LocalDateTime.now()));
             hgTruck.setCrtBy(systemUser.getId().intValue());
@@ -80,13 +81,13 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
         if(update){
            log.warn("添加或修改港车运输信息成功"+hgTruck);
            hgTruckFollow.setHgTruckId(hgTruck.getId());
-            hgTruckFollow.setMdyBy(systemUser.getId().intValue());
-            hgTruckFollow.setMdyByDtm(LocalDateTime.now());
-            hgTruckFollow.setMdyByName(systemUser.getUserName());
-            boolean save = hgTruckFollowService.save(hgTruckFollow);
-            if(save){
-                log.warn("添加或修改港车运输信息,操作日志添加成功");
-            }
+           hgTruckFollow.setCrtBy(systemUser.getId().intValue());
+           hgTruckFollow.setCrtByDtm(LocalDateTime.now());
+           hgTruckFollow.setCrtByName(systemUser.getUserName());
+           boolean save = hgTruckFollowService.save(hgTruckFollow);
+           if(save){
+               log.warn("添加或修改港车运输信息,操作日志添加成功");
+           }
         }
         return update;
     }
@@ -102,8 +103,7 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
         HgTruck hgTruck = this.getById(form.getId());
         //获取委托单id集合
         for (Integer id : form.getIds()) {
-            BookingOrder bookingOrder = new BookingOrder();
-            bookingOrder.setId(id);
+            BookingOrder bookingOrder = bookingOrderService.getById(id);
             bookingOrder.setHgTruckId(hgTruck.getId());
             bookingOrder.setHgTruckNo(hgTruck.getTruckNo());
             bookingOrder.setMdyBy(systemUser.getId().intValue());
@@ -155,7 +155,7 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
             HgTruckFollow hgTruckFollow = new HgTruckFollow();
             hgTruckFollow.setHgTruckId(hgTruck.getId());
             hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
-            hgTruckFollow.setFollowContext(systemUser.getUserName()+"修改车次状态为"+form.getStatus());
+            hgTruckFollow.setFollowContext(systemUser.getUserName()+"修改车次状态为"+TrainNumberStatusEnum.getDesc(form.getStatus()));
             hgTruckFollow.setCrtBy(systemUser.getId().intValue());
             hgTruckFollow.setCrtByDtm(LocalDateTime.now());
             hgTruckFollow.setCrtByName(systemUser.getUserName());
@@ -182,7 +182,7 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
             HgTruckFollow hgTruckFollow = new HgTruckFollow();
             hgTruckFollow.setHgTruckId(hgTruck.getId());
             hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
-            hgTruckFollow.setFollowContext(systemUser.getUserName()+"修改车次状态为"+form.getStatus());
+            hgTruckFollow.setFollowContext(systemUser.getUserName()+"修改车次状态为"+TrainNumberStatusEnum.getDesc(hgTruck.getStateFlag()));
             hgTruckFollow.setCrtBy(systemUser.getId().intValue());
             hgTruckFollow.setCrtByDtm(LocalDateTime.now());
             hgTruckFollow.setCrtByName(systemUser.getUserName());
@@ -344,7 +344,7 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
             hgTruck.setMdyByDtm(LocalDateTime.now());
             hgTruck.setMdyByName(systemUser.getUserName());
             hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
-            hgTruckFollow.setFollowContext("修改港车单"+hgTruck.getId());
+            hgTruckFollow.setFollowContext("修改港车单"+hgTruck.getTruckNo());
         }else{
             hgTruck.setTruckNo(commodityService.getOrderNo(NoCodeEnum.HG_TRUCK.getCode(),LocalDateTime.now()));
             hgTruck.setCrtBy(systemUser.getId().intValue());

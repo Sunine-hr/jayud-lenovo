@@ -113,7 +113,6 @@ public class VerificationReocrdsServiceImpl extends ServiceImpl<VerificationReoc
     public boolean cancelWriteOff(QueryCommonForm form) {
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
         List<VerificationReocrds> list = new ArrayList<>();
-
         for (Integer id : form.getIds()) {
             VerificationReocrds verificationReocrds = new VerificationReocrds();
             verificationReocrds.setId(id);
@@ -126,6 +125,10 @@ public class VerificationReocrdsServiceImpl extends ServiceImpl<VerificationReoc
         boolean result = this.updateBatchById(list);
         if(result){
             log.warn("反核销成功");
+            boolean delete = acctPayEntryService.deleteAcctPayEntryByExportVerificationId(form.getIds());
+            if(delete){
+                log.warn("删除应收款单成功");
+            }
         }
         return result;
     }

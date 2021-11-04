@@ -220,6 +220,16 @@ public interface OmsClient {
                                                    @RequestParam("legalIds") List<Long> legalIds,
                                                    @RequestParam("orderNos") List<String> orderNos);
 
+    /**
+     * 查询待审核费用订单数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/auditPendingExpensesNum")
+    public ApiResult<Integer> auditPendingExpensesNum(@RequestParam("subType") String subType,
+                                                      @RequestParam("dataControl") DataControl dataControl,
+                                                      @RequestParam("orderNos") List<String> orderNos);
+
     @ApiOperation("根据类型和业务类型查询订单id")
     @RequestMapping(value = "/api/getOrderAddressOrderIdByTimeInterval")
     public ApiResult<Set<Long>> getOrderAddressOrderIdByTimeInterval(@RequestParam("timeInterval") List<String> timeInterval,

@@ -7,6 +7,7 @@ import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportDetails;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
+import com.jayud.common.entity.DataControl;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -25,11 +26,11 @@ public interface OrderInlandTransportMapper extends BaseMapper<OrderInlandTransp
 
     IPage<OrderInlandTransportFormVO> findByPage(Page<OrderInlandTransport> page,
                                                  @Param("form") QueryOrderForm form,
-                                                 @Param("legalIds") List<Long> legalIds);
+                                                 @Param("dataControl") DataControl dataControl);
 
     List<OrderInlandTransportDetails> getOrderInfoByMainOrderNos(@Param("mainOrderNos") List<String> mainOrderNos);
 
-    Integer getNumByStatus(@Param("status") String status, @Param("legalIds") List<Long> legalIds);
+    Integer getNumByStatus(@Param("status") String status, @Param("dataControl") DataControl dataControl);
 
     List<OrderInlandTransportFormVO> getOrderInlandTransportList(@Param("pickUpTimeStart") String pickUpTimeStart, @Param("pickUpTimeEnd") String pickUpTimeEnd, @Param("orderNo") String orderNo);
 }

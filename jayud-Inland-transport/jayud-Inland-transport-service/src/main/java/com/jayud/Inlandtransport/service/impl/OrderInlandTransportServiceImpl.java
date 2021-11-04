@@ -18,10 +18,7 @@ import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
-import com.jayud.common.entity.AuditInfoForm;
-import com.jayud.common.entity.DelOprStatusForm;
-import com.jayud.common.entity.InitComboxStrVO;
-import com.jayud.common.entity.OrderDeliveryAddress;
+import com.jayud.common.entity.*;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
@@ -109,11 +106,13 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         }
 
         //获取当前用户所属法人主体
-        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
-        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+//        ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
+//        List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
+
+        DataControl dataControl = this.oauthClient.getDataPermission(form.getLoginUserName(), UserTypeEnum.EMPLOYEE_TYPE.getCode()).getData();
 
         Page<OrderInlandTransport> page = new Page<>(form.getPageNum(), form.getPageSize());
-        IPage<OrderInlandTransportFormVO> iPage = this.baseMapper.findByPage(page, form, legalIds);
+        IPage<OrderInlandTransportFormVO> iPage = this.baseMapper.findByPage(page, form, dataControl);
 
         List<OrderInlandTransportFormVO> records = iPage.getRecords();
         if (iPage.getRecords().size() == 0) {
@@ -414,14 +413,14 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
 
 
     @Override
-    public Integer getNumByStatus(String status, List<Long> legalIds, Map<String, Object> datas) {
-        Integer num = this.baseMapper.getNumByStatus(status, legalIds);
+    public Integer getNumByStatus(String status, DataControl dataControl, Map<String, Object> datas) {
+        Integer num = 0;
         switch (status) {
             case "CostAudit":
-                List<OrderInlandTransport> list = this.getByLegalEntityId(legalIds);
+                List<OrderInlandTransport> list = this.getByLegalEntityId(dataControl.getCompanyIds());
                 if (org.apache.commons.collections4.CollectionUtils.isEmpty(list)) return num;
                 List<String> orderNos = list.stream().map(OrderInlandTransport::getOrderNo).collect(Collectors.toList());
-                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.NL.getSignOne(), legalIds, orderNos).getData();
+                num = this.omsClient.auditPendingExpensesNum(SubOrderSignEnum.NL.getSignOne(), dataControl, orderNos).getData();
                 break;
             case "inlandReceiverCheck":
                 Map<String, Integer> costNum = (Map<String, Integer>) datas.get(status);
@@ -432,7 +431,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
                 num = costNum.get("B_1");
                 break;
             default:
-                num = this.baseMapper.getNumByStatus(status, legalIds);
+                num = this.baseMapper.getNumByStatus(status, dataControl);
         }
 
         return num == null ? 0 : num;
@@ -473,9 +472,10 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
 
     /**
      * 获取内陆订单list
+     *
      * @param pickUpTimeStart 提货时间Start
-     * @param pickUpTimeEnd 提后时间End
-     * @param orderNo 订单号
+     * @param pickUpTimeEnd   提后时间End
+     * @param orderNo         订单号
      * @return
      */
     @Override

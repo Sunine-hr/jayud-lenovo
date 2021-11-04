@@ -139,12 +139,25 @@
                 )
             </if>
 
-            <if test="legalIds != null and legalIds.size>0">
-                and i.`legal_entity_id` in
-                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+            <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
+                and i.`legal_entity_id`  in
+                <foreach collection="dataControl.companyIds" item="legalId" open="(" separator="," close=")">
                     #{legalId}
                 </foreach>
             </if>
+            <if test="dataControl.departmentId !=null and dataControl.departmentId.size>0">
+                and i.department_id in
+                <foreach collection="dataControl.departmentId" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+<!--            <if test="legalIds != null and legalIds.size>0">-->
+<!--                and i.`legal_entity_id` in-->
+<!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+<!--                    #{legalId}-->
+<!--                </foreach>-->
+<!--            </if>-->
 
         </where>
         order by i.id desc
@@ -183,10 +196,22 @@
         select count(*) from order_inland_transport
         <where>
             and status=#{status} and (process_status=0)
-            <if test="legalIds != null and legalIds.size>0">
-                and `legal_entity_id` in
-                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
+<!--            <if test="legalIds != null and legalIds.size>0">-->
+<!--                and `legal_entity_id` in-->
+<!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+<!--                    #{legalId}-->
+<!--                </foreach>-->
+<!--            </if>-->
+            <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
+                and `legal_entity_id`  in
+                <foreach collection="dataControl.companyIds" item="legalId" open="(" separator="," close=")">
                     #{legalId}
+                </foreach>
+            </if>
+            <if test="dataControl.departmentId !=null and dataControl.departmentId.size>0">
+                and department_id in
+                <foreach collection="dataControl.departmentId" item="item" open="(" separator="," close=")">
+                    #{item}
                 </foreach>
             </if>
             group by status

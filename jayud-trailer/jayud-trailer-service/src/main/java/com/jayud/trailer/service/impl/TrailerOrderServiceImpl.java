@@ -8,16 +8,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlConstant;
-import com.jayud.common.entity.DelOprStatusForm;
-import com.jayud.common.entity.InitComboxStrVO;
-import com.jayud.common.entity.InitComboxVO;
-import com.jayud.common.entity.OrderDeliveryAddress;
+import com.jayud.common.entity.*;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
 import com.jayud.trailer.bo.*;
+import com.jayud.trailer.bo.AuditInfoForm;
 import com.jayud.trailer.feign.FileClient;
 import com.jayud.trailer.feign.OauthClient;
 import com.jayud.trailer.feign.OmsClient;
@@ -253,8 +251,10 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
         ApiResult legalEntityByLegalName = oauthClient.getLegalIdBySystemName(form.getLoginUserName());
         List<Long> legalIds = (List<Long>) legalEntityByLegalName.getData();
 
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.EMPLOYEE_TYPE.getCode()).getData();
+
         Page<TrailerOrderFormVO> page = new Page<>(form.getPageNum(), form.getPageSize());
-        IPage<TrailerOrderFormVO> iPage = this.baseMapper.findByPage(page, form, legalIds);
+        IPage<TrailerOrderFormVO> iPage = this.baseMapper.findByPage(page, form, dataControl);
         return iPage;
     }
 
@@ -485,15 +485,15 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
     }
 
     @Override
-    public Integer getNumByStatus(String status, List<Long> legalIds, Map<String, Object> datas) {
+    public Integer getNumByStatus(String status, DataControl dataControl, Map<String, Object> datas) {
         Integer num = 0;
         switch (status) {
             case "CostAudit":
 //                List<Long> legalIds = dataControl.getCompanyIds();
-                List<TrailerOrder> list = this.getByLegalEntityId(legalIds);
+                List<TrailerOrder> list = this.getByLegalEntityId(dataControl.getCompanyIds());
                 if (CollectionUtils.isEmpty(list)) return num;
                 List<String> orderNos = list.stream().map(TrailerOrder::getOrderNo).collect(Collectors.toList());
-                num = this.omsClient.auditPendingExpenses(SubOrderSignEnum.TC.getSignOne(), legalIds, orderNos).getData();
+                num = this.omsClient.auditPendingExpensesNum(SubOrderSignEnum.TC.getSignOne(), dataControl, orderNos).getData();
                 break;
             case "trailerReceiverCheck":
                 Map<String, Integer> costNum = (Map<String, Integer>) datas.get(status);
@@ -504,7 +504,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
                 num = costNum.get("B_1");
                 break;
             default:
-                num = this.baseMapper.getNumByStatus(status, legalIds);
+                num = this.baseMapper.getNumByStatus(status, dataControl);
         }
 
         return num == null ? 0 : num;

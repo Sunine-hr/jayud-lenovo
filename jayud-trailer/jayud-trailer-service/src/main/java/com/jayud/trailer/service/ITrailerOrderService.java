@@ -1,6 +1,7 @@
 package com.jayud.trailer.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.entity.DataControl;
 import com.jayud.trailer.bo.*;
 import com.jayud.trailer.po.TrailerOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -118,7 +119,7 @@ public interface ITrailerOrderService extends IService<TrailerOrder> {
 
     List<TrailerOrderInfoVO> getInfo(List<String> mainOrderNos);
 
-    Integer getNumByStatus(String status, List<Long> legalIds, Map<String, Object> datas);
+    Integer getNumByStatus(String status, DataControl dataControl, Map<String, Object> datas);
 
     List<TrailerOrder> getByCondition(TrailerOrder setMainOrderNo);
 

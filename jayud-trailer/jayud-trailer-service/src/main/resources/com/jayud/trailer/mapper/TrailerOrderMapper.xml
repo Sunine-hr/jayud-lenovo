@@ -249,10 +249,22 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
                 )
             </if>
 
-            <if test="legalIds != null and legalIds.size>0">
+<!--            <if test="legalIds != null and legalIds.size>0">-->
+<!--                and tor.`legal_entity_id` in-->
+<!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+<!--                    #{legalId}-->
+<!--                </foreach>-->
+<!--            </if>-->
+            <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
                 and tor.`legal_entity_id` in
-                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                    #{legalId}
+                <foreach collection="dataControl.companyIds" item="companyId" open="(" separator="," close=")">
+                    #{companyId}
+                </foreach>
+            </if>
+            <if test="dataControl.departmentId !=null and dataControl.departmentId.size>0">
+                and tor.department_id i n
+                <foreach collection="dataControl.departmentId" item="item" open="(" separator="," close=")">
+                    #{item}
                 </foreach>
             </if>
             and tor.is_info_complete = 1
@@ -292,12 +304,25 @@ release_time, is_weighed, is_make_up, create_user, create_time, update_user, upd
                     and tor.status=#{status}
                 </otherwise>
             </choose>
-            <if test="legalIds != null and legalIds.size>0">
+<!--            <if test="legalIds != null and legalIds.size>0">-->
+<!--                and tor.`legal_entity_id` in-->
+<!--                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">-->
+<!--                    #{legalId}-->
+<!--                </foreach>-->
+<!--            </if>-->
+            <if test="dataControl.companyIds != null and dataControl.companyIds.size>0">
                 and tor.`legal_entity_id` in
-                <foreach collection="legalIds" item="legalId" open="(" separator="," close=")">
-                    #{legalId}
+                <foreach collection="dataControl.companyIds" item="companyId" open="(" separator="," close=")">
+                    #{companyId}
                 </foreach>
             </if>
+            <if test="dataControl.departmentId !=null and dataControl.departmentId.size>0">
+                and tor.department_id i n
+                <foreach collection="dataControl.departmentId" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
         </where>
     </select>
 

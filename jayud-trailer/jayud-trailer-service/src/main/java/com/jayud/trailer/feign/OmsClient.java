@@ -4,11 +4,9 @@ package com.jayud.trailer.feign;
 import com.jayud.common.ApiResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.config.FeignRequestInterceptor;
-import com.jayud.common.entity.DelOprStatusForm;
-import com.jayud.common.entity.InitComboxStrVO;
-import com.jayud.common.entity.InitComboxVO;
-import com.jayud.common.entity.OrderDeliveryAddress;
+import com.jayud.common.entity.*;
 import com.jayud.trailer.bo.*;
+import com.jayud.trailer.bo.AuditInfoForm;
 import com.jayud.trailer.po.OrderFlowSheet;
 import com.jayud.trailer.vo.GoodsVO;
 import com.jayud.trailer.vo.OrderAddressVO;
@@ -294,6 +292,15 @@ public interface OmsClient {
                                                    @RequestParam("legalIds") List<Long> legalIds,
                                                    @RequestParam("orderNos") List<String> orderNos);
 
+    /**
+     * 查询待审核费用订单数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/auditPendingExpensesNum")
+    public ApiResult<Integer> auditPendingExpensesNum(@RequestParam("subType") String subType,
+                                                      @RequestParam("dataControl") DataControl dataControl,
+                                                      @RequestParam("orderNos") List<String> orderNos);
     /**
      * 查询供应商code
      */

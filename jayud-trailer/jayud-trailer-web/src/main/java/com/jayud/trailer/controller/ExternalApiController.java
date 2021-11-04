@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.ApiResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.InitChangeStatusVO;
 import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.enums.UserTypeEnum;
 import com.jayud.trailer.bo.AddTrailerOrderFrom;
 import com.jayud.trailer.feign.FinanceClient;
 import com.jayud.trailer.feign.OauthClient;
@@ -21,6 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.xmlbeans.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -169,6 +172,8 @@ public class ExternalApiController {
         datas.put("trailerReceiverCheck", reBillNumMap);
         datas.put("trailerPayCheck", payBillNumMap);
 
+        DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), null).getData();
+
         for (Map<String, Object> menus : menusList) {
 
             Map<String, Object> map = new HashMap<>();
@@ -176,7 +181,7 @@ public class ExternalApiController {
             String status = tmp.get(title);
             Integer num = 0;
             if (status != null) {
-                num = this.trailerOrderService.getNumByStatus(status, legalIds, datas);
+                num = this.trailerOrderService.getNumByStatus(status, dataControl, datas);
             }
             map.put("menusName", title);
             map.put("num", num);

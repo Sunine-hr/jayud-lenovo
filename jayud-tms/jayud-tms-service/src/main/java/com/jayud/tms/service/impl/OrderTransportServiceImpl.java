@@ -44,8 +44,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -168,7 +166,12 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTakeAdrService.saveOrUpdate(orderTakeAdr);
 
         }
-        redisUtils.set("tmsDispatchAddress", jsonArray.toString());
+        String tmps = redisUtils.get("tmsDispatchAddress");
+        if (StringUtils.isEmpty(tmps)) {
+            redisUtils.set("tmsDispatchAddress", jsonArray.toString());
+        } else {
+            redisUtils.set("tmsDispatchAddress", new JSONArray(tmps).add(jsonArray.toString()));
+        }
 
         orderTransport.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
         orderTransport.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));
@@ -960,7 +963,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         Object customsInfo = this.omsClient.initGoCustomsAudit(mainOrderNo).getData();
         //查询节点资料
         List<LogisticsTrackVO> logisticsTrackVOS = this.omsClient.getLogisticsTrackByOrderIds(Arrays.asList(orderTransport.getId()), Arrays.asList(OrderStatusEnum.TMS_T_9.getCode()), 2).getData();
-        if (!CollectionUtils.isEmpty(logisticsTrackVOS)){
+        if (!CollectionUtils.isEmpty(logisticsTrackVOS)) {
             inputOrderTransportVO.setGoCustomsRemarks(logisticsTrackVOS.get(0).getRemarks());
         }
 
@@ -1017,6 +1020,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     /**
      * 根据第三方订单号查询中港订单信息
+     *
      * @param thirdPartyOrderNo
      * @return
      */
@@ -1050,6 +1054,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     /**
      * 推送订单状态到供应链
+     *
      * @param orderTransport
      * @param form
      * @param isRetry
@@ -1093,7 +1098,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                 }
 
             }).start();
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             logger.warn("推送订单状态到供应链失败，原因：{}", e.getMessage());
         }
@@ -1101,6 +1106,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     /**
      * 推送运输公司信息到供应链
+     *
      * @param orderTransport
      */
     @Async
@@ -1148,7 +1154,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                 }
             }).start();
 
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             logger.warn("推送运输公司消息到供应链失败，原因：{}", e.getMessage());
         }
@@ -1156,6 +1162,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
     /**
      * 获取创建人的类型
+     *
      * @param id
      * @return
      */
@@ -1166,6 +1173,7 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                 .eq(OrderTransport::getId, id));
         return orderTransport.getCreateUserType();
     }
+
     @Override
     public List<OrderTransportVO> getOrderTransportList(String pickUpTimeStart, String pickUpTimeEnd, String orderNo) {
         return baseMapper.getOrderTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);

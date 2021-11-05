@@ -2,7 +2,10 @@ package com.jayud.tms.controller;
 
 
 import com.jayud.common.CommonResult;
+import com.jayud.common.entity.MapEntity;
 import com.jayud.common.utils.BeanUtils;
+import com.jayud.common.utils.StringUtils;
+import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.bo.QueryDeliveryAddressForm;
 import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.model.vo.DeliveryAddressVO;
@@ -13,6 +16,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +36,10 @@ public class OrderTransCommonController {
 
     @Autowired
     IOrderTransportService orderTransportService;
+    @Autowired
+    private OmsClient omsClient;
+    @Value("${tencentMap.key}")
+    private String tencentMapKey;
 
     @ApiOperation(value = "获取提货/送货地址")
     @PostMapping(value = "/findDeliveryAddress")
@@ -81,6 +89,21 @@ public class OrderTransCommonController {
             phones = deliveryAddresses.stream().map(DeliveryAddress::getPhone).collect(Collectors.toList());
         }
         return CommonResult.success(phones);
+    }
+
+    @ApiOperation(value = "补充货物定位信息")
+    @RequestMapping(value = "/addLocationInfo")
+    public CommonResult addLocationInfo() {
+
+        List<DeliveryAddress> list = this.deliveryAddressService.list().stream().filter(e -> StringUtils.isEmpty(e.getLoAndLa())).collect(Collectors.toList());
+        for (DeliveryAddress deliveryAddress : list) {
+            MapEntity mapEntity = this.omsClient.getTencentMapLaAndLo(deliveryAddress.getAddress(), tencentMapKey).getData();
+            if (mapEntity != null) {
+                DeliveryAddress tmp = new DeliveryAddress().setId(deliveryAddress.getId()).setLoAndLa(mapEntity.getLongitude() + "," + mapEntity.getLatitude());
+                this.deliveryAddressService.updateById(tmp);
+            }
+        }
+        return CommonResult.success();
     }
 
 }

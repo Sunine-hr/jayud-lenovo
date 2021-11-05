@@ -44,7 +44,7 @@ public class MapPositioningServiceImpl implements MapPositioningService {
     public MapEntity getTencentMapLaAndLo(String address, String key) {
         JSONObject jsonObject = this.getTencentMapLaAndLoInfo(address, key);
         if (jsonObject.getInt("status") != 0) {
-            log.warn(jsonObject.getStr("message"));
+            log.warn("地址:" + address + " " + jsonObject.getStr("message"));
             throw new JayudBizException(jsonObject.getInt("status"), jsonObject.getStr("message"));
         }
         MapEntity map = new MapEntity();

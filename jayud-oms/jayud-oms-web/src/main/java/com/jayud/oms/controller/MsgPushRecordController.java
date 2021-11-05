@@ -53,7 +53,7 @@ public class MsgPushRecordController {
         String token = UserOperator.getToken();
         Object userId = oauthClient.getSystemUserBySystemName(token).getData();
         QueryWrapper<MsgPushRecord> condition = new QueryWrapper<>();
-        condition.lambda().eq(MsgPushRecord::getRecipientId, userId).eq(MsgPushRecord::getOptStatus, 1).groupBy(MsgPushRecord::getReceivingStatus, MsgPushRecord::getInitialTime);
+        condition.lambda().eq(MsgPushRecord::getRecipientId, userId.toString()).eq(MsgPushRecord::getOptStatus, 1).groupBy(MsgPushRecord::getReceivingStatus, MsgPushRecord::getInitialTime);
         List<MsgPushRecord> list = msgPushRecordService.getBaseMapper().selectList(condition);
         return CommonResult.success(list.size());
     }

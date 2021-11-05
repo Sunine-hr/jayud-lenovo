@@ -3,7 +3,6 @@ package com.jayud.tms.schedule;
 import cn.hutool.core.date.StopWatch;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.entity.MapEntity;
 import com.jayud.common.utils.DateUtils;
@@ -11,7 +10,6 @@ import com.jayud.tms.controller.ExternalApiController;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.po.DeliveryAddress;
 import com.jayud.tms.service.IDeliveryAddressService;
-import com.jayud.tms.service.IOrderSendCarsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,9 +63,14 @@ public class ScheduledTask {
                     jsonArray.remove(jsonObject);
                 }
             }
-            redisUtils.set("tmsDispatchAddress", jsonArray.toString());
+
         }
 
+        if (jsonArray.size()==0){
+            redisUtils.delete("tmsDispatchAddress");
+        }else {
+            redisUtils.set("tmsDispatchAddress", jsonArray.toString());
+        }
 
         // 结束时间
         stopWatch.stop();

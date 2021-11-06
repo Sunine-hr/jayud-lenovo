@@ -82,6 +82,7 @@ public class HgBillApi {
     public CommonResult submitYunBaoGuan(@RequestBody QueryCommonForm form) {
 
         List<YunBaoGuanData> yunBaoGuanData = hgBillService.getYunBaoGuanData(form.getId());
+        HgBill hgBill1 = hgBillService.getById(form.getId());
         PushOrderForm pushOrderForm = new PushOrderForm();
 
         //拼接数据传到云报关
@@ -93,15 +94,19 @@ public class HgBillApi {
             }else{
                 customsHeadForm.setDeclareId(1);
             }
+            customsHeadForm.setUid(hgBill1.getUid());
             customsHeadForm.setIndateDt(yunBaoGuanData1.getBillDate());
             customsHeadForm.setNote("供应链系统推送");
 
             List<CustomsGoodsForm> goodsForms = new ArrayList<>();
             for (YunBaoGuanData yunBaoGuanDatum : yunBaoGuanData) {
                 CustomsGoodsForm customsGoodsForm = new CustomsGoodsForm();
-                customsGoodsForm.setGoodsNo(yunBaoGuanDatum.getItemNo());
-                customsGoodsForm.setGoodsName(yunBaoGuanDatum.getItemName());
-                customsGoodsForm.setGoodsSpec(yunBaoGuanDatum.getItemModel());
+//                customsGoodsForm.setGoodsNo(yunBaoGuanDatum.getItemNo());
+//                customsGoodsForm.setGoodsName(yunBaoGuanDatum.getItemName());
+//                customsGoodsForm.setGoodsSpec(yunBaoGuanDatum.getItemModel());
+                customsGoodsForm.setGoodsNo("111111");
+                customsGoodsForm.setGoodsName("测试商品");
+                customsGoodsForm.setGoodsSpec("测试型号");
                 customsGoodsForm.setAmount(yunBaoGuanDatum.getQty());
                 customsGoodsForm.setAmount02(yunBaoGuanDatum.getQty2());
                 customsGoodsForm.setAmount03(yunBaoGuanDatum.getQty3());
@@ -165,9 +170,9 @@ public class HgBillApi {
                 stringBuffer.append(declarationTraceVO.getCname()).append(" : ").append(declarationTraceVO.getProcess_dt());
 
                 //判断进程信息是否已保存
-                HgBillFollow hgBillFollow = hgBillFollowService.getHgBillFollowByBillIdAndContent(hgBill.getId(),stringBuffer.toString());
-                if(hgBillFollow == null){
-                    hgBillFollow = new HgBillFollow();
+                List<HgBillFollow> hgBillFollows1 = hgBillFollowService.getHgBillFollowByBillIdAndContent(hgBill.getId(),stringBuffer.toString());
+                if(CollectionUtil.isEmpty(hgBillFollows1)){
+                    HgBillFollow hgBillFollow = new HgBillFollow();
                     hgBillFollow.setBillId(hgBill.getId());
                     hgBillFollow.setSType("系统");
                     hgBillFollow.setFollowContext(stringBuffer.toString());

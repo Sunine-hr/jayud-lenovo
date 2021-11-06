@@ -295,5 +295,11 @@ public class BookingOrderEntryServiceImpl extends ServiceImpl<BookingOrderEntryM
 
     }
 
+    @Override
+    public boolean updateBookingOrderEntry(Commodity commodity) {
+
+        return this.baseMapper.updateBookingOrderEntry(commodity);
+    }
+
 
 }

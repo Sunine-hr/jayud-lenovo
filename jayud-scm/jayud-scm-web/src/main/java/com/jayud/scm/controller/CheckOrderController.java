@@ -91,7 +91,7 @@ public class CheckOrderController {
                 checkOrder.setCheckState(CheckStateEnum.CHECK_STATE_3.getCode().toString());
                 bookingOrder.setStateFlag(StateFlagEnum.STATE_FLAG_2.getCode());
                 bookingOrderFollow.setBookingId(bookingOrder.getId());
-                bookingOrderFollow.setFollowContext("该订单已收货");
+                bookingOrderFollow.setFollowContext("该订单已提货完成");
                 bookingOrderFollow.setSType("人工");
                 break;
             case 2:

@@ -40,7 +40,7 @@ public class ShiroConfig {
     private String password;
     private Duration timeout;
 
-    private int sessionTimeout = 3600 * 2;
+    private int sessionTimeout = 3600 * 2; //两小时
 
     /**
      * Filter工厂，设置对应的过滤条件和跳转条件
@@ -128,7 +128,7 @@ public class ShiroConfig {
         redisSessionDAO.setRedisManager(redisManager());
         redisSessionDAO.setSessionIdGenerator(sessionIdGenerator());
         //设置session的过期时间（秒）
-        redisSessionDAO.setExpire(3600*24);
+        redisSessionDAO.setExpire(sessionTimeout);
         return redisSessionDAO;
     }
 
@@ -157,7 +157,7 @@ public class ShiroConfig {
     public SessionManager sessionManager() {
         MySessionManager mySessionManager = new MySessionManager();
         mySessionManager.setSessionDAO(redisSessionDAO());
-        mySessionManager.setGlobalSessionTimeout(sessionTimeout*10000);
+        mySessionManager.setGlobalSessionTimeout(sessionTimeout*1000);
         return mySessionManager;
     }
 

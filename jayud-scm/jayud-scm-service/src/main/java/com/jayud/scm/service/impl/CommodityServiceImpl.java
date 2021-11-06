@@ -51,6 +51,9 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
     @Autowired
     private IBBrandService brandService;
 
+//    @Autowired
+//    private IBookingOrderEntryService bookingOrderEntryService;
+
 
     @Override
     public boolean delete(DeleteForm deleteForm) {
@@ -268,6 +271,12 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
             log.warn("商品归类失败,商品id为"+form.getId());
             return false;
         }
+
+        //商品审核后，将海关编码和申报要素反写到订单商品明细中
+//        boolean result = bookingOrderEntryService.updateBookingOrderEntry(commodity);
+//        if(result){
+//            log.warn("反写委托单详情成功");
+//        }
 
         if(CollectionUtils.isNotEmpty(form.getAddCommodityEntryForms())){
             List<CommodityEntry> commodityEntries = ConvertUtil.convertList(form.getAddCommodityEntryForms(), CommodityEntry.class);

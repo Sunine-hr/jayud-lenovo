@@ -3,6 +3,7 @@ package com.jayud.scm.service;
 import com.jayud.scm.model.bo.BookingOrderEntryForm;
 import com.jayud.scm.model.po.BookingOrderEntry;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.scm.model.po.Commodity;
 import com.jayud.scm.model.vo.BookingOrderEntryVO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -57,4 +58,6 @@ public interface IBookingOrderEntryService extends IService<BookingOrderEntry> {
      * @param bookingId
      */
     void importByBookingOrderEntry(MultipartFile file, Integer bookingId);
+
+    boolean updateBookingOrderEntry(Commodity commodity);
 }

@@ -610,9 +610,7 @@ public class BookingOrderController {
             bookingOrderEntryVO.setBookingEntryId(bookingOrderEntryVO.getId());
             bookingOrderEntryList1.add(bookingOrderEntryVO);
         }
-        if(CollectionUtils.isEmpty(bookingOrderEntryList1)){
-            return CommonResult.success();
-        }
+
         return CommonResult.success(bookingOrderEntryList1);
     }
 
@@ -657,9 +655,7 @@ public class BookingOrderController {
             bookingOrderEntryVO.setBookingEntryId(bookingOrderEntryVO.getId());
             bookingOrderEntryList1.add(bookingOrderEntryVO);
         }
-        if(CollectionUtils.isEmpty(bookingOrderEntryList1)){
-            return CommonResult.success();
-        }
+
         return CommonResult.success(bookingOrderEntryList1);
     }
 

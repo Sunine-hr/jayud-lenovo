@@ -237,14 +237,21 @@ public class HgTruckApi {
                 List<BookingOrderEntryVO> bookingOrderEntryByBookingId = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingOrder.getId());
                 AddAddressForm addAddressForm = new AddAddressForm();
                 AddAddressForm addAddressForm1 = new AddAddressForm();
+                Integer pieceAmount = 0;
+                Double weight = 0.0;
+                Double volume = 0.0;
                 for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryByBookingId) {
-                    addAddressForm.setPieceAmount(((bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0)).add(bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0))).intValue());
-                    addAddressForm.setWeight(((bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0)).add(bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0))).doubleValue());
-                    addAddressForm.setVolume(((bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0)).add(bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0))).doubleValue());
-                    addAddressForm1.setPieceAmount(((bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0)).add(bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0))).intValue());
-                    addAddressForm1.setWeight(((bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0)).add(bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0))).doubleValue());
-                    addAddressForm1.setVolume(((bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0)).add(bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0))).doubleValue());
+                    pieceAmount = pieceAmount + (bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0)).intValue();
+                    weight = weight + (bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0)).doubleValue();
+                    volume = volume + (bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0)).doubleValue();
+
                 }
+                addAddressForm.setPieceAmount(pieceAmount);
+                addAddressForm.setWeight(weight);
+                addAddressForm.setVolume(volume);
+                addAddressForm1.setPieceAmount(pieceAmount);
+                addAddressForm1.setWeight(weight);
+                addAddressForm1.setVolume(volume);
                 addAddressForm.setCityName(dicEntryByDicCode.getReserved3());
                 if(dicEntryByDicCode.getReserved4() != null){
                     addAddressForm.setAreaName(dicEntryByDicCode.getReserved4());
@@ -279,11 +286,17 @@ public class HgTruckApi {
             for (BookingOrder bookingOrder : bookingOrderByHgTrackId) {
                 List<BookingOrderEntryVO> bookingOrderEntryByBookingId = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingOrder.getId());
                 AddAddressForm addAddressForm = new AddAddressForm();
+                Integer pieceAmount = 0;
+                Double weight = 0.0;
+                Double volume = 0.0;
                 for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryByBookingId) {
-                    addAddressForm.setPieceAmount(((bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0)).add(bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0))).intValue());
-                    addAddressForm.setWeight(((bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0)).add(bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0))).doubleValue());
-                    addAddressForm.setVolume(((bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0)).add(bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0))).doubleValue());
+                    pieceAmount = pieceAmount + (bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0)).intValue();
+                    weight = weight + (bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0)).doubleValue();
+                    volume = volume + (bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0)).doubleValue();
                 }
+                addAddressForm.setPieceAmount(pieceAmount);
+                addAddressForm.setWeight(weight);
+                addAddressForm.setVolume(volume);
 
                 //拼接地址  填充地址信息
                 addAddressForm.setCityName(dicEntryByDicCode1.getReserved3());
@@ -322,6 +335,7 @@ public class HgTruckApi {
             hgTruckApiVO.setTakeAdrForms2(takeAdrForms2);
         }
 
+        System.out.println("请求参数："+hgTruckApiVO);
         OutAuthenticationForm outAuthenticationForm = new OutAuthenticationForm();
 
         String s = redisUtils.get(getRedisKey(outAuthenticationForm));

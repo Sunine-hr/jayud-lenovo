@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.HgBillFollowVO;
 import com.jayud.scm.model.vo.HgBillVO;
 
+import java.util.List;
+
 /**
  * <p>
  * 入库单跟踪记录表 服务类
@@ -19,5 +21,5 @@ public interface IHgBillFollowService extends IService<HgBillFollow> {
 
     IPage<HgBillFollowVO> findListByHgBillId(QueryCommonForm form);
 
-    HgBillFollow getHgBillFollowByBillIdAndContent(Integer id, String toString);
+    List<HgBillFollow> getHgBillFollowByBillIdAndContent(Integer id, String toString);
 }

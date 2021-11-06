@@ -74,6 +74,12 @@ public class AcctReceiptController {
     @ApiOperation(value = "锁定金额")
     @PostMapping(value = "/lockAmount")
     public CommonResult lockAmount(@RequestBody QueryCommonForm form) {
+
+//        AcctReceipt acctReceipt = acctReceiptService.getById(form.getId());
+//        if(acctReceipt != null){
+//
+//        }
+
         boolean result = acctReceiptService.lockAmount(form);
         if(!result){
             return CommonResult.error(444,"锁定金额失败");

@@ -253,7 +253,7 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         //2.记录 委托单跟踪记录表
         BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
         bookingOrderFollow.setBookingId(bookingId);
-        bookingOrderFollow.setSType("1");//1系统 2人工
+        bookingOrderFollow.setSType("系统");//1系统 2人工
         if(commonResult.getCode().equals(ResultEnum.SUCCESS.getCode())){
             //操作成功
             if(bookingOrder.getModelType().equals(1)){
@@ -293,7 +293,7 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         //2.记录 委托单跟踪记录表
         BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
         bookingOrderFollow.setBookingId(bookingId);
-        bookingOrderFollow.setSType("1");//1系统 2人工
+        bookingOrderFollow.setSType("系统");//1系统 2人工
         if(commonResult.getCode().equals(ResultEnum.SUCCESS.getCode())){
             //操作成功
             bookingOrderFollow.setFollowContext("出口委托单，反审，成功！");

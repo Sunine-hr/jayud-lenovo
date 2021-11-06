@@ -2,6 +2,7 @@ package com.jayud.scm.mapper;
 
 import com.jayud.scm.model.po.BookingOrderEntry;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jayud.scm.model.po.Commodity;
 import com.jayud.scm.model.vo.BookingOrderEntryVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -40,4 +41,6 @@ public interface BookingOrderEntryMapper extends BaseMapper<BookingOrderEntry> {
      * @return
      */
     BookingOrderEntryVO findBookingOrderEntryByBookingIdAndItemId(@Param("bookingId") Integer bookingId, @Param("itemId") Integer itemId);
+
+    boolean updateBookingOrderEntry(Commodity commodity);
 }

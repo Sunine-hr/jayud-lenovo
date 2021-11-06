@@ -84,6 +84,7 @@ public class AccountBankBillServiceImpl extends ServiceImpl<AccountBankBillMappe
         }else{
             accountBankBill.setIsVerification(1);
         }
+        accountBankBill.setVerificationCurrency(accountBankBill.getCurrencyName());
         boolean result = this.saveOrUpdate(accountBankBill);
         if(result){
             log.warn("新增或修改水单信息成功");

@@ -13,6 +13,8 @@ import com.jayud.scm.service.IHgBillFollowService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
  * 入库单跟踪记录表 服务实现类
@@ -31,11 +33,11 @@ public class HgBillFollowServiceImpl extends ServiceImpl<HgBillFollowMapper, HgB
     }
 
     @Override
-    public HgBillFollow getHgBillFollowByBillIdAndContent(Integer id, String toString) {
+    public List<HgBillFollow> getHgBillFollowByBillIdAndContent(Integer id, String toString) {
         QueryWrapper<HgBillFollow> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(HgBillFollow::getBillId,id);
         queryWrapper.lambda().eq(HgBillFollow::getFollowContext,toString);
         queryWrapper.lambda().eq(HgBillFollow::getVoided,0);
-        return this.getOne(queryWrapper);
+        return this.list(queryWrapper);
     }
 }

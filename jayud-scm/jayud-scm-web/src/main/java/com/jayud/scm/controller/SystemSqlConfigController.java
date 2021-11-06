@@ -115,9 +115,9 @@ public class SystemSqlConfigController {
 
         //登录用户信息
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
-//        if(ObjectUtil.isEmpty(systemUser)){
-//            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录!");
-//        }
+        if(ObjectUtil.isEmpty(systemUser)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录!");
+        }
         Long userId = systemUser.getId();
         //HttpServerletRequest  装请求信息的类
         //HttpServerletResponse  装相应信息的类

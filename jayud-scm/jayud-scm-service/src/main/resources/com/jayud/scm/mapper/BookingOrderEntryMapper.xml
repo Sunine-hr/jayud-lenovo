@@ -124,4 +124,14 @@
         and t.`item_id` = #{itemId, jdbcType=INTEGER}
     </select>
 
+
+    <select id="updateBookingOrderEntry" parameterType="com.jayud.scm.model.po.Commodity" resultType="boolean">
+        update booking_order_entry b set customs_code = #{commodity.hsCodeNo} , elements = #{commodity.skuElements}
+        where b.item_id = #{commodity.id} and b.id in
+        (select bo.id from booking_order b
+         left join booking_order_entry bo on bo.booking_id = b.id and bo.voided = 0
+         left join hg_bill h on h.id = b.bill_id and h.voided = 0
+         where b.bill_id is null or (b.bill_id is not null and h.check_state_flag = 'N0'))
+    </select>
+
 </mapper>

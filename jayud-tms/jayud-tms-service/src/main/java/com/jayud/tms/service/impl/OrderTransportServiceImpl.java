@@ -167,13 +167,18 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
 
         }
         String tmps = redisUtils.get("tmsDispatchAddress");
-        if (StringUtils.isEmpty(tmps)) {
-            redisUtils.set("tmsDispatchAddress", jsonArray.toString());
-        } else {
-            JSONArray oldData = new JSONArray(tmps);
-            oldData.addAll(jsonArray);
-            redisUtils.set("tmsDispatchAddress", oldData);
+        try {
+            if (StringUtils.isEmpty(tmps)) {
+                redisUtils.set("tmsDispatchAddress", jsonArray.toString());
+            } else {
+                JSONArray oldData = new JSONArray(tmps);
+                oldData.addAll(jsonArray);
+                redisUtils.set("tmsDispatchAddress", oldData);
+            }
+        }catch (Exception e){
+            log.warn("获取货物编辑缓存系信息失败 value="+tmps);
         }
+
 
         orderTransport.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
         orderTransport.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));

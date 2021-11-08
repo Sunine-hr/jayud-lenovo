@@ -166,12 +166,14 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
             orderTakeAdrService.saveOrUpdate(orderTakeAdr);
 
         }
-//        String tmps = redisUtils.get("tmsDispatchAddress");
-//        if (StringUtils.isEmpty(tmps)) {
-//            redisUtils.set("tmsDispatchAddress", jsonArray.toString());
-//        } else {
-//            redisUtils.set("tmsDispatchAddress", new JSONArray(tmps).add(jsonArray.toString()));
-//        }
+        String tmps = redisUtils.get("tmsDispatchAddress");
+        if (StringUtils.isEmpty(tmps)) {
+            redisUtils.set("tmsDispatchAddress", jsonArray.toString());
+        } else {
+            JSONArray oldData = new JSONArray(tmps);
+            oldData.addAll(jsonArray);
+            redisUtils.set("tmsDispatchAddress", oldData);
+        }
 
         orderTransport.setCntrPic(StringUtils.getFileStr(form.getCntrPics()));
         orderTransport.setCntrPicName(StringUtils.getFileNameStr(form.getCntrPics()));

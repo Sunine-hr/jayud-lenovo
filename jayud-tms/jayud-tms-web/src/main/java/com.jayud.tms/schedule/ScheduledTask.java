@@ -6,6 +6,7 @@ import cn.hutool.json.JSONObject;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.entity.MapEntity;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.tms.controller.ExternalApiController;
 import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.po.DeliveryAddress;
@@ -18,6 +19,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Iterator;
 
 /**
  * 定时任务
@@ -53,23 +55,29 @@ public class ScheduledTask {
         //获取缓存地址
         String tmsDispatchAddress = redisUtils.get("tmsDispatchAddress");
         JSONArray jsonArray = new JSONArray(tmsDispatchAddress);
+
         if (jsonArray.size() > 0) {
-            for (int i = 0; i < jsonArray.size(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                MapEntity mapEntity = omsClient.getTencentMapLaAndLo(jsonObject.getStr("address"), tencentMapKey).getData();
-                if (mapEntity != null) {
-                    DeliveryAddress tmp = new DeliveryAddress().setId(jsonObject.getLong("id")).setLoAndLa(mapEntity.getLongitude() + "," + mapEntity.getLatitude());
-                    this.deliveryAddressService.updateById(tmp);
-                    jsonArray.remove(jsonObject);
+            Iterator<Object> iterator = jsonArray.iterator();
+            while (iterator.hasNext()){
+                Object next = iterator.next();
+                if (next instanceof JSONObject){
+                    JSONObject jsonObject=(JSONObject) next;
+                    MapEntity mapEntity = omsClient.getTencentMapLaAndLo(jsonObject.getStr("address"), tencentMapKey).getData();
+                    if (mapEntity != null) {
+                        DeliveryAddress tmp = new DeliveryAddress().setId(jsonObject.getLong("id")).setLoAndLa(mapEntity.getLongitude() + "," + mapEntity.getLatitude());
+                        this.deliveryAddressService.updateById(tmp);
+                        iterator.remove();
+//                        jsonArray.remove(jsonObject);
+                    }
                 }
             }
-
         }
-
-        if (jsonArray.size()==0){
-            redisUtils.delete("tmsDispatchAddress");
-        }else {
-            redisUtils.set("tmsDispatchAddress", jsonArray.toString());
+        if (!StringUtils.isEmpty(tmsDispatchAddress)) {
+            if (jsonArray.size() == 0) {
+                redisUtils.delete("tmsDispatchAddress");
+            } else {
+                redisUtils.set("tmsDispatchAddress", jsonArray.toString());
+            }
         }
 
         // 结束时间

@@ -76,8 +76,7 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
         condition.lambda().eq(MsgPushRecord::getOptStatus, 1);
         String userName = UserOperator.getToken();
         Object data = this.oauthClient.getSystemUserBySystemName(userName).getData();
-        JSONObject jsonObject = new JSONObject(data);
-        condition.lambda().eq(MsgPushRecord::getRecipientId, jsonObject.getLong("id"));
+        condition.lambda().eq(MsgPushRecord::getRecipientId, data);
         return this.baseMapper.update(new MsgPushRecord().setOptStatus(2), condition);
     }
 
@@ -96,8 +95,7 @@ public class MsgPushRecordServiceImpl extends ServiceImpl<MsgPushRecordMapper, M
         condition.lambda().ne(MsgPushRecord::getOptStatus, 3);
         String userName = UserOperator.getToken();
         Object data = this.oauthClient.getSystemUserBySystemName(userName).getData();
-        JSONObject jsonObject = new JSONObject(data);
-        condition.lambda().eq(MsgPushRecord::getRecipientId, jsonObject.getLong("id"));
+        condition.lambda().eq(MsgPushRecord::getRecipientId, data);
         return this.baseMapper.update(new MsgPushRecord().setOptStatus(3), condition);
     }
 

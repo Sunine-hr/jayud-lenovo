@@ -62,6 +62,8 @@ public class AddSystemUserForm {
                 sb.append(e).append(",");
             });
             this.partTimeDepId = sb.toString();
+        } else {
+            this.partTimeDepId = "";
         }
     }
 }

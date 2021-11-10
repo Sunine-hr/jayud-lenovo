@@ -74,6 +74,8 @@ public class OprSystemUserForm {
                 sb.append(e).append(",");
             });
             this.partTimeDepId = sb.toString();
+        }else {
+            this.partTimeDepId="";
         }
     }
 }

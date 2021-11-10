@@ -188,4 +188,13 @@ public interface OauthClient {
      */
     @RequestMapping(value = "/api/getEnableMsgUserChannelByUserIds")
     ApiResult<List<Object>> getEnableMsgUserChannelByUserIds(@RequestParam(value = "userIds") List<Long> userIds);
+
+    /**
+     * 根据部门id获取部门名称
+     *
+     * @param departmentId
+     * @return
+     */
+    @RequestMapping(value = "/api/getDepartmentNameById")
+    ApiResult getDepartmentNameById(@RequestParam("departmentId") Long departmentId);
 }

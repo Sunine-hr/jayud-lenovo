@@ -45,6 +45,10 @@ spring:
         wall:
           config:
             multi-statement-allow: true
+  cloud:
+    alibaba:
+      seata:
+        tx-service-group: jayud-oms-fescar-service-group
 
 swagger:
   enable: true
@@ -52,7 +56,8 @@ logging:
   path: /data/log/oms
 feign:
   httpclient:
-    connection-timeout: 5000
+    connection-timeout: 60000
+    connection-timer-repeat: 3000
 hystrix:
   command:
     default:
@@ -68,6 +73,9 @@ ribbon:
 address:
   productAddr: ${address.productAddr}
   supplierAddr: ${address.supplierAddr}
+
+
+
 
 worksheet:
   tms: ${worksheet.tms}

@@ -66,4 +66,9 @@ public class AddSystemUserForm {
             this.partTimeDepId = "";
         }
     }
+
+    public void setPartTimeDepId(String partTimeDepId) {
+        this.partTimeDepId = CollectionUtils.isEmpty(partTimeDepIds) ? "" : partTimeDepId;
+    }
+
 }

@@ -24,6 +24,7 @@ public class FeignRequestInterceptor implements RequestInterceptor {
         if (attributes == null) {
             return;
         }
+
         HttpServletRequest request = attributes.getRequest();
         Enumeration<String> headerNames = request.getHeaderNames();
         if (headerNames != null) {
@@ -35,11 +36,17 @@ public class FeignRequestInterceptor implements RequestInterceptor {
                     continue;
                 }
                 requestTemplate.header(name, values);
+
             }
         } else {
             log.info("feign interceptor error header:{}", requestTemplate);
         }
+        Object kid = request.getAttribute("TX_XID");
+        if (kid != null) {
+            requestTemplate.header("TX_XID", kid.toString());
+        }
 
+//        requestTemplate.header(RootContext.KEY_XID, RootContext.getXID());
         Enumeration<String> bodyNames = request.getParameterNames();
         StringBuffer body = new StringBuffer();
         if (bodyNames != null) {

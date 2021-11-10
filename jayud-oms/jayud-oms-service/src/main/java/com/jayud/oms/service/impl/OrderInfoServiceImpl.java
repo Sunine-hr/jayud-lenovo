@@ -25,6 +25,7 @@ import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
 import io.netty.util.internal.StringUtil;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1407,6 +1408,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         InputOrderVO inputOrderVO = new InputOrderVO();
         //获取主订单信息
         InputMainOrderVO inputMainOrderVO = getMainOrderById(form.getMainOrderId());
+        Object departmentInfo = this.oauthClient.getDepartmentNameById(inputMainOrderVO.getBizBelongDepart()).getData();
+        JSONObject department = new JSONObject(departmentInfo);
+        inputMainOrderVO.setBizBelongDepartDesc(department.getStr("name"));
         inputMainOrderVO.setCreateUserTypeName(CreateUserTypeEnum.getDesc(inputMainOrderVO.getCreateUserType()));
         inputOrderVO.setOrderForm(inputMainOrderVO);
 
@@ -1650,6 +1654,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
 
     @Override
+    @GlobalTransactional
     public boolean createOrder(InputOrderForm form) {
         //保存主订单
         InputMainOrderForm inputMainOrderForm = form.getOrderForm();

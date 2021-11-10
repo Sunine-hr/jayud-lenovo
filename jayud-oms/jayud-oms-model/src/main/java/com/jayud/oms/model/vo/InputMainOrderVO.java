@@ -43,6 +43,9 @@ public class InputMainOrderVO {
     @ApiModelProperty(value = "业务所属部门")
     private Long bizBelongDepart;
 
+    @ApiModelProperty(value = "业务所属部门名称")
+    private String bizBelongDepartDesc;
+
     @ApiModelProperty(value = "客户参考号")
     private String referenceNo;
 

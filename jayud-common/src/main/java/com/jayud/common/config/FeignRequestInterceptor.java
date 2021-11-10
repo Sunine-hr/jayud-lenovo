@@ -42,10 +42,10 @@ public class FeignRequestInterceptor implements RequestInterceptor {
         } else {
             log.info("feign interceptor error header:{}", requestTemplate);
         }
-        Object kid = request.getAttribute("TX_XID");
-        if (kid != null) {
-            requestTemplate.header("TX_XID", kid.toString());
-        }
+//        Object kid = request.getAttribute("TX_XID");
+//        if (kid != null) {
+//            requestTemplate.header("TX_XID", kid.toString());
+//        }
 
         requestTemplate.header(RootContext.KEY_XID, RootContext.getXID());
         Enumeration<String> bodyNames = request.getParameterNames();

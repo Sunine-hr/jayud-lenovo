@@ -56,8 +56,8 @@ public class BookingOrderEntryServiceImpl extends ServiceImpl<BookingOrderEntryM
 
     @Autowired
     ISystemUserService systemUserService;//后台用户表
-    @Autowired
-    ICommodityService commodityService;//商品表
+//    @Autowired
+//    ICommodityService commodityService;//商品表
 
     /**
      * 商品明细表，list查询

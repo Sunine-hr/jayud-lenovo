@@ -112,6 +112,15 @@ public class BookingOrderController {
 
     //出口委托单，保存(新增、修改)
     @ApiOperation(value = "出口委托单，保存(新增、修改)")
+    @PostMapping(value = "/temporaryStorageBookingOrder")
+    public CommonResult temporaryStorageBookingOrder(@Valid @RequestBody AddBookingOrderForm form){
+        BookingOrderForm bookingOrderForm = ConvertUtil.convert(form, BookingOrderForm.class);
+        bookingOrderService.temporaryStorageBookingOrder(bookingOrderForm);
+        return CommonResult.success("保存成功!");
+    }
+
+    //出口委托单，保存(新增、修改)
+    @ApiOperation(value = "出口委托单，保存(新增、修改)")
     @PostMapping(value = "/saveBookingOrder")
     public CommonResult saveBookingOrder(@Valid @RequestBody BookingOrderForm form){
         CustomerMaintenanceSetup customerMaintenanceSetup = customerMaintenanceSetupService.getById(form.getFsalesId());
@@ -180,6 +189,9 @@ public class BookingOrderController {
             return CommonResult.error(444,"该委托单没有客户合同号，无法审核");
         }
 
+        if(!bookingOrder.getStateFlag().equals(StateFlagEnum.STATE_FLAG_0.getCode())){
+            return CommonResult.error(444,"只有订单状态为未确认的单才能进行审核");
+        }
         if(!systemUser.getUserName().equalsIgnoreCase("Admin")){
             //获取登录用户所属角色
             List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());

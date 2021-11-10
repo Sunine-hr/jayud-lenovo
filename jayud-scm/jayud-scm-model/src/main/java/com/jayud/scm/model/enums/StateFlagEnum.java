@@ -27,7 +27,8 @@ public enum StateFlagEnum {
     STATE_FLAG_8(8, "已签收"),
     STATE_FLAG_9(9, "部分出库"),
     STATE_FLAG_10(10, "已出库"),
-    STATE_FLAG_11(11, "已报关")
+    STATE_FLAG_11(11, "已报关"),
+    STATE_FLAG_NEGATIVE_4(-4, "暂存")
     ;
 
 

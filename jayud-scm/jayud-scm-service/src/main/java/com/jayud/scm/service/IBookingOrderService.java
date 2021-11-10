@@ -98,4 +98,6 @@ public interface IBookingOrderService extends IService<BookingOrder> {
 
     //出口核销反算人民币单价
     CommonResult reverseCalculation(Integer id);
+
+    void temporaryStorageBookingOrder(BookingOrderForm bookingOrderForm);
 }

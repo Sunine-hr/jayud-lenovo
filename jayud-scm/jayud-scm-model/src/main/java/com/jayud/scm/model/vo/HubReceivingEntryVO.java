@@ -72,6 +72,7 @@ public class HubReceivingEntryVO {
     @ApiModelProperty(value = "价格")
     private BigDecimal price;
 
+    @ApiModelProperty(value = "报关单价")
     private BigDecimal hgPrice;
 
     @ApiModelProperty(value = "件数")

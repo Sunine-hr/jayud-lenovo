@@ -39,4 +39,6 @@ public interface IHgTruckService extends IService<HgTruck> {
     boolean acceptTransportationInformation(AddHgTruckForm form);
 
     boolean updateTrainNumberStatus1(QueryCommonForm form);
+
+    boolean temporaryStorageHgTruck(AddHgTruckForm addHgTruckForm);
 }

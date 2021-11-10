@@ -51,8 +51,8 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
     @Autowired
     private IBBrandService brandService;
 
-//    @Autowired
-//    private IBookingOrderEntryService bookingOrderEntryService;
+    @Autowired
+    private IBookingOrderEntryService bookingOrderEntryService;
 
 
     @Override
@@ -175,12 +175,15 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
             commodityDetailVO.setHsCodeVO(hsCodeVO);
             commodityDetailVO.setCommodityEntryVOS(commodityEntryVOS);
         }
-        BBrand bBrand = brandService.getNameByNameEn(commodity.getSkuBrand());
-        if(bBrand != null){
-            commodityDetailVO.setAllName(bBrand.getAllName());
-        }else{
-            commodityDetailVO.setAllName(commodity.getSkuBrand());
+        if(commodity.getSkuBrand() != null){
+            BBrand bBrand = brandService.getNameByNameEn(commodity.getSkuBrand());
+            if(bBrand != null){
+                commodityDetailVO.setAllName(bBrand.getAllName());
+            }else{
+                commodityDetailVO.setAllName(commodity.getSkuBrand());
+            }
         }
+
         return commodityDetailVO;
     }
 
@@ -273,10 +276,10 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
         }
 
         //商品审核后，将海关编码和申报要素反写到订单商品明细中
-//        boolean result = bookingOrderEntryService.updateBookingOrderEntry(commodity);
-//        if(result){
-//            log.warn("反写委托单详情成功");
-//        }
+        boolean result = bookingOrderEntryService.updateBookingOrderEntry(commodity);
+        if(result){
+            log.warn("反写委托单详情成功");
+        }
 
         if(CollectionUtils.isNotEmpty(form.getAddCommodityEntryForms())){
             List<CommodityEntry> commodityEntries = ConvertUtil.convertList(form.getAddCommodityEntryForms(), CommodityEntry.class);

@@ -489,4 +489,71 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         }
         return CommonResult.success();
     }
+
+    @Override
+    public void temporaryStorageBookingOrder(BookingOrderForm form) {
+        //登录用户信息
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+        if(ObjectUtil.isEmpty(systemUser)){
+            Asserts.fail(ResultEnum.UNKNOWN_ERROR, "用户失效，请重新登录");
+        }
+        Integer id = form.getId();
+        if(ObjectUtil.isEmpty(id)){
+            //新增
+            BookingOrder bookingOrder = ConvertUtil.convert(form, BookingOrder.class);
+            //设置创建人信息
+            if(bookingOrder.getModelType().equals(1)){
+                bookingOrder.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D002.getCode(),LocalDateTime.now()));
+            }
+            if(bookingOrder.getModelType().equals(2)){
+                bookingOrder.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(),LocalDateTime.now()));
+            }
+
+            bookingOrder.setCrtBy(systemUser.getId().intValue());
+            bookingOrder.setCrtByName(systemUser.getUserName());
+            bookingOrder.setCrtByDtm(LocalDateTime.now());
+
+            //设置状态
+            bookingOrder.setStateFlag(StateFlagEnum.STATE_FLAG_NEGATIVE_4.getCode());//STATE_FLAG_0(0, "未确认"),
+
+            this.saveOrUpdate(bookingOrder);
+
+            BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
+            bookingOrderFollow.setCrtBy(systemUser.getId().intValue());
+            bookingOrderFollow.setCrtByDtm(LocalDateTime.now());
+            bookingOrderFollow.setCrtByName(systemUser.getUserName());
+            bookingOrderFollow.setBookingId(bookingOrder.getId());
+            bookingOrderFollow.setSType(OperationEnum.INSERT.getCode());
+            bookingOrderFollow.setFollowContext(systemUser.getUserName()+"暂存委托单"+bookingOrder.getBookingNo());
+            boolean save = bookingOrderFollowService.save(bookingOrderFollow);
+            if(save){
+                log.warn("添加委托单，操作日志添加成功");
+            }
+        }else{
+            //修改
+            BookingOrderVO bookingOrderVO = bookingOrderMapper.getBookingOrderById(id);
+            BookingOrder bookingOrder = ConvertUtil.convert(bookingOrderVO, BookingOrder.class);
+
+            BeanUtil.copyProperties(form, bookingOrder);
+
+            //设置修改人信息
+            bookingOrder.setMdyBy(systemUser.getId().intValue());
+            bookingOrder.setMdyByName(systemUser.getUserName());
+            bookingOrder.setMdyByDtm(LocalDateTime.now());
+
+            this.saveOrUpdate(bookingOrder);
+
+            BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
+            bookingOrderFollow.setCrtBy(systemUser.getId().intValue());
+            bookingOrderFollow.setCrtByDtm(LocalDateTime.now());
+            bookingOrderFollow.setCrtByName(systemUser.getUserName());
+            bookingOrderFollow.setBookingId(bookingOrder.getId());
+            bookingOrderFollow.setSType(OperationEnum.UPDATE.getCode());
+            bookingOrderFollow.setFollowContext(systemUser.getUserName()+"暂存委托单"+bookingOrder.getBookingNo());
+            boolean save = bookingOrderFollowService.save(bookingOrderFollow);
+            if(save){
+                log.warn("修改委托单，操作日志添加成功");
+            }
+        }
+    }
 }

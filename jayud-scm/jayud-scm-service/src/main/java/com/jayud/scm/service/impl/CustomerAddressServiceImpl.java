@@ -59,7 +59,7 @@ public class CustomerAddressServiceImpl extends ServiceImpl<CustomerAddressMappe
         CustomerAddress customerAddress = ConvertUtil.convert(form, CustomerAddress.class);
         if(form.getId() != null){
 
-            if(customerAddress.getIsDefault().equals(1)){
+                if(customerAddress.getIsDefault().equals(1)){
                 QueryWrapper<CustomerAddress> queryWrapper = new QueryWrapper<>();
                 queryWrapper.lambda().eq(CustomerAddress::getCustomerId,form.getCustomerId());
                 queryWrapper.lambda().eq(CustomerAddress::getSType,form.getSType());

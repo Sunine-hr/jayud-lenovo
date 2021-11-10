@@ -101,12 +101,12 @@ public class HgBillApi {
             List<CustomsGoodsForm> goodsForms = new ArrayList<>();
             for (YunBaoGuanData yunBaoGuanDatum : yunBaoGuanData) {
                 CustomsGoodsForm customsGoodsForm = new CustomsGoodsForm();
-//                customsGoodsForm.setGoodsNo(yunBaoGuanDatum.getItemNo());
-//                customsGoodsForm.setGoodsName(yunBaoGuanDatum.getItemName());
-//                customsGoodsForm.setGoodsSpec(yunBaoGuanDatum.getItemModel());
-                customsGoodsForm.setGoodsNo("111111");
-                customsGoodsForm.setGoodsName("测试商品");
-                customsGoodsForm.setGoodsSpec("测试型号");
+                customsGoodsForm.setGoodsNo(yunBaoGuanDatum.getItemNo());
+                customsGoodsForm.setGoodsName(yunBaoGuanDatum.getItemName());
+                customsGoodsForm.setGoodsSpec(yunBaoGuanDatum.getItemModel());
+//                customsGoodsForm.setGoodsNo("111111");
+//                customsGoodsForm.setGoodsName("测试商品");
+//                customsGoodsForm.setGoodsSpec("测试型号");
                 customsGoodsForm.setAmount(yunBaoGuanDatum.getQty());
                 customsGoodsForm.setAmount02(yunBaoGuanDatum.getQty2());
                 customsGoodsForm.setAmount03(yunBaoGuanDatum.getQty3());

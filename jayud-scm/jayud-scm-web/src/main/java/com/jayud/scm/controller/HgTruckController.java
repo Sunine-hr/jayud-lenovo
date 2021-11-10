@@ -6,6 +6,7 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.TableEnum;
 import com.jayud.scm.model.po.*;
@@ -73,7 +74,19 @@ public class HgTruckController {
 //        form.setTruckCompany(customerService.getCustomerById(form.getTruckCompanyId()).getCustomerName());
         boolean result = hgTruckService.saveOrUpdateHgTruck(form);
         if(!result){
-            return CommonResult.error(444,"添加或修改港车运输失败");
+            return CommonResult.error(444,"添加或修改港车运输信息失败");
+        }
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "暂存港车运输信息")
+    @PostMapping(value = "/temporaryStorageHgTruck")
+    public CommonResult temporaryStorageHgTruck(@RequestBody @Valid HgTruckForm form) {
+//        form.setTruckCompany(customerService.getCustomerById(form.getTruckCompanyId()).getCustomerName());
+        AddHgTruckForm addHgTruckForm = ConvertUtil.convert(form, AddHgTruckForm.class);
+        boolean result = hgTruckService.temporaryStorageHgTruck(addHgTruckForm);
+        if(!result){
+            return CommonResult.error(444,"暂存港车运输信息失败");
         }
         return CommonResult.success();
     }
@@ -136,6 +149,11 @@ public class HgTruckController {
         List<BookingOrder> bookingOrderByHgTrackId = bookingOrderService.getBookingOrderByHgTrackId(form.getId());
         if(CollectionUtils.isEmpty(bookingOrderByHgTrackId)){
             return CommonResult.error(444,"该港车单还未绑车，无法进行审核");
+        }
+
+        HgTruck hgTruck = hgTruckService.getById(form.getId());
+        if(hgTruck.getStateFlag().equals(-1)){
+            return CommonResult.error(444,"暂存的港车单无法审核");
         }
 
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());

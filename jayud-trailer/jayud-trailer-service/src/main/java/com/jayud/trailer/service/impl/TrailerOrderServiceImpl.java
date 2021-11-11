@@ -113,6 +113,7 @@ public class TrailerOrderServiceImpl extends ServiceImpl<TrailerOrderMapper, Tra
             ApiResult result = this.omsClient.saveOrUpdateOrderAddressAndGoodsBatch(orderAddressForms);
             if (result.getCode() != HttpStatus.SC_OK) {
                 log.warn("批量保存/修改订单地址信息失败,订单地址信息={}", new JSONArray(orderAddressForms));
+                throw new JayudBizException(result.getMsg());
             }
 
         }

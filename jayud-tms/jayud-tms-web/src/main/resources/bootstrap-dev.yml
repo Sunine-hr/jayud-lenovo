@@ -16,7 +16,7 @@ mybatis-plus:
 
 seata:
   enabled: true
-  application-id: jayud-tms
+  application-id: jayud-tms-web
   tx-service-group: jayud-oms-fescar-service-group
   enable-auto-data-source-proxy: true
   #  config:

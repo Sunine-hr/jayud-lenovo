@@ -7,7 +7,7 @@ jayud:
 
 seata:
   enabled: true
-  application-id: jayud-oms
+  application-id: jayud-storage-web
   tx-service-group: jayud-oms-fescar-service-group
   enable-auto-data-source-proxy: true
   #  config:

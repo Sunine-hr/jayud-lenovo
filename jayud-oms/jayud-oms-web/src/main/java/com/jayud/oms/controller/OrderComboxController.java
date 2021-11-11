@@ -799,7 +799,7 @@ public class OrderComboxController {
                     map.put("data", objs);
                     break;
                 case TC:
-                    List<InputTrailerOrderVO> trailerOrderForms = MapUtil.get(params, "trailerOrderForm", List.class);
+                    List<InputTrailerOrderVO> trailerOrderForms = new JSONObject(params).getJSONArray("trailerOrderForm").toJavaList(InputTrailerOrderVO.class);
                     if (CollectionUtils.isEmpty(trailerOrderForms)) continue;
                     map.put("name", enumType.getDesc());
                     trailerOrderForms.forEach(e -> {

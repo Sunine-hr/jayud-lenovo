@@ -12,3 +12,30 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+
+
+seata:
+  enabled: true
+  application-id: jayud-oms
+  tx-service-group: jayud-oms-fescar-service-group
+  enable-auto-data-source-proxy: true
+  #  config:
+  #    nacos:
+  #      namespace: ffe05704-8927-44f6-859d-a00cf6eb1fcf
+  #      server-addr: 113.100.140.250:8848
+  #      group: SEATA_GROUP
+  #      username: "nacos"
+  #      password: "nacos"
+  registry:
+    type: nacos
+    nacos:
+      server-addr: 127.0.0.1:8848
+      namespace:
+      username: "nacos"
+      password: "nacos"
+      cluster: default
+  service:
+    vgroup-mapping:
+      jayud-oms-fescar-service-group: "default"
+      grouplist:
+        default: 127.0.0.1:8091

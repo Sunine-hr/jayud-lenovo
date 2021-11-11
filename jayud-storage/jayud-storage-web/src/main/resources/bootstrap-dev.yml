@@ -2,8 +2,9 @@ jayud:
   nacos:
     server-addr: 113.100.140.250:8848
     config:
+      namespace: 65ed253a-22cf-49e9-8e95-72402f722631
 #      namespace: 7a4f5e06-9d25-4cd7-afaa-7ce6e46d687d
-      namespace: 8f1f1f76-aaa3-4fc9-81b8-e61963b11d7b
+#      namespace: 8f1f1f76-aaa3-4fc9-81b8-e61963b11d7b
 mybatis-plus:
   mapper-locations: classpath:com.jayud.storage.mapper/*.xml
   typeAliasesPackage: com.jayud.model
@@ -13,3 +14,29 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+
+seata:
+  enabled: true
+  application-id: jayud-oms
+  tx-service-group: jayud-oms-fescar-service-group
+  enable-auto-data-source-proxy: true
+  #  config:
+  #    nacos:
+  #      namespace: ffe05704-8927-44f6-859d-a00cf6eb1fcf
+  #      server-addr: 113.100.140.250:8848
+  #      group: SEATA_GROUP
+  #      username: "nacos"
+  #      password: "nacos"
+  registry:
+    type: nacos
+    nacos:
+      server-addr: 113.100.140.250:8848
+      namespace: ffe05704-8927-44f6-859d-a00cf6eb1fcf
+      username: "nacos"
+      password: "nacos"
+      cluster: default
+  service:
+    vgroup-mapping:
+      jayud-oms-fescar-service-group: "default"
+      grouplist:
+        default: 127.0.0.1:8091

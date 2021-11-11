@@ -227,7 +227,7 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/auditPendingExpensesNum")
     public ApiResult<Integer> auditPendingExpensesNum(@RequestParam("subType") String subType,
-                                                      @RequestParam("dataControl") DataControl dataControl,
+                                                      @RequestBody DataControl dataControl,
                                                       @RequestParam("orderNos") List<String> orderNos);
 
     @ApiOperation("根据类型和业务类型查询订单id")

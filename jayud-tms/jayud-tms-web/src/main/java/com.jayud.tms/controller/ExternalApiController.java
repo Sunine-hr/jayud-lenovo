@@ -34,6 +34,7 @@ import com.jayud.tms.service.ITmsExtensionFieldService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @Api(tags = "tms对外接口")
+@Slf4j
 public class ExternalApiController {
 
     @Autowired
@@ -266,8 +268,8 @@ public class ExternalApiController {
         tmp.put("车辆派送", "T_13");
         tmp.put("确认签收", "T_14");
         tmp.put("费用审核", "CostAudit");
-        tmp.put("应收对账单审核","zgysReceiverCheck");
-        tmp.put("应付对账单审核","zgysPayCheck");
+        tmp.put("应收对账单审核", "zgysReceiverCheck");
+        tmp.put("应付对账单审核", "zgysPayCheck");
         List<Map<String, Object>> result = new ArrayList<>();
 
 //        ApiResult<List<Long>> legalEntityByLegalName = oauthClient.getLegalIdBySystemName(UserOperator.getToken());
@@ -275,9 +277,11 @@ public class ExternalApiController {
         DataControl dataControl = this.oauthClient.getDataPermission(UserOperator.getToken(), UserTypeEnum.EMPLOYEE_TYPE.getCode()).getData();
         Map<String, Integer> reBillNumMap = this.financeClient.getPendingBillStatusNum(null, dataControl.getCompanyIds(), 0, false, SubOrderSignEnum.ZGYS.getSignOne()).getData();
         Map<String, Integer> payBillNumMap = this.financeClient.getPendingBillStatusNum(null, dataControl.getCompanyIds(), 1, false, SubOrderSignEnum.ZGYS.getSignOne()).getData();
-        Map<String,Object> datas=new HashMap<>();
-        datas.put("zgysReceiverCheck",reBillNumMap);
-        datas.put("zgysPayCheck",payBillNumMap);
+        Map<String, Object> datas = new HashMap<>();
+        datas.put("zgysReceiverCheck", reBillNumMap);
+        datas.put("zgysPayCheck", payBillNumMap);
+
+        log.warn("中港菜单:" + JSONUtil.toJsonStr(dataControl));
         for (Map<String, Object> menus : menusList) {
 
             Map<String, Object> map = new HashMap<>();
@@ -285,7 +289,7 @@ public class ExternalApiController {
             String status = tmp.get(title);
             Integer num = 0;
             if (status != null) {
-                num = this.orderTransportService.getNumByStatus(status, dataControl,datas);
+                num = this.orderTransportService.getNumByStatus(status, dataControl, datas);
             }
             map.put("menusName", title);
             map.put("num", num);
@@ -537,7 +541,7 @@ public class ExternalApiController {
      * 获取中港订单
      */
     @RequestMapping(value = "/api/getOrderTransportList")
-    public ApiResult getOrderTransportList(@RequestParam("pickUpTimeStart") String pickUpTimeStart, @RequestParam("pickUpTimeEnd") String pickUpTimeEnd, @RequestParam(value = "orderNo", required = false) String orderNo){
+    public ApiResult getOrderTransportList(@RequestParam("pickUpTimeStart") String pickUpTimeStart, @RequestParam("pickUpTimeEnd") String pickUpTimeEnd, @RequestParam(value = "orderNo", required = false) String orderNo) {
         List<OrderTransportVO> list = orderTransportService.getOrderTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);
         return ApiResult.ok(list);
     }

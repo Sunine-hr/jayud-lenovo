@@ -1602,8 +1602,8 @@ public class ExternalApiController {
      */
     @RequestMapping(value = "/api/auditPendingExpensesNum")
     public ApiResult<Integer> auditPendingExpensesNum(@RequestParam("subType") String subType,
-                                                   @RequestParam("dataControl") DataControl dataControl,
-                                                   @RequestParam("orderNos") List<String> orderNos){
+                                                      @RequestBody(required = false) DataControl dataControl,
+                                                      @RequestParam("orderNos") List<String> orderNos) {
         Integer num = this.costCommonService.auditPendingExpenses(subType, dataControl, orderNos, null);
         return ApiResult.ok(num);
     }

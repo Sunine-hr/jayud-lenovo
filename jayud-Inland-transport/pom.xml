@@ -36,10 +36,16 @@
             <version>1.1.21</version>
         </dependency>
 
+<!--        <dependency>-->
+<!--            <groupId>io.seata</groupId>-->
+<!--            <artifactId>seata-spring-boot-starter</artifactId>-->
+<!--            <version>${seata.version}</version>-->
+<!--        </dependency>-->
+
         <dependency>
-            <groupId>io.seata</groupId>
-            <artifactId>seata-spring-boot-starter</artifactId>
-            <version>${seata.version}</version>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+            <version>${alibaba.seata.version}</version>
         </dependency>
     </dependencies>
 </project>

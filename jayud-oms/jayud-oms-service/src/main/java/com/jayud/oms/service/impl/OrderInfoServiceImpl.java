@@ -2039,7 +2039,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                                 throw new JayudBizException("创建拖车订单失败");
                             }
 
-                            String subOrderNo =result.getData();
+                            String subOrderNo = result.getData();
 
                             trailerOrderFrom.setOrderNo(subOrderNo);
 
@@ -2222,7 +2222,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
                             : ProcessStatusEnum.DRAFT.getCode();
                     storageFastOrderForm.setProcessStatus(processStatus);
-                    String subOrderNo = this.storageClient.createFastOrder(storageFastOrderForm).getData();
+                    ApiResult<String> result = this.storageClient.createFastOrder(storageFastOrderForm);
+                    if (!result.isOk()) {
+                        throw new JayudBizException("快进快出创建失败");
+                    }
+                    String subOrderNo = result.getData();
                     storageFastOrderForm.setOrderNo(subOrderNo);
 
                     if (storageFastOrderForm.getIsWarehouse().equals(1)) {

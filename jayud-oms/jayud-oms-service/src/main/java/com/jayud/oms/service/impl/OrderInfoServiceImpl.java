@@ -1789,7 +1789,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 orderInlandTransportForm.setCreateUser(UserOperator.getToken() == null ? form.getLoginUserName() : UserOperator.getToken());
                 orderInlandTransportForm.setProcessStatus(processStatus);
                 orderInlandTransportForm.setUnitName(unitName.getName());
-                String subOrderNo = this.inlandTpClient.createOrder(orderInlandTransportForm).getData();
+                ApiResult<String> result = this.inlandTpClient.createOrder(orderInlandTransportForm);
+                if (!result.isOk()) {//调用失败
+                    throw new JayudBizException("创建内陆订单失败");
+                }
+                String subOrderNo = result.getData();
                 orderInlandTransportForm.setOrderNo(subOrderNo);
 
                 this.initProcessNode(mainOrderNo, orderNo, OrderStatusEnum.NLYS,
@@ -1970,6 +1974,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         ApiResult result = trailerClient.deleteOrderByMainOrderNo(trailerOrderFroms.get(0).getMainOrderNo());
                         if (result.getCode() != HttpStatus.SC_OK) {
                             log.warn("删除订单信息失败");
+                            throw new JayudBizException("删除订单信息失败");
                         }
                     }
 
@@ -1977,6 +1982,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                         ApiResult result = trailerClient.deleteOrderByMainOrderNo(trailerOrderFroms.get(0).getMainOrderNo());
                         if (result.getCode() != HttpStatus.SC_OK) {
                             log.warn("删除订单信息失败");
+                            throw new JayudBizException("删除订单信息失败");
                         }
                     }
 
@@ -2028,11 +2034,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                             Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
                                     : ProcessStatusEnum.DRAFT.getCode();
                             trailerOrderFrom.setProcessStatus(processStatus);
-                            String subOrderNo = this.trailerClient.createOrder(trailerOrderFrom).getData();
+                            ApiResult<String> result = this.trailerClient.createOrder(trailerOrderFrom);
+                            if (result.getCode() != HttpStatus.SC_OK) {
+                                throw new JayudBizException("创建拖车订单失败");
+                            }
+
+                            String subOrderNo = result.getData();
+
                             trailerOrderFrom.setOrderNo(subOrderNo);
 
                             this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.TC,
                                     form, trailerOrderFrom.getId(), OrderStatusEnum.getTrailerOrderProcess());
+
+
                         }
                     }
                 }
@@ -2087,7 +2101,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
                             : ProcessStatusEnum.DRAFT.getCode();
                     storageInputOrderForm.setProcessStatus(processStatus);
-                    String subOrderNo = this.storageClient.createInOrder(storageInputOrderForm).getData();
+                    ApiResult<String> result = this.storageClient.createInOrder(storageInputOrderForm);
+                    if (result.getCode() != HttpStatus.SC_OK) {
+                        throw new JayudBizException("创建仓储订单失败");
+                    }
+                    String subOrderNo = result.getData();
                     storageInputOrderForm.setOrderNo(subOrderNo);
 
                     this.initProcessNode(mainOrderNo, subOrderNo, OrderStatusEnum.CC,
@@ -2204,7 +2222,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     Integer processStatus = CommonConstant.SUBMIT.equals(form.getCmd()) ? ProcessStatusEnum.PROCESSING.getCode()
                             : ProcessStatusEnum.DRAFT.getCode();
                     storageFastOrderForm.setProcessStatus(processStatus);
-                    String subOrderNo = this.storageClient.createFastOrder(storageFastOrderForm).getData();
+                    ApiResult<String> result = this.storageClient.createFastOrder(storageFastOrderForm);
+                    if (!result.isOk()) {
+                        throw new JayudBizException("快进快出创建失败");
+                    }
+                    String subOrderNo = result.getData();
                     storageFastOrderForm.setOrderNo(subOrderNo);
 
                     if (storageFastOrderForm.getIsWarehouse().equals(1)) {

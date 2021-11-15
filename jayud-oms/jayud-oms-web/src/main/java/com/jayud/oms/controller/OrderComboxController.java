@@ -3,6 +3,7 @@ package com.jayud.oms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -799,8 +800,9 @@ public class OrderComboxController {
                     map.put("data", objs);
                     break;
                 case TC:
-                    List<InputTrailerOrderVO> trailerOrderForms = MapUtil.get(params, "trailerOrderForm", List.class);
-                    if (CollectionUtils.isEmpty(trailerOrderForms)) continue;
+                    JSONArray trailerOrderFormArray = new JSONObject(params).getJSONArray("trailerOrderForm");
+                    if (CollectionUtils.isEmpty(trailerOrderFormArray)) continue;
+                    List<InputTrailerOrderVO> trailerOrderForms = trailerOrderFormArray.toJavaList(InputTrailerOrderVO.class);
                     map.put("name", enumType.getDesc());
                     trailerOrderForms.forEach(e -> {
                         obj.put("id", e.getId());

@@ -15,7 +15,7 @@ mybatis-plus:
 
 seata:
   enabled: true
-  application-id: jayud-oms
+  application-id: jayud-Inland-transport-web
   tx-service-group: jayud-oms-fescar-service-group
   enable-auto-data-source-proxy: true
   #  config:
@@ -28,13 +28,13 @@ seata:
   registry:
     type: nacos
     nacos:
-      server-addr: 127.0.0.1:8848
+      server-addr: 172.18.239.242:8848
       namespace:
       username: "nacos"
-      password: "nacos"
+      password: "jayud@)@)"
       cluster: default
   service:
     vgroup-mapping:
       jayud-oms-fescar-service-group: "default"
       grouplist:
-        default: 127.0.0.1:8091
+        default: 172.18.239.243:8091

@@ -31,7 +31,7 @@ seata:
       server-addr: 127.0.0.1:8848
       namespace:
       username: "nacos"
-      password: "nacos"
+      password: "jayud@)@)"
       cluster: default
   service:
     vgroup-mapping:

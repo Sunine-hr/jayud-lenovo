@@ -92,7 +92,10 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
                     .setOrderNo(orderNo)
                     .setBusinessType(BusinessTypeEnum.NL.getCode());
         }
-        this.omsClient.addDeliveryAddress(addressList);
+        ApiResult result = this.omsClient.addDeliveryAddress(addressList);
+        if (!result.isOk()) {
+            throw new RuntimeException(result.getMsg());
+        }
         return inlandOrder.getOrderNo();
     }
 

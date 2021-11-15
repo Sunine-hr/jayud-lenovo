@@ -30,19 +30,36 @@
 
     <select id="findBankAccountByPage" resultType="com.jayud.oms.model.vo.BankAccountVO">
 
-        select id,customer_id,account_bank,num,account,currency_code,payment_method ,exchange_line_num,collection_contract_no,status,create_time,create_user,update_time,update_user,remarks,type
-        from bank_account
+        SELECT
+        ba.id,
+        ba.customer_id,
+        ba.account_bank,
+        ba.num,
+        ba.account,
+        (select cf.currency_name   from currency_info cf   where  cf.currency_code =  ba.currency_code) currency,
+        ba.payment_method,
+        ba.exchange_line_num,
+        ba.collection_contract_no,
+        ba.status,
+        ba.create_time,
+        ba.create_user,
+        ba.update_time,
+        ba.update_user,
+        ba.remarks,
+        ba.type
+        FROM
+        bank_account ba
 
         <where>
             <if test="form.customerId!=null">
-                and `customer_id` =#{form.customerId}
+                and ba.customer_id =#{form.customerId}
             </if>
             <if test="form.type!=null">
-                and `type` =#{form.type}
+                and ba.type =#{form.type}
             </if>
-            and   status!=2
+            and   ba.status!=2
         </where>
-        order by  create_time DESC
+        order by  ba.create_time DESC
     </select>
 
 </mapper>

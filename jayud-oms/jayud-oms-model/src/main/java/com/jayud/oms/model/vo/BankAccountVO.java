@@ -81,19 +81,6 @@ public class BankAccountVO {
     private Integer type;
 
 
-    public void setCurrencyCode(String currencyCode) {
-        this.currencyCode = currencyCode;
-        switch (currencyCode) {
-            case "HKD":
-                this.currency = "港币";
-                break;
-            case "CNY":
-                this.currency = "人民币";
-                break;
-            case "USD":
-                this.currency = "美元";
-                break;
-        }
-    }
+
 
 }

@@ -242,6 +242,14 @@ public class ExternalApiController {
     }
 
 
+    @ApiModelProperty(value = "获取飞机港口下拉数据")
+    @RequestMapping(value = "/api/airfreight/test")
+    public ApiResult<AirPort> test() {
+        this.airPortService.save(new AirPort().setCode("test").setCreateTime(LocalDateTime.now()).setName("测试").setStatus(1));
+        return ApiResult.ok();
+    }
+
+
     private <T> T getForm(String json, Class<T> clz) {
         return JSONUtil.toBean(json, clz);
     }

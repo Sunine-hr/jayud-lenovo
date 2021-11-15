@@ -42,7 +42,7 @@
             </if>
             and   status!=2
         </where>
-        group by  create_time DESC
+        order by  create_time DESC
     </select>
 
 </mapper>

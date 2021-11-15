@@ -170,9 +170,9 @@ public class SupplierInfoController {
                 return CommonResult.error(ResultEnum.CANNOT_MODIFY_IN_AUDIT);
             }
         }
-
-        if (this.supplierInfoService.saveOrUpdateSupplierInfo(form)) {
-            return CommonResult.success();
+        Long aLong = this.supplierInfoService.saveOrUpdateSupplierInfo(form);
+        if (aLong!=null) {
+            return CommonResult.success(aLong);
         } else {
             return CommonResult.error(ResultEnum.OPR_FAIL);
         }

@@ -37,7 +37,7 @@ public interface ISupplierInfoService extends IService<SupplierInfo> {
      * @param form
      * @return
      */
-    boolean saveOrUpdateSupplierInfo(AddSupplierInfoForm form);
+    Long saveOrUpdateSupplierInfo(AddSupplierInfoForm form);
 
     /**
      * 分页查询供应商审核信息

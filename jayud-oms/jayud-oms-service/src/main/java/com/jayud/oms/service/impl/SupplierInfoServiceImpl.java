@@ -137,7 +137,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
      */
     @Override
     @Transactional
-    public boolean saveOrUpdateSupplierInfo(AddSupplierInfoForm form) {
+    public Long saveOrUpdateSupplierInfo(AddSupplierInfoForm form) {
         StringBuilder sb = new StringBuilder();
         for (Long id : form.getProductClassifyIds()) {
             sb.append(id).append(",");
@@ -160,8 +160,12 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
                     .setUpdateUser(UserOperator.getToken())
                     .setSupplierCode(null);
             isTrue = this.updateById(supplierInfo);
-        }
 
+        }
+        Long supplierInfoId = null;
+        if (isTrue) {
+            supplierInfoId = supplierInfo.getId();
+        }
         form.setId(supplierInfo.getId());
         //保存客户和法人主体关系
         this.supplierRelaLegalServic.saveSupplierRelLegal(form);
@@ -173,7 +177,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
                 .setAuditTypeDesc(AuditTypeDescEnum.ONE.getDesc())
                 .setAuditStatus(AuditStatusEnum.CW_WAIT.getCode())
         );
-        return isTrue;
+        return supplierInfoId;
     }
 
     /**
@@ -575,6 +579,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
     /**
      * 查询供应商及其车辆tree
+     *
      * @return 供应商及其车辆tree
      */
     @Override
@@ -585,14 +590,14 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
         //查询，供应商信息
         QueryWrapper<SupplierInfo> supplierInfoQueryWrapper = new QueryWrapper<>();
-        if(StrUtil.isNotEmpty(supName)){
+        if (StrUtil.isNotEmpty(supName)) {
             supplierInfoQueryWrapper.lambda().like(SupplierInfo::getSupplierChName, supName);
         }
         supplierInfoQueryWrapper.lambda().ne(SupplierInfo::getGpsAddress, "");
         List<SupplierInfo> supplierInfos = baseMapper.selectList(supplierInfoQueryWrapper);
         //查询，供应商对应车辆信息
         QueryWrapper<VehicleInfo> vehicleInfoQueryWrapper = new QueryWrapper<>();
-        if(StrUtil.isNotEmpty(plateNumber)){
+        if (StrUtil.isNotEmpty(plateNumber)) {
             vehicleInfoQueryWrapper.lambda().like(VehicleInfo::getPlateNumber, plateNumber);
         }
         List<VehicleInfo> vehicleInfos = vehicleInfoMapper.selectList(vehicleInfoQueryWrapper);
@@ -606,7 +611,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             List<Map<String, Object>> children = new ArrayList<>();
             vehicleInfos.forEach(vehicleInfo -> {
                 //车辆供应商id，相同
-                if(supplierInfo.getId().equals(vehicleInfo.getSupplierId())){
+                if (supplierInfo.getId().equals(vehicleInfo.getSupplierId())) {
                     Map<String, Object> vehMap = new HashMap<>();
                     vehMap.put("id", vehicleInfo.getId());
                     vehMap.put("label", vehicleInfo.getPlateNumber());
@@ -617,7 +622,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
                 }
             });
             //仅展示有车辆的供应商
-            if(CollUtil.isNotEmpty(children)){
+            if (CollUtil.isNotEmpty(children)) {
                 supMap.put("children", children);
                 supplierVehicleTree.add(supMap);
             }
@@ -627,6 +632,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
     /**
      * 查询供应商（仅展示有车辆的供应商）
+     *
      * @return 供应商list
      */
     @Override
@@ -648,7 +654,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             List<Map<String, Object>> children = new ArrayList<>();
             vehicleInfos.forEach(vehicleInfo -> {
                 //车辆供应商id，相同
-                if(supplierInfo.getId().equals(vehicleInfo.getSupplierId())){
+                if (supplierInfo.getId().equals(vehicleInfo.getSupplierId())) {
                     Map<String, Object> vehMap = new HashMap<>();
                     vehMap.put("id", vehicleInfo.getId());
                     vehMap.put("label", vehicleInfo.getPlateNumber());
@@ -659,7 +665,7 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
                 }
             });
             //仅展示有车辆的供应商
-            if(CollUtil.isNotEmpty(children)){
+            if (CollUtil.isNotEmpty(children)) {
                 list.add(supMap);
             }
         });
@@ -668,10 +674,11 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
     /**
      * 查询订单tree
-     * @param orderTypeCode 单据类型
+     *
+     * @param orderTypeCode   单据类型
      * @param pickUpTimeStart 提货时间Start
-     * @param pickUpTimeEnd 提货时间End
-     * @param orderNo 订单号
+     * @param pickUpTimeEnd   提货时间End
+     * @param orderNo         订单号
      * @return 订单tree
      */
     @Override
@@ -681,41 +688,39 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
         LocalDateTime localDate = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        if(StrUtil.isEmpty(pickUpTimeStart)){
+        if (StrUtil.isEmpty(pickUpTimeStart)) {
             //减30天
             LocalDateTime minus = localDate.minus(30, ChronoUnit.DAYS);
             pickUpTimeStart = minus.format(formatter);
         }
-        if(StrUtil.isEmpty(pickUpTimeEnd)){
+        if (StrUtil.isEmpty(pickUpTimeEnd)) {
             pickUpTimeEnd = localDate.format(formatter);
         }
 
         List<Map<String, Object>> orderTree = new ArrayList<>();
-        if(StrUtil.isEmpty(orderTypeCode)){
+        if (StrUtil.isEmpty(orderTypeCode)) {
             //查询全部
             //查询中港订单
             Map<String, Object> zgys = zgysExtracted(pickUpTimeStart, pickUpTimeEnd, orderNo);
-            if(ObjectUtil.isNotEmpty(zgys)){
+            if (ObjectUtil.isNotEmpty(zgys)) {
                 orderTree.add(zgys);
             }
             //查询内陆订单
             Map<String, Object> nl = nlExtracted(pickUpTimeStart, pickUpTimeEnd, orderNo);
-            if(ObjectUtil.isNotEmpty(nl)){
+            if (ObjectUtil.isNotEmpty(nl)) {
                 orderTree.add(nl);
             }
-        }
-        else if(StrUtil.isNotEmpty(orderTypeCode) && orderTypeCode.equals(SubOrderSignEnum.ZGYS.getSignTwo())){
+        } else if (StrUtil.isNotEmpty(orderTypeCode) && orderTypeCode.equals(SubOrderSignEnum.ZGYS.getSignTwo())) {
             //查询中港订单
             Map<String, Object> zgys = zgysExtracted(pickUpTimeStart, pickUpTimeEnd, orderNo);
-            if(ObjectUtil.isNotEmpty(zgys)){
+            if (ObjectUtil.isNotEmpty(zgys)) {
                 orderTree.add(zgys);
             }
 
-        }
-        else if(StrUtil.isNotEmpty(orderTypeCode) && orderTypeCode.equals(SubOrderSignEnum.NL.getSignTwo())){
+        } else if (StrUtil.isNotEmpty(orderTypeCode) && orderTypeCode.equals(SubOrderSignEnum.NL.getSignTwo())) {
             //查询内陆订单
             Map<String, Object> nl = nlExtracted(pickUpTimeStart, pickUpTimeEnd, orderNo);
-            if(ObjectUtil.isNotEmpty(nl)){
+            if (ObjectUtil.isNotEmpty(nl)) {
                 orderTree.add(nl);
             }
         }
@@ -725,9 +730,10 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
     /**
      * 中港运输单
+     *
      * @param pickUpTimeStart 提货时间Start
-     * @param pickUpTimeEnd 提货时间End
-     * @param orderNo 订单号
+     * @param pickUpTimeEnd   提货时间End
+     * @param orderNo         订单号
      */
     private Map<String, Object> zgysExtracted(String pickUpTimeStart, String pickUpTimeEnd, String orderNo) {
         //查询中港订单
@@ -746,8 +752,8 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
         JSONArray jsonArray = JSON.parseArray(s);//对list进行分组
 
-        List<Map<String, Object>> maps1 =new ArrayList<>();
-        for(int i = 0; i < jsonArray.size(); i++) {
+        List<Map<String, Object>> maps1 = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             Map<String, Object> jsonMap = JSONObject.toJavaObject(jsonObject, Map.class);
             maps1.add(jsonMap);
@@ -797,10 +803,10 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             time.put("children", orderList);
             pickUpTimeList.add(time);
         }
-        if(CollUtil.isNotEmpty(pickUpTimeList)){
+        if (CollUtil.isNotEmpty(pickUpTimeList)) {
             zgys.put("children", pickUpTimeList);
             return zgys;
-        }else{
+        } else {
             //没有订单，返回空
             return null;
         }
@@ -808,9 +814,10 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
     /**
      * 内陆运输单
+     *
      * @param pickUpTimeStart 提货时间Start
-     * @param pickUpTimeEnd 提货时间End
-     * @param orderNo 订单号
+     * @param pickUpTimeEnd   提货时间End
+     * @param orderNo         订单号
      */
     private Map<String, Object> nlExtracted(String pickUpTimeStart, String pickUpTimeEnd, String orderNo) {
         //查询内陆订单
@@ -828,8 +835,8 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
         JSONArray jsonArray = JSON.parseArray(s);//对list进行分组
 
-        List<Map<String, Object>> maps1 =new ArrayList<>();
-        for(int i = 0; i < jsonArray.size(); i++) {
+        List<Map<String, Object>> maps1 = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             Map<String, Object> jsonMap = JSONObject.toJavaObject(jsonObject, Map.class);
             maps1.add(jsonMap);
@@ -878,10 +885,10 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
             time.put("children", orderList);
             pickUpTimeList.add(time);
         }
-        if(CollUtil.isNotEmpty(pickUpTimeList)){
+        if (CollUtil.isNotEmpty(pickUpTimeList)) {
             nl.put("children", pickUpTimeList);
             return nl;
-        }else{
+        } else {
             //没有订单，返回空
             return null;
         }

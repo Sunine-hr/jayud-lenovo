@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.mapper.BankAccountMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.model.po.BankAccount">
+        <id column="id" property="id"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="account_bank" property="accountBank"/>
+        <result column="num" property="num"/>
+        <result column="account" property="account"/>
+        <result column="currency_code" property="currencyCode"/>
+        <result column="payment_method" property="paymentMethod"/>
+        <result column="exchange_line_num" property="exchangeLineNum"/>
+        <result column="collection_contract_no" property="collectionContractNo"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="remarks" property="remarks"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+      id,customer_id,account_bank,account_bank,num,account,currency_code,payment_method,exchange_line_num,collection_contract_no,status,create_time,create_user,update_time,update_user,remarks,type
+    </sql>
+
+
+    <select id="findBankAccountByPage" resultType="com.jayud.oms.model.vo.BankAccountVO">
+
+        select id,customer_id,account_bank,num,account,currency_code,payment_method ,exchange_line_num,collection_contract_no,status,create_time,create_user,update_time,update_user,remarks,type
+        from bank_account
+
+        <where>
+            <if test="form.customerId!=null">
+                and `customer_id` =#{form.customerId}
+            </if>
+            <if test="form.type!=null">
+                and `type` =#{form.type}
+            </if>
+            and   status!=2
+        </where>
+        group by  create_time DESC
+    </select>
+
+</mapper>

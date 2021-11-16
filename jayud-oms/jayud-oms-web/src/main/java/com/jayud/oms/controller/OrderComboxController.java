@@ -894,5 +894,46 @@ public class OrderComboxController {
         return CommonResult.success(cabinetSizes);
     }
 
+
+    /**
+     * 下拉客户对象
+     *
+     * @return
+     */
+    @ApiOperation("下拉客户对象")
+    @PostMapping(value = "/initClientObj")
+    public CommonResult<List<InitComboxStrVO>> initClientObj(@RequestBody Map<String, Object> map) {
+
+        Integer type = MapUtil.getInt(map, "type");
+        List<InitComboxStrVO> initComboxVOS = new ArrayList<>();
+        switch (type) {
+            case 1: //客户
+                //获取结算单位下拉框
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq("status", "1");
+                queryWrapper.eq("audit_status", 10);
+                List<CustomerInfo> customerInfos = customerInfoService.list(queryWrapper);
+                for (CustomerInfo customerInfo : customerInfos) {
+                    InitComboxStrVO initComboxVO = new InitComboxStrVO();
+                    initComboxVO.setCode(customerInfo.getIdCode());
+                    initComboxVO.setName(customerInfo.getName());
+                    initComboxVOS.add(initComboxVO);
+                }
+                break;
+            case 2: //供应商
+                List<SupplierInfo> supplierInfos = supplierInfoService.getApprovedSupplier(
+                        BeanUtils.convertToFieldName(true,
+                                SupplierInfo::getId, SupplierInfo::getSupplierChName, SupplierInfo::getSupplierCode));
+                for (SupplierInfo supplierInfo : supplierInfos) {
+                    InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+                    comboxStrVO.setCode(supplierInfo.getSupplierCode());
+                    comboxStrVO.setName(supplierInfo.getSupplierChName());
+                    initComboxVOS.add(comboxStrVO);
+                }
+                break;
+        }
+        return CommonResult.success(initComboxVOS);
+    }
+
 }
 

@@ -80,10 +80,8 @@ public class ContractQuotationController {
     @ApiOperation("自动生成编号")
     @PostMapping("/autoGenerateNum")
     public CommonResult<String> autoGenerateNum() {
-        StringBuilder orderNo = new StringBuilder("BJ");
-        orderNo.append(DateUtils.LocalDateTime2Str(LocalDateTime.now(), "yyyyMMdd"))
-                .append(StringUtils.zeroComplement(4, this.contractQuotationService.count() + 1));
-        return CommonResult.success(orderNo.toString());
+        String num=this.contractQuotationService.autoGenerateNum();
+        return CommonResult.success(num);
     }
 
     @ApiOperation("获取编辑详情")

@@ -26,4 +26,7 @@ public interface IContractQuotationService extends IService<ContractQuotation> {
     IPage<ContractQuotationVO> findByPage(QueryContractQuotationForm form);
 
     ContractQuotationVO getEditInfoById(Long id);
+
+    String autoGenerateNum();
+
 }

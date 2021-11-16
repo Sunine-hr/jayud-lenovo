@@ -12,6 +12,7 @@ import com.jayud.common.enums.TrackingInfoBisTypeEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ComparisonOptUtil;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.mapper.ContractQuotationMapper;
 import com.jayud.oms.model.bo.AddContractQuotationDetailsForm;
@@ -149,11 +150,11 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
                             Map<String, String> currencyInfoMap) {
         if (!StringUtils.isEmpty(value)) {
             value = value.replace(newData.getCostCode(), costInfoMap.get(newData.getCostCode()));
-            value = value.replace(oldData.getCostCode()+"", MapUtil.getStr(costInfoMap, oldData.getCostCode(), ""));
+            value = value.replace(oldData.getCostCode() + "", MapUtil.getStr(costInfoMap, oldData.getCostCode(), ""));
             value = value.replace(newData.getCostTypeId() + "", costTypeMap.get(newData.getCostTypeId()));
             value = value.replace(oldData.getCostTypeId() + "", MapUtil.getStr(costTypeMap, oldData.getCostTypeId(), ""));
             value = value.replace(newData.getCurrencyCode(), currencyInfoMap.get(newData.getCurrencyCode()));
-            value = value.replace(oldData.getCurrencyCode()+"", MapUtil.getStr(currencyInfoMap, oldData.getCurrencyCode(), ""));
+            value = value.replace(oldData.getCurrencyCode() + "", MapUtil.getStr(currencyInfoMap, oldData.getCurrencyCode(), ""));
 
             String msg = map.get(newData.getSubType());
             if (StringUtils.isEmpty(msg)) {
@@ -199,5 +200,14 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
         Map<String, List<InitComboxVO>> costType = this.costInfoService.initCostTypeByCostInfoCode();
         tmp.assembleDetails(details, costType);
         return tmp;
+    }
+
+    @Override
+    public String autoGenerateNum() {
+        int count = this.baseMapper.countByTime(LocalDateTime.now());
+        StringBuilder orderNo = new StringBuilder("JYD-HT-");
+        orderNo.append(DateUtils.LocalDateTime2Str(LocalDateTime.now(), "yy")).append("-")
+                .append(StringUtils.zeroComplement(4, count + 1));
+        return orderNo.toString();
     }
 }

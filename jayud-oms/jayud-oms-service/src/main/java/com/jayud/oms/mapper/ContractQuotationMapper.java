@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.vo.ContractQuotationVO;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
+
 /**
  * <p>
  * 合同报价 Mapper 接口
@@ -19,4 +21,6 @@ import org.apache.ibatis.annotations.Param;
 public interface ContractQuotationMapper extends BaseMapper<ContractQuotation> {
 
     IPage<ContractQuotationVO> findByPage(@Param("page") Page<ContractQuotation> page, @Param("form") QueryContractQuotationForm form);
+
+    int countByTime(@Param("now") LocalDateTime now);
 }

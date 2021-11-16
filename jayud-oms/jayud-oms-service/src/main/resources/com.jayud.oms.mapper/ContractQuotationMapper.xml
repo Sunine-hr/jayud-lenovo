@@ -46,4 +46,11 @@
         order by id desc
     </select>
 
+    <select id="countByTime" resultType="java.lang.Integer">
+        select count(1) from contract_quotation
+        <where>
+            DATE_FORMAT(create_time,'%Y')=#{now}
+        </where>
+    </select>
+
 </mapper>

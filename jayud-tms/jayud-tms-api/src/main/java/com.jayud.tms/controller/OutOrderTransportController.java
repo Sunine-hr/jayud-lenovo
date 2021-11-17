@@ -171,7 +171,7 @@ public class OutOrderTransportController {
         mainOrderForm.setUnitAccount(customerInfo.getStr("name"));
         mainOrderForm.setUnitCode(customerInfo.getStr("idCode"));
         mainOrderForm.setOperationTime(LocalDateTime.now());
-        mainOrderForm.setCmd("submit");
+        mainOrderForm.setCmd("preSubmit");
         mainOrderForm.setReferenceNo(form.getOrderNo());
 
         //组装中港订单

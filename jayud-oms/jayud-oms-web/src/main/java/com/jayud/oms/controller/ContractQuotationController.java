@@ -17,6 +17,8 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.AddContractQuotationForm;
 import com.jayud.oms.model.bo.QueryContractQuotationForm;
 import com.jayud.oms.model.bo.QueryCustomsQuestionnaireForm;
+import com.jayud.oms.model.enums.ContractQuotationProStatusEnum;
+import com.jayud.oms.model.enums.ContractQuotationSignEnum;
 import com.jayud.oms.model.po.ContractQuotation;
 import com.jayud.oms.model.po.TrackingInfo;
 import com.jayud.oms.model.vo.ContractQuotationVO;
@@ -33,10 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -70,9 +69,9 @@ public class ContractQuotationController {
     public CommonResult saveOrUpdate(@RequestBody AddContractQuotationForm form) {
         form.checkParam();
         form.assemblyContractNo();
-        if (this.contractQuotationService.exitName(form.getId(), form.getName())) {
-            return CommonResult.error(400, "该报价名称已存在");
-        }
+//        if (this.contractQuotationService.exitName(form.getId(), form.getName())) {
+//            return CommonResult.error(400, "该报价名称已存在");
+//        }
         this.contractQuotationService.saveOrUpdate(form);
         return CommonResult.success();
     }
@@ -80,7 +79,7 @@ public class ContractQuotationController {
     @ApiOperation("自动生成编号")
     @PostMapping("/autoGenerateNum")
     public CommonResult<String> autoGenerateNum() {
-        String num=this.contractQuotationService.autoGenerateNum();
+        String num = this.contractQuotationService.autoGenerateNum();
         return CommonResult.success(num);
     }
 
@@ -107,29 +106,29 @@ public class ContractQuotationController {
     }
 
 
-    @ApiOperation("审核操作")
-    @PostMapping("/auditOpt")
-    public CommonResult<ContractQuotationVO> auditOpt(@RequestBody Map<String, Object> map) {
-        Long id = MapUtil.getLong(map, "id");
-        if (id == null) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR);
-        }
-        this.contractQuotationService.updateById(new ContractQuotation().setId(id).setAuditStatus(1)
-                .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken()));
-        return CommonResult.success();
-    }
+//    @ApiOperation("审核操作")
+//    @PostMapping("/auditOpt")
+//    public CommonResult<ContractQuotationVO> auditOpt(@RequestBody Map<String, Object> map) {
+//        Long id = MapUtil.getLong(map, "id");
+//        if (id == null) {
+//            return CommonResult.error(ResultEnum.PARAM_ERROR);
+//        }
+//        this.contractQuotationService.updateById(new ContractQuotation().setId(id)
+//                .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken()));
+//        return CommonResult.success();
+//    }
 
-    @ApiOperation("反审核操作")
-    @PostMapping("/antiAuditOpt")
-    public CommonResult<ContractQuotationVO> antiAuditOpt(@RequestBody Map<String, Object> map) {
-        Long id = MapUtil.getLong(map, "id");
-        if (id == null) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR);
-        }
-        this.contractQuotationService.updateById(new ContractQuotation().setId(id).setAuditStatus(2)
-                .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken()));
-        return CommonResult.success();
-    }
+//    @ApiOperation("反审核操作")
+//    @PostMapping("/antiAuditOpt")
+//    public CommonResult<ContractQuotationVO> antiAuditOpt(@RequestBody Map<String, Object> map) {
+//        Long id = MapUtil.getLong(map, "id");
+//        if (id == null) {
+//            return CommonResult.error(ResultEnum.PARAM_ERROR);
+//        }
+//        this.contractQuotationService.updateById(new ContractQuotation().setId(id)
+//                .setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken()));
+//        return CommonResult.success();
+//    }
 
 
     /**
@@ -173,6 +172,21 @@ public class ContractQuotationController {
             }
         }
         return CommonResult.success(initComboxStrVOS);
+    }
+
+
+    /**
+     * 获取合同报价查询条件
+     *
+     * @return
+     */
+    @ApiOperation("获取合同报价查询条件")
+    @PostMapping("/initQueryCondition")
+    public CommonResult<Map<String, Object>> initQueryCondition() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("optStatus", ContractQuotationProStatusEnum.initCombox());
+        map.put("sign", ContractQuotationSignEnum.initCombox());
+        return CommonResult.success();
     }
 }
 

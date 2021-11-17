@@ -57,8 +57,11 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
     @ApiModelProperty(value = "有效结束时间")
     private LocalDate endTime;
 
-    @ApiModelProperty(value = "审核状态(1:已审核,2:未审核)")
-    private Integer auditStatus;
+//    @ApiModelProperty(value = "审核状态(1:已审核,2:未审核)")
+//    private Integer auditStatus;
+
+    @ApiModelProperty(value = "流程状态(1:未提交,2:待部门经理审核,3:待公司法务审核,4:待总审核,5:未通过,6:待完善,7:已完成)")
+    private Integer optStatus;
 
     @ApiModelProperty(value = "运输")
     private List<AddContractQuotationDetailsForm> tmsDetails;
@@ -76,9 +79,9 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
         if (customerId == null) {
             throw new JayudBizException(400, "客户不能为空");
         }
-        if (StringUtils.isEmpty(name)) {
-            throw new JayudBizException(400, "报价名称不能为空");
-        }
+//        if (StringUtils.isEmpty(name)) {
+//            throw new JayudBizException(400, "报价名称不能为空");
+//        }
         if (startTime == null) {
             throw new JayudBizException(400, "有效起始时间不能为空");
         }

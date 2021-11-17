@@ -8,6 +8,7 @@ import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.oms.model.enums.ContractQuotationProStatusEnum;
 import com.jayud.oms.model.po.ContractQuotationDetails;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -73,8 +74,8 @@ public class ContractQuotationVO extends Model<ContractQuotationVO> {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private LocalDate endTime;
 
-    @ApiModelProperty(value = "审核状态(1:已审核,2:未审核)")
-    private Integer auditStatus;
+//    @ApiModelProperty(value = "审核状态(1:已审核,2:未审核)")
+//    private Integer auditStatus;
 
     @ApiModelProperty(value = "审核状态描述(1:已审核,2:未审核)")
     private String auditStatusDesc;
@@ -92,16 +93,48 @@ public class ContractQuotationVO extends Model<ContractQuotationVO> {
     @ApiModelProperty(value = "中港运输报价详情")
     private List<ContractQuotationDetailsVO> tmsDetails = new ArrayList<>();
 
-    public void setAuditStatus(Integer auditStatus) {
-        this.auditStatus = auditStatus;
-        switch (auditStatus) {
-            case 1:
-                this.auditStatusDesc = "已审核";
-                break;
-            case 2:
-                this.auditStatusDesc = "未审核";
+    @ApiModelProperty(value = "合同对象(1:客户,2:供应商)")
+    private Integer type;
+
+    @ApiModelProperty(value = "流程状态(1:未提交,2:待部门经理审核,3:待公司法务审核,4:待总审核,5:未通过,6:待完善,7:已完成)")
+    private Integer optStatus;
+
+    @ApiModelProperty(value = "流程状态")
+    private String optStatusDesc;
+
+    @ApiModelProperty(value = "接单法人id")
+    private Long legalEntityId;
+
+    @ApiModelProperty(value = "标记")
+    private String sign;
+
+    @ApiModelProperty(value = "未通过消息")
+    private String reasonsFailure;
+
+    public void setOptStatus(Integer optStatus) {
+        this.optStatus = optStatus;
+        this.optStatusDesc = ContractQuotationProStatusEnum.getDesc(optStatus);
+    }
+
+    public void setEndTime(LocalDate endTime) {
+        this.endTime = endTime;
+        if (LocalDate.now().compareTo(endTime) > 0) {
+            sign = "已过期";
+        } else if (endTime.minusMonths(1).compareTo(LocalDate.now()) <= 0 && LocalDate.now().compareTo(endTime) < 0) {
+            sign = "即将到期";
         }
     }
+
+    //    public void setAuditStatus(Integer auditStatus) {
+//        this.auditStatus = auditStatus;
+//        switch (auditStatus) {
+//            case 1:
+//                this.auditStatusDesc = "已审核";
+//                break;
+//            case 2:
+//                this.auditStatusDesc = "未审核";
+//        }
+//    }
 
 
     //    @ApiModelProperty(value = "更新时间")

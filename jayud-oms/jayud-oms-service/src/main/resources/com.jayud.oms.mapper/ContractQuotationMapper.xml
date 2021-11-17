@@ -28,8 +28,8 @@
         select
         cq.id, cq.number, cq.customer_code,
         cq.contract_no, cq.name, cq.start_time,
-        cq.end_time, cq.audit_status, cq.status,
-        cq.create_time, cq.create_user,
+        cq.end_time, cq.opt_status, cq.status,cq.reasons_failure,cq.legal_entity_id,cq.type,
+        cq.create_time, cq.create_user,cq.reasons_failure,
         ci.name customerName
         from
         contract_quotation cq
@@ -40,6 +40,24 @@
             </if>
             <if test="form.customerName != null and form.customerName!=''">
                 and ci.name like concat('%',#{form.customerName},'%')
+            </if>
+            <if test="form.optStatus!=null">
+                and cq.opt_status = #{form.optStatus}
+            </if>
+            <if test="form.sign !=null">
+            <choose>
+                <when test="form.sign == 1">
+                   and  date(cq.end_time)  <![CDATA[<]]> CURDATE()
+                </when>
+                <when test="form.sign == 2">
+                   and DATE_SUB(cq.end_time, INTERVAL 1 MONTH) <![CDATA[<=]]> date(CURDATE())
+                   and  date(CURDATE())  <![CDATA[<]]> cq.end_time
+                </when>
+                <otherwise>
+                    and DATE_ADD(CURDATE(), INTERVAL 1 MONTH) <![CDATA[<=]]> date(cq.end_time)
+                    and  date(CURDATE())  <![CDATA[<]]> cq.end_time
+                </otherwise>
+            </choose>
             </if>
             and cq.status in (1)
         </where>

@@ -50,8 +50,8 @@ public class ContractQuotation extends Model<ContractQuotation> {
     @ApiModelProperty(value = "有效结束时间")
     private LocalDate endTime;
 
-    @ApiModelProperty(value = "审核状态(1:已审核,2:未审核)")
-    private Integer auditStatus;
+//    @ApiModelProperty(value = "审核状态(1:已审核,2:未审核)")
+//    private Integer auditStatus;
 
     @ApiModelProperty(value = "状态（0禁用 1启用 2删除）")
     private Integer status;
@@ -70,6 +70,19 @@ public class ContractQuotation extends Model<ContractQuotation> {
 
     @ApiModelProperty(value = "描述")
     private String remarks;
+
+    @ApiModelProperty(value = "合同对象(1:客户,2:供应商)")
+    private Integer type;
+
+    @ApiModelProperty(value = "流程状态(1:未提交,2:待部门经理审核,3:待公司法务审核,4:待总审核,5:未通过,6:待完善,7:已完成)")
+    private Integer optStatus;
+
+    @ApiModelProperty(value = "接单法人id")
+    private Long legalEntityId;
+
+    @ApiModelProperty(value = "未通过消息")
+    private String reasonsFailure;
+
 
 
     @Override

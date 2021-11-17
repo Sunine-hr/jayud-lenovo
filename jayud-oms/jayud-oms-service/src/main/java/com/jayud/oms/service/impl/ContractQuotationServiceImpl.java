@@ -18,6 +18,8 @@ import com.jayud.oms.mapper.ContractQuotationMapper;
 import com.jayud.oms.model.bo.AddContractQuotationDetailsForm;
 import com.jayud.oms.model.bo.AddContractQuotationForm;
 import com.jayud.oms.model.bo.QueryContractQuotationForm;
+import com.jayud.oms.model.enums.ContractQuotationProStatusEnum;
+import com.jayud.oms.model.enums.CustomsQuestionnaireStatusEnum;
 import com.jayud.oms.model.po.ContractQuotation;
 import com.jayud.oms.model.po.ContractQuotationDetails;
 import com.jayud.oms.model.po.CustomerInfo;
@@ -70,12 +72,11 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
             if (this.exitNumber(form.getNumber())) {
                 throw new JayudBizException(400, "该报价编号已存在");
             }
-            contractQuotation.setCreateTime(LocalDateTime.now()).setCreateUser(UserOperator.getToken());
-
+            contractQuotation.setOptStatus(ContractQuotationProStatusEnum.ONE.getCode()).setCreateTime(LocalDateTime.now()).setCreateUser(UserOperator.getToken());
         } else {
-            if (form.getAuditStatus().equals(1)) {
-                throw new JayudBizException(400, "已审核的信息无法修改,请进行反审核");
-            }
+//            if (form.getAuditStatus().equals(1)) {
+//                throw new JayudBizException(400, "已审核的信息无法修改,请进行反审核");
+//            }
             contractQuotation.setUpdateTime(LocalDateTime.now()).setUpdateUser(UserOperator.getToken());
         }
         this.saveOrUpdate(contractQuotation);

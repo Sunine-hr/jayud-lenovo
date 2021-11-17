@@ -24,8 +24,8 @@ import java.time.LocalDateTime;
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="ContractQuotation对象", description="合同报价")
-public class QueryContractQuotationForm extends BasePageForm{
+@ApiModel(value = "ContractQuotation对象", description = "合同报价")
+public class QueryContractQuotationForm extends BasePageForm {
 
     private static final long serialVersionUID = 1L;
 
@@ -35,5 +35,10 @@ public class QueryContractQuotationForm extends BasePageForm{
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
+    @ApiModelProperty(value = "流程状态(1:未提交,2:待部门经理审核,3:待公司法务审核,4:待总审核,5:未通过,6:待完善,7:已完成)")
+    private Integer optStatus;
+
+    @ApiModelProperty(value = "标记(1:已到期,2:即将到期,3:无标记)")
+    private Integer sign;
 
 }

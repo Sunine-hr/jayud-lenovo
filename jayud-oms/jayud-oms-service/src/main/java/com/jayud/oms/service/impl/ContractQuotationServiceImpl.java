@@ -6,25 +6,20 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
+import com.jayud.common.enums.BusinessTypeEnum;
 import com.jayud.common.enums.StatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.enums.TrackingInfoBisTypeEnum;
 import com.jayud.common.exception.JayudBizException;
-import com.jayud.common.utils.ComparisonOptUtil;
-import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.DateUtils;
-import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.*;
+import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.mapper.ContractQuotationMapper;
 import com.jayud.oms.model.bo.AddContractQuotationDetailsForm;
 import com.jayud.oms.model.bo.AddContractQuotationForm;
 import com.jayud.oms.model.bo.QueryContractQuotationForm;
+import com.jayud.oms.model.enums.AuditTypeDescEnum;
 import com.jayud.oms.model.enums.ContractQuotationProStatusEnum;
-import com.jayud.oms.model.enums.CustomsQuestionnaireStatusEnum;
-import com.jayud.oms.model.po.ContractQuotation;
-import com.jayud.oms.model.po.ContractQuotationDetails;
-import com.jayud.oms.model.po.CustomerInfo;
-import com.jayud.oms.model.po.TrackingInfo;
-import com.jayud.oms.model.vo.ContractQuotationDetailsVO;
+import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.ContractQuotationVO;
 import com.jayud.oms.model.vo.InitComboxVO;
 import com.jayud.oms.service.*;
@@ -62,12 +57,18 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
     private ICurrencyInfoService currencyInfoService;
     @Autowired
     private ITrackingInfoService trackingInfoService;
+    @Autowired
+    private IAuditInfoService auditInfoService;
+    @Autowired
+    private FileClient fileClient;
+
 
     @Override
     @Transactional
     public void saveOrUpdate(AddContractQuotationForm form) {
         ContractQuotation contractQuotation = ConvertUtil.convert(form, ContractQuotation.class);
-        contractQuotation.setCustomerCode(customerInfoService.getById(form.getCustomerId()).getIdCode());
+        contractQuotation.setFile(StringUtils.getFileStr(form.getFiles())).setFileName(StringUtils.getFileNameStr(form.getFiles()));
+//        contractQuotation.setCustomerCode(customerInfoService.getById(form.getCustomerId()).getIdCode());
         if (form.getId() == null) {
             if (this.exitNumber(form.getNumber())) {
                 throw new JayudBizException(400, "该报价编号已存在");
@@ -195,11 +196,21 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
     public ContractQuotationVO getEditInfoById(Long id) {
         ContractQuotation contractQuotation = this.getById(id);
         ContractQuotationVO tmp = ConvertUtil.convert(contractQuotation, ContractQuotationVO.class);
+        Object url = this.fileClient.getBaseUrl().getData();
+        tmp.setFiles(StringUtils.getFileViews(contractQuotation.getFile(), contractQuotation.getFileName(), url.toString()));
+        if (ContractQuotationProStatusEnum.SIX.getCode().equals(contractQuotation.getOptStatus())
+                || ContractQuotationProStatusEnum.SEVEN.getCode().equals(contractQuotation.getOptStatus())) {
+            tmp.setSignContractFiles(StringUtils.getFileViews(contractQuotation.getSignContractFile(), contractQuotation.getSignContractFileName(), url.toString()));
+            tmp.setSignOfferFiles(StringUtils.getFileViews(contractQuotation.getSignOfferFile(), contractQuotation.getSignOfferFileName(), url.toString()));
+        }
+
+
         CustomerInfo customerInfo = customerInfoService.getByCode(tmp.getCustomerCode());
         tmp.setCustomerId(customerInfo.getId());
         List<ContractQuotationDetails> details = this.contractQuotationDetailsService.getByCondition(new ContractQuotationDetails().setStatus(StatusEnum.ENABLE.getCode()).setContractQuotationId(id));
         Map<String, List<InitComboxVO>> costType = this.costInfoService.initCostTypeByCostInfoCode();
         tmp.assembleDetails(details, costType);
+        tmp.assembleReviewer();
         return tmp;
     }
 
@@ -210,5 +221,45 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
         orderNo.append(DateUtils.LocalDateTime2Str(LocalDateTime.now(), "yy")).append("-")
                 .append(StringUtils.zeroComplement(4, count + 1));
         return orderNo.toString();
+    }
+
+    @Override
+    public void auditOpt(Long id, String reasonsFailure, ContractQuotationProStatusEnum statusEnum) {
+        AuditInfo auditInfo = new AuditInfo();
+        auditInfo.setExtId(id).setExtDesc(AuditTypeDescEnum.FOUR.getTable())
+                .setAuditTypeDesc(statusEnum.getDesc())
+                .setAuditStatus(statusEnum.getCode().toString())
+                .setAuditComment(reasonsFailure)
+                .setAuditUser(UserOperator.getToken())
+                .setCreatedUser(UserOperator.getToken())
+                .setAuditTime(LocalDateTime.now()).setCreatedTime(LocalDateTime.now());
+
+        auditInfoService.save(auditInfo);
+        ContractQuotation contractQuotation = new ContractQuotation().setId(id).setReasonsFailure(reasonsFailure);
+        Integer optStatus;
+        if (ContractQuotationProStatusEnum.FIVE.getCode().equals(statusEnum.getCode())) {
+            optStatus = statusEnum.getCode();
+            contractQuotation.setLegalAudit("").setDepManagerReview("").setGeneralManagerReview("");
+        } else {
+            optStatus = statusEnum.getNextOpt();
+            switch (statusEnum) {
+                case TWO:
+                    contractQuotation.setLegalAudit(UserOperator.getToken());
+                    break;
+                case THREE:
+                    contractQuotation.setDepManagerReview(UserOperator.getToken());
+                    break;
+                case FOUR:
+                    contractQuotation.setGeneralManagerReview(UserOperator.getToken());
+                    break;
+            }
+        }
+        this.updateById(contractQuotation.setOptStatus(optStatus));
+    }
+
+    @Override
+    public List<ContractQuotation> getByCondition(ContractQuotation contractQuotation) {
+        QueryWrapper<ContractQuotation> condition = new QueryWrapper<>(contractQuotation);
+        return this.baseMapper.selectList(condition);
     }
 }

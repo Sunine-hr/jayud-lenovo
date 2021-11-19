@@ -1,5 +1,6 @@
 package com.jayud.oms.model.vo;
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.enums.ContractQuotationProStatusEnum;
 import com.jayud.oms.model.po.ContractQuotationDetails;
@@ -111,6 +113,23 @@ public class ContractQuotationVO extends Model<ContractQuotationVO> {
     @ApiModelProperty(value = "未通过消息")
     private String reasonsFailure;
 
+    @ApiModelProperty(value = "审核人员")
+    public String reviewer;
+    @ApiModelProperty(value = "合同报价文件")
+    private List<FileView> files;
+    @ApiModelProperty(value = "签署合同附件")
+    private List<FileView> signContractFiles;
+    @ApiModelProperty(value = "签署报价附件")
+    private List<FileView> signOfferFiles;
+    @ApiModelProperty(value = "法务审核")
+    private String legalAudit;
+
+    @ApiModelProperty(value = "部门经理审核")
+    private String depManagerReview;
+
+    @ApiModelProperty(value = "总经理审核")
+    private String generalManagerReview;
+
     public void setOptStatus(Integer optStatus) {
         this.optStatus = optStatus;
         this.optStatusDesc = ContractQuotationProStatusEnum.getDesc(optStatus);
@@ -172,4 +191,19 @@ public class ContractQuotationVO extends Model<ContractQuotationVO> {
         }
 
     }
+
+    public void assembleReviewer() {
+        StringBuilder sb = new StringBuilder();
+        if (!StringUtils.isEmpty(this.legalAudit)) {
+            sb.append(this.legalAudit).append("(法务)").append(",");
+        }
+        if (!StringUtils.isEmpty(this.depManagerReview)) {
+            sb.append(this.depManagerReview).append("(部门经理)").append(",");
+        }
+        if (!StringUtils.isEmpty(this.generalManagerReview)) {
+            sb.append(this.generalManagerReview).append("(总经理)");
+        }
+        this.reviewer = sb.toString();
+    }
+
 }

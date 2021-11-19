@@ -8,10 +8,12 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -41,4 +43,13 @@ public class QueryContractQuotationForm extends BasePageForm {
     @ApiModelProperty(value = "标记(1:已到期,2:即将到期,3:无标记)")
     private Integer sign;
 
+    @ApiModelProperty(value = "有效时间")
+    private List<String> effectiveTime;
+
+    public void setEffectiveTime(List<String> effectiveTime) {
+        this.effectiveTime = effectiveTime;
+        if (CollectionUtils.isEmpty(effectiveTime)){
+            this.effectiveTime=null;
+        }
+    }
 }

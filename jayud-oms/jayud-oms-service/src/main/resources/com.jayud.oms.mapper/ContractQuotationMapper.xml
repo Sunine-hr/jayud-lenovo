@@ -30,6 +30,7 @@
         cq.contract_no, cq.name, cq.start_time,
         cq.end_time, cq.opt_status, cq.status,cq.reasons_failure,cq.legal_entity_id,cq.type,
         cq.create_time, cq.create_user,cq.reasons_failure,
+        cq.file,cq.file_name,sign_contract_file,sign_contract_file_name,sign_offer_file,sign_offer_file_name,
         ci.name customerName
         from
         contract_quotation cq
@@ -58,6 +59,12 @@
                     and  date(CURDATE())  <![CDATA[<]]> cq.end_time
                 </otherwise>
             </choose>
+            </if>
+            <if test="form.effectiveTime!=null ">
+                and cq.start_time  <![CDATA[<]]> #{form.effectiveTime[0]}
+                <if test="form.effectiveTime.size >1 ">
+                and cq.end_time  <![CDATA[<]]> #{form.effectiveTime[1]}
+                </if>
             </if>
             and cq.status in (1)
         </where>

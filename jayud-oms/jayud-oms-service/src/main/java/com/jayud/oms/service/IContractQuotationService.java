@@ -3,9 +3,12 @@ package com.jayud.oms.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.oms.model.bo.AddContractQuotationForm;
 import com.jayud.oms.model.bo.QueryContractQuotationForm;
+import com.jayud.oms.model.enums.ContractQuotationProStatusEnum;
 import com.jayud.oms.model.po.ContractQuotation;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.oms.model.vo.ContractQuotationVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -29,4 +32,7 @@ public interface IContractQuotationService extends IService<ContractQuotation> {
 
     String autoGenerateNum();
 
+    void auditOpt(Long id, String reasonsFailure, ContractQuotationProStatusEnum statusEnum);
+
+    List<ContractQuotation> getByCondition(ContractQuotation contractQuotation);
 }

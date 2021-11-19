@@ -6,7 +6,8 @@ package com.jayud.oms.model.enums;
 public enum AuditTypeDescEnum {
     ONE("1", "supplier_info表", "供应商审核"),
     TWO("2", "customs_questionnaire表", "海关调查问卷审核"),
-    THREE("3", "business_dev_evaluation", "商业伙伴开发评估审核"),;
+    THREE("3", "business_dev_evaluation表", "商业伙伴开发评估审核"),
+    FOUR("4", "contract_quotation表", "合同报价"),;
 
     private String code;
     private String table;

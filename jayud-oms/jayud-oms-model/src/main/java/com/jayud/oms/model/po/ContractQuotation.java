@@ -83,7 +83,32 @@ public class ContractQuotation extends Model<ContractQuotation> {
     @ApiModelProperty(value = "未通过消息")
     private String reasonsFailure;
 
+    @ApiModelProperty(value = "合同报价附件")
+    private String file;
 
+    @ApiModelProperty(value = "合同报价附件名称")
+    private String fileName;
+
+    @ApiModelProperty(value = "签署合同附件")
+    private String signContractFile;
+
+    @ApiModelProperty(value = "签署合同附件名称")
+    private String signContractFileName;
+
+    @ApiModelProperty(value = "签署报价附件")
+    private String signOfferFile;
+
+    @ApiModelProperty(value = "签署报价附件名称")
+    private String signOfferFileName;
+
+    @ApiModelProperty(value = "法务审核")
+    private String legalAudit;
+
+    @ApiModelProperty(value = "部门经理审核")
+    private String depManagerReview;
+
+    @ApiModelProperty(value = "总经理审核")
+    private String generalManagerReview;
 
     @Override
     protected Serializable pkVal() {

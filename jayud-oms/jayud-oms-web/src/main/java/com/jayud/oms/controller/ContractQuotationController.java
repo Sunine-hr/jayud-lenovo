@@ -1,8 +1,10 @@
 package com.jayud.oms.controller;
 
 
+import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
@@ -13,17 +15,21 @@ import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.enums.TrackingInfoBisTypeEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.AddContractQuotationForm;
+import com.jayud.oms.model.bo.GetOrderDetailForm;
 import com.jayud.oms.model.bo.QueryContractQuotationForm;
 import com.jayud.oms.model.bo.QueryCustomsQuestionnaireForm;
 import com.jayud.oms.model.enums.ContractQuotationProStatusEnum;
 import com.jayud.oms.model.enums.ContractQuotationSignEnum;
+import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.ContractQuotation;
 import com.jayud.oms.model.po.TrackingInfo;
 import com.jayud.oms.model.vo.ContractQuotationVO;
 import com.jayud.oms.model.vo.TrackingInfoVO;
 import com.jayud.oms.service.IContractQuotationService;
+import com.jayud.oms.service.IOrderInfoService;
 import com.jayud.oms.service.ITrackingInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -55,6 +61,8 @@ public class ContractQuotationController {
     private IContractQuotationService contractQuotationService;
     @Autowired
     private ITrackingInfoService trackingInfoService;
+    @Autowired
+    private IOrderInfoService orderInfoService;
 
     @ApiOperation("分页查询合同报价")
     @PostMapping("/findByPage")
@@ -72,6 +80,15 @@ public class ContractQuotationController {
 //        if (this.contractQuotationService.exitName(form.getId(), form.getName())) {
 //            return CommonResult.error(400, "该报价名称已存在");
 //        }
+
+        if (form.getId() != null) {
+            ContractQuotation contractQuotation = this.contractQuotationService.getById(form.getId());
+            if (!ContractQuotationProStatusEnum.ONE.getCode().equals(contractQuotation.getOptStatus())
+                    && !ContractQuotationProStatusEnum.FIVE.getCode().equals(contractQuotation.getOptStatus())) {
+                return CommonResult.error(400, "当前状态无法进行操作");
+            }
+        }
+        form.checkCostDuplicate();
         this.contractQuotationService.saveOrUpdate(form);
         return CommonResult.success();
     }
@@ -186,7 +203,128 @@ public class ContractQuotationController {
         Map<String, Object> map = new HashMap<>();
         map.put("optStatus", ContractQuotationProStatusEnum.initCombox());
         map.put("sign", ContractQuotationSignEnum.initCombox());
+        return CommonResult.success(map);
+    }
+
+    /**
+     * 审核操作
+     *
+     * @return
+     */
+    @ApiOperation("审核操作")
+    @PostMapping("/auditOpt")
+    public CommonResult auditOpt(@RequestBody Map<String, Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        if (id == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        ContractQuotation contractQuotation = this.contractQuotationService.getById(id);
+        Integer optStatus = contractQuotation.getOptStatus();
+        String reasonsFailure = MapUtil.getStr(map, "reasonsFailure");
+        ContractQuotationProStatusEnum statusEnum = ContractQuotationProStatusEnum.getEnum(optStatus);
+        if (statusEnum == null || statusEnum.getNextOpt() == null) {
+            return CommonResult.error(400, "不存在操作流程");
+        }
+        this.contractQuotationService.auditOpt(id, reasonsFailure, statusEnum);
+        return CommonResult.success(map);
+    }
+
+    /**
+     * 审核不通过
+     *
+     * @return
+     */
+    @ApiOperation("审核不通过")
+    @PostMapping("/auditFailed")
+    public CommonResult auditFailed(@RequestBody Map<String, Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        String reasonsFailure = MapUtil.getStr(map, "reasonsFailure");
+        if (id == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        if (StringUtils.isEmpty(reasonsFailure)) {
+            return CommonResult.error(400, "请输入不通过理由");
+        }
+        ContractQuotation contractQuotation = this.contractQuotationService.getById(id);
+        if (!ContractQuotationProStatusEnum.TWO.getCode().equals(contractQuotation.getOptStatus())
+                && !ContractQuotationProStatusEnum.THREE.getCode().equals(contractQuotation.getOptStatus())
+                && !ContractQuotationProStatusEnum.FOUR.getCode().equals(contractQuotation.getOptStatus())) {
+            return CommonResult.error(400, "该状态不能进行操作");
+        }
+        this.contractQuotationService.auditOpt(id, reasonsFailure, ContractQuotationProStatusEnum.FIVE);
+        return CommonResult.success(map);
+    }
+
+
+    /**
+     * 完善资料
+     *
+     * @return
+     */
+    @ApiOperation("完善资料")
+    @PostMapping("/completeMaterial")
+    public CommonResult completeMaterial(@RequestBody Map<String, Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        List<FileView> signContractFiles = MapUtil.get(map, "signContractFiles", new TypeReference<List<FileView>>() {
+        });
+        List<FileView> signOfferFiles = MapUtil.get(map, "signOfferFiles", new TypeReference<List<FileView>>() {
+        });
+        if (signContractFiles == null) {
+            return CommonResult.error(400, "请上传签署合同附件");
+        }
+        if (signOfferFiles == null) {
+            return CommonResult.error(400, "请上传签署报价附件");
+        }
+        ContractQuotation contractQuotation = this.contractQuotationService.getById(id);
+        ContractQuotationProStatusEnum statusEnum = ContractQuotationProStatusEnum.getEnum(contractQuotation.getOptStatus());
+        if (statusEnum == null || statusEnum.getNextOpt() == null) {
+            return CommonResult.error(400, "该状态不能进行操作");
+        }
+
+        this.contractQuotationService.updateById(new ContractQuotation().setId(id)
+                .setOptStatus(statusEnum.getNextOpt()).setSignContractFile(StringUtils.getFileStr(signContractFiles))
+                .setSignContractFileName(StringUtils.getFileNameStr(signContractFiles))
+                .setSignOfferFile(StringUtils.getFileStr(signOfferFiles))
+                .setSignOfferFileName(StringUtils.getFileNameStr(signOfferFiles))
+                .setUpdateUser(UserOperator.getToken()).setUpdateTime(LocalDateTime.now()));
         return CommonResult.success();
     }
+
+
+    /**
+     * 获取客户合同报价
+     *
+     * @return
+     */
+    @ApiOperation("获取客户合同报价")
+    @PostMapping("/getCustomerContractQuotation")
+    public CommonResult<List<InitComboxStrVO>> getCustomerContractQuotation(@RequestBody Map<String, Object> map) {
+        String customerCode = MapUtil.getStr(map, "unitCode");
+        Long legalEntityId = MapUtil.getLong(map, "legalEntityId");
+        List<ContractQuotation> list = this.contractQuotationService.getByCondition(new ContractQuotation().setCustomerCode(customerCode).setLegalEntityId(legalEntityId)
+                .setType(1));
+        List<InitComboxStrVO> tmps = new ArrayList<>();
+        for (ContractQuotation contractQuotation : list) {
+            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+            initComboxStrVO.setName(contractQuotation.getName());
+            initComboxStrVO.setId(contractQuotation.getId());
+            tmps.add(initComboxStrVO);
+        }
+        return CommonResult.success(tmps);
+    }
+
+
+    /**
+     * 导入费用
+     *
+     * @return
+     */
+    @ApiOperation("导入费用")
+    @PostMapping("/importCost")
+    public CommonResult importCost(@RequestBody GetOrderDetailForm form) {
+
+        return CommonResult.success();
+    }
+
 }
 

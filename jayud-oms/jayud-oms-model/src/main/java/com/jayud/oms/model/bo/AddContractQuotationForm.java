@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -15,6 +16,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -39,8 +42,8 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
     @ApiModelProperty(value = "报价编号")
     private String number;
 
-    @ApiModelProperty(value = "客户id")
-    private Long customerId;
+    @ApiModelProperty(value = "客户/供应商code")
+    private String customerCode;
 
     @ApiModelProperty(value = "合同编号")
     private List<String> contractNos;
@@ -61,11 +64,19 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
 //    private Integer auditStatus;
 
     @ApiModelProperty(value = "流程状态(1:未提交,2:待部门经理审核,3:待公司法务审核,4:待总审核,5:未通过,6:待完善,7:已完成)")
-    private Integer optStatus;
+    private Integer optStatus = 1;
 
     @ApiModelProperty(value = "运输")
     private List<AddContractQuotationDetailsForm> tmsDetails;
 
+    @ApiModelProperty(value = "接单法人id")
+    private Long legalEntityId;
+
+    @ApiModelProperty(value = "合同对象(1:客户,2:供应商)")
+    private Integer type;
+
+    @ApiModelProperty(value = "合同报价文件")
+    private List<FileView> files;
 
     @Override
     protected Serializable pkVal() {
@@ -76,7 +87,7 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
         if (StringUtils.isEmpty(number)) {
             throw new JayudBizException(400, "报价编号不能为空");
         }
-        if (customerId == null) {
+        if (customerCode == null) {
             throw new JayudBizException(400, "客户不能为空");
         }
 //        if (StringUtils.isEmpty(name)) {
@@ -91,6 +102,9 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
 
         if (endTime.compareTo(startTime) < 0) {
             throw new JayudBizException(400, "结束时间不能小于开始时间");
+        }
+        if (legalEntityId == null) {
+            throw new JayudBizException(400, "请输入公司法人");
         }
         if (tmsDetails != null) {
             tmsDetails.forEach(e -> {
@@ -109,5 +123,20 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
             });
             this.contractNo = sb.toString();
         }
+    }
+
+    public void checkCostDuplicate() {
+        doCheckCostDuplicate(tmsDetails);
+    }
+
+    public void doCheckCostDuplicate(List<AddContractQuotationDetailsForm> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return;
+        }
+        Map<String, Long> count = list.stream().collect(Collectors.groupingBy(e -> e.getStartingPlace()
+                + "~" + e.getDestinationId() + "~" + e.getVehicleSize() + "~" + e.getCostCode() + "~" + e.getCostTypeId(), Collectors.counting()));
+        count.forEach((k, v) -> {
+            if (v > 1) throw new JayudBizException("已存在相同费用,请检查");
+        });
     }
 }

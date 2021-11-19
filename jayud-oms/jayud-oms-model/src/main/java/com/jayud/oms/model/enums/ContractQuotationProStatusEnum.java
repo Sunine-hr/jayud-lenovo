@@ -16,17 +16,18 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum ContractQuotationProStatusEnum {
 
-    ONE(1, "未提交"),
-    TWO(2, "待部门经理审核"),
-    THREE(3, "待公司法务审核"),
-    FOUR(4, "待总经理审核"),
-    FIVE(5, "未通过"),
-    SIX(6, "待完善"),
-    SEVEN(7, "已完成"),
+    ONE(1, "未提交", 2),
+    TWO(2, "待公司法务审核", 3),
+    THREE(3, "待部门经理审核", 4),
+    FOUR(4, "待总经理审核", 6),
+    FIVE(5, "未通过", null),
+    SIX(6, "待完善", 7),
+    SEVEN(7, "已完成", null),
     ;
 
     private Integer code;
     private String desc;
+    private Integer nextOpt;
 
     public static String getDesc(Integer code) {
         for (ContractQuotationProStatusEnum value : values()) {
@@ -58,17 +59,12 @@ public enum ContractQuotationProStatusEnum {
     }
 
 
-    /**
-     * main|zgys|bg|ky
-     * @param cmd
-     * @return
-     */
-//    public static Integer getCode(String cmd) {
-//        for (BusinessTypeEnum value : values()) {
-//            if (Objects.equals(cmd, value.getDesc())) {
-//                return value.getCode();
-//            }
-//        }
-//        return -1;
-//    }
+    public static ContractQuotationProStatusEnum getEnum(Integer code) {
+        for (ContractQuotationProStatusEnum value : values()) {
+            if (Objects.equals(code, value.getCode())) {
+                return value;
+            }
+        }
+        return null;
+    }
 }

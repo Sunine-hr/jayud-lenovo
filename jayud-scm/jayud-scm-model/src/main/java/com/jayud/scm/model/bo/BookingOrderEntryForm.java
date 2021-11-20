@@ -20,8 +20,11 @@ public class BookingOrderEntryForm {
     @ApiModelProperty(value = "委托单id")
     private Integer bookingId;
 
-    @ApiModelProperty(value = "序号")
-    private Integer itemNo;
+//    @ApiModelProperty(value = "序号")
+//    private Integer itemNo;
+
+    @ApiModelProperty(value = "委托单号")
+    private String bookingNo;
 
     @ApiModelProperty(value = "产品id")
     private Integer itemId;

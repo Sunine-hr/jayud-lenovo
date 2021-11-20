@@ -1,6 +1,7 @@
 package com.jayud.scm.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
@@ -32,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -296,9 +298,25 @@ public class BookingOrderEntryServiceImpl extends ServiceImpl<BookingOrderEntryM
     }
 
     @Override
-    public boolean updateBookingOrderEntry(Commodity commodity) {
+    public void updateBookingOrderEntry(Commodity commodity) {
+        List<Integer> integers = this.baseMapper.getBookingOrderEntryByBookingId(commodity.getId());
+        if(CollectionUtil.isNotEmpty(integers)){
+            this.baseMapper.updateBookingOrderEntry(commodity,integers);
+        }
 
-        return this.baseMapper.updateBookingOrderEntry(commodity);
+    }
+
+    @Override
+    public boolean updateExRmbPrice(BookingOrderEntry bookingOrderEntry) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+        bookingOrderEntry.setMdyBy(systemUser.getId().intValue());
+        bookingOrderEntry.setMdyByDtm(LocalDateTime.now());
+        bookingOrderEntry.setMdyByName(systemUser.getUserName());
+        boolean result = this.updateById(bookingOrderEntry);
+        if(result){
+            log.warn("修改采购合同成功");
+        }
+        return result;
     }
 
 

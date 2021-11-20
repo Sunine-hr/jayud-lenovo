@@ -276,10 +276,7 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
         }
 
         //商品审核后，将海关编码和申报要素反写到订单商品明细中
-        boolean result = bookingOrderEntryService.updateBookingOrderEntry(commodity);
-        if(result){
-            log.warn("反写委托单详情成功");
-        }
+        bookingOrderEntryService.updateBookingOrderEntry(commodity);
 
         if(CollectionUtils.isNotEmpty(form.getAddCommodityEntryForms())){
             List<CommodityEntry> commodityEntries = ConvertUtil.convertList(form.getAddCommodityEntryForms(), CommodityEntry.class);

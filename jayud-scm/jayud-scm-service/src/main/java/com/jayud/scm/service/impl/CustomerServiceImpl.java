@@ -376,4 +376,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
         return this.baseMapper.getClassById(form);
     }
+
+    @Override
+    public List<CustomerVO> getCustomerByClassType(String classType) {
+        return this.baseMapper.getCustomerByClassType(classType);
+    }
 }

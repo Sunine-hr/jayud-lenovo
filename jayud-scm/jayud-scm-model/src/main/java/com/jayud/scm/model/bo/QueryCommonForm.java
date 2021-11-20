@@ -122,5 +122,10 @@ public class QueryCommonForm extends BasePageForm{
     @ApiModelProperty(value = "用户名")
     private String userName;
 
+    @ApiModelProperty("签收时间")
+    private String signDate;
+
+    @ApiModelProperty("签收备注")
+    private String signRemak;
 
 }

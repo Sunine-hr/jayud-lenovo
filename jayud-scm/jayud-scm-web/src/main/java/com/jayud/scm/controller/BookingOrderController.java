@@ -671,5 +671,32 @@ public class BookingOrderController {
         return CommonResult.success(bookingOrderEntryList1);
     }
 
+    @ApiOperation(value = "修改采购单价")
+    @PostMapping(value = "/updateExRmbPrice")
+    public CommonResult updateExRmbPrice(@Valid @RequestBody Map<String,Object> map){
+        Double exRmbPrice = MapUtil.getDouble(map, "exRmbPrice");
+        Integer id = MapUtil.getInt(map, "id");
+        if(null == exRmbPrice){
+            return CommonResult.error(444,"采购单价不能为空");
+        }
+        if(null == id){
+            return CommonResult.error(444,"修改数据不能为空");
+        }
+        BookingOrderEntry bookingOrderEntry = this.bookingOrderEntryService.getById(id);
+        BookingOrder bookingOrder = this.bookingOrderService.getById(bookingOrderEntry.getBookingId());
+        if(bookingOrder.getDeputyStyle().equals("采购出口")){
+            return CommonResult.error(444,"只有采购出口的委托单数据才能修改");
+        }
+
+        bookingOrderEntry.setExRmbPrice(new BigDecimal(exRmbPrice));
+        bookingOrderEntry.setId(id);
+        boolean result = this.bookingOrderEntryService.updateExRmbPrice(bookingOrderEntry);
+        if(!result){
+            return CommonResult.error(444,"修改采购单价失败");
+        }
+
+        return CommonResult.success();
+    }
+
 }
 

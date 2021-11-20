@@ -71,6 +71,14 @@ public class HgTruckController {
     @ApiOperation(value = "添加或修改港车运输信息")
     @PostMapping(value = "/saveOrUpdateHgTruck")
     public CommonResult saveOrUpdateHgTruck(@RequestBody @Valid AddHgTruckForm form) {
+
+        if(form.getId() != null){
+            List<BookingOrder> bookingOrders = bookingOrderService.getBookingOrderByHgTrackId(form.getId());
+            if(CollectionUtil.isNotEmpty(bookingOrders)){
+                return CommonResult.error(444,"该港车单已绑车，无法进行修改，请先解绑车次");
+            }
+        }
+
 //        form.setTruckCompany(customerService.getCustomerById(form.getTruckCompanyId()).getCustomerName());
         boolean result = hgTruckService.saveOrUpdateHgTruck(form);
         if(!result){
@@ -142,14 +150,21 @@ public class HgTruckController {
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "港车修改")
+    @PostMapping(value = "/portCarUpdate")
+    public CommonResult portCarUpdate(@RequestBody PermissionForm form) {
+        List<BookingOrder> bookingOrderByHgTrackId = bookingOrderService.getBookingOrderByHgTrackId(form.getId());
+        if(CollectionUtils.isNotEmpty(bookingOrderByHgTrackId)){
+            return CommonResult.error(444,"该港车单已绑车，无法进行修改");
+        }
+        return CommonResult.success();
+    }
+
     @ApiOperation(value = "港车审核")
     @PostMapping(value = "/portCarAudit")
     public CommonResult portCarAudit(@RequestBody PermissionForm form) {
 
-        List<BookingOrder> bookingOrderByHgTrackId = bookingOrderService.getBookingOrderByHgTrackId(form.getId());
-        if(CollectionUtils.isEmpty(bookingOrderByHgTrackId)){
-            return CommonResult.error(444,"该港车单还未绑车，无法进行审核");
-        }
+
 
         HgTruck hgTruck = hgTruckService.getById(form.getId());
         if(hgTruck.getStateFlag().equals(-1)){

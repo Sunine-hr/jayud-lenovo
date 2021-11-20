@@ -196,6 +196,12 @@ public class HgTruck extends Model<HgTruck> {
     @ApiModelProperty(value = "删除时间")
     private LocalDateTime voidedByDtm;
 
+    @ApiModelProperty(value = "是否需要提货  0 否 1 是")
+    private Integer isTakeDelivery;
+
+    @ApiModelProperty(value = "是否需要送货 0 否 1 是")
+    private Integer isDelivery;
+
 
     @Override
     protected Serializable pkVal() {

@@ -175,4 +175,10 @@ public class HgTruckVO {
     @ApiModelProperty(value = "最后修改时间")
     private LocalDateTime mdyByDtm;
 
+    @ApiModelProperty(value = "是否需要提货  0 否 1 是")
+    private Integer isTakeDelivery;
+
+    @ApiModelProperty(value = "是否需要送货 0 否 1 是")
+    private Integer isDelivery;
+
 }

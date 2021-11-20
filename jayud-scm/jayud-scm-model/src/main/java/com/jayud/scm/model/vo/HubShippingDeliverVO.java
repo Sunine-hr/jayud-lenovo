@@ -1,15 +1,16 @@
-package com.jayud.scm.model.po;
+package com.jayud.scm.model.vo;
 
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -20,11 +21,7 @@ import lombok.EqualsAndHashCode;
  * @since 2021-11-12
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@ApiModel(value="HubShippingDeliver对象", description="调度配送表")
-public class HubShippingDeliver extends Model<HubShippingDeliver> {
-
-    private static final long serialVersionUID = 1L;
+public class HubShippingDeliverVO extends Model<HubShippingDeliverVO> {
 
     @ApiModelProperty(value = "自动ID")
       @TableId(value = "id", type = IdType.AUTO)
@@ -152,10 +149,5 @@ public class HubShippingDeliver extends Model<HubShippingDeliver> {
 
     @ApiModelProperty(value = "司机ID")
     private Integer diverId;
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
 
 }

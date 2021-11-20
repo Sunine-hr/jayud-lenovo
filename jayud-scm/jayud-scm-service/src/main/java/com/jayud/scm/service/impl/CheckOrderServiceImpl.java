@@ -194,4 +194,74 @@ public class CheckOrderServiceImpl extends ServiceImpl<CheckOrderMapper, CheckOr
         checkOrderVO.setBookingOrderEntryList(ConvertUtil.convertList(checkOrderEntryByCheckOrderId,CheckOrderEntryVO.class));
         return checkOrderVO;
     }
+
+    @Override
+    public boolean dispatch(List<Integer> checkIds, Integer id, String deliverNo) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        List<CheckOrderFollow> checkOrderFollows = new ArrayList<>();
+        List<CheckOrder> checkOrders = new ArrayList<>();
+        for (Integer checkId : checkIds) {
+            CheckOrder checkOrder = new CheckOrder();
+            checkOrder.setId(checkId);
+            checkOrder.setShippingDeliverId(id);
+            checkOrder.setMdyBy(systemUser.getId().intValue());
+            checkOrder.setMdyByDtm(LocalDateTime.now());
+            checkOrder.setMdyByName(systemUser.getUserName());
+            checkOrders.add(checkOrder);
+
+            CheckOrderFollow checkOrderFollow = new CheckOrderFollow();
+            checkOrderFollow.setCheckId(checkId);
+            checkOrderFollow.setSType(OperationEnum.UPDATE.getCode());
+            checkOrderFollow.setFollowContext("提验货单绑定配送车辆" + deliverNo);
+            checkOrderFollow.setCrtBy(systemUser.getId().intValue());
+            checkOrderFollow.setCrtByDtm(LocalDateTime.now());
+            checkOrderFollow.setCrtByName(systemUser.getUserName());
+            checkOrderFollows.add(checkOrderFollow);
+        }
+        boolean result = this.updateBatchById(checkOrders);
+        if(result){
+            log.warn("提验货单绑定配送车辆成功");
+            boolean result1 = this.checkOrderFollowService.saveBatch(checkOrderFollows);
+            if(result1){
+                log.warn("提验货单绑定配送车辆操作日志添加成功");
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean deleteDispatch(List<Integer> checkIds) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        List<CheckOrderFollow> checkOrderFollows = new ArrayList<>();
+        List<CheckOrder> checkOrders = new ArrayList<>();
+        for (Integer checkId : checkIds) {
+            CheckOrder checkOrder = new CheckOrder();
+            checkOrder.setId(checkId);
+            checkOrder.setShippingDeliverId(null);
+            checkOrder.setMdyBy(systemUser.getId().intValue());
+            checkOrder.setMdyByDtm(LocalDateTime.now());
+            checkOrder.setMdyByName(systemUser.getUserName());
+            checkOrders.add(checkOrder);
+
+            CheckOrderFollow checkOrderFollow = new CheckOrderFollow();
+            checkOrderFollow.setCheckId(checkId);
+            checkOrderFollow.setSType(OperationEnum.UPDATE.getCode());
+            checkOrderFollow.setFollowContext("提验货单去绑配送车辆");
+            checkOrderFollow.setCrtBy(systemUser.getId().intValue());
+            checkOrderFollow.setCrtByDtm(LocalDateTime.now());
+            checkOrderFollow.setCrtByName(systemUser.getUserName());
+            checkOrderFollows.add(checkOrderFollow);
+        }
+        boolean result = this.updateBatchById(checkOrders);
+        if(result){
+            log.warn("提验货单去绑配送车辆成功");
+            boolean result1 = this.checkOrderFollowService.saveBatch(checkOrderFollows);
+            if(result1){
+                log.warn("提验货单去绑配送车辆操作日志添加成功");
+            }
+        }
+        return result;
+    }
 }

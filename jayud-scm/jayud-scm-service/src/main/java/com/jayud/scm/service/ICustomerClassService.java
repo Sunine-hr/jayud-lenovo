@@ -3,6 +3,7 @@ package com.jayud.scm.service;
 import com.jayud.scm.model.bo.AddCustomerTypeForm;
 import com.jayud.scm.model.po.CustomerClass;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.scm.model.vo.CustomerVO;
 
 import java.util.List;
 
@@ -23,4 +24,5 @@ public interface ICustomerClassService extends IService<CustomerClass> {
     boolean updateCustomerClass(AddCustomerTypeForm form);
 
     boolean financialNumberSetting(AddCustomerTypeForm form);
+
 }

@@ -1,7 +1,10 @@
 package com.jayud.scm.model.po;
 
 import java.math.BigDecimal;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
@@ -70,9 +73,11 @@ public class TaxInvoice extends Model<TaxInvoice> {
     private String changeReason;
 
     @ApiModelProperty(value = "配送ID")
+    @TableField(fill = FieldFill.UPDATE)
     private Integer deliverId;
 
     @ApiModelProperty(value = "配送编号")
+    @TableField(fill = FieldFill.UPDATE)
     private String deliverNo;
 
     @ApiModelProperty(value = "是否同步到开票系统")

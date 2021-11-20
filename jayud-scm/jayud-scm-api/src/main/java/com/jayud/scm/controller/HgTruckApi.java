@@ -2,24 +2,21 @@ package com.jayud.scm.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.http.HttpRequest;
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.google.gson.JsonObject;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
-import com.jayud.common.exception.ApiException;
 import com.jayud.common.exception.Asserts;
-import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.RSAUtils;
 import com.jayud.common.utils.TokenGenerator;
 import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.po.BDataDicEntry;
 import com.jayud.scm.model.po.BookingOrder;
 import com.jayud.scm.model.po.HgTruck;
-import com.jayud.scm.model.po.SystemUser;
 import com.jayud.scm.model.vo.*;
 import com.jayud.scm.service.*;
 import io.swagger.annotations.Api;
@@ -33,6 +30,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.attribute.standard.JobSheets;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
@@ -175,24 +173,47 @@ public class HgTruckApi {
         hgTruckApiVO.setWarehouseInfo(hgTruckVO.getShippingHubName());
 
 
-        OutAuthenticationForm outAuthenticationForm = new OutAuthenticationForm();
+//        OutAuthenticationForm outAuthenticationForm = new OutAuthenticationForm();
+//
+//        String s = redisUtils.get(getRedisKey(outAuthenticationForm));
+//        if(StringUtils.isBlank(s)){
+//            s = doLogin(outAuthenticationForm);
+//        }
 
-        String s = redisUtils.get(getRedisKey(outAuthenticationForm));
-        if(StringUtils.isBlank(s)){
-            s = doLogin(outAuthenticationForm);
+//        System.out.println("订车请求参数："+JSONUtil.toJsonStr(hgTruckApiVO));
+        //加密参数
+        String s1 = null;
+        try {
+             s1 = RSAUtils.privateDecrypt(hgTruckApiVO.toString(), RSAUtils.getPrivateKey(RSAUtils.PRIVATE_KEY));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("AppId",RSAUtils.PUBLIC_KEY);
+        jsonObject.put("data",s1);
 
         //请求
         String feedback = HttpRequest
                 .post(createTransportationUrl)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header("token",s)
-                .body(JSONUtil.toJsonStr(hgTruckApiVO))
+//                .header("token",s)
+//                .body(JSONUtil.toJsonStr(hgTruckApiVO))
+                .body(JSONUtil.toJsonStr(jsonObject))
                 .execute().body();
-        System.out.println("carBookingSubmissionfeedback:"+feedback);
+        log.warn("carBookingSubmissionfeedback:"+feedback);
+
+        //解密数据
+        String s = null;
+        try {
+            s = RSAUtils.privateDecrypt(feedback, RSAUtils.getPrivateKey(RSAUtils.PRIVATE_KEY));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         //获取token
-        Map map1 = JSONUtil.toBean(feedback, Map.class);
-        System.out.println(map1);
+        Map map1 = JSONUtil.toBean(s, Map.class);
+//        System.out.println(map1);
         if(map1.get("code").equals(200)){
             return CommonResult.success();
         }
@@ -336,23 +357,48 @@ public class HgTruckApi {
         }
 
         System.out.println("请求参数："+hgTruckApiVO);
-        OutAuthenticationForm outAuthenticationForm = new OutAuthenticationForm();
+//        OutAuthenticationForm outAuthenticationForm = new OutAuthenticationForm();
+//
+//        String s = redisUtils.get(getRedisKey(outAuthenticationForm));
+//        if(StringUtils.isBlank(s)){
+//            s = doLogin(outAuthenticationForm);
+//        }
 
-        String s = redisUtils.get(getRedisKey(outAuthenticationForm));
-        if(StringUtils.isBlank(s)){
-            s = doLogin(outAuthenticationForm);
+//        System.out.println("明细请求参数："+JSONUtil.toJsonStr(hgTruckApiVO));
+
+        //加密参数
+        String s1 = null;
+        try {
+            s1 = RSAUtils.privateDecrypt(hgTruckApiVO.toString(), RSAUtils.getPrivateKey(RSAUtils.PRIVATE_KEY));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("AppId",RSAUtils.PUBLIC_KEY);
+        jsonObject.put("data",s1);
 
         //请求
         String feedback = HttpRequest
                 .post(updateTransportationUrl)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header("token",s)
-                .body(JSONUtil.toJsonStr(hgTruckApiVO))
+//                .header("token",s)
+//                .body(JSONUtil.toJsonStr(hgTruckApiVO))
+                .body(JSONUtil.toJsonStr(jsonObject))
                 .execute().body();
-        System.out.println("detailSubmissionfeedback:"+feedback);
+        log.warn("detailSubmissionfeedback:"+feedback);
+
+        //解密数据
+        String s = null;
+        try {
+            s = RSAUtils.publicDecrypt(feedback, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         //获取token
-        Map map1 = JSONUtil.toBean(feedback, Map.class);
+        Map map1 = JSONUtil.toBean(s, Map.class);
         if(map1.get("code").equals(200)){
             return CommonResult.success();
         }
@@ -362,12 +408,20 @@ public class HgTruckApi {
 
     @ApiOperation(value = "获取车次状态")
     @PostMapping(value = "/getTrainNumberStatus")
-    public CommonResult getTrainNumberStatus(@RequestBody QueryCommonForm form, HttpServletRequest request) {
+    public CommonResult getTrainNumberStatus(@RequestBody Map<String,Object> map, HttpServletRequest request) {
+//        String token = request.getHeader("token");
+//        if(StringUtils.isBlank(token)){
+//            return CommonResult.error(444,"未登录，请前往登录");
+//        }
+        String data = MapUtil.getStr(map, "data");
 
-        String token = request.getHeader("token");
-        if(StringUtils.isBlank(token)){
-            return CommonResult.error(444,"未登录，请前往登录");
+        String s = null;
+        try {
+            s = RSAUtils.publicDecrypt(data, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        QueryCommonForm form = JSONUtil.toBean(s, QueryCommonForm.class);
 
         if(StringUtils.isEmpty(form.getTrainStatus())){
             return CommonResult.error(444,"车次状态为空");
@@ -395,15 +449,23 @@ public class HgTruckApi {
     @ApiOperation(value = "获取载货清单")
     @PostMapping(value = "/getManifest")
     public CommonResult getManifest(@RequestBody Map<String,Object> map, HttpServletRequest request) {
+//        String token = request.getHeader("token");
+//        if(StringUtils.isBlank(token)){
+//            return CommonResult.error(444,"未登录，请前往登录");
+//        }
+        String data = MapUtil.getStr(map, "data");
 
-        String token = request.getHeader("token");
-        if(StringUtils.isBlank(token)){
-            return CommonResult.error(444,"未登录，请前往登录");
+        String s = null;
+        try {
+            s = RSAUtils.publicDecrypt(data, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        Map map1 = JSONUtil.toBean(s, Map.class);
 
-        String exHkNo = MapUtil.getStr(map, "exHkNo");
-        String truckNo = MapUtil.getStr(map, "truckNo");
-        String userName = MapUtil.getStr(map, "userName");
+        String exHkNo = MapUtil.getStr(map1, "exHkNo");
+        String truckNo = MapUtil.getStr(map1, "truckNo");
+        String userName = MapUtil.getStr(map1, "userName");
 
         if(StringUtils.isEmpty(truckNo)){
             return CommonResult.error(444,"港车编号为空");
@@ -429,12 +491,22 @@ public class HgTruckApi {
 
     @ApiOperation(value = "接受运输公司等信息")
     @PostMapping(value = "/acceptTransportationInformation")
-    public CommonResult acceptTransportationInformation(@RequestBody AddHgTruckForm form,HttpServletRequest request) {
+    public CommonResult acceptTransportationInformation(@RequestBody Map<String,Object> map,HttpServletRequest request) {
 
-        String token = request.getHeader("token");
-        if(StringUtils.isBlank(token)){
-            return CommonResult.error(444,"未登录，请前往登录");
+//        String token = request.getHeader("token");
+//        if(StringUtils.isBlank(token)){
+//            return CommonResult.error(444,"未登录，请前往登录");
+//        }
+
+        String data = MapUtil.getStr(map, "data");
+
+        String s = null;
+        try {
+            s = RSAUtils.publicDecrypt(data, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        AddHgTruckForm form = JSONUtil.toBean(s, AddHgTruckForm.class);
 
         if(StringUtils.isEmpty(form.getTruckCompany())){
             return CommonResult.error(444,"运输公司不能为空");
@@ -503,7 +575,7 @@ public class HgTruckApi {
         bizData.setOprTime(date);
         System.out.println(date);
         String jsonStr = JSONObject.toJSONString(bizData);
-        String encodeValue = DigestUtils.md5DigestAsHex(("admin" + jsonStr + "123456").getBytes());
+        String encodeValue = DigestUtils.md5DigestAsHex(("杨小兰" + jsonStr + "123456").getBytes());
         System.out.println(encodeValue);
         String token = TokenGenerator.generateValue(encodeValue);
         System.out.println(token);

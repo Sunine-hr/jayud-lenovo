@@ -42,5 +42,7 @@ public interface BookingOrderEntryMapper extends BaseMapper<BookingOrderEntry> {
      */
     BookingOrderEntryVO findBookingOrderEntryByBookingIdAndItemId(@Param("bookingId") Integer bookingId, @Param("itemId") Integer itemId);
 
-    boolean updateBookingOrderEntry(Commodity commodity);
+    List<Integer> getBookingOrderEntryByBookingId(@Param("id") Integer id);
+
+    Boolean updateBookingOrderEntry(@Param("commodity")Commodity commodity, @Param("integers")List<Integer> integers);
 }

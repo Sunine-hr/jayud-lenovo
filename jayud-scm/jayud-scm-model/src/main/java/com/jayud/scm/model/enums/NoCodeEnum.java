@@ -30,6 +30,7 @@ public enum NoCodeEnum {
     VERIFICATION_REOCRDS("1012","核销单号"),
     EXPORT_TAX_INVOICE("1013","进项票单号"),
     ACCT_ENTRY_PAY("1015","应付款编号"),
+    HUB_SHIPPING_DELIVER("1016","配送，发货，自提系统单号"),
     ;
 
     private String code;

@@ -5,7 +5,9 @@ import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.AddHubShippingForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.bo.QueryForm;
 import com.jayud.scm.model.po.BookingOrder;
+import com.jayud.scm.model.po.HubShipping;
 import com.jayud.scm.model.vo.CheckOrderVO;
 import com.jayud.scm.model.vo.HubReceivingVO;
 import com.jayud.scm.model.vo.HubShippingVO;
@@ -69,9 +71,19 @@ public class HubShippingController {
     @ApiOperation(value = "签收出库单")
     @PostMapping(value = "/signOrder")
     public CommonResult signOrder(@RequestBody QueryCommonForm form) {
+
+        HubShipping hubShipping = hubShippingService.getById(form.getIds().get(0));
+        if(hubShipping.getSignState().equals(1)){
+            return CommonResult.error(444,"该出库单已签收，无法重复签收");
+        }
+
+        if(hubShipping.getStateFlag().equals(1)){
+            return CommonResult.error(444,"未出库的出库单不允许签收！");
+        }
+
         boolean result = hubShippingService.signOrder(form);
         if(!result){
-            return CommonResult.error(444,"订单签收失败");
+            return CommonResult.error(444,"出库单签收失败");
         }
         return CommonResult.success();
     }
@@ -93,6 +105,34 @@ public class HubShippingController {
     @PostMapping(value = "/automaticGenerationHubShipping")
     public CommonResult automaticGenerationHubShipping(@RequestBody QueryCommonForm form) {
         return hubShippingService.automaticGenerationHubShipping(form);
+    }
+
+
+    @ApiOperation(value = "出库单信息修改")
+    @PostMapping(value = "/updateHubShipping")
+    public CommonResult updateHubShipping(@RequestBody AddHubShippingForm form) {
+        boolean result = hubShippingService.updateHubShipping(form);
+        if(!result){
+            return CommonResult.error(444,"出库单信息修改失败");
+        }
+        return CommonResult.success();
+    }
+
+    @ApiOperation(value = "签收出库单信息")
+    @PostMapping(value = "/signHubShipping")
+    public CommonResult signHubShipping(@RequestBody QueryCommonForm form) {
+        if(null == form.getId()){
+            return CommonResult.error(444,"出库单id不为空");
+        }
+        HubShipping hubShipping = hubShippingService.getById(form.getId());
+        if(hubShipping.getStateFlag().equals(1)){
+            return CommonResult.error(444,"未出库的出库单不允许签收！");
+        }
+        boolean result = hubShippingService.signHubShipping(form);
+        if(!result){
+            return CommonResult.error(444,"签收出库单信息失败");
+        }
+        return CommonResult.success();
     }
 
 }

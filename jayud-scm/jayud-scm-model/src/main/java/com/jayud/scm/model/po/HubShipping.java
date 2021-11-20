@@ -1,7 +1,10 @@
 package com.jayud.scm.model.po;
 
 import java.math.BigDecimal;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
@@ -72,9 +75,11 @@ public class HubShipping extends Model<HubShipping> {
     private String receivingNo;
 
     @ApiModelProperty(value = "配送ID")
+    @TableField(fill = FieldFill.UPDATE) //修改能修改null
     private Integer deliverId;
 
     @ApiModelProperty(value = "配送编号")
+    @TableField(fill = FieldFill.UPDATE)
     private String deliverNo;
 
     @ApiModelProperty(value = "发货类型（0自提，1发货，2配送，3直送发货，4转仓，5存仓发货,6.暂放仓库）")

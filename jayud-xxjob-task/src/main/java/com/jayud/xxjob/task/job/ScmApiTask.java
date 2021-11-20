@@ -1,6 +1,7 @@
 package com.jayud.xxjob.task.job;
 
 import com.jayud.common.ApiResult;
+import com.jayud.xxjob.task.feign.ScmApiClient;
 import com.jayud.xxjob.task.feign.ScmClient;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
@@ -21,24 +22,25 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class ScmTask {
+public class ScmApiTask {
 
     @Autowired
-    private ScmClient scmClient;
+    private ScmApiClient scmApiClient;
 
     /**
-     * 抓取中行汇率
+     * 抓取云报关状态变化
      */
-    @XxlJob("grabExchangeRate")
-    public void grabExchangeRate() throws Exception {
-        XxlJobHelper.log("执行获取中行汇率任务");
-        log.info("执行获取中行汇率任务");
-        ApiResult result = scmClient.grabExchangeRate();
+    @XxlJob("updateHgBill")
+    public void updateHgBill() throws Exception {
+        XxlJobHelper.log("执行抓取云报关状态变化任务");
+        log.info("执行抓取云报关状态变化任务");
+        ApiResult result = scmApiClient.updateHgBill();
         if (!result.isOk()) {
             log.warn("请求失败 报错信息={}", result.getMsg());
             XxlJobHelper.log("请求失败 报错信息={}", result.getMsg());
         }
     }
+
 
 
 }

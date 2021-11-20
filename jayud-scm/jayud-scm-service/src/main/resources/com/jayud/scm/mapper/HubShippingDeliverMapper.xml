@@ -39,11 +39,16 @@
         <result column="voided_by" property="voidedBy" />
         <result column="voided_by_name" property="voidedByName" />
         <result column="voided_by_dtm" property="voidedByDtm" />
+        <result column="driver_name" property="driverName" />
+        <result column="driver_tel" property="driverTel" />
+        <result column="id_code" property="idCode" />
+        <result column="begin_time" property="beginTime" />
+        <result column="end_time" property="endTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, deliver_no, deliver_date, model_type, deliver_type, hub_name, deliver_name, deliver_time, truck_no, trans_type, supplier_id, supplier_name, supplier_no, sf_type, sf_pay, sf_remark, take_user, take_user_cid, total_packages, total_gw, check_state_flag, f_step, f_level, state_flag, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
+        id, deliver_no, deliver_date, model_type, deliver_type, hub_name, deliver_name, deliver_time, truck_no, trans_type, supplier_id, supplier_name, supplier_no, sf_type, sf_pay, sf_remark, take_user, take_user_cid, total_packages, total_gw, check_state_flag, f_step, f_level, state_flag, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm, driver_name, driver_tel, id_code, begin_time, end_time
     </sql>
 
 </mapper>

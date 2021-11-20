@@ -156,4 +156,6 @@ public interface ISystemUserService extends IService<SystemUser> {
     List<SystemUser> getSystemUserByDepartmentId(Long departmentId);
 
     public void insertLoginLog(SystemUser user);
+
+    List<SystemUser> getSystemUserByIds(Set<Long> longs);
 }

@@ -1,10 +1,12 @@
 package com.jayud.scm.controller;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.scm.model.bo.*;
@@ -190,6 +192,9 @@ public class CustomerController {
         if(customer != null && !customer.getId().equals(id)){
             return CommonResult.error(444,"客户名称已存在");
         }
+        if(customer == null){
+            customer = new Customer();
+        }
         customer.setId(id);
         customer.setCustomerName(customerName);
         boolean result = customerService.updateCustomerName(customer);
@@ -264,6 +269,20 @@ public class CustomerController {
         }
         CustomerOperatorVO customerOperatorVO = customerService.findCustomerOperatorByCustomerId(customerId,modelType);
         return CommonResult.success(customerOperatorVO);
+    }
+
+    @ApiOperation(value = "根据客户类型获取客户集合 ")
+    @PostMapping(value = "/getCustomerByClassType")
+    public CommonResult getCustomerByClassType(@RequestBody Map<String,Object> map) {
+        String classType = MapUtil.getStr(map, "classType");
+        if(null == classType ){
+            return CommonResult.error(444,"客户类型不能为空");
+        }
+        List<CustomerVO> customerVOS = this.customerService.getCustomerByClassType(classType);
+        if(CollectionUtil.isEmpty(customerVOS)){
+            customerVOS = new ArrayList<>();
+        }
+        return CommonResult.success(customerVOS);
     }
 
 }

@@ -150,4 +150,10 @@ public class AddHgTruckForm {
     @ApiModelProperty(value = "用户名")
     private String userName;
 
+    @ApiModelProperty(value = "是否需要提货  0 否 1 是")
+    private Integer isTakeDelivery;
+
+    @ApiModelProperty(value = "是否需要送货 0 否 1 是")
+    private Integer isDelivery;
+
 }

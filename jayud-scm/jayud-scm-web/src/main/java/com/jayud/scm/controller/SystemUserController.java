@@ -1,5 +1,6 @@
 package com.jayud.scm.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -29,8 +30,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Pattern;
 
 
@@ -708,6 +711,39 @@ public class SystemUserController {
             longs.add(systemUserRoleRelation.getUserId());
         }
         List<SystemUser> byIds = this.userService.getByIds(longs);
+        return CommonResult.success(byIds);
+    }
+
+    @ApiOperation(value = "获取所有角色为仓库、物流的用户")
+    @PostMapping(value = "/getSystemUserByRoleByRoleName")
+    public CommonResult getSystemUserByRoleByRoleName() {
+        SystemRole systemRole = roleService.getRoleByRoleName("仓库");
+        SystemRole systemRole1 = roleService.getRoleByRoleName("物流");
+        Set<Long> longs = new HashSet<>();
+        if(systemRole != null){
+            List<SystemUserRoleRelation> systemUserRoleRelations = this.userRoleRelationService.getEnabledUsersByRoleId(systemRole.getId());
+            if(CollectionUtil.isNotEmpty(systemUserRoleRelations)){
+                for (SystemUserRoleRelation systemUserRoleRelation : systemUserRoleRelations) {
+                    longs.add(systemUserRoleRelation.getUserId());
+                }
+            }
+
+        }
+        if(systemRole1 != null){
+            List<SystemUserRoleRelation> systemUserRoleRelations1 = this.userRoleRelationService.getEnabledUsersByRoleId(systemRole1.getId());
+            if(CollectionUtil.isNotEmpty(systemUserRoleRelations1)){
+                for (SystemUserRoleRelation systemUserRoleRelation : systemUserRoleRelations1) {
+                    longs.add(systemUserRoleRelation.getUserId());
+                }
+            }
+
+        }
+        List<SystemUser> byIds = new ArrayList<>();
+
+        if(CollectionUtil.isNotEmpty(longs)){
+            byIds = this.userService.getSystemUserByIds(longs);
+        }
+
         return CommonResult.success(byIds);
     }
 

@@ -58,4 +58,6 @@ public interface ICustomerService extends IService<Customer> {
     CustomerOperatorVO findCustomerOperatorByCustomerId(Integer customerId,Integer modelType);
 
     Map getClassById(QueryCommonForm form);
+
+    List<CustomerVO> getCustomerByClassType(String classType);
 }

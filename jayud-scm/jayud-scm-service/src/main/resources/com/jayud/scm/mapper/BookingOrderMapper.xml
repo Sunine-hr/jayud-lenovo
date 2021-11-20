@@ -166,7 +166,7 @@
         <if test="form.modelType !=null and form.modelType!=''">
             and t.model_type = #{form.modelType}
         </if>
-        <if test="form.type !=null and form.modelType == 1">
+        <if test="form.type !=null ">
             and t.`id` in (select id from v_bookOrder)
         </if>
         <if test="form.hgTruckId !=null and form.hgTruckId !=''">

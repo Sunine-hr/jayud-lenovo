@@ -63,7 +63,7 @@ public class AccountBankBillEntryController {
         }
         AccountBankBill bankBill = accountBankBillService.getById(form.getBankBillId());
         if(bankBill.getVerificationMoney() == null || bankBill.getVerificationMoney().compareTo(total) == -1){
-            return CommonResult.error(444,"水单明细总金额不能大于水单主表金额");
+            return CommonResult.error(444,"水单明细总金额不能大于水单金额");
         }
 
 

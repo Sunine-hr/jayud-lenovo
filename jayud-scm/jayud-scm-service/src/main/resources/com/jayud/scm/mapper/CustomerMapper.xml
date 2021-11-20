@@ -174,4 +174,8 @@
         select * from ${form.table} c where c.id = #{form.id}
     </select>
 
+    <select id="getCustomerByClassType" resultType="com.jayud.scm.model.vo.CustomerVO">
+        select * from customer c where c.voided = 0 and c.id in (select customer_id from customer_class where class_name = #{classType})
+    </select>
+
 </mapper>

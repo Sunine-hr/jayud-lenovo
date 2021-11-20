@@ -2,7 +2,9 @@ package com.jayud.scm.model.po;
 
 import java.math.BigDecimal;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.time.LocalDateTime;
@@ -119,6 +121,7 @@ public class CheckOrder extends Model<CheckOrder> {
     private String warehouseName;
 
     @ApiModelProperty(value = "配送单Id")
+    @TableField(fill = FieldFill.UPDATE)
     private Integer shippingDeliverId;
 
     @ApiModelProperty(value = "客户ID")

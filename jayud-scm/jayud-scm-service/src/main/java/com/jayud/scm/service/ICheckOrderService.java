@@ -29,4 +29,8 @@ public interface ICheckOrderService extends IService<CheckOrder> {
     boolean saveOrUpdateCheckOrder(AddCheckOrderForm form);
 
     CheckOrderVO getCheckOrderById(Integer id);
+
+    boolean dispatch(List<Integer> checkIds, Integer id, String deliverNo);
+
+    boolean deleteDispatch(List<Integer> checkIds);
 }

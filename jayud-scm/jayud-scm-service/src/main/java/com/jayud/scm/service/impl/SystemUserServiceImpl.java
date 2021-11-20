@@ -471,4 +471,9 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
         loginLogService.save(loginLog);
     }
 
+    @Override
+    public List<SystemUser> getSystemUserByIds(Set<Long> longs) {
+        return this.baseMapper.selectBatchIds(longs);
+    }
+
 }

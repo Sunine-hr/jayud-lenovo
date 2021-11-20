@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.scm.model.po.VFeeModel;
 import com.jayud.scm.model.vo.CommodityFormVO;
 import com.jayud.scm.model.vo.CustomerFormVO;
+import com.jayud.scm.model.vo.CustomerVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -42,4 +43,6 @@ public interface CustomerMapper extends BaseMapper<Customer> {
     List<VFeeModel> findVFeeModelByCustomerId(@Param("customerId") Integer customerId,@Param("modelType")Integer modelType);
 
     Map getClassById(@Param("form") QueryCommonForm form);
+
+    List<CustomerVO> getCustomerByClassType(String classType);
 }

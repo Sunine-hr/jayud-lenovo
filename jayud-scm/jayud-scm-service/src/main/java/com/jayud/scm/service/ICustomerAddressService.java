@@ -28,4 +28,6 @@ public interface ICustomerAddressService extends IService<CustomerAddress> {
     CustomerAddressVO getCustomerAddressById(Integer id);
 
     List<CustomerAddressVO> getCustomerAddressByCustomerIdAndSType(Integer customerId, String sType);
+
+    List<CustomerAddressVO> getCustomerAddressByAddressAndSType(String address, String sType);
 }

@@ -14,4 +14,5 @@ public interface ScmClient {
      */
     @RequestMapping(value = "/rateRmbFromBoc/grabExchangeRate")
     public ApiResult grabExchangeRate();
+
 }

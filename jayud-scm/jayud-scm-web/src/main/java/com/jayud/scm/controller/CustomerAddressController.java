@@ -1,6 +1,7 @@
 package com.jayud.scm.controller;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -106,6 +108,30 @@ public class CustomerAddressController {
         List<CustomerAddressVO> customerAddressVOS = customerAddressService.getCustomerAddressByCustomerIdAndSType(customerId,sType);
         return CommonResult.success(customerAddressVOS);
     }
+
+    @ApiOperation(value = "根据地址类型和客户id获取地址信息的详情")
+    @PostMapping(value = "/getCustomerAddressByAddressAndSType")
+    public CommonResult<List<CustomerAddressVO>> getCustomerAddressByAddressAndSType(@RequestBody Map<String,Object> map) {
+        String address = MapUtil.getStr(map, "address");
+        String sType = MapUtil.getStr(map, "sType");
+        List<CustomerAddressVO> customerAddressVOS = customerAddressService.getCustomerAddressByAddressAndSType(address,sType);
+        if(CollectionUtil.isEmpty(customerAddressVOS)){
+            customerAddressVOS = new ArrayList<>();
+        }
+        return CommonResult.success(customerAddressVOS);
+    }
+
+//    @ApiOperation(value = "根据地址类型和客户id获取地址信息的详情")
+//    @PostMapping(value = "/getCustomerAddressByAddressAndSType")
+//    public CommonResult<List<CustomerAddressVO>> getCustomerAddressByPhoneAndSType(@RequestBody Map<String,Object> map) {
+//        String address = MapUtil.getStr(map, "address");
+//        String sType = MapUtil.getStr(map, "sType");
+//        List<CustomerAddressVO> customerAddressVOS = customerAddressService.getCustomerAddressByAddressAndSType(address,sType);
+//        if(CollectionUtil.isEmpty(customerAddressVOS)){
+//            customerAddressVOS = new ArrayList<>();
+//        }
+//        return CommonResult.success(customerAddressVOS);
+//    }
 
 }
 

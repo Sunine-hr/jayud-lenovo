@@ -1,30 +1,28 @@
-package com.jayud.scm.model.po;
+package com.jayud.scm.model.bo;
 
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 /**
  * <p>
- * 调度配送表
+ * 调度配送 新增form表单
  * </p>
  *
  * @author LLJ
  * @since 2021-11-12
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@ApiModel(value="HubShippingDeliver对象", description="调度配送表")
-public class HubShippingDeliver extends Model<HubShippingDeliver> {
-
-    private static final long serialVersionUID = 1L;
+public class AddHubShippingDeliverForm {
 
     @ApiModelProperty(value = "自动ID")
       @TableId(value = "id", type = IdType.AUTO)
@@ -43,27 +41,35 @@ public class HubShippingDeliver extends Model<HubShippingDeliver> {
     private Integer deliverType;
 
     @ApiModelProperty(value = "仓库名称")
+    @NotNull(message = "仓库名称不为空")
     private String hubName;
 
     @ApiModelProperty(value = "配送人")
+    @NotNull(message = "配送人不为空")
     private String deliverName;
 
     @ApiModelProperty(value = "调度出库日期")
+    @NotNull(message = "配送日期不为空")
     private String deliverTime;
 
     @ApiModelProperty(value = "车牌")
+    @NotNull(message = "车牌不为空")
     private String truckNo;
 
     @ApiModelProperty(value = "运输方式（空运，陆运)")
+    @NotNull(message = "运输方式不为空")
     private String transType;
 
     @ApiModelProperty(value = "供应商ID")
+    @NotNull(message = "供应商ID不为空")
     private Integer supplierId;
 
     @ApiModelProperty(value = "物流承运商")
+    @NotNull(message = "物流承运商不为空")
     private String supplierName;
 
     @ApiModelProperty(value = "承运单号")
+    @NotNull(message = "承运单号不为空")
     private String supplierNo;
 
     @ApiModelProperty(value = "快递发货类别")
@@ -89,12 +95,6 @@ public class HubShippingDeliver extends Model<HubShippingDeliver> {
 
     @ApiModelProperty(value = "审核状态")
     private String checkStateFlag;
-
-    @ApiModelProperty(value = "审核步长")
-    private Integer fStep;
-
-    @ApiModelProperty(value = "审核级别")
-    private Integer fLevel;
 
     @ApiModelProperty(value = "发货状态")
     private Integer stateFlag;
@@ -133,12 +133,15 @@ public class HubShippingDeliver extends Model<HubShippingDeliver> {
     private LocalDateTime voidedByDtm;
 
     @ApiModelProperty(value = "司机")
+    @NotNull(message = "司机不为空")
     private String driverName;
 
     @ApiModelProperty(value = "司机电话")
+    @NotNull(message = "司机电话不为空")
     private String driverTel;
 
     @ApiModelProperty(value = "证件号码")
+    @NotNull(message = "证件号码不为空")
     private String idCode;
 
     @ApiModelProperty(value = "开始时间")
@@ -153,9 +156,11 @@ public class HubShippingDeliver extends Model<HubShippingDeliver> {
     @ApiModelProperty(value = "司机ID")
     private Integer diverId;
 
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
+    @ApiModelProperty(value = "出库单号")
+    private String shippingNo;
+
+    @ApiModelProperty(value = "提验货单号")
+    private String checkNo;
+
 
 }

@@ -59,5 +59,8 @@ public interface IBookingOrderEntryService extends IService<BookingOrderEntry> {
      */
     void importByBookingOrderEntry(MultipartFile file, Integer bookingId);
 
-    boolean updateBookingOrderEntry(Commodity commodity);
+    void updateBookingOrderEntry(Commodity commodity);
+
+    boolean updateExRmbPrice(BookingOrderEntry bookingOrderEntry);
+
 }

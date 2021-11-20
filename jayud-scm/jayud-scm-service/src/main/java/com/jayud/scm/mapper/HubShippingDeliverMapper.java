@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author LLJ
- * @since 2021-08-17
+ * @since 2021-11-12
  */
 @Mapper
 public interface HubShippingDeliverMapper extends BaseMapper<HubShippingDeliver> {

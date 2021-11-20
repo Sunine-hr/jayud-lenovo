@@ -45,6 +45,7 @@ public enum TableEnum {
     other_cost(34,"other_cost"),//其他费用
     reports(35,"reports"),//打印报表
     tax_invoice(36,"tax_invoice"),//销项票
+    hub_shipping_deliver(37,"hub_shipping_deliver"),//调度策略
     ;
 
     private Integer code;

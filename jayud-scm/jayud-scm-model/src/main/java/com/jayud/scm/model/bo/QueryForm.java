@@ -19,10 +19,9 @@ public class QueryForm extends BasePageForm{
     @ApiModelProperty("id")
     private Integer id;
 
-    @ApiModelProperty("id")
+    @ApiModelProperty("客户id")
     private Integer customerId;
 
-    @ApiModelProperty("id")
+    @ApiModelProperty("业务类型")
     private Integer modelType;
-
 }

@@ -154,4 +154,13 @@ public class CustomerAddressServiceImpl extends ServiceImpl<CustomerAddressMappe
         queryWrapper.lambda().eq(CustomerAddress::getVoided,0);
         return ConvertUtil.convertList(this.list(queryWrapper),CustomerAddressVO.class);
     }
+
+    @Override
+    public List<CustomerAddressVO> getCustomerAddressByAddressAndSType(String address, String sType) {
+        QueryWrapper<CustomerAddress> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().like(CustomerAddress::getAddress,address);
+        queryWrapper.lambda().eq(CustomerAddress::getSType,sType);
+        queryWrapper.lambda().eq(CustomerAddress::getVoided,0);
+        return ConvertUtil.convertList(this.list(queryWrapper),CustomerAddressVO.class);
+    }
 }

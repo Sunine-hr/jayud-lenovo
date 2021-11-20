@@ -97,6 +97,7 @@ public class HgBillApi {
             customsHeadForm.setUid(hgBill1.getUid());
             customsHeadForm.setIndateDt(yunBaoGuanData1.getBillDate());
             customsHeadForm.setNote("供应链系统推送");
+            customsHeadForm.setDeclareGroupId(1);
 
             List<CustomsGoodsForm> goodsForms = new ArrayList<>();
             for (YunBaoGuanData yunBaoGuanDatum : yunBaoGuanData) {

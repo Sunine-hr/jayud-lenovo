@@ -143,4 +143,46 @@ public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO
             }
         }
     }
+
+
+    public boolean pairingTmsRule(List<String> startAddrs, List<String> endAddrs, String vehicleSize) {
+        if (this.type == 2) {
+            return true;
+        }
+        boolean isTrue = false;
+        if (!this.vehicleSize.equals(vehicleSize)) {
+            return isTrue;
+        }
+        String[] startingPlaceStrs = this.startingPlace.split(",");
+
+        for (String startAddr : startAddrs) {
+            for (String startingPlaceStr : startingPlaceStrs) {
+                if (startAddr.contains(startingPlaceStr)) {
+                    isTrue = true;
+                }
+            }
+            if (isTrue) {
+                break;
+            }
+        }
+        if (!isTrue) {
+            return false;
+        } else {
+            isTrue = false;
+        }
+
+        String[] destinationStrs = this.destination.split(",");
+        for (String endAddr : endAddrs) {
+            for (String destinationStr : destinationStrs) {
+                if (endAddr.contains(destinationStr)) {
+                    isTrue = true;
+                }
+            }
+            if (isTrue) {
+                break;
+            }
+        }
+
+        return isTrue;
+    }
 }

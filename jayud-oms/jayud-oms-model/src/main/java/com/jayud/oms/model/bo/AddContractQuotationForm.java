@@ -133,10 +133,31 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
         if (CollectionUtils.isEmpty(list)) {
             return;
         }
-        Map<String, Long> count = list.stream().collect(Collectors.groupingBy(e -> e.getStartingPlace()
-                + "~" + e.getDestinationId() + "~" + e.getVehicleSize() + "~" + e.getCostCode() + "~" + e.getCostTypeId(), Collectors.counting()));
-        count.forEach((k, v) -> {
-            if (v > 1) throw new JayudBizException("已存在相同费用,请检查");
+
+        Map<String, List<AddContractQuotationDetailsForm>> listMap = list.stream().collect(Collectors.groupingBy(e -> e.getVehicleSize() + "~" + e.getCostCode() + "~" + e.getCostTypeId()));
+//        Map<String, Long> count = list.stream().collect(Collectors.groupingBy(e -> e.getStartingPlace()
+//                + "~" + e.getDestinationId() + "~" + e.getVehicleSize() + "~" + e.getCostCode() + "~" + e.getCostTypeId(), Collectors.counting()));
+//        count.forEach((k, v) -> {
+//            if (v > 1) throw new JayudBizException("已存在相同费用,请检查");
+//        });
+        listMap.forEach((k, v) -> {
+            for (int i = 0; i < v.size(); i++) {
+                AddContractQuotationDetailsForm tmp = v.get(i);
+                for (int i1 = 0; i1 < v.size(); i1++) {
+                    AddContractQuotationDetailsForm form = v.get(i1);
+                    if (i1 == i) {
+                        continue;
+                    }
+                    List<Long> startPlaceIds = tmp.getStartingPlaceIds().stream().filter(e -> form.getStartingPlaceIds().contains(e)).collect(Collectors.toList());
+                    if (startPlaceIds.size() == 0) {
+                        return;
+                    }
+                    List<Long> endPlaceIds = tmp.getDestinationIds().stream().filter(e -> form.getDestinationIds().contains(e)).collect(Collectors.toList());
+                    if (endPlaceIds.size()>0){
+                        throw new JayudBizException("已存在相同费用,请检查");
+                    }
+                }
+            }
         });
     }
 }

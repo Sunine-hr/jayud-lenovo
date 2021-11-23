@@ -16,13 +16,14 @@ import com.jayud.oms.feign.FileClient;
 import com.jayud.oms.mapper.ContractQuotationMapper;
 import com.jayud.oms.model.bo.AddContractQuotationDetailsForm;
 import com.jayud.oms.model.bo.AddContractQuotationForm;
+import com.jayud.oms.model.bo.GetOrderDetailForm;
 import com.jayud.oms.model.bo.QueryContractQuotationForm;
 import com.jayud.oms.model.enums.AuditTypeDescEnum;
 import com.jayud.oms.model.enums.ContractQuotationProStatusEnum;
 import com.jayud.oms.model.po.*;
-import com.jayud.oms.model.vo.ContractQuotationVO;
-import com.jayud.oms.model.vo.InitComboxVO;
+import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +62,8 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
     private IAuditInfoService auditInfoService;
     @Autowired
     private FileClient fileClient;
+    @Autowired
+    private IOrderInfoService orderInfoService;
 
 
     @Override
@@ -204,7 +207,6 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
             tmp.setSignOfferFiles(StringUtils.getFileViews(contractQuotation.getSignOfferFile(), contractQuotation.getSignOfferFileName(), url.toString()));
         }
 
-
         CustomerInfo customerInfo = customerInfoService.getByCode(tmp.getCustomerCode());
         tmp.setCustomerId(customerInfo.getId());
         List<ContractQuotationDetails> details = this.contractQuotationDetailsService.getByCondition(new ContractQuotationDetails().setStatus(StatusEnum.ENABLE.getCode()).setContractQuotationId(id));
@@ -261,5 +263,30 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
     public List<ContractQuotation> getByCondition(ContractQuotation contractQuotation) {
         QueryWrapper<ContractQuotation> condition = new QueryWrapper<>(contractQuotation);
         return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public List<ContractQuotationDetailsVO> importCost(Long mainOrderId, Long contractQuotationId) {
+
+        OrderInfo orderInfo = this.orderInfoService.getById(mainOrderId);
+        GetOrderDetailForm form = new GetOrderDetailForm();
+        form.setMainOrderId(mainOrderId);
+        form.setClassCode(orderInfo.getClassCode());
+        InputOrderVO orderDetail = this.orderInfoService.getOrderDetail(form);
+
+        ContractQuotationVO tmp = this.getEditInfoById(contractQuotationId);
+        List<ContractQuotationDetailsVO> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(tmp.getTmsDetails())) {
+            InputOrderTransportVO tms = orderDetail.getOrderTransportForm();
+            if (tms != null) {
+                List<String> startAddrs = tms.getOrderTakeAdrForms1().stream().map(InputOrderTakeAdrVO::getAddress).collect(Collectors.toList());
+                List<String> endAddrs = tms.getOrderTakeAdrForms2().stream().map(InputOrderTakeAdrVO::getAddress).collect(Collectors.toList());
+                List<ContractQuotationDetailsVO> tmsDetails = tmp.getTmsDetails();
+                List<ContractQuotationDetailsVO> tmsList = tmsDetails.stream().filter(e -> e.pairingTmsRule(startAddrs, endAddrs, tms.getVehicleSize())).collect(Collectors.toList());
+                list.addAll(tmsList);
+            }
+        }
+
+        return list;
     }
 }

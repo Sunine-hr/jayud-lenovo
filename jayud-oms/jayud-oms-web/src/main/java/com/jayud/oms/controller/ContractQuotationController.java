@@ -4,7 +4,6 @@ package com.jayud.oms.controller;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.api.R;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
@@ -14,18 +13,15 @@ import com.jayud.common.enums.StatusEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.enums.TrackingInfoBisTypeEnum;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.AddContractQuotationForm;
-import com.jayud.oms.model.bo.GetOrderDetailForm;
 import com.jayud.oms.model.bo.QueryContractQuotationForm;
-import com.jayud.oms.model.bo.QueryCustomsQuestionnaireForm;
 import com.jayud.oms.model.enums.ContractQuotationProStatusEnum;
 import com.jayud.oms.model.enums.ContractQuotationSignEnum;
-import com.jayud.oms.model.po.AuditInfo;
 import com.jayud.oms.model.po.ContractQuotation;
 import com.jayud.oms.model.po.TrackingInfo;
+import com.jayud.oms.model.vo.ContractQuotationDetailsVO;
 import com.jayud.oms.model.vo.ContractQuotationVO;
 import com.jayud.oms.model.vo.TrackingInfoVO;
 import com.jayud.oms.service.IContractQuotationService;
@@ -37,9 +33,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -301,12 +297,16 @@ public class ContractQuotationController {
     public CommonResult<List<InitComboxStrVO>> getCustomerContractQuotation(@RequestBody Map<String, Object> map) {
         String customerCode = MapUtil.getStr(map, "unitCode");
         Long legalEntityId = MapUtil.getLong(map, "legalEntityId");
-        List<ContractQuotation> list = this.contractQuotationService.getByCondition(new ContractQuotation().setCustomerCode(customerCode).setLegalEntityId(legalEntityId)
+        List<ContractQuotation> list = this.contractQuotationService.getByCondition(new ContractQuotation().setCustomerCode(customerCode)
+                .setLegalEntityId(legalEntityId)
                 .setType(1));
         List<InitComboxStrVO> tmps = new ArrayList<>();
         for (ContractQuotation contractQuotation : list) {
+            if (LocalDate.now().compareTo(contractQuotation.getEndTime()) > 0) {
+                continue;
+            }
             InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
-            initComboxStrVO.setName(contractQuotation.getName());
+            initComboxStrVO.setName(contractQuotation.getNumber());
             initComboxStrVO.setId(contractQuotation.getId());
             tmps.add(initComboxStrVO);
         }
@@ -321,9 +321,12 @@ public class ContractQuotationController {
      */
     @ApiOperation("导入费用")
     @PostMapping("/importCost")
-    public CommonResult importCost(@RequestBody GetOrderDetailForm form) {
+    public CommonResult<List<ContractQuotationDetailsVO>> importCost(@RequestBody Map<String, Object> map) {
+        Long mainOrderId = MapUtil.getLong(map, "mainOrderId");
+        Long contractQuotationId = MapUtil.getLong(map, "contractQuotationId");
+        List<ContractQuotationDetailsVO> list=this.contractQuotationService.importCost(mainOrderId,contractQuotationId);
 
-        return CommonResult.success();
+        return CommonResult.success(list);
     }
 
 }

@@ -74,7 +74,7 @@
     <select id="countByTime" resultType="java.lang.Integer">
         select count(1) from contract_quotation
         <where>
-            DATE_FORMAT(create_time,'%Y')=#{now}
+            DATE_FORMAT(create_time,'%Y')= DATE_FORMAT(#{now},'%Y')
         </where>
     </select>
 

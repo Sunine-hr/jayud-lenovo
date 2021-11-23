@@ -139,7 +139,7 @@ public class ContractQuotationVO extends Model<ContractQuotationVO> {
         this.endTime = endTime;
         if (LocalDate.now().compareTo(endTime) > 0) {
             sign = "已过期";
-        } else if (endTime.minusMonths(1).compareTo(LocalDate.now()) <= 0 && LocalDate.now().compareTo(endTime) < 0) {
+        } else if (LocalDate.now().compareTo(endTime.minusMonths(1)) >= 0 && LocalDate.now().compareTo(endTime) <= 0) {
             sign = "即将到期";
         }
     }
@@ -205,5 +205,6 @@ public class ContractQuotationVO extends Model<ContractQuotationVO> {
         }
         this.reviewer = sb.toString();
     }
+
 
 }

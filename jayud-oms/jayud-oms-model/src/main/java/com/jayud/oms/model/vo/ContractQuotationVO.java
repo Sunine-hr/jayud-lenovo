@@ -95,6 +95,9 @@ public class ContractQuotationVO extends Model<ContractQuotationVO> {
     @ApiModelProperty(value = "中港运输报价详情")
     private List<ContractQuotationDetailsVO> tmsDetails = new ArrayList<>();
 
+    @ApiModelProperty(value = "中港运输报价详情")
+    private List<ContractQuotationDetailsVO> bgDetails = new ArrayList<>();
+
     @ApiModelProperty(value = "合同对象(1:客户,2:供应商)")
     private Integer type;
 
@@ -186,6 +189,11 @@ public class ContractQuotationVO extends Model<ContractQuotationVO> {
                     ContractQuotationDetailsVO convert = ConvertUtil.convert(detail, ContractQuotationDetailsVO.class);
                     convert.setCategorys(costType.get(convert.getCostCode()));
                     tmsDetails.add(convert);
+                    break;
+                case BG:
+                    convert = ConvertUtil.convert(detail, ContractQuotationDetailsVO.class);
+                    convert.setCategorys(costType.get(convert.getCostCode()));
+                    bgDetails.add(convert);
                     break;
             }
         }

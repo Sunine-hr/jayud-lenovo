@@ -73,6 +73,9 @@ public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO
     @ApiModelProperty(value = "币种代码")
     private String currencyCode;
 
+    @ApiModelProperty(value = "币种名称")
+    private String currency;
+
     @ApiModelProperty(value = "费用类别(作业环节)")
     private Long costTypeId;
 
@@ -103,6 +106,15 @@ public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO
     @ApiModelProperty(value = "标识某些字段不能不修改")
     private Boolean disable;
 
+    @ApiModelProperty(value = "录用费用数量")
+    private Integer number;
+
+    @ApiModelProperty(value = "费用类型id")
+    private Long costGenreId;
+
+    @ApiModelProperty(value = "创建类型(1:其他,2:合同)")
+    private Integer createType = 2;
+
     @Override
     protected Serializable pkVal() {
         return this.id;
@@ -111,6 +123,7 @@ public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO
 
     public void setType(Integer type) {
         this.type = type;
+        if (type == null) return;
         switch (type) {
             case 1:
                 disable = false;
@@ -127,7 +140,7 @@ public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO
             String[] split = startingPlaceId.split(",");
             this.startingPlaceIds = new ArrayList<>();
             for (String s : split) {
-                startingPlaceIds.add(Long.valueOf(s));
+                this.startingPlaceIds.add(Long.valueOf(s));
             }
         }
     }
@@ -135,11 +148,10 @@ public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO
     public void setDestinationId(String destinationId) {
         this.destinationId = destinationId;
         if (!StringUtils.isEmpty(destinationId)) {
-            this.startingPlaceIds = new ArrayList<>();
             String[] split = destinationId.split(",");
             this.destinationIds = new ArrayList<>();
             for (String s : split) {
-                destinationIds.add(Long.valueOf(s));
+                this.destinationIds.add(Long.valueOf(s));
             }
         }
     }
@@ -185,4 +197,5 @@ public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO
 
         return isTrue;
     }
+
 }

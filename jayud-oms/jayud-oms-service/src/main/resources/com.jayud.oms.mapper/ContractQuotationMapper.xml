@@ -61,9 +61,9 @@
             </choose>
             </if>
             <if test="form.effectiveTime!=null ">
-                and cq.start_time  <![CDATA[<]]> #{form.effectiveTime[0]}
+                and cq.start_time  <![CDATA[>=]]> #{form.effectiveTime[0]}
                 <if test="form.effectiveTime.size >1 ">
-                and cq.end_time  <![CDATA[<]]> #{form.effectiveTime[1]}
+                and cq.end_time  <![CDATA[<=]]> #{form.effectiveTime[1]}
                 </if>
             </if>
             and cq.status in (1)

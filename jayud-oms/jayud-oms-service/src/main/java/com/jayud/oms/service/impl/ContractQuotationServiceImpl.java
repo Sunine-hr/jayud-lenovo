@@ -6,10 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
-import com.jayud.common.enums.BusinessTypeEnum;
-import com.jayud.common.enums.StatusEnum;
-import com.jayud.common.enums.SubOrderSignEnum;
-import com.jayud.common.enums.TrackingInfoBisTypeEnum;
+import com.jayud.common.constant.SqlConstant;
+import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.*;
 import com.jayud.oms.feign.FileClient;
@@ -64,6 +62,10 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
     private FileClient fileClient;
     @Autowired
     private IOrderInfoService orderInfoService;
+    @Autowired
+    private ICostGenreService costGenreService;
+    @Autowired
+    private IProductBizService productBizService;
 
 
     @Override
@@ -91,6 +93,7 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
     private void doQuotationProcessing(AddContractQuotationForm form) {
         List<AddContractQuotationDetailsForm> list = new ArrayList<>();
         list.addAll(form.getTmsDetails());
+        list.addAll(form.getBgDetails());
         List<ContractQuotationDetails> details = new ArrayList<>();
         List<ContractQuotationDetails> oldTmp = this.contractQuotationDetailsService.getByCondition(new ContractQuotationDetails()
                 .setContractQuotationId(form.getId()).setStatus(StatusEnum.ENABLE.getCode()));
@@ -274,6 +277,11 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
         form.setClassCode(orderInfo.getClassCode());
         InputOrderVO orderDetail = this.orderInfoService.getOrderDetail(form);
 
+        QueryWrapper<ProductBiz> queryProductBiz = new QueryWrapper();
+        queryProductBiz.eq(SqlConstant.ID_CODE, orderInfo.getBizCode());
+        ProductBiz productBizs = productBizService.getOne(queryProductBiz);
+
+
         ContractQuotationVO tmp = this.getEditInfoById(contractQuotationId);
         List<ContractQuotationDetailsVO> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(tmp.getTmsDetails())) {
@@ -282,11 +290,20 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
                 List<String> startAddrs = tms.getOrderTakeAdrForms1().stream().map(InputOrderTakeAdrVO::getAddress).collect(Collectors.toList());
                 List<String> endAddrs = tms.getOrderTakeAdrForms2().stream().map(InputOrderTakeAdrVO::getAddress).collect(Collectors.toList());
                 List<ContractQuotationDetailsVO> tmsDetails = tmp.getTmsDetails();
-                List<ContractQuotationDetailsVO> tmsList = tmsDetails.stream().filter(e -> e.pairingTmsRule(startAddrs, endAddrs, tms.getVehicleSize())).collect(Collectors.toList());
+                List<ContractQuotationDetailsVO> tmsList = tmsDetails.stream().filter(e -> e.pairingTmsRule(startAddrs, endAddrs, tms.getVehicleSize()))
+                        .map(e -> e.setCostGenreId(productBizs.getCostGenreDefault()).setNumber(1)).collect(Collectors.toList());
                 list.addAll(tmsList);
             }
         }
-
+        if (!CollectionUtils.isEmpty(tmp.getBgDetails())) {
+            InputOrderCustomsVO bg = orderDetail.getOrderCustomsForm();
+            if (bg != null) {
+                long count = bg.getSubOrders().stream().filter(e -> !OrderStatusEnum.CLOSE.getDesc().equals(e.getStatusDesc())).count();
+                tmp.getBgDetails().forEach(e -> e.setNumber(count == 0 ? 1 : (int) count).setCostGenreId(productBizs.getCostGenreDefault()));
+                list.addAll(tmp.getBgDetails());
+            }
+        }
+        list.forEach(e -> e.setStatus(null).setCreateTime(null).setCreateUser(null).setUpdateUser(null).setUpdateTime(null));
         return list;
     }
 }

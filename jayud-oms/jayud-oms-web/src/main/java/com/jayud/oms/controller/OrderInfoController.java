@@ -608,6 +608,23 @@ public class OrderInfoController {
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "关闭服务单")
+    @PostMapping("/closeServiceOrder")
+    public CommonResult closeServiceOrder(@RequestBody Map<String, Object> map) {
+        Long mainOrderId = MapUtil.getLong(map, "mainOrderId");
+        if (mainOrderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setStatus(Integer.valueOf(OrderStatusEnum.MAIN_3.getCode()));
+        orderInfo.setId(mainOrderId);
+        orderInfo.setUpTime(LocalDateTime.now());
+        orderInfo.setUpUser(UserOperator.getToken());
+        orderInfo.setNeedInputCost(false);
+        this.orderInfoService.updateById(orderInfo);
+        return CommonResult.success();
+    }
+
     /**
      * 检查提交提单信息
      *

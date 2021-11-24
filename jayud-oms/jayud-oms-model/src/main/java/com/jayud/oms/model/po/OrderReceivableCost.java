@@ -130,6 +130,9 @@ public class OrderReceivableCost extends Model<OrderReceivableCost> {
     @ApiModelProperty(value = "订单结算单位")
     private String unitName;
 
+    @ApiModelProperty(value = "创建类型(1:其他,2:合同)")
+    private Integer createType;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

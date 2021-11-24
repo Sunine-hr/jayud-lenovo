@@ -66,8 +66,11 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
     @ApiModelProperty(value = "流程状态(1:未提交,2:待部门经理审核,3:待公司法务审核,4:待总审核,5:未通过,6:待完善,7:已完成)")
     private Integer optStatus = 1;
 
-    @ApiModelProperty(value = "运输")
+    @ApiModelProperty(value = "中港")
     private List<AddContractQuotationDetailsForm> tmsDetails;
+
+    @ApiModelProperty(value = "报关")
+    private List<AddContractQuotationDetailsForm> bgDetails;
 
     @ApiModelProperty(value = "接单法人id")
     private Long legalEntityId;
@@ -82,6 +85,13 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
     protected Serializable pkVal() {
         return this.id;
     }
+
+//    public void setTmsDetails(List<AddContractQuotationDetailsForm> tmsDetails) {
+//        this.tmsDetails = tmsDetails;
+//        if (CollectionUtils.isEmpty(tmsDetails)) {
+//            this.tmsDetails = null;
+//        }
+//    }
 
     public void checkParam() {
         if (StringUtils.isEmpty(number)) {
@@ -106,9 +116,19 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
         if (legalEntityId == null) {
             throw new JayudBizException(400, "请输入公司法人");
         }
-        if (tmsDetails != null) {
+        if (CollectionUtils.isEmpty(tmsDetails)&&
+                CollectionUtils.isEmpty(bgDetails)) {
+            throw new JayudBizException(400, "请填写合同报价费用");
+        }
+        if (!CollectionUtils.isEmpty(tmsDetails)) {
             tmsDetails.forEach(e -> {
                 e.setSubType(SubOrderSignEnum.ZGYS.getSignOne());
+                e.checkParam();
+            });
+        }
+        if (!CollectionUtils.isEmpty(bgDetails)) {
+            bgDetails.forEach(e -> {
+                e.setSubType(SubOrderSignEnum.BG.getSignOne());
                 e.checkParam();
             });
         }
@@ -150,10 +170,10 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
                     }
                     List<Long> startPlaceIds = tmp.getStartingPlaceIds().stream().filter(e -> form.getStartingPlaceIds().contains(e)).collect(Collectors.toList());
                     if (startPlaceIds.size() == 0) {
-                        return;
+                        continue;
                     }
                     List<Long> endPlaceIds = tmp.getDestinationIds().stream().filter(e -> form.getDestinationIds().contains(e)).collect(Collectors.toList());
-                    if (endPlaceIds.size()>0){
+                    if (endPlaceIds.size() > 0) {
                         throw new JayudBizException("已存在相同费用,请检查");
                     }
                 }

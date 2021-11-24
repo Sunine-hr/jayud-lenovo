@@ -16,19 +16,22 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.oms.model.bo.AddContractQuotationForm;
+import com.jayud.oms.model.bo.OrderCostTemplateInfoDTO;
 import com.jayud.oms.model.bo.QueryContractQuotationForm;
 import com.jayud.oms.model.enums.ContractQuotationProStatusEnum;
 import com.jayud.oms.model.enums.ContractQuotationSignEnum;
 import com.jayud.oms.model.po.ContractQuotation;
+import com.jayud.oms.model.po.CurrencyInfo;
+import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.po.TrackingInfo;
-import com.jayud.oms.model.vo.ContractQuotationDetailsVO;
-import com.jayud.oms.model.vo.ContractQuotationVO;
-import com.jayud.oms.model.vo.TrackingInfoVO;
+import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.IContractQuotationService;
+import com.jayud.oms.service.ICurrencyInfoService;
 import com.jayud.oms.service.IOrderInfoService;
 import com.jayud.oms.service.ITrackingInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -59,6 +62,8 @@ public class ContractQuotationController {
     private ITrackingInfoService trackingInfoService;
     @Autowired
     private IOrderInfoService orderInfoService;
+    @Autowired
+    private ICurrencyInfoService currencyInfoService;
 
     @ApiOperation("分页查询合同报价")
     @PostMapping("/findByPage")
@@ -292,23 +297,30 @@ public class ContractQuotationController {
      *
      * @return
      */
-    @ApiOperation("获取客户合同报价")
+    @ApiOperation("获取下拉客户合同报价")
     @PostMapping("/getCustomerContractQuotation")
     public CommonResult<List<InitComboxStrVO>> getCustomerContractQuotation(@RequestBody Map<String, Object> map) {
-        String customerCode = MapUtil.getStr(map, "unitCode");
-        Long legalEntityId = MapUtil.getLong(map, "legalEntityId");
-        List<ContractQuotation> list = this.contractQuotationService.getByCondition(new ContractQuotation().setCustomerCode(customerCode)
-                .setLegalEntityId(legalEntityId)
+        Long mainOrderId = MapUtil.getLong(map, "mainOrderId");
+        if (mainOrderId == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        OrderInfo orderInfo = this.orderInfoService.getById(mainOrderId);
+        List<ContractQuotation> list = this.contractQuotationService.getByCondition(new ContractQuotation().setCustomerCode(orderInfo.getUnitCode())
+                .setLegalEntityId(orderInfo.getLegalEntityId())
                 .setType(1));
         List<InitComboxStrVO> tmps = new ArrayList<>();
         for (ContractQuotation contractQuotation : list) {
             if (LocalDate.now().compareTo(contractQuotation.getEndTime()) > 0) {
                 continue;
             }
-            InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
-            initComboxStrVO.setName(contractQuotation.getNumber());
-            initComboxStrVO.setId(contractQuotation.getId());
-            tmps.add(initComboxStrVO);
+            if (ContractQuotationProStatusEnum.SIX.getCode().equals(contractQuotation.getOptStatus())
+                    || ContractQuotationProStatusEnum.SEVEN.getCode().equals(contractQuotation.getOptStatus())) {
+                InitComboxStrVO initComboxStrVO = new InitComboxStrVO();
+                initComboxStrVO.setName(contractQuotation.getNumber());
+                initComboxStrVO.setId(contractQuotation.getId());
+                tmps.add(initComboxStrVO);
+            }
+
         }
         return CommonResult.success(tmps);
     }
@@ -324,9 +336,20 @@ public class ContractQuotationController {
     public CommonResult<List<ContractQuotationDetailsVO>> importCost(@RequestBody Map<String, Object> map) {
         Long mainOrderId = MapUtil.getLong(map, "mainOrderId");
         Long contractQuotationId = MapUtil.getLong(map, "contractQuotationId");
-        List<ContractQuotationDetailsVO> list=this.contractQuotationService.importCost(mainOrderId,contractQuotationId);
-
-        return CommonResult.success(list);
+        String createdTimeStr = MapUtil.getStr(map, "createdTimeStr");
+        if (mainOrderId == null || contractQuotationId == null || createdTimeStr == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        List<CurrencyInfoVO> currencyInfos = currencyInfoService.findCurrencyInfo(createdTimeStr);
+        Map<String, CurrencyInfoVO> tmp = currencyInfos.stream().collect(Collectors.toMap(CurrencyInfoVO::getCurrencyCode, e -> e));
+        List<ContractQuotationDetailsVO> list = this.contractQuotationService.importCost(mainOrderId, contractQuotationId);
+        List<ContractQuotationDetailsVO> tmps = list.stream().map(e -> {
+            CurrencyInfoVO currencyInfoVO = tmp.get(e.getCurrencyCode());
+            e.setCurrencyCode(currencyInfoVO == null ? null : currencyInfoVO.getCurrencyCode());
+            e.setId(null);
+            return e.setCurrency(currencyInfoVO == null ? null : currencyInfoVO.getCurrencyName());
+        }).collect(Collectors.toList());
+        return CommonResult.success(tmps);
     }
 
 }

@@ -67,6 +67,8 @@ public class InputReceivableCostForm {
     @ApiModelProperty(value = "卸货地址")
     private String unloadingAddress;
 
+    @ApiModelProperty(value = "创建类型(1:其他,2:合同)")
+    private Integer createType;
 
     public void checkUnitParam() {
         //校验单位匹配数量是否整数

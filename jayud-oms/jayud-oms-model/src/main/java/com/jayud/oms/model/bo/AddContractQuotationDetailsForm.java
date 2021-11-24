@@ -2,6 +2,7 @@ package com.jayud.oms.model.bo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.aop.annotations.FieldLabel;
+import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
@@ -38,7 +39,7 @@ public class AddContractQuotationDetailsForm extends Model<AddContractQuotationD
     private Long contractQuotationId;
 
     @ApiModelProperty(value = "类型(1:整车 2:其他)")
-    @FieldLabel(name = "类型",mappingString = "1:整车,2:其他")
+    @FieldLabel(name = "类型", mappingString = "1:整车,2:其他")
     private Integer type;
 
     @ApiModelProperty(value = "起始地")
@@ -121,18 +122,21 @@ public class AddContractQuotationDetailsForm extends Model<AddContractQuotationD
     }
 
     public void checkParam() {
-        if (type == null) {
-            throw new JayudBizException(400, "类型不能为空");
-        } else {
-            switch (type) {
-                case 1:
+        switch (SubOrderSignEnum.getEnum(subType)) {
+            case ZGYS:
+                if (type == null) {
+                    throw new JayudBizException(400, "类型不能为空");
+                } else if (type == 1) {
                     if (StringUtils.isEmpty(startingPlace)) throw new JayudBizException(400, "起始地不能为空");
                     if (StringUtils.isEmpty(destination)) throw new JayudBizException(400, "目的地不能为空");
                     if (StringUtils.isEmpty(vehicleSize)) throw new JayudBizException(400, "车型尺寸不能为空");
-                    break;
-            }
+                }
+                break;
+            case BG:
 
+                break;
         }
+
         if (StringUtils.isEmpty(costCode)) {
             throw new JayudBizException(400, "费用名称不能为空");
         }

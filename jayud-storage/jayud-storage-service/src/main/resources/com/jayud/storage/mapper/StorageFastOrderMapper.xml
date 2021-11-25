@@ -4,30 +4,82 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.jayud.storage.model.po.StorageFastOrder">
-        <id column="id" property="id" />
-        <result column="order_no" property="orderNo" />
-        <result column="main_order_no" property="mainOrderNo" />
-        <result column="status" property="status" />
-        <result column="process_status" property="processStatus" />
-        <result column="unit_code" property="unitCode" />
-        <result column="legal_name" property="legalName" />
-        <result column="legal_entity_id" property="legalEntityId" />
-        <result column="department_id" property="departmentId" />
-        <result column="waybill_no" property="waybillNo" />
-        <result column="in_plate_number" property="inPlateNumber" />
-        <result column="in_warehouse_number" property="inWarehouseNumber" />
-        <result column="create_user" property="createUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="remarks" property="remarks" />
-        <result column="order_taker" property="orderTaker" />
-        <result column="receiving_orders_date" property="receivingOrdersDate" />
-        <result column="estimated_arrival_time" property="estimatedArrivalTime" />
-        <result column="expected_delivery_time" property="expectedDeliveryTime" />
-        <result column="out_plate_number" property="outPlateNumber" />
-        <result column="out_warehouse_number" property="outWarehouseNumber" />
-        <result column="is_warehouse" property="isWarehouse" />
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="status" property="status"/>
+        <result column="process_status" property="processStatus"/>
+        <result column="unit_code" property="unitCode"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="legal_entity_id" property="legalEntityId"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="waybill_no" property="waybillNo"/>
+        <result column="in_plate_number" property="inPlateNumber"/>
+        <result column="in_warehouse_number" property="inWarehouseNumber"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remarks" property="remarks"/>
+        <result column="order_taker" property="orderTaker"/>
+        <result column="receiving_orders_date" property="receivingOrdersDate"/>
+        <result column="estimated_arrival_time" property="estimatedArrivalTime"/>
+        <result column="expected_delivery_time" property="expectedDeliveryTime"/>
+        <result column="out_plate_number" property="outPlateNumber"/>
+        <result column="out_warehouse_number" property="outWarehouseNumber"/>
+        <result column="is_warehouse" property="isWarehouse"/>
+    </resultMap>
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="OneResultMap" type="com.jayud.storage.model.vo.StorageFastOrderVO">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="main_order_no" property="mainOrderNo"/>
+        <result column="status" property="status"/>
+        <result column="process_status" property="processStatus"/>
+        <result column="unit_code" property="unitCode"/>
+        <result column="legal_name" property="legalName"/>
+        <result column="legal_entity_id" property="legalEntityId"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="waybill_no" property="waybillNo"/>
+        <result column="in_plate_number" property="inPlateNumber"/>
+        <result column="in_warehouse_number" property="inWarehouseNumber"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remarks" property="remarks"/>
+        <result column="order_taker" property="orderTaker"/>
+        <result column="receiving_orders_date" property="receivingOrdersDate"/>
+        <result column="estimated_arrival_time" property="estimatedArrivalTime"/>
+        <result column="expected_delivery_time" property="expectedDeliveryTime"/>
+        <result column="out_plate_number" property="outPlateNumber"/>
+        <result column="out_warehouse_number" property="outWarehouseNumber"/>
+        <result column="is_warehouse" property="isWarehouse"/>
+        <collection property="fastGoodsFormList" ofType="com.jayud.storage.model.vo.WarehouseGoodsVO">
+            <id column="goodsId" property="id"/>
+            <result column="order_no" property="orderNo"/>
+            <result column="order_id" property="orderId"/>
+            <result column="name" property="name"/>
+            <result column="sku" property="sku"/>
+            <result column="specification_model" property="specificationModel"/>
+            <result column="board_number" property="boardNumber"/>
+            <result column="commodity_batch_number" property="commodityBatchNumber"/>
+            <result column="number" property="number"/>
+            <result column="pcs" property="pcs"/>
+            <result column="weight" property="weight"/>
+            <result column="volume" property="volume"/>
+            <result column="estimated_arrival_time" property="estimatedArrivalTime"/>
+            <result column="expected_delivery_time" property="expectedDeliveryTime"/>
+            <result column="remarks" property="remarks"/>
+            <result column="file_path" property="filePath"/>
+            <result column="file_name" property="fileName"/>
+            <result column="create_user" property="createUser"/>
+            <result column="create_time" property="createTime"/>
+            <result column="update_user" property="updateUser"/>
+            <result column="update_time" property="updateTime"/>
+            <result column="type" property="type"/>
+        </collection>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -39,12 +91,15 @@
         select sfo.id id,sfo.order_no orderNo,main_order_no mainOrderNo,status, process_status processStatus,
         legal_entity_id legalEntityId,legal_name leaglName,
         unit_code unitCode,department_id departmentId,waybill_no waybillNo,
-        in_plate_number inPlateNumber, in_warehouse_number inWarehouseNumber, create_user createUser, create_time createTime, remarks,
-        receiving_orders_date receivingOrdersDate, estimated_arrival_time estimatedArrivalTime, expected_delivery_time expectedDeliveryTime, out_plate_number outPlateNumber, out_warehouse_number outWarehouseNumber, is_warehouse isWarehouse
-        --         (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = sio.`order_no`) +
-        --         (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = sio.`order_no`)>0 THEN TRUE
-        --         ELSE FALSE
-        --         END) cost
+        in_plate_number inPlateNumber, in_warehouse_number inWarehouseNumber, create_user createUser, create_time
+        createTime, remarks,
+        receiving_orders_date receivingOrdersDate, estimated_arrival_time estimatedArrivalTime, expected_delivery_time
+        expectedDeliveryTime, out_plate_number outPlateNumber, out_warehouse_number outWarehouseNumber, is_warehouse
+        isWarehouse
+        -- (CASE WHEN (SELECT COUNT(1) FROM order_payment_cost opc WHERE opc.order_no = sio.`order_no`) +
+        -- (SELECT COUNT(1) FROM order_receivable_cost orc WHERE orc.order_no = sio.`order_no`)>0 THEN TRUE
+        -- ELSE FALSE
+        -- END) cost
         from storage_fast_order sfo
         <where>
             <if test="form.orderNo !=null and form.orderNo!=''">
@@ -90,10 +145,12 @@
                 and sfo.create_time <![CDATA[<= ]]> #{form.endTime}
             </if>
             <if test="form.cmd == 'costAudit'">
-                --                 AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = sio.order_no AND opc.`status` =
-                --                 '2' and opc.sub_type = 'cci')
-                --                 OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = sio.order_no AND orc.`status` =
-                --                 '2' and orc.sub_type = 'cci'))
+                -- AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = sio.order_no AND
+                opc.`status` =
+                -- '2' and opc.sub_type = 'cci')
+                -- OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = sio.order_no AND
+                orc.`status` =
+                -- '2' and orc.sub_type = 'cci'))
                 and sfo.`order_no` in
                 <foreach collection="form.subPaymentOrderNos" item="orderNo" open="(" separator="," close=")">
                     #{orderNo}
@@ -112,6 +169,28 @@
             </if>
         </where>
         order by sfo.id desc
+    </select>
+
+
+    <select id="getFastOrderByMainOrder" resultMap="OneResultMap">
+        select
+        f.id, f.order_no, f.main_order_no, f.status, f.process_status, f.unit_code, f.legal_name,
+        f.legal_entity_id, f.department_id, f.waybill_no, f.in_plate_number,
+        f.in_warehouse_number, f.create_user, f.create_time, f.update_user, f.update_time,
+        f.remarks, f.order_taker, f.receiving_orders_date, f.estimated_arrival_time,
+        f.expected_delivery_time, f.out_plate_number, f.out_warehouse_number, f.is_warehouse,
+        w.id goodsId, w.order_no, w.order_id, w.name, w.sku, w.specification_model, w.board_number,
+        w.commodity_batch_number, w.number, w.pcs, w.weight, w.volume, w.estimated_arrival_time,
+        w.expected_delivery_time, w.remarks, w.file_path, w.file_name, w.create_user, w.create_time,
+        w.update_user, w.update_time, w.type
+        from storage_fast_order f
+        left join warehouse_goods w on f.order_no=w.order_no
+        <where>
+            f.main_order_no in
+            <foreach collection="mainOrderNos" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </where>
     </select>
 
 </mapper>

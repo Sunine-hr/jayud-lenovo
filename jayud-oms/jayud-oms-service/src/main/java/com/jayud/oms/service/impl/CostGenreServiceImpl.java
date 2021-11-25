@@ -3,17 +3,20 @@ package com.jayud.oms.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.oms.feign.FreightAirClient;
+import com.jayud.oms.mapper.CostGenreMapper;
 import com.jayud.oms.model.bo.AddCostGenreForm;
 import com.jayud.oms.model.bo.QueryCostGenreForm;
 import com.jayud.oms.model.enums.StatusEnum;
-import com.jayud.oms.model.po.*;
-import com.jayud.oms.mapper.CostGenreMapper;
+import com.jayud.oms.model.po.CostGenre;
+import com.jayud.oms.model.po.CostGenreTaxRate;
 import com.jayud.oms.model.vo.CostGenreVO;
 import com.jayud.oms.service.ICostGenreService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.oms.service.ICostGenreTaxRateService;
+//import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -36,6 +40,8 @@ public class CostGenreServiceImpl extends ServiceImpl<CostGenreMapper, CostGenre
 
     @Autowired
     private ICostGenreTaxRateService costGenreTaxRateService;
+    @Autowired
+    private FreightAirClient freightAirClient;
 
     /**
      * 分页查询费用类型
@@ -179,5 +185,28 @@ public class CostGenreServiceImpl extends ServiceImpl<CostGenreMapper, CostGenre
             return null;
         }
         return costGenres.get(0).getId();
+    }
+
+
+    @Override
+//    @GlobalTransactional
+    public void test() {
+        //获取事务ID
+//        String xid = RootContext.getXID();
+//        boolean boo = RootContext.inGlobalTransaction();
+//        String str = xid + ":" + boo;
+        String str="";
+        // 将事务ID也写入到表中
+        System.out.println(str);
+        this.freightAirClient.test();
+        // 猜测 GlobalTransactional 方法全部结束后才会结束第一阶段，在这里Sleep 进行验证
+        if (true) {
+            try {
+                TimeUnit.SECONDS.sleep(10);
+                if (true) throw new RuntimeException("回滚");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -24,6 +24,7 @@ public enum BillTemplateEnum {
     TC("tc", TrailerOrderTemplate.class, "拖车", false, 0, null),
     NL("nl", InlandTPTemplate.class, "内陆", false, 0, null),
     HY("hy", SeaOrderTemplate.class, "海运", false, 0, null),
+    CCF("ccf", StorageFastOrderTemplate.class, "快进快出", false, 0, null),
 
     //导出应收模板(标准)
     KY_NORM_RE("ky-norm-re", AirOrderTemplate.class, "空运", false, 0, null),
@@ -31,15 +32,25 @@ public enum BillTemplateEnum {
     TC_NORM_RE("tc-norm-re", TrailerOrderTemplate.class, "拖车", true, 0, null),
     NL_NORM_RE("nl-norm-re", InlandTPTemplate.class, "内陆", true, 0, null),
     HY_NORM_RE("hy-norm-re", SeaOrderTemplate.class, "海运", false, 0, null),
+    CCF_NORM_RE("ccf-norm-re", StorageFastOrderTemplate.class, "快进快出", true, 0, null),
 
     //导出应付模板(标准)
 //    KY_NORM_PAY("ky-norm-pay", AirOrderTemplate.class, "空运", true, 1),
     ZGYS_NORM_PAY("zgys-norm-pay", TmsOrderPayTemplate.class, "中港", true, 1, PayBillTemplateServiceImpl.class),
+
     TC_NORM_PAY("tc-norm-pay", TrailerOrderPayTemplate.class, "拖车", true, 1, PayBillTemplateServiceImpl.class),
+
     NL_NORM_PAY("nl-norm-pay", InlandTPPayTemplate.class, "内陆", true, 1, PayBillTemplateServiceImpl.class),
+
+    CCF_NORM_PAY("ccf-norm-pay", StorageFastOrderTemplate.class, "快进快出", true, 1, PayBillTemplateServiceImpl.class),
+
     ZGYS_SUPPLIER_PAY("zgys-supplier-pay", TmsOrderPayTemplate.class, "中港供应商", true, 1, PaySupplierBillTemplateServiceImpl.class),
+
     TC_SUPPLIER_PAY("tc-supplier-pay", TrailerOrderPayTemplate.class, "拖车供应商", true, 1, PaySupplierBillTemplateServiceImpl.class),
+
     NL_SUPPLIER_PAY("nl-supplier-pay", InlandTPPayTemplate.class, "内陆供应商", true, 1, PaySupplierBillTemplateServiceImpl.class),
+
+
 //    HY_NORM_PAY("hy-norm-pay", SeaOrderTemplate.class, "海运", false, 1),
 
 

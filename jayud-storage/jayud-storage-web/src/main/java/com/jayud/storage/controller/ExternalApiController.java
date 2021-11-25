@@ -70,7 +70,7 @@ public class ExternalApiController {
 
     @ApiOperation("创建入库订单")
     @RequestMapping(value = "/api/storage/createInOrder")
-    ApiResult<String> createInOrder(@RequestBody StorageInputOrderForm storageInputOrderForm){
+    ApiResult<String> createInOrder(@RequestBody StorageInputOrderForm storageInputOrderForm) {
         String orderNo = storageInputOrderService.createOrder(storageInputOrderForm);
         return ApiResult.ok(orderNo);
     }
@@ -78,7 +78,7 @@ public class ExternalApiController {
 
     @ApiOperation("创建出库订单")
     @RequestMapping(value = "/api/storage/createOutOrder")
-    ApiResult<String> createOutOrder(@RequestBody StorageOutOrderForm storageOutOrderForm){
+    ApiResult<String> createOutOrder(@RequestBody StorageOutOrderForm storageOutOrderForm) {
         String orderNo = storageOutOrderService.createOrder(storageOutOrderForm);
         return ApiResult.ok(orderNo);
     }
@@ -87,19 +87,18 @@ public class ExternalApiController {
      * 根据主订单号获取仓储入库单信息
      */
     @RequestMapping(value = "/api/storage/getStorageInOrderDetails")
-    ApiResult<StorageInputOrderVO> getStorageInOrderDetails(@RequestParam("orderNo") String orderNo){
+    ApiResult<StorageInputOrderVO> getStorageInOrderDetails(@RequestParam("orderNo") String orderNo) {
         StorageInputOrder storageInputOrder = storageInputOrderService.getStorageInOrderByMainOrderNO(orderNo);
-        System.out.println("storageInputOrder=========================================="+storageInputOrder);
+        System.out.println("storageInputOrder==========================================" + storageInputOrder);
         StorageInputOrderVO storageInputOrderVO = storageInputOrderService.getStorageInputOrderVOById(storageInputOrder.getId());
         return ApiResult.ok(storageInputOrderVO);
     }
 
     /**
      * 根据主订单号获取仓储出库单信息
-     *
      */
     @RequestMapping(value = "/api/storage/getStorageOutOrderDetails")
-    ApiResult<StorageOutOrderVO> getStorageOutOrderDetails(@RequestParam("orderNo") String orderNo){
+    ApiResult<StorageOutOrderVO> getStorageOutOrderDetails(@RequestParam("orderNo") String orderNo) {
         StorageOutOrder storageOutOrder = storageOutOrderService.getStorageOutOrderByMainOrderNO(orderNo);
         StorageOutOrderVO storageOutOrderVO = storageOutOrderService.getStorageOutOrderVOById(storageOutOrder.getId());
         return ApiResult.ok(storageOutOrderVO);
@@ -107,11 +106,11 @@ public class ExternalApiController {
 
     @ApiOperation(value = "判断商品是否为商品表维护的数据")
     @PostMapping(value = "/isCommodity")
-    public ApiResult isCommodity(@RequestBody List<WarehouseGoodsForm> warehouseGoodsForms){
+    public ApiResult isCommodity(@RequestBody List<WarehouseGoodsForm> warehouseGoodsForms) {
         for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
             boolean flag = goodService.isCommodity(warehouseGoodsForm.getSku());
-            if(!flag){
-                return ApiResult.error(444,"商品未建档，请前往建档");
+            if (!flag) {
+                return ApiResult.error(444, "商品未建档，请前往建档");
             }
         }
         return ApiResult.ok();
@@ -119,12 +118,12 @@ public class ExternalApiController {
 
     @ApiOperation(value = "判断出库商品数量是否小于等于该商品库存")
     @PostMapping(value = "/isStock")
-    public ApiResult isStock(@RequestBody List<WarehouseGoodsForm> warehouseGoodsForms){
+    public ApiResult isStock(@RequestBody List<WarehouseGoodsForm> warehouseGoodsForms) {
         for (WarehouseGoodsForm warehouseGoodsForm : warehouseGoodsForms) {
-            InGoodsOperationRecord listByWarehousingBatchNoAndSku = inGoodsOperationRecordService.getListByWarehousingBatchNoAndSku(warehouseGoodsForm.getWarehousingBatchNo(),warehouseGoodsForm.getSku());
+            InGoodsOperationRecord listByWarehousingBatchNoAndSku = inGoodsOperationRecordService.getListByWarehousingBatchNoAndSku(warehouseGoodsForm.getWarehousingBatchNo(), warehouseGoodsForm.getSku());
 
-            if(listByWarehousingBatchNoAndSku == null){
-                return ApiResult.error(444,"该商品没有库存");
+            if (listByWarehousingBatchNoAndSku == null) {
+                return ApiResult.error(444, "该商品没有库存");
             }
 
             Integer number = 0;
@@ -134,8 +133,8 @@ public class ExternalApiController {
             }
 
 
-            if(number < warehouseGoodsForm.getNumber()){
-                return ApiResult.error(444,listByWarehousingBatchNoAndSku.getWarehousingBatchNo()+"的"+warehouseGoodsForm.getName()+"数量为"+number);
+            if (number < warehouseGoodsForm.getNumber()) {
+                return ApiResult.error(444, listByWarehousingBatchNoAndSku.getWarehousingBatchNo() + "的" + warehouseGoodsForm.getName() + "数量为" + number);
             }
         }
         return ApiResult.ok();
@@ -143,11 +142,11 @@ public class ExternalApiController {
 
     @ApiOperation(value = "判断出库商品数量是否小于等于该商品库存")
     @PostMapping(value = "/isEnough")
-    public ApiResult isEnough(@RequestBody List<WarehouseGoodsForm> goodsFormList){
+    public ApiResult isEnough(@RequestBody List<WarehouseGoodsForm> goodsFormList) {
         for (WarehouseGoodsForm warehouseGoodsForm : goodsFormList) {
             Stock stock = stockService.getStockBySku(warehouseGoodsForm.getSku());
-            if(stock.getAvailableStock() < warehouseGoodsForm.getNumber()){
-                return ApiResult.error(444,warehouseGoodsForm.getSku()+"的库存数量不足，剩余数量为" + stock.getAvailableStock());
+            if (stock.getAvailableStock() < warehouseGoodsForm.getNumber()) {
+                return ApiResult.error(444, warehouseGoodsForm.getSku() + "的库存数量不足，剩余数量为" + stock.getAvailableStock());
             }
         }
         return ApiResult.ok();
@@ -157,7 +156,7 @@ public class ExternalApiController {
      * 创建仓储快进快出订单
      */
     @RequestMapping(value = "/api/storage/createFastOrder")
-    ApiResult<String> createFastOrder(@RequestBody StorageFastOrderForm inputStorageFastOrderForm){
+    ApiResult<String> createFastOrder(@RequestBody StorageFastOrderForm inputStorageFastOrderForm) {
         String orderNo = storageFastOrderService.createOrder(inputStorageFastOrderForm);
         return ApiResult.ok(orderNo);
     }
@@ -166,7 +165,7 @@ public class ExternalApiController {
      * 根据主订单号获取仓储快进快出单信息
      */
     @RequestMapping(value = "/api/storage/getStorageFastOrderDetails")
-    ApiResult<StorageFastOrderVO> getStorageFastOrderDetails(@RequestParam("orderNo") String orderNo){
+    ApiResult<StorageFastOrderVO> getStorageFastOrderDetails(@RequestParam("orderNo") String orderNo) {
         StorageFastOrder storageFastOrder = storageFastOrderService.getStorageFastOrderByMainOrderNO(orderNo);
         StorageFastOrderVO storageFastOrderVO = storageFastOrderService.getStorageFastOrderVOById(storageFastOrder.getId());
         return ApiResult.ok(storageFastOrderVO);
@@ -176,7 +175,7 @@ public class ExternalApiController {
      * 获取仓储出库订单号
      */
     @RequestMapping(value = "/api/storage/getStorageOutOrderNo")
-    public ApiResult<InitChangeStatusVO> getStorageOutOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo){
+    public ApiResult<InitChangeStatusVO> getStorageOutOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo) {
         InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
         List<StorageOutOrder> list = this.storageOutOrderService.getByCondition(new StorageOutOrder().setMainOrderNo(mainOrderNo));
         if (org.apache.commons.collections.CollectionUtils.isNotEmpty(list)) {
@@ -196,7 +195,7 @@ public class ExternalApiController {
      * 获取仓储入库订单号
      */
     @RequestMapping(value = "/api/storage/getStorageInOrderNo")
-    public ApiResult<InitChangeStatusVO> getStorageInOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo){
+    public ApiResult<InitChangeStatusVO> getStorageInOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo) {
         InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
         List<StorageInputOrder> list = this.storageInputOrderService.getByCondition(new StorageInputOrder().setMainOrderNo(mainOrderNo));
         if (org.apache.commons.collections.CollectionUtils.isNotEmpty(list)) {
@@ -216,7 +215,7 @@ public class ExternalApiController {
      * 获取仓储快进快出订单号
      */
     @RequestMapping(value = "/api/storage/getStorageFastOrderNo")
-    public ApiResult<InitChangeStatusVO> getStorageFastOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo){
+    public ApiResult<InitChangeStatusVO> getStorageFastOrderNo(@RequestParam(value = "mainOrderNo") String mainOrderNo) {
         InitChangeStatusVO initChangeStatusVO = new InitChangeStatusVO();
         List<StorageFastOrder> list = this.storageFastOrderService.getByCondition(new StorageFastOrder().setMainOrderNo(mainOrderNo));
         if (org.apache.commons.collections.CollectionUtils.isNotEmpty(list)) {
@@ -225,7 +224,7 @@ public class ExternalApiController {
             initChangeStatusVO.setOrderNo(tmp.getOrderNo());
             initChangeStatusVO.setOrderType(CommonConstant.CCF);
             initChangeStatusVO.setOrderTypeDesc(CommonConstant.CCF_DESC);
-            initChangeStatusVO.setStatus( ProcessStatusEnum.CLOSE.getCode().equals(tmp.getProcessStatus())?"CLOSE":tmp.getProcessStatus()+"");
+            initChangeStatusVO.setStatus(ProcessStatusEnum.CLOSE.getCode().equals(tmp.getProcessStatus()) ? "CLOSE" : tmp.getProcessStatus() + "");
             initChangeStatusVO.setNeedInputCost(tmp.getNeedInputCost());
             return ApiResult.ok(initChangeStatusVO);
         }
@@ -236,7 +235,7 @@ public class ExternalApiController {
      * 关闭订单
      */
     @RequestMapping(value = "/api/storage/closeInOrder")
-    public ApiResult closeInOrder(@RequestBody List<SubOrderCloseOpt> form){
+    public ApiResult closeInOrder(@RequestBody List<SubOrderCloseOpt> form) {
         List<String> orderNos = form.stream().map(SubOrderCloseOpt::getOrderNo).collect(Collectors.toList());
         List<StorageInputOrder> list = this.storageInputOrderService.getOrdersByOrderNos(orderNos);
         Map<String, StorageInputOrder> map = list.stream().collect(Collectors.toMap(StorageInputOrder::getOrderNo, e -> e));
@@ -260,7 +259,7 @@ public class ExternalApiController {
      * 关闭订单
      */
     @RequestMapping(value = "/api/storage/closeOutOrder")
-    public ApiResult closeOutOrder(@RequestBody List<SubOrderCloseOpt> form){
+    public ApiResult closeOutOrder(@RequestBody List<SubOrderCloseOpt> form) {
         List<String> orderNos = form.stream().map(SubOrderCloseOpt::getOrderNo).collect(Collectors.toList());
         List<StorageOutOrder> list = this.storageOutOrderService.getOrdersByOrderNos(orderNos);
         Map<String, StorageOutOrder> map = list.stream().collect(Collectors.toMap(StorageOutOrder::getOrderNo, e -> e));
@@ -284,7 +283,7 @@ public class ExternalApiController {
      * 关闭订单
      */
     @RequestMapping(value = "/api/storage/closeFastOrder")
-    public ApiResult closeFastOrder(@RequestBody List<SubOrderCloseOpt> form){
+    public ApiResult closeFastOrder(@RequestBody List<SubOrderCloseOpt> form) {
         List<String> orderNos = form.stream().map(SubOrderCloseOpt::getOrderNo).collect(Collectors.toList());
         List<StorageFastOrder> list = this.storageFastOrderService.getOrdersByOrderNos(orderNos);
         Map<String, StorageFastOrder> map = list.stream().collect(Collectors.toMap(StorageFastOrder::getOrderNo, e -> e));
@@ -322,8 +321,15 @@ public class ExternalApiController {
 
     @ApiOperation(value = "根据id查询仓库名称")
     @RequestMapping("/api/storage/findWarehouseNameById")
-    public CommonResult<Warehouse> findWarehouseNameById(@RequestParam(value = "id", required = true) Long id){
+    public CommonResult<Warehouse> findWarehouseNameById(@RequestParam(value = "id", required = true) Long id) {
         Warehouse warehouse = warehouseService.findWarehouseNameById(id);
         return CommonResult.success(warehouse);
+    }
+
+    @ApiOperation(value = "根据主订单查询快进快出")
+    @RequestMapping("/api/storage/getFastOrderByMainOrder")
+    public CommonResult<List<StorageFastOrderVO>> getFastOrderByMainOrder(@RequestParam("mainOrderNos") List<String> mainOrderNos) {
+        List<StorageFastOrderVO> fastOrderVOS = storageFastOrderService.getFastOrderByMainOrder(mainOrderNos);
+        return CommonResult.success(fastOrderVOS);
     }
 }

@@ -6,6 +6,7 @@ import com.jayud.storage.model.bo.QueryStorageFastOrderForm;
 import com.jayud.storage.model.po.StorageFastOrder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.storage.model.vo.StorageFastOrderFormVO;
+import com.jayud.storage.model.vo.StorageFastOrderVO;
 import com.jayud.storage.model.vo.StorageOutOrderFormVO;
 import org.apache.ibatis.annotations.Param;
 
@@ -22,4 +23,6 @@ import java.util.List;
 public interface StorageFastOrderMapper extends BaseMapper<StorageFastOrder> {
 
     IPage<StorageFastOrderFormVO> findByPage(@Param("page") Page<StorageOutOrderFormVO> page, @Param("form")QueryStorageFastOrderForm form, @Param("legalIds")List<Long> legalIds);
+
+    List<StorageFastOrderVO> getFastOrderByMainOrder(@Param("mainOrderNos") List<String> mainOrderNos);
 }

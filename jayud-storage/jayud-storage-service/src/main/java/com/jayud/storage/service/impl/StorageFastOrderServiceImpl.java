@@ -449,4 +449,9 @@ public class StorageFastOrderServiceImpl extends ServiceImpl<StorageFastOrderMap
         condition.lambda().in(StorageFastOrder::getOrderNo, orderNos);
         return this.baseMapper.selectList(condition);
     }
+
+    @Override
+    public List<StorageFastOrderVO> getFastOrderByMainOrder(List<String> mainOrderNos) {
+        return this.baseMapper.getFastOrderByMainOrder(mainOrderNos);
+    }
 }

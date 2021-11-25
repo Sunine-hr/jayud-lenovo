@@ -56,6 +56,8 @@ public class CommonServiceImpl implements CommonService {
     private IVoidBillingRecordsService voidBillingRecordsService;
     @Autowired
     private OceanShipClient oceanShipClient;
+    @Autowired
+    private StorageClient storageClient;
 
     /**
      * 获取空运明细
@@ -216,6 +218,45 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
+     * 获取快进快出明细
+     */
+    public Map<String, Object> getStorageFastOrderTemplate(List<String> mainOrderNos, String cmd, BillTemplateEnum templateEnum) {
+        Object data = this.storageClient.getFastOrderByMainOrder(mainOrderNos).getData();
+        JSONArray array = new JSONArray(data);
+        Map<String, Object> map = new HashMap<>();
+        //查询主订单信息
+        ApiResult result = omsClient.getMainOrderByOrderNos(mainOrderNos);
+        for (int i = 0; i < array.size(); i++) {
+            JSONObject jsonObject = array.getJSONObject(i);
+            switch (templateEnum) {
+                case CCF:
+                case CCF_NORM_RE:
+                    StorageFastOrderTemplate template = ConvertUtil.convert(jsonObject, StorageFastOrderTemplate.class);
+                    template.assembleData(jsonObject);
+                    template.setSubOrderNo(jsonObject.getStr("orderNo"));
+                    //组装主订单信息
+                    template.assemblyMainOrderData(result.getData());
+                    map.put(cmd.equals("main") ? template.getMainOrderNo() : template.getSubOrderNo(), template);
+                    map.put(template.getMainOrderNo() + "~" + template.getSubOrderNo(), template);
+                    break;
+                case CCF_NORM_PAY:
+                    template = ConvertUtil.convert(jsonObject, StorageFastOrderTemplate.class);
+                    template.assembleData(jsonObject);
+                    template.setSubOrderNo(jsonObject.getStr("orderNo"));
+                    //组装主订单信息
+                    template.assemblyMainOrderData(result.getData());
+                    map.put(cmd.equals("main") ? template.getMainOrderNo() : template.getSubOrderNo(), template);
+                    map.put(template.getMainOrderNo() + "~" + template.getSubOrderNo(), template);
+                    break;
+
+            }
+
+        }
+
+        return map;
+    }
+
+    /**
      * 处理模板数据
      *
      * @param cmd
@@ -323,6 +364,10 @@ public class CommonServiceImpl implements CommonService {
             //海运
             if (tmp.equals(BillTemplateEnum.HY.getCmd())) {
                 data = this.getSeaOrderTemplate(mainOrderNos, cmd, templateEnum);
+            }
+            //快进快出
+            if (tmp.equals(BillTemplateEnum.CCF.getCmd())) {
+                data = this.getStorageFastOrderTemplate(mainOrderNos, cmd, templateEnum);
             }
         }
 

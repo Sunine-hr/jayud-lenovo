@@ -46,4 +46,7 @@ public interface IStorageFastOrderService extends IService<StorageFastOrder> {
     List<StorageFastOrder> getByCondition(StorageFastOrder setMainOrderNo);
 
     List<StorageFastOrder> getOrdersByOrderNos(List<String> orderNos);
+
+    List<StorageFastOrderVO> getFastOrderByMainOrder(List<String> mainOrderNos);
+
 }

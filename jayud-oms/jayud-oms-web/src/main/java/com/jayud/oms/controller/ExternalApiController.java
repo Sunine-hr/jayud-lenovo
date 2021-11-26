@@ -126,7 +126,8 @@ public class ExternalApiController {
     private IRegionCityService regionCityService;
     @Autowired
     private FinanceClient financeClient;
-
+    @Autowired
+    private IClientSecretKeyService clientSecretKeyService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -1260,6 +1261,20 @@ public class ExternalApiController {
         return ApiResult.ok(new ArrayList<>(vehicleInfos));
     }
 
+
+    /**
+     * 根据司机id查询 司机信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getDriverInfoByIdOne")
+    public ApiResult  getDriverInfoByIdOne(@RequestParam("driverName") String driverName) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("name", driverName);
+        DriverInfo driverInfo = this.driverInfoService.getOne(queryWrapper);
+        return ApiResult.ok(driverInfo);
+    }
+
     /**
      * 根据司机ids查询司机信息
      *
@@ -2344,4 +2359,24 @@ public class ExternalApiController {
         return ApiResult.ok(regionCityMap);
     }
 
+    @ApiOperation(value = "根据客户appid查询私钥信息解密")
+    @PostMapping("/api/findClientSecretKeyOne")
+    public ApiResult findClientSecretKeyOne(@RequestParam("appId") String appId) {
+        ClientSecretKeyVO clientSecretKeyOne = this.clientSecretKeyService.findClientSecretKeyOne(appId);
+        return ApiResult.ok(clientSecretKeyOne);
+    }
+
+    @ApiOperation(value = "根据客户id查询私钥信息解密")
+    @PostMapping("/api/findClientSecretOne")
+    public ApiResult findClientSecretOne(@RequestParam("cId") String cId) {
+        ClientSecretKeyVO clientSecretKeyOne = this.clientSecretKeyService.findClientSecretOne(cId);
+        return ApiResult.ok(clientSecretKeyOne);
+    }
+
+    @ApiOperation(value = "根据公钥去查询私钥信息解密")
+    @PostMapping("/api/findClientSecretPublicKeyOne")
+    public ApiResult findClientSecretPublicKeyOne(@RequestParam("publicKey") String publicKey) {
+        ClientSecretKeyVO clientSecretKeyOne = this.clientSecretKeyService.findClientSecretPublicKeyOne(publicKey);
+        return ApiResult.ok(clientSecretKeyOne);
+    }
 }

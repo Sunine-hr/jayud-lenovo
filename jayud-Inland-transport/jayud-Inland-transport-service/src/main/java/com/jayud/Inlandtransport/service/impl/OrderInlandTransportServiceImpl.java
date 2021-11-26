@@ -1,7 +1,11 @@
 package com.jayud.Inlandtransport.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,15 +25,18 @@ import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.*;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
-import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -54,12 +61,18 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
     private OauthClient oauthClient;
     @Autowired
     private IOrderInlandSendCarsService orderInlandSendCarsService;
+    @Value("${scm.urls.base:}")
+    private String urlBase;
+    // 设置运输公司信息
+    @Value("${scm.urls.accept-inlandTransportat-information:}")
+    private String urlAcceptInlandTransportatInformation;
 
     //创建订单
     @Override
     @Transactional
     public String createOrder(AddOrderInlandTransportForm form) {
         LocalDateTime now = LocalDateTime.now();
+
         OrderInlandTransport inlandOrder = ConvertUtil.convert(form, OrderInlandTransport.class);
         //生成订单号
         String orderNo = null;
@@ -96,8 +109,16 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         if (!result.isOk()) {
             throw new RuntimeException(result.getMsg());
         }
+        // OrderInlandTransport inlandOrder
+//        if ("2".equals(inlandOrder.getCreateUserType())) {
+//            this.msgPush(inlandOrder);
+//        }
+//        if (inlandOrder!=null) {
+//            this.msgPush(inlandOrder);
+//        }
         return inlandOrder.getOrderNo();
     }
+
 
     @Override
     public IPage<OrderInlandTransportFormVO> findByPage(QueryOrderForm form) {
@@ -484,6 +505,172 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
     @Override
     public List<OrderInlandTransportFormVO> getOrderInlandTransportList(String pickUpTimeStart, String pickUpTimeEnd, String orderNo) {
         return baseMapper.getOrderInlandTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);
+    }
+
+    /**
+     * 根据第三方订单号查询内陆订单信息
+     *
+     * @param thirdPartyOrderNo
+     * @return
+     */
+    @Override
+    public OutOrderInlandTransportVO getOutOrderInlandTransportVOByThirdPartyOrderNo(String thirdPartyOrderNo) {
+        QueryWrapper<OrderInlandTransport> orderInlandTransportOne = new QueryWrapper<>();
+        orderInlandTransportOne.lambda().select(OrderInlandTransport::getId, OrderInlandTransport::getMainOrderNo, OrderInlandTransport::getOrderNo)
+                .in(OrderInlandTransport::getThirdPartyOrderNo, thirdPartyOrderNo);
+        OrderInlandTransport orderInlandTransport = this.getOne(orderInlandTransportOne, false);
+        if (orderInlandTransport == null) {
+            return null;
+        }
+        OutOrderInlandTransportVO outOrderInlandTransportVO = ConvertUtil.convert(orderInlandTransport, OutOrderInlandTransportVO.class);
+        if (outOrderInlandTransportVO == null) {
+            return null;
+        }
+        //查询主订单信息
+        ApiResult result = omsClient.getMainOrderByOrderNos(Collections.singletonList(orderInlandTransport.getMainOrderNo()));
+        if (result == null) {
+            return null;
+        }
+        JSONArray mainOrders = new JSONArray(JSON.toJSONString(result.getData()));
+        JSONObject json = mainOrders.getJSONObject(0);
+        outOrderInlandTransportVO.setMainOrderNo(json.getStr("orderNo"));
+        outOrderInlandTransportVO.setMainOrderId(json.getLong("id"));
+        return outOrderInlandTransportVO;
+    }
+
+    /**
+     * 根据登录用户查询客户名称
+     */
+    @Override
+    public JSONObject getCustomerInfoByLoginUserName(Long companyId) {
+//        String user = UserOperator.getToken();
+//        if (StringUtils.isEmpty(user)) {
+//            log.warn("查询不到用户信息");
+//            throw new JayudBizException("查询不到用户信息");
+//        }
+        //查询客户id
+//        ApiResult result = this.oauthClient.getSystemUserByName("廖凌杰");
+//        if (result.getCode() != HttpStatus.SC_OK) {
+//            log.warn("远程调用查询用户信息失败 message=" + result.getMsg());
+//            throw new JayudBizException(ResultEnum.OPR_FAIL);
+//        }
+//        JSONObject systemUser = JSONUtil.parseObj(result.getData());
+//        Long companyId = systemUser.getLong("companyId");
+
+        ApiResult result = omsClient.getCustomerInfoVOById(companyId);
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("远程调用查询客户信息失败 message=" + result.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        JSONObject customerInfo = JSONUtil.parseObj(result.getData());
+        return customerInfo;
+    }
+
+
+    /**
+     * 根据主订单id去查询子订单的一些信息推送
+     *
+     * @param orderId 子订单
+     */
+    @Override
+    public String pushMessage(Long orderId) {
+        // 根据 子订单 id 查询到 客户unit_code 信息和第三方订单号信息 和派车id 和
+        OrderInlandSendDriveVO orderInlandSendDriveVO = new OrderInlandSendDriveVO();
+        //内陆订单信息
+        OrderInlandTransportDetails orderDetails = this.getOrderDetails(orderId);
+
+        if (orderDetails.getType().intValue() != CreateUserTypeEnum.SCM.getCode()) {
+            return null;
+        }
+
+        //根据内陆id查询派车信息
+        OrderInlandSendCars orderInlandSendCars = orderInlandSendCarsService.getOrderInlandSendCars(orderDetails.getId());
+
+
+        //车辆id 查询车辆信息
+        ApiResult driverInfoByIdOne = omsClient.getDriverInfoByIdOne(orderInlandSendCars.getDriverName());
+        //根据主订单的 信息找到客户信息  在试用客户信息 查询秘钥信息  私钥加密
+        JSONObject vehicleInfo = JSONUtil.parseObj(driverInfoByIdOne.getData());
+        //在根据子订单  客户 unit_code  查询到客户id
+        ApiResult<Long> customerByCode = omsClient.getCustomerByCode(orderDetails.getUnitCode());
+        if (customerByCode.getCode() != HttpStatus.SC_OK) {
+            log.warn("远程调用查询客户信息失败 message=" + customerByCode.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        ApiResult result = omsClient.findClientSecretOne(customerByCode.getData().toString());
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("远程调用查询客户信息失败 message=" + result.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        JSONObject jsonObjectSecret = JSONUtil.parseObj(result.getData());
+        //第三方订单号
+        orderInlandSendDriveVO.setOrderNo(orderDetails.getThirdPartyOrderNo());
+        //司机身份证号
+        orderInlandSendDriveVO.setIdCode(vehicleInfo.getStr("idNo"));
+        // 司机姓名
+        orderInlandSendDriveVO.setDriverName(orderInlandSendCars.getDriverName());
+        //司机车牌
+        orderInlandSendDriveVO.setTruckNo(orderInlandSendCars.getLicensePlate());
+        //司机配送人司机
+        orderInlandSendDriveVO.setDeliverName(orderInlandSendCars.getDriverName());
+        //司机电话
+        orderInlandSendDriveVO.setDriverTel(orderInlandSendCars.getDriverPhone());
+        orderInlandSendDriveVO.setDeliverTime(DateUtils.LocalDateTime2Str(LocalDateTime.now(), DateUtils.DATE_TIME_PATTERN));
+
+        String orderInlandSendString = com.alibaba.fastjson.JSONObject.toJSONString(orderInlandSendDriveVO);
+        String appSecret = jsonObjectSecret.getStr("appSecret");
+        //拿到对应客户的私钥加密
+        String string =null;
+        try {
+            String sjm = RSAUtils.privateEncrypt(orderInlandSendString, RSAUtils.getPrivateKey(jsonObjectSecret.getStr("appPrivateSecret")));
+            String orderIns = com.alibaba.fastjson.JSONObject.toJSONString(sjm);
+            System.out.println(orderIns);
+            string = httpClient(sjm, appSecret);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return string;
+    }
+
+    //给供应商推送消息
+    public String httpClient(String data, String publickey) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
+        jsonObject.put("data", data);
+        String s = jsonObject.toString();
+        System.out.println(s);
+        HttpResponse response = cn.hutool.http.HttpRequest
+                .post(urlBase + urlAcceptInlandTransportatInformation)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .body(s)
+                .execute();
+
+
+        String feedback = response.body();
+
+
+        System.out.println(""+feedback);
+        JSONObject parseObj = JSONUtil.parseObj(feedback);
+
+        String data2 = parseObj.getStr("data");
+
+        String publicKey = parseObj.getStr("publicKey");
+
+        //解密
+        String jmm = RSAUtils.publicDecrypt(data2, RSAUtils.getPublicKey(publicKey));
+        JSONObject paj = JSONUtil.parseObj(jmm);
+        String code = paj.getStr("code");
+        System.out.println("解密后的数据："+code);
+        if (org.apache.commons.lang.StringUtils.isEmpty(code)) {
+            return null;
+        }
+        log.info("报文:" + response.toString());
+        log.info("供应链返回参数:" + feedback);
+        return JSONUtil.parseObj(jmm).get("code").toString();
+//        MapUtil.getStr(feedback, "data");
+//        if () {
+//
+//        }
+
     }
 
 }

@@ -46,6 +46,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
@@ -1001,22 +1003,22 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
      * 根据登录用户查询客户名称
      */
     @Override
-    public JSONObject getCustomerInfoByLoginUserName() {
-        String user = UserOperator.getToken();
-        if (StringUtils.isEmpty(user)) {
-            log.warn("查询不到用户信息");
-            throw new JayudBizException("查询不到用户信息");
-        }
-        //查询客户id
-        ApiResult result = this.oauthClient.getSystemUserByName(user);
-        if (result.getCode() != HttpStatus.SC_OK) {
-            log.warn("远程调用查询用户信息失败 message=" + result.getMsg());
-            throw new JayudBizException(ResultEnum.OPR_FAIL);
-        }
-        JSONObject systemUser = JSONUtil.parseObj(result.getData());
-        Long companyId = systemUser.getLong("companyId");
+    public JSONObject getCustomerInfoByLoginUserName(Long companyId) {
+//        String user = UserOperator.getToken();
+//        if (StringUtils.isEmpty(user)) {
+//            log.warn("查询不到用户信息");
+//            throw new JayudBizException("查询不到用户信息");
+//        }
+//        //查询客户id
+//        ApiResult result = this.oauthClient.getSystemUserByName(user);
+//        if (result.getCode() != HttpStatus.SC_OK) {
+//            log.warn("远程调用查询用户信息失败 message=" + result.getMsg());
+//            throw new JayudBizException(ResultEnum.OPR_FAIL);
+//        }
+//        JSONObject systemUser = JSONUtil.parseObj(result.getData());
+//        Long companyId = systemUser.getLong("companyId");
 
-        result = omsClient.getCustomerInfoVOById(companyId);
+        ApiResult result = omsClient.getCustomerInfoVOById(companyId);
         if (result.getCode() != HttpStatus.SC_OK) {
             log.warn("远程调用查询客户信息失败 message=" + result.getMsg());
             throw new JayudBizException(ResultEnum.OPR_FAIL);
@@ -1067,8 +1069,10 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
      * @param isRetry
      */
     @Override
-    public void pushManifest(OrderTransport orderTransport, OprStatusForm form, boolean isRetry) {
+    public void pushManifest(OrderTransport orderTransport, OprStatusForm form, boolean isRetry,Long orderId) {
         Integer createUserTypeById = orderTransportService.getCreateUserTypeById(orderTransport.getId());
+
+        OrderTransport byId = orderTransportService.getById(orderId);
         if (createUserTypeById != CreateUserTypeEnum.SCM.getCode()) {
             return;
         }
@@ -1081,28 +1085,33 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                     .eq(OrderTransport::getId, orderTransport.getId()));
 
             new Thread(() -> {
-                Map<String, Object> res = null;
+                String res = null;
 
                 if (CommonConstant.CAR_TAKE_GOODS.equals(form.getCmd())) {//车辆提货
                     res = scmOrderService.setManifest(ScmOrderStatusEnum.ASSEMBLY_VEHICLE.getCode(),
-                            orderTransportTemp.getThirdPartyOrderNo());
-                    if (MapUtil.getInt(res, "code") != 0) {
-                        logger.warn("推送订单状态到供应链失败，原因：{}", res.get("msg"));
+                            orderTransportTemp.getThirdPartyOrderNo(),byId.getUnitCode());
+//                    if (MapUtil.getInt(res, "code") != 0) {
+//                        logger.warn("推送订单状态到供应链失败，原因：{}", res.get("msg"));
+//                    }
+                    if(Integer.parseInt(res)!=0){
+                        System.out.println("推送失败 ："+res);
                     }
                     res = scmOrderService.setManifest(ScmOrderStatusEnum.DEPART_VEHICLE.getCode(),
-                            orderTransportTemp.getThirdPartyOrderNo());
+                            orderTransportTemp.getThirdPartyOrderNo(),byId.getUnitCode());
                 } else if (CommonConstant.CAR_GO_CUSTOMS.equals(form.getCmd()) &&
                         form.getStatus().equals(OrderStatusEnum.TMS_T_9.getCode())) {//车辆通关
                     res = scmOrderService.setManifest(ScmOrderStatusEnum.THROUGH_CUSTOMS.getCode(),
-                            orderTransportTemp.getThirdPartyOrderNo());
+                            orderTransportTemp.getThirdPartyOrderNo(),byId.getUnitCode());
                 } else if (CommonConstant.CONFIRM_SIGN_IN.equals(form.getCmd())) {//确认签收
                     res = scmOrderService.setManifest(ScmOrderStatusEnum.ARRIVED.getCode(),
-                            orderTransportTemp.getThirdPartyOrderNo());
+                            orderTransportTemp.getThirdPartyOrderNo(),byId.getUnitCode());
                 }
-
-                if (res != null && MapUtil.getInt(res, "code") != 0) {
-                    logger.warn("推送订单状态到供应链失败，原因：{}", res.get("msg"));
+                if(Integer.parseInt(res)!=0){
+                    System.out.println("推送失败 ："+res);
                 }
+//                if (res != null && MapUtil.getInt(res, "code") != 0) {
+//                    logger.warn("推送订单状态到供应链失败，原因：{}", res.get("msg"));
+//                }
 
             }).start();
         } catch (Exception e) {
@@ -1118,8 +1127,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
      */
     @Async
     @Override
-    public void pushTransportationInformation(OrderTransport orderTransport) {
+    public void pushTransportationInformation(OrderTransport orderTransport,Long orderId) {
         Integer createUserTypeById = orderTransportService.getCreateUserTypeById(orderTransport.getId());
+        OrderTransport byId = orderTransportService.getById(orderId);
         if (createUserTypeById != CreateUserTypeEnum.SCM.getCode()) {
             return;
         }
@@ -1155,10 +1165,18 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                 // 直接传法人主体名称，对于供应链来说车辆供应商是物流科技
                 scmTransportationInformationForm.setTruckCompany(orderTransportTemp.getLegalName());
 
-                Map<String, Object> res = scmOrderService.acceptTransportationInformation(scmTransportationInformationForm);
-                if (MapUtil.getInt(res, "code") != 0) {
-                    logger.warn("推送运输公司消息到供应链失败，原因：{}", res.get("msg"));
+                String string = null;
+                try {
+                    string = scmOrderService.acceptTransportationInformation(scmTransportationInformationForm,byId.getUnitCode());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+                if(Integer.parseInt(string)!=0){
+                    System.out.println("推送失败 ："+string);
+                }
+//                if (MapUtil.getInt(res, "code") != 0) {
+//                    logger.warn("推送运输公司消息到供应链失败，原因：{}", res.get("msg"));
+//                }
             }).start();
 
         } catch (Exception e) {

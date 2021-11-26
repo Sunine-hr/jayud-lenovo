@@ -50,7 +50,14 @@ public class InputOrderForm {
     @ApiModelProperty(value = "操作指令:cmd=preSubmit or submit", required = true)
     private String cmd;
 
+    @ApiModelProperty(value = "(0:本系统,2:scm)")
+    private Integer createUserType;
 
+    @ApiModelProperty(value = "第三方订单号")
+    private String thirdPartyOrderNo;
+
+    @ApiModelProperty(value = "外部调用标识(1类型1  2类型2)")
+    private Integer type;
     /**
      * 报关单号校验
      */

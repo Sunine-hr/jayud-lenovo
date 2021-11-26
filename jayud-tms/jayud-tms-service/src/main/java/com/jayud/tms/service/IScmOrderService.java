@@ -2,6 +2,8 @@ package com.jayud.tms.service;
 
 import com.jayud.tms.model.bo.ScmTransportationInformationForm;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Map;
 
 /**
@@ -16,23 +18,25 @@ public interface IScmOrderService {
 
     /**
      * 设置车次状态
+     *
      * @param trainStatus
      * @param truckNo
      * @return
      */
-    Map<String, Object> setManifest(String trainStatus, String truckNo);
+    String setManifest(String trainStatus, String truckNo, String unitCode);
 
     /**
      * 设置运输公司信息
+     *
      * @param scmTransportationInformationForm
      * @return
      */
-    Map<String, Object> acceptTransportationInformation(
-            ScmTransportationInformationForm scmTransportationInformationForm);
+    String acceptTransportationInformation(
+            ScmTransportationInformationForm scmTransportationInformationForm, String unitCode);
 
     /**
      * 刷新Token
      */
-	void refreshToken();
+    void refreshToken();
 
 }

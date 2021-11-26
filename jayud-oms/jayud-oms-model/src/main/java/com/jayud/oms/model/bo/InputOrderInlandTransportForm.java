@@ -74,6 +74,9 @@ public class InputOrderInlandTransportForm extends Model<InputOrderInlandTranspo
     @ApiModelProperty(value = "创建人(登录用户) 前端不用管")
     private String createUser;
 
+    @ApiModelProperty(value = "当前登录用户,FeignClient必传,要么就传token,否则跨系统拿不到用户")
+    private String loginUser;
+
 //    @ApiModelProperty(value = "创建时间")
 //    private LocalDateTime createTime;
 
@@ -85,6 +88,15 @@ public class InputOrderInlandTransportForm extends Model<InputOrderInlandTranspo
 
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
+
+    @ApiModelProperty(value = "第三方订单号")
+    private String thirdPartyOrderNo;
+
+    @ApiModelProperty(value = "(0:本系统,2:scm)")
+    private Integer createUserType;
+
+    @ApiModelProperty(value = "外部调用标识(1类型1  2类型2)")
+    private Integer type;
 
     @Override
     protected Serializable pkVal() {

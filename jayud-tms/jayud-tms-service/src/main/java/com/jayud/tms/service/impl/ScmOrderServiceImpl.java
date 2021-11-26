@@ -6,10 +6,13 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.jayud.common.ApiResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.common.utils.RSAUtils;
 import com.jayud.tms.feign.FileClient;
 import com.jayud.tms.feign.MsgClient;
 import com.jayud.tms.feign.OauthClient;
@@ -17,12 +20,16 @@ import com.jayud.tms.feign.OmsClient;
 import com.jayud.tms.model.bo.ScmTransportationInformationForm;
 import com.jayud.tms.service.IScmOrderService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +65,8 @@ public class ScmOrderServiceImpl implements IScmOrderService {
 
     @Autowired
     private RedisUtils redisUtils;
-
+    @Autowired
+    private OmsClient omsClient;
     /**
      * 设置车次状态
      * @param trainStatus
@@ -66,12 +74,38 @@ public class ScmOrderServiceImpl implements IScmOrderService {
      * @return
      */
     @Override
-    public Map<String, Object> setManifest(String trainStatus, String truckNo) {
+    public String setManifest(String trainStatus, String truckNo,String unitCode) {
         Map<String, Object> form = new HashMap<>();
         form.put("trainStatus", trainStatus);
         form.put("truckNo", truckNo);
         form.put("userName", defaultUsername);
-        return doPost(JSONObject.toJSONString(form), urlBase + setTrainNumberStatus);
+
+
+        //在根据子订单  客户 unit_code  查询到客户id
+        ApiResult<Long> customerByCode = omsClient.getCustomerByCode(unitCode);
+        if (customerByCode.getCode() != HttpStatus.SC_OK) {
+            log.warn("远程调用查询客户信息失败 message=" + customerByCode.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        ApiResult result = omsClient.findClientSecretOne(customerByCode.getData().toString());
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("远程调用查询客户信息失败 message=" + result.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(result.getData());
+        String s1 = JSONObject.toJSONString(form);
+        String sjm = null;
+        try {
+
+            sjm = RSAUtils.privateEncrypt(s1, RSAUtils.getPrivateKey(jsonObject.getStr("appPrivateSecret")));
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
+        return doPost(sjm, urlBase + setTrainNumberStatus);
     }
 
     /**
@@ -79,9 +113,33 @@ public class ScmOrderServiceImpl implements IScmOrderService {
      * @param scmTransportationInformationForm
      * @return
      */
-    public Map<String, Object> acceptTransportationInformation(ScmTransportationInformationForm scmTransportationInformationForm) {
+    @Override
+    public String acceptTransportationInformation(ScmTransportationInformationForm scmTransportationInformationForm, String unitCode) {
         scmTransportationInformationForm.setUserName(defaultUsername);
-        return doPost(JSONObject.toJSONString(scmTransportationInformationForm), urlBase + urlAcceptTransportationInformation);
+
+        //在根据子订单  客户 unit_code  查询到客户id
+        ApiResult<Long> customerByCode = omsClient.getCustomerByCode(unitCode);
+        if (customerByCode.getCode() != HttpStatus.SC_OK) {
+            log.warn("远程调用查询客户信息失败 message=" + customerByCode.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        ApiResult result = omsClient.findClientSecretOne(customerByCode.getData().toString());
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("远程调用查询客户信息失败 message=" + result.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(result.getData());
+
+        String sjm = null;
+        try {
+            sjm = RSAUtils.privateEncrypt(JSONObject.toJSONString(scmTransportationInformationForm), RSAUtils.getPrivateKey(jsonObject.getStr("appPrivateSecret")));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
+        return doPost(sjm, urlBase + urlAcceptTransportationInformation);
     }
 
     /**
@@ -105,24 +163,53 @@ public class ScmOrderServiceImpl implements IScmOrderService {
      * @param url
      * @return
      */
-    private Map<String, Object> doPost(String form, String url) {
+    private String doPost(String form, String url){
         log.info("请求供应链 url: {} 参数: {}", url, form);
         String token = login(null, null);
+        com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
+        jsonObject.put("data", form);
+        String s = jsonObject.toString();
 
         HttpResponse response = HttpRequest.post(url)
-                .header("token", token)
-                .header(Header.CONTENT_TYPE.name(), "application/json; charset=UTF-8")
-                .body(form)
+//                .header("token", token)  // HttpHeaders.CONTENT_TYPE
+                .header(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8")
+                .body(s)
                 .execute();
-        String feedback = response.body();
 
-        if (StringUtils.isEmpty(feedback)) {
+
+//        HttpResponse response = cn.hutool.http.HttpRequest
+//                .post(url)
+////                .header("token", token)
+//                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+//                .body(s)
+//                .execute();
+        String feedback = response.body();
+        System.out.println(""+feedback);
+        cn.hutool.json.JSONObject parseObj = JSONUtil.parseObj(feedback);
+        String data2 = parseObj.getStr("data");
+        String publicKey = parseObj.getStr("publicKey");
+        //解密
+        String jmm = null;
+        try {
+            jmm = RSAUtils.publicDecrypt(data2, RSAUtils.getPublicKey(publicKey));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+        cn.hutool.json.JSONObject paj = JSONUtil.parseObj(jmm);
+        String code = paj.getStr("code");
+        System.out.println("解密后的数据："+code);
+
+        if (StringUtils.isEmpty(code)) {
             return null;
         }
+
         log.info("报文:" + response.toString());
         log.info("请求token信息:" + token);
         log.info("供应链返回参数:" + feedback);
-        return JSONUtil.toBean(feedback, Map.class);
+//        return JSONUtil.toBean(feedback, Map.class);
+        return JSONUtil.parseObj(jmm).get("code").toString();
     }
 
     /**

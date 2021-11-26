@@ -22,11 +22,13 @@ import com.jayud.oms.model.bo.QueryCusAccountForm;
 import com.jayud.oms.model.bo.QueryCustomerInfoForm;
 import com.jayud.oms.model.bo.QueryRelUnitInfoListForm;
 import com.jayud.oms.model.enums.CustomerInfoStatusEnum;
+import com.jayud.oms.model.po.ClientSecretKey;
 import com.jayud.oms.model.po.CustomerInfo;
 import com.jayud.oms.model.po.CustomerRelaLegal;
 import com.jayud.oms.model.vo.CustAccountVO;
 import com.jayud.oms.model.vo.CustomerInfoVO;
 import com.jayud.oms.model.vo.InitComboxStrVO;
+import com.jayud.oms.service.IClientSecretKeyService;
 import com.jayud.oms.service.ICustomerInfoService;
 import com.jayud.oms.service.ICustomerRelaLegalService;
 import com.jayud.oms.service.ICustomerRelaUnitService;
@@ -58,6 +60,8 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
     private ICustomerRelaUnitService customerRelaUnitService;
     @Autowired
     private FileClient fileClient;
+    @Autowired
+    private IClientSecretKeyService clientSecretKeyService;
 
     @Override
     public IPage<CustomerInfoVO> findCustomerInfoByPage(QueryCustomerInfoForm form) {
@@ -413,7 +417,8 @@ public class CustomerInfoServiceImpl extends ServiceImpl<CustomerInfoMapper, Cus
         this.customerRelaLegalService.saveCusRelLegal(form);
         //保存客户和结算单位关系
         this.customerRelaUnitService.saveBatchRelaUnit(customerInfo.getId(), form.getUnitCodeIds());
-
+        //客户创建成功 保存生成 客户私钥对
+        clientSecretKeyService.saveOrUpdateAddr(new ClientSecretKey().setCustomerInfoId(String.valueOf(customerInfo.getId())));
         return customerInfo.getId();
     }
 

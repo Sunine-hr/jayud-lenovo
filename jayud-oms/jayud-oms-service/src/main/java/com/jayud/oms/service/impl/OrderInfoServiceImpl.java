@@ -1652,7 +1652,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return inputOrderVO;
     }
 
-
+//需要修改 的内陆订单部分
     @Override
     @GlobalTransactional
     public boolean createOrder(InputOrderForm form) {

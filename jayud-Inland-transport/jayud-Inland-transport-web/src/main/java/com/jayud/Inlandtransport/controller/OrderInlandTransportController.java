@@ -3,11 +3,13 @@ package com.jayud.Inlandtransport.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
+import cn.hutool.log.dialect.commons.ApacheCommonsLog;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.Inlandtransport.feign.OauthClient;
 import com.jayud.Inlandtransport.feign.OmsClient;
 import com.jayud.Inlandtransport.model.bo.ProcessOptForm;
 import com.jayud.Inlandtransport.model.bo.QueryOrderForm;
+import com.jayud.Inlandtransport.model.po.OrderInlandSendCars;
 import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
 import com.jayud.Inlandtransport.model.vo.*;
 import com.jayud.Inlandtransport.service.IOrderInlandSendCarsService;
@@ -21,8 +23,7 @@ import com.jayud.common.entity.AuditInfoForm;
 import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
-import com.jayud.common.utils.DateUtils;
-import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.*;
 
 import static com.jayud.common.enums.OrderStatusEnum.getInlandTPStatus;
@@ -109,7 +112,7 @@ public class OrderInlandTransportController {
 
     @ApiOperation(value = "执行程操作")
     @PostMapping(value = "/doProcessOpt")
-    public CommonResult doProcessOpt(@RequestBody ProcessOptForm form) {
+    public CommonResult doProcessOpt(@RequestBody ProcessOptForm form)  {
         if (form.getMainOrderId() == null || form.getOrderId() == null) {
             log.warn("主/子订单id必填");
             return CommonResult.error(ResultEnum.VALIDATE_FAILED);
@@ -146,6 +149,13 @@ public class OrderInlandTransportController {
                 break;
             case INLANDTP_NL_3: //派车审核
             case INLANDTP_NL_4: //确认派车
+                if(form.getStatus().equals("NL_4")){
+                    System.out.println("确认派车");
+                    String string= orderInlandTransportService.pushMessage(form.getOrderId());
+                    if(Integer.parseInt(string)!=0){
+                        System.out.println("推送失败 ："+string);
+                    }
+                }
             case INLANDTP_NL_5: //车辆提货
             case INLANDTP_NL_6: //货物签收
                 this.orderInlandTransportService.updateProcessStatus(new OrderInlandTransport(), form);
@@ -153,6 +163,8 @@ public class OrderInlandTransportController {
         }
         return CommonResult.success();
     }
+
+
 
     @ApiOperation(value = "查询订单详情 subOrderId=子订单id")
     @PostMapping(value = "/getOrderDetails")

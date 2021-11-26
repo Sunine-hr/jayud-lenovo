@@ -209,7 +209,7 @@ public class OrderInTransportController {
         }
         this.orderTransportService.msgPush(orderTransport);
         // 同步操作到scm供应链
-        this.orderTransportService.pushManifest(orderTransport, form, false);
+        this.orderTransportService.pushManifest(orderTransport, form, false,form.getOrderId());
 
         return CommonResult.success();
     }
@@ -317,7 +317,7 @@ public class OrderInTransportController {
         }
         this.orderTransportService.msgPush(orderTransport);
         // 同步操作到scm供应链
-        this.orderTransportService.pushManifest(orderTransport, form, false);
+        this.orderTransportService.pushManifest(orderTransport, form, false,form.getOrderId());
         return CommonResult.success();
     }
 
@@ -741,7 +741,7 @@ public class OrderInTransportController {
         }
         this.orderTransportService.msgPush(orderTransport);
         // 推送运输公司消息到供应链
-        this.orderTransportService.pushTransportationInformation(orderTransport);
+        this.orderTransportService.pushTransportationInformation(orderTransport,form.getOrderId());
         return CommonResult.success();
     }
 

@@ -21,6 +21,9 @@
         <result column="create_time" property="createTime"/>
         <result column="update_user" property="updateUser"/>
         <result column="update_time" property="updateTime"/>
+        <result column="third_party_order_no" property="departmentId"/>
+        <result column="type" property="type"/>
+        <result column="create_user_type" property="createUserType"/>
     </resultMap>
 
 

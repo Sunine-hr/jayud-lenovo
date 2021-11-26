@@ -36,4 +36,11 @@ public interface OauthClient {
     @RequestMapping(value = "/api/getDataPermission")
     public ApiResult<DataControl> getDataPermission(@RequestParam("loginName") String loginName,
                                                     @RequestParam(value = "UserType") String userType);
+
+
+    /**
+     * 根据法人主体id查询法人主体名称
+     */
+    @RequestMapping(value = "/api/getLegalNameByLegalId")
+    public ApiResult<String> getLegalNameByLegalId(@RequestParam("legalId") Long legalId);
 }

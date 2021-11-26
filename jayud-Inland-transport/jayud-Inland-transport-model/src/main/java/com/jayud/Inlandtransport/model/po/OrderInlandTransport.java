@@ -34,6 +34,9 @@ public class OrderInlandTransport extends Model<OrderInlandTransport> {
     @ApiModelProperty(value = "主订单编号")
     private String mainOrderNo;
 
+    @ApiModelProperty(value = "第三方订单号")
+    private String thirdPartyOrderNo;
+
     @ApiModelProperty(value = "内陆订单编号")
     private String orderNo;
 
@@ -85,6 +88,11 @@ public class OrderInlandTransport extends Model<OrderInlandTransport> {
     @ApiModelProperty(value = "操作部门id")
     private Long departmentId;
 
+    @ApiModelProperty(value = "(0:本系统,2:scm)")
+    private Integer createUserType;
+
+    @ApiModelProperty(value = "外部调用标识(1类型1  2类型2)")
+    private Integer type;
 
     @Override
     protected Serializable pkVal() {

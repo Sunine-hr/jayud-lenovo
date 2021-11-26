@@ -198,7 +198,7 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      * 根据登录用户查询客户信息
      * @return
      */
-    JSONObject getCustomerInfoByLoginUserName();
+    JSONObject getCustomerInfoByLoginUserName(Long companyId);
 
     /**
      * 根据第三方订单号查询中港订单信息
@@ -213,13 +213,13 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      * @param form
      * @param isRetry
      */
-    void pushManifest(OrderTransport orderTransport, OprStatusForm form, boolean isRetry);
+    void pushManifest(OrderTransport orderTransport, OprStatusForm form, boolean isRetry,Long orderId);
 
     /**
      * 推送运输公司信息到供应链
      * @param orderTransport
      */
-    void pushTransportationInformation(OrderTransport orderTransport);
+    void pushTransportationInformation(OrderTransport orderTransport,Long orderId);
 
     /**
      * 获取创建人的类型

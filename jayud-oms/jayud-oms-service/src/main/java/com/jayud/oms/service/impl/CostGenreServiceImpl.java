@@ -188,25 +188,25 @@ public class CostGenreServiceImpl extends ServiceImpl<CostGenreMapper, CostGenre
     }
 
 
-    @Override
-//    @GlobalTransactional
-    public void test() {
-        //获取事务ID
-//        String xid = RootContext.getXID();
-//        boolean boo = RootContext.inGlobalTransaction();
-//        String str = xid + ":" + boo;
-        String str="";
-        // 将事务ID也写入到表中
-        System.out.println(str);
-        this.freightAirClient.test();
-        // 猜测 GlobalTransactional 方法全部结束后才会结束第一阶段，在这里Sleep 进行验证
-        if (true) {
-            try {
-                TimeUnit.SECONDS.sleep(10);
-                if (true) throw new RuntimeException("回滚");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    @Override
+////    @GlobalTransactional
+//    public void test() {
+//        //获取事务ID
+////        String xid = RootContext.getXID();
+////        boolean boo = RootContext.inGlobalTransaction();
+////        String str = xid + ":" + boo;
+//        String str="";
+//        // 将事务ID也写入到表中
+//        System.out.println(str);
+//        this.freightAirClient.test();
+//        // 猜测 GlobalTransactional 方法全部结束后才会结束第一阶段，在这里Sleep 进行验证
+//        if (true) {
+//            try {
+//                TimeUnit.SECONDS.sleep(10);
+//                if (true) throw new RuntimeException("回滚");
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 }

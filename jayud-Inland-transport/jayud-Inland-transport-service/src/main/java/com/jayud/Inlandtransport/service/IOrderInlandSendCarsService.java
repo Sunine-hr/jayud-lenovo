@@ -31,4 +31,16 @@ public interface IOrderInlandSendCarsService extends IService<OrderInlandSendCar
      * 删除派车信息
      */
     public boolean deleteByOrderNo(String orderNo);
+
+    /**
+     * 推送到kafka
+     */
+    void msgPush(OrderInlandSendCars orderInlandSendCars);
+
+
+    /**
+     * 根据内陆id查询派车信息
+     */
+    OrderInlandSendCars getOrderInlandSendCars(Long Id);
+
 }

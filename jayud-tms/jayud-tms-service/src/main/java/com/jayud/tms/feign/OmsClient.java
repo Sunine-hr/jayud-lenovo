@@ -414,4 +414,27 @@ public interface OmsClient {
     public ApiResult<Map<String, Long>> getRegionCityIdMapByName(@RequestParam(value = "provinceName", required = true) String provinceName,
                                               @RequestParam(value = "cityName", required = true) String cityName,
                                               @RequestParam(value = "areaName", required = true) String areaName);
+
+
+    /**
+     * 根据appid查询私钥信息解密
+     *
+     * @param appId
+     * @returnR
+     */
+    @PostMapping("/api/findClientSecretKeyOne")
+    ApiResult findClientSecretKeyOne(@RequestParam("appId") String appId);
+
+
+    /**
+     * 根据客户id查询私钥信息解密
+     */
+    @PostMapping("/api/findClientSecretOne")
+    public ApiResult findClientSecretOne(@RequestParam("cId") String cId);
+
+    /**
+     * 根据客户code 查询客户id
+     */
+    @RequestMapping(value = "/api/getCustomerByCode")
+    ApiResult<Long> getCustomerByCode(@RequestParam("code") String code);
 }

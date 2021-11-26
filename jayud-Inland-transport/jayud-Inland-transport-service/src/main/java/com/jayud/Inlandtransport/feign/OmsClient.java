@@ -1,6 +1,7 @@
 package com.jayud.Inlandtransport.feign;
 
 
+import com.jayud.Inlandtransport.model.bo.InputOrderForm;
 import com.jayud.Inlandtransport.model.bo.OprStatusForm;
 import com.jayud.Inlandtransport.model.vo.GoodsVO;
 import com.jayud.Inlandtransport.model.vo.OrderAddressVO;
@@ -10,6 +11,7 @@ import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.*;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -245,4 +247,72 @@ public interface OmsClient {
     public ApiResult<Map<String, Object>> getCostStatus(@RequestParam("mainOrderNos") List<String> mainOrderNos,
                                                         @RequestParam("orderNos") List<String> orderNos);
 
+    /**
+     * 根据客户id查询客户信息VO
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/api/getCustomerInfoVOById")
+    public ApiResult getCustomerInfoVOById(@RequestParam("id") Long id);
+
+    /**
+     * 根据业务名称获取业务编码
+     */
+    @RequestMapping(value = "/api/getProductBizIdCodeByName")
+    public ApiResult getProductBizIdCodeByName(@RequestBody String name);
+
+    /**
+     * 保存或更新TMS创建的主订单
+     *
+     * @param inputOrderForm
+     */
+    @RequestMapping(value = "/api/saveOrUpdateOutMainOrderForm")
+    ApiResult<Boolean> saveOrUpdateOutMainOrderForm(@RequestBody InputOrderForm inputOrderForm);
+
+    /**
+     * 根据省市区名称列表获取Map
+     */
+    @RequestMapping(value = "/api/getRegionCityIdMapByName")
+    public ApiResult<Map<String, Long>> getRegionCityIdMapByName(@RequestParam(value = "provinceName", required = true) String provinceName,
+                                                                 @RequestParam(value = "cityName", required = true) String cityName,
+                                                                 @RequestParam(value = "areaName", required = true) String areaName);
+
+
+    /**
+     * 根据appid查询私钥信息解密
+     *
+     * @param appId
+     * @returnR
+     */
+    @PostMapping("/api/findClientSecretKeyOne")
+    ApiResult findClientSecretKeyOne(@RequestParam("appId") String appId);
+
+    /**
+     * @param driverId
+     * @return
+     */
+    @RequestMapping(value = "/api/initDriverInfo")
+    ApiResult initDriverInfo(@RequestParam("driverId") Long driverId);
+
+    /**
+     * 根据客户code 查询客户id
+     */
+    @RequestMapping(value = "/api/getCustomerByCode")
+    ApiResult<Long> getCustomerByCode(@RequestParam("code") String code);
+
+    /**
+     * 根据司机id查询 司机信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/getDriverInfoByIdOne")
+    public ApiResult  getDriverInfoByIdOne(@RequestParam("driverName") String driverName);
+
+
+    /**
+     * 根据客户id查询私钥信息解密
+     */
+    @PostMapping("/api/findClientSecretOne")
+    public ApiResult findClientSecretOne(@RequestParam("cId") String cId);
 }

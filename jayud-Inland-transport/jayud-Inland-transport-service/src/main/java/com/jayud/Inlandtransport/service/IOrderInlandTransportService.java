@@ -1,5 +1,6 @@
 package com.jayud.Inlandtransport.service;
 
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.Inlandtransport.model.bo.AddOrderInlandTransportForm;
 import com.jayud.Inlandtransport.model.bo.ProcessOptForm;
@@ -9,9 +10,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportDetails;
 import com.jayud.Inlandtransport.model.vo.OrderInlandTransportFormVO;
 import com.jayud.Inlandtransport.model.vo.OrderRejectedOpt;
+import com.jayud.Inlandtransport.model.vo.OutOrderInlandTransportVO;
 import com.jayud.common.entity.AuditInfoForm;
 import com.jayud.common.entity.DataControl;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.Map;
 
@@ -112,4 +116,29 @@ public interface IOrderInlandTransportService extends IService<OrderInlandTransp
      * @return
      */
     List<OrderInlandTransportFormVO> getOrderInlandTransportList(String pickUpTimeStart, String pickUpTimeEnd, String orderNo);
+
+    /**
+     * 根据第三方订单号查询内陆订单信息
+     * @param thirdPartyOrderNo
+     * @return
+     */
+    OutOrderInlandTransportVO getOutOrderInlandTransportVOByThirdPartyOrderNo(String thirdPartyOrderNo);
+
+
+
+    /**
+     * 根据登录用户查询客户信息
+     * @return
+     */
+    JSONObject getCustomerInfoByLoginUserName(Long companyId);
+
+
+
+
+    /**
+     *根据主订单id去查询子订单的一些信息推送
+     * @param orderId 子订单
+     */
+    String pushMessage(Long orderId);
+
 }

@@ -8,6 +8,7 @@ import com.jayud.oms.model.po.Platform;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.vo.PlatformDetailsVO;
 import com.jayud.oms.model.vo.PlatformVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Map;
@@ -20,6 +21,7 @@ import java.util.Map;
  * @author CYC
  * @since 2021-10-23
  */
+@Mapper
 public interface PlatformMapper extends BaseMapper<Platform> {
 
     IPage<PlatformVO> findPlatformByPage(Page page, @Param("form") QueryPlatformForm form);

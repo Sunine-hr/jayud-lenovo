@@ -21,7 +21,7 @@ import java.util.List;
  */
 public interface IContractQuotationService extends IService<ContractQuotation> {
 
-    void saveOrUpdate(AddContractQuotationForm form);
+    Long saveOrUpdate(AddContractQuotationForm form);
 
     boolean exitNumber(String number);
 

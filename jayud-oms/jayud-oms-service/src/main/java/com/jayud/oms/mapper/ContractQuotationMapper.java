@@ -6,6 +6,7 @@ import com.jayud.oms.model.bo.QueryContractQuotationForm;
 import com.jayud.oms.model.po.ContractQuotation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.vo.ContractQuotationVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
  * @author LDR
  * @since 2021-10-26
  */
+@Mapper
 public interface ContractQuotationMapper extends BaseMapper<ContractQuotation> {
 
     IPage<ContractQuotationVO> findByPage(@Param("page") Page<ContractQuotation> page, @Param("form") QueryContractQuotationForm form);

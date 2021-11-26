@@ -13,18 +13,20 @@ import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -67,6 +69,8 @@ public class EasyExcelUtils {
 
         //顶部数据
         rowNum = setTop(entity, sheet, workbook, rowNum);
+
+        insertPicture(entity, workbook, sheet);
 
 //        setColumnWidth(entity, sheet);
 
@@ -592,5 +596,15 @@ public class EasyExcelUtils {
         for (int i = 0; i < times; i++) {
             workbook.cloneSheet(0);
         }
+    }
+
+
+    public static void insertPicture(EasyExcelEntity easyExcelEntity, Workbook workbook, Sheet sheet) throws IOException {
+        if (StringUtils.isEmpty(easyExcelEntity.getTitlePictureImgPath())) return;
+        Drawing<?> patriarch = sheet.createDrawingPatriarch();
+        ByteArrayOutputStream byteArrayOut = new ByteArrayOutputStream();
+        BufferedImage bufferImg = ImageIO.read(new File(easyExcelEntity.getTitlePictureImgPath()));
+        ImageIO.write(bufferImg, "png", byteArrayOut);
+        patriarch.createPicture(easyExcelEntity.getTitlePictureStyle(), workbook.addPicture(byteArrayOut.toByteArray(), XSSFWorkbook.PICTURE_TYPE_JPEG));
     }
 }

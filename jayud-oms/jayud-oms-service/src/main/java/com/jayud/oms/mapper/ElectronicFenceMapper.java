@@ -6,6 +6,7 @@ import com.jayud.oms.model.bo.QueryElectronicFenceForm;
 import com.jayud.oms.model.po.ElectronicFence;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.vo.ElectronicFenceVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -16,6 +17,7 @@ import org.apache.ibatis.annotations.Param;
  * @author LDR
  * @since 2021-10-25
  */
+@Mapper
 public interface ElectronicFenceMapper extends BaseMapper<ElectronicFence> {
 
     IPage<ElectronicFenceVO> findByPage(@Param("page") Page<ElectronicFence> page,

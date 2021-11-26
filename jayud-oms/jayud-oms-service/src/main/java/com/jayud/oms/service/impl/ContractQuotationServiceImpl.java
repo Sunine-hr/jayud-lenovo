@@ -70,7 +70,7 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
 
     @Override
     @Transactional
-    public void saveOrUpdate(AddContractQuotationForm form) {
+    public Long saveOrUpdate(AddContractQuotationForm form) {
         ContractQuotation contractQuotation = ConvertUtil.convert(form, ContractQuotation.class);
         contractQuotation.setFile(StringUtils.getFileStr(form.getFiles())).setFileName(StringUtils.getFileNameStr(form.getFiles()));
 //        contractQuotation.setCustomerCode(customerInfoService.getById(form.getCustomerId()).getIdCode());
@@ -88,6 +88,7 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
         this.saveOrUpdate(contractQuotation);
         form.setId(contractQuotation.getId());
         this.doQuotationProcessing(form);
+        return contractQuotation.getId();
     }
 
     private void doQuotationProcessing(AddContractQuotationForm form) {
@@ -299,8 +300,10 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
             InputOrderCustomsVO bg = orderDetail.getOrderCustomsForm();
             if (bg != null) {
                 long count = bg.getSubOrders().stream().filter(e -> !OrderStatusEnum.CLOSE.getDesc().equals(e.getStatusDesc())).count();
-                tmp.getBgDetails().forEach(e -> e.setNumber(count == 0 ? 1 : (int) count).setCostGenreId(productBizs.getCostGenreDefault()));
-                list.addAll(tmp.getBgDetails());
+                if (count > 0) {
+                    tmp.getBgDetails().forEach(e -> e.setNumber((int) count).setCostGenreId(productBizs.getCostGenreDefault()));
+                    list.addAll(tmp.getBgDetails());
+                }
             }
         }
         list.forEach(e -> e.setStatus(null).setCreateTime(null).setCreateUser(null).setUpdateUser(null).setUpdateTime(null));

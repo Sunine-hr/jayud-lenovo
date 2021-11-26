@@ -375,6 +375,7 @@ public class ReceiveBillDetailController {
                 .append(EasyExcelUtils.SPLIT_SYMBOL)
                 .toString());
         entity.setBottomData(bottomData);
+        entity.assembleTitlePictureStyle("D:\\资料\\图片1.png");
         Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
 
         ServletOutputStream out = response.getOutputStream();

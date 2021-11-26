@@ -90,8 +90,7 @@ public class ContractQuotationController {
             }
         }
         form.checkCostDuplicate();
-        this.contractQuotationService.saveOrUpdate(form);
-        return CommonResult.success();
+        return CommonResult.success(this.contractQuotationService.saveOrUpdate(form));
     }
 
     @ApiOperation("自动生成编号")

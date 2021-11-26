@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.vo.CustomerLineDetailsVO;
 import com.jayud.oms.model.vo.CustomerLineVO;
 import com.jayud.oms.model.vo.LineDetailsVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Map;
@@ -20,6 +21,7 @@ import java.util.Map;
  * @author CYC
  * @since 2021-10-19
  */
+@Mapper
 public interface CustomerLineMapper extends BaseMapper<CustomerLine> {
 
     IPage<CustomerLineVO> findCustomerLineByPage(Page page, @Param("form") QueryCustomerLineForm form);

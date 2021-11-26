@@ -7,6 +7,7 @@ import com.jayud.oms.model.po.OilCardManagement;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jayud.oms.model.vo.OilCardManagementVO;
 import com.jayud.oms.model.vo.VehicleInfoVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -17,6 +18,7 @@ import org.apache.ibatis.annotations.Param;
  * @author LDR
  * @since 2021-10-11
  */
+@Mapper
 public interface OilCardManagementMapper extends BaseMapper<OilCardManagement> {
 
     IPage<OilCardManagementVO> findByPage(@Param("page") Page<OilCardManagementVO> page, @Param("form") QueryOilCardManagementForm form);

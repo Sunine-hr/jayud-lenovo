@@ -16,6 +16,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -161,8 +162,9 @@ public class ProfitStatementVO extends Model<ProfitStatementVO> {
     private String classCode;
 
     @ApiModelProperty(value = "操作时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
-    private LocalDateTime operationTime;
+//    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate operationTime;
+
 
     public static void main(String[] args) {
         Utilities.printFieldsInfo(QueryProfitStatementForm.class);
@@ -194,9 +196,9 @@ public class ProfitStatementVO extends Model<ProfitStatementVO> {
             this.payInCostIds = StringUtils.add("", payCostIds, this.paySubCostIds);
             this.inProfit = BigDecimalUtil.subtract(profit, this.subProfit);
 
-            this.reInAmount =this.reAmount;
+            this.reInAmount = this.reAmount;
             this.reInEquivalentAmount = this.reEquivalentAmount;
-            this.reInCostIds =this.reCostIds;
+            this.reInCostIds = this.reCostIds;
 
         } else {
             //操作部门

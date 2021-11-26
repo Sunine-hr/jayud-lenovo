@@ -2,13 +2,12 @@ package com.jayud.oms.feign;
 
 
 import com.jayud.common.ApiResult;
-import com.jayud.common.CommonResult;
+import com.jayud.common.config.FeignRequestInterceptor;
 import com.jayud.common.entity.SubOrderCloseOpt;
 import com.jayud.oms.model.bo.InputAirOrderForm;
 import com.jayud.oms.model.vo.InitChangeStatusVO;
 import com.jayud.oms.model.vo.InputAirOrderVO;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +20,7 @@ import java.util.Map;
 /**
  *
  */
-@FeignClient(value = "jayud-freight-air-web")
+@FeignClient(value = "jayud-freight-air-web", configuration = FeignRequestInterceptor.class)
 public interface FreightAirClient {
 
     /**
@@ -71,4 +70,9 @@ public interface FreightAirClient {
      */
     @RequestMapping(value = "/api/airfreight/getAirOrderByMainOrderNos")
     public ApiResult getAirOrderByMainOrderNos(@RequestParam("mainOrderNos") List<String> mainOrderNos);
+
+
+    @ApiModelProperty(value = "测试")
+    @RequestMapping(value = "/api/airfreight/test")
+    public ApiResult test();
 }

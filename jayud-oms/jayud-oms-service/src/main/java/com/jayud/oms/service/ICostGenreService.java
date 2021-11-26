@@ -61,4 +61,6 @@ public interface ICostGenreService extends IService<CostGenre> {
     boolean saveOrUpdate(AddCostGenreForm form);
 
     Long getIdByName(String name);
+
+    void test();
 }

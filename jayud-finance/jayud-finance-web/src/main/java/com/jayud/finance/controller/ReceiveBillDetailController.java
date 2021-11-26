@@ -32,6 +32,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletOutputStream;
@@ -60,6 +61,8 @@ public class ReceiveBillDetailController {
     private CommonService commonService;
     @Autowired
     private ILockOrderService lockOrderService;
+    @Value("${execl.logo}")
+    private String logo;
 
     @ApiOperation(value = "应收对账单列表,应收对账单审核列表,财务应收对账单列表")
     @PostMapping("/findReceiveBillDetailByPage")
@@ -232,8 +235,8 @@ public class ReceiveBillDetailController {
         //参数校验
         form.checkEditSBill();
         //检查是否锁单区间
-        if (this.lockOrderService.checkLockingInterval(0,form.getAccountTermStr())) {
-            return CommonResult.error(400,"该核算期已经被锁定");
+        if (this.lockOrderService.checkLockingInterval(0, form.getAccountTermStr())) {
+            return CommonResult.error(400, "该核算期已经被锁定");
         }
         return billDetailService.editSBill(form);
     }
@@ -375,7 +378,7 @@ public class ReceiveBillDetailController {
                 .append(EasyExcelUtils.SPLIT_SYMBOL)
                 .toString());
         entity.setBottomData(bottomData);
-        entity.assembleTitlePictureStyle("D:\\资料\\图片1.png");
+        entity.assembleTitlePictureStyle(logo);
         Workbook workbook = EasyExcelUtils.autoGeneration("", entity);
 
         ServletOutputStream out = response.getOutputStream();

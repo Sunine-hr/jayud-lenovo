@@ -36,14 +36,16 @@ public class ImageRecog {
      */
     public static String discernBarCode(String urlPath, Integer type) throws Exception {
         BufferedImage image = null;
-        if (urlPath.endsWith(".pdf")){
-            image=PDF2ImgUtil.pdf2Image(urlPath,2,500);
-        }else {
+        BufferedImage copy = null;
+        if (urlPath.endsWith(".pdf")) {
+            image = PDF2ImgUtil.pdf2Image(urlPath, 2, 500);
+        } else {
             if (type == 1) {
                 image = ImageIO.read(new File(urlPath));
             } else {
                 URL url = new URL(urlPath);
                 image = ImageIO.read(url);
+//                copy = ConvertUtil.convert(image, BufferedImage.class);
             }
             if (image == null) {
                 return null;
@@ -72,6 +74,7 @@ public class ImageRecog {
             text = result.getText();
         } catch (NotFoundException e) {
             log.warn("识别条形失败,更改其他方案");
+            pic2 = image;
         }
         String reg = "^(\\d{13})$";
         Pattern r = Pattern.compile(reg);
@@ -81,9 +84,9 @@ public class ImageRecog {
         }
 
         if (StringUtils.isEmpty(text)) {
-            String base64 =ImageProcessing.imgToBase64(pic2);
+            String base64 = ImageProcessing.imgToBase64(pic2);
             System.out.println("转换base64 :" + base64);
-            String response = AlibabaOcrUtil.characterRecognition(base64,"f3b8f4766eda484b93bf1fbb6a11d462");
+            String response = AlibabaOcrUtil.characterRecognition(base64, "f3b8f4766eda484b93bf1fbb6a11d462");
             JSONObject jsonObject = new JSONObject(response);
             JSONArray prism_wordsInfo = jsonObject.getJSONArray("prism_wordsInfo");
 

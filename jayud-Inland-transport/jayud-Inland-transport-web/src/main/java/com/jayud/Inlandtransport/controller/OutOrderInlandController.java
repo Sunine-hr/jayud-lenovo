@@ -276,6 +276,7 @@ public class OutOrderInlandController {
         mainOrderForm.setBizUid(customerInfo.getLong("ywId"));
         mainOrderForm.setBizUname(customerInfo.getStr("ywName"));
 
+
         if (isEdit) {
             mainOrderForm.setOrderId(outOrderInlandTransportVO.getMainOrderId());
             mainOrderForm.setOrderNo(outOrderInlandTransportVO.getMainOrderNo());
@@ -297,7 +298,7 @@ public class OutOrderInlandController {
         mainOrderForm.setUnitCode(customerInfo.getStr("idCode"));
         mainOrderForm.setOperationTime(LocalDateTime.now());
         mainOrderForm.setCmd("preSubmit");
-        mainOrderForm.setOrderNo(form.getOrderNo());
+        mainOrderForm.setReferenceNo(form.getMainOrderNo());//第三方单号
 
         //组装内陆订单
         InputOrderInlandTransportForm inputOrderInlandTransportForm = new InputOrderInlandTransportForm();
@@ -340,6 +341,11 @@ public class OutOrderInlandController {
 
                 // 提货时间  dateOfDelivery
                 convert.setDeliveryDate(address.getDate());
+                convert.setGoodsName(address.getGoodsDesc());//货物描述
+                convert.setPlateAmount(address.getPieceAmount());//板数
+                convert.setBulkCargoAmount(address.getBulkCargoAmount());//件数
+                convert.setTotalWeight(address.getWeight());//重量
+                convert.setVolume(address.getVolume());//体积
                 orderTakeAdrForms1.add(convert);
             }
             inputOrderInlandTransportForm.setPickUpAddressList(orderTakeAdrForms1);
@@ -371,6 +377,11 @@ public class OutOrderInlandController {
 
                 // 送货时间
                 convert2.setDeliveryDate(address2.getDate());
+                convert2.setGoodsName(address2.getGoodsDesc());//货物描述
+                convert2.setPlateAmount(address2.getPieceAmount());//板数
+                convert2.setBulkCargoAmount(address2.getBulkCargoAmount());//件数
+                convert2.setTotalWeight(address2.getWeight());//重量
+                convert2.setVolume(address2.getVolume());//体积
                 orderDeliveryAddress2.add(convert2);
             }
             inputOrderInlandTransportForm.setOrderDeliveryAddressList(orderDeliveryAddress2);

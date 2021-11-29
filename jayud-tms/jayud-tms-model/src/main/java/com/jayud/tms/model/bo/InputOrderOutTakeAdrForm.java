@@ -39,4 +39,7 @@ public class InputOrderOutTakeAdrForm {
     @ApiModelProperty(value = "区")
     private String areaName;
 
+    @ApiModelProperty(value = "散货件数")
+    private Integer bulkCargoAmount;
+
 }

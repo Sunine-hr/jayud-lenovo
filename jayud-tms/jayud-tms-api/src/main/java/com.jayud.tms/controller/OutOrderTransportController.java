@@ -355,6 +355,12 @@ public class OutOrderTransportController {
 
                 // 提货时间
                 inputOrderTakeAdrForm.setTakeTimeStr(truckDate);
+
+                inputOrderTakeAdrForm.setGoodsDesc(orderTakeAdrForm1.getGoodsDesc());//货物描述
+                inputOrderTakeAdrForm.setPlateAmount(orderTakeAdrForm1.getPieceAmount());//板数
+                inputOrderTakeAdrForm.setPieceAmount(orderTakeAdrForm1.getBulkCargoAmount());//件数
+                inputOrderTakeAdrForm.setWeight(orderTakeAdrForm1.getWeight());//重量
+                inputOrderTakeAdrForm.setVolume(orderTakeAdrForm1.getVolume());//体积
                 orderTakeAdrForms1.add(inputOrderTakeAdrForm);
             }
             inputOrderTransportForm.setTakeAdrForms1(orderTakeAdrForms1);
@@ -386,6 +392,11 @@ public class OutOrderTransportController {
 
                 // 送货时间
                 inputOrderTakeAdrForm.setTakeTimeStr(receivingDate);
+                inputOrderTakeAdrForm.setGoodsDesc(orderTakeAdrForm2.getGoodsDesc());//货物描述
+                inputOrderTakeAdrForm.setPlateAmount(orderTakeAdrForm2.getPieceAmount());//板数
+                inputOrderTakeAdrForm.setPieceAmount(orderTakeAdrForm2.getBulkCargoAmount());//件数
+                inputOrderTakeAdrForm.setWeight(orderTakeAdrForm2.getWeight());//重量
+                inputOrderTakeAdrForm.setVolume(orderTakeAdrForm2.getVolume());//体积
                 orderTakeAdrForms2.add(inputOrderTakeAdrForm);
             }
             inputOrderTransportForm.setTakeAdrForms2(orderTakeAdrForms2);

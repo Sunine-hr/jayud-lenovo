@@ -2379,4 +2379,19 @@ public class ExternalApiController {
         ClientSecretKeyVO clientSecretKeyOne = this.clientSecretKeyService.findClientSecretPublicKeyOne(publicKey);
         return ApiResult.ok(clientSecretKeyOne);
     }
+
+
+    @ApiOperation(value = "根据主订单编号去关闭主订单")
+    @PostMapping("/api/deleteOrderInfoByIdOne")
+    public ApiResult deleteOrderInfoUpdateByIdOne(@RequestParam("orderNo") String  orderNo) {
+        Long mainOrderId = orderInfoService.getIdByOrderNo(orderNo);
+
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setId(mainOrderId);
+        orderInfo.setStatus(ProcessStatusEnum.CLOSE.getCode());
+        return ApiResult.ok(this.orderInfoService.updateById(orderInfo));
+    }
+
+
+
 }

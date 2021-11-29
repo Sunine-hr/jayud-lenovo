@@ -315,4 +315,11 @@ public interface OmsClient {
      */
     @PostMapping("/api/findClientSecretOne")
     public ApiResult findClientSecretOne(@RequestParam("cId") String cId);
+
+
+    /**
+     * 根据主订单编号去关闭主订单
+     */
+    @PostMapping("/api/deleteOrderInfoByIdOne")
+    public ApiResult deleteOrderInfoUpdateByIdOne(@RequestParam("orderNo") String  orderNo);
 }

@@ -331,6 +331,9 @@ public class HubShipping extends Model<HubShipping> {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime voidedByDtm;
 
+    @ApiModelProperty(value = "订车备注")
+    private String bookCarRemark;
+
 
     @Override
     protected Serializable pkVal() {

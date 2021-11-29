@@ -15,7 +15,9 @@ public enum TrainNumberStatusEnum {
     TWO(2,"已装车"),
     THREE(3,"已过关"),
     FOUR(4,"已到货"),
-    FIVE(5,"直送客户")
+    FIVE(5,"直送客户"),
+    SIX(6,"已订车提交"),
+    SENVE(7,"已明细提交"),
     ;
 
     private Integer code;

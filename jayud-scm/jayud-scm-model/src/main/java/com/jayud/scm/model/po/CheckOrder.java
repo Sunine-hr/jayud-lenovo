@@ -210,6 +210,9 @@ public class CheckOrder extends Model<CheckOrder> {
     @ApiModelProperty(value = "删除时间")
     private LocalDateTime voidedByDtm;
 
+    @ApiModelProperty(value = "订车备注")
+    private String bookCarRemark;
+
 
     @Override
     protected Serializable pkVal() {

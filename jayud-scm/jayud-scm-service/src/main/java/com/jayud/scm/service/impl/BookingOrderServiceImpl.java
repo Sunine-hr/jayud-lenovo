@@ -141,6 +141,8 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
             bookingOrder.setMdyByName(systemUser.getUserName());
             bookingOrder.setMdyByDtm(LocalDateTime.now());
 
+            bookingOrder.setStateFlag(StateFlagEnum.STATE_FLAG_0.getCode());//STATE_FLAG_0(0, "未确认"),
+
             this.saveOrUpdate(bookingOrder);
 
             BookingOrderFollow bookingOrderFollow = new BookingOrderFollow();
@@ -540,6 +542,8 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
             bookingOrder.setMdyBy(systemUser.getId().intValue());
             bookingOrder.setMdyByName(systemUser.getUserName());
             bookingOrder.setMdyByDtm(LocalDateTime.now());
+            //设置状态
+            bookingOrder.setStateFlag(StateFlagEnum.STATE_FLAG_NEGATIVE_4.getCode());//STATE_FLAG_0(0, "未确认"),
 
             this.saveOrUpdate(bookingOrder);
 

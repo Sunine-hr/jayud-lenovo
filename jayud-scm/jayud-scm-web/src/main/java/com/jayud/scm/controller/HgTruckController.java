@@ -119,6 +119,30 @@ public class HgTruckController {
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "车次状态撤回")
+    @PostMapping(value = "/withdrawalTrainNumberStatus")
+    public CommonResult withdrawalTrainNumberStatus(@RequestBody @Valid QueryCommonForm form) {
+        HgTruck hgTruck = this.hgTruckService.getById(form.getId());
+        if(hgTruck.getCheckStateFlag().equals("Y")){
+            return CommonResult.error(444,"请选择已审核的数据");
+        }
+        if(hgTruck.getStateFlag().equals(0)){
+            return CommonResult.error(444,"状态为未装车不能状态撤回");
+        }
+        if(hgTruck.getStateFlag().equals(6)){
+            return CommonResult.error(444,"已订车提交的港车单不能进行该操作");
+        }
+        if(hgTruck.getStateFlag().equals(7)){
+            return CommonResult.error(444,"已明细提交的港车单不能进行该操作");
+        }
+
+        boolean result = hgTruckService.withdrawalTrainNumberStatus(form);
+        if(!result){
+            return CommonResult.error(444,"车次状态撤回操作失败");
+        }
+        return CommonResult.success();
+    }
+
     @ApiOperation(value = "封条信息录入")
     @PostMapping(value = "/sealInformationEntry")
     public CommonResult sealInformationEntry(@RequestBody @Valid QueryCommonForm form) {

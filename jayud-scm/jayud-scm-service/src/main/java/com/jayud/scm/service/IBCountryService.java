@@ -20,4 +20,6 @@ import java.util.List;
 public interface IBCountryService extends IService<BCountry> {
 
     IPage<BCountryVO> findCountryList(QueryCountryForm form);
+
+    BCountry getBcountryByName(String startCountryNo);
 }

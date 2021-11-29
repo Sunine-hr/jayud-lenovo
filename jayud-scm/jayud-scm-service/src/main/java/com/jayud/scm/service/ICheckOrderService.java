@@ -33,4 +33,8 @@ public interface ICheckOrderService extends IService<CheckOrder> {
     boolean dispatch(List<Integer> checkIds, Integer id, String deliverNo);
 
     boolean deleteDispatch(List<Integer> checkIds);
+
+    boolean saveErrorInformation(CheckOrder checkOrder);
+
+    List<CheckOrder> getCheckOrderByDeliverId(Integer id);
 }

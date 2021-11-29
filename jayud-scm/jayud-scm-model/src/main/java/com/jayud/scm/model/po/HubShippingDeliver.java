@@ -153,6 +153,9 @@ public class HubShippingDeliver extends Model<HubShippingDeliver> {
     @ApiModelProperty(value = "司机ID")
     private Integer diverId;
 
+    @ApiModelProperty(value = "司机ID")
+    private Integer pushOms;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

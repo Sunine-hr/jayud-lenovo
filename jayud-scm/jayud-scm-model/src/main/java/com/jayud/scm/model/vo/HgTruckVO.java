@@ -181,4 +181,7 @@ public class HgTruckVO {
     @ApiModelProperty(value = "是否需要送货 0 否 1 是")
     private Integer isDelivery;
 
+    @ApiModelProperty(value = "推送中港次数")
+    private Integer pushTms;
+
 }

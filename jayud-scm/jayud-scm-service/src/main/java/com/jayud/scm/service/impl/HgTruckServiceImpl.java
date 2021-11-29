@@ -171,23 +171,23 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
 
     @Override
     public boolean updateTrainNumberStatus1(QueryCommonForm form) {
-        SystemUser systemUser = systemUserService.getSystemUserBySystemName(form.getUserName());
+//        SystemUser systemUser = systemUserService.getSystemUserBySystemName(form.getUserName());
 
         HgTruck hgTruck = new HgTruck();
         hgTruck.setId(form.getId());
         hgTruck.setStateFlag(TrainNumberStatusEnum.getCode(form.getTrainStatus()));
-        hgTruck.setMdyBy(systemUser.getId().intValue());
+//        hgTruck.setMdyBy(systemUser.getId().intValue());
         hgTruck.setMdyByDtm(LocalDateTime.now());
-        hgTruck.setMdyByName(systemUser.getUserName());
+//        hgTruck.setMdyByName(systemUser.getUserName());
         boolean update = this.updateById(hgTruck);
         if(update){
             HgTruckFollow hgTruckFollow = new HgTruckFollow();
             hgTruckFollow.setHgTruckId(hgTruck.getId());
             hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
-            hgTruckFollow.setFollowContext(systemUser.getUserName()+"修改车次状态为"+TrainNumberStatusEnum.getDesc(hgTruck.getStateFlag()));
-            hgTruckFollow.setCrtBy(systemUser.getId().intValue());
+            hgTruckFollow.setFollowContext("修改车次状态为"+TrainNumberStatusEnum.getDesc(hgTruck.getStateFlag()));
+//            hgTruckFollow.setCrtBy(systemUser.getId().intValue());
             hgTruckFollow.setCrtByDtm(LocalDateTime.now());
-            hgTruckFollow.setCrtByName(systemUser.getUserName());
+//            hgTruckFollow.setCrtByName(systemUser.getUserName());
             boolean save = hgTruckFollowService.save(hgTruckFollow);
             if(save){
                 log.warn("修改车次操作成功,操作日志添加成功");
@@ -231,6 +231,27 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
             }
         }
         return update;
+    }
+
+    @Override
+    public boolean withdrawalTrainNumberStatus(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        HgTruck hgTruck = this.getById(form.getId());
+        hgTruck.setStateFlag(hgTruck.getStateFlag()-1);
+        boolean result = this.saveOrUpdate(hgTruck);
+
+        if(result){
+            HgTruckFollow hgTruckFollow = new HgTruckFollow();
+            hgTruckFollow.setHgTruckId(hgTruck.getId());
+            hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
+            hgTruckFollow.setFollowContext("车次状态撤回为"+TrainNumberStatusEnum.getDesc(hgTruck.getStateFlag()));
+            hgTruckFollow.setCrtBy(systemUser.getId().intValue());
+            hgTruckFollow.setCrtByDtm(LocalDateTime.now());
+            hgTruckFollow.setCrtByName(systemUser.getUserName());
+            boolean save = hgTruckFollowService.save(hgTruckFollow);
+        }
+        return result;
     }
 
     @Override
@@ -348,7 +369,7 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
 
     @Override
     public boolean getManifest(String exHkNo, String truckNo,String userName) {
-        SystemUser systemUser = systemUserService.getSystemUserBySystemName(userName);
+//        SystemUser systemUser = systemUserService.getSystemUserBySystemName(userName);
 
         QueryWrapper<HgTruck> queryWrapper = new QueryWrapper();
         queryWrapper.lambda().eq(HgTruck::getTruckNo,truckNo);
@@ -360,10 +381,10 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
             HgTruckFollow hgTruckFollow = new HgTruckFollow();
             hgTruckFollow.setHgTruckId(hgTruck.getId());
             hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
-            hgTruckFollow.setFollowContext("数据接收成功，"+systemUser.getUserName()+"修改载货清单");
-            hgTruckFollow.setCrtBy(systemUser.getId().intValue());
+            hgTruckFollow.setFollowContext("数据接收成功，修改载货清单");
+//            hgTruckFollow.setCrtBy(systemUser.getId().intValue());
             hgTruckFollow.setCrtByDtm(LocalDateTime.now());
-            hgTruckFollow.setCrtByName(systemUser.getUserName());
+//            hgTruckFollow.setCrtByName(systemUser.getUserName());
             boolean save = hgTruckFollowService.save(hgTruckFollow);
             if(save){
                 log.warn("修改载货清单数据操作日志，添加成功");
@@ -374,21 +395,21 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
 
     @Override
     public boolean acceptTransportationInformation(AddHgTruckForm form) {
-        SystemUser systemUser = systemUserService.getSystemUserBySystemName(form.getUserName());
+//        SystemUser systemUser = systemUserService.getSystemUserBySystemName(form.getUserName());
 
         HgTruckFollow hgTruckFollow = new HgTruckFollow();
         HgTruck hgTruck = ConvertUtil.convert(form, HgTruck.class);
         if(hgTruck.getId() != null){
-            hgTruck.setMdyBy(systemUser.getId().intValue());
+//            hgTruck.setMdyBy(systemUser.getId().intValue());
             hgTruck.setMdyByDtm(LocalDateTime.now());
-            hgTruck.setMdyByName(systemUser.getUserName());
+//            hgTruck.setMdyByName(systemUser.getUserName());
             hgTruckFollow.setSType(OperationEnum.UPDATE.getCode());
             hgTruckFollow.setFollowContext("修改港车单"+hgTruck.getTruckNo());
         }else{
             hgTruck.setTruckNo(commodityService.getOrderNo(NoCodeEnum.HG_TRUCK.getCode(),LocalDateTime.now()));
-            hgTruck.setCrtBy(systemUser.getId().intValue());
+//            hgTruck.setCrtBy(systemUser.getId().intValue());
             hgTruck.setCrtByDtm(LocalDateTime.now());
-            hgTruck.setCrtByName(systemUser.getUserName());
+//            hgTruck.setCrtByName(systemUser.getUserName());
             hgTruckFollow.setSType(OperationEnum.INSERT.getCode());
             hgTruckFollow.setFollowContext("增加港车单"+hgTruck.getTruckNo());
         }
@@ -396,9 +417,9 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
         if(update){
             log.warn("添加或修改港车运输信息成功"+hgTruck);
             hgTruckFollow.setHgTruckId(hgTruck.getId());
-            hgTruckFollow.setMdyBy(systemUser.getId().intValue());
+//            hgTruckFollow.setMdyBy(systemUser.getId().intValue());
             hgTruckFollow.setMdyByDtm(LocalDateTime.now());
-            hgTruckFollow.setMdyByName(systemUser.getUserName());
+//            hgTruckFollow.setMdyByName(systemUser.getUserName());
             boolean save = hgTruckFollowService.save(hgTruckFollow);
             if(save){
                 log.warn("添加或修改港车运输信息,操作日志添加成功");

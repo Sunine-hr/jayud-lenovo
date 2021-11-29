@@ -218,6 +218,9 @@ public class AccountBankBillController {
     public CommonResult automaticallyGeneratePayment(@RequestBody QueryCommonForm form) {
 
         AcctReceipt acctReceipt = acctReceiptService.getAcctReceiptByJoinBillId(form.getId());
+        if(acctReceipt == null){
+            return CommonResult.error(444,"生成收款单之后才能自动核销");
+        }
         AcctPay acctPay = acctPayService.getAcctPayByPayToMeId(acctReceipt.getId());
         if (acctPay != null) {
             return CommonResult.error(444,"该水单已经生成付款单，不能重复生成");

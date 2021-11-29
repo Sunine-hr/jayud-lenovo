@@ -129,6 +129,7 @@ public class CommonController {
     @Autowired
     private IAcctPayService acctPayService;
 
+
     @ApiOperation(value = "根据id通用查询方法")
     @PostMapping(value = "/getClassById")
     public CommonResult<Map> getClassById(@Valid @RequestBody QueryCommonForm form) {

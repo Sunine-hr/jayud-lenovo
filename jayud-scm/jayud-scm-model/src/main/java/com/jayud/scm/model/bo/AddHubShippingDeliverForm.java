@@ -156,11 +156,36 @@ public class AddHubShippingDeliverForm {
     @ApiModelProperty(value = "司机ID")
     private Integer diverId;
 
+    @ApiModelProperty(value = "订单号")
+    private String orderNo;
+
     @ApiModelProperty(value = "出库单号")
     private String shippingNo;
 
     @ApiModelProperty(value = "提验货单号")
     private String checkNo;
 
+
+    public String checkParam(){
+//        if(this.idCode == null){
+//            return "司机证件号码不能为空";
+//        }
+        if(this.driverName == null){
+            return "司机姓名不能为空";
+        }
+        if(this.driverTel == null){
+            return "司机电话不能为空";
+        }
+        if(this.truckNo == null){
+            return "车牌不能为空";
+        }
+        if(this.deliverTime == null){
+            return "配送时间不能为空";
+        }
+        if(this.deliverName == null){
+            return "配送人不能为空";
+        }
+        return null;
+    }
 
 }

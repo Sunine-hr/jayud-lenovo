@@ -264,4 +264,33 @@ public class CheckOrderServiceImpl extends ServiceImpl<CheckOrderMapper, CheckOr
         }
         return result;
     }
+
+    @Override
+    public boolean saveErrorInformation(CheckOrder checkOrder) {
+
+        checkOrder.setMdyByDtm(LocalDateTime.now());
+
+        CheckOrderFollow checkOrderFollow = new CheckOrderFollow();
+        checkOrderFollow.setCheckId(checkOrder.getId());
+        checkOrderFollow.setSType(OperationEnum.UPDATE.getCode());
+        checkOrderFollow.setFollowContext("提验货单去绑配送车辆");
+        checkOrderFollow.setCrtByDtm(LocalDateTime.now());
+        boolean result = this.updateById(checkOrder);
+        if(result){
+            log.warn("提验货单去绑配送车辆成功");
+            boolean result1 = this.checkOrderFollowService.save(checkOrderFollow);
+            if(result1){
+                log.warn("提验货单去绑配送车辆操作日志添加成功");
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<CheckOrder> getCheckOrderByDeliverId(Integer id) {
+        QueryWrapper<CheckOrder> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CheckOrder::getShippingDeliverId,id);
+        queryWrapper.lambda().eq(CheckOrder::getVoided,0);
+        return this.list(queryWrapper);
+    }
 }

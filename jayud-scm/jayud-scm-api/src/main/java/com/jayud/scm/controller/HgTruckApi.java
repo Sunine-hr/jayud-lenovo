@@ -10,6 +10,7 @@ import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.RSAUtils;
 import com.jayud.common.utils.TokenGenerator;
@@ -47,6 +48,9 @@ public class HgTruckApi {
 
     @Value("${scmApi.url.updateTransportationUrl}")
     private String updateTransportationUrl;
+
+    @Value("${scmApi.url.carBookingSubmissionWithdrawal}")
+    private String carBookingSubmissionWithdrawal;
 
     @Value("${scmApi.url.loginUrl}")
     private String loginUrl;
@@ -155,6 +159,11 @@ public class HgTruckApi {
     public CommonResult carBookingSubmission(@RequestBody Map<String,Object> map) {
         Integer id = MapUtil.getInt(map, "id");
         HgTruckVO hgTruckVO = hgTruckService.getHgTruckById(id);
+
+        if(!hgTruckVO.getStateFlag().equals(0)){
+            return CommonResult.error(444,"请选择未装车的港车单进行操作");
+        }
+
         HgTruckApiVO hgTruckApiVO = new HgTruckApiVO();
         if(hgTruckVO.getModelType().equals(1)){
             hgTruckApiVO.setBizType("进口");
@@ -182,16 +191,21 @@ public class HgTruckApi {
 
 //        System.out.println("订车请求参数："+JSONUtil.toJsonStr(hgTruckApiVO));
         //加密参数
-        String s1 = null;
-        try {
-             s1 = RSAUtils.privateDecrypt(hgTruckApiVO.toString(), RSAUtils.getPrivateKey(RSAUtils.PRIVATE_KEY));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        String s1 = null;
+//        try {
+//             s1 = RSAUtils.privateEncrypt(JSONUtil.toJsonStr(hgTruckApiVO), RSAUtils.getPrivateKey(RSAUtils.PRIVATE_KEY));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("publicKey",RSAUtils.PUBLIC_KEY);
+//        jsonObject.put("appId",RSAUtils.APP_ID);
+//        jsonObject.put("data",s1);
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("AppId",RSAUtils.PUBLIC_KEY);
-        jsonObject.put("data",s1);
+        JSONObject jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(hgTruckApiVO));
+
+        System.out.println("加密后的参数："+jsonObject);
 
         //请求
         String feedback = HttpRequest
@@ -206,7 +220,7 @@ public class HgTruckApi {
         //解密数据
         String s = null;
         try {
-            s = RSAUtils.privateDecrypt(feedback, RSAUtils.getPrivateKey(RSAUtils.PRIVATE_KEY));
+            s = RSAUtils.publicDecrypt(feedback, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -215,6 +229,63 @@ public class HgTruckApi {
         Map map1 = JSONUtil.toBean(s, Map.class);
 //        System.out.println(map1);
         if(map1.get("code").equals(200)){
+            HgTruck hgTruck = ConvertUtil.convert(hgTruckVO, HgTruck.class);
+            hgTruck.setStateFlag(6);
+            hgTruck.setPushTms(1);
+            boolean result = this.hgTruckService.saveOrUpdate(hgTruck);
+            if(result){
+                log.warn("订车提交，订车单状态修改成功");
+            }
+            return CommonResult.success();
+        }
+        return CommonResult.error((Integer)map1.get("code"),(String)(map1.get("msg")!=null?map1.get("msg"):""));
+    }
+
+    @ApiOperation(value = "订车提交撤回")
+    @PostMapping(value = "/carBookingSubmissionWithdrawal")
+    public CommonResult carBookingSubmissionWithdrawal(@RequestBody Map<String,Object> map) {
+        Integer id = MapUtil.getInt(map, "id");
+        HgTruckVO hgTruckVO = hgTruckService.getHgTruckById(id);
+
+        if(!hgTruckVO.getStateFlag().equals(6) && !hgTruckVO.getStateFlag().equals(7) ){
+            return CommonResult.error(444,"请选择已订车提交或已明细提交的港车单进行操作");
+        }
+
+        Map<String,Object> map2 = new HashMap<>();
+        map2.put("orderNo",hgTruckVO.getTruckNo());
+        JSONObject jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(map2));
+
+        System.out.println("加密后的参数："+jsonObject);
+
+        //请求
+        String feedback = HttpRequest
+                .post(carBookingSubmissionWithdrawal)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+//                .header("token",s)
+//                .body(JSONUtil.toJsonStr(hgTruckApiVO))
+                .body(JSONUtil.toJsonStr(jsonObject))
+                .execute().body();
+        log.warn("carBookingSubmissionfeedback:"+feedback);
+
+        //解密数据
+        String s = null;
+        try {
+            s = RSAUtils.publicDecrypt(feedback, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //获取token
+        Map map1 = JSONUtil.toBean(s, Map.class);
+//        System.out.println(map1);
+        if(map1.get("code").equals(200)){
+            HgTruck hgTruck = ConvertUtil.convert(hgTruckVO, HgTruck.class);
+            hgTruck.setStateFlag(0);
+            hgTruck.setPushTms(0);
+            boolean result = this.hgTruckService.saveOrUpdate(hgTruck);
+            if(result){
+                log.warn("订车提交撤回，订车单状态修改成功");
+            }
             return CommonResult.success();
         }
         return CommonResult.error((Integer)map1.get("code"),(String)(map1.get("msg")!=null?map1.get("msg"):""));
@@ -226,6 +297,11 @@ public class HgTruckApi {
 
         Integer id = MapUtil.getInt(map, "id");
         HgTruckVO hgTruckVO = hgTruckService.getHgTruckById(id);
+
+        if(!hgTruckVO.getStateFlag().equals(6)){
+            return CommonResult.error(444,"请选择已订车提交的港车单进行操作");
+        }
+
         HgTruckApiVO hgTruckApiVO = new HgTruckApiVO();
         if(hgTruckVO.getModelType().equals(1)){
             hgTruckApiVO.setBizType("进口");
@@ -367,16 +443,22 @@ public class HgTruckApi {
 //        System.out.println("明细请求参数："+JSONUtil.toJsonStr(hgTruckApiVO));
 
         //加密参数
-        String s1 = null;
-        try {
-            s1 = RSAUtils.privateDecrypt(hgTruckApiVO.toString(), RSAUtils.getPrivateKey(RSAUtils.PRIVATE_KEY));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        String s1 = null;
+//        try {
+//            s1 = RSAUtils.privateEncrypt(JSONUtil.toJsonStr(hgTruckApiVO), RSAUtils.getPrivateKey(RSAUtils.PRIVATE_KEY));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("publicKey",RSAUtils.PUBLIC_KEY);
+//        jsonObject.put("appid",RSAUtils.APP_ID);
+//        jsonObject.put("data",s1);
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("AppId",RSAUtils.PUBLIC_KEY);
-        jsonObject.put("data",s1);
+        JSONObject jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(hgTruckApiVO));
+
+        System.out.println("加密后的参数："+jsonObject);
+
 
         //请求
         String feedback = HttpRequest
@@ -400,15 +482,22 @@ public class HgTruckApi {
         //获取token
         Map map1 = JSONUtil.toBean(s, Map.class);
         if(map1.get("code").equals(200)){
+            HgTruck hgTruck = ConvertUtil.convert(hgTruckVO, HgTruck.class);
+            hgTruck.setStateFlag(7);
+            hgTruck.setPushTms(2);
+            boolean result = this.hgTruckService.saveOrUpdate(hgTruck);
+            if(result){
+                log.warn("订车明细提交，订车单状态修改成功");
+            }
+
             return CommonResult.success();
         }
         return CommonResult.error(444,"明细提交失败");
     }
 
-
     @ApiOperation(value = "获取车次状态")
     @PostMapping(value = "/getTrainNumberStatus")
-    public CommonResult getTrainNumberStatus(@RequestBody Map<String,Object> map, HttpServletRequest request) {
+    public String getTrainNumberStatus(@RequestBody Map<String,Object> map, HttpServletRequest request) {
 //        String token = request.getHeader("token");
 //        if(StringUtils.isBlank(token)){
 //            return CommonResult.error(444,"未登录，请前往登录");
@@ -423,11 +512,17 @@ public class HgTruckApi {
         }
         QueryCommonForm form = JSONUtil.toBean(s, QueryCommonForm.class);
 
+        JSONObject jsonObject = null;
         if(StringUtils.isEmpty(form.getTrainStatus())){
-            return CommonResult.error(444,"车次状态为空");
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444,"车次状态为空")));
+            return JSONUtil.toJsonStr(jsonObject);
+
+//            return CommonResult.error(444,"车次状态为空");
         }
         if(StringUtils.isEmpty(form.getTruckNo())){
-            return CommonResult.error(444,"港车编号为空");
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444,"港车编号为空")));
+            return JSONUtil.toJsonStr(jsonObject);
+//            return CommonResult.error(444,"港车编号为空");
         }
 
         QueryWrapper<HgTruck> queryWrapper = new QueryWrapper();
@@ -435,20 +530,74 @@ public class HgTruckApi {
         queryWrapper.lambda().eq(HgTruck::getVoided,0);
         HgTruck hgTruck = hgTruckService.getOne(queryWrapper);
         if(hgTruck == null){
-            return CommonResult.error(444,"港车编号不存在");
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444,"港车编号不存在")));
+            return JSONUtil.toJsonStr(jsonObject);
+//            return CommonResult.error(444,"港车编号不存在");
         }
         form.setId(hgTruck.getId());
 
         boolean result = hgTruckService.updateTrainNumberStatus1(form);
         if(!result){
-            return CommonResult.error(444,"车次状态修改失败");
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444,"车次状态修改失败")));
+            return JSONUtil.toJsonStr(jsonObject);
         }
-        return CommonResult.success();
+        jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.success()));
+        return JSONUtil.toJsonStr(jsonObject);
+    }
+
+    @ApiOperation(value = "删除中港单")
+    @PostMapping(value = "/updateTrainNumberStatus")
+    public String updateTrainNumberStatus(@RequestBody Map<String,Object> map, HttpServletRequest request) {
+//        String token = request.getHeader("token");
+//        if(StringUtils.isBlank(token)){
+//            return CommonResult.error(444,"未登录，请前往登录");
+//        }
+        String data = MapUtil.getStr(map, "data");
+
+        String s = null;
+        try {
+            s = RSAUtils.publicDecrypt(data, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Map map1 = JSONUtil.toBean(s, Map.class);
+
+        String orderNo = MapUtil.getStr(map1, "orderNo");
+
+        JSONObject jsonObject = null;
+
+        if(StringUtils.isEmpty(orderNo)){
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444,"港车编号为空")));
+            return JSONUtil.toJsonStr(jsonObject);
+//            return CommonResult.error(444,"港车编号为空");
+        }
+
+        QueryWrapper<HgTruck> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(HgTruck::getTruckNo,orderNo);
+        queryWrapper.lambda().eq(HgTruck::getVoided,0);
+        HgTruck hgTruck = hgTruckService.getOne(queryWrapper);
+        if(hgTruck == null){
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444,"港车编号不存在")));
+            return JSONUtil.toJsonStr(jsonObject);
+//            return CommonResult.error(444,"港车编号不存在");
+        }
+        hgTruck.setStateFlag(0);
+        hgTruck.setPushTms(0);
+
+        boolean result = hgTruckService.saveOrUpdate(hgTruck);
+        if(!result){
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444,"车次状态修改失败")));
+            return JSONUtil.toJsonStr(jsonObject);
+//            return CommonResult.error(444,"车次状态修改失败");
+        }
+        jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.success()));
+        return JSONUtil.toJsonStr(jsonObject);
+//        return CommonResult.success();
     }
 
     @ApiOperation(value = "获取载货清单")
     @PostMapping(value = "/getManifest")
-    public CommonResult getManifest(@RequestBody Map<String,Object> map, HttpServletRequest request) {
+    public String getManifest(@RequestBody Map<String,Object> map, HttpServletRequest request) {
 //        String token = request.getHeader("token");
 //        if(StringUtils.isBlank(token)){
 //            return CommonResult.error(444,"未登录，请前往登录");
@@ -467,11 +616,18 @@ public class HgTruckApi {
         String truckNo = MapUtil.getStr(map1, "truckNo");
         String userName = MapUtil.getStr(map1, "userName");
 
+        JSONObject jsonObject = null;
+
         if(StringUtils.isEmpty(truckNo)){
-            return CommonResult.error(444,"港车编号为空");
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444," " +
+                    "")));
+            return JSONUtil.toJsonStr(jsonObject);
+//            return CommonResult.error(444,"港车编号为空");
         }
         if(StringUtils.isEmpty(exHkNo)){
-            return CommonResult.error(444,"载货清单为空");
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444,"载货清单为空")));
+            return JSONUtil.toJsonStr(jsonObject);
+//            return CommonResult.error(444,"载货清单为空");
         }
 
         QueryWrapper<HgTruck> queryWrapper = new QueryWrapper();
@@ -479,19 +635,25 @@ public class HgTruckApi {
         queryWrapper.lambda().eq(HgTruck::getVoided,0);
         HgTruck hgTruck = hgTruckService.getOne(queryWrapper);
         if(hgTruck == null){
-            return CommonResult.error(444,"港车编号不存在");
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444,"港车编号不存在")));
+            return JSONUtil.toJsonStr(jsonObject);
+//            return CommonResult.error(444,"港车编号不存在");
         }
 
         boolean result = hgTruckService.getManifest(exHkNo,truckNo,userName);
         if(!result){
-            return CommonResult.error(444,"载货清单修改失败");
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444,"载货清单修改失败")));
+            return JSONUtil.toJsonStr(jsonObject);
+//            return CommonResult.error(444,"载货清单修改失败");
         }
-        return CommonResult.success();
+        jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.success()));
+        return JSONUtil.toJsonStr(jsonObject);
+//        return CommonResult.success();
     }
 
     @ApiOperation(value = "接受运输公司等信息")
     @PostMapping(value = "/acceptTransportationInformation")
-    public CommonResult acceptTransportationInformation(@RequestBody Map<String,Object> map,HttpServletRequest request) {
+    public String acceptTransportationInformation(@RequestBody Map<String,Object> map,HttpServletRequest request) {
 
 //        String token = request.getHeader("token");
 //        if(StringUtils.isBlank(token)){
@@ -508,8 +670,12 @@ public class HgTruckApi {
         }
         AddHgTruckForm form = JSONUtil.toBean(s, AddHgTruckForm.class);
 
+        JSONObject jsonObject = null;
+
         if(StringUtils.isEmpty(form.getTruckCompany())){
-            return CommonResult.error(444,"运输公司不能为空");
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444,"运输公司不能为空")));
+            return JSONUtil.toJsonStr(jsonObject);
+//            return CommonResult.error(444,"运输公司不能为空");
         }
 
         QueryWrapper<HgTruck> queryWrapper = new QueryWrapper();
@@ -517,15 +683,21 @@ public class HgTruckApi {
         queryWrapper.lambda().eq(HgTruck::getVoided,0);
         HgTruck hgTruck = hgTruckService.getOne(queryWrapper);
         if(hgTruck == null){
-            return CommonResult.error(444,"港车编号不存在");
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444,"港车编号不存在")));
+            return JSONUtil.toJsonStr(jsonObject);
+//            return CommonResult.error(444,"港车编号不存在");
         }
         form.setId(hgTruck.getId());
 
         boolean result = hgTruckService.acceptTransportationInformation(form);
         if(!result){
-            return CommonResult.error(444,"接收成功，运输信息修改失败");
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444,"接收成功，运输信息修改失败")));
+            return JSONUtil.toJsonStr(jsonObject);
+//            return CommonResult.error(444,"接收成功，运输信息修改失败");
         }
-        return CommonResult.success();
+        jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.success()));
+        return JSONUtil.toJsonStr(jsonObject);
+//        return CommonResult.success();
     }
 
     //登录

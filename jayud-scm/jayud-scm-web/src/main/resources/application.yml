@@ -74,6 +74,7 @@ secure:
       - /hgBill/getSingleWindowData
       - /hgBill/getHgBillDataByDeclareState
       - /hgBill/updateHgBill
+      - /common/importExcel
 feign:
   httpclient:
     connection-timeout: 5000

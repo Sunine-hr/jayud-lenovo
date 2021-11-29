@@ -1,6 +1,8 @@
 package com.jayud.common.utils;
 
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.jayud.common.CommonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -23,9 +25,9 @@ public class RSAUtils {
     public static final String CHARSET = "UTF-8";
     public static final String RSA_ALGORITHM = "RSA";
 
-    public static final String PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAISmyTcBa3np3or9pXiZ7aK9nIFfYffyJBwr6oURdDb2rMP44aN8KuJ3knL/N4QRpZddwJnrdYAfmaIXa7bADYECAwEAAQ==";
-    public static final String PRIVATE_KEY = "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAhKbJNwFreeneiv2leJntor2cgV9h9/IkHCvqhRF0Nvasw/jho3wq4neScv83hBGll13Amet1gB+ZohdrtsANgQIDAQABAkBacQjhmvM3RO/5XeTS7EgsXBD32BuInKxoFL0qCvNsgRkQcvckq6mjjgJ4O3qSgBl7HV9M0ve/4MJgiLjBB4qRAiEAxGIe9FuWbsgEt20D4IPpZRAtsvR5IG4XdiD18bep0d0CIQCs68P8dydCJ69rV3yDOYyK68+zwNS0uJtVRFk+T4A59QIgGSx+zVIkQYUwXZcC5TfjpknhocwG7upN5Z2qCVdC1J0CIHbAhtyHu6c798VA1JqN2A3DeeVZRPpDWTGKebtH/6hNAiEAvFIJpsM4z5MK6or152N2jJ4JxYBnRovVq//+gdGMSvU=";
-
+    public static final String PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL7q_PqXeAdSxbk2DcujrQdwQbRI0HqpowVDo-ZiNEI2eIh_odjTkQN4skvvXDfbzcKUEwclxl8XM0dQxDMTT5UCAwEAAQ";
+    public static final String PRIVATE_KEY = "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAvur8-pd4B1LFuTYNy6OtB3BBtEjQeqmjBUOj5mI0QjZ4iH-h2NORA3iyS-9cN9vNwpQTByXGXxczR1DEMxNPlQIDAQABAkBNRhOK4g_k9u2sn2JKED-SiS8u52HqpAqlsNEACLOaMHrq_XwSzxCQ82DGnLzbhF8PRt5lgvcDWPscW1D7md8BAiEA4f_r9zS1oa4yq6yTeOZ9WtNtM1V9CwrGYU20C_LmynUCIQDYQuS0YrsOxo5y7NJjDghHs5ZObMH-JjQnEFh5kZ6MoQIgEwLdTbFQaiZmOszMpwn0l5Rbhkr1tt0ULRFFSRAI3BUCID48-i8D3wvAjwx6JY5GYpGoGJDXcfkfq5C2fo_2HaghAiBZNarD68AqGWCqVU05Z4VEummlchrRdVECeRgVi43R5g";
+    public static final String APP_ID = "1637655615848";
 
     public static Map<String, String> createKeys(int keySize){
         //为RSA算法创建一个KeyPairGenerator对象
@@ -198,6 +200,23 @@ public class RSAUtils {
         keyPairArr[1] = privateKey;
 
         return keyPairArr;
+    }
+
+    //加密数据
+    public static JSONObject getEncryptedData(Object o){
+        String s1 = null;
+        try {
+            s1 = RSAUtils.privateEncrypt(JSONUtil.toJsonStr(o), RSAUtils.getPrivateKey(RSAUtils.PRIVATE_KEY));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("publicKey",RSAUtils.PUBLIC_KEY);
+        jsonObject.put("appId",RSAUtils.APP_ID);
+        jsonObject.put("data",s1);
+
+        return jsonObject;
     }
 
     public static void main(String[] args) throws Exception {

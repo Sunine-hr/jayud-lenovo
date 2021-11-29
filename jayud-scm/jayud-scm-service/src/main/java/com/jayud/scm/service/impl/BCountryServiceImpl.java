@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.scm.model.bo.BasePageForm;
@@ -10,6 +11,7 @@ import com.jayud.scm.model.vo.BCountryVO;
 import com.jayud.scm.model.vo.HsCodeFormVO;
 import com.jayud.scm.service.IBCountryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.bouncycastle.operator.bc.BcAESSymmetricKeyUnwrapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,5 +31,13 @@ public class BCountryServiceImpl extends ServiceImpl<BCountryMapper, BCountry> i
     public IPage<BCountryVO> findCountryList(QueryCountryForm form) {
         Page<BCountryVO> page = new Page<>(form.getPageNum(),form.getPageSize() );
         return this.baseMapper.findCountryList(form,page);
+    }
+
+    @Override
+    public BCountry getBcountryByName(String startCountryNo) {
+        QueryWrapper<BCountry> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(BCountry::getNameCh,startCountryNo);
+        queryWrapper.lambda().eq(BCountry::getVoided,0);
+        return this.getOne(queryWrapper);
     }
 }

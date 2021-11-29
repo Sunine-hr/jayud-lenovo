@@ -25,13 +25,46 @@ public class YunBaoGuanData {
     private Integer pid;
 
     @ApiModelProperty(value = "")
-    private Integer modelType;
-
-    @ApiModelProperty(value = "")
     private String entryType;
 
     @ApiModelProperty(value = "")
-    private String customerNo;
+    private Integer declareId;
+
+    @ApiModelProperty(value = "")
+    private Integer declareGroupId;
+
+    @ApiModelProperty(value = "")
+    private String indateDt;
+
+    @ApiModelProperty(value = "")
+    private String portNo2;
+
+    @ApiModelProperty(value = "")
+    private String soNo;
+
+    @ApiModelProperty(value = "")
+    private String recordsNo;
+
+    @ApiModelProperty(value = "")
+    private String transmodeNo;
+
+    @ApiModelProperty(value = "")
+    private String tradeNo;
+
+    @ApiModelProperty(value = "")
+    private String tradeCountryNo;
+
+    @ApiModelProperty(value = "")
+    private String bargainmodeNo;
+
+    @ApiModelProperty(value = "")
+    private String imposemodeNo;
+
+    @ApiModelProperty(value = "")
+    private String imposeNo;
+
+    @ApiModelProperty(value = "")
+    private String licenceNo;
 
     @ApiModelProperty(value = "")
     private String customerCustomsCode;
@@ -46,7 +79,13 @@ public class YunBaoGuanData {
     private String endCountryNo;
 
     @ApiModelProperty(value = "")
+    private String loadportNo;
+
+    @ApiModelProperty(value = "")
     private String portNo;
+
+    @ApiModelProperty(value = "")
+    private String bookNo;
 
     @ApiModelProperty(value = "")
     private LocalDateTime billDate;
@@ -58,16 +97,40 @@ public class YunBaoGuanData {
     private String incotermsNo;
 
     @ApiModelProperty(value = "")
+    private String remitmodeNo;
+
+    @ApiModelProperty(value = "")
     private String currencyNo;
 
     @ApiModelProperty(value = "")
     private String freightNo;
 
     @ApiModelProperty(value = "")
-    private String freight;
+    private String freightmodeNo;
 
     @ApiModelProperty(value = "")
-    private String freightCurrency;
+    private BigDecimal freight;
+
+    @ApiModelProperty(value = "")
+    private String freightCurrencyNo;
+
+    @ApiModelProperty(value = "")
+    private String subscribemodeNo;
+
+    @ApiModelProperty(value = "")
+    private BigDecimal subscribe;
+
+    @ApiModelProperty(value = "")
+    private String subscribeCurrencyNo;
+
+    @ApiModelProperty(value = "")
+    private String incidentalmodeNo;
+
+    @ApiModelProperty(value = "")
+    private String incidentalCurrencyNo;
+
+    @ApiModelProperty(value = "")
+    private BigDecimal incidental;
 
     @ApiModelProperty(value = "")
     private String premiumNo;
@@ -94,7 +157,13 @@ public class YunBaoGuanData {
     private String entryPackages;
 
     @ApiModelProperty(value = "")
-    private String packNO;
+    private String packNo;
+
+    @ApiModelProperty(value = "")
+    private BigDecimal grossweight;
+
+    @ApiModelProperty(value = "")
+    private BigDecimal netweight;
 
     @ApiModelProperty(value = "")
     private BigDecimal gw;
@@ -103,13 +172,19 @@ public class YunBaoGuanData {
     private BigDecimal nw;
 
     @ApiModelProperty(value = "")
-    private String entryNw;
+    private BigDecimal entryNw;
 
     @ApiModelProperty(value = "")
-    private String entryGw;
+    private BigDecimal entryGw;
 
     @ApiModelProperty(value = "")
     private String cnTruckNo;
+
+    @ApiModelProperty(value = "")
+    private String asorigincode;
+
+    @ApiModelProperty(value = "")
+    private String truckNo;
 
     @ApiModelProperty(value = "")
     private String cnTruckNo1;
@@ -130,37 +205,78 @@ public class YunBaoGuanData {
     private String cabinetNo;
 
     @ApiModelProperty(value = "")
+    private String cabinNo;
+
+    @ApiModelProperty(value = "")
+    private String numNo;
+
+    @ApiModelProperty(value = "")
     private String lockNum;
 
     @ApiModelProperty(value = "")
-    private String itemName;
+    private String drawbackNo;
 
     @ApiModelProperty(value = "")
-    private String itemModel;
+    private String vessel;
 
     @ApiModelProperty(value = "")
-    private String itemBrand;
+    private String sellerTel;
+
+
+
+    @ApiModelProperty(value = "")
+    private String tsgxqr;
+
+    @ApiModelProperty(value = "")
+    private String jgyxqr;
+
+    @ApiModelProperty(value = "")
+    private String zftxqsyfqr;
+
+    @ApiModelProperty(value = "")
+    private String note;
+
+
+
+
+    @ApiModelProperty(value = "")
+    private String itemNo;
+
+    @ApiModelProperty(value = "")
+    private String goodsName;
+
+    @ApiModelProperty(value = "")
+    private String goodsNo;
+
+    @ApiModelProperty(value = "")
+    private String goodsSpec;
 
     @ApiModelProperty(value = "")
     private String elements;
 
     @ApiModelProperty(value = "")
+    private BigDecimal amount;
+
+    @ApiModelProperty(value = "")
+    private BigDecimal sum;
+
+    @ApiModelProperty(value = "")
     private String unitNo;
 
     @ApiModelProperty(value = "")
-    private String unitNo2;
+    private String unit02No;
 
     @ApiModelProperty(value = "")
-    private String unitNo3;
+    private String unit03No;
 
     @ApiModelProperty(value = "")
-    private BigDecimal qty;
+    private BigDecimal amount02;
 
     @ApiModelProperty(value = "")
-    private BigDecimal qty2;
+    private BigDecimal amount03;
 
     @ApiModelProperty(value = "")
-    private BigDecimal qty3;
+    private BigDecimal price;
 
     @ApiModelProperty(value = "")
     private BigDecimal cipPrice;
@@ -169,10 +285,10 @@ public class YunBaoGuanData {
     private BigDecimal totalCipPrice;
 
     @ApiModelProperty(value = "")
-    private String CountryNo;
+    private String countryNo;
 
     @ApiModelProperty(value = "")
-    private String OtherCountryNo;
+    private String otherCountryNo;
 
     @ApiModelProperty(value = "")
     private String sysCustomerName;
@@ -186,8 +302,8 @@ public class YunBaoGuanData {
     @ApiModelProperty(value = "")
     private String agentName;
 
-    @ApiModelProperty(value = "")
-    private String agentNo;
+//    @ApiModelProperty(value = "")
+//    private String agentNo;
 
     @ApiModelProperty(value = "")
     private String agentCode;
@@ -217,10 +333,7 @@ public class YunBaoGuanData {
     private String billEntryId;
 
     @ApiModelProperty(value = "")
-    private String itemNo;
-
-    @ApiModelProperty(value = "")
-    private String despport;
+    private String despPort;
 
     @ApiModelProperty(value = "")
     private String goodsplace;
@@ -235,7 +348,16 @@ public class YunBaoGuanData {
     private String buyerNo;
 
     @ApiModelProperty(value = "")
+    private String buyersAddress;
+
+    @ApiModelProperty(value = "")
+    private String buyersTel;
+
+    @ApiModelProperty(value = "")
     private String buyerName;
+
+    @ApiModelProperty(value = "")
+    private String busNo;
 
     @ApiModelProperty(value = "")
     private String exgNo;
@@ -259,6 +381,24 @@ public class YunBaoGuanData {
     private String consigneeNo;
 
     @ApiModelProperty(value = "")
+    private String contractNo;
+
+    @ApiModelProperty(value = "")
+    private String contractDt;
+
+    @ApiModelProperty(value = "")
+    private String invoiceDt;
+
+    @ApiModelProperty(value = "")
+    private String invoiceNo;
+
+    @ApiModelProperty(value = "")
+    private String signedAt;
+
+    @ApiModelProperty(value = "")
+    private String piece;
+
+    @ApiModelProperty(value = "")
     private String consigneeName;
 
     @ApiModelProperty(value = "")
@@ -270,8 +410,8 @@ public class YunBaoGuanData {
     @ApiModelProperty(value = "")
     private String shipperCode;
 
-    @ApiModelProperty(value = "")
-    private String shipperNo;
+//    @ApiModelProperty(value = "")
+//    private String shipperNo;
 
     @ApiModelProperty(value = "")
     private String gsdjqr;

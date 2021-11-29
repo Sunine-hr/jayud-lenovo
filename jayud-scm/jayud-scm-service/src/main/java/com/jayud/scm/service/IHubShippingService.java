@@ -44,4 +44,8 @@ public interface IHubShippingService extends IService<HubShipping> {
     boolean updateHubShippingByDeliverId(Integer id);
 
     boolean updateHubShippingStateByDeliverId(Integer id);
+
+    boolean saveErrorInformation(HubShipping hubShipping);
+
+    List<HubShipping> getHubShippingByDeliverId(Integer id);
 }

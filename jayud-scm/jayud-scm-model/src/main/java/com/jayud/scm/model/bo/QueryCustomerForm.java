@@ -36,6 +36,9 @@ public class QueryCustomerForm extends BasePageForm{
     @ApiModelProperty("审核状态 全部、未审核、已审核 N1 N2 N3")
     private String auditStatus;
 
+    @ApiModelProperty("审核状态 全部、未审核、已审核 N1 N2 N3")
+    private String checkStateFlag;
+
     @ApiModelProperty("创建日期")
     private String[] createTime;
 

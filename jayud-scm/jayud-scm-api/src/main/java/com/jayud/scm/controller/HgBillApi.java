@@ -76,6 +76,12 @@ public class HgBillApi {
     @Value("${yunbaoguan.urls.trust-trace}")
     String trustTraceUrl;
 
+    @Autowired
+    private IBCountryService bCountryService;
+
+    @Autowired
+    private IBDataDicEntryService ibDataDicEntryService;
+
 
     @ApiOperation(value = "提交云报关")
     @PostMapping(value = "/submitYunBaoGuan")
@@ -83,52 +89,74 @@ public class HgBillApi {
 
         List<YunBaoGuanData> yunBaoGuanData = hgBillService.getYunBaoGuanData(form.getId());
         HgBill hgBill1 = hgBillService.getById(form.getId());
+//        if(!hgBill1.getCustomsDate().equals(0)){
+//            return CommonResult.error(444,"该报关单已推送云报关，无法重复推送");
+//        }
         PushOrderForm pushOrderForm = new PushOrderForm();
 
         //拼接数据传到云报关
         if(CollectionUtil.isNotEmpty(yunBaoGuanData)){
-            CustomsHeadForm customsHeadForm = ConvertUtil.convert(yunBaoGuanData.get(0), CustomsHeadForm.class);
             YunBaoGuanData yunBaoGuanData1 = yunBaoGuanData.get(0);
-            if(yunBaoGuanData.get(0).getModelType().equals(1)){
-                customsHeadForm.setDeclareId(2);
-            }else{
-                customsHeadForm.setDeclareId(1);
-            }
+            CustomsHeadForm customsHeadForm = ConvertUtil.convert(yunBaoGuanData1, CustomsHeadForm.class);
+//            YunBaoGuanData yunBaoGuanData1 = yunBaoGuanData.get(0);
+//            if(yunBaoGuanData.get(0).getModelType().equals(1)){
+//                customsHeadForm.setDeclareId(2);
+//            }else{
+//                customsHeadForm.setDeclareId(1);
+//            }
             customsHeadForm.setUid(hgBill1.getUid());
-            customsHeadForm.setIndateDt(yunBaoGuanData1.getBillDate());
             customsHeadForm.setNote("供应链系统推送");
             customsHeadForm.setDeclareGroupId(1);
 
-            List<CustomsGoodsForm> goodsForms = new ArrayList<>();
-            for (YunBaoGuanData yunBaoGuanDatum : yunBaoGuanData) {
-                CustomsGoodsForm customsGoodsForm = new CustomsGoodsForm();
-                customsGoodsForm.setGoodsNo(yunBaoGuanDatum.getItemNo());
-                customsGoodsForm.setGoodsName(yunBaoGuanDatum.getItemName());
-                customsGoodsForm.setGoodsSpec(yunBaoGuanDatum.getItemModel());
-//                customsGoodsForm.setGoodsNo("111111");
-//                customsGoodsForm.setGoodsName("测试商品");
-//                customsGoodsForm.setGoodsSpec("测试型号");
-                customsGoodsForm.setAmount(yunBaoGuanDatum.getQty());
-                customsGoodsForm.setAmount02(yunBaoGuanDatum.getQty2());
-                customsGoodsForm.setAmount03(yunBaoGuanDatum.getQty3());
-                customsGoodsForm.setUnitNo(yunBaoGuanDatum.getUnitNo());
-                customsGoodsForm.setUnit02No(yunBaoGuanDatum.getUnitNo3());
-                customsGoodsForm.setUnit03No(yunBaoGuanDatum.getUnitNo3());
-                customsGoodsForm.setCountryNo(yunBaoGuanDatum.getCountryNo());
-                customsGoodsForm.setOtherCountryNo(yunBaoGuanDatum.getOtherCountryNo());
-                customsGoodsForm.setSum(yunBaoGuanDatum.getTotalCipPrice());
-                customsGoodsForm.setPrice(yunBaoGuanDatum.getCipPrice());
-                customsGoodsForm.setCurrencyNo(yunBaoGuanDatum.getCurrencyNo());
-                customsGoodsForm.setGrossWeight(yunBaoGuanDatum.getGw());
-                customsGoodsForm.setNetWeight(yunBaoGuanDatum.getNw());
-                customsGoodsForm.setPiece(yunBaoGuanDatum.getPackages());
-                customsGoodsForm.setSjgoodsNo(yunBaoGuanDatum.getSjgoodsNo());
-                customsGoodsForm.setGjf(yunBaoGuanDatum.getGif());
-                customsGoodsForm.setCiqName(yunBaoGuanDatum.getCiqName());
-                customsGoodsForm.setDistrictCode(yunBaoGuanDatum.getDistrictcode());
-                customsGoodsForm.setOriginCode(yunBaoGuanDatum.getOrigincode());
-                goodsForms.add(customsGoodsForm);
+            //改换国家为国家代码
+            if(customsHeadForm.getStartCountryNo() != null){
+                customsHeadForm.setStartCountryNo(bCountryService.getBcountryByName(customsHeadForm.getStartCountryNo()).getThreeCharacterCode());
             }
+            if(customsHeadForm.getTradeCountryNo() != null){
+                customsHeadForm.setTradeCountryNo(bCountryService.getBcountryByName(customsHeadForm.getTradeCountryNo()).getThreeCharacterCode());
+            }
+            //改换港口为港口代码
+            if(customsHeadForm.getPortNo() != null){
+                customsHeadForm.setPortNo(ibDataDicEntryService.getBDataDicEntryByDicCode("1064",customsHeadForm.getPortNo()).getReserved1());
+            }
+            if(customsHeadForm.getPortNo2() != null){
+                customsHeadForm.setPortNo(ibDataDicEntryService.getBDataDicEntryByDicCode("1064",customsHeadForm.getPortNo2()).getReserved1());
+            }
+            if(customsHeadForm.getDespPort() != null){
+                customsHeadForm.setPortNo(ibDataDicEntryService.getBDataDicEntryByDicCode("1064",customsHeadForm.getDespPort()).getReserved1());
+            }
+
+            List<CustomsGoodsForm> goodsForms = ConvertUtil.convertList(yunBaoGuanData,CustomsGoodsForm.class);
+
+//            for (YunBaoGuanData yunBaoGuanDatum : yunBaoGuanData) {
+//                CustomsGoodsForm customsGoodsForm = new CustomsGoodsForm();
+//                customsGoodsForm.setGoodsNo(yunBaoGuanDatum.getItemNo());
+//                customsGoodsForm.setGoodsName(yunBaoGuanDatum.getItemName());
+//                customsGoodsForm.setGoodsSpec(yunBaoGuanDatum.getItemModel());
+////                customsGoodsForm.setGoodsNo("111111");
+////                customsGoodsForm.setGoodsName("测试商品");
+////                customsGoodsForm.setGoodsSpec("测试型号");
+//                customsGoodsForm.setAmount(yunBaoGuanDatum.getQty());
+//                customsGoodsForm.setAmount02(yunBaoGuanDatum.getQty2());
+//                customsGoodsForm.setAmount03(yunBaoGuanDatum.getQty3());
+//                customsGoodsForm.setUnitNo(yunBaoGuanDatum.getUnitNo());
+//                customsGoodsForm.setUnit02No(yunBaoGuanDatum.getUnitNo3());
+//                customsGoodsForm.setUnit03No(yunBaoGuanDatum.getUnitNo3());
+//                customsGoodsForm.setCountryNo(yunBaoGuanDatum.getCountryNo());
+//                customsGoodsForm.setOtherCountryNo(yunBaoGuanDatum.getOtherCountryNo());
+//                customsGoodsForm.setSum(yunBaoGuanDatum.getTotalCipPrice());
+//                customsGoodsForm.setPrice(yunBaoGuanDatum.getCipPrice());
+//                customsGoodsForm.setCurrencyNo(yunBaoGuanDatum.getCurrencyNo());
+//                customsGoodsForm.setGrossWeight(yunBaoGuanDatum.getGw());
+//                customsGoodsForm.setNetWeight(yunBaoGuanDatum.getNw());
+//                customsGoodsForm.setPiece(yunBaoGuanDatum.getPackages());
+//                customsGoodsForm.setSjgoodsNo(yunBaoGuanDatum.getSjgoodsNo());
+//                customsGoodsForm.setGjf(yunBaoGuanDatum.getGif());
+//                customsGoodsForm.setCiqName(yunBaoGuanDatum.getCiqName());
+//                customsGoodsForm.setDistrictCode(yunBaoGuanDatum.getDistrictcode());
+//                customsGoodsForm.setOriginCode(yunBaoGuanDatum.getOrigincode());
+//                goodsForms.add(customsGoodsForm);
+//            }
             pushOrderForm.setGdtl(goodsForms);
             pushOrderForm.setHead(customsHeadForm);
         }

@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
@@ -424,29 +425,60 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
         queryWrapper.lambda().eq(HubShipping::getVoided,0);
         List<HubShipping> hubShippings = this.list(queryWrapper);
 
-        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+        if(CollectionUtil.isNotEmpty(hubShippings)){
+            SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 
-        List<HubShippingFollow> follows = new ArrayList<>();
-        for (HubShipping hubShipping : hubShippings) {
-            hubShipping.setStateFlag(1);
-            hubShipping.setMdyBy(systemUser.getId().intValue());
-            hubShipping.setMdyByDtm(LocalDateTime.now());
-            hubShipping.setMdyByName(systemUser.getUserName());
+            List<HubShippingFollow> follows = new ArrayList<>();
+            for (HubShipping hubShipping : hubShippings) {
+                hubShipping.setStateFlag(1);
+                hubShipping.setMdyBy(systemUser.getId().intValue());
+                hubShipping.setMdyByDtm(LocalDateTime.now());
+                hubShipping.setMdyByName(systemUser.getUserName());
 
-            HubShippingFollow hubShippingFollow = new HubShippingFollow();
-            hubShippingFollow.setShippingId(hubShipping.getId());
-            hubShippingFollow.setSType(OperationEnum.UPDATE.getCode());
-            hubShippingFollow.setFollowContext("该出库单状态回撤为未出库");
-            hubShippingFollow.setCrtBy(systemUser.getId().intValue());
-            hubShippingFollow.setCrtByDtm(LocalDateTime.now());
-            hubShippingFollow.setCrtByName(systemUser.getUserName());
-            follows.add(hubShippingFollow);
+                HubShippingFollow hubShippingFollow = new HubShippingFollow();
+                hubShippingFollow.setShippingId(hubShipping.getId());
+                hubShippingFollow.setSType(OperationEnum.UPDATE.getCode());
+                hubShippingFollow.setFollowContext("该出库单状态回撤为未出库");
+                hubShippingFollow.setCrtBy(systemUser.getId().intValue());
+                hubShippingFollow.setCrtByDtm(LocalDateTime.now());
+                hubShippingFollow.setCrtByName(systemUser.getUserName());
+                follows.add(hubShippingFollow);
+            }
+            boolean result = this.updateBatchById(hubShippings);
+            if(result){
+                log.warn("修改出库单状态回撤为未出库成功");
+                this.hubShippingFollowService.saveBatch(follows);
+            }
+            return result;
         }
-        boolean result = this.updateBatchById(hubShippings);
+        return true;
+    }
+
+    @Override
+    public boolean saveErrorInformation(HubShipping hubShipping) {
+
+        hubShipping.setStateFlag(1);
+        hubShipping.setMdyByDtm(LocalDateTime.now());
+
+        HubShippingFollow hubShippingFollow = new HubShippingFollow();
+        hubShippingFollow.setShippingId(hubShipping.getId());
+        hubShippingFollow.setSType(OperationEnum.UPDATE.getCode());
+        hubShippingFollow.setFollowContext("该出库单状态回撤为未出库");
+        hubShippingFollow.setCrtByDtm(LocalDateTime.now());
+
+        boolean result = this.updateById(hubShipping);
         if(result){
             log.warn("修改出库单状态回撤为未出库成功");
-            this.hubShippingFollowService.saveBatch(follows);
+            this.hubShippingFollowService.save(hubShippingFollow);
         }
         return result;
+    }
+
+    @Override
+    public List<HubShipping> getHubShippingByDeliverId(Integer id) {
+        QueryWrapper<HubShipping> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(HubShipping::getDeliverId,id);
+        queryWrapper.lambda().eq(HubShipping::getVoided,0);
+        return this.list(queryWrapper);
     }
 }

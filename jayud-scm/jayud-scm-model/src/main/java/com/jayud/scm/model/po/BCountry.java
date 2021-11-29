@@ -91,6 +91,9 @@ public class BCountry extends Model<BCountry> {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime voidedByDtm;
 
+    @ApiModelProperty(value = "三字码")
+    private String threeCharacterCode;
+
 
     @Override
     protected Serializable pkVal() {

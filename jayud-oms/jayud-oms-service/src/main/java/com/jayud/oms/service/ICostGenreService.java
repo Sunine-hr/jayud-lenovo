@@ -62,5 +62,5 @@ public interface ICostGenreService extends IService<CostGenre> {
 
     Long getIdByName(String name);
 
-    void test();
+//    void test();
 }

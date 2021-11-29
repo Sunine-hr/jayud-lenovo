@@ -53,7 +53,7 @@ public class EasyExcelEntity {
     private XSSFClientAnchor titlePictureStyle;
 
     public void assembleTitlePictureStyle(String path) {
-        this.assembleTitlePictureStyle(path, 0, 0, 0, 0, (short) 0, 0, (short) 4, 2);
+        this.assembleTitlePictureStyle(path, 0, 0, 0, 0, (short) 0, 0, (short) 3, 2);
     }
 
 

@@ -546,6 +546,17 @@ public class ExternalApiController {
         return ApiResult.ok(list);
     }
 
+
+
+    /**
+     * 根据订单mainOrderNo获取中港订单 第三方单号
+     */
+    @RequestMapping(value = "/api/getOrderTransportOneThirdParty")
+    public ApiResult getOrderTransportOneThirdParty(@RequestParam(value = "mainOrderNo") String mainOrderNo ) {
+        OrderTransportVO orderTransportOne = orderTransportService.getOrderTransportOne(mainOrderNo);
+        return ApiResult.ok(orderTransportOne);
+    }
+
 }
 
 

@@ -152,8 +152,12 @@ public class OrderInlandTransportController {
                 if(form.getStatus().equals("NL_4")){
                     System.out.println("确认派车");
                     String string= orderInlandTransportService.pushMessage(form.getOrderId());
+                    if(string==null){
+                        return CommonResult.error(400, "推送失败");
+                    }
                     if(Integer.parseInt(string)!=0){
                         System.out.println("推送失败 ："+string);
+                        return CommonResult.error(400, "推送失败");
                     }
                 }
             case INLANDTP_NL_5: //车辆提货

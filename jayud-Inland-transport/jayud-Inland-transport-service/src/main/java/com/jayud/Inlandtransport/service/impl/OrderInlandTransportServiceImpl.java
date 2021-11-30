@@ -579,7 +579,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         //内陆订单信息
         OrderInlandTransportDetails orderDetails = this.getOrderDetails(orderId);
 
-        if (orderDetails.getType().intValue() != CreateUserTypeEnum.SCM.getCode()) {
+        if (orderDetails.getCreateUserType().intValue()!= CreateUserTypeEnum.SCM.getCode()) {
             return null;
         }
 
@@ -659,13 +659,15 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         String jmm = RSAUtils.publicDecrypt(data2, RSAUtils.getPublicKey(publicKey));
         JSONObject paj = JSONUtil.parseObj(jmm);
         String code = paj.getStr("code");
+        log.info("状态码:" + code);
         System.out.println("解密后的数据："+code);
         if (org.apache.commons.lang.StringUtils.isEmpty(code)) {
             return null;
         }
         log.info("报文:" + response.toString());
         log.info("供应链返回参数:" + feedback);
-        return JSONUtil.parseObj(jmm).get("code").toString();
+        return code;
+//        return JSONUtil.parseObj(jmm).get("code").toString();
 //        MapUtil.getStr(feedback, "data");
 //        if () {
 //

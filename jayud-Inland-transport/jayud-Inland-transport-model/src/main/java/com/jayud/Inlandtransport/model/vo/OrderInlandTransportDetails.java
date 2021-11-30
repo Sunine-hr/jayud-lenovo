@@ -107,6 +107,9 @@ public class OrderInlandTransportDetails extends Model<OrderInlandTransportDetai
     @ApiModelProperty(value = "第三方订单号")
     private Long type;
 
+    @ApiModelProperty(value = "(0:本系统,2:scm)")
+    private Integer createUserType;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

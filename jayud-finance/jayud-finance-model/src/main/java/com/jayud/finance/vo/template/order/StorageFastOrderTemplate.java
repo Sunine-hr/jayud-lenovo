@@ -69,7 +69,7 @@ public class StorageFastOrderTemplate {
             if (this.mainOrderNo.equals(json.getStr("orderNo"))) { //主订单配对
                 this.customerName = json.getStr("customerName");
                 LocalDateTime operationTime = json.get("operationTime", LocalDateTime.class);
-                this.operationTime = DateUtils.LocalDateTime2Str(operationTime,DateUtils.DATE_PATTERN);
+                this.operationTime = DateUtils.LocalDateTime2Str(operationTime, DateUtils.DATE_PATTERN);
 //                this.customerCode = json.getStr("customerCode");
 //                this.mainOrderId = json.getLong("id");
 //                this.bizUname = json.getStr("bizUname");
@@ -96,7 +96,11 @@ public class StorageFastOrderTemplate {
                 JSONObject data = fastGoodsFormList.getJSONObject(i);
                 String name = data.getStr("name");
                 sb.append(name).append(",");
-                number = number + data.getInt("number");
+                Integer count = data.getInt("number");
+                if (count != null) {
+                    number = number + count;
+                }
+
             }
             this.goodsInfo = sb.toString();
             this.number = number;

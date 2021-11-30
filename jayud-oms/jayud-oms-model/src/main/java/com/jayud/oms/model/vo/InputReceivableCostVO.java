@@ -82,6 +82,9 @@ public class InputReceivableCostVO {
     @ApiModelProperty(value = "是否录用费用")
     private Boolean isInternal;
 
+    @ApiModelProperty(value = "是否汇总到主订单")
+    private Boolean isSumToMain;
+
     @ApiModelProperty(value = "作业环节")
     private List<InitComboxVO> categorys;
 

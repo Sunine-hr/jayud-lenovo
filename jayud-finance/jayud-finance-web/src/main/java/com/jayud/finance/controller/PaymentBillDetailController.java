@@ -26,6 +26,7 @@ import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +54,8 @@ public class PaymentBillDetailController {
     private CommonService commonService;
     @Autowired
     private ILockOrderService lockOrderService;
+    @Autowired
+    private IOrderReceivableBillService billService;
 
     @ApiOperation(value = "应付对账单列表,应付对账单审核列表,财务应付对账单列表")
     @PostMapping("/findPaymentBillDetailByPage")
@@ -166,7 +169,24 @@ public class PaymentBillDetailController {
     @PostMapping("/findEditBillByPage")
     public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findEditBillByPage(@RequestBody @Valid QueryEditBillForm form) {
         IPage<PaymentNotPaidBillVO> pageList = billDetailService.findEditBillByPage(form);
-        CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
+        Map<String, Object> map = new HashMap<>();
+        if (!CollectionUtils.isEmpty(pageList.getRecords())) {
+            List<PaymentNotPaidBillVO> records = pageList.getRecords();
+            List<Long> costIds = new ArrayList<>();
+            List<String> amountStrs = new ArrayList<>();
+            for (PaymentNotPaidBillVO record : records) {
+                costIds.add(record.getCostId());
+                amountStrs.add(record.getAmountStr());
+            }
+            ViewBillVO viewBillVO = this.billService.getViewBillByCostIds(costIds, form.getCmd());
+            String totalCost = this.commonService.calculatingCosts(amountStrs);
+
+            map.put("legalName", viewBillVO.getLegalName());
+            map.put("customerName", viewBillVO.getCustomerName());
+            map.put("num", pageList.getTotal());
+            map.put("totalCost", totalCost);
+        }
+        CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList, map);
         return CommonResult.success(pageVO);
     }
 

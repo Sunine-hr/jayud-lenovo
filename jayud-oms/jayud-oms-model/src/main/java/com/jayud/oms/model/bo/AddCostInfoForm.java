@@ -48,5 +48,8 @@ public class AddCostInfoForm {
 //    @NotNull(message = "cids is required")
 //    private List<CostTypeVO> costTypeVOs;
 
+    @ApiModelProperty(value = "是否实报实销")
+    @NotNull(message = "isReimbursement is required")
+    private Boolean isReimbursement;
 
 }

@@ -34,6 +34,9 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "已选中得服务")
     private String selectedServer;
 
+    @ApiModelProperty(value = "第三方单号")
+    private String thirdPartyOrderNo;
+
     @ApiModelProperty(value = "业务类型")
     private String bizCode;
 

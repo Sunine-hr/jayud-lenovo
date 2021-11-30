@@ -3341,7 +3341,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 推送六联单号去供应商
-     * @param orderNo 主订单单号
+     * @param orderId 主订单单号
      * @param encode  六联单号
      */
     @Override
@@ -3352,8 +3352,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         OrderInfo orderInfo = this.getOne(queryWrapper);
 
+        ApiResult orderTransportOneThirdParty = tmsClient.getOrderTransportOneThirdParty(orderInfo.getOrderNo());
+        if (orderTransportOneThirdParty.getCode() != HttpStatus.SC_OK) {
+            log.warn("远程调用查询客户信息失败 message=" + orderTransportOneThirdParty.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        JSONObject jsonObject = JSONUtil.parseObj(orderTransportOneThirdParty.getData());
+        String thirdPartyOrderNo = jsonObject.getStr("thirdPartyOrderNo");
+
         Map<String, Object> form = new HashMap<>();
-        form.put("truckNo", orderInfo.getOrderNo());
+        form.put("truckNo", thirdPartyOrderNo);
         form.put("exHkNo", encode);//六联单号
 
         //根据主订单 unit_code   操作人去查询 客户信息表 id  customer_code

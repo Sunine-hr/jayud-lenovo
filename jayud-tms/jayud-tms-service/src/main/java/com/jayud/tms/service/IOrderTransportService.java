@@ -237,4 +237,11 @@ public interface IOrderTransportService extends IService<OrderTransport> {
      * @return
      */
     List<OrderTransportVO> getOrderTransportList(String pickUpTimeStart, String pickUpTimeEnd, String orderNo);
+
+    /**
+     * 根据订单号查询子订单
+     * @param mainOrderNo
+     * @return
+     */
+    OrderTransportVO getOrderTransportOne(String mainOrderNo);
 }

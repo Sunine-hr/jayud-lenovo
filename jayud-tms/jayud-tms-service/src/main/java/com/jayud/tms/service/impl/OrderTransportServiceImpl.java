@@ -1212,5 +1212,23 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
         return baseMapper.getOrderTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);
     }
 
+    /**
+     * 根据订单号查询子订单
+     *
+     * @param mainOrderNo
+     * @return
+     */
+    @Override
+    public OrderTransportVO getOrderTransportOne(String mainOrderNo) {
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("main_order_no", mainOrderNo);
+
+        OrderTransport orderTransport = this.getOne(queryWrapper);
+
+        OrderTransportVO outOrderTransportVO = ConvertUtil.convert(orderTransport, OrderTransportVO.class);
+        return outOrderTransportVO;
+    }
+
 
 }

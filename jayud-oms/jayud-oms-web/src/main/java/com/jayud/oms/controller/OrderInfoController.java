@@ -271,7 +271,7 @@ public class OrderInfoController {
         orderInfo.setUpUser(UserOperator.getToken());
         orderInfo.setUpTime(LocalDateTime.now());
         boolean result = orderInfoService.updateById(orderInfo);
-
+        orderInfoService.pushMessageNumbers(form.getMainOrderId(),form.getEncode());
         //TODO 上传仓单文件/六联单号文件/上传舱单文件/上传报关单文件
         //查询主单信息
         OrderInfo tmp = this.orderInfoService.getById(form.getMainOrderId());

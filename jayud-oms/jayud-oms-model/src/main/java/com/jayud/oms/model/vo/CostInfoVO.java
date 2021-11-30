@@ -58,5 +58,8 @@ public class CostInfoVO {
     @ApiModelProperty(value = "是否展示给司机")
     private Boolean isDriverShow;
 
+    @ApiModelProperty(value = "是否实报实销")
+    private Boolean isReimbursement;
+
 
 }

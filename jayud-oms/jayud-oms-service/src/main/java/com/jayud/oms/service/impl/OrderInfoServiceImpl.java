@@ -1153,6 +1153,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             boolean optOne = false;
             if (orderPaymentCosts.size() > 0) {
                 paymentCostService.saveOrUpdateBatch(orderPaymentCosts);
+                //实报实销操作
+                this.doReimbursementOpt(form);
             }
             if (orderReceivableCosts.size() > 0) {
                 Map<String, String> customerInfoMap = this.customerInfoService.list().stream().filter(e -> !StringUtils.isEmpty(e.getIdCode())).collect(Collectors.toMap(e -> e.getIdCode(), e -> e.getName()));
@@ -1652,7 +1654,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return inputOrderVO;
     }
 
-//需要修改 的内陆订单部分
+    //需要修改 的内陆订单部分
     @Override
     @GlobalTransactional
     public boolean createOrder(InputOrderForm form) {
@@ -3298,6 +3300,30 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     }
 
+    private void doReimbursementOpt(AuditCostForm form) {
+        Map<String, CostInfo> costInfoMap = this.costInfoService.list().stream().filter(e -> e.getIsReimbursement() != null && e.getIsReimbursement()).collect(Collectors.toMap(e -> e.getIdCode(), e -> e));
+        List<OrderPaymentCost> paymentCosts = form.getPaymentCosts().stream().filter(e -> costInfoMap.get(e.getCostCode()) != null).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(paymentCosts)) {
+            return;
+        }
+        //查询主订单操作主体
+        String mainOrderNo = paymentCosts.get(0).getMainOrderNo();
+
+        OrderInfo mainOrder = this.getByOrderNos(Collections.singletonList(mainOrderNo)).get(0);
+        CustomerInfo customerInfo = this.customerInfoService.getByCode(mainOrder.getUnitCode());
+        CustomerInfo subCustomerInfo = this.customerInfoService.getByCode(form.getSubUnitCode());
+        for (OrderPaymentCost paymentCost : paymentCosts) {
+            OrderReceivableCost receivableCost = ConvertUtil.convert(paymentCost, OrderReceivableCost.class);
+            if (paymentCost.getIsSumToMain()) {
+                receivableCost.setSubType(SubOrderSignEnum.MAIN.getSignOne()).setCustomerCode(mainOrder.getUnitCode()).setCustomerName(customerInfo.getName());
+            } else {
+                receivableCost.setOrderNo(form.getSubOrderNo()).setCustomerCode(form.getSubUnitCode()).setCustomerName(subCustomerInfo.getName());
+            }
+            form.getReceivableCosts().add(receivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode())));
+        }
+
+
+    }
 
     private void orderBatchOperation(InputOrderForm form, Map<String, Object> submitOrderMap) {
         if ("submit".equals(form.getCmd())) {

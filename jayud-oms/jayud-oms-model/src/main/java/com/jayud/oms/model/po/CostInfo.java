@@ -64,6 +64,9 @@ public class CostInfo extends Model<CostInfo> {
     @ApiModelProperty(value = "是否展示给司机")
     private Boolean isDriverShow;
 
+    @ApiModelProperty(value = "是否实报实销")
+    private Boolean isReimbursement;
+
 
     @Override
     protected Serializable pkVal() {

@@ -21,15 +21,13 @@ import com.jayud.finance.enums.BillEnum;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.po.OrderReceivableBillDetail;
-import com.jayud.finance.service.CommonService;
-import com.jayud.finance.service.ILockOrderService;
-import com.jayud.finance.service.IOrderBillCostTotalService;
-import com.jayud.finance.service.IOrderReceivableBillDetailService;
+import com.jayud.finance.service.*;
 import com.jayud.finance.util.StringUtils;
 import com.jayud.finance.vo.*;
 import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,6 +59,8 @@ public class ReceiveBillDetailController {
     private CommonService commonService;
     @Autowired
     private ILockOrderService lockOrderService;
+    @Autowired
+    private IOrderReceivableBillService billService;
     @Value("${execl.logo}")
     private String logo;
 
@@ -177,7 +177,24 @@ public class ReceiveBillDetailController {
     @PostMapping("/findEditSBillByPage")
     public CommonResult<CommonPageResult<PaymentNotPaidBillVO>> findEditSBillByPage(@RequestBody @Valid QueryEditBillForm form) {
         IPage<PaymentNotPaidBillVO> pageList = billDetailService.findEditSBillByPage(form);
-        CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList);
+        Map<String, Object> map = new HashMap<>();
+        if (!CollectionUtils.isEmpty(pageList.getRecords())) {
+            List<PaymentNotPaidBillVO> records = pageList.getRecords();
+            List<Long> costIds = new ArrayList<>();
+            List<String> amountStrs = new ArrayList<>();
+            for (PaymentNotPaidBillVO record : records) {
+                costIds.add(record.getCostId());
+                amountStrs.add(record.getAmountStr());
+            }
+            ViewBillVO viewBillVO = billService.getViewBillByCostIds(costIds, form.getCmd());
+            String totalCost = this.commonService.calculatingCosts(amountStrs);
+
+            map.put("legalName", viewBillVO.getLegalName());
+            map.put("customerName", viewBillVO.getCustomerName());
+            map.put("num", pageList.getTotal());
+            map.put("totalCost", totalCost);
+        }
+        CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList, map);
         return CommonResult.success(pageVO);
     }
 

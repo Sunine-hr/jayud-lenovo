@@ -231,7 +231,7 @@ public class OutOrderTransportController {
         }
 
         OutOrderTransportVO outOrderTransportVO = orderTransportService.getOutOrderTransportVOByThirdPartyOrderNo(form.getOrderNo());
-        if (outOrderTransportVO != null) {
+        if (outOrderTransportVO == null) {
             log.warn("修改订单失败 message=根据第三方订单号查询不到中港订单信息");
 
             return privatekey(ApiResult.error("查询不到订单信息"), appPrivateSecret);

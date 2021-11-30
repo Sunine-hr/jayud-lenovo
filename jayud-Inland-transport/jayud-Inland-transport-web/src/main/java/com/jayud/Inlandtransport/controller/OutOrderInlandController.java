@@ -235,8 +235,8 @@ public class OutOrderInlandController {
         form.checkOrderTransportParam();
 
         OutOrderInlandTransportVO outOrderInlandTransportVO = orderInlandTransportService.getOutOrderInlandTransportVOByThirdPartyOrderNo(form.getOrderNo());
-        if (outOrderInlandTransportVO != null) {
-            log.warn("修改订单失败 message=根据第三方订单号查询不到中港订单信息");
+        if (outOrderInlandTransportVO == null) {
+            log.warn("修改订单失败 message=根据第三方订单号查询不到内陆订单信息");
             return privatekey(ApiResult.error("查询不到订单信息"), appPrivateSecret);
         }
 
@@ -261,7 +261,7 @@ public class OutOrderInlandController {
      * @param isEdit
      * @return
      */
-    private ApiResult createOrUpdateOutOrderInlandTransport(InputOrderOutInlandTransportFrom form, OutOrderInlandTransportVO outOrderInlandTransportVO, boolean isEdit, Long companyId) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    private ApiResult createOrUpdateOutOrderInlandTransport(InputOrderOutInlandTransportFrom form, OutOrderInlandTransportVO outOrderInlandTransportVO, boolean isEdit, Long companyId) {
         String tip = isEdit ? "修改" : "创建";
         InputOrderForm orderForm = new InputOrderForm();
         //查询客户名称 传入客户id查询客户信息

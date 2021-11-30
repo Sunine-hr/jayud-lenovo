@@ -1,6 +1,7 @@
 package com.jayud.oms.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -26,13 +27,18 @@ import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
 import io.netty.util.internal.StringUtil;
 import io.seata.spring.annotation.GlobalTransactional;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
@@ -49,6 +55,7 @@ import static com.jayud.common.enums.CreateUserTypeEnum.*;
  * @since 2020-09-15
  */
 @Service
+@Slf4j
 public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo> implements IOrderInfoService {
 
     @Autowired
@@ -128,6 +135,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Autowired
     private IOrderTypeNumberService orderTypeNumberService;
+
+    @Value("${scm.urls.base:}")
+    private String urlBase;
+    // 设置运输公司信息
+    @Value("${scm.urls.accept-order-info-numbers:}")
+    private String urlAcceptOrderInfoNumbers;
+
+    @Autowired
+    private IClientSecretKeyService clientSecretKeyService;
 
     public String generationOrderNo(Long legalId, Integer integer, String classStatus) {
         //生成订单号
@@ -1088,6 +1104,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public Integer pendingExternalCustomsDeclarationNum(List<Long> legalIds, String userName) {
         return this.baseMapper.pendingCustomsDeclarationNum(legalIds, userName);
     }
+
 
     /**
      * 计算费用,利润/合计币种
@@ -3322,4 +3339,88 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         });
     }
 
+    /**
+     * 推送六联单号去供应商
+     * @param orderNo 主订单单号
+     * @param encode  六联单号
+     */
+    @Override
+    public void pushMessageNumbers(Long orderId, String encode) {
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id", orderId);
+
+        OrderInfo orderInfo = this.getOne(queryWrapper);
+
+        Map<String, Object> form = new HashMap<>();
+        form.put("truckNo", orderInfo.getOrderNo());
+        form.put("exHkNo", encode);//六联单号
+
+        //根据主订单 unit_code   操作人去查询 客户信息表 id  customer_code
+        CustomerInfo byCode = customerInfoService.getByCode(orderInfo.getCustomerCode());
+
+        //使用id 查询  秘钥
+        ClientSecretKeyVO clientSecretKeyOne = this.clientSecretKeyService.findClientSecretOne(byCode.getId().toString());
+        String s1 = com.alibaba.fastjson.JSONObject.toJSONString(form);
+        String sjm = null;
+        try {
+            sjm = RSAUtils.privateEncrypt(s1, RSAUtils.getPrivateKey(clientSecretKeyOne.getAppPrivateSecret()));
+            String orderIns = com.alibaba.fastjson.JSONObject.toJSONString(sjm);
+            System.out.println(orderIns);
+            httpClient(sjm, clientSecretKeyOne.getAppSecret());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+
+    //给供应商推送消息
+    public String httpClient(String data, String publickey) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
+        jsonObject.put("data", data);
+        String s = jsonObject.toString();
+        System.out.println(s);
+        log.warn("远程调用查询客户信息 message=" + s);
+        HttpResponse response = cn.hutool.http.HttpRequest
+                .post(urlBase + urlAcceptOrderInfoNumbers)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .body(s)
+                .execute();
+
+
+        String feedback = response.body();
+
+
+        System.out.println(""+feedback);
+        JSONObject parseObj = JSONUtil.parseObj(feedback);
+
+        String data2 = parseObj.getStr("data");
+
+        String publicKey = parseObj.getStr("publicKey");
+
+        //解密
+        String jmm = RSAUtils.publicDecrypt(data2, RSAUtils.getPublicKey(publicKey));
+        JSONObject paj = JSONUtil.parseObj(jmm);
+        String code = paj.getStr("code");
+        log.info("状态码:" + code);
+        log.warn("远程调用查询客户信息失败 message=" + code);
+        System.out.println("解密后的数据："+code);
+        if (org.apache.commons.lang.StringUtils.isEmpty(code)) {
+            throw new JayudBizException("400，不是供应链数据失败！");
+        }
+        log.info("报文:" + response.toString());
+        log.info("供应链返回参数:" + feedback);
+        return code;
+//        return JSONUtil.parseObj(jmm).get("code").toString();
+//        MapUtil.getStr(feedback, "data");
+//        if () {
+//
+//        }
+
+    }
 }

@@ -7,6 +7,8 @@ import com.jayud.oms.model.bo.*;
 import com.jayud.oms.model.po.OrderInfo;
 import com.jayud.oms.model.vo.*;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -311,4 +313,11 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      */
     Integer pendingExternalCustomsDeclarationNum(List<Long> legalIds, String userName);
 
+
+    /**
+     * 推送六联单号去供应商
+     * @param orderId 主订单单号
+     * @param encode  六联单号
+     */
+    void pushMessageNumbers(Long orderId,String encode) ;
 }

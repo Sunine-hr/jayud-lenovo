@@ -234,7 +234,7 @@ public class OutOrderInlandController {
         //订单验证
         form.checkOrderTransportParam();
 
-        OutOrderInlandTransportVO outOrderInlandTransportVO = orderInlandTransportService.getOutOrderInlandTransportVOByThirdPartyOrderNo(form.getMainOrderNo());
+        OutOrderInlandTransportVO outOrderInlandTransportVO = orderInlandTransportService.getOutOrderInlandTransportVOByThirdPartyOrderNo(form.getOrderNo());
         if (outOrderInlandTransportVO != null) {
             log.warn("修改订单失败 message=根据第三方订单号查询不到中港订单信息");
             return privatekey(ApiResult.error("查询不到订单信息"), appPrivateSecret);
@@ -298,7 +298,7 @@ public class OutOrderInlandController {
         mainOrderForm.setUnitCode(customerInfo.getStr("idCode"));
         mainOrderForm.setOperationTime(LocalDateTime.now());
         mainOrderForm.setCmd("preSubmit");
-        mainOrderForm.setReferenceNo(form.getMainOrderNo());//第三方单号
+        mainOrderForm.setReferenceNo(form.getOrderNo());//第三方单号
 
         //组装内陆订单
         InputOrderInlandTransportForm inputOrderInlandTransportForm = new InputOrderInlandTransportForm();

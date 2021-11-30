@@ -580,7 +580,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         OrderInlandTransportDetails orderDetails = this.getOrderDetails(orderId);
         log.warn("远程调用查询客户信息失败 message=" + orderDetails);
         if (orderDetails.getCreateUserType().intValue()!= CreateUserTypeEnum.SCM.getCode()) {
-            return null;
+           throw new JayudBizException("400，不是供应链数据失败！");
         }
 
         //根据内陆id查询派车信息

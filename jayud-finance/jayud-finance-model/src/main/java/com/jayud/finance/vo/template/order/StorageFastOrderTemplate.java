@@ -11,6 +11,7 @@ import com.jayud.common.enums.OrderStatusEnum;
 import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
+import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
@@ -95,7 +96,10 @@ public class StorageFastOrderTemplate {
             for (int i = 0; i < fastGoodsFormList.size(); i++) {
                 JSONObject data = fastGoodsFormList.getJSONObject(i);
                 String name = data.getStr("name");
-                sb.append(name).append(",");
+                sb.append(name);
+                if (!StringUtils.isEmpty(name)) {
+                    sb.append(",");
+                }
                 Integer count = data.getInt("number");
                 if (count != null) {
                     number = number + count;

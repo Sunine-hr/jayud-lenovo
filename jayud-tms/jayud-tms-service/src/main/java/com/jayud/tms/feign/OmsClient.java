@@ -437,4 +437,10 @@ public interface OmsClient {
      */
     @RequestMapping(value = "/api/getCustomerByCode")
     ApiResult<Long> getCustomerByCode(@RequestParam("code") String code);
+
+    /**
+     * 根据主订单编号去关闭主订单
+     */
+    @PostMapping("/api/deleteOrderInfoByIdOne")
+    public ApiResult deleteOrderInfoUpdateByIdOne(@RequestParam("orderNo") String  orderNo);
 }

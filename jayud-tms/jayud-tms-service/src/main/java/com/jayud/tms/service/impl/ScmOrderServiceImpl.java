@@ -199,7 +199,7 @@ public class ScmOrderServiceImpl implements IScmOrderService {
         }
         cn.hutool.json.JSONObject paj = JSONUtil.parseObj(jmm);
         String code = paj.getStr("code");
-        System.out.println("解密后的数据："+code);
+        log.info("解密后的数据："+code);
 
         if (StringUtils.isEmpty(code)) {
             return null;
@@ -208,8 +208,7 @@ public class ScmOrderServiceImpl implements IScmOrderService {
         log.info("报文:" + response.toString());
         log.info("请求token信息:" + token);
         log.info("供应链返回参数:" + feedback);
-//        return JSONUtil.toBean(feedback, Map.class);
-        return JSONUtil.parseObj(jmm).get("code").toString();
+        return code;
     }
 
     /**

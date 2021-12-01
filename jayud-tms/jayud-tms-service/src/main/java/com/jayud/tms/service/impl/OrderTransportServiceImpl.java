@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
@@ -1106,6 +1107,9 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                     res = scmOrderService.setManifest(ScmOrderStatusEnum.ARRIVED.getCode(),
                             orderTransportTemp.getThirdPartyOrderNo(),byId.getUnitCode());
                 }
+//                if(res==null){
+//                    return CommonResult.error(400, "推送失败");
+//                }
                 if(Integer.parseInt(res)!=0){
                     System.out.println("推送失败 ："+res);
                 }
@@ -1171,8 +1175,12 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+//                if(string==null){
+//                    return CommonResult.error(400, "推送失败");
+//                }
                 if(Integer.parseInt(string)!=0){
                     System.out.println("推送失败 ："+string);
+                    logger.warn("推送运输公司消息到供应链失败 :" ,string);
                 }
 //                if (MapUtil.getInt(res, "code") != 0) {
 //                    logger.warn("推送运输公司消息到供应链失败，原因：{}", res.get("msg"));
@@ -1202,6 +1210,24 @@ public class OrderTransportServiceImpl extends ServiceImpl<OrderTransportMapper,
     @Override
     public List<OrderTransportVO> getOrderTransportList(String pickUpTimeStart, String pickUpTimeEnd, String orderNo) {
         return baseMapper.getOrderTransportList(pickUpTimeStart, pickUpTimeEnd, orderNo);
+    }
+
+    /**
+     * 根据订单号查询子订单
+     *
+     * @param mainOrderNo
+     * @return
+     */
+    @Override
+    public OrderTransportVO getOrderTransportOne(String mainOrderNo) {
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("main_order_no", mainOrderNo);
+
+        OrderTransport orderTransport = this.getOne(queryWrapper);
+
+        OrderTransportVO outOrderTransportVO = ConvertUtil.convert(orderTransport, OrderTransportVO.class);
+        return outOrderTransportVO;
     }
 
 

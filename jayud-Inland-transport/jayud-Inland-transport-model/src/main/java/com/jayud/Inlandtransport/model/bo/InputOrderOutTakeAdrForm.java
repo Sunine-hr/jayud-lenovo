@@ -42,5 +42,7 @@ public class InputOrderOutTakeAdrForm {
     @ApiModelProperty(value = "提货时间 （yyyyMMddHHmmss）")
     private String date;
 
+    @ApiModelProperty(value = "散货件数")
+    private Integer bulkCargoAmount;
 
 }

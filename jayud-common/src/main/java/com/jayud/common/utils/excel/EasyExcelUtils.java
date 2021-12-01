@@ -149,7 +149,7 @@ public class EasyExcelUtils {
                 row.setHeight((short) 500);
                 row.createCell(0).setCellValue(tmps[0]);
                 if (tmps.length > 1) {
-                    int index = tmps.length == 3 ? Integer.parseInt(tmps[2]) : 5;
+                    int index = tmps.length == 3 ? Integer.parseInt(tmps[2]) : 2;
                     row.createCell(entity.getTableHead().size() - index).setCellValue(tmps[1]);
                 }
                 ++rowNum;
@@ -359,7 +359,7 @@ public class EasyExcelUtils {
                 row.setHeight((short) 400);
                 row.createCell(0).setCellValue(tmps[0]);
                 if (tmps.length > 1) {
-                    row.createCell(entity.getTableHead().size() - 5).setCellValue(tmps[1]);
+                    row.createCell(entity.getTableHead().size() - 2).setCellValue(tmps[1]);
                 }
                 ++rowNum;
             }

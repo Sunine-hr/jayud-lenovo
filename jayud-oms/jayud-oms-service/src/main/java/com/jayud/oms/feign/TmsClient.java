@@ -199,4 +199,11 @@ public interface TmsClient {
      */
     @RequestMapping(value = "/api/getTmsInfoBySubOrderNo")
     public ApiResult getTmsInfoBySubOrderNo(@RequestParam("orderNo") String orderNo);
+
+
+    /**
+     * 根据订单mainOrderNo获取中港订单 第三方单号
+     */
+    @RequestMapping(value = "/api/getOrderTransportOneThirdParty")
+    public ApiResult getOrderTransportOneThirdParty(@RequestParam(value = "mainOrderNo") String mainOrderNo );
 }

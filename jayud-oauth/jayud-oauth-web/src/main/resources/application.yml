@@ -75,6 +75,12 @@ secure:
       - /warehouseArea/findGoodByWarehouseArea/*
       - /warehouseAreaShelvesLocation/findGoodByKuCode/*
       - /warehouseArea/findGoodByWarehouseAreaShelves/*
+      - /orderInlandApi/createOutOrderTransport/*
+      - /orderInlandApi/updateOutOrderTransport/*
+      - /orderInlandApi/deleteOutOrderTransport/*
+      - /orderTransport/createOutOrderTransport/*
+      - /orderTransport/updateOutOrderTransport/*
+      - /orderTransport/deleteOutOrderTransport/*
 feign:
   httpclient:
     connection-timeout: 5000

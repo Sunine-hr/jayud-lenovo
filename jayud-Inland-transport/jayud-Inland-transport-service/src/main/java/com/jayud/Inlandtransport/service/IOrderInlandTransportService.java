@@ -139,6 +139,6 @@ public interface IOrderInlandTransportService extends IService<OrderInlandTransp
      *根据主订单id去查询子订单的一些信息推送
      * @param orderId 子订单
      */
-    String pushMessage(Long orderId);
+    String pushMessageInland(Long orderId);
 
 }

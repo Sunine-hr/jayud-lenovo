@@ -573,13 +573,14 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
      * @param orderId 子订单
      */
     @Override
-    public String pushMessage(Long orderId) {
+    public String  pushMessageInland(Long orderId) {
         // 根据 子订单 id 查询到 客户unit_code 信息和第三方订单号信息 和派车id 和
         OrderInlandSendDriveVO orderInlandSendDriveVO = new OrderInlandSendDriveVO();
         //内陆订单信息
         OrderInlandTransportDetails orderDetails = this.getOrderDetails(orderId);
-
-        if (orderDetails.getType().intValue() != CreateUserTypeEnum.SCM.getCode()) {
+        log.warn("远程调用查询客户信息  打印 message=" + orderDetails);
+        if (orderDetails.getCreateUserType().intValue()!= CreateUserTypeEnum.SCM.getCode()) {
+//           throw new JayudBizException("400，不是供应链数据失败！");
             return null;
         }
 
@@ -619,15 +620,17 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
 
         String orderInlandSendString = com.alibaba.fastjson.JSONObject.toJSONString(orderInlandSendDriveVO);
         String appSecret = jsonObjectSecret.getStr("appSecret");
+        log.warn("远程调用查询客户信息 打印 message=" + appSecret);
         //拿到对应客户的私钥加密
         String string =null;
         try {
             String sjm = RSAUtils.privateEncrypt(orderInlandSendString, RSAUtils.getPrivateKey(jsonObjectSecret.getStr("appPrivateSecret")));
             String orderIns = com.alibaba.fastjson.JSONObject.toJSONString(sjm);
             System.out.println(orderIns);
-            string = httpClient(sjm, appSecret);
+           httpClient(sjm, appSecret);
+            log.warn("远程调用查询客户 打印 message=" + string);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new JayudBizException("400，不是供应链数据失败！");
         }
         return string;
     }
@@ -638,6 +641,7 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         jsonObject.put("data", data);
         String s = jsonObject.toString();
         System.out.println(s);
+        log.warn("远程调用查询客户信息  打印 message=" + s);
         HttpResponse response = cn.hutool.http.HttpRequest
                 .post(urlBase + urlAcceptInlandTransportatInformation)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
@@ -659,13 +663,16 @@ public class OrderInlandTransportServiceImpl extends ServiceImpl<OrderInlandTran
         String jmm = RSAUtils.publicDecrypt(data2, RSAUtils.getPublicKey(publicKey));
         JSONObject paj = JSONUtil.parseObj(jmm);
         String code = paj.getStr("code");
+        log.info("状态码:" + code);
+        log.warn("远程调用查询客户信息打印 message=" + code);
         System.out.println("解密后的数据："+code);
         if (org.apache.commons.lang.StringUtils.isEmpty(code)) {
-            return null;
+            throw new JayudBizException("400，不是供应链数据失败！");
         }
         log.info("报文:" + response.toString());
         log.info("供应链返回参数:" + feedback);
-        return JSONUtil.parseObj(jmm).get("code").toString();
+        return code;
+//        return JSONUtil.parseObj(jmm).get("code").toString();
 //        MapUtil.getStr(feedback, "data");
 //        if () {
 //

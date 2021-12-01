@@ -8,6 +8,7 @@ import cn.hutool.json.JSONUtil;
 import com.jayud.Inlandtransport.feign.OauthClient;
 import com.jayud.Inlandtransport.feign.OmsClient;
 import com.jayud.Inlandtransport.model.bo.*;
+import com.jayud.Inlandtransport.model.po.OrderInlandTransport;
 import com.jayud.Inlandtransport.model.vo.OutOrderInlandTransportVO;
 import com.jayud.Inlandtransport.service.IOrderInlandTransportService;
 import com.jayud.common.ApiResult;
@@ -17,6 +18,7 @@ import com.jayud.common.entity.AuditInfoForm;
 import com.jayud.common.entity.OrderDeliveryAddress;
 import com.jayud.common.enums.CreateUserTypeEnum;
 import com.jayud.common.enums.OrderStatusEnum;
+import com.jayud.common.enums.ProcessStatusEnum;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
@@ -60,7 +62,7 @@ public class OutOrderInlandController {
     OauthClient oauthClient;
 
     /**
-     设置登录人
+     * 设置登录人
      */
     @Value("${scm.default.loginName:}")
     private String defaultLoginNme;
@@ -70,12 +72,13 @@ public class OutOrderInlandController {
 
     @ApiOperation(value = "供应链外部创建内陆订单")
     @RequestMapping(value = "/createOutOrderTransport")
-    String createOutOrderTransport(@RequestBody Map<String, Object> param) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    String createOutOrderTransport(@RequestBody Map<String, Object> param) throws Exception {
         //appid
         String appId = MapUtil.getStr(param, "appId");
         //加密的字符串
         String rsaString = MapUtil.getStr(param, "data");
         String publicKey = MapUtil.getStr(param, "publicKey");
+//        String signType = MapUtil.getStr(param, "signType");
         ApiResult result = omsClient.findClientSecretKeyOne(appId);
         if (result.getCode() != HttpStatus.SC_OK) {
             log.warn("远程调用查询客户信息失败 message=" + result.getMsg());
@@ -88,8 +91,15 @@ public class OutOrderInlandController {
         //查询到的私钥
         String appPrivateSecret = jsonObject.getStr("appPrivateSecret");
 //        String jmm = RSAUtils.publicDecrypt(rsaString, RSAUtils.getPublicKey(jsonObject.getStr("appSecret")));
-        //使用传进来的私钥解密
+        //使用传进来的公钥解密
         String jmm = RSAUtils.publicDecrypt(rsaString, RSAUtils.getPublicKey(publicKey));
+// RSA验签
+//        boolean result1 = RSAUtils.verify(jmm, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY), signType);
+//      //验证签名失败
+//        if (result1==false) {
+//            return privatekey(ApiResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage()), appPrivateSecret);
+//
+//        }
 
         com.alibaba.fastjson.JSONObject.parseObject(jmm, InputOrderOutInlandTransportFrom.class);
 
@@ -183,6 +193,67 @@ public class OutOrderInlandController {
         return privatekey(orUpdateOutOrderInlandTransport, appPrivateSecret);
     }
 
+
+    @ApiOperation(value = "供应链外部关闭内陆订单")
+    @RequestMapping(value = "/deleteOutOrderTransport")
+    String deleteOutOrderTransport(@RequestBody Map<String, Object> param) throws InvalidKeySpecException, NoSuchAlgorithmException {
+
+
+        String appId = MapUtil.getStr(param, "appId");
+        //加密的字符串
+        String rsaString = MapUtil.getStr(param, "data");
+        String publicKey = MapUtil.getStr(param, "publicKey");
+        ApiResult result = omsClient.findClientSecretKeyOne(appId);
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("远程调用查询客户信息失败 message=" + result.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        JSONObject jsonObject = JSONUtil.parseObj(result.getData());
+
+        Long companyId = Long.valueOf(jsonObject.getStr("customerInfoId")).longValue();
+
+        String appPrivateSecret = jsonObject.getStr("appPrivateSecret");
+//        String jmm = RSAUtils.publicDecrypt(rsaString, RSAUtils.getPublicKey(jsonObject.getStr("appSecret")));
+        //使用传进来的私钥解密
+        String jmm = RSAUtils.publicDecrypt(rsaString, RSAUtils.getPublicKey(publicKey));
+
+        com.alibaba.fastjson.JSONObject.parseObject(jmm, InputOrderOutInlandTransportFrom.class);
+
+
+        InputOrderOutInlandTransportFrom form = com.alibaba.fastjson.JSONObject.parseObject(jmm, InputOrderOutInlandTransportFrom.class);
+
+        if (log.isInfoEnabled()) {
+            log.info("供应链调用修改内陆订单接口：{}", JSONUtil.toJsonStr(form));
+        }
+
+        //通用参数校验
+        if (form == null) {
+            return privatekey(ApiResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage()), appPrivateSecret);
+        }
+
+        //订单验证
+        form.checkOrderTransportParam();
+
+        OutOrderInlandTransportVO outOrderInlandTransportVO = orderInlandTransportService.getOutOrderInlandTransportVOByThirdPartyOrderNo(form.getOrderNo());
+        if (outOrderInlandTransportVO == null) {
+            log.warn("修改订单失败 message=根据第三方订单号查询不到内陆订单信息");
+            return privatekey(ApiResult.error("查询不到订单信息"), appPrivateSecret);
+        }
+
+
+        //根据主订单单号去关闭主订单
+        ApiResult apiResult = omsClient.deleteOrderInfoUpdateByIdOne(outOrderInlandTransportVO.getMainOrderNo());
+
+        OrderInlandTransport inlandTransport = new OrderInlandTransport();
+        inlandTransport.setId(outOrderInlandTransportVO.getId());
+        inlandTransport.setProcessStatus(ProcessStatusEnum.CLOSE.getCode());
+        inlandTransport.setUpdateTime(LocalDateTime.now());
+
+        this.orderInlandTransportService.updateById(inlandTransport);
+
+        return privatekey(apiResult, appPrivateSecret);
+    }
+
     /**
      * 创建或修改内陆订单
      *
@@ -190,7 +261,7 @@ public class OutOrderInlandController {
      * @param isEdit
      * @return
      */
-    private ApiResult createOrUpdateOutOrderInlandTransport(InputOrderOutInlandTransportFrom form, OutOrderInlandTransportVO outOrderInlandTransportVO, boolean isEdit, Long companyId) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    private ApiResult createOrUpdateOutOrderInlandTransport(InputOrderOutInlandTransportFrom form, OutOrderInlandTransportVO outOrderInlandTransportVO, boolean isEdit, Long companyId) {
         String tip = isEdit ? "修改" : "创建";
         InputOrderForm orderForm = new InputOrderForm();
         //查询客户名称 传入客户id查询客户信息
@@ -204,6 +275,7 @@ public class OutOrderInlandController {
         mainOrderForm.setCreateUserType(CreateUserTypeEnum.SCM.getCode());
         mainOrderForm.setBizUid(customerInfo.getLong("ywId"));
         mainOrderForm.setBizUname(customerInfo.getStr("ywName"));
+
 
         if (isEdit) {
             mainOrderForm.setOrderId(outOrderInlandTransportVO.getMainOrderId());
@@ -226,7 +298,7 @@ public class OutOrderInlandController {
         mainOrderForm.setUnitCode(customerInfo.getStr("idCode"));
         mainOrderForm.setOperationTime(LocalDateTime.now());
         mainOrderForm.setCmd("preSubmit");
-        mainOrderForm.setOrderNo(form.getOrderNo());
+        mainOrderForm.setReferenceNo(form.getOrderNo());//第三方单号
 
         //组装内陆订单
         InputOrderInlandTransportForm inputOrderInlandTransportForm = new InputOrderInlandTransportForm();
@@ -269,6 +341,11 @@ public class OutOrderInlandController {
 
                 // 提货时间  dateOfDelivery
                 convert.setDeliveryDate(address.getDate());
+                convert.setGoodsName(address.getGoodsDesc());//货物描述
+                convert.setPlateAmount(address.getPieceAmount());//板数
+                convert.setBulkCargoAmount(address.getBulkCargoAmount());//件数
+                convert.setTotalWeight(address.getWeight());//重量
+                convert.setVolume(address.getVolume());//体积
                 orderTakeAdrForms1.add(convert);
             }
             inputOrderInlandTransportForm.setPickUpAddressList(orderTakeAdrForms1);
@@ -300,6 +377,11 @@ public class OutOrderInlandController {
 
                 // 送货时间
                 convert2.setDeliveryDate(address2.getDate());
+                convert2.setGoodsName(address2.getGoodsDesc());//货物描述
+                convert2.setPlateAmount(address2.getPieceAmount());//板数
+                convert2.setBulkCargoAmount(address2.getBulkCargoAmount());//件数
+                convert2.setTotalWeight(address2.getWeight());//重量
+                convert2.setVolume(address2.getVolume());//体积
                 orderDeliveryAddress2.add(convert2);
             }
             inputOrderInlandTransportForm.setOrderDeliveryAddressList(orderDeliveryAddress2);

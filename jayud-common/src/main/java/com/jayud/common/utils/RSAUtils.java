@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.jayud.common.entity.AuditInfoForm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.util.Base64Utils;
 
 import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
@@ -201,6 +202,58 @@ public class RSAUtils {
         return keyPairArr;
     }
 
+    /**
+     * <p>
+     * 校验数字签名
+     * </p>
+     *
+     * @param data 已加密数据
+     * @param publicKey 公钥(BASE64编码)
+     * @param sign 数字签名
+     *
+     * @return
+     * @throws Exception
+     *
+     */
+    /**
+     * 签名
+     *
+     * @param data 待签名数据
+     * @param privateKey 私钥
+     * @return 签名
+     */
+    public static String sign(String data, PrivateKey privateKey) throws Exception {
+        byte[] keyBytes = privateKey.getEncoded();
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PrivateKey key = keyFactory.generatePrivate(keySpec);
+        Signature signature = Signature.getInstance("MD5withRSA");
+        signature.initSign(key);
+        signature.update(data.getBytes());
+        return new String(Base64.encodeBase64(signature.sign()));
+    }
+
+    /**
+     * 验签
+     *
+     * @param srcData 原始字符串
+     * @param publicKey 公钥
+     * @param sign 签名
+     * @return 是否验签通过
+     */
+    public static boolean verify(String srcData, PublicKey publicKey, String sign) throws Exception {
+        byte[] keyBytes = publicKey.getEncoded();
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PublicKey key = keyFactory.generatePublic(keySpec);
+        Signature signature = Signature.getInstance("MD5withRSA");
+        signature.initVerify(key);
+        signature.update(srcData.getBytes());
+        return signature.verify(Base64.decodeBase64(sign.getBytes()));
+    }
+
+
+
     public static void main(String[] args) throws Exception {
 
 //
@@ -210,19 +263,19 @@ public class RSAUtils {
 //        System.out.println("publicKey"+publicKey);
 //        System.out.println("privateKey"+privateKey);
 
-        Map<String, Object> form = new HashMap<>();
-        form.put("trainStatus", "");
-        form.put("truckNo", "truckNo");
-        form.put("userName", "defaultUsername");
+//        Map<String, Object> form = new HashMap<>();
+//        form.put("trainStatus", "");
+//        form.put("truckNo", "truckNo");
+//        form.put("userName", "defaultUsername");
 
 
 
         String  vo="{\"id\":\"\",\"type\":1,\"orderNo\":\"EX2111000008\",\"vehicleType\":\"1\",\"vehicleSize\":\"3T\",\"takeAdrForms1\":[{\"province\":1,\"city\":2,\"area\":null,\"contacts\":\"1\",\"phone\":\"1\",\"address\":\"广东省 深圳市 罗湖区\",\"goodsDesc\":\"一个货物\",\"pieceAmount\":\"1\",\"weight\":0.2,\"volume\":0.1,\"remarks\":\"备注\",\"date\":\"2021-11-22 11:21:43\",\"provinceName\":\"广东省\",\"cityName\":\"深圳市\",\"areaName\":\"罗湖区\"}],\"takeAdrForms2\":[{\"province\":1,\"city\":2,\"area\":null,\"contacts\":\"1\",\"phone\":\"1\",\"address\":\"河北省 石家庄市 长安区\",\"goodsDesc\":\"一个货物\",\"pieceAmount\":\"1\",\"weight\":0.2,\"volume\":0.1,\"remarks\":\"备注\",\"date\":\"2021-11-22 11:21:43\",\"provinceName\":\"河北省\",\"cityName\":\"石家庄市\",\"areaName\":\"长安区\"}]}";
-//
-//        AuditInfoForm form = new AuditInfoForm();
-//        form.setAuditComment("ggggg");
-//        form.setAuditUser("1111");
-//        form.setAuditStatus("2222");
+
+        AuditInfoForm form = new AuditInfoForm();
+        form.setAuditComment("ggggg");
+        form.setAuditUser("1111");
+        form.setAuditStatus("2222");
 
         System.out.println("加密前:"+form);
         //转化成json字符串
@@ -230,16 +283,23 @@ public class RSAUtils {
         System.out.println("对象转换成json的字符串去加密:"+s1);
 
         //  私钥加密
-        String sjm = RSAUtils.privateEncrypt(vo, RSAUtils.getPrivateKey(RSAUtils.PRIVATE_KEY));
+        String sjm = RSAUtils.privateEncrypt(s1, RSAUtils.getPrivateKey(RSAUtils.PRIVATE_KEY));
         System.out.println("加密后 :"+sjm);
         System.out.println("----------");
 
-        String  bb="ApSoVcj4RoHCjMZw2ftTpuoha4z4K7a4tw8dl9oBCWhlRAoAV6J4JCXZdxKieHaLa4yqquNrQ9FCJziKKmQRYw";
+        String  bb="ApSoVcj4RoHCjMZw2ftTpuoha4z4K7a4tw8dl9oBCWhlRAoAV6J4JCXZdxKieHaLa4yqquNrQ9FCJziKKmQRYw1";
 
         System.out.println("解密部分");
         //公钥解密
-        String jmm = RSAUtils.publicDecrypt(bb, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
+        String jmm = RSAUtils.publicDecrypt(sjm, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
         System.out.println("解密数据"+jmm);
+        // RSA签名
+        String sign = sign(s1, getPrivateKey(RSAUtils.PRIVATE_KEY));
+        // RSA验签
+        boolean result = verify(jmm, getPublicKey(RSAUtils.PUBLIC_KEY), sign);
+        System.out.print("验签结果:" + result);
+
+
 
         AuditInfoForm auditInfoForm1 = JSONObject.parseObject(jmm, AuditInfoForm.class);
         System.out.println("解密后的数据："+auditInfoForm1);

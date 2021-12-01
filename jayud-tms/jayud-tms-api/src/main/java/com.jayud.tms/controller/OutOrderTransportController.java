@@ -145,7 +145,7 @@ public class OutOrderTransportController {
 
     @ApiOperation(value = "供应链外部修改中港订单")
     @RequestMapping(value = "/updateOutOrderTransport")
-    String updateOutOrderTransport(@RequestBody Map<String, Object> param) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    String updateOutOrderTransport(@RequestBody Map<String, Object> param) throws  Exception, NoSuchAlgorithmException {
 
         String appId = MapUtil.getStr(param, "appId");
         //加密的字符串
@@ -192,6 +192,59 @@ public class OutOrderTransportController {
         return privatekey(orUpdateOutOrderTransport, appPrivateSecret);
 
     }
+
+
+    @ApiOperation(value = "供应链外部删除中港订单")
+    @RequestMapping(value = "/deleteOutOrderTransport")
+    String deleteOutOrderTransport(@RequestBody Map<String, Object> param) throws InvalidKeySpecException, NoSuchAlgorithmException {
+
+        String appId = MapUtil.getStr(param, "appId");
+        //加密的字符串
+        String rsaString = MapUtil.getStr(param, "data");
+        String publicKey = MapUtil.getStr(param, "publicKey");
+
+        ApiResult result = omsClient.findClientSecretKeyOne(appId);
+        if (result.getCode() != HttpStatus.SC_OK) {
+            log.warn("远程调用查询客户信息失败 message=" + result.getMsg());
+            throw new JayudBizException(ResultEnum.OPR_FAIL);
+        }
+        JSONObject jsonObject = JSONUtil.parseObj(result.getData());
+
+        Long companyId = Long.valueOf(jsonObject.getStr("customerInfoId")).longValue();
+
+        String appPrivateSecret = jsonObject.getStr("appPrivateSecret");
+//        String jmm = RSAUtils.publicDecrypt(rsaString, RSAUtils.getPublicKey(jsonObject.getStr("appSecret")));
+        //使用传进来的私钥解密
+        String jmm = RSAUtils.publicDecrypt(rsaString, RSAUtils.getPublicKey(publicKey));
+
+
+
+        InputOrderOutTransportForm form = com.alibaba.fastjson.JSONObject.parseObject(jmm, InputOrderOutTransportForm.class);
+
+        if (log.isInfoEnabled()) {
+            log.info("供应链调用修改中港订单接口：{}", JSONUtil.toJsonStr(form));
+        }
+
+        //通用参数校验
+        if (form == null) {
+            return privatekey(ApiResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage()), appPrivateSecret);
+        }
+
+        OutOrderTransportVO outOrderTransportVO = orderTransportService.getOutOrderTransportVOByThirdPartyOrderNo(form.getOrderNo());
+        if (outOrderTransportVO == null) {
+            log.warn("修改订单失败 message=根据第三方订单号查询不到中港订单信息");
+
+            return privatekey(ApiResult.error("查询不到订单信息"), appPrivateSecret);
+        }
+        //根据主订单单号去关闭主订单
+        ApiResult apiResult = omsClient.deleteOrderInfoUpdateByIdOne(outOrderTransportVO.getMainOrderNo());
+
+        return privatekey(apiResult, appPrivateSecret);
+
+    }
+
+
+
 
     /**
      * 创建或修改中港订单
@@ -302,6 +355,12 @@ public class OutOrderTransportController {
 
                 // 提货时间
                 inputOrderTakeAdrForm.setTakeTimeStr(truckDate);
+
+                inputOrderTakeAdrForm.setGoodsDesc(orderTakeAdrForm1.getGoodsDesc());//货物描述
+                inputOrderTakeAdrForm.setPlateAmount(orderTakeAdrForm1.getPieceAmount());//板数
+                inputOrderTakeAdrForm.setPieceAmount(orderTakeAdrForm1.getBulkCargoAmount());//件数
+                inputOrderTakeAdrForm.setWeight(orderTakeAdrForm1.getWeight());//重量
+                inputOrderTakeAdrForm.setVolume(orderTakeAdrForm1.getVolume());//体积
                 orderTakeAdrForms1.add(inputOrderTakeAdrForm);
             }
             inputOrderTransportForm.setTakeAdrForms1(orderTakeAdrForms1);
@@ -333,6 +392,11 @@ public class OutOrderTransportController {
 
                 // 送货时间
                 inputOrderTakeAdrForm.setTakeTimeStr(receivingDate);
+                inputOrderTakeAdrForm.setGoodsDesc(orderTakeAdrForm2.getGoodsDesc());//货物描述
+                inputOrderTakeAdrForm.setPlateAmount(orderTakeAdrForm2.getPieceAmount());//板数
+                inputOrderTakeAdrForm.setPieceAmount(orderTakeAdrForm2.getBulkCargoAmount());//件数
+                inputOrderTakeAdrForm.setWeight(orderTakeAdrForm2.getWeight());//重量
+                inputOrderTakeAdrForm.setVolume(orderTakeAdrForm2.getVolume());//体积
                 orderTakeAdrForms2.add(inputOrderTakeAdrForm);
             }
             inputOrderTransportForm.setTakeAdrForms2(orderTakeAdrForms2);

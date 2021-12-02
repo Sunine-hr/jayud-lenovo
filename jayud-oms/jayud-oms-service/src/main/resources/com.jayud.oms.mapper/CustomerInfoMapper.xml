@@ -412,7 +412,9 @@
                 #{legalId}
             </foreach>
         </if>
-
+        <if test="form.createdUser != null and form.createdUser != ''">
+            and ci.created_user = #{form.createdUser}
+        </if>
     </select>
 
     <select id="getNumByStatus" resultType="java.lang.Integer">

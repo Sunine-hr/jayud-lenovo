@@ -30,4 +30,6 @@ public class QueryCustomerInfoForm extends BasePageForm{
     @ApiModelProperty(value = "审核状态 ( 0-待客服审核 1-待财务审核 2-待总经办审核 10-通过 11-拒绝)")
     private Integer auditStatus;
 
+    @ApiModelProperty(value = "创建人")
+    private String createdUser;
 }

@@ -239,6 +239,13 @@ public class OutOrderTransportController {
         //根据主订单单号去关闭主订单
         ApiResult apiResult = omsClient.deleteOrderInfoUpdateByIdOne(outOrderTransportVO.getMainOrderNo());
 
+        OrderTransport orderTransport = new OrderTransport();
+        orderTransport.setId(outOrderTransportVO.getId());
+        orderTransport.setThirdPartyOrderNo("");
+
+        this.orderTransportService.updateById(orderTransport);
+
+
         return privatekey(apiResult, appPrivateSecret);
 
     }

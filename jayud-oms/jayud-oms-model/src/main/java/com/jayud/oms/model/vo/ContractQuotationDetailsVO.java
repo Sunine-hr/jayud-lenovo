@@ -74,7 +74,7 @@ public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO
     private String currencyCode;
 
     @ApiModelProperty(value = "币种名称")
-    private String currency;
+    private String currencyName;
 
     @ApiModelProperty(value = "费用类别(作业环节)")
     private Long costTypeId;

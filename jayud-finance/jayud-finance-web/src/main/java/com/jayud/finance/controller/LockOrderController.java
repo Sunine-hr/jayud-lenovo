@@ -53,10 +53,11 @@ public class LockOrderController {
     public CommonResult getLockOrderById(@RequestBody Map<String, Object> map) {
 //        Integer id = MapUtil.getInt(map, "id");
         Integer type = MapUtil.getInt(map, "type");
+        Integer model = MapUtil.getInt(map, "model");
         if (type == null) {
             return CommonResult.error(ResultEnum.PARAM_ERROR);
         }
-        List<LockOrder> lockOrders = this.lockOrderService.getByCondition(new LockOrder().setType(type));
+        List<LockOrder> lockOrders = this.lockOrderService.getByCondition(new LockOrder().setType(type).setModel(model));
         if (CollectionUtils.isEmpty(lockOrders)) {
             return CommonResult.success();
         }

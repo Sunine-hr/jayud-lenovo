@@ -77,41 +77,81 @@
         order_info oi
         LEFT JOIN product_classify pc2 ON pc2.id_code = oi.`class_code`
         <where>
-            <if test="form.cmd == 'noSubmit'">
-                and oi.`status` = 2
-            </if>
-            <if test="form.cmd == 'costAudit'">
-                and oi.`status` IN (1,3,4)
-                AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND
-                opc.`status`
-                = '2' and opc.sub_type='main')
-                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND
-                orc.`status`
-                = '2' and orc.sub_type='main'))
-            </if>
-            <if test="form.cmd == 'costAudited'">
-                and oi.`status` IN (1,3,4)
-                AND oi.order_no in (
-                (SELECT opc.main_order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='main'
-                and opc.is_bill='0'
-                union SELECT orc.main_order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and
-                orc.sub_type='main' and orc.is_bill='0')
-                )
-            </if>
-            <if test="form.cmd == 'outCustomsRelease'">
-                and (oi.class_code = 'ZGYS' or oi.selected_server like concat('%','ZGYSDD','%')) and oi.`status` = 1
-                and oi.customs_release = 0
-                and oi.selected_server not like concat('%','CKBG','%')
-            </if>
-            <if test="form.cmd == 'dataNotAll'">
-                and oi.`status` = 4
-            </if>
-            <if test="form.cmd == 'cancelled'">
-                and oi.`status` = 6
-            </if>
-            <if test="form.cmd == 'rejected'">
-                and oi.`status` = 7
-            </if>
+            <choose>
+                <when test="form.cmd == 'noSubmit'">
+                    and oi.`status` = 2
+                </when>
+                <when test="form.cmd == 'costAudit'">
+                    and oi.`status` IN (1,3,4)
+                    AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND
+                    opc.`status`
+                    = '2' and opc.sub_type='main')
+                    OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND
+                    orc.`status`
+                    = '2' and orc.sub_type='main'))
+                </when>
+                <when test="form.cmd == 'costAudited'">
+                    and oi.`status` IN (1,3,4)
+                    AND oi.order_no in (
+                    (SELECT opc.main_order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='main'
+                    and opc.is_bill='0'
+                    union SELECT orc.main_order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and
+                    orc.sub_type='main' and orc.is_bill='0')
+                    )
+                </when>
+                <when test="form.cmd == 'outCustomsRelease'">
+                    and (oi.class_code = 'ZGYS' or oi.selected_server like concat('%','ZGYSDD','%')) and oi.`status` = 1
+                    and oi.customs_release = 0
+                    and oi.selected_server not like concat('%','CKBG','%')
+                </when>
+                <when test="form.cmd == 'dataNotAll'">
+                    and oi.`status` = 4
+                </when>
+                <when test="form.cmd == 'cancelled'">
+                    and oi.`status` = 6
+                </when>
+                <when test="form.cmd == 'rejected'">
+                    and oi.`status` = 7
+                </when>
+                <otherwise>
+                    and oi.`status` != 9
+                </otherwise>
+            </choose>
+<!--            <if test="form.cmd == 'noSubmit'">-->
+<!--                and oi.`status` = 2-->
+<!--            </if>-->
+<!--            <if test="form.cmd == 'costAudit'">-->
+<!--                and oi.`status` IN (1,3,4)-->
+<!--                AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`main_order_no` = oi.order_no AND-->
+<!--                opc.`status`-->
+<!--                = '2' and opc.sub_type='main')-->
+<!--                OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`main_order_no` = oi.order_no AND-->
+<!--                orc.`status`-->
+<!--                = '2' and orc.sub_type='main'))-->
+<!--            </if>-->
+<!--            <if test="form.cmd == 'costAudited'">-->
+<!--                and oi.`status` IN (1,3,4)-->
+<!--                AND oi.order_no in (-->
+<!--                (SELECT opc.main_order_no FROM order_payment_cost opc WHERE opc.`status` = '3' and opc.sub_type='main'-->
+<!--                and opc.is_bill='0'-->
+<!--                union SELECT orc.main_order_no FROM order_receivable_cost orc WHERE orc.`status` = '3' and-->
+<!--                orc.sub_type='main' and orc.is_bill='0')-->
+<!--                )-->
+<!--            </if>-->
+<!--            <if test="form.cmd == 'outCustomsRelease'">-->
+<!--                and (oi.class_code = 'ZGYS' or oi.selected_server like concat('%','ZGYSDD','%')) and oi.`status` = 1-->
+<!--                and oi.customs_release = 0-->
+<!--                and oi.selected_server not like concat('%','CKBG','%')-->
+<!--            </if>-->
+<!--            <if test="form.cmd == 'dataNotAll'">-->
+<!--                and oi.`status` = 4-->
+<!--            </if>-->
+<!--            <if test="form.cmd == 'cancelled'">-->
+<!--                and oi.`status` = 6-->
+<!--            </if>-->
+<!--            <if test="form.cmd == 'rejected'">-->
+<!--                and oi.`status` = 7-->
+<!--            </if>-->
             <if test="form.orderNo != null and form.orderNo != ''">
                 and oi.order_no like concat('%',#{form.orderNo},'%')
             </if>

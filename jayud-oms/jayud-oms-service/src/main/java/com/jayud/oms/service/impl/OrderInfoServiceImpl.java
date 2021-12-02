@@ -3367,6 +3367,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 推送六联单号去供应商
+     *
      * @param orderId 主订单单号
      * @param encode  六联单号
      */
@@ -3385,7 +3386,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         JSONObject jsonObject = JSONUtil.parseObj(orderTransportOneThirdParty.getData());
         String thirdPartyOrderNo = jsonObject.getStr("thirdPartyOrderNo");
+        String createUserType = jsonObject.getStr("createUserType");
 
+        if(Integer.parseInt(createUserType)!=CreateUserTypeEnum.SCM.getCode()){
+            return;
+        }
         Map<String, Object> form = new HashMap<>();
         form.put("truckNo", thirdPartyOrderNo);
         form.put("exHkNo", encode);//六联单号
@@ -3411,8 +3416,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
 
-
-
     //给供应商推送消息
     public String httpClient(String data, String publickey) throws InvalidKeySpecException, NoSuchAlgorithmException {
         com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
@@ -3430,7 +3433,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         String feedback = response.body();
 
 
-        System.out.println(""+feedback);
+        System.out.println("" + feedback);
         JSONObject parseObj = JSONUtil.parseObj(feedback);
 
         String data2 = parseObj.getStr("data");
@@ -3443,7 +3446,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         String code = paj.getStr("code");
         log.info("状态码:" + code);
         log.warn("远程调用查询客户信息失败 message=" + code);
-        System.out.println("解密后的数据："+code);
+        System.out.println("解密后的数据：" + code);
         if (org.apache.commons.lang.StringUtils.isEmpty(code)) {
             throw new JayudBizException("400，不是供应链数据失败！");
         }

@@ -519,6 +519,12 @@ public class OrderInfoController {
     @PostMapping("/copyInformation")
     public CommonResult<InputOrderVO> copyInformation(@RequestBody @Valid GetOrderDetailForm form) {
         InputOrderVO inputOrderVO = orderInfoService.getOrderDetail(form);
+        //主订单的 设置 来源   只要是复制的订单 默认为本系统创建
+        //创建类型
+        inputOrderVO.getOrderForm().setCreateUserType(0);
+        //客户参考号
+        inputOrderVO.getOrderForm().setReferenceNo("");
+        inputOrderVO.getOrderForm().setCreateUserTypeName(CreateUserTypeEnum.getDesc(Integer.parseInt("0")));
 
         inputOrderVO.copyOperationInfo();
 

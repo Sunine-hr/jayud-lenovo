@@ -246,6 +246,8 @@ public class OrderTransportVO {
     @ApiModelProperty(value = "签收时间")
     private String signTime;
 
+    @ApiModelProperty(value = "创建人的类型(0:本系统,1:vivo,2:供应链)")
+    private Integer createUserType;
     /**
      * 组装商品信息
      */

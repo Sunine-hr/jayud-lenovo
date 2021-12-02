@@ -13,6 +13,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * <p>
  * 锁单表
@@ -56,6 +58,9 @@ public class LockOrder extends Model<LockOrder> {
 
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
+
+    @ApiModelProperty(value = "模式(1:锁账单,2:锁费用)")
+    private Integer model;
 
 
     @Override

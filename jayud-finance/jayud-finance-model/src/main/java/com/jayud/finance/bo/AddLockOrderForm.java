@@ -45,6 +45,10 @@ public class AddLockOrderForm extends Model<AddLockOrderForm> {
     @NotNull
     private Integer type;
 
+    @ApiModelProperty(value = "模式(1:锁账单,2:锁费用)")
+    @NotNull
+    private Integer model;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

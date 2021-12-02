@@ -248,7 +248,7 @@ public class OutOrderInlandController {
         inlandTransport.setId(outOrderInlandTransportVO.getId());
         inlandTransport.setProcessStatus(ProcessStatusEnum.CLOSE.getCode());
         inlandTransport.setUpdateTime(LocalDateTime.now());
-
+        inlandTransport.setThirdPartyOrderNo("");
         this.orderInlandTransportService.updateById(inlandTransport);
 
         return privatekey(apiResult, appPrivateSecret);

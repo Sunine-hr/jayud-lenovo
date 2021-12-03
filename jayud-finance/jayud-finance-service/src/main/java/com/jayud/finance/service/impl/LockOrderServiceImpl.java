@@ -50,14 +50,15 @@ public class LockOrderServiceImpl extends ServiceImpl<LockOrderMapper, LockOrder
      *
      * @param type
      * @param accountTerm
+     * @param i
      * @return
      */
     @Override
-    public boolean checkLockingInterval(int type, String accountTerm) {
+    public boolean checkLockingInterval(int type, String accountTerm, int model) {
         QueryWrapper<LockOrder> condition = new QueryWrapper<>();
         condition.lambda().le(LockOrder::getStartTime, accountTerm)
                 .ge(LockOrder::getEndTime, accountTerm).eq(LockOrder::getType, type)
-                .eq(LockOrder::getStatus, StatusEnum.ENABLE.getCode());
+                .eq(LockOrder::getStatus, StatusEnum.ENABLE.getCode()).eq(LockOrder::getModel, model);
         return this.count(condition) > 0;
     }
 }

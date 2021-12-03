@@ -2,12 +2,10 @@ package com.jayud.finance.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.ApiResult;
+import com.jayud.common.CommonResult;
 import com.jayud.finance.feign.OmsClient;
 import com.jayud.finance.po.CustomsFinanceFeeRelation;
-import com.jayud.finance.service.ICurrencyRateService;
-import com.jayud.finance.service.IOrderPaymentBillDetailService;
-import com.jayud.finance.service.IOrderReceivableBillDetailService;
-import com.jayud.finance.service.PreloadService;
+import com.jayud.finance.service.*;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -37,6 +35,8 @@ public class ExternalApiController {
     private IOrderPaymentBillDetailService paymentBillDetailService;
     @Autowired
     private OmsClient omsClient;
+    @Autowired
+    private ILockOrderService lockOrderService;
 
     /**
      * 获取云报关-金蝶财务费用项对应关系
@@ -122,5 +122,17 @@ public class ExternalApiController {
         return ApiResult.ok(result);
     }
 
+
+    /**
+     * 检查是否锁单区间
+     * @return
+     */
+    @RequestMapping(value = "/api/checkLockingInterval")
+    public ApiResult<Boolean> checkLockingInterval(@RequestParam("type") int type,
+                                                   @RequestParam("accountTerm")String accountTerm,
+                                                   @RequestParam("model")int model) {
+        //检查是否锁单区间
+      return ApiResult.ok(this.lockOrderService.checkLockingInterval(type,accountTerm, model));
+    }
 
 }

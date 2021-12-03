@@ -59,4 +59,14 @@ public interface FinanceClient {
                                                                    @RequestParam("type") Integer type,
                                                                    @RequestParam("isMain") boolean isMain,
                                                                    @RequestParam("subType") String subType);
+
+    /**
+     * 检查是否锁单区间
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/checkLockingInterval")
+    public ApiResult<Boolean> checkLockingInterval(@RequestParam("type") int type,
+                                                   @RequestParam("accountTerm") String accountTerm,
+                                                   @RequestParam("model") int model);
 }

@@ -22,7 +22,6 @@ import com.jayud.common.utils.excel.EasyExcelUtils;
 import com.jayud.finance.bo.*;
 import com.jayud.finance.feign.OauthClient;
 import com.jayud.finance.feign.OmsClient;
-import com.jayud.finance.po.OrderPaymentBillDetail;
 import com.jayud.finance.service.CommonService;
 import com.jayud.finance.service.ILockOrderService;
 import com.jayud.finance.service.IOrderPaymentBillService;
@@ -94,7 +93,7 @@ public class PaymentBillController {
         form.checkCreateReceiveBill();
 
         //检查是否锁单区间
-        if (this.lockOrderService.checkLockingInterval(1, form.getAccountTermStr())) {
+        if (this.lockOrderService.checkLockingInterval(1, form.getAccountTermStr(), 1)) {
             return CommonResult.error(400, "该核算期已经被锁定");
         }
         //订单维度补充数据

@@ -252,7 +252,7 @@ public class ReceiveBillDetailController {
         //参数校验
         form.checkEditSBill();
         //检查是否锁单区间
-        if (this.lockOrderService.checkLockingInterval(0, form.getAccountTermStr())) {
+        if (this.lockOrderService.checkLockingInterval(0, form.getAccountTermStr(),1)) {
             return CommonResult.error(400, "该核算期已经被锁定");
         }
         return billDetailService.editSBill(form);

@@ -20,5 +20,5 @@ public interface ILockOrderService extends IService<LockOrder> {
 
     List<LockOrder> getByCondition(LockOrder lockOrder);
 
-    boolean checkLockingInterval(int type, String accountTerm);
+    boolean checkLockingInterval(int type, String accountTerm, int model);
 }

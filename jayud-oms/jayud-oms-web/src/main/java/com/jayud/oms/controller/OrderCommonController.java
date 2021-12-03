@@ -41,6 +41,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.jayud.common.utils.DateUtils.DATE_PATTERN;
+
 
 @RestController
 @RequestMapping("/orderCommon")
@@ -84,6 +86,14 @@ public class OrderCommonController {
     public CommonResult saveOrUpdateCost(@RequestBody InputCostForm form) {
         if (form == null || form.getMainOrderId() == null) {
             return CommonResult.error(400, "参数不合法");
+        }
+        OrderInfo orderInfo = this.orderInfoService.getById(form.getMainOrderId());
+        //检查是否锁单区间
+        if (this.financeClient.checkLockingInterval(1, DateUtils.LocalDateTime2Str(orderInfo.getOperationTime(), DATE_PATTERN), 2).getData()) {
+            return CommonResult.error(400, "应付费用已锁,不允许修改,请联系财务");
+        }
+        if (this.financeClient.checkLockingInterval(0, DateUtils.LocalDateTime2Str(orderInfo.getOperationTime(), DATE_PATTERN), 2).getData()) {
+            return CommonResult.error(400, "应收费用已锁,不允许修改,请联系财务");
         }
 
         if ("preSubmit_sub".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
@@ -229,6 +239,17 @@ public class OrderCommonController {
     @ApiOperation(value = "费用审核")
     @PostMapping(value = "/auditCost")
     public CommonResult auditCost(@RequestBody AuditCostForm form) {
+
+//        form.getReceivableCosts().size()>0
+//        this.orderInfoService.getById(form.)
+//        检查是否锁单区间
+//        if (this.financeClient.checkLockingInterval(1, DateUtils.LocalDateTime2Str(orderInfo.getOperationTime(), DATE_PATTERN), 2).getData()) {
+//            return CommonResult.error(400, "应付费用已锁,不允许修改,请联系财务");
+//        }
+//        if (this.financeClient.checkLockingInterval(0, DateUtils.LocalDateTime2Str(orderInfo.getOperationTime(), DATE_PATTERN), 2).getData()) {
+//            return CommonResult.error(400, "应收费用已锁,不允许修改,请联系财务");
+//        }
+
         if (form.getStatus() == null || "".equals(form.getStatus()) || !("3".equals(form.getStatus()) ||
                 "0".equals(form.getStatus())) || form.getPaymentCosts() == null ||
                 form.getReceivableCosts() == null) {

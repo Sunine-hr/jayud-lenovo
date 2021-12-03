@@ -145,12 +145,6 @@
                 and sfo.create_time <![CDATA[<= ]]> #{form.endTime}
             </if>
             <if test="form.cmd == 'costAudit'">
-                -- AND (EXISTS (SELECT 1 FROM order_payment_cost opc WHERE opc.`order_no` = sio.order_no AND
-                opc.`status` =
-                -- '2' and opc.sub_type = 'cci')
-                -- OR EXISTS (SELECT 1 FROM order_receivable_cost orc WHERE orc.`order_no` = sio.order_no AND
-                orc.`status` =
-                -- '2' and orc.sub_type = 'cci'))
                 and sfo.`order_no` in
                 <foreach collection="form.subPaymentOrderNos" item="orderNo" open="(" separator="," close=")">
                     #{orderNo}

@@ -89,10 +89,10 @@ public class OrderCommonController {
         }
         OrderInfo orderInfo = this.orderInfoService.getById(form.getMainOrderId());
         //检查是否锁单区间
-        if (this.financeClient.checkLockingInterval(1, DateUtils.LocalDateTime2Str(orderInfo.getOperationTime(), DATE_PATTERN), 2).getData()) {
+        if (form.getPaymentCostList().size() > 0 && this.financeClient.checkLockingInterval(1, DateUtils.LocalDateTime2Str(orderInfo.getOperationTime(), "yyyy-MM"), 2).getData()) {
             return CommonResult.error(400, "应付费用已锁,不允许修改,请联系财务");
         }
-        if (this.financeClient.checkLockingInterval(0, DateUtils.LocalDateTime2Str(orderInfo.getOperationTime(), DATE_PATTERN), 2).getData()) {
+        if (form.getReceivableCostList().size() > 0 && this.financeClient.checkLockingInterval(0, DateUtils.LocalDateTime2Str(orderInfo.getOperationTime(), "yyyy-MM"), 2).getData()) {
             return CommonResult.error(400, "应收费用已锁,不允许修改,请联系财务");
         }
 
@@ -240,15 +240,21 @@ public class OrderCommonController {
     @PostMapping(value = "/auditCost")
     public CommonResult auditCost(@RequestBody AuditCostForm form) {
 
-//        form.getReceivableCosts().size()>0
-//        this.orderInfoService.getById(form.)
+        String mainOrder = "";
+        if (form.getReceivableCosts().size() > 0) {
+            mainOrder = form.getReceivableCosts().get(0).getMainOrderNo();
+        } else if (form.getPaymentCosts().size() > 0) {
+            mainOrder = form.getPaymentCosts().get(0).getMainOrderNo();
+        }
+        List<OrderInfo> orderNos = this.orderInfoService.getByOrderNos(Arrays.asList(mainOrder));
 //        检查是否锁单区间
-//        if (this.financeClient.checkLockingInterval(1, DateUtils.LocalDateTime2Str(orderInfo.getOperationTime(), DATE_PATTERN), 2).getData()) {
-//            return CommonResult.error(400, "应付费用已锁,不允许修改,请联系财务");
-//        }
-//        if (this.financeClient.checkLockingInterval(0, DateUtils.LocalDateTime2Str(orderInfo.getOperationTime(), DATE_PATTERN), 2).getData()) {
-//            return CommonResult.error(400, "应收费用已锁,不允许修改,请联系财务");
-//        }
+        if (form.getPaymentCosts().size() > 0 && this.financeClient.checkLockingInterval(1, DateUtils.LocalDateTime2Str(orderNos.get(0).getOperationTime(), "yyyy-MM"), 2).getData()) {
+            return CommonResult.error(400, "应付费用已锁,不允许修改,请联系财务");
+        }
+        if (form.getReceivableCosts().size() > 0 && this.financeClient.checkLockingInterval(0, DateUtils.LocalDateTime2Str(orderNos.get(0).getOperationTime(), "yyyy-MM"), 2).getData()) {
+            return CommonResult.error(400, "应收费用已锁,不允许修改,请联系财务");
+        }
+
 
         if (form.getStatus() == null || "".equals(form.getStatus()) || !("3".equals(form.getStatus()) ||
                 "0".equals(form.getStatus())) || form.getPaymentCosts() == null ||

@@ -93,4 +93,11 @@ public class InputPaymentCostVO {
 
     @ApiModelProperty(value = "作业环节")
     private List<InitComboxVO> categorys;
+
+    @ApiModelProperty(value = "应收费用id")
+    private Long receivableId;
+
+    @ApiModelProperty(value = "是否实报实销")
+    private Boolean isReimbursement;
+
 }

@@ -1184,6 +1184,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
 
         } catch (Exception e) {
+            if (e instanceof JayudBizException) throw new JayudBizException(e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -3329,6 +3330,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         OrderInfo mainOrder = this.getByOrderNos(Collections.singletonList(mainOrderNo)).get(0);
         CustomerInfo customerInfo = this.customerInfoService.getByCode(mainOrder.getUnitCode());
         CustomerInfo subCustomerInfo = this.customerInfoService.getByCode(form.getSubUnitCode());
+        List<OrderReceivableCost> list = new ArrayList<>();
+        List<Long> receivableIds = new ArrayList<>();
         for (OrderPaymentCost paymentCost : paymentCosts) {
             OrderReceivableCost receivableCost = ConvertUtil.convert(paymentCost, OrderReceivableCost.class);
             if (paymentCost.getIsSumToMain()) {
@@ -3336,10 +3339,37 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             } else {
                 receivableCost.setOrderNo(form.getSubOrderNo()).setCustomerCode(form.getSubUnitCode()).setCustomerName(subCustomerInfo.getName());
             }
-            form.getReceivableCosts().add(receivableCost.setStatus(Integer.valueOf(OrderStatusEnum.COST_1.getCode())));
+            if (paymentCost.getReceivableId() != null) {
+                receivableIds.add(paymentCost.getReceivableId());
+            }
+            list.add(receivableCost.setId(null).setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode())).setId(paymentCost.getReceivableId()).setIsReimbursement(true));
+        }
+        if (!CollectionUtils.isEmpty(receivableIds)) {
+            Map<Long, OrderReceivableCost> oldReceivableCostMap = this.orderReceivableCostService.listByIds(receivableIds).stream().collect(Collectors.toMap(e -> e.getId(), e -> e));
+            list = list.stream().map(e -> {
+                OrderReceivableCost orderReceivableCost = oldReceivableCostMap.get(e.getId());
+                if (e.getId() != null) {
+                    if (OrderStatusEnum.COST_0.getCode().equals(form.getStatus())
+                            && OrderStatusEnum.COST_3.getCode().equals(orderReceivableCost.getStatus() + "")) {
+                        throw new JayudBizException(400, "应收费用已审核无法进行反审核");
+                    }
+                }
+                if (OrderStatusEnum.COST_2.getCode().equals(e.getStatus() + "") ||
+                        OrderStatusEnum.COST_1.getCode().equals(e.getStatus() + "")) {
+                    return e;
+                }
+                return null;
+            }).filter(Objects::nonNull).collect(Collectors.toList());
         }
 
 
+        this.receivableCostService.saveOrUpdateBatch(list);
+
+
+        for (int i = 0; i < paymentCosts.size(); i++) {
+            paymentCosts.get(i).setReceivableId(list.get(i).getId()).setIsReimbursement(true);
+        }
+        this.paymentCostService.updateBatchById(paymentCosts);
     }
 
     private void orderBatchOperation(InputOrderForm form, Map<String, Object> submitOrderMap) {
@@ -3388,7 +3418,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         String thirdPartyOrderNo = jsonObject.getStr("thirdPartyOrderNo");
         String createUserType = jsonObject.getStr("createUserType");
 
-        if(Integer.parseInt(createUserType)!=CreateUserTypeEnum.SCM.getCode()){
+        if (Integer.parseInt(createUserType) != CreateUserTypeEnum.SCM.getCode()) {
             return;
         }
         Map<String, Object> form = new HashMap<>();

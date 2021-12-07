@@ -88,4 +88,8 @@ public class InputReceivableCostVO {
     @ApiModelProperty(value = "作业环节")
     private List<InitComboxVO> categorys;
 
+    @ApiModelProperty(value = "是否实报实销")
+    private Boolean isReimbursement;
+
+
 }

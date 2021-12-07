@@ -2,6 +2,7 @@ package com.jayud.finance.bo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.Utilities;
 import com.jayud.finance.vo.LockOrderVO;
 import io.swagger.annotations.ApiModel;
@@ -25,7 +26,7 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="LockOrder对象", description="锁单表")
+@ApiModel(value = "LockOrder对象", description = "锁单表")
 public class AddLockOrderForm extends Model<AddLockOrderForm> {
 
     private static final long serialVersionUID = 1L;
@@ -53,5 +54,16 @@ public class AddLockOrderForm extends Model<AddLockOrderForm> {
     protected Serializable pkVal() {
         return this.id;
     }
+
+
+    public void checkParam() {
+        if (this.times.size() == 1) {
+            throw new JayudBizException(400, "填写起始/结束时间");
+        }
+        if (this.times.get(0).compareTo(this.times.get(1)) > 0) {
+            throw new JayudBizException(400, "开始时间大于结束时间");
+        }
+    }
+
 
 }

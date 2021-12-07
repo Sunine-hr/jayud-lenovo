@@ -153,6 +153,9 @@ public class OrderPaymentCost extends Model<OrderPaymentCost> {
     @ApiModelProperty(value = "司机费用id")
     private Long driverCostId;
 
+    @ApiModelProperty(value = "是否实报实销")
+    private Boolean isReimbursement;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

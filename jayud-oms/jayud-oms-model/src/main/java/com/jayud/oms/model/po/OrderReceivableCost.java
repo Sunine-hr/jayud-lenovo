@@ -133,6 +133,9 @@ public class OrderReceivableCost extends Model<OrderReceivableCost> {
     @ApiModelProperty(value = "创建类型(1:其他,2:合同)")
     private Integer createType;
 
+    @ApiModelProperty(value = "是否实报实销")
+    private Boolean isReimbursement;
+
     @Override
     protected Serializable pkVal() {
         return this.id;

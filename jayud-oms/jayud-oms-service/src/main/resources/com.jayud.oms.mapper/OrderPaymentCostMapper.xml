@@ -65,7 +65,8 @@
         opc.`remarks`,
         opc.`status`,
         opc.unloading_address unloadingAddress,
-        opc.supplier_id,opc.department_id,opc.is_internal,opc.is_sum_to_main,opc.sub_type
+        opc.supplier_id,opc.department_id,opc.is_internal,opc.is_sum_to_main,opc.sub_type,
+        opc.receivable_id,opc.is_reimbursement
 
         FROM
         order_payment_cost opc

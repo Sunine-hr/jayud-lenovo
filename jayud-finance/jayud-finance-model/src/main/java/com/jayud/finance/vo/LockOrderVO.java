@@ -43,6 +43,9 @@ public class LockOrderVO extends Model<LockOrderVO> {
     @ApiModelProperty(value = "类型 (0:应收,1:应付)")
     private Integer type;
 
+    @ApiModelProperty(value = "模式(1:锁账单,2:锁费用)")
+    private Integer model;
+
 //    @ApiModelProperty(value = "创建时间")
 //    private LocalDateTime createTime;
 //

@@ -41,6 +41,7 @@ public class LockOrderController {
     @PostMapping(value = "/doLockOrder")
     @ApiOperation("设置核算期")
     public CommonResult doLockOrder(@RequestBody @Valid AddLockOrderForm form) {
+        form.checkParam();
         this.lockOrderService.saveOrUpdate(form);
         return CommonResult.success();
     }

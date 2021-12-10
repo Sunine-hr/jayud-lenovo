@@ -52,7 +52,7 @@
           ota.`enter_warehouse_no` enterWarehouseNo,
           ota.file,
 		  ota.file_name fileName,
-		  da.province,da.city,da.area
+		  da.province,da.city,da.area,ota.is_hk_delivery
         FROM
           order_take_adr ota
           LEFT JOIN delivery_address da

@@ -103,6 +103,9 @@ public class InputOrderTakeAdrVO {
     @ApiModelProperty(value = "区主键")
     private Integer area;
 
+    @ApiModelProperty(value = "是否香港配送")
+    private Boolean isHkDelivery;
+
     public String getVehicleTypeDesc() {
         if (this.vehicleType != null) {
             if (this.vehicleType == 1) {

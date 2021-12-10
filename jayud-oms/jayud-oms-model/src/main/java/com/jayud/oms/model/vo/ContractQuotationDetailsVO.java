@@ -1,6 +1,8 @@
 package com.jayud.oms.model.vo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.jayud.common.aop.annotations.FieldLabel;
+import com.jayud.common.enums.UnitEnum;
 import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -13,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -107,13 +110,26 @@ public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO
     private Boolean disable;
 
     @ApiModelProperty(value = "录用费用数量")
-    private Integer number;
+    private Double number;
 
     @ApiModelProperty(value = "费用类型id")
     private Long costGenreId;
 
     @ApiModelProperty(value = "创建类型(1:其他,2:合同)")
     private Integer createType = 2;
+
+    @ApiModelProperty(value = "重量计费/kg")
+    private BigDecimal weightBilling;
+
+    @ApiModelProperty(value = "件数计费/件")
+    @FieldLabel(name = "件数计费")
+    private BigDecimal numBilling;
+
+    @ApiModelProperty(value = "板数计费/版")
+    private BigDecimal plateNumBilling;
+
+    @ApiModelProperty(value = "最低计费")
+    private BigDecimal minBilling;
 
     @Override
     protected Serializable pkVal() {
@@ -198,4 +214,44 @@ public class ContractQuotationDetailsVO extends Model<ContractQuotationDetailsVO
         return isTrue;
     }
 
+    public void pairingHGPSRule(Double weight, Double pieceAmount, Double plateAmount) {
+        BigDecimal weightPrice = new BigDecimal(weight).multiply(this.weightBilling);
+        BigDecimal piecePrice = new BigDecimal(pieceAmount).multiply(this.numBilling);
+        BigDecimal platePrice = new BigDecimal(0);
+        if (plateAmount != null) {
+            platePrice = new BigDecimal(plateAmount).multiply(this.plateNumBilling);
+        }
+        List<BigDecimal> price = new ArrayList<>();
+        price.add(weightPrice);
+        price.add(piecePrice);
+        price.add(platePrice);
+
+        BigDecimal max = Collections.max(price);
+        if (max.compareTo(minBilling) < 0) {
+            this.number = 1.0;
+            this.unitPrice = minBilling;
+            this.unit= UnitEnum.BILL.getCode();
+            return;
+        }
+        int index = price.indexOf(max);
+        switch (index) {
+            case 0:
+                this.number = weight;
+                this.unitPrice = this.weightBilling;
+                this.unit= UnitEnum.KGS.getCode();
+                break;
+            case 1:
+                this.number = pieceAmount;
+                this.unitPrice = this.numBilling;
+                this.unit= UnitEnum.PCS.getCode();
+                break;
+            case 2:
+                this.number = plateAmount;
+                this.unitPrice = this.plateNumBilling;
+                this.unit= UnitEnum.Pallet.getCode();
+                break;
+        }
+
+        return;
+    }
 }

@@ -2,10 +2,12 @@ package com.jayud.oms.model.bo;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.jayud.common.aop.annotations.FieldLabel;
+import com.jayud.common.enums.ContractQuotationModeEnum;
 import com.jayud.common.enums.SubOrderSignEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.common.utils.Utilities;
+import com.jayud.oms.model.po.ContractQuotation;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -86,11 +88,29 @@ public class AddContractQuotationDetailsForm extends Model<AddContractQuotationD
     @FieldLabel(name = "费用类别")
     private Long costTypeId;
 
+    @ApiModelProperty(value = "重量计费/kg")
+    @FieldLabel(name = "重量计费")
+    private BigDecimal weightBilling;
+
+    @ApiModelProperty(value = "件数计费/件")
+    @FieldLabel(name = "件数计费")
+    private BigDecimal numBilling;
+
+    @ApiModelProperty(value = "板数计费/版")
+    @FieldLabel(name = "板数计费")
+    private BigDecimal plateNumBilling;
+
+    @ApiModelProperty(value = "最低计费")
+    @FieldLabel(name = "最低计费")
+    private BigDecimal minBilling;
+
+
     public static void main(String[] args) {
-        System.out.println(Utilities.printCheckCode(AddContractQuotationDetailsForm.class));
+        System.out.println(Utilities.printFieldsInfo(AddContractQuotationDetailsForm.class));
     }
 
     public void setUnitPrice(BigDecimal unitPrice) {
+        if (unitPrice==null) return;
         this.unitPrice = unitPrice.setScale(4);
     }
 
@@ -122,7 +142,7 @@ public class AddContractQuotationDetailsForm extends Model<AddContractQuotationD
     }
 
     public void checkParam() {
-        switch (SubOrderSignEnum.getEnum(subType)) {
+        switch (ContractQuotationModeEnum.getEnum(subType)) {
             case ZGYS:
                 if (type == null) {
                     throw new JayudBizException(400, "类型不能为空");
@@ -131,17 +151,32 @@ public class AddContractQuotationDetailsForm extends Model<AddContractQuotationD
                     if (StringUtils.isEmpty(destination)) throw new JayudBizException(400, "目的地不能为空");
                     if (StringUtils.isEmpty(vehicleSize)) throw new JayudBizException(400, "车型尺寸不能为空");
                 }
+                if (unitPrice == null) {
+                    throw new JayudBizException(400, "单价不能为空");
+                }
                 break;
             case BG:
-
+                if (unitPrice == null) {
+                    throw new JayudBizException(400, "单价不能为空");
+                }
+            case HKPS:
+                if (this.weightBilling==null){
+                    throw new JayudBizException(400, "香港配送重量计费不能为空");
+                }
+                if (this.numBilling==null){
+                    throw new JayudBizException(400, "香港配送件数计费不能为空");
+                }
+                if (this.plateNumBilling==null){
+                    throw new JayudBizException(400, "香港配送板数计费不能为空");
+                }
+                if (this.minBilling==null){
+                    throw new JayudBizException(400, "香港配送最低计费不能为空");
+                }
                 break;
         }
 
         if (StringUtils.isEmpty(costCode)) {
             throw new JayudBizException(400, "费用名称不能为空");
-        }
-        if (unitPrice == null) {
-            throw new JayudBizException(400, "单价不能为空");
         }
         if (StringUtils.isEmpty(currencyCode)) {
             throw new JayudBizException(400, "币种代码不能为空");

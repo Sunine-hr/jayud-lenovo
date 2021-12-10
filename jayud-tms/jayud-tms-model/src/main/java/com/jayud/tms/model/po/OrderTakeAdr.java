@@ -74,6 +74,9 @@ public class OrderTakeAdr extends Model<OrderTakeAdr> {
     @ApiModelProperty(value = "提货送货文件名称")
     private String fileName;
 
+    @ApiModelProperty(value = "是否香港配送")
+    private Boolean isHkDelivery;
+
 
     @Override
     protected Serializable pkVal() {

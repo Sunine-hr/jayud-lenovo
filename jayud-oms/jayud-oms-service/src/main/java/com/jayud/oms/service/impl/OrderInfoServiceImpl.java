@@ -3320,7 +3320,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     private void doReimbursementOpt(AuditCostForm form) {
         Map<String, CostInfo> costInfoMap = this.costInfoService.list().stream().filter(e -> e.getIsReimbursement() != null && e.getIsReimbursement()).collect(Collectors.toMap(e -> e.getIdCode(), e -> e));
-        List<OrderPaymentCost> paymentCosts = form.getPaymentCosts().stream().filter(e -> costInfoMap.get(e.getCostCode()) != null).collect(Collectors.toList());
+        List<OrderPaymentCost> paymentCosts = form.getPaymentCosts().stream().filter(e ->(e.getIsInternal()==null||!e.getIsInternal())&& costInfoMap.get(e.getCostCode()) != null).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(paymentCosts)) {
             return;
         }
@@ -3334,15 +3334,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<Long> receivableIds = new ArrayList<>();
         for (OrderPaymentCost paymentCost : paymentCosts) {
             OrderReceivableCost receivableCost = ConvertUtil.convert(paymentCost, OrderReceivableCost.class);
-            if (paymentCost.getIsSumToMain()) {
-                receivableCost.setSubType(SubOrderSignEnum.MAIN.getSignOne()).setCustomerCode(mainOrder.getUnitCode()).setCustomerName(customerInfo.getName());
-            } else {
-                receivableCost.setOrderNo(form.getSubOrderNo()).setCustomerCode(form.getSubUnitCode()).setCustomerName(subCustomerInfo.getName());
+            if (!OrderStatusEnum.COST_0.getCode().equals(form.getStatus())) {
+                if (paymentCost.getIsSumToMain()) {
+                    receivableCost.setSubType(SubOrderSignEnum.MAIN.getSignOne()).setCustomerCode(mainOrder.getUnitCode()).setCustomerName(customerInfo.getName());
+                } else {
+                    receivableCost.setOrderNo(form.getSubOrderNo()).setCustomerCode(form.getSubUnitCode()).setCustomerName(subCustomerInfo.getName());
+                }
             }
             if (paymentCost.getReceivableId() != null) {
                 receivableIds.add(paymentCost.getReceivableId());
             }
-            list.add(receivableCost.setId(null).setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode())).setId(paymentCost.getReceivableId()).setIsReimbursement(true));
+            list.add(receivableCost.setId(null).setIsBill("0").setStatus(Integer.valueOf(OrderStatusEnum.COST_2.getCode())).setId(paymentCost.getReceivableId()).setIsReimbursement(true));
         }
         if (!CollectionUtils.isEmpty(receivableIds)) {
             Map<Long, OrderReceivableCost> oldReceivableCostMap = this.orderReceivableCostService.listByIds(receivableIds).stream().collect(Collectors.toMap(e -> e.getId(), e -> e));

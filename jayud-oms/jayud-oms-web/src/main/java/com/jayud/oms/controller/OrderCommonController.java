@@ -87,14 +87,17 @@ public class OrderCommonController {
         if (form == null || form.getMainOrderId() == null) {
             return CommonResult.error(400, "参数不合法");
         }
-        OrderInfo orderInfo = this.orderInfoService.getById(form.getMainOrderId());
-        //检查是否锁单区间
-        if (form.getPaymentCostList().size() > 0 && this.financeClient.checkLockingInterval(1, DateUtils.LocalDateTime2Str(orderInfo.getOperationTime(), "yyyy-MM"), 2).getData()) {
-            return CommonResult.error(400, "应付费用已锁,不允许修改,请联系财务");
+        if ("submit_main".equals(form.getCmd()) || "submit_sub".equals(form.getCmd())){
+            OrderInfo orderInfo = this.orderInfoService.getById(form.getMainOrderId());
+            //检查是否锁单区间
+            if (form.getPaymentCostList().size() > 0 && this.financeClient.checkLockingInterval(1, DateUtils.LocalDateTime2Str(orderInfo.getOperationTime(), "yyyy-MM"), 2).getData()) {
+                return CommonResult.error(400, "应付费用已锁,不允许修改,请联系财务");
+            }
+            if (form.getReceivableCostList().size() > 0 && this.financeClient.checkLockingInterval(0, DateUtils.LocalDateTime2Str(orderInfo.getOperationTime(), "yyyy-MM"), 2).getData()) {
+                return CommonResult.error(400, "应收费用已锁,不允许修改,请联系财务");
+            }
         }
-        if (form.getReceivableCostList().size() > 0 && this.financeClient.checkLockingInterval(0, DateUtils.LocalDateTime2Str(orderInfo.getOperationTime(), "yyyy-MM"), 2).getData()) {
-            return CommonResult.error(400, "应收费用已锁,不允许修改,请联系财务");
-        }
+
 
         if ("preSubmit_sub".equals(form.getCmd()) || "preSubmit_sub".equals(form.getCmd())) {
             if (form.getPaymentCostList() == null ||

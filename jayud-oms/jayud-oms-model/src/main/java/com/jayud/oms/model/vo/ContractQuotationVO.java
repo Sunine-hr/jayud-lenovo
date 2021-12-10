@@ -1,11 +1,10 @@
 package com.jayud.oms.model.vo;
 
-import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.enums.ContractQuotationModeEnum;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
 import com.jayud.common.utils.FileView;
@@ -98,6 +97,9 @@ public class ContractQuotationVO extends Model<ContractQuotationVO> {
     @ApiModelProperty(value = "中港运输报价详情")
     private List<ContractQuotationDetailsVO> bgDetails = new ArrayList<>();
 
+    @ApiModelProperty(value = "香港配送")//备注:前端要改成这个名字
+    private List<ContractQuotationDetailsVO> xgDetails = new ArrayList<>();
+
     @ApiModelProperty(value = "合同对象(1:客户,2:供应商)")
     private Integer type;
 
@@ -184,7 +186,7 @@ public class ContractQuotationVO extends Model<ContractQuotationVO> {
 
     public void assembleDetails(List<ContractQuotationDetails> details, Map<String, List<InitComboxVO>> costType) {
         for (ContractQuotationDetails detail : details) {
-            switch (SubOrderSignEnum.getEnum(detail.getSubType())) {
+            switch (ContractQuotationModeEnum.getEnum(detail.getSubType())) {
                 case ZGYS:
                     ContractQuotationDetailsVO convert = ConvertUtil.convert(detail, ContractQuotationDetailsVO.class);
                     convert.setCategorys(costType.get(convert.getCostCode()));
@@ -194,6 +196,11 @@ public class ContractQuotationVO extends Model<ContractQuotationVO> {
                     convert = ConvertUtil.convert(detail, ContractQuotationDetailsVO.class);
                     convert.setCategorys(costType.get(convert.getCostCode()));
                     bgDetails.add(convert);
+                    break;
+                case HKPS:
+                    convert = ConvertUtil.convert(detail, ContractQuotationDetailsVO.class);
+                    convert.setCategorys(costType.get(convert.getCostCode()));
+                    xgDetails.add(convert);
                     break;
             }
         }

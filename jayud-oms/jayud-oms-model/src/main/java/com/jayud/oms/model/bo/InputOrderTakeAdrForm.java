@@ -40,7 +40,7 @@ public class InputOrderTakeAdrForm {
     private Long takeAdrId;
 
     @ApiModelProperty(value = "提货日期")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime takeTimeStr;
 
     @ApiModelProperty(value = "货物描述")
@@ -78,5 +78,8 @@ public class InputOrderTakeAdrForm {
 
     @ApiModelProperty(value = "提货文件上传附件地址数组集合")
     private List<FileView> takeFiles = new ArrayList<>();
+
+    @ApiModelProperty(value = "是否香港配送")
+    private Boolean isHkDelivery = false;
 
 }

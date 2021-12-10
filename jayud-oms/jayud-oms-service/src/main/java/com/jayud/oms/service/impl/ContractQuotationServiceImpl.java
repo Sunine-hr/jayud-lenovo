@@ -95,6 +95,7 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
         List<AddContractQuotationDetailsForm> list = new ArrayList<>();
         list.addAll(form.getTmsDetails());
         list.addAll(form.getBgDetails());
+        list.addAll(form.getXgDetails());
         List<ContractQuotationDetails> details = new ArrayList<>();
         List<ContractQuotationDetails> oldTmp = this.contractQuotationDetailsService.getByCondition(new ContractQuotationDetails()
                 .setContractQuotationId(form.getId()).setStatus(StatusEnum.ENABLE.getCode()));
@@ -119,7 +120,7 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
         List<TrackingInfo> trackingInfos = new ArrayList<>();
         map.forEach((k, v) -> {
             TrackingInfo t = new TrackingInfo();
-            t.setType(SubOrderSignEnum.getEnum(k).getDesc());
+            t.setType(ContractQuotationModeEnum.getEnum(k).getDesc());
             t.setContent(v);
             t.setBusinessId(form.getId());
             t.setBusinessType(TrackingInfoBisTypeEnum.ONE.getCode());
@@ -140,7 +141,7 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
         });
         deleteMap.forEach((k, v) -> {
             TrackingInfo t = new TrackingInfo();
-            t.setType(SubOrderSignEnum.getEnum(k).getDesc());
+            t.setType(ContractQuotationModeEnum.getEnum(k).getDesc());
             t.setContent(v);
             t.setBusinessId(form.getId());
             t.setBusinessType(TrackingInfoBisTypeEnum.ONE.getCode());
@@ -292,7 +293,7 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
                 List<String> endAddrs = tms.getOrderTakeAdrForms2().stream().map(InputOrderTakeAdrVO::getAddress).collect(Collectors.toList());
                 List<ContractQuotationDetailsVO> tmsDetails = tmp.getTmsDetails();
                 List<ContractQuotationDetailsVO> tmsList = tmsDetails.stream().filter(e -> e.pairingTmsRule(startAddrs, endAddrs, tms.getVehicleSize()))
-                        .map(e -> e.setCostGenreId(productBizs.getCostGenreDefault()).setNumber(1)).collect(Collectors.toList());
+                        .map(e -> e.setCostGenreId(productBizs.getCostGenreDefault()).setNumber(1.0)).collect(Collectors.toList());
                 list.addAll(tmsList);
             }
         }
@@ -301,11 +302,35 @@ public class ContractQuotationServiceImpl extends ServiceImpl<ContractQuotationM
             if (bg != null) {
                 long count = bg.getSubOrders().stream().filter(e -> !OrderStatusEnum.CLOSE.getDesc().equals(e.getStatusDesc())).count();
                 if (count > 0) {
-                    tmp.getBgDetails().forEach(e -> e.setNumber((int) count).setCostGenreId(productBizs.getCostGenreDefault()));
+                    tmp.getBgDetails().forEach(e -> e.setNumber(Double.longBitsToDouble(count)).setCostGenreId(productBizs.getCostGenreDefault()));
                     list.addAll(tmp.getBgDetails());
                 }
             }
         }
+        if (!CollectionUtils.isEmpty(tmp.getXgDetails())) {
+            InputOrderTransportVO tms = orderDetail.getOrderTransportForm();
+            if (tms != null) {
+                List<InputOrderTakeAdrVO> startAddrs = tms.getOrderTakeAdrForms1().stream().filter(e -> e.getIsHkDelivery() != null && e.getIsHkDelivery()).collect(Collectors.toList());
+                List<InputOrderTakeAdrVO> endAddrs = tms.getOrderTakeAdrForms2().stream().filter(e -> e.getIsHkDelivery() != null && e.getIsHkDelivery()).collect(Collectors.toList());
+                if (!CollectionUtils.isEmpty(endAddrs)) {
+                    startAddrs.addAll(endAddrs);
+                }
+
+                List<ContractQuotationDetailsVO> xgDetails = tmp.getXgDetails();
+                startAddrs.forEach(e1 -> {
+
+                    for (ContractQuotationDetailsVO xgDetail : xgDetails) {
+                        ContractQuotationDetailsVO convert = ConvertUtil.convert(xgDetail, ContractQuotationDetailsVO.class);
+                        convert.pairingHGPSRule(e1.getWeight(), e1.getPieceAmount(), e1.getPlateAmount());
+                        convert.setCostGenreId(productBizs.getCostGenreDefault());
+                        list.add(convert);
+                    }
+                });
+
+
+            }
+        }
+
         list.forEach(e -> e.setStatus(null).setCreateTime(null).setCreateUser(null).setUpdateUser(null).setUpdateTime(null));
         return list;
     }

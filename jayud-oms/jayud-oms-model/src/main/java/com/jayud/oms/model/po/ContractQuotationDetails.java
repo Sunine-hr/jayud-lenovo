@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
+import com.jayud.common.aop.annotations.FieldLabel;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -83,9 +85,20 @@ public class ContractQuotationDetails extends Model<ContractQuotationDetails> {
     @ApiModelProperty(value = "描述")
     private String remarks;
 
-
     @ApiModelProperty(value = "合同报价id")
     private Long contractQuotationId;
+
+    @ApiModelProperty(value = "重量计费/kg")
+    private BigDecimal weightBilling;
+
+    @ApiModelProperty(value = "件数计费/件")
+    private BigDecimal numBilling;
+
+    @ApiModelProperty(value = "板数计费/版")
+    private BigDecimal plateNumBilling;
+
+    @ApiModelProperty(value = "最低计费")
+    private BigDecimal minBilling;
 
 
     @Override

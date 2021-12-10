@@ -91,5 +91,9 @@ public class InputReceivableCostVO {
     @ApiModelProperty(value = "是否实报实销")
     private Boolean isReimbursement;
 
+    @ApiModelProperty(value = "法人主体")
+    private Long legalId;
 
+    @ApiModelProperty(value = "法人主体名称")
+    private String legalName;
 }

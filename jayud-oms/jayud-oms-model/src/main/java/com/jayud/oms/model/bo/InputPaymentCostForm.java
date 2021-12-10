@@ -78,7 +78,8 @@ public class InputPaymentCostForm {
         }
         if (UnitEnum.CTNS.name().equals(this.unit)
                 || UnitEnum.PCS.name().equals(this.unit)
-                || UnitEnum.BILL.name().equals(this.unit)) {
+                || UnitEnum.BILL.name().equals(this.unit)
+                || UnitEnum.Pallet.name().equals(this.unit)) {
             if (this.number != null && !NumberUtils.isIntegerValue(this.number)) {
                 throw new JayudBizException("数量请输入整数（单位:CTNS/PCS/BILL)");
             }

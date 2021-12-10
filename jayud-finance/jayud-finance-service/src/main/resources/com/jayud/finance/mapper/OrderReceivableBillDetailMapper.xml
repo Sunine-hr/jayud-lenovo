@@ -322,7 +322,7 @@
         </if>
         <if test="dynamicSqlParam.table !=null and dynamicSqlParam.table != ''">
             <choose>
-                <when test="form.cmd == 'cce' or form.cmd == 'cci' or form.cmd='ccf'">
+                <when test="form.cmd == 'cce' or form.cmd == 'cci' or form.cmd=='ccf'">
                     orc.legal_name
                 </when>
                 <otherwise>

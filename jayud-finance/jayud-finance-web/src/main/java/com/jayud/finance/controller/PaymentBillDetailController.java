@@ -55,7 +55,7 @@ public class PaymentBillDetailController {
     @Autowired
     private ILockOrderService lockOrderService;
     @Autowired
-    private IOrderReceivableBillService billService;
+    private IOrderPaymentBillService billService;
 
     @ApiOperation(value = "应付对账单列表,应付对账单审核列表,财务应付对账单列表")
     @PostMapping("/findPaymentBillDetailByPage")
@@ -178,12 +178,13 @@ public class PaymentBillDetailController {
                 costIds.add(record.getCostId());
                 amountStrs.add(record.getAmountStr());
             }
+            Map<String, List<PaymentNotPaidBillVO>> tmps = records.stream().collect(Collectors.groupingBy(PaymentNotPaidBillVO::getOrderNo));
             ViewBillVO viewBillVO = this.billService.getViewBillByCostIds(costIds, form.getCmd());
             String totalCost = this.commonService.calculatingCosts(amountStrs);
 
             map.put("legalName", viewBillVO.getLegalName());
             map.put("customerName", viewBillVO.getCustomerName());
-            map.put("num", pageList.getTotal());
+            map.put("num", tmps.keySet().size());
             map.put("totalCost", totalCost);
         }
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList, map);
@@ -243,8 +244,8 @@ public class PaymentBillDetailController {
         //参数校验
         form.checkEditSBill();
         //检查是否锁单区间
-        if (this.lockOrderService.checkLockingInterval(1,form.getAccountTermStr(), 1)) {
-            return CommonResult.error(400,"该核算期已经被锁定");
+        if (this.lockOrderService.checkLockingInterval(1, form.getAccountTermStr(), 1)) {
+            return CommonResult.error(400, "该核算期已经被锁定");
         }
         return billDetailService.editBill(form);
     }

@@ -3,7 +3,7 @@ package com.jayud.oms.model.bo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.jayud.common.enums.SubOrderSignEnum;
+import com.jayud.common.enums.ContractQuotationModeEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
@@ -72,6 +72,9 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
     @ApiModelProperty(value = "报关")
     private List<AddContractQuotationDetailsForm> bgDetails;
 
+    @ApiModelProperty(value = "香港配送")//备注:前端要改成这个名字
+    private List<AddContractQuotationDetailsForm> xgDetails;
+
     @ApiModelProperty(value = "接单法人id")
     private Long legalEntityId;
 
@@ -116,19 +119,27 @@ public class AddContractQuotationForm extends Model<AddContractQuotationForm> {
         if (legalEntityId == null) {
             throw new JayudBizException(400, "请输入公司法人");
         }
-        if (CollectionUtils.isEmpty(tmsDetails)&&
-                CollectionUtils.isEmpty(bgDetails)) {
+        if (CollectionUtils.isEmpty(tmsDetails)
+                && CollectionUtils.isEmpty(bgDetails)
+                && CollectionUtils.isEmpty(xgDetails)) {
             throw new JayudBizException(400, "请填写合同报价费用");
         }
         if (!CollectionUtils.isEmpty(tmsDetails)) {
             tmsDetails.forEach(e -> {
-                e.setSubType(SubOrderSignEnum.ZGYS.getSignOne());
+                e.setSubType(ContractQuotationModeEnum.ZGYS.getCode());
                 e.checkParam();
             });
         }
         if (!CollectionUtils.isEmpty(bgDetails)) {
             bgDetails.forEach(e -> {
-                e.setSubType(SubOrderSignEnum.BG.getSignOne());
+                e.setSubType(ContractQuotationModeEnum.BG.getCode());
+                e.checkParam();
+            });
+        }
+
+        if (!CollectionUtils.isEmpty(xgDetails)) {
+            xgDetails.forEach(e -> {
+                e.setSubType(ContractQuotationModeEnum.HKPS.getCode());
                 e.checkParam();
             });
         }

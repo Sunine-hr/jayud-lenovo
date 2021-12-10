@@ -13,7 +13,7 @@ import java.util.Objects;
 public enum UnitEnum {
 
     KGS("KGS","KGS"),CBM("CBM","CBM"),CTNS("CTNS","CTNS")
-    ,PCS("PCS","PCS"),BILL("BILL","BILL");
+    ,PCS("PCS","PCS"),BILL("BILL","BILL"),Pallet("Pallet","Pallet");
     private String code;
     private String desc;
 

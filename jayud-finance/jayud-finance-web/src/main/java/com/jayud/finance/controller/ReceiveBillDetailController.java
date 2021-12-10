@@ -186,12 +186,13 @@ public class ReceiveBillDetailController {
                 costIds.add(record.getCostId());
                 amountStrs.add(record.getAmountStr());
             }
+            Map<String, List<PaymentNotPaidBillVO>> tmps = records.stream().collect(Collectors.groupingBy(PaymentNotPaidBillVO::getOrderNo));
             ViewBillVO viewBillVO = billService.getViewBillByCostIds(costIds, form.getCmd());
             String totalCost = this.commonService.calculatingCosts(amountStrs);
 
             map.put("legalName", viewBillVO.getLegalName());
             map.put("customerName", viewBillVO.getCustomerName());
-            map.put("num", pageList.getTotal());
+            map.put("num", tmps.keySet().size());
             map.put("totalCost", totalCost);
         }
         CommonPageResult<PaymentNotPaidBillVO> pageVO = new CommonPageResult(pageList, map);
@@ -252,7 +253,7 @@ public class ReceiveBillDetailController {
         //参数校验
         form.checkEditSBill();
         //检查是否锁单区间
-        if (this.lockOrderService.checkLockingInterval(0, form.getAccountTermStr(),1)) {
+        if (this.lockOrderService.checkLockingInterval(0, form.getAccountTermStr(), 1)) {
             return CommonResult.error(400, "该核算期已经被锁定");
         }
         return billDetailService.editSBill(form);

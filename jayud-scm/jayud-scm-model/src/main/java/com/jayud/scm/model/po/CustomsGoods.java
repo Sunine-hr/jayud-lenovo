@@ -102,12 +102,12 @@ public class CustomsGoods {
     @ApiModelProperty(value = "毛重(18,4)")
     @JsonProperty("grossweight")
     @SerializedName("grossweight")
-    private BigDecimal grossWeight;
+    private BigDecimal grossweight;
 
     @ApiModelProperty(value = "净重(18,4)")
     @JsonProperty("netweight")
     @SerializedName("netweight")
-    private BigDecimal netWeight;
+    private BigDecimal netweight;
 
     @ApiModelProperty(value = "件数")
     private Integer piece;
@@ -133,10 +133,10 @@ public class CustomsGoods {
     @ApiModelProperty(value = "境内货源地")
     @JsonProperty("districtcode")
     @SerializedName("districtcode")
-    private String districtCode;
+    private String districtcode;
 
     @ApiModelProperty(value = "地区代码")
     @JsonProperty("origincode")
     @SerializedName("origincode")
-    private String originCode;
+    private String origincode;
 }

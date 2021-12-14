@@ -117,6 +117,9 @@ public class BookingOrderEntry extends Model<BookingOrderEntry> {
     @ApiModelProperty(value = "箱号")
     private String ctnsNo;
 
+    @ApiModelProperty(value = "板数")
+    private BigDecimal pallets;
+
     @ApiModelProperty(value = "件数")
     private BigDecimal packages;
 

@@ -129,6 +129,9 @@ public class CommonController {
     @Autowired
     private IAcctPayService acctPayService;
 
+    @Autowired
+    private IHubShippingDeliverService hubShippingDeliverService;
+
 
     @ApiOperation(value = "根据id通用查询方法")
     @PostMapping(value = "/getClassById")
@@ -203,9 +206,9 @@ public class CommonController {
 //            case 17:
 //                result = hubReceivingService.delete(deleteForm);
 //                break;
-            case 18:
-                result = hubShippingService.delete(deleteForm);
-                break;
+//            case 18:
+//                result = hubShippingService.delete(deleteForm);
+//                break;
             case 21:
                 result = checkOrderService.delete(deleteForm);
                 break;
@@ -232,6 +235,9 @@ public class CommonController {
                 break;
             case 32:
                 result = acctPayService.delete(deleteForm);
+                break;
+            case 37:
+                result = hubShippingDeliverService.delete(deleteForm);
                 break;
         }
 

@@ -314,8 +314,7 @@ public class HgTruckServiceImpl extends ServiceImpl<HgTruckMapper, HgTruck> impl
         List<BookingOrder> bookingOrders = new ArrayList<>();
         List<BookingOrderFollow> bookingOrderFollows = new ArrayList<>();
         for (Integer id : form.getIds()) {
-            BookingOrder bookingOrder = new BookingOrder();
-            bookingOrder.setId(id);
+            BookingOrder bookingOrder = this.bookingOrderService.getById(id);
             bookingOrder.setHgTruckId(null);
             bookingOrder.setHgTruckNo(null);
             bookingOrder.setMdyBy(systemUser.getId().intValue());

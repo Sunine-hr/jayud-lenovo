@@ -53,6 +53,9 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
     @Autowired
     private IBookingOrderFollowService bookingOrderFollowService;
 
+    @Autowired
+    private ICustomerService customerService;
+
     @Override
     public boolean delete(DeleteForm deleteForm) {
         List<HubShippingEntry> hubShippingEntries = new ArrayList<>();
@@ -146,15 +149,27 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
         HubShipping hubShipping = ConvertUtil.convert(form, HubShipping.class);
         HubShippingFollow hubShippingFollow = new HubShippingFollow();
 
+        BigDecimal totalQty = new BigDecimal(0);
+        BigDecimal totaCbm = new BigDecimal(0);
+        BigDecimal totalGw = new BigDecimal(0);
+        BigDecimal totaNw = new BigDecimal(0);
+        Integer totaPackages = 0 ;
+        Integer totaPallets = 0;
         List<AddHubShippingEntryForm> addHubShippingEntryFormList = form.getAddHubShippingEntryFormList();
         for (AddHubShippingEntryForm addHubShippingEntryForm : addHubShippingEntryFormList) {
-            hubShipping.setTotalQty((addHubShippingEntryForm.getQty()!=null ?addHubShippingEntryForm.getQty():new BigDecimal(0)).add(addHubShippingEntryForm.getQty()!=null ?addHubShippingEntryForm.getQty():new BigDecimal(0)));
-            hubShipping.setTotaCbm((addHubShippingEntryForm.getCbm()!=null ?addHubShippingEntryForm.getCbm():new BigDecimal(0)).add(addHubShippingEntryForm.getCbm()!=null ?addHubShippingEntryForm.getCbm():new BigDecimal(0)));
-            hubShipping.setTotalGw((addHubShippingEntryForm.getGw()!=null ?addHubShippingEntryForm.getGw():new BigDecimal(0)).add(addHubShippingEntryForm.getGw()!=null ?addHubShippingEntryForm.getGw():new BigDecimal(0)));
-            hubShipping.setTotaNw((addHubShippingEntryForm.getNw()!=null ?addHubShippingEntryForm.getNw():new BigDecimal(0)).add(addHubShippingEntryForm.getNw()!=null ?addHubShippingEntryForm.getNw():new BigDecimal(0)));
-            hubShipping.setTotaPackages((addHubShippingEntryForm.getPackages()!=null ?addHubShippingEntryForm.getPackages(): 0) + (addHubShippingEntryForm.getPackages()!=null ?addHubShippingEntryForm.getPackages():0));
-            hubShipping.setTotaPallets((addHubShippingEntryForm.getPallets()!=null ?addHubShippingEntryForm.getPallets():0) + (addHubShippingEntryForm.getPallets()!=null ?addHubShippingEntryForm.getPallets():0));
+            totalQty = totalQty.add(addHubShippingEntryForm.getQty()!=null ?addHubShippingEntryForm.getQty():new BigDecimal(0));
+            totaCbm = totaCbm.add(addHubShippingEntryForm.getCbm()!=null ?addHubShippingEntryForm.getCbm():new BigDecimal(0));
+            totalGw = totalGw.add(addHubShippingEntryForm.getGw()!=null ?addHubShippingEntryForm.getGw():new BigDecimal(0));
+            totaNw = totaNw.add(addHubShippingEntryForm.getNw()!=null ?addHubShippingEntryForm.getNw():new BigDecimal(0));
+            totaPackages = totaPackages + (addHubShippingEntryForm.getPackages()!=null ?addHubShippingEntryForm.getPackages(): 0);
+            totaPallets = totaPallets + (addHubShippingEntryForm.getPallets()!=null ?addHubShippingEntryForm.getPallets():0) ;
         }
+        hubShipping.setTotalQty(totalQty);
+        hubShipping.setTotaCbm(totaCbm);
+        hubShipping.setTotalGw(totalGw);
+        hubShipping.setTotaNw(totaNw);
+        hubShipping.setTotaPackages(totaPackages);
+        hubShipping.setTotaPallets(totaPallets);
 
         if(hubShipping.getId() != null){
             hubShipping.setMdyByName(systemUser.getUserName());
@@ -480,5 +495,28 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
         queryWrapper.lambda().eq(HubShipping::getDeliverId,id);
         queryWrapper.lambda().eq(HubShipping::getVoided,0);
         return this.list(queryWrapper);
+    }
+
+    @Override
+    public CommonResult reviewHubShipping(PermissionForm form) {
+
+        HubShippingFollow hubShippingFollow = new HubShippingFollow();
+        hubShippingFollow.setShippingId(form.getId().intValue());
+        hubShippingFollow.setSType(OperationEnum.UPDATE.getCode());
+        hubShippingFollow.setCrtBy(form.getId().intValue());
+        hubShippingFollow.setCrtByDtm(LocalDateTime.now());
+        hubShippingFollow.setCrtByName(form.getUserName());
+
+        CommonResult commonResult = customerService.toExamine(form);
+        if(commonResult.getCode().equals(0)){
+            hubShippingFollow.setFollowContext("出库单审核成功");
+        }else {
+            hubShippingFollow.setFollowContext("出库单审核失败");
+        }
+        boolean save = this.hubShippingFollowService.save(hubShippingFollow);
+        if(save){
+            log.warn("审核，操作日志添加成功");
+        }
+        return commonResult;
     }
 }

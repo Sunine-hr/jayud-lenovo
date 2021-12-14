@@ -13,10 +13,12 @@ import com.jayud.scm.model.vo.*;
 import com.jayud.scm.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.scm.utils.DateUtil;
+import io.swagger.annotations.ApiModelProperty;
 import org.apache.poi.hdgf.HDGFDiagram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -150,17 +152,31 @@ public class HgBillServiceImpl extends ServiceImpl<HgBillMapper, HgBill> impleme
 
         BookingOrderVO bookingOrderById = bookingOrderService.getBookingOrderById(bookingId);
         List<BookingOrderEntryVO> bookingOrderEntryList = bookingOrderById.getBookingOrderEntryList();
+        BigDecimal totalGw = new BigDecimal(0);
+        BigDecimal totalNw = new BigDecimal(0);
+        BigDecimal totalCbm = new BigDecimal(0);
+        Integer packages = 0;
+        for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryList) {
+            packages = packages + (bookingOrderEntryVO.getPackages()!=null ?bookingOrderEntryVO.getPackages():new BigDecimal(0)).intValue();
+            totalGw = totalGw.add(bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0));
+            totalNw = totalNw.add(bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0));
+            totalCbm = totalCbm.add(bookingOrderEntryVO.getCbm()!=null ?bookingOrderEntryVO.getCbm():new BigDecimal(0));
+        }
 
         HgBill hgBill = ConvertUtil.convert(bookingOrderById, HgBill.class);
+
+        hgBill.setTotalCbm(totalCbm);
+        hgBill.setTotalGw(totalGw);
+        hgBill.setTotalNw(totalNw);
+        hgBill.setPackages(packages);
         hgBill.setCrtBy(systemUser.getId().intValue());
         hgBill.setCrtByDtm(LocalDateTime.now());
         hgBill.setCrtByName(systemUser.getUserName());
         hgBill.setCheckStateFlag("N0");
         hgBill.setFStep(0);
         hgBill.setFLevel(2);
-        hgBill.setCustomsNo(bookingOrderById.getContractNo());
         hgBill.setBillDate(LocalDateTime.now());
-        hgBill.setBillNo(commodityService.getOrderNo(NoCodeEnum.HG_BILL.getCode(),LocalDateTime.now()));
+        hgBill.setBillNo(bookingOrderById.getContractNo());
         hgBill.setCustomerBillNo(bookingOrderById.getContractNo());
 
         boolean save = this.save(hgBill);

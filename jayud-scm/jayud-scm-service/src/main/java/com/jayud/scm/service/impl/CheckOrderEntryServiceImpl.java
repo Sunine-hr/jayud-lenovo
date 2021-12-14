@@ -17,9 +17,11 @@ import com.jayud.scm.service.IBookingOrderEntryService;
 import com.jayud.scm.service.ICheckOrderEntryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.scm.service.ISystemUserService;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,23 +78,41 @@ public class CheckOrderEntryServiceImpl extends ServiceImpl<CheckOrderEntryMappe
             checkOrderEntry.setMdyBy(systemUser.getId().intValue());
             checkOrderEntry.setMdyByDtm(LocalDateTime.now());
             checkOrderEntry.setMdyByName(systemUser.getUserName());
-
-            BookingOrderEntry bookingOrderEntry = new BookingOrderEntry();
-            bookingOrderEntry.setId(checkOrderEntry.getBookingEntryId());
-            bookingOrderEntry.setItemOrigin(checkOrderEntry.getItemOrigin());
-            bookingOrderEntry.setPackages(checkOrderEntry.getPackages());
-            bookingOrderEntry.setGw(checkOrderEntry.getGw());
-            bookingOrderEntry.setNw(checkOrderEntry.getNw());
-            bookingOrderEntry.setPackingType(checkOrderEntry.getPackagesType());
-            bookingOrderEntry.setBn(checkOrderEntry.getBn());
-            bookingOrderEntry.setCtnsNo(checkOrderEntry.getCtnsNo());
-            bookingOrderEntry.setAccessories(checkOrderEntry.getItemAccs());
-            bookingOrderEntries.add(bookingOrderEntry);
-
         }
         boolean b = this.updateBatchById(checkOrderEntries);
         if(b){
             log.warn("修改提货验货明细成功");
+            for (CheckOrderEntry checkOrderEntry : checkOrderEntries) {
+                QueryWrapper<CheckOrderEntry> queryWrapper = new QueryWrapper<>();
+                queryWrapper.lambda().eq(CheckOrderEntry::getBookingEntryId,checkOrderEntry.getBookingEntryId());
+                queryWrapper.lambda().eq(CheckOrderEntry::getItemModel,checkOrderEntry.getItemModel());
+                queryWrapper.lambda().eq(CheckOrderEntry::getVoided,0);
+                List<CheckOrderEntry> list = this.list(queryWrapper);
+                BigDecimal pallets = new BigDecimal(0);
+                BigDecimal packages = new BigDecimal(0);
+                BigDecimal gw = new BigDecimal(0);
+                BigDecimal nw = new BigDecimal(0);
+                for (CheckOrderEntry orderEntry : list) {
+                    pallets = pallets.add(orderEntry.getPallets() != null ? orderEntry.getPallets() : new BigDecimal(0));
+                    packages = packages.add(orderEntry.getPackages() != null ? orderEntry.getPackages() : new BigDecimal(0));
+                    gw = gw.add(orderEntry.getGw() != null ? orderEntry.getGw() : new BigDecimal(0));
+                    nw = nw.add(orderEntry.getNw() != null ? orderEntry.getNw() : new BigDecimal(0));
+                }
+
+                BookingOrderEntry bookingOrderEntry = new BookingOrderEntry();
+                bookingOrderEntry.setId(checkOrderEntry.getBookingEntryId());
+                bookingOrderEntry.setPallets(pallets);
+                bookingOrderEntry.setItemOrigin(checkOrderEntry.getItemOrigin());
+                bookingOrderEntry.setPackages(packages);
+                bookingOrderEntry.setGw(gw);
+                bookingOrderEntry.setNw(nw);
+                bookingOrderEntry.setPackingType(checkOrderEntry.getPackagesType());
+                bookingOrderEntry.setBn(checkOrderEntry.getBn());
+                bookingOrderEntry.setCtnsNo(checkOrderEntry.getCtnsNo());
+                bookingOrderEntry.setAccessories(checkOrderEntry.getItemAccs());
+                bookingOrderEntries.add(bookingOrderEntry);
+            }
+
             boolean b1 = this.bookingOrderEntryService.updateBatchById(bookingOrderEntries);
             if(!b1){
                 log.warn("回改订单明细失败"+bookingOrderEntries);

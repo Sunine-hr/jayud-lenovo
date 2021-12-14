@@ -18,4 +18,6 @@ public interface ITaxInvoiceService extends IService<TaxInvoice> {
     boolean dispatch(List<Integer> taxInvoiceIds, Integer id, String deliverNo);
 
     boolean deleteDispatch(List<Integer> taxInvoiceIds);
+
+    List<TaxInvoice> getTaxInvoiceByDeliverId(int intValue);
 }

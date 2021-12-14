@@ -208,4 +208,9 @@ public class InvoiceDetailVO {
     @JsonProperty(value = "pAtMoney")
     private BigDecimal pAtMoney;
 
+    @ApiModelProperty(value = "报关单号")
+    private String customsNo;
+
+    @ApiModelProperty(value = "客户合同号")
+    private String contractNo;
 }

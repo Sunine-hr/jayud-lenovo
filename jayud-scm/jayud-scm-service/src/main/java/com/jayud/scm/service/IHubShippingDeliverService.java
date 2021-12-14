@@ -1,6 +1,7 @@
 package com.jayud.scm.service;
 
 import com.jayud.scm.model.bo.AddHubShippingDeliverForm;
+import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.DispatchForm;
 import com.jayud.scm.model.po.HubShippingDeliver;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -29,4 +30,6 @@ public interface IHubShippingDeliverService extends IService<HubShippingDeliver>
     boolean deleteDispatch(DispatchForm form);
 
     HubShippingDeliver saveHubShippingDeliver(HubShippingDeliver hubShippingDeliver);
+
+    boolean delete(DeleteForm deleteForm);
 }

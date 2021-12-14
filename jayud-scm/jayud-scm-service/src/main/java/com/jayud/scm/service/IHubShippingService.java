@@ -1,10 +1,7 @@
 package com.jayud.scm.service;
 
 import com.jayud.common.CommonResult;
-import com.jayud.scm.model.bo.AddHubShippingForm;
-import com.jayud.scm.model.bo.DeleteForm;
-import com.jayud.scm.model.bo.QueryCommonForm;
-import com.jayud.scm.model.bo.QueryForm;
+import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.po.HubShipping;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.scm.model.vo.HubShippingVO;
@@ -48,4 +45,6 @@ public interface IHubShippingService extends IService<HubShipping> {
     boolean saveErrorInformation(HubShipping hubShipping);
 
     List<HubShipping> getHubShippingByDeliverId(Integer id);
+
+    CommonResult reviewHubShipping(PermissionForm form);
 }

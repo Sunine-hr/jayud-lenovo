@@ -302,8 +302,8 @@ public class YunBaoGuanData {
     @ApiModelProperty(value = "")
     private String agentName;
 
-//    @ApiModelProperty(value = "")
-//    private String agentNo;
+    @ApiModelProperty(value = "")
+    private String agentNo;
 
     @ApiModelProperty(value = "")
     private String agentCode;
@@ -410,8 +410,8 @@ public class YunBaoGuanData {
     @ApiModelProperty(value = "")
     private String shipperCode;
 
-//    @ApiModelProperty(value = "")
-//    private String shipperNo;
+    @ApiModelProperty(value = "")
+    private String shipperNo;
 
     @ApiModelProperty(value = "")
     private String gsdjqr;

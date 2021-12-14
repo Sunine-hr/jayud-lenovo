@@ -5,9 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.scm.model.bo.AddCheckOrderForm;
-import com.jayud.scm.model.bo.DeleteForm;
-import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.*;
@@ -19,6 +17,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +49,9 @@ public class CheckOrderServiceImpl extends ServiceImpl<CheckOrderMapper, CheckOr
 
     @Autowired
     private IBookingOrderFollowService bookingOrderFollowService;
+
+    @Autowired
+    private IBookingOrderEntryService bookingOrderEntryService;
 
     @Override
     public boolean delete(DeleteForm deleteForm) {
@@ -137,6 +139,27 @@ public class CheckOrderServiceImpl extends ServiceImpl<CheckOrderMapper, CheckOr
 
         CheckOrderFollow checkOrderFollow = new CheckOrderFollow();
         CheckOrder checkOrder = ConvertUtil.convert(form, CheckOrder.class);
+
+        BigDecimal totalQty = new BigDecimal(0);
+        BigDecimal totaCbm = new BigDecimal(0);
+        BigDecimal totalGw = new BigDecimal(0);
+        BigDecimal totaNw = new BigDecimal(0);
+        BigDecimal totaPackages = new BigDecimal(0) ;
+        BigDecimal totaPallets = new BigDecimal(0);
+        List<AddCheckOrderEntryForm> addCheckOrderEntryForms = form.getBookingOrderEntryList();
+        for (AddCheckOrderEntryForm addCheckOrderEntryForm : addCheckOrderEntryForms) {
+            totalQty = totalQty.add(addCheckOrderEntryForm.getQty()!=null ?addCheckOrderEntryForm.getQty():new BigDecimal(0));
+            totaCbm = totaCbm.add(addCheckOrderEntryForm.getCbm()!=null ?addCheckOrderEntryForm.getCbm():new BigDecimal(0));
+            totalGw = totalGw.add(addCheckOrderEntryForm.getGw()!=null ?addCheckOrderEntryForm.getGw():new BigDecimal(0));
+            totaNw = totaNw.add(addCheckOrderEntryForm.getNw()!=null ?addCheckOrderEntryForm.getNw():new BigDecimal(0));
+            totaPackages = totaPackages.add(addCheckOrderEntryForm.getPackages()!=null ?addCheckOrderEntryForm.getPackages(): new BigDecimal(0));
+            totaPallets = totaPallets.add (addCheckOrderEntryForm.getPallets()!=null ?addCheckOrderEntryForm.getPallets():new BigDecimal(0)) ;
+        }
+        checkOrder.setTotalCbm(totaCbm);
+        checkOrder.setTotalGw(totalGw);
+        checkOrder.setTotalPackages(totaPackages);
+        checkOrder.setTotalPallet(totaPallets.intValue());
+
         if(form.getId() != null){
             checkOrder.setMdyByName(systemUser.getUserName());
             checkOrder.setMdyBy(systemUser.getId().intValue());
@@ -155,8 +178,10 @@ public class CheckOrderServiceImpl extends ServiceImpl<CheckOrderMapper, CheckOr
         if(result){
             log.warn("增加或修改提验货单成功");
             if(CollectionUtils.isNotEmpty(form.getBookingOrderEntryList())){
+                List<BookingOrderEntry> bookingOrderEntries = new ArrayList<>();
                 List<CheckOrderEntry> checkOrderEntries = ConvertUtil.convertList(form.getBookingOrderEntryList(), CheckOrderEntry.class);
                 for (CheckOrderEntry checkOrderEntry : checkOrderEntries) {
+
                     if(checkOrderEntry.getId() != null){
                         checkOrderEntry.setCheckId(checkOrder.getId());
                         checkOrderEntry.setMdyBy(systemUser.getId().intValue());
@@ -181,6 +206,41 @@ public class CheckOrderServiceImpl extends ServiceImpl<CheckOrderMapper, CheckOr
                 if(save){
                     log.warn("修改或者新增提验货单，提验货操作日志添加成功"+checkOrderFollow);
                 }
+//                for (CheckOrderEntry checkOrderEntry : checkOrderEntries) {
+//                    QueryWrapper<CheckOrderEntry> queryWrapper1 = new QueryWrapper<>();
+//                    queryWrapper1.lambda().eq(CheckOrderEntry::getBookingEntryId,checkOrderEntry.getBookingEntryId());
+//                    queryWrapper1.lambda().eq(CheckOrderEntry::getItemModel,checkOrderEntry.getItemModel());
+//                    queryWrapper1.lambda().eq(CheckOrderEntry::getVoided,0);
+//                    List<CheckOrderEntry> list = this.checkOrderEntryService.list(queryWrapper1);
+//                    BigDecimal pallets = new BigDecimal(0);
+//                    BigDecimal packages = new BigDecimal(0);
+//                    BigDecimal gw = new BigDecimal(0);
+//                    BigDecimal nw = new BigDecimal(0);
+//                    for (CheckOrderEntry orderEntry : list) {
+//                        pallets = pallets.add(orderEntry.getPallets() != null ? orderEntry.getPallets() : new BigDecimal(0));
+//                        packages = packages.add(orderEntry.getPackages() != null ? orderEntry.getPackages() : new BigDecimal(0));
+//                        gw = gw.add(orderEntry.getGw() != null ? orderEntry.getGw() : new BigDecimal(0));
+//                        nw = nw.add(orderEntry.getNw() != null ? orderEntry.getNw() : new BigDecimal(0));
+//                    }
+//
+//                    BookingOrderEntry bookingOrderEntry = new BookingOrderEntry();
+//                    bookingOrderEntry.setId(checkOrderEntry.getBookingEntryId());
+//                    bookingOrderEntry.setPallets(pallets);
+//                    bookingOrderEntry.setItemOrigin(checkOrderEntry.getItemOrigin());
+//                    bookingOrderEntry.setPackages(packages);
+//                    bookingOrderEntry.setGw(gw);
+//                    bookingOrderEntry.setNw(nw);
+//                    bookingOrderEntry.setPackingType(checkOrderEntry.getPackagesType());
+//                    bookingOrderEntry.setBn(checkOrderEntry.getBn());
+//                    bookingOrderEntry.setCtnsNo(checkOrderEntry.getCtnsNo());
+//                    bookingOrderEntry.setAccessories(checkOrderEntry.getItemAccs());
+//                    bookingOrderEntries.add(bookingOrderEntry);
+//                }
+//
+//                boolean b1 = this.bookingOrderEntryService.updateBatchById(bookingOrderEntries);
+//                if(!b1){
+//                    log.warn("回改订单明细失败"+bookingOrderEntries);
+//                }
             }
         }
         return result;

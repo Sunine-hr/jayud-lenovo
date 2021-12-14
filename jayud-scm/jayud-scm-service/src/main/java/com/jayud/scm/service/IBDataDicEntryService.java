@@ -27,6 +27,8 @@ public interface IBDataDicEntryService extends IService<BDataDicEntry> {
 
     BDataDicEntry getBDataDicEntryByDicCode(String dicCode, String dataValue);
 
+    BDataDicEntry getBDataDicEntryByDicCodeAndDataText(String dicCode, String dataText);
+
     boolean saveOrUpdateBDataDicEntry(AddBDataDicEntryForm form);
 
     BDataDicEntryVO getBDataDicEntryId(Integer id);

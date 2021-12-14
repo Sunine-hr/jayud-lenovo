@@ -255,9 +255,9 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
                 addCommodityEntryForm.setElementSort(addCommodityEntryForm.getSortIndex());
 
                 if(addCommodityEntryForm.getElementName().equals("型号")){
-                    stringBuffer.append(addCommodityEntryForm.getElementValue() == null?" ":(addCommodityEntryForm.getElementValue()+"型")).append("|");
+                    stringBuffer.append(addCommodityEntryForm.getElementValue() == null ?" ":(addCommodityEntryForm.getElementValue()+"型")).append("|");
                 }
-                if(addCommodityEntryForm.getElementValue() != null){
+                if(addCommodityEntryForm.getElementValue() != null && !addCommodityEntryForm.getElementName().equals("型号")){
 //                    stringBuffer.append(addCommodityEntryForm.getElementValue() == null?" ":addCommodityEntryForm.getElementValue()).append("|");
                     stringBuffer.append(addCommodityEntryForm.getElementValue()).append("|");
                 }
@@ -271,7 +271,7 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
         commodity.setMdyByDtm(LocalDateTime.now());
         boolean update = this.saveOrUpdate(commodity);
         if(!update){
-            log.warn("商品归类失败,商品id为"+form.getId());
+            log.warn("商品归类失败,商品编号为"+commodity.getSkuNo());
             return false;
         }
 

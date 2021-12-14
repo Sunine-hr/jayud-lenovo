@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import sun.rmi.runtime.Log;
 
 import javax.swing.plaf.nimbus.State;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,9 @@ public class CheckOrderController {
 
     @Autowired
     private ICheckOrderService checkOrderService;
+
+    @Autowired
+    private ICheckOrderEntryService checkOrderEntryService;
 
     @Autowired
     private IHubReceivingService hubReceivingService;
@@ -72,6 +76,7 @@ public class CheckOrderController {
     @Autowired
     private ISystemUserRoleRelationService systemUserRoleRelationService;
 
+
     @ApiOperation(value = "下一步操作 1提货完成、2验货完成、3提货撤销、4验货撤销")
     @PostMapping(value = "/nextOperation")
     public CommonResult nextOperation(@RequestBody QueryCommonForm form) {
@@ -85,6 +90,21 @@ public class CheckOrderController {
 //        }
         if(checkState.equals("2")){
             return CommonResult.error(444,"订单已取消，无法操作");
+        }
+        if(form.getNext().equals(2)){
+            List<CheckOrderEntry> checkOrderEntries = this.checkOrderEntryService.getCheckOrderEntryByCheckOrderId(checkOrder.getId().longValue());
+            BigDecimal nw = new BigDecimal(0);
+            BigDecimal gw = new BigDecimal(0);
+            for (CheckOrderEntry checkOrderEntry : checkOrderEntries) {
+                nw = nw.add(checkOrderEntry.getNw() != null ? checkOrderEntry.getNw() : new BigDecimal(0));
+                gw = gw.add(checkOrderEntry.getGw() != null ? checkOrderEntry.getGw() : new BigDecimal(0));
+                if(checkOrderEntry.getNw() == null){
+                    return CommonResult.error(444,"净重为空不能进行验货完成操作");
+                }
+            }
+            if(gw.compareTo(nw)<1){
+                return CommonResult.error(444,"总毛重小于等于总净重不能进行验货完成操作");
+            }
         }
         switch (form.getNext()){
             case 1:
@@ -230,6 +250,10 @@ public class CheckOrderController {
         CheckOrder checkOrder = checkOrderService.getById(form.getId());
         if(!checkOrder.getCheckState().equals("1")){
             return CommonResult.error(444,"状态只有为已提交，才能进行反审");
+        }
+
+        if(checkOrder.getShippingDeliverId() != null){
+            return CommonResult.error(444,"提验货单已进行调度，不能反审");
         }
 
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());

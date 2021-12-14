@@ -1,5 +1,6 @@
 package com.jayud.scm.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.UserOperator;
 import com.jayud.scm.model.enums.OperationEnum;
 import com.jayud.scm.model.po.CheckOrder;
@@ -73,5 +74,13 @@ public class TaxInvoiceServiceImpl extends ServiceImpl<TaxInvoiceMapper, TaxInvo
             log.warn("提验货单绑定配送车辆成功");
         }
         return result;
+    }
+
+    @Override
+    public List<TaxInvoice> getTaxInvoiceByDeliverId(int intValue) {
+        QueryWrapper<TaxInvoice> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(TaxInvoice::getDeliverId,intValue);
+        queryWrapper.lambda().eq(TaxInvoice::getVoided,0);
+        return this.list(queryWrapper);
     }
 }

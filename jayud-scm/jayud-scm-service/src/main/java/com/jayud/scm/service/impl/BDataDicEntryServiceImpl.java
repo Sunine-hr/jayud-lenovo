@@ -66,6 +66,15 @@ public class BDataDicEntryServiceImpl extends ServiceImpl<BDataDicEntryMapper, B
     }
 
     @Override
+    public BDataDicEntry getBDataDicEntryByDicCodeAndDataText(String dicCode, String dataValue) {
+        QueryWrapper<BDataDicEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(BDataDicEntry::getDicCode,dicCode);
+        queryWrapper.lambda().eq(BDataDicEntry::getDataText,dataValue);
+        queryWrapper.lambda().eq(BDataDicEntry::getVoided,0);
+        return this.getOne(queryWrapper);
+    }
+
+    @Override
     public boolean saveOrUpdateBDataDicEntry(AddBDataDicEntryForm form) {
         SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
 

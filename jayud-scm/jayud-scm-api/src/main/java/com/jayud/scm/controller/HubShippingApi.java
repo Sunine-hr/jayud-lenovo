@@ -5,20 +5,15 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.google.gson.Gson;
 import com.jayud.common.CommonResult;
-import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.RSAUtils;
 import com.jayud.scm.model.bo.AddAddressForm;
-import com.jayud.scm.model.bo.AddHubShippingDeliverForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
+import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.po.*;
-import com.jayud.scm.model.vo.BookingOrderEntryVO;
 import com.jayud.scm.model.vo.HubToInlandTransportVO;
-import com.jayud.scm.service.IBDataDicEntryService;
-import com.jayud.scm.service.IHubShippingDeliverService;
-import com.jayud.scm.service.IHubShippingEntryService;
-import com.jayud.scm.service.IHubShippingService;
+import com.jayud.scm.service.*;
+import com.jayud.scm.utils.DateUtil;
+import com.jayud.scm.utils.RSAUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +50,9 @@ public class HubShippingApi {
     @Autowired
     private IHubShippingEntryService hubShippingEntryService;
 
+    @Autowired
+    private ICommodityService commodityService;
+
     @Value("${scmApi.url.createOutOrderTransport}")
     private String createOutOrderTransport;
 
@@ -70,6 +68,18 @@ public class HubShippingApi {
             return CommonResult.error(444,"该出库单已调度，不能重复订车");
         }
 
+        if(hubShipping.getDeliverType().equals("配送")){
+            return CommonResult.error(444,"发货类型为配送的出库单才能订车");
+        }
+
+        if(hubShipping.getWhAddress() == null){
+            return CommonResult.error(444,"交货地址为空不能订车");
+        }
+
+        if(!hubShipping.getModelType().equals(1)){
+            return CommonResult.error(444,"只有进口的出库单才能订车");
+        }
+
         //新建调度单  出库单绑定调度策略
         HubShippingDeliver shippingDeliver = new HubShippingDeliver();
         shippingDeliver.setModelType(hubShipping.getModelType());
@@ -77,21 +87,11 @@ public class HubShippingApi {
         shippingDeliver.setDeliverType(2);
         shippingDeliver.setHubName("深圳仓");
         shippingDeliver.setPushOms(1);
-        HubShippingDeliver hubShippingDeliver1 = this.hubShippingDeliverService.saveHubShippingDeliver(shippingDeliver);
-        if(hubShippingDeliver1 == null){
-            log.warn("调度策略单创建失败");
-        }
+        shippingDeliver.setDeliverNo(commodityService.getOrderNo(NoCodeEnum.HUB_SHIPPING_DELIVER.getCode(),LocalDateTime.now()));
 
-        hubShipping.setStateFlag(1);
-        hubShipping.setDeliverId(hubShippingDeliver1.getId());
-        hubShipping.setDeliverNo(hubShippingDeliver1.getDeliverNo());
-        boolean result = this.hubShippingService.saveOrUpdate(hubShipping);
-        if(result){
-            log.warn("出库单调度成功");
-        }
 
         HubToInlandTransportVO hubToInlandTransportVO = new HubToInlandTransportVO();
-        hubToInlandTransportVO.setOrderNo(hubShippingDeliver1.getDeliverNo());
+        hubToInlandTransportVO.setOrderNo(shippingDeliver.getDeliverNo());
         hubToInlandTransportVO.setVehicleType("1");
         hubToInlandTransportVO.setVehicleSize(hubShipping.getRemark());
 
@@ -108,17 +108,23 @@ public class HubShippingApi {
             Integer pieceAmount = 0;
             Double weight = 0.0;
             Double volume = 0.0;
+            Integer pallets = 0;
 
-            pieceAmount = pieceAmount + (hubShippingEntry.getQty()!=null ?hubShippingEntry.getQty():new BigDecimal(0)).intValue();
+            pieceAmount = pieceAmount + (hubShippingEntry.getPackages()!=null ?hubShippingEntry.getPackages():new BigDecimal(0)).intValue();
             weight = weight + (hubShippingEntry.getGw()!=null ?hubShippingEntry.getGw():new BigDecimal(0)).doubleValue();
-            volume = volume + (hubShippingEntry.getNw()!=null ?hubShippingEntry.getNw():new BigDecimal(0)).doubleValue();
+            volume = volume + (hubShippingEntry.getCbm()!=null ?hubShippingEntry.getCbm():new BigDecimal(0)).doubleValue();
+            pallets = pallets + (hubShippingEntry.getPallets()!=null ?hubShippingEntry.getPallets():new BigDecimal(0)).intValue();
 
-            addAddressForm.setPieceAmount(pieceAmount);
+            addAddressForm.setPieceAmount(pallets);
             addAddressForm.setWeight(weight);
             addAddressForm.setVolume(volume);
-            addAddressForm1.setPieceAmount(pieceAmount);
+            addAddressForm.setBulkCargoAmount(pieceAmount);
+            addAddressForm.setDate(DateUtil.localDateTimeToString((hubShipping.getShippingDate() == null ? LocalDateTime.now():hubShipping.getShippingDate()),"yyyy-MM-dd HH:mm:ss"));
+            addAddressForm1.setPieceAmount(pallets);
             addAddressForm1.setWeight(weight);
             addAddressForm1.setVolume(volume);
+            addAddressForm1.setBulkCargoAmount(pieceAmount);
+            addAddressForm1.setDate(DateUtil.localDateTimeToString((hubShipping.getDeliveryDate() == null ? LocalDateTime.now():hubShipping.getDeliveryDate()),"yyyy-MM-dd HH:mm:ss"));
             addAddressForm.setCityName(dicEntryByDicCode.getReserved3());
             if(dicEntryByDicCode.getReserved4() != null){
                 addAddressForm.setAreaName(dicEntryByDicCode.getReserved4());
@@ -140,7 +146,7 @@ public class HubShippingApi {
         hubToInlandTransportVO.setTakeAdrForms1(takeAdrForms1);
         hubToInlandTransportVO.setTakeAdrForms2(takeAdrForms2);
 
-        System.out.println("请求参数："+hubToInlandTransportVO);
+//        System.out.println("请求参数："+hubToInlandTransportVO);
 
         //加密参数
 //        String s1 = null;
@@ -156,7 +162,7 @@ public class HubShippingApi {
 //        jsonObject.put("data",s1);
         JSONObject encryptedData = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(hubToInlandTransportVO));
 
-        System.out.println("加密后的参数："+encryptedData);
+//        System.out.println("加密后的参数："+encryptedData);
 
 
         //请求
@@ -181,9 +187,23 @@ public class HubShippingApi {
         //获取token
         Map map1 = JSONUtil.toBean(s, Map.class);
         if(map1.get("code").equals(200)){
+
+            HubShippingDeliver hubShippingDeliver1 = this.hubShippingDeliverService.saveHubShippingDeliver(shippingDeliver);
+            if(hubShippingDeliver1 == null){
+                log.warn("调度策略单创建失败");
+            }
+
+            hubShipping.setStateFlag(1);
+            hubShipping.setDeliverId(hubShippingDeliver1.getId());
+            hubShipping.setDeliverNo(hubShippingDeliver1.getDeliverNo());
+            boolean result = this.hubShippingService.saveOrUpdate(hubShipping);
+            if(result){
+                log.warn("出库单调度成功");
+            }
+
             return CommonResult.success();
         }
-        return CommonResult.error(444,"出库单推送失败");
+        return CommonResult.error((Integer)map1.get("code"),(String)(map1.get("msg")!=null?map1.get("msg"):""));
     }
 
 

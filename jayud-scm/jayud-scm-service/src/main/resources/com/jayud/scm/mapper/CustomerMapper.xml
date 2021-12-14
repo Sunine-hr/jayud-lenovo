@@ -109,7 +109,7 @@
 
         </if>
         <if test="form.checkStateFlag !=null and form.checkStateFlag!=''">
-            and co.checkStateFlag = #{form.checkStateFlag}
+            and co.check_state_flag = #{form.checkStateFlag}
         </if>
         <if test="form.businessType !=null and form.businessType!=''">
             and co.id in (select customer_id from fee_model where model_type = #{form.businessType})

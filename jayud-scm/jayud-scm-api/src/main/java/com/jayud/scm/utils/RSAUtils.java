@@ -1,4 +1,4 @@
-package com.jayud.common.utils;
+package com.jayud.scm.utils;
 
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -219,9 +219,9 @@ public class RSAUtils {
     }
 
     public static void main(String[] args) throws Exception {
-        RSAUtils generatorRSAKey = new RSAUtils();
-        generatorRSAKey.initSecretkey();
-        JSONObject s = new JSONObject();
+//        RSAUtils generatorRSAKey = new RSAUtils();
+//        generatorRSAKey.initSecretkey();
+//        JSONObject s = new JSONObject();
 //        s.put("warehouseName", "佳裕达龙岗仓库");
 //        s.put("customerName", "Fingo");
 //        s.put("transportTypeName", "云途小包");
@@ -238,37 +238,37 @@ public class RSAUtils {
 //        s.put("customerName", "Fingo");
 //        s.put("transportTypeName", "云途小包");
 //
-        s.put("contacts", "李贤斌");
-        s.put("countryName", "中国");
-        s.put("cityName", "深圳");
-        s.put("stateProvinceName", "广州");
-        s.put("streetAddress", "罗湖区北京大厦");
-        s.put("postCode", "234345");
-        s.put("phone", "1234243233");
-        s.put("telephone", "");
-        s.put("email", "");
-        s.put("company", "佳裕达");
-        s.put("senderName", "小吴");
-        s.put("senderPhone", "133435432343");
-        s.put("senderCountryName", "中国");
-        s.put("senderPostCode", "234345");
-        s.put("senderStateProvinceName", "湖南");
-        s.put("senderCityName", "长沙");
-        s.put("senderAddress", "雨花区");
-        s.put("senderTelephone", "");
-        s.put("senderCompany", "");
-        s.put("trackingNo", "2344534");
-        s.put("remark", "");
-        s.put("countyName", "");
-        s.put("townName", "");
-        s.put("senderEmail", "");
-        s.put("origin", 1);
-        s.put("weight", new BigDecimal(10));
-        s.put("length", new BigDecimal(10));
-        s.put("height", new BigDecimal(10));
-        s.put("width", new BigDecimal(10));
-        s.put("identityCard", "2453534564343543453453");
-        s.put("status", 0);
+//        s.put("contacts", "李贤斌");
+//        s.put("countryName", "中国");
+//        s.put("cityName", "深圳");
+//        s.put("stateProvinceName", "广州");
+//        s.put("streetAddress", "罗湖区北京大厦");
+//        s.put("postCode", "234345");
+//        s.put("phone", "1234243233");
+//        s.put("telephone", "");
+//        s.put("email", "");
+//        s.put("company", "佳裕达");
+//        s.put("senderName", "小吴");
+//        s.put("senderPhone", "133435432343");
+//        s.put("senderCountryName", "中国");
+//        s.put("senderPostCode", "234345");
+//        s.put("senderStateProvinceName", "湖南");
+//        s.put("senderCityName", "长沙");
+//        s.put("senderAddress", "雨花区");
+//        s.put("senderTelephone", "");
+//        s.put("senderCompany", "");
+//        s.put("trackingNo", "2344534");
+//        s.put("remark", "");
+//        s.put("countyName", "");
+//        s.put("townName", "");
+//        s.put("senderEmail", "");
+//        s.put("origin", 1);
+//        s.put("weight", new BigDecimal(10));
+//        s.put("length", new BigDecimal(10));
+//        s.put("height", new BigDecimal(10));
+//        s.put("width", new BigDecimal(10));
+//        s.put("identityCard", "2453534564343543453453");
+//        s.put("status", 0);
 //
 //        s.put("customerRefNo", "11");
 //        List<StockInOrderDetailForm> list = new ArrayList<>();
@@ -301,11 +301,14 @@ public class RSAUtils {
 //        s.put("specification", "");
 
 
-        System.out.println(s);
-        String s2 = s.toJSONString();
-        System.out.println("s2:"+s2);
-        String s1 = RSAUtils.publicEncrypt(s2, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
-        System.out.println("s1:"+s1);
+        String s1 = RSAUtils.publicDecrypt("Uv7FAdI0_HYB45g_lf91i0IgHJ8Da8tiBxE1B0EQ0WWbzNJemSHQaEswg3rYQTsaccOT0baHlc1J8gdAqj1F0JdGONq99I9aK2iTZULjCgR_hf2vAtoO3BHtXImCgo8IUmGUKGigI_ZJtzdGAvAcbH9RqOc2PrEWlAnrLrLdIP0cyig3nC-gO6QS5e15ZHxqmvSjOZd_PhauFVXK2nwf5XuzYQxjZ1rUYUO1nGapOm5KoJUJYSo2F_EG9AXiu1SJNRaovbczDanpwWlPX4uM5_PuQGvm6aSFXfYhsppdUEEUPNMdvDMtfzCHalvvNb4kPSzYu3f5VUpx_GpLBh5X84Regcssmj5TfubvanYiWQhnR155DbOamhBPkywN6v3kPc6jhEno5U3L6OaqIwEISNmftxi_L89h4pcg9j5L_as", RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
+        System.out.println(s1);
+
+//        System.out.println(s);
+//        String s2 = s.toJSONString();
+//        System.out.println("s2:"+s2);
+//        String s1 = RSAUtils.publicEncrypt(s2, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
+//        System.out.println("s1:"+s1);
     }
 
 

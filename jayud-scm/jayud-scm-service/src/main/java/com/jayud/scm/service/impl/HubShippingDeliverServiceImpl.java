@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddHubShippingDeliverForm;
+import com.jayud.scm.model.bo.DeleteForm;
 import com.jayud.scm.model.bo.DispatchForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.enums.OperationEnum;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -174,12 +176,63 @@ public class HubShippingDeliverServiceImpl extends ServiceImpl<HubShippingDelive
     @Override
     public HubShippingDeliver saveHubShippingDeliver(HubShippingDeliver hubShippingDeliver) {
 
-        hubShippingDeliver.setDeliverNo(commodityService.getOrderNo(NoCodeEnum.HUB_SHIPPING_DELIVER.getCode(),LocalDateTime.now()));
         hubShippingDeliver.setCrtByDtm(LocalDateTime.now());
         boolean save = this.save(hubShippingDeliver);
         if(save){
             return hubShippingDeliver;
         }
         return null;
+    }
+
+    @Override
+    public boolean delete(DeleteForm deleteForm) {
+
+        List<Integer> integers = new ArrayList<>();
+        List<Integer> integers2 = new ArrayList<>();
+        List<Integer> integers3 = new ArrayList<>();
+        for (Long id : deleteForm.getIds()) {
+            List<HubShipping> hubShippings = hubShippingService.getHubShippingByDeliverId(id.intValue());
+            List<CheckOrder> checkOrders = checkOrderService.getCheckOrderByDeliverId(id.intValue());
+            List<TaxInvoice> taxInvoices = taxInvoiceService.getTaxInvoiceByDeliverId(id.intValue());
+            if(CollectionUtil.isNotEmpty(hubShippings)){
+                for (HubShipping hubShipping : hubShippings) {
+                    integers.add(hubShipping.getId());
+                }
+            }
+            if(CollectionUtil.isNotEmpty(checkOrders)){
+                for (CheckOrder checkOrder : checkOrders) {
+                    integers2.add(checkOrder.getId());
+                }
+            }
+            if(CollectionUtil.isNotEmpty(taxInvoices)){
+                for (TaxInvoice taxInvoice : taxInvoices) {
+                    integers3.add(taxInvoice.getId());
+                }
+            }
+
+        }
+        if(CollectionUtil.isNotEmpty(integers)){
+            boolean result = hubShippingService.deleteDispatch(integers);
+            if(!result){
+                log.warn("删除出口单失败");
+               return false;
+            }
+        }
+        if(CollectionUtil.isNotEmpty(integers2)){
+            boolean result = checkOrderService.deleteDispatch(integers2);
+            if(!result){
+                log.warn("删除提验货单失败");
+                return false;
+            }
+        }
+        if(CollectionUtil.isNotEmpty(integers3)) {
+            boolean result = taxInvoiceService.deleteDispatch(integers3);
+            if (!result) {
+                log.warn("删除发票单失败");
+                return false;
+            }
+
+        }
+        return true;
     }
 }

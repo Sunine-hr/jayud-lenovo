@@ -1,18 +1,20 @@
 package com.jayud.scm.controller;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
+import com.jayud.common.UserOperator;
 import com.jayud.scm.model.bo.AddHubShippingForm;
+import com.jayud.scm.model.bo.PermissionForm;
 import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.bo.QueryForm;
-import com.jayud.scm.model.po.BookingOrder;
-import com.jayud.scm.model.po.HubShipping;
+import com.jayud.scm.model.enums.TableEnum;
+import com.jayud.scm.model.po.*;
 import com.jayud.scm.model.vo.CheckOrderVO;
 import com.jayud.scm.model.vo.HubReceivingVO;
 import com.jayud.scm.model.vo.HubShippingVO;
-import com.jayud.scm.service.IBookingOrderService;
-import com.jayud.scm.service.IHubShippingService;
+import com.jayud.scm.service.*;
 import com.jayud.scm.service.impl.CommodityServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,6 +47,18 @@ public class HubShippingController {
 
     @Autowired
     private IBookingOrderService bookingOrderService;
+
+    @Autowired
+    private ISystemUserService systemUserService;
+
+    @Autowired
+    private ICustomerService customerService;
+
+    @Autowired
+    private ISystemRoleActionService systemRoleActionService;
+
+    @Autowired
+    private ISystemUserRoleRelationService systemUserRoleRelationService;
 
     @ApiOperation(value = "根据id查询出库订单信息")
     @PostMapping(value = "/getHubShippingById")
@@ -134,6 +148,103 @@ public class HubShippingController {
         }
         return CommonResult.success();
     }
+
+    @ApiOperation(value = "出库单反审")
+    @PostMapping(value = "/hubShippingAudit")
+    public CommonResult checkOrderAudit(@RequestBody PermissionForm form) {
+
+        HubShipping hubShipping = hubShippingService.getById(form.getId());
+        if(!hubShipping.getStateFlag().equals(0)){
+            return CommonResult.error(444,"状态只有为未出库的单，才能进行反审");
+        }
+
+        if(hubShipping.getDeliverId() != null){
+            return CommonResult.error(444,"出库单已进行调度，不能反审");
+        }
+
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        if(!systemUser.getUserName().equals("admin")){
+            //获取登录用户所属角色
+            List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
+//            for (SystemRole systemRole : enabledRolesByUserId) {
+//                SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),form.getActionCode());
+//                if(systemRoleAction == null){
+//                    return CommonResult.error(444,"该用户没有该按钮权限");
+//                }
+//            }
+            List<Long> longs = new ArrayList<>();
+            for (SystemRole systemRole : enabledRolesByUserId) {
+                longs.add(systemRole.getId());
+//                if(systemRoleAction == null){
+//                    return CommonResult.error(444,"该用户没有该按钮权限");
+//                }
+            }
+            List<SystemRoleAction> systemRoleActions = systemRoleActionService.getSystemRoleActionByRoleIdsAndActionCode(longs,form.getActionCode());
+            if(CollectionUtil.isEmpty(systemRoleActions)){
+                return CommonResult.error(444,"该用户没有该按钮权限");
+            }
+        }
+
+        form.setTable(TableEnum.getDesc(form.getKey()));
+        form.setUserId(systemUser.getId().intValue());
+        form.setUserName(systemUser.getUserName());
+
+        return customerService.deApproval(form);
+
+    }
+
+    @ApiOperation(value = "出库审核")
+    @PostMapping(value = "/reviewHubShipping")
+    public CommonResult reviewHubShipping(@RequestBody PermissionForm form) {
+        //获取登录用户
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        HubShipping hubShipping = this.hubShippingService.getById(form.getId());
+        if(hubShipping.getShippingDate() == null){
+            return CommonResult.error(444,"出库日期为空，无法审核");
+        }
+        if(hubShipping.getWhAddress() == null){
+            return CommonResult.error(444,"交货地址为空，无法审核");
+        }
+        if(hubShipping.getDeliveryDate() == null){
+            return CommonResult.error(444,"要求交货时间为空，无法审核");
+        }
+
+        //获取按钮权限
+//        SystemAction systemAction = systemActionService.getSystemActionByActionCode(form.getActionCode());
+
+        if(!systemUser.getUserName().equals("admin")){
+            //获取登录用户所属角色
+            List<SystemRole> enabledRolesByUserId = systemUserRoleRelationService.getEnabledRolesByUserId(systemUser.getId());
+//            for (SystemRole systemRole : enabledRolesByUserId) {
+//                SystemRoleAction systemRoleAction = systemRoleActionService.getSystemRoleActionByRoleIdAndActionCode(systemRole.getId(),form.getActionCode());
+//                if(systemRoleAction == null){
+//                    return CommonResult.error(444,"该用户没有该按钮权限");
+//                }
+//            }
+            List<Long> longs = new ArrayList<>();
+            for (SystemRole systemRole : enabledRolesByUserId) {
+                longs.add(systemRole.getId());
+//                if(systemRoleAction == null){
+//                    return CommonResult.error(444,"该用户没有该按钮权限");
+//                }
+            }
+            List<SystemRoleAction> systemRoleActions = systemRoleActionService.getSystemRoleActionByRoleIdsAndActionCode(longs,form.getActionCode());
+            if(CollectionUtil.isEmpty(systemRoleActions)){
+                return CommonResult.error(444,"该用户没有该按钮权限");
+            }
+        }
+
+        //拥有按钮权限，判断是否为审核按钮
+
+        form.setTable(TableEnum.getDesc(form.getKey()));
+        form.setUserId(systemUser.getId().intValue());
+        form.setUserName(systemUser.getUserName());
+
+        return hubShippingService.reviewHubShipping(form);
+    }
+
 
 }
 

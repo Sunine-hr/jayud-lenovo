@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -31,8 +32,14 @@ public class AddAddressForm {
     @ApiModelProperty(value = "货物描述")
     private String goodsDesc;
 
-    @ApiModelProperty(value = "件数")
+    @ApiModelProperty(value = "板数")
     private Integer pieceAmount;
+
+    @ApiModelProperty(value = "件数")
+    private Integer bulkCargoAmount;
+
+    @ApiModelProperty(value = "时间")
+    private String date;
 
     @ApiModelProperty(value = "重量")
     private Double weight;

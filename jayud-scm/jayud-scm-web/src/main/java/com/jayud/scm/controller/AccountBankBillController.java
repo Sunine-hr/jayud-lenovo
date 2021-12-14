@@ -217,6 +217,11 @@ public class AccountBankBillController {
     @PostMapping(value = "/automaticallyGeneratePayment")
     public CommonResult automaticallyGeneratePayment(@RequestBody QueryCommonForm form) {
 
+        AccountBankBill accountBankBill = this.accountBankBillService.getById(form.getId());
+        if(!accountBankBill.getBankBillType().equals("水单")){
+            return CommonResult.error(444,"只有水单类别为水单才能进行该操作");
+        }
+
         AcctReceipt acctReceipt = acctReceiptService.getAcctReceiptByJoinBillId(form.getId());
         if(acctReceipt == null){
             return CommonResult.error(444,"生成收款单之后才能自动核销");

@@ -28,7 +28,10 @@
 
     <select id="findByPage" resultType="com.jayud.scm.model.vo.BDataDicVO">
         select id, dic_code dicCode, dic_desc dicDesc, dic_type dicType, remark
-        from b_data_dic
+        from b_data_dic where 1=1
+        <if test="form.condition !=null and form.condition!=''">
+            and dic_desc like concat('%',#{form.condition},'%')
+        </if>
     </select>
 
 </mapper>

@@ -20,5 +20,5 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface BDataDicMapper extends BaseMapper<BDataDic> {
 
-    IPage<BDataDicVO> findByPage(@Param("page") Page<BDataDicVO> page);
+    IPage<BDataDicVO> findByPage(@Param("page") Page<BDataDicVO> page,@Param("form") QueryForm form);
 }

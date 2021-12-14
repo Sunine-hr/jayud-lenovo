@@ -363,6 +363,7 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
             bookingOrderEntry.setId(null);
             bookingOrderEntry.setExRmbPrice(null);
             bookingOrderEntry.setBookingId(bookingId);
+            bookingOrderEntry.setBookingNo(bookingOrder.getBookingNo());
         });
         if(CollUtil.isNotEmpty(bookingOrderEntryList1)){
             bookingOrderEntryService.saveOrUpdateBatch(bookingOrderEntryList1);
@@ -386,7 +387,13 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
     public BookingOrderVO prepareBookingOrder(Integer modelType) {
         BookingOrderVO bookingOrderVO = new BookingOrderVO();
         bookingOrderVO.setModelType(modelType);//业务类型/工作单类型 1进口  2出口 3国内 4香港  5采购  6销售
-        bookingOrderVO.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(), LocalDateTime.now()));//单号的生成规则
+        if(modelType.equals(1)){
+            bookingOrderVO.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D002.getCode(),LocalDateTime.now()));
+        }
+        if(modelType.equals(2)){
+            bookingOrderVO.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(),LocalDateTime.now()));
+        }
+//        bookingOrderVO.setBookingNo(commodityService.getOrderNo(NoCodeEnum.D001.getCode(), LocalDateTime.now()));//单号的生成规则
         return bookingOrderVO;
     }
 

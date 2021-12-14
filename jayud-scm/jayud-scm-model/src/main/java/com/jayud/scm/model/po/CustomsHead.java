@@ -122,7 +122,7 @@ public class CustomsHead {
     @ApiModelProperty(value = "运输工具名称")
     @JsonProperty("transname")
     @SerializedName("transname")
-    private String transName;
+    private String transname;
 
     @ApiModelProperty(value = "监管方式编号")
     @JsonProperty("trade_no")
@@ -167,12 +167,12 @@ public class CustomsHead {
     @ApiModelProperty(value = "成交方式编号")
     @JsonProperty("bargainmode_no")
     @SerializedName("bargainmode_no")
-    private String bargainModeNo;
+    private String bargainmodeNo;
 
     @ApiModelProperty(value = "运费标识")
     @JsonProperty("freightmode_no")
     @SerializedName("freightmode_no")
-    private String freightModeNo;
+    private String freightmodeNo;
 
     @ApiModelProperty(value = "运费币种编号")
     @JsonProperty("freight_currency_no")
@@ -185,7 +185,7 @@ public class CustomsHead {
     @ApiModelProperty(value = "保费标识")
     @JsonProperty("subscribemode_no")
     @SerializedName("subscribemode_no")
-    private String subscribeModeNo;
+    private String subscribemodeNo;
 
     @ApiModelProperty(value = "保费币种编号")
     @JsonProperty("subscribe_currency_no")
@@ -198,7 +198,7 @@ public class CustomsHead {
     @ApiModelProperty(value = "杂费标识")
     @JsonProperty("incidentalmode_no")
     @SerializedName("incidentalmode_no")
-    private String incidentalModeNo;
+    private String incidentalmodeNo;
 
     @ApiModelProperty(value = "杂费币种编号")
     @JsonProperty("incidental_currency_no")
@@ -224,12 +224,12 @@ public class CustomsHead {
     @ApiModelProperty(value = "毛重(18,4)")
     @JsonProperty("grossweight")
     @SerializedName("grossweight")
-    private BigDecimal grossWeight;
+    private BigDecimal grossweight;
 
     @ApiModelProperty(value = "净重(18,4)")
     @JsonProperty("netweight")
     @SerializedName("netweight")
-    private BigDecimal netWeight;
+    private BigDecimal netweight;
 
     @ApiModelProperty(value = "车牌号")
     @JsonProperty("truck_no")
@@ -339,7 +339,7 @@ public class CustomsHead {
     @ApiModelProperty(value = "经停港 单一窗口新增字段")
     @JsonProperty("distinateport")
     @SerializedName("distinateport")
-    private String distinatePort;
+    private String distinateport;
 
     @ApiModelProperty(value = "境外收发货人代码 单一窗口新增字段")
     @JsonProperty("buyer_no")

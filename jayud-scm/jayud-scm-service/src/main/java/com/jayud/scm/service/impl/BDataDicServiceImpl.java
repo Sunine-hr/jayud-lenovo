@@ -37,7 +37,7 @@ public class BDataDicServiceImpl extends ServiceImpl<BDataDicMapper, BDataDic> i
     @Override
     public IPage<BDataDicVO> findByPage(QueryForm form) {
         Page<BDataDicVO> page = new Page<>(form.getPageNum(), form.getPageSize());
-        return this.baseMapper.findByPage(page);
+        return this.baseMapper.findByPage(page,form);
     }
 
     @Override

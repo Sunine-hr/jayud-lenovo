@@ -119,15 +119,41 @@ public class HgBillApi {
             if(customsHeadForm.getPortNo() != null){
                 customsHeadForm.setPortNo(ibDataDicEntryService.getBDataDicEntryByDicCode("1064",customsHeadForm.getPortNo()).getReserved1());
             }
-            if(customsHeadForm.getPortNo2() != null){
-                customsHeadForm.setPortNo(ibDataDicEntryService.getBDataDicEntryByDicCode("1064",customsHeadForm.getPortNo2()).getReserved1());
-            }
             if(customsHeadForm.getDespPort() != null){
-                customsHeadForm.setPortNo(ibDataDicEntryService.getBDataDicEntryByDicCode("1064",customsHeadForm.getDespPort()).getReserved1());
+                customsHeadForm.setDespPort(ibDataDicEntryService.getBDataDicEntryByDicCode("1064",customsHeadForm.getDespPort()).getReserved1());
             }
 
-            List<CustomsGoodsForm> goodsForms = ConvertUtil.convertList(yunBaoGuanData,CustomsGoodsForm.class);
+            //成交方式
+            if(customsHeadForm.getBargainmodeNo() != null){
+                customsHeadForm.setBargainmodeNo(ibDataDicEntryService.getBDataDicEntryByDicCode("1002",customsHeadForm.getBargainmodeNo()).getReserved1());
+            }
 
+            //境内货源地
+            if(customsHeadForm.getEndCountryNo() != null){
+                BDataDicEntry bDataDicEntryByDicCode = ibDataDicEntryService.getBDataDicEntryByDicCodeAndDataText("1056", customsHeadForm.getEndCountryNo());
+                if(bDataDicEntryByDicCode == null){
+                    return CommonResult.error(444,"未找到对应的境内货源地");
+                }
+                customsHeadForm.setEndCountryNo(bDataDicEntryByDicCode.getDataValue());
+            }
+
+            //指运港
+            if(customsHeadForm.getLoadportNo() != null){
+                BDataDicEntry bDataDicEntryByDicCode = ibDataDicEntryService.getBDataDicEntryByDicCodeAndDataText("1048", customsHeadForm.getLoadportNo());
+                if(bDataDicEntryByDicCode == null){
+                    return CommonResult.error(444,"未找到对应的指运港");
+                }
+                customsHeadForm.setLoadportNo(bDataDicEntryByDicCode.getDataValue());
+            }
+            List<CustomsGoodsForm> goodsForms = ConvertUtil.convertList(yunBaoGuanData,CustomsGoodsForm.class);
+            for (CustomsGoodsForm goodsForm : goodsForms) {
+                if(goodsForm.getCountryNo() != null){
+                    goodsForm.setCountryNo(bCountryService.getBcountryByName(goodsForm.getCountryNo()).getThreeCharacterCode());
+                }
+                if(goodsForm.getOtherCountryNo() != null){
+                    goodsForm.setOtherCountryNo(bCountryService.getBcountryByName(goodsForm.getOtherCountryNo()).getThreeCharacterCode());
+                }
+            }
 //            for (YunBaoGuanData yunBaoGuanDatum : yunBaoGuanData) {
 //                CustomsGoodsForm customsGoodsForm = new CustomsGoodsForm();
 //                customsGoodsForm.setGoodsNo(yunBaoGuanDatum.getItemNo());

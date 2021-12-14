@@ -110,6 +110,9 @@ public class BookingOrderEntryVO {
     @ApiModelProperty(value = "件数")
     private BigDecimal packages;
 
+    @ApiModelProperty(value = "板数")
+    private BigDecimal pallets;
+
     @ApiModelProperty(value = "毛重")
     private BigDecimal gw;
 

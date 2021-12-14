@@ -5,14 +5,12 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.google.gson.JsonObject;
 import com.jayud.common.CommonResult;
 import com.jayud.common.RedisUtils;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
-import com.jayud.common.utils.RSAUtils;
 import com.jayud.common.utils.TokenGenerator;
 import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.po.BDataDicEntry;
@@ -20,6 +18,7 @@ import com.jayud.scm.model.po.BookingOrder;
 import com.jayud.scm.model.po.HgTruck;
 import com.jayud.scm.model.vo.*;
 import com.jayud.scm.service.*;
+import com.jayud.scm.utils.RSAUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.print.attribute.standard.JobSheets;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
@@ -337,16 +335,19 @@ public class HgTruckApi {
                 Integer pieceAmount = 0;
                 Double weight = 0.0;
                 Double volume = 0.0;
+                Integer pallets = 0;
                 for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryByBookingId) {
-                    pieceAmount = pieceAmount + (bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0)).intValue();
+                    pieceAmount = pieceAmount + (bookingOrderEntryVO.getPackages()!=null ?bookingOrderEntryVO.getPackages():new BigDecimal(0)).intValue();
                     weight = weight + (bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0)).doubleValue();
-                    volume = volume + (bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0)).doubleValue();
-
+                    volume = volume + (bookingOrderEntryVO.getCbm()!=null ?bookingOrderEntryVO.getCbm():new BigDecimal(0)).doubleValue();
+                    pallets = pallets + (bookingOrderEntryVO.getPallets()!=null ?bookingOrderEntryVO.getPallets():new BigDecimal(0)).intValue();
                 }
-                addAddressForm.setPieceAmount(pieceAmount);
+                addAddressForm.setPieceAmount(pallets);
+                addAddressForm.setBulkCargoAmount(pieceAmount);
                 addAddressForm.setWeight(weight);
                 addAddressForm.setVolume(volume);
-                addAddressForm1.setPieceAmount(pieceAmount);
+                addAddressForm1.setPieceAmount(pallets);
+                addAddressForm1.setBulkCargoAmount(pieceAmount);
                 addAddressForm1.setWeight(weight);
                 addAddressForm1.setVolume(volume);
                 addAddressForm.setCityName(dicEntryByDicCode.getReserved3());
@@ -386,14 +387,17 @@ public class HgTruckApi {
                 Integer pieceAmount = 0;
                 Double weight = 0.0;
                 Double volume = 0.0;
+                Integer pallets = 0;
                 for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryByBookingId) {
-                    pieceAmount = pieceAmount + (bookingOrderEntryVO.getQty()!=null ?bookingOrderEntryVO.getQty():new BigDecimal(0)).intValue();
+                    pieceAmount = pieceAmount + (bookingOrderEntryVO.getPackages()!=null ?bookingOrderEntryVO.getPackages():new BigDecimal(0)).intValue();
                     weight = weight + (bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0)).doubleValue();
-                    volume = volume + (bookingOrderEntryVO.getNw()!=null ?bookingOrderEntryVO.getNw():new BigDecimal(0)).doubleValue();
+                    volume = volume + (bookingOrderEntryVO.getCbm()!=null ?bookingOrderEntryVO.getCbm():new BigDecimal(0)).doubleValue();
+                    pallets = pallets + (bookingOrderEntryVO.getPallets()!=null ?bookingOrderEntryVO.getPallets():new BigDecimal(0)).intValue();
                 }
-                addAddressForm.setPieceAmount(pieceAmount);
+                addAddressForm.setBulkCargoAmount(pieceAmount);
                 addAddressForm.setWeight(weight);
                 addAddressForm.setVolume(volume);
+                addAddressForm.setPieceAmount(pallets);
 
                 //拼接地址  填充地址信息
                 addAddressForm.setCityName(dicEntryByDicCode1.getReserved3());
@@ -418,8 +422,14 @@ public class HgTruckApi {
                 return CommonResult.error(444,"该委托单还没有出库单");
             }
             for (HubShippingVO hubShippingVO : hubShippingByBookingId) {
+                if(hubShippingVO.getCheckStateFlag().equals("Y")){
+                    return CommonResult.error(444,"该委托单的出库单未审核");
+                }
+            }
+            for (HubShippingVO hubShippingVO : hubShippingByBookingId) {
                 AddAddressForm addAddressForm = new AddAddressForm();
-                addAddressForm.setPieceAmount(hubShippingVO.getTotalQty().intValue());
+                addAddressForm.setBulkCargoAmount(hubShippingVO.getTotaPackages().intValue());
+                addAddressForm.setPieceAmount(hubShippingVO.getTotaPallets());
                 addAddressForm.setWeight(hubShippingVO.getTotalGw().doubleValue());
                 addAddressForm.setVolume(hubShippingVO.getTotaCbm().doubleValue());
                 addAddressForm.setContacts(hubShippingVO.getWhName());
@@ -478,6 +488,7 @@ public class HgTruckApi {
             e.printStackTrace();
         }
 
+        log.warn("解密后的数据:"+s);
 
         //获取token
         Map map1 = JSONUtil.toBean(s, Map.class);
@@ -619,8 +630,7 @@ public class HgTruckApi {
         JSONObject jsonObject = null;
 
         if(StringUtils.isEmpty(truckNo)){
-            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444," " +
-                    "")));
+            jsonObject = RSAUtils.getEncryptedData(JSONUtil.toJsonStr(CommonResult.error(444,"港车编号为空")));
             return JSONUtil.toJsonStr(jsonObject);
 //            return CommonResult.error(444,"港车编号为空");
         }

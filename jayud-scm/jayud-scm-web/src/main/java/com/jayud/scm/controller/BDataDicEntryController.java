@@ -2,13 +2,12 @@ package com.jayud.scm.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.scm.model.bo.AddBDataDicEntryForm;
-import com.jayud.scm.model.bo.AddBDataDicForm;
-import com.jayud.scm.model.bo.QueryCommonForm;
-import com.jayud.scm.model.bo.QueryForm;
+import com.jayud.scm.model.bo.*;
 import com.jayud.scm.model.po.BDataDic;
 import com.jayud.scm.model.po.BDataDicEntry;
 import com.jayud.scm.model.vo.BDataDicEntryVO;
@@ -17,13 +16,14 @@ import com.jayud.scm.service.IBDataDicEntryService;
 import com.jayud.scm.service.IBDataDicService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import org.springframework.web.bind.annotation.RestController;
-
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**

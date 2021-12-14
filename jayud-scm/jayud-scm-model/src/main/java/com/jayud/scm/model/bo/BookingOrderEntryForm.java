@@ -65,6 +65,9 @@ public class BookingOrderEntryForm {
     @ApiModelProperty(value = "批号")
     private String bn;
 
+    @ApiModelProperty(value = "板数")
+    private BigDecimal pallets;
+
     @ApiModelProperty(value = "毛重")
     private BigDecimal gw;
 

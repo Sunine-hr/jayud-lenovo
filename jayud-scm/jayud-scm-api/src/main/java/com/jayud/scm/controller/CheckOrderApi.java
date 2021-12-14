@@ -8,11 +8,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.gson.Gson;
 import com.jayud.common.CommonResult;
-import com.jayud.common.utils.*;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.*;
+import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.po.*;
 import com.jayud.scm.model.vo.*;
 import com.jayud.scm.service.*;
+import com.jayud.scm.utils.DateUtil;
+import com.jayud.scm.utils.RSAUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +54,9 @@ public class CheckOrderApi {
     @Autowired
     private IHubShippingService hubShippingService;
 
+    @Autowired
+    private ICommodityService commodityService;
+
     @Value("${scmApi.url.createOutOrderTransport}")
     private String createOutOrderTransport;
 
@@ -67,6 +73,18 @@ public class CheckOrderApi {
             return CommonResult.error(444,"该提验货单已调度，不能重复调度");
         }
 
+        if(checkOrder.getCheckType() != null && checkOrder.getCheckType().equals("仓库验货")){
+            return CommonResult.error(444,"验货类型为仓库验货的单不能进行订车");
+        }
+
+        if(!checkOrder.getModelType().equals(2)){
+            return CommonResult.error(444,"只有出口的提验货单才能订车");
+        }
+
+        if(checkOrder.getPickAddress() == null){
+            return CommonResult.error(444,"提货地址为空不能订车");
+        }
+
         //新建调度单  出库单绑定调度策略
         HubShippingDeliver hubShippingDeliver = new HubShippingDeliver();
         hubShippingDeliver.setModelType(checkOrder.getModelType());
@@ -74,20 +92,11 @@ public class CheckOrderApi {
         hubShippingDeliver.setDeliverType(2);
         hubShippingDeliver.setHubName("深圳仓");
         hubShippingDeliver.setPushOms(1);
-        HubShippingDeliver hubShippingDeliver1 = this.hubShippingDeliverService.saveHubShippingDeliver(hubShippingDeliver);
+        hubShippingDeliver.setDeliverNo(commodityService.getOrderNo(NoCodeEnum.HUB_SHIPPING_DELIVER.getCode(),LocalDateTime.now()));
 
-        if(hubShippingDeliver1 == null){
-            log.warn("调度策略单创建失败");
-        }
-
-        checkOrder.setShippingDeliverId(hubShippingDeliver.getId());
-        boolean result = this.checkOrderService.saveOrUpdate(checkOrder);
-        if(result){
-            log.warn("提验货单调度成功");
-        }
 
         HubToInlandTransportVO hubToInlandTransportVO = new HubToInlandTransportVO();
-        hubToInlandTransportVO.setOrderNo(hubShippingDeliver1.getDeliverNo());
+        hubToInlandTransportVO.setOrderNo(hubShippingDeliver.getDeliverNo());
         hubToInlandTransportVO.setVehicleType("1");
         hubToInlandTransportVO.setVehicleSize(checkOrder.getRemark());
 
@@ -104,16 +113,22 @@ public class CheckOrderApi {
             Integer pieceAmount = 0;
             Double weight = 0.0;
             Double volume = 0.0;
+            Integer pallets = 0;
 
-            pieceAmount = pieceAmount + (checkOrderEntry.getQty()!=null ?checkOrderEntry.getQty():new BigDecimal(0)).intValue();
+            pieceAmount = pieceAmount + (checkOrderEntry.getPackages()!=null ?checkOrderEntry.getPackages():new BigDecimal(0)).intValue();
             weight = weight + (checkOrderEntry.getGw()!=null ?checkOrderEntry.getGw():new BigDecimal(0)).doubleValue();
-            volume = volume + (checkOrderEntry.getNw()!=null ?checkOrderEntry.getNw():new BigDecimal(0)).doubleValue();
+            volume = volume + (checkOrderEntry.getCbm()!=null ?checkOrderEntry.getCbm():new BigDecimal(0)).doubleValue();
+            pallets = pallets + (checkOrderEntry.getPallets()!=null ?checkOrderEntry.getPallets():new BigDecimal(0)).intValue();
 
-            addAddressForm.setPieceAmount(pieceAmount);
+            addAddressForm.setPieceAmount(pallets);
             addAddressForm.setWeight(weight);
+            addAddressForm.setBulkCargoAmount(pieceAmount);
             addAddressForm.setVolume(volume);
-            addAddressForm1.setPieceAmount(pieceAmount);
+            addAddressForm.setDate(DateUtil.localDateTimeToString(checkOrder.getToWarehouseTime() == null ? LocalDateTime.now():checkOrder.getToWarehouseTime(),"yyyy-MM-dd HH:mm:ss"));
+            addAddressForm1.setPieceAmount(pallets);
+            addAddressForm1.setDate(DateUtil.localDateTimeToString((checkOrder.getCheckDateTime() == null ? LocalDateTime.now():checkOrder.getCheckDateTime()),"yyyy-MM-dd HH:mm:ss"));
             addAddressForm1.setWeight(weight);
+            addAddressForm1.setBulkCargoAmount(pieceAmount);
             addAddressForm1.setVolume(volume);
             addAddressForm.setCityName(dicEntryByDicCode.getReserved3());
             if(dicEntryByDicCode.getReserved4() != null){
@@ -175,9 +190,22 @@ public class CheckOrderApi {
         //获取token
         Map map1 = JSONUtil.toBean(s, Map.class);
         if(map1.get("code").equals(200)){
+
+            HubShippingDeliver hubShippingDeliver1 = this.hubShippingDeliverService.saveHubShippingDeliver(hubShippingDeliver);
+
+            if(hubShippingDeliver1 == null){
+                log.warn("调度策略单创建失败");
+            }
+
+            checkOrder.setShippingDeliverId(hubShippingDeliver.getId());
+            boolean result = this.checkOrderService.saveOrUpdate(checkOrder);
+            if(result){
+                log.warn("提验货单调度成功");
+            }
+
             return CommonResult.success();
         }
-        return CommonResult.error(444,"出库单推送失败");
+        return CommonResult.error((Integer)map1.get("code"),(String)(map1.get("msg")!=null?map1.get("msg"):""));
     }
 
 
@@ -196,10 +224,7 @@ public class CheckOrderApi {
 
         hubShippingDeliver.setVoided(1);
         hubShippingDeliver.setVoidedByDtm(LocalDateTime.now());
-        boolean result1 = this.hubShippingDeliverService.saveOrUpdate(hubShippingDeliver);
-        if(result1){
-            return CommonResult.error(444,"订车撤回失败");
-        }
+
 
         Map<String,Object> map2 = new HashMap<>();
         map2.put("orderNo",hubShippingDeliver.getDeliverNo());
@@ -214,7 +239,7 @@ public class CheckOrderApi {
 //                .body(JSONUtil.toJsonStr(hgTruckApiVO))
                 .body(JSONUtil.toJsonStr(encryptedData))
                 .execute().body();
-        log.warn("pushHubShipping:"+feedback);
+        log.warn("deleteShippingDeliver:"+feedback);
 
         //解密数据
         String s = null;
@@ -227,6 +252,12 @@ public class CheckOrderApi {
         //
         Map map1 = JSONUtil.toBean(s, Map.class);
         if(map1.get("code").equals(200)){
+
+            boolean result1 = this.hubShippingDeliverService.saveOrUpdate(hubShippingDeliver);
+            if(!result1){
+                return CommonResult.error(444,"订车撤回失败");
+            }
+
             if(CollectionUtil.isNotEmpty(checkOrders)){
                 for (CheckOrder checkOrder : checkOrders) {
                     checkOrder.setShippingDeliverId(null);
@@ -250,7 +281,7 @@ public class CheckOrderApi {
 
             return CommonResult.success();
         }
-        return CommonResult.error(444,"订车撤回失败");
+        return CommonResult.error((Integer)map1.get("code"),(String)(map1.get("msg")!=null?map1.get("msg"):""));
     }
 
     @ApiOperation(value = "删除调度策略")

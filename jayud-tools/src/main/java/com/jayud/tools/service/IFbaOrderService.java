@@ -26,4 +26,10 @@ public interface IFbaOrderService extends IService<FbaOrder> {
     void saveOrUpdateFbaOrder(AddFbaOrderForm addFbaOrderForm);
 
     void deleteById(List<Long> ids);
+
+    FbaOrderVO getFbaOrderById(int id);
+
+    FbaOrder getFbaOrderByOrderNo(String orderNo);
+
+    FbaOrderVO getFbaOrderVOByOrderNo(String orderNo);
 }

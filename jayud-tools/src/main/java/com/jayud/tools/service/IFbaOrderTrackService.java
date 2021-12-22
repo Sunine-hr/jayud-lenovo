@@ -1,7 +1,10 @@
 package com.jayud.tools.service;
 
+import com.jayud.tools.model.bo.AddFbaOrderTrackForm;
 import com.jayud.tools.model.po.FbaOrderTrack;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IFbaOrderTrackService extends IService<FbaOrderTrack> {
 
+    List<FbaOrderTrack> getFbaOrderTrackByOrderId(Integer id);
+
+    void deleteById(List<Long> ids);
+
+    void saveOrUpdateFbaOrderTrack(AddFbaOrderTrackForm addFbaOrderTrackForm);
 }

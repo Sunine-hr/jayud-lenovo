@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -70,5 +71,8 @@ public class FbaOrderVO {
 
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
+
+    @ApiModelProperty(value = "订单轨迹集合")
+    private List<FbaOrderTrackVO> fbaOrderTrackVOS;
 
 }

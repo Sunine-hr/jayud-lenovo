@@ -5,29 +5,23 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.common.Result;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.excel.ExcelUtils;
 import com.jayud.tools.model.bo.AddFbaOrderForm;
+import com.jayud.tools.model.bo.AddFbaOrderTrackForm;
 import com.jayud.tools.model.bo.DeleteForm;
 import com.jayud.tools.model.bo.QueryFbaOrderForm;
 import com.jayud.tools.model.po.FbaOrder;
 import com.jayud.tools.model.vo.FbaOrderVO;
 import com.jayud.tools.service.IFbaOrderService;
+import com.jayud.tools.service.IFbaOrderTrackService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.math3.analysis.function.Add;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -44,6 +38,9 @@ public class FbaOrderController {
 
     @Autowired
     private IFbaOrderService fbaOrderService;
+
+    @Autowired
+    private IFbaOrderTrackService fbaOrderTrackService;
 
     /**
      * 分页查询数据
@@ -73,9 +70,16 @@ public class FbaOrderController {
      * 新增
      * @param addFbaOrderForm
      **/
-    @ApiOperation("新增")
+    @ApiOperation("新增订单")
     @PostMapping("/add")
     public CommonResult add(@Valid @RequestBody AddFbaOrderForm addFbaOrderForm ){
+
+        if(addFbaOrderForm.getId() == null){
+            FbaOrder fbaOrderByOrderNo = fbaOrderService.getFbaOrderByOrderNo(addFbaOrderForm.getOrderNo());
+            if(fbaOrderByOrderNo != null){
+                return CommonResult.error(444,"订单编号已存在");
+            }
+        }
 
         fbaOrderService.saveOrUpdateFbaOrder(addFbaOrderForm);
         return CommonResult.success();
@@ -85,7 +89,7 @@ public class FbaOrderController {
      * 删除
      * @param  form
      **/
-    @ApiOperation("删除")
+    @ApiOperation("删除订单")
     @PostMapping("/del")
     public CommonResult del(@Valid @RequestBody DeleteForm form){
         if(CollectionUtil.isEmpty(form.getIds())){
@@ -103,8 +107,45 @@ public class FbaOrderController {
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
     @GetMapping(value = "/queryById")
     public CommonResult<FbaOrderVO> queryById(@RequestParam(name="id",required=true) int id) {
-        FbaOrder fbaOrder = fbaOrderService.getById(id);
-        return CommonResult.success(ConvertUtil.convert(fbaOrder, FbaOrderVO.class));
+
+        return CommonResult.success(fbaOrderService.getFbaOrderById(id));
+    }
+
+    /**
+     * 新增
+     * @param addFbaOrderTrackForm
+     **/
+    @ApiOperation("新增轨迹")
+    @PostMapping("/addFbaOrderTrack")
+    public CommonResult addFbaOrderTrack(@Valid @RequestBody AddFbaOrderTrackForm addFbaOrderTrackForm ){
+
+        fbaOrderTrackService.saveOrUpdateFbaOrderTrack(addFbaOrderTrackForm);
+        return CommonResult.success();
+    }
+
+    /**
+     * 删除
+     * @param  form
+     **/
+    @ApiOperation("删除轨迹")
+    @PostMapping("/delFbaOrderTrack")
+    public CommonResult delFbaOrderTrack(@Valid @RequestBody DeleteForm form){
+        if(CollectionUtil.isEmpty(form.getIds())){
+            return CommonResult.error(444,"id不为空");
+        }
+        fbaOrderTrackService.deleteById(form.getIds());
+        return CommonResult.success();
+    }
+
+    /**
+     * 根据订单查询轨迹的信息
+     * @param  orderNo
+     **/
+    @ApiOperation("根据订单查询轨迹的信息")
+    @GetMapping("/")
+    public CommonResult delFbaOrderTrack(@RequestParam(name="id",required=true) String orderNo){
+        FbaOrderVO fbaOrderVO = fbaOrderService.getFbaOrderVOByOrderNo(orderNo);
+        return CommonResult.success(fbaOrderVO);
     }
 
 }

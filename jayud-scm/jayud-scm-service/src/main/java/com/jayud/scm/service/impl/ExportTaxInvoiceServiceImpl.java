@@ -1,9 +1,11 @@
 package com.jayud.scm.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.jayud.common.UserOperator;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.scm.model.bo.AddExportTaxInvoiceForm;
 import com.jayud.scm.model.bo.DeleteForm;
+import com.jayud.scm.model.bo.QueryCommonForm;
 import com.jayud.scm.model.enums.NoCodeEnum;
 import com.jayud.scm.model.po.ExportTaxInvoice;
 import com.jayud.scm.mapper.ExportTaxInvoiceMapper;
@@ -15,10 +17,13 @@ import com.jayud.scm.service.IExportTaxInvoiceEntryService;
 import com.jayud.scm.service.IExportTaxInvoiceService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.scm.service.ISystemUserService;
+import com.jayud.scm.utils.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,18 +81,81 @@ public class ExportTaxInvoiceServiceImpl extends ServiceImpl<ExportTaxInvoiceMap
         List<ExportTaxInvoiceEntry> exportTaxInvoiceEntries = new ArrayList<>();
         for (Long id : deleteForm.getIds()) {
             List<ExportTaxInvoiceEntry> exportTaxInvoiceEntries1 = exportTaxInvoiceEntryService.getExportTaxInvoiceEntryByExportTaxInvoiceId(id.intValue());
-            exportTaxInvoiceEntries.addAll(exportTaxInvoiceEntries1);
+            if(CollectionUtils.isNotEmpty(exportTaxInvoiceEntries)){
+                exportTaxInvoiceEntries.addAll(exportTaxInvoiceEntries1);
+            }
         }
-        for (ExportTaxInvoiceEntry exportTaxInvoiceEntry : exportTaxInvoiceEntries) {
-            exportTaxInvoiceEntry.setVoided(0);
-            exportTaxInvoiceEntry.setVoidedBy(deleteForm.getId().intValue());
-            exportTaxInvoiceEntry.setVoidedByDtm(deleteForm.getDeleteTime());
-            exportTaxInvoiceEntry.setVoidedByName(deleteForm.getName());
+        if(CollectionUtils.isNotEmpty(exportTaxInvoiceEntries)){
+            for (ExportTaxInvoiceEntry exportTaxInvoiceEntry : exportTaxInvoiceEntries) {
+                exportTaxInvoiceEntry.setVoided(0);
+                exportTaxInvoiceEntry.setVoidedBy(deleteForm.getId().intValue());
+                exportTaxInvoiceEntry.setVoidedByDtm(deleteForm.getDeleteTime());
+                exportTaxInvoiceEntry.setVoidedByName(deleteForm.getName());
+            }
+            boolean result = this.exportTaxInvoiceEntryService.updateBatchById(exportTaxInvoiceEntries);
+            if(result){
+                log.warn("删除进项票明细成功");
+            }
+            return result;
         }
-        boolean result = this.exportTaxInvoiceEntryService.updateBatchById(exportTaxInvoiceEntries);
-        if(result){
-            log.warn("删除进项票明细成功");
-        }
-        return result;
+        return true;
+    }
+
+    @Override
+    public boolean sendingTime(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        ExportTaxInvoice exportTaxInvoice = new ExportTaxInvoice();
+        exportTaxInvoice.setId(form.getId());
+        exportTaxInvoice.setLetterDate(LocalDate.parse(form.getLetterDate(), DateTimeFormatter.ISO_DATE).atStartOfDay());
+        exportTaxInvoice.setLetterFlag("函调中");
+        exportTaxInvoice.setMdyBy(systemUser.getId().intValue());
+        exportTaxInvoice.setMdyByDtm(LocalDateTime.now());
+        exportTaxInvoice.setMdyByName(systemUser.getUserName());
+        return this.updateById(exportTaxInvoice);
+    }
+
+    @Override
+    public boolean replyTime(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        ExportTaxInvoice exportTaxInvoice = new ExportTaxInvoice();
+        exportTaxInvoice.setId(form.getId());
+        exportTaxInvoice.setLetterDate(LocalDate.parse(form.getBackletterDate(), DateTimeFormatter.ISO_DATE).atStartOfDay());
+        exportTaxInvoice.setLetterFlag("函调完成");
+        exportTaxInvoice.setMdyBy(systemUser.getId().intValue());
+        exportTaxInvoice.setMdyByDtm(LocalDateTime.now());
+        exportTaxInvoice.setMdyByName(systemUser.getUserName());
+        return this.updateById(exportTaxInvoice);
+    }
+
+    @Override
+    public boolean certificationTime(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        ExportTaxInvoice exportTaxInvoice = new ExportTaxInvoice();
+        exportTaxInvoice.setId(form.getId());
+        exportTaxInvoice.setLetterDate(LocalDate.parse(form.getConfirmDtm(), DateTimeFormatter.ISO_DATE).atStartOfDay());
+        exportTaxInvoice.setMdyBy(systemUser.getId().intValue());
+        exportTaxInvoice.setMdyByDtm(LocalDateTime.now());
+        exportTaxInvoice.setMdyByName(systemUser.getUserName());
+        return this.updateById(exportTaxInvoice);
+    }
+
+    @Override
+    public boolean taxRefundEntry(QueryCommonForm form) {
+        SystemUser systemUser = systemUserService.getSystemUserBySystemName(UserOperator.getToken());
+
+        ExportTaxInvoice exportTaxInvoice = new ExportTaxInvoice();
+        exportTaxInvoice.setId(form.getId());
+        exportTaxInvoice.setLetterDate(LocalDate.parse(form.getArriveTime(), DateTimeFormatter.ISO_DATE).atStartOfDay());
+        exportTaxInvoice.setFactBackTaxMoney(form.getFactBackTaxMoney());
+        exportTaxInvoice.setBankId(form.getBankId());
+        exportTaxInvoice.setBankName(form.getBankName());
+        exportTaxInvoice.setMdyBy(systemUser.getId().intValue());
+        exportTaxInvoice.setMdyByDtm(LocalDateTime.now());
+        exportTaxInvoice.setMdyByName(systemUser.getUserName());
+        return this.updateById(exportTaxInvoice);
+
     }
 }

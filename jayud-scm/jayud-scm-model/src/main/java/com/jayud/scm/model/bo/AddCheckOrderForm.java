@@ -155,4 +155,13 @@ public class AddCheckOrderForm extends Model<AddCheckOrderForm> {
     @ApiModelProperty(value = "提验货详情集合")
     private List<AddCheckOrderEntryForm> bookingOrderEntryList;
 
+    @ApiModelProperty(value = "交货电话")
+    private String whTel;
+
+    @ApiModelProperty(value = "交货联系人")
+    private String whName;
+
+    @ApiModelProperty(value = "交货地址")
+    private String whAddress;
+
 }

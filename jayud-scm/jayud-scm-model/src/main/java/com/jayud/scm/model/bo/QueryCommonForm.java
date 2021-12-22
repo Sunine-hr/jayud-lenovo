@@ -128,4 +128,28 @@ public class QueryCommonForm extends BasePageForm{
     @ApiModelProperty("签收备注")
     private String signRemak;
 
+
+    //进项票
+
+    @ApiModelProperty(value = "发函时间")
+    private String letterDate;
+
+    @ApiModelProperty(value = "回函时间")
+    private String backletterDate;
+
+    @ApiModelProperty(value = "认证时间")
+    private String confirmDtm;
+
+    @ApiModelProperty(value = "到帐日期")
+    private String arriveTime;
+
+    @ApiModelProperty(value = "实退税到账金额")
+    private BigDecimal factBackTaxMoney;
+
+    @ApiModelProperty(value = "到帐银行id")
+    private Integer bankId;
+
+    @ApiModelProperty(value = "到帐银行名称")
+    private String bankName;
+
 }

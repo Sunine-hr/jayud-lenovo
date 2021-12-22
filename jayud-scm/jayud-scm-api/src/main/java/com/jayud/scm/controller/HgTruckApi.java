@@ -328,52 +328,64 @@ public class HgTruckApi {
             BDataDicEntry dicEntryByDicCode = ibDataDicEntryService.getBDataDicEntryByDicCode("1049", "香港仓");
             BDataDicEntry dicEntryByDicCode1 = ibDataDicEntryService.getBDataDicEntryByDicCode("1049", "深圳仓");
 
+//            Integer totalPieceAmount = 0;
+//            Double totalWeight = 0.0;
+//            Double toatalVolume = 0.0;
+//            Integer totalPallets = 0;
+            Integer pieceAmount = 0;
+            Double weight = 0.0;
+            Double volume = 0.0;
+            Integer pallets = 0;
+            AddAddressForm addAddressForm = new AddAddressForm();
+            AddAddressForm addAddressForm1 = new AddAddressForm();
+
             for (BookingOrder bookingOrder : bookingOrderByHgTrackId) {
                 List<BookingOrderEntryVO> bookingOrderEntryByBookingId = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingOrder.getId());
-                AddAddressForm addAddressForm = new AddAddressForm();
-                AddAddressForm addAddressForm1 = new AddAddressForm();
-                Integer pieceAmount = 0;
-                Double weight = 0.0;
-                Double volume = 0.0;
-                Integer pallets = 0;
+
+//                Integer pieceAmount = 0;
+//                Double weight = 0.0;
+//                Double volume = 0.0;
+//                Integer pallets = 0;
                 for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryByBookingId) {
                     pieceAmount = pieceAmount + (bookingOrderEntryVO.getPackages()!=null ?bookingOrderEntryVO.getPackages():new BigDecimal(0)).intValue();
                     weight = weight + (bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0)).doubleValue();
                     volume = volume + (bookingOrderEntryVO.getCbm()!=null ?bookingOrderEntryVO.getCbm():new BigDecimal(0)).doubleValue();
                     pallets = pallets + (bookingOrderEntryVO.getPallets()!=null ?bookingOrderEntryVO.getPallets():new BigDecimal(0)).intValue();
                 }
-                addAddressForm.setPieceAmount(pallets);
-                addAddressForm.setBulkCargoAmount(pieceAmount);
-                addAddressForm.setWeight(weight);
-                addAddressForm.setVolume(volume);
-                addAddressForm1.setPieceAmount(pallets);
-                addAddressForm1.setBulkCargoAmount(pieceAmount);
-                addAddressForm1.setWeight(weight);
-                addAddressForm1.setVolume(volume);
-                addAddressForm.setCityName(dicEntryByDicCode.getReserved3());
-                if(dicEntryByDicCode.getReserved4() != null){
-                    addAddressForm.setAreaName(dicEntryByDicCode.getReserved4());
-                }
-                addAddressForm.setProvinceName(dicEntryByDicCode.getReserved2());
-                addAddressForm.setAddress(dicEntryByDicCode.getReserved5());
-                String[] s = dicEntryByDicCode.getReserved1().split(" ");
-                addAddressForm.setContacts(s[0]);
-                addAddressForm.setPhone(s[1]);
                 addAddressForm.setGoodsDesc(bookingOrderEntryByBookingId.get(0).getItemName());
-
-                addAddressForm1.setCityName(dicEntryByDicCode1.getReserved3());
-                if(dicEntryByDicCode1.getReserved4() != null){
-                    addAddressForm1.setAreaName(dicEntryByDicCode1.getReserved4());
-                }
-                addAddressForm1.setProvinceName(dicEntryByDicCode1.getReserved2());
-                addAddressForm1.setAddress(dicEntryByDicCode1.getReserved5());
-                String[] s1 = dicEntryByDicCode.getReserved1().split(" ");
-                addAddressForm1.setContacts(s1[0]);
-                addAddressForm1.setPhone(s1[1]);
                 addAddressForm1.setGoodsDesc(bookingOrderEntryByBookingId.get(0).getItemName());
-                takeAdrForms1.add(addAddressForm);
-                takeAdrForms2.add(addAddressForm1);
             }
+            addAddressForm.setPieceAmount(pallets);
+            addAddressForm.setBulkCargoAmount(pieceAmount);
+            addAddressForm.setWeight(weight);
+            addAddressForm.setVolume(volume);
+            addAddressForm1.setPieceAmount(pallets);
+            addAddressForm1.setBulkCargoAmount(pieceAmount);
+            addAddressForm1.setWeight(weight);
+            addAddressForm1.setVolume(volume);
+            addAddressForm.setCityName(dicEntryByDicCode.getReserved3());
+            if(dicEntryByDicCode.getReserved4() != null){
+                addAddressForm.setAreaName(dicEntryByDicCode.getReserved4());
+            }
+            addAddressForm.setProvinceName(dicEntryByDicCode.getReserved2());
+            addAddressForm.setAddress(dicEntryByDicCode.getReserved5());
+            String[] s = dicEntryByDicCode.getReserved1().split(" ");
+            addAddressForm.setContacts(s[0]);
+            addAddressForm.setPhone(s[1]);
+
+
+            addAddressForm1.setCityName(dicEntryByDicCode1.getReserved3());
+            if(dicEntryByDicCode1.getReserved4() != null){
+                addAddressForm1.setAreaName(dicEntryByDicCode1.getReserved4());
+            }
+            addAddressForm1.setProvinceName(dicEntryByDicCode1.getReserved2());
+            addAddressForm1.setAddress(dicEntryByDicCode1.getReserved5());
+            String[] s1 = dicEntryByDicCode.getReserved1().split(" ");
+            addAddressForm1.setContacts(s1[0]);
+            addAddressForm1.setPhone(s1[1]);
+
+            takeAdrForms1.add(addAddressForm);
+            takeAdrForms2.add(addAddressForm1);
             hgTruckApiVO.setTakeAdrForms1(takeAdrForms1);
             hgTruckApiVO.setTakeAdrForms2(takeAdrForms2);
         }else if(hgTruckVO.getModelType().equals(2)) {
@@ -381,40 +393,41 @@ public class HgTruckApi {
             List<AddAddressForm> takeAdrForms2 = new ArrayList<>();
             List<Integer> integers = new ArrayList<>();
             BDataDicEntry dicEntryByDicCode1 = ibDataDicEntryService.getBDataDicEntryByDicCode("1049", "深圳仓");
+            AddAddressForm addAddressForm = new AddAddressForm();
+            Integer pieceAmount = 0;
+            Double weight = 0.0;
+            Double volume = 0.0;
+            Integer pallets = 0;
             for (BookingOrder bookingOrder : bookingOrderByHgTrackId) {
                 List<BookingOrderEntryVO> bookingOrderEntryByBookingId = bookingOrderEntryService.findBookingOrderEntryByBookingId(bookingOrder.getId());
-                AddAddressForm addAddressForm = new AddAddressForm();
-                Integer pieceAmount = 0;
-                Double weight = 0.0;
-                Double volume = 0.0;
-                Integer pallets = 0;
+
                 for (BookingOrderEntryVO bookingOrderEntryVO : bookingOrderEntryByBookingId) {
                     pieceAmount = pieceAmount + (bookingOrderEntryVO.getPackages()!=null ?bookingOrderEntryVO.getPackages():new BigDecimal(0)).intValue();
                     weight = weight + (bookingOrderEntryVO.getGw()!=null ?bookingOrderEntryVO.getGw():new BigDecimal(0)).doubleValue();
                     volume = volume + (bookingOrderEntryVO.getCbm()!=null ?bookingOrderEntryVO.getCbm():new BigDecimal(0)).doubleValue();
                     pallets = pallets + (bookingOrderEntryVO.getPallets()!=null ?bookingOrderEntryVO.getPallets():new BigDecimal(0)).intValue();
                 }
-                addAddressForm.setBulkCargoAmount(pieceAmount);
-                addAddressForm.setWeight(weight);
-                addAddressForm.setVolume(volume);
-                addAddressForm.setPieceAmount(pallets);
-
-                //拼接地址  填充地址信息
-                addAddressForm.setCityName(dicEntryByDicCode1.getReserved3());
-                if(dicEntryByDicCode1.getReserved4() != null){
-                    addAddressForm.setAreaName(dicEntryByDicCode1.getReserved4());
-                }
-                addAddressForm.setProvinceName(dicEntryByDicCode1.getReserved2());
-                addAddressForm.setAddress(dicEntryByDicCode1.getReserved5());
-                String[] s1 = dicEntryByDicCode1.getReserved1().split(" ");
-                addAddressForm.setContacts(s1[0]);
-                addAddressForm.setPhone(s1[1]);
-                addAddressForm.setGoodsDesc(bookingOrderEntryByBookingId.get(0).getItemName());
-                takeAdrForms1.add(addAddressForm);
-
                 integers.add(bookingOrder.getId());
-
+                addAddressForm.setGoodsDesc(bookingOrderEntryByBookingId.get(0).getItemName());;
             }
+            addAddressForm.setBulkCargoAmount(pieceAmount);
+            addAddressForm.setWeight(weight);
+            addAddressForm.setVolume(volume);
+            addAddressForm.setPieceAmount(pallets);
+
+            //拼接地址  填充地址信息
+            addAddressForm.setCityName(dicEntryByDicCode1.getReserved3());
+            if(dicEntryByDicCode1.getReserved4() != null){
+                addAddressForm.setAreaName(dicEntryByDicCode1.getReserved4());
+            }
+            addAddressForm.setProvinceName(dicEntryByDicCode1.getReserved2());
+            addAddressForm.setAddress(dicEntryByDicCode1.getReserved5());
+            String[] s1 = dicEntryByDicCode1.getReserved1().split(" ");
+            addAddressForm.setContacts(s1[0]);
+            addAddressForm.setPhone(s1[1]);
+            takeAdrForms1.add(addAddressForm);
+
+
             QueryCommonForm queryCommonForm = new QueryCommonForm();
             queryCommonForm.setIds(integers);
             List<HubShippingVO> hubShippingByBookingId = hubShippingService.getHubShippingByBookingId(queryCommonForm);
@@ -422,20 +435,39 @@ public class HgTruckApi {
                 return CommonResult.error(444,"该委托单还没有出库单");
             }
             for (HubShippingVO hubShippingVO : hubShippingByBookingId) {
-                if(hubShippingVO.getCheckStateFlag().equals("Y")){
+                if(!hubShippingVO.getCheckStateFlag().equals("Y")){
                     return CommonResult.error(444,"该委托单的出库单未审核");
                 }
             }
+
+            HashMap<String,HubShippingVO> map1 = new HashMap<>();
             for (HubShippingVO hubShippingVO : hubShippingByBookingId) {
-                AddAddressForm addAddressForm = new AddAddressForm();
-                addAddressForm.setBulkCargoAmount(hubShippingVO.getTotaPackages().intValue());
-                addAddressForm.setPieceAmount(hubShippingVO.getTotaPallets());
-                addAddressForm.setWeight(hubShippingVO.getTotalGw().doubleValue());
-                addAddressForm.setVolume(hubShippingVO.getTotaCbm().doubleValue());
-                addAddressForm.setContacts(hubShippingVO.getWhName());
-                addAddressForm.setPhone(hubShippingVO.getWhTel());
-                addAddressForm.setGoodsDesc(hubShippingByBookingId.get(0).getAddHubShippingEntryFormList().get(0).getItemName());
-                addAddressForm.setAddress(hubShippingVO.getWhAddress());
+                if(map1.containsKey(hubShippingVO.getWhAddress())){
+                    HubShippingVO hubShipping = map1.get(hubShippingVO.getWhAddress());
+                    hubShipping.setTotaPackages((hubShippingVO.getTotaPackages()!= null ?hubShippingVO.getTotaPackages():0) + (hubShipping.getTotaPackages()!= null ?hubShipping.getTotaPackages():0));
+                    hubShipping.setTotaPallets((hubShippingVO.getTotaPallets() != null ?hubShippingVO.getTotaPallets():0) + (hubShipping.getTotaPallets()!= null ?hubShipping.getTotaPallets():0));
+                    hubShipping.setTotalGw(hubShippingVO.getTotalGw()!= null ?hubShippingVO.getTotalGw():new BigDecimal(0).add(hubShipping.getTotalGw()!= null ?hubShipping.getTotalGw():new BigDecimal(0)));
+                    hubShipping.setTotaCbm((hubShippingVO.getTotaCbm()!= null ?hubShippingVO.getTotaCbm():new BigDecimal(0)).add(hubShipping.getTotaCbm()!= null ?hubShipping.getTotaCbm():new BigDecimal(0)));
+                }else{
+                    map1.put(hubShippingVO.getWhAddress(),hubShippingVO);
+                }
+            }
+            List<HubShippingVO> hubShippings = new ArrayList<>();
+            for (String s : map1.keySet()) {
+                HubShippingVO hubShippingVO = map1.get(s);
+                hubShippings.add(hubShippingVO);
+            }
+
+            for (HubShippingVO hubShippingVO : hubShippings) {
+                AddAddressForm addAddressFor = new AddAddressForm();
+                addAddressFor.setBulkCargoAmount(hubShippingVO.getTotaPackages().intValue());
+                addAddressFor.setPieceAmount(hubShippingVO.getTotaPallets());
+                addAddressFor.setWeight(hubShippingVO.getTotalGw().doubleValue());
+                addAddressFor.setVolume(hubShippingVO.getTotaCbm().doubleValue());
+                addAddressFor.setContacts(hubShippingVO.getWhName());
+                addAddressFor.setPhone(hubShippingVO.getWhTel());
+                addAddressFor.setGoodsDesc(hubShippingByBookingId.get(0).getAddHubShippingEntryFormList().get(0).getItemName());
+                addAddressFor.setAddress(hubShippingVO.getWhAddress());
                 takeAdrForms2.add(addAddressForm);
             }
             hgTruckApiVO.setTakeAdrForms1(takeAdrForms1);

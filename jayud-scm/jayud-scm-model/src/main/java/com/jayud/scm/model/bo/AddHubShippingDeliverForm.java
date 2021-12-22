@@ -32,7 +32,7 @@ public class AddHubShippingDeliverForm {
     private String deliverNo;
 
     @ApiModelProperty(value = "单据日期")
-    private LocalDateTime deliverDate;
+    private String deliverDate;
 
     @ApiModelProperty(value = "业务类型")
     private Integer modelType;
@@ -102,36 +102,6 @@ public class AddHubShippingDeliverForm {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    @ApiModelProperty(value = "创建人ID")
-    private Integer crtBy;
-
-    @ApiModelProperty(value = "创建人名称")
-    private String crtByName;
-
-    @ApiModelProperty(value = "创建时间")
-    private LocalDateTime crtByDtm;
-
-    @ApiModelProperty(value = "最后修改人ID")
-    private Integer mdyBy;
-
-    @ApiModelProperty(value = "最后修改人名称")
-    private String mdyByName;
-
-    @ApiModelProperty(value = "最后修改时间")
-    private LocalDateTime mdyByDtm;
-
-    @ApiModelProperty(value = "删除标记")
-    private Integer voided;
-
-    @ApiModelProperty(value = "删除人ID")
-    private Integer voidedBy;
-
-    @ApiModelProperty(value = "删除人名称")
-    private String voidedByName;
-
-    @ApiModelProperty(value = "删除时间")
-    private LocalDateTime voidedByDtm;
-
     @ApiModelProperty(value = "司机")
     @NotNull(message = "司机不为空")
     private String driverName;
@@ -145,10 +115,10 @@ public class AddHubShippingDeliverForm {
     private String idCode;
 
     @ApiModelProperty(value = "开始时间")
-    private LocalDateTime beginTime;
+    private String beginTime;
 
     @ApiModelProperty(value = "结束时间")
-    private LocalDateTime endTime;
+    private String endTime;
 
     @ApiModelProperty(value = "车牌ID")
     private Integer truckNoId;

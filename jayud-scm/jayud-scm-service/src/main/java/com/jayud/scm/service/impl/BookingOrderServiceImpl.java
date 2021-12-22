@@ -350,8 +350,11 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         bookingOrder.setCheckStateFlag("N0");
         bookingOrder.setStateFlag(0);
         bookingOrder.setFStep(0);
+        bookingOrder.setStateFlag(StateFlagEnum.STATE_FLAG_NEGATIVE_4.getCode());
         bookingOrder.setBillId(null);
         bookingOrder.setContractNo(null);
+        bookingOrder.setHgTruckNo(null);
+        bookingOrder.setHgTruckId(null);
         this.saveOrUpdate(bookingOrder);
 
         BookingOrderVO bookingOrderVO1 = ConvertUtil.convert(bookingOrder, BookingOrderVO.class);

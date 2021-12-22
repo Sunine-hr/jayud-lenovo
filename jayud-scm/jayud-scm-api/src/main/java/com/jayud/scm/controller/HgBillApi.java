@@ -138,13 +138,13 @@ public class HgBillApi {
             }
 
             //指运港
-            if(customsHeadForm.getLoadportNo() != null){
-                BDataDicEntry bDataDicEntryByDicCode = ibDataDicEntryService.getBDataDicEntryByDicCodeAndDataText("1048", customsHeadForm.getLoadportNo());
-                if(bDataDicEntryByDicCode == null){
-                    return CommonResult.error(444,"未找到对应的指运港");
-                }
-                customsHeadForm.setLoadportNo(bDataDicEntryByDicCode.getDataValue());
-            }
+//            if(customsHeadForm.getLoadportNo() != null){
+//                BDataDicEntry bDataDicEntryByDicCode = ibDataDicEntryService.getBDataDicEntryByDicCodeAndDataText("1048", customsHeadForm.getLoadportNo());
+//                if(bDataDicEntryByDicCode == null){
+//                    return CommonResult.error(444,"未找到对应的指运港");
+//                }
+//                customsHeadForm.setLoadportNo(bDataDicEntryByDicCode.getDataValue());
+//            }
             List<CustomsGoodsForm> goodsForms = ConvertUtil.convertList(yunBaoGuanData,CustomsGoodsForm.class);
             for (CustomsGoodsForm goodsForm : goodsForms) {
                 if(goodsForm.getCountryNo() != null){

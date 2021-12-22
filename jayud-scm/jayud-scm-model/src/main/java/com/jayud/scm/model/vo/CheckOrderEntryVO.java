@@ -140,4 +140,13 @@ public class CheckOrderEntryVO {
     @ApiModelProperty(value = "最后修改时间")
     private LocalDateTime mdyByDtm;
 
+    @ApiModelProperty(value = "交货电话")
+    private String whTel;
+
+    @ApiModelProperty(value = "交货联系人")
+    private String whName;
+
+    @ApiModelProperty(value = "交货地址")
+    private String whAddress;
+
 }

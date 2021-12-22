@@ -168,4 +168,13 @@ public class CheckOrderVO {
 
     @ApiModelProperty(value = "提验货明细集合")
     private List<CheckOrderEntryVO> bookingOrderEntryList;
+
+    @ApiModelProperty(value = "交货电话")
+    private String whTel;
+
+    @ApiModelProperty(value = "交货联系人")
+    private String whName;
+
+    @ApiModelProperty(value = "交货地址")
+    private String whAddress;
 }

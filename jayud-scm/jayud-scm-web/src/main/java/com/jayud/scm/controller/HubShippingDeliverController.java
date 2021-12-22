@@ -92,6 +92,25 @@ public class HubShippingDeliverController {
         return CommonResult.success();
     }
 
+    @ApiOperation(value = "发货")
+    @PostMapping(value = "/shippingDeliverTruckDeliverGoods")
+    public CommonResult shippingDeliverTruckDeliverGoods(@RequestBody QueryForm form) {
+
+        HubShippingDeliver hubShippingDeliver = this.hubShippingDeliverService.getById(form.getId());
+        if(!hubShippingDeliver.getCheckStateFlag().equals("Y")){
+            return CommonResult.error(444,"未审核的记录不能发货");
+        }
+        if(!hubShippingDeliver.getStateFlag().equals(1)){
+            return CommonResult.error(444,"请选择未发货的记录");
+        }
+
+        boolean result = this.hubShippingDeliverService.shippingDeliverTruckSend(form.getId());
+        if(!result){
+            return CommonResult.error(444,"发货失败");
+        }
+        return CommonResult.success();
+    }
+
     @ApiOperation(value = "状态回撤")
     @PostMapping(value = "/deliverStatusBack")
     public CommonResult deliverStatusBack(@RequestBody QueryForm form) {

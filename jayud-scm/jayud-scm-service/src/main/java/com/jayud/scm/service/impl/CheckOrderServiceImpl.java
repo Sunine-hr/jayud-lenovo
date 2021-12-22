@@ -160,6 +160,7 @@ public class CheckOrderServiceImpl extends ServiceImpl<CheckOrderMapper, CheckOr
         checkOrder.setTotalPackages(totaPackages);
         checkOrder.setTotalPallet(totaPallets.intValue());
 
+
         if(form.getId() != null){
             checkOrder.setMdyByName(systemUser.getUserName());
             checkOrder.setMdyBy(systemUser.getId().intValue());

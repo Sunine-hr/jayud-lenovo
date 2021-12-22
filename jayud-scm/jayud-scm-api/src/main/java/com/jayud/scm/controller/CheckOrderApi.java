@@ -100,56 +100,102 @@ public class CheckOrderApi {
         hubToInlandTransportVO.setVehicleType("1");
         hubToInlandTransportVO.setVehicleSize(checkOrder.getRemark());
 
-        List<AddAddressForm> takeAdrForms1 = new ArrayList<>();
-        List<AddAddressForm> takeAdrForms2 = new ArrayList<>();
-        BDataDicEntry dicEntryByDicCode = ibDataDicEntryService.getBDataDicEntryByDicCode("1049", "深圳仓");
+        if(checkOrder.getTruckModel().equals("陆运")){
+            List<AddAddressForm> takeAdrForms1 = new ArrayList<>();
+            List<AddAddressForm> takeAdrForms2 = new ArrayList<>();
+            BDataDicEntry dicEntryByDicCode = ibDataDicEntryService.getBDataDicEntryByDicCode("1049", "深圳仓");
 
-        List<CheckOrderEntry> checkOrderEntries = checkOrderEntryService.getCheckOrderEntryByCheckOrderId(checkOrder.getId().longValue());
+            List<CheckOrderEntry> checkOrderEntries = checkOrderEntryService.getCheckOrderEntryByCheckOrderId(checkOrder.getId().longValue());
 
-        for (CheckOrderEntry checkOrderEntry : checkOrderEntries) {
+            for (CheckOrderEntry checkOrderEntry : checkOrderEntries) {
 
-            AddAddressForm addAddressForm = new AddAddressForm();
-            AddAddressForm addAddressForm1 = new AddAddressForm();
-            Integer pieceAmount = 0;
-            Double weight = 0.0;
-            Double volume = 0.0;
-            Integer pallets = 0;
+                AddAddressForm addAddressForm = new AddAddressForm();
+                AddAddressForm addAddressForm1 = new AddAddressForm();
+                Integer pieceAmount = 0;
+                Double weight = 0.0;
+                Double volume = 0.0;
+                Integer pallets = 0;
 
-            pieceAmount = pieceAmount + (checkOrderEntry.getPackages()!=null ?checkOrderEntry.getPackages():new BigDecimal(0)).intValue();
-            weight = weight + (checkOrderEntry.getGw()!=null ?checkOrderEntry.getGw():new BigDecimal(0)).doubleValue();
-            volume = volume + (checkOrderEntry.getCbm()!=null ?checkOrderEntry.getCbm():new BigDecimal(0)).doubleValue();
-            pallets = pallets + (checkOrderEntry.getPallets()!=null ?checkOrderEntry.getPallets():new BigDecimal(0)).intValue();
+                pieceAmount = pieceAmount + (checkOrderEntry.getPackages()!=null ?checkOrderEntry.getPackages():new BigDecimal(0)).intValue();
+                weight = weight + (checkOrderEntry.getGw()!=null ?checkOrderEntry.getGw():new BigDecimal(0)).doubleValue();
+                volume = volume + (checkOrderEntry.getCbm()!=null ?checkOrderEntry.getCbm():new BigDecimal(0)).doubleValue();
+                pallets = pallets + (checkOrderEntry.getPallets()!=null ?checkOrderEntry.getPallets():new BigDecimal(0)).intValue();
 
-            addAddressForm.setPieceAmount(pallets);
-            addAddressForm.setWeight(weight);
-            addAddressForm.setBulkCargoAmount(pieceAmount);
-            addAddressForm.setVolume(volume);
-            addAddressForm.setDate(DateUtil.localDateTimeToString(checkOrder.getToWarehouseTime() == null ? LocalDateTime.now():checkOrder.getToWarehouseTime(),"yyyy-MM-dd HH:mm:ss"));
-            addAddressForm1.setPieceAmount(pallets);
-            addAddressForm1.setDate(DateUtil.localDateTimeToString((checkOrder.getCheckDateTime() == null ? LocalDateTime.now():checkOrder.getCheckDateTime()),"yyyy-MM-dd HH:mm:ss"));
-            addAddressForm1.setWeight(weight);
-            addAddressForm1.setBulkCargoAmount(pieceAmount);
-            addAddressForm1.setVolume(volume);
-            addAddressForm.setCityName(dicEntryByDicCode.getReserved3());
-            if(dicEntryByDicCode.getReserved4() != null){
-                addAddressForm.setAreaName(dicEntryByDicCode.getReserved4());
+                addAddressForm.setPieceAmount(pallets);
+                addAddressForm.setWeight(weight);
+                addAddressForm.setBulkCargoAmount(pieceAmount);
+                addAddressForm.setVolume(volume);
+                addAddressForm.setDate(DateUtil.localDateTimeToString(checkOrder.getToWarehouseTime() == null ? LocalDateTime.now():checkOrder.getToWarehouseTime(),"yyyy-MM-dd HH:mm:ss"));
+                addAddressForm1.setPieceAmount(pallets);
+                addAddressForm1.setDate(DateUtil.localDateTimeToString((checkOrder.getCheckDateTime() == null ? LocalDateTime.now():checkOrder.getCheckDateTime()),"yyyy-MM-dd HH:mm:ss"));
+                addAddressForm1.setWeight(weight);
+                addAddressForm1.setBulkCargoAmount(pieceAmount);
+                addAddressForm1.setVolume(volume);
+                addAddressForm.setCityName(dicEntryByDicCode.getReserved3());
+                if(dicEntryByDicCode.getReserved4() != null){
+                    addAddressForm.setAreaName(dicEntryByDicCode.getReserved4());
+                }
+                addAddressForm.setProvinceName(dicEntryByDicCode.getReserved2());
+                addAddressForm.setAddress(dicEntryByDicCode.getReserved5());
+                String[] s = dicEntryByDicCode.getReserved1().split(" ");
+                addAddressForm.setContacts(s[0]);
+                addAddressForm.setPhone(s[1]);
+                addAddressForm.setGoodsDesc(checkOrderEntry.getItemName());
+
+                addAddressForm1.setGoodsDesc(checkOrderEntry.getItemName());
+                addAddressForm1.setPhone(checkOrder.getPickUpTel());
+                addAddressForm1.setContacts(checkOrder.getPickUpUser());
+                addAddressForm1.setAddress(checkOrder.getPickAddress());
+                takeAdrForms1.add(addAddressForm);
+                takeAdrForms2.add(addAddressForm1);
             }
-            addAddressForm.setProvinceName(dicEntryByDicCode.getReserved2());
-            addAddressForm.setAddress(dicEntryByDicCode.getReserved5());
-            String[] s = dicEntryByDicCode.getReserved1().split(" ");
-            addAddressForm.setContacts(s[0]);
-            addAddressForm.setPhone(s[1]);
-            addAddressForm.setGoodsDesc(checkOrderEntry.getItemName());
+            hubToInlandTransportVO.setTakeAdrForms1(takeAdrForms2);
+            hubToInlandTransportVO.setTakeAdrForms2(takeAdrForms1);
+        }else{
+            List<AddAddressForm> takeAdrForms1 = new ArrayList<>();
+            List<AddAddressForm> takeAdrForms2 = new ArrayList<>();
+            List<CheckOrderEntry> checkOrderEntries = checkOrderEntryService.getCheckOrderEntryByCheckOrderId(checkOrder.getId().longValue());
 
-            addAddressForm1.setGoodsDesc(checkOrderEntry.getItemName());
-            addAddressForm1.setPhone(checkOrder.getPickUpTel());
-            addAddressForm1.setContacts(checkOrder.getPickUpUser());
-            addAddressForm1.setAddress(checkOrder.getPickAddress());
-            takeAdrForms1.add(addAddressForm);
-            takeAdrForms2.add(addAddressForm1);
+            for (CheckOrderEntry checkOrderEntry : checkOrderEntries) {
+
+                AddAddressForm addAddressForm = new AddAddressForm();
+                AddAddressForm addAddressForm1 = new AddAddressForm();
+                Integer pieceAmount = 0;
+                Double weight = 0.0;
+                Double volume = 0.0;
+                Integer pallets = 0;
+
+                pieceAmount = pieceAmount + (checkOrderEntry.getPackages()!=null ?checkOrderEntry.getPackages():new BigDecimal(0)).intValue();
+                weight = weight + (checkOrderEntry.getGw()!=null ?checkOrderEntry.getGw():new BigDecimal(0)).doubleValue();
+                volume = volume + (checkOrderEntry.getCbm()!=null ?checkOrderEntry.getCbm():new BigDecimal(0)).doubleValue();
+                pallets = pallets + (checkOrderEntry.getPallets()!=null ?checkOrderEntry.getPallets():new BigDecimal(0)).intValue();
+
+                addAddressForm.setPieceAmount(pallets);
+                addAddressForm.setWeight(weight);
+                addAddressForm.setBulkCargoAmount(pieceAmount);
+                addAddressForm.setVolume(volume);
+                addAddressForm.setDate(DateUtil.localDateTimeToString(checkOrder.getToWarehouseTime() == null ? LocalDateTime.now():checkOrder.getToWarehouseTime(),"yyyy-MM-dd HH:mm:ss"));
+                addAddressForm1.setPieceAmount(pallets);
+                addAddressForm1.setDate(DateUtil.localDateTimeToString((checkOrder.getCheckDateTime() == null ? LocalDateTime.now():checkOrder.getCheckDateTime()),"yyyy-MM-dd HH:mm:ss"));
+                addAddressForm1.setWeight(weight);
+                addAddressForm1.setBulkCargoAmount(pieceAmount);
+                addAddressForm1.setVolume(volume);
+                addAddressForm.setAddress(checkOrder.getWhAddress());
+                addAddressForm.setContacts(checkOrder.getWhName());
+                addAddressForm.setPhone(checkOrder.getWhTel());
+                addAddressForm.setGoodsDesc(checkOrderEntry.getItemName());
+
+                addAddressForm1.setGoodsDesc(checkOrderEntry.getItemName());
+                addAddressForm1.setPhone(checkOrder.getPickUpTel());
+                addAddressForm1.setContacts(checkOrder.getPickUpUser());
+                addAddressForm1.setAddress(checkOrder.getPickAddress());
+                takeAdrForms1.add(addAddressForm);
+                takeAdrForms2.add(addAddressForm1);
+            }
+            hubToInlandTransportVO.setTakeAdrForms1(takeAdrForms2);
+            hubToInlandTransportVO.setTakeAdrForms2(takeAdrForms1);
         }
-        hubToInlandTransportVO.setTakeAdrForms1(takeAdrForms2);
-        hubToInlandTransportVO.setTakeAdrForms2(takeAdrForms1);
+
 
         System.out.println("请求参数："+hubToInlandTransportVO);
 
@@ -176,7 +222,7 @@ public class CheckOrderApi {
 //                .body(JSONUtil.toJsonStr(hgTruckApiVO))
                 .body(JSONUtil.toJsonStr(encryptedData))
                 .execute().body();
-        log.warn("pushHubShipping:"+feedback);
+        log.warn("pushCheckOrder:"+feedback);
 
         //解密数据
         String s = null;

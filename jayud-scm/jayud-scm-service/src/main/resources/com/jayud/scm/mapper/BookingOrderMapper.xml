@@ -175,6 +175,7 @@
         <if test="form.isExportTaxInvoice !=null and form.isExportTaxInvoice == 1">
             and t.model_type in (2,3) and e.f_bill_no is null
         </if>
+        order by t.id desc
     </select>
 
     <select id="getBookingOrderById" parameterType="java.lang.Integer" resultType="com.jayud.scm.model.vo.BookingOrderVO">

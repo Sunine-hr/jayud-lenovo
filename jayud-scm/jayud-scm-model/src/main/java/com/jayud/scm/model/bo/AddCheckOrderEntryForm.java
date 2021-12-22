@@ -115,4 +115,13 @@ public class AddCheckOrderEntryForm {
     @ApiModelProperty(value = "验货备注")
     private String checkRemark;
 
+    @ApiModelProperty(value = "交货电话")
+    private String whTel;
+
+    @ApiModelProperty(value = "交货联系人")
+    private String whName;
+
+    @ApiModelProperty(value = "交货地址")
+    private String whAddress;
+
 }

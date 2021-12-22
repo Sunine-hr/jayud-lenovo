@@ -355,6 +355,9 @@ public class BookingOrderServiceImpl extends ServiceImpl<BookingOrderMapper, Boo
         bookingOrder.setContractNo(null);
         bookingOrder.setHgTruckNo(null);
         bookingOrder.setHgTruckId(null);
+        bookingOrder.setCrtBy(systemUser.getId().intValue());
+        bookingOrder.setCrtByDtm(LocalDateTime.now());
+        bookingOrder.setCrtByName(systemUser.getUserName());
         this.saveOrUpdate(bookingOrder);
 
         BookingOrderVO bookingOrderVO1 = ConvertUtil.convert(bookingOrder, BookingOrderVO.class);

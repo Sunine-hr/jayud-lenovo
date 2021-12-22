@@ -228,6 +228,7 @@ public class HubShippingServiceImpl extends ServiceImpl<HubShippingMapper, HubSh
         for (Integer id : form.getIds()) {
             QueryWrapper<HubShipping> queryWrapper = new QueryWrapper();
             queryWrapper.lambda().eq(HubShipping::getBookingId,id);
+            queryWrapper.lambda().eq(HubShipping::getVoided,0);
             List<HubShipping> list = this.list(queryWrapper);
             List<HubShippingVO> shippingVOS = ConvertUtil.convertList(list, HubShippingVO.class);
             for (HubShippingVO hubShippingVO : shippingVOS) {

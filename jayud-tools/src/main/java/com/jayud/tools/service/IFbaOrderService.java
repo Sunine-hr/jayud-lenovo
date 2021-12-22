@@ -1,7 +1,13 @@
 package com.jayud.tools.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.tools.model.bo.AddFbaOrderForm;
+import com.jayud.tools.model.bo.QueryFbaOrderForm;
 import com.jayud.tools.model.po.FbaOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.tools.model.vo.FbaOrderVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +19,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IFbaOrderService extends IService<FbaOrder> {
 
+    IPage selectPage(QueryFbaOrderForm queryFbaOrderForm);
+
+    List<FbaOrderVO> selectList(QueryFbaOrderForm queryFbaOrderForm);
+
+    void saveOrUpdateFbaOrder(AddFbaOrderForm addFbaOrderForm);
+
+    void deleteById(List<Long> ids);
 }

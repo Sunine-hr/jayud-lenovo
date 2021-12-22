@@ -28,4 +28,56 @@
         id, order_no, customer_no, transshipment_no, receipt_date, sales_man, customer_name, port_departure, port_destination, voyage_number, number, remark, create_user, create_time, update_user, update_time, is_delete
     </sql>
 
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM fba_order
+        <where>
+            is_deleted = 0
+            <if test="form.orderNo != null and form.orderNo != ''">
+                AND order_no like concat('%',#{form.orderNo},'%')
+            </if>
+
+            <if test="form.customerNo != null and form.customerNo != ''">
+                AND customer_no like concat('%',#{form.customerNo},'%')
+            </if>
+
+            <if test="form.transshipmentNo != null and form.transshipmentNo != ''">
+                AND transshipment_no like concat('%',#{form.transshipmentNo},'%')
+            </if>
+
+            <if test="form.receiptDate != null and form.receiptDate != ''">
+                AND receipt_date = #{form.receiptDate}
+            </if>
+
+            <if test="form.salesMan != null and form.salesMan != ''">
+                AND sales_man like concat('%',#{form.salesMan},'%')
+            </if>
+
+            <if test="form.customerName != null and form.customerName != ''">
+                AND customer_name  like concat('%',#{form.customerName},'%')
+            </if>
+
+            <if test="form.portDeparture != null and form.portDeparture != ''">
+                AND port_departure  like concat('%',#{form.portDeparture},'%')
+            </if>
+
+            <if test="form.voyageNumber != null and form.voyageNumber != ''">
+                AND voyage_number  like concat('%',#{form.voyageNumber},'%')
+            </if>
+            <if test="form.portDestination != null and form.portDestination != ''">
+                AND port_destination  like concat('%',#{form.portDestination},'%')
+            </if>
+
+
+        </where>
+    </sql>
+
+    <select id="findList" resultType="com.jayud.tools.model.vo.FbaOrderVO" parameterType="com.jayud.tools.model.bo.QueryFbaOrderForm">
+        <include refid="selects"/>
+    </select>
+
+    <select id="findByPage" resultType="com.jayud.tools.model.vo.FbaOrderVO" parameterType="com.jayud.tools.model.bo.QueryFbaOrderForm">
+        <include refid="selects"/>
+    </select>
+
 </mapper>

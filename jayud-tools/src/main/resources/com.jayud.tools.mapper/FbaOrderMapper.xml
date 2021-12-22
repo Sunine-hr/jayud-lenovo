@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.tools.mapper.FbaOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.tools.model.po.FbaOrder">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="customer_no" property="customerNo" />
+        <result column="transshipment_no" property="transshipmentNo" />
+        <result column="receipt_date" property="receiptDate" />
+        <result column="sales_man" property="salesMan" />
+        <result column="customer_name" property="customerName" />
+        <result column="port_departure" property="portDeparture" />
+        <result column="port_destination" property="portDestination" />
+        <result column="voyage_number" property="voyageNumber" />
+        <result column="number" property="number" />
+        <result column="remark" property="remark" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_delete" property="isDelete" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_no, customer_no, transshipment_no, receipt_date, sales_man, customer_name, port_departure, port_destination, voyage_number, number, remark, create_user, create_time, update_user, update_time, is_delete
+    </sql>
+
+</mapper>

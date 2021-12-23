@@ -81,6 +81,7 @@ secure:
       - /orderTransport/createOutOrderTransport/*
       - /orderTransport/updateOutOrderTransport/*
       - /orderTransport/deleteOutOrderTransport/*
+      - /fbaOrder/getFbaOrderVOByOrderNo
 feign:
   httpclient:
     connection-timeout: 5000

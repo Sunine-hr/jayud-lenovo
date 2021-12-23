@@ -32,4 +32,8 @@ public interface IFbaOrderService extends IService<FbaOrder> {
     FbaOrder getFbaOrderByOrderNo(String orderNo);
 
     FbaOrderVO getFbaOrderVOByOrderNo(String orderNo);
+
+    FbaOrder getFbaOrderByCustomerNo(String customerNo);
+
+    FbaOrder getFbaOrderByTransshipmentNo(String transshipmentNo);
 }

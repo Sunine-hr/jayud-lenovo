@@ -76,10 +76,32 @@ public class FbaOrderController {
     @PostMapping("/add")
     public CommonResult add(@Valid @RequestBody AddFbaOrderForm addFbaOrderForm ){
 
+        FbaOrder fbaOrderByOrderNo = fbaOrderService.getFbaOrderByOrderNo(addFbaOrderForm.getOrderNo());
+        FbaOrder fbaOrderByCustomerNo = fbaOrderService.getFbaOrderByCustomerNo(addFbaOrderForm.getCustomerNo());
+        FbaOrder fbaOrderByTransshipmentNo = fbaOrderService.getFbaOrderByTransshipmentNo(addFbaOrderForm.getTransshipmentNo());
         if(addFbaOrderForm.getId() == null){
-            FbaOrder fbaOrderByOrderNo = fbaOrderService.getFbaOrderByOrderNo(addFbaOrderForm.getOrderNo());
+
             if(fbaOrderByOrderNo != null){
                 return CommonResult.error(444,"订单编号已存在");
+            }
+            if(fbaOrderByCustomerNo != null){
+                return CommonResult.error(444,"客户单号已存在");
+            }
+            if(fbaOrderByTransshipmentNo != null){
+                return CommonResult.error(444,"转运单号已存在");
+            }
+        }
+
+        if(addFbaOrderForm.getId() != null){
+
+            if(fbaOrderByOrderNo != null && !fbaOrderByOrderNo.getId().equals(addFbaOrderForm.getId())){
+                return CommonResult.error(444,"订单编号已存在");
+            }
+            if(fbaOrderByCustomerNo != null && !fbaOrderByCustomerNo.getId().equals(addFbaOrderForm.getId())){
+                return CommonResult.error(444,"客户单号已存在");
+            }
+            if(fbaOrderByTransshipmentNo != null && !fbaOrderByTransshipmentNo  .getId().equals(addFbaOrderForm.getId())){
+                return CommonResult.error(444,"转运单号已存在");
             }
         }
 

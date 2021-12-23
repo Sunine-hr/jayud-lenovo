@@ -31,7 +31,7 @@
     <sql id="selects">
         SELECT <include refid="Base_Column_List"/>
         FROM fba_order f
-        left join (select f.id,max(fo.trajectory_time),fo.operation_information from fba_order f left join fba_order_track fo on f.id = fo.order_id and fo.is_delete = 0) fo on fo.id = f.id
+        left join (select f.id,max(fo.trajectory_time),fo.operation_information from fba_order f left join fba_order_track fo on f.id = fo.order_id and fo.is_delete = 0 group by f.id) fo on fo.id = f.id
         <where>
             is_delete = 0
             <if test="form.orderNo != null and form.orderNo != ''">
@@ -68,8 +68,7 @@
             <if test="form.portDestination != null and form.portDestination != ''">
                 AND port_destination  like concat('%',#{form.portDestination},'%')
             </if>
-
-
+            order by f.id desc
         </where>
     </sql>
 
@@ -79,6 +78,14 @@
 
     <select id="findByPage" resultType="com.jayud.tools.model.vo.FbaOrderVO" parameterType="com.jayud.tools.model.bo.QueryFbaOrderForm">
         <include refid="selects"/>
+    </select>
+
+    <select id="getFbaOrderVOByOrderNo" resultType="com.jayud.tools.model.vo.FbaOrderVO" parameterType="com.jayud.tools.model.bo.QueryFbaOrderForm">
+        SELECT <include refid="Base_Column_List"/>
+        FROM fba_order f
+        left join (select f.id,max(fo.trajectory_time),fo.operation_information from fba_order f left join fba_order_track fo on f.id = fo.order_id and fo.is_delete = 0 group by f.id) fo on fo.id = f.id
+        where is_delete = 0 and f.order_no = #{orderNo} or f.customer_no = #{orderNo} or f.transshipment_no = #{orderNo}
+
     </select>
 
 </mapper>

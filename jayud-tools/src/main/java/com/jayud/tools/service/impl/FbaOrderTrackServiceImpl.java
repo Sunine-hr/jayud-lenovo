@@ -61,9 +61,9 @@ public class FbaOrderTrackServiceImpl extends ServiceImpl<FbaOrderTrackMapper, F
             fbaOrderTrack.setOrderId(orderId);
             fbaOrderTrack.setOperationInformation(addFbaOrderTrackForm.getOperationInformation());
             fbaOrderTrack.setRemark(addFbaOrderTrackForm.getRemark());
-            fbaOrderTrack.setTrajectoryTime(LocalDate.parse(addFbaOrderTrackForm.getTrajectoryTime(), DateTimeFormatter.ISO_DATE).atStartOfDay());
+            fbaOrderTrack.setTrajectoryTime(DateUtils.str2LocalDateTime(addFbaOrderTrackForm.getTrajectoryTime(),"yyyy-MM-dd HH:mm:ss"));
             fbaOrderTrack.setCreateTime(LocalDateTime.now());
-            fbaOrderTrack.setCreateUser(UserOperator.getToken());
+            fbaOrderTrack.setCreateUser(addFbaOrderTrackForm.getLoginUserName());
             fbaOrderTracks.add(fbaOrderTrack);
         }
         boolean result = this.saveBatch(fbaOrderTracks);

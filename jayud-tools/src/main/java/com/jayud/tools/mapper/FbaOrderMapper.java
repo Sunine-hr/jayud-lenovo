@@ -26,4 +26,6 @@ public interface FbaOrderMapper extends BaseMapper<FbaOrder> {
     List<FbaOrderVO> findList(@Param("form") QueryFbaOrderForm queryFbaOrderForm);
 
     IPage findByPage(@Param("form")QueryFbaOrderForm queryFbaOrderForm, @Param("page")Page<FbaOrderVO> page);
+
+    FbaOrderVO getFbaOrderVOByOrderNo(@Param("orderNo")String orderNo);
 }

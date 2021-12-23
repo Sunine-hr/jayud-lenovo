@@ -38,4 +38,7 @@ public class AddFbaOrderTrackForm {
 
     @ApiModelProperty(value = "备注")
     private String remark;
+
+    @ApiModelProperty(value = "备注")
+    private String loginUserName;
 }

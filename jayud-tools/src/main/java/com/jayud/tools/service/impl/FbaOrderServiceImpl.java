@@ -56,10 +56,12 @@ public class FbaOrderServiceImpl extends ServiceImpl<FbaOrderMapper, FbaOrder> i
         FbaOrder fbaOrder = ConvertUtil.convert(addFbaOrderForm, FbaOrder.class);
         if(fbaOrder.getId() != null){
             fbaOrder.setUpdateTime(LocalDateTime.now());
-            fbaOrder.setUpdateUser(UserOperator.getToken());
+//            fbaOrder.setUpdateUser(UserOperator.getToken());
+            fbaOrder.setUpdateUser(addFbaOrderForm.getLoginUserName());
+
         }else{
             fbaOrder.setCreateTime(LocalDateTime.now());
-            fbaOrder.setCreateUser(UserOperator.getToken());
+            fbaOrder.setCreateUser(addFbaOrderForm.getLoginUserName());
         }
         boolean result = this.saveOrUpdate(fbaOrder);
         if(result){
@@ -105,11 +107,9 @@ public class FbaOrderServiceImpl extends ServiceImpl<FbaOrderMapper, FbaOrder> i
 
     @Override
     public FbaOrderVO getFbaOrderVOByOrderNo(String orderNo) {
-        QueryWrapper<FbaOrder> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(FbaOrder::getOrderNo,orderNo);
-        queryWrapper.lambda().eq(FbaOrder::getIsDelete,0);
-        FbaOrder fbaOrder = this.getOne(queryWrapper);
-        FbaOrderVO fbaOrderVO = ConvertUtil.convert(fbaOrder, FbaOrderVO.class);
+
+        FbaOrderVO fbaOrderVO = this.baseMapper.getFbaOrderVOByOrderNo(orderNo);
+
         List<FbaOrderTrack> fbaOrderTrackByOrderId = this.fbaOrderTrackService.getFbaOrderTrackByOrderId(fbaOrderVO.getId());
         List<FbaOrderTrackVO> fbaOrderTrackVOS = ConvertUtil.convertList(fbaOrderTrackByOrderId, FbaOrderTrackVO.class);
         for (FbaOrderTrackVO fbaOrderTrackVO : fbaOrderTrackVOS) {
@@ -117,6 +117,24 @@ public class FbaOrderServiceImpl extends ServiceImpl<FbaOrderMapper, FbaOrder> i
         }
         fbaOrderVO.setFbaOrderTrackVOS(fbaOrderTrackVOS);
         return fbaOrderVO;
+    }
+
+    @Override
+    public FbaOrder getFbaOrderByCustomerNo(String customerNo) {
+        QueryWrapper<FbaOrder> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(FbaOrder::getCustomerNo,customerNo);
+        queryWrapper.lambda().eq(FbaOrder::getIsDelete,0);
+        FbaOrder fbaOrder = this.getOne(queryWrapper);
+        return fbaOrder;
+    }
+
+    @Override
+    public FbaOrder getFbaOrderByTransshipmentNo(String transshipmentNo) {
+        QueryWrapper<FbaOrder> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(FbaOrder::getTransshipmentNo,transshipmentNo);
+        queryWrapper.lambda().eq(FbaOrder::getIsDelete,0);
+        FbaOrder fbaOrder = this.getOne(queryWrapper);
+        return fbaOrder;
     }
 
 }

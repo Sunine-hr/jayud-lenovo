@@ -37,7 +37,7 @@ public class AddFbaOrderForm {
     private String transshipmentNo;
 
     @ApiModelProperty(value = "收件日期")
-    private LocalDateTime receiptDate;
+    private String receiptDate;
 
     @ApiModelProperty(value = "业务员")
     private String salesMan;

@@ -2,6 +2,7 @@ package com.jayud.tools.controller;
 
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -49,8 +51,8 @@ public class FbaOrderController {
      * @return
      */
     @ApiOperation("分页查询数据")
-    @GetMapping("/selectPage")
-    public CommonResult<CommonPageResult<IPage<FbaOrderVO>>> selectPage(QueryFbaOrderForm queryFbaOrderForm) {
+    @PostMapping("/selectPage")
+    public CommonResult<CommonPageResult<IPage<FbaOrderVO>>> selectPage(@RequestBody QueryFbaOrderForm queryFbaOrderForm) {
         return CommonResult.success(new CommonPageResult(fbaOrderService.selectPage(queryFbaOrderForm)));
     }
 
@@ -61,8 +63,8 @@ public class FbaOrderController {
      * @return
      */
     @ApiOperation("列表查询数据")
-    @GetMapping("/selectList")
-    public CommonResult<List<FbaOrderVO>> selectList(QueryFbaOrderForm queryFbaOrderForm) {
+    @PostMapping("/selectList")
+    public CommonResult<List<FbaOrderVO>> selectList( @RequestBody QueryFbaOrderForm queryFbaOrderForm) {
         return CommonResult.success(fbaOrderService.selectList(queryFbaOrderForm));
     }
 
@@ -101,13 +103,12 @@ public class FbaOrderController {
 
     /**
      * 根据id查询
-     * @param id
+     * @param map
      */
     @ApiOperation("根据id查询")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
-    @GetMapping(value = "/queryById")
-    public CommonResult<FbaOrderVO> queryById(@RequestParam(name="id",required=true) int id) {
-
+    @PostMapping(value = "/queryById")
+    public CommonResult<FbaOrderVO> queryById(@RequestBody Map<String,Object> map) {
+        Integer id = MapUtil.getInt(map,"id");
         return CommonResult.success(fbaOrderService.getFbaOrderById(id));
     }
 
@@ -139,11 +140,12 @@ public class FbaOrderController {
 
     /**
      * 根据订单查询轨迹的信息
-     * @param  orderNo
+     * @param  map
      **/
     @ApiOperation("根据订单查询轨迹的信息")
-    @GetMapping("/")
-    public CommonResult delFbaOrderTrack(@RequestParam(name="id",required=true) String orderNo){
+    @PostMapping("/getFbaOrderVOByOrderNo")
+    public CommonResult getFbaOrderVOByOrderNo(@RequestBody Map<String,Object> map){
+        String orderNo = MapUtil.getStr(map,"orderNo");
         FbaOrderVO fbaOrderVO = fbaOrderService.getFbaOrderVOByOrderNo(orderNo);
         return CommonResult.success(fbaOrderVO);
     }

@@ -3,6 +3,7 @@ package com.jayud.tools.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class FbaOrderTrackVO extends Model<FbaOrderTrackVO> {
     private Integer id;
 
     @ApiModelProperty(value = "轨迹时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime trajectoryTime;
 
     @ApiModelProperty(value = "订单id")
@@ -42,6 +44,7 @@ public class FbaOrderTrackVO extends Model<FbaOrderTrackVO> {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "星期几")

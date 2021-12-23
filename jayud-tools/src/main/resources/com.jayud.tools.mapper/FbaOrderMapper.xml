@@ -25,14 +25,15 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_no, customer_no, transshipment_no, receipt_date, sales_man, customer_name, port_departure, port_destination, voyage_number, number, remark, create_user, create_time, update_user, update_time, is_delete
+        f.id, order_no, customer_no, transshipment_no, receipt_date, sales_man, customer_name, port_departure, port_destination, voyage_number, number, remark, create_user, create_time, update_user, update_time, is_delete,fo.operation_information
     </sql>
 
     <sql id="selects">
         SELECT <include refid="Base_Column_List"/>
-        FROM fba_order
+        FROM fba_order f
+        left join (select f.id,max(fo.trajectory_time),fo.operation_information from fba_order f left join fba_order_track fo on f.id = fo.order_id and fo.is_delete = 0) fo on fo.id = f.id
         <where>
-            is_deleted = 0
+            is_delete = 0
             <if test="form.orderNo != null and form.orderNo != ''">
                 AND order_no like concat('%',#{form.orderNo},'%')
             </if>

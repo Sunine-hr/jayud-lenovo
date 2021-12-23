@@ -468,7 +468,7 @@ public class HgTruckApi {
                 addAddressFor.setPhone(hubShippingVO.getWhTel());
                 addAddressFor.setGoodsDesc(hubShippingByBookingId.get(0).getAddHubShippingEntryFormList().get(0).getItemName());
                 addAddressFor.setAddress(hubShippingVO.getWhAddress());
-                takeAdrForms2.add(addAddressForm);
+                takeAdrForms2.add(addAddressFor);
             }
             hgTruckApiVO.setTakeAdrForms1(takeAdrForms1);
             hgTruckApiVO.setTakeAdrForms2(takeAdrForms2);

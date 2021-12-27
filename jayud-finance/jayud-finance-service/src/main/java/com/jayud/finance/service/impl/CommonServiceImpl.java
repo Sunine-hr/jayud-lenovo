@@ -484,13 +484,13 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public String generateBillNo(Long legalEntityId, Integer type) {
         LocalDateTime now = LocalDateTime.now();
-        String date = DateUtils.LocalDateTime2Str(now, "YYMM");
+        String date = DateUtils.LocalDateTime2Str(now, "yyMM");
         //查询法人主体代码
         Object legalEntitys = this.oauthClient.getLegalEntityByLegalIds(Collections.singletonList(legalEntityId)).getData();
         JSONObject jsonObject = new JSONArray(legalEntitys).getJSONObject(0);
         String legalCode = jsonObject.getStr("legalCode");
         //查询该日期订单数量
-        String format = "YYYY-MM";
+        String format = "yyyy-MM";
         String sqlFormat = "%Y-%m";
         StringBuilder billNo = new StringBuilder();
         switch (BillTypeEnum.getEnum(type)) {

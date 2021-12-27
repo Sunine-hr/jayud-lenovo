@@ -85,7 +85,7 @@
         FROM fba_order f
         left join (select f.id,max(fo.trajectory_time),fo.operation_information from fba_order f left join fba_order_track fo on f.id = fo.order_id and fo.is_delete = 0 group by f.id) fo on fo.id = f.id
         where is_delete = 0 and f.order_no = #{orderNo} or f.customer_no = #{orderNo} or f.transshipment_no = #{orderNo}
-
+        order by f.id desc
     </select>
 
 </mapper>

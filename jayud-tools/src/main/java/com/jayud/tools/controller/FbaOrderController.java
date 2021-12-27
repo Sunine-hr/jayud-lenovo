@@ -6,7 +6,6 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
-import com.jayud.common.utils.ConvertUtil;
 import com.jayud.tools.model.bo.AddFbaOrderForm;
 import com.jayud.tools.model.bo.AddFbaOrderTrackForm;
 import com.jayud.tools.model.bo.DeleteForm;
@@ -16,7 +15,6 @@ import com.jayud.tools.model.vo.FbaOrderVO;
 import com.jayud.tools.service.IFbaOrderService;
 import com.jayud.tools.service.IFbaOrderTrackService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -76,19 +74,40 @@ public class FbaOrderController {
     @PostMapping("/add")
     public CommonResult add(@Valid @RequestBody AddFbaOrderForm addFbaOrderForm ){
 
+        if(addFbaOrderForm.getCustomerNo() != null){
+            FbaOrder fbaOrderByCustomerNo = fbaOrderService.getFbaOrderByCustomerNo(addFbaOrderForm.getCustomerNo());
+            if(addFbaOrderForm.getId() == null){
+                if(fbaOrderByCustomerNo != null){
+                    return CommonResult.error(444,"客户单号已存在");
+                }
+            }
+
+            if(addFbaOrderForm.getId() != null){
+                if(fbaOrderByCustomerNo != null && !fbaOrderByCustomerNo.getId().equals(addFbaOrderForm.getId())){
+                    return CommonResult.error(444,"客户单号已存在");
+                }
+            }
+        }
+
+        if(addFbaOrderForm.getTransshipmentNo() != null){
+            FbaOrder fbaOrderByTransshipmentNo = fbaOrderService.getFbaOrderByTransshipmentNo(addFbaOrderForm.getTransshipmentNo());
+            if(addFbaOrderForm.getId() == null){
+                if(fbaOrderByTransshipmentNo != null){
+                    return CommonResult.error(444,"转运单号已存在");
+                }
+            }
+
+            if(addFbaOrderForm.getId() != null){
+                if(fbaOrderByTransshipmentNo != null && !fbaOrderByTransshipmentNo  .getId().equals(addFbaOrderForm.getId())){
+                    return CommonResult.error(444,"转运单号已存在");
+                }
+            }
+        }
         FbaOrder fbaOrderByOrderNo = fbaOrderService.getFbaOrderByOrderNo(addFbaOrderForm.getOrderNo());
-        FbaOrder fbaOrderByCustomerNo = fbaOrderService.getFbaOrderByCustomerNo(addFbaOrderForm.getCustomerNo());
-        FbaOrder fbaOrderByTransshipmentNo = fbaOrderService.getFbaOrderByTransshipmentNo(addFbaOrderForm.getTransshipmentNo());
         if(addFbaOrderForm.getId() == null){
 
             if(fbaOrderByOrderNo != null){
                 return CommonResult.error(444,"订单编号已存在");
-            }
-            if(fbaOrderByCustomerNo != null){
-                return CommonResult.error(444,"客户单号已存在");
-            }
-            if(fbaOrderByTransshipmentNo != null){
-                return CommonResult.error(444,"转运单号已存在");
             }
         }
 
@@ -96,12 +115,6 @@ public class FbaOrderController {
 
             if(fbaOrderByOrderNo != null && !fbaOrderByOrderNo.getId().equals(addFbaOrderForm.getId())){
                 return CommonResult.error(444,"订单编号已存在");
-            }
-            if(fbaOrderByCustomerNo != null && !fbaOrderByCustomerNo.getId().equals(addFbaOrderForm.getId())){
-                return CommonResult.error(444,"客户单号已存在");
-            }
-            if(fbaOrderByTransshipmentNo != null && !fbaOrderByTransshipmentNo  .getId().equals(addFbaOrderForm.getId())){
-                return CommonResult.error(444,"转运单号已存在");
             }
         }
 
@@ -169,6 +182,9 @@ public class FbaOrderController {
     public CommonResult getFbaOrderVOByOrderNo(@RequestBody Map<String,Object> map){
         String orderNo = MapUtil.getStr(map,"orderNo");
         FbaOrderVO fbaOrderVO = fbaOrderService.getFbaOrderVOByOrderNo(orderNo);
+        if(fbaOrderVO == null){
+            return CommonResult.error(444,"订单不存在");
+        }
         return CommonResult.success(fbaOrderVO);
     }
 

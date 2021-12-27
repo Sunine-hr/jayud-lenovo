@@ -33,6 +33,7 @@ public class FbaOrderTrackServiceImpl extends ServiceImpl<FbaOrderTrackMapper, F
         QueryWrapper<FbaOrderTrack> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(FbaOrderTrack::getOrderId,id);
         queryWrapper.lambda().eq(FbaOrderTrack::getIsDelete,0);
+        queryWrapper.lambda().orderByDesc(FbaOrderTrack::getTrajectoryTime);
         return this.list(queryWrapper);
     }
 

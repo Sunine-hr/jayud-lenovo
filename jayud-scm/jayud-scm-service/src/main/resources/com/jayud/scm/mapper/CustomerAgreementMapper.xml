@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.CustomerAgreementMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.CustomerAgreement">
+        <id column="id" property="id" />
+        <result column="sign_customer_name" property="signCustomerName" />
+        <result column="sign_company_name" property="signCompanyName" />
+        <result column="is_extended" property="isExtended" />
+        <result column="is_num" property="isNum" />
+        <result column="customer_id" property="customerId" />
+        <result column="customer_name" property="customerName" />
+        <result column="treaty_type" property="treatyType" />
+        <result column="treaty_no" property="treatyNo" />
+        <result column="treaty_begin_dtm" property="treatyBeginDtm" />
+        <result column="treaty_end_dtm" property="treatyEndDtm" />
+        <result column="treaty_date" property="treatyDate" />
+        <result column="treaty_copy_right" property="treatyCopyRight" />
+        <result column="treaty_notes" property="treatyNotes" />
+        <result column="remark" property="remark" />
+        <result column="is_default_value" property="isDefaultValue" />
+        <result column="is_files" property="isFiles" />
+        <result column="files_user" property="filesUser" />
+        <result column="files_dtm" property="filesDtm" />
+        <result column="files_num" property="filesNum" />
+        <result column="is_yuan_jian" property="isYuanJian" />
+        <result column="yuan_jian_dtm" property="yuanJianDtm" />
+        <result column="f_level" property="fLevel" />
+        <result column="f_step" property="fStep" />
+        <result column="check_state_flag" property="checkStateFlag" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_dtm" property="crtDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_dtm" property="mdyDtm" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_dtm" property="voidedDtm" />
+        <result column="voided" property="voided" />
+        <result column="parent_id" property="parentId" />
+        <result column="dispute" property="dispute" />
+        <result column="is_pay_in" property="isPayIn" />
+        <result column="receivername" property="receivername" />
+        <result column="receivertel" property="receivertel" />
+        <result column="receivercode" property="receivercode" />
+        <result column="mailing_address" property="mailingAddress" />
+        <result column="is_sync" property="isSync" />
+        <result column="model_type" property="modelType" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sign_customer_name, sign_company_name, is_extended, is_num, customer_id, customer_name, treaty_type, treaty_no, treaty_begin_dtm, treaty_end_dtm, treaty_date, treaty_copy_right, treaty_notes, remark, is_default_value, is_files, files_user, files_dtm, files_num, is_yuan_jian, yuan_jian_dtm, f_level, f_step, check_state_flag, crt_by, crt_by_name, crt_dtm, mdy_by, mdy_by_name, mdy_dtm, voided_by, voided_by_name, voided_dtm, voided, parent_id, dispute, is_pay_in, receivername, receivertel, receivercode, mailing_address, is_sync, model_type
+    </sql>
+
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.CustomerAgreementVO">
+        select id, customer_id customerId,
+       sign_customer_name signCustomerName, sign_company_name signCompanyName, is_extended isExtended,
+       is_num isNum, customer_name customerName, treaty_type treatyType,
+       treaty_no treatyNo, treaty_begin_dtm treatyBeginDtm, treaty_end_dtm treatyEndDtm, treaty_date treatyDate,
+       treaty_copy_right treatyCopyRight, treaty_notes treatyNotes, remark,
+       is_default_value isDefaultValue, is_files isFiles, files_user filesUser, files_dtm filesDtm, files_num filesNum,
+       is_yuan_jian isYuanJian, yuan_jian_dtm yuanJianDtm, check_state_flag checkStateFlag,parent_id parentId,
+       dispute, is_pay_in isPayIn, receivername, receivertel, receivercode, mailing_address mailingAddress, model_type modelType,
+       crt_by_name crtByName, crt_dtm crtByDtm,remark,mdy_by_name mdyByName, mdy_dtm mdyByDtm
+       from customer_agreement where voided = 0 and customer_id = #{form.id}
+    </select>
+
+</mapper>

@@ -182,3 +182,10 @@ spring:
           filters:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor
+        - id: route-jayud-scm-api      #供应链系统api服务端
+          uri: lb://jayud-scm-api  # uri以lb://开头（后面接的服务名称)
+          predicates:
+            - Path=/jayudScmApi/**
+          filters:
+            - StripPrefix=1
+            - IgnoreGlobalFilterFactor

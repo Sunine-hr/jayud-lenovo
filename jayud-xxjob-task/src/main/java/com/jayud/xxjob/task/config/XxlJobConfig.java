@@ -54,10 +54,10 @@ public class XxlJobConfig {
     public XxlJobSpringExecutor xxlJobExecutor() throws NacosException {
         logger.info(">>>>>>>>>>> xxl-job config init.");
         XxlJobSpringExecutor xxlJobSpringExecutor = new XxlJobSpringExecutor();
-        List<ServiceInstance> allInstances = discoveryClient.getInstances("xxl-job-admin");
-        ServiceInstance instance = allInstances.get(0);
+//        List<ServiceInstance> allInstances = discoveryClient.getInstances("xxl-job-admin");
+//        ServiceInstance instance = allInstances.get(0);
 
-        xxlJobSpringExecutor.setAdminAddresses(adminAddresses + ":" + instance.getPort() + "/xxl-job-admin");
+        xxlJobSpringExecutor.setAdminAddresses(adminAddresses + "/xxl-job-admin");
 //        xxlJobSpringExecutor.setAdminAddresses(adminAddresses);
         xxlJobSpringExecutor.setAppname(appname);
         xxlJobSpringExecutor.setAddress(address);

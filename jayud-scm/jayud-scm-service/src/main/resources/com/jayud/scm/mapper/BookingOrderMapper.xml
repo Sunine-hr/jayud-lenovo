@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.BookingOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.BookingOrder">
+        <id column="id" property="id" />
+        <result column="booking_no" property="bookingNo" />
+        <result column="booking_date" property="bookingDate" />
+        <result column="arrived_date" property="arrivedDate" />
+        <result column="state_flag" property="stateFlag" />
+        <result column="customer_id" property="customerId" />
+        <result column="customer_no" property="customerNo" />
+        <result column="customer_name" property="customerName" />
+        <result column="customer_type" property="customerType" />
+        <result column="buyer" property="buyer" />
+        <result column="customer_email" property="customerEmail" />
+        <result column="supplier_id" property="supplierId" />
+        <result column="supplier_name" property="supplierName" />
+        <result column="supplier_no" property="supplierNo" />
+        <result column="supplier_type" property="supplierType" />
+        <result column="model_type" property="modelType" />
+        <result column="origin" property="origin" />
+        <result column="destination" property="destination" />
+        <result column="pick_up_no" property="pickUpNo" />
+        <result column="pick_up_user" property="pickUpUser" />
+        <result column="pick_up_tel" property="pickUpTel" />
+        <result column="pick_up_address" property="pickUpAddress" />
+        <result column="pick_up_remark" property="pickUpRemark" />
+        <result column="delivery_name" property="deliveryName" />
+        <result column="delivery_tel" property="deliveryTel" />
+        <result column="delivery_address" property="deliveryAddress" />
+        <result column="delivery_remark" property="deliveryRemark" />
+        <result column="hg_type" property="hgType" />
+        <result column="contract_no" property="contractNo" />
+        <result column="currency_name" property="currencyName" />
+        <result column="is_hg" property="isHg" />
+        <result column="hg_truck_book_id" property="hgTruckBookId" />
+        <result column="hg_truck_id" property="hgTruckId" />
+        <result column="hg_truck_no" property="hgTruckNo" />
+        <result column="f_multi_levei0" property="fMultiLevei0" />
+        <result column="f_datetime" property="fDatetime" />
+        <result column="check_state_flag" property="checkStateFlag" />
+        <result column="f_level" property="fLevel" />
+        <result column="f_step" property="fStep" />
+        <result column="remark" property="remark" />
+        <result column="overseas_customers_id" property="overseasCustomersId" />
+        <result column="overseas_customers" property="overseasCustomers" />
+        <result column="receiving_id" property="receivingId" />
+        <result column="receiving_no" property="receivingNo" />
+        <result column="customer_relation_id" property="customerRelationId" />
+        <result column="supplier_relation_id" property="supplierRelationId" />
+        <result column="arfee_id" property="arfeeId" />
+        <result column="deputy_style" property="deputyStyle" />
+        <result column="incoterms" property="incoterms" />
+        <result column="pay_fee_style" property="payFeeStyle" />
+        <result column="pay_fee_day" property="payFeeDay" />
+        <result column="re_fee_style" property="reFeeStyle" />
+        <result column="re_fee_day" property="reFeeDay" />
+        <result column="account_type" property="accountType" />
+        <result column="interest" property="interest" />
+        <result column="balance_day" property="balanceDay" />
+        <result column="insurance" property="insurance" />
+        <result column="f_rate" property="fRate" />
+        <result column="bg_rate" property="bgRate" />
+        <result column="hg_rate" property="hgRate" />
+        <result column="arrived_rate" property="arrivedRate" />
+        <result column="invoice_rate" property="invoiceRate" />
+        <result column="rece_rate" property="receRate" />
+        <result column="account_rate" property="accountRate" />
+        <result column="goods_rate" property="goodsRate" />
+        <result column="convert_rate" property="convertRate" />
+        <result column="appoint_hg_rate" property="appointHgRate" />
+        <result column="composite_fee" property="compositeFee" />
+        <result column="proxy_fee" property="proxyFee" />
+        <result column="composite_proxy_fee" property="compositeProxyFee" />
+        <result column="fsales_id" property="fsalesId" />
+        <result column="fsales_name" property="fsalesName" />
+        <result column="follower_id" property="followerId" />
+        <result column="follower_name" property="followerName" />
+        <result column="yfee" property="yfee" />
+        <result column="bfee" property="bfee" />
+        <result column="earnest_per" property="earnestPer" />
+        <result column="inv_remark" property="invRemark" />
+        <result column="is_lowest_price" property="isLowestPrice" />
+        <result column="inv_customer_id" property="invCustomerId" />
+        <result column="inv_customer_name" property="invCustomerName" />
+        <result column="product_class" property="productClass" />
+        <result column="bill_id" property="billId" />
+        <result column="bill_style" property="billStyle" />
+        <result column="is_hs_status" property="isHsStatus" />
+        <result column="make_by" property="makeBy" />
+        <result column="make_by_name" property="makeByName" />
+        <result column="make_dtm" property="makeDtm" />
+        <result column="purchase_contract_no" property="purchaseContractNo" />
+        <result column="sales_contract_no" property="salesContractNo" />
+        <result column="origin_area" property="originArea" />
+        <result column="hk_co_id" property="hkCoId" />
+        <result column="hk_co_name" property="hkCoName" />
+        <result column="hk_co_name_en" property="hkCoNameEn" />
+        <result column="hk_co_address" property="hkCoAddress" />
+        <result column="hk_co_address_en" property="hkCoAddressEn" />
+        <result column="hk_co_relationer" property="hkCoRelationer" />
+        <result column="hk_co_tel" property="hkCoTel" />
+        <result column="hk_co_email" property="hkCoEmail" />
+        <result column="hk_co_fax" property="hkCoFax" />
+        <result column="hg_currency_name" property="hgCurrencyName" />
+        <result column="is_urgent" property="isUrgent" />
+        <result column="min_fees_no" property="minFeesNo" />
+        <result column="is_sync" property="isSync" />
+        <result column="onl_id" property="onlId" />
+        <result column="onl_no" property="onlNo" />
+        <result column="print_num" property="printNum" />
+        <result column="is_jiaji" property="isJiaji" />
+        <result column="purchaseid" property="purchaseid" />
+        <result column="purchasename" property="purchasename" />
+        <result column="saleid" property="saleid" />
+        <result column="salename" property="salename" />
+        <result column="hub_no" property="hubNo" />
+        <result column="custom_master" property="customMaster" />
+        <result column="distinate_port" property="distinatePort" />
+        <result column="port" property="port" />
+        <result column="trade_country" property="tradeCountry" />
+        <result column="trade_area_code" property="tradeAreaCode" />
+        <result column="desp_port_code" property="despPortCode" />
+        <result column="goods_place" property="goodsPlace" />
+        <result column="is_us_payment" property="isUsPayment" />
+        <result column="is_confirm" property="isConfirm" />
+        <result column="so_num" property="soNum" />
+        <result column="consignee_code" property="consigneeCode" />
+        <result column="consignee_address" property="consigneeAddress" />
+        <result column="consignee_tel" property="consigneeTel" />
+        <result column="container_type" property="containerType" />
+        <result column="consignee_name" property="consigneeName" />
+        <result column="transportation_type" property="transportationType" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_by_dtm" property="crtByDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_by_dtm" property="mdyByDtm" />
+        <result column="voided" property="voided" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_by_dtm" property="voidedByDtm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, booking_no, booking_date, arrived_date, state_flag, customer_id, customer_no, customer_name, customer_type, buyer, customer_email, supplier_id, supplier_name, supplier_no, supplier_type, model_type, origin, destination, pick_up_no, pick_up_user, pick_up_tel, pick_up_address, pick_up_remark, delivery_name, delivery_tel, delivery_address, delivery_remark, hg_type, contract_no, currency_name, is_hg, hg_truck_book_id, hg_truck_id, hg_truck_no, f_multi_levei0, f_datetime, check_state_flag, f_level, f_step, remark, overseas_customers_id, overseas_customers, receiving_id, receiving_no, customer_relation_id, supplier_relation_id, arfee_id, deputy_style, incoterms, pay_fee_style, pay_fee_day, re_fee_style, re_fee_day, account_type, interest, balance_day, insurance, f_rate, bg_rate, hg_rate, arrived_rate, invoice_rate, rece_rate, account_rate, goods_rate, convert_rate, appoint_hg_rate, composite_fee, proxy_fee, composite_proxy_fee, fsales_id, fsales_name, follower_id, follower_name, yfee, bfee, earnest_per, inv_remark, is_lowest_price, inv_customer_id, inv_customer_name, product_class, bill_id, bill_style, is_hs_status, make_by, make_by_name, make_dtm, purchase_contract_no, sales_contract_no, origin_area, hk_co_id, hk_co_name, hk_co_name_en, hk_co_address, hk_co_address_en, hk_co_relationer, hk_co_tel, hk_co_email, hk_co_fax, hg_currency_name, is_urgent, min_fees_no, is_sync, onl_id, onl_no, print_num, is_jiaji, purchaseid, purchasename, saleid, salename, hub_no, custom_master, distinate_port, port, trade_country, trade_area_code, desp_port_code, goods_place, is_us_payment, is_confirm, so_num, consignee_code, consignee_address, consignee_tel, container_type, consignee_name, transportation_type, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
+    </sql>
+
+    <select id="findBookingOrderByPage" resultType="com.jayud.scm.model.vo.BookingOrderVO">
+        select
+            t.`id`,t.`booking_no`,t.`booking_date`,t.`arrived_date`,t.`state_flag`,t.`customer_id`,t.`customer_no`,t.`customer_name`,t.`customer_type`,t.`buyer`,t.`customer_email`,t.`supplier_id`,t.`supplier_name`,t.`supplier_no`,t.`supplier_type`,t.`model_type`,t.`origin`,t.`destination`,t.`pick_up_no`,t.`pick_up_user`,t.`pick_up_tel`,t.`pick_up_address`,t.`pick_up_remark`,t.`delivery_name`,t.`delivery_tel`,t.`delivery_address`,t.`delivery_remark`,t.`hg_type`,t.`contract_no`,t.`currency_name`,t.`is_hg`,t.`hg_truck_book_id`,t.`hg_truck_id`,t.`hg_truck_no`,t.`f_multi_levei0`,t.`f_datetime`,t.`check_state_flag`,t.`f_level`,t.`f_step`,t.`remark`,t.`overseas_customers_id`,t.`overseas_customers`,t.`receiving_id`,t.`receiving_no`,t.`customer_relation_id`,t.`supplier_relation_id`,t.`arfee_id`,t.`deputy_style`,t.`incoterms`,t.`pay_fee_style`,t.`pay_fee_day`,t.`re_fee_style`,t.`re_fee_day`,t.`account_type`,t.`interest`,t.`balance_day`,t.`insurance`,t.`f_rate`,t.`bg_rate`,t.`hg_rate`,t.`arrived_rate`,t.`invoice_rate`,t.`rece_rate`,t.`account_rate`,t.`goods_rate`,t.`convert_rate`,t.`appoint_hg_rate`,t.`composite_fee`,t.`proxy_fee`,t.`composite_proxy_fee`,t.`fsales_id`,t.`fsales_name`,t.`follower_id`,t.`follower_name`,t.`yfee`,t.`bfee`,t.`earnest_per`,t.`inv_remark`,t.`is_lowest_price`,t.`inv_customer_id`,t.`inv_customer_name`,t.`product_class`,t.`bill_id`,t.`bill_style`,t.`is_hs_status`,t.`make_by`,t.`make_by_name`,t.`make_dtm`,t.`purchase_contract_no`,t.`sales_contract_no`,t.`origin_area`,t.`hk_co_id`,t.`hk_co_name`,t.`hk_co_name_en`,t.`hk_co_address`,t.`hk_co_address_en`,t.`hk_co_relationer`,t.`hk_co_tel`,t.`hk_co_email`,t.`hk_co_fax`,t.`hg_currency_name`,t.`is_urgent`,t.`min_fees_no`,t.`is_sync`,t.`onl_id`,t.`onl_no`,t.`print_num`,t.`is_jiaji`,t.`purchaseid`,t.`purchasename`,t.`saleid`,t.`salename`,t.`hub_no`,t.`custom_master`,t.`distinate_port`,t.`port`,t.`trade_country`,t.`trade_area_code`,t.`desp_port_code`,t.`goods_place`,t.`is_us_payment`,t.`is_confirm`,t.`so_num`,t.`consignee_code`,t.`consignee_address`,t.`consignee_tel`,t.`container_type`,t.`consignee_name`,t.`transportation_type`,t.`crt_by`,t.`crt_by_name`,t.`crt_by_dtm`,t.`mdy_by`,t.`mdy_by_name`,t.`mdy_by_dtm`,t.`voided`,t.`voided_by`,t.`voided_by_name`,t.`voided_by_dtm`
+        from booking_order t
+        left join export_tax_invoice e on t.id = e.order_id
+        where 1=1
+        and t.voided = 0
+<!--        <if test="form.key !=null and form.key!=''">-->
+<!--            and ${form.key} like concat('%',#{form.condition},'%') ESCAPE '/'-->
+<!--        </if>-->
+        <if test="form.bookingNo !=null and form.bookingNo!=''">
+            and t.`booking_no` like concat('%',#{form.bookingNo},'%')
+        </if>
+        <if test="form.modelType !=null and form.modelType!=''">
+            and t.model_type = #{form.modelType}
+        </if>
+        <if test="form.type !=null ">
+            and t.`id` in (select id from v_bookOrder)
+        </if>
+        <if test="form.hgTruckId !=null and form.hgTruckId !=''">
+            and t.`hg_truck_id` = #{form.hgTruckId}
+        </if>
+        <if test="form.isExportTaxInvoice !=null and form.isExportTaxInvoice == 1">
+            and t.model_type in (2,3) and e.f_bill_no is null
+        </if>
+        order by t.id desc
+    </select>
+
+    <select id="getBookingOrderById" parameterType="java.lang.Integer" resultType="com.jayud.scm.model.vo.BookingOrderVO">
+        select
+            t.`id`,t.`booking_no`,t.`booking_date`,t.`arrived_date`,t.`state_flag`,t.`customer_id`,t.`customer_no`,t.`customer_name`,t.`customer_type`,t.`buyer`,t.`customer_email`,t.`supplier_id`,t.`supplier_name`,t.`supplier_no`,t.`supplier_type`,t.`model_type`,t.`origin`,t.`destination`,t.`pick_up_no`,t.`pick_up_user`,t.`pick_up_tel`,t.`pick_up_address`,t.`pick_up_remark`,t.`delivery_name`,t.`delivery_tel`,t.`delivery_address`,t.`delivery_remark`,t.`hg_type`,t.`contract_no`,t.`currency_name`,t.`is_hg`,t.`hg_truck_book_id`,t.`hg_truck_id`,t.`hg_truck_no`,t.`f_multi_levei0`,t.`f_datetime`,t.`check_state_flag`,t.`f_level`,t.`f_step`,t.`remark`,t.`overseas_customers_id`,t.`overseas_customers`,t.`receiving_id`,t.`receiving_no`,t.`customer_relation_id`,t.`supplier_relation_id`,t.`arfee_id`,t.`deputy_style`,t.`incoterms`,t.`pay_fee_style`,t.`pay_fee_day`,t.`re_fee_style`,t.`re_fee_day`,t.`account_type`,t.`interest`,t.`balance_day`,t.`insurance`,t.`f_rate`,t.`bg_rate`,t.`hg_rate`,t.`arrived_rate`,t.`invoice_rate`,t.`rece_rate`,t.`account_rate`,t.`goods_rate`,t.`convert_rate`,t.`appoint_hg_rate`,t.`composite_fee`,t.`proxy_fee`,t.`composite_proxy_fee`,t.`fsales_id`,t.`fsales_name`,t.`follower_id`,t.`follower_name`,t.`yfee`,t.`bfee`,t.`earnest_per`,t.`inv_remark`,t.`is_lowest_price`,t.`inv_customer_id`,t.`inv_customer_name`,t.`product_class`,t.`bill_id`,t.`bill_style`,t.`is_hs_status`,t.`make_by`,t.`make_by_name`,t.`make_dtm`,t.`purchase_contract_no`,t.`sales_contract_no`,t.`origin_area`,t.`hk_co_id`,t.`hk_co_name`,t.`hk_co_name_en`,t.`hk_co_address`,t.`hk_co_address_en`,t.`hk_co_relationer`,t.`hk_co_tel`,t.`hk_co_email`,t.`hk_co_fax`,t.`hg_currency_name`,t.`is_urgent`,t.`min_fees_no`,t.`is_sync`,t.`onl_id`,t.`onl_no`,t.`print_num`,t.`is_jiaji`,t.`purchaseid`,t.`purchasename`,t.`saleid`,t.`salename`,t.`hub_no`,t.`custom_master`,t.`distinate_port`,t.`port`,t.`trade_country`,t.`trade_area_code`,t.`desp_port_code`,t.`goods_place`,t.`is_us_payment`,t.`is_confirm`,t.`so_num`,t.`consignee_code`,t.`consignee_address`,t.`consignee_tel`,t.`container_type`,t.`consignee_name`,t.`transportation_type`,t.`crt_by`,t.`crt_by_name`,t.`crt_by_dtm`,t.`mdy_by`,t.`mdy_by_name`,t.`mdy_by_dtm`,t.`voided`,t.`voided_by`,t.`voided_by_name`,t.`voided_by_dtm`,
+            f.lowest_price,t.arfee_remark
+        from booking_order t
+        left join fee f on t.arfee_id = f.id
+        where 1=1
+        and t.`id` = #{id}
+    </select>
+
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.BookingOrderVO">
+        select
+        t.`id`,t.`booking_no`,t.`booking_date`,t.`arrived_date`,t.`state_flag`,t.`customer_id`,t.`customer_no`,t.`customer_name`,t.`customer_type`,t.`buyer`,t.`customer_email`,t.`supplier_id`,t.`supplier_name`,t.`supplier_no`,t.`supplier_type`,t.`model_type`,t.`origin`,t.`destination`,t.`pick_up_no`,t.`pick_up_user`,t.`pick_up_tel`,t.`pick_up_address`,t.`pick_up_remark`,t.`delivery_name`,t.`delivery_tel`,t.`delivery_address`,t.`delivery_remark`,t.`hg_type`,t.`contract_no`,t.`currency_name`,t.`is_hg`,t.`hg_truck_book_id`,t.`hg_truck_id`,t.`hg_truck_no`,t.`f_multi_levei0`,t.`f_datetime`,t.`check_state_flag`,t.`f_level`,t.`f_step`,t.`remark`,t.`overseas_customers_id`,t.`overseas_customers`,t.`receiving_id`,t.`receiving_no`,t.`customer_relation_id`,t.`supplier_relation_id`,t.`arfee_id`,t.`deputy_style`,t.`incoterms`,t.`pay_fee_style`,t.`pay_fee_day`,t.`re_fee_style`,t.`re_fee_day`,t.`account_type`,t.`interest`,t.`balance_day`,t.`insurance`,t.`f_rate`,t.`bg_rate`,t.`hg_rate`,t.`arrived_rate`,t.`invoice_rate`,t.`rece_rate`,t.`account_rate`,t.`goods_rate`,t.`convert_rate`,t.`appoint_hg_rate`,t.`composite_fee`,t.`proxy_fee`,t.`composite_proxy_fee`,t.`fsales_id`,t.`fsales_name`,t.`follower_id`,t.`follower_name`,t.`yfee`,t.`bfee`,t.`earnest_per`,t.`inv_remark`,t.`is_lowest_price`,t.`inv_customer_id`,t.`inv_customer_name`,t.`product_class`,t.`bill_id`,t.`bill_style`,t.`is_hs_status`,t.`make_by`,t.`make_by_name`,t.`make_dtm`,t.`purchase_contract_no`,t.`sales_contract_no`,t.`origin_area`,t.`hk_co_id`,t.`hk_co_name`,t.`hk_co_name_en`,t.`hk_co_address`,t.`hk_co_address_en`,t.`hk_co_relationer`,t.`hk_co_tel`,t.`hk_co_email`,t.`hk_co_fax`,t.`hg_currency_name`,t.`is_urgent`,t.`min_fees_no`,t.`is_sync`,t.`onl_id`,t.`onl_no`,t.`print_num`,t.`is_jiaji`,t.`purchaseid`,t.`purchasename`,t.`saleid`,t.`salename`,t.`hub_no`,t.`custom_master`,t.`distinate_port`,t.`port`,t.`trade_country`,t.`trade_area_code`,t.`desp_port_code`,t.`goods_place`,t.`is_us_payment`,t.`is_confirm`,t.`so_num`,t.`consignee_code`,t.`consignee_address`,t.`consignee_tel`,t.`container_type`,t.`consignee_name`,t.`transportation_type`,t.`crt_by`,t.`crt_by_name`,t.`crt_by_dtm`,t.`mdy_by`,t.`mdy_by_name`,t.`mdy_by_dtm`,t.`voided`,t.`voided_by`,t.`voided_by_name`,t.`voided_by_dtm`
+        from booking_order t
+        where 1=1
+        and t.voided = 0 and ISNULL(t.hg_truck_id)
+        <if test="form.bookingNo !=null and form.bookingNo!=''">
+            and t.`booking_no` like concat('%',#{form.bookingNo},'%')
+        </if>
+        <if test="form.modelType !=null and form.modelType!=''">
+            and t.model_type = #{form.modelType}
+        </if>
+        <if test="form.hgTruckId !=null and form.hgTruckId !=''">
+            and t.`hg_truck_id` = #{form.hgTruckId}
+        </if>
+        <if test="form.customerName !=null and form.customerName !=''">
+            and t.`customer_name` = like concat('%',#{form.customerName},'%')
+        </if>
+    </select>
+
+    <select id="upOrderCheckValidate" parameterType="map" statementType="CALLABLE" resultType="java.util.HashMap">
+        {
+        call up_order_check_validate(
+        #{orderId,mode=IN},
+        #{step,mode=IN},
+        #{result,mode=OUT,jdbcType=INTEGER},
+        #{msg,mode=OUT,jdbcType=VARCHAR}
+        )
+        }
+    </select>
+
+    <select id="isCommplete" resultType="com.jayud.scm.model.vo.QtyVO">
+        select SUM(IFNULL(b.qty,0)) bookingQty from booking_order_entry b
+        where b.voided = 0 and b.booking_id = #{bookingId}
+    </select>
+
+    <select id="isCommplete2" resultType="com.jayud.scm.model.vo.QtyVO">
+        select SUM(IFNULL(h.qty,0)) receivingQty from hub_receiving_entry h
+        where h.voided = 0 and h.booking_id = #{bookingId}
+    </select>
+
+    <select id="settlement" parameterType="map" statementType="CALLABLE" resultType="java.util.HashMap">
+        {
+        call calc_export_invoice_sp(
+        #{id,mode=IN},
+        #{userId,mode=IN},
+        #{userName,mode=IN},
+        #{state,mode=OUT,jdbcType=INTEGER},
+        #{string,mode=OUT,jdbcType=VARCHAR}
+        )
+        }
+    </select>
+
+    <select id="importSettlement" parameterType="map" statementType="CALLABLE" resultType="java.util.HashMap">
+        {
+        call calc_import_invoice_sp(
+        #{id,mode=IN},
+        #{userId,mode=IN},
+        #{userName,mode=IN},
+        #{state,mode=OUT,jdbcType=INTEGER},
+        #{string,mode=OUT,jdbcType=VARCHAR}
+        )
+        }
+    </select>
+
+    <select id="estimatedUnitPrice" parameterType="map" statementType="CALLABLE" resultType="java.util.HashMap">
+        {
+        call up_e_order_price_sp(
+        #{id,mode=IN},
+        #{state,mode=OUT,jdbcType=INTEGER},
+        #{string,mode=OUT,jdbcType=VARCHAR}
+        )
+        }
+    </select>
+
+    <select id="reverseCalculation" parameterType="map" statementType="CALLABLE" resultType="java.util.HashMap">
+        {
+        call up_e_order_rmb_price_sp(
+        #{id,mode=IN},
+        #{state,mode=OUT,jdbcType=INTEGER},
+        #{string,mode=OUT,jdbcType=VARCHAR}
+        )
+        }
+    </select>
+</mapper>

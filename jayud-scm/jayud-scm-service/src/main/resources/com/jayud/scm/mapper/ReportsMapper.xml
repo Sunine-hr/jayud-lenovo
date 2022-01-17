@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.ReportsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.Reports">
+        <id column="id" property="id" />
+        <result column="mod_id" property="modId" />
+        <result column="mod_name" property="modName" />
+        <result column="rpt_name" property="rptName" />
+        <result column="rpt_path" property="rptPath" />
+        <result column="rpt_file_name" property="rptFileName" />
+        <result column="para_num" property="paraNum" />
+        <result column="proc_name" property="procName" />
+        <result column="direction_flag" property="directionFlag" />
+        <result column="is_child_flag" property="isChildFlag" />
+        <result column="para_str" property="paraStr" />
+        <result column="menu_id" property="menuId" />
+        <result column="menu_code" property="menuCode" />
+        <result column="remark" property="remark" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_by_dtm" property="crtByDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_by_dtm" property="mdyByDtm" />
+        <result column="voided" property="voided" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_by_dtm" property="voidedByDtm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, mod_id, mod_name, rpt_name, rpt_path, rpt_file_name, para_num, proc_name, direction_flag, is_child_flag, para_str, menu_id, menu_code, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
+    </sql>
+
+</mapper>

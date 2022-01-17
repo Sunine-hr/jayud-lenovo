@@ -407,6 +407,11 @@ public class StringUtils {
         return str == null || str.length() == 0;
     }
 
+    public static boolean isEmptyNotTrim(String str) {
+        return str == null || str.length() == 0 || str.trim().length() == 0
+                || "&nbsp;".equals(str.trim());
+    }
+
 
     public static void main(String[] args) {
         String str = "湖北省恩施土家族苗族自治州恩施市";
@@ -506,4 +511,35 @@ public class StringUtils {
         }
         return str.toString();
     }
+
+
+
+    /**
+     * 将下划线风格替换为驼峰风格
+     *
+     * @param inputString
+     * @return
+     */
+    public String underlineToCamelhump(String inputString) {
+        StringBuilder sb = new StringBuilder();
+
+        boolean nextUpperCase = false;
+        for (int i = 0; i < inputString.length(); i++) {
+            char c = inputString.charAt(i);
+            if (c == '_') {
+                if (sb.length() > 0) {
+                    nextUpperCase = true;
+                }
+            } else {
+                if (nextUpperCase) {
+                    sb.append(Character.toUpperCase(c));
+                    nextUpperCase = false;
+                } else {
+                    sb.append(Character.toLowerCase(c));
+                }
+            }
+        }
+        return sb.toString();
+    }
+
 }

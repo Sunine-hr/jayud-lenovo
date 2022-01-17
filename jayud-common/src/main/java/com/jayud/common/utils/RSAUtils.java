@@ -5,6 +5,8 @@ import com.jayud.common.entity.AuditInfoForm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.util.Base64Utils;
+import cn.hutool.json.JSONUtil;
+import org.apache.commons.io.IOUtils;
 
 import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
@@ -30,6 +32,11 @@ public class RSAUtils {
 
 
     public static Map<String, String> createKeys(){
+    public static final String PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMlB9-D3eJsl7zz7V3v2t07Zhv60YZrbsG5c1fiI7ioqPI_Xa80CNwLyG-QhqocgUOjH1JOyw7EXsPx16XyGsIkCAwEAAQ";
+    public static final String PRIVATE_KEY = "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAyUH34Pd4myXvPPtXe_a3TtmG_rRhmtuwblzV-IjuKio8j9drzQI3AvIb5CGqhyBQ6MfUk7LDsRew_HXpfIawiQIDAQABAkEAkYuemtf9JZ56dEyESQb0LBbONLb4e0hzQGzs5O8J5f0aY-YOJiWeSlU-_25mwYpXajR_70OsgBxQQEQzDnuzvQIhAPP34eBEJp9PKY7O7iVuEtIyjyYAC0XE9Zibs3zyVye3AiEA0y7ch-X6urhLzFtR-52x2BHg4vjFVgHSJDyAtAd6ab8CIDDRd1djC79xHcW_zpOa1RVOnKpj892ALgzdiysDa0E9AiEArz6D4oIFvkyRGdPuBE6n9hVf-PlXSDfamhda9gn-myECIDlTgdFKb7YBR6dP9xU9df3QDhGAWWo1qBNmE0F0N9FA";
+    public static final String APP_ID = "1637925530991";
+
+    public static Map<String, String> createKeys(int keySize){
         //为RSA算法创建一个KeyPairGenerator对象
         KeyPairGenerator kpg;
         try{
@@ -40,6 +47,7 @@ public class RSAUtils {
 
         //初始化KeyPairGenerator对象,密钥长度
         kpg.initialize(512);                //keySize 可以为1024
+//        kpg.initialize(keySize);                //keySize 可以为1024
         //生成密匙对
         KeyPair keyPair = kpg.generateKeyPair();
         //得到公钥
@@ -175,6 +183,7 @@ public class RSAUtils {
         }
         byte[] resultDatas = out.toByteArray();
 //        IOUtils.closeQuietly(out);
+        IOUtils.closeQuietly(out);
         return resultDatas;
     }
 
@@ -304,6 +313,111 @@ public class RSAUtils {
         AuditInfoForm auditInfoForm1 = JSONObject.parseObject(jmm, AuditInfoForm.class);
         System.out.println("解密后的数据："+auditInfoForm1);
 
+    //加密数据
+    public static JSONObject getEncryptedData(Object o){
+        String s1 = null;
+        try {
+            s1 = RSAUtils.privateEncrypt(JSONUtil.toJsonStr(o), RSAUtils.getPrivateKey(RSAUtils.PRIVATE_KEY));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("publicKey",RSAUtils.PUBLIC_KEY);
+        jsonObject.put("appId",RSAUtils.APP_ID);
+        jsonObject.put("data",s1);
+
+        return jsonObject;
+    }
+
+    public static void main(String[] args) throws Exception {
+        RSAUtils generatorRSAKey = new RSAUtils();
+        generatorRSAKey.initSecretkey();
+        JSONObject s = new JSONObject();
+//        s.put("warehouseName", "佳裕达龙岗仓库");
+//        s.put("customerName", "Fingo");
+//        s.put("transportTypeName", "云途小包");
+//        s.put("transportTrackNo", "11");
+//        s.put("status", 80);
+//        s.put("customerRefNo", "11");
+//        List<StockInOrderDetailForm> list = new ArrayList<>();
+//        StockInOrderDetailForm stockInOrderDetailForm = new StockInOrderDetailForm();
+//        stockInOrderDetailForm.setSku("SKU-30-2");
+//        stockInOrderDetailForm.setProductQty(3);
+//        list.add(stockInOrderDetailForm);
+//        s.put("items", list);
+//        s.put("warehouseName", "佳裕达龙岗仓库");
+//        s.put("customerName", "Fingo");
+//        s.put("transportTypeName", "云途小包");
+//
+        s.put("contacts", "李贤斌");
+        s.put("countryName", "中国");
+        s.put("cityName", "深圳");
+        s.put("stateProvinceName", "广州");
+        s.put("streetAddress", "罗湖区北京大厦");
+        s.put("postCode", "234345");
+        s.put("phone", "1234243233");
+        s.put("telephone", "");
+        s.put("email", "");
+        s.put("company", "佳裕达");
+        s.put("senderName", "小吴");
+        s.put("senderPhone", "133435432343");
+        s.put("senderCountryName", "中国");
+        s.put("senderPostCode", "234345");
+        s.put("senderStateProvinceName", "湖南");
+        s.put("senderCityName", "长沙");
+        s.put("senderAddress", "雨花区");
+        s.put("senderTelephone", "");
+        s.put("senderCompany", "");
+        s.put("trackingNo", "2344534");
+        s.put("remark", "");
+        s.put("countyName", "");
+        s.put("townName", "");
+        s.put("senderEmail", "");
+        s.put("origin", 1);
+        s.put("weight", new BigDecimal(10));
+        s.put("length", new BigDecimal(10));
+        s.put("height", new BigDecimal(10));
+        s.put("width", new BigDecimal(10));
+        s.put("identityCard", "2453534564343543453453");
+        s.put("status", 0);
+//
+//        s.put("customerRefNo", "11");
+//        List<StockInOrderDetailForm> list = new ArrayList<>();
+//        StockInOrderDetailForm stockInOrderDetailForm = new StockInOrderDetailForm();
+//        stockInOrderDetailForm.setSku("SKU-30-2");
+//        stockInOrderDetailForm.setProductQty(3);
+//        list.add(stockInOrderDetailForm);
+//        s.put("items", list);
+
+//        s.put("customerName", "Fingo");
+//        s.put("sku", "yy-123");
+//        s.put("barcode", "ert3345");
+//        s.put("nameCn", "电脑");
+//        s.put("nameEn", "department");
+//        s.put("productDescribe", "用来办公的好东西");
+//        s.put("declaredValue", new BigDecimal(100));
+//        s.put("weight", new BigDecimal(10));
+//        s.put("length", new BigDecimal(10));
+//        s.put("width", new BigDecimal(10));
+//        s.put("height", new BigDecimal(10));
+//        s.put("hsCode", "");
+//        s.put("orgin", "");
+//        s.put("brandEn", "");
+//        s.put("imageUrl", "");
+//        s.put("ccDeclarePrice", new BigDecimal(10));
+//        s.put("bcDeclarePrice", new BigDecimal(10));
+//        s.put("etkDeclarePrice", new BigDecimal(10));
+//        s.put("validityTime", new Date());
+//        s.put("ifBattery", "");
+//        s.put("specification", "");
+
+
+        System.out.println(s);
+        String s2 = s.toJSONString();
+        System.out.println("s2:"+s2);
+        String s1 = RSAUtils.publicEncrypt(s2, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
+        System.out.println("s1:"+s1);
     }
 
 

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.BBanksMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.BBanks">
+        <id column="id" property="id" />
+        <result column="bank_name" property="bankName" />
+        <result column="bank_code" property="bankCode" />
+        <result column="swift_code" property="swiftCode" />
+        <result column="account_number" property="accountNumber" />
+        <result column="branch" property="branch" />
+        <result column="address" property="address" />
+        <result column="manager" property="manager" />
+        <result column="tel" property="tel" />
+        <result column="account_name" property="accountName" />
+        <result column="account_no" property="accountNo" />
+        <result column="currency_name" property="currencyName" />
+        <result column="bank_area" property="bankArea" />
+        <result column="remark" property="remark" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_by_dtm" property="crtByDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_by_dtm" property="mdyByDtm" />
+        <result column="voided" property="voided" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_by_dtm" property="voidedByDtm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, bank_name, bank_code, swift_code, account_number, branch, address, manager, tel, account_name, account_no, currency_name, bank_area, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
+    </sql>
+
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.BBanksVO">
+        select id, bank_name bankName, bank_code bankCode, swift_code swiftCode, account_number accountNumber, branch, address, manager, tel,
+        account_name accountName, account_no accountNo, currency_name currencyName, bank_area bankArea, remark
+        from b_banks b where b.voided = 0
+    </select>
+
+</mapper>

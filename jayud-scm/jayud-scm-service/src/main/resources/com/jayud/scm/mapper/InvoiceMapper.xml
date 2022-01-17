@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.scm.mapper.InvoiceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.scm.model.po.Invoice">
+        <id column="id" property="id" />
+        <result column="f_bill_no" property="fBillNo" />
+        <result column="f_date" property="fDate" />
+        <result column="order_id" property="orderId" />
+        <result column="order_no" property="orderNo" />
+        <result column="customer_id" property="customerId" />
+        <result column="customer_name" property="customerName" />
+        <result column="currency_name" property="currencyName" />
+        <result column="model_type" property="modelType" />
+        <result column="deputy_style" property="deputyStyle" />
+        <result column="pay_style" property="payStyle" />
+        <result column="rec_style" property="recStyle" />
+        <result column="rate" property="rate" />
+        <result column="is_send_email" property="isSendEmail" />
+        <result column="send_time" property="sendTime" />
+        <result column="land_tax_flag" property="landTaxFlag" />
+        <result column="is_print" property="isPrint" />
+        <result column="check_state_flag" property="checkStateFlag" />
+        <result column="f_level" property="fLevel" />
+        <result column="f_step" property="fStep" />
+        <result column="tax_remark" property="taxRemark" />
+        <result column="is_sync" property="isSync" />
+        <result column="onl_id" property="onlId" />
+        <result column="onl_no" property="onlNo" />
+        <result column="pay_id" property="payId" />
+        <result column="inv_customer_id" property="invCustomerId" />
+        <result column="inv_customer_name" property="invCustomerName" />
+        <result column="is_hgbill" property="isHgbill" />
+        <result column="bank_id" property="bankId" />
+        <result column="is_red" property="isRed" />
+        <result column="remark" property="remark" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_by_dtm" property="crtByDtm" />
+        <result column="mdy_by" property="mdyBy" />
+        <result column="mdy_by_name" property="mdyByName" />
+        <result column="mdy_by_dtm" property="mdyByDtm" />
+        <result column="voided" property="voided" />
+        <result column="voided_by" property="voidedBy" />
+        <result column="voided_by_name" property="voidedByName" />
+        <result column="voided_by_dtm" property="voidedByDtm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, f_bill_no, f_date, order_id, order_no, customer_id, customer_name, currency_name, model_type, deputy_style, pay_style, rec_style, rate, is_send_email, send_time, land_tax_flag, is_print, check_state_flag, f_level, f_step, tax_remark, is_sync, onl_id, onl_no, pay_id, inv_customer_id, inv_customer_name, is_hgbill, bank_id, is_red, remark, crt_by, crt_by_name, crt_by_dtm, mdy_by, mdy_by_name, mdy_by_dtm, voided, voided_by, voided_by_name, voided_by_dtm
+    </sql>
+
+    <select id="findByPage" resultType="com.jayud.scm.model.vo.InvoiceDetailVO">
+--         select i.id invoiceEntryId, i.f_bill_no fBillNo, i.f_date fDate, order_id orderId, order_no orderNo, customer_id customerId,
+--         customer_name customerName, currency_name currencyName, model_type modelType, deputy_style deputyStyle, pay_style payStyle,
+--         rec_style recStyle, i.rate, is_send_email isSendEmail, send_time sendTime, land_tax_flag landTaxFlag, is_print isPrint,
+--         check_state_flag checkStateFlag, tax_remark taxRemark,i.pay_id payId, inv_customer_id invCustomerId, inv_customer_name invCustomerName, is_hgbill isHgbill, bank_id bankId, is_red isRed,
+--         ie.id bid, invoice_id invoiceId, ie.f_date bfDate, order_entry_id orderEntryId, item_name itemName, item_model itemModel,
+--         item_unit itemUnit, qty, ie.rate brate, fees_id feesId, formula, far_date farDate, fee_name feeName, ar_money arMoney,
+--         fee_alias feeAlias, fc_date fcDate, far_date_old farDateOld, other_cost_id otherCostId, item_name_inv itemNameInv,
+--         item_model_inv itemModelInv, ie.pay_id bpayId, pay_date payDate, pay_rate payRate, is_bill isBill, is_ar isAr
+--         from invoice i left join invoice_entry ie on i.id = ie.invoice_id and ie.voided = 0
+        select * from v_account_bank_entry_list_add i
+        where i.voided = 0 and i.check_state_flag = 'Y'
+        <if test="form.key !=null and form.key == 'fBillNo'">
+            and i.f_bill_no like concat('%',#{form.condition},'%')
+        </if>
+        <if test="form.key !=null and form.key == 'orderNo'">
+            and i.order_no like concat('%',#{form.condition},'%')
+        </if>
+        <if test="form.key !=null and form.key == 'customerName'">
+            and i.customer_name like concat('%',#{form.condition},'%')
+        </if>
+        <if test="form.key !=null and form.key == 'itemName'">
+            and ie.item_name like concat('%',#{form.condition},'%')
+        </if>
+        <if test="form.key !=null and form.key == 'itemModel'">
+            and ie.item_model like concat('%',#{form.condition},'%')
+        </if>
+        <if test="form.customerId !=null and form.customerId != ''">
+            and i.customer_id = #{form.customerId}
+        </if>
+        <if test="form.modelType !=null and form.modelType != ''">
+            and i.model_type = #{form.modelType}
+        </if>
+        order by i.id desc
+    </select>
+
+</mapper>

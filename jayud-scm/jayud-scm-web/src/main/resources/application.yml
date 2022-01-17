@@ -1,0 +1,92 @@
+server:
+  port: 8220
+  servlet:
+    context-path: ${scm.content.path}
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB
+  redis:
+    host: ${redis.server.url}
+    port: ${redis.server.port}
+    password: ${redis.server.password}
+    timeout: 2000s
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    druid:
+      url: jdbc:mysql://${jayud.datasource.ip}:${jayud.datasource.port}/${business.scm.datasource.name}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&autoReconnect=true
+      username: ${jayud.datasource.username}
+      password: ${jayud.datasource.password}
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        login-username: admin
+        login-password: admin
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          config:
+            multi-statement-allow: true
+
+swagger:
+  enable: true
+logging:
+  path: /data/log/scm
+secure:
+  ignored:
+    urls: #安全路径白名单
+      - /swagger-ui.html
+      - /swagger-resources/**
+      - /swagger/**
+      - /**/v2/api-docs
+      - /**/*.js
+      - /**/*.css
+      - /**/*.png
+      - /**/*.ico
+      - /doc.html
+      - /webjars/springfox-swagger-ui/**
+      - /actuator/**
+      - /druid/**
+      - /system/user/login
+      - /system/user/logout
+      - /system/user/auth/image
+      - /oss/upload
+      - /api/**
+      - /commodity/exportCommodityTemplate
+      - /common/getOrderNo
+      - /hgBill/getSingleWindowData
+      - /hgBill/getHgBillDataByDeclareState
+      - /hgBill/updateHgBill
+      - /common/importExcel
+feign:
+  httpclient:
+    connection-timeout: 5000
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000

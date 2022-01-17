@@ -27,11 +27,10 @@ public class RSAUtils {
     public static final String CHARSET = "UTF-8";
     public static final String RSA_ALGORITHM = "RSA";
 
-    public static final String PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL7q_PqXeAdSxbk2DcujrQdwQbRI0HqpowVDo-ZiNEI2eIh_odjTkQN4skvvXDfbzcKUEwclxl8XM0dQxDMTT5UCAwEAAQ";
-    public static final String PRIVATE_KEY = "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAvur8-pd4B1LFuTYNy6OtB3BBtEjQeqmjBUOj5mI0QjZ4iH-h2NORA3iyS-9cN9vNwpQTByXGXxczR1DEMxNPlQIDAQABAkBNRhOK4g_k9u2sn2JKED-SiS8u52HqpAqlsNEACLOaMHrq_XwSzxCQ82DGnLzbhF8PRt5lgvcDWPscW1D7md8BAiEA4f_r9zS1oa4yq6yTeOZ9WtNtM1V9CwrGYU20C_LmynUCIQDYQuS0YrsOxo5y7NJjDghHs5ZObMH-JjQnEFh5kZ6MoQIgEwLdTbFQaiZmOszMpwn0l5Rbhkr1tt0ULRFFSRAI3BUCID48-i8D3wvAjwx6JY5GYpGoGJDXcfkfq5C2fo_2HaghAiBZNarD68AqGWCqVU05Z4VEummlchrRdVECeRgVi43R5g";
+//    public static final String PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL7q_PqXeAdSxbk2DcujrQdwQbRI0HqpowVDo-ZiNEI2eIh_odjTkQN4skvvXDfbzcKUEwclxl8XM0dQxDMTT5UCAwEAAQ";
+//    public static final String PRIVATE_KEY = "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAvur8-pd4B1LFuTYNy6OtB3BBtEjQeqmjBUOj5mI0QjZ4iH-h2NORA3iyS-9cN9vNwpQTByXGXxczR1DEMxNPlQIDAQABAkBNRhOK4g_k9u2sn2JKED-SiS8u52HqpAqlsNEACLOaMHrq_XwSzxCQ82DGnLzbhF8PRt5lgvcDWPscW1D7md8BAiEA4f_r9zS1oa4yq6yTeOZ9WtNtM1V9CwrGYU20C_LmynUCIQDYQuS0YrsOxo5y7NJjDghHs5ZObMH-JjQnEFh5kZ6MoQIgEwLdTbFQaiZmOszMpwn0l5Rbhkr1tt0ULRFFSRAI3BUCID48-i8D3wvAjwx6JY5GYpGoGJDXcfkfq5C2fo_2HaghAiBZNarD68AqGWCqVU05Z4VEummlchrRdVECeRgVi43R5g";
 
 
-    public static Map<String, String> createKeys(){
     public static final String PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMlB9-D3eJsl7zz7V3v2t07Zhv60YZrbsG5c1fiI7ioqPI_Xa80CNwLyG-QhqocgUOjH1JOyw7EXsPx16XyGsIkCAwEAAQ";
     public static final String PRIVATE_KEY = "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAyUH34Pd4myXvPPtXe_a3TtmG_rRhmtuwblzV-IjuKio8j9drzQI3AvIb5CGqhyBQ6MfUk7LDsRew_HXpfIawiQIDAQABAkEAkYuemtf9JZ56dEyESQb0LBbONLb4e0hzQGzs5O8J5f0aY-YOJiWeSlU-_25mwYpXajR_70OsgBxQQEQzDnuzvQIhAPP34eBEJp9PKY7O7iVuEtIyjyYAC0XE9Zibs3zyVye3AiEA0y7ch-X6urhLzFtR-52x2BHg4vjFVgHSJDyAtAd6ab8CIDDRd1djC79xHcW_zpOa1RVOnKpj892ALgzdiysDa0E9AiEArz6D4oIFvkyRGdPuBE6n9hVf-PlXSDfamhda9gn-myECIDlTgdFKb7YBR6dP9xU9df3QDhGAWWo1qBNmE0F0N9FA";
     public static final String APP_ID = "1637925530991";
@@ -261,58 +260,6 @@ public class RSAUtils {
         return signature.verify(Base64.decodeBase64(sign.getBytes()));
     }
 
-
-
-    public static void main(String[] args) throws Exception {
-
-//
-//        Map<String, String> keys = RSAUtils.createKeys();
-//        String publicKey = keys.get("publicKey");
-//        String privateKey = keys.get("privateKey");
-//        System.out.println("publicKey"+publicKey);
-//        System.out.println("privateKey"+privateKey);
-
-//        Map<String, Object> form = new HashMap<>();
-//        form.put("trainStatus", "");
-//        form.put("truckNo", "truckNo");
-//        form.put("userName", "defaultUsername");
-
-
-
-        String  vo="{\"id\":\"\",\"type\":1,\"orderNo\":\"EX2111000008\",\"vehicleType\":\"1\",\"vehicleSize\":\"3T\",\"takeAdrForms1\":[{\"province\":1,\"city\":2,\"area\":null,\"contacts\":\"1\",\"phone\":\"1\",\"address\":\"广东省 深圳市 罗湖区\",\"goodsDesc\":\"一个货物\",\"pieceAmount\":\"1\",\"weight\":0.2,\"volume\":0.1,\"remarks\":\"备注\",\"date\":\"2021-11-22 11:21:43\",\"provinceName\":\"广东省\",\"cityName\":\"深圳市\",\"areaName\":\"罗湖区\"}],\"takeAdrForms2\":[{\"province\":1,\"city\":2,\"area\":null,\"contacts\":\"1\",\"phone\":\"1\",\"address\":\"河北省 石家庄市 长安区\",\"goodsDesc\":\"一个货物\",\"pieceAmount\":\"1\",\"weight\":0.2,\"volume\":0.1,\"remarks\":\"备注\",\"date\":\"2021-11-22 11:21:43\",\"provinceName\":\"河北省\",\"cityName\":\"石家庄市\",\"areaName\":\"长安区\"}]}";
-
-        AuditInfoForm form = new AuditInfoForm();
-        form.setAuditComment("ggggg");
-        form.setAuditUser("1111");
-        form.setAuditStatus("2222");
-
-        System.out.println("加密前:"+form);
-        //转化成json字符串
-        String s1 = JSONObject.toJSONString(form);
-        System.out.println("对象转换成json的字符串去加密:"+s1);
-
-        //  私钥加密
-        String sjm = RSAUtils.privateEncrypt(s1, RSAUtils.getPrivateKey(RSAUtils.PRIVATE_KEY));
-        System.out.println("加密后 :"+sjm);
-        System.out.println("----------");
-
-        String  bb="ApSoVcj4RoHCjMZw2ftTpuoha4z4K7a4tw8dl9oBCWhlRAoAV6J4JCXZdxKieHaLa4yqquNrQ9FCJziKKmQRYw1";
-
-        System.out.println("解密部分");
-        //公钥解密
-        String jmm = RSAUtils.publicDecrypt(sjm, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
-        System.out.println("解密数据"+jmm);
-        // RSA签名
-        String sign = sign(s1, getPrivateKey(RSAUtils.PRIVATE_KEY));
-        // RSA验签
-        boolean result = verify(jmm, getPublicKey(RSAUtils.PUBLIC_KEY), sign);
-        System.out.print("验签结果:" + result);
-
-
-
-        AuditInfoForm auditInfoForm1 = JSONObject.parseObject(jmm, AuditInfoForm.class);
-        System.out.println("解密后的数据："+auditInfoForm1);
-
     //加密数据
     public static JSONObject getEncryptedData(Object o){
         String s1 = null;
@@ -330,10 +277,62 @@ public class RSAUtils {
         return jsonObject;
     }
 
+
+
     public static void main(String[] args) throws Exception {
-        RSAUtils generatorRSAKey = new RSAUtils();
-        generatorRSAKey.initSecretkey();
-        JSONObject s = new JSONObject();
+
+//
+//        Map<String, String> keys = RSAUtils.createKeys();
+//        String publicKey = keys.get("publicKey");
+//        String privateKey = keys.get("privateKey");
+//        System.out.println("publicKey"+publicKey);
+//        System.out.println("privateKey"+privateKey);
+
+//        Map<String, Object> form = new HashMap<>();
+//        form.put("trainStatus", "");
+//        form.put("truckNo", "truckNo");
+//        form.put("userName", "defaultUsername");
+
+
+        String vo = "{\"id\":\"\",\"type\":1,\"orderNo\":\"EX2111000008\",\"vehicleType\":\"1\",\"vehicleSize\":\"3T\",\"takeAdrForms1\":[{\"province\":1,\"city\":2,\"area\":null,\"contacts\":\"1\",\"phone\":\"1\",\"address\":\"广东省 深圳市 罗湖区\",\"goodsDesc\":\"一个货物\",\"pieceAmount\":\"1\",\"weight\":0.2,\"volume\":0.1,\"remarks\":\"备注\",\"date\":\"2021-11-22 11:21:43\",\"provinceName\":\"广东省\",\"cityName\":\"深圳市\",\"areaName\":\"罗湖区\"}],\"takeAdrForms2\":[{\"province\":1,\"city\":2,\"area\":null,\"contacts\":\"1\",\"phone\":\"1\",\"address\":\"河北省 石家庄市 长安区\",\"goodsDesc\":\"一个货物\",\"pieceAmount\":\"1\",\"weight\":0.2,\"volume\":0.1,\"remarks\":\"备注\",\"date\":\"2021-11-22 11:21:43\",\"provinceName\":\"河北省\",\"cityName\":\"石家庄市\",\"areaName\":\"长安区\"}]}";
+
+        AuditInfoForm form = new AuditInfoForm();
+        form.setAuditComment("ggggg");
+        form.setAuditUser("1111");
+        form.setAuditStatus("2222");
+
+        System.out.println("加密前:" + form);
+        //转化成json字符串
+        String s1 = JSONObject.toJSONString(form);
+        System.out.println("对象转换成json的字符串去加密:" + s1);
+
+        //  私钥加密
+        String sjm = RSAUtils.privateEncrypt(s1, RSAUtils.getPrivateKey(RSAUtils.PRIVATE_KEY));
+        System.out.println("加密后 :" + sjm);
+        System.out.println("----------");
+
+        String bb = "ApSoVcj4RoHCjMZw2ftTpuoha4z4K7a4tw8dl9oBCWhlRAoAV6J4JCXZdxKieHaLa4yqquNrQ9FCJziKKmQRYw1";
+
+        System.out.println("解密部分");
+        //公钥解密
+        String jmm = RSAUtils.publicDecrypt(sjm, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
+        System.out.println("解密数据" + jmm);
+        // RSA签名
+        String sign = sign(s1, getPrivateKey(RSAUtils.PRIVATE_KEY));
+        // RSA验签
+        boolean result = verify(jmm, getPublicKey(RSAUtils.PUBLIC_KEY), sign);
+        System.out.print("验签结果:" + result);
+
+
+        AuditInfoForm auditInfoForm1 = JSONObject.parseObject(jmm, AuditInfoForm.class);
+        System.out.println("解密后的数据：" + auditInfoForm1);
+
+    }
+
+//    public static void main(String[] args) throws Exception {
+//        RSAUtils generatorRSAKey = new RSAUtils();
+//        generatorRSAKey.initSecretkey();
+//        JSONObject s = new JSONObject();
 //        s.put("warehouseName", "佳裕达龙岗仓库");
 //        s.put("customerName", "Fingo");
 //        s.put("transportTypeName", "云途小包");
@@ -350,37 +349,37 @@ public class RSAUtils {
 //        s.put("customerName", "Fingo");
 //        s.put("transportTypeName", "云途小包");
 //
-        s.put("contacts", "李贤斌");
-        s.put("countryName", "中国");
-        s.put("cityName", "深圳");
-        s.put("stateProvinceName", "广州");
-        s.put("streetAddress", "罗湖区北京大厦");
-        s.put("postCode", "234345");
-        s.put("phone", "1234243233");
-        s.put("telephone", "");
-        s.put("email", "");
-        s.put("company", "佳裕达");
-        s.put("senderName", "小吴");
-        s.put("senderPhone", "133435432343");
-        s.put("senderCountryName", "中国");
-        s.put("senderPostCode", "234345");
-        s.put("senderStateProvinceName", "湖南");
-        s.put("senderCityName", "长沙");
-        s.put("senderAddress", "雨花区");
-        s.put("senderTelephone", "");
-        s.put("senderCompany", "");
-        s.put("trackingNo", "2344534");
-        s.put("remark", "");
-        s.put("countyName", "");
-        s.put("townName", "");
-        s.put("senderEmail", "");
-        s.put("origin", 1);
-        s.put("weight", new BigDecimal(10));
-        s.put("length", new BigDecimal(10));
-        s.put("height", new BigDecimal(10));
-        s.put("width", new BigDecimal(10));
-        s.put("identityCard", "2453534564343543453453");
-        s.put("status", 0);
+//        s.put("contacts", "李贤斌");
+//        s.put("countryName", "中国");
+//        s.put("cityName", "深圳");
+//        s.put("stateProvinceName", "广州");
+//        s.put("streetAddress", "罗湖区北京大厦");
+//        s.put("postCode", "234345");
+//        s.put("phone", "1234243233");
+//        s.put("telephone", "");
+//        s.put("email", "");
+//        s.put("company", "佳裕达");
+//        s.put("senderName", "小吴");
+//        s.put("senderPhone", "133435432343");
+//        s.put("senderCountryName", "中国");
+//        s.put("senderPostCode", "234345");
+//        s.put("senderStateProvinceName", "湖南");
+//        s.put("senderCityName", "长沙");
+//        s.put("senderAddress", "雨花区");
+//        s.put("senderTelephone", "");
+//        s.put("senderCompany", "");
+//        s.put("trackingNo", "2344534");
+//        s.put("remark", "");
+//        s.put("countyName", "");
+//        s.put("townName", "");
+//        s.put("senderEmail", "");
+//        s.put("origin", 1);
+//        s.put("weight", new BigDecimal(10));
+//        s.put("length", new BigDecimal(10));
+//        s.put("height", new BigDecimal(10));
+//        s.put("width", new BigDecimal(10));
+//        s.put("identityCard", "2453534564343543453453");
+//        s.put("status", 0);
 //
 //        s.put("customerRefNo", "11");
 //        List<StockInOrderDetailForm> list = new ArrayList<>();
@@ -413,12 +412,12 @@ public class RSAUtils {
 //        s.put("specification", "");
 
 
-        System.out.println(s);
-        String s2 = s.toJSONString();
-        System.out.println("s2:"+s2);
-        String s1 = RSAUtils.publicEncrypt(s2, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
-        System.out.println("s1:"+s1);
-    }
+//        System.out.println(s);
+//        String s2 = s.toJSONString();
+//        System.out.println("s2:"+s2);
+//        String s1 = RSAUtils.publicEncrypt(s2, RSAUtils.getPublicKey(RSAUtils.PUBLIC_KEY));
+//        System.out.println("s1:"+s1);
+//    }
 
 
 

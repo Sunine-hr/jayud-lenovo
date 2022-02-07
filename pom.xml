@@ -38,6 +38,7 @@
         <module>jayud-scm</module>
 
         <module>jayud-report</module>
+        <module>jayud-work-flow</module>
 
     </modules>
 

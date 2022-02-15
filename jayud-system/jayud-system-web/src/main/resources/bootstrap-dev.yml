@@ -1,0 +1,7 @@
+jayud:
+  nacos:
+    server-addr: 113.100.140.250:8848
+    config:
+      namespace: jayud-oms-xr
+
+

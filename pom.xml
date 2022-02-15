@@ -40,6 +40,8 @@
         <module>jayud-report</module>
         <module>jayud-work-flow</module>
 
+        <module>jayud-auth</module>
+        <module>jayud-system</module>
     </modules>
 
     <parent>
@@ -62,6 +64,8 @@
         <fastjson.version>1.2.75</fastjson.version>
         <seata.version>1.3.0</seata.version>
         <alibaba.seata.version>2.1.3.RELEASE</alibaba.seata.version>
+
+        <spring-cloud-starter-bootstrap.version>3.0.3</spring-cloud-starter-bootstrap.version>
     </properties>
     <!-- 管理依赖 -->
     <dependencyManagement>
@@ -289,7 +293,11 @@
 <!--            <artifactId>seata-spring-boot-starter</artifactId>-->
 <!--            <version>1.3.0</version>-->
 <!--        </dependency>-->
-
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            <version>${spring-cloud-starter-bootstrap.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -70,7 +71,8 @@ public class ClientSecretKeyServiceImpl extends ServiceImpl<ClientSecretKeyMappe
     @Override
     public Long saveOrUpdateAddr(ClientSecretKey clientSecretKey) {
         if (Objects.isNull(clientSecretKey.getId())) {
-            Map<String, String> keys = RSAUtils.createKeys();
+//            Map<String, String> keys = RSAUtils.createKeys();
+            Map<String, String> keys = new HashMap<>();
             clientSecretKey.setCreateTime(LocalDateTime.now())
                     //公钥
                     .setAppSecret(keys.get("publicKey"))

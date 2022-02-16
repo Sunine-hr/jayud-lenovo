@@ -36,8 +36,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         AuthUserDetail authUserDetail = new AuthUserDetail();
         BeanUtils.copyProperties(sysUser,authUserDetail);
-//        return authUserDetail;
-        return new User(sysUser.getName(), sysUser.getPassword(), AuthorityUtils.createAuthorityList(new String[]{}));
+        authUserDetail.setId(1L);
+        authUserDetail.setUsername(s);
+        return authUserDetail;
+//        return new User(sysUser.getName(), sysUser.getPassword(), AuthorityUtils.createAuthorityList(new String[]{}));
     }
 
     @Override

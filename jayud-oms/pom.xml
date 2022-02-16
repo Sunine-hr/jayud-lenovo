@@ -21,6 +21,9 @@
         <module>jayud-oms-service</module>
         <module>jayud-oms-mini-app</module>
     </modules>
+    <properties>
+        <spring-cloud-starter-oauth2.version>2.2.5.RELEASE</spring-cloud-starter-oauth2.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -44,6 +47,12 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
             <version>${alibaba.seata.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-oauth2</artifactId>
+            <version>${spring-cloud-starter-oauth2.version}</version>
         </dependency>
 
     </dependencies>

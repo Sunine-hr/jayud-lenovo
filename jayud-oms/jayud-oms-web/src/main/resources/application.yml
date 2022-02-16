@@ -80,4 +80,34 @@ address:
 worksheet:
   tms: ${worksheet.tms}
 
-
+security:
+  oauth2:
+    client:
+      clientId: jayud-oms-web
+      clientSecret: 123456
+      accessTokenUri: http://127.0.0.1:10004/auth/oauth/token
+      #accessTokenUri: http://192.168.3.39:10004/uaa/oauth/token
+      grant-type: client_credentials
+      scope: server
+    resource:
+      user-info-uri: http://127.0.0.1:10004/auth/sysUser/current
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      cors:
+        allowed-origins: "*"
+        allowed-methods: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    redis:
+      enabled: false
+    rabbit:
+      enabled: false
+    mongo:
+      enabled: false
+    mail:
+      enabled: false

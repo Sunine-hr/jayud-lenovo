@@ -1,6 +1,7 @@
 package com.jayud.oms.controller;
 
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -17,5 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/appletOrderAddr")
 public class AppletOrderAddrController {
 
+    @GetMapping("/getMsg")
+    public String getMsg(){
+        return "is_success";
+    }
 }
 

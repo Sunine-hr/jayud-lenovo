@@ -74,8 +74,7 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clientDetailsServiceConfigurer) throws Exception {
 		clientDetailsServiceConfigurer.inMemory().withClient("browser").authorizedGrantTypes(REFRESH_TOKEN, "password").scopes("ui").and()
-				.withClient("jayud-system-web").secret(SECRET).authorizedGrantTypes(CLIENT_CREDENTIALS, REFRESH_TOKEN).scopes(SERVER).and()
-				.withClient("jayud-oms-web").secret(SECRET).authorizedGrantTypes(CLIENT_CREDENTIALS, REFRESH_TOKEN).scopes(SERVER)
+				.withClient("jayud-system-web").secret(SECRET).authorizedGrantTypes(CLIENT_CREDENTIALS, REFRESH_TOKEN).scopes(SERVER)
 				.accessTokenValiditySeconds(60*60);
 
 		clientDetailsServiceConfigurer.withClientDetails(clientDetailsService());
@@ -87,10 +86,11 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer authorizationServerEndpointsConfigurer) throws Exception {
 		authorizationServerEndpointsConfigurer
-				//内存保存token
-				.tokenStore(tokenStore)
-				//redis保存token，下方redisTokenStore需放开
-//				.tokenStore(redisTokenStore())
+				//默认内置保存token
+//				.tokenStore(tokenStore)
+				//redis保存token
+				.tokenStore(redisTokenStore())
+//				.tokenServices(redisTokenService())
 				.tokenGranter(tokenGranter())
 				.authenticationManager(authenticationManager)
 				.userDetailsService(userService);
@@ -184,13 +184,15 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 		if (tokenServices != null) {
 			return tokenServices;
 		}
-		this.tokenServices = createDefaultTokenServices();
+		//设置redis-token校验
+		this.tokenServices = redisTokenService();
 		return tokenServices;
 	}
 
+	//默认内存保存token
 	private DefaultTokenServices createDefaultTokenServices() {
 		DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
-		defaultTokenServices.setTokenStore(tokenStore());
+		defaultTokenServices.setTokenStore(tokenStores());
 		defaultTokenServices.setSupportRefreshToken(true);
 		defaultTokenServices.setReuseRefreshToken(reuseRefreshToken);
 		defaultTokenServices.setClientDetailsService(clientDetailsService());
@@ -199,7 +201,7 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 		return defaultTokenServices;
 	}
 
-	private TokenStore tokenStore() {
+	private TokenStore tokenStores() {
 		if (tokenStore == null) {
 			if (accessTokenConverter() instanceof JwtAccessTokenConverter) {
 				this.tokenStore = new JwtTokenStore((JwtAccessTokenConverter) accessTokenConverter());
@@ -239,10 +241,31 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 		return requestFactory;
 	}
 
-	//使用redis保存token信息放开
 //	@Bean
-//	public TokenStore redisTokenStore() {
-//		RedisTokenStore redis = new RedisTokenStore(redisConnectionFactory);
-//		return redis;
+//	TokenStore tokenStore() {
+//		return new RedisTokenStore(redisConnectionFactory);
 //	}
+
+	@Bean
+	public TokenStore redisTokenStore() {
+		RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
+		redisTokenStore.setPrefix("auth-token:");
+		return redisTokenStore;
+	}
+
+	@Bean
+	public DefaultTokenServices redisTokenService() {
+		DefaultTokenServices tokenServices = new DefaultTokenServices();
+		//配置token存储
+		tokenServices.setTokenStore(redisTokenStore());
+		//开启支持refresh_token，此处如果之前没有配置，启动服务后再配置重启服务，可能会导致不返回token的问题，解决方式：清除redis对应token存储
+		tokenServices.setSupportRefreshToken(true);
+		//复用refresh_token
+		tokenServices.setReuseRefreshToken(true);
+		//token有效期，设置1小时
+		tokenServices.setAccessTokenValiditySeconds(1*60*60);
+		//refresh_token有效期，设置1天
+		tokenServices.setRefreshTokenValiditySeconds(24*60*60);
+		return tokenServices;
+	}
 }

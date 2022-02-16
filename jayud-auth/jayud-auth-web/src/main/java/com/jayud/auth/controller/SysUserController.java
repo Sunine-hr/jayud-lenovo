@@ -7,9 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
@@ -30,6 +32,9 @@ public class SysUserController {
     @Autowired
     private SysUserService userService;
 
+    @Autowired
+    private ConsumerTokenServices consumerTokenServices;
+
     @GetMapping("/getMsg")
     public String isSuccess(){
         SysUser sysUser = userService.getUser();
@@ -44,6 +49,21 @@ public class SysUserController {
             return null;
         }
         return principal;
+    }
+
+    /**
+     * @description 退出登录
+     * @author  ciro
+     * @date   2022/2/16 15:32
+     * @param: token
+     * @return: java.lang.String
+     **/
+    @GetMapping("logout")
+    public String logout(@RequestParam("token")String token){
+        if (consumerTokenServices.revokeToken(token)) {
+            return "logout success";
+        }
+        return "logout error";
     }
 
 

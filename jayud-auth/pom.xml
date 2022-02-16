@@ -27,7 +27,7 @@
         <spring-cloud-starter-oauth2.version>2.2.5.RELEASE</spring-cloud-starter-oauth2.version>
         <mysql.version>8.0.23</mysql.version>
         <spring.security.jwt.version>1.1.1.RELEASE</spring.security.jwt.version>
-
+        <fastjson.version>1.2.75</fastjson.version>
         <maven-compiler-source.version>1.8</maven-compiler-source.version>
         <maven-compiler-target.version>1.8</maven-compiler-target.version>
         <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>

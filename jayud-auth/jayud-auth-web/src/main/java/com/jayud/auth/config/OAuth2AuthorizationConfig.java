@@ -4,7 +4,9 @@ package com.jayud.auth.config;
 import com.jayud.auth.service.impl.SysUserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -31,6 +33,7 @@ import org.springframework.security.oauth2.provider.token.*;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
@@ -61,7 +64,8 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 
 	@Autowired
 	private SysUserServiceImpl userService;
-
+	@Autowired
+	RedisConnectionFactory redisConnectionFactory;
 
 
 	/**
@@ -82,7 +86,10 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer authorizationServerEndpointsConfigurer) throws Exception {
 		authorizationServerEndpointsConfigurer
+				//内存保存token
 				.tokenStore(tokenStore)
+				//redis保存token，下方redisTokenStore需放开
+//				.tokenStore(redisTokenStore())
 				.tokenGranter(tokenGranter())
 				.authenticationManager(authenticationManager)
 				.userDetailsService(userService);
@@ -152,7 +159,7 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 	}
 
 	private ClientDetailsService clientDetailsService() {
-		return new ClientDetailsService() {// NOSONAR
+		return new ClientDetailsService() {
 			@Override
 			public ClientDetails loadClientByClientId(String clientId) {
 				BaseClientDetails details = new BaseClientDetails();
@@ -231,4 +238,10 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 		return requestFactory;
 	}
 
+	//使用redis保存token信息放开
+//	@Bean
+//	public TokenStore redisTokenStore() {
+//		RedisTokenStore redis = new RedisTokenStore(redisConnectionFactory);
+//		return redis;
+//	}
 }

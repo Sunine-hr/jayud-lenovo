@@ -33,7 +33,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
 //                .antMatchers("/**","/deviceAuthorization/activate","/api/uaa/deviceAuthorization/license/generateCode").permitAll()
 //                .anyRequest().authenticated().and().csrf().disable();
-        httpSecurity.authorizeRequests().anyRequest().authenticated().and().csrf().disable().antMatcher("/**");
+        httpSecurity.authorizeRequests().anyRequest().authenticated().antMatchers("/sysUser/token").permitAll()
+                .and().csrf().disable();
     }
 
     /**

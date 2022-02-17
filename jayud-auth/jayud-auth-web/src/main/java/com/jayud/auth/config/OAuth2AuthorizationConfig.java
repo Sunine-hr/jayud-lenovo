@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -93,7 +94,12 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 //				.tokenServices(redisTokenService())
 				.tokenGranter(tokenGranter())
 				.authenticationManager(authenticationManager)
-				.userDetailsService(userService);
+				.userDetailsService(userService)
+				.allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST,
+						HttpMethod.OPTIONS, HttpMethod.PUT, HttpMethod.PATCH, HttpMethod.DELETE)
+				//默认/oauth/token登录接口改为/sysUser/token
+				.pathMapping("/oauth/token", "/sysUser/token")
+		;
 	}
 
 	/**

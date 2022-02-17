@@ -1,4 +1,4 @@
-package com.jayud.auth.config;//package com.jyd.auth.config;
+//package com.jayud.auth.config;
 //
 //import com.jyd.component.commons.config.CommonResourceServerConfig;
 //import org.springframework.beans.factory.annotation.Autowired;

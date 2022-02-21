@@ -68,6 +68,9 @@ public class SysMenu extends Model<SysMenu> {
     @ApiModelProperty(value = "是否按钮:1-是   0-不是")
     private Boolean isButton;
 
+    @ApiModelProperty(value = "是否审核:1-是   0-不是")
+    private Boolean isApprove;
+
     @ApiModelProperty(value = "系统类型(1-权限系统，2-OMS系统)")
     private Integer sysType;
 

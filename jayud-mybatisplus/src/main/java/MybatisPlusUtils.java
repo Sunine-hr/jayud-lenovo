@@ -29,7 +29,7 @@ public class MybatisPlusUtils {
                 "jayud-auth/jayud-auth-web"
         };
         for (String model : models) {
-            shell(model,"sys_tenant");
+            shell(model,"sys_role");
 
         }
     }
@@ -101,7 +101,8 @@ public class MybatisPlusUtils {
             focList.add(new FileOutConfig("/mapperxml.xml.vm") {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
-                    return path + "/src/main/resources/com/jayud/auth/mapper"
+                    //TODO 4.com.jayud.业务模块名.mapper
+                    return path + "/src/main/resources/com.jayud.auth.mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
 
                 }

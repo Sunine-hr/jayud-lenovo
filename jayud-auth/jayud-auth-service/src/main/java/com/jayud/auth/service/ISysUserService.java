@@ -19,8 +19,8 @@ public interface ISysUserService extends IService<SysUser> {
 
     /**
      * @description 分页查询
-     * @author jayud
-     * @date 2022-02-21
+     * @author  jayud
+     * @date   2022-02-21
      * @param: sysUser
      * @param: currentPage
      * @param: pageSize
@@ -28,14 +28,14 @@ public interface ISysUserService extends IService<SysUser> {
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysUser>
      **/
     IPage<SysUser> selectPage(SysUser sysUser,
-                              Integer currentPage,
-                              Integer pageSize,
-                              HttpServletRequest req);
+                                Integer currentPage,
+                                Integer pageSize,
+                                HttpServletRequest req);
 
     /**
      * @description 列表查询数据
-     * @author jayud
-     * @date 2022-02-21
+     * @author  jayud
+     * @date   2022-02-21
      * @param: sysUser
      * @param: req
      * @return: java.util.List<com.jayud.auth.model.po.SysUser>
@@ -43,10 +43,11 @@ public interface ISysUserService extends IService<SysUser> {
     List<SysUser> selectList(SysUser sysUser);
 
 
+
     /**
      * @description 物理删除
-     * @author jayud
-     * @date 2022-02-21
+     * @author  jayud
+     * @date   2022-02-21
      * @param: id
      * @return: void
      **/
@@ -54,13 +55,15 @@ public interface ISysUserService extends IService<SysUser> {
 
 
     /**
-     * @description 逻辑删除
-     * @author jayud
-     * @date 2022-02-21
-     * @param: id
-     * @return: com.jyd.component.commons.result.Result
-     **/
+    * @description 逻辑删除
+    * @author  jayud
+    * @date   2022-02-21
+    * @param: id
+    * @return: com.jyd.component.commons.result.Result
+    **/
     void logicDel(Long id);
+
+
 
 
 }

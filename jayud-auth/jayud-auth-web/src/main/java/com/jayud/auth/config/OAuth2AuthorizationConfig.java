@@ -99,7 +99,7 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 				.allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST,
 						HttpMethod.OPTIONS, HttpMethod.PUT, HttpMethod.PATCH, HttpMethod.DELETE)
 				//默认/oauth/token登录接口改为/sysUser/token
-				.pathMapping("/oauth/token", "/sysUser/token")
+				.pathMapping("/oauth/token", "/auth/token")
 		;
 	}
 

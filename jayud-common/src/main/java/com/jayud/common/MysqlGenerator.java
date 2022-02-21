@@ -70,7 +70,7 @@ public class MysqlGenerator {
         dsc.setDbType(DbType.MYSQL);
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("Jayud2021!@#");
+        dsc.setPassword("Jayud2021!@#");//TODO 2.业务模块数据源
         dsc.setUrl("jdbc:mysql://113.100.140.250:8097/jayud_oms_auth?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai");
         mpg.setDataSource(dsc);
 
@@ -84,7 +84,7 @@ public class MysqlGenerator {
         String pack = "";
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.jayud.auth");//TODO 2.com.jayud.业务模块名
+        pc.setParent("com.jayud.auth");//TODO 3.com.jayud.业务模块名
         pc.setEntity("model.po");
         pc.setController("controller");
         pc.setMapper("mapper");
@@ -107,7 +107,7 @@ public class MysqlGenerator {
             focList.add(new FileOutConfig("/templates/mapper.xml.vm") {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
-                    return path + "/src/main/resources/com.jayud.auth.mapper" //TODO 3.com.jayud.业务模块名.mapper
+                    return path + "/src/main/resources/com.jayud.auth.mapper" //TODO 4.com.jayud.业务模块名.mapper
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
                 }
             });

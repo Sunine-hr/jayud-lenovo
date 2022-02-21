@@ -42,6 +42,7 @@
 
         <module>jayud-auth</module>
         <module>jayud-system</module>
+        <module>jayud-mybatisplus</module>
     </modules>
 
     <parent>

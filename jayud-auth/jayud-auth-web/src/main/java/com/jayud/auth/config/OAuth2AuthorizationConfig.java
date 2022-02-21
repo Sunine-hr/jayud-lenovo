@@ -1,7 +1,8 @@
 package com.jayud.auth.config;
 
 
-import com.jayud.auth.service.impl.SysUserServiceImpl;
+
+import com.jayud.auth.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -64,7 +65,7 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 
 
 	@Autowired
-	private SysUserServiceImpl userService;
+	private UserDetailsServiceImpl userService;
 	@Autowired
 	RedisConnectionFactory redisConnectionFactory;
 

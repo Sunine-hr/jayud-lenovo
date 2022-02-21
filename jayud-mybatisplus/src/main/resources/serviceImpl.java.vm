@@ -1,0 +1,69 @@
+package ${package.ServiceImpl};
+
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.jayud.common.utils.CurrentUserUtil;
+import ${package.Entity}.${entity};
+import ${package.Mapper}.${table.mapperName};
+import ${package.Service}.${table.serviceName};
+import ${superServiceImplClassPackage};
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * $!{table.comment} 服务实现类
+ *
+ * @author jayud
+ * @since ${date}
+ */
+@Slf4j
+@Service
+public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.mapperName}, ${entity}> implements ${table.serviceName} {
+
+
+    @Autowired
+    private ${table.mapperName} ${table.entityPath}Mapper;
+
+    @Override
+    public IPage<${entity}> selectPage(${entity} ${table.entityPath},
+                                        Integer currentPage,
+                                        Integer pageSize,
+                                        HttpServletRequest req){
+
+        Page<${entity}> page=new Page<${entity}>(currentPage,pageSize);
+        IPage<${entity}> pageList= ${table.entityPath}Mapper.pageList(page, ${table.entityPath});
+        return pageList;
+    }
+
+    @Override
+    public List<${entity}> selectList(${entity} ${table.entityPath}){
+        return ${table.entityPath}Mapper.list(${table.entityPath});
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void phyDelById(Long id){
+        ${table.entityPath}Mapper.phyDelById(id);
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void logicDel(Long id){
+        ${table.entityPath}Mapper.logicDel(id,CurrentUserUtil.getUsername());
+    }
+
+}

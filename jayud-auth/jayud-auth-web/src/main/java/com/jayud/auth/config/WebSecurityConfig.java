@@ -1,6 +1,7 @@
 package com.jayud.auth.config;
 
-import com.jayud.auth.service.impl.SysUserServiceImpl;
+
+import com.jayud.auth.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private SysUserServiceImpl userService;
+    private UserDetailsServiceImpl userService;
 
     /**
      * 为特定的Http请求配置基于Web的安全约束

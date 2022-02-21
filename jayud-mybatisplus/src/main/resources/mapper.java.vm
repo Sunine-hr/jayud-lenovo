@@ -1,0 +1,63 @@
+package ${package.Mapper};
+
+import ${package.Entity}.${entity};
+import ${superMapperClassPackage};
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * $!{table.comment} Mapper 接口
+ *
+ * @author jayud
+ * @since ${date}
+ */
+@Mapper
+public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {
+
+    /**
+     * @description 分页查询
+     * @author  jayud
+     * @date   ${date}
+     * @param: page
+     * @param: ${table.entityPath}
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<${package.Entity}.${entity}>
+     **/
+    IPage<${entity}> pageList(@Param("page") Page<${entity}> page, @Param("${table.entityPath}") ${entity} ${table.entityPath});
+
+    /**
+     * @description 列表查询数据
+     * @author  jayud
+     * @date   ${date}
+     * @param: ${table.entityPath}
+     * @return: java.util.List<${package.Entity}.${entity}>
+     **/
+    List<${entity}> list(@Param("${table.entityPath}") ${entity} ${table.entityPath});
+
+
+    /**
+     * @description 根据id物理删除
+     * @author  jayud
+     * @date   ${date}
+     * @param: id
+     * @return: int
+     **/
+    int phyDelById(@Param("id") Long id);
+
+    /**
+     * @description 根据id逻辑删除
+     * @author  jayud
+     * @date   ${date}
+     * @param: id
+     * @param: username
+     * @return: int
+     **/
+    int logicDel(@Param("id") Long id,@Param("username") String username);
+}

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${package.Mapper}.${table.mapperName}">
+
+#if(${enableCache})
+
+
+#end
+#if(${baseResultMap})
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="${package.Entity}.${entity}">
+    #foreach($field in ${table.fields})
+        #if(${field.keyFlag})##生成主键排在第一位
+        <id column="${field.name}" property="${field.propertyName}" />
+        #end
+    #end
+    #foreach($field in ${table.commonFields})##生成公共字段
+    <result column="${field.name}" property="${field.propertyName}" />
+    #end
+    #foreach($field in ${table.fields})
+        #if(!${field.keyFlag})##生成普通字段
+        <result column="${field.name}" property="${field.propertyName}" />
+        #end
+    #end
+    </resultMap>
+
+#end
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            #foreach($field in ${table.commonFields})
+                ${field.columnName},
+            #end
+            ${table.fieldNames}
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">${table.name} </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            #foreach($field in ${table.fields})
+                #if(!${field.keyFlag}
+                    && ${field.propertyName} != "createBy"
+                    && ${field.propertyName} != "createTime"
+                    && ${field.propertyName} != "updateBy"
+                    && ${field.propertyName} != "updateTime"
+                    && ${field.propertyName} != "isDeleted")
+                    #if(${field.propertyType} == "String")
+            <if test="${table.entityPath}.${field.propertyName} != null and ${table.entityPath}.${field.propertyName} != ''">
+                AND ${field.name} = #{${table.entityPath}.${field.propertyName}}
+            </if>
+                    #else
+            <if test="${table.entityPath}.${field.propertyName} != null ">
+                AND ${field.name} = ${${table.entityPath}.${field.propertyName}}
+            </if>
+                    #end
+
+                #end
+            #end
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="${package.Entity}.${entity}">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="${package.Entity}.${entity}">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  ${table.name} WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE ${table.name} SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+
+</mapper>

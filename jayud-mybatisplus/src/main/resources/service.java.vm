@@ -1,0 +1,72 @@
+package ${package.Service};
+
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import ${package.Entity}.${entity};
+import ${superServiceClassPackage};
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * $!{table.comment} 服务类
+ *
+ * @author jayud
+ * @since ${date}
+ */
+public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
+
+
+    /**
+     * @description 分页查询
+     * @author  jayud
+     * @date   ${date}
+     * @param: ${table.entityPath}
+     * @param: currentPage
+     * @param: pageSize
+     * @param: req
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<${package.Entity}.${entity}>
+     **/
+    IPage<${entity}> selectPage(${entity} ${table.entityPath},
+                                Integer currentPage,
+                                Integer pageSize,
+                                HttpServletRequest req);
+
+    /**
+     * @description 列表查询数据
+     * @author  jayud
+     * @date   ${date}
+     * @param: ${table.entityPath}
+     * @param: req
+     * @return: java.util.List<${package.Entity}.${entity}>
+     **/
+    List<${entity}> selectList(${entity} ${table.entityPath});
+
+
+
+    /**
+     * @description 物理删除
+     * @author  jayud
+     * @date   ${date}
+     * @param: id
+     * @return: void
+     **/
+    void phyDelById(Long id);
+
+
+    /**
+    * @description 逻辑删除
+    * @author  jayud
+    * @date   ${date}
+    * @param: id
+    * @return: com.jyd.component.commons.result.Result
+    **/
+    void logicDel(Long id);
+
+
+
+
+}

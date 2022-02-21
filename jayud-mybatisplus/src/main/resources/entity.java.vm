@@ -1,0 +1,59 @@
+package ${package.Entity};
+
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import com.jayud.common.entity.SysBaseEntity;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import java.time.LocalDateTime;
+import java.math.BigDecimal;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+
+/**
+ * ${entity} 实体类
+ *
+ * @author jyd
+ * @since ${date}
+ */
+@Data
+@EqualsAndHashCode(callSuper = false)
+@ApiModel(value="${table.comment}对象", description="${table.comment}")
+public class ${entity} extends SysBaseEntity {
+
+#foreach($field in ${table.fields})
+    #if(!${field.keyFlag}
+    && ${field.propertyName} != "isDeleted"
+    && ${field.propertyName} != "createBy"
+    && ${field.propertyName} != "createTime"
+    && ${field.propertyName} != "updateBy"
+    && ${field.propertyName} != "updateTime"
+    &&${field.columnType} == "LOCAL_DATE_TIME")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    #end
+    #if(!${field.keyFlag}
+    && ${field.propertyName} != "isDeleted"
+    && ${field.propertyName} != "createBy"
+    && ${field.propertyName} != "createTime"
+    && ${field.propertyName} != "updateBy"
+    && ${field.propertyName} != "updateTime")
+    @ApiModelProperty(value = "${field.comment}")
+    private ${field.propertyType} ${field.propertyName};
+    #end
+
+    #if(${field.propertyName} == "isDeleted")
+    @ApiModelProperty(value = "${field.comment}")
+    @TableLogic
+    private Boolean ${field.propertyName};
+    #end
+#end
+
+
+    }

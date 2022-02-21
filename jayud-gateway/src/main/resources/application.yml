@@ -189,3 +189,10 @@ spring:
           filters:
             - StripPrefix=1
             - IgnoreGlobalFilterFactor
+        - id: route-jayud-auth-web  #供应链系统api服务端
+          uri: lb://jayud-auth-web  # uri以lb://开头（后面接的服务名称)
+          predicates:
+            - Path=/jayudAuth/**
+          filters:
+            - StripPrefix=1
+            - IgnoreGlobalFilterFactor

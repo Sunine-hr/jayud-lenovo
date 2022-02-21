@@ -2,6 +2,7 @@ package com.jayud.auth.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jayud.common.BaseResult;
+import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -53,8 +54,8 @@ public class UserDetailsController {
      * @return: java.lang.String
      **/
     @GetMapping("logout")
-    public String logout(@RequestParam("token")String token){
-        if (consumerTokenServices.revokeToken(token)) {
+    public String logout(){
+        if (consumerTokenServices.revokeToken(CurrentUserUtil.getUserToken())) {
             return "logout success";
         }
         return "logout error";

@@ -26,11 +26,17 @@ import java.util.Map;
 public class MysqlGenerator {
 
     public static void main(String[] args) {
-        String[] models = {"jayud-freight-air\\jayud-freight-air-model",
-                "jayud-freight-air\\jayud-freight-air-service",
-                "jayud-freight-air\\jayud-freight-air-web"};
+        //TODO 1.jayud-业务模块名/jayud-业务模块名-model
+        String[] models = {
+//                "jayud-freight-air\\jayud-freight-air-model",
+//                "jayud-freight-air\\jayud-freight-air-service",
+//                "jayud-freight-air\\jayud-freight-air-web"
+                "jayud-auth/jayud-auth-model",
+                "jayud-auth/jayud-auth-service",
+                "jayud-auth/jayud-auth-web"
+        };
         for (String model : models) {
-            shell(model,"air_order");
+            shell(model,"sys_menu");
 
         }
     }
@@ -49,7 +55,7 @@ public class MysqlGenerator {
         gc.setBaseResultMap(true);// XML ResultMap
         gc.setBaseColumnList(true);// XML columList
         gc.setSwagger2(true);
-        gc.setAuthor("李达荣");
+        gc.setAuthor("jayud.dev");
 
         // 自定义文件命名，注意 %s 会自动填充表实体属性！
         gc.setMapperName("%sMapper");
@@ -63,9 +69,9 @@ public class MysqlGenerator {
         DataSourceConfig dsc = new DataSourceConfig();
         dsc.setDbType(DbType.MYSQL);
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
-        dsc.setUsername("jayudtest");
-        dsc.setPassword("jayudtest");
-        dsc.setUrl("jdbc:mysql://rm-wz9m40gpm90c230wobo.mysql.rds.aliyuncs.com/jayud-test");
+        dsc.setUsername("root");
+        dsc.setPassword("Jayud2021!@#");//TODO 2.业务模块数据源
+        dsc.setUrl("jdbc:mysql://113.100.140.250:8097/jayud_oms_auth?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai");
         mpg.setDataSource(dsc);
 
         // 策略配置
@@ -78,7 +84,7 @@ public class MysqlGenerator {
         String pack = "";
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.jayud.airfreight");
+        pc.setParent("com.jayud.auth");//TODO 3.com.jayud.业务模块名
         pc.setEntity("model.po");
         pc.setController("controller");
         pc.setMapper("mapper");
@@ -101,7 +107,7 @@ public class MysqlGenerator {
             focList.add(new FileOutConfig("/templates/mapper.xml.vm") {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
-                    return path + "/src/main/resources/com/jayud/airfreight/mapper"
+                    return path + "/src/main/resources/com.jayud.auth.mapper" //TODO 4.com.jayud.业务模块名.mapper
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
                 }
             });

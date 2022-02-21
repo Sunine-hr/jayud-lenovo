@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.SysUserMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SysUser">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="password" property="password" />
+        <result column="user_name" property="userName" />
+        <result column="en_user_name" property="enUserName" />
+        <result column="head_portrait" property="headPortrait" />
+        <result column="sex" property="sex" />
+        <result column="phone" property="phone" />
+        <result column="email" property="email" />
+        <result column="is_depart_charge" property="isDepartCharge" />
+        <result column="depart_id" property="departId" />
+        <result column="depart_ids" property="departIds" />
+        <result column="rel_tenant_ids" property="relTenantIds" />
+        <result column="post_id" property="postId" />
+        <result column="entry_time" property="entryTime" />
+        <result column="job_status" property="jobStatus" />
+        <result column="status" property="status" />
+        <result column="user_type" property="userType" />
+        <result column="supervisor_id" property="supervisorId" />
+        <result column="part_time_dep_id" property="partTimeDepId" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, name, password, user_name, en_user_name, head_portrait, sex, phone, email, is_depart_charge, depart_id, depart_ids, rel_tenant_ids, post_id, entry_time, job_status, status, user_type, supervisor_id, part_time_dep_id, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">sys_user </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="sysUser.name != null and sysUser.name != ''">
+                AND name = #{sysUser.name}
+            </if>
+
+            <if test="sysUser.password != null and sysUser.password != ''">
+                AND password = #{sysUser.password}
+            </if>
+
+            <if test="sysUser.userName != null and sysUser.userName != ''">
+                AND user_name = #{sysUser.userName}
+            </if>
+
+            <if test="sysUser.enUserName != null and sysUser.enUserName != ''">
+                AND en_user_name = #{sysUser.enUserName}
+            </if>
+
+            <if test="sysUser.headPortrait != null and sysUser.headPortrait != ''">
+                AND head_portrait = #{sysUser.headPortrait}
+            </if>
+
+            <if test="sysUser.sex != null ">
+                AND sex = ${sysUser.sex}
+            </if>
+
+            <if test="sysUser.phone != null and sysUser.phone != ''">
+                AND phone = #{sysUser.phone}
+            </if>
+
+            <if test="sysUser.email != null and sysUser.email != ''">
+                AND email = #{sysUser.email}
+            </if>
+
+            <if test="sysUser.isDepartCharge != null ">
+                AND is_depart_charge = ${sysUser.isDepartCharge}
+            </if>
+
+            <if test="sysUser.departId != null ">
+                AND depart_id = ${sysUser.departId}
+            </if>
+
+            <if test="sysUser.departIds != null and sysUser.departIds != ''">
+                AND depart_ids = #{sysUser.departIds}
+            </if>
+
+            <if test="sysUser.relTenantIds != null and sysUser.relTenantIds != ''">
+                AND rel_tenant_ids = #{sysUser.relTenantIds}
+            </if>
+
+            <if test="sysUser.postId != null ">
+                AND post_id = ${sysUser.postId}
+            </if>
+
+            <if test="sysUser.entryTime != null ">
+                AND entry_time = ${sysUser.entryTime}
+            </if>
+
+            <if test="sysUser.jobStatus != null ">
+                AND job_status = ${sysUser.jobStatus}
+            </if>
+
+            <if test="sysUser.status != null ">
+                AND status = ${sysUser.status}
+            </if>
+
+            <if test="sysUser.userType != null and sysUser.userType != ''">
+                AND user_type = #{sysUser.userType}
+            </if>
+
+            <if test="sysUser.supervisorId != null ">
+                AND supervisor_id = ${sysUser.supervisorId}
+            </if>
+
+            <if test="sysUser.partTimeDepId != null and sysUser.partTimeDepId != ''">
+                AND part_time_dep_id = #{sysUser.partTimeDepId}
+            </if>
+
+            <if test="sysUser.tenantCode != null and sysUser.tenantCode != ''">
+                AND tenant_code = #{sysUser.tenantCode}
+            </if>
+
+            <if test="sysUser.remark != null and sysUser.remark != ''">
+                AND remark = #{sysUser.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysUser">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysUser">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  sys_user WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE sys_user SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+
+</mapper>

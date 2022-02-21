@@ -19,7 +19,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 /**
  * ${entity} 实体类
  *
- * @author jyd
+ * @author jayud
  * @since ${date}
  */
 @Data

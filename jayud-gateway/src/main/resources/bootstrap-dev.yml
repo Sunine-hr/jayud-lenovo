@@ -1,6 +1,6 @@
 jayud:
   nacos:
-    server-addr: 127.0.0.1:8848
+    server-addr: 113.100.140.250:8848
     #    server-addr: 127.0.0.1:8848
     config:
       #       namespace: 7a4f5e06-9d25-4cd7-afaa-7ce6e46d687d

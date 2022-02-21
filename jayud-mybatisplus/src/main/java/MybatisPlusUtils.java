@@ -95,13 +95,15 @@ public class MybatisPlusUtils {
             }
         };
         if (path.contains("service")) {
+
             List<FileOutConfig> focList = new ArrayList<>();
             // 调整 xml 生成目录演示
-            focList.add(new FileOutConfig("/templates/mapper.xml.vm") {
+            focList.add(new FileOutConfig("/mapperxml.xml.vm") {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
-                    return path + "/src/main/resources/com.jayud.auth.mapper" //TODO 4.com.jayud.业务模块名.mapper
+                    return path + "/src/main/resources/com/jayud/auth/mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
+
                 }
             });
             cfg.setFileOutConfigList(focList);

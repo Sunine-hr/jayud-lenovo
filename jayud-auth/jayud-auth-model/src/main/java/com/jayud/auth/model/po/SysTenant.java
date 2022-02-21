@@ -19,7 +19,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 /**
  * SysTenant 实体类
  *
- * @author jyd
+ * @author jayud
  * @since 2022-02-21
  */
 @Data

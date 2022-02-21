@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.SysTenantMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SysTenant">
+        <id column="id" property="id" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="tenant_name" property="tenantName" />
+        <result column="tenant_contact" property="tenantContact" />
+        <result column="tenant_email" property="tenantEmail" />
+        <result column="tenant_tel" property="tenantTel" />
+        <result column="begin_date" property="beginDate" />
+        <result column="end_date" property="endDate" />
+        <result column="status" property="status" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, tenant_code, tenant_name, tenant_contact, tenant_email, tenant_tel, begin_date, end_date, status, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">sys_tenant </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="sysTenant.tenantCode != null and sysTenant.tenantCode != ''">
+                AND tenant_code = #{sysTenant.tenantCode}
+            </if>
+
+            <if test="sysTenant.tenantName != null and sysTenant.tenantName != ''">
+                AND tenant_name = #{sysTenant.tenantName}
+            </if>
+
+            <if test="sysTenant.tenantContact != null and sysTenant.tenantContact != ''">
+                AND tenant_contact = #{sysTenant.tenantContact}
+            </if>
+
+            <if test="sysTenant.tenantEmail != null and sysTenant.tenantEmail != ''">
+                AND tenant_email = #{sysTenant.tenantEmail}
+            </if>
+
+            <if test="sysTenant.tenantTel != null and sysTenant.tenantTel != ''">
+                AND tenant_tel = #{sysTenant.tenantTel}
+            </if>
+
+            <if test="sysTenant.beginDate != null ">
+                AND begin_date = ${sysTenant.beginDate}
+            </if>
+
+            <if test="sysTenant.endDate != null ">
+                AND end_date = ${sysTenant.endDate}
+            </if>
+
+            <if test="sysTenant.status != null ">
+                AND status = ${sysTenant.status}
+            </if>
+
+            <if test="sysTenant.remark != null and sysTenant.remark != ''">
+                AND remark = #{sysTenant.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysTenant">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysTenant">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  sys_tenant WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE sys_tenant SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+
+</mapper>

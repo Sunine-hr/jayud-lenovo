@@ -1,9 +1,6 @@
 package com.jayud.auth.controller;
 
-
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -30,7 +27,7 @@ import javax.validation.Valid;
 /**
  * 多租户信息表 控制类
  *
- * @author jyd
+ * @author jayud
  * @since 2022-02-21
  */
 @Slf4j
@@ -47,7 +44,7 @@ public class SysTenantController {
 
     /**
      * @description 分页查询
-     * @author  jyd
+     * @author  jayud
      * @date   2022-02-21
      * @param: sysTenant
      * @param: currentPage
@@ -67,7 +64,7 @@ public class SysTenantController {
 
     /**
     * @description 列表查询数据
-    * @author  jyd
+    * @author  jayud
     * @date   2022-02-21
     * @param: sysTenant
     * @param: req
@@ -83,7 +80,7 @@ public class SysTenantController {
 
     /**
     * @description 新增
-    * @author  jyd
+    * @author  jayud
     * @date   2022-02-21
     * @param: sysTenant
     * @return: com.jayud.common.BaseResult
@@ -98,7 +95,7 @@ public class SysTenantController {
 
     /**
      * @description 编辑
-     * @author  jyd
+     * @author  jayud
      * @date   2022-02-21
      * @param: sysTenant
      * @return: com.jayud.common.BaseResult
@@ -114,7 +111,7 @@ public class SysTenantController {
 
     /**
      * @description 物理删除
-     * @author  jyd
+     * @author  jayud
      * @date   2022-02-21
      * @param: id
      * @return: com.jayud.common.BaseResult
@@ -129,7 +126,7 @@ public class SysTenantController {
 
     /**
      * @description 逻辑删除
-     * @author  jyd
+     * @author  jayud
      * @date   2022-02-21
      * @param: id
      * @return: com.jayud.common.BaseResult
@@ -145,7 +142,7 @@ public class SysTenantController {
 
     /**
      * @description 根据id查询
-     * @author  jyd
+     * @author  jayud
      * @date   2022-02-21
      * @param: id
      * @return: com.jayud.common.BaseResult<com.jayud.auth.model.po.SysTenant>

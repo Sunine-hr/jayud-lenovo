@@ -61,9 +61,6 @@
         <include refid="selects"/>
     </select>
 
-
-
-
     <delete id="phyDelById">
         DELETE FROM  sys_role WHERE id = ${id}
     </delete>

@@ -1,6 +1,7 @@
 package com.jayud.auth.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.jayud.auth.model.po.SysMenu;
 import com.jayud.auth.mapper.SysMenuMapper;
@@ -51,14 +52,38 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             roleIds.add(0L);
         }
 
-        List<SysMenu> sysMenus = this.selectSysMenuByRoleIds(roleIds);
-
-
-        return null;
+        // 原始的数据一条一条的
+        List<SysMenu> menus = this.selectSysMenuByRoleIds(roleIds);
+        // 构建好的菜单树，第一层菜单的pid是0
+        List<SysMenu> menuTree = buildMenuTree(menus, "0");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("roleIds", roleIds);
+        jsonObject.put("roles", roles);
+        jsonObject.put("menuNodeList", menuTree);
+        return jsonObject;
     }
 
     @Override
     public List<SysMenu> selectSysMenuByRoleIds(List<Long> roleIds) {
         return baseMapper.selectSysMenuByRoleIds(roleIds);
     }
+
+    /**
+     * 构建菜单树
+     *
+     * @param menuList
+     * @param pid
+     * @return
+     */
+    private List<SysMenu> buildMenuTree(List<SysMenu> menuList, String pid) {
+        List<SysMenu> treeList = new ArrayList<>();
+        menuList.forEach(menu -> {
+            if (StrUtil.equals(pid, menu.getParentId().toString())) {
+                menu.setChildren(buildMenuTree(menuList, menu.getId().toString()));
+                treeList.add(menu);
+            }
+        });
+        return treeList;
+    }
+
 }

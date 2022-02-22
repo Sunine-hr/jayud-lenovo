@@ -267,6 +267,7 @@
     </update>
 
 
+
     <select id="findSysUserNameOne" parameterType="com.jayud.auth.model.bo.SysUserForm"
             resultType="com.jayud.auth.model.vo.SysUserVO">
         SELECT
@@ -310,5 +311,51 @@
         </where>
         ORDER BY create_time DESC
     </select>
+
+
+
+
+    <select id="findSysUserIdOne" parameterType="com.jayud.auth.model.bo.SysUserForm"
+            resultType="com.jayud.auth.model.vo.SysUserVO">
+        SELECT
+            su.id,
+            su.name,
+            su.password,
+            su.user_name,
+            su.en_user_name,
+            su.sex,
+            su.phone,
+            su.email,
+            su.is_depart_charge,
+            su.depart_id,
+            su.depart_ids,
+            su.rel_tenant_ids,
+            su.post_id,
+            su.entry_time,
+            su.job_status,
+            su.STATUS,
+            su.user_type,
+            su.supervisor_id,
+            su.part_time_dep_id,
+            su.tenant_code,
+            su.remark,
+            su.is_deleted,
+            su.create_by,
+            su.create_time,
+            su.update_by,
+            su.update_time ,
+            GROUP_CONCAT( sur.role_id ) roleListIdString
+
+        FROM
+            sys_user  su
+            left join sys_user_role sur
+            on su.id=sur.user_id
+            where su.is_deleted=0
+            and sur.is_deleted=0
+             and su.id=#{sysUser.id}
+            group by  su.name
+    </select>
+
+
 
 </mapper>

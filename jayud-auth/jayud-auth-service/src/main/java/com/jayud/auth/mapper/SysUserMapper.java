@@ -23,8 +23,8 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 
     /**
      * @description 分页查询
-     * @author  jayud
-     * @date   2022-02-21
+     * @author jayud
+     * @date 2022-02-21
      * @param: page
      * @param: sysUser
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysUser>
@@ -33,19 +33,20 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 
     /**
      * @description 列表查询数据
-     * @author  jayud
-     * @date   2022-02-21
+     * @author jayud
+     * @date 2022-02-21
      * @param: sysUser
      * @return: java.util.List<com.jayud.auth.model.po.SysUser>
      **/
     List<SysUserVO> list(@Param("sysUser") SysUser sysUser);
 
     //根据id集合查询用户信息   没用到
-    List<SysUserVO>  findSelectIdsList(@Param("sysUser") SysUserForm sysUser);
+    List<SysUserVO> findSelectIdsList(@Param("sysUser") SysUserForm sysUser);
+
     /**
      * @description 根据id物理删除
-     * @author  jayud
-     * @date   2022-02-21
+     * @author jayud
+     * @date 2022-02-21
      * @param: id
      * @return: int
      **/
@@ -53,17 +54,19 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 
     /**
      * @description 根据id逻辑删除
-     * @author  jayud
-     * @date   2022-02-21
+     * @author jayud
+     * @date 2022-02-21
      * @param: id
      * @param: username
      * @return: int
      **/
-    int logicDel(@Param("id") Long id,@Param("username") String username);
-
+    int logicDel(@Param("id") Long id, @Param("username") String username);
 
 
     //根据用户名称查询信息 校验
 
     SysUserVO findSysUserNameOne(@Param("sysUser") SysUserForm sysUser);
+
+    //编辑 根据id查询信息
+    SysUserVO findSysUserIdOne(@Param("sysUser") SysUserForm sysUser);
 }

@@ -1,10 +1,13 @@
 package com.jayud.auth.model.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -74,9 +77,6 @@ public class SysMenu extends Model<SysMenu> {
     @ApiModelProperty(value = "系统类型(1-权限系统，2-OMS系统)")
     private Integer sysType;
 
-    @ApiModelProperty(value = "租户编码")
-    private String tenantCode;
-
     @ApiModelProperty(value = "备注")
     private String remark;
 
@@ -95,6 +95,8 @@ public class SysMenu extends Model<SysMenu> {
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
 
+    @TableField(exist = false)
+    private List<SysMenu> children;
 
     @Override
     protected Serializable pkVal() {

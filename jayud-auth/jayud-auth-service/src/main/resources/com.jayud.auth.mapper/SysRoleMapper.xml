@@ -60,14 +60,8 @@
     <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysRole">
         <include refid="selects"/>
     </select>
-    <select id="selectSysRoleByUserId" resultType="com.jayud.auth.model.po.SysRole">
-        select sr.* from  sys_role sr
-        join sys_user_role sur on sr.id = sur.role_id and sur.is_deleted = 0
-        join sys_user su on sur.user_id = su.id and sr.tenant_code = su.tenant_code and su.is_deleted = 0
-        where 1=1
-        and sr.is_deleted = 0
-        and su.id = #{userId}
-    </select>
+
+
 
 
     <delete id="phyDelById">

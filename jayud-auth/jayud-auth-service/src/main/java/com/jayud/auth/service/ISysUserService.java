@@ -45,6 +45,8 @@ public interface ISysUserService extends IService<SysUser> {
      **/
     List<SysUserVO> selectList(SysUser sysUser);
 
+    //根据id集合查询用户
+    List<SysUserVO> selectIdsList(SysUserForm sysUserForm);
 
     /**
      * \

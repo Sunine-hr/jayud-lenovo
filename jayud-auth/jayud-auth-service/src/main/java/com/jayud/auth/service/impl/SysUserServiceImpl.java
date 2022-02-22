@@ -57,40 +57,52 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
+    public List<SysUserVO> selectIdsList(SysUserForm sysUserForm) {
+        return sysUserMapper.findSelectIdsList(sysUserForm);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean saveOrUpdateSysUser(SysUserForm sysUserForm) {
         Boolean result = null;
         SysUser sysUser = ConvertUtil.convert(sysUserForm, SysUser.class);
         if (sysUser.getId() != null) {
+
+            //先删除掉之前的信息关联信息
+            SysUserRole sysUserRole1 = new SysUserRole();
+            sysUserRole1.setUserId(sysUser.getId());
+            sysUserRoleMapper.updateSysUserRoleMultiRow(sysUserRole1);
             //修改
             sysUser.setUpdateBy(CurrentUserUtil.getUsername());
             sysUser.setUpdateTime(new Date());
-            result = this.updateById(sysUser);
-
-
-
-
+            result = this.saveOrUpdate(sysUser);
+            Long id = sysUser.getId();
+            // 然后再次添加角色和菜单关联表
+            for (int i = 0; i < sysUserForm.getRoleIds().size(); i++) {
+                SysUserRole sysUserRole = new SysUserRole();
+                sysUserRole.setUserId(id);//用户id
+                sysUserRole.setRoleId(sysUserForm.getRoleIds().get(0));//角色id
+                sysUserRole.setCreateBy(CurrentUserUtil.getUsername());//创建人
+                sysUserRole.setCreateTime(new Date());//创建时间
+                sysUserRoleMapper.insert(sysUserRole);
+            }
         } else {
             //新增
             sysUser.setCreateBy(CurrentUserUtil.getUsername());
             sysUser.setCreateTime(new Date());
             result = this.saveOrUpdate(sysUser);
             Long id = sysUser.getId();
-
-            for (int i = 0; i <sysUserForm.getRoleIds().size() ; i++) {
-                SysUserRole sysUserRole = new SysUserRole();
+            //再次添加角色和菜单关联表
+            for (int i = 0; i < sysUserForm.getRoleIds().size(); i++) {
+                  SysUserRole sysUserRole = new SysUserRole();
                 sysUserRole.setUserId(id);//用户id
                 sysUserRole.setRoleId(sysUserForm.getRoleIds().get(0));//角色id
                 sysUserRole.setCreateBy(CurrentUserUtil.getUsername());//创建人
                 sysUserRole.setCreateTime(new Date());//创建时间
-
-
                 sysUserRoleMapper.insert(sysUserRole);
             }
-
-
-
-
         }
+
         if (result) {
             log.warn("新增或修改库区成功");
             return true;
@@ -101,7 +113,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysUserVO findSysUserName(SysUserForm sysUserForm) {
 
-        return  sysUserMapper.findSysUserNameOne(sysUserForm);
+        return sysUserMapper.findSysUserNameOne(sysUserForm);
     }
 
 

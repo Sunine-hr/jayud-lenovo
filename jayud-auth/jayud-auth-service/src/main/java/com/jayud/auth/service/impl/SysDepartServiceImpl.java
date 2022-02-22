@@ -97,6 +97,8 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
             if(ObjectUtil.isNotEmpty(one)){
                 new IllegalAccessException("机构编码已存在");
             }
+            depart.setCreateBy(CurrentUserUtil.getUsername());
+            depart.setCreateTime(new Date());
         }else{
             //修改
             QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<>();
@@ -108,6 +110,8 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
             if(ObjectUtil.isNotEmpty(one)){
                 new IllegalAccessException("机构编码已存在");
             }
+            depart.setUpdateBy(CurrentUserUtil.getUsername());
+            depart.setUpdateTime(new Date());
         }
         this.saveOrUpdate(depart);
     }

@@ -79,15 +79,13 @@ public class SysUserController {
      **/
     @ApiOperation("根据ids查询数据")
     @PostMapping("/selectIdsList")
-    public BaseResult<List<SysUserVO>> selectIdsList(@RequestParam DeleteForm ids) {
-
-
+    public BaseResult<List<SysUserVO>> selectIdsList(@RequestBody DeleteForm ids) {
         //需要写一个根据id集合查询列表信息
-
-        return BaseResult.ok();
+        SysUserForm sysUserForm = new SysUserForm();
+        sysUserForm.setRoleIds(ids.getIds());
+        List<SysUserVO> sysUserVOS = sysUserService.selectIdsList(sysUserForm);
+        return BaseResult.ok(sysUserVOS);
     }
-
-
 
 
 
@@ -110,7 +108,6 @@ public class SysUserController {
                 return BaseResult.error("用户名已存在！");
             }
         }
-
         sysUserService.saveOrUpdateSysUser(sysUserForm);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
@@ -155,7 +152,7 @@ public class SysUserController {
      **/
     @ApiOperation("逻辑删除")
     @PostMapping("/delSysUser")
-    public BaseResult logicDel(@RequestParam DeleteForm ids) {
+    public BaseResult logicDel(@RequestBody DeleteForm ids) {
 
         if (ids.getIds().size() == 0) {
             return BaseResult.error("id不为空");

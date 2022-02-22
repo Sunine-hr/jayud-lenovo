@@ -1,6 +1,7 @@
 package com.jayud.auth.controller;
 
 import com.jayud.auth.model.dto.AddSysRole;
+import com.jayud.auth.model.po.SysUserRole;
 import com.jayud.auth.service.ISysMenuService;
 import com.jayud.auth.service.ISysUserRoleService;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -102,6 +103,25 @@ public class SysRoleController {
 
 
     /**
+     * @description 逻辑删除
+     * @author jayud
+     * @date 2022-02-21
+     * @param: id
+     * @return: com.jayud.common.BaseResult
+     **/
+    @ApiOperation("逻辑删除")
+    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
+    @GetMapping("/logicDel")
+    public BaseResult logicDel(@RequestParam Long id) {
+        if (this.sysUserRoleService.exitByRolesIds(Arrays.asList(id))) {
+            return BaseResult.error("存在角色绑定用户,无法删除");
+        }
+
+        sysRoleService.logicDel(id);
+        return BaseResult.ok(SysTips.DEL_SUCCESS);
+    }
+
+    /**
      * @description 批量逻辑删除
      * @author jayud
      * @date 2022-02-21
@@ -129,20 +149,22 @@ public class SysRoleController {
 
 
     @ApiOperation("关联员工")
-    @GetMapping("/associatedEmployees")
+    @PostMapping("/associatedEmployees")
     public BaseResult associatedEmployees(@RequestParam("rolesId") Long rolesId,
                                           @RequestParam("userIds") List<Long> userIds) {
-        this.sysUserRoleService.associatedEmployees(rolesId,userIds);
+        this.sysUserRoleService.associatedEmployees(rolesId, userIds);
         return BaseResult.ok();
 
     }
 
-    @ApiOperation("获取关联员工")
-    @GetMapping("/getAssociatedEmployees")
-    public BaseResult getAssociatedEmployees(@RequestParam("rolesId") Long rolesId,
-                                          @RequestParam("userIds") List<Long> userIds) {
-        this.sysUserRoleService.associatedEmployees(rolesId,userIds);
-        return BaseResult.ok();
+    @ApiOperation("分页查询关联员工")
+    @GetMapping("/selectAssociatedEmployeesPage")
+    public BaseResult<IPage<SysUserRole>> selectAssociatedEmployeesPage(@RequestParam("rolesId") Long rolesId,
+                                                                        @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+                                                                        @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                                        HttpServletRequest req) {
+        IPage<SysUserRole> page = this.sysUserRoleService.selectAssociatedEmployeesPage(rolesId, currentPage, pageSize,req);
+        return BaseResult.ok(page);
 
     }
 
@@ -175,21 +197,6 @@ public class SysRoleController {
     @GetMapping("/phyDel")
     public BaseResult phyDel(@RequestParam Long id){
         sysRoleService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
-
-    /**
-     * @description 逻辑删除
-     * @author  jayud
-     * @date   2022-02-21
-     * @param: id
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("逻辑删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id){
-        sysRoleService.logicDel(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 

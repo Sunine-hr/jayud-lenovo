@@ -6,10 +6,7 @@ import com.jayud.auth.model.po.SysUserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户-角色关联表 服务类
@@ -77,4 +74,6 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
     boolean exitByRolesIds(List<Long> rolesIds);
 
     void associatedEmployees(Long rolesId, List<Long> userIds);
+
+    IPage<SysUserRole> selectAssociatedEmployeesPage(Long rolesId, Integer currentPage, Integer pageSize, HttpServletRequest req);
 }

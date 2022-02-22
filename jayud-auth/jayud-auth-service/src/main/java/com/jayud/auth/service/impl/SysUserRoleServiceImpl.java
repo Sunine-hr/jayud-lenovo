@@ -1,10 +1,11 @@
 package com.jayud.auth.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.bo.SysUserForm;
+import com.jayud.auth.model.po.SysUser;
+import com.jayud.auth.service.ISysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 用户-角色关联表 服务实现类
@@ -31,6 +33,8 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
 
     @Autowired
     private SysUserRoleMapper sysUserRoleMapper;
+    @Autowired
+    private ISysUserService sysUserService;
 
     @Override
     public IPage<SysUserRole> selectPage(SysUserRole sysUserRole,
@@ -82,6 +86,16 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
             list.add(sysUserRole);
         }
         this.saveBatch(list);
+    }
+
+    @Override
+    public IPage<SysUserRole> selectAssociatedEmployeesPage(Long rolesId, Integer currentPage, Integer pageSize, HttpServletRequest req) {
+        IPage<SysUserRole> userRolePage = this.selectPage(new SysUserRole().setRoleId(rolesId).setIsDeleted(false),
+                currentPage, pageSize,req);
+        List<SysUserRole> records = userRolePage.getRecords();
+        List<Long> userIds = records.stream().map(e -> e.getUserId()).collect(Collectors.toList());
+//        this.sysUserService.selectPage(new SysUserForm());
+        return null;
     }
 
 }

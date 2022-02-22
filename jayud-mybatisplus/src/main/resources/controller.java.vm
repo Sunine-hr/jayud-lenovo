@@ -70,9 +70,9 @@ public class ${table.controllerName} {
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
     public BaseResult<IPage<${entity}>> selectPage(${entity} ${table.entityPath},
-                                                                @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
-                                                                @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-                                                                HttpServletRequest req) {
+                                                   @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
+                                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                                   HttpServletRequest req) {
         return BaseResult.ok(${table.entityPath}Service.selectPage(${table.entityPath},currentPage,pageSize,req));
     }
 

@@ -29,7 +29,7 @@ public class MybatisPlusUtils {
                 "jayud-auth/jayud-auth-web"
         };
         for (String model : models) {
-            shell(model,"sys_role");
+            shell(model,"sys_tenant");
 
         }
     }

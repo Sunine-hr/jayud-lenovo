@@ -4,6 +4,7 @@ package com.jayud.auth.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.auth.model.po.SysTenant;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.BaseResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -15,7 +16,7 @@ import java.util.Map;
  * 多租户信息表 服务类
  *
  * @author jayud
- * @since 2022-02-21
+ * @since 2022-02-22
  */
 public interface ISysTenantService extends IService<SysTenant> {
 
@@ -23,7 +24,7 @@ public interface ISysTenantService extends IService<SysTenant> {
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: sysTenant
      * @param: currentPage
      * @param: pageSize
@@ -38,7 +39,7 @@ public interface ISysTenantService extends IService<SysTenant> {
     /**
      * @description 列表查询数据
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: sysTenant
      * @param: req
      * @return: java.util.List<com.jayud.auth.model.po.SysTenant>
@@ -50,7 +51,7 @@ public interface ISysTenantService extends IService<SysTenant> {
     /**
      * @description 物理删除
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: id
      * @return: void
      **/
@@ -60,11 +61,20 @@ public interface ISysTenantService extends IService<SysTenant> {
     /**
     * @description 逻辑删除
     * @author  jayud
-    * @date   2022-02-21
+    * @date   2022-02-22
     * @param: id
     * @return: com.jyd.component.commons.result.Result
     **/
     void logicDel(Long id);
+
+    /**
+     * @description 保存租户
+     * @author  ciro
+     * @date   2022/2/22 10:38
+     * @param: sysTenant
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult saveTenant(SysTenant sysTenant);
 
 
 

@@ -17,7 +17,7 @@ import java.util.Map;
  * 多租户信息表 Mapper 接口
  *
  * @author jayud
- * @since 2022-02-21
+ * @since 2022-02-22
  */
 @Mapper
 public interface SysTenantMapper extends BaseMapper<SysTenant> {
@@ -25,7 +25,7 @@ public interface SysTenantMapper extends BaseMapper<SysTenant> {
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: page
      * @param: sysTenant
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysTenant>
@@ -35,7 +35,7 @@ public interface SysTenantMapper extends BaseMapper<SysTenant> {
     /**
      * @description 列表查询数据
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: sysTenant
      * @return: java.util.List<com.jayud.auth.model.po.SysTenant>
      **/
@@ -45,7 +45,7 @@ public interface SysTenantMapper extends BaseMapper<SysTenant> {
     /**
      * @description 根据id物理删除
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: id
      * @return: int
      **/
@@ -54,7 +54,7 @@ public interface SysTenantMapper extends BaseMapper<SysTenant> {
     /**
      * @description 根据id逻辑删除
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: id
      * @param: username
      * @return: int

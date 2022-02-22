@@ -16,11 +16,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
  * SysTenant 实体类
  *
  * @author jayud
- * @since 2022-02-21
+ * @since 2022-02-22
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -28,9 +31,11 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 public class SysTenant extends SysBaseEntity {
 
 
+    @NotBlank(message = "租户编码不能为空！")
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;
 
+    @NotBlank(message = "租户名称不能为空！")
     @ApiModelProperty(value = "租户名称")
     private String tenantName;
 
@@ -65,8 +70,4 @@ public class SysTenant extends SysBaseEntity {
     private Boolean isDeleted;
 
 
-
-
-
-
-    }
+}

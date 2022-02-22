@@ -55,5 +55,4 @@ public class ${entity} extends SysBaseEntity {
     #end
 #end
 
-
-    }
+}

@@ -5,6 +5,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.BaseResult;
+import com.jayud.common.constant.SysTips;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -26,7 +28,7 @@ import java.util.Map;
  * 多租户信息表 服务实现类
  *
  * @author jayud
- * @since 2022-02-21
+ * @since 2022-02-22
  */
 @Slf4j
 @Service
@@ -64,6 +66,55 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(Long id){
         sysTenantMapper.logicDel(id,CurrentUserUtil.getUsername());
+    }
+
+    @Override
+    public BaseResult saveTenant(SysTenant sysTenant) {
+        boolean isAdd = false;
+        if (sysTenant.getId() == null){
+            isAdd = true;
+        }
+        if (!checkSameCode(isAdd,sysTenant)){
+            if (isAdd){
+                this.save(sysTenant);
+                return BaseResult.ok(SysTips.ADD_SUCCESS);
+            }else {
+                this.updateById(sysTenant);
+                return BaseResult.ok(SysTips.EDIT_SUCCESS);
+            }
+        }
+        return BaseResult.ok(SysTips.TENANT_CODE_SAME);
+    }
+
+
+    /**
+     * @description 判断是否有相同编码
+     * @author  ciro
+     * @date   2022/2/22 10:50
+     * @param: isAdd
+     * @param: sysTenant
+     * @return: boolean
+     **/
+    private boolean checkSameCode(boolean isAdd,SysTenant sysTenant){
+        SysTenant checks = new SysTenant();
+        checks.setTenantCode(sysTenant.getTenantCode());
+        List<SysTenant> tenantList = selectList(checks);
+        if (isAdd){
+            if (CollUtil.isNotEmpty(tenantList)){
+                return true;
+            }else {
+                return false;
+            }
+        }else {
+            if (CollUtil.isEmpty(tenantList)){
+                return false;
+            }else {
+                if (tenantList.get(0).getId().equals(sysTenant.getId())){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }

@@ -196,5 +196,7 @@ public interface SysTips {
      */
     String DO_NOT_RESUBMIT = "请勿重复提交！";
 
+    String TENANT_CODE_SAME = "存在相同租户编码！";
+
 }
 

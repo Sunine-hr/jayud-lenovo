@@ -182,9 +182,9 @@
                 and create_time between #{receiptNotice.creationTime[0]} and #{receiptNotice.creationTime[1]}
             </if>
 
-            <if test="sysUser.roleIds != null ">
+            <if test="sysUser.userIds != null  ">
                 AND id IN
-                <foreach item="id" collection="sysUser.roleIds" open="(" separator="," close=")">
+                <foreach item="id" collection="sysUser.userIds" open="(" separator="," close=")">
                     #{id}
                 </foreach>
             </if>

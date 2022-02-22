@@ -40,7 +40,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         AuthUserDetail userDetail = CurrentUserUtil.getUserDetail();
         Long userId = userDetail.getId();
         SysUser sysUser = sysUserService.getById(userId);
-        String tenantCode = sysUser.getTenantCode();//租户编码
+        //租户编码
+        String tenantCode = sysUser.getTenantCode();
 
         List<SysRole> roles = sysRoleService.selectSysRoleByUserId(userId);
         List<Long> roleIds = new ArrayList<>();

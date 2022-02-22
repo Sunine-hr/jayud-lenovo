@@ -67,6 +67,10 @@ public class AuthUserDetail implements UserDetails {
      * 兼职部门ids
      */
     private String partTimeDepId;
+    /**
+     * 拥有系统类型
+     */
+    private List<String> systemTypeList;
 
     private List<GrantedAuthority> authorities;
 

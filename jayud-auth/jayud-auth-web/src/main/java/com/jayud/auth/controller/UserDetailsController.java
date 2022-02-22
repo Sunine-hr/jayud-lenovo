@@ -73,7 +73,7 @@ public class UserDetailsController {
         if (!checkResult.isSuccess()){
             return checkResult;
         }
-        return returnMsg(tokenEndpoint.getAccessToken(principal, parameters).getBody());
+        return returnMsg(tokenEndpoint.getAccessToken(principal, parameters).getBody(),parameters.get("username"));
     }
     @PostMapping("/token")
     public BaseResult<?> postAccessToken(Principal principal, @RequestBody Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
@@ -81,7 +81,7 @@ public class UserDetailsController {
         if (!checkResult.isSuccess()){
             return checkResult;
         }
-        return returnMsg(tokenEndpoint.postAccessToken(principal, parameters).getBody());
+        return returnMsg(tokenEndpoint.postAccessToken(principal, parameters).getBody(),parameters.get("username"));
     }
 
     /**
@@ -90,7 +90,7 @@ public class UserDetailsController {
      * @param accessToken 　Token
      * @return Result
      */
-    private BaseResult returnMsg(OAuth2AccessToken accessToken) {
+    private BaseResult returnMsg(OAuth2AccessToken accessToken,String username) {
         DefaultOAuth2AccessToken token = (DefaultOAuth2AccessToken) accessToken;
         Map<String, Object> data = new LinkedHashMap<>(token.getAdditionalInformation());
         data.put("access_token", token.getValue());
@@ -100,9 +100,10 @@ public class UserDetailsController {
         data.put("token_type",token.getTokenType());
         data.put("expires_in",token.getExpiration());
         data.put("scope",token.getScope());
+        SysUser sysUser = sysUserService.getUserByUserName(null,username);
         String userData = "{\"id\":1,\"name\":\"Admin\",\"password\":\"E10ADC3949BA59ABBE56E057F20F883E\",\"auditStatusDesc\":null,\"userName\":\"Admin\",\"enUserName\":\"\",\"phone\":\"15131231212\",\"departmentId\":1,\"workId\":null,\"workName\":\"运维岗位\",\"roleId\":null,\"roleName\":null,\"companyId\":1,\"companyName\":null,\"superiorId\":98,\"superiorName\":null,\"note\":null,\"loginTime\":null,\"status\":1,\"createdTime\":\"2020-09-10 15:27:25.0\",\"createdUser\":\"admin\",\"token\":\"b65a00ec-e9f4-4d6b-b9ea-02c7828f3e00\",\"isError\":null,\"legalEntityIds\":[],\"legalEntityIdStr\":\"\",\"legalEntities\":null,\"isForcedPasswordChange\":true,\"updatePassWordDate\":\"2021-05-07 09:29:28\"}";
         JSONObject jsonObject = JSONObject.parseObject(userData);
-        data.put("userData",jsonObject);
+        data.put("userData",sysUser);
         return BaseResult.ok(data);
     }
 

@@ -1,6 +1,7 @@
 package com.jayud.auth.controller;
 
 import com.jayud.auth.model.bo.SysTenantForm;
+import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -75,6 +76,7 @@ public class SysTenantController {
     @GetMapping("/selectList")
     public BaseResult<List<SysTenant>> selectList(SysTenant sysTenant,
                                                 HttpServletRequest req) {
+        Object os = CurrentUserUtil.getUserDetail();
         return BaseResult.ok(sysTenantService.selectList(sysTenant));
     }
 

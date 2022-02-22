@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.List;
  * @since 2022-02-21
  */
 @Data
+@Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 @ApiModel(value = "后台用户表对象", description = "后台用户表")
 public class SysUserForm extends SysBaseEntity {

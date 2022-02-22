@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.dto.AddSysRole;
+import com.jayud.auth.model.po.SysUserRole;
+import com.jayud.auth.service.ISysUserRoleService;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +42,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Autowired
     private SysRoleMapper sysRoleMapper;
+    @Autowired
+    private ISysUserRoleService sysUserRoleService;
 
     @Override
     public IPage<SysRole> selectPage(SysRole sysRole,
@@ -98,6 +102,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             sysRole.setUpdateTime(new Date()).setUpdateBy(CurrentUserUtil.getUsername());
             this.updateById(sysRole);
         }
+    }
+
+    @Override
+    public List<SysRole> getRoleByUserId(Long userId) {
+
+        return null;
     }
 
 }

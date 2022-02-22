@@ -79,5 +79,6 @@ public interface ISysUserService extends IService<SysUser> {
      **/
     BaseResult deleteSysUser(List<Long> ids);
 
-
+    //编辑 根据id查询信息
+    SysUserVO findSysUserIdOne(SysUserForm sysUserForm);
 }

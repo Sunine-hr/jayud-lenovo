@@ -14,6 +14,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.auth.service.ISysUserService;
 import com.jayud.auth.model.po.SysUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.swagger.annotations.Api;
@@ -88,7 +89,6 @@ public class SysUserController {
     }
 
 
-
     /**
      * @description 新增
      * @author jayud
@@ -102,9 +102,9 @@ public class SysUserController {
         if (sysUserForm != null) {
             return BaseResult.error("数据不能为空！");
         }
-        if(sysUserForm.getId()==null){
+        if (sysUserForm.getId() == null) {
             SysUserVO sysUserName = sysUserService.findSysUserName(sysUserForm);
-            if(sysUserName!=null){
+            if (sysUserName != null) {
                 return BaseResult.error("用户名已存在！");
             }
         }
@@ -170,15 +170,22 @@ public class SysUserController {
      * @return: com.jayud.common.BaseResult<com.jayud.auth.model.po.SysUser>
      **/
     @ApiOperation("根据id查询")
-    @ApiImplicitParam(name = "id", value = "主键id", dataType = "int", required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<SysUserVO> queryById(@RequestParam(name = "id", required = true) int id) {
-        SysUser sysUser = sysUserService.getById(id);
-
+    public BaseResult<SysUserVO> queryById(@RequestParam(name = "id", required = true) Long id) {
+        SysUserVO sysUserIdOne = null;
+        SysUserForm sysUserForm = new SysUserForm();
+        sysUserForm.setId(id);
         //关联查询用户信息 关联表 行合并  成列
+        sysUserIdOne = sysUserService.findSysUserIdOne(sysUserForm);
 
-
-        return BaseResult.ok();
+        List<Long> list = new ArrayList<>();
+        String s = sysUserIdOne.getRoleListIdString();
+        String[] a = s.split(",");
+        for (int i = 0; i < a.length; i++) {
+            list.add(Long.parseLong(a[i]));
+        }
+        sysUserIdOne.setRoleIds(list);
+        return BaseResult.ok(sysUserIdOne);
     }
 
 

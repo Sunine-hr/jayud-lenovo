@@ -97,5 +97,8 @@ public class SysUserVO extends SysBaseEntity {
     private Boolean isDeleted;
 
     @ApiModelProperty(value = "用户关联的角色")
-    private List<Long> warehouseList;
+    private String roleListIdString;
+
+    @ApiModelProperty(value = "角色id集合")
+    private List<Long> roleIds;
 }

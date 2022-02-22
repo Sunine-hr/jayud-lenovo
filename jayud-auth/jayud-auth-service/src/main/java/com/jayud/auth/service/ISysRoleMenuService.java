@@ -2,7 +2,7 @@ package com.jayud.auth.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.auth.model.po.SysUserRole;
+import com.jayud.auth.model.po.SysRoleMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,25 +12,25 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 用户-角色关联表 服务类
+ * 角色-菜单关联表 服务类
  *
  * @author jayud
- * @since 2022-02-22
+ * @since 2022-02-21
  */
-public interface ISysUserRoleService extends IService<SysUserRole> {
+public interface ISysRoleMenuService extends IService<SysRoleMenu> {
 
 
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-02-22
-     * @param: sysUserRole
+     * @date   2022-02-21
+     * @param: sysRoleMenu
      * @param: currentPage
      * @param: pageSize
      * @param: req
-     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysUserRole>
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysRoleMenu>
      **/
-    IPage<SysUserRole> selectPage(SysUserRole sysUserRole,
+    IPage<SysRoleMenu> selectPage(SysRoleMenu sysRoleMenu,
                                 Integer currentPage,
                                 Integer pageSize,
                                 HttpServletRequest req);
@@ -38,19 +38,19 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
     /**
      * @description 列表查询数据
      * @author  jayud
-     * @date   2022-02-22
-     * @param: sysUserRole
+     * @date   2022-02-21
+     * @param: sysRoleMenu
      * @param: req
-     * @return: java.util.List<com.jayud.auth.model.po.SysUserRole>
+     * @return: java.util.List<com.jayud.auth.model.po.SysRoleMenu>
      **/
-    List<SysUserRole> selectList(SysUserRole sysUserRole);
+    List<SysRoleMenu> selectList(SysRoleMenu sysRoleMenu);
 
 
 
     /**
      * @description 物理删除
      * @author  jayud
-     * @date   2022-02-22
+     * @date   2022-02-21
      * @param: id
      * @return: void
      **/
@@ -60,14 +60,13 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
     /**
     * @description 逻辑删除
     * @author  jayud
-    * @date   2022-02-22
+    * @date   2022-02-21
     * @param: id
     * @return: com.jyd.component.commons.result.Result
     **/
     void logicDel(Long id);
 
 
-    boolean exitByRolesIds(List<Long> rolesIds);
 
-    void associatedEmployees(Long rolesId, List<Long> userIds);
+
 }

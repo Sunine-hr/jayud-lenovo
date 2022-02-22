@@ -1,5 +1,9 @@
 package com.jayud.auth.controller;
 
+import com.jayud.auth.model.dto.AddSysRole;
+import com.jayud.auth.service.ISysMenuService;
+import com.jayud.auth.service.ISysUserRoleService;
+import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -57,13 +61,9 @@ public class SysRoleController {
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
     public BaseResult<IPage<SysRole>> selectPage(SysRole sysRole,
-                                                                @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
-                                                                @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-                                                                HttpServletRequest req) {
-        return BaseResult.ok(sysRoleService.selectPage(sysRole,currentPage,pageSize,req));
-                                                 @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
-                                                 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                                 HttpServletRequest req) {
+            @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
+            @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+            HttpServletRequest req) {
         return BaseResult.ok(sysRoleService.selectPage(sysRole, currentPage, pageSize, req));
     }
 
@@ -100,25 +100,6 @@ public class SysRoleController {
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
 
-
-    /**
-     * @description 逻辑删除
-     * @author jayud
-     * @date 2022-02-21
-     * @param: id
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("逻辑删除")
-    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
-    @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id) {
-        if (this.sysUserRoleService.exitByRolesIds(Arrays.asList(id))) {
-            return BaseResult.error("存在角色绑定用户,无法删除");
-        }
-
-        sysRoleService.logicDel(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
 
     /**
      * @description 批量逻辑删除
@@ -168,8 +149,6 @@ public class SysRoleController {
 
     /**
      * @description 编辑
-     * @author  jayud
-     * @date   2022-02-21
      * @author jayud
      * @date 2022-02-21
      * @param: sysRole
@@ -188,8 +167,6 @@ public class SysRoleController {
      * @description 物理删除
      * @author  jayud
      * @date   2022-02-21
-     * @author jayud
-     * @date 2022-02-21
      * @param: id
      * @return: com.jayud.common.BaseResult
      **/
@@ -221,8 +198,6 @@ public class SysRoleController {
      * @description 根据id查询
      * @author  jayud
      * @date   2022-02-21
-     * @author jayud
-     * @date 2022-02-21
      * @param: id
      * @return: com.jayud.common.BaseResult<com.jayud.auth.model.po.SysRole>
      **/

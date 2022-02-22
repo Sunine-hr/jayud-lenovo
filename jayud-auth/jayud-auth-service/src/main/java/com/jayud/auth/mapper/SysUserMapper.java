@@ -40,7 +40,8 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      **/
     List<SysUserVO> list(@Param("sysUser") SysUser sysUser);
 
-
+    //根据id集合查询用户信息   没用到
+    List<SysUserVO>  findSelectIdsList(@Param("sysUser") SysUserForm sysUser);
     /**
      * @description 根据id物理删除
      * @author  jayud
@@ -59,4 +60,10 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return: int
      **/
     int logicDel(@Param("id") Long id,@Param("username") String username);
+
+
+
+    //根据用户名称查询信息 校验
+
+    SysUserVO findSysUserNameOne(@Param("sysUser") SysUserForm sysUser);
 }

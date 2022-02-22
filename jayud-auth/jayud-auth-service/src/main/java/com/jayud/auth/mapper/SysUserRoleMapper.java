@@ -60,4 +60,8 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
      * @return: int
      **/
     int logicDel(@Param("id") Long id,@Param("username") String username);
+
+
+
+    int updateSysUserRoleMultiRow( @Param("sysUserRole") SysUserRole sysUserRole);
 }

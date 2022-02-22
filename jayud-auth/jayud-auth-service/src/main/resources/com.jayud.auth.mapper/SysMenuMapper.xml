@@ -19,7 +19,6 @@
         <result column="is_leaf" property="isLeaf" />
         <result column="is_button" property="isButton" />
         <result column="sys_type" property="sysType" />
-        <result column="tenant_code" property="tenantCode" />
         <result column="remark" property="remark" />
         <result column="is_deleted" property="isDeleted" />
         <result column="create_by" property="createBy" />
@@ -32,5 +31,21 @@
     <sql id="Base_Column_List">
         id, parent_id, title, level, sort, name, code, icon, hidden, router, type, is_route, is_leaf, is_button, sys_type, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
+    <select id="selectSysMenuByRoleIds" resultType="com.jayud.auth.model.po.SysMenu">
+        select sm.* from sys_menu sm
+        join sys_role_menu srm on sm.id = srm.menu_id and srm.is_deleted = 0
+        join sys_role sr on srm.role_id = sr.id and sr.is_deleted = 0
+        where 1=1
+        and sm.is_deleted = 0
+        <if test="roleIds!=null and roleIds.size()>0">
+            and sr.id in
+            <foreach item="item" index="index" collection="roleIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY sm.id
+        ORDER BY sm.sort asc
+
+    </select>
 
 </mapper>

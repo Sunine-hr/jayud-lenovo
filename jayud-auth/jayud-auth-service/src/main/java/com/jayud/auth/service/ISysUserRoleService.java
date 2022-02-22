@@ -4,12 +4,10 @@ package com.jayud.auth.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.auth.model.po.SysUserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.auth.model.vo.SysUserVO;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户-角色关联表 服务类
@@ -77,4 +75,10 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
     boolean exitByRolesIds(List<Long> rolesIds);
 
     void associatedEmployees(Long rolesId, List<Long> userIds);
+
+    IPage<SysUserVO> selectAssociatedEmployeesPage(Long rolesId, Integer currentPage, Integer pageSize, HttpServletRequest req);
+
+    void deleteEmployees(Long rolesId, List<Long> userIds);
+
+    List<SysUserRole> getByCondition(SysUserRole sysUserRole);
 }

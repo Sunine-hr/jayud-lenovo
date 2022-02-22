@@ -58,5 +58,12 @@
         WHERE id = ${id} AND is_deleted = 0
     </update>
 
+    <update id="updateSysUserRoleMultiRow" parameterType="com.jayud.auth.model.po.SysUserRole">
+        update sys_user_role
+        set is_deleted=1
+        where is_deleted = 0
+        and user_id = #{sysUserRole.userId}
+    </update>
+
 
 </mapper>

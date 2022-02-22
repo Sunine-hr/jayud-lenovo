@@ -172,11 +172,21 @@
             <if test="sysUser.name != null and sysUser.name != ''">
                 AND name = #{sysUser.name}
             </if>
+            <if test="sysUser.tenantCode != null and sysUser.tenantCode != ''">
+                AND tenant_code = #{sysUser.tenantCode}
+            </if>
             <if test="sysUser.departId != null and sysUser.departId != ''">
                 AND depart_id = #{sysUser.departId}
             </if>
             <if test="sysUser.creationTime !=null and sysUser.creationTime.size > 0">
                 and create_time between #{receiptNotice.creationTime[0]} and #{receiptNotice.creationTime[1]}
+            </if>
+
+            <if test="sysUser.roleIds != null ">
+                AND id IN
+                <foreach item="id" collection="sysUser.roleIds" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
             </if>
 
         </where>
@@ -189,6 +199,64 @@
     </select>
 
 
+    <select id="findSelectIdsList" parameterType="com.jayud.auth.model.bo.SysUserForm"
+            resultType="com.jayud.auth.model.vo.SysUserVO">
+        SELECT
+        id,
+        name,
+        password,
+        user_name,
+        en_user_name,
+        sex,
+        phone,
+        email,
+        is_depart_charge,
+        depart_id,
+        depart_ids,
+        rel_tenant_ids,
+        post_id,
+        entry_time,
+        job_status,
+        STATUS,
+        user_type,
+        supervisor_id,
+        part_time_dep_id,
+        tenant_code,
+        remark,
+        is_deleted,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        sys_user
+        <where>
+            is_deleted = 0
+            <if test="sysUser.name != null and sysUser.name != ''">
+                AND name = #{sysUser.name}
+            </if>
+            <if test="sysUser.tenantCode != null and sysUser.tenantCode != ''">
+                AND tenant_code = #{sysUser.tenantCode}
+            </if>
+            <if test="sysUser.departId != null and sysUser.departId != ''">
+                AND depart_id = #{sysUser.departId}
+            </if>
+            <if test="sysUser.creationTime !=null and sysUser.creationTime.size > 0">
+                and create_time between #{receiptNotice.creationTime[0]} and #{receiptNotice.creationTime[1]}
+            </if>
+
+            <if test="sysUser.roleIds != null ">
+                AND id IN
+                <foreach item="id" collection="sysUser.roleIds" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+
     <delete id="phyDelById">
         DELETE FROM  sys_user WHERE id = ${id}
     </delete>
@@ -198,5 +266,49 @@
         WHERE id = ${id} AND is_deleted = 0
     </update>
 
+
+    <select id="findSysUserNameOne" parameterType="com.jayud.auth.model.bo.SysUserForm"
+            resultType="com.jayud.auth.model.vo.SysUserVO">
+        SELECT
+        id,
+        name,
+        password,
+        user_name,
+        en_user_name,
+        sex,
+        phone,
+        email,
+        is_depart_charge,
+        depart_id,
+        depart_ids,
+        rel_tenant_ids,
+        post_id,
+        entry_time,
+        job_status,
+        STATUS,
+        user_type,
+        supervisor_id,
+        part_time_dep_id,
+        tenant_code,
+        remark,
+        is_deleted,
+        create_by,
+        create_time,
+        update_by,
+        update_times
+        FROM
+        sys_user
+        <where>
+            is_deleted = 0
+            <if test="sysUser.name != null and sysUser.name != ''">
+                AND name = #{sysUser.name}
+            </if>
+            <if test="sysUser.departId != null and sysUser.departId != ''">
+                AND depart_id = #{sysUser.departId}
+            </if>
+
+        </where>
+        ORDER BY create_time DESC
+    </select>
 
 </mapper>

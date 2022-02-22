@@ -7,10 +7,7 @@ import com.jayud.auth.model.po.SysRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 角色表 服务类
@@ -78,4 +75,6 @@ public interface ISysRoleService extends IService<SysRole> {
     boolean checkUnique(Long id, String roleName, String roleCode);
 
     void addOrUpdate(AddSysRole form);
+
+    List<Long> getRoleIdsByUserId(Long userId);
 }

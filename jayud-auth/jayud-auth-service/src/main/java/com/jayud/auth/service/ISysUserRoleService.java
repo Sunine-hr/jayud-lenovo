@@ -2,35 +2,35 @@ package com.jayud.auth.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.auth.model.bo.SysUserForm;
-import com.jayud.auth.model.po.SysUser;
+import com.jayud.auth.model.po.SysUserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.auth.model.vo.SysUserVO;
-import com.jayud.common.BaseResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * 后台用户表 服务类
+ * 用户-角色关联表 服务类
  *
  * @author jayud
- * @since 2022-02-21
+ * @since 2022-02-22
  */
-public interface ISysUserService extends IService<SysUser> {
+public interface ISysUserRoleService extends IService<SysUserRole> {
 
 
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-02-21
-     * @param: sysUser
+     * @date   2022-02-22
+     * @param: sysUserRole
      * @param: currentPage
      * @param: pageSize
      * @param: req
-     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysUser>
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysUserRole>
      **/
-    IPage<SysUserVO> selectPage(SysUserForm sysUserForm,
+    IPage<SysUserRole> selectPage(SysUserRole sysUserRole,
                                 Integer currentPage,
                                 Integer pageSize,
                                 HttpServletRequest req);
@@ -38,24 +38,19 @@ public interface ISysUserService extends IService<SysUser> {
     /**
      * @description 列表查询数据
      * @author  jayud
-     * @date   2022-02-21
-     * @param: sysUser
+     * @date   2022-02-22
+     * @param: sysUserRole
      * @param: req
-     * @return: java.util.List<com.jayud.auth.model.po.SysUser>
+     * @return: java.util.List<com.jayud.auth.model.po.SysUserRole>
      **/
-    List<SysUserVO> selectList(SysUser sysUser);
+    List<SysUserRole> selectList(SysUserRole sysUserRole);
 
 
-    /**\
-     * 新增或者修改
-     * @param sysUserForm
-     * @return
-     */
-    boolean saveOrUpdateSysUser(SysUserForm sysUserForm);
+
     /**
      * @description 物理删除
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: id
      * @return: void
      **/
@@ -65,11 +60,11 @@ public interface ISysUserService extends IService<SysUser> {
     /**
     * @description 逻辑删除
     * @author  jayud
-    * @date   2022-02-21
+    * @date   2022-02-22
     * @param: id
     * @return: com.jyd.component.commons.result.Result
     **/
-    BaseResult deleteSysUser(List<Long> ids);
+    void logicDel(Long id);
 
 
 

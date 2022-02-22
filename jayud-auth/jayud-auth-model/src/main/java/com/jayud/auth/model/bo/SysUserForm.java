@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * SysUser 实体类
@@ -92,8 +93,10 @@ public class SysUserForm extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")
-    @TableLogic
+//    @TableLogic
     private Boolean isDeleted;
 
+    @ApiModelProperty(value = "创建时间")
+    private List<String> creationTime;
 
 }

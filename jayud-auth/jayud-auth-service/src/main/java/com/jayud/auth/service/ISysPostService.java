@@ -2,7 +2,7 @@ package com.jayud.auth.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.auth.model.po.SysRoleMenu;
+import com.jayud.auth.model.po.SysPost;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,25 +12,25 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 角色-菜单关联表 服务类
+ * 岗位表 服务类
  *
  * @author jayud
- * @since 2022-02-21
+ * @since 2022-02-22
  */
-public interface ISysRoleMenuService extends IService<SysRoleMenu> {
+public interface ISysPostService extends IService<SysPost> {
 
 
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-02-21
-     * @param: sysRoleMenu
+     * @date   2022-02-22
+     * @param: sysPost
      * @param: currentPage
      * @param: pageSize
      * @param: req
-     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysRoleMenu>
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysPost>
      **/
-    IPage<SysRoleMenu> selectPage(SysRoleMenu sysRoleMenu,
+    IPage<SysPost> selectPage(SysPost sysPost,
                                 Integer currentPage,
                                 Integer pageSize,
                                 HttpServletRequest req);
@@ -38,19 +38,19 @@ public interface ISysRoleMenuService extends IService<SysRoleMenu> {
     /**
      * @description 列表查询数据
      * @author  jayud
-     * @date   2022-02-21
-     * @param: sysRoleMenu
+     * @date   2022-02-22
+     * @param: sysPost
      * @param: req
-     * @return: java.util.List<com.jayud.auth.model.po.SysRoleMenu>
+     * @return: java.util.List<com.jayud.auth.model.po.SysPost>
      **/
-    List<SysRoleMenu> selectList(SysRoleMenu sysRoleMenu);
+    List<SysPost> selectList(SysPost sysPost);
 
 
 
     /**
      * @description 物理删除
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: id
      * @return: void
      **/
@@ -60,14 +60,13 @@ public interface ISysRoleMenuService extends IService<SysRoleMenu> {
     /**
     * @description 逻辑删除
     * @author  jayud
-    * @date   2022-02-21
+    * @date   2022-02-22
     * @param: id
     * @return: com.jyd.component.commons.result.Result
     **/
     void logicDel(Long id);
 
 
-    void deleteByRoleId(Long roleId);
 
-    List<Long> getMenuIdsByRoleId(Long roleId);
+
 }

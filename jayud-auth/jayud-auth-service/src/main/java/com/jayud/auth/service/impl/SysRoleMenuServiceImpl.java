@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 角色-菜单关联表 服务实现类
@@ -38,32 +39,46 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
 
     @Override
     public IPage<SysRoleMenu> selectPage(SysRoleMenu sysRoleMenu,
-                                        Integer currentPage,
-                                        Integer pageSize,
-                                        HttpServletRequest req){
+                                         Integer currentPage,
+                                         Integer pageSize,
+                                         HttpServletRequest req) {
 
-        Page<SysRoleMenu> page=new Page<SysRoleMenu>(currentPage,pageSize);
-        IPage<SysRoleMenu> pageList= sysRoleMenuMapper.pageList(page, sysRoleMenu);
+        Page<SysRoleMenu> page = new Page<SysRoleMenu>(currentPage, pageSize);
+        IPage<SysRoleMenu> pageList = sysRoleMenuMapper.pageList(page, sysRoleMenu);
         return pageList;
     }
 
     @Override
-    public List<SysRoleMenu> selectList(SysRoleMenu sysRoleMenu){
+    public List<SysRoleMenu> selectList(SysRoleMenu sysRoleMenu) {
         return sysRoleMenuMapper.list(sysRoleMenu);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void phyDelById(Long id){
+    public void phyDelById(Long id) {
         sysRoleMenuMapper.phyDelById(id);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id){
-        sysRoleMenuMapper.logicDel(id,CurrentUserUtil.getUsername());
+    public void logicDel(Long id) {
+        sysRoleMenuMapper.logicDel(id, CurrentUserUtil.getUsername());
+    }
+
+    @Override
+    public void deleteByRoleId(Long roleId) {
+        QueryWrapper<SysRoleMenu> condition = new QueryWrapper<>();
+        condition.lambda().eq(SysRoleMenu::getIsDeleted, false).eq(SysRoleMenu::getRoleId, roleId);
+        this.update(new SysRoleMenu().setIsDeleted(true), condition);
+    }
+
+    @Override
+    public List<Long> getMenuIdsByRoleId(Long roleId) {
+        List<SysRoleMenu> roleMenus = this.baseMapper.selectList(new QueryWrapper<>(new SysRoleMenu().setIsDeleted(false).setRoleId(roleId)));
+        List<Long> menuIds = roleMenus.stream().map(e -> e.getMenuId()).collect(Collectors.toList());
+        return menuIds;
     }
 
 }

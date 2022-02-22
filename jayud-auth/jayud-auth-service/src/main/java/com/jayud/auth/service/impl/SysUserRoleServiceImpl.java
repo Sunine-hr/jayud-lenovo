@@ -95,7 +95,7 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
                 currentPage, pageSize, req);
         List<SysUserRole> records = userRolePage.getRecords();
         List<Long> userIds = records.stream().map(e -> e.getUserId()).collect(Collectors.toList());
-        IPage<SysUserVO> userPages = this.sysUserService.selectPage(new SysUserForm(), currentPage, pageSize, req);
+        IPage<SysUserVO> userPages = this.sysUserService.selectPage(new SysUserForm().setUserIds(userIds), currentPage, pageSize, req);
         return userPages;
     }
 
@@ -112,6 +112,21 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
     public List<SysUserRole> getByCondition(SysUserRole sysUserRole) {
         QueryWrapper<SysUserRole> condition = new QueryWrapper<>(sysUserRole);
         return this.baseMapper.selectList(condition);
+    }
+
+    @Override
+    public void deleteByUserId(Long userId) {
+        QueryWrapper<SysUserRole> condition = new QueryWrapper<>();
+        condition.lambda().eq(SysUserRole::getUserId, userId)
+                .eq(SysUserRole::getIsDeleted, false);
+        this.baseMapper.update(new SysUserRole().setIsDeleted(true), condition);
+    }
+
+    @Override
+    public List<Long> getUserIdsByRoleId(Long roleId) {
+        List<SysUserRole> sysUserRoles = this.baseMapper.selectList(new QueryWrapper<>(new SysUserRole().setRoleId(roleId).setIsDeleted(false)));
+        List<Long> userIds = sysUserRoles.stream().map(e -> e.getUserId()).collect(Collectors.toList());
+        return userIds;
     }
 
 }

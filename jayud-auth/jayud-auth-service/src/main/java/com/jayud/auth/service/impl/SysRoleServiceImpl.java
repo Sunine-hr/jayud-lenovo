@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.dto.AddSysRole;
+import com.jayud.auth.model.po.SysRoleMenu;
 import com.jayud.auth.model.po.SysUserRole;
+import com.jayud.auth.service.ISysRoleMenuService;
 import com.jayud.auth.service.ISysUserRoleService;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.auth.model.po.SysRole;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +42,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     private SysRoleMapper sysRoleMapper;
     @Autowired
     private ISysUserRoleService sysUserRoleService;
+    @Autowired
+    private ISysRoleMenuService sysRoleMenuService;
 
     @Override
     public IPage<SysRole> selectPage(SysRole sysRole,
@@ -103,6 +109,31 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         List<SysUserRole> tmps = this.sysUserRoleService.getByCondition(new SysUserRole().setUserId(userId).setIsDeleted(false));
         List<Long> roleIds = tmps.stream().map(e -> e.getRoleId()).collect(Collectors.toList());
         return roleIds;
+    }
+
+    @Override
+    public void setRoles(Long userId, List<Long> roleIds) {
+        this.sysUserRoleService.deleteByUserId(userId);
+        List<SysUserRole> list = new ArrayList<>();
+        for (Long roleId : roleIds) {
+            SysUserRole tmp = new SysUserRole();
+            tmp.setRoleId(roleId).setUserId(userId);
+            list.add(tmp);
+        }
+        this.sysUserRoleService.saveBatch(list);
+    }
+
+    @Override
+    public void setRolePermissions(Long roleId, List<Long> menuIds) {
+        this.sysRoleMenuService.deleteByRoleId(roleId);
+
+        List<SysRoleMenu> list = new ArrayList<>();
+        for (Long menuId : menuIds) {
+            SysRoleMenu tmp = new SysRoleMenu();
+            tmp.setMenuId(menuId).setRoleId(roleId);
+            list.add(tmp);
+        }
+        this.sysRoleMenuService.saveBatch(list);
     }
 
 }

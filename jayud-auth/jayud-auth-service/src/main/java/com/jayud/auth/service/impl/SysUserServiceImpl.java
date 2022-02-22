@@ -86,10 +86,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             // 然后再次添加角色和菜单关联表
             for (int i = 0; i < sysUserForm.getRoleIds().size(); i++) {
                 SysUserRole sysUserRole = new SysUserRole();
-                sysUserRole.setUserId(id);//用户id
-                sysUserRole.setRoleId(sysUserForm.getRoleIds().get(0));//角色id
-                sysUserRole.setCreateBy(CurrentUserUtil.getUsername());//创建人
-                sysUserRole.setCreateTime(new Date());//创建时间
+                //用户id
+                sysUserRole.setUserId(id);
+                //角色id
+                sysUserRole.setRoleId(sysUserForm.getRoleIds().get(0));
+                //创建人
+                sysUserRole.setCreateBy(CurrentUserUtil.getUsername());
+                sysUserRole.setCreateTime(new Date());
                 sysUserRoleMapper.insert(sysUserRole);
             }
         } else {
@@ -101,10 +104,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             //再次添加角色和菜单关联表
             for (int i = 0; i < sysUserForm.getRoleIds().size(); i++) {
                   SysUserRole sysUserRole = new SysUserRole();
-                sysUserRole.setUserId(id);//用户id
-                sysUserRole.setRoleId(sysUserForm.getRoleIds().get(0));//角色id
-                sysUserRole.setCreateBy(CurrentUserUtil.getUsername());//创建人
-                sysUserRole.setCreateTime(new Date());//创建时间
+                //用户id
+                sysUserRole.setUserId(id);
+                //角色id
+                sysUserRole.setRoleId(sysUserForm.getRoleIds().get(0));
+                //创建人
+                sysUserRole.setCreateBy(CurrentUserUtil.getUsername());
+                sysUserRole.setCreateTime(new Date());
                 sysUserRoleMapper.insert(sysUserRole);
             }
         }
@@ -170,6 +176,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             return BaseResult.error(SysTips.ACCOUNT_FROZEN);
         }
         return BaseResult.ok();
+    }
+
+    @Override
+    public SysUserVO findSysUserIdOne(SysUserForm sysUserForm) {
+
+        return sysUserMapper.findSysUserIdOne(sysUserForm);
     }
 
 }

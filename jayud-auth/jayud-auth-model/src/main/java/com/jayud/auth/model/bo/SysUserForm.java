@@ -104,4 +104,8 @@ public class SysUserForm extends SysBaseEntity {
 
     @ApiModelProperty(value = "角色id集合")
     private List<Long> roleIds;
+
+    @ApiModelProperty(value = "用户id集合")
+    private List<Long> userIds;
+
 }

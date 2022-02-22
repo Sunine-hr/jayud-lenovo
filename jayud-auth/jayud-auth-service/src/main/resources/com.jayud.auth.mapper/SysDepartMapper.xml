@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.SysDepartMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SysDepart">
+        <id column="id" property="id" />
+        <result column="parent_id" property="parentId" />
+        <result column="depart_name" property="departName" />
+        <result column="depart_name_en" property="departNameEn" />
+        <result column="depart_name_abbr" property="departNameAbbr" />
+        <result column="depart_order" property="departOrder" />
+        <result column="description" property="description" />
+        <result column="org_category" property="orgCategory" />
+        <result column="org_code" property="orgCode" />
+        <result column="mobile" property="mobile" />
+        <result column="fax" property="fax" />
+        <result column="address" property="address" />
+        <result column="memo" property="memo" />
+        <result column="status" property="status" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, parent_id, depart_name, depart_name_en, depart_name_abbr, depart_order, description, org_category, org_code, mobile, fax, address, memo, status, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">sys_depart </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="sysDepart.parentId != null ">
+                AND parent_id = ${sysDepart.parentId}
+            </if>
+
+            <if test="sysDepart.departName != null and sysDepart.departName != ''">
+                AND depart_name = #{sysDepart.departName}
+            </if>
+
+            <if test="sysDepart.departNameEn != null and sysDepart.departNameEn != ''">
+                AND depart_name_en = #{sysDepart.departNameEn}
+            </if>
+
+            <if test="sysDepart.departNameAbbr != null and sysDepart.departNameAbbr != ''">
+                AND depart_name_abbr = #{sysDepart.departNameAbbr}
+            </if>
+
+            <if test="sysDepart.departOrder != null ">
+                AND depart_order = ${sysDepart.departOrder}
+            </if>
+
+            <if test="sysDepart.description != null and sysDepart.description != ''">
+                AND description = #{sysDepart.description}
+            </if>
+
+            <if test="sysDepart.orgCategory != null and sysDepart.orgCategory != ''">
+                AND org_category = #{sysDepart.orgCategory}
+            </if>
+
+            <if test="sysDepart.orgCode != null and sysDepart.orgCode != ''">
+                AND org_code = #{sysDepart.orgCode}
+            </if>
+
+            <if test="sysDepart.mobile != null and sysDepart.mobile != ''">
+                AND mobile = #{sysDepart.mobile}
+            </if>
+
+            <if test="sysDepart.fax != null and sysDepart.fax != ''">
+                AND fax = #{sysDepart.fax}
+            </if>
+
+            <if test="sysDepart.address != null and sysDepart.address != ''">
+                AND address = #{sysDepart.address}
+            </if>
+
+            <if test="sysDepart.memo != null and sysDepart.memo != ''">
+                AND memo = #{sysDepart.memo}
+            </if>
+
+            <if test="sysDepart.status != null ">
+                AND status = ${sysDepart.status}
+            </if>
+
+            <if test="sysDepart.tenantCode != null and sysDepart.tenantCode != ''">
+                AND tenant_code = #{sysDepart.tenantCode}
+            </if>
+
+            <if test="sysDepart.remark != null and sysDepart.remark != ''">
+                AND remark = #{sysDepart.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysDepart">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysDepart">
+        <include refid="selects"/>
+    </select>
+
+    <select id="selectDeptTree" resultType="com.jayud.auth.model.po.SysDepart">
+        select  sd.* from sys_depart sd
+        where sd.is_deleted = 0
+        and sd.tenant_code = #{form.tenantCode}
+        <if test="form.departName != null and form.departName != ''">
+            and sd.depart_name like concat('%',#{form.departName},'%')
+        </if>
+        <if test="form.createTimeArr != null and form.createTimeArr.length>0">
+            and sd.create_time <![CDATA[ >= ]]> #{form.createTimeArr[0]}
+            and sd.create_time <![CDATA[ <= ]]> #{form.createTimeArr[1]}
+        </if>
+
+    </select>
+
+
+    <delete id="phyDelById">
+        DELETE FROM  sys_depart WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE sys_depart SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+
+</mapper>

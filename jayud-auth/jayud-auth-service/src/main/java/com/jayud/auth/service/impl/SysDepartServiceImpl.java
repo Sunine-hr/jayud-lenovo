@@ -82,6 +82,36 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         return tree;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveSysDepart(SysDepart depart) {
+        Long id = depart.getId();
+        SysDepart sysDepart = this.getById(id);
+        if(ObjectUtil.isEmpty(sysDepart)){
+            //新增
+            QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
+            queryWrapper.lambda().eq(SysDepart::getOrgCode, depart.getOrgCode());
+            queryWrapper.lambda().groupBy(SysDepart::getOrgCode);
+            SysDepart one = this.getOne(queryWrapper);
+            if(ObjectUtil.isNotEmpty(one)){
+                new IllegalAccessException("机构编码已存在");
+            }
+        }else{
+            //修改
+            QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().ne(SysDepart::getId, id);
+            queryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
+            queryWrapper.lambda().eq(SysDepart::getOrgCode, depart.getOrgCode());
+            queryWrapper.lambda().groupBy(SysDepart::getOrgCode);
+            SysDepart one = this.getOne(queryWrapper);
+            if(ObjectUtil.isNotEmpty(one)){
+                new IllegalAccessException("机构编码已存在");
+            }
+        }
+        this.saveOrUpdate(depart);
+    }
+
     /**
      * 构建树
      *

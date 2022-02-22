@@ -153,6 +153,11 @@ public class SysDepartController {
         return BaseResult.ok(sysDepart);
     }
 
+    /**
+     * 查询部门树
+     * @param form
+     * @return
+     */
     @ApiOperation("查询部门树")
     @PostMapping("/selectDeptTree")
     public BaseResult<List<SysDepart>> selectDeptTree(@RequestBody QuerySysDeptForm form){
@@ -160,5 +165,16 @@ public class SysDepartController {
         return BaseResult.ok(deptTree);
     }
 
+    /**
+     * 保存组织or部门
+     * @param depart
+     * @return
+     */
+    @ApiOperation(value = "保存组织or部门")
+    @PostMapping(value = "/save")
+    public BaseResult saveSysDepart(@Valid @RequestBody SysDepart depart){
+        sysDepartService.saveSysDepart(depart);
+        return BaseResult.ok("保存成功");
+    }
 
 }

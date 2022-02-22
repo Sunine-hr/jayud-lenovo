@@ -74,4 +74,10 @@ public interface ISysDepartService extends IService<SysDepart> {
      * @return
      */
     List<SysDepart> selectDeptTree(QuerySysDeptForm form);
+
+    /**
+     * 保存组织or部门
+     * @param depart
+     */
+    void saveSysDepart(SysDepart depart);
 }

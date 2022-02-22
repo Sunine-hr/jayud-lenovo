@@ -4,6 +4,7 @@ package com.jayud.auth.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.auth.model.po.SysUrl;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.BaseResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -66,7 +67,14 @@ public interface ISysUrlService extends IService<SysUrl> {
     **/
     void logicDel(Long id);
 
-
+    /**
+     * @description 保存系统链接信息
+     * @author  ciro
+     * @date   2022/2/22 11:20
+     * @param: sysUrl
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult saveUrl(SysUrl sysUrl);
 
 
 }

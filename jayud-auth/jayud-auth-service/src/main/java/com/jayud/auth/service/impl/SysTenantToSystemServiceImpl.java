@@ -5,6 +5,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.bo.SysTenantForm;
+import com.jayud.common.utils.ListUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -16,11 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 租户-系统关联表 服务实现类
@@ -64,6 +63,30 @@ public class SysTenantToSystemServiceImpl extends ServiceImpl<SysTenantToSystemM
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(Long id){
         sysTenantToSystemMapper.logicDel(id,CurrentUserUtil.getUsername());
+    }
+
+    @Override
+    public void saveTenantSystemRelation(SysTenantForm sysTenantForm) {
+        SysTenantToSystem sysTenantToSystem = new SysTenantToSystem();
+        sysTenantToSystem.setTenantId(sysTenantForm.getId());
+        List<SysTenantToSystem> tenantToSystemList = selectList(sysTenantToSystem);
+        List<String> lastIdList = tenantToSystemList.stream().map(x->String.valueOf(x.getSystemId())).distinct().collect(Collectors.toList());
+        List<String> thisIdList = sysTenantForm.getSysUrlList().stream().map(x->String.valueOf(x.getId())).distinct().collect(Collectors.toList());
+        List<String> addIdList = ListUtil.getDiff(lastIdList,thisIdList);
+        List<String> delIdList = ListUtil.getDiff(thisIdList,lastIdList);
+        if (CollUtil.isNotEmpty(addIdList)){
+            List<SysTenantToSystem> addList = new ArrayList<>();
+            addIdList.forEach(id->{
+                SysTenantToSystem system = new SysTenantToSystem();
+                system.setSystemId(Long.valueOf(id));
+                system.setTenantId(sysTenantForm.getId());
+                addList.add(system);
+            });
+            this.saveBatch(addList);
+        }
+        if (CollUtil.isNotEmpty(delIdList)){
+            sysTenantToSystemMapper.deletedRelation(sysTenantForm.getId(),delIdList,CurrentUserUtil.getUsername());
+        }
     }
 
 }

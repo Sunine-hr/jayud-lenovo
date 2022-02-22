@@ -1,6 +1,10 @@
 package com.jayud.auth.service.impl;
 
+import com.jayud.auth.model.po.SysUser;
+import com.jayud.auth.service.ISysUserService;
 import com.jayud.common.dto.AuthUserDetail;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,12 +17,15 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
+    @Autowired
+    private ISysUserService sysUserService;
+
     @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        SysUser sysUser = sysUserService.getUserByUserName(null,username);
         AuthUserDetail authUserDetail = new AuthUserDetail();
-        authUserDetail.setId(1L);
-        authUserDetail.setUsername("admin");
-        authUserDetail.setPassword("$2a$10$0Gh0i/roNUhOHnEXTpn3WexRsc8RfhxAaumD.KdzUtmxesVwHH8q6");
+        BeanUtils.copyProperties(sysUser,authUserDetail);
+        authUserDetail.setUsername(sysUser.getName());
         return authUserDetail;
     }
 }

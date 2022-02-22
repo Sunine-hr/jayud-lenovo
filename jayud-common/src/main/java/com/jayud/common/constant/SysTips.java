@@ -111,6 +111,10 @@ public interface SysTips {
      */
     String ACCOUNT_FROZEN = "该用户已冻结！";
     /**
+     * 用户冻结
+     */
+    String ACCOUNT_RESIGNED = "该用户已离职！";
+    /**
      * 短信验证码发送失败（第三方原因）
      */
     String SMS_CODE_SEND_ERROR = "短信验证码发送失败,请稍后重试！";
@@ -197,6 +201,8 @@ public interface SysTips {
     String DO_NOT_RESUBMIT = "请勿重复提交！";
 
     String TENANT_CODE_SAME = "存在相同租户编码！";
+
+    String SYS_URL_TYPE_SAME = "存在系统类型！";
 
 }
 

@@ -2,6 +2,7 @@ package com.jayud.auth.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.bo.SysTenantForm;
 import com.jayud.auth.model.po.SysTenantToSystem;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -66,6 +67,14 @@ public interface ISysTenantToSystemService extends IService<SysTenantToSystem> {
     **/
     void logicDel(Long id);
 
+    /**
+     * @description 保存租户和系统关系
+     * @author  ciro
+     * @date   2022/2/22 11:32
+     * @param: sysTenantForm
+     * @return: void
+     **/
+    void saveTenantSystemRelation(SysTenantForm sysTenantForm);
 
 
 

@@ -13,6 +13,8 @@
         <result column="begin_date" property="beginDate" />
         <result column="end_date" property="endDate" />
         <result column="status" property="status" />
+        <result column="system_name" property="systemName" />
+        <result column="log_url" property="logUrl" />
         <result column="remark" property="remark" />
         <result column="is_deleted" property="isDeleted" />
         <result column="create_by" property="createBy" />
@@ -23,7 +25,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, tenant_code, tenant_name, tenant_contact, tenant_email, tenant_tel, begin_date, end_date, status, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, tenant_code, tenant_name, tenant_contact, tenant_email, tenant_tel, begin_date, end_date, status, remark, system_name, log_url, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
@@ -64,6 +66,14 @@
 
             <if test="sysTenant.status != null ">
                 AND status = ${sysTenant.status}
+            </if>
+
+            <if test="sysTenant.systemName != null and sysTenant.systemName != ''">
+                AND system_name = #{sysTenant.systemName}
+            </if>
+
+            <if test="sysTenant.logUrl != null and sysTenant.logUrl != ''">
+                AND log_url = #{sysTenant.logUrl}
             </if>
 
             <if test="sysTenant.remark != null and sysTenant.remark != ''">

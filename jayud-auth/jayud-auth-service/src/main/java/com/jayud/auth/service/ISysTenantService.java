@@ -2,6 +2,7 @@ package com.jayud.auth.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.bo.SysTenantForm;
 import com.jayud.auth.model.po.SysTenant;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.BaseResult;
@@ -71,10 +72,10 @@ public interface ISysTenantService extends IService<SysTenant> {
      * @description 保存租户
      * @author  ciro
      * @date   2022/2/22 10:38
-     * @param: sysTenant
+     * @param: sysTenantForm
      * @return: com.jayud.common.BaseResult
      **/
-    BaseResult saveTenant(SysTenant sysTenant);
+    BaseResult saveTenant(SysTenantForm sysTenantForm);
 
 
 

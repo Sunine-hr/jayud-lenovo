@@ -61,6 +61,12 @@ public class SysTenant extends SysBaseEntity {
     @ApiModelProperty(value = "状态 1正常 0冻结")
     private Integer status;
 
+    @ApiModelProperty(value = "系统名称")
+    private String systemName;
+
+    @ApiModelProperty(value = "log路径")
+    private String logUrl;
+
     @ApiModelProperty(value = "备注")
     private String remark;
 

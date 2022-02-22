@@ -60,4 +60,15 @@ public interface SysTenantToSystemMapper extends BaseMapper<SysTenantToSystem> {
      * @return: int
      **/
     int logicDel(@Param("id") Long id,@Param("username") String username);
+
+    /**
+     * @description 删除关联数据
+     * @author  ciro
+     * @date   2022/2/22 13:31
+     * @param: tenantId
+     * @param: systemIdList
+     * @param: username
+     * @return: int
+     **/
+    int deletedRelation(@Param("tenantId") Long tenantId,@Param("systemIdList") List<String> systemIdList,@Param("username") String username);
 }

@@ -1,6 +1,8 @@
 package com.jayud.auth.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jayud.auth.model.po.SysUser;
+import com.jayud.auth.service.ISysUserService;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -27,6 +29,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 public class UserDetailsController {
+
+    @Autowired
+    private ISysUserService sysUserService;
 
     @Autowired
     private ConsumerTokenServices consumerTokenServices;
@@ -64,10 +69,18 @@ public class UserDetailsController {
 
     @GetMapping("/token")
     public BaseResult<?> getAccessToken(Principal principal, @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
+        BaseResult checkResult = sysUserService.checkUserStatus(parameters.get("tenantCode"),parameters.get("username"),parameters.get("password"));
+        if (!checkResult.isSuccess()){
+            return checkResult;
+        }
         return returnMsg(tokenEndpoint.getAccessToken(principal, parameters).getBody());
     }
     @PostMapping("/token")
     public BaseResult<?> postAccessToken(Principal principal, @RequestBody Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
+        BaseResult checkResult = sysUserService.checkUserStatus(parameters.get("tenantCode"),parameters.get("username"),parameters.get("password"));
+        if (!checkResult.isSuccess()){
+            return checkResult;
+        }
         return returnMsg(tokenEndpoint.postAccessToken(principal, parameters).getBody());
     }
 

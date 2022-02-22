@@ -51,5 +51,16 @@ public class CurrentUserUtil {
         return ((OAuth2AuthenticationDetails) oauth2Authentication.getDetails()).getTokenValue();
     }
 
+    /**
+     * @description 获取当前用户租户编码
+     * @author  ciro
+     * @date   2022/2/22 15:10
+     * @param:
+     * @return: java.lang.String
+     **/
+    public static String getUserTenantCode(){
+        return getUserDetail().getTenantCode();
+    }
+
 
 }

@@ -1,13 +1,14 @@
 package com.jayud.auth.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ObjectUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.bo.SysTenantForm;
+import com.jayud.auth.service.ISysTenantToSystemService;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.auth.model.po.SysTenant;
@@ -34,6 +35,8 @@ import java.util.Map;
 @Service
 public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant> implements ISysTenantService {
 
+    @Autowired
+    private ISysTenantToSystemService sysTenantToSystemService;
 
     @Autowired
     private SysTenantMapper sysTenantMapper;
@@ -65,21 +68,26 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(Long id){
+//        sysTenantMapper.deleteById(id);
         sysTenantMapper.logicDel(id,CurrentUserUtil.getUsername());
     }
 
     @Override
-    public BaseResult saveTenant(SysTenant sysTenant) {
+    public BaseResult saveTenant(SysTenantForm sysTenantForm) {
         boolean isAdd = false;
-        if (sysTenant.getId() == null){
+        if (sysTenantForm.getId() == null){
             isAdd = true;
         }
-        if (!checkSameCode(isAdd,sysTenant)){
+        if (!checkSameCode(isAdd,sysTenantForm)){
             if (isAdd){
-                this.save(sysTenant);
+                this.save(sysTenantForm);
+            }else {
+                this.updateById(sysTenantForm);
+            }
+            sysTenantToSystemService.saveTenantSystemRelation(sysTenantForm);
+            if (isAdd){
                 return BaseResult.ok(SysTips.ADD_SUCCESS);
             }else {
-                this.updateById(sysTenant);
                 return BaseResult.ok(SysTips.EDIT_SUCCESS);
             }
         }
@@ -92,12 +100,12 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
      * @author  ciro
      * @date   2022/2/22 10:50
      * @param: isAdd
-     * @param: sysTenant
+     * @param: sysTenantForm
      * @return: boolean
      **/
-    private boolean checkSameCode(boolean isAdd,SysTenant sysTenant){
+    private boolean checkSameCode(boolean isAdd,SysTenantForm sysTenantForm){
         SysTenant checks = new SysTenant();
-        checks.setTenantCode(sysTenant.getTenantCode());
+        checks.setTenantCode(sysTenantForm.getTenantCode());
         List<SysTenant> tenantList = selectList(checks);
         if (isAdd){
             if (CollUtil.isNotEmpty(tenantList)){
@@ -109,7 +117,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
             if (CollUtil.isEmpty(tenantList)){
                 return false;
             }else {
-                if (tenantList.get(0).getId().equals(sysTenant.getId())){
+                if (tenantList.get(0).getId().equals(sysTenantForm.getId())){
                     return false;
                 }
             }

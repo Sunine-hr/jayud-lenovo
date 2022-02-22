@@ -63,5 +63,13 @@
         WHERE id = ${id} AND is_deleted = 0
     </update>
 
+    <update id="deletedRelation">
+        UPDATE sys_tenant_to_system SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE tenant_id = ${tenantId} AND is_deleted = 0
+        AND system_id IN
+        <foreach item="id" collection="systemIdList" open="(" separator="," close=")">
+            ${id}
+        </foreach>
+    </update>
 
 </mapper>

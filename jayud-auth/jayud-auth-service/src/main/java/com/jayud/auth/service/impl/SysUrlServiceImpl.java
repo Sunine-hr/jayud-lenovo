@@ -5,6 +5,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.BaseResult;
+import com.jayud.common.constant.SysTips;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -64,6 +66,54 @@ public class SysUrlServiceImpl extends ServiceImpl<SysUrlMapper, SysUrl> impleme
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(Long id){
         sysUrlMapper.logicDel(id,CurrentUserUtil.getUsername());
+    }
+
+    @Override
+    public BaseResult saveUrl(SysUrl sysUrl) {
+        boolean isAdd = false;
+        if (sysUrl.getId() == null){
+            isAdd = true;
+        }
+        if (!checkSameType(isAdd,sysUrl)){
+            if (isAdd){
+                this.save(sysUrl);
+                return BaseResult.ok(SysTips.ADD_SUCCESS);
+            }else {
+                this.updateById(sysUrl);
+                return BaseResult.ok(SysTips.EDIT_SUCCESS);
+            }
+        }
+        return BaseResult.ok(SysTips.SYS_URL_TYPE_SAME);
+    }
+
+    /**
+     * @description 判断是否有相同类型
+     * @author  ciro
+     * @date   2022/2/22 11:24
+     * @param: isAdd
+     * @param: sysUrl
+     * @return: boolean
+     **/
+    private boolean checkSameType(boolean isAdd,SysUrl sysUrl){
+        SysUrl checks = new SysUrl();
+        checks.setType(sysUrl.getType());
+        List<SysUrl> urlList = selectList(checks);
+        if (isAdd){
+            if (CollUtil.isNotEmpty(urlList)){
+                return true;
+            }else {
+                return false;
+            }
+        }else {
+            if (CollUtil.isEmpty(urlList)){
+                return false;
+            }else {
+                if (urlList.get(0).getId().equals(sysUrl.getId())){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }

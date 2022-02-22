@@ -55,9 +55,9 @@ public class SysUrlController {
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
     public BaseResult<IPage<SysUrl>> selectPage(SysUrl sysUrl,
-                                                                @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
-                                                                @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-                                                                HttpServletRequest req) {
+                                                @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
+                                                @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                                HttpServletRequest req) {
         return BaseResult.ok(sysUrlService.selectPage(sysUrl,currentPage,pageSize,req));
     }
 
@@ -88,8 +88,7 @@ public class SysUrlController {
     @ApiOperation("新增")
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody SysUrl sysUrl ){
-        sysUrlService.save(sysUrl);
-        return BaseResult.ok(SysTips.ADD_SUCCESS);
+        return sysUrlService.saveUrl(sysUrl);
     }
 
 
@@ -103,8 +102,7 @@ public class SysUrlController {
     @ApiOperation("编辑")
     @PostMapping("/edit")
     public BaseResult edit(@Valid @RequestBody SysUrl sysUrl ){
-        sysUrlService.updateById(sysUrl);
-        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+        return sysUrlService.saveUrl(sysUrl);
     }
 
 

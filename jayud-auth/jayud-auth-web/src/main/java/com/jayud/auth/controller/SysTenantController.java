@@ -1,5 +1,6 @@
 package com.jayud.auth.controller;
 
+import com.jayud.auth.model.bo.SysTenantForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -82,13 +83,13 @@ public class SysTenantController {
     * @description 新增
     * @author  jayud
     * @date   2022-02-22
-    * @param: sysTenant
+    * @param: sysTenantForm
     * @return: com.jayud.common.BaseResult
     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody SysTenant sysTenant ){
-        return sysTenantService.saveTenant(sysTenant);
+    public BaseResult add(@Valid @RequestBody SysTenantForm sysTenantForm ){
+        return sysTenantService.saveTenant(sysTenantForm);
     }
 
 
@@ -96,13 +97,13 @@ public class SysTenantController {
      * @description 编辑
      * @author  jayud
      * @date   2022-02-22
-     * @param: sysTenant
+     * @param: sysTenantForm
      * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("编辑")
     @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody SysTenant sysTenant ){
-        return sysTenantService.saveTenant(sysTenant);
+    public BaseResult edit(@Valid @RequestBody SysTenantForm sysTenantForm ){
+        return sysTenantService.saveTenant(sysTenantForm);
     }
 
 

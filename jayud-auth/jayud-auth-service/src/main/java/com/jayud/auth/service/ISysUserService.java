@@ -71,7 +71,27 @@ public interface ISysUserService extends IService<SysUser> {
     **/
     BaseResult deleteSysUser(List<Long> ids);
 
+    /**
+     * @description 根据租户
+     * @author  ciro
+     * @date   2022/2/22 14:18
+     * @param: tenantCode
+     * @param: name
+     * @return: com.jayud.auth.model.po.SysUser
+     **/
+    SysUser getUserByUserName(String tenantCode,String name);
 
+
+    /**
+     * @description 判断用户状态
+     * @author  ciro
+     * @date   2022/2/22 15:01
+     * @param: tenantCode
+     * @param: name
+     * @param: password
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult checkUserStatus(String tenantCode,String name,String password);
 
 
 }

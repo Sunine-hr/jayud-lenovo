@@ -1,18 +1,22 @@
 package com.jayud.auth.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.bo.SysUserForm;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.common.BaseResult;
+import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.auth.model.po.SysUser;
 import com.jayud.auth.mapper.SysUserMapper;
 import com.jayud.auth.service.ISysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +37,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
     public IPage<SysUserVO> selectPage(SysUserForm sysUserForm,
@@ -89,6 +95,34 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             sysUserMapper.updateById(sysUser);
         }
 
+        return BaseResult.ok();
+    }
+
+    @Override
+    public SysUser getUserByUserName(String tenantCode, String name) {
+        LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.isNotBlank(tenantCode)) {
+            lambdaQueryWrapper.eq(SysUser::getTenantCode, tenantCode);
+        }
+        lambdaQueryWrapper.eq(SysUser::getName,name);
+        return this.getOne(lambdaQueryWrapper);
+    }
+
+    @Override
+    public BaseResult checkUserStatus(String tenantCode, String name,String password) {
+        SysUser sysUser = getUserByUserName(tenantCode, name);
+        if (sysUser == null){
+            return BaseResult.error(SysTips.ACCOUNT_NON_EXISTENT);
+        }
+        if (sysUser.getPassword().equals(encoder.encode(password))){
+            return BaseResult.error(SysTips.LOGIN_ERROR);
+        }
+        if (sysUser.getJobStatus().equals(0)){
+            return BaseResult.error(SysTips.ACCOUNT_RESIGNED);
+        }
+        if (sysUser.getStatus().equals(0)){
+            return BaseResult.error(SysTips.ACCOUNT_FROZEN);
+        }
         return BaseResult.ok();
     }
 

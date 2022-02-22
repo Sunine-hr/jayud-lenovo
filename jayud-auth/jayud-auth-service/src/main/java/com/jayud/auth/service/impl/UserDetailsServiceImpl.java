@@ -1,6 +1,6 @@
 package com.jayud.auth.service.impl;
 
-import com.jayud.auth.model.dto.AuthUserDetail;
+import com.jayud.common.dto.AuthUserDetail;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

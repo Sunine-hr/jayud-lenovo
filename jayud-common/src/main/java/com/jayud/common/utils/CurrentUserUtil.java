@@ -1,5 +1,6 @@
 package com.jayud.common.utils;
 
+import com.jayud.common.dto.AuthUserDetail;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -22,8 +23,8 @@ public class CurrentUserUtil {
      * @return: java.lang.String
      **/
     public static String getUsername(){
-        String username = ((OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication()).getPrincipal().toString();
-        return username;
+        AuthUserDetail authUserDetail = getUserDetail();
+        return authUserDetail.getUsername();
     }
 
     /**
@@ -31,14 +32,11 @@ public class CurrentUserUtil {
      * @author  ciro
      * @date   2022/2/21 17:56
      * @param:
-     * @return: java.util.LinkedHashMap
+     * @return: com.jayud.common.dto.AuthUserDetail
      **/
-    public static LinkedHashMap getUserDetail(){
-        OAuth2Authentication oauth2Authentication = (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) oauth2Authentication
-                .getUserAuthentication();
-        LinkedHashMap principal = (LinkedHashMap)((LinkedHashMap) usernamePasswordAuthenticationToken.getDetails()).get("principal");
-        return principal;
+    public static AuthUserDetail getUserDetail(){
+        AuthUserDetail authUserDetail = (AuthUserDetail)(((OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication()).getPrincipal());
+        return authUserDetail;
     }
 
     /**

@@ -1,13 +1,11 @@
-package com.jayud.auth.model.dto;
+package com.jayud.common.dto;
 
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author ciro

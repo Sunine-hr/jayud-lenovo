@@ -99,4 +99,7 @@ public class SysUserForm extends SysBaseEntity {
     @ApiModelProperty(value = "创建时间")
     private List<String> creationTime;
 
+
+    @ApiModelProperty(value = "角色id集合")
+    private List<Long> roleIds;
 }

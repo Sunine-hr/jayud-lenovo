@@ -59,4 +59,10 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return: int
      **/
     int logicDel(@Param("id") Long id,@Param("username") String username);
+
+
+
+    //根据用户名称查询信息 校验
+
+    SysUserVO findSysUserNameOne(@Param("sysUser") SysUserForm sysUser);
 }

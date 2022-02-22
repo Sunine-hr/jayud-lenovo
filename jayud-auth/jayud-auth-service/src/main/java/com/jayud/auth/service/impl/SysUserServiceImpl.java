@@ -1,8 +1,11 @@
 package com.jayud.auth.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.mapper.SysUserRoleMapper;
 import com.jayud.auth.model.bo.SysUserForm;
+import com.jayud.auth.model.po.SysUserRole;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.common.BaseResult;
 import com.jayud.common.utils.ConvertUtil;
@@ -34,6 +37,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Autowired
     private SysUserMapper sysUserMapper;
 
+    @Autowired
+    private SysUserRoleMapper sysUserRoleMapper;
+
     @Override
     public IPage<SysUserVO> selectPage(SysUserForm sysUserForm,
                                        Integer currentPage,
@@ -53,21 +59,49 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public boolean saveOrUpdateSysUser(SysUserForm sysUserForm) {
         Boolean result = null;
-        SysUser convert = ConvertUtil.convert(sysUserForm, SysUser.class);
-        if (convert.getId() != null) {
-            convert.setUpdateBy(CurrentUserUtil.getUsername());
-            convert.setUpdateTime(new Date());
-            result = this.updateById(convert);
+        SysUser sysUser = ConvertUtil.convert(sysUserForm, SysUser.class);
+        if (sysUser.getId() != null) {
+            //修改
+            sysUser.setUpdateBy(CurrentUserUtil.getUsername());
+            sysUser.setUpdateTime(new Date());
+            result = this.updateById(sysUser);
+
+
+
+
         } else {
-            convert.setCreateBy(CurrentUserUtil.getUsername());
-            convert.setCreateTime(new Date());
-            result = this.saveOrUpdate(convert);
+            //新增
+            sysUser.setCreateBy(CurrentUserUtil.getUsername());
+            sysUser.setCreateTime(new Date());
+            result = this.saveOrUpdate(sysUser);
+            Long id = sysUser.getId();
+
+            for (int i = 0; i <sysUserForm.getRoleIds().size() ; i++) {
+                SysUserRole sysUserRole = new SysUserRole();
+                sysUserRole.setUserId(id);//用户id
+                sysUserRole.setRoleId(sysUserForm.getRoleIds().get(0));//角色id
+                sysUserRole.setCreateBy(CurrentUserUtil.getUsername());//创建人
+                sysUserRole.setCreateTime(new Date());//创建时间
+
+
+                sysUserRoleMapper.insert(sysUserRole);
+            }
+
+
+
+
         }
         if (result) {
             log.warn("新增或修改库区成功");
             return true;
         }
         return false;
+    }
+
+    @Override
+    public SysUserVO findSysUserName(SysUserForm sysUserForm) {
+
+        return  sysUserMapper.findSysUserNameOne(sysUserForm);
     }
 
 

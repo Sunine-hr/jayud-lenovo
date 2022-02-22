@@ -22,8 +22,8 @@ public interface ISysUserService extends IService<SysUser> {
 
     /**
      * @description 分页查询
-     * @author  jayud
-     * @date   2022-02-21
+     * @author jayud
+     * @date 2022-02-21
      * @param: sysUser
      * @param: currentPage
      * @param: pageSize
@@ -37,8 +37,8 @@ public interface ISysUserService extends IService<SysUser> {
 
     /**
      * @description 列表查询数据
-     * @author  jayud
-     * @date   2022-02-21
+     * @author jayud
+     * @date 2022-02-21
      * @param: sysUser
      * @param: req
      * @return: java.util.List<com.jayud.auth.model.po.SysUser>
@@ -46,16 +46,22 @@ public interface ISysUserService extends IService<SysUser> {
     List<SysUserVO> selectList(SysUser sysUser);
 
 
-    /**\
+    /**
+     * \
      * 新增或者修改
+     *
      * @param sysUserForm
      * @return
      */
     boolean saveOrUpdateSysUser(SysUserForm sysUserForm);
+
+    //校验用户名
+    SysUserVO findSysUserName(SysUserForm sysUserForm);
+
     /**
      * @description 物理删除
-     * @author  jayud
-     * @date   2022-02-21
+     * @author jayud
+     * @date 2022-02-21
      * @param: id
      * @return: void
      **/
@@ -63,15 +69,13 @@ public interface ISysUserService extends IService<SysUser> {
 
 
     /**
-    * @description 逻辑删除
-    * @author  jayud
-    * @date   2022-02-21
-    * @param: id
-    * @return: com.jyd.component.commons.result.Result
-    **/
+     * @description 逻辑删除
+     * @author jayud
+     * @date 2022-02-21
+     * @param: id
+     * @return: com.jyd.component.commons.result.Result
+     **/
     BaseResult deleteSysUser(List<Long> ids);
-
-
 
 
 }

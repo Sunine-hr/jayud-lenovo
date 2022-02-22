@@ -1,7 +1,6 @@
 package com.jayud.auth.controller;
 
 import com.jayud.auth.model.dto.AddSysRole;
-import com.jayud.auth.model.po.SysUserRole;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.service.ISysMenuService;
 import com.jayud.auth.service.ISysUserRoleService;
@@ -16,9 +15,7 @@ import com.jayud.auth.service.ISysRoleService;
 import com.jayud.auth.model.po.SysRole;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 /**
@@ -172,10 +168,6 @@ public class SysRoleController {
 
     /**
      * @description 删除员工
-     * @author jayud
-     * @date 2022-02-21
-     * @param: sysRole
-     * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("删除员工")
     @PostMapping("/deleteEmployee")
@@ -187,10 +179,6 @@ public class SysRoleController {
 
     /**
      * @description 批量删除员工
-     * @author jayud
-     * @date 2022-02-21
-     * @param: sysRole
-     * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("批量删除员工")
     @PostMapping("/deleteEmployees")
@@ -201,17 +189,13 @@ public class SysRoleController {
 
 
     /**
-     * @description 根据用户id获取角色
-     * @author jayud
-     * @date 2022-02-21
-     * @param: sysRole
-     * @return: com.jayud.common.BaseResult
+     * @description 根据用户id获取角色集合id
      **/
-    @ApiOperation("根据用户id获取角色")
-    @GetMapping("/getRoleByUserId")
-    public BaseResult<List<SysRole>> getRoleByUserId(@RequestParam("userId") Long userId) {
-        List<SysRole> sysRoles = sysRoleService.getRoleByUserId(userId);
-        return BaseResult.ok(sysRoles);
+    @ApiOperation("根据用户id获取角色集合id")
+    @GetMapping("/getRoleIdsByUserId")
+    public BaseResult<List<Long>> getRoleIdsByUserId(@RequestParam("userId") Long userId) {
+        List<Long> roleIds = sysRoleService.getRoleIdsByUserId(userId);
+        return BaseResult.ok(roleIds);
     }
 
     /**

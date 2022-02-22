@@ -79,4 +79,6 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
     IPage<SysUserVO> selectAssociatedEmployeesPage(Long rolesId, Integer currentPage, Integer pageSize, HttpServletRequest req);
 
     void deleteEmployees(Long rolesId, List<Long> userIds);
+
+    List<SysUserRole> getByCondition(SysUserRole sysUserRole);
 }

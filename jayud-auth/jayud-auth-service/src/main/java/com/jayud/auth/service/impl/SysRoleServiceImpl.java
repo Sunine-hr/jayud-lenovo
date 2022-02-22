@@ -1,7 +1,5 @@
 package com.jayud.auth.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,13 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 角色表 服务实现类
@@ -47,9 +41,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Override
     public IPage<SysRole> selectPage(SysRole sysRole,
-                                        Integer currentPage,
-                                        Integer pageSize,
-                                        HttpServletRequest req){
+                                     Integer currentPage,
+                                     Integer pageSize,
+                                     HttpServletRequest req) {
         Page<SysRole> page = new Page<SysRole>(currentPage, pageSize);
         IPage<SysRole> pageList = sysRoleMapper.pageList(page, sysRole);
         return pageList;
@@ -70,8 +64,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id){
-        sysRoleMapper.logicDel(id,CurrentUserUtil.getUsername());
+    public void logicDel(Long id) {
+        sysRoleMapper.logicDel(id, CurrentUserUtil.getUsername());
     }
 
     @Override
@@ -105,9 +99,10 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     }
 
     @Override
-    public List<SysRole> getRoleByUserId(Long userId) {
-
-        return null;
+    public List<Long> getRoleIdsByUserId(Long userId) {
+        List<SysUserRole> tmps = this.sysUserRoleService.getByCondition(new SysUserRole().setUserId(userId).setIsDeleted(false));
+        List<Long> roleIds = tmps.stream().map(e -> e.getRoleId()).collect(Collectors.toList());
+        return roleIds;
     }
 
 }

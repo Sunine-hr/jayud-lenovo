@@ -108,4 +108,10 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         this.update(new SysUserRole().setIsDeleted(true), condition);
     }
 
+    @Override
+    public List<SysUserRole> getByCondition(SysUserRole sysUserRole) {
+        QueryWrapper<SysUserRole> condition = new QueryWrapper<>(sysUserRole);
+        return this.baseMapper.selectList(condition);
+    }
+
 }

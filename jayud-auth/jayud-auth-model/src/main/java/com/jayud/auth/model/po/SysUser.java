@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -65,10 +66,8 @@ public class SysUser extends SysBaseEntity {
     @ApiModelProperty(value = "岗位ID")
     private Long postId;
 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @ApiModelProperty(value = "入职时间")
-    private LocalDateTime entryTime;
+    private Date entryTime;
 
     @ApiModelProperty(value = "员工状态：0-离职，1-在职")
     private Integer jobStatus;

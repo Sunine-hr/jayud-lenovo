@@ -1,50 +1,51 @@
 package com.jayud.auth.mapper;
 
-import com.jayud.auth.model.bo.SysUserForm;
-import com.jayud.auth.model.po.SysUser;
+import com.jayud.auth.model.po.SysUserRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
-import com.jayud.auth.model.vo.SysUserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * 后台用户表 Mapper 接口
+ * 用户-角色关联表 Mapper 接口
  *
  * @author jayud
- * @since 2022-02-21
+ * @since 2022-02-22
  */
 @Mapper
-public interface SysUserMapper extends BaseMapper<SysUser> {
+public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
 
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: page
-     * @param: sysUser
-     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysUser>
+     * @param: sysUserRole
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysUserRole>
      **/
-    IPage<SysUserVO> pageList(@Param("page") Page<SysUserForm> page, @Param("sysUser") SysUserForm sysUser);
+    IPage<SysUserRole> pageList(@Param("page") Page<SysUserRole> page, @Param("sysUserRole") SysUserRole sysUserRole);
 
     /**
      * @description 列表查询数据
      * @author  jayud
-     * @date   2022-02-21
-     * @param: sysUser
-     * @return: java.util.List<com.jayud.auth.model.po.SysUser>
+     * @date   2022-02-22
+     * @param: sysUserRole
+     * @return: java.util.List<com.jayud.auth.model.po.SysUserRole>
      **/
-    List<SysUserVO> list(@Param("sysUser") SysUser sysUser);
+    List<SysUserRole> list(@Param("sysUserRole") SysUserRole sysUserRole);
 
 
     /**
      * @description 根据id物理删除
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: id
      * @return: int
      **/
@@ -53,7 +54,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     /**
      * @description 根据id逻辑删除
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: id
      * @param: username
      * @return: int

@@ -15,26 +15,30 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import lombok.experimental.Accessors;
 
 /**
- * SysUserRole 实体类
+ * SysUrl 实体类
  *
  * @author jayud
- * @since 2022-02-22
+ * @since 2022-02-21
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="用户-角色关联表对象", description="用户-角色关联表")
-public class SysUserRole extends SysBaseEntity {
+@ApiModel(value="系统链接表对象", description="系统链接表")
+public class SysUrl extends SysBaseEntity {
 
 
-    @ApiModelProperty(value = "用户id")
-    private Long userId;
+    @ApiModelProperty(value = "系统名称")
+    private String name;
 
-    @ApiModelProperty(value = "角色id")
-    private Long roleId;
+    @ApiModelProperty(value = "系统链接")
+    private String url;
+
+    @ApiModelProperty(value = "系统类型(1-权限系统，2-OMS系统)")
+    private Integer type;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
 
 
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")

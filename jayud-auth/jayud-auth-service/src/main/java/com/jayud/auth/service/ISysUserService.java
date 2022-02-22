@@ -2,8 +2,11 @@ package com.jayud.auth.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.bo.SysUserForm;
 import com.jayud.auth.model.po.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.auth.model.vo.SysUserVO;
+import com.jayud.common.BaseResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -27,7 +30,7 @@ public interface ISysUserService extends IService<SysUser> {
      * @param: req
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysUser>
      **/
-    IPage<SysUser> selectPage(SysUser sysUser,
+    IPage<SysUserVO> selectPage(SysUserForm sysUserForm,
                                 Integer currentPage,
                                 Integer pageSize,
                                 HttpServletRequest req);
@@ -40,10 +43,15 @@ public interface ISysUserService extends IService<SysUser> {
      * @param: req
      * @return: java.util.List<com.jayud.auth.model.po.SysUser>
      **/
-    List<SysUser> selectList(SysUser sysUser);
+    List<SysUserVO> selectList(SysUser sysUser);
 
 
-
+    /**\
+     * 新增或者修改
+     * @param sysUserForm
+     * @return
+     */
+    boolean saveOrUpdateSysUser(SysUserForm sysUserForm);
     /**
      * @description 物理删除
      * @author  jayud
@@ -61,7 +69,7 @@ public interface ISysUserService extends IService<SysUser> {
     * @param: id
     * @return: com.jyd.component.commons.result.Result
     **/
-    void logicDel(Long id);
+    BaseResult deleteSysUser(List<Long> ids);
 
 
 

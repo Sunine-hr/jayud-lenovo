@@ -11,38 +11,39 @@
     <modules>
         <!-- 公共包 -->
         <module>jayud-common</module>
-        <!-- 文件上传 -->
-        <module>jayud-file</module>
         <!-- 网关路由 -->
         <module>jayud-gateway</module>
-        <!-- 消息中间件 -->
-        <module>jayud-msg</module>
-        <!-- 任务调度 -->
-        <module>jayud-task</module>
-        <module>jayud-oauth</module>
-        <module>jayud-customs</module>
-        <module>jayud-finance</module>
-        <module>jayud-oms</module>
-        <module>jayud-tms</module>
-        <module>jayud-freight-air</module>
-        <module>jayud-mall</module>
-        <module>jayud-tools</module>
-        <module>jayud-ocean-ship</module>
-        <module>jayud-Inland-transport</module>
-
-        <module>jayud-trailer</module>
-        <module>jayud-storage</module>
-
-        <module>jayud-email</module>
-        <module>jayud-xxjob-task</module>
-        <module>jayud-scm</module>
-
-        <module>jayud-report</module>
-        <module>jayud-work-flow</module>
-
+        <!-- oauth2权限 -->
         <module>jayud-auth</module>
-        <module>jayud-system</module>
-        <module>jayud-mybatisplus</module>
+        <!-- 文件上传 -->
+<!--        <module>jayud-file</module>-->
+<!--        &lt;!&ndash; 消息中间件 &ndash;&gt;-->
+<!--        <module>jayud-msg</module>-->
+<!--        &lt;!&ndash; 任务调度 &ndash;&gt;-->
+<!--        <module>jayud-task</module>-->
+<!--        <module>jayud-oauth</module>-->
+<!--        <module>jayud-customs</module>-->
+<!--        <module>jayud-finance</module>-->
+<!--        <module>jayud-oms</module>-->
+<!--        <module>jayud-tms</module>-->
+<!--        <module>jayud-freight-air</module>-->
+<!--        <module>jayud-mall</module>-->
+<!--        <module>jayud-tools</module>-->
+<!--        <module>jayud-ocean-ship</module>-->
+<!--        <module>jayud-Inland-transport</module>-->
+
+<!--        <module>jayud-trailer</module>-->
+<!--        <module>jayud-storage</module>-->
+
+<!--        <module>jayud-email</module>-->
+<!--        <module>jayud-xxjob-task</module>-->
+<!--        <module>jayud-scm</module>-->
+
+<!--        <module>jayud-report</module>-->
+<!--        <module>jayud-work-flow</module>-->
+
+<!--        <module>jayud-system</module>-->
+<!--        <module>jayud-mybatisplus</module>-->
     </modules>
 
     <parent>

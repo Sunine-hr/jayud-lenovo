@@ -1,22 +1,14 @@
-package com.jayud.auth.model.po;
+package com.jayud.auth.model.dto;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.time.LocalDateTime;
-import java.math.BigDecimal;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import lombok.experimental.Accessors;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * SysRole 实体类
@@ -26,15 +18,16 @@ import lombok.experimental.Accessors;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value = "角色表对象", description = "角色表")
-public class SysRole extends SysBaseEntity {
+@ApiModel(value="角色表对象", description="角色表")
+public class AddSysRole extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "角色名称")
+    @NotBlank(message = "角色名称必填")
     private String roleName;
 
     @ApiModelProperty(value = "角色编码")
+    @NotBlank(message = "角色编码必填")
     private String roleCode;
 
     @ApiModelProperty(value = "是否启用：0-否；1-是")
@@ -47,13 +40,7 @@ public class SysRole extends SysBaseEntity {
     private String remark;
 
 
-    @ApiModelProperty(value = "是否删除，0未删除，1已删除")
-    @TableLogic
-    private Boolean isDeleted;
-
-
-
-
+    public void checkAddOrUpdate() {
 
 
     }

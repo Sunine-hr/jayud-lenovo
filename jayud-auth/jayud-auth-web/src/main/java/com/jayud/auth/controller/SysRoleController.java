@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -37,18 +39,20 @@ import javax.validation.Valid;
 public class SysRoleController {
 
     @Autowired
-    public ISysRoleService sysRoleService;
+    private ISysRoleService sysRoleService;
+    @Autowired
+    private ISysMenuService sysMenuService;
+    @Autowired
+    private ISysUserRoleService sysUserRoleService;
 
 
     /**
      * @description 分页查询
      * @author  jayud
      * @date   2022-02-21
-     * @param: sysRole
-     * @param: currentPage
      * @param: pageSize
      * @param: req
-     * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysRole>>
+     * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage < com.jayud.auth.model.po.SysRole>>
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
@@ -57,6 +61,10 @@ public class SysRoleController {
                                                                 @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                                 HttpServletRequest req) {
         return BaseResult.ok(sysRoleService.selectPage(sysRole,currentPage,pageSize,req));
+                                                 @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+                                                 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                 HttpServletRequest req) {
+        return BaseResult.ok(sysRoleService.selectPage(sysRole, currentPage, pageSize, req));
     }
 
 
@@ -83,11 +91,78 @@ public class SysRoleController {
     * @param: sysRole
     * @return: com.jayud.common.BaseResult
     **/
-    @ApiOperation("新增")
-    @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody SysRole sysRole ){
-        sysRoleService.save(sysRole);
+    @ApiOperation("新增/修改")
+    @PostMapping("/addOrUpdate")
+    public BaseResult addOrUpdate(@Valid @RequestBody AddSysRole form) {
+//        form.checkAddOrUpdate();
+        this.sysRoleService.checkUnique(form.getId(), form.getRoleName(), form.getRoleCode());
+        sysRoleService.addOrUpdate(form);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
+    }
+
+
+    /**
+     * @description 逻辑删除
+     * @author jayud
+     * @date 2022-02-21
+     * @param: id
+     * @return: com.jayud.common.BaseResult
+     **/
+    @ApiOperation("逻辑删除")
+    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
+    @GetMapping("/logicDel")
+    public BaseResult logicDel(@RequestParam Long id) {
+        if (this.sysUserRoleService.exitByRolesIds(Arrays.asList(id))) {
+            return BaseResult.error("存在角色绑定用户,无法删除");
+        }
+
+        sysRoleService.logicDel(id);
+        return BaseResult.ok(SysTips.DEL_SUCCESS);
+    }
+
+    /**
+     * @description 批量逻辑删除
+     * @author jayud
+     * @date 2022-02-21
+     * @param: id
+     * @return: com.jayud.common.BaseResult
+     **/
+    @ApiOperation("批量逻辑删除")
+    @GetMapping("/batchLogicDel")
+    public BaseResult batchLogicDel(@RequestBody List<SysRole> sysRoles) {
+        List<Long> rolesIds = sysRoles.stream().map(e -> e.getId()).collect(Collectors.toList());
+
+        if (this.sysUserRoleService.exitByRolesIds(rolesIds)) {
+            return BaseResult.error("存在角色绑定用户,无法删除");
+        }
+        List<SysRole> tmps = new ArrayList<>();
+        Date date = new Date();
+        for (Long rolesId : rolesIds) {
+            SysRole sysRole = new SysRole();
+            sysRole.setIsDeleted(true).setId(rolesId).setUpdateTime(date).setUpdateBy(CurrentUserUtil.getUsername());
+            tmps.add(sysRole);
+        }
+        sysRoleService.updateBatchById(tmps);
+        return BaseResult.ok(SysTips.DEL_SUCCESS);
+    }
+
+
+    @ApiOperation("关联员工")
+    @GetMapping("/associatedEmployees")
+    public BaseResult associatedEmployees(@RequestParam("rolesId") Long rolesId,
+                                          @RequestParam("userIds") List<Long> userIds) {
+        this.sysUserRoleService.associatedEmployees(rolesId,userIds);
+        return BaseResult.ok();
+
+    }
+
+    @ApiOperation("获取关联员工")
+    @GetMapping("/getAssociatedEmployees")
+    public BaseResult getAssociatedEmployees(@RequestParam("rolesId") Long rolesId,
+                                          @RequestParam("userIds") List<Long> userIds) {
+        this.sysUserRoleService.associatedEmployees(rolesId,userIds);
+        return BaseResult.ok();
+
     }
 
 
@@ -95,6 +170,8 @@ public class SysRoleController {
      * @description 编辑
      * @author  jayud
      * @date   2022-02-21
+     * @author jayud
+     * @date 2022-02-21
      * @param: sysRole
      * @return: com.jayud.common.BaseResult
      **/
@@ -111,6 +188,8 @@ public class SysRoleController {
      * @description 物理删除
      * @author  jayud
      * @date   2022-02-21
+     * @author jayud
+     * @date 2022-02-21
      * @param: id
      * @return: com.jayud.common.BaseResult
      **/
@@ -142,13 +221,15 @@ public class SysRoleController {
      * @description 根据id查询
      * @author  jayud
      * @date   2022-02-21
+     * @author jayud
+     * @date 2022-02-21
      * @param: id
      * @return: com.jayud.common.BaseResult<com.jayud.auth.model.po.SysRole>
      **/
     @ApiOperation("根据id查询")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
+    @ApiImplicitParam(name = "id", value = "主键id", dataType = "int", required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<SysRole> queryById(@RequestParam(name="id",required=true) int id) {
+    public BaseResult<SysRole> queryById(@RequestParam(name = "id", required = true) int id) {
         SysRole sysRole = sysRoleService.getById(id);
         return BaseResult.ok(sysRole);
     }

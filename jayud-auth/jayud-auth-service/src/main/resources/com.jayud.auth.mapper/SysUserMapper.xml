@@ -4,33 +4,33 @@
 
     <!-- 通用查询映射结果ss -->
     <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SysUser">
-        <id column="id" property="id" />
-        <result column="name" property="name" />
-        <result column="password" property="password" />
-        <result column="user_name" property="userName" />
-        <result column="en_user_name" property="enUserName" />
-        <result column="head_portrait" property="headPortrait" />
-        <result column="sex" property="sex" />
-        <result column="phone" property="phone" />
-        <result column="email" property="email" />
-        <result column="is_depart_charge" property="isDepartCharge" />
-        <result column="depart_id" property="departId" />
-        <result column="depart_ids" property="departIds" />
-        <result column="rel_tenant_ids" property="relTenantIds" />
-        <result column="post_id" property="postId" />
-        <result column="entry_time" property="entryTime" />
-        <result column="job_status" property="jobStatus" />
-        <result column="status" property="status" />
-        <result column="user_type" property="userType" />
-        <result column="supervisor_id" property="supervisorId" />
-        <result column="part_time_dep_id" property="partTimeDepId" />
-        <result column="tenant_code" property="tenantCode" />
-        <result column="remark" property="remark" />
-        <result column="is_deleted" property="isDeleted" />
-        <result column="create_by" property="createBy" />
-        <result column="create_time" property="createTime" />
-        <result column="update_by" property="updateBy" />
-        <result column="update_time" property="updateTime" />
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="password" property="password"/>
+        <result column="user_name" property="userName"/>
+        <result column="en_user_name" property="enUserName"/>
+        <result column="head_portrait" property="headPortrait"/>
+        <result column="sex" property="sex"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="is_depart_charge" property="isDepartCharge"/>
+        <result column="depart_id" property="departId"/>
+        <result column="depart_ids" property="departIds"/>
+        <result column="rel_tenant_ids" property="relTenantIds"/>
+        <result column="post_id" property="postId"/>
+        <result column="entry_time" property="entryTime"/>
+        <result column="job_status" property="jobStatus"/>
+        <result column="status" property="status"/>
+        <result column="user_type" property="userType"/>
+        <result column="supervisor_id" property="supervisorId"/>
+        <result column="part_time_dep_id" property="partTimeDepId"/>
+        <result column="tenant_code" property="tenantCode"/>
+        <result column="remark" property="remark"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -42,8 +42,10 @@
     <sql id="tname">sys_user </sql>
 
     <sql id="selects">
-        SELECT <include refid="Base_Column_List"/>
-        FROM <include refid="tname"/>
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tname"/>
         <where>
             is_deleted = 0
             <if test="sysUser.name != null and sysUser.name != ''">
@@ -133,15 +135,58 @@
         </where>
     </sql>
 
-    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysUser">
-        <include refid="selects"/>
+    <select id="pageList" parameterType="com.jayud.auth.model.bo.SysUserForm"
+            resultType="com.jayud.auth.model.vo.SysUserVO">
+
+        SELECT
+        id,
+        name,
+        password,
+        user_name,
+        en_user_name,
+        sex,
+        phone,
+        email,
+        is_depart_charge,
+        depart_id,
+        depart_ids,
+        rel_tenant_ids,
+        post_id,
+        entry_time,
+        job_status,
+        STATUS,
+        user_type,
+        supervisor_id,
+        part_time_dep_id,
+        tenant_code,
+        remark,
+        is_deleted,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        sys_user
+        <where>
+            is_deleted = 0
+            <if test="sysUser.name != null and sysUser.name != ''">
+                AND name = #{sysUser.name}
+            </if>
+            <if test="sysUser.departId != null and sysUser.departId != ''">
+                AND depart_id = #{sysUser.departId}
+            </if>
+            <if test="sysUser.creationTime !=null and sysUser.creationTime.size > 0">
+                and create_time between #{receiptNotice.creationTime[0]} and #{receiptNotice.creationTime[1]}
+            </if>
+
+        </where>
+        ORDER BY create_time DESC
+
     </select>
 
-    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysUser">
+    <select id="list" parameterType="com.jayud.auth.model.po.SysUser" resultType="com.jayud.auth.model.vo.SysUserVO">
         <include refid="selects"/>
     </select>
-
-
 
 
     <delete id="phyDelById">

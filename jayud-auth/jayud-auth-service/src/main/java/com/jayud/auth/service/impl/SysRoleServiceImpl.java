@@ -5,6 +5,9 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.dto.AddSysRole;
+import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.ConvertUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -16,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -41,21 +46,20 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                                         Integer currentPage,
                                         Integer pageSize,
                                         HttpServletRequest req){
-
-        Page<SysRole> page=new Page<SysRole>(currentPage,pageSize);
-        IPage<SysRole> pageList= sysRoleMapper.pageList(page, sysRole);
+        Page<SysRole> page = new Page<SysRole>(currentPage, pageSize);
+        IPage<SysRole> pageList = sysRoleMapper.pageList(page, sysRole);
         return pageList;
     }
 
     @Override
-    public List<SysRole> selectList(SysRole sysRole){
+    public List<SysRole> selectList(SysRole sysRole) {
         return sysRoleMapper.list(sysRole);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void phyDelById(Long id){
+    public void phyDelById(Long id) {
         sysRoleMapper.phyDelById(id);
     }
 
@@ -69,6 +73,31 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public List<SysRole> selectSysRoleByUserId(Long userId) {
         return sysRoleMapper.selectSysRoleByUserId(userId);
+    }
+
+    @Override
+    public boolean checkUnique(Long id, String roleName, String roleCode) {
+        SysRole sysRole = this.getOne(new QueryWrapper<>(new SysRole().setIsDeleted(false).setRoleName(roleName)));
+        if (sysRole != null && !sysRole.getId().equals(id)) {
+            throw new JayudBizException("角色名称必须唯一");
+        }
+        sysRole = this.getOne(new QueryWrapper<>(new SysRole().setIsDeleted(false).setRoleCode(roleCode)));
+        if (sysRole != null && !sysRole.getId().equals(id)) {
+            throw new JayudBizException("角色编码必须唯一");
+        }
+        return true;
+    }
+
+    @Override
+    public void addOrUpdate(AddSysRole form) {
+        SysRole sysRole = ConvertUtil.convert(form, SysRole.class);
+        if (sysRole.getId() == null) {
+            sysRole.setCreateTime(new Date()).setCreateBy(CurrentUserUtil.getUsername());
+            this.save(sysRole);
+        } else {
+            sysRole.setUpdateTime(new Date()).setUpdateBy(CurrentUserUtil.getUsername());
+            this.updateById(sysRole);
+        }
     }
 
 }

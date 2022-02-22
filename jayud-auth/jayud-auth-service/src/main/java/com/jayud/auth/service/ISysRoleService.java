@@ -2,6 +2,7 @@ package com.jayud.auth.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.dto.AddSysRole;
 import com.jayud.auth.model.po.SysRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -73,4 +74,8 @@ public interface ISysRoleService extends IService<SysRole> {
      * @return
      */
     List<SysRole> selectSysRoleByUserId(Long userId);
+
+    boolean checkUnique(Long id, String roleName, String roleCode);
+
+    void addOrUpdate(AddSysRole form);
 }

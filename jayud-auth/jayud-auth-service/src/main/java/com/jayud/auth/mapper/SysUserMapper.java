@@ -1,17 +1,16 @@
 package com.jayud.auth.mapper;
 
+import com.jayud.auth.model.bo.SysUserForm;
 import com.jayud.auth.model.po.SysUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import com.jayud.auth.model.vo.SysUserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 后台用户表 Mapper 接口
@@ -30,7 +29,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @param: sysUser
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysUser>
      **/
-    IPage<SysUser> pageList(@Param("page") Page<SysUser> page, @Param("sysUser") SysUser sysUser);
+    IPage<SysUserVO> pageList(@Param("page") Page<SysUserForm> page, @Param("sysUser") SysUserForm sysUser);
 
     /**
      * @description 列表查询数据
@@ -39,7 +38,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @param: sysUser
      * @return: java.util.List<com.jayud.auth.model.po.SysUser>
      **/
-    List<SysUser> list(@Param("sysUser") SysUser sysUser);
+    List<SysUserVO> list(@Param("sysUser") SysUser sysUser);
 
 
     /**

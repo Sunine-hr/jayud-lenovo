@@ -16,17 +16,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 用户-角色关联表 服务实现类
  *
  * @author jayud
- * @since 2022-02-21
+ * @since 2022-02-22
  */
 @Slf4j
 @Service
@@ -62,8 +58,30 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id){
-        sysUserRoleMapper.logicDel(id,CurrentUserUtil.getUsername());
+    public void logicDel(Long id) {
+        sysUserRoleMapper.logicDel(id, CurrentUserUtil.getUsername());
+    }
+
+    @Override
+    public boolean exitByRolesIds(List<Long> rolesIds) {
+        QueryWrapper<SysUserRole> condition = new QueryWrapper<>();
+        condition.lambda().in(SysUserRole::getRoleId, rolesIds).eq(SysUserRole::getIsDeleted, false);
+        return this.count(condition) > 0;
+    }
+
+    @Override
+    public void associatedEmployees(Long rolesId, List<Long> userIds) {
+        QueryWrapper<SysUserRole> condition = new QueryWrapper<>();
+        condition.lambda().eq(SysUserRole::getRoleId, rolesId).eq(SysUserRole::getIsDeleted, false);
+        this.update(new SysUserRole().setIsDeleted(true), condition);
+
+        List<SysUserRole> list = new ArrayList<>();
+        for (Long userId : userIds) {
+            SysUserRole sysUserRole = new SysUserRole();
+            sysUserRole.setRoleId(rolesId).setUserId(userId);
+            list.add(sysUserRole);
+        }
+        this.saveBatch(list);
     }
 
 }

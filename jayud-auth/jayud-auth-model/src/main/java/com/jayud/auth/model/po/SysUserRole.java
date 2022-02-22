@@ -15,15 +15,17 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import lombok.experimental.Accessors;
 
 /**
  * SysUserRole 实体类
  *
  * @author jayud
- * @since 2022-02-21
+ * @since 2022-02-22
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
 @ApiModel(value="用户-角色关联表对象", description="用户-角色关联表")
 public class SysUserRole extends SysBaseEntity {
 

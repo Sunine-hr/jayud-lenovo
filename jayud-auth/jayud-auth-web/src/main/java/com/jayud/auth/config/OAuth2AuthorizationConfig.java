@@ -270,9 +270,9 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 		//复用refresh_token
 		tokenServices.setReuseRefreshToken(true);
 		//token有效期，设置1小时
-		tokenServices.setAccessTokenValiditySeconds(1*60*60);
+		tokenServices.setAccessTokenValiditySeconds(24*60*60);
 		//refresh_token有效期，设置1天
-		tokenServices.setRefreshTokenValiditySeconds(24*60*60);
+		tokenServices.setRefreshTokenValiditySeconds(36*60*60);
 		return tokenServices;
 	}
 }

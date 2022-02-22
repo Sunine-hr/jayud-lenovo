@@ -17,7 +17,7 @@ import java.util.Map;
  * 用户-角色关联表 Mapper 接口
  *
  * @author jayud
- * @since 2022-02-21
+ * @since 2022-02-22
  */
 @Mapper
 public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
@@ -25,7 +25,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: page
      * @param: sysUserRole
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysUserRole>
@@ -35,7 +35,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     /**
      * @description 列表查询数据
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: sysUserRole
      * @return: java.util.List<com.jayud.auth.model.po.SysUserRole>
      **/
@@ -45,7 +45,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     /**
      * @description 根据id物理删除
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: id
      * @return: int
      **/
@@ -54,7 +54,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     /**
      * @description 根据id逻辑删除
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: id
      * @param: username
      * @return: int

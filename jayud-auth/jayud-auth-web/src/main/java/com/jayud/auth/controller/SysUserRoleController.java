@@ -28,7 +28,7 @@ import javax.validation.Valid;
  * 用户-角色关联表 控制类
  *
  * @author jayud
- * @since 2022-02-21
+ * @since 2022-02-22
  */
 @Slf4j
 @Api(tags = "用户-角色关联表")
@@ -45,7 +45,7 @@ public class SysUserRoleController {
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: sysUserRole
      * @param: currentPage
      * @param: pageSize
@@ -65,7 +65,7 @@ public class SysUserRoleController {
     /**
     * @description 列表查询数据
     * @author  jayud
-    * @date   2022-02-21
+    * @date   2022-02-22
     * @param: sysUserRole
     * @param: req
     * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.auth.model.po.SysUserRole>>
@@ -81,7 +81,7 @@ public class SysUserRoleController {
     /**
     * @description 新增
     * @author  jayud
-    * @date   2022-02-21
+    * @date   2022-02-22
     * @param: sysUserRole
     * @return: com.jayud.common.BaseResult
     **/
@@ -96,7 +96,7 @@ public class SysUserRoleController {
     /**
      * @description 编辑
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: sysUserRole
      * @return: com.jayud.common.BaseResult
      **/
@@ -112,7 +112,7 @@ public class SysUserRoleController {
     /**
      * @description 物理删除
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: id
      * @return: com.jayud.common.BaseResult
      **/
@@ -127,7 +127,7 @@ public class SysUserRoleController {
     /**
      * @description 逻辑删除
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: id
      * @return: com.jayud.common.BaseResult
      **/
@@ -143,7 +143,7 @@ public class SysUserRoleController {
     /**
      * @description 根据id查询
      * @author  jayud
-     * @date   2022-02-21
+     * @date   2022-02-22
      * @param: id
      * @return: com.jayud.common.BaseResult<com.jayud.auth.model.po.SysUserRole>
      **/

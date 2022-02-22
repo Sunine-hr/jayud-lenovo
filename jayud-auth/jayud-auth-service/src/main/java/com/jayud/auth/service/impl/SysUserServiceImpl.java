@@ -1,10 +1,11 @@
 package com.jayud.auth.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ObjectUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.bo.SysUserForm;
+import com.jayud.auth.model.vo.SysUserVO;
+import com.jayud.common.BaseResult;
+import com.jayud.common.utils.ConvertUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -17,10 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 后台用户表 服务实现类
@@ -37,33 +35,61 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private SysUserMapper sysUserMapper;
 
     @Override
-    public IPage<SysUser> selectPage(SysUser sysUser,
-                                        Integer currentPage,
-                                        Integer pageSize,
-                                        HttpServletRequest req){
+    public IPage<SysUserVO> selectPage(SysUserForm sysUserForm,
+                                       Integer currentPage,
+                                       Integer pageSize,
+                                       HttpServletRequest req) {
 
-        Page<SysUser> page=new Page<SysUser>(currentPage,pageSize);
-        IPage<SysUser> pageList= sysUserMapper.pageList(page, sysUser);
+        Page<SysUserForm> page = new Page<SysUserForm>(currentPage, pageSize);
+        IPage<SysUserVO> pageList = sysUserMapper.pageList(page, sysUserForm);
         return pageList;
     }
 
     @Override
-    public List<SysUser> selectList(SysUser sysUser){
+    public List<SysUserVO> selectList(SysUser sysUser) {
         return sysUserMapper.list(sysUser);
+    }
+
+    @Override
+    public boolean saveOrUpdateSysUser(SysUserForm sysUserForm) {
+        Boolean result = null;
+        SysUser convert = ConvertUtil.convert(sysUserForm, SysUser.class);
+        if (convert.getId() != null) {
+            convert.setUpdateBy(CurrentUserUtil.getUsername());
+            convert.setUpdateTime(new Date());
+            result = this.updateById(convert);
+        } else {
+            convert.setCreateBy(CurrentUserUtil.getUsername());
+            convert.setCreateTime(new Date());
+            result = this.saveOrUpdate(convert);
+        }
+        if (result) {
+            log.warn("新增或修改库区成功");
+            return true;
+        }
+        return false;
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void phyDelById(Long id){
+    public void phyDelById(Long id) {
         sysUserMapper.phyDelById(id);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id){
-        sysUserMapper.logicDel(id,CurrentUserUtil.getUsername());
+    public BaseResult deleteSysUser(List<Long> ids) {
+
+        for (int i = 0; i < ids.size(); i++) {
+            SysUser sysUser = new SysUser();
+            sysUser.setId(ids.get(i));
+            sysUser.setIsDeleted(true);
+            sysUserMapper.updateById(sysUser);
+        }
+
+        return BaseResult.ok();
     }
 
 }

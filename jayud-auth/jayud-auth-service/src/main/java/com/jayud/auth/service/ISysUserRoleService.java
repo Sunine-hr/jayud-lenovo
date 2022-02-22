@@ -16,6 +16,7 @@ import java.util.Map;
  *
  * @author jayud
  * @since 2022-02-21
+ * @since 2022-02-22
  */
 public interface ISysUserRoleService extends IService<SysUserRole> {
 
@@ -24,6 +25,7 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
      * @description 分页查询
      * @author  jayud
      * @date   2022-02-21
+     * @date   2022-02-22
      * @param: sysUserRole
      * @param: currentPage
      * @param: pageSize
@@ -39,6 +41,7 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
      * @description 列表查询数据
      * @author  jayud
      * @date   2022-02-21
+     * @date   2022-02-22
      * @param: sysUserRole
      * @param: req
      * @return: java.util.List<com.jayud.auth.model.po.SysUserRole>
@@ -51,6 +54,7 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
      * @description 物理删除
      * @author  jayud
      * @date   2022-02-21
+     * @date   2022-02-22
      * @param: id
      * @return: void
      **/
@@ -61,6 +65,7 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
     * @description 逻辑删除
     * @author  jayud
     * @date   2022-02-21
+    * @date   2022-02-22
     * @param: id
     * @return: com.jyd.component.commons.result.Result
     **/
@@ -69,4 +74,7 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
 
 
 
+    boolean exitByRolesIds(List<Long> rolesIds);
+
+    void associatedEmployees(Long rolesId, List<Long> userIds);
 }

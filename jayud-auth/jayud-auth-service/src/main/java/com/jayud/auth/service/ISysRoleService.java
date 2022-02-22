@@ -81,4 +81,5 @@ public interface ISysRoleService extends IService<SysRole> {
     void setRoles(Long userId, List<Long> roleIds);
 
     void setRolePermissions(Long rolesId, List<Long> menuIds);
+
 }

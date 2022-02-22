@@ -220,6 +220,16 @@ public class SysRoleController {
     }
 
     /**
+     * @description 根据角色id获取菜单权限id
+     **/
+    @ApiOperation("根据角色id获取菜单权限id")
+    @GetMapping("/getMenuIdsByRoleId")
+    public BaseResult<List<Long>> getMenuIdsByRoleId(@RequestParam("roleId") Long roleId) {
+        List<Long> menuIds = sysRoleMenuService.getMenuIdsByRoleId(roleId);
+        return BaseResult.ok(menuIds);
+    }
+
+    /**
      * @description 设置角色权限
      **/
     @ApiOperation("设置角色权限")

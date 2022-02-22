@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 角色-菜单关联表 服务实现类
@@ -71,6 +72,13 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
         QueryWrapper<SysRoleMenu> condition = new QueryWrapper<>();
         condition.lambda().eq(SysRoleMenu::getIsDeleted, false).eq(SysRoleMenu::getRoleId, roleId);
         this.update(new SysRoleMenu().setIsDeleted(true), condition);
+    }
+
+    @Override
+    public List<Long> getMenuIdsByRoleId(Long roleId) {
+        List<SysRoleMenu> roleMenus = this.baseMapper.selectList(new QueryWrapper<>(new SysRoleMenu().setIsDeleted(false).setRoleId(roleId)));
+        List<Long> menuIds = roleMenus.stream().map(e -> e.getMenuId()).collect(Collectors.toList());
+        return menuIds;
     }
 
 }

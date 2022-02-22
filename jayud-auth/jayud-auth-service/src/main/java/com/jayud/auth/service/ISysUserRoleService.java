@@ -4,6 +4,7 @@ package com.jayud.auth.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.auth.model.po.SysUserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.auth.model.vo.SysUserVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -75,5 +76,7 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
 
     void associatedEmployees(Long rolesId, List<Long> userIds);
 
-    IPage<SysUserRole> selectAssociatedEmployeesPage(Long rolesId, Integer currentPage, Integer pageSize, HttpServletRequest req);
+    IPage<SysUserVO> selectAssociatedEmployeesPage(Long rolesId, Integer currentPage, Integer pageSize, HttpServletRequest req);
+
+    void deleteEmployees(Long rolesId, List<Long> userIds);
 }

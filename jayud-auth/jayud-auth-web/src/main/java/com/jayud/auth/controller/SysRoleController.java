@@ -2,6 +2,7 @@ package com.jayud.auth.controller;
 
 import com.jayud.auth.model.dto.AddSysRole;
 import com.jayud.auth.model.po.SysUserRole;
+import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.service.ISysMenuService;
 import com.jayud.auth.service.ISysUserRoleService;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -53,8 +54,8 @@ public class SysRoleController {
 
     /**
      * @description 分页查询
-     * @author  jayud
-     * @date   2022-02-21
+     * @author jayud
+     * @date 2022-02-21
      * @param: pageSize
      * @param: req
      * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage < com.jayud.auth.model.po.SysRole>>
@@ -62,21 +63,21 @@ public class SysRoleController {
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
     public BaseResult<IPage<SysRole>> selectPage(SysRole sysRole,
-            @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
-            @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-            HttpServletRequest req) {
+                                                 @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+                                                 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                 HttpServletRequest req) {
         return BaseResult.ok(sysRoleService.selectPage(sysRole, currentPage, pageSize, req));
     }
 
 
     /**
-    * @description 列表查询数据
-    * @author  jayud
-    * @date   2022-02-21
-    * @param: sysRole
-    * @param: req
-    * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.auth.model.po.SysRole>>
-    **/
+     * @description 列表查询数据
+     * @author jayud
+     * @date 2022-02-21
+     * @param: sysRole
+     * @param: req
+     * @return: com.jayud.common.BaseResult<java.util.List < com.jayud.auth.model.po.SysRole>>
+     **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
     public BaseResult<List<SysRole>> selectList(SysRole sysRole,
@@ -86,12 +87,12 @@ public class SysRoleController {
 
 
     /**
-    * @description 新增
-    * @author  jayud
-    * @date   2022-02-21
-    * @param: sysRole
-    * @return: com.jayud.common.BaseResult
-    **/
+     * @description 新增
+     * @author jayud
+     * @date 2022-02-21
+     * @param: sysRole
+     * @return: com.jayud.common.BaseResult
+     **/
     @ApiOperation("新增/修改")
     @PostMapping("/addOrUpdate")
     public BaseResult addOrUpdate(@Valid @RequestBody AddSysRole form) {
@@ -159,15 +160,59 @@ public class SysRoleController {
 
     @ApiOperation("分页查询关联员工")
     @GetMapping("/selectAssociatedEmployeesPage")
-    public BaseResult<IPage<SysUserRole>> selectAssociatedEmployeesPage(@RequestParam("rolesId") Long rolesId,
-                                                                        @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
-                                                                        @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                                                        HttpServletRequest req) {
-        IPage<SysUserRole> page = this.sysUserRoleService.selectAssociatedEmployeesPage(rolesId, currentPage, pageSize,req);
+    public BaseResult<IPage<SysUserVO>> selectAssociatedEmployeesPage(@RequestParam("rolesId") Long rolesId,
+                                                                      @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+                                                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                                      HttpServletRequest req) {
+        IPage<SysUserVO> page = this.sysUserRoleService.selectAssociatedEmployeesPage(rolesId, currentPage, pageSize, req);
         return BaseResult.ok(page);
 
     }
 
+
+    /**
+     * @description 删除员工
+     * @author jayud
+     * @date 2022-02-21
+     * @param: sysRole
+     * @return: com.jayud.common.BaseResult
+     **/
+    @ApiOperation("删除员工")
+    @PostMapping("/deleteEmployee")
+    public BaseResult deleteEmployee(@RequestParam("rolesId") Long rolesId, @RequestParam("userId") Long userId) {
+        sysUserRoleService.deleteEmployees(rolesId, Arrays.asList(userId));
+        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+    }
+
+
+    /**
+     * @description 批量删除员工
+     * @author jayud
+     * @date 2022-02-21
+     * @param: sysRole
+     * @return: com.jayud.common.BaseResult
+     **/
+    @ApiOperation("批量删除员工")
+    @PostMapping("/deleteEmployees")
+    public BaseResult deleteEmployees(@RequestParam("rolesId") Long rolesId, @RequestParam("userIds") List<Long> userIds) {
+        sysUserRoleService.deleteEmployees(rolesId, userIds);
+        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+    }
+
+
+    /**
+     * @description 根据用户id获取角色
+     * @author jayud
+     * @date 2022-02-21
+     * @param: sysRole
+     * @return: com.jayud.common.BaseResult
+     **/
+    @ApiOperation("根据用户id获取角色")
+    @GetMapping("/getRoleByUserId")
+    public BaseResult<List<SysRole>> getRoleByUserId(@RequestParam("userId") Long userId) {
+        List<SysRole> sysRoles = sysRoleService.getRoleByUserId(userId);
+        return BaseResult.ok(sysRoles);
+    }
 
     /**
      * @description 编辑
@@ -176,26 +221,25 @@ public class SysRoleController {
      * @param: sysRole
      * @return: com.jayud.common.BaseResult
      **/
-    @ApiOperation("编辑")
-    @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody SysRole sysRole ){
-        sysRoleService.updateById(sysRole);
-        return BaseResult.ok(SysTips.EDIT_SUCCESS);
-    }
-
+//    @ApiOperation("编辑")
+//    @PostMapping("/edit")
+//    public BaseResult edit(@Valid @RequestBody SysRole sysRole ){
+//        sysRoleService.updateById(sysRole);
+//        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+//    }
 
 
     /**
      * @description 物理删除
-     * @author  jayud
-     * @date   2022-02-21
+     * @author jayud
+     * @date 2022-02-21
      * @param: id
      * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
+    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
     @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id){
+    public BaseResult phyDel(@RequestParam Long id) {
         sysRoleService.phyDelById(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
@@ -203,8 +247,8 @@ public class SysRoleController {
 
     /**
      * @description 根据id查询
-     * @author  jayud
-     * @date   2022-02-21
+     * @author jayud
+     * @date 2022-02-21
      * @param: id
      * @return: com.jayud.common.BaseResult<com.jayud.auth.model.po.SysRole>
      **/

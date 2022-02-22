@@ -78,4 +78,6 @@ public interface ISysRoleService extends IService<SysRole> {
     boolean checkUnique(Long id, String roleName, String roleCode);
 
     void addOrUpdate(AddSysRole form);
+
+    List<SysRole> getRoleByUserId(Long userId);
 }

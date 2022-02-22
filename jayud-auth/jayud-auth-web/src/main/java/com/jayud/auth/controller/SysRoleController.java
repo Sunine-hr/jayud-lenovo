@@ -3,6 +3,7 @@ package com.jayud.auth.controller;
 import com.jayud.auth.model.dto.AddSysRole;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.service.ISysMenuService;
+import com.jayud.auth.service.ISysRoleMenuService;
 import com.jayud.auth.service.ISysUserRoleService;
 import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +47,8 @@ public class SysRoleController {
     private ISysMenuService sysMenuService;
     @Autowired
     private ISysUserRoleService sysUserRoleService;
+    @Autowired
+    private ISysRoleMenuService sysRoleMenuService;
 
 
     /**
@@ -154,6 +157,14 @@ public class SysRoleController {
 
     }
 
+    @ApiOperation("根据角色id获取用户id集合")
+    @GetMapping("/getUserIdsByRoleId")
+    public BaseResult<List<Long>> getUserIdsByRoleId(@RequestParam("roleId") Long roleId) {
+        List<Long> userIds = this.sysUserRoleService.getUserIdsByRoleId(roleId);
+        return BaseResult.ok(userIds);
+
+    }
+
     @ApiOperation("分页查询关联员工")
     @GetMapping("/selectAssociatedEmployeesPage")
     public BaseResult<IPage<SysUserVO>> selectAssociatedEmployeesPage(@RequestParam("rolesId") Long rolesId,
@@ -196,6 +207,26 @@ public class SysRoleController {
     public BaseResult<List<Long>> getRoleIdsByUserId(@RequestParam("userId") Long userId) {
         List<Long> roleIds = sysRoleService.getRoleIdsByUserId(userId);
         return BaseResult.ok(roleIds);
+    }
+
+    /**
+     * @description 设置角色
+     **/
+    @ApiOperation("设置角色")
+    @GetMapping("/setRoles")
+    public BaseResult setRoles(@RequestParam("userId") Long userId, @RequestParam("roleIds") List<Long> roleIds) {
+        sysRoleService.setRoles(userId, roleIds);
+        return BaseResult.ok();
+    }
+
+    /**
+     * @description 设置角色权限
+     **/
+    @ApiOperation("设置角色权限")
+    @GetMapping("/setRolePermissions")
+    public BaseResult setRolePermissions(@RequestParam("rolesId") Long rolesId, @RequestParam("menuIds") List<Long> menuIds) {
+        sysRoleService.setRolePermissions(rolesId, menuIds);
+        return BaseResult.ok();
     }
 
     /**

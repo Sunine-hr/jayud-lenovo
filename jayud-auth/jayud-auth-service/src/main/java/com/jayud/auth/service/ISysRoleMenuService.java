@@ -67,6 +67,5 @@ public interface ISysRoleMenuService extends IService<SysRoleMenu> {
     void logicDel(Long id);
 
 
-
-
+    void deleteByRoleId(Long roleId);
 }

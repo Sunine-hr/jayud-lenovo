@@ -81,4 +81,8 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
     void deleteEmployees(Long rolesId, List<Long> userIds);
 
     List<SysUserRole> getByCondition(SysUserRole sysUserRole);
+
+    void deleteByUserId(Long userId);
+
+    List<Long> getUserIdsByRoleId(Long roleId);
 }

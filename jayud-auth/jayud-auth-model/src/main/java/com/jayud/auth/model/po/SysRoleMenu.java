@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import lombok.experimental.Accessors;
 
 /**
  * SysRoleMenu 实体类
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
 @ApiModel(value="角色-菜单关联表对象", description="角色-菜单关联表")
 public class SysRoleMenu extends SysBaseEntity {
 

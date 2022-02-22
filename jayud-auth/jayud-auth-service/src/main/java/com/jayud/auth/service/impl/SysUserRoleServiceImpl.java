@@ -114,4 +114,19 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         return this.baseMapper.selectList(condition);
     }
 
+    @Override
+    public void deleteByUserId(Long userId) {
+        QueryWrapper<SysUserRole> condition = new QueryWrapper<>();
+        condition.lambda().eq(SysUserRole::getUserId, userId)
+                .eq(SysUserRole::getIsDeleted, false);
+        this.baseMapper.update(new SysUserRole().setIsDeleted(true), condition);
+    }
+
+    @Override
+    public List<Long> getUserIdsByRoleId(Long roleId) {
+        List<SysUserRole> sysUserRoles = this.baseMapper.selectList(new QueryWrapper<>(new SysUserRole().setRoleId(roleId).setIsDeleted(false)));
+        List<Long> userIds = sysUserRoles.stream().map(e -> e.getUserId()).collect(Collectors.toList());
+        return userIds;
+    }
+
 }

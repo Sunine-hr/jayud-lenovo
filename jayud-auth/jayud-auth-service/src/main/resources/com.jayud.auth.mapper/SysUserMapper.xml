@@ -199,4 +199,49 @@
     </update>
 
 
+
+
+    <select id="findSysUserNameOne" parameterType="com.jayud.auth.model.bo.SysUserForm" resultType="com.jayud.auth.model.vo.SysUserVO">
+        SELECT
+        id,
+        name,
+        password,
+        user_name,
+        en_user_name,
+        sex,
+        phone,
+        email,
+        is_depart_charge,
+        depart_id,
+        depart_ids,
+        rel_tenant_ids,
+        post_id,
+        entry_time,
+        job_status,
+        STATUS,
+        user_type,
+        supervisor_id,
+        part_time_dep_id,
+        tenant_code,
+        remark,
+        is_deleted,
+        create_by,
+        create_time,
+        update_by,
+        update_times
+        FROM
+        sys_user
+        <where>
+            is_deleted = 0
+            <if test="sysUser.name != null and sysUser.name != ''">
+                AND name = #{sysUser.name}
+            </if>
+            <if test="sysUser.departId != null and sysUser.departId != ''">
+                AND depart_id = #{sysUser.departId}
+            </if>
+
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
 </mapper>

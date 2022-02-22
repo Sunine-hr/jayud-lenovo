@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * SysUser 实体类
@@ -95,5 +96,6 @@ public class SysUserVO extends SysBaseEntity {
     @TableLogic
     private Boolean isDeleted;
 
-
+    @ApiModelProperty(value = "用户关联的角色")
+    private List<Long> warehouseList;
 }

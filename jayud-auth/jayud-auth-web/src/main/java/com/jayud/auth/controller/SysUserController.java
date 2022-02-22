@@ -3,6 +3,7 @@ package com.jayud.auth.controller;
 import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.bo.SysUserForm;
 import com.jayud.auth.model.vo.SysUserVO;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.RestController;
@@ -73,6 +74,22 @@ public class SysUserController {
         return BaseResult.ok(sysUserService.selectList(sysUser));
     }
 
+    /**
+     * @description 根据ids查询数据
+     **/
+    @ApiOperation("根据ids查询数据")
+    @PostMapping("/selectIdsList")
+    public BaseResult<List<SysUserVO>> selectIdsList(@RequestParam DeleteForm ids) {
+
+
+        //需要写一个根据id集合查询列表信息
+
+        return BaseResult.ok();
+    }
+
+
+
+
 
     /**
      * @description 新增
@@ -84,24 +101,34 @@ public class SysUserController {
     @ApiOperation("新增")
     @PostMapping("/saveOrUpdate")
     public BaseResult add(@RequestBody SysUserForm sysUserForm) {
+        if (sysUserForm != null) {
+            return BaseResult.error("数据不能为空！");
+        }
+        if(sysUserForm.getId()==null){
+            SysUserVO sysUserName = sysUserService.findSysUserName(sysUserForm);
+            if(sysUserName!=null){
+                return BaseResult.error("用户名已存在！");
+            }
+        }
+
         sysUserService.saveOrUpdateSysUser(sysUserForm);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
 
 
-    /**
-     * @description 编辑
-     * @author jayud
-     * @date 2022-02-21
-     * @param: sysUser
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("编辑")
-    @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody SysUser sysUser) {
-        sysUserService.updateById(sysUser);
-        return BaseResult.ok(SysTips.EDIT_SUCCESS);
-    }
+//    /**
+//     * @description 编辑
+//     * @author jayud
+//     * @date 2022-02-21
+//     * @param: sysUser
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("编辑")
+//    @PostMapping("/edit")
+//    public BaseResult edit(@Valid @RequestBody SysUser sysUser) {
+//        sysUserService.updateById(sysUser);
+//        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+//    }
 
 
 //    /**
@@ -148,9 +175,13 @@ public class SysUserController {
     @ApiOperation("根据id查询")
     @ApiImplicitParam(name = "id", value = "主键id", dataType = "int", required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<SysUser> queryById(@RequestParam(name = "id", required = true) int id) {
+    public BaseResult<SysUserVO> queryById(@RequestParam(name = "id", required = true) int id) {
         SysUser sysUser = sysUserService.getById(id);
-        return BaseResult.ok(sysUser);
+
+        //关联查询用户信息 关联表 行合并  成列
+
+
+        return BaseResult.ok();
     }
 
 

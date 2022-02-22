@@ -172,11 +172,21 @@
             <if test="sysUser.name != null and sysUser.name != ''">
                 AND name = #{sysUser.name}
             </if>
+            <if test="sysUser.tenantCode != null and sysUser.tenantCode != ''">
+                AND tenant_code = #{sysUser.tenantCode}
+            </if>
             <if test="sysUser.departId != null and sysUser.departId != ''">
                 AND depart_id = #{sysUser.departId}
             </if>
             <if test="sysUser.creationTime !=null and sysUser.creationTime.size > 0">
                 and create_time between #{receiptNotice.creationTime[0]} and #{receiptNotice.creationTime[1]}
+            </if>
+
+            <if test="sysUser.roleIds != null ">
+                AND id IN
+                <foreach item="id" collection="sysUser.roleIds" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
             </if>
 
         </where>
@@ -224,6 +234,9 @@
             is_deleted = 0
             <if test="sysUser.name != null and sysUser.name != ''">
                 AND name = #{sysUser.name}
+            </if>
+            <if test="sysUser.tenantCode != null and sysUser.tenantCode != ''">
+                AND tenant_code = #{sysUser.tenantCode}
             </if>
             <if test="sysUser.departId != null and sysUser.departId != ''">
                 AND depart_id = #{sysUser.departId}

@@ -75,7 +75,7 @@ public class SysUserController {
     }
 
     /**
-     * @description 根据ids查询数据
+     * @description 根据ids查询数据  没用到
      **/
     @ApiOperation("根据ids查询数据")
     @PostMapping("/selectIdsList")

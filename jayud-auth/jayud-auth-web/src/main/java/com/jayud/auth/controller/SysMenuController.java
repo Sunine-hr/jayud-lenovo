@@ -39,12 +39,22 @@ public class SysMenuController {
         return BaseResult.ok(jsonObject);
     }
 
+    /**
+     * 获取所有的菜单树
+     * @return
+     */
     @ApiModelProperty(value = "获取所有的菜单")
     @PostMapping(value = "allMenuTree")
     public BaseResult<List<SysMenu>> allMenuTree(){
         List<SysMenu> tree = sysMenuService.allMenuTree();
         return BaseResult.ok(tree);
     }
+
+    /**
+     * 分页查询
+     */
+
+
 
 
 }

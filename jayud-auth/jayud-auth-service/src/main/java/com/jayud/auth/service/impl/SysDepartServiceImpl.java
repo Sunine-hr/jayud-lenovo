@@ -131,17 +131,25 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
             depart.setUpdateTime(new Date());
         }
         //获取当前用户租户编码
-        String userTenantCode = CurrentUserUtil.getUserTenantCode();
-        QueryWrapper<SysDepart> sysDepartQueryWrapper = new QueryWrapper<>();
-        sysDepartQueryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
-        sysDepartQueryWrapper.lambda().eq(SysDepart::getTenantCode, userTenantCode);
-        sysDepartQueryWrapper.lambda().eq(SysDepart::getOrgCategory, "1");
-        sysDepartQueryWrapper.lambda().groupBy(SysDepart::getOrgCode);
-        SysDepart one = this.getOne(sysDepartQueryWrapper);
-        if(ObjectUtil.isNotEmpty(one)){
-            throw new IllegalArgumentException("一个租户仅能存在一个集团");
+        String orgCategory = depart.getOrgCategory();
+        if("1".equals(orgCategory)){
+            String userTenantCode = CurrentUserUtil.getUserTenantCode();
+            QueryWrapper<SysDepart> sysDepartQueryWrapper = new QueryWrapper<>();
+            sysDepartQueryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
+            sysDepartQueryWrapper.lambda().eq(SysDepart::getTenantCode, userTenantCode);
+            sysDepartQueryWrapper.lambda().eq(SysDepart::getOrgCategory, orgCategory);
+            sysDepartQueryWrapper.lambda().groupBy(SysDepart::getOrgCode);
+            SysDepart one = this.getOne(sysDepartQueryWrapper);
+            if(ObjectUtil.isNotEmpty(one)){
+                throw new IllegalArgumentException("一个租户仅能存在一个集团");
+            }
         }
-        Long parentId = ObjectUtil.isEmpty(depart.getParentId()) ? 0L : depart.getParentId();
+        //Long parentId = ObjectUtil.isEmpty(depart.getParentId()) ? 0L : depart.getParentId();
+        Long parentId = 0L;
+        List<Long> parentIdList = depart.getParentIdList();
+        if(CollUtil.isNotEmpty(parentIdList)){
+            parentId = parentIdList.get(parentIdList.size() - 1);
+        }
         depart.setParentId(parentId);
 
         this.saveOrUpdate(depart);

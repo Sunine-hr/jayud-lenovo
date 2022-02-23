@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.SysDictItemMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SysDictItem">
+        <id column="id" property="id" />
+        <result column="dict_id" property="dictId" />
+        <result column="item_text" property="itemText" />
+        <result column="item_value" property="itemValue" />
+        <result column="sort_order" property="sortOrder" />
+        <result column="status" property="status" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, dict_id, item_text, item_value, sort_order, status, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">sys_dict_item </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="sysDictItem.dictId != null ">
+                AND dict_id = ${sysDictItem.dictId}
+            </if>
+
+            <if test="sysDictItem.itemText != null and sysDictItem.itemText != ''">
+                AND item_text = #{sysDictItem.itemText}
+            </if>
+
+            <if test="sysDictItem.itemValue != null and sysDictItem.itemValue != ''">
+                AND item_value = #{sysDictItem.itemValue}
+            </if>
+
+            <if test="sysDictItem.sortOrder != null ">
+                AND sort_order = ${sysDictItem.sortOrder}
+            </if>
+
+            <if test="sysDictItem.status != null ">
+                AND status = ${sysDictItem.status}
+            </if>
+
+            <if test="sysDictItem.remark != null and sysDictItem.remark != ''">
+                AND remark = #{sysDictItem.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysDictItem">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysDictItem">
+        <include refid="selects"/>
+    </select>
+
+    <select id="selectItemByDictCode" resultMap="BaseResultMap">
+
+    </select>
+
+
+    <delete id="phyDelById">
+        DELETE FROM  sys_dict_item WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE sys_dict_item SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+
+</mapper>

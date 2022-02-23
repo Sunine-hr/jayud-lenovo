@@ -105,20 +105,20 @@ public class SysDepartController {
 
 
 
-    /**
-     * @description 物理删除
-     * @author  jayud
-     * @date   2022-02-22
-     * @param: id
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id){
-        sysDepartService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
+//    /**
+//     * @description 物理删除
+//     * @author  jayud
+//     * @date   2022-02-22
+//     * @param: id
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("物理删除")
+//    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
+//    @GetMapping("/phyDel")
+//    public BaseResult phyDel(@RequestParam Long id){
+//        sysDepartService.phyDelById(id);
+//        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//    }
 
     /**
      * @description 逻辑删除
@@ -147,7 +147,7 @@ public class SysDepartController {
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
     @GetMapping(value = "/queryById")
     public BaseResult<SysDepart> queryById(@RequestParam(name="id",required=true) int id) {
-        SysDepart sysDepart = sysDepartService.getById(id);
+        SysDepart sysDepart = sysDepartService.queryById(id);
         return BaseResult.ok(sysDepart);
     }
 

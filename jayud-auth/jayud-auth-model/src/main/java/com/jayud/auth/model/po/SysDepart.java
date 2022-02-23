@@ -82,6 +82,7 @@ public class SysDepart extends SysBaseEntity {
     @ApiModelProperty(value = "组织/部门负责人")
     private Long principalId;
 
+    @ApiModelProperty(value = "给前端展示")
     @TableField(exist = false)
     private List<SysDepart> children;
 
@@ -93,5 +94,11 @@ public class SysDepart extends SysBaseEntity {
     @TableField(exist = false)
     private Long value;
 
+    @ApiModelProperty(value = "给前端展示")
+    @TableField(exist = false)
+    private List<Long> parentIdList;
 
+    @ApiModelProperty(value = "组织/部门负责人-给前端展示")
+    @TableField(exist = false)
+    private String principalName;
 }

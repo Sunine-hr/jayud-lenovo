@@ -87,4 +87,11 @@ public interface ISysDepartService extends IService<SysDepart> {
      * @return
      */
     List<SysDepart> selectSuperiorOrganization(QuerySysDeptForm form);
+
+    /**
+     * 查询组织
+     * @param id
+     * @return
+     */
+    SysDepart queryById(int id);
 }

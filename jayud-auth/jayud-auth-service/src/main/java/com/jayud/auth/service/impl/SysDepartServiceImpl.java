@@ -68,6 +68,22 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(Long id){
+        //存在员工，不能删除
+        QueryWrapper<SysUser> sysUserQueryWrapper = new QueryWrapper<>();
+        sysUserQueryWrapper.lambda().eq(SysUser::getDepartId, id);
+        sysUserQueryWrapper.lambda().eq(SysUser::getIsDeleted, 0);
+        List<SysUser> list = sysUserService.list(sysUserQueryWrapper);
+        if(CollUtil.isEmpty(list)){
+            throw new IllegalArgumentException("组织存在员工，不能删除");
+        }
+        //存在子级，不能删除
+        QueryWrapper<SysDepart> sysDepartQueryWrapper = new QueryWrapper<>();
+        sysDepartQueryWrapper.lambda().eq(SysDepart::getParentId, id);
+        sysDepartQueryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
+        List<SysDepart> list1 = sysDepartMapper.selectList(sysDepartQueryWrapper);
+        if(CollUtil.isEmpty(list1)){
+            throw new IllegalArgumentException("组织存在子级，不能删除");
+        }
         sysDepartMapper.logicDel(id,CurrentUserUtil.getUsername());
     }
 
@@ -152,6 +168,23 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         List<SysDepart> departs = sysDepartMapper.selectDeptTree(form);
         List<SysDepart> tree = buildTree(departs, "0");
         return tree;
+    }
+
+    @Override
+    public SysDepart queryById(int id) {
+        SysDepart depart = this.getById(id);
+        if(ObjectUtil.isEmpty(depart)){
+            throw new IllegalArgumentException("组织不存在");
+        }
+        String parentIds = sysDepartMapper.selectParentIds(depart.getId());
+        String[] parentIdArrays = parentIds.split(",");
+        List<Long> parentIdList = new ArrayList<>();
+        for(int i=parentIdArrays.length; i>0; i--){
+            parentIdList.add(Long.valueOf(parentIdArrays[i-1]));
+        }
+        //parentIdList.add(depart.getId());
+        depart.setParentIdList(parentIdList);
+        return depart;
     }
 
     /**

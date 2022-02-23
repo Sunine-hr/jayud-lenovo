@@ -67,6 +67,5 @@ public interface ISysDictService extends IService<SysDict> {
     void logicDel(Long id);
 
 
-
-
+    void checkUnique(SysDict sysDict);
 }

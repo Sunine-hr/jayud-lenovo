@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import lombok.experimental.Accessors;
 
 /**
  * SysDict 实体类
@@ -24,7 +26,8 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="字典对象", description="字典")
+@Accessors(chain = true)
+@ApiModel(value = "字典对象", description = "字典")
 public class SysDict extends SysBaseEntity {
 
 
@@ -41,9 +44,6 @@ public class SysDict extends SysBaseEntity {
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")
     @TableLogic
     private Boolean isDeleted;
-
-
-
 
 
 }

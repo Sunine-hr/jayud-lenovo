@@ -1,6 +1,7 @@
 package com.jayud.auth.controller;
 
 import com.jayud.auth.model.dto.AddSysRole;
+import com.jayud.auth.model.vo.SysRoleVO;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.service.ISysMenuService;
 import com.jayud.auth.service.ISysRoleMenuService;
@@ -61,10 +62,11 @@ public class SysRoleController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<SysRole>> selectPage(SysRole sysRole,
-                                                 @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
-                                                 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                                 HttpServletRequest req) {
+    public BaseResult<IPage<SysRoleVO>> selectPage(SysRole sysRole,
+                                                   @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+                                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                   HttpServletRequest req) {
+        sysRole.setIsDeleted(false);
         return BaseResult.ok(sysRoleService.selectPage(sysRole, currentPage, pageSize, req));
     }
 
@@ -129,7 +131,7 @@ public class SysRoleController {
      * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("批量逻辑删除")
-    @GetMapping("/batchLogicDel")
+    @PostMapping("/batchLogicDel")
     public BaseResult batchLogicDel(@RequestBody List<SysRole> sysRoles) {
         List<Long> rolesIds = sysRoles.stream().map(e -> e.getId()).collect(Collectors.toList());
 

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.auth.model.dto.AddSysRole;
 import com.jayud.auth.model.po.SysRole;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.auth.model.vo.SysRoleVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -28,7 +29,7 @@ public interface ISysRoleService extends IService<SysRole> {
      * @param: req
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysRole>
      **/
-    IPage<SysRole> selectPage(SysRole sysRole,
+    IPage<SysRoleVO> selectPage(SysRole sysRole,
                                 Integer currentPage,
                                 Integer pageSize,
                                 HttpServletRequest req);

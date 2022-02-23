@@ -76,4 +76,5 @@ public interface ISysDictItemService extends IService<SysDictItem> {
     List<SysDictItem> selectItemByDictCode(String dictCode);
 
 
+    void checkUnique(SysDictItem sysDictItem);
 }

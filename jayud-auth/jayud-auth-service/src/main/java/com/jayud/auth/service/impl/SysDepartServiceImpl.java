@@ -11,6 +11,7 @@ import com.jayud.auth.model.po.SysMenu;
 import com.jayud.auth.model.po.SysUser;
 import com.jayud.auth.service.ISysUserService;
 import com.jayud.common.dto.AuthUserDetail;
+import com.jayud.common.exception.JayudBizException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -95,7 +96,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
             queryWrapper.lambda().groupBy(SysDepart::getOrgCode);
             SysDepart one = this.getOne(queryWrapper);
             if(ObjectUtil.isNotEmpty(one)){
-                new IllegalAccessException("机构编码已存在");
+                throw new IllegalArgumentException("机构编码已存在");
             }
             depart.setCreateBy(CurrentUserUtil.getUsername());
             depart.setCreateTime(new Date());
@@ -108,7 +109,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
             queryWrapper.lambda().groupBy(SysDepart::getOrgCode);
             SysDepart one = this.getOne(queryWrapper);
             if(ObjectUtil.isNotEmpty(one)){
-                new IllegalAccessException("机构编码已存在");
+                throw new IllegalArgumentException("机构编码已存在");
             }
             depart.setUpdateBy(CurrentUserUtil.getUsername());
             depart.setUpdateTime(new Date());

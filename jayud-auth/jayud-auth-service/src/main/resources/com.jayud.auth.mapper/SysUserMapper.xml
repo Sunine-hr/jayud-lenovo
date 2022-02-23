@@ -189,6 +189,13 @@
                 </foreach>
             </if>
 
+            <if test="sysUser.departIdLists != null  ">
+                AND depart_id IN
+                <foreach item="id" collection="sysUser.departIdLists" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
         </where>
         ORDER BY create_time DESC
 

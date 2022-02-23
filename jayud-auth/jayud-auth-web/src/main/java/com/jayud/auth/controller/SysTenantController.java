@@ -156,5 +156,14 @@ public class SysTenantController {
         return BaseResult.ok(sysTenant);
     }
 
+    @GetMapping(value = "/initTenantData")
+    public BaseResult initTenantData(Long tenantId,String tenantCode){
+        SysTenantForm sysTenantForm = new SysTenantForm();
+        sysTenantForm.setId(tenantId);
+        sysTenantForm.setTenantCode(tenantCode);
+        sysTenantService.initCreateTenant(sysTenantForm);
+        return BaseResult.ok();
+    }
+
 
 }

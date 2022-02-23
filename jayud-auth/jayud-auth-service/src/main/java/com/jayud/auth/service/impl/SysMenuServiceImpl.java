@@ -69,6 +69,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         return baseMapper.selectSysMenuByRoleIds(roleIds);
     }
 
+    @Override
+    public List<SysMenu> selectSysMenuByMenuCodes(List<String> menuCodeList) {
+        return baseMapper.selectSysMenuByMenuCodes(menuCodeList);
+    }
+
     /**
      * 构建菜单树
      *

@@ -1,6 +1,8 @@
 package com.jayud.auth.controller;
 
+import com.jayud.auth.model.po.SysRole;
 import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,10 +13,8 @@ import com.jayud.common.BaseResult;
 import com.jayud.auth.service.ISysDictService;
 import com.jayud.auth.model.po.SysDict;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -59,6 +59,7 @@ public class SysDictController {
                                                  @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
                                                  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                  HttpServletRequest req) {
+        sysDict.setIsDeleted(false);
         return BaseResult.ok(sysDictService.selectPage(sysDict, currentPage, pageSize, req));
     }
 
@@ -90,7 +91,7 @@ public class SysDictController {
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody SysDict sysDict) {
         if (StringUtils.isEmpty(sysDict.getDictName()) || StringUtils.isEmpty(sysDict.getDictCode())) {
-           throw new JayudBizException("请填写字典名称/字典编码");
+            throw new JayudBizException("请填写字典名称/字典描述");
         }
 
         this.sysDictService.checkUnique(sysDict);
@@ -110,7 +111,7 @@ public class SysDictController {
     @PostMapping("/edit")
     public BaseResult edit(@Valid @RequestBody SysDict sysDict) {
         if (StringUtils.isEmpty(sysDict.getDictName()) || StringUtils.isEmpty(sysDict.getDictCode())) {
-            throw new JayudBizException("请填写字典名称/字典编码");
+            throw new JayudBizException("请填写字典名称/字典描述");
         }
         this.sysDictService.checkUnique(sysDict);
         sysDictService.updateById(sysDict);
@@ -125,13 +126,13 @@ public class SysDictController {
      * @param: id
      * @return: com.jayud.common.BaseResult
      **/
-    @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
-    @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id) {
-        sysDictService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
+//    @ApiOperation("物理删除")
+//    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
+//    @GetMapping("/phyDel")
+//    public BaseResult phyDel(@RequestParam Long id) {
+//        sysDictService.phyDelById(id);
+//        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//    }
 
     /**
      * @description 逻辑删除
@@ -145,6 +146,27 @@ public class SysDictController {
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam Long id) {
         sysDictService.logicDel(id);
+        return BaseResult.ok(SysTips.DEL_SUCCESS);
+    }
+
+    /**
+     * @description 批量逻辑删除
+     * @author jayud
+     * @date 2022-02-21
+     * @param: id
+     * @return: com.jayud.common.BaseResult
+     **/
+    @ApiOperation("批量逻辑删除")
+    @PostMapping("/batchLogicDel")
+    public BaseResult batchLogicDel(@RequestBody List<SysDict> sysDicts) {
+        List<Long> sysDictIds = sysDicts.stream().map(e -> e.getId()).collect(Collectors.toList());
+        List<SysDict> tmps = new ArrayList<>();
+        for (Long sysDictId : sysDictIds) {
+            SysDict tmp = new SysDict();
+            tmp.setIsDeleted(true).setId(sysDictId);
+            tmps.add(tmp);
+        }
+        this.sysDictService.updateBatchById(tmps);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 

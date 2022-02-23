@@ -67,4 +67,12 @@
         </where>
     </select>
 
+    <select id="allMenuTree" resultType="com.jayud.auth.model.po.SysMenu">
+        select sm.* from sys_menu sm
+        where 1=1
+        and sm.is_deleted = 0
+        GROUP BY sm.id
+        ORDER BY sm.sort asc
+    </select>
+
 </mapper>

@@ -114,7 +114,44 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
             depart.setUpdateBy(CurrentUserUtil.getUsername());
             depart.setUpdateTime(new Date());
         }
+        //获取当前用户租户编码
+        String userTenantCode = CurrentUserUtil.getUserTenantCode();
+        QueryWrapper<SysDepart> sysDepartQueryWrapper = new QueryWrapper<>();
+        sysDepartQueryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
+        sysDepartQueryWrapper.lambda().eq(SysDepart::getTenantCode, userTenantCode);
+        sysDepartQueryWrapper.lambda().eq(SysDepart::getOrgCategory, "1");
+        sysDepartQueryWrapper.lambda().groupBy(SysDepart::getOrgCode);
+        SysDepart one = this.getOne(sysDepartQueryWrapper);
+        if(ObjectUtil.isNotEmpty(one)){
+            throw new IllegalArgumentException("一个租户仅能存在一个集团");
+        }
+        Long parentId = ObjectUtil.isEmpty(depart.getParentId()) ? 0L : depart.getParentId();
+        depart.setParentId(parentId);
+
         this.saveOrUpdate(depart);
+    }
+
+    @Override
+    public List<SysDepart> selectSuperiorOrganization(QuerySysDeptForm form) {
+        //组织区分租户
+        AuthUserDetail userDetail = CurrentUserUtil.getUserDetail();
+        SysUser sysUser = sysUserService.getById(userDetail.getId());
+        String tenantCode = sysUser.getTenantCode();
+        form.setTenantCode(tenantCode);
+
+        String orgCategory = form.getOrgCategory();//机构类别 1集团，2公司，3部门
+        List<String> stringList = new ArrayList<>();
+        if("1".equals(orgCategory)){
+            stringList = Arrays.asList("1","2","3");
+        }else if("2".equals(orgCategory)){
+            stringList = Arrays.asList("2","3");
+        }else if("3".equals(orgCategory)){
+            stringList = Arrays.asList("3");
+        }
+        form.setNotInOrgCategory(stringList);//过滤掉的机构类别
+        List<SysDepart> departs = sysDepartMapper.selectDeptTree(form);
+        List<SysDepart> tree = buildTree(departs, "0");
+        return tree;
     }
 
     /**

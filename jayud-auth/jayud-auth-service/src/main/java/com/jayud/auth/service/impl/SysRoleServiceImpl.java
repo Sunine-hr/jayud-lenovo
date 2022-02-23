@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.dto.AddSysRole;
 import com.jayud.auth.model.po.SysRoleMenu;
 import com.jayud.auth.model.po.SysUserRole;
+import com.jayud.auth.model.vo.SysRoleVO;
 import com.jayud.auth.service.ISysRoleMenuService;
 import com.jayud.auth.service.ISysUserRoleService;
 import com.jayud.common.exception.JayudBizException;
@@ -46,12 +47,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     private ISysRoleMenuService sysRoleMenuService;
 
     @Override
-    public IPage<SysRole> selectPage(SysRole sysRole,
-                                     Integer currentPage,
-                                     Integer pageSize,
-                                     HttpServletRequest req) {
+    public IPage<SysRoleVO> selectPage(SysRole sysRole,
+                                       Integer currentPage,
+                                       Integer pageSize,
+                                       HttpServletRequest req) {
         Page<SysRole> page = new Page<SysRole>(currentPage, pageSize);
-        IPage<SysRole> pageList = sysRoleMapper.pageList(page, sysRole);
+        IPage<SysRoleVO> pageList = sysRoleMapper.pageList(page, sysRole);
         return pageList;
     }
 

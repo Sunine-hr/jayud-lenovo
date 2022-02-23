@@ -80,4 +80,11 @@ public interface ISysDepartService extends IService<SysDepart> {
      * @param depart
      */
     void saveSysDepart(SysDepart depart);
+
+    /**
+     * 获取上级组织
+     * @param form
+     * @return
+     */
+    List<SysDepart> selectSuperiorOrganization(QuerySysDeptForm form);
 }

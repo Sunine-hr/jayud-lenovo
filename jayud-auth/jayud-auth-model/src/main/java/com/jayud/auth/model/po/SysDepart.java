@@ -89,6 +89,9 @@ public class SysDepart extends SysBaseEntity {
     @TableField(exist = false)
     private String label;
 
+    @ApiModelProperty(value = "给前端展示")
+    @TableField(exist = false)
+    private Long value;
 
 
 }

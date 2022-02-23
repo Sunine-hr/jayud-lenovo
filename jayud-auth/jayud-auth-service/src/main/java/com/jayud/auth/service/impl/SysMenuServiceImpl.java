@@ -70,6 +70,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     }
 
     @Override
+    public List<SysMenu> allMenuTree() {
+        List<SysMenu> menus = baseMapper.allMenuTree();
+        List<SysMenu> menuTree = buildMenuTree(menus, "0");
+        return menuTree;
+    }
+
+    @Override
     public List<SysMenu> selectSysMenuByMenuCodes(List<String> menuCodeList) {
         return baseMapper.selectSysMenuByMenuCodes(menuCodeList);
     }

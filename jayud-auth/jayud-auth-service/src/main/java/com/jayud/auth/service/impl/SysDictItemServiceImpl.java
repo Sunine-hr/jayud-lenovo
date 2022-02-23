@@ -5,6 +5,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.po.SysDict;
+import com.jayud.common.exception.JayudBizException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -69,6 +71,19 @@ public class SysDictItemServiceImpl extends ServiceImpl<SysDictItemMapper, SysDi
     @Override
     public List<SysDictItem> selectItemByDictCode(String dictCode) {
         return sysDictItemMapper.selectItemByDictCode(dictCode);
+    }
+
+    @Override
+    public void checkUnique(SysDictItem sysDictItem) {
+        SysDictItem tmp = this.baseMapper.selectOne(new QueryWrapper<>(new SysDictItem().setItemText(sysDictItem.getItemText()).setIsDeleted(false)));
+        if (tmp != null && !tmp.getId().equals(sysDictItem.getId())) {
+            throw new JayudBizException("字典名称已存在");
+        }
+
+//        tmp = this.baseMapper.selectOne(new QueryWrapper<>(new SysDict().setDictCode(sysDict.getDictName()).setIsDeleted(false)));
+//        if (tmp != null && !tmp.getId().equals(sysDict.getId())) {
+//            throw new JayudBizException("字典名称已存在");
+//        }
     }
 
 }

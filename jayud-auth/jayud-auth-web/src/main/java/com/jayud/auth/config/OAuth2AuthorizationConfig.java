@@ -257,6 +257,8 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 	public TokenStore redisTokenStore() {
 		RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
 		redisTokenStore.setPrefix("auth-token:");
+		//添加登录token校验
+		redisTokenStore.setAuthenticationKeyGenerator(new MyAuthenticationKeyGenerator());
 		return redisTokenStore;
 	}
 

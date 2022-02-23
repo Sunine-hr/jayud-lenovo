@@ -65,9 +65,22 @@
     <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysDictItem">
         <include refid="selects"/>
     </select>
-
-    <select id="selectItemByDictCode" resultMap="BaseResultMap">
-
+    <select id="selectItemByDictCode" resultType="com.jayud.auth.model.po.SysDictItem">
+        SELECT
+            sdi.id id,
+            sdi.dict_id dictId,
+            sdi.item_text itemText,
+            sdi.item_value itemValue,
+            sdi.sort_order sortOrder,
+            sdi.`status` `status`
+        FROM
+            sys_dict_item sdi
+                LEFT JOIN sys_dict sd ON sd.id = sdi.dict_id
+        WHERE
+            sd.is_deleted = 0
+          AND sdi.is_deleted = 0
+          AND sdi.`status` = 1
+          AND sd.dict_code = #{dictCode}
     </select>
 
 

@@ -66,4 +66,9 @@ public class SysDictItemServiceImpl extends ServiceImpl<SysDictItemMapper, SysDi
         sysDictItemMapper.logicDel(id,CurrentUserUtil.getUsername());
     }
 
+    @Override
+    public List<SysDictItem> selectItemByDictCode(String dictCode) {
+        return sysDictItemMapper.selectItemByDictCode(dictCode);
+    }
+
 }

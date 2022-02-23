@@ -66,7 +66,14 @@ public interface ISysDictItemService extends IService<SysDictItem> {
     **/
     void logicDel(Long id);
 
-
+    /**
+     * @description 根据字典编码查询子项
+     * @author  ciro
+     * @date   2022/2/23 9:45
+     * @param: dictCode
+     * @return: java.util.List<com.jayud.auth.model.po.SysDictItem>
+     **/
+    List<SysDictItem> selectItemByDictCode(String dictCode);
 
 
 }

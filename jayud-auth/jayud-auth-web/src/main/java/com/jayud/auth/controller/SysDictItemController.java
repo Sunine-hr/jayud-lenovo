@@ -155,5 +155,13 @@ public class SysDictItemController {
         return BaseResult.ok(sysDictItem);
     }
 
+    @ApiOperation("根据字典编码查询子项")
+    @ApiImplicitParam(name = "dictCode",value = "字典编码",dataType = "String",required = true)
+    @GetMapping("/selectItemByDictCode")
+    public BaseResult<List<SysDictItem>> selectItemByDictCode(String dictCode,
+                                                              HttpServletRequest req) {
+        return BaseResult.ok(sysDictItemService.selectItemByDictCode(dictCode));
+    }
+
 
 }

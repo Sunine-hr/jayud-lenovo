@@ -81,7 +81,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             //修改
             sysUser.setUpdateBy(CurrentUserUtil.getUsername());
             sysUser.setUpdateTime(new Date());
-            result = this.saveOrUpdate(sysUser);
+            sysUser.setPassword(encoder.encode(sysUser.getPassword())); //密码
+
+            result = this.updateById(sysUser);
             Long id = sysUser.getId();
             // 然后再次添加角色和菜单关联表
             for (int i = 0; i < sysUserForm.getRoleIds().size(); i++) {
@@ -99,11 +101,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             //新增
             sysUser.setCreateBy(CurrentUserUtil.getUsername());
             sysUser.setCreateTime(new Date());
+            sysUser.setPassword(encoder.encode(sysUser.getPassword()));
             result = this.saveOrUpdate(sysUser);
             Long id = sysUser.getId();
             //再次添加角色和菜单关联表
             for (int i = 0; i < sysUserForm.getRoleIds().size(); i++) {
-                  SysUserRole sysUserRole = new SysUserRole();
+                SysUserRole sysUserRole = new SysUserRole();
                 //用户id
                 sysUserRole.setUserId(id);
                 //角色id

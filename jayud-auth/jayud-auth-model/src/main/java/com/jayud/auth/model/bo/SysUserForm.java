@@ -13,6 +13,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -67,10 +68,8 @@ public class SysUserForm extends SysBaseEntity {
     @ApiModelProperty(value = "岗位ID")
     private Long postId;
 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @ApiModelProperty(value = "入职时间")
-    private LocalDateTime entryTime;
+    private Date entryTime;
 
     @ApiModelProperty(value = "员工状态：0-离职，1-在职")
     private Integer jobStatus;
@@ -108,4 +107,6 @@ public class SysUserForm extends SysBaseEntity {
     @ApiModelProperty(value = "用户id集合")
     private List<Long> userIds;
 
+    @ApiModelProperty(value = "所属部门id集合")
+    private List<Long> departIdLists;
 }

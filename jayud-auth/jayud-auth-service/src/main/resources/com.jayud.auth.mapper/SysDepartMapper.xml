@@ -112,7 +112,7 @@
     </select>
 
     <select id="selectDeptTree" resultType="com.jayud.auth.model.po.SysDepart">
-        select  sd.* from sys_depart sd
+        select  sd.*,sd.depart_name label from sys_depart sd
         where sd.is_deleted = 0
         and sd.tenant_code = #{form.tenantCode}
         <if test="form.departName != null and form.departName != ''">

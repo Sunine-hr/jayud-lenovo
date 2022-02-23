@@ -177,7 +177,9 @@ public class SysUserController {
         sysUserForm.setId(id);
         //关联查询用户信息 关联表 行合并  成列
         sysUserIdOne = sysUserService.findSysUserIdOne(sysUserForm);
-
+        if(sysUserIdOne!=null){
+            return BaseResult.error("用户不存在！");
+        }
         List<Long> list = new ArrayList<>();
         String s = sysUserIdOne.getRoleListIdString();
         String[] a = s.split(",");

@@ -1,5 +1,8 @@
 package com.jayud.auth.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.auth.model.bo.SysPostForm;
+import com.jayud.auth.model.vo.SysPostVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -79,6 +82,17 @@ public class SysPostController {
 
 
     /**
+     * @description 递归查询数据列表查询数据
+     **/
+    @ApiOperation("递归查询数据列表查询数据")
+    @GetMapping("/selectSysPostLists")
+    public BaseResult<List<SysPostVO>> selectSysPostLists(SysPostForm sysPostForm,
+                                                          HttpServletRequest req) {
+        return BaseResult.ok(sysPostService.selectSysPostLists(sysPostForm));
+    }
+
+
+    /**
     * @description 新增
     * @author  jayud
     * @date   2022-02-22
@@ -87,8 +101,26 @@ public class SysPostController {
     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody SysPost sysPost ){
-        sysPostService.save(sysPost);
+    public BaseResult add(@Valid @RequestBody SysPostForm sysPostForm ){
+
+        if(sysPostForm!=null){
+            return  BaseResult.error("参数不能为空！");
+        }
+        QueryWrapper<SysPost> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SysPost::getIsDeleted, 0);
+        queryWrapper.lambda().eq(SysPost::getPostCode, sysPostForm.getPostCode());
+        SysPost one = sysPostService.getOne(queryWrapper);
+        if(one!=null){
+            return  BaseResult.error("岗位编码已存在！");
+        }
+        QueryWrapper<SysPost> queryWrapper2 = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SysPost::getIsDeleted, 0);
+        queryWrapper.lambda().eq(SysPost::getPostName, sysPostForm.getPostName());
+        SysPost two = sysPostService.getOne(queryWrapper);
+        if(two!=null){
+            return  BaseResult.error("岗位名称已存在！");
+        }
+        sysPostService.saveOrUpdateSysPost(sysPostForm);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
 

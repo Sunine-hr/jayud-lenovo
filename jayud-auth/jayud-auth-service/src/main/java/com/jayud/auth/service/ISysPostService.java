@@ -2,8 +2,10 @@ package com.jayud.auth.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.bo.SysPostForm;
 import com.jayud.auth.model.po.SysPost;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.auth.model.vo.SysPostVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -46,7 +48,7 @@ public interface ISysPostService extends IService<SysPost> {
     List<SysPost> selectList(SysPost sysPost);
 
 
-
+    List<SysPostVO> selectSysPostLists(SysPostForm sysPostForm);
     /**
      * @description 物理删除
      * @author  jayud
@@ -66,6 +68,14 @@ public interface ISysPostService extends IService<SysPost> {
     **/
     void logicDel(Long id);
 
+    /**
+     * @description 逻辑删除
+     * @author  jayud
+     * @date   2022-02-22
+     * @param: id
+     * @return: com.jyd.component.commons.result.Result
+     **/
+    boolean saveOrUpdateSysPost(SysPostForm sysPostForm);
 
 
 

@@ -1,8 +1,10 @@
 package com.jayud.auth.mapper;
 
+import com.jayud.auth.model.bo.SysPostForm;
 import com.jayud.auth.model.po.SysPost;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import com.jayud.auth.model.vo.SysPostVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -40,6 +42,11 @@ public interface SysPostMapper extends BaseMapper<SysPost> {
      * @return: java.util.List<com.jayud.auth.model.po.SysPost>
      **/
     List<SysPost> list(@Param("sysPost") SysPost sysPost);
+
+    /**
+     * @description 递归列表查询数据
+     **/
+    List<SysPostVO> selectSysPostLists(@Param("sysPost") SysPostForm sysPost);
 
 
     /**

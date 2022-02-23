@@ -25,11 +25,12 @@
         <result column="create_time" property="createTime" />
         <result column="update_by" property="updateBy" />
         <result column="update_time" property="updateTime" />
+        <result column="principal_id" property="principalId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, parent_id, depart_name, depart_name_en, depart_name_abbr, depart_order, description, org_category, org_code, mobile, fax, address, memo, status, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, parent_id, depart_name, depart_name_en, depart_name_abbr, depart_order, description, org_category, org_code, mobile, fax, address, memo, status, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time, principal_id
     </sql>
 
     <!-- 表名 -->
@@ -112,7 +113,7 @@
     </select>
 
     <select id="selectDeptTree" resultType="com.jayud.auth.model.po.SysDepart">
-        select  sd.*,sd.depart_name label from sys_depart sd
+        select  sd.*,sd.depart_name "label",sd.id "value" from sys_depart sd
         where sd.is_deleted = 0
         and sd.tenant_code = #{form.tenantCode}
         <if test="form.departName != null and form.departName != ''">
@@ -121,6 +122,12 @@
         <if test="form.createTimeArr != null and form.createTimeArr.length>0">
             and sd.create_time <![CDATA[ >= ]]> #{form.createTimeArr[0]}
             and sd.create_time <![CDATA[ <= ]]> #{form.createTimeArr[1]}
+        </if>
+        <if test="form.notInOrgCategory != null and form.notInOrgCategory.size() > 0">
+            AND sd.org_category not in
+            <foreach collection="form.notInOrgCategory"  item="item" open="(" separator="," close=")"  >
+                #{item}
+            </foreach>
         </if>
 
     </select>

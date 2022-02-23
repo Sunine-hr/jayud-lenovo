@@ -51,12 +51,10 @@ public class SysDepartController {
      * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysDepart>>
      **/
     @ApiOperation("分页查询数据")
-    @GetMapping("/selectPage")
-    public BaseResult<IPage<SysDepart>> selectPage(SysDepart sysDepart,
-                                                   @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
-                                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+    @PostMapping("/selectPage")
+    public BaseResult<IPage<SysDepart>> selectPage(@RequestBody SysDepart sysDepart,
                                                    HttpServletRequest req) {
-        return BaseResult.ok(sysDepartService.selectPage(sysDepart,currentPage,pageSize,req));
+        return BaseResult.ok(sysDepartService.selectPage(sysDepart,sysDepart.getCurrentPage(),sysDepart.getPageSize(),req));
     }
 
 
@@ -154,11 +152,11 @@ public class SysDepartController {
     }
 
     /**
-     * 查询部门树
+     * 查询组织部门树
      * @param form
      * @return
      */
-    @ApiOperation("查询部门树")
+    @ApiOperation("查询组织部门树")
     @PostMapping("/selectDeptTree")
     public BaseResult<List<SysDepart>> selectDeptTree(@RequestBody QuerySysDeptForm form){
         List<SysDepart> deptTree = sysDepartService.selectDeptTree(form);
@@ -176,5 +174,13 @@ public class SysDepartController {
         sysDepartService.saveSysDepart(depart);
         return BaseResult.ok("保存成功");
     }
+
+    @ApiOperation("获取上级组织")
+    @PostMapping("/selectSuperiorOrganization")
+    public BaseResult<List<SysDepart>> selectSuperiorOrganization(@RequestBody QuerySysDeptForm form){
+        List<SysDepart> deptTree = sysDepartService.selectSuperiorOrganization(form);
+        return BaseResult.ok(deptTree);
+    }
+
 
 }

@@ -69,6 +69,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         return baseMapper.selectSysMenuByRoleIds(roleIds);
     }
 
+    @Override
+    public List<SysMenu> allMenuTree() {
+        List<SysMenu> menus = baseMapper.allMenuTree();
+        List<SysMenu> menuTree = buildMenuTree(menus, "0");
+        return menuTree;
+    }
+
     /**
      * 构建菜单树
      *

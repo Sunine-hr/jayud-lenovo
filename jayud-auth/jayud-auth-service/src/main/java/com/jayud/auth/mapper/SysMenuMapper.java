@@ -22,4 +22,10 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
      * @return
      */
     List<SysMenu> selectSysMenuByRoleIds(@Param("roleIds") List<Long> roleIds);
+
+    /**
+     * 获取所有菜单树
+     * @return
+     */
+    List<SysMenu> allMenuTree();
 }

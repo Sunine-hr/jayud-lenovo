@@ -6,6 +6,7 @@ import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysMenu;
 import com.jayud.auth.service.ISysMenuService;
 import com.jayud.common.BaseResult;
+import com.jayud.common.utils.CurrentUserUtil;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -70,6 +71,12 @@ public class SysMenuController {
     public BaseResult saveSysMenu(@RequestBody SysMenu sysMenu){
         sysMenuService.saveSysMenu(sysMenu);
         return BaseResult.ok();
+    }
+
+    @ApiOperation(value = "根据租户查询菜单树")
+    @PostMapping(value = "selectMenuTreeByTenantCode")
+    public BaseResult<List<SysMenu>> selectMenuTreeByTenantCode(){
+        return BaseResult.ok(sysMenuService.selectMenuTreeByTenantCode(CurrentUserUtil.getUserTenantCode()));
     }
 
 

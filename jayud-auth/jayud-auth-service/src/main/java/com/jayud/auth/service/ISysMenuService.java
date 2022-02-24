@@ -63,6 +63,7 @@ public interface ISysMenuService extends IService<SysMenu> {
      * @param sysMenu
      */
     void saveSysMenu(SysMenu sysMenu);
+
     /**
      * @description 根据租户查询菜单树
      * @author  ciro

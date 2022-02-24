@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.io.Serializable;
 import java.util.List;
 
+import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -24,13 +25,13 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @ApiModel(value="SysMenu对象", description="系统菜单表")
-public class SysMenu extends Model<SysMenu> {
+public class SysMenu extends SysBaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "id")
-      @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+//    @ApiModelProperty(value = "id")
+//      @TableId(value = "id", type = IdType.AUTO)
+//    private Long id;
 
     @ApiModelProperty(value = "父级ID")
     private Long parentId;
@@ -83,24 +84,28 @@ public class SysMenu extends Model<SysMenu> {
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")
     private Boolean isDeleted;
 
-    @ApiModelProperty(value = "创建人")
-    private String createBy;
-
-    @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "更新人")
-    private String updateBy;
-
-    @ApiModelProperty(value = "更新时间")
-    private LocalDateTime updateTime;
+//    @ApiModelProperty(value = "创建人")
+//    private String createBy;
+//
+//    @ApiModelProperty(value = "创建时间")
+//    private LocalDateTime createTime;
+//
+//    @ApiModelProperty(value = "更新人")
+//    private String updateBy;
+//
+//    @ApiModelProperty(value = "更新时间")
+//    private LocalDateTime updateTime;
 
     @TableField(exist = false)
     private List<SysMenu> children;
 
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
+//    @Override
+//    protected Serializable pkVal() {
+//        return this.id;
+//    }
+
+    @ApiModelProperty(value = "系统类型(1-权限系统，2-OMS系统) in() 查询")
+    @TableField(exist = false)
+    private List<Integer> inSysTypeList;
 
 }

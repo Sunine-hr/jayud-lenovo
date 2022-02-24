@@ -53,7 +53,7 @@
         </where>
     </sql>
 
-    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysRole">
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.vo.SysRoleVO">
         <include refid="selects"/>
     </select>
 

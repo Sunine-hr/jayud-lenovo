@@ -51,12 +51,10 @@ public class SysDepartController {
      * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysDepart>>
      **/
     @ApiOperation("分页查询数据")
-    @GetMapping("/selectPage")
-    public BaseResult<IPage<SysDepart>> selectPage(SysDepart sysDepart,
-                                                   @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
-                                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+    @PostMapping("/selectPage")
+    public BaseResult<IPage<SysDepart>> selectPage(@RequestBody SysDepart sysDepart,
                                                    HttpServletRequest req) {
-        return BaseResult.ok(sysDepartService.selectPage(sysDepart,currentPage,pageSize,req));
+        return BaseResult.ok(sysDepartService.selectPage(sysDepart,sysDepart.getCurrentPage(),sysDepart.getPageSize(),req));
     }
 
 
@@ -107,20 +105,20 @@ public class SysDepartController {
 
 
 
-    /**
-     * @description 物理删除
-     * @author  jayud
-     * @date   2022-02-22
-     * @param: id
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id){
-        sysDepartService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
+//    /**
+//     * @description 物理删除
+//     * @author  jayud
+//     * @date   2022-02-22
+//     * @param: id
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("物理删除")
+//    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
+//    @GetMapping("/phyDel")
+//    public BaseResult phyDel(@RequestParam Long id){
+//        sysDepartService.phyDelById(id);
+//        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//    }
 
     /**
      * @description 逻辑删除
@@ -149,16 +147,16 @@ public class SysDepartController {
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
     @GetMapping(value = "/queryById")
     public BaseResult<SysDepart> queryById(@RequestParam(name="id",required=true) int id) {
-        SysDepart sysDepart = sysDepartService.getById(id);
+        SysDepart sysDepart = sysDepartService.queryById(id);
         return BaseResult.ok(sysDepart);
     }
 
     /**
-     * 查询部门树
+     * 查询组织部门树
      * @param form
      * @return
      */
-    @ApiOperation("查询部门树")
+    @ApiOperation("查询组织部门树")
     @PostMapping("/selectDeptTree")
     public BaseResult<List<SysDepart>> selectDeptTree(@RequestBody QuerySysDeptForm form){
         List<SysDepart> deptTree = sysDepartService.selectDeptTree(form);
@@ -176,5 +174,13 @@ public class SysDepartController {
         sysDepartService.saveSysDepart(depart);
         return BaseResult.ok("保存成功");
     }
+
+    @ApiOperation("获取上级组织")
+    @PostMapping("/selectSuperiorOrganization")
+    public BaseResult<List<SysDepart>> selectSuperiorOrganization(@RequestBody QuerySysDeptForm form){
+        List<SysDepart> deptTree = sysDepartService.selectSuperiorOrganization(form);
+        return BaseResult.ok(deptTree);
+    }
+
 
 }

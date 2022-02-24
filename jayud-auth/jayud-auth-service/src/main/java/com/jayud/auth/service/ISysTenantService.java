@@ -78,6 +78,13 @@ public interface ISysTenantService extends IService<SysTenant> {
     BaseResult saveTenant(SysTenantForm sysTenantForm);
 
 
-
+    /**
+     * @description 创建租户初始化数据
+     * @author  ciro
+     * @date   2022/2/23 13:58
+     * @param: sysTenantForm
+     * @return: void
+     **/
+    void initCreateTenant(SysTenantForm sysTenantForm);
 
 }

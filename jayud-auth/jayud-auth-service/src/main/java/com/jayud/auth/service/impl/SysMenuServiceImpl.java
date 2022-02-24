@@ -3,6 +3,9 @@ package com.jayud.auth.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysMenu;
 import com.jayud.auth.mapper.SysMenuMapper;
 import com.jayud.auth.model.po.SysRole;
@@ -15,7 +18,9 @@ import com.jayud.common.dto.AuthUserDetail;
 import com.jayud.common.utils.CurrentUserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +39,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     private ISysUserService sysUserService;
     @Autowired
     private ISysRoleService sysRoleService;
+    @Autowired
+    private SysMenuMapper sysMenuMapper;
 
     @Override
     public JSONObject getUserMenuByToken() {
@@ -67,6 +74,31 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public List<SysMenu> selectSysMenuByRoleIds(List<Long> roleIds) {
         return baseMapper.selectSysMenuByRoleIds(roleIds);
+    }
+
+    @Override
+    public List<SysMenu> allMenuTree(SysMenu sysMenu) {
+        List<SysMenu> menus = baseMapper.allMenuTree(sysMenu);
+        List<SysMenu> menuTree = buildMenuTree(menus, "0");
+        return menuTree;
+    }
+
+    @Override
+    public List<SysMenu> selectSysMenuByMenuCodes(List<String> menuCodeList) {
+        return baseMapper.selectSysMenuByMenuCodes(menuCodeList);
+    }
+
+    @Override
+    public IPage<SysMenu> selectPage(SysMenu sysMenu, Integer currentPage, Integer pageSize, HttpServletRequest req) {
+        Page<SysMenu> page=new Page<SysMenu>(currentPage,pageSize);
+        IPage<SysMenu> pageList= sysMenuMapper.pageList(page, sysMenu);
+        return pageList;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveSysMenu(SysMenu sysMenu) {
+
     }
 
     /**

@@ -1,9 +1,12 @@
 package com.jayud.auth.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -26,4 +29,38 @@ public interface ISysMenuService extends IService<SysMenu> {
      * 根据角色ids，获取菜单
      */
     List<SysMenu> selectSysMenuByRoleIds(List<Long> roleIds);
+
+    /**
+     * 获取所有菜单tree
+     * @return
+     */
+    List<SysMenu> allMenuTree(SysMenu sysMenu);
+
+    /**
+     * @description 根据菜单编码集合查询菜单
+     * @author  ciro
+     * @date   2022/2/23 15:41
+     * @param: menuCodeList
+     * @return: java.util.List<com.jayud.auth.model.po.SysMenu>
+     **/
+    List<SysMenu> selectSysMenuByMenuCodes(List<String> menuCodeList);
+
+    /**
+     * 分页查询
+     * @param sysMenu
+     * @param currentPage
+     * @param pageSize
+     * @param req
+     * @return
+     */
+    IPage<SysMenu> selectPage(SysMenu sysMenu,
+                                Integer currentPage,
+                                Integer pageSize,
+                                HttpServletRequest req);
+
+    /**
+     * 新增or编辑菜单
+     * @param sysMenu
+     */
+    void saveSysMenu(SysMenu sysMenu);
 }

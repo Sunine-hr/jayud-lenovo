@@ -25,79 +25,84 @@
         <result column="create_time" property="createTime" />
         <result column="update_by" property="updateBy" />
         <result column="update_time" property="updateTime" />
+        <result column="principal_id" property="principalId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, parent_id, depart_name, depart_name_en, depart_name_abbr, depart_order, description, org_category, org_code, mobile, fax, address, memo, status, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, parent_id, depart_name, depart_name_en, depart_name_abbr, depart_order, description, org_category, org_code, mobile, fax, address, memo, status, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time, principal_id
     </sql>
 
     <!-- 表名 -->
     <sql id="tname">sys_depart </sql>
 
     <sql id="selects">
-        SELECT <include refid="Base_Column_List"/>
-        FROM <include refid="tname"/>
+        select
+        sd.id, sd.parent_id, sd.depart_name, sd.depart_name_en, sd.depart_name_abbr, sd.depart_order, sd.description, sd.org_category, sd.org_code, sd.mobile, sd.fax, sd.address, sd.memo, sd.`status`,
+        sd.tenant_code, sd.remark, sd.is_deleted, sd.create_by, sd.create_time, sd.update_by, sd.update_time, sd.principal_id,
+        su.name principalName
+        from sys_depart sd
+        LEFT JOIN sys_user su on sd.principal_id = su.id
         <where>
-            is_deleted = 0
+            sd.is_deleted = 0
             <if test="sysDepart.parentId != null ">
-                AND parent_id = ${sysDepart.parentId}
+                AND sd.parent_id = ${sysDepart.parentId}
             </if>
 
             <if test="sysDepart.departName != null and sysDepart.departName != ''">
-                AND depart_name = #{sysDepart.departName}
+                AND sd.depart_name = #{sysDepart.departName}
             </if>
 
             <if test="sysDepart.departNameEn != null and sysDepart.departNameEn != ''">
-                AND depart_name_en = #{sysDepart.departNameEn}
+                AND sd.depart_name_en = #{sysDepart.departNameEn}
             </if>
 
             <if test="sysDepart.departNameAbbr != null and sysDepart.departNameAbbr != ''">
-                AND depart_name_abbr = #{sysDepart.departNameAbbr}
+                AND sd.depart_name_abbr = #{sysDepart.departNameAbbr}
             </if>
 
             <if test="sysDepart.departOrder != null ">
-                AND depart_order = ${sysDepart.departOrder}
+                AND sd.depart_order = ${sysDepart.departOrder}
             </if>
 
             <if test="sysDepart.description != null and sysDepart.description != ''">
-                AND description = #{sysDepart.description}
+                AND sd.description = #{sysDepart.description}
             </if>
 
             <if test="sysDepart.orgCategory != null and sysDepart.orgCategory != ''">
-                AND org_category = #{sysDepart.orgCategory}
+                AND sd.org_category = #{sysDepart.orgCategory}
             </if>
 
             <if test="sysDepart.orgCode != null and sysDepart.orgCode != ''">
-                AND org_code = #{sysDepart.orgCode}
+                AND sd.org_code = #{sysDepart.orgCode}
             </if>
 
             <if test="sysDepart.mobile != null and sysDepart.mobile != ''">
-                AND mobile = #{sysDepart.mobile}
+                AND sd.mobile = #{sysDepart.mobile}
             </if>
 
             <if test="sysDepart.fax != null and sysDepart.fax != ''">
-                AND fax = #{sysDepart.fax}
+                AND sd.fax = #{sysDepart.fax}
             </if>
 
             <if test="sysDepart.address != null and sysDepart.address != ''">
-                AND address = #{sysDepart.address}
+                AND sd.address = #{sysDepart.address}
             </if>
 
             <if test="sysDepart.memo != null and sysDepart.memo != ''">
-                AND memo = #{sysDepart.memo}
+                AND sd.memo = #{sysDepart.memo}
             </if>
 
             <if test="sysDepart.status != null ">
-                AND status = ${sysDepart.status}
+                AND sd.status = ${sysDepart.status}
             </if>
 
             <if test="sysDepart.tenantCode != null and sysDepart.tenantCode != ''">
-                AND tenant_code = #{sysDepart.tenantCode}
+                AND sd.tenant_code = #{sysDepart.tenantCode}
             </if>
 
             <if test="sysDepart.remark != null and sysDepart.remark != ''">
-                AND remark = #{sysDepart.remark}
+                AND sd.remark = #{sysDepart.remark}
             </if>
 
         </where>
@@ -112,7 +117,7 @@
     </select>
 
     <select id="selectDeptTree" resultType="com.jayud.auth.model.po.SysDepart">
-        select  sd.*,sd.depart_name label from sys_depart sd
+        select  sd.*,sd.depart_name "label",sd.id "value" from sys_depart sd
         where sd.is_deleted = 0
         and sd.tenant_code = #{form.tenantCode}
         <if test="form.departName != null and form.departName != ''">
@@ -122,7 +127,17 @@
             and sd.create_time <![CDATA[ >= ]]> #{form.createTimeArr[0]}
             and sd.create_time <![CDATA[ <= ]]> #{form.createTimeArr[1]}
         </if>
+        <if test="form.notInOrgCategory != null and form.notInOrgCategory.size() > 0">
+            AND sd.org_category not in
+            <foreach collection="form.notInOrgCategory"  item="item" open="(" separator="," close=")"  >
+                #{item}
+            </foreach>
+        </if>
 
+    </select>
+
+    <select id="selectParentIds" resultType="java.lang.String">
+        select getDepartParentList(#{id}) pids
     </select>
 
 

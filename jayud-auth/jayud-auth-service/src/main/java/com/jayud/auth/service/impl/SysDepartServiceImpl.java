@@ -68,6 +68,22 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(Long id){
+        //存在员工，不能删除
+        QueryWrapper<SysUser> sysUserQueryWrapper = new QueryWrapper<>();
+        sysUserQueryWrapper.lambda().eq(SysUser::getDepartId, id);
+        sysUserQueryWrapper.lambda().eq(SysUser::getIsDeleted, 0);
+        List<SysUser> list = sysUserService.list(sysUserQueryWrapper);
+        if(CollUtil.isEmpty(list)){
+            throw new IllegalArgumentException("组织存在员工，不能删除");
+        }
+        //存在子级，不能删除
+        QueryWrapper<SysDepart> sysDepartQueryWrapper = new QueryWrapper<>();
+        sysDepartQueryWrapper.lambda().eq(SysDepart::getParentId, id);
+        sysDepartQueryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
+        List<SysDepart> list1 = sysDepartMapper.selectList(sysDepartQueryWrapper);
+        if(CollUtil.isEmpty(list1)){
+            throw new IllegalArgumentException("组织存在子级，不能删除");
+        }
         sysDepartMapper.logicDel(id,CurrentUserUtil.getUsername());
     }
 
@@ -114,7 +130,69 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
             depart.setUpdateBy(CurrentUserUtil.getUsername());
             depart.setUpdateTime(new Date());
         }
+        //获取当前用户租户编码
+        String orgCategory = depart.getOrgCategory();
+        if("1".equals(orgCategory)){
+            String userTenantCode = CurrentUserUtil.getUserTenantCode();
+            QueryWrapper<SysDepart> sysDepartQueryWrapper = new QueryWrapper<>();
+            sysDepartQueryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
+            sysDepartQueryWrapper.lambda().eq(SysDepart::getTenantCode, userTenantCode);
+            sysDepartQueryWrapper.lambda().eq(SysDepart::getOrgCategory, orgCategory);
+            sysDepartQueryWrapper.lambda().groupBy(SysDepart::getOrgCode);
+            SysDepart one = this.getOne(sysDepartQueryWrapper);
+            if(ObjectUtil.isNotEmpty(one)){
+                throw new IllegalArgumentException("一个租户仅能存在一个集团");
+            }
+        }
+        //Long parentId = ObjectUtil.isEmpty(depart.getParentId()) ? 0L : depart.getParentId();
+        Long parentId = 0L;
+        List<Long> parentIdList = depart.getParentIdList();
+        if(CollUtil.isNotEmpty(parentIdList)){
+            parentId = parentIdList.get(parentIdList.size() - 1);
+        }
+        depart.setParentId(parentId);
+
         this.saveOrUpdate(depart);
+    }
+
+    @Override
+    public List<SysDepart> selectSuperiorOrganization(QuerySysDeptForm form) {
+        //组织区分租户
+        AuthUserDetail userDetail = CurrentUserUtil.getUserDetail();
+        SysUser sysUser = sysUserService.getById(userDetail.getId());
+        String tenantCode = sysUser.getTenantCode();
+        form.setTenantCode(tenantCode);
+
+        String orgCategory = form.getOrgCategory();//机构类别 1集团，2公司，3部门
+        List<String> stringList = new ArrayList<>();
+        if("1".equals(orgCategory)){
+            stringList = Arrays.asList("1","2","3");
+        }else if("2".equals(orgCategory)){
+            stringList = Arrays.asList("2","3");
+        }else if("3".equals(orgCategory)){
+            stringList = Arrays.asList("3");
+        }
+        form.setNotInOrgCategory(stringList);//过滤掉的机构类别
+        List<SysDepart> departs = sysDepartMapper.selectDeptTree(form);
+        List<SysDepart> tree = buildTree(departs, "0");
+        return tree;
+    }
+
+    @Override
+    public SysDepart queryById(int id) {
+        SysDepart depart = this.getById(id);
+        if(ObjectUtil.isEmpty(depart)){
+            throw new IllegalArgumentException("组织不存在");
+        }
+        String parentIds = sysDepartMapper.selectParentIds(depart.getId());
+        String[] parentIdArrays = parentIds.split(",");
+        List<Long> parentIdList = new ArrayList<>();
+        for(int i=parentIdArrays.length; i>0; i--){
+            parentIdList.add(Long.valueOf(parentIdArrays[i-1]));
+        }
+        //parentIdList.add(depart.getId());
+        depart.setParentIdList(parentIdList);
+        return depart;
     }
 
     /**

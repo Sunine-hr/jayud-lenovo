@@ -3,6 +3,7 @@ package com.jayud.auth.mapper;
 import com.jayud.auth.model.po.SysRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import com.jayud.auth.model.vo.SysRoleVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -30,7 +31,7 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
      * @param: sysRole
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysRole>
      **/
-    IPage<SysRole> pageList(@Param("page") Page<SysRole> page, @Param("sysRole") SysRole sysRole);
+    IPage<SysRoleVO> pageList(@Param("page") Page<SysRole> page, @Param("sysRole") SysRole sysRole);
 
     /**
      * @description 列表查询数据

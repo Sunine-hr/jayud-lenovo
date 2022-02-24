@@ -244,7 +244,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
                     SysDepart sysDeparts = null;
                     for (int i = 0; i < lists.size(); i++) {
                         sysDeparts = new SysDepart();
-                        sysDeparts.setId(System.currentTimeMillis());
+                        sysDeparts.setId(System.currentTimeMillis()+lists.get(i).getId());
                         sysDeparts.setUserId(lists.get(i).getId());
                         sysDeparts.setLabel(lists.get(i).getName());
                         treeListUser.add(sysDeparts);

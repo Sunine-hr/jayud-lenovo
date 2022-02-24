@@ -39,6 +39,9 @@ public class SysUserVO extends SysBaseEntity {
     @ApiModelProperty(value = "英文名")
     private String enUserName;
 
+    @ApiModelProperty(value = "QQ号")
+    private String qqNumber;
+
     @ApiModelProperty(value = "工号")
     private String numberName;
 

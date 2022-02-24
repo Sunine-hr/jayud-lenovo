@@ -9,6 +9,7 @@ import com.jayud.auth.service.ISysMenuService;
 import com.jayud.common.BaseResult;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.common.utils.ExcelUtils;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/sysMenu")
+@Api(tags = "菜单信息")
 public class SysMenuController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -42,7 +44,7 @@ public class SysMenuController {
      * 获取当前用户的菜单
      * @return
      */
-    @ApiModelProperty(value = "获取当前用户的菜单")
+    @ApiOperation(value = "获取当前用户的菜单")
     @PostMapping(value = "/getUserMenuByToken")
     public BaseResult getUserMenuByToken(){
         //JSONObject jsonObject = JSONObject.parseObject(menu);
@@ -54,7 +56,7 @@ public class SysMenuController {
      * 获取所有的菜单树
      * @return
      */
-    @ApiModelProperty(value = "获取所有的菜单")
+    @ApiOperation(value = "获取所有的菜单")
     @PostMapping(value = "allMenuTree")
     public BaseResult<List<SysMenu>> allMenuTree(@RequestBody SysMenu sysMenu){
         List<SysMenu> tree = sysMenuService.allMenuTree(sysMenu);

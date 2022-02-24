@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.common.mapper.BaseCommonMapper">
+
+
+    <insert id="saveLog" parameterType="Object">
+        insert into sys_log ( log_type, log_content, operate_type, method, request_url, request_param,
+                              request_type, ip, username,
+                              cost_time, create_time, create_by)
+        values (#{dto.logType, jdbcType=INTEGER},
+                #{dto.logContent, jdbcType=VARCHAR},
+                #{dto.operateType, jdbcType=INTEGER},
+                #{dto.method, jdbcType=VARCHAR},
+                #{dto.requestUrl, jdbcType=VARCHAR},
+                #{dto.requestParam, jdbcType=VARCHAR},
+                #{dto.requestType, jdbcType=VARCHAR},
+                #{dto.ip, jdbcType=VARCHAR},
+                #{dto.username, jdbcType=VARCHAR},
+                #{dto.costTime, jdbcType=BIGINT},
+                #{dto.createTime, jdbcType=TIMESTAMP},
+                #{dto.createBy, jdbcType=VARCHAR})
+    </insert>
+
+</mapper>

@@ -173,4 +173,12 @@ public class SysTenantController {
     }
 
 
+    @ApiOperation("更新")
+    @PostMapping("/update")
+    public BaseResult update(@Valid @RequestBody SysTenant sysTenant ){
+        sysTenantService.updateById(sysTenant);
+        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+    }
+
+
 }

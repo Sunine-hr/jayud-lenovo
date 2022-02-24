@@ -216,7 +216,7 @@ public class StringUtils {
             return fileNameStr;
         }
         StringBuilder sb = new StringBuilder();
-        for(int i=0;0<fileViewList.size();i++){
+        for(int i=0;i<fileViewList.size();i++){
             sb.append(fileViewList.get(i)).append(",");
         }
 

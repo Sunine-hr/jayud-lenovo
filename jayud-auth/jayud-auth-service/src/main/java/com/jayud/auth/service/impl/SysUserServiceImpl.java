@@ -81,14 +81,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             //修改
             sysUser.setUpdateBy(CurrentUserUtil.getUsername());
             sysUser.setUpdateTime(new Date());
-
-            if(!sysUserForm.getNewPassword().equals("")&&sysUserForm.getNewPassword()!=null){
-                //修改秘钥的密码
-                sysUser.setPassword(sysUserForm.getNewPassword());
-            }else {
-                //修改新密码
-                sysUser.setPassword(encoder.encode(sysUser.getPassword())); //密码
-            }
+            //后续待定
+//            if(!sysUserForm.getNewPassword().equals("")&&sysUserForm.getNewPassword()!=null){
+//                //修改秘钥的密码
+//                sysUser.setPassword(sysUserForm.getNewPassword());
+//            }else {
+//                //修改新密码
+//                sysUser.setPassword(encoder.encode(sysUser.getPassword())); //密码
+//            }
 
             result = this.updateById(sysUser);
             Long id = sysUser.getId();
@@ -115,7 +115,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
             //负责部门节点id集合
             sysUser.setDepartmentList(fileNameString);
-            if(sysUser.getPassword().equals("")&&sysUser.getPassword()==null){
+            if(sysUser.getPassword().equals("")){
                 //设置默认密码
                 sysUser.setPassword(encoder.encode("123456"));
             }else {

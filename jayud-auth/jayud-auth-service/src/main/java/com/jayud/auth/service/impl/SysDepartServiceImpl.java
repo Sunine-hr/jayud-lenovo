@@ -44,37 +44,37 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 
     @Override
     public IPage<SysDepart> selectPage(SysDepart sysDepart,
-                                        Integer currentPage,
-                                        Integer pageSize,
-                                        HttpServletRequest req){
+                                       Integer currentPage,
+                                       Integer pageSize,
+                                       HttpServletRequest req) {
 
-        Page<SysDepart> page=new Page<SysDepart>(currentPage,pageSize);
-        IPage<SysDepart> pageList= sysDepartMapper.pageList(page, sysDepart);
+        Page<SysDepart> page = new Page<SysDepart>(currentPage, pageSize);
+        IPage<SysDepart> pageList = sysDepartMapper.pageList(page, sysDepart);
         return pageList;
     }
 
     @Override
-    public List<SysDepart> selectList(SysDepart sysDepart){
+    public List<SysDepart> selectList(SysDepart sysDepart) {
         return sysDepartMapper.list(sysDepart);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void phyDelById(Long id){
+    public void phyDelById(Long id) {
         sysDepartMapper.phyDelById(id);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id){
+    public void logicDel(Long id) {
         //存在员工，不能删除
         QueryWrapper<SysUser> sysUserQueryWrapper = new QueryWrapper<>();
         sysUserQueryWrapper.lambda().eq(SysUser::getDepartId, id);
         sysUserQueryWrapper.lambda().eq(SysUser::getIsDeleted, 0);
         List<SysUser> list = sysUserService.list(sysUserQueryWrapper);
-        if(CollUtil.isEmpty(list)){
+        if (CollUtil.isEmpty(list)) {
             throw new IllegalArgumentException("组织存在员工，不能删除");
         }
         //存在子级，不能删除
@@ -82,10 +82,10 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         sysDepartQueryWrapper.lambda().eq(SysDepart::getParentId, id);
         sysDepartQueryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
         List<SysDepart> list1 = sysDepartMapper.selectList(sysDepartQueryWrapper);
-        if(CollUtil.isEmpty(list1)){
+        if (CollUtil.isEmpty(list1)) {
             throw new IllegalArgumentException("组织存在子级，不能删除");
         }
-        sysDepartMapper.logicDel(id,CurrentUserUtil.getUsername());
+        sysDepartMapper.logicDel(id, CurrentUserUtil.getUsername());
     }
 
     @Override
@@ -105,19 +105,19 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
     public void saveSysDepart(SysDepart depart) {
         Long id = depart.getId();
         SysDepart sysDepart = this.getById(id);
-        if(ObjectUtil.isEmpty(sysDepart)){
+        if (ObjectUtil.isEmpty(sysDepart)) {
             //新增
             QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<>();
             queryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
             queryWrapper.lambda().eq(SysDepart::getOrgCode, depart.getOrgCode());
             queryWrapper.lambda().groupBy(SysDepart::getOrgCode);
             SysDepart one = this.getOne(queryWrapper);
-            if(ObjectUtil.isNotEmpty(one)){
+            if (ObjectUtil.isNotEmpty(one)) {
                 throw new IllegalArgumentException("机构编码已存在");
             }
             depart.setCreateBy(CurrentUserUtil.getUsername());
             depart.setCreateTime(new Date());
-        }else{
+        } else {
             //修改
             QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<>();
             queryWrapper.lambda().ne(SysDepart::getId, id);
@@ -125,7 +125,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
             queryWrapper.lambda().eq(SysDepart::getOrgCode, depart.getOrgCode());
             queryWrapper.lambda().groupBy(SysDepart::getOrgCode);
             SysDepart one = this.getOne(queryWrapper);
-            if(ObjectUtil.isNotEmpty(one)){
+            if (ObjectUtil.isNotEmpty(one)) {
                 throw new IllegalArgumentException("机构编码已存在");
             }
             depart.setUpdateBy(CurrentUserUtil.getUsername());
@@ -133,7 +133,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         }
         //获取当前用户租户编码
         String orgCategory = depart.getOrgCategory();
-        if("1".equals(orgCategory)){
+        if ("1".equals(orgCategory)) {
             String userTenantCode = CurrentUserUtil.getUserTenantCode();
             QueryWrapper<SysDepart> sysDepartQueryWrapper = new QueryWrapper<>();
             sysDepartQueryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
@@ -141,14 +141,14 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
             sysDepartQueryWrapper.lambda().eq(SysDepart::getOrgCategory, orgCategory);
             sysDepartQueryWrapper.lambda().groupBy(SysDepart::getOrgCode);
             SysDepart one = this.getOne(sysDepartQueryWrapper);
-            if(ObjectUtil.isNotEmpty(one)){
+            if (ObjectUtil.isNotEmpty(one)) {
                 throw new IllegalArgumentException("一个租户仅能存在一个集团");
             }
         }
         //Long parentId = ObjectUtil.isEmpty(depart.getParentId()) ? 0L : depart.getParentId();
         Long parentId = 0L;
         List<Long> parentIdList = depart.getParentIdList();
-        if(CollUtil.isNotEmpty(parentIdList)){
+        if (CollUtil.isNotEmpty(parentIdList)) {
             parentId = parentIdList.get(parentIdList.size() - 1);
         }
         depart.setParentId(parentId);
@@ -166,11 +166,11 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 
         String orgCategory = form.getOrgCategory();//机构类别 1集团，2公司，3部门
         List<String> stringList = new ArrayList<>();
-        if("1".equals(orgCategory)){
-            stringList = Arrays.asList("1","2","3");
-        }else if("2".equals(orgCategory)){
-            stringList = Arrays.asList("2","3");
-        }else if("3".equals(orgCategory)){
+        if ("1".equals(orgCategory)) {
+            stringList = Arrays.asList("1", "2", "3");
+        } else if ("2".equals(orgCategory)) {
+            stringList = Arrays.asList("2", "3");
+        } else if ("3".equals(orgCategory)) {
             stringList = Arrays.asList("3");
         }
         form.setNotInOrgCategory(stringList);//过滤掉的机构类别
@@ -182,14 +182,14 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
     @Override
     public SysDepart queryById(int id) {
         SysDepart depart = this.getById(id);
-        if(ObjectUtil.isEmpty(depart)){
+        if (ObjectUtil.isEmpty(depart)) {
             throw new IllegalArgumentException("组织不存在");
         }
         String parentIds = sysDepartMapper.selectParentIds(depart.getId());
         String[] parentIdArrays = parentIds.split(",");
         List<Long> parentIdList = new ArrayList<>();
-        for(int i=parentIdArrays.length; i>0; i--){
-            parentIdList.add(Long.valueOf(parentIdArrays[i-1]));
+        for (int i = parentIdArrays.length; i > 0; i--) {
+            parentIdList.add(Long.valueOf(parentIdArrays[i - 1]));
         }
         //parentIdList.add(depart.getId());
         depart.setParentIdList(parentIdList);
@@ -235,18 +235,19 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         list.forEach(l -> {
             if (StrUtil.equals(pid, l.getParentId().toString())) {
                 l.setChildren(buildTreeStaff(list, l.getId().toString()));
-                if(StrUtil.equals("3",l.getOrgCategory())){
+                if (StrUtil.equals("3", l.getOrgCategory())) {
                     QueryWrapper<SysUser> sysUserQueryWrapper = new QueryWrapper<>();
                     sysUserQueryWrapper.lambda().eq(SysUser::getDepartId, l.getId());
                     sysUserQueryWrapper.lambda().eq(SysUser::getIsDeleted, 0);
                     List<SysUser> lists = sysUserService.list(sysUserQueryWrapper);
-                    List<SysDepart> treeListUser=null;
-                    for (int i=0;i<lists.size();i++){
-                        treeListUser = new ArrayList<>();
-                        SysDepart sysDepart = new SysDepart();
-                        sysDepart.setId(lists.get(i).getId());
-                        sysDepart.setLabel(lists.get(i).getUserName());
-                        treeListUser.add(sysDepart);
+                    List<SysDepart> treeListUser = new ArrayList<>();
+                    SysDepart sysDeparts = null;
+                    for (int i = 0; i < lists.size(); i++) {
+                        sysDeparts = new SysDepart();
+                        sysDeparts.setId(System.currentTimeMillis()+lists.get(i).getId());
+                        sysDeparts.setUserId(lists.get(i).getId());
+                        sysDeparts.setLabel(lists.get(i).getName());
+                        treeListUser.add(sysDeparts);
                     }
                     l.setChildren(treeListUser);
                 }

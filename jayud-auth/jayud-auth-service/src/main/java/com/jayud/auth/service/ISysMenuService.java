@@ -59,6 +59,11 @@ public interface ISysMenuService extends IService<SysMenu> {
                                 HttpServletRequest req);
 
     /**
+     * 新增or编辑菜单
+     * @param sysMenu
+     */
+    void saveSysMenu(SysMenu sysMenu);
+    /**
      * @description 根据租户查询菜单树
      * @author  ciro
      * @date   2022/2/24 9:48

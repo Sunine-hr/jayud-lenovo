@@ -62,5 +62,15 @@ public class SysMenuController {
     }
 
 
+    /**
+     * 新增or编辑
+     */
+    @ApiOperation(value = "新增OR编辑")
+    @PostMapping(value = "saveSysMenu")
+    public BaseResult saveSysMenu(@RequestBody SysMenu sysMenu){
+        sysMenuService.saveSysMenu(sysMenu);
+        return BaseResult.ok();
+    }
+
 
 }

@@ -89,10 +89,10 @@
         where 1=1
         and sm.is_deleted = 0
         <if test="sysMenu.parentId != null">
-            sm.parent_id = #{sysMenu.parentId}
+            and sm.parent_id = #{sysMenu.parentId}
         </if>
         <if test="sysMenu.title != null and sysMenu.title != ''">
-            sm.title like concat('%',#{sysMenu.title},'%')
+            and sm.title like concat('%',#{sysMenu.title},'%')
         </if>
         <if test="sysMenu.childrenIds!=null and sysMenu.childrenIds.size()>0">
             AND sm.`id` IN
@@ -116,10 +116,10 @@
         where 1=1
         and sm.is_deleted = 0
         <if test="sysMenu.parentId != null">
-            sm.parent_id = #{sysMenu.parentId}
+            and sm.parent_id = #{sysMenu.parentId}
         </if>
         <if test="sysMenu.title != null and sysMenu.title != ''">
-            sm.title like concat('%',#{sysMenu.title},'%')
+            and sm.title like concat('%',#{sysMenu.title},'%')
         </if>
 
     </select>

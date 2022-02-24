@@ -34,7 +34,7 @@ public interface ISysMenuService extends IService<SysMenu> {
      * 获取所有菜单tree
      * @return
      */
-    List<SysMenu> allMenuTree();
+    List<SysMenu> allMenuTree(SysMenu sysMenu);
 
     /**
      * @description 根据菜单编码集合查询菜单

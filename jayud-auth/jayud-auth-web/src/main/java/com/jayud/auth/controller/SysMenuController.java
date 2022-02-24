@@ -47,7 +47,7 @@ public class SysMenuController {
     @ApiModelProperty(value = "获取所有的菜单")
     @PostMapping(value = "allMenuTree")
     public BaseResult<List<SysMenu>> allMenuTree(@RequestBody SysMenu sysMenu){
-        List<SysMenu> tree = sysMenuService.allMenuTree();
+        List<SysMenu> tree = sysMenuService.allMenuTree(sysMenu);
         return BaseResult.ok(tree);
     }
 

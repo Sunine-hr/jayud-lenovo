@@ -29,7 +29,7 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
      * 获取所有菜单树
      * @return
      */
-    List<SysMenu> allMenuTree();
+    List<SysMenu> allMenuTree(@Param("sysMenu") SysMenu sysMenu);
 
     /**
      * @description 根据菜单编码集合查询菜单

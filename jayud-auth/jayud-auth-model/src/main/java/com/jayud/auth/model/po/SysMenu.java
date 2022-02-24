@@ -104,4 +104,8 @@ public class SysMenu extends SysBaseEntity {
 //        return this.id;
 //    }
 
+    @ApiModelProperty(value = "系统类型(1-权限系统，2-OMS系统) in() 查询")
+    @TableField(exist = false)
+    private List<Integer> inSysTypeList;
+
 }

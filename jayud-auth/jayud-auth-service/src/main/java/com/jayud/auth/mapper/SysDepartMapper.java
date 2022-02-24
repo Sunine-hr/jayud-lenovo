@@ -68,4 +68,11 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
      * @return
      */
     List<SysDepart> selectDeptTree(@Param("form") QuerySysDeptForm form);
+
+    /**
+     * 查询组织的所有父id
+     * @param id
+     * @return
+     */
+    String selectParentIds(@Param("id") Long id);
 }

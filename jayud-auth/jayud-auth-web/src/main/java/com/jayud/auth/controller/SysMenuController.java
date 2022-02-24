@@ -1,17 +1,18 @@
 package com.jayud.auth.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysMenu;
 import com.jayud.auth.service.ISysMenuService;
 import com.jayud.common.BaseResult;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -39,12 +40,27 @@ public class SysMenuController {
         return BaseResult.ok(jsonObject);
     }
 
+    /**
+     * 获取所有的菜单树
+     * @return
+     */
     @ApiModelProperty(value = "获取所有的菜单")
     @PostMapping(value = "allMenuTree")
-    public BaseResult<List<SysMenu>> allMenuTree(){
-        List<SysMenu> tree = sysMenuService.allMenuTree();
+    public BaseResult<List<SysMenu>> allMenuTree(@RequestBody SysMenu sysMenu){
+        List<SysMenu> tree = sysMenuService.allMenuTree(sysMenu);
         return BaseResult.ok(tree);
     }
+
+    /**
+     * 分页查询数据
+     */
+    @ApiOperation("分页查询数据")
+    @PostMapping("/selectPage")
+    public BaseResult<IPage<SysMenu>> selectPage(@RequestBody SysMenu sysMenu,
+                                                   HttpServletRequest req) {
+        return BaseResult.ok(sysMenuService.selectPage(sysMenu,sysMenu.getCurrentPage(),sysMenu.getPageSize(),req));
+    }
+
 
 
 }

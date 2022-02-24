@@ -71,8 +71,28 @@
         select sm.* from sys_menu sm
         where 1=1
         and sm.is_deleted = 0
+        <if test="sysMenu.title != null and sysMenu.title != ''">
+            sm.title like concat('%',#{sysMenu.title},'%')
+        </if>
+        <if test="sysMenu.inSysTypeList!=null and sysMenu.inSysTypeList.size()>0">
+            AND sm.`sys_type` IN
+            <foreach item="item" index="index" collection="sysMenu.inSysTypeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         GROUP BY sm.id
         ORDER BY sm.sort asc
+    </select>
+
+    <select id="pageList" resultType="com.jayud.auth.model.po.SysMenu">
+        select sm.* from sys_menu sm
+        where 1=1
+        <if test="sysMenu.parentId != null">
+            sm.parent_id = #{sysMenu.parentId}
+        </if>
+        <if test="sysMenu.title != null and sysMenu.title != ''">
+            sm.title like concat('%',#{sysMenu.title},'%')
+        </if>
     </select>
 
 </mapper>

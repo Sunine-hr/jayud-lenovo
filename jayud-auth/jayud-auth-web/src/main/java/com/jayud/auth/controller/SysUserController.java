@@ -180,9 +180,20 @@ public class SysUserController {
         sysUserForm.setId(id);
         //关联查询用户信息 关联表 行合并  成列
         sysUserIdOne = sysUserService.findSysUserIdOne(sysUserForm);
-        if(sysUserIdOne!=null){
+        if(sysUserIdOne==null){
             return BaseResult.error("用户不存在！");
         }
+
+        //拿到的部门的集合
+        List<Long> listId = new ArrayList<>();
+        String departmentList = sysUserIdOne.getDepartmentList();
+        String[] aa = departmentList.split(",");
+        for (int i = 0; i < aa.length; i++) {
+            long l = Long.parseLong(aa[i]);
+            listId.add(l);
+        }
+        sysUserIdOne.setDepartIdLists(listId);
+        //拿到角色的集合
         List<Long> list = new ArrayList<>();
         String s = sysUserIdOne.getRoleListIdString();
         String[] a = s.split(",");

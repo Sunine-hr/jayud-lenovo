@@ -316,7 +316,7 @@
         create_by,
         create_time,
         update_by,
-        update_times
+        update_time
         FROM
         sys_user
         <where>
@@ -367,7 +367,8 @@
             su.create_time,
             su.update_by,
             su.update_time ,
-            GROUP_CONCAT( sur.role_id ) roleListIdString
+            GROUP_CONCAT( sur.role_id ) roleListIdString,
+            (SELECT suu.name FROM sys_user suu where suu.id=su.supervisor_id) supervisor_id_name
 
         FROM
             sys_user  su

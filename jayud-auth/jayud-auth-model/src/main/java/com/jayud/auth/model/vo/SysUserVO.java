@@ -66,6 +66,7 @@ public class SysUserVO extends SysBaseEntity {
     @ApiModelProperty(value = "所属部门id节点")
     private String departmentList;
 
+
     @ApiModelProperty(value = "负责部门ids")
     private String departIds;
 
@@ -80,6 +81,9 @@ public class SysUserVO extends SysBaseEntity {
 
     @ApiModelProperty(value = "员工状态：0-离职，1-在职")
     private Integer jobStatus;
+
+    @ApiModelProperty(value = "状态(1:在职,0:离职)")
+    private String statusDesc;
 
     @ApiModelProperty(value = "冻结状态：0-冻结，1-正常")
     private Integer status;
@@ -117,4 +121,15 @@ public class SysUserVO extends SysBaseEntity {
     @ApiModelProperty(value = "岗位名称")
     private String postIdName;
 
+    @ApiModelProperty(value = "上司id对应的名字")
+    private String supervisorIdName;
+
+    @ApiModelProperty(value = "所属部门id节点集合")
+    private List<Long> departIdLists;
+
+
+    public void setStatus(Integer status) {
+        this.status = status;
+        this.statusDesc = this.status == 1 ? "在职" : "离职";
+    }
 }

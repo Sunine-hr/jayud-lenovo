@@ -90,4 +90,7 @@ public class SysMenu extends SysBaseEntity {
     @TableField(exist = false)
     private List<Integer> inSysTypeList;
 
+    @ApiModelProperty(value = "菜单的所有子集ids")
+    @TableField(exist = false)
+    private List<Long> childrenIds;
 }

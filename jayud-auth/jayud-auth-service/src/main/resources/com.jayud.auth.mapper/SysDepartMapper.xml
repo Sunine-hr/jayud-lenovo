@@ -45,6 +45,10 @@
         LEFT JOIN sys_user su on sd.principal_id = su.id
         <where>
             sd.is_deleted = 0
+
+            <if test="sysDepart.id != null ">
+                AND sd.id = ${sysDepart.id}
+            </if>
             <if test="sysDepart.parentId != null ">
                 AND sd.parent_id = ${sysDepart.parentId}
             </if>

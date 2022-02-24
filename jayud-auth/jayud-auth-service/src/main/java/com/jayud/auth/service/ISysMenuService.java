@@ -2,6 +2,7 @@ package com.jayud.auth.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -72,4 +73,10 @@ public interface ISysMenuService extends IService<SysMenu> {
      * @return: java.util.List<com.jayud.auth.model.po.SysMenu>
      **/
     List<SysMenu> selectMenuTreeByTenantCode(String tenantCode);
+
+    /**
+     * 批量删除（逻辑删除）
+     * @param form
+     */
+    void batchDelete(DeleteForm form);
 }

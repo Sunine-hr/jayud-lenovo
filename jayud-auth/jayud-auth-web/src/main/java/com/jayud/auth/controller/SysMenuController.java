@@ -2,6 +2,7 @@ package com.jayud.auth.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysMenu;
 import com.jayud.auth.service.ISysMenuService;
@@ -72,11 +73,26 @@ public class SysMenuController {
         return BaseResult.ok();
     }
 
+    /**
+     * 根据租户查询菜单树
+     * @return
+     */
     @ApiOperation(value = "根据租户查询菜单树")
     @GetMapping(value = "selectMenuTreeByTenantCode")
     public BaseResult<List<SysMenu>> selectMenuTreeByTenantCode(){
         return BaseResult.ok(sysMenuService.selectMenuTreeByTenantCode(CurrentUserUtil.getUserTenantCode()));
     }
+
+    /**
+     * 批量删除菜单
+     */
+    @ApiOperation(value = "批量删除菜单(逻辑删除)")
+    @PostMapping(value = "batchDelete")
+    public BaseResult batchDelete(@RequestBody DeleteForm form){
+        sysMenuService.batchDelete(form);
+        return BaseResult.ok();
+    }
+
 
 
 }

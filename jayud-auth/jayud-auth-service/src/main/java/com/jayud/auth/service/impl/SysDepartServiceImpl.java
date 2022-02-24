@@ -240,7 +240,15 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
                     sysUserQueryWrapper.lambda().eq(SysUser::getDepartId, l.getId());
                     sysUserQueryWrapper.lambda().eq(SysUser::getIsDeleted, 0);
                     List<SysUser> lists = sysUserService.list(sysUserQueryWrapper);
-                    l.setSysUsersList(lists);
+                    List<SysDepart> treeListUser=null;
+                    for (int i=0;i<lists.size();i++){
+                        treeListUser = new ArrayList<>();
+                        SysDepart sysDepart = new SysDepart();
+                        sysDepart.setId(lists.get(i).getId());
+                        sysDepart.setLabel(lists.get(i).getUserName());
+                        treeListUser.add(sysDepart);
+                    }
+                    l.setChildren(treeListUser);
                 }
                 treeList.add(l);
             }

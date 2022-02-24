@@ -110,10 +110,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             sysUser.setCreateTime(new Date());
 
             //截取集合拼接成字符串  未完 。。。。
-//            StringUtils.getFileNameStr();
+            //所属部门id 的节点   departIdLists
+            String fileNameString = com.jayud.common.utils.StringUtils.getFileNameString(sysUserForm.getDepartIdLists());
 
-
-
+            //负责部门节点id集合
+            sysUser.setDepartmentList(fileNameString);
             if(sysUser.getPassword().equals("")&&sysUser.getPassword()==null){
                 //设置默认密码
                 sysUser.setPassword(encoder.encode("123456"));

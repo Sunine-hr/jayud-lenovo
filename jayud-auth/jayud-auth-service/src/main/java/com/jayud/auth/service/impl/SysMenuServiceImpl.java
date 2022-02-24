@@ -55,6 +55,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public JSONObject getUserMenuByToken() {
+        CurrentUserUtil.getUserToken();
         AuthUserDetail userDetail = CurrentUserUtil.getUserDetail();
         Long userId = userDetail.getId();
         SysUser sysUser = sysUserService.getById(userId);

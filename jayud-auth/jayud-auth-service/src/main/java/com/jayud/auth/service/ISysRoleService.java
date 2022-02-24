@@ -7,6 +7,7 @@ import com.jayud.auth.model.po.SysRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.auth.model.vo.SysRoleVO;
 
+import javax.management.relation.Role;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -82,5 +83,14 @@ public interface ISysRoleService extends IService<SysRole> {
     void setRoles(Long userId, List<Long> roleIds);
 
     void setRolePermissions(Long rolesId, List<Long> menuIds);
+
+    /**
+     * @description 根据用户名称查询角色
+     * @author  ciro
+     * @date   2022/2/24 10:48
+     * @param: username
+     * @return: java.util.List<com.jayud.auth.model.po.SysRole>
+     **/
+    List<SysRole> selectRoleByUsername(String username);
 
 }

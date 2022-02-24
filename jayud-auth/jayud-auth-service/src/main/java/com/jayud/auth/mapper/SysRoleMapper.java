@@ -68,4 +68,13 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
      * @return
      */
     List<SysRole> selectSysRoleByUserId(@Param("userId") Long userId);
+
+    /**
+     * @description 根据用户名称查询角色
+     * @author  ciro
+     * @date   2022/2/24 10:54
+     * @param: username
+     * @return: java.util.List<com.jayud.auth.model.po.SysRole>
+     **/
+    List<SysRole> selectRoleByUsername(@Param("username") String username);
 }

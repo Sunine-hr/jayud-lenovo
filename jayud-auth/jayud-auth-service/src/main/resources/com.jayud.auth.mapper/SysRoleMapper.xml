@@ -69,6 +69,25 @@
         and sr.is_deleted = 0
         and su.id = #{userId}
     </select>
+    <select id="selectRoleByUsername" resultType="com.jayud.auth.model.po.SysRole">
+        SELECT
+            sr.id id,
+            sr.role_code roleCode,
+            sr.role_name roleName,
+            sr.`status` `status`,
+            sr.remark remark,
+            sr.tenant_code tenant_code
+        FROM
+            sys_role sr
+                LEFT JOIN sys_user_role sur ON sur.role_id = sr.id
+                AND sur.is_deleted = 0
+                LEFT JOIN sys_user su ON sur.user_id = su.id
+                AND su.is_deleted = 0
+        WHERE
+            sr.is_deleted = 0
+          AND su.`name` = #{username}
+
+    </select>
 
     <delete id="phyDelById">
         DELETE FROM  sys_role WHERE id = ${id}

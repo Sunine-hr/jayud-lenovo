@@ -137,4 +137,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         this.sysRoleMenuService.saveBatch(list);
     }
 
+    @Override
+    public List<SysRole> selectRoleByUsername(String username) {
+        return sysRoleMapper.selectRoleByUsername(username);
+    }
+
 }

@@ -1,11 +1,15 @@
 package com.jayud.common.utils;
 
 import com.jayud.common.dto.AuthUserDetail;
+import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 
 /**
@@ -60,6 +64,26 @@ public class CurrentUserUtil {
      **/
     public static String getUserTenantCode(){
         return getUserDetail().getTenantCode();
+    }
+
+    /**
+     * @description 判断是否有角色权限
+     * @author  ciro
+     * @date   2022/2/24 11:36
+     * @param: roleCode
+     * @return: java.lang.Boolean
+     **/
+    public static Boolean hasRole(String roleCode){
+        Boolean isHas = false;
+        OAuth2Authentication oauth2Authentication = (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
+        Collection<GrantedAuthority> collection = oauth2Authentication.getAuthorities();
+        for (GrantedAuthority grantedAuthority : collection){
+            if (roleCode.equals(grantedAuthority.getAuthority())){
+                isHas = true;
+                break;
+            }
+        }
+        return isHas;
     }
 
 

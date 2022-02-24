@@ -160,6 +160,10 @@ public interface SysTips {
      */
     String ADD_SUCCESS = "添加成功！";
     /**
+     * 添加成功!
+     */
+    String SAVE_SUCCESS = "保存成功！";
+    /**
      * 添加失败!
      */
     String ADD_FAIL = "添加失败！";

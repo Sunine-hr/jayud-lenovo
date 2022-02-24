@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.SysEnterpriseWechatConfigMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SysEnterpriseWechatConfig">
+        <id column="id" property="id" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="enterprise_id" property="enterpriseId" />
+        <result column="application_voucher" property="applicationVoucher" />
+        <result column="application_id" property="applicationId" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, tenant_code, enterprise_id, application_voucher, application_id, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">sys_enterprise_wechat_config </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="sysEnterpriseWechatConfig.tenantCode != null and sysEnterpriseWechatConfig.tenantCode != ''">
+                AND tenant_code = #{sysEnterpriseWechatConfig.tenantCode}
+            </if>
+
+            <if test="sysEnterpriseWechatConfig.enterpriseId != null and sysEnterpriseWechatConfig.enterpriseId != ''">
+                AND enterprise_id = #{sysEnterpriseWechatConfig.enterpriseId}
+            </if>
+
+            <if test="sysEnterpriseWechatConfig.applicationVoucher != null and sysEnterpriseWechatConfig.applicationVoucher != ''">
+                AND application_voucher = #{sysEnterpriseWechatConfig.applicationVoucher}
+            </if>
+
+            <if test="sysEnterpriseWechatConfig.applicationId != null and sysEnterpriseWechatConfig.applicationId != ''">
+                AND application_id = #{sysEnterpriseWechatConfig.applicationId}
+            </if>
+
+            <if test="sysEnterpriseWechatConfig.remark != null and sysEnterpriseWechatConfig.remark != ''">
+                AND remark = #{sysEnterpriseWechatConfig.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysEnterpriseWechatConfig">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysEnterpriseWechatConfig">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  sys_enterprise_wechat_config WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE sys_enterprise_wechat_config SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+
+</mapper>

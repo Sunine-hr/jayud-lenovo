@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.SysEmamilConfigMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SysEmamilConfig">
+        <id column="id" property="id" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="email_server_addr" property="emailServerAddr" />
+        <result column="send_email_account" property="sendEmailAccount" />
+        <result column="send_email_account_name" property="sendEmailAccountName" />
+        <result column="send_email_account_password" property="sendEmailAccountPassword" />
+        <result column="financial_email_addr" property="financialEmailAddr" />
+        <result column="affairs_email_addr" property="affairsEmailAddr" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, tenant_code, email_server_addr, send_email_account, send_email_account_name, send_email_account_password, financial_email_addr, affairs_email_addr, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">sys_emamil_config </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="sysEmamilConfig.tenantCode != null and sysEmamilConfig.tenantCode != ''">
+                AND tenant_code = #{sysEmamilConfig.tenantCode}
+            </if>
+
+            <if test="sysEmamilConfig.emailServerAddr != null and sysEmamilConfig.emailServerAddr != ''">
+                AND email_server_addr = #{sysEmamilConfig.emailServerAddr}
+            </if>
+
+            <if test="sysEmamilConfig.sendEmailAccount != null and sysEmamilConfig.sendEmailAccount != ''">
+                AND send_email_account = #{sysEmamilConfig.sendEmailAccount}
+            </if>
+
+            <if test="sysEmamilConfig.sendEmailAccountName != null and sysEmamilConfig.sendEmailAccountName != ''">
+                AND send_email_account_name = #{sysEmamilConfig.sendEmailAccountName}
+            </if>
+
+            <if test="sysEmamilConfig.sendEmailAccountPassword != null and sysEmamilConfig.sendEmailAccountPassword != ''">
+                AND send_email_account_password = #{sysEmamilConfig.sendEmailAccountPassword}
+            </if>
+
+            <if test="sysEmamilConfig.financialEmailAddr != null and sysEmamilConfig.financialEmailAddr != ''">
+                AND financial_email_addr = #{sysEmamilConfig.financialEmailAddr}
+            </if>
+
+            <if test="sysEmamilConfig.affairsEmailAddr != null and sysEmamilConfig.affairsEmailAddr != ''">
+                AND affairs_email_addr = #{sysEmamilConfig.affairsEmailAddr}
+            </if>
+
+            <if test="sysEmamilConfig.remark != null and sysEmamilConfig.remark != ''">
+                AND remark = #{sysEmamilConfig.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysEmamilConfig">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysEmamilConfig">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  sys_emamil_config WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE sys_emamil_config SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+
+</mapper>

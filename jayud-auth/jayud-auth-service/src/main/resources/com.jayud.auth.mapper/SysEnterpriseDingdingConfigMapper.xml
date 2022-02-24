@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.SysEnterpriseDingdingConfigMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SysEnterpriseDingdingConfig">
+        <id column="id" property="id" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="app_key" property="appKey" />
+        <result column="app_secret" property="appSecret" />
+        <result column="agent_id" property="agentId" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, tenant_code, app_key, app_secret, agent_id, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">sys_enterprise_dingding_config </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="sysEnterpriseDingdingConfig.tenantCode != null and sysEnterpriseDingdingConfig.tenantCode != ''">
+                AND tenant_code = #{sysEnterpriseDingdingConfig.tenantCode}
+            </if>
+
+            <if test="sysEnterpriseDingdingConfig.appKey != null and sysEnterpriseDingdingConfig.appKey != ''">
+                AND app_key = #{sysEnterpriseDingdingConfig.appKey}
+            </if>
+
+            <if test="sysEnterpriseDingdingConfig.appSecret != null and sysEnterpriseDingdingConfig.appSecret != ''">
+                AND app_secret = #{sysEnterpriseDingdingConfig.appSecret}
+            </if>
+
+            <if test="sysEnterpriseDingdingConfig.agentId != null and sysEnterpriseDingdingConfig.agentId != ''">
+                AND agent_id = #{sysEnterpriseDingdingConfig.agentId}
+            </if>
+
+            <if test="sysEnterpriseDingdingConfig.remark != null and sysEnterpriseDingdingConfig.remark != ''">
+                AND remark = #{sysEnterpriseDingdingConfig.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysEnterpriseDingdingConfig">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysEnterpriseDingdingConfig">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  sys_enterprise_dingding_config WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE sys_enterprise_dingding_config SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+
+</mapper>

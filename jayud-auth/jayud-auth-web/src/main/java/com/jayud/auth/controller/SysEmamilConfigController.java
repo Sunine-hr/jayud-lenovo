@@ -1,0 +1,186 @@
+package com.jayud.auth.controller;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.constant.SysTips;
+import com.jayud.common.BaseResult;
+import com.jayud.auth.service.ISysEmamilConfigService;
+import com.jayud.auth.model.po.SysEmamilConfig;
+
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
+/**
+ * 系统邮箱配置表 控制类
+ *
+ * @author jayud
+ * @since 2022-02-24
+ */
+@Slf4j
+@Api(tags = "系统邮箱配置表")
+@RestController
+@RequestMapping("/sysEmamilConfig")
+public class SysEmamilConfigController {
+
+
+
+    @Autowired
+    public ISysEmamilConfigService sysEmamilConfigService;
+
+
+    /**
+     * @description 分页查询
+     * @author  jayud
+     * @date   2022-02-24
+     * @param: sysEmamilConfig
+     * @param: currentPage
+     * @param: pageSize
+     * @param: req
+     * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysEmamilConfig>>
+     **/
+    @ApiOperation("分页查询数据")
+    @GetMapping("/selectPage")
+    public BaseResult<IPage<SysEmamilConfig>> selectPage(SysEmamilConfig sysEmamilConfig,
+                                                   @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
+                                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                                   HttpServletRequest req) {
+        return BaseResult.ok(sysEmamilConfigService.selectPage(sysEmamilConfig,currentPage,pageSize,req));
+    }
+
+
+    /**
+    * @description 列表查询数据
+    * @author  jayud
+    * @date   2022-02-24
+    * @param: sysEmamilConfig
+    * @param: req
+    * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.auth.model.po.SysEmamilConfig>>
+    **/
+    @ApiOperation("列表查询数据")
+    @GetMapping("/selectList")
+    public BaseResult<List<SysEmamilConfig>> selectList(SysEmamilConfig sysEmamilConfig,
+                                                HttpServletRequest req) {
+        return BaseResult.ok(sysEmamilConfigService.selectList(sysEmamilConfig));
+    }
+
+
+    /**
+    * @description 新增
+    * @author  jayud
+    * @date   2022-02-24
+    * @param: sysEmamilConfig
+    * @return: com.jayud.common.BaseResult
+    **/
+    @ApiOperation("新增")
+    @PostMapping("/add")
+    public BaseResult add(@Valid @RequestBody SysEmamilConfig sysEmamilConfig ){
+        sysEmamilConfigService.save(sysEmamilConfig);
+        return BaseResult.ok(SysTips.ADD_SUCCESS);
+    }
+
+
+    /**
+     * @description 编辑
+     * @author  jayud
+     * @date   2022-02-24
+     * @param: sysEmamilConfig
+     * @return: com.jayud.common.BaseResult
+     **/
+    @ApiOperation("编辑")
+    @PostMapping("/edit")
+    public BaseResult edit(@Valid @RequestBody SysEmamilConfig sysEmamilConfig ){
+        sysEmamilConfigService.updateById(sysEmamilConfig);
+        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+    }
+
+
+
+    /**
+     * @description 物理删除
+     * @author  jayud
+     * @date   2022-02-24
+     * @param: id
+     * @return: com.jayud.common.BaseResult
+     **/
+    @ApiOperation("物理删除")
+    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
+    @GetMapping("/phyDel")
+    public BaseResult phyDel(@RequestParam Long id){
+        sysEmamilConfigService.phyDelById(id);
+        return BaseResult.ok(SysTips.DEL_SUCCESS);
+    }
+
+    /**
+     * @description 逻辑删除
+     * @author  jayud
+     * @date   2022-02-24
+     * @param: id
+     * @return: com.jayud.common.BaseResult
+     **/
+    @ApiOperation("逻辑删除")
+    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
+    @GetMapping("/logicDel")
+    public BaseResult logicDel(@RequestParam Long id){
+        sysEmamilConfigService.logicDel(id);
+        return BaseResult.ok(SysTips.DEL_SUCCESS);
+    }
+
+
+    /**
+     * @description 根据id查询
+     * @author  jayud
+     * @date   2022-02-24
+     * @param: id
+     * @return: com.jayud.common.BaseResult<com.jayud.auth.model.po.SysEmamilConfig>
+     **/
+    @ApiOperation("根据id查询")
+    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
+    @GetMapping(value = "/queryById")
+    public BaseResult<SysEmamilConfig> queryById(@RequestParam(name="id",required=true) int id) {
+        SysEmamilConfig sysEmamilConfig = sysEmamilConfigService.getById(id);
+        return BaseResult.ok(sysEmamilConfig);
+    }
+
+    /**
+     * @description 保存数据
+     * @author  ciro
+     * @date   2022/2/24 13:02
+     * @param: sysEmamilConfig
+     * @return: com.jayud.common.BaseResult
+     **/
+    @ApiOperation("保存数据")
+    @PostMapping("/saveConfig")
+    public BaseResult saveConfig(@Valid @RequestBody SysEmamilConfig sysEmamilConfig ){
+        return sysEmamilConfigService.saveConfig(sysEmamilConfig);
+    }
+
+
+    /**
+     * @description 根据租户编码查询
+     * @author  ciro
+     * @date   2022/2/24 13:02
+     * @param: tenantCode
+     * @return: com.jayud.common.BaseResult<com.jayud.auth.model.po.SysEmamilConfig>
+     **/
+    @ApiOperation("根据租户编码查询")
+    @ApiImplicitParam(name = "tenantCode",value = "租户编码",dataType = "String",required = true)
+    @GetMapping(value = "/selectByTenantCode")
+    public BaseResult<SysEmamilConfig> selectByTenantCode(@RequestParam(name="tenantCode",required=true) String tenantCode) {
+        return sysEmamilConfigService.selectByTenantCode(tenantCode);
+    }
+
+}

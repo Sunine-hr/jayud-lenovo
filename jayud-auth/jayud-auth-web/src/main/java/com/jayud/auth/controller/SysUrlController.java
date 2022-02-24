@@ -154,8 +154,15 @@ public class SysUrlController {
         return BaseResult.ok(sysUrl);
     }
 
+    /**
+     * @description 根据租户获取系统列表
+     * @author  ciro
+     * @date   2022/2/24 9:46
+     * @param: tenantCode
+     * @return: com.jayud.common.BaseResult
+     **/
     @GetMapping(value = "getSystemByTenantCode")
-    public BaseResult getSystemByTenantCode(String tenantCode){
+    public BaseResult<List<SysUrl>> getSystemByTenantCode(String tenantCode){
         return BaseResult.ok(sysUrlService.getSystemByTenantCode(tenantCode));
     }
 

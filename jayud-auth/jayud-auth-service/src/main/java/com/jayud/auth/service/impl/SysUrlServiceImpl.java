@@ -88,7 +88,7 @@ public class SysUrlServiceImpl extends ServiceImpl<SysUrlMapper, SysUrl> impleme
 
     @Override
     public List<SysUrl> getSystemByTenantCode(String tenantCode) {
-        return null;
+        return sysUrlMapper.getSystemByTenantCode(tenantCode);
     }
 
     /**

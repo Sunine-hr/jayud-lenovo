@@ -21,6 +21,7 @@ import com.jayud.common.utils.CurrentUserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +43,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Autowired
     private ISysRoleService sysRoleService;
     @Autowired
-    private SysMenuMapper sysMenuMapper;
-    @Autowired
     private ISysUrlService sysUrlService;
+
+    @Autowired
+    private SysMenuMapper sysMenuMapper;
 
     @Override
     public JSONObject getUserMenuByToken() {
@@ -105,7 +107,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         List<SysMenu> menuList = new ArrayList<>();
         if (CollUtil.isNotEmpty(urlList)) {
             List<Integer> typeList = urlList.stream().map(x -> x.getType()).collect(Collectors.toList());
-
+            SysMenu sysMenu = new SysMenu();
+            sysMenu.setInSysTypeList(typeList);
+            menuList = allMenuTree(sysMenu);
         }
         return menuList;
     }

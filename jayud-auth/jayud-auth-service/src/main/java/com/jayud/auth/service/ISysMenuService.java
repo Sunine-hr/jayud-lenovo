@@ -58,4 +58,12 @@ public interface ISysMenuService extends IService<SysMenu> {
                                 Integer pageSize,
                                 HttpServletRequest req);
 
+    /**
+     * @description 根据租户查询菜单树
+     * @author  ciro
+     * @date   2022/2/24 9:48
+     * @param: tenantCode
+     * @return: java.util.List<com.jayud.auth.model.po.SysMenu>
+     **/
+    List<SysMenu> selectMenuTreeByTenantCode(String tenantCode);
 }

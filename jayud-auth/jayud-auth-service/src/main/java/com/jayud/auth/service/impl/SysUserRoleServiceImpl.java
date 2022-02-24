@@ -95,6 +95,9 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
                 currentPage, pageSize, req);
         List<SysUserRole> records = userRolePage.getRecords();
         List<Long> userIds = records.stream().map(e -> e.getUserId()).collect(Collectors.toList());
+        if (userIds.size() == 0) {
+            userIds.add(-1L);
+        }
         IPage<SysUserVO> userPages = this.sysUserService.selectPage(new SysUserForm().setUserIds(userIds), currentPage, pageSize, req);
         return userPages;
     }

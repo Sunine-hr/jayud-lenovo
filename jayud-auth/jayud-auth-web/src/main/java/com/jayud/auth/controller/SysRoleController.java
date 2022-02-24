@@ -1,11 +1,14 @@
 package com.jayud.auth.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.MapUtil;
 import com.jayud.auth.model.dto.AddSysRole;
 import com.jayud.auth.model.vo.SysRoleVO;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.service.ISysMenuService;
 import com.jayud.auth.service.ISysRoleMenuService;
 import com.jayud.auth.service.ISysUserRoleService;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -67,6 +70,11 @@ public class SysRoleController {
                                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                    HttpServletRequest req) {
         sysRole.setIsDeleted(false);
+        if (CurrentUserUtil.hasRole("tenant_role_admin")) {
+            sysRole.setTenantCode(null);
+        } else {
+            sysRole.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        }
         return BaseResult.ok(sysRoleService.selectPage(sysRole, currentPage, pageSize, req));
     }
 
@@ -115,6 +123,10 @@ public class SysRoleController {
     @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam Long id) {
+        SysRole sysRole = this.sysRoleService.getById(id);
+        if (sysRole.getRoleCode().equals("tenant_role_admin")) {
+            throw new JayudBizException("超级管理员不能删除");
+        }
         if (this.sysUserRoleService.exitByRolesIds(Arrays.asList(id))) {
             return BaseResult.error("存在角色绑定用户,无法删除");
         }
@@ -133,6 +145,13 @@ public class SysRoleController {
     @ApiOperation("批量逻辑删除")
     @PostMapping("/batchLogicDel")
     public BaseResult batchLogicDel(@RequestBody List<SysRole> sysRoles) {
+
+        for (SysRole sysRole : sysRoles) {
+            if (sysRole.getRoleCode().equals("tenant_role_admin")) {
+                throw new JayudBizException("超级管理员不能删除");
+            }
+        }
+
         List<Long> rolesIds = sysRoles.stream().map(e -> e.getId()).collect(Collectors.toList());
 
         if (this.sysUserRoleService.exitByRolesIds(rolesIds)) {
@@ -142,7 +161,7 @@ public class SysRoleController {
         Date date = new Date();
         for (Long rolesId : rolesIds) {
             SysRole sysRole = new SysRole();
-            sysRole.setIsDeleted(true).setId(rolesId).setUpdateTime(date).setUpdateBy(CurrentUserUtil.getUsername());
+            sysRole.setIsDeleted(true).setId(rolesId);
             tmps.add(sysRole);
         }
         sysRoleService.updateBatchById(tmps);
@@ -195,7 +214,12 @@ public class SysRoleController {
      **/
     @ApiOperation("批量删除员工")
     @PostMapping("/deleteEmployees")
-    public BaseResult deleteEmployees(@RequestParam("rolesId") Long rolesId, @RequestParam("userIds") List<Long> userIds) {
+    public BaseResult deleteEmployees(@RequestBody Map<String, Object> map) {
+        Long rolesId = MapUtil.getLong(map, "rolesId");
+        List<Long> userIds = MapUtil.get(map, "userIds", List.class);
+        if (rolesId == null || CollectionUtil.isEmpty(userIds)) {
+            return BaseResult.error("参数必填");
+        }
         sysUserRoleService.deleteEmployees(rolesId, userIds);
         return BaseResult.ok(SysTips.EDIT_SUCCESS);
     }
@@ -215,8 +239,13 @@ public class SysRoleController {
      * @description 设置角色
      **/
     @ApiOperation("设置角色")
-    @GetMapping("/setRoles")
-    public BaseResult setRoles(@RequestParam("userId") Long userId, @RequestParam("roleIds") List<Long> roleIds) {
+    @PostMapping("/setRoles")
+    public BaseResult setRoles(@RequestBody Map<String, Object> map) {
+        Long userId = MapUtil.getLong(map, "userId");
+        List<Long> roleIds = MapUtil.get(map, "roleIds", List.class);
+        if (userId == null || CollectionUtil.isEmpty(roleIds)) {
+            return BaseResult.error("参数必填");
+        }
         sysRoleService.setRoles(userId, roleIds);
         return BaseResult.ok();
     }
@@ -235,8 +264,13 @@ public class SysRoleController {
      * @description 设置角色权限
      **/
     @ApiOperation("设置角色权限")
-    @GetMapping("/setRolePermissions")
-    public BaseResult setRolePermissions(@RequestParam("rolesId") Long rolesId, @RequestParam("menuIds") List<Long> menuIds) {
+    @PostMapping("/setRolePermissions")
+    public BaseResult setRolePermissions(@RequestBody Map<String, Object> map) {
+        Long rolesId = MapUtil.getLong(map, "rolesId");
+        List<Long> menuIds = MapUtil.get(map, "menuIds", List.class);
+        if (rolesId == null || CollectionUtil.isEmpty(menuIds)) {
+            return BaseResult.error("参数必填");
+        }
         sysRoleService.setRolePermissions(rolesId, menuIds);
         return BaseResult.ok();
     }
@@ -263,13 +297,13 @@ public class SysRoleController {
      * @param: id
      * @return: com.jayud.common.BaseResult
      **/
-    @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
-    @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id) {
-        sysRoleService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
+//    @ApiOperation("物理删除")
+//    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
+//    @GetMapping("/phyDel")
+//    public BaseResult phyDel(@RequestParam Long id) {
+//        sysRoleService.phyDelById(id);
+//        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//    }
 
 
     /**

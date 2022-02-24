@@ -156,19 +156,19 @@ public class SysDictController {
      * @param: id
      * @return: com.jayud.common.BaseResult
      **/
-    @ApiOperation("批量逻辑删除")
-    @PostMapping("/batchLogicDel")
-    public BaseResult batchLogicDel(@RequestBody List<SysDict> sysDicts) {
-        List<Long> sysDictIds = sysDicts.stream().map(e -> e.getId()).collect(Collectors.toList());
-        List<SysDict> tmps = new ArrayList<>();
-        for (Long sysDictId : sysDictIds) {
-            SysDict tmp = new SysDict();
-            tmp.setIsDeleted(true).setId(sysDictId);
-            tmps.add(tmp);
-        }
-        this.sysDictService.updateBatchById(tmps);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
+//    @ApiOperation("批量逻辑删除")
+//    @PostMapping("/batchLogicDel")
+//    public BaseResult batchLogicDel(@RequestBody List<SysDict> sysDicts) {
+//        List<Long> sysDictIds = sysDicts.stream().map(e -> e.getId()).collect(Collectors.toList());
+//        List<SysDict> tmps = new ArrayList<>();
+//        for (Long sysDictId : sysDictIds) {
+//            SysDict tmp = new SysDict();
+//            tmp.setIsDeleted(true).setId(sysDictId);
+//            tmps.add(tmp);
+//        }
+//        this.sysDictService.updateBatchById(tmps);
+//        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//    }
 
 
     /**

@@ -1,5 +1,6 @@
 package com.jayud.auth.controller;
 
+import com.jayud.auth.model.po.SysDict;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +12,8 @@ import com.jayud.common.BaseResult;
 import com.jayud.auth.service.ISysDictItemService;
 import com.jayud.auth.model.po.SysDictItem;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -59,6 +58,8 @@ public class SysDictItemController {
                                                      @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
                                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                      HttpServletRequest req) {
+
+
         return BaseResult.ok(sysDictItemService.selectPage(sysDictItem, currentPage, pageSize, req));
     }
 
@@ -108,6 +109,9 @@ public class SysDictItemController {
     @ApiOperation("编辑")
     @PostMapping("/edit")
     public BaseResult edit(@Valid @RequestBody SysDictItem sysDictItem) {
+        if (StringUtils.isEmpty(sysDictItem.getItemText()) || StringUtils.isEmpty(sysDictItem.getItemValue())) {
+            throw new JayudBizException("请填写字典类别/编码");
+        }
         sysDictItemService.updateById(sysDictItem);
         return BaseResult.ok(SysTips.EDIT_SUCCESS);
     }
@@ -120,13 +124,13 @@ public class SysDictItemController {
      * @param: id
      * @return: com.jayud.common.BaseResult
      **/
-    @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
-    @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id) {
-        sysDictItemService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
+//    @ApiOperation("物理删除")
+//    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
+//    @GetMapping("/phyDel")
+//    public BaseResult phyDel(@RequestParam Long id) {
+//        sysDictItemService.phyDelById(id);
+//        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//    }
 
     /**
      * @description 逻辑删除
@@ -140,6 +144,27 @@ public class SysDictItemController {
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam Long id) {
         sysDictItemService.logicDel(id);
+        return BaseResult.ok(SysTips.DEL_SUCCESS);
+    }
+
+    /**
+     * @description 批量逻辑删除
+     * @author jayud
+     * @date 2022-02-21
+     * @param: id
+     * @return: com.jayud.common.BaseResult
+     **/
+    @ApiOperation("批量逻辑删除")
+    @PostMapping("/batchLogicDel")
+    public BaseResult batchLogicDel(@RequestBody List<SysDictItem> sysDictItems) {
+        List<Long> ids = sysDictItems.stream().map(e -> e.getId()).collect(Collectors.toList());
+        List<SysDictItem> tmps = new ArrayList<>();
+        for (Long id : ids) {
+            SysDictItem tmp = new SysDictItem();
+            tmp.setIsDeleted(true).setId(id);
+            tmps.add(tmp);
+        }
+        this.sysDictItemService.updateBatchById(tmps);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 

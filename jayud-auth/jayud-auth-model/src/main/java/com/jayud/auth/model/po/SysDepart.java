@@ -104,6 +104,7 @@ public class SysDepart extends SysBaseEntity {
     private String principalName;
 
     @ApiModelProperty(value = "员工id")
+    @TableField(exist = false)
     private Long userId;
 
     @ApiModelProperty(value = "员工管理")

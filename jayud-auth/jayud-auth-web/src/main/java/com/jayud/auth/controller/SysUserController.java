@@ -99,7 +99,7 @@ public class SysUserController {
     @ApiOperation("新增")
     @PostMapping("/saveOrUpdate")
     public BaseResult add(@RequestBody SysUserForm sysUserForm) {
-        if (sysUserForm != null) {
+        if (sysUserForm == null) {
             return BaseResult.error("数据不能为空！");
         }
         if (sysUserForm.getId() == null) {
@@ -108,8 +108,11 @@ public class SysUserController {
                 return BaseResult.error("用户名已存在！");
             }
         }
-        sysUserService.saveOrUpdateSysUser(sysUserForm);
-        return BaseResult.ok(SysTips.ADD_SUCCESS);
+        boolean b = sysUserService.saveOrUpdateSysUser(sysUserForm);
+        if(b){
+            return BaseResult.ok();
+        }
+        return BaseResult.error(SysTips.ADD_SUCCESS);
     }
 
 
@@ -188,6 +191,14 @@ public class SysUserController {
         }
         sysUserIdOne.setRoleIds(list);
         return BaseResult.ok(sysUserIdOne);
+    }
+
+
+    @ApiOperation("修改密码")
+    @PostMapping("/updateUserPassword")
+    public BaseResult updateUserPassword(@RequestBody SysUserForm sysUserForm){
+         sysUserService.findUpdateUserPassword(sysUserForm);
+        return BaseResult.ok();
     }
 
 

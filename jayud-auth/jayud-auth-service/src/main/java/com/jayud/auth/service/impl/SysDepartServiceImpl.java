@@ -41,6 +41,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
     @Autowired
     private ISysUserService sysUserService;
 
+
     @Override
     public IPage<SysDepart> selectPage(SysDepart sysDepart,
                                         Integer currentPage,
@@ -207,6 +208,40 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         list.forEach(l -> {
             if (StrUtil.equals(pid, l.getParentId().toString())) {
                 l.setChildren(buildTree(list, l.getId().toString()));
+                treeList.add(l);
+            }
+        });
+        return treeList;
+    }
+
+
+    //构建树并且查询员工信息
+    @Override
+    public List<SysDepart> selectDeptTreeStaff(QuerySysDeptForm form) {
+        //组织区分租户
+        AuthUserDetail userDetail = CurrentUserUtil.getUserDetail();
+        SysUser sysUser = sysUserService.getById(userDetail.getId());
+        String tenantCode = sysUser.getTenantCode();
+        form.setTenantCode(tenantCode);
+        List<SysDepart> departs = sysDepartMapper.selectDeptTree(form);
+        List<SysDepart> tree = buildTreeStaff(departs, "0");
+        return tree;
+    }
+
+
+    //构建树并且查询员工信息
+    private List<SysDepart> buildTreeStaff(List<SysDepart> list, String pid) {
+        List<SysDepart> treeList = new ArrayList<>();
+        list.forEach(l -> {
+            if (StrUtil.equals(pid, l.getParentId().toString())) {
+                l.setChildren(buildTreeStaff(list, l.getId().toString()));
+                if(StrUtil.equals("3",l.getOrgCategory())){
+                    QueryWrapper<SysUser> sysUserQueryWrapper = new QueryWrapper<>();
+                    sysUserQueryWrapper.lambda().eq(SysUser::getDepartId, l.getId());
+                    sysUserQueryWrapper.lambda().eq(SysUser::getIsDeleted, 0);
+                    List<SysUser> lists = sysUserService.list(sysUserQueryWrapper);
+                    l.setSysUsersList(lists);
+                }
                 treeList.add(l);
             }
         });

@@ -10,6 +10,7 @@ import com.jayud.auth.model.bo.SysPostForm;
 import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysUser;
 import com.jayud.auth.model.vo.SysPostVO;
+import com.jayud.common.BaseResult;
 import com.jayud.common.utils.ConvertUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +41,9 @@ public class SysPostServiceImpl extends ServiceImpl<SysPostMapper, SysPost> impl
 
     @Override
     public IPage<SysPost> selectPage(SysPost sysPost,
-                                        Integer currentPage,
-                                        Integer pageSize,
-                                        HttpServletRequest req){
+                                     Integer currentPage,
+                                     Integer pageSize,
+                                     HttpServletRequest req){
 
         Page<SysPost> page=new Page<SysPost>(currentPage,pageSize);
         IPage<SysPost> pageList= sysPostMapper.pageList(page, sysPost);
@@ -86,17 +87,13 @@ public class SysPostServiceImpl extends ServiceImpl<SysPostMapper, SysPost> impl
         SysPost sysPost = ConvertUtil.convert(sysPostForm, SysPost.class);
         if(sysPost.getId()!=null){ //那就是有id  是个修改
 
-
-
-
             sysPost.setUpdateBy(CurrentUserUtil.getUsername());
             sysPost.setUpdateTime(new Date());
             result= this.updateById(sysPost);
         }else{
-            sysPost.setUpdateBy(CurrentUserUtil.getUsername());
-            sysPost.setUpdateTime(new Date());
+            sysPost.setCreateBy(CurrentUserUtil.getUsername());
+            sysPost.setCreateTime(new Date());
             result= this.save(sysPost);
-
         }
         if (result) {
             log.warn("新增或修改库区成功");
@@ -104,6 +101,18 @@ public class SysPostServiceImpl extends ServiceImpl<SysPostMapper, SysPost> impl
         }
 
         return false;
+    }
+
+    @Override
+    public BaseResult deleteSysPost(List<Long> ids) {
+
+        for (int i = 0; i < ids.size(); i++) {
+            SysPost sysPost = new SysPost();
+            sysPost.setId(ids.get(i));
+            sysPost.setIsDeleted(true);
+            sysPostMapper.updateById(sysPost);
+        }
+        return BaseResult.ok();
     }
 
 

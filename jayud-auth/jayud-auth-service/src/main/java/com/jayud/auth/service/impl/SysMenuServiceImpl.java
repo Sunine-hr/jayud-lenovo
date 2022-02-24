@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysMenu;
 import com.jayud.auth.mapper.SysMenuMapper;
@@ -27,8 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -195,6 +195,41 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             menuList = allMenuTree(sysMenu);
         }
         return menuList;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchDelete(DeleteForm form) {
+        List<Long> ids = form.getIds();
+        if(CollUtil.isEmpty(ids)){
+            throw new IllegalArgumentException("ids不能为空");
+        }
+        List<SysMenu> sysMenus = new ArrayList<>();
+        for (int i=0; i<ids.size(); i++){
+            Long menuId = ids.get(i);
+            SysMenu sysMenu = this.getById(menuId);
+            QueryWrapper<SysMenu> sysMenuQueryWrapper = new QueryWrapper<>();
+            sysMenuQueryWrapper.lambda().eq(SysMenu::getIsDeleted, 0);
+            sysMenuQueryWrapper.lambda().eq(SysMenu::getParentId, menuId);
+            sysMenuQueryWrapper.lambda().groupBy(SysMenu::getParentId);
+            SysMenu one = this.getOne(sysMenuQueryWrapper);
+            if(ObjectUtil.isNotEmpty(one)){
+                throw new IllegalArgumentException("ids集合中的菜单存在子菜单，不能删除");
+            }
+            sysMenu.setIsDeleted(true);
+            sysMenu.setUpdateBy(CurrentUserUtil.getUsername());
+            sysMenu.setUpdateTime(new Date());
+            sysMenus.add(sysMenu);
+        }
+        if(CollUtil.isEmpty(sysMenus)){
+            throw new IllegalArgumentException("没有找到对应的菜单");
+        }
+        this.saveOrUpdateBatch(sysMenus);
+    }
+
+    @Override
+    public List<LinkedHashMap<String, Object>> exportSysMenu(SysMenu sysMenu) {
+        return baseMapper.exportSysMenu(sysMenu);
     }
 
     /**

@@ -39,6 +39,12 @@ public class SysUser extends SysBaseEntity {
     @ApiModelProperty(value = "英文名")
     private String enUserName;
 
+    @ApiModelProperty(value = "工号")
+    private String numberName;
+
+    @ApiModelProperty(value = "QQ号")
+    private String qqNumber;
+
     @ApiModelProperty(value = "用户图像")
     private String headPortrait;
 
@@ -56,6 +62,9 @@ public class SysUser extends SysBaseEntity {
 
     @ApiModelProperty(value = "所属部门id")
     private Long departId;
+
+    @ApiModelProperty(value = "所属部门id节点")
+    private String departmentList;
 
     @ApiModelProperty(value = "负责部门ids")
     private String departIds;
@@ -92,8 +101,14 @@ public class SysUser extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")
-    @TableLogic
+//    @TableLogic
     private Boolean isDeleted;
+
+
+    /**
+     * 默认密码
+     */
+    private   static final String   TACITLY_APPROVE_PASSWORD="123456";
 
 
 }

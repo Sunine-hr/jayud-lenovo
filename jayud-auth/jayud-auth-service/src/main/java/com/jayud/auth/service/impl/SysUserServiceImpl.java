@@ -81,7 +81,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             //修改
             sysUser.setUpdateBy(CurrentUserUtil.getUsername());
             sysUser.setUpdateTime(new Date());
-            sysUser.setPassword(encoder.encode(sysUser.getPassword())); //密码
+
+            if(!sysUserForm.getNewPassword().equals("")&&sysUserForm.getNewPassword()!=null){
+                //修改秘钥的密码
+                sysUser.setPassword(sysUserForm.getNewPassword());
+            }else {
+                //修改新密码
+                sysUser.setPassword(encoder.encode(sysUser.getPassword())); //密码
+            }
 
             result = this.updateById(sysUser);
             Long id = sysUser.getId();
@@ -101,7 +108,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             //新增
             sysUser.setCreateBy(CurrentUserUtil.getUsername());
             sysUser.setCreateTime(new Date());
-            sysUser.setPassword(encoder.encode(sysUser.getPassword()));
+
+            //截取集合拼接成字符串  未完 。。。。
+//            StringUtils.getFileNameStr();
+
+
+
+            if(sysUser.getPassword().equals("")&&sysUser.getPassword()==null){
+                //设置默认密码
+                sysUser.setPassword(encoder.encode("123456"));
+            }else {
+                //反之保存自己填写的密码
+                sysUser.setPassword(encoder.encode(sysUser.getPassword()));
+            }
             result = this.saveOrUpdate(sysUser);
             Long id = sysUser.getId();
             //再次添加角色和菜单关联表
@@ -159,32 +178,55 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (StringUtils.isNotBlank(tenantCode)) {
             lambdaQueryWrapper.eq(SysUser::getTenantCode, tenantCode);
         }
-        lambdaQueryWrapper.eq(SysUser::getName,name);
+        lambdaQueryWrapper.eq(SysUser::getName, name);
         return this.getOne(lambdaQueryWrapper);
     }
 
     @Override
-    public BaseResult checkUserStatus(String tenantCode, String name,String password) {
+    public BaseResult checkUserStatus(String tenantCode, String name, String password) {
         SysUser sysUser = getUserByUserName(tenantCode, name);
-        if (sysUser == null){
+        if (sysUser == null) {
             return BaseResult.error(SysTips.ACCOUNT_NON_EXISTENT);
         }
-        if (sysUser.getPassword().equals(encoder.encode(password))){
+        if (sysUser.getPassword().equals(encoder.encode(password))) {
             return BaseResult.error(SysTips.LOGIN_ERROR);
         }
-        if (sysUser.getJobStatus().equals(0)){
+        if (sysUser.getJobStatus().equals(0)) {
             return BaseResult.error(SysTips.ACCOUNT_RESIGNED);
         }
-        if (sysUser.getStatus().equals(0)){
+        if (sysUser.getStatus().equals(0)) {
             return BaseResult.error(SysTips.ACCOUNT_FROZEN);
         }
         return BaseResult.ok();
     }
 
+
     @Override
     public SysUserVO findSysUserIdOne(SysUserForm sysUserForm) {
 
         return sysUserMapper.findSysUserIdOne(sysUserForm);
+    }
+
+    @Override
+    public BaseResult findUpdateUserPassword(SysUserForm sysUserForm) {
+        Boolean result = null;
+        LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SysUser::getName, CurrentUserUtil.getUsername());
+        SysUser one = this.getOne(lambdaQueryWrapper);
+        if (one.getPassword().equals(encoder.encode(sysUserForm.getPassword()))) {
+            if (one.getId()!=null){
+                one.setUpdateBy(CurrentUserUtil.getUsername());
+                one.setUpdateTime(new Date());
+                //新密码
+                one.setPassword(encoder.encode(sysUserForm.getNewPassword())); //新密码
+                result= this.updateById(one);
+            }
+        }
+        if (result) {
+            log.warn("修改成功!");
+            return BaseResult.error("修改成功!");
+        }
+        return BaseResult.ok();
     }
 
 }

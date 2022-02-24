@@ -94,4 +94,12 @@ public interface ISysDepartService extends IService<SysDepart> {
      * @return
      */
     SysDepart queryById(int id);
+
+    /**
+     * 根据查询条件，查询部门树 并且查询员工信息
+     * @param form
+     * @return
+     */
+    List<SysDepart> selectDeptTreeStaff(QuerySysDeptForm form);
+
 }

@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import javax.annotation.ManagedBean;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -50,4 +51,11 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
      * @return
      */
     IPage<SysMenu> pageList(@Param("page") Page<SysMenu> page, @Param("sysMenu") SysMenu sysMenu);
+
+    /**
+     * 导出菜单
+     * @param sysMenu
+     * @return
+     */
+    List<LinkedHashMap<String, Object>> exportSysMenu(@Param("sysMenu") SysMenu sysMenu);
 }

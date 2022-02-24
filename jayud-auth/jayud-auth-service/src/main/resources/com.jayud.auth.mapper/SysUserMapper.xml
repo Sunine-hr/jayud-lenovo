@@ -9,6 +9,7 @@
         <result column="password" property="password"/>
         <result column="user_name" property="userName"/>
         <result column="en_user_name" property="enUserName"/>
+        <result column="number_name" property="numberName"/>
         <result column="head_portrait" property="headPortrait"/>
         <result column="sex" property="sex"/>
         <result column="phone" property="phone"/>
@@ -35,7 +36,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, name, password, user_name, en_user_name, head_portrait, sex, phone, email, is_depart_charge, depart_id, depart_ids, rel_tenant_ids, post_id, entry_time, job_status, status, user_type, supervisor_id, part_time_dep_id, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, name, password, user_name, en_user_name,number_name ,head_portrait, sex, phone, email, is_depart_charge, depart_id,department_list, depart_ids, rel_tenant_ids, post_id, entry_time, job_status, status, user_type, supervisor_id, part_time_dep_id, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
@@ -144,11 +145,14 @@
         password,
         user_name,
         en_user_name,
+        number_name,
+        qq_number,
         sex,
         phone,
         email,
         is_depart_charge,
         depart_id,
+        department_list,
         depart_ids,
         rel_tenant_ids,
         post_id,
@@ -164,7 +168,10 @@
         create_by,
         create_time,
         update_by,
-        update_time
+        update_time,
+        (SELECT sd.depart_name FROM sys_depart  sd where  sd.id=depart_id) departIdName,
+        (SELECT sp.post_name FROM sys_post sp where sp.id=post_id) postIdName
+
         FROM
         sys_user
         <where>
@@ -214,11 +221,14 @@
         password,
         user_name,
         en_user_name,
+        number_name,
+        qq_number,
         sex,
         phone,
         email,
         is_depart_charge,
         depart_id,
+        department_list,
         depart_ids,
         rel_tenant_ids,
         post_id,
@@ -283,11 +293,14 @@
         password,
         user_name,
         en_user_name,
+        number_name,
+        qq_number,
         sex,
         phone,
         email,
         is_depart_charge,
         depart_id,
+        department_list,
         depart_ids,
         rel_tenant_ids,
         post_id,
@@ -330,11 +343,14 @@
             su.password,
             su.user_name,
             su.en_user_name,
+            su.number_name,
+            su.qq_number,
             su.sex,
             su.phone,
             su.email,
             su.is_depart_charge,
             su.depart_id,
+            su.department_list,
             su.depart_ids,
             su.rel_tenant_ids,
             su.post_id,

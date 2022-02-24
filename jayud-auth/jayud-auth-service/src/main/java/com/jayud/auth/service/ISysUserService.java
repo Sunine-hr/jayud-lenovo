@@ -104,4 +104,7 @@ public interface ISysUserService extends IService<SysUser> {
     BaseResult checkUserStatus(String tenantCode,String name,String password);
 
 
+
+    BaseResult findUpdateUserPassword(SysUserForm sysUserForm);
+
 }

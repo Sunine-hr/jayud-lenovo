@@ -39,6 +39,12 @@ public class SysUserVO extends SysBaseEntity {
     @ApiModelProperty(value = "英文名")
     private String enUserName;
 
+    @ApiModelProperty(value = "QQ号")
+    private String qqNumber;
+
+    @ApiModelProperty(value = "工号")
+    private String numberName;
+
     @ApiModelProperty(value = "用户图像")
     private String headPortrait;
 
@@ -56,6 +62,9 @@ public class SysUserVO extends SysBaseEntity {
 
     @ApiModelProperty(value = "所属部门id")
     private Long departId;
+
+    @ApiModelProperty(value = "所属部门id节点")
+    private String departmentList;
 
     @ApiModelProperty(value = "负责部门ids")
     private String departIds;
@@ -100,4 +109,12 @@ public class SysUserVO extends SysBaseEntity {
 
     @ApiModelProperty(value = "角色id集合")
     private List<Long> roleIds;
+
+
+    @ApiModelProperty(value = "所属部门")
+    private String departIdName;
+
+    @ApiModelProperty(value = "岗位名称")
+    private String postIdName;
+
 }

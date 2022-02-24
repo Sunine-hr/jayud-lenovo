@@ -94,6 +94,12 @@
         <if test="sysMenu.title != null and sysMenu.title != ''">
             sm.title like concat('%',#{sysMenu.title},'%')
         </if>
+        <if test="sysMenu.childrenIds!=null and sysMenu.childrenIds.size()>0">
+            AND sm.`id` IN
+            <foreach item="item" index="index" collection="sysMenu.childrenIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
 
     <select id="exportSysMenu" resultType="java.util.LinkedHashMap">
@@ -116,6 +122,24 @@
             sm.title like concat('%',#{sysMenu.title},'%')
         </if>
 
+    </select>
+
+    <!--查询菜单id的所有子集菜单-->
+    <select id="selectMenuChildren" resultType="com.jayud.auth.model.po.SysMenu">
+        select id,title from (
+            select
+            t1.id,
+            t1.title,
+            if(find_in_set(parent_id, @pids) > 0, @pids := concat(@pids, ',', id), 0) as ischild
+            from (
+                select
+                id,
+                parent_id,
+                title
+                from sys_menu t order by parent_id, id
+            ) t1,
+            (select @pids := #{menuId}) t2
+        ) t3 where ischild != 0
     </select>
 
 </mapper>

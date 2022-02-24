@@ -58,4 +58,11 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
      * @return
      */
     List<LinkedHashMap<String, Object>> exportSysMenu(@Param("sysMenu") SysMenu sysMenu);
+
+    /**
+     * 根据菜单id，查询菜单的所有子集菜单(递归)
+     * @param menuId
+     * @return
+     */
+    List<SysMenu> selectMenuChildren(@Param("menuId") Long menuId);
 }

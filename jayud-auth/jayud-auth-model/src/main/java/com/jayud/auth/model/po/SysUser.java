@@ -42,6 +42,9 @@ public class SysUser extends SysBaseEntity {
     @ApiModelProperty(value = "工号")
     private String numberName;
 
+    @ApiModelProperty(value = "QQ号")
+    private String qqNumber;
+
     @ApiModelProperty(value = "用户图像")
     private String headPortrait;
 

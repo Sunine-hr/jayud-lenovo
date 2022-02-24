@@ -205,6 +205,29 @@ public class StringUtils {
     }
 
     /**
+     * 将附件集合处理成字符串逗号拼接
+     *
+     * @param fileViewList
+     * @return
+     */
+    public static String getFileNameString(List<Long> fileViewList) {
+        String fileNameStr = "";
+        if (fileViewList == null || fileViewList.size() == 0) {
+            return fileNameStr;
+        }
+        StringBuilder sb = new StringBuilder();
+        for(int i=0;0<fileViewList.size();i++){
+            sb.append(fileViewList.get(i)).append(",");
+        }
+
+        if (!"".equals(String.valueOf(sb))) {
+            fileNameStr = sb.substring(0, sb.length() - 1);
+        }
+        return fileNameStr;
+    }
+
+
+    /**
      * 把字符串解析成文件数组
      *
      * @param fileStr

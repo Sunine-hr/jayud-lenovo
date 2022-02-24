@@ -86,6 +86,7 @@ public class SysDepart extends SysBaseEntity {
     @TableField(exist = false)
     private List<SysDepart> children;
 
+
     @ApiModelProperty(value = "给前端展示")
     @TableField(exist = false)
     private String label;
@@ -101,4 +102,5 @@ public class SysDepart extends SysBaseEntity {
     @ApiModelProperty(value = "组织/部门负责人-给前端展示")
     @TableField(exist = false)
     private String principalName;
+
 }

@@ -58,4 +58,9 @@ public interface ISysMenuService extends IService<SysMenu> {
                                 Integer pageSize,
                                 HttpServletRequest req);
 
+    /**
+     * 新增or编辑菜单
+     * @param sysMenu
+     */
+    void saveSysMenu(SysMenu sysMenu);
 }

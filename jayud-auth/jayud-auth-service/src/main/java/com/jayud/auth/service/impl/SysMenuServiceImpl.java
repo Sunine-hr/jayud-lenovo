@@ -18,6 +18,7 @@ import com.jayud.common.dto.AuthUserDetail;
 import com.jayud.common.utils.CurrentUserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -92,6 +93,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         Page<SysMenu> page=new Page<SysMenu>(currentPage,pageSize);
         IPage<SysMenu> pageList= sysMenuMapper.pageList(page, sysMenu);
         return pageList;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveSysMenu(SysMenu sysMenu) {
+
     }
 
     /**

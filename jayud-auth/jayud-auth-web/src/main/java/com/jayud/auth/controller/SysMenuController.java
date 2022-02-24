@@ -74,7 +74,7 @@ public class SysMenuController {
     }
 
     @ApiOperation(value = "根据租户查询菜单树")
-    @PostMapping(value = "selectMenuTreeByTenantCode")
+    @GetMapping(value = "selectMenuTreeByTenantCode")
     public BaseResult<List<SysMenu>> selectMenuTreeByTenantCode(){
         return BaseResult.ok(sysMenuService.selectMenuTreeByTenantCode(CurrentUserUtil.getUserTenantCode()));
     }

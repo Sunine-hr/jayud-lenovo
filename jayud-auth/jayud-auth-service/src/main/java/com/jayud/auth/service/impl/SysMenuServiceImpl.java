@@ -104,10 +104,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     public IPage<SysMenu> selectPage(SysMenu sysMenu, Integer currentPage, Integer pageSize, HttpServletRequest req) {
         //根据菜单id，查询菜单的所有子集ids
         Long menuId = sysMenu.getId();
-        List<SysMenu> menuChildren = sysMenuMapper.selectMenuChildren(menuId);
-        List<Long> childrenIds = menuChildren.stream().map(menu -> menu.getId()).collect(Collectors.toList());
-        sysMenu.setChildrenIds(childrenIds);
-
+        if(ObjectUtil.isNotEmpty(menuId)){
+            List<SysMenu> menuChildren = sysMenuMapper.selectMenuChildren(menuId);
+            List<Long> childrenIds = menuChildren.stream().map(menu -> menu.getId()).collect(Collectors.toList());
+            if(CollUtil.isNotEmpty(childrenIds)){
+                sysMenu.setChildrenIds(childrenIds);
+            }else{
+                sysMenu.setChildrenIds(Arrays.asList(0L));
+            }
+        }
         Page<SysMenu> page=new Page<SysMenu>(currentPage,pageSize);
         IPage<SysMenu> pageList= sysMenuMapper.pageList(page, sysMenu);
         return pageList;

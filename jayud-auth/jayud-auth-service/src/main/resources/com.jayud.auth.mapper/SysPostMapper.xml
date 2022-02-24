@@ -59,7 +59,50 @@
     </sql>
 
     <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysPost">
-        <include refid="selects"/>
+
+        SELECT
+            id,
+            post_code,
+            post_name,
+            post_sequence,
+            parent_id,
+            depart_id,
+            remark,
+            is_deleted,
+            create_by,
+            create_time,
+            update_by,
+            update_time
+        FROM
+            sys_post
+        <where>
+            is_deleted = 0
+            <if test="sysPost.postCode != null and sysPost.postCode != ''">
+                AND post_code = #{sysPost.postCode}
+            </if>
+
+            <if test="sysPost.postName != null and sysPost.postName != ''">
+                AND post_name = #{sysPost.postName}
+            </if>
+
+            <if test="sysPost.postSequence != null ">
+                AND post_sequence = ${sysPost.postSequence}
+            </if>
+
+            <if test="sysPost.parentId != null ">
+                AND parent_id = ${sysPost.parentId}
+            </if>
+
+            <if test="sysPost.departId != null ">
+                AND depart_id = ${sysPost.departId}
+            </if>
+
+            <if test="sysPost.remark != null and sysPost.remark != ''">
+                AND remark = #{sysPost.remark}
+            </if>
+
+        </where>
+        ORDER BY create_time DESC
     </select>
 
     <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysPost">

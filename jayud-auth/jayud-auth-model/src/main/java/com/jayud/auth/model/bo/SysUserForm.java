@@ -41,6 +41,9 @@ public class SysUserForm extends SysBaseEntity {
     @ApiModelProperty(value = "英文名")
     private String enUserName;
 
+    @ApiModelProperty(value = "工号")
+    private String numberName;
+
     @ApiModelProperty(value = "用户图像")
     private String headPortrait;
 
@@ -58,6 +61,9 @@ public class SysUserForm extends SysBaseEntity {
 
     @ApiModelProperty(value = "所属部门id")
     private Long departId;
+
+    @ApiModelProperty(value = "所属部门id节点")
+    private String departmentList;
 
     @ApiModelProperty(value = "负责部门ids")
     private String departIds;
@@ -109,4 +115,7 @@ public class SysUserForm extends SysBaseEntity {
 
     @ApiModelProperty(value = "所属部门id集合")
     private List<Long> departIdLists;
+
+    @ApiModelProperty(value = "新密码")
+    private String newPassword;
 }

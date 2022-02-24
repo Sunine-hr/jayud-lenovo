@@ -1,6 +1,7 @@
 package com.jayud.auth.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.bo.SysPostForm;
 import com.jayud.auth.model.vo.SysPostVO;
 import lombok.extern.slf4j.Slf4j;
@@ -101,60 +102,63 @@ public class SysPostController {
     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody SysPostForm sysPostForm ){
+    public BaseResult add(@RequestBody SysPostForm sysPostForm ){
 
-        if(sysPostForm!=null){
+        if(sysPostForm==null){
             return  BaseResult.error("参数不能为空！");
         }
-        QueryWrapper<SysPost> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(SysPost::getIsDeleted, 0);
-        queryWrapper.lambda().eq(SysPost::getPostCode, sysPostForm.getPostCode());
-        SysPost one = sysPostService.getOne(queryWrapper);
-        if(one!=null){
-            return  BaseResult.error("岗位编码已存在！");
+        if(sysPostForm.getId()==null){
+            QueryWrapper<SysPost> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(SysPost::getIsDeleted, 0);
+            queryWrapper.lambda().eq(SysPost::getPostCode, sysPostForm.getPostCode());
+            SysPost one = sysPostService.getOne(queryWrapper);
+            if(one!=null){
+                return  BaseResult.error("岗位编码已存在！");
+            }
+            QueryWrapper<SysPost> queryWrapper2 = new QueryWrapper<>();
+            queryWrapper2.lambda().eq(SysPost::getIsDeleted, 0);
+            queryWrapper2.lambda().eq(SysPost::getPostName, sysPostForm.getPostName());
+            SysPost two = sysPostService.getOne(queryWrapper2);
+            if(two!=null){
+                return  BaseResult.error("岗位名称已存在！");
+            }
         }
-        QueryWrapper<SysPost> queryWrapper2 = new QueryWrapper<>();
-        queryWrapper.lambda().eq(SysPost::getIsDeleted, 0);
-        queryWrapper.lambda().eq(SysPost::getPostName, sysPostForm.getPostName());
-        SysPost two = sysPostService.getOne(queryWrapper);
-        if(two!=null){
-            return  BaseResult.error("岗位名称已存在！");
-        }
+
         sysPostService.saveOrUpdateSysPost(sysPostForm);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
 
+//
+//    /**
+//     * @description 编辑
+//     * @author  jayud
+//     * @date   2022-02-22
+//     * @param: sysPost
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("编辑")
+//    @PostMapping("/edit")
+//    public BaseResult edit(@Valid @RequestBody SysPost sysPost ){
+//        sysPostService.updateById(sysPost);
+//        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+//    }
 
-    /**
-     * @description 编辑
-     * @author  jayud
-     * @date   2022-02-22
-     * @param: sysPost
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("编辑")
-    @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody SysPost sysPost ){
-        sysPostService.updateById(sysPost);
-        return BaseResult.ok(SysTips.EDIT_SUCCESS);
-    }
 
 
-
-    /**
-     * @description 物理删除
-     * @author  jayud
-     * @date   2022-02-22
-     * @param: id
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id){
-        sysPostService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
+//    /**
+//     * @description 物理删除
+//     * @author  jayud
+//     * @date   2022-02-22
+//     * @param: id
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("物理删除")
+//    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
+//    @GetMapping("/phyDel")
+//    public BaseResult phyDel(@RequestParam Long id){
+//        sysPostService.phyDelById(id);
+//        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//    }
 
     /**
      * @description 逻辑删除
@@ -165,9 +169,10 @@ public class SysPostController {
      **/
     @ApiOperation("逻辑删除")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id){
-        sysPostService.logicDel(id);
+    @PostMapping("/logicDel")
+    public BaseResult logicDel(@RequestBody DeleteForm ids){
+
+        sysPostService.deleteSysPost(ids.getIds());
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 
@@ -180,9 +185,8 @@ public class SysPostController {
      * @return: com.jayud.common.BaseResult<com.jayud.auth.model.po.SysPost>
      **/
     @ApiOperation("根据id查询")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<SysPost> queryById(@RequestParam(name="id",required=true) int id) {
+    public BaseResult<SysPost> queryById(@RequestParam(name="id",required=true) Long id) {
         SysPost sysPost = sysPostService.getById(id);
         return BaseResult.ok(sysPost);
     }

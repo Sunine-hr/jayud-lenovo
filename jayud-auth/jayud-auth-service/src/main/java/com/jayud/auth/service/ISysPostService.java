@@ -6,6 +6,7 @@ import com.jayud.auth.model.bo.SysPostForm;
 import com.jayud.auth.model.po.SysPost;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.auth.model.vo.SysPostVO;
+import com.jayud.common.BaseResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -24,8 +25,8 @@ public interface ISysPostService extends IService<SysPost> {
 
     /**
      * @description 分页查询
-     * @author  jayud
-     * @date   2022-02-22
+     * @author jayud
+     * @date 2022-02-22
      * @param: sysPost
      * @param: currentPage
      * @param: pageSize
@@ -33,14 +34,14 @@ public interface ISysPostService extends IService<SysPost> {
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysPost>
      **/
     IPage<SysPost> selectPage(SysPost sysPost,
-                                Integer currentPage,
-                                Integer pageSize,
-                                HttpServletRequest req);
+                              Integer currentPage,
+                              Integer pageSize,
+                              HttpServletRequest req);
 
     /**
      * @description 列表查询数据
-     * @author  jayud
-     * @date   2022-02-22
+     * @author jayud
+     * @date 2022-02-22
      * @param: sysPost
      * @param: req
      * @return: java.util.List<com.jayud.auth.model.po.SysPost>
@@ -49,10 +50,11 @@ public interface ISysPostService extends IService<SysPost> {
 
 
     List<SysPostVO> selectSysPostLists(SysPostForm sysPostForm);
+
     /**
      * @description 物理删除
-     * @author  jayud
-     * @date   2022-02-22
+     * @author jayud
+     * @date 2022-02-22
      * @param: id
      * @return: void
      **/
@@ -60,23 +62,30 @@ public interface ISysPostService extends IService<SysPost> {
 
 
     /**
-    * @description 逻辑删除
-    * @author  jayud
-    * @date   2022-02-22
-    * @param: id
-    * @return: com.jyd.component.commons.result.Result
-    **/
+     * @description 逻辑删除
+     * @author jayud
+     * @date 2022-02-22
+     * @param: id
+     * @return: com.jyd.component.commons.result.Result
+     **/
     void logicDel(Long id);
 
     /**
      * @description 逻辑删除
-     * @author  jayud
-     * @date   2022-02-22
+     * @author jayud
+     * @date 2022-02-22
      * @param: id
      * @return: com.jyd.component.commons.result.Result
      **/
     boolean saveOrUpdateSysPost(SysPostForm sysPostForm);
 
 
+    /**
+     * 删除
+     * @param ids
+     * @return
+     */
 
+
+    BaseResult deleteSysPost(List<Long> ids);
 }

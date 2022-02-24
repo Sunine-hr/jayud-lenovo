@@ -1,6 +1,7 @@
 package com.jayud.auth.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import com.jayud.auth.model.dto.AddSysRole;
 import com.jayud.auth.model.vo.SysRoleVO;
@@ -171,8 +172,12 @@ public class SysRoleController {
 
     @ApiOperation("关联员工")
     @PostMapping("/associatedEmployees")
-    public BaseResult associatedEmployees(@RequestParam("rolesId") Long rolesId,
-                                          @RequestParam("userIds") List<Long> userIds) {
+    public BaseResult associatedEmployees(@RequestBody Map<String, Object> map) {
+        Long rolesId = MapUtil.getLong(map, "rolesId");
+        List<Long> userIds = MapUtil.get(map, "userIds", new TypeReference<List<Long>>() {});
+        if (rolesId == null || CollectionUtil.isEmpty(userIds)) {
+            return BaseResult.error("参数必填");
+        }
         this.sysUserRoleService.associatedEmployees(rolesId, userIds);
         return BaseResult.ok();
 
@@ -216,7 +221,7 @@ public class SysRoleController {
     @PostMapping("/deleteEmployees")
     public BaseResult deleteEmployees(@RequestBody Map<String, Object> map) {
         Long rolesId = MapUtil.getLong(map, "rolesId");
-        List<Long> userIds = MapUtil.get(map, "userIds", List.class);
+        List<Long> userIds = MapUtil.get(map, "userIds", new TypeReference<List<Long>>() {});
         if (rolesId == null || CollectionUtil.isEmpty(userIds)) {
             return BaseResult.error("参数必填");
         }
@@ -242,7 +247,7 @@ public class SysRoleController {
     @PostMapping("/setRoles")
     public BaseResult setRoles(@RequestBody Map<String, Object> map) {
         Long userId = MapUtil.getLong(map, "userId");
-        List<Long> roleIds = MapUtil.get(map, "roleIds", List.class);
+        List<Long> roleIds = MapUtil.get(map, "roleIds", new TypeReference<List<Long>>() {});
         if (userId == null || CollectionUtil.isEmpty(roleIds)) {
             return BaseResult.error("参数必填");
         }
@@ -267,7 +272,7 @@ public class SysRoleController {
     @PostMapping("/setRolePermissions")
     public BaseResult setRolePermissions(@RequestBody Map<String, Object> map) {
         Long rolesId = MapUtil.getLong(map, "rolesId");
-        List<Long> menuIds = MapUtil.get(map, "menuIds", List.class);
+        List<Long> menuIds = MapUtil.get(map, "menuIds", new TypeReference<List<Long>>() {});
         if (rolesId == null || CollectionUtil.isEmpty(menuIds)) {
             return BaseResult.error("参数必填");
         }

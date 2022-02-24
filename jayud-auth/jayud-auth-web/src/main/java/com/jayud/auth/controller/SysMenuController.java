@@ -62,7 +62,6 @@ public class SysMenuController {
         return BaseResult.ok(sysMenuService.selectPage(sysMenu,sysMenu.getCurrentPage(),sysMenu.getPageSize(),req));
     }
 
-
     /**
      * 新增or编辑
      */

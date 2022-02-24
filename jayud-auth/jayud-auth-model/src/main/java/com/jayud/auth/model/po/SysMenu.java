@@ -29,10 +29,6 @@ public class SysMenu extends SysBaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-//    @ApiModelProperty(value = "id")
-//      @TableId(value = "id", type = IdType.AUTO)
-//    private Long id;
-
     @ApiModelProperty(value = "父级ID")
     private Long parentId;
 
@@ -84,25 +80,11 @@ public class SysMenu extends SysBaseEntity {
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")
     private Boolean isDeleted;
 
-//    @ApiModelProperty(value = "创建人")
-//    private String createBy;
-//
-//    @ApiModelProperty(value = "创建时间")
-//    private LocalDateTime createTime;
-//
-//    @ApiModelProperty(value = "更新人")
-//    private String updateBy;
-//
-//    @ApiModelProperty(value = "更新时间")
-//    private LocalDateTime updateTime;
+    @ApiModelProperty(value = "菜单状态：0-显示；1-隐藏")
+    private Integer status;
 
     @TableField(exist = false)
     private List<SysMenu> children;
-
-//    @Override
-//    protected Serializable pkVal() {
-//        return this.id;
-//    }
 
     @ApiModelProperty(value = "系统类型(1-权限系统，2-OMS系统) in() 查询")
     @TableField(exist = false)

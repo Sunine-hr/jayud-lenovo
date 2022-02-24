@@ -75,4 +75,15 @@
         ORDER BY sm.sort asc
     </select>
 
+    <select id="pageList" resultType="com.jayud.auth.model.po.SysMenu">
+        select sm.* from sys_menu sm
+        where 1=1
+        <if test="sysMenu.parentId != null">
+            sm.parent_id = #{sysMenu.parentId}
+        </if>
+        <if test="sysMenu.title != null and sysMenu.title != ''">
+            sm.title like concat('%',#{sysMenu.title},'%')
+        </if>
+    </select>
+
 </mapper>

@@ -1,9 +1,12 @@
 package com.jayud.auth.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -41,5 +44,18 @@ public interface ISysMenuService extends IService<SysMenu> {
      * @return: java.util.List<com.jayud.auth.model.po.SysMenu>
      **/
     List<SysMenu> selectSysMenuByMenuCodes(List<String> menuCodeList);
+
+    /**
+     * 分页查询
+     * @param sysMenu
+     * @param currentPage
+     * @param pageSize
+     * @param req
+     * @return
+     */
+    IPage<SysMenu> selectPage(SysMenu sysMenu,
+                                Integer currentPage,
+                                Integer pageSize,
+                                HttpServletRequest req);
 
 }

@@ -18,31 +18,31 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, name, url, type, remark, is_deleted, create_by, create_time, update_by, update_time
+            su.id, su.name, su.url, su.type, su.remark, su.is_deleted, su.create_by, su.create_time, su.update_by, su.update_time
     </sql>
 
     <!-- 表名 -->
-    <sql id="tname">sys_url </sql>
+    <sql id="tname">sys_url su</sql>
 
     <sql id="selects">
         SELECT <include refid="Base_Column_List"/>
         FROM <include refid="tname"/>
         <where>
-            is_deleted = 0
+            su.is_deleted = 0
             <if test="sysUrl.name != null and sysUrl.name != ''">
-                AND name = #{sysUrl.name}
+                AND su.name = #{sysUrl.name}
             </if>
 
             <if test="sysUrl.url != null and sysUrl.url != ''">
-                AND url = #{sysUrl.url}
+                AND su.url = #{sysUrl.url}
             </if>
 
             <if test="sysUrl.type != null ">
-                AND type = ${sysUrl.type}
+                AND su.type = ${sysUrl.type}
             </if>
 
             <if test="sysUrl.remark != null and sysUrl.remark != ''">
-                AND remark = #{sysUrl.remark}
+                AND su.remark = #{sysUrl.remark}
             </if>
 
         </where>
@@ -55,8 +55,16 @@
     <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysUrl">
         <include refid="selects"/>
     </select>
+    <select id="getSystemByTenantCode" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+                LEFT JOIN sys_tenant_to_system stts ON su.id = stts.system_id AND stts.is_deleted = 0
+                LEFT JOIN sys_tenant st ON stts.tenant_id = st.id AND st.is_deleted = 0
+        WHERE
+            su.is_deleted = 0
+          AND st.tenant_code = #{tenantCode}
 
-
+    </select>
 
 
     <delete id="phyDelById">

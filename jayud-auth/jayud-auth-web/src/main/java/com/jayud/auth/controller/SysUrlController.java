@@ -1,5 +1,6 @@
 package com.jayud.auth.controller;
 
+import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -151,6 +152,11 @@ public class SysUrlController {
     public BaseResult<SysUrl> queryById(@RequestParam(name="id",required=true) int id) {
         SysUrl sysUrl = sysUrlService.getById(id);
         return BaseResult.ok(sysUrl);
+    }
+
+    @GetMapping(value = "getSystemByTenantCode")
+    public BaseResult getSystemByTenantCode(String tenantCode){
+        return BaseResult.ok(sysUrlService.getSystemByTenantCode(tenantCode));
     }
 
 

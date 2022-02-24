@@ -60,4 +60,13 @@ public interface SysUrlMapper extends BaseMapper<SysUrl> {
      * @return: int
      **/
     int logicDel(@Param("id") Long id,@Param("username") String username);
+
+    /**
+     * @description 根据租户编码获取关联系统信息
+     * @author  ciro
+     * @date   2022/2/24 9:17
+     * @param: tenantCode
+     * @return: java.util.List<com.jayud.auth.model.po.SysUrl>
+     **/
+    List<SysUrl> getSystemByTenantCode(@Param("tenantCode") String tenantCode);
 }

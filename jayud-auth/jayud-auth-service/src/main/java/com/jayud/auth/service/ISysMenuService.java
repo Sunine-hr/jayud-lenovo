@@ -42,4 +42,13 @@ public interface ISysMenuService extends IService<SysMenu> {
      **/
     List<SysMenu> selectSysMenuByMenuCodes(List<String> menuCodeList);
 
+    /**
+     * @description 根据租户编码查询系统菜单树
+     * @author  ciro
+     * @date   2022/2/24 9:34
+     * @param: tenantCode
+     * @return: java.util.List<com.jayud.auth.model.po.SysMenu>
+     **/
+    List<SysMenu> selectMenuTreeByTenantCode(String tenantCode);
+
 }

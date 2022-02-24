@@ -76,5 +76,14 @@ public interface ISysUrlService extends IService<SysUrl> {
      **/
     BaseResult saveUrl(SysUrl sysUrl);
 
+    /**
+     * @description 根据租户编码获取关联系统信息
+     * @author  ciro
+     * @date   2022/2/24 9:06
+     * @param: tenantCode
+     * @return: java.util.List<com.jayud.auth.model.po.SysUrl>
+     **/
+    List<SysUrl> getSystemByTenantCode(String tenantCode);
+
 
 }

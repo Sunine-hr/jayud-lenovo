@@ -6,18 +6,22 @@ import com.alibaba.fastjson.JSONObject;
 import com.jayud.auth.model.po.SysMenu;
 import com.jayud.auth.mapper.SysMenuMapper;
 import com.jayud.auth.model.po.SysRole;
+import com.jayud.auth.model.po.SysUrl;
 import com.jayud.auth.model.po.SysUser;
 import com.jayud.auth.service.ISysMenuService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.auth.service.ISysRoleService;
+import com.jayud.auth.service.ISysUrlService;
 import com.jayud.auth.service.ISysUserService;
 import com.jayud.common.dto.AuthUserDetail;
 import com.jayud.common.utils.CurrentUserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -34,6 +38,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     private ISysUserService sysUserService;
     @Autowired
     private ISysRoleService sysRoleService;
+    @Autowired
+    private ISysUrlService sysUrlService;
 
     @Override
     public JSONObject getUserMenuByToken() {
@@ -79,6 +85,17 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public List<SysMenu> selectSysMenuByMenuCodes(List<String> menuCodeList) {
         return baseMapper.selectSysMenuByMenuCodes(menuCodeList);
+    }
+
+    @Override
+    public List<SysMenu> selectMenuTreeByTenantCode(String tenantCode) {
+        List<SysUrl> urlList = sysUrlService.getSystemByTenantCode(CurrentUserUtil.getUserTenantCode());
+        List<SysMenu> menuList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(urlList)) {
+            List<Integer> typeList = urlList.stream().map(x -> x.getType()).collect(Collectors.toList());
+
+        }
+        return menuList;
     }
 
     /**

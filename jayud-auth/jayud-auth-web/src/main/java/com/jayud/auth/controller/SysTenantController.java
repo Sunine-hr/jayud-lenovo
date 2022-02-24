@@ -156,6 +156,14 @@ public class SysTenantController {
         return BaseResult.ok(sysTenant);
     }
 
+    /**
+     * @description 初始化租户数据
+     * @author  ciro
+     * @date   2022/2/24 9:02
+     * @param: tenantId
+     * @param: tenantCode
+     * @return: com.jayud.common.BaseResult
+     **/
     @GetMapping(value = "/initTenantData")
     public BaseResult initTenantData(Long tenantId,String tenantCode){
         SysTenantForm sysTenantForm = new SysTenantForm();

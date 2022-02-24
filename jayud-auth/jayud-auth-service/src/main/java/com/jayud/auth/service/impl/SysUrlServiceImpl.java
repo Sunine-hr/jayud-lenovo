@@ -86,6 +86,11 @@ public class SysUrlServiceImpl extends ServiceImpl<SysUrlMapper, SysUrl> impleme
         return BaseResult.ok(SysTips.SYS_URL_TYPE_SAME);
     }
 
+    @Override
+    public List<SysUrl> getSystemByTenantCode(String tenantCode) {
+        return null;
+    }
+
     /**
      * @description 判断是否有相同类型
      * @author  ciro

@@ -8,7 +8,9 @@ import com.jayud.auth.model.po.SysMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -79,4 +81,11 @@ public interface ISysMenuService extends IService<SysMenu> {
      * @param form
      */
     void batchDelete(DeleteForm form);
+
+    /**
+     * 导出菜单
+     * @param sysMenu
+     * @return
+     */
+    List<LinkedHashMap<String, Object>> exportSysMenu(SysMenu sysMenu);
 }

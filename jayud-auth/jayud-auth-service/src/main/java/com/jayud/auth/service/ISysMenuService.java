@@ -2,12 +2,15 @@ package com.jayud.auth.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -63,4 +66,26 @@ public interface ISysMenuService extends IService<SysMenu> {
      * @param sysMenu
      */
     void saveSysMenu(SysMenu sysMenu);
+
+    /**
+     * @description 根据租户查询菜单树
+     * @author  ciro
+     * @date   2022/2/24 9:48
+     * @param: tenantCode
+     * @return: java.util.List<com.jayud.auth.model.po.SysMenu>
+     **/
+    List<SysMenu> selectMenuTreeByTenantCode(String tenantCode);
+
+    /**
+     * 批量删除（逻辑删除）
+     * @param form
+     */
+    void batchDelete(DeleteForm form);
+
+    /**
+     * 导出菜单
+     * @param sysMenu
+     * @return
+     */
+    List<LinkedHashMap<String, Object>> exportSysMenu(SysMenu sysMenu);
 }

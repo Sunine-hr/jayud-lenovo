@@ -76,7 +76,6 @@ public class SysTenantController {
     @GetMapping("/selectList")
     public BaseResult<List<SysTenant>> selectList(SysTenant sysTenant,
                                                 HttpServletRequest req) {
-        Object os = CurrentUserUtil.getUserDetail();
         return BaseResult.ok(sysTenantService.selectList(sysTenant));
     }
 
@@ -151,11 +150,19 @@ public class SysTenantController {
     @ApiOperation("根据id查询")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<SysTenant> queryById(@RequestParam(name="id",required=true) int id) {
-        SysTenant sysTenant = sysTenantService.getById(id);
-        return BaseResult.ok(sysTenant);
+    public BaseResult<SysTenantForm> queryById(@RequestParam(name="id",required=true) Long id) {
+        SysTenantForm sysTenantForm = sysTenantService.selectByTenantId(id);
+        return BaseResult.ok(sysTenantForm);
     }
 
+    /**
+     * @description 初始化租户数据
+     * @author  ciro
+     * @date   2022/2/24 9:02
+     * @param: tenantId
+     * @param: tenantCode
+     * @return: com.jayud.common.BaseResult
+     **/
     @GetMapping(value = "/initTenantData")
     public BaseResult initTenantData(Long tenantId,String tenantCode){
         SysTenantForm sysTenantForm = new SysTenantForm();

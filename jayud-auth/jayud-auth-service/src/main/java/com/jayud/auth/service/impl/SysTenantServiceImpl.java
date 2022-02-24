@@ -13,6 +13,7 @@ import com.jayud.common.utils.PasswordUtil;
 import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.auth.mapper.SysTenantMapper;
@@ -46,6 +47,8 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     private ISysUserService sysUserService;
     @Autowired
     private ISysUserRoleService sysUserRoleService;
+    @Autowired
+    private ISysUrlService sysUrlService;
 
     @Autowired
     private SysTenantMapper sysTenantMapper;
@@ -77,7 +80,6 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(Long id){
-//        sysTenantMapper.deleteById(id);
         sysTenantMapper.logicDel(id,CurrentUserUtil.getUsername());
     }
 
@@ -113,6 +115,15 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         addTenantRoleToMenu(sysTenantForm.getTenantCode(),sysRole.getId());
         SysUser sysUser = addTenantUser(sysTenantForm.getTenantCode());
         addTenantUserToRole(sysUser.getId(),sysRole.getId());
+    }
+
+    @Override
+    public SysTenantForm selectByTenantId(Long id) {
+        SysTenant sysTenant = this.getById(id);
+        SysTenantForm sysTenantForm = new SysTenantForm();
+        BeanUtils.copyProperties(sysTenant,sysTenantForm);
+        sysTenantForm.setSysUrlList(sysUrlService.getSystemByTenantCode(sysTenant.getTenantCode()));
+        return sysTenantForm;
     }
 
 

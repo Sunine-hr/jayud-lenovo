@@ -4,8 +4,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.po.SysMenu;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import javax.annotation.ManagedBean;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -16,6 +19,7 @@ import java.util.List;
  * @author jayud.dev
  * @since 2022-02-21
  */
+@Mapper
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
     /**
@@ -47,4 +51,11 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
      * @return
      */
     IPage<SysMenu> pageList(@Param("page") Page<SysMenu> page, @Param("sysMenu") SysMenu sysMenu);
+
+    /**
+     * 导出菜单
+     * @param sysMenu
+     * @return
+     */
+    List<LinkedHashMap<String, Object>> exportSysMenu(@Param("sysMenu") SysMenu sysMenu);
 }

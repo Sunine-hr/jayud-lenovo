@@ -87,4 +87,13 @@ public interface ISysTenantService extends IService<SysTenant> {
      **/
     void initCreateTenant(SysTenantForm sysTenantForm);
 
+    /**
+     * @description 根据id查询
+     * @author  ciro
+     * @date   2022/2/24 10:23
+     * @param: id
+     * @return: com.jayud.auth.model.bo.SysTenantForm
+     **/
+    SysTenantForm selectByTenantId(Long id);
+
 }

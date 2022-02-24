@@ -87,12 +87,35 @@
     <select id="pageList" resultType="com.jayud.auth.model.po.SysMenu">
         select sm.* from sys_menu sm
         where 1=1
+        and sm.is_deleted = 0
         <if test="sysMenu.parentId != null">
             sm.parent_id = #{sysMenu.parentId}
         </if>
         <if test="sysMenu.title != null and sysMenu.title != ''">
             sm.title like concat('%',#{sysMenu.title},'%')
         </if>
+    </select>
+
+    <select id="exportSysMenu" resultType="java.util.LinkedHashMap">
+        select
+        sm.title as 'title',
+        sm.code as 'code',
+        sm.icon as 'icon',
+        sm.router as 'router',
+        sm.sort as 'sort',
+        case when sm.status = 0 then '显示'
+        when sm.status = 1 then '隐藏'
+        end as 'status'
+        from sys_menu sm
+        where 1=1
+        and sm.is_deleted = 0
+        <if test="sysMenu.parentId != null">
+            sm.parent_id = #{sysMenu.parentId}
+        </if>
+        <if test="sysMenu.title != null and sysMenu.title != ''">
+            sm.title like concat('%',#{sysMenu.title},'%')
+        </if>
+
     </select>
 
 </mapper>

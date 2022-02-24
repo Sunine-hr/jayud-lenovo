@@ -1,9 +1,12 @@
 package com.jayud.auth.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysMenu;
@@ -25,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -105,7 +109,78 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveSysMenu(SysMenu sysMenu) {
+        Long id = sysMenu.getId();
+        SysMenu menu = this.getById(id);
+        if(ObjectUtil.isEmpty(menu)){
+            //新增
+            String name = sysMenu.getName();
+            QueryWrapper<SysMenu> nameQueryWrapper = new QueryWrapper<>();
+            nameQueryWrapper.lambda().eq(SysMenu::getIsDeleted, 0);
+            nameQueryWrapper.lambda().eq(SysMenu::getName, name);
+            nameQueryWrapper.lambda().groupBy(SysMenu::getName);
+            SysMenu nameOne = this.getOne(nameQueryWrapper);
+            if(ObjectUtil.isNotEmpty(nameOne)){
+                throw new IllegalArgumentException("name，前端名称，已存在");
+            }
+            String code = sysMenu.getCode();
+            QueryWrapper<SysMenu> codeQueryWrapper = new QueryWrapper<>();
+            codeQueryWrapper.lambda().eq(SysMenu::getIsDeleted, 0);
+            codeQueryWrapper.lambda().eq(SysMenu::getCode, code);
+            codeQueryWrapper.lambda().groupBy(SysMenu::getCode);
+            SysMenu codeOne = this.getOne(codeQueryWrapper);
+            if(ObjectUtil.isNotEmpty(codeOne)){
+                throw new IllegalArgumentException("code，前端编码，已存在");
+            }
+            String router = sysMenu.getRouter();
+            QueryWrapper<SysMenu> routerQueryWrapper = new QueryWrapper<>();
+            routerQueryWrapper.lambda().eq(SysMenu::getIsDeleted, 0);
+            routerQueryWrapper.lambda().eq(SysMenu::getRouter, router);
+            routerQueryWrapper.lambda().groupBy(SysMenu::getCode);
+            SysMenu routerOne = this.getOne(routerQueryWrapper);
+            if(ObjectUtil.isNotEmpty(routerOne)){
+                throw new IllegalArgumentException("router，前端路由，已存在");
+            }
 
+            sysMenu.setCreateBy(CurrentUserUtil.getUsername());
+            sysMenu.setCreateTime(new Date());
+
+        }else{
+            //修改
+            String name = sysMenu.getName();
+            QueryWrapper<SysMenu> nameQueryWrapper = new QueryWrapper<>();
+            nameQueryWrapper.lambda().ne(SysMenu::getId, id);
+            nameQueryWrapper.lambda().eq(SysMenu::getIsDeleted, 0);
+            nameQueryWrapper.lambda().eq(SysMenu::getName, name);
+            nameQueryWrapper.lambda().groupBy(SysMenu::getName);
+            SysMenu nameOne = this.getOne(nameQueryWrapper);
+            if(ObjectUtil.isNotEmpty(nameOne)){
+                throw new IllegalArgumentException("name，前端名称，已存在");
+            }
+            String code = sysMenu.getCode();
+            QueryWrapper<SysMenu> codeQueryWrapper = new QueryWrapper<>();
+            nameQueryWrapper.lambda().ne(SysMenu::getId, id);
+            codeQueryWrapper.lambda().eq(SysMenu::getIsDeleted, 0);
+            codeQueryWrapper.lambda().eq(SysMenu::getCode, code);
+            codeQueryWrapper.lambda().groupBy(SysMenu::getCode);
+            SysMenu codeOne = this.getOne(codeQueryWrapper);
+            if(ObjectUtil.isNotEmpty(codeOne)){
+                throw new IllegalArgumentException("code，前端编码，已存在");
+            }
+            String router = sysMenu.getRouter();
+            QueryWrapper<SysMenu> routerQueryWrapper = new QueryWrapper<>();
+            nameQueryWrapper.lambda().ne(SysMenu::getId, id);
+            routerQueryWrapper.lambda().eq(SysMenu::getIsDeleted, 0);
+            routerQueryWrapper.lambda().eq(SysMenu::getRouter, router);
+            routerQueryWrapper.lambda().groupBy(SysMenu::getCode);
+            SysMenu routerOne = this.getOne(routerQueryWrapper);
+            if(ObjectUtil.isNotEmpty(routerOne)){
+                throw new IllegalArgumentException("router，前端路由，已存在");
+            }
+
+            sysMenu.setUpdateBy(CurrentUserUtil.getUsername());
+            sysMenu.setUpdateTime(new Date());
+        }
+        this.saveOrUpdate(sysMenu);
     }
 
     @Override

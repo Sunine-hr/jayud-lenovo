@@ -159,7 +159,6 @@ public class SysRoleController {
             return BaseResult.error("存在角色绑定用户,无法删除");
         }
         List<SysRole> tmps = new ArrayList<>();
-        Date date = new Date();
         for (Long rolesId : rolesIds) {
             SysRole sysRole = new SysRole();
             sysRole.setIsDeleted(true).setId(rolesId);

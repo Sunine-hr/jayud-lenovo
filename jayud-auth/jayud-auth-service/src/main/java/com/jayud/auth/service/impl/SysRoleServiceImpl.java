@@ -82,11 +82,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Override
     public boolean checkUnique(Long id, String roleName, String roleCode) {
-        SysRole sysRole = this.getOne(new QueryWrapper<>(new SysRole().setIsDeleted(false).setRoleName(roleName)));
+        SysRole sysRole = this.getOne(new QueryWrapper<>(new SysRole().setIsDeleted(false).setRoleName(roleName).setTenantCode(CurrentUserUtil.getUserTenantCode())));
         if (sysRole != null && !sysRole.getId().equals(id)) {
             throw new JayudBizException("角色名称必须唯一");
         }
-        sysRole = this.getOne(new QueryWrapper<>(new SysRole().setIsDeleted(false).setRoleCode(roleCode)));
+        sysRole = this.getOne(new QueryWrapper<>(new SysRole().setIsDeleted(false).setRoleCode(roleCode).setTenantCode(CurrentUserUtil.getUserTenantCode())));
         if (sysRole != null && !sysRole.getId().equals(id)) {
             throw new JayudBizException("角色编码必须唯一");
         }

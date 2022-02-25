@@ -174,7 +174,8 @@ public class SysRoleController {
     @PostMapping("/associatedEmployees")
     public BaseResult associatedEmployees(@RequestBody Map<String, Object> map) {
         Long rolesId = MapUtil.getLong(map, "rolesId");
-        List<Long> userIds = MapUtil.get(map, "userIds", new TypeReference<List<Long>>() {});
+        List<Long> userIds = MapUtil.get(map, "userIds", new TypeReference<List<Long>>() {
+        });
         if (rolesId == null || CollectionUtil.isEmpty(userIds)) {
             return BaseResult.error("参数必填");
         }
@@ -187,7 +188,11 @@ public class SysRoleController {
     @GetMapping("/getUserIdsByRoleId")
     public BaseResult<List<Long>> getUserIdsByRoleId(@RequestParam("roleId") Long roleId) {
         List<Long> userIds = this.sysUserRoleService.getUserIdsByRoleId(roleId);
-        return BaseResult.ok(userIds);
+        List<Long> ids = new ArrayList<>();
+        userIds.forEach(e ->
+                ids.add(Long.valueOf("111111" + e))
+        );
+        return BaseResult.ok(ids);
 
     }
 
@@ -207,7 +212,7 @@ public class SysRoleController {
      * @description 删除员工
      **/
     @ApiOperation("删除员工")
-    @PostMapping("/deleteEmployee")
+    @GetMapping("/deleteEmployee")
     public BaseResult deleteEmployee(@RequestParam("rolesId") Long rolesId, @RequestParam("userId") Long userId) {
         sysUserRoleService.deleteEmployees(rolesId, Arrays.asList(userId));
         return BaseResult.ok(SysTips.EDIT_SUCCESS);
@@ -221,7 +226,8 @@ public class SysRoleController {
     @PostMapping("/deleteEmployees")
     public BaseResult deleteEmployees(@RequestBody Map<String, Object> map) {
         Long rolesId = MapUtil.getLong(map, "rolesId");
-        List<Long> userIds = MapUtil.get(map, "userIds", new TypeReference<List<Long>>() {});
+        List<Long> userIds = MapUtil.get(map, "userIds", new TypeReference<List<Long>>() {
+        });
         if (rolesId == null || CollectionUtil.isEmpty(userIds)) {
             return BaseResult.error("参数必填");
         }
@@ -247,7 +253,8 @@ public class SysRoleController {
     @PostMapping("/setRoles")
     public BaseResult setRoles(@RequestBody Map<String, Object> map) {
         Long userId = MapUtil.getLong(map, "userId");
-        List<Long> roleIds = MapUtil.get(map, "roleIds", new TypeReference<List<Long>>() {});
+        List<Long> roleIds = MapUtil.get(map, "roleIds", new TypeReference<List<Long>>() {
+        });
         if (userId == null || CollectionUtil.isEmpty(roleIds)) {
             return BaseResult.error("参数必填");
         }
@@ -272,7 +279,8 @@ public class SysRoleController {
     @PostMapping("/setRolePermissions")
     public BaseResult setRolePermissions(@RequestBody Map<String, Object> map) {
         Long rolesId = MapUtil.getLong(map, "rolesId");
-        List<Long> menuIds = MapUtil.get(map, "menuIds", new TypeReference<List<Long>>() {});
+        List<Long> menuIds = MapUtil.get(map, "menuIds", new TypeReference<List<Long>>() {
+        });
         if (rolesId == null || CollectionUtil.isEmpty(menuIds)) {
             return BaseResult.error("参数必填");
         }

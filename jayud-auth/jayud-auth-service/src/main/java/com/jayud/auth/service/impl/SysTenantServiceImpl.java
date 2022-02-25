@@ -1,6 +1,7 @@
 package com.jayud.auth.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.bo.SysTenantForm;
@@ -104,7 +105,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
                 return BaseResult.ok(SysTips.EDIT_SUCCESS);
             }
         }
-        return BaseResult.ok(SysTips.TENANT_CODE_SAME);
+        return BaseResult.error(SysTips.TENANT_CODE_SAME);
     }
 
     @Override
@@ -124,6 +125,14 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         BeanUtils.copyProperties(sysTenant,sysTenantForm);
         sysTenantForm.setSysUrlList(sysUrlService.getSystemByTenantCode(sysTenant.getTenantCode()));
         return sysTenantForm;
+    }
+
+    @Override
+    public SysTenant selectByTenantCode(String tenantCode) {
+        LambdaQueryWrapper<SysTenant> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SysTenant::getTenantCode,tenantCode);
+        SysTenant sysTenant = this.getOne(lambdaQueryWrapper);
+        return sysTenant;
     }
 
 
@@ -166,7 +175,10 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
      * @return: void
      **/
     private void addTenantToSystem(SysTenantForm sysTenantForm){
-        List<Integer> typeList = sysTenantForm.getSysUrlList().stream().map(x->x.getType()).collect(Collectors.toList());
+        List<Integer> typeList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(sysTenantForm.getSysUrlList())) {
+            typeList = sysTenantForm.getSysUrlList().stream().map(x -> x.getType()).collect(Collectors.toList());
+        }
         if (!typeList.contains(SystemTypeEnum.AUTH.getType())) {
             SysTenantToSystem tenantToSystem = new SysTenantToSystem();
             tenantToSystem.setTenantId(sysTenantForm.getId());

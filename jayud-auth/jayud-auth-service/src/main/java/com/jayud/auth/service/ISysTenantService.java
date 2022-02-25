@@ -96,4 +96,13 @@ public interface ISysTenantService extends IService<SysTenant> {
      **/
     SysTenantForm selectByTenantId(Long id);
 
+    /**
+     * @description 根据租户编码查询
+     * @author  ciro
+     * @date   2022/2/25 10:49
+     * @param: tenantCode
+     * @return: com.jayud.auth.model.po.SysTenant
+     **/
+    SysTenant selectByTenantCode(String tenantCode);
+
 }

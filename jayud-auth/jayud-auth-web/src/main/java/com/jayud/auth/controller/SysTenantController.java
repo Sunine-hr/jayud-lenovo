@@ -1,5 +1,6 @@
 package com.jayud.auth.controller;
 
+import com.alibaba.excel.EasyExcel;
 import com.jayud.auth.model.bo.SysTenantForm;
 import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +12,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.auth.service.ISysTenantService;
 import com.jayud.auth.model.po.SysTenant;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -172,7 +170,28 @@ public class SysTenantController {
         return BaseResult.ok();
     }
 
+    /**
+     * @description 根据租户编码查询
+     * @author  ciro
+     * @date   2022/2/25 10:52
+     * @param: tenantCode
+     * @return: com.jayud.common.BaseResult<com.jayud.auth.model.po.SysTenant>
+     **/
+    @ApiOperation("根据租户编码查询")
+    @ApiImplicitParam(name = "tenantCode",value = "租户编码",dataType = "String",required = true)
+    @GetMapping(value = "/queryByTenantCode")
+    public BaseResult<SysTenant> queryByTenantCode(@RequestParam(name="tenantCode",required=true) String tenantCode) {
+        SysTenant sysTenant = sysTenantService.selectByTenantCode(tenantCode);
+        return BaseResult.ok(sysTenant);
+    }
 
+    /**
+     * @description 更新
+     * @author  ciro
+     * @date   2022/2/25 10:52
+     * @param: sysTenant
+     * @return: com.jayud.common.BaseResult
+     **/
     @ApiOperation("更新")
     @PostMapping("/update")
     public BaseResult update(@Valid @RequestBody SysTenant sysTenant ){

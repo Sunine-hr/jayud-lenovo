@@ -326,5 +326,13 @@ public class SysRoleController {
         return BaseResult.ok(sysRole);
     }
 
-
+    @ApiOperation("判断用户是否有角色")
+    @ApiImplicitParam(name = "roleCode", value = "角色编码", dataType = "String", required = true)
+    @GetMapping(value = "/isHasRole")
+    public BaseResult isHasRole(@RequestParam(name = "roleCode", required = true) String roleCode){
+        if (CurrentUserUtil.hasRole(roleCode)) {
+            return BaseResult.ok();
+        }
+        return BaseResult.error();
+    }
 }

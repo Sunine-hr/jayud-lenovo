@@ -60,11 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/deviceAuthorization/getActivationInfo",
-                "/deviceAuthorization/getDeviceStatus", "/deviceAuthorization/activate",
-                "/deviceAuthorization/license/generateCode",
-                "/swagger-ui.html", "/swagger-resources/**", "/swagger/**",
-                "/**/v2/api-docs", "/**/*.js", "/**/*.css", "/**/*.png", "/**/*.ico", "/ doc.html");
+        web.ignoring().antMatchers("/auth/token");
     }
 
 }

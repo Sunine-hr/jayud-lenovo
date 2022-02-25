@@ -1,8 +1,7 @@
 package com.jayud.auth.controller;
 
-import com.alibaba.excel.EasyExcel;
+import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.bo.SysTenantForm;
-import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 /**
@@ -197,6 +195,20 @@ public class SysTenantController {
     public BaseResult update(@Valid @RequestBody SysTenant sysTenant ){
         sysTenantService.updateById(sysTenant);
         return BaseResult.ok(SysTips.EDIT_SUCCESS);
+    }
+
+    /**
+     * @description 根据id批量删除
+     * @author  ciro
+     * @date   2022/2/25 13:49
+     * @param: deleteForm
+     * @return: com.jayud.common.BaseResult
+     **/
+    @ApiOperation("根据id批量删除")
+    @PostMapping("/delByIds")
+    public BaseResult delByIds (@Valid @RequestBody DeleteForm deleteForm) {
+        sysTenantService.delByIds(deleteForm);
+        return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 
 

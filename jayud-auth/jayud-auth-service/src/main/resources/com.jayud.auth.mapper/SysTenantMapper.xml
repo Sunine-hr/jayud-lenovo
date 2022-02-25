@@ -102,6 +102,13 @@
         UPDATE sys_tenant SET is_deleted = 1 ,update_by = #{username}, update_time = now()
         WHERE id = ${id} AND is_deleted = 0
     </update>
+    <update id="logicDelByIds">
+        UPDATE sys_tenant SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE is_deleted = 0 AND id IN
+            <foreach collection="ids" item="id" open="(" separator="," close=")">
+                ${id}
+            </foreach>
+    </update>
 
 
 </mapper>

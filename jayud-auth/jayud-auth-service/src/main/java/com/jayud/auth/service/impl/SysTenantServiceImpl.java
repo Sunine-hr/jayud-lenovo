@@ -2,8 +2,11 @@ package com.jayud.auth.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.bo.SysTenantForm;
 import com.jayud.auth.model.po.*;
 import com.jayud.auth.service.*;
@@ -133,6 +136,11 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         lambdaQueryWrapper.eq(SysTenant::getTenantCode,tenantCode);
         SysTenant sysTenant = this.getOne(lambdaQueryWrapper);
         return sysTenant;
+    }
+
+    @Override
+    public void delByIds(DeleteForm deleteForm) {
+       sysTenantMapper.logicDelByIds(deleteForm.getIds(),CurrentUserUtil.getUsername());
     }
 
 

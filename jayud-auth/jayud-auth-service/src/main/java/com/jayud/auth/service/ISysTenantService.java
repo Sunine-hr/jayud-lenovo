@@ -2,6 +2,7 @@ package com.jayud.auth.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.bo.SysTenantForm;
 import com.jayud.auth.model.po.SysTenant;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -104,5 +105,14 @@ public interface ISysTenantService extends IService<SysTenant> {
      * @return: com.jayud.auth.model.po.SysTenant
      **/
     SysTenant selectByTenantCode(String tenantCode);
+
+    /**
+     * @description 根据id集合删除
+     * @author  ciro
+     * @date   2022/2/25 13:42
+     * @param: deleteForm
+     * @return: void
+     **/
+    void delByIds(DeleteForm deleteForm);
 
 }

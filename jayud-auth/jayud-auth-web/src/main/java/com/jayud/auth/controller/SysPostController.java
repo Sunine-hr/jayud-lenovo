@@ -107,23 +107,6 @@ public class SysPostController {
         if(sysPostForm==null){
             return  BaseResult.error("参数不能为空！");
         }
-        if(sysPostForm.getId()==null){
-            QueryWrapper<SysPost> queryWrapper = new QueryWrapper<>();
-            queryWrapper.lambda().eq(SysPost::getIsDeleted, 0);
-            queryWrapper.lambda().eq(SysPost::getPostCode, sysPostForm.getPostCode());
-            SysPost one = sysPostService.getOne(queryWrapper);
-            if(one!=null){
-                return  BaseResult.error("岗位编码已存在！");
-            }
-            QueryWrapper<SysPost> queryWrapper2 = new QueryWrapper<>();
-            queryWrapper2.lambda().eq(SysPost::getIsDeleted, 0);
-            queryWrapper2.lambda().eq(SysPost::getPostName, sysPostForm.getPostName());
-            SysPost two = sysPostService.getOne(queryWrapper2);
-            if(two!=null){
-                return  BaseResult.error("岗位名称已存在！");
-            }
-        }
-
         sysPostService.saveOrUpdateSysPost(sysPostForm);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }

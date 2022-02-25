@@ -64,7 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/deviceAuthorization/getDeviceStatus", "/deviceAuthorization/activate",
                 "/deviceAuthorization/license/generateCode",
                 "/swagger-ui.html", "/swagger-resources/**", "/swagger/**",
-                "/**/v2/api-docs", "/**/*.js", "/**/*.css", "/**/*.png", "/**/*.ico", "/ doc.html","/auth/token");
+                "/**/v2/api-docs", "/**/*.js", "/**/*.css", "/**/*.png", "/**/*.ico", "/ doc.html");
     }
 
 }

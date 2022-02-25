@@ -4,11 +4,13 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import com.jayud.auth.model.dto.AddSysRole;
+import com.jayud.auth.model.po.SysDict;
 import com.jayud.auth.model.vo.SysRoleVO;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.service.ISysMenuService;
 import com.jayud.auth.service.ISysRoleMenuService;
 import com.jayud.auth.service.ISysUserRoleService;
+import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +73,7 @@ public class SysRoleController {
                                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                    HttpServletRequest req) {
         sysRole.setIsDeleted(false);
-        if (CurrentUserUtil.hasRole("tenant_role_admin")) {
+        if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
             sysRole.setTenantCode(null);
         } else {
             sysRole.setTenantCode(CurrentUserUtil.getUserTenantCode());
@@ -125,11 +127,11 @@ public class SysRoleController {
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam Long id) {
         SysRole sysRole = this.sysRoleService.getById(id);
-        if (sysRole.getRoleCode().equals("tenant_role_admin")) {
-            throw new JayudBizException("超级管理员不能删除");
+        if (sysRole.getRoleCode().equals(CommonConstant.SUPER_TENANT)) {
+            throw new JayudBizException(SysTips.DELETE_ADMIN_ERROR);
         }
         if (this.sysUserRoleService.exitByRolesIds(Arrays.asList(id))) {
-            return BaseResult.error("存在角色绑定用户,无法删除");
+            return BaseResult.error(SysTips.ERROR_MSG_ONE);
         }
 
         sysRoleService.logicDel(id);
@@ -148,15 +150,15 @@ public class SysRoleController {
     public BaseResult batchLogicDel(@RequestBody List<SysRole> sysRoles) {
 
         for (SysRole sysRole : sysRoles) {
-            if (sysRole.getRoleCode().equals("tenant_role_admin")) {
-                throw new JayudBizException("超级管理员不能删除");
+            if (sysRole.getRoleCode().equals(CommonConstant.SUPER_TENANT)) {
+                throw new JayudBizException(SysTips.DELETE_ADMIN_ERROR);
             }
         }
 
         List<Long> rolesIds = sysRoles.stream().map(e -> e.getId()).collect(Collectors.toList());
 
         if (this.sysUserRoleService.exitByRolesIds(rolesIds)) {
-            return BaseResult.error("存在角色绑定用户,无法删除");
+            return BaseResult.error(SysTips.ERROR_MSG_ONE);
         }
         List<SysRole> tmps = new ArrayList<>();
         for (Long rolesId : rolesIds) {
@@ -176,7 +178,7 @@ public class SysRoleController {
         List<Long> userIds = MapUtil.get(map, "userIds", new TypeReference<List<Long>>() {
         });
         if (rolesId == null || CollectionUtil.isEmpty(userIds)) {
-            return BaseResult.error("参数必填");
+            return BaseResult.error(SysTips.ERROR_MSG);
         }
         this.sysUserRoleService.associatedEmployees(rolesId, userIds);
         return BaseResult.ok();
@@ -228,7 +230,7 @@ public class SysRoleController {
         List<Long> userIds = MapUtil.get(map, "userIds", new TypeReference<List<Long>>() {
         });
         if (rolesId == null || CollectionUtil.isEmpty(userIds)) {
-            return BaseResult.error("参数必填");
+            return BaseResult.error(SysTips.BATCH_DEL_SUCCESS);
         }
         sysUserRoleService.deleteEmployees(rolesId, userIds);
         return BaseResult.ok(SysTips.EDIT_SUCCESS);
@@ -255,7 +257,7 @@ public class SysRoleController {
         List<Long> roleIds = MapUtil.get(map, "roleIds", new TypeReference<List<Long>>() {
         });
         if (userId == null || CollectionUtil.isEmpty(roleIds)) {
-            return BaseResult.error("参数必填");
+            return BaseResult.error(SysTips.ERROR_MSG);
         }
         sysRoleService.setRoles(userId, roleIds);
         return BaseResult.ok();
@@ -281,7 +283,7 @@ public class SysRoleController {
         List<Long> menuIds = MapUtil.get(map, "menuIds", new TypeReference<List<Long>>() {
         });
         if (rolesId == null || CollectionUtil.isEmpty(menuIds)) {
-            return BaseResult.error("参数必填");
+            return BaseResult.error(SysTips.ERROR_MSG);
         }
         sysRoleService.setRolePermissions(rolesId, menuIds);
         return BaseResult.ok();

@@ -248,4 +248,7 @@ public abstract class CommonConstant {
     public static final String RECEIVABLE = "receivable";//应收标识
 
     public static final String PAYMENT = "payment";//应付标识
+
+    public static final String SUPER_TENANT = "tenant_role_admin";
+
 }

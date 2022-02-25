@@ -184,11 +184,11 @@ public class SysDepartController {
 
 
     /**
-     * 查询组织部门树
+     * 查询组织部门树以及员工
      * @param form
      * @return
      */
-    @ApiOperation("查询组织部门树")
+    @ApiOperation("查询组织部门树以及员工")
     @PostMapping("/selectDeptTreeStaff")
     public BaseResult<List<SysDepart>> selectDeptTreeStaff(@RequestBody QuerySysDeptForm form){
         List<SysDepart> deptTree = sysDepartService.selectDeptTreeStaff(form);

@@ -12,6 +12,7 @@ import com.jayud.auth.model.po.SysUser;
 import com.jayud.auth.service.ISysUserService;
 import com.jayud.common.dto.AuthUserDetail;
 import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -243,8 +244,10 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
                     List<SysDepart> treeListUser = new ArrayList<>();
                     SysDepart sysDeparts = null;
                     for (int i = 0; i < lists.size(); i++) {
+                        long iil=111111;
                         sysDeparts = new SysDepart();
-                        sysDeparts.setId(System.currentTimeMillis()+lists.get(i).getId());
+                        Long aLong = StringUtils.longTransitionLong(iil,lists.get(i).getId());
+                        sysDeparts.setId(aLong);
                         sysDeparts.setUserId(lists.get(i).getId());
                         sysDeparts.setLabel(lists.get(i).getName());
                         treeListUser.add(sysDeparts);

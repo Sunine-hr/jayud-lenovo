@@ -447,6 +447,12 @@ public class StringUtils {
         System.out.println(table.get(0).get("town"));
         System.out.println(table.get(0).get("village"));
 
+        long ab=111111;
+        long abb=1;
+        Long aLong = longTransitionLong(ab,abb);
+        System.out.println("拼接："+aLong);
+
+
     }
 
     public static String supplyZero(int count, int zeroNum) {
@@ -564,5 +570,23 @@ public class StringUtils {
         }
         return sb.toString();
     }
+
+    //数字转字符串
+    // 然后再转数字
+    public static Long  longTransitionLong(Long a, Long b){
+
+        String sl1 = Long.toString(a);
+        String sl2 = Long.toString(b);
+        StringBuilder sb = new StringBuilder();
+        StringBuilder append = sb.append(sl1).append(sl2);
+
+        Long aLong = Long.valueOf(append.toString());
+
+        return aLong;
+    }
+
+
+
+
 
 }

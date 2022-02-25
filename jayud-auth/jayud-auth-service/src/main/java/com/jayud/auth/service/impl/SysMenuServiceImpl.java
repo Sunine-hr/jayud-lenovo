@@ -170,7 +170,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             }
             String code = sysMenu.getCode();
             QueryWrapper<SysMenu> codeQueryWrapper = new QueryWrapper<>();
-            nameQueryWrapper.lambda().ne(SysMenu::getId, id);
+            codeQueryWrapper.lambda().ne(SysMenu::getId, id);
             codeQueryWrapper.lambda().eq(SysMenu::getIsDeleted, 0);
             codeQueryWrapper.lambda().eq(SysMenu::getCode, code);
             codeQueryWrapper.lambda().groupBy(SysMenu::getCode);
@@ -180,7 +180,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             }
             String router = sysMenu.getRouter();
             QueryWrapper<SysMenu> routerQueryWrapper = new QueryWrapper<>();
-            nameQueryWrapper.lambda().ne(SysMenu::getId, id);
+            routerQueryWrapper.lambda().ne(SysMenu::getId, id);
             routerQueryWrapper.lambda().eq(SysMenu::getIsDeleted, 0);
             routerQueryWrapper.lambda().eq(SysMenu::getRouter, router);
             routerQueryWrapper.lambda().groupBy(SysMenu::getCode);

@@ -214,7 +214,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(SysUser::getName, CurrentUserUtil.getUsername());
         SysUser one = this.getOne(lambdaQueryWrapper);
-        if (one.getPassword().equals(encoder.encode(sysUserForm.getPassword()))) {
+
+        //旧密码校验
+        if(one.getPassword().equals(encoder.encode(sysUserForm.getPassword()))){
+            return BaseResult.error("当前密码错误！");
+        }
+        //旧密码和新密码 不能相同
+        if(one.getPassword().equals(encoder.encode(sysUserForm.getNewPassword()))){
+            return BaseResult.error("修改密码不能和之前密码相同!");
+        }
+        if (!one.getPassword().equals(encoder.encode(sysUserForm.getPassword()))) {
             if (one.getId()!=null){
                 one.setUpdateBy(CurrentUserUtil.getUsername());
                 one.setUpdateTime(new Date());
@@ -230,4 +239,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return BaseResult.ok();
     }
 
+    public static void main(String[] args) {
+
+        String encode = encoder.encode("666888");
+        System.out.println(encode);
+    }
 }

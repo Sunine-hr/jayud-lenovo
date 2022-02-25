@@ -51,4 +51,5 @@ public class SysRole extends SysBaseEntity {
 //    @TableLogic
     private Boolean isDeleted;
 
+
 }

@@ -11,6 +11,7 @@ import com.jayud.auth.model.po.SysMenu;
 import com.jayud.auth.model.po.SysUser;
 import com.jayud.auth.service.ISysUserService;
 import com.jayud.common.dto.AuthUserDetail;
+import com.jayud.common.enums.DepartTypeEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -165,16 +166,18 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         String tenantCode = sysUser.getTenantCode();
         form.setTenantCode(tenantCode);
 
-        String orgCategory = form.getOrgCategory();//机构类别 1集团，2公司，3部门
+        //机构类别 1集团，2公司，3部门
+        String orgCategory = form.getOrgCategory();
         List<String> stringList = new ArrayList<>();
-        if ("1".equals(orgCategory)) {
+        if (DepartTypeEnum.GROUP.getDepartType().equals(orgCategory)) {
             stringList = Arrays.asList("1", "2", "3");
-        } else if ("2".equals(orgCategory)) {
+        } else if (DepartTypeEnum.COMPANY.getDepartType().equals(orgCategory)) {
             stringList = Arrays.asList("2", "3");
-        } else if ("3".equals(orgCategory)) {
+        } else if (DepartTypeEnum.DEPART.getDepartType().equals(orgCategory)) {
             stringList = Arrays.asList("3");
         }
-        form.setNotInOrgCategory(stringList);//过滤掉的机构类别
+        //过滤掉的机构类别
+        form.setNotInOrgCategory(stringList);
         List<SysDepart> departs = sysDepartMapper.selectDeptTree(form);
         List<SysDepart> tree = buildTree(departs, "0");
         return tree;

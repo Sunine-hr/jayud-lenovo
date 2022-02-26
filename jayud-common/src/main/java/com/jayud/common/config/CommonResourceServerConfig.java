@@ -1,6 +1,7 @@
 package com.jayud.common.config;
 
 
+import com.jayud.common.oauth.AuthExceptionEntryPoint;
 import com.jayud.common.provider.UserInfoTokenServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 
 /**
@@ -57,6 +59,13 @@ public class CommonResourceServerConfig extends ResourceServerConfigurerAdapter 
 	@Bean
 	public ResourceServerTokenServices tokenServices() {
 		return new UserInfoTokenServices(sso.getUserInfoUri(), sso.getClientId());
+	}
+
+
+	@Override
+	public void configure(ResourceServerSecurityConfigurer resource) throws Exception {
+		//这里把自定义异常加进去
+		resource.authenticationEntryPoint(new AuthExceptionEntryPoint());
 	}
 
 }

@@ -2,6 +2,7 @@ package com.jayud.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jayud.common.constant.SysTips;
+import com.jayud.common.enums.ResultEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -152,6 +153,21 @@ public class BaseResult<T> implements Serializable {
         r.setCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
         r.setMsg(msg);
         r.setSuccess(false);
+        return r;
+    }
+
+    /**
+     * @description token过期
+     * @author  ciro
+     * @date   2022/2/26 13:42
+     * @param: msg
+     * @return: com.jayud.common.BaseResult<T>
+     **/
+    public static <T> BaseResult<T> unAuthorized(String msg) {
+        BaseResult<T> r = new BaseResult<T>();
+        r.setSuccess(false);
+        r.setCode(ResultEnum.UNAUTHORIZED.getCode());
+        r.setMsg(ResultEnum.UNAUTHORIZED.getMessage());
         return r;
     }
 }

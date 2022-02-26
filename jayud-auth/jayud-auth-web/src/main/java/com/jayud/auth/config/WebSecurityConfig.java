@@ -30,10 +30,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-//        httpSecurity.authorizeRequests()
-//                .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
-//                .antMatchers("/**","/deviceAuthorization/activate","/api/uaa/deviceAuthorization/license/generateCode").permitAll()
-//                .anyRequest().authenticated().and().csrf().disable();
         httpSecurity.cors().and().authorizeRequests().anyRequest().authenticated().antMatchers("/auth/token").permitAll()
                 .and().csrf().disable();
     }

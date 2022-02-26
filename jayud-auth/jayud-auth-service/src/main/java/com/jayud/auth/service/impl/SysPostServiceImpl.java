@@ -119,12 +119,14 @@ public class SysPostServiceImpl extends ServiceImpl<SysPostMapper, SysPost> impl
     @Override
     public BaseResult deleteSysPost(List<Long> ids) {
 
+        List<SysPost> sysPosts = new ArrayList<>();
         for (int i = 0; i < ids.size(); i++) {
             SysPost sysPost = new SysPost();
             sysPost.setId(ids.get(i));
             sysPost.setIsDeleted(true);
-            sysPostMapper.updateById(sysPost);
+            sysPosts.add(sysPost);
         }
+        this.updateBatchById(sysPosts);
         return BaseResult.ok();
     }
 

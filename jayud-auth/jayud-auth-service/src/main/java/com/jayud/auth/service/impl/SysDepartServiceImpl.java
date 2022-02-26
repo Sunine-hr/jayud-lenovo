@@ -135,7 +135,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         }
         //获取当前用户租户编码
         String orgCategory = depart.getOrgCategory();
-        if ("1".equals(orgCategory)) {
+        if (ObjectUtil.isNotEmpty(orgCategory)) {
             String userTenantCode = CurrentUserUtil.getUserTenantCode();
             QueryWrapper<SysDepart> sysDepartQueryWrapper = new QueryWrapper<>();
             sysDepartQueryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
@@ -239,7 +239,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         list.forEach(l -> {
             if (StrUtil.equals(pid, l.getParentId().toString())) {
                 l.setChildren(buildTreeStaff(list, l.getId().toString()));
-                if (StrUtil.equals("3", l.getOrgCategory())) {
+                if (StrUtil.equals(DepartTypeEnum.DEPART.getDepartType(), l.getOrgCategory())) {
                     QueryWrapper<SysUser> sysUserQueryWrapper = new QueryWrapper<>();
                     sysUserQueryWrapper.lambda().eq(SysUser::getDepartId, l.getId());
                     sysUserQueryWrapper.lambda().eq(SysUser::getIsDeleted, 0);

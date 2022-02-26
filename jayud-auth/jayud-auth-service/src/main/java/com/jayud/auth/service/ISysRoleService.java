@@ -74,14 +74,41 @@ public interface ISysRoleService extends IService<SysRole> {
      */
     List<SysRole> selectSysRoleByUserId(Long userId);
 
+    /**
+     * 是否唯一
+     * @param id
+     * @param roleName
+     * @param roleCode
+     * @return
+     */
     boolean checkUnique(Long id, String roleName, String roleCode);
 
+    /**
+     * 创建/编辑角色
+     * @param form
+     */
     void addOrUpdate(AddSysRole form);
 
+    /**
+     * 根据用户id查询角色id集合
+     * @param userId
+     * @return
+     */
     List<Long> getRoleIdsByUserId(Long userId);
 
+    /**
+     * 设置角色
+     * @param userId
+     * @param roleIds
+     */
     void setRoles(Long userId, List<Long> roleIds);
 
+
+    /**
+     * 设置角色权限
+     * @param rolesId
+     * @param menuIds
+     */
     void setRolePermissions(Long rolesId, List<Long> menuIds);
 
     /**

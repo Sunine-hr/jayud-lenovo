@@ -128,8 +128,8 @@ public class SysUserVO extends SysBaseEntity {
     private List<Long> departIdLists;
 
 
-    public void setStatus(Integer status) {
-        this.status = status;
-        this.statusDesc = this.status == 1 ? "在职" : "离职";
+    public void setJobStatus(Integer jobStatus) {
+        this.jobStatus = jobStatus;
+        this.statusDesc = this.jobStatus == 1 ? "在职" : "离职";
     }
 }

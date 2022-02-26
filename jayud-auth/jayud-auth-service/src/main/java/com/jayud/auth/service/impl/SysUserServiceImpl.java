@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -115,10 +116,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
             //负责部门节点id集合
             sysUser.setDepartmentList(fileNameString);
-            if(sysUser.getPassword().equals("")){
+            if (sysUser.getPassword().equals("")) {
                 //设置默认密码
                 sysUser.setPassword(encoder.encode("123456"));
-            }else {
+            } else {
                 //反之保存自己填写的密码
                 sysUser.setPassword(encoder.encode(sysUser.getPassword()));
             }
@@ -163,13 +164,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Transactional(rollbackFor = Exception.class)
     public BaseResult deleteSysUser(List<Long> ids) {
 
+        List<SysUser> sysUsers = new ArrayList<>();
         for (int i = 0; i < ids.size(); i++) {
             SysUser sysUser = new SysUser();
             sysUser.setId(ids.get(i));
             sysUser.setIsDeleted(true);
-            sysUserMapper.updateById(sysUser);
+            sysUsers.add(sysUser);
         }
-
+        this.updateBatchById(sysUsers);
         return BaseResult.ok();
     }
 
@@ -216,20 +218,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser one = this.getOne(lambdaQueryWrapper);
 
         //旧密码校验
-        if(one.getPassword().equals(encoder.encode(sysUserForm.getPassword()))){
+        if (one.getPassword().equals(encoder.encode(sysUserForm.getPassword()))) {
             return BaseResult.error("当前密码错误！");
         }
         //旧密码和新密码 不能相同
-        if(one.getPassword().equals(encoder.encode(sysUserForm.getNewPassword()))){
+        if (one.getPassword().equals(encoder.encode(sysUserForm.getNewPassword()))) {
             return BaseResult.error("修改密码不能和之前密码相同!");
         }
         if (!one.getPassword().equals(encoder.encode(sysUserForm.getPassword()))) {
-            if (one.getId()!=null){
+            if (one.getId() != null) {
                 one.setUpdateBy(CurrentUserUtil.getUsername());
                 one.setUpdateTime(new Date());
                 //新密码
                 one.setPassword(encoder.encode(sysUserForm.getNewPassword())); //新密码
-                result= this.updateById(one);
+                result = this.updateById(one);
             }
         }
         if (result) {
@@ -238,6 +240,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         return BaseResult.ok();
     }
+
+
 
     public static void main(String[] args) {
 

@@ -70,19 +70,54 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
     void logicDel(Long id);
 
 
-
-
+    /**
+     * 是否存在员工绑定角色
+     * @param rolesIds
+     * @return
+     */
     boolean exitByRolesIds(List<Long> rolesIds);
 
+    /**
+     * 关联员工
+     * @param rolesId
+     * @param userIds
+     */
     void associatedEmployees(Long rolesId, List<Long> userIds);
 
+    /**
+     * 分页查询关联员工
+     * @param rolesId
+     * @param currentPage
+     * @param pageSize
+     * @param req
+     * @return
+     */
     IPage<SysUserVO> selectAssociatedEmployeesPage(Long rolesId, Integer currentPage, Integer pageSize, HttpServletRequest req);
 
+    /**
+     * 解绑员工
+     * @param rolesId
+     * @param userIds
+     */
     void deleteEmployees(Long rolesId, List<Long> userIds);
 
+    /**
+     * 根据条件查询用户绑定角色
+     * @param sysUserRole
+     * @return
+     */
     List<SysUserRole> getByCondition(SysUserRole sysUserRole);
 
+    /**
+     * 根据用户id逻辑删除绑定角色
+     * @param userId
+     */
     void deleteByUserId(Long userId);
 
+    /**
+     * 根据角色id查询绑定用户集合id
+     * @param roleId
+     * @return
+     */
     List<Long> getUserIdsByRoleId(Long roleId);
 }

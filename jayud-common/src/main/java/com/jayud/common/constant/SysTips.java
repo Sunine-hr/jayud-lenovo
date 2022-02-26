@@ -208,5 +208,8 @@ public interface SysTips {
 
     String SYS_URL_TYPE_SAME = "存在系统类型！";
 
+    String ERROR_MSG_ONE = "存在角色绑定用户,无法删除";
+
+    String DELETE_ADMIN_ERROR = "超级管理员不能删除";
 }
 

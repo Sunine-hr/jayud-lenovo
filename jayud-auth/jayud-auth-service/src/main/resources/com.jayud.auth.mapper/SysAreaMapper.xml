@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.SysAreaMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SysArea">
+        <id column="id" property="id" />
+        <result column="level" property="level" />
+        <result column="code" property="code" />
+        <result column="parent_code" property="parentCode" />
+        <result column="zip_code" property="zipCode" />
+        <result column="city_code" property="cityCode" />
+        <result column="name" property="name" />
+        <result column="short_name" property="shortName" />
+        <result column="merger_name" property="mergerName" />
+        <result column="pinyin" property="pinyin" />
+        <result column="lng" property="lng" />
+        <result column="lat" property="lat" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_deleted" property="isDeleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, level, code, parent_code, zip_code, city_code, name, short_name, merger_name, pinyin, lng, lat, create_by, create_time, update_by, update_time, is_deleted
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">sys_area </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="sysArea.level != null ">
+                AND level = ${sysArea.level}
+            </if>
+
+            <if test="sysArea.code != null ">
+                AND code = ${sysArea.code}
+            </if>
+
+            <if test="sysArea.parentCode != null ">
+                AND parent_code = ${sysArea.parentCode}
+            </if>
+
+            <if test="sysArea.zipCode != null ">
+                AND zip_code = ${sysArea.zipCode}
+            </if>
+
+            <if test="sysArea.cityCode != null and sysArea.cityCode != ''">
+                AND city_code = #{sysArea.cityCode}
+            </if>
+
+            <if test="sysArea.name != null and sysArea.name != ''">
+                AND name = #{sysArea.name}
+            </if>
+
+            <if test="sysArea.shortName != null and sysArea.shortName != ''">
+                AND short_name = #{sysArea.shortName}
+            </if>
+
+            <if test="sysArea.mergerName != null and sysArea.mergerName != ''">
+                AND merger_name = #{sysArea.mergerName}
+            </if>
+
+            <if test="sysArea.pinyin != null and sysArea.pinyin != ''">
+                AND pinyin = #{sysArea.pinyin}
+            </if>
+
+            <if test="sysArea.lng != null ">
+                AND lng = ${sysArea.lng}
+            </if>
+
+            <if test="sysArea.lat != null ">
+                AND lat = ${sysArea.lat}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysArea">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysArea">
+        <include refid="selects"/>
+    </select>
+
+    <select id="selectAreas" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysArea">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_area1
+    </select>
+
+
+    <delete id="phyDelById">
+        DELETE FROM  sys_area WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE sys_area SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+
+</mapper>

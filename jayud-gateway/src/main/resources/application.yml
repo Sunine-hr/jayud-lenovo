@@ -1,198 +1,198 @@
-server:
-  port: 8001 #端口
-spring:
-  cloud:
-    gateway:
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins: "*"   # 允许跨域请求的域名或服务器IP,多个用逗号分隔，*为允许所有
-            allowedMethods:       # 允许跨域的请求方法
-              - GET
-              - POST
-              - PUT
-              - DELETE
-      routes:
-        - id: route-jayud-oms #佳裕达物流系统oms服务端
-          uri: lb://jayud-oms-web  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudOms/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-file #文件处理中心
-          uri: lb://jayud-file-web
-          predicates:
-            - Path=/jayudFile/** #指定路径（localhost:8001/swagger-ui.html）
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-oauth      #佳裕达物流系统oauth服务端
-          uri: lb://jayud-oauth-web  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudOauth/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-customs      #佳裕达物流系统customs服务端
-          uri: lb://jayud-customs-web  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudCustoms/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-customs-api      #佳裕达物流系统customs API接口
-          uri: lb://jayud-customs-api  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudCustomsApi/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-finance      #佳裕达物流系统finance服务端
-          uri: lb://jayud-finance-web  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudFinance/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-msg      #佳裕达物流系统msg消息队列服务端
-          uri: lb://jayud-msg-config  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudMsg/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-tms      #佳裕达物流系统tms服务端
-          uri: lb://jayud-tms-web  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudTms/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-freight-air      #佳裕达物流系统jayud-freight-air服务端
-          uri: lb://jayud-freight-air-web  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudAir/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-freight-air      #佳裕达物流系统jayud-freight-air-api服务端
-          uri: lb://jayud-freight-air-api  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudAirApi/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-mall-admin      #佳裕达jayud-mall-admin 服务端(南京电商后台)
-          uri: lb://jayud-mall-admin      # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudMallAdmin/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-tools      #佳裕达jayud-tools 佳裕达小工具项目
-          uri: lb://jayud-tools      # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudTools/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-tools-ws   #佳裕达jayud-tools 佳裕达小工具项目 配置websocket转发
-          # uri: lb:ws://jayud-tools
-          uri: ws://localhost:10443
-          predicates:
-            - Path=/jayudToolsWs/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: jayud-oms-mini-app    #佳裕达小程序服务端
-          uri: lb://jayud-oms-mini-app  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudOmsMiniApp/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-ocean-ship      #佳裕达物流系统jayud-ocean-ship服务端
-          uri: lb://jayud-ocean-ship-web  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudOceanShip/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-mall-web      #佳裕达jayud-mall-web 服务端(南京电商C端[客户端])
-          uri: lb://jayud-mall-web      # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudMallWeb/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-Inland-transport     #佳裕达物流系统jayud-Inland-transport 内陆服务端
-          uri: lb://jayud-Inland-transport-web  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudInland/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-trailer      #佳裕达物流系统jayud-trailer服务端
-          uri: lb://jayud-trailer-web  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudTrailer/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-mall-web      #佳裕达jayud-mall-web 服务端(南京电商C端[客户端])
-          uri: lb://jayud-mall-web      # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudMallWeb/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-storage      #佳裕达物流系统jayud-storage服务端
-          uri: lb://jayud-storage-web  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudStorage/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-storage      #佳裕达物流系统jayud-storage-PDA服务端
-          uri: lb://jayud-storage-PDA  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudStoragePDA/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-scm      #供应链系统web
-          uri: lb://jayud-scm-web  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudScm/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-tms-api  #佳裕达物流系统tms-api服务端
-          uri: lb://jayud-tms-api  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudTmsApi/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-scm-api  #供应链系统api服务端
-          uri: lb://jayud-scm-api  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudScmApi/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-scm-api      #供应链系统api服务端
-          uri: lb://jayud-scm-api  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudScmApi/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
-        - id: route-jayud-auth-web  #供应链系统api服务端
-          uri: lb://jayud-auth-web  # uri以lb://开头（后面接的服务名称)
-          predicates:
-            - Path=/jayudAuth/**
-          filters:
-            - StripPrefix=1
-            - IgnoreGlobalFilterFactor
+#server:
+#  port: 8001 #端口
+#spring:
+#  cloud:
+#    gateway:
+#      globalcors:
+#        corsConfigurations:
+#          '[/**]':
+#            allowedOrigins: "*"   # 允许跨域请求的域名或服务器IP,多个用逗号分隔，*为允许所有
+#            allowedMethods:       # 允许跨域的请求方法
+#              - GET
+#              - POST
+#              - PUT
+#              - DELETE
+#      routes:
+#        - id: route-jayud-oms #佳裕达物流系统oms服务端
+#          uri: lb://jayud-oms-web  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudOms/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-file #文件处理中心
+#          uri: lb://jayud-file-web
+#          predicates:
+#            - Path=/jayudFile/** #指定路径（localhost:8001/swagger-ui.html）
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-oauth      #佳裕达物流系统oauth服务端
+#          uri: lb://jayud-oauth-web  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudOauth/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-customs      #佳裕达物流系统customs服务端
+#          uri: lb://jayud-customs-web  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudCustoms/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-customs-api      #佳裕达物流系统customs API接口
+#          uri: lb://jayud-customs-api  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudCustomsApi/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-finance      #佳裕达物流系统finance服务端
+#          uri: lb://jayud-finance-web  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudFinance/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-msg      #佳裕达物流系统msg消息队列服务端
+#          uri: lb://jayud-msg-config  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudMsg/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-tms      #佳裕达物流系统tms服务端
+#          uri: lb://jayud-tms-web  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudTms/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-freight-air      #佳裕达物流系统jayud-freight-air服务端
+#          uri: lb://jayud-freight-air-web  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudAir/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-freight-air      #佳裕达物流系统jayud-freight-air-api服务端
+#          uri: lb://jayud-freight-air-api  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudAirApi/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-mall-admin      #佳裕达jayud-mall-admin 服务端(南京电商后台)
+#          uri: lb://jayud-mall-admin      # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudMallAdmin/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-tools      #佳裕达jayud-tools 佳裕达小工具项目
+#          uri: lb://jayud-tools      # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudTools/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-tools-ws   #佳裕达jayud-tools 佳裕达小工具项目 配置websocket转发
+#          # uri: lb:ws://jayud-tools
+#          uri: ws://localhost:10443
+#          predicates:
+#            - Path=/jayudToolsWs/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: jayud-oms-mini-app    #佳裕达小程序服务端
+#          uri: lb://jayud-oms-mini-app  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudOmsMiniApp/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-ocean-ship      #佳裕达物流系统jayud-ocean-ship服务端
+#          uri: lb://jayud-ocean-ship-web  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudOceanShip/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-mall-web      #佳裕达jayud-mall-web 服务端(南京电商C端[客户端])
+#          uri: lb://jayud-mall-web      # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudMallWeb/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-Inland-transport     #佳裕达物流系统jayud-Inland-transport 内陆服务端
+#          uri: lb://jayud-Inland-transport-web  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudInland/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-trailer      #佳裕达物流系统jayud-trailer服务端
+#          uri: lb://jayud-trailer-web  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudTrailer/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-mall-web      #佳裕达jayud-mall-web 服务端(南京电商C端[客户端])
+#          uri: lb://jayud-mall-web      # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudMallWeb/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-storage      #佳裕达物流系统jayud-storage服务端
+#          uri: lb://jayud-storage-web  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudStorage/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-storage      #佳裕达物流系统jayud-storage-PDA服务端
+#          uri: lb://jayud-storage-PDA  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudStoragePDA/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-scm      #供应链系统web
+#          uri: lb://jayud-scm-web  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudScm/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-tms-api  #佳裕达物流系统tms-api服务端
+#          uri: lb://jayud-tms-api  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudTmsApi/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-scm-api  #供应链系统api服务端
+#          uri: lb://jayud-scm-api  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudScmApi/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-scm-api      #供应链系统api服务端
+#          uri: lb://jayud-scm-api  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudScmApi/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor
+#        - id: route-jayud-auth-web  #供应链系统api服务端
+#          uri: lb://jayud-auth-web  # uri以lb://开头（后面接的服务名称)
+#          predicates:
+#            - Path=/jayudAuth/**
+#          filters:
+#            - StripPrefix=1
+#            - IgnoreGlobalFilterFactor

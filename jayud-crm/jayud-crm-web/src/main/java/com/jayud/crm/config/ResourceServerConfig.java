@@ -1,4 +1,4 @@
-package com.jayud.system.config;
+package com.jayud.crm.config;
 
 
 

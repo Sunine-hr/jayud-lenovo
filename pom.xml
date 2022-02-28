@@ -44,6 +44,9 @@
 
 <!--        <module>jayud-system</module>-->
         <module>jayud-mybatisplus</module>
+        <module>jayud-crm</module>
+
+
     </modules>
 
     <parent>

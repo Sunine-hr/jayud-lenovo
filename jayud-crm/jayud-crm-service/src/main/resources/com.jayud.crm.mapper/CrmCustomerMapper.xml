@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.crm.mapper.CrmCustomerMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCustomer">
+        <id column="id" property="id" />
+        <result column="parent_id" property="parentId" />
+        <result column="cust_name" property="custName" />
+        <result column="un_credit_code" property="unCreditCode" />
+        <result column="cust_state" property="custState" />
+        <result column="is_public" property="isPublic" />
+        <result column="cust_name_abbr" property="custNameAbbr" />
+        <result column="cust_name_en" property="custNameEn" />
+        <result column="cust_style" property="custStyle" />
+        <result column="cust_level" property="custLevel" />
+        <result column="industry_type" property="industryType" />
+        <result column="country" property="country" />
+        <result column="province" property="province" />
+        <result column="city" property="city" />
+        <result column="county" property="county" />
+        <result column="area" property="area" />
+        <result column="reg_date" property="regDate" />
+        <result column="reg_addr" property="regAddr" />
+        <result column="reg_addr_en" property="regAddrEn" />
+        <result column="reg_tel" property="regTel" />
+        <result column="cust_reg_tpye" property="custRegTpye" />
+        <result column="cust_reg_number" property="custRegNumber" />
+        <result column="cust_org_code" property="custOrgCode" />
+        <result column="buzlicense_expirdate" property="buzlicenseExpirdate" />
+        <result column="legalperson_name" property="legalpersonName" />
+        <result column="actualcontrol_name" property="actualcontrolName" />
+        <result column="is_taxpayer" property="isTaxpayer" />
+        <result column="reg_capital" property="regCapital" />
+        <result column="paid_capital" property="paidCapital" />
+        <result column="reg_currency" property="regCurrency" />
+        <result column="oper_scope" property="operScope" />
+        <result column="reg_org" property="regOrg" />
+        <result column="customs_code" property="customsCode" />
+        <result column="ciq_code" property="ciqCode" />
+        <result column="cust_form" property="custForm" />
+        <result column="supply_chain" property="supplyChain" />
+        <result column="first_order_date" property="firstOrderDate" />
+        <result column="fsales_id" property="fsalesId" />
+        <result column="fsales_name" property="fsalesName" />
+        <result column="follower_id" property="followerId" />
+        <result column="follower_name" property="followerName" />
+        <result column="onl_id" property="onlId" />
+        <result column="onl_no" property="onlNo" />
+        <result column="is_sync" property="isSync" />
+        <result column="f_level" property="fLevel" />
+        <result column="f_step" property="fStep" />
+        <result column="check_state_flag" property="checkStateFlag" />
+        <result column="old_cust_name" property="oldCustName" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, parent_id, cust_name, un_credit_code, cust_state, is_public, cust_name_abbr, cust_name_en, cust_style, cust_level, industry_type, country, province, city, county, area, reg_date, reg_addr, reg_addr_en, reg_tel, cust_reg_tpye, cust_reg_number, cust_org_code, buzlicense_expirdate, legalperson_name, actualcontrol_name, is_taxpayer, reg_capital, paid_capital, reg_currency, oper_scope, reg_org, customs_code, ciq_code, cust_form, supply_chain, first_order_date, fsales_id, fsales_name, follower_id, follower_name, onl_id, onl_no, is_sync, f_level, f_step, check_state_flag, old_cust_name, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">crm_customer </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="crmCustomer.parentId != null ">
+                AND parent_id = ${crmCustomer.parentId}
+            </if>
+
+            <if test="crmCustomer.custName != null and crmCustomer.custName != ''">
+                AND cust_name = #{crmCustomer.custName}
+            </if>
+
+            <if test="crmCustomer.unCreditCode != null and crmCustomer.unCreditCode != ''">
+                AND un_credit_code = #{crmCustomer.unCreditCode}
+            </if>
+
+            <if test="crmCustomer.custState != null ">
+                AND cust_state = ${crmCustomer.custState}
+            </if>
+
+            <if test="crmCustomer.isPublic != null ">
+                AND is_public = ${crmCustomer.isPublic}
+            </if>
+
+            <if test="crmCustomer.custNameAbbr != null and crmCustomer.custNameAbbr != ''">
+                AND cust_name_abbr = #{crmCustomer.custNameAbbr}
+            </if>
+
+            <if test="crmCustomer.custNameEn != null and crmCustomer.custNameEn != ''">
+                AND cust_name_en = #{crmCustomer.custNameEn}
+            </if>
+
+            <if test="crmCustomer.custStyle != null and crmCustomer.custStyle != ''">
+                AND cust_style = #{crmCustomer.custStyle}
+            </if>
+
+            <if test="crmCustomer.custLevel != null and crmCustomer.custLevel != ''">
+                AND cust_level = #{crmCustomer.custLevel}
+            </if>
+
+            <if test="crmCustomer.industryType != null and crmCustomer.industryType != ''">
+                AND industry_type = #{crmCustomer.industryType}
+            </if>
+
+            <if test="crmCustomer.country != null and crmCustomer.country != ''">
+                AND country = #{crmCustomer.country}
+            </if>
+
+            <if test="crmCustomer.province != null and crmCustomer.province != ''">
+                AND province = #{crmCustomer.province}
+            </if>
+
+            <if test="crmCustomer.city != null and crmCustomer.city != ''">
+                AND city = #{crmCustomer.city}
+            </if>
+
+            <if test="crmCustomer.county != null and crmCustomer.county != ''">
+                AND county = #{crmCustomer.county}
+            </if>
+
+            <if test="crmCustomer.area != null and crmCustomer.area != ''">
+                AND area = #{crmCustomer.area}
+            </if>
+
+            <if test="crmCustomer.regDate != null ">
+                AND reg_date = ${crmCustomer.regDate}
+            </if>
+
+            <if test="crmCustomer.regAddr != null and crmCustomer.regAddr != ''">
+                AND reg_addr = #{crmCustomer.regAddr}
+            </if>
+
+            <if test="crmCustomer.regAddrEn != null and crmCustomer.regAddrEn != ''">
+                AND reg_addr_en = #{crmCustomer.regAddrEn}
+            </if>
+
+            <if test="crmCustomer.regTel != null and crmCustomer.regTel != ''">
+                AND reg_tel = #{crmCustomer.regTel}
+            </if>
+
+            <if test="crmCustomer.custRegTpye != null and crmCustomer.custRegTpye != ''">
+                AND cust_reg_tpye = #{crmCustomer.custRegTpye}
+            </if>
+
+            <if test="crmCustomer.custRegNumber != null and crmCustomer.custRegNumber != ''">
+                AND cust_reg_number = #{crmCustomer.custRegNumber}
+            </if>
+
+            <if test="crmCustomer.custOrgCode != null and crmCustomer.custOrgCode != ''">
+                AND cust_org_code = #{crmCustomer.custOrgCode}
+            </if>
+
+            <if test="crmCustomer.buzlicenseExpirdate != null and crmCustomer.buzlicenseExpirdate != ''">
+                AND buzlicense_expirdate = #{crmCustomer.buzlicenseExpirdate}
+            </if>
+
+            <if test="crmCustomer.legalpersonName != null and crmCustomer.legalpersonName != ''">
+                AND legalperson_name = #{crmCustomer.legalpersonName}
+            </if>
+
+            <if test="crmCustomer.actualcontrolName != null and crmCustomer.actualcontrolName != ''">
+                AND actualcontrol_name = #{crmCustomer.actualcontrolName}
+            </if>
+
+            <if test="crmCustomer.isTaxpayer != null ">
+                AND is_taxpayer = ${crmCustomer.isTaxpayer}
+            </if>
+
+            <if test="crmCustomer.regCapital != null ">
+                AND reg_capital = ${crmCustomer.regCapital}
+            </if>
+
+            <if test="crmCustomer.paidCapital != null ">
+                AND paid_capital = ${crmCustomer.paidCapital}
+            </if>
+
+            <if test="crmCustomer.regCurrency != null and crmCustomer.regCurrency != ''">
+                AND reg_currency = #{crmCustomer.regCurrency}
+            </if>
+
+            <if test="crmCustomer.operScope != null and crmCustomer.operScope != ''">
+                AND oper_scope = #{crmCustomer.operScope}
+            </if>
+
+            <if test="crmCustomer.regOrg != null and crmCustomer.regOrg != ''">
+                AND reg_org = #{crmCustomer.regOrg}
+            </if>
+
+            <if test="crmCustomer.customsCode != null and crmCustomer.customsCode != ''">
+                AND customs_code = #{crmCustomer.customsCode}
+            </if>
+
+            <if test="crmCustomer.ciqCode != null and crmCustomer.ciqCode != ''">
+                AND ciq_code = #{crmCustomer.ciqCode}
+            </if>
+
+            <if test="crmCustomer.custForm != null and crmCustomer.custForm != ''">
+                AND cust_form = #{crmCustomer.custForm}
+            </if>
+
+            <if test="crmCustomer.supplyChain != null and crmCustomer.supplyChain != ''">
+                AND supply_chain = #{crmCustomer.supplyChain}
+            </if>
+
+            <if test="crmCustomer.firstOrderDate != null ">
+                AND first_order_date = ${crmCustomer.firstOrderDate}
+            </if>
+
+            <if test="crmCustomer.fsalesId != null ">
+                AND fsales_id = ${crmCustomer.fsalesId}
+            </if>
+
+            <if test="crmCustomer.fsalesName != null and crmCustomer.fsalesName != ''">
+                AND fsales_name = #{crmCustomer.fsalesName}
+            </if>
+
+            <if test="crmCustomer.followerId != null ">
+                AND follower_id = ${crmCustomer.followerId}
+            </if>
+
+            <if test="crmCustomer.followerName != null and crmCustomer.followerName != ''">
+                AND follower_name = #{crmCustomer.followerName}
+            </if>
+
+            <if test="crmCustomer.onlId != null ">
+                AND onl_id = ${crmCustomer.onlId}
+            </if>
+
+            <if test="crmCustomer.onlNo != null and crmCustomer.onlNo != ''">
+                AND onl_no = #{crmCustomer.onlNo}
+            </if>
+
+            <if test="crmCustomer.isSync != null ">
+                AND is_sync = ${crmCustomer.isSync}
+            </if>
+
+            <if test="crmCustomer.fLevel != null ">
+                AND f_level = ${crmCustomer.fLevel}
+            </if>
+
+            <if test="crmCustomer.fStep != null ">
+                AND f_step = ${crmCustomer.fStep}
+            </if>
+
+            <if test="crmCustomer.checkStateFlag != null and crmCustomer.checkStateFlag != ''">
+                AND check_state_flag = #{crmCustomer.checkStateFlag}
+            </if>
+
+            <if test="crmCustomer.oldCustName != null and crmCustomer.oldCustName != ''">
+                AND old_cust_name = #{crmCustomer.oldCustName}
+            </if>
+
+            <if test="crmCustomer.tenantCode != null and crmCustomer.tenantCode != ''">
+                AND tenant_code = #{crmCustomer.tenantCode}
+            </if>
+
+            <if test="crmCustomer.remark != null and crmCustomer.remark != ''">
+                AND remark = #{crmCustomer.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomer">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomer">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  crm_customer WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE crm_customer SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+
+</mapper>

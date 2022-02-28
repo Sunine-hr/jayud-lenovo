@@ -24,12 +24,12 @@ public class MybatisPlusUtils {
 //                "jayud-freight-air\\jayud-freight-air-model",
 //                "jayud-freight-air\\jayud-freight-air-service",
 //                "jayud-freight-air\\jayud-freight-air-web"
-                "jayud-auth/jayud-auth-model",
-                "jayud-auth/jayud-auth-service",
-                "jayud-auth/jayud-auth-web"
+                "jayud-crm/jayud-crm-model",
+                "jayud-crm/jayud-crm-service",
+                "jayud-crm/jayud-crm-web"
         };
         for (String model : models) {
-            shell(model,"sys_tenant");
+            shell(model,"crm_customer");
 
         }
     }
@@ -64,7 +64,7 @@ public class MybatisPlusUtils {
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
         dsc.setPassword("Jayud2021!@#");//TODO 2.业务模块数据源
-        dsc.setUrl("jdbc:mysql://113.100.140.250:8097/jayud_oms_auth?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai");
+        dsc.setUrl("jdbc:mysql://113.100.140.250:8097/jayud_oms_crm?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai");
         mpg.setDataSource(dsc);
 
         // 策略配置
@@ -77,7 +77,7 @@ public class MybatisPlusUtils {
         String pack = "";
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.jayud.auth");//TODO 3.com.jayud.业务模块名
+        pc.setParent("com.jayud.crm");//TODO 3.com.jayud.业务模块名
         pc.setEntity("model.po");
         pc.setController("controller");
         pc.setMapper("mapper");
@@ -102,7 +102,7 @@ public class MybatisPlusUtils {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
                     //TODO 4.com.jayud.业务模块名.mapper
-                    return path + "/src/main/resources/com.jayud.auth.mapper"
+                    return path + "/src/main/resources/com.jayud.crm.mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
 
                 }

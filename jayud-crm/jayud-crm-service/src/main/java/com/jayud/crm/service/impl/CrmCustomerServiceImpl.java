@@ -26,7 +26,7 @@ import java.util.Map;
  * 基本档案_客户_基本信息(crm_customer) 服务实现类
  *
  * @author jayud
- * @since 2022-02-28
+ * @since 2022-03-01
  */
 @Slf4j
 @Service
@@ -64,6 +64,12 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(Long id){
         crmCustomerMapper.logicDel(id,CurrentUserUtil.getUsername());
+    }
+
+
+    @Override
+    public List<LinkedHashMap<String, Object>> queryCrmCustomerForExcel(Map<String, Object> paramMap) {
+        return this.baseMapper.queryCrmCustomerForExcel(paramMap);
     }
 
 }

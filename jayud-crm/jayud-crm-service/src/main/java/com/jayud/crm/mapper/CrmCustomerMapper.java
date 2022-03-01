@@ -17,7 +17,7 @@ import java.util.Map;
  * 基本档案_客户_基本信息(crm_customer) Mapper 接口
  *
  * @author jayud
- * @since 2022-02-28
+ * @since 2022-03-01
  */
 @Mapper
 public interface CrmCustomerMapper extends BaseMapper<CrmCustomer> {
@@ -25,7 +25,7 @@ public interface CrmCustomerMapper extends BaseMapper<CrmCustomer> {
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-02-28
+     * @date   2022-03-01
      * @param: page
      * @param: crmCustomer
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomer>
@@ -35,7 +35,7 @@ public interface CrmCustomerMapper extends BaseMapper<CrmCustomer> {
     /**
      * @description 列表查询数据
      * @author  jayud
-     * @date   2022-02-28
+     * @date   2022-03-01
      * @param: crmCustomer
      * @return: java.util.List<com.jayud.crm.model.po.CrmCustomer>
      **/
@@ -45,7 +45,7 @@ public interface CrmCustomerMapper extends BaseMapper<CrmCustomer> {
     /**
      * @description 根据id物理删除
      * @author  jayud
-     * @date   2022-02-28
+     * @date   2022-03-01
      * @param: id
      * @return: int
      **/
@@ -54,10 +54,20 @@ public interface CrmCustomerMapper extends BaseMapper<CrmCustomer> {
     /**
      * @description 根据id逻辑删除
      * @author  jayud
-     * @date   2022-02-28
+     * @date   2022-03-01
      * @param: id
      * @param: username
      * @return: int
      **/
     int logicDel(@Param("id") Long id,@Param("username") String username);
+
+
+    /**
+     * @description 查询导出
+     * @author  jayud
+     * @date   2022-03-01
+     * @param: paramMap
+     * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
+     **/
+    List<LinkedHashMap<String, Object>> queryCrmCustomerForExcel(Map<String, Object> paramMap);
 }

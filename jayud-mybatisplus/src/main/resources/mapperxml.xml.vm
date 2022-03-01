@@ -83,5 +83,32 @@
         WHERE id = ${id} AND is_deleted = 0
     </update>
 
+    <select id="query${entity}ForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+        #foreach($field in ${table.fields})
+            ${field.name} '${field.propertyName}'#if($foreach.hasNext),#end
+        #end
+        FROM ${table.name}
+        WHERE is_deleted = 0
+        #foreach($field in ${table.fields})
+            #if(!${field.keyFlag}
+            && ${field.propertyName} != "createBy"
+            && ${field.propertyName} != "createTime"
+            && ${field.propertyName} != "updateBy"
+            && ${field.propertyName} != "updateTime"
+            && ${field.propertyName} != "isDeleted")
+                #if(${field.propertyType} == "String")
+                    <if test="${field.propertyName} != null and ${field.propertyName} != ''">
+                        AND ${field.name} LIKE CONCAT('%',#{${field.propertyName}}, '%')
+                    </if>
+                #else
+                    <if test="${field.propertyName} != null ">
+                        AND ${field.name} = #{${field.propertyName}}
+                    </if>
+                #end
+            #end
+        #end
+
+    </select>
 
 </mapper>

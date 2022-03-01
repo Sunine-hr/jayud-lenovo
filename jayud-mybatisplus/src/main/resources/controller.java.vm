@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import ${superControllerClassPackage};
     #end
 
+
+import com.jayud.common.utils.ExcelUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.BaseResult;
@@ -168,6 +170,33 @@ public class ${table.controllerName} {
     public BaseResult<${entity}> queryById(@RequestParam(name="id",required=true) int id) {
         ${entity} ${table.entityPath} = ${table.entityPath}Service.getById(id);
         return BaseResult.ok(${table.entityPath});
+    }
+
+
+    /**
+    * @description 根据查询条件导出收货单
+    * @author  jayud
+    * @date   ${date}
+    * @param: response  响应对象
+    * @param: queryReceiptForm  参数queryReceiptForm
+    * @param: req
+    * @return: void
+    **/
+    @ApiOperation("根据查询条件导出${table.comment}")
+    @PostMapping(path = "/export${entity}")
+    public void export${entity}(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
+        try {
+            List<String> headList = Arrays.asList(
+            #foreach($field in ${table.fields})
+                "${field.comment}"#if($foreach.hasNext),#end
+            #end
+            );
+            List<LinkedHashMap<String, Object>> dataList = ${table.entityPath}Service.query${entity}ForExcel(paramMap);
+            ExcelUtils.exportExcel(headList, dataList, "${table.comment}", response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.warn(e.toString());
+        }
     }
 
 

@@ -60,4 +60,14 @@ public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {
      * @return: int
      **/
     int logicDel(@Param("id") Long id,@Param("username") String username);
+
+
+    /**
+     * @description 查询导出
+     * @author  jayud
+     * @date   ${date}
+     * @param: paramMap
+     * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
+     **/
+    List<LinkedHashMap<String, Object>> query${entity}ForExcel(Map<String, Object> paramMap);
 }

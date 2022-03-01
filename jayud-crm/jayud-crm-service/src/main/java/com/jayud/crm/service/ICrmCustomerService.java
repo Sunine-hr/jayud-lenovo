@@ -15,7 +15,7 @@ import java.util.Map;
  * 基本档案_客户_基本信息(crm_customer) 服务类
  *
  * @author jayud
- * @since 2022-02-28
+ * @since 2022-03-01
  */
 public interface ICrmCustomerService extends IService<CrmCustomer> {
 
@@ -23,7 +23,7 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-02-28
+     * @date   2022-03-01
      * @param: crmCustomer
      * @param: currentPage
      * @param: pageSize
@@ -38,7 +38,7 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
     /**
      * @description 列表查询数据
      * @author  jayud
-     * @date   2022-02-28
+     * @date   2022-03-01
      * @param: crmCustomer
      * @param: req
      * @return: java.util.List<com.jayud.crm.model.po.CrmCustomer>
@@ -50,7 +50,7 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
     /**
      * @description 物理删除
      * @author  jayud
-     * @date   2022-02-28
+     * @date   2022-03-01
      * @param: id
      * @return: void
      **/
@@ -60,13 +60,23 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
     /**
     * @description 逻辑删除
     * @author  jayud
-    * @date   2022-02-28
+    * @date   2022-03-01
     * @param: id
     * @return: com.jyd.component.commons.result.Result
     **/
     void logicDel(Long id);
 
 
+
+    /**
+     * @description 查询导出
+     * @author  jayud
+     * @date   2022-03-01
+     * @param: queryReceiptForm
+     * @param: req
+     * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
+     **/
+    List<LinkedHashMap<String, Object>> queryCrmCustomerForExcel(Map<String, Object> paramMap);
 
 
 }

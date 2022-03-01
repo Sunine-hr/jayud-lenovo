@@ -20,7 +20,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
  * CrmCustomer 实体类
  *
  * @author jayud
- * @since 2022-02-28
+ * @since 2022-03-01
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -29,7 +29,7 @@ public class CrmCustomer extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "(母公司ID)")
-    private Integer parentId;
+    private Long parentId;
 
     @ApiModelProperty(value = "公司名称")
     private String custName;
@@ -40,8 +40,14 @@ public class CrmCustomer extends SysBaseEntity {
     @ApiModelProperty(value = "企业跟进状态(潜在，意向，合作，暂不合作）")
     private Boolean custState;
 
+    @ApiModelProperty(value = "是否普通用户")
+    private Boolean isCust;
+
     @ApiModelProperty(value = "是否公海客户")
     private Boolean isPublic;
+
+    @ApiModelProperty(value = "是否供应商")
+    private Boolean isSupplier;
 
     @ApiModelProperty(value = "简称")
     private String custNameAbbr;
@@ -172,6 +178,42 @@ public class CrmCustomer extends SysBaseEntity {
 
     @ApiModelProperty(value = "曾用名")
     private String oldCustName;
+
+    @ApiModelProperty(value = "公司编码")
+    private String custCode;
+
+    @ApiModelProperty(value = "供应商编码")
+    private String supplierCode;
+
+    @ApiModelProperty(value = "业务类型")
+    private String businessTypes;
+
+    @ApiModelProperty(value = "服务类型")
+    private Integer serviceType;
+
+    @ApiModelProperty(value = "帐期")
+    private Integer accountingPeriod;
+
+    @ApiModelProperty(value = "对账方式")
+    private Integer reconciliationMethod;
+
+    @ApiModelProperty(value = "结算方式")
+    private Integer settlementMethod;
+
+    @ApiModelProperty(value = "所属行业")
+    private Integer industry;
+
+    @ApiModelProperty(value = "网址地址")
+    private String websiteUrl;
+
+    @ApiModelProperty(value = "企业信用")
+    private Integer custEnterpriseCredit;
+
+    @ApiModelProperty(value = "进口信用")
+    private Integer custImportCredit;
+
+    @ApiModelProperty(value = "海关信用")
+    private Integer custCustomsCredit;
 
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;

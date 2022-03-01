@@ -66,4 +66,10 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
         ${table.entityPath}Mapper.logicDel(id,CurrentUserUtil.getUsername());
     }
 
+
+    @Override
+    public List<LinkedHashMap<String, Object>> query${entity}ForExcel(Map<String, Object> paramMap) {
+        return this.baseMapper.query${entity}ForExcel(paramMap);
+    }
+
 }

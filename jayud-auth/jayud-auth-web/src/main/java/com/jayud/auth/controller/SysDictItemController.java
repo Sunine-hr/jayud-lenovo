@@ -192,5 +192,13 @@ public class SysDictItemController {
         return BaseResult.ok(sysDictItemService.selectItemByDictCode(dictCode));
     }
 
+    @ApiOperation("根据字典编码查询子项")
+    @PostMapping(value = "/api/selectItemByDictCode")
+    public BaseResult selectItemByDictCodeFeign(@RequestParam String dictCode,
+                                                              HttpServletRequest req) {
+        List<SysDictItem> sysDictItems = sysDictItemService.selectItemByDictCode(dictCode);
+        System.out.println("字典表："+sysDictItems);
+        return BaseResult.ok(sysDictItems);
+    }
 
 }

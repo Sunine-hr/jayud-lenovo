@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 @SpringBootApplication(scanBasePackages = "com.jayud")
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients(basePackages = "com.jayud")
 @MapperScan(basePackages = {"com.jayud.**.mapper"})
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)

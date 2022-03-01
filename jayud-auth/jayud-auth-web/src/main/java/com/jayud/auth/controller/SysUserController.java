@@ -75,6 +75,15 @@ public class SysUserController {
         return BaseResult.ok(sysUserService.selectList(sysUser));
     }
 
+    @ApiOperation("列表查询数据")
+    @PostMapping("/api/selectList")
+    public BaseResult selectListFeign() {
+        SysUser sysUser = new SysUser();
+
+        List<SysUserVO> sysUserVOS = sysUserService.selectList(sysUser);
+        System.out.println("远程调用查询到的数据："+sysUserVOS);
+        return BaseResult.ok(sysUserVOS);
+    }
     /**
      * @description 根据ids查询数据  没用到
      **/

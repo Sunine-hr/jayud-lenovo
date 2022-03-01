@@ -43,6 +43,7 @@
         join sys_role sr on srm.role_id = sr.id and sr.is_deleted = 0
         where 1=1
         and sm.is_deleted = 0
+        and sm.is_button = 0
         <if test="roleIds!=null and roleIds.size()>0">
             and sr.id in
             <foreach item="item" index="index" collection="roleIds" open="(" separator="," close=")">

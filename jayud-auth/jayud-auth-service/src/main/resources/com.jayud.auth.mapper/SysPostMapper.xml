@@ -32,11 +32,11 @@
         <where>
             is_deleted = 0
             <if test="sysPost.postCode != null and sysPost.postCode != ''">
-                AND post_code = #{sysPost.postCode}
+                AND post_code  LIKE CONCAT('%',#{sysPost.postCode}, '%')
             </if>
 
             <if test="sysPost.postName != null and sysPost.postName != ''">
-                AND post_name = #{sysPost.postName}
+                AND post_name LIKE CONCAT('%',#{sysPost.postName}, '%')
             </if>
 
             <if test="sysPost.postSequence != null ">
@@ -78,11 +78,11 @@
         <where>
             is_deleted = 0
             <if test="sysPost.postCode != null and sysPost.postCode != ''">
-                AND post_code = #{sysPost.postCode}
+                AND post_code  LIKE CONCAT('%',#{sysPost.postCode}, '%')
             </if>
 
             <if test="sysPost.postName != null and sysPost.postName != ''">
-                AND post_name = #{sysPost.postName}
+                AND post_name LIKE CONCAT('%',#{sysPost.postName}, '%')
             </if>
 
             <if test="sysPost.postSequence != null ">

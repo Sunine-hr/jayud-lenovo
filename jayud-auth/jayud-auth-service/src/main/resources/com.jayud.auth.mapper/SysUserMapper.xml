@@ -50,7 +50,7 @@
         <where>
             is_deleted = 0
             <if test="sysUser.name != null and sysUser.name != ''">
-                AND name = #{sysUser.name}
+                AND name LIKE CONCAT('%',#{sysUser.name}, '%')
             </if>
 
             <if test="sysUser.password != null and sysUser.password != ''">
@@ -177,7 +177,7 @@
         <where>
             is_deleted = 0
             <if test="sysUser.name != null and sysUser.name != ''">
-                AND name = #{sysUser.name}
+                AND name LIKE CONCAT('%',#{sysUser.name}, '%')
             </if>
             <if test="sysUser.tenantCode != null and sysUser.tenantCode != ''">
                 AND tenant_code = #{sysUser.tenantCode}
@@ -250,7 +250,7 @@
         <where>
             is_deleted = 0
             <if test="sysUser.name != null and sysUser.name != ''">
-                AND name = #{sysUser.name}
+                AND name LIKE CONCAT('%',#{sysUser.name}, '%')
             </if>
             <if test="sysUser.tenantCode != null and sysUser.tenantCode != ''">
                 AND tenant_code = #{sysUser.tenantCode}

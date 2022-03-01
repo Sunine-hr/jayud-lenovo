@@ -33,7 +33,7 @@ public class AuthExceptionEntryPoint implements AuthenticationEntryPoint {
             map.put("msg", "访问此资源需要完全的身份验证");
         }
         response.setContentType("application/json");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(HttpServletResponse.SC_OK);
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(response.getOutputStream(), baseResult);

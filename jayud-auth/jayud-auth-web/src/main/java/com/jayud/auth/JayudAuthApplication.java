@@ -18,7 +18,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @SpringBootApplication(scanBasePackages = "com.jayud")
 @EnableResourceServer
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients(basePackages = "com.jayud")
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class JayudAuthApplication {

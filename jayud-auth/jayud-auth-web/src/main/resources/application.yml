@@ -1,6 +1,7 @@
 feign:
   httpclient:
     connection-timeout: 5000
+    enabled: true
 hystrix:
   command:
     default:

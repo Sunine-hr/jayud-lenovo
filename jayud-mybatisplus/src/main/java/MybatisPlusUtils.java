@@ -21,15 +21,12 @@ public class MybatisPlusUtils {
     public static void main(String[] args) {
         //TODO 1.jayud-业务模块名/jayud-业务模块名-model
         String[] models = {
-//                "jayud-freight-air\\jayud-freight-air-model",
-//                "jayud-freight-air\\jayud-freight-air-service",
-//                "jayud-freight-air\\jayud-freight-air-web"
-                "jayud-crm/jayud-crm-model",
-                "jayud-crm/jayud-crm-service",
-                "jayud-crm/jayud-crm-web"
+                "jayud-auth/jayud-auth-model",
+                "jayud-auth/jayud-auth-service",
+                "jayud-auth/jayud-auth-web"
         };
         for (String model : models) {
-            shell(model,"crm_customer");
+            shell(model,"b_no_rule");
 
         }
     }
@@ -77,7 +74,7 @@ public class MybatisPlusUtils {
         String pack = "";
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.jayud.crm");//TODO 3.com.jayud.业务模块名
+        pc.setParent("com.jayud.auth");//TODO 3.com.jayud.业务模块名
         pc.setEntity("model.po");
         pc.setController("controller");
         pc.setMapper("mapper");
@@ -102,7 +99,7 @@ public class MybatisPlusUtils {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
                     //TODO 4.com.jayud.业务模块名.mapper
-                    return path + "/src/main/resources/com.jayud.crm.mapper"
+                    return path + "/src/main/resources/com.jayud.auth.mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
 
                 }

@@ -240,7 +240,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         return BaseResult.ok();
     }
-
+    @Override
+    public SysUserVO getSystemUserByName(String token) {
+        return sysUserMapper.getSystemUserByName(token);
+    }
 
     public static void main(String[] args) {
 

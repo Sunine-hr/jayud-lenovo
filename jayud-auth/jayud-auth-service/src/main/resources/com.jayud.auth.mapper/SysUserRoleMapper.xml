@@ -65,5 +65,13 @@
         and user_id = #{sysUserRole.userId}
     </update>
 
+    <update id="getCountByUserNameAndRoleName" >
+        select count(*) from sys_user_role s
+        left join sys_role sr on su.id = s.role_id and sr.is_deleted = 0
+        left join sys_user su on s.user_id = sr.id and sr.is_deleted = 0
+        where is_deleted = 0
+        and su.name = #{username} and sr.role_name = #{admin} and su.tenant_code = #{tenantCode}
+    </update>
+
 
 </mapper>

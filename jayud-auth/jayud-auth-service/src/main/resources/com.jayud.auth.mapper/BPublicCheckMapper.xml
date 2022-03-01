@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.BPublicCheckMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.BPublicCheck">
+        <id column="id" property="id" />
+        <result column="table_name" property="tableName" />
+        <result column="check_flag" property="checkFlag" />
+        <result column="record_id" property="recordId" />
+        <result column="f_level" property="fLevel" />
+        <result column="f_step" property="fStep" />
+        <result column="remark" property="remark" />
+        <result column="f_check_id" property="fCheckId" />
+        <result column="f_check_name" property="fCheckName" />
+        <result column="crt_by" property="crtBy" />
+        <result column="crt_by_name" property="crtByName" />
+        <result column="crt_by_dtm" property="crtByDtm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, table_name, check_flag, record_id, f_level, f_step, remark, f_check_id, f_check_name, crt_by, crt_by_name, crt_by_dtm
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">b_public_check </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="bPublicCheck.tableName != null and bPublicCheck.tableName != ''">
+                AND table_name = #{bPublicCheck.tableName}
+            </if>
+
+            <if test="bPublicCheck.checkFlag != null ">
+                AND check_flag = ${bPublicCheck.checkFlag}
+            </if>
+
+            <if test="bPublicCheck.recordId != null ">
+                AND record_id = ${bPublicCheck.recordId}
+            </if>
+
+            <if test="bPublicCheck.fLevel != null ">
+                AND f_level = ${bPublicCheck.fLevel}
+            </if>
+
+            <if test="bPublicCheck.fStep != null ">
+                AND f_step = ${bPublicCheck.fStep}
+            </if>
+
+            <if test="bPublicCheck.remark != null and bPublicCheck.remark != ''">
+                AND remark = #{bPublicCheck.remark}
+            </if>
+
+            <if test="bPublicCheck.fCheckId != null ">
+                AND f_check_id = ${bPublicCheck.fCheckId}
+            </if>
+
+            <if test="bPublicCheck.fCheckName != null and bPublicCheck.fCheckName != ''">
+                AND f_check_name = #{bPublicCheck.fCheckName}
+            </if>
+
+            <if test="bPublicCheck.crtBy != null ">
+                AND crt_by = ${bPublicCheck.crtBy}
+            </if>
+
+            <if test="bPublicCheck.crtByName != null and bPublicCheck.crtByName != ''">
+                AND crt_by_name = #{bPublicCheck.crtByName}
+            </if>
+
+            <if test="bPublicCheck.crtByDtm != null ">
+                AND crt_by_dtm = ${bPublicCheck.crtByDtm}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.BPublicCheck">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.BPublicCheck">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  b_public_check WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE b_public_check SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="getData" resultType="map" >
+        select * from #{checkTable} where id = #{recordId}
+    </select>
+
+    <select id="getCheckData" resultType="map" >
+        select * from #{checkDatabase}.#{checkTable} where id = #{recordId}
+    </select>
+
+</mapper>

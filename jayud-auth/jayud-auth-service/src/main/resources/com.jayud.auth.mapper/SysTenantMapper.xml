@@ -37,23 +37,23 @@
         <where>
             is_deleted = 0
             <if test="sysTenant.tenantCode != null and sysTenant.tenantCode != ''">
-                AND tenant_code = #{sysTenant.tenantCode}
+                AND tenant_code  LIKE CONCAT('%',#{sysTenant.tenantCode},'%')
             </if>
 
             <if test="sysTenant.tenantName != null and sysTenant.tenantName != ''">
-                AND tenant_name = #{sysTenant.tenantName}
+                AND tenant_name  LIKE CONCAT('%',#{sysTenant.tenantName},'%')
             </if>
 
             <if test="sysTenant.tenantContact != null and sysTenant.tenantContact != ''">
-                AND tenant_contact = #{sysTenant.tenantContact}
+                AND tenant_contact  LIKE CONCAT('%',#{sysTenant.tenantContact},'%')
             </if>
 
             <if test="sysTenant.tenantEmail != null and sysTenant.tenantEmail != ''">
-                AND tenant_email = #{sysTenant.tenantEmail}
+                AND tenant_email  LIKE CONCAT('%',#{sysTenant.tenantEmail},'%')
             </if>
 
             <if test="sysTenant.tenantTel != null and sysTenant.tenantTel != ''">
-                AND tenant_tel = #{sysTenant.tenantTel}
+                AND tenant_tel  LIKE CONCAT('%',#{sysTenant.tenantTel},'%')
             </if>
 
             <if test="sysTenant.beginDate != null ">
@@ -69,15 +69,15 @@
             </if>
 
             <if test="sysTenant.systemName != null and sysTenant.systemName != ''">
-                AND system_name = #{sysTenant.systemName}
+                AND system_name  LIKE CONCAT('%',#{sysTenant.systemName},'%')
             </if>
 
             <if test="sysTenant.logUrl != null and sysTenant.logUrl != ''">
-                AND log_url = #{sysTenant.logUrl}
+                AND log_url  LIKE CONCAT('%',#{sysTenant.logUrl},'%')
             </if>
 
             <if test="sysTenant.remark != null and sysTenant.remark != ''">
-                AND remark = #{sysTenant.remark}
+                AND remark  LIKE CONCAT('%',#{sysTenant.remark},'%')
             </if>
 
         </where>

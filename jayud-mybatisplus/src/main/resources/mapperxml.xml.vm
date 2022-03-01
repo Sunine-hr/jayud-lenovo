@@ -50,7 +50,7 @@
                     && ${field.propertyName} != "isDeleted")
                     #if(${field.propertyType} == "String")
             <if test="${table.entityPath}.${field.propertyName} != null and ${table.entityPath}.${field.propertyName} != ''">
-                AND ${field.name} = #{${table.entityPath}.${field.propertyName}}
+                AND ${field.name} LIKE CONCAT('%',#{${table.entityPath}.${field.propertyName}},'%')
             </if>
                     #else
             <if test="${table.entityPath}.${field.propertyName} != null ">

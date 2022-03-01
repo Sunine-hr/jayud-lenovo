@@ -54,10 +54,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                                        HttpServletRequest req) {
 
         Page<SysUserForm> page = new Page<SysUserForm>(currentPage, pageSize);
+
+        //权限查询输入条件 查询
+        String tenantCode = findTenantCode();
+        sysUserForm.setTenantCode(tenantCode);
         IPage<SysUserVO> pageList = sysUserMapper.pageList(page, sysUserForm);
         return pageList;
     }
 
+    //根据查询当前用户账号查询信息
+    public String findTenantCode(){
+
+        String username = CurrentUserUtil.getUsername();
+        SysUserForm sysUserForm = new SysUserForm();
+        sysUserForm.setName(username);
+        SysUserVO sysUserNameOne = sysUserMapper.findSysUserNameOne(sysUserForm);
+        return  sysUserNameOne.getTenantCode();
+    }
     @Override
     public List<SysUserVO> selectList(SysUser sysUser) {
         return sysUserMapper.list(sysUser);
@@ -99,7 +112,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 //用户id
                 sysUserRole.setUserId(id);
                 //角色id
-                sysUserRole.setRoleId(sysUserForm.getRoleIds().get(0));
+                sysUserRole.setRoleId(sysUserForm.getRoleIds().get(i));
                 //创建人
                 sysUserRole.setCreateBy(CurrentUserUtil.getUsername());
                 sysUserRole.setCreateTime(new Date());
@@ -131,7 +144,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 //用户id
                 sysUserRole.setUserId(id);
                 //角色id
-                sysUserRole.setRoleId(sysUserForm.getRoleIds().get(0));
+                sysUserRole.setRoleId(sysUserForm.getRoleIds().get(i));
                 //创建人
                 sysUserRole.setCreateBy(CurrentUserUtil.getUsername());
                 sysUserRole.setCreateTime(new Date());

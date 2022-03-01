@@ -102,7 +102,7 @@
             </if>
 
         </where>
-        ORDER BY create_time DESC
+        ORDER BY post_sequence asc
     </select>
 
     <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysPost">

@@ -3,6 +3,8 @@ package com.jayud.auth.controller;
 import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.bo.SysUserForm;
 import com.jayud.auth.model.vo.SysUserVO;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.utils.CurrentUserUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.parameters.P;
@@ -56,6 +58,12 @@ public class SysUserController {
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
     public BaseResult<IPage<SysUserVO>> selectPage(@RequestBody SysUserForm sysUserForm, HttpServletRequest req) {
+
+        if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
+            sysUserForm.setTenantCode(null);
+        } else {
+            sysUserForm.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        }
         return BaseResult.ok(sysUserService.selectPage(sysUserForm, sysUserForm.getCurrentPage(), sysUserForm.getPageSize(), req));
     }
 

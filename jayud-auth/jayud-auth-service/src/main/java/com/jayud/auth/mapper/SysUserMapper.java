@@ -69,4 +69,11 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 
     //编辑 根据id查询信息
     SysUserVO findSysUserIdOne(@Param("sysUser") SysUserForm sysUser);
+
+    /**
+     * 根据名称获取用户信息
+     * @param token
+     * @return
+     */
+    SysUserVO getSystemUserByName(@Param("token") String token);
 }

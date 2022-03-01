@@ -120,4 +120,12 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
      * @return
      */
     List<Long> getUserIdsByRoleId(Long roleId);
+
+    /**
+     * 判断用户有没有管理员权限
+     * @param username
+     * @param admin
+     * @return
+     */
+    int getCountByUserNameAndRoleName(String username, String admin,String tenantCode);
 }

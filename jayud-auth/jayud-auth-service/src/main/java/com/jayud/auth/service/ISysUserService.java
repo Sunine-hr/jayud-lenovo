@@ -107,4 +107,10 @@ public interface ISysUserService extends IService<SysUser> {
 
     BaseResult findUpdateUserPassword(SysUserForm sysUserForm);
 
+    /**
+     * 根据用户名查找用户
+     * @param token
+     * @return
+     */
+    SysUserVO getSystemUserByName(String token);
 }

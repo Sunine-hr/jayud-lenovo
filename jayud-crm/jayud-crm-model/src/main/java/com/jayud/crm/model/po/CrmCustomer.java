@@ -2,6 +2,7 @@ package com.jayud.crm.model.po;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
 
@@ -83,6 +85,8 @@ public class CrmCustomer extends SysBaseEntity {
     @ApiModelProperty(value = "区域(华南，华北，西南等)")
     private String area;
 
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @ApiModelProperty(value = "注册时间")
@@ -145,11 +149,14 @@ public class CrmCustomer extends SysBaseEntity {
     @ApiModelProperty(value = "目前合作方")
     private String supplyChain;
 
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @ApiModelProperty(value = "第一单日期")
     private LocalDateTime firstOrderDate;
 
+    //--
     @ApiModelProperty(value = "业务ID")
     private Integer fsalesId;
 
@@ -171,11 +178,11 @@ public class CrmCustomer extends SysBaseEntity {
     @ApiModelProperty(value = "是否同步")
     private Boolean isSync;
 
-    @ApiModelProperty(value = "审核级别")
-    private Integer fLevel;
-
-    @ApiModelProperty(value = "当前级别")
-    private Integer fStep;
+//    @ApiModelProperty(value = "审核级别")
+//    private Integer fLevel;
+//
+//    @ApiModelProperty(value = "当前级别")
+//    private Integer fStep;
 
     @ApiModelProperty(value = "审核状态")
     private String checkStateFlag;

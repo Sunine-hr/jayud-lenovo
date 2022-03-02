@@ -57,6 +57,11 @@ public interface CrmDictCode {
      */
     String CUST_BANK_CURRENCY = "crm_cust_bank_currency";
 
+    /**
+     *  客户管理-业务类型
+     */
+    String CUST_BUSINESS_TYPE= "crm_cust_business_type";
+
 
 
 

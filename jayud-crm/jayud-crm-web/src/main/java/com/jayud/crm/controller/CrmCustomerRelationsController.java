@@ -8,8 +8,8 @@ import com.jayud.common.utils.ExcelUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.BaseResult;
-import com.jayud.crm.service.ICrmCustomerBankService;
-import com.jayud.crm.model.po.CrmCustomerBank;
+import com.jayud.crm.service.ICrmCustomerRelationsService;
+import com.jayud.crm.model.po.CrmCustomerRelations;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -27,40 +27,40 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 /**
- * 基本档案_客户_银行账户(crm_customer_bank) 控制类
+ * 基本档案_客户_联系人(crm_customer_relations) 控制类
  *
  * @author jayud
  * @since 2022-03-02
  */
 @Slf4j
-@Api(tags = "基本档案_客户_银行账户(crm_customer_bank)")
+@Api(tags = "基本档案_客户_联系人(crm_customer_relations)")
 @RestController
-@RequestMapping("/crmCustomerBank")
-public class CrmCustomerBankController {
+@RequestMapping("/crmCustomerRelations")
+public class CrmCustomerRelationsController {
 
 
 
     @Autowired
-    public ICrmCustomerBankService crmCustomerBankService;
+    public ICrmCustomerRelationsService crmCustomerRelationsService;
 
 
     /**
      * @description 分页查询
      * @author  jayud
      * @date   2022-03-02
-     * @param: crmCustomerBank
+     * @param: crmCustomerRelations
      * @param: currentPage
      * @param: pageSize
      * @param: req
-     * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomerBank>>
+     * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomerRelations>>
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<CrmCustomerBank>> selectPage(CrmCustomerBank crmCustomerBank,
+    public BaseResult<IPage<CrmCustomerRelations>> selectPage(CrmCustomerRelations crmCustomerRelations,
                                                    @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                    HttpServletRequest req) {
-        return BaseResult.ok(crmCustomerBankService.selectPage(crmCustomerBank,currentPage,pageSize,req));
+        return BaseResult.ok(crmCustomerRelationsService.selectPage(crmCustomerRelations,currentPage,pageSize,req));
     }
 
 
@@ -68,15 +68,15 @@ public class CrmCustomerBankController {
     * @description 列表查询数据
     * @author  jayud
     * @date   2022-03-02
-    * @param: crmCustomerBank
+    * @param: crmCustomerRelations
     * @param: req
-    * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.crm.model.po.CrmCustomerBank>>
+    * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.crm.model.po.CrmCustomerRelations>>
     **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
-    public BaseResult<List<CrmCustomerBank>> selectList(CrmCustomerBank crmCustomerBank,
+    public BaseResult<List<CrmCustomerRelations>> selectList(CrmCustomerRelations crmCustomerRelations,
                                                 HttpServletRequest req) {
-        return BaseResult.ok(crmCustomerBankService.selectList(crmCustomerBank));
+        return BaseResult.ok(crmCustomerRelationsService.selectList(crmCustomerRelations));
     }
 
 
@@ -84,13 +84,14 @@ public class CrmCustomerBankController {
     * @description 新增
     * @author  jayud
     * @date   2022-03-02
-    * @param: crmCustomerBank
+    * @param: crmCustomerRelations
     * @return: com.jayud.common.BaseResult
     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody CrmCustomerBank crmCustomerBank ){
-        return crmCustomerBankService.saveBank(crmCustomerBank);
+    public BaseResult add(@Valid @RequestBody CrmCustomerRelations crmCustomerRelations ){
+        crmCustomerRelationsService.save(crmCustomerRelations);
+        return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
 
 
@@ -98,13 +99,14 @@ public class CrmCustomerBankController {
      * @description 编辑
      * @author  jayud
      * @date   2022-03-02
-     * @param: crmCustomerBank
+     * @param: crmCustomerRelations
      * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("编辑")
     @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody CrmCustomerBank crmCustomerBank ){
-        return crmCustomerBankService.saveBank(crmCustomerBank);
+    public BaseResult edit(@Valid @RequestBody CrmCustomerRelations crmCustomerRelations ){
+        crmCustomerRelationsService.updateById(crmCustomerRelations);
+        return BaseResult.ok(SysTips.EDIT_SUCCESS);
     }
 
 
@@ -120,7 +122,7 @@ public class CrmCustomerBankController {
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
     @GetMapping("/phyDel")
     public BaseResult phyDel(@RequestParam Long id){
-        crmCustomerBankService.phyDelById(id);
+        crmCustomerRelationsService.phyDelById(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 
@@ -135,15 +137,7 @@ public class CrmCustomerBankController {
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam Long id){
-        crmCustomerBankService.logicDel(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
-
-    @ApiOperation("逻辑删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/logicDelByIds")
-    public BaseResult logicDelByIds(@RequestParam Long[] ids){
-        crmCustomerBankService.logicDelByIds(ids);
+        crmCustomerRelationsService.logicDel(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 
@@ -153,14 +147,14 @@ public class CrmCustomerBankController {
      * @author  jayud
      * @date   2022-03-02
      * @param: id
-     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.po.CrmCustomerBank>
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.po.CrmCustomerRelations>
      **/
     @ApiOperation("根据id查询")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<CrmCustomerBank> queryById(@RequestParam(name="id",required=true) int id) {
-        CrmCustomerBank crmCustomerBank = crmCustomerBankService.getById(id);
-        return BaseResult.ok(crmCustomerBank);
+    public BaseResult<CrmCustomerRelations> queryById(@RequestParam(name="id",required=true) int id) {
+        CrmCustomerRelations crmCustomerRelations = crmCustomerRelationsService.getById(id);
+        return BaseResult.ok(crmCustomerRelations);
     }
 
 
@@ -173,22 +167,25 @@ public class CrmCustomerBankController {
     * @param: req
     * @return: void
     **/
-    @ApiOperation("根据查询条件导出基本档案_客户_银行账户(crm_customer_bank)")
-    @PostMapping(path = "/exportCrmCustomerBank")
-    public void exportCrmCustomerBank(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
+    @ApiOperation("根据查询条件导出基本档案_客户_联系人(crm_customer_relations)")
+    @PostMapping(path = "/exportCrmCustomerRelations")
+    public void exportCrmCustomerRelations(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
         try {
             List<String> headList = Arrays.asList(
                 "自动ID",
                 "客户ID",
-                "银行名称",
-                "银行地址",
-                "银行代码",
-                "账户名称",
-                "银行账号",
-                "开户行",
-                "账户币别",
-                "国际联行号",
-                "是否默认账户",
+                "联系人类型",
+                "是否默认联系人",
+                "姓名",
+                "证件类型",
+                "证件号码",
+                "电话",
+                "手机",
+                "邮箱",
+                "地址",
+                "生日",
+                "岗位名称",
+                "持股比例",
                 "租户编码",
                 "备注",
                 "是否删除，0未删除，1已删除",
@@ -197,8 +194,8 @@ public class CrmCustomerBankController {
                 "更新人",
                 "更新时间"
             );
-            List<LinkedHashMap<String, Object>> dataList = crmCustomerBankService.queryCrmCustomerBankForExcel(paramMap);
-            ExcelUtils.exportExcel(headList, dataList, "基本档案_客户_银行账户(crm_customer_bank)", response);
+            List<LinkedHashMap<String, Object>> dataList = crmCustomerRelationsService.queryCrmCustomerRelationsForExcel(paramMap);
+            ExcelUtils.exportExcel(headList, dataList, "基本档案_客户_联系人(crm_customer_relations)", response);
         } catch (Exception e) {
             e.printStackTrace();
             log.warn(e.toString());

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.crm.mapper.CrmCustomerRelationsMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCustomerRelations">
+        <id column="id" property="id" />
+        <result column="cust_id" property="custId" />
+        <result column="relation_type" property="relationType" />
+        <result column="is_default" property="isDefault" />
+        <result column="c_name" property="cName" />
+        <result column="id_type" property="idType" />
+        <result column="id_card" property="idCard" />
+        <result column="tel" property="tel" />
+        <result column="mobile" property="mobile" />
+        <result column="email" property="email" />
+        <result column="address" property="address" />
+        <result column="birthday" property="birthday" />
+        <result column="post_name" property="postName" />
+        <result column="shareholding_ratio" property="shareholdingRatio" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, cust_id, relation_type, is_default, c_name, id_type, id_card, tel, mobile, email, address, birthday, post_name, shareholding_ratio, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">crm_customer_relations </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="crmCustomerRelations.custId != null ">
+                AND cust_id = ${crmCustomerRelations.custId}
+            </if>
+
+            <if test="crmCustomerRelations.relationType != null ">
+                AND relation_type = ${crmCustomerRelations.relationType}
+            </if>
+
+            <if test="crmCustomerRelations.isDefault != null ">
+                AND is_default = ${crmCustomerRelations.isDefault}
+            </if>
+
+            <if test="crmCustomerRelations.cName != null and crmCustomerRelations.cName != ''">
+                AND c_name LIKE CONCAT('%',#{crmCustomerRelations.cName},'%')
+            </if>
+
+            <if test="crmCustomerRelations.idType != null and crmCustomerRelations.idType != ''">
+                AND id_type LIKE CONCAT('%',#{crmCustomerRelations.idType},'%')
+            </if>
+
+            <if test="crmCustomerRelations.idCard != null and crmCustomerRelations.idCard != ''">
+                AND id_card LIKE CONCAT('%',#{crmCustomerRelations.idCard},'%')
+            </if>
+
+            <if test="crmCustomerRelations.tel != null and crmCustomerRelations.tel != ''">
+                AND tel LIKE CONCAT('%',#{crmCustomerRelations.tel},'%')
+            </if>
+
+            <if test="crmCustomerRelations.mobile != null and crmCustomerRelations.mobile != ''">
+                AND mobile LIKE CONCAT('%',#{crmCustomerRelations.mobile},'%')
+            </if>
+
+            <if test="crmCustomerRelations.email != null and crmCustomerRelations.email != ''">
+                AND email LIKE CONCAT('%',#{crmCustomerRelations.email},'%')
+            </if>
+
+            <if test="crmCustomerRelations.address != null and crmCustomerRelations.address != ''">
+                AND address LIKE CONCAT('%',#{crmCustomerRelations.address},'%')
+            </if>
+
+            <if test="crmCustomerRelations.birthday != null ">
+                AND birthday = ${crmCustomerRelations.birthday}
+            </if>
+
+            <if test="crmCustomerRelations.postName != null and crmCustomerRelations.postName != ''">
+                AND post_name LIKE CONCAT('%',#{crmCustomerRelations.postName},'%')
+            </if>
+
+            <if test="crmCustomerRelations.shareholdingRatio != null ">
+                AND shareholding_ratio = ${crmCustomerRelations.shareholdingRatio}
+            </if>
+
+            <if test="crmCustomerRelations.tenantCode != null and crmCustomerRelations.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{crmCustomerRelations.tenantCode},'%')
+            </if>
+
+            <if test="crmCustomerRelations.remark != null and crmCustomerRelations.remark != ''">
+                AND remark LIKE CONCAT('%',#{crmCustomerRelations.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerRelations">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerRelations">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  crm_customer_relations WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE crm_customer_relations SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCrmCustomerRelationsForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            cust_id 'custId',
+            relation_type 'relationType',
+            is_default 'isDefault',
+            c_name 'cName',
+            id_type 'idType',
+            id_card 'idCard',
+            tel 'tel',
+            mobile 'mobile',
+            email 'email',
+            address 'address',
+            birthday 'birthday',
+            post_name 'postName',
+            shareholding_ratio 'shareholdingRatio',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM crm_customer_relations
+        WHERE is_deleted = 0
+                    <if test="custId != null ">
+                        AND cust_id = #{custId}
+                    </if>
+                    <if test="relationType != null ">
+                        AND relation_type = #{relationType}
+                    </if>
+                    <if test="isDefault != null ">
+                        AND is_default = #{isDefault}
+                    </if>
+                    <if test="cName != null and cName != ''">
+                        AND c_name LIKE CONCAT('%',#{cName}, '%')
+                    </if>
+                    <if test="idType != null and idType != ''">
+                        AND id_type LIKE CONCAT('%',#{idType}, '%')
+                    </if>
+                    <if test="idCard != null and idCard != ''">
+                        AND id_card LIKE CONCAT('%',#{idCard}, '%')
+                    </if>
+                    <if test="tel != null and tel != ''">
+                        AND tel LIKE CONCAT('%',#{tel}, '%')
+                    </if>
+                    <if test="mobile != null and mobile != ''">
+                        AND mobile LIKE CONCAT('%',#{mobile}, '%')
+                    </if>
+                    <if test="email != null and email != ''">
+                        AND email LIKE CONCAT('%',#{email}, '%')
+                    </if>
+                    <if test="address != null and address != ''">
+                        AND address LIKE CONCAT('%',#{address}, '%')
+                    </if>
+                    <if test="birthday != null ">
+                        AND birthday = #{birthday}
+                    </if>
+                    <if test="postName != null and postName != ''">
+                        AND post_name LIKE CONCAT('%',#{postName}, '%')
+                    </if>
+                    <if test="shareholdingRatio != null ">
+                        AND shareholding_ratio = #{shareholdingRatio}
+                    </if>
+                    <if test="tenantCode != null and tenantCode != ''">
+                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

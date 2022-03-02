@@ -9,6 +9,7 @@
         <result column="bank_name" property="bankName" />
         <result column="bank_address" property="bankAddress" />
         <result column="bank_num" property="bankNum" />
+        <result column="bank_deposit" property="bankDeposit" />
         <result column="acc_name" property="accName" />
         <result column="acc_number" property="accNumber" />
         <result column="currency_name" property="currencyName" />
@@ -51,7 +52,9 @@
             <if test="crmCustomerBank.bankNum != null and crmCustomerBank.bankNum != ''">
                 AND bank_num LIKE CONCAT('%',#{crmCustomerBank.bankNum},'%')
             </if>
-
+            <if test="crmCustomerBank.bankDeposit != null and crmCustomerBank.bankDeposit != ''">
+                AND bank_deposit LIKE CONCAT('%',#{crmCustomerBank.bankDeposit},'%')
+            </if>
             <if test="crmCustomerBank.accName != null and crmCustomerBank.accName != ''">
                 AND acc_name LIKE CONCAT('%',#{crmCustomerBank.accName},'%')
             </if>
@@ -117,6 +120,7 @@
             bank_name 'bankName',
             bank_address 'bankAddress',
             bank_num 'bankNum',
+            bank_deposit 'bankDeposit',
             acc_name 'accName',
             acc_number 'accNumber',
             currency_name 'currencyName',

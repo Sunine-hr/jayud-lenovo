@@ -105,9 +105,9 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             this.updateById(crmCustomerForm);
         }
         if (isAdd){
-            return BaseResult.ok(SysTips.ADD_SUCCESS);
+            return BaseResult.ok(crmCustomerForm.getId());
         }else {
-            return BaseResult.ok(SysTips.EDIT_SUCCESS);
+            return BaseResult.ok(crmCustomerForm.getId());
         }
     }
 
@@ -141,18 +141,21 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         //客户管理-服务类型
         BaseResult<List<SysDictItem>> custServerType = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_SERVER_TYPE);
         crmCodeFrom.setCustIndustry(custServerType.getResult());
-        //客户管理-对账方式
-        BaseResult<List<SysDictItem>> custReconciliationMethod = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_RECONCILIATION_METHOD);
-        crmCodeFrom.setCustIndustry(custReconciliationMethod.getResult());
-        //客户管理-结算方式
-        BaseResult<List<SysDictItem>> custSettlementMethod = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_SETTLEMENT_METHOD);
-        crmCodeFrom.setCustIndustry(custSettlementMethod.getResult());
-        //客户管理-客户状态
-        BaseResult<List<SysDictItem>> custNormalStatus= sysDictClient.selectItemByDictCode(CrmDictCode.CUST_NORMAL_STATUS);
-        crmCodeFrom.setCustIndustry(custNormalStatus.getResult());
+//        //客户管理-对账方式
+//        BaseResult<List<SysDictItem>> custReconciliationMethod = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_RECONCILIATION_METHOD);
+//        crmCodeFrom.setCustIndustry(custReconciliationMethod.getResult());
+//        //客户管理-结算方式
+//        BaseResult<List<SysDictItem>> custSettlementMethod = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_SETTLEMENT_METHOD);
+//        crmCodeFrom.setCustIndustry(custSettlementMethod.getResult());
+//        //客户管理-客户状态
+//        BaseResult<List<SysDictItem>> custNormalStatus= sysDictClient.selectItemByDictCode(CrmDictCode.CUST_NORMAL_STATUS);
+//        crmCodeFrom.setCustIndustry(custNormalStatus.getResult());
+//        //客户管理-银行币别
+//        BaseResult<List<SysDictItem>> custBankCurrency= sysDictClient.selectItemByDictCode(CrmDictCode.CUST_BANK_CURRENCY);
+//        crmCodeFrom.setCustBankCurrency(custBankCurrency.getResult());
         //客户管理-银行币别
-        BaseResult<List<SysDictItem>> custBankCurrency= sysDictClient.selectItemByDictCode(CrmDictCode.CUST_BANK_CURRENCY);
-        crmCodeFrom.setCustBankCurrency(custBankCurrency.getResult());
+        BaseResult<List<SysDictItem>> custBusinessType = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_BUSINESS_TYPE);
+        crmCodeFrom.setCustBusinessType(custBusinessType.getResult());
         return crmCodeFrom;
     }
 

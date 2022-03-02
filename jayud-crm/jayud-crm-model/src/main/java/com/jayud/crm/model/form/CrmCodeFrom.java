@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,20 +32,32 @@ public class CrmCodeFrom {
     @ApiModelProperty(value = "客户所属行业")
     private List<SysDictItem> custIndustry;
 
-    @ApiModelProperty(value = "客户管理-服务类型")
-    private List<SysDictItem> custServerType;
+//    @ApiModelProperty(value = "客户管理-服务类型")
+//    private List<SysDictItem> custServerType;
+//
+//    @ApiModelProperty(value = "客户管理-对账方式")
+//    private List<SysDictItem> custReconciliationMethod;
+//
+//    @ApiModelProperty(value = "客户管理-结算方式")
+//    private List<SysDictItem> custSettlementMethod;
+//
+//    @ApiModelProperty(value = "客户管理-客户状态")
+//    private List<SysDictItem> custNormalStatus;
+//
+//    @ApiModelProperty(value = "客户管理-银行币别")
+//    private List<SysDictItem> custBankCurrency;
 
-    @ApiModelProperty(value = "客户管理-对账方式")
-    private List<SysDictItem> custReconciliationMethod;
+    @ApiModelProperty(value = "客户管理-业务类型")
+    private List<SysDictItem> custBusinessType;
 
-    @ApiModelProperty(value = "客户管理-结算方式")
-    private List<SysDictItem> custSettlementMethod;
 
-    @ApiModelProperty(value = "客户管理-客户状态")
-    private List<SysDictItem> custNormalStatus;
-
-    @ApiModelProperty(value = "客户管理-银行币别")
-    private List<SysDictItem> custBankCurrency;
-
+    public void intit(){
+        this.custStatus = new ArrayList<>();
+        this.custStar = new ArrayList<>();
+        this.custAuditStatus = new ArrayList<>();
+        this.custSources = new ArrayList<>();
+        this.custIndustry = new ArrayList<>();
+        this.custBusinessType = new ArrayList<>();
+    }
 
 }

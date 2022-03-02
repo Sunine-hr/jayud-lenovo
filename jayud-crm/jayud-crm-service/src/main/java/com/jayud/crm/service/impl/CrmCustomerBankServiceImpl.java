@@ -115,6 +115,7 @@ public class CrmCustomerBankServiceImpl extends ServiceImpl<CrmCustomerBankMappe
         LambdaQueryWrapper<CrmCustomerBank> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(CrmCustomerBank::getIsDeleted,false);
         lambdaQueryWrapper.eq(CrmCustomerBank::getCustId,crmCustomerBank.getCustId());
+        lambdaQueryWrapper.eq(CrmCustomerBank::getIsDefault,true);
         CrmCustomerBank customerBanks = this.getOne(lambdaQueryWrapper);
         if (customerBanks != null) {
             boolean isChange = false;

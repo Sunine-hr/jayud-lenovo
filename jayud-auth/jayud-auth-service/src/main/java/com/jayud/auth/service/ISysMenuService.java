@@ -88,4 +88,17 @@ public interface ISysMenuService extends IService<SysMenu> {
      * @return
      */
     List<LinkedHashMap<String, Object>> exportSysMenu(SysMenu sysMenu);
+
+    /**
+     * 获取当前用户的菜单及其按钮
+     * @return
+     */
+    JSONObject getUserMenuBtnByToken();
+
+    /**
+     * 根据角色ids，获取菜单及其按钮
+     * @param roleIds
+     * @return
+     */
+    List<SysMenu> selectSysMenuBtnByRoleIds(List<Long> roleIds);
 }

@@ -63,7 +63,7 @@ public class CrmContractQuotation extends SysBaseEntity {
     private Long legalEntityId;
 
     @ApiModelProperty(value = "法人主体")
-    private Long legalEntity;
+    private String legalEntity;
 
     @ApiModelProperty(value = "销售员id")
     private Long userId;
@@ -85,7 +85,6 @@ public class CrmContractQuotation extends SysBaseEntity {
 
     @ApiModelProperty(value = "备注")
     private String remark;
-
 
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")
     @TableLogic

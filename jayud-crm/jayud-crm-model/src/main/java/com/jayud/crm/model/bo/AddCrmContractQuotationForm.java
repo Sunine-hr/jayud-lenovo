@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -61,7 +62,7 @@ public class AddCrmContractQuotationForm extends SysBaseEntity {
     private Long legalEntityId;
 
     @ApiModelProperty(value = "法人主体")
-    private Long legalEntity;
+    private String legalEntity;
 
     @ApiModelProperty(value = "销售员id")
     private Long userId;
@@ -70,13 +71,13 @@ public class AddCrmContractQuotationForm extends SysBaseEntity {
     private String user;
 
     @ApiModelProperty(value = "中港")
-    private List<AddCrmContractQuotationDetailsForm> tmsDetails;
+    private List<AddCrmContractQuotationDetailsForm> tmsDetails=new ArrayList<>();
 
     @ApiModelProperty(value = "报关")
-    private List<AddCrmContractQuotationDetailsForm> bgDetails;
+    private List<AddCrmContractQuotationDetailsForm> bgDetails=new ArrayList<>();
 
     @ApiModelProperty(value = "香港配送")//备注:前端要改成这个名字
-    private List<AddCrmContractQuotationDetailsForm> xgDetails;
+    private List<AddCrmContractQuotationDetailsForm> xgDetails=new ArrayList<>();
 
 
     @ApiModelProperty(value = "审核级别")

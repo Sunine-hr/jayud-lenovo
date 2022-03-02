@@ -16,7 +16,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @SpringBootApplication(scanBasePackages = "com.jayud")
 @EnableDiscoveryClient
 @EnableFeignClients
-@MapperScan("com.jayud.oms.mapper")
+//@MapperScan("com.jayud.oms.mapper")
+@MapperScan(basePackages = {"com.jayud.**.mapper"})
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class JayudOmsApplication {

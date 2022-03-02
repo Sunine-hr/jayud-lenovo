@@ -78,5 +78,13 @@ public interface ICrmFileService extends IService<CrmFile> {
      **/
     List<LinkedHashMap<String, Object>> queryCrmFileForExcel(Map<String, Object> paramMap);
 
+    /**
+     * 文件处理
+     * @param files
+     * @param id
+     * @param code
+     */
+    void doFileProcessing(List<CrmFile> files, Long businessId, String code);
 
+    List<CrmFile> getFiles(Long id, String code);
 }

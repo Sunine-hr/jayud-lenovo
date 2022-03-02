@@ -3,11 +3,13 @@ package com.jayud.crm.mapper;
 import com.jayud.crm.model.po.CrmContractQuotation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import com.jayud.crm.model.vo.CrmContractQuotationVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,7 +32,7 @@ public interface CrmContractQuotationMapper extends BaseMapper<CrmContractQuotat
      * @param: crmContractQuotation
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmContractQuotation>
      **/
-    IPage<CrmContractQuotation> pageList(@Param("page") Page<CrmContractQuotation> page, @Param("crmContractQuotation") CrmContractQuotation crmContractQuotation);
+    IPage<CrmContractQuotationVO> pageList(@Param("page") Page<CrmContractQuotation> page, @Param("crmContractQuotation") CrmContractQuotation crmContractQuotation);
 
     /**
      * @description 列表查询数据
@@ -70,4 +72,7 @@ public interface CrmContractQuotationMapper extends BaseMapper<CrmContractQuotat
      * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
      **/
     List<LinkedHashMap<String, Object>> queryCrmContractQuotationForExcel(Map<String, Object> paramMap);
+
+    int countByTime(@Param("now") LocalDateTime now);
+
 }

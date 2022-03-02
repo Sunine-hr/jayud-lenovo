@@ -28,6 +28,7 @@ import com.jayud.oms.model.enums.VehicleTypeEnum;
 import com.jayud.oms.model.po.*;
 import com.jayud.oms.model.vo.*;
 import com.jayud.oms.service.*;
+import io.netty.util.internal.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -2409,5 +2410,103 @@ public class ExternalApiController {
         return ApiResult.ok(this.orderInfoService.updateById(orderInfo));
     }
 
+    @ApiOperation(value = "初始化车型尺寸,区分车型")
+    @PostMapping(value = "/initVehicleSize")
+    public CommonResult<InitVehicleSizeInfoVO> initVehicleSize() {
+        InitVehicleSizeInfoVO initVehicleSizeInfoVO = new InitVehicleSizeInfoVO();
+        //柜车尺寸集合
+        List<VehicleSizeInfoVO> cabinetCars = new ArrayList<>();
+        //吨车尺寸集合
+        List<VehicleSizeInfoVO> tonCars = new ArrayList<>();
+        List<VehicleSizeInfoVO> vehicleSizeInfoVOS = vehicleInfoService.findVehicleSize();
+        for (VehicleSizeInfoVO obj : vehicleSizeInfoVOS) {
+            if (VehicleTypeEnum.CABINET_CAR.getCode() == obj.getVehicleType()) {
+                cabinetCars.add(obj);
+            } else if (VehicleTypeEnum.TON_CAR.getCode() == obj.getVehicleType()) {
+                tonCars.add(obj);
+            }
+        }
+        initVehicleSizeInfoVO.setCabinetCars(cabinetCars);
+        initVehicleSizeInfoVO.setTonCars(tonCars);
+        return CommonResult.success(initVehicleSizeInfoVO);
+    }
 
+    @ApiOperation(value = "录用费用页面-下拉选单位")
+    @PostMapping(value = "/initCostUnit")
+    public CommonResult<List<InitComboxStrVO>> initCostUnit() {
+        List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
+        for (UnitEnum unitEnum : UnitEnum.values()) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(unitEnum.getCode());
+            comboxStrVO.setName(unitEnum.getDesc());
+            comboxStrVOS.add(comboxStrVO);
+        }
+        return CommonResult.success(comboxStrVOS);
+    }
+
+    @ApiOperation(value = "录入费用:应收/付项目/币种 ")
+    @PostMapping(value = "/initCost")
+    public CommonResult initCost(@RequestBody Map<String, Object> param) {
+        String createdTimeStr = MapUtil.getStr(param, "createdTimeStr");
+        if (StringUtil.isNullOrEmpty(createdTimeStr)) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        Map<String, Object> result = new HashMap<>();
+        List<CostInfo> costInfos = costInfoService.findCostInfo();//费用项目
+        List<InitComboxStrVO> paymentCombox = new ArrayList<>();
+        List<InitComboxStrVO> receivableCombox = new ArrayList<>();
+        for (CostInfo costInfo : costInfos) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(costInfo.getIdCode());
+            comboxStrVO.setName(costInfo.getName());
+            receivableCombox.add(comboxStrVO);//后期没做应收应付项目的区分
+            paymentCombox.add(comboxStrVO);
+        }
+        result.put("paymentCost", paymentCombox);
+        result.put("receivableCost", receivableCombox);
+
+        //币种
+        List<InitComboxStrVO> initComboxStrVOS = new ArrayList<>();
+        List<CurrencyInfoVO> currencyInfos = currencyInfoService.findCurrencyInfo(createdTimeStr);
+        for (CurrencyInfoVO currencyInfo : currencyInfos) {
+            InitComboxStrVO comboxStrVO = new InitComboxStrVO();
+            comboxStrVO.setCode(currencyInfo.getCurrencyCode());
+            comboxStrVO.setName(currencyInfo.getCurrencyName());
+            comboxStrVO.setNote(String.valueOf(currencyInfo.getExchangeRate()));
+            initComboxStrVOS.add(comboxStrVO);
+        }
+        result.put("currency", initComboxStrVOS);
+        return CommonResult.success(result);
+    }
+
+    @ApiOperation(value = "费用类别,idCode=费用名称的隐藏值")
+    @PostMapping(value = "/initCostType")
+    public CommonResult<List<InitComboxVO>> initCostType(@RequestBody Map<String, Object> param) {
+        String idCode = MapUtil.getStr(param, CommonConstant.ID_CODE);
+        QueryWrapper queryCostInfo = new QueryWrapper();
+        queryCostInfo.eq(SqlConstant.ID_CODE, idCode);
+        CostInfo costInfo = costInfoService.getOne(queryCostInfo);
+        if (costInfo == null || StringUtil.isNullOrEmpty(costInfo.getCids())) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMessage());
+        }
+        String[] cids = costInfo.getCids().split(CommonConstant.COMMA);
+        List<InitComboxVO> costTypeComboxs = new ArrayList<>();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(SqlConstant.STATUS, CommonConstant.VALUE_1);
+        queryWrapper.in(SqlConstant.ID, cids);
+        List<CostType> costTypes = costTypeService.list(queryWrapper);
+        for (CostType costType : costTypes) {
+            InitComboxVO initComboxVO = new InitComboxVO();
+            initComboxVO.setName(costType.getCodeName());
+            initComboxVO.setId(costType.getId());
+            costTypeComboxs.add(initComboxVO);
+        }
+        return CommonResult.success(costTypeComboxs);
+    }
+
+    @ApiOperation(value = "根据费用名称查询费用类型")
+    @PostMapping(value = "/initCostTypeByCostInfoCode")
+    public CommonResult<Map<String, List<InitComboxVO>>> initCostTypeByCostInfoCode(){
+        return CommonResult.success(this.costInfoService.initCostTypeByCostInfoCode());
+    }
 }

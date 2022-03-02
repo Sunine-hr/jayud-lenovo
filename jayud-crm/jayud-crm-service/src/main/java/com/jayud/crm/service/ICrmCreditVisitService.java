@@ -48,7 +48,7 @@ public interface ICrmCreditVisitService extends IService<CrmCreditVisit> {
      **/
     List<CrmCreditVisit> selectList(CrmCreditVisit crmCreditVisit);
 
-    boolean saveOrUpdateCrmCreditVisit(CrmCreditVisitForm crmCreditVisitForm);
+    BaseResult saveOrUpdateCrmCreditVisit(CrmCreditVisitForm crmCreditVisitForm);
 
     /**
      * @description 物理删除
@@ -67,7 +67,7 @@ public interface ICrmCreditVisitService extends IService<CrmCreditVisit> {
     * @param: id
     * @return: com.jyd.component.commons.result.Result
     **/
-    void logicDel(List<Long> ids);
+    void logicDel(Long id);
 
 
     /**

@@ -5,6 +5,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.BaseResult;
+import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.crm.mapper.CrmCreditVisitRoleMapper;
 import com.jayud.crm.model.bo.CrmCreditVisitForm;
@@ -57,7 +59,7 @@ public class CrmCreditVisitServiceImpl extends ServiceImpl<CrmCreditVisitMapper,
     }
 
     @Override
-    public boolean saveOrUpdateCrmCreditVisit(CrmCreditVisitForm crmCreditVisitForm) {
+    public BaseResult saveOrUpdateCrmCreditVisit(CrmCreditVisitForm crmCreditVisitForm) {
         Boolean result = null;
         CrmCreditVisit convert = ConvertUtil.convert(crmCreditVisitForm, CrmCreditVisit.class);
         if (convert.getId() != null) {
@@ -87,7 +89,7 @@ public class CrmCreditVisitServiceImpl extends ServiceImpl<CrmCreditVisitMapper,
             convert.setUpdateBy(CurrentUserUtil.getUsername());
             convert.setUpdateTime(new Date());
 
-            result= this.saveOrUpdate(convert);
+            result = this.saveOrUpdate(convert);
             Long id = convert.getId();
 
             //然后再添加拜访表和员工表关联表
@@ -104,9 +106,9 @@ public class CrmCreditVisitServiceImpl extends ServiceImpl<CrmCreditVisitMapper,
         }
         if (result) {
             log.warn("新增或修改成功");
-            return true;
+            return BaseResult.ok(SysTips.ADD_SUCCESS);
         }
-        return false;
+        return BaseResult.error(SysTips.EDIT_FAIL);
     }
 
 
@@ -119,15 +121,16 @@ public class CrmCreditVisitServiceImpl extends ServiceImpl<CrmCreditVisitMapper,
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(List<Long> ids) {
-        List<CrmCreditVisit> crmCreditVisit = new ArrayList<>();
-        for (int i = 0; i < ids.size(); i++) {
-            CrmCreditVisit crmCreditVisit1 = new CrmCreditVisit();
-            crmCreditVisit1.setId(ids.get(i));
-            crmCreditVisit1.setIsDeleted(true);
-            crmCreditVisit.add(crmCreditVisit1);
-        }
-        this.updateBatchById(crmCreditVisit);
+    public void logicDel(Long id) {
+//        List<CrmCreditVisit> crmCreditVisit = new ArrayList<>();
+//        for (int i = 0; i < ids.size(); i++) {
+        CrmCreditVisit crmCreditVisit1 = new CrmCreditVisit();
+        crmCreditVisit1.setId(id);
+        crmCreditVisit1.setIsDeleted(true);
+        crmCreditVisitMapper.insert(crmCreditVisit1);
+//            crmCreditVisit.add(crmCreditVisit1);
+//        }
+//        this.updateBatchById(crmCreditVisit);
     }
 
     @Override

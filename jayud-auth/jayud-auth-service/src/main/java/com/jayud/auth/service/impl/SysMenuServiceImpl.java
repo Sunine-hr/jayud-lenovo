@@ -21,7 +21,9 @@ import com.jayud.auth.service.ISysRoleService;
 import com.jayud.auth.service.ISysUrlService;
 import com.jayud.auth.service.ISysUserService;
 import com.jayud.common.dto.AuthUserDetail;
+import com.jayud.common.entity.SysBaseEntity;
 import com.jayud.common.utils.CurrentUserUtil;
+import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QEncoderStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -276,6 +278,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public List<SysMenu> selectSysMenuBtnByRoleIds(List<Long> roleIds) {
         return baseMapper.selectSysMenuBtnByRoleIds(roleIds);
+    }
+
+    @Override
+    public List<SysMenu> getByIds(List<Integer> actionIds) {
+        QueryWrapper<SysMenu> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().in(SysBaseEntity::getId,actionIds);
+        return this.baseMapper.selectList(queryWrapper);
     }
 
     /**

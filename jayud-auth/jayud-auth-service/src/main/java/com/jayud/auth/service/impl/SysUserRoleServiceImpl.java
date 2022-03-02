@@ -137,4 +137,14 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         return this.baseMapper.getCountByUserNameAndRoleName(username,admin,tenantCode);
     }
 
+    @Override
+    public int getCountByUserName(String username, String userTenantCode,String menuCode) {
+        return this.baseMapper.getCountByUserName(username,userTenantCode,menuCode);
+    }
+
+    @Override
+    public int getCountByUserNameAndStep(String username, String userTenantCode, String menuCode, Integer newStep) {
+        return this.baseMapper.getCountByUserNameAndStep(username,userTenantCode,menuCode,newStep);
+    }
+
 }

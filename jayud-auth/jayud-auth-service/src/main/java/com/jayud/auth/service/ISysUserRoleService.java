@@ -128,4 +128,22 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
      * @return
      */
     int getCountByUserNameAndRoleName(String username, String admin,String tenantCode);
+
+    /**
+     * 判断该用户是否有按钮权限
+     * @param username
+     * @param userTenantCode
+     * @return
+     */
+    int getCountByUserName(String username, String userTenantCode,String menuCode);
+
+    /**
+     * 判断用户是否有该级别的审核权限
+     * @param username
+     * @param userTenantCode
+     * @param menuCode
+     * @param newStep
+     * @return
+     */
+    int getCountByUserNameAndStep(String username, String userTenantCode, String menuCode, Integer newStep);
 }

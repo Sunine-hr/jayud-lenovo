@@ -8,8 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -64,4 +63,10 @@ public interface BPublicCheckMapper extends BaseMapper<BPublicCheck> {
     Map<String, Object> getData(@Param("recordId") Long recordId, @Param("checkTable")String checkTable);
 
     Map<String, Object> getCheckData(@Param("recordId")Long recordId, @Param("checkTable")String checkTable, @Param("checkDatabase")String checkDatabase);
+
+    BPublicCheck getPublicCheckByRecordId(@Param("sheetCode") String sheetCode, @Param("recordId") Long recordId, @Param("checkFlag") int checkFlag);
+
+    int updateCheckData(@Param("recordId")Long recordId, @Param("checkTable")String checkTable,@Param("checkDatabase") String checkDatabase, @Param("newStep")Integer newStep,  @Param("checkFlag")String checkFlag, @Param("id")Long id, @Param("now")LocalDateTime now, @Param("name")String name);
+
+    int updateData(@Param("recordId")Long recordId, @Param("checkTable")String checkTable, @Param("newStep")Integer newStep, @Param("checkFlag")String checkFlag, @Param("id")Long id, @Param("now")LocalDateTime now, @Param("name")String name);
 }

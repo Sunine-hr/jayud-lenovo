@@ -208,8 +208,14 @@ public interface SysTips {
 
     String SYS_URL_TYPE_SAME = "存在系统类型！";
 
-    String ERROR_MSG_ONE = "存在角色绑定用户,无法删除";
+    String ERROR_MSG_ONE = "存在角色绑定用户,无法删除！";
 
-    String DELETE_ADMIN_ERROR = "超级管理员不能删除";
+    String DELETE_ADMIN_ERROR = "超级管理员不能删除！";
+
+    String NOT_ONE_DATA_ERROR = "存在多条数据！";
+
+    String CREDIT_CODE_EXIT_ERROR = "统一社会信用代码已存在！";
+
+    String CUSTOMER_NAME_EXIT_ERROR = "客户名称已存在！";
 }
 

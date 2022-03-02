@@ -1,8 +1,10 @@
 package com.jayud.common.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.jayud.common.dto.AuthUserDetail;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,7 +41,13 @@ public class CurrentUserUtil {
      * @return: com.jayud.common.dto.AuthUserDetail
      **/
     public static AuthUserDetail getUserDetail(){
-        AuthUserDetail authUserDetail = (AuthUserDetail)(((OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication()).getPrincipal());
+        LinkedHashMap users = (LinkedHashMap) ((LinkedHashMap)((Authentication)((OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication()).getUserAuthentication()).getDetails()).get("principal");
+        AuthUserDetail authUserDetail = new AuthUserDetail();
+        if (users == null){
+            authUserDetail = (AuthUserDetail)(((OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication()).getPrincipal());
+        }else {
+            authUserDetail = JSON.parseObject(JSON.toJSONString(users), AuthUserDetail.class);
+        }
         return authUserDetail;
     }
 

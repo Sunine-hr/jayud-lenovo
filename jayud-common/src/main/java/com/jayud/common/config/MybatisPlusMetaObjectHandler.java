@@ -23,9 +23,12 @@ public class MybatisPlusMetaObjectHandler implements MetaObjectHandler {
         try {
             username = CurrentUserUtil.getUsername();
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         if (username != "") {
+            if(metaObject.hasGetter("tenantCode")){
+                this.setFieldValByName("tenantCode", CurrentUserUtil.getUserTenantCode(), metaObject);
+            }
             this.setFieldValByName("createTime", new Date(), metaObject);
             this.setFieldValByName("createBy", username, metaObject);
         }

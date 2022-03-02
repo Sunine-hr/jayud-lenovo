@@ -1,6 +1,7 @@
 package com.jayud.crm.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -17,8 +18,10 @@ import com.jayud.common.utils.StringUtils;
 import com.jayud.crm.feign.OmsClient;
 import com.jayud.crm.model.bo.AddCrmContractQuotationDetailsForm;
 import com.jayud.crm.model.bo.AddCrmContractQuotationForm;
+import com.jayud.crm.model.enums.FileModuleEnum;
 import com.jayud.crm.model.po.CrmContractQuotationDetails;
 import com.jayud.crm.service.ICrmContractQuotationDetailsService;
+import com.jayud.crm.service.ICrmFileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -51,6 +54,9 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
     private ICrmContractQuotationDetailsService crmContractQuotationDetailsService;
     @Autowired
     private OmsClient omsClient;
+    @Autowired
+    private ICrmFileService crmFileService;
+
 
     @Override
     public IPage<CrmContractQuotation> selectPage(CrmContractQuotation crmContractQuotation,
@@ -103,6 +109,13 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
         }
         this.saveOrUpdate(contractQuotation);
         form.setId(contractQuotation.getId());
+        //文件处理
+        if (!CollectionUtil.isEmpty(form.getFiles())) {
+            form.getFiles().forEach(e -> {
+                e.setBusinessId(form.getId()).setCode(FileModuleEnum.ONE.getCode());
+            });
+            this.crmFileService.saveOrUpdateBatch(form.getFiles());
+        }
         this.doQuotationProcessing(form);
         return contractQuotation.getId();
     }

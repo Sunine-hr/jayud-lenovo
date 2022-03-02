@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * CrmCreditVisit 实体类
@@ -67,11 +68,16 @@ public class CrmCreditVisitVO extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")
-    @TableLogic
     private Boolean isDeleted;
 
+    @ApiModelProperty(value = "员工名称集合")
+    private String userNames;
 
+    @ApiModelProperty(value = "员工集合ids")
+    private String userIds;
 
+    @ApiModelProperty(value = "拜访人员集合s")
+    private List<Long> visitNameList;
 
 
 }

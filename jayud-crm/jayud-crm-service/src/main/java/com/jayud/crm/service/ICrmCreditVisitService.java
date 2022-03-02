@@ -2,6 +2,7 @@ package com.jayud.crm.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.BaseResult;
 import com.jayud.crm.model.bo.CrmCreditVisitForm;
 import com.jayud.crm.model.po.CrmCreditVisit;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -47,7 +48,7 @@ public interface ICrmCreditVisitService extends IService<CrmCreditVisit> {
      **/
     List<CrmCreditVisit> selectList(CrmCreditVisit crmCreditVisit);
 
-
+    boolean saveOrUpdateCrmCreditVisit(CrmCreditVisitForm crmCreditVisitForm);
 
     /**
      * @description 物理删除
@@ -66,9 +67,14 @@ public interface ICrmCreditVisitService extends IService<CrmCreditVisit> {
     * @param: id
     * @return: com.jyd.component.commons.result.Result
     **/
-    void logicDel(Long id);
+    void logicDel(List<Long> ids);
 
 
-
+    /**
+     * 根据id查询用户信息
+     * @param id
+     * @return
+     */
+    CrmCreditVisitVO findCrmCreditVisitIdOne(Long id);
 
 }

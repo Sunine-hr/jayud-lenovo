@@ -1,10 +1,8 @@
 package com.jayud.crm.mapper;
 
-import com.jayud.crm.model.bo.CrmCreditVisitForm;
-import com.jayud.crm.model.po.CrmCreditVisit;
+import com.jayud.crm.model.po.CrmFile;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
-import com.jayud.crm.model.vo.CrmCreditVisitVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -16,32 +14,32 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 基本档案_客户_客户走访记录 Mapper 接口
+ * 基本档案_文件(crm_file) Mapper 接口
  *
  * @author jayud
  * @since 2022-03-02
  */
 @Mapper
-public interface CrmCreditVisitMapper extends BaseMapper<CrmCreditVisit> {
+public interface CrmFileMapper extends BaseMapper<CrmFile> {
 
     /**
      * @description 分页查询
      * @author  jayud
      * @date   2022-03-02
      * @param: page
-     * @param: crmCreditVisit
-     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCreditVisit>
+     * @param: crmFile
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmFile>
      **/
-    IPage<CrmCreditVisitVO> pageList(@Param("page") Page<CrmCreditVisitForm> page, @Param("crmCreditVisit") CrmCreditVisitForm crmCreditVisit);
+    IPage<CrmFile> pageList(@Param("page") Page<CrmFile> page, @Param("crmFile") CrmFile crmFile);
 
     /**
      * @description 列表查询数据
      * @author  jayud
      * @date   2022-03-02
-     * @param: crmCreditVisit
-     * @return: java.util.List<com.jayud.crm.model.po.CrmCreditVisit>
+     * @param: crmFile
+     * @return: java.util.List<com.jayud.crm.model.po.CrmFile>
      **/
-    List<CrmCreditVisit> list(@Param("crmCreditVisit") CrmCreditVisit crmCreditVisit);
+    List<CrmFile> list(@Param("crmFile") CrmFile crmFile);
 
 
     /**
@@ -64,11 +62,12 @@ public interface CrmCreditVisitMapper extends BaseMapper<CrmCreditVisit> {
     int logicDel(@Param("id") Long id,@Param("username") String username);
 
 
-
     /**
-     * 根据id查询用户信息
-     * @param id
-     * @return
-     */
-    CrmCreditVisitVO findCrmCreditVisitIdOne(@Param("id") Long id);
+     * @description 查询导出
+     * @author  jayud
+     * @date   2022-03-02
+     * @param: paramMap
+     * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
+     **/
+    List<LinkedHashMap<String, Object>> queryCrmFileForExcel(Map<String, Object> paramMap);
 }

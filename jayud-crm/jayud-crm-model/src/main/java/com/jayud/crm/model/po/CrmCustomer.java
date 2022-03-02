@@ -16,6 +16,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * CrmCustomer 实体类
  *
@@ -31,7 +33,8 @@ public class CrmCustomer extends SysBaseEntity {
     @ApiModelProperty(value = "(母公司ID)")
     private Long parentId;
 
-    @ApiModelProperty(value = "公司名称")
+    @NotBlank(message = "客户名称不能为空")
+    @ApiModelProperty(value = "客户名称")
     private String custName;
 
     @ApiModelProperty(value = "统一信用代码")
@@ -49,6 +52,7 @@ public class CrmCustomer extends SysBaseEntity {
     @ApiModelProperty(value = "是否供应商")
     private Boolean isSupplier;
 
+    @NotBlank(message = "客户简称不能为空")
     @ApiModelProperty(value = "简称")
     private String custNameAbbr;
 

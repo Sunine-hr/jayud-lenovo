@@ -26,5 +26,5 @@ public interface AuthClient {
 
     //字段表查询
     @PostMapping(value = "/sysDictItem/api/selectItemByDictCode")
-    public BaseResult  selectItemByDictCodeFeign( @RequestParam String dictCode);
+    public BaseResult  selectItemByDictCodeFeign( @RequestParam("dictCode") String dictCode);
 }

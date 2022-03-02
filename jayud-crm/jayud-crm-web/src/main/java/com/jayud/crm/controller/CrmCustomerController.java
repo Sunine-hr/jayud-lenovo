@@ -1,5 +1,8 @@
 package com.jayud.crm.controller;
 
+import com.jayud.common.utils.CurrentUserUtil;
+import com.jayud.crm.model.form.CrmCodeFrom;
+import com.jayud.crm.model.form.CrmCustomerForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -84,14 +87,13 @@ public class CrmCustomerController {
     * @description 新增
     * @author  jayud
     * @date   2022-03-01
-    * @param: crmCustomer
+    * @param: crmCustomerForm
     * @return: com.jayud.common.BaseResult
     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody CrmCustomer crmCustomer ){
-        crmCustomerService.save(crmCustomer);
-        return BaseResult.ok(SysTips.ADD_SUCCESS);
+    public BaseResult add(@Valid @RequestBody CrmCustomerForm crmCustomerForm ){
+        return crmCustomerService.saveCrmCustomer(crmCustomerForm);
     }
 
 
@@ -99,14 +101,13 @@ public class CrmCustomerController {
      * @description 编辑
      * @author  jayud
      * @date   2022-03-01
-     * @param: crmCustomer
+     * @param: crmCustomerForm
      * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("编辑")
     @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody CrmCustomer crmCustomer ){
-        crmCustomerService.updateById(crmCustomer);
-        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+    public BaseResult edit(@Valid @RequestBody CrmCustomerForm crmCustomerForm ){
+        return crmCustomerService.saveCrmCustomer(crmCustomerForm);
     }
 
 
@@ -147,14 +148,13 @@ public class CrmCustomerController {
      * @author  jayud
      * @date   2022-03-01
      * @param: id
-     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.po.CrmCustomer>
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.form.CrmCodeFrom>
      **/
     @ApiOperation("根据id查询")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<CrmCustomer> queryById(@RequestParam(name="id",required=true) int id) {
-        CrmCustomer crmCustomer = crmCustomerService.getById(id);
-        return BaseResult.ok(crmCustomer);
+    public BaseResult<CrmCustomerForm> queryById(@RequestParam(name="id",required=true) Long id) {
+        return BaseResult.ok(crmCustomerService.selectById(id));
     }
 
 
@@ -248,6 +248,20 @@ public class CrmCustomerController {
             e.printStackTrace();
             log.warn(e.toString());
         }
+    }
+
+    /**
+     * @description 获取客户信息字典项目
+     * @author  ciro
+     * @date   2022/3/2 11:07
+     * @param:
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.form.CrmCodeFrom>
+     **/
+    @ApiOperation("获取用户字典下拉")
+    public BaseResult<CrmCodeFrom> getCrmCode(){
+        CrmCodeFrom crmCodeFrom = new CrmCodeFrom();
+
+        return BaseResult.ok(crmCodeFrom);
     }
 
 

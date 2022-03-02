@@ -2,6 +2,8 @@ package com.jayud.crm.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.BaseResult;
+import com.jayud.crm.model.form.CrmCustomerForm;
 import com.jayud.crm.model.po.CrmCustomer;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -78,5 +80,24 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      **/
     List<LinkedHashMap<String, Object>> queryCrmCustomerForExcel(Map<String, Object> paramMap);
 
+
+    /**
+     * @description 保存用户数据
+     * @author  ciro
+     * @date   2022/3/2 9:17
+     * @param: crmCustomerForm
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult saveCrmCustomer(CrmCustomerForm crmCustomerForm);
+
+
+    /**
+     * @description 根据id查询
+     * @author  ciro
+     * @date   2022/3/2 11:18
+     * @param: id
+     * @return: com.jayud.crm.model.form.CrmCustomerForm
+     **/
+    CrmCustomerForm selectById(Long id);
 
 }

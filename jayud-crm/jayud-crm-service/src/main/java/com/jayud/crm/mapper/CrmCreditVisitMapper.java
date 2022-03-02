@@ -62,4 +62,13 @@ public interface CrmCreditVisitMapper extends BaseMapper<CrmCreditVisit> {
      * @return: int
      **/
     int logicDel(@Param("id") Long id,@Param("username") String username);
+
+
+
+    /**
+     * 根据id查询用户信息
+     * @param id
+     * @return
+     */
+    CrmCreditVisitVO findCrmCreditVisitIdOne(@Param("id") Long id);
 }

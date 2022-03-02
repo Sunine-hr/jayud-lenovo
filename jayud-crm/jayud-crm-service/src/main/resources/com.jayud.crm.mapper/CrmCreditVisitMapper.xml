@@ -4,24 +4,24 @@
 
     <!-- 通用查询映射结果ss -->
     <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCreditVisit">
-        <id column="id" property="id" />
-        <result column="cust_id" property="custId" />
-        <result column="cust_name" property="custName" />
-        <result column="visit_name" property="visitName" />
-        <result column="cust_relation" property="custRelation" />
-        <result column="visit_date" property="visitDate" />
-        <result column="end_date" property="endDate" />
-        <result column="vist_address" property="vistAddress" />
-        <result column="vist_item" property="vistItem" />
-        <result column="cust_req" property="custReq" />
-        <result column="cust_answer" property="custAnswer" />
-        <result column="tenant_code" property="tenantCode" />
-        <result column="remark" property="remark" />
-        <result column="is_deleted" property="isDeleted" />
-        <result column="create_by" property="createBy" />
-        <result column="create_time" property="createTime" />
-        <result column="update_by" property="updateBy" />
-        <result column="update_time" property="updateTime" />
+        <id column="id" property="id"/>
+        <result column="cust_id" property="custId"/>
+        <result column="cust_name" property="custName"/>
+        <result column="visit_name" property="visitName"/>
+        <result column="cust_relation" property="custRelation"/>
+        <result column="visit_date" property="visitDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="vist_address" property="vistAddress"/>
+        <result column="vist_item" property="vistItem"/>
+        <result column="cust_req" property="custReq"/>
+        <result column="cust_answer" property="custAnswer"/>
+        <result column="tenant_code" property="tenantCode"/>
+        <result column="remark" property="remark"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -33,8 +33,10 @@
     <sql id="tname">crm_credit_visit </sql>
 
     <sql id="selects">
-        SELECT <include refid="Base_Column_List"/>
-        FROM <include refid="tname"/>
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tname"/>
         <where>
             is_deleted = 0
             <if test="crmCreditVisit.custId != null ">
@@ -88,15 +90,60 @@
         </where>
     </sql>
 
-    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCreditVisit">
-        <include refid="selects"/>
+
+    <select id="pageList" parameterType="com.jayud.crm.model.bo.CrmCreditVisitForm"
+            resultType="com.jayud.crm.model.vo.CrmCreditVisitVO">
+
+        SELECT
+        ccv.id,
+        ccv.cust_id,
+        ccv.cust_name,
+        ccv.visit_name,
+        ccv.cust_relation,
+        ccv.visit_date,
+        ccv.end_date,
+        ccv.vist_address,
+        ccv.vist_item,
+        ccv.cust_req,
+        ccv.cust_answer,
+        ccv.tenant_code,
+        ccv.remark,
+        ccv.is_deleted,
+        ccv.create_by,
+        ccv.create_time,
+        ccv.update_by,
+        ccv.update_time,
+        GROUP_CONCAT( ccvru.userName ) userNames
+        FROM
+        crm_credit_visit ccv
+        LEFT JOIN (
+        SELECT
+        ccvr.visit_id as visitId,
+        su.name as userName,
+        ccvr.is_deleted
+        from
+        crm_credit_visit_role ccvr
+        LEFT JOIN sys_user su on ccvr.user_id= su.id
+        where ccvr.is_deleted=0
+        ) ccvru on ccv.id=ccvru.visitId
+        where
+        ccv.is_deleted=0
+        and ccvru.is_deleted=0
+
+        <if test="crmCreditVisit.custName != null and crmCreditVisit.custName != ''">
+            and ccv.cust_name LIKE CONCAT('%',#{crmCreditVisit.custName},'%')
+        </if>
+        <if test="crmCreditVisit.creationTime != null and crmCreditVisit.creationTime.length>0">
+            and ccv.create_time <![CDATA[ >= ]]> #{form.creationTime[0]}
+            and ccv.create_time <![CDATA[ <= ]]> #{form.creationTime[1]}
+        </if>
+        group by ccv.id
+        ORDER BY ccv.create_time DESC
     </select>
 
     <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCreditVisit">
         <include refid="selects"/>
     </select>
-
-
 
 
     <delete id="phyDelById">
@@ -108,5 +155,37 @@
         WHERE id = ${id} AND is_deleted = 0
     </update>
 
+
+    <select id="findCrmCreditVisitIdOne" parameterType="com.jayud.crm.model.bo.CrmCreditVisitForm"
+            resultType="com.jayud.crm.model.vo.CrmCreditVisitVO">
+        SELECT
+            ccv.id,
+            ccv.cust_id,
+            ccv.cust_name,
+            ccv.visit_name,
+            ccv.cust_relation,
+            ccv.visit_date,
+            ccv.end_date,
+            ccv.vist_address,
+            ccv.vist_item,
+            ccv.cust_req,
+            ccv.cust_answer,
+            ccv.tenant_code,
+            ccv.remark,
+            ccv.is_deleted,
+            ccv.create_by,
+            ccv.create_time,
+            ccv.update_by,
+            ccv.update_time,
+            GROUP_CONCAT( ccvr.user_id ) userIds
+        FROM
+            crm_credit_visit  ccv
+        LEFT JOIN crm_credit_visit_role ccvr
+        on ccv.id=ccvr.visit_id
+        where ccv.is_deleted=0
+        and ccv.id=#{id}
+        group by ccv.id
+
+    </select>
 
 </mapper>

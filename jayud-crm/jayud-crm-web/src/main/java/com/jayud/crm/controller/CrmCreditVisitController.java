@@ -11,10 +11,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.crm.service.ICrmCreditVisitService;
 import com.jayud.crm.model.po.CrmCreditVisit;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -39,122 +36,131 @@ import javax.validation.Valid;
 public class CrmCreditVisitController {
 
 
-
     @Autowired
     public ICrmCreditVisitService crmCreditVisitService;
 
 
     /**
      * @description 分页查询
-     * @author  jayud
-     * @date   2022-03-02
+     * @author jayud
+     * @date 2022-03-02
      * @param: crmCreditVisit
      * @param: currentPage
      * @param: pageSize
      * @param: req
-     * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCreditVisit>>
+     * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage < com.jayud.crm.model.po.CrmCreditVisit>>
      **/
     @ApiOperation("分页查询数据")
-    @GetMapping("/selectPage")
-    public BaseResult<IPage<CrmCreditVisitVO>> selectPage(CrmCreditVisitForm crmCreditVisitForm,
-                                                          @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
-                                                          @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+    @PostMapping("/selectPage")
+    public BaseResult<IPage<CrmCreditVisitVO>> selectPage(@RequestBody CrmCreditVisitForm crmCreditVisitForm,
                                                           HttpServletRequest req) {
-        return BaseResult.ok(crmCreditVisitService.selectPage(crmCreditVisitForm,currentPage,pageSize,req));
+        return BaseResult.ok(crmCreditVisitService.selectPage(crmCreditVisitForm, crmCreditVisitForm.getCurrentPage(), crmCreditVisitForm.getPageSize(), req));
     }
 
 
     /**
-    * @description 列表查询数据
-    * @author  jayud
-    * @date   2022-03-02
-    * @param: crmCreditVisit
-    * @param: req
-    * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.crm.model.po.CrmCreditVisit>>
-    **/
+     * @description 列表查询数据
+     * @author jayud
+     * @date 2022-03-02
+     * @param: crmCreditVisit
+     * @param: req
+     * @return: com.jayud.common.BaseResult<java.util.List < com.jayud.crm.model.po.CrmCreditVisit>>
+     **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
     public BaseResult<List<CrmCreditVisit>> selectList(CrmCreditVisit crmCreditVisit,
-                                                HttpServletRequest req) {
+                                                       HttpServletRequest req) {
         return BaseResult.ok(crmCreditVisitService.selectList(crmCreditVisit));
     }
 
 
     /**
-    * @description 新增
-    * @author  jayud
-    * @date   2022-03-02
-    * @param: crmCreditVisit
-    * @return: com.jayud.common.BaseResult
-    **/
+     * @description 新增
+     * @author jayud
+     * @date 2022-03-02
+     * @param: crmCreditVisit
+     * @return: com.jayud.common.BaseResult
+     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody CrmCreditVisit crmCreditVisit ){
-        crmCreditVisitService.save(crmCreditVisit);
+    public BaseResult add(@Valid @RequestBody CrmCreditVisitForm crmCreditVisitForm) {
+        crmCreditVisitService.saveOrUpdateCrmCreditVisit(crmCreditVisitForm);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
 
 
-    /**
-     * @description 编辑
-     * @author  jayud
-     * @date   2022-03-02
-     * @param: crmCreditVisit
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("编辑")
-    @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody CrmCreditVisit crmCreditVisit ){
-        crmCreditVisitService.updateById(crmCreditVisit);
-        return BaseResult.ok(SysTips.EDIT_SUCCESS);
-    }
+//    /**
+//     * @description 编辑
+//     * @author  jayud
+//     * @date   2022-03-02
+//     * @param: crmCreditVisit
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("编辑")
+//    @PostMapping("/edit")
+//    public BaseResult edit(@Valid @RequestBody CrmCreditVisit crmCreditVisit ){
+//        crmCreditVisitService.updateById(crmCreditVisit);
+//        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+//    }
 
 
-
-    /**
-     * @description 物理删除
-     * @author  jayud
-     * @date   2022-03-02
-     * @param: id
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id){
-        crmCreditVisitService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
+//
+//    /**
+//     * @description 物理删除
+//     * @author  jayud
+//     * @date   2022-03-02
+//     * @param: id
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("物理删除")
+//    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
+//    @GetMapping("/phyDel")
+//    public BaseResult phyDel(@RequestParam Long id){
+//        crmCreditVisitService.phyDelById(id);
+//        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//    }
 
     /**
      * @description 逻辑删除
-     * @author  jayud
-     * @date   2022-03-02
+     * @author jayud
+     * @date 2022-03-02
      * @param: id
      * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("逻辑删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id){
-        crmCreditVisitService.logicDel(id);
+    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
+    @PostMapping("/logicDel")
+    public BaseResult logicDel(@RequestBody List<Long> ids) {
+        crmCreditVisitService.logicDel(ids);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 
 
     /**
      * @description 根据id查询
-     * @author  jayud
-     * @date   2022-03-02
+     * @author jayud
+     * @date 2022-03-02
      * @param: id
      * @return: com.jayud.common.BaseResult<com.jayud.crm.model.po.CrmCreditVisit>
      **/
-    @ApiOperation("根据id查询")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
-    @GetMapping(value = "/queryById")
-    public BaseResult<CrmCreditVisit> queryById(@RequestParam(name="id",required=true) int id) {
-        CrmCreditVisit crmCreditVisit = crmCreditVisitService.getById(id);
-        return BaseResult.ok(crmCreditVisit);
+    @ApiOperation("根据id查询详情")
+    @GetMapping(value = "/findCrmCreditVisitIdOne")
+    public BaseResult<CrmCreditVisitVO> findCrmCreditVisitIdOne(@RequestParam(name = "id", required = true) Long id) {
+        CrmCreditVisitVO crmCreditVisitIdOne = null;
+        crmCreditVisitIdOne = crmCreditVisitService.findCrmCreditVisitIdOne(id);
+        if (crmCreditVisitIdOne == null) {
+            return BaseResult.error("用户不存在！");
+        }
+        //拿到的员工的集合
+        List<Long> listId = new ArrayList<>();
+        String userIds = crmCreditVisitIdOne.getUserIds();
+        String[] aa = userIds.split(",");
+        for (int i = 0; i < aa.length; i++) {
+            long l = Long.parseLong(aa[i]);
+            listId.add(l);
+        }
+        crmCreditVisitIdOne.setVisitNameList(listId);
+        return BaseResult.ok(crmCreditVisitIdOne);
     }
 
 

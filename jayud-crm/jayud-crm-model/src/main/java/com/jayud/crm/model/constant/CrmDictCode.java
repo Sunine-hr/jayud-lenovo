@@ -63,7 +63,10 @@ public interface CrmDictCode {
     String CUST_BUSINESS_TYPE= "crm_cust_business_type";
 
 
-
+    /**
+     *  风控管理-客户类型
+     */
+    String CRM_CUSTOMER_RISK_TYPE = "crm_customer_risk_type";
 
 
 }

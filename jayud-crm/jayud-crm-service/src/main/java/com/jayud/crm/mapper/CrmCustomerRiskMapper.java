@@ -1,53 +1,52 @@
 package com.jayud.crm.mapper;
 
-import com.jayud.crm.model.po.CrmContractQuotation;
+import com.jayud.crm.model.bo.CrmCustomerRiskForm;
+import com.jayud.crm.model.po.CrmCustomerRisk;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
-import com.jayud.crm.model.vo.CrmContractQuotationVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * 合同报价 Mapper 接口
+ * 基本档案_客户_风险客户（crm_customer_risk） Mapper 接口
  *
  * @author jayud
- * @since 2022-03-01
+ * @since 2022-03-02
  */
 @Mapper
-public interface CrmContractQuotationMapper extends BaseMapper<CrmContractQuotation> {
+public interface CrmCustomerRiskMapper extends BaseMapper<CrmCustomerRisk> {
 
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-03-01
+     * @date   2022-03-02
      * @param: page
-     * @param: crmContractQuotation
-     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmContractQuotation>
+     * @param: crmCustomerRisk
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomerRisk>
      **/
-    IPage<CrmContractQuotationVO> pageList(@Param("page") Page<CrmContractQuotation> page, @Param("crmContractQuotation") CrmContractQuotation crmContractQuotation);
+    IPage<CrmCustomerRisk> pageList(@Param("page") Page<CrmCustomerRiskForm> page, @Param("crmCustomerRisk") CrmCustomerRiskForm crmCustomerRisk);
 
     /**
      * @description 列表查询数据
      * @author  jayud
-     * @date   2022-03-01
-     * @param: crmContractQuotation
-     * @return: java.util.List<com.jayud.crm.model.po.CrmContractQuotation>
+     * @date   2022-03-02
+     * @param: crmCustomerRisk
+     * @return: java.util.List<com.jayud.crm.model.po.CrmCustomerRisk>
      **/
-    List<CrmContractQuotation> list(@Param("crmContractQuotation") CrmContractQuotation crmContractQuotation);
+    List<CrmCustomerRisk> list(@Param("crmCustomerRisk") CrmCustomerRisk crmCustomerRisk);
 
 
     /**
      * @description 根据id物理删除
      * @author  jayud
-     * @date   2022-03-01
+     * @date   2022-03-02
      * @param: id
      * @return: int
      **/
@@ -56,7 +55,7 @@ public interface CrmContractQuotationMapper extends BaseMapper<CrmContractQuotat
     /**
      * @description 根据id逻辑删除
      * @author  jayud
-     * @date   2022-03-01
+     * @date   2022-03-02
      * @param: id
      * @param: username
      * @return: int
@@ -67,12 +66,9 @@ public interface CrmContractQuotationMapper extends BaseMapper<CrmContractQuotat
     /**
      * @description 查询导出
      * @author  jayud
-     * @date   2022-03-01
+     * @date   2022-03-02
      * @param: paramMap
      * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
      **/
-    List<LinkedHashMap<String, Object>> queryCrmContractQuotationForExcel(Map<String, Object> paramMap);
-
-    int countByTime(@Param("now") LocalDateTime now);
-
+    List<LinkedHashMap<String, Object>> queryCrmCustomerRiskForExcel(Map<String, Object> paramMap);
 }

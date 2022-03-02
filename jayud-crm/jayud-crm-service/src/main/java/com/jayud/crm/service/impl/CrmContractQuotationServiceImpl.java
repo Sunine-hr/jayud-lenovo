@@ -7,24 +7,26 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.CommonResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.entity.InitComboxVO;
 import com.jayud.common.enums.ContractQuotationModeEnum;
 import com.jayud.common.enums.StatusEnum;
 import com.jayud.common.enums.TrackingInfoBisTypeEnum;
 import com.jayud.common.exception.JayudBizException;
-import com.jayud.common.utils.ComparisonOptUtil;
-import com.jayud.common.utils.ConvertUtil;
-import com.jayud.common.utils.StringUtils;
+import com.jayud.common.utils.*;
+import com.jayud.crm.feign.FileClient;
 import com.jayud.crm.feign.OmsClient;
 import com.jayud.crm.model.bo.AddCrmContractQuotationDetailsForm;
 import com.jayud.crm.model.bo.AddCrmContractQuotationForm;
 import com.jayud.crm.model.enums.FileModuleEnum;
 import com.jayud.crm.model.po.CrmContractQuotationDetails;
+import com.jayud.crm.model.po.CrmFile;
+import com.jayud.crm.model.vo.CrmContractQuotationVO;
 import com.jayud.crm.service.ICrmContractQuotationDetailsService;
 import com.jayud.crm.service.ICrmFileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.model.po.CrmContractQuotation;
 import com.jayud.crm.mapper.CrmContractQuotationMapper;
 import com.jayud.crm.service.ICrmContractQuotationService;
@@ -56,16 +58,30 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
     private OmsClient omsClient;
     @Autowired
     private ICrmFileService crmFileService;
+    @Autowired
+    private FileClient fileClient;
 
 
     @Override
-    public IPage<CrmContractQuotation> selectPage(CrmContractQuotation crmContractQuotation,
-                                                  Integer currentPage,
-                                                  Integer pageSize,
-                                                  HttpServletRequest req) {
+    public IPage<CrmContractQuotationVO> selectPage(CrmContractQuotation crmContractQuotation,
+                                                    Integer currentPage,
+                                                    Integer pageSize,
+                                                    HttpServletRequest req) {
 
+        crmContractQuotation.setTenantCode(CurrentUserUtil.getUserTenantCode());
         Page<CrmContractQuotation> page = new Page<CrmContractQuotation>(currentPage, pageSize);
-        IPage<CrmContractQuotation> pageList = crmContractQuotationMapper.pageList(page, crmContractQuotation);
+        IPage<CrmContractQuotationVO> pageList = crmContractQuotationMapper.pageList(page, crmContractQuotation);
+
+        Object url = this.fileClient.getBaseUrl().getData();
+        for (CrmContractQuotationVO record : pageList.getRecords()) {
+            List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(true).setBusinessId(record.getId()).setCode(FileModuleEnum.ONE.getCode())));
+            files.forEach(e -> {
+                e.setUploadFileUrl(url + e.getUploadFileUrl());
+            });
+            record.setEffectiveTime(record.getStartTime() + "-" + record.getEndTime());
+            record.setFiles(files);
+        }
+
         return pageList;
     }
 
@@ -95,6 +111,7 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
     }
 
     @Override
+    @Transactional
     public Long saveOrUpdate(AddCrmContractQuotationForm form) {
         CrmContractQuotation contractQuotation = ConvertUtil.convert(form, CrmContractQuotation.class);
 //        contractQuotation.setFile(StringUtils.getFileStr(form.getFiles())).setFileName(StringUtils.getFileNameStr(form.getFiles()));
@@ -110,12 +127,8 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
         this.saveOrUpdate(contractQuotation);
         form.setId(contractQuotation.getId());
         //文件处理
-        if (!CollectionUtil.isEmpty(form.getFiles())) {
-            form.getFiles().forEach(e -> {
-                e.setBusinessId(form.getId()).setCode(FileModuleEnum.ONE.getCode());
-            });
-            this.crmFileService.saveOrUpdateBatch(form.getFiles());
-        }
+        this.crmFileService.doFileProcessing(form.getFiles(), form.getId(), FileModuleEnum.ONE.getCode());
+
         this.doQuotationProcessing(form);
         return contractQuotation.getId();
     }
@@ -132,7 +145,7 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
         list.addAll(form.getXgDetails());
         List<CrmContractQuotationDetails> details = new ArrayList<>();
         List<CrmContractQuotationDetails> oldTmp = this.crmContractQuotationDetailsService.getBaseMapper().selectList(new QueryWrapper<>(new CrmContractQuotationDetails()
-                .setContractQuotationId(form.getId()).setStatus(StatusEnum.ENABLE.getCode())));
+                .setContractQuotationId(form.getId()).setStatus(StatusEnum.ENABLE.getCode()).setIsDeleted(false)));
         Map<Long, CrmContractQuotationDetails> oldMap = oldTmp.stream().collect(Collectors.toMap(e -> e.getId(), e -> e));
 
 //        Map<String, String> costInfoMap = this.omsClient.getCostInfos().getData().stream().collect(Collectors.toMap(e -> MapUtil.getStr(e, "idCode"), e -> MapUtil.getStr(e, "name")));
@@ -194,6 +207,32 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
     public boolean exitNumber(String number) {
         QueryWrapper<CrmContractQuotation> condition = new QueryWrapper<>(new CrmContractQuotation().setNumber(number));
         return this.count(condition) > 0;
+    }
+
+    @Override
+    public String autoGenerateNum() {
+        int count = this.baseMapper.countByTime(LocalDateTime.now());
+        StringBuilder orderNo = new StringBuilder("JYD-BJD-");
+        orderNo.append(DateUtils.LocalDateTime2Str(LocalDateTime.now(), "yy")).append("-")
+                .append(StringUtils.zeroComplement(3, count + 1));
+        return orderNo.toString();
+    }
+
+    @Override
+    public CrmContractQuotationVO getEditInfoById(Long id) {
+        CrmContractQuotation contractQuotation = this.getById(id);
+        CrmContractQuotationVO tmp = ConvertUtil.convert(contractQuotation, CrmContractQuotationVO.class);
+        Object url = this.fileClient.getBaseUrl().getData();
+        List<CrmFile> files = this.crmFileService.getFiles(contractQuotation.getId(), FileModuleEnum.ONE.getCode());
+        files.forEach(e -> {
+            e.setUploadFileUrl(url + e.getUploadFileUrl());
+        });
+//        ustomerInfo customerInfo = customerInfoService.getByCode(tmp.getCustomerCode());
+//        tmp.setCustomerId(customerInfo.getId());
+        List<CrmContractQuotationDetails> details = this.crmContractQuotationDetailsService.getBaseMapper().selectList(new QueryWrapper<>(new CrmContractQuotationDetails().setIsDeleted(false).setContractQuotationId(id)));
+        Map<String, List<InitComboxVO>> costType = this.omsClient.initCostTypeByCostInfoCode().getData();
+        tmp.assembleDetails(details, costType);
+        return tmp;
     }
 
 }

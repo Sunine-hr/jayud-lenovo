@@ -2,7 +2,9 @@ package com.jayud.crm.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.crm.model.po.CrmFile;
+import com.jayud.common.BaseResult;
+import com.jayud.crm.model.bo.CrmCustomerRiskForm;
+import com.jayud.crm.model.po.CrmCustomerRisk;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,40 +14,40 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 基本档案_文件(crm_file) 服务类
+ * 基本档案_客户_风险客户（crm_customer_risk） 服务类
  *
  * @author jayud
  * @since 2022-03-02
  */
-public interface ICrmFileService extends IService<CrmFile> {
+public interface ICrmCustomerRiskService extends IService<CrmCustomerRisk> {
 
 
     /**
      * @description 分页查询
      * @author  jayud
      * @date   2022-03-02
-     * @param: crmFile
+     * @param: crmCustomerRisk
      * @param: currentPage
      * @param: pageSize
      * @param: req
-     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmFile>
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomerRisk>
      **/
-    IPage<CrmFile> selectPage(CrmFile crmFile,
-                                Integer currentPage,
-                                Integer pageSize,
-                                HttpServletRequest req);
+    IPage<CrmCustomerRisk> selectPage(CrmCustomerRiskForm crmCustomerRiskForm,
+                                      Integer currentPage,
+                                      Integer pageSize,
+                                      HttpServletRequest req);
 
     /**
      * @description 列表查询数据
      * @author  jayud
      * @date   2022-03-02
-     * @param: crmFile
+     * @param: crmCustomerRisk
      * @param: req
-     * @return: java.util.List<com.jayud.crm.model.po.CrmFile>
+     * @return: java.util.List<com.jayud.crm.model.po.CrmCustomerRisk>
      **/
-    List<CrmFile> selectList(CrmFile crmFile);
+    List<CrmCustomerRisk> selectList(CrmCustomerRisk crmCustomerRisk);
 
-
+    BaseResult saveOrUpdateCrmCustomerRisk(CrmCustomerRiskForm crmCustomerRiskForm);
 
     /**
      * @description 物理删除
@@ -76,15 +78,7 @@ public interface ICrmFileService extends IService<CrmFile> {
      * @param: req
      * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
      **/
-    List<LinkedHashMap<String, Object>> queryCrmFileForExcel(Map<String, Object> paramMap);
+    List<LinkedHashMap<String, Object>> queryCrmCustomerRiskForExcel(Map<String, Object> paramMap);
 
-    /**
-     * 文件处理
-     * @param files
-     * @param id
-     * @param code
-     */
-    void doFileProcessing(List<CrmFile> files, Long businessId, String code);
 
-    List<CrmFile> getFiles(Long id, String code);
 }

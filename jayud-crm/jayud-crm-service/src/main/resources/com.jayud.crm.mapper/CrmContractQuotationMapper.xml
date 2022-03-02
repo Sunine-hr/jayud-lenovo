@@ -30,6 +30,34 @@
         <result column="update_time" property="updateTime" />
     </resultMap>
 
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMapOne" type="com.jayud.crm.model.vo.CrmContractQuotationVO">
+        <id column="id" property="id" />
+        <result column="number" property="number" />
+        <result column="customer_id" property="customerId" />
+        <result column="customer_code" property="customerCode" />
+        <result column="customer_name" property="customerName" />
+        <result column="name" property="name" />
+        <result column="start_time" property="startTime" />
+        <result column="end_time" property="endTime" />
+        <result column="status" property="status" />
+        <result column="type" property="type" />
+        <result column="legal_entity_id" property="legalEntityId" />
+        <result column="legal_entity" property="legalEntity" />
+        <result column="user_id" property="userId" />
+        <result column="user" property="user" />
+        <result column="f_level" property="fLevel" />
+        <result column="f_step" property="fStep" />
+        <result column="check_state_flag" property="checkStateFlag" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
             id, number, customer_id, customer_code, customer_name, name, start_time, end_time, status, type, legal_entity_id, legal_entity, user_id, user, f_level, f_step, check_state_flag, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
@@ -118,7 +146,7 @@
         </where>
     </sql>
 
-    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmContractQuotation">
+    <select id="pageList" resultMap="BaseResultMapOne" parameterType="com.jayud.crm.model.po.CrmContractQuotation">
         <include refid="selects"/>
     </select>
 
@@ -221,6 +249,13 @@
                         AND remark LIKE CONCAT('%',#{remark}, '%')
                     </if>
 
+    </select>
+
+    <select id="countByTime" resultType="java.lang.Integer">
+        select count(1) from contract_quotation
+        <where>
+            DATE_FORMAT(create_time,'%Y')= DATE_FORMAT(#{now},'%Y')
+        </where>
     </select>
 
 </mapper>

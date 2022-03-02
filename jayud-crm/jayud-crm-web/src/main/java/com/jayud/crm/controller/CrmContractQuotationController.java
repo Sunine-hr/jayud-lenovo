@@ -1,7 +1,14 @@
 package com.jayud.crm.controller;
 
+import cn.hutool.core.map.MapUtil;
 import com.jayud.common.CommonResult;
+import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.entity.InitComboxVO;
+import com.jayud.common.enums.ResultEnum;
+import com.jayud.common.enums.UnitEnum;
+import com.jayud.crm.feign.OmsClient;
 import com.jayud.crm.model.bo.AddCrmContractQuotationForm;
+import com.jayud.crm.model.vo.CrmContractQuotationVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,10 +20,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.crm.service.ICrmContractQuotationService;
 import com.jayud.crm.model.po.CrmContractQuotation;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -43,6 +47,8 @@ public class CrmContractQuotationController {
 
     @Autowired
     public ICrmContractQuotationService crmContractQuotationService;
+    @Autowired
+    public OmsClient omsClient;
 
 
     /**
@@ -57,10 +63,10 @@ public class CrmContractQuotationController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<CrmContractQuotation>> selectPage(CrmContractQuotation crmContractQuotation,
-                                                              @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
-                                                              @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                                              HttpServletRequest req) {
+    public BaseResult<IPage<CrmContractQuotationVO>> selectPage(CrmContractQuotation crmContractQuotation,
+                                                                @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+                                                                @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                                HttpServletRequest req) {
         return BaseResult.ok(crmContractQuotationService.selectPage(crmContractQuotation, currentPage, pageSize, req));
     }
 
@@ -97,33 +103,22 @@ public class CrmContractQuotationController {
     }
 
 
-    /**
-     * @description 新增
-     * @author jayud
-     * @date 2022-03-01
-     * @param: crmContractQuotation
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("新增")
-    @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody CrmContractQuotation crmContractQuotation) {
-        crmContractQuotationService.save(crmContractQuotation);
-        return BaseResult.ok(SysTips.ADD_SUCCESS);
+    @ApiOperation("自动生成编号")
+    @PostMapping("/autoGenerateNum")
+    public CommonResult<String> autoGenerateNum() {
+        String num = this.crmContractQuotationService.autoGenerateNum();
+        return CommonResult.success(num);
     }
 
-
-    /**
-     * @description 编辑
-     * @author jayud
-     * @date 2022-03-01
-     * @param: crmContractQuotation
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("编辑")
-    @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody CrmContractQuotation crmContractQuotation) {
-        crmContractQuotationService.updateById(crmContractQuotation);
-        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+    @ApiOperation("获取编辑详情")
+    @PostMapping("/getEditInfoById")
+    public CommonResult<CrmContractQuotationVO> getEditInfoById(@RequestBody Map<String, Object> map) {
+        Long id = MapUtil.getLong(map, "id");
+        if (id == null) {
+            return CommonResult.error(ResultEnum.PARAM_ERROR);
+        }
+        CrmContractQuotationVO tmp = this.crmContractQuotationService.getEditInfoById(id);
+        return CommonResult.success(tmp);
     }
 
 
@@ -134,13 +129,13 @@ public class CrmContractQuotationController {
      * @param: id
      * @return: com.jayud.common.BaseResult
      **/
-    @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
-    @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id) {
-        crmContractQuotationService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
+//    @ApiOperation("物理删除")
+//    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
+//    @GetMapping("/phyDel")
+//    public BaseResult phyDel(@RequestParam Long id) {
+//        crmContractQuotationService.phyDelById(id);
+//        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//    }
 
     /**
      * @description 逻辑删除
@@ -222,4 +217,27 @@ public class CrmContractQuotationController {
     }
 
 
+    @ApiOperation(value = "录用费用页面-下拉选单位")
+    @PostMapping(value = "/initCostUnit")
+    public CommonResult<List<InitComboxStrVO>> initCostUnit() {
+        return CommonResult.success(UnitEnum.initCostUnit());
+    }
+
+    @ApiOperation(value = "初始化车型尺寸,区分车型")
+    @PostMapping(value = "/initVehicleSize")
+    public CommonResult<List<Map<String, Object>>> initVehicleSize() {
+        return omsClient.initVehicleSize();
+    }
+
+    @ApiOperation(value = "费用类别,idCode=费用名称的隐藏值")
+    @PostMapping(value = "/initCostType")
+    public CommonResult<List<InitComboxVO>> initCostType(@RequestBody Map<String, Object> param) {
+        return omsClient.initCostType(param);
+    }
+
+    @ApiOperation(value = "录入费用:应收/付项目/币种 ")
+    @PostMapping(value = "/initCost")
+    public CommonResult initCost(@RequestBody Map<String, Object> param) {
+        return omsClient.initCost(param);
+    }
 }

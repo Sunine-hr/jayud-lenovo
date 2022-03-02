@@ -84,8 +84,7 @@ public class CrmCreditVisitController {
     @ApiOperation("新增")
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody CrmCreditVisitForm crmCreditVisitForm) {
-        crmCreditVisitService.saveOrUpdateCrmCreditVisit(crmCreditVisitForm);
-        return BaseResult.ok(SysTips.ADD_SUCCESS);
+        return crmCreditVisitService.saveOrUpdateCrmCreditVisit(crmCreditVisitForm);
     }
 
 
@@ -129,9 +128,9 @@ public class CrmCreditVisitController {
      **/
     @ApiOperation("逻辑删除")
     @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
-    @PostMapping("/logicDel")
-    public BaseResult logicDel(@RequestBody List<Long> ids) {
-        crmCreditVisitService.logicDel(ids);
+    @GetMapping("/logicDel")
+    public BaseResult logicDel(@RequestParam Long id) {
+        crmCreditVisitService.logicDel(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 

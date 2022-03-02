@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.crm.mapper.CrmCustomerRiskMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCustomerRisk">
+        <id column="id" property="id"/>
+        <result column="cust_id" property="custId"/>
+        <result column="cust_name" property="custName"/>
+        <result column="risk_type" property="riskType"/>
+        <result column="introduction" property="introduction"/>
+        <result column="tenant_code" property="tenantCode"/>
+        <result column="remark" property="remark"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="un_credit_code" property="unCreditCode"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, cust_id, cust_name, risk_type, introduction, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time, un_credit_code
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">crm_customer_risk </sql>
+
+    <sql id="selects">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="crmCustomerRisk.custId != null ">
+                AND cust_id = ${crmCustomerRisk.custId}
+            </if>
+
+            <if test="crmCustomerRisk.custName != null and crmCustomerRisk.custName != ''">
+                AND cust_name LIKE CONCAT('%',#{crmCustomerRisk.custName},'%')
+            </if>
+
+            <if test="crmCustomerRisk.riskType != null and crmCustomerRisk.riskType != ''">
+                AND risk_type LIKE CONCAT('%',#{crmCustomerRisk.riskType},'%')
+            </if>
+
+            <if test="crmCustomerRisk.introduction != null and crmCustomerRisk.introduction != ''">
+                AND introduction LIKE CONCAT('%',#{crmCustomerRisk.introduction},'%')
+            </if>
+
+            <if test="crmCustomerRisk.tenantCode != null and crmCustomerRisk.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{crmCustomerRisk.tenantCode},'%')
+            </if>
+
+            <if test="crmCustomerRisk.remark != null and crmCustomerRisk.remark != ''">
+                AND remark LIKE CONCAT('%',#{crmCustomerRisk.remark},'%')
+            </if>
+
+            <if test="crmCustomerRisk.unCreditCode != null and crmCustomerRisk.unCreditCode != ''">
+                AND un_credit_code LIKE CONCAT('%',#{crmCustomerRisk.unCreditCode},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList"  parameterType="com.jayud.crm.model.bo.CrmCustomerRiskForm"  resultType="com.jayud.crm.model.po.CrmCustomerRisk">
+
+        SELECT
+        id,
+        cust_id,
+        cust_name,
+        risk_type,
+        introduction,
+        tenant_code,
+        remark,
+        is_deleted,
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        un_credit_code
+        FROM
+        crm_customer_risk
+        where
+        <if test="crmCustomerRisk.custName != null and crmCustomerRisk.custName != ''">
+            AND cust_name LIKE CONCAT('%',#{crmCustomerRisk.custName},'%')
+        </if>
+        <if test="crmCustomerRisk.creationTime != null and crmCustomerRisk.creationTime.length>0">
+            and create_time <![CDATA[ >= ]]> #{crmCustomerRisk.creationTime[0]}
+            and create_time <![CDATA[ <= ]]> #{crmCustomerRisk.creationTime[1]}
+        </if>
+        ORDER BY  create_time DESC
+
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerRisk">
+        <include refid="selects"/>
+    </select>
+
+
+    <delete id="phyDelById">
+        DELETE FROM  crm_customer_risk WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE crm_customer_risk SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCrmCustomerRiskForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+        id 'id',
+        cust_id 'custId',
+        cust_name 'custName',
+        risk_type 'riskType',
+        introduction 'introduction',
+        tenant_code 'tenantCode',
+        remark 'remark',
+        is_deleted 'isDeleted',
+        create_by 'createBy',
+        create_time 'createTime',
+        update_by 'updateBy',
+        update_time 'updateTime',
+        un_credit_code 'unCreditCode'
+        FROM crm_customer_risk
+        WHERE is_deleted = 0
+        <if test="custId != null ">
+            AND cust_id = #{custId}
+        </if>
+        <if test="custName != null and custName != ''">
+            AND cust_name LIKE CONCAT('%',#{custName}, '%')
+        </if>
+        <if test="riskType != null and riskType != ''">
+            AND risk_type LIKE CONCAT('%',#{riskType}, '%')
+        </if>
+        <if test="introduction != null and introduction != ''">
+            AND introduction LIKE CONCAT('%',#{introduction}, '%')
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark LIKE CONCAT('%',#{remark}, '%')
+        </if>
+        <if test="unCreditCode != null and unCreditCode != ''">
+            AND un_credit_code LIKE CONCAT('%',#{unCreditCode}, '%')
+        </if>
+
+    </select>
+
+</mapper>

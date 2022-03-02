@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.crm.model.bo.AddCrmContractQuotationForm;
 import com.jayud.crm.model.po.CrmContractQuotation;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.crm.model.vo.CrmContractQuotationVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -31,7 +32,7 @@ public interface ICrmContractQuotationService extends IService<CrmContractQuotat
      * @param: req
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmContractQuotation>
      **/
-    IPage<CrmContractQuotation> selectPage(CrmContractQuotation crmContractQuotation,
+    IPage<CrmContractQuotationVO> selectPage(CrmContractQuotation crmContractQuotation,
                                 Integer currentPage,
                                 Integer pageSize,
                                 HttpServletRequest req);
@@ -92,4 +93,8 @@ public interface ICrmContractQuotationService extends IService<CrmContractQuotat
      * @return
      */
     boolean exitNumber(String number);
+
+    String autoGenerateNum();
+
+    CrmContractQuotationVO getEditInfoById(Long id);
 }

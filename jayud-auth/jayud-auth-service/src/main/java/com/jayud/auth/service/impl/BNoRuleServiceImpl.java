@@ -72,6 +72,7 @@ public class BNoRuleServiceImpl extends ServiceImpl<BNoRuleMapper, BNoRule> impl
     public BNoRule getNoRulesBySheetCode(String sheetCode) {
 
         return bNoRuleMapper.getNoRulesBySheetCode(sheetCode);
+    }
     public String getOrder(String code,  Date  date) {
         HashMap<String,Object> map = new HashMap<>();
         map.put("i_code",code);

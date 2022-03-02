@@ -96,8 +96,7 @@ public class BNoRule extends SysBaseEntity {
     private LocalDateTime voidedByDtm;
     private Integer isDelete;
 
-    @ApiModelProperty(value = "两次审核能否为同一个人")
-    private Boolean check;
+
 
 
 }

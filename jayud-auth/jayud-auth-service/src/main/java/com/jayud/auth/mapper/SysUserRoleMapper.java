@@ -65,5 +65,29 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
 
     int updateSysUserRoleMultiRow( @Param("sysUserRole") SysUserRole sysUserRole);
 
+    /**
+     * 判断用户有没有管理员权限
+     * @param username
+     * @param admin
+     * @return
+     */
     int getCountByUserNameAndRoleName(@Param("username") String username, @Param("admin")String admin,@Param("tenantCode") String tenantCode);
+
+    /**
+     * 判断该用户是否有按钮权限
+     * @param username
+     * @param userTenantCode
+     * @return
+     */
+    int getCountByUserName(@Param("username")String username,@Param("userTenantCode") String userTenantCode,@Param("menuCode") String menuCode);
+
+    /**
+     * 判断用户是否有该级别的审核权限
+     * @param username
+     * @param userTenantCode
+     * @param menuCode
+     * @param newStep
+     * @return
+     */
+    int getCountByUserNameAndStep(@Param("username")String username, @Param("userTenantCode")String userTenantCode, @Param("menuCode")String menuCode, @Param("newStep")Integer newStep);
 }

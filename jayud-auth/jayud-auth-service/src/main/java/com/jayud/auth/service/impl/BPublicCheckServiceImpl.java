@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.bo.CheckForm;
 import com.jayud.auth.model.po.BNoRule;
-import com.jayud.auth.service.IBNoRuleService;
-import com.jayud.auth.service.IPublicCheckService;
-import com.jayud.auth.service.ISysRoleService;
-import com.jayud.auth.service.ISysUserRoleService;
+import com.jayud.auth.model.vo.SysUserVO;
+import com.jayud.auth.service.*;
 import com.jayud.common.BaseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +41,9 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
 
     @Autowired
     private ISysUserRoleService sysUserRoleService;
+
+    @Autowired
+    private ISysUserService sysUserService;
 
     @Override
     public IPage<BPublicCheck> selectPage(BPublicCheck bPublicCheck,
@@ -79,6 +81,9 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         BNoRule bNoRule = bNoRuleService.getNoRulesBySheetCode(checkForm.getSheetCode());
         String checkTable = bNoRule.getCheckTable();
 
+        //获取当前登录用户
+        SysUserVO systemUserByName = sysUserService.getSystemUserByName(CurrentUserUtil.getUsername());
+
         //根据id获取当前记录
         Map<String,Object> map = new HashMap<>();
         if(null == bNoRule.getCheckDatabase()){
@@ -90,46 +95,140 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         //判断当前单据审核状态  s_level <= s_step  已审核完成
         Integer sLevel = (Integer)map.get("sLevel");
         Integer sStep = (Integer)map.get("sStep");
+        Integer newStep = sStep + 1;
         if(sLevel <= sStep){
             return BaseResult.error(444,"该订单已审核完成");
         }
         //当前用户不为管理员，判断该用户的审核权限
-        int count = sysUserRoleService.getCountByUserNameAndRoleName(CurrentUserUtil.getUsername(),"super_admin",CurrentUserUtil.getUserTenantCode());
+        int count = sysUserRoleService.getCountByUserNameAndRoleName(systemUserByName.getName(),"super_admin",systemUserByName.getTenantCode());
         if(count <= 0){
             //判断该用户有无审核按钮权限
-            int check = sysUserRoleService.getCountByUserNameAndRoleName(CurrentUserUtil.getUsername(),"super_admin",CurrentUserUtil.getUserTenantCode());
+            int check = sysUserRoleService.getCountByUserName(systemUserByName.getName(),systemUserByName.getTenantCode(),checkForm.getMenuCode());
+            if(check<=0){
+                return BaseResult.error(444,"没有审核按钮权限");
+            }
             //判断该用户是否有该级审核权限
+            int checkCount = sysUserRoleService.getCountByUserNameAndStep(systemUserByName.getName(),systemUserByName.getTenantCode(),checkForm.getMenuCode(),newStep);
+            if(checkCount <= 0){
+                return BaseResult.error(444,"没有该级别审核权限");
+            }
             //判断是否审核金额  暂时不控制
 
             //判断连续两次审核能否为同一人
-
+            if(bNoRule.getCheck() && sStep != 0){
+                BPublicCheck bPublicCheck = this.baseMapper.getPublicCheckByRecordId(checkForm.getSheetCode(),checkForm.getRecordId(),1);
+                if(bPublicCheck.getFCheckName().equals(CurrentUserUtil.getUsername())){
+                    return BaseResult.error(444,"连续两次审核不能为同一人");
+                }
+            }
         }
 
-
         //执行审核
+        int update;
+        String checkFlag = "N"+sStep;
+        if(null == bNoRule.getCheckDatabase()){
+            update  = bPublicCheckMapper.updateData(checkForm.getRecordId(),checkTable,newStep,checkFlag,systemUserByName.getId(),LocalDateTime.now(),systemUserByName.getName());
+        }else{
+            update   = bPublicCheckMapper.updateCheckData(checkForm.getRecordId(),checkTable,bNoRule.getCheckDatabase(),newStep,checkFlag,systemUserByName.getId(),LocalDateTime.now(),systemUserByName.getName());
+        }
+        if(update != 0){
+            return BaseResult.error(444,"审核失败，修改订单审核状态失败");
+        }
 
         //添加审核记录
-
-        return null;
+        BPublicCheck bPublicCheck = new BPublicCheck();
+        bPublicCheck.setTableName(checkForm.getSheetCode());
+        bPublicCheck.setCheckFlag(1);
+        bPublicCheck.setRecordId(checkForm.getRecordId());
+        bPublicCheck.setFLevel(sLevel);
+        bPublicCheck.setFStep(newStep);
+        bPublicCheck.setFCheckId(systemUserByName.getId());
+        bPublicCheck.setCrtBy(systemUserByName.getId());
+        bPublicCheck.setCrtByDtm(LocalDateTime.now());
+        bPublicCheck.setCrtByName(systemUserByName.getName());
+        boolean save = this.save(bPublicCheck);
+        if(!save){
+            return BaseResult.error(444,"审核失败，添加审核数据失败");
+        }
+        log.warn("审核成功");
+        return BaseResult.ok("审核成功");
     }
 
     @Override
     public BaseResult unCheck(CheckForm checkForm) {
         //根据当前单据编号获取表名、库名
+        BNoRule bNoRule = bNoRuleService.getNoRulesBySheetCode(checkForm.getSheetCode());
+        String checkTable = bNoRule.getCheckTable();
+
+        //获取当前登录用户
+        SysUserVO systemUserByName = sysUserService.getSystemUserByName(CurrentUserUtil.getUsername());
 
         //根据id获取当前记录
-
+        Map<String,Object> map = new HashMap<>();
+        if(null == bNoRule.getCheckDatabase()){
+            map  = bPublicCheckMapper.getData(checkForm.getRecordId(),checkTable);
+        }else{
+            map  = bPublicCheckMapper.getCheckData(checkForm.getRecordId(),checkTable,bNoRule.getCheckDatabase());
+        }
         //判断当前审核步长  为0 当前订单未审核
-
+        Integer sLevel = (Integer)map.get("sLevel");
+        Integer sStep = (Integer)map.get("sStep");
+        Integer newStep = sStep - 1;
+        if(sStep != 0){
+            return BaseResult.error(444,"该订单还未审核，无法反审");
+        }
         //当前用户不为管理员，判断该用户的审核权限
-        //判断该用户有无审核按钮权限
-        //判断该用户是否有该级审核权限
-        //判断是否审核金额  暂时不控制
+        int count = sysUserRoleService.getCountByUserNameAndRoleName(systemUserByName.getName(),"super_admin",systemUserByName.getTenantCode());
+        if(count <= 0){
+            //判断该用户有无审核按钮权限
+            int check = sysUserRoleService.getCountByUserName(systemUserByName.getName(),systemUserByName.getTenantCode(),checkForm.getMenuCode());
+            if(check<=0){
+                return BaseResult.error(444,"没有反审核按钮权限");
+            }
+            //判断该用户是否有该级审核权限
+            int checkCount = sysUserRoleService.getCountByUserNameAndStep(systemUserByName.getName(),systemUserByName.getTenantCode(),checkForm.getMenuCode(),newStep);
+            if(checkCount <= 0){
+                return BaseResult.error(444,"没有该级别反审核权限");
+            }
+            //判断是否审核金额  暂时不控制
 
+            //判断连续两次审核能否为同一人
+            if(bNoRule.getCheck() && sStep != 0){
+                BPublicCheck bPublicCheck = this.baseMapper.getPublicCheckByRecordId(checkForm.getSheetCode(),checkForm.getRecordId(),0);
+                if(bPublicCheck.getFCheckName().equals(CurrentUserUtil.getUsername())){
+                    return BaseResult.error(444,"连续两次反审核不能为同一人");
+                }
+            }
+        }
         //执行反审核
+        int update;
+        String checkFlag = "N"+sStep;
+        if(null == bNoRule.getCheckDatabase()){
+            update  = bPublicCheckMapper.updateData(checkForm.getRecordId(),checkTable,newStep,checkFlag,systemUserByName.getId(),LocalDateTime.now(),systemUserByName.getName());
+        }else{
+            update   = bPublicCheckMapper.updateCheckData(checkForm.getRecordId(),checkTable,bNoRule.getCheckDatabase(),newStep,checkFlag,systemUserByName.getId(),LocalDateTime.now(),systemUserByName.getName());
+        }
+        if(update != 0){
+            return BaseResult.error(444,"反审核失败，修改订单审核状态失败");
+        }
 
         //添加反审核记录
-        return null;
+        BPublicCheck bPublicCheck = new BPublicCheck();
+        bPublicCheck.setTableName(checkForm.getSheetCode());
+        bPublicCheck.setCheckFlag(0);
+        bPublicCheck.setRecordId(checkForm.getRecordId());
+        bPublicCheck.setFLevel(sLevel);
+        bPublicCheck.setFStep(newStep);
+        bPublicCheck.setFCheckId(systemUserByName.getId());
+        bPublicCheck.setCrtBy(systemUserByName.getId());
+        bPublicCheck.setCrtByDtm(LocalDateTime.now());
+        bPublicCheck.setCrtByName(systemUserByName.getName());
+        boolean save = this.save(bPublicCheck);
+        if(!save){
+            return BaseResult.error(444,"反审核失败，添加反审核数据失败");
+        }
+        log.warn("反审核成功");
+        return BaseResult.ok("反审核成功");
     }
 
 }

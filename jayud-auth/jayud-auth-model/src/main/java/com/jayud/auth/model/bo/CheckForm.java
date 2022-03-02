@@ -18,6 +18,8 @@ public class CheckForm extends BasePageForm {
     @NotBlank(message = "记录id，不能为空")
     private Long recordId;
 
-
+    @ApiModelProperty(value = "按钮code")
+    @NotBlank(message = "按钮code，不能为空")
+    private String menuCode;
 
 }

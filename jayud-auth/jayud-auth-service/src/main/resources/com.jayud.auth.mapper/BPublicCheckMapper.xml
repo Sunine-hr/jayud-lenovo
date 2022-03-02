@@ -106,4 +106,16 @@
         select * from #{checkDatabase}.#{checkTable} where id = #{recordId}
     </select>
 
+    <select id="getPublicCheckByRecordId" resultType="map" >
+        select *,max (crt_by_dtm) from b_public_check where id = #{recordId} and check_flag = #{checkFlag} and table_name = #{sheetCode}
+    </select>
+
+    <select id="updateData" resultType="int" >
+        update set  from #{checkTable} where id = #{recordId}
+    </select>
+
+    <select id="updateCheckData" resultType="int" >
+        update * from #{checkDatabase}.#{checkTable} where id = #{recordId}
+    </select>
+
 </mapper>

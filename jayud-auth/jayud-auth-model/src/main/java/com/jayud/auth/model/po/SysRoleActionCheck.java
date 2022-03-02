@@ -17,40 +17,34 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 /**
- * BPublicCheck 实体类
+ * SysRoleActionCheck 实体类
  *
  * @author jayud
- * @since 2022-02-28
+ * @since 2022-03-01
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="审核记录表对象", description="审核记录表")
-public class BPublicCheck extends SysBaseEntity {
+@ApiModel(value="角色审核级别权限对象", description="角色审核级别权限")
+public class SysRoleActionCheck extends SysBaseEntity {
 
 
-    @ApiModelProperty(value = "表名")
-    private String tableName;
+    @ApiModelProperty(value = "角色ID")
+    private Long roleId;
 
-    @ApiModelProperty(value = "操作,1审核，0反审")
-    private Integer checkFlag;
+    @ApiModelProperty(value = "权限ID")
+    private Long actionId;
 
-    @ApiModelProperty(value = "记录ID")
-    private Long recordId;
+    @ApiModelProperty(value = "审核CODE")
+    private String actionCode;
 
-    @ApiModelProperty(value = "需要审核级别")
-    private Integer fLevel;
+    @ApiModelProperty(value = "审核级别")
+    private Integer checkLevel;
 
-    @ApiModelProperty(value = "当前审核级别")
-    private Integer fStep;
+    @ApiModelProperty(value = "权限最高金额,0不限制")
+    private BigDecimal checkMoney;
 
     @ApiModelProperty(value = "备注")
     private String remark;
-
-    @ApiModelProperty(value = "审核人ID")
-    private Long fCheckId;
-
-    @ApiModelProperty(value = "审核人名称")
-    private String fCheckName;
 
     @ApiModelProperty(value = "创建人ID")
     private Long crtBy;
@@ -63,5 +57,20 @@ public class BPublicCheck extends SysBaseEntity {
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime crtByDtm;
 
+    @ApiModelProperty(value = "最后修改人ID")
+    private Long mdyBy;
+
+    @ApiModelProperty(value = "最后修改人名称")
+    private String mdyByName;
+
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @ApiModelProperty(value = "最后修改时间")
+    private LocalDateTime mdyByDtm;
+
+
+    @ApiModelProperty(value = "删除标记")
+    @TableLogic
+    private Boolean isDeleted;
 
 }

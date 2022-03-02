@@ -67,10 +67,31 @@
 
     <update id="getCountByUserNameAndRoleName" >
         select count(*) from sys_user_role s
-        left join sys_role sr on su.id = s.role_id and sr.is_deleted = 0
-        left join sys_user su on s.user_id = sr.id and sr.is_deleted = 0
+        left join sys_role sr on sr.id = s.role_id and sr.is_deleted = 0
+        left join sys_user su on s.user_id = su.id and su.is_deleted = 0
         where is_deleted = 0
         and su.name = #{username} and sr.role_name = #{admin} and su.tenant_code = #{tenantCode}
+    </update>
+
+    <update id="getCountByUserName" >
+        select count(*) from sys_user_role s
+        left join sys_role sr on sr.id = s.role_id and sr.is_deleted = 0
+        left join sys_user su on s.user_id = su.id and su.is_deleted = 0
+        left join sys_role_menu srm on srm.role_id = sr.id and srm.is_deleted = 0
+        left join sys_menu sm on sm.id = srm.menu_id and sm.is_deleted = 0
+        where is_deleted = 0
+        and su.name = #{username} and sm.code = #{menuCode} and su.tenant_code = #{tenantCode}
+    </update>
+
+    <update id="getCountByUserNameAndStep" >
+        select count(*) from sys_user_role s
+        left join sys_role sr on sr.id = s.role_id and sr.is_deleted = 0
+        left join sys_user su on s.user_id = su.id and su.is_deleted = 0
+        left join sys_role_menu srm on srm.role_id = sr.id and srm.is_deleted = 0
+        left join sys_menu sm on sm.id = srm.menu_id and sm.is_deleted = 0
+        left join sys_role_action_check srac on sm.id = srac.action_id and srac.is_deleted = 0
+        where is_deleted = 0
+        and su.name = #{username} and sm.code = #{menuCode} and su.tenant_code = #{userTenantCode} and srac.check_level = #{newStep}
     </update>
 
 

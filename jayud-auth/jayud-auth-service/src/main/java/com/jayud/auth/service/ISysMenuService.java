@@ -90,6 +90,13 @@ public interface ISysMenuService extends IService<SysMenu> {
     List<LinkedHashMap<String, Object>> exportSysMenu(SysMenu sysMenu);
 
     /**
+     * 根据菜单id集合，获取菜单数据
+     * @param actionIds
+     * @return
+     */
+    List<SysMenu> getByIds(List<Integer> actionIds);
+
+    /**
      * 获取当前用户的菜单及其按钮
      * @return
      */

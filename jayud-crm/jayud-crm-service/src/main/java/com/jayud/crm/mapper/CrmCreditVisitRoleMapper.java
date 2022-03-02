@@ -24,8 +24,8 @@ public interface CrmCreditVisitRoleMapper extends BaseMapper<CrmCreditVisitRole>
 
     /**
      * @description 分页查询
-     * @author  jayud
-     * @date   2022-03-02
+     * @author jayud
+     * @date 2022-03-02
      * @param: page
      * @param: crmCreditVisitRole
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCreditVisitRole>
@@ -34,8 +34,8 @@ public interface CrmCreditVisitRoleMapper extends BaseMapper<CrmCreditVisitRole>
 
     /**
      * @description 列表查询数据
-     * @author  jayud
-     * @date   2022-03-02
+     * @author jayud
+     * @date 2022-03-02
      * @param: crmCreditVisitRole
      * @return: java.util.List<com.jayud.crm.model.po.CrmCreditVisitRole>
      **/
@@ -44,8 +44,8 @@ public interface CrmCreditVisitRoleMapper extends BaseMapper<CrmCreditVisitRole>
 
     /**
      * @description 根据id物理删除
-     * @author  jayud
-     * @date   2022-03-02
+     * @author jayud
+     * @date 2022-03-02
      * @param: id
      * @return: int
      **/
@@ -53,11 +53,15 @@ public interface CrmCreditVisitRoleMapper extends BaseMapper<CrmCreditVisitRole>
 
     /**
      * @description 根据id逻辑删除
-     * @author  jayud
-     * @date   2022-03-02
+     * @author jayud
+     * @date 2022-03-02
      * @param: id
      * @param: username
      * @return: int
      **/
-    int logicDel(@Param("id") Long id,@Param("username") String username);
+    int logicDel(@Param("id") Long id, @Param("username") String username);
+
+
+    int updateCrmCreditVisitRole(@Param("crmCreditVisitRole") CrmCreditVisitRole crmCreditVisitRole);
+
 }

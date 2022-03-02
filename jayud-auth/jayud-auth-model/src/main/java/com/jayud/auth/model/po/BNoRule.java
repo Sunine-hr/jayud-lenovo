@@ -20,6 +20,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
  * BNoRule 实体类
  *
  * @author jayud
+ * @since 2022-03-02
  * @since 2022-03-01
  */
 @Data
@@ -93,6 +94,9 @@ public class BNoRule extends SysBaseEntity {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @ApiModelProperty(value = "删除时间")
     private LocalDateTime voidedByDtm;
+    private Integer isDelete;
+
+
 
 
 }

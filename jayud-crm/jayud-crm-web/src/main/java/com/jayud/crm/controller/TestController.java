@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 @Slf4j
 @Api(tags = "测试信息")
 @RestController
@@ -37,4 +39,10 @@ public class TestController {
         return BaseResult.ok(baseResult);
     }
 
+    @GetMapping(value="/testdate")
+    public BaseResult testdate(@RequestParam String dictCode){
+        BaseResult orderFeign = authClient.getOrderFeign(dictCode, new Date());
+        System.out.println("时间："+orderFeign);
+        return BaseResult.ok(orderFeign);
+    }
 }

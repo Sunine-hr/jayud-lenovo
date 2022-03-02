@@ -128,4 +128,16 @@
         select * from b_no_rule where no_code = #{sheetCode}
     </select>
 
+
+    <select id="getOrderNo" parameterType="map" statementType="CALLABLE" resultType="java.util.HashMap">
+        {
+        call up_get_no(
+        #{i_code,mode=IN},
+        #{i_date,mode=IN},
+        #{o_no,mode=OUT,jdbcType=VARCHAR}
+        )
+        }
+    </select>
+
+
 </mapper>

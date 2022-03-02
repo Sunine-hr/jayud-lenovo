@@ -1,8 +1,8 @@
-package com.jayud.auth.service;
+package com.jayud.crm.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.auth.model.po.BNoRule;
+import com.jayud.crm.model.po.CrmCreditVisitRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,29 +10,27 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.time.LocalDateTime;
-import java.util.*;
 
 /**
- * 编号规则表 服务类
+ * 客户走访记录-拜访人员(员工表)关联表 服务类
  *
  * @author jayud
- * @since 2022-03-01
+ * @since 2022-03-02
  */
-public interface IBNoRuleService extends IService<BNoRule> {
+public interface ICrmCreditVisitRoleService extends IService<CrmCreditVisitRole> {
 
 
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-03-01
-     * @param: bNoRule
+     * @date   2022-03-02
+     * @param: crmCreditVisitRole
      * @param: currentPage
      * @param: pageSize
      * @param: req
-     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.BNoRule>
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCreditVisitRole>
      **/
-    IPage<BNoRule> selectPage(BNoRule bNoRule,
+    IPage<CrmCreditVisitRole> selectPage(CrmCreditVisitRole crmCreditVisitRole,
                                 Integer currentPage,
                                 Integer pageSize,
                                 HttpServletRequest req);
@@ -40,19 +38,19 @@ public interface IBNoRuleService extends IService<BNoRule> {
     /**
      * @description 列表查询数据
      * @author  jayud
-     * @date   2022-03-01
-     * @param: bNoRule
+     * @date   2022-03-02
+     * @param: crmCreditVisitRole
      * @param: req
-     * @return: java.util.List<com.jayud.auth.model.po.BNoRule>
+     * @return: java.util.List<com.jayud.crm.model.po.CrmCreditVisitRole>
      **/
-    List<BNoRule> selectList(BNoRule bNoRule);
+    List<CrmCreditVisitRole> selectList(CrmCreditVisitRole crmCreditVisitRole);
 
 
 
     /**
      * @description 物理删除
      * @author  jayud
-     * @date   2022-03-01
+     * @date   2022-03-02
      * @param: id
      * @return: void
      **/
@@ -62,22 +60,13 @@ public interface IBNoRuleService extends IService<BNoRule> {
     /**
     * @description 逻辑删除
     * @author  jayud
-    * @date   2022-03-01
+    * @date   2022-03-02
     * @param: id
     * @return: com.jyd.component.commons.result.Result
     **/
     void logicDel(Long id);
 
-    /**
-     * 根据code获取单据
-     * @param sheetCode
-     * @return
-     */
-    BNoRule getNoRulesBySheetCode(String sheetCode);
 
 
-
-    //获得单号
-    String getOrder(String code, Date date);
 
 }

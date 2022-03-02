@@ -1,6 +1,6 @@
-package com.jayud.auth.mapper;
+package com.jayud.crm.mapper;
 
-import com.jayud.auth.model.po.BNoRule;
+import com.jayud.crm.model.po.CrmCreditVisitRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -14,39 +14,38 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 编号规则表 Mapper 接口
+ * 客户走访记录-拜访人员(员工表)关联表 Mapper 接口
  *
  * @author jayud
- * @since 2022-03-01
  * @since 2022-03-02
  */
 @Mapper
-public interface BNoRuleMapper extends BaseMapper<BNoRule> {
+public interface CrmCreditVisitRoleMapper extends BaseMapper<CrmCreditVisitRole> {
 
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-03-01
+     * @date   2022-03-02
      * @param: page
-     * @param: bNoRule
-     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.BNoRule>
+     * @param: crmCreditVisitRole
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCreditVisitRole>
      **/
-    IPage<BNoRule> pageList(@Param("page") Page<BNoRule> page, @Param("bNoRule") BNoRule bNoRule);
+    IPage<CrmCreditVisitRole> pageList(@Param("page") Page<CrmCreditVisitRole> page, @Param("crmCreditVisitRole") CrmCreditVisitRole crmCreditVisitRole);
 
     /**
      * @description 列表查询数据
      * @author  jayud
-     * @date   2022-03-01
-     * @param: bNoRule
-     * @return: java.util.List<com.jayud.auth.model.po.BNoRule>
+     * @date   2022-03-02
+     * @param: crmCreditVisitRole
+     * @return: java.util.List<com.jayud.crm.model.po.CrmCreditVisitRole>
      **/
-    List<BNoRule> list(@Param("bNoRule") BNoRule bNoRule);
+    List<CrmCreditVisitRole> list(@Param("crmCreditVisitRole") CrmCreditVisitRole crmCreditVisitRole);
 
 
     /**
      * @description 根据id物理删除
      * @author  jayud
-     * @date   2022-03-01
+     * @date   2022-03-02
      * @param: id
      * @return: int
      **/
@@ -55,19 +54,10 @@ public interface BNoRuleMapper extends BaseMapper<BNoRule> {
     /**
      * @description 根据id逻辑删除
      * @author  jayud
-     * @date   2022-03-01
+     * @date   2022-03-02
      * @param: id
      * @param: username
      * @return: int
      **/
     int logicDel(@Param("id") Long id,@Param("username") String username);
-
-    /**
-     * 根据code获取单据
-     * @param sheetCode
-     * @return
-     */
-    BNoRule getNoRulesBySheetCode(@Param("sheetCode") String sheetCode);
-    //获得单号
-    void getOrderNo(Map<String,Object> map);
 }

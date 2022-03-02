@@ -1,6 +1,6 @@
-package com.jayud.auth.mapper;
+package com.jayud.crm.mapper;
 
-import com.jayud.auth.model.po.BNoRule;
+import com.jayud.crm.model.po.CrmContractQuotation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -14,33 +14,32 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 编号规则表 Mapper 接口
+ * 合同报价 Mapper 接口
  *
  * @author jayud
  * @since 2022-03-01
- * @since 2022-03-02
  */
 @Mapper
-public interface BNoRuleMapper extends BaseMapper<BNoRule> {
+public interface CrmContractQuotationMapper extends BaseMapper<CrmContractQuotation> {
 
     /**
      * @description 分页查询
      * @author  jayud
      * @date   2022-03-01
      * @param: page
-     * @param: bNoRule
-     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.BNoRule>
+     * @param: crmContractQuotation
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmContractQuotation>
      **/
-    IPage<BNoRule> pageList(@Param("page") Page<BNoRule> page, @Param("bNoRule") BNoRule bNoRule);
+    IPage<CrmContractQuotation> pageList(@Param("page") Page<CrmContractQuotation> page, @Param("crmContractQuotation") CrmContractQuotation crmContractQuotation);
 
     /**
      * @description 列表查询数据
      * @author  jayud
      * @date   2022-03-01
-     * @param: bNoRule
-     * @return: java.util.List<com.jayud.auth.model.po.BNoRule>
+     * @param: crmContractQuotation
+     * @return: java.util.List<com.jayud.crm.model.po.CrmContractQuotation>
      **/
-    List<BNoRule> list(@Param("bNoRule") BNoRule bNoRule);
+    List<CrmContractQuotation> list(@Param("crmContractQuotation") CrmContractQuotation crmContractQuotation);
 
 
     /**
@@ -62,12 +61,13 @@ public interface BNoRuleMapper extends BaseMapper<BNoRule> {
      **/
     int logicDel(@Param("id") Long id,@Param("username") String username);
 
+
     /**
-     * 根据code获取单据
-     * @param sheetCode
-     * @return
-     */
-    BNoRule getNoRulesBySheetCode(@Param("sheetCode") String sheetCode);
-    //获得单号
-    void getOrderNo(Map<String,Object> map);
+     * @description 查询导出
+     * @author  jayud
+     * @date   2022-03-01
+     * @param: paramMap
+     * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
+     **/
+    List<LinkedHashMap<String, Object>> queryCrmContractQuotationForExcel(Map<String, Object> paramMap);
 }

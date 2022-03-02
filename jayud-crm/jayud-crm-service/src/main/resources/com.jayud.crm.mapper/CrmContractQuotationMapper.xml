@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.crm.mapper.CrmContractQuotationMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmContractQuotation">
+        <id column="id" property="id" />
+        <result column="number" property="number" />
+        <result column="customer_id" property="customerId" />
+        <result column="customer_code" property="customerCode" />
+        <result column="customer_name" property="customerName" />
+        <result column="name" property="name" />
+        <result column="start_time" property="startTime" />
+        <result column="end_time" property="endTime" />
+        <result column="status" property="status" />
+        <result column="type" property="type" />
+        <result column="legal_entity_id" property="legalEntityId" />
+        <result column="legal_entity" property="legalEntity" />
+        <result column="user_id" property="userId" />
+        <result column="user" property="user" />
+        <result column="f_level" property="fLevel" />
+        <result column="f_step" property="fStep" />
+        <result column="check_state_flag" property="checkStateFlag" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, number, customer_id, customer_code, customer_name, name, start_time, end_time, status, type, legal_entity_id, legal_entity, user_id, user, f_level, f_step, check_state_flag, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">crm_contract_quotation </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="crmContractQuotation.number != null and crmContractQuotation.number != ''">
+                AND number LIKE CONCAT('%',#{crmContractQuotation.number},'%')
+            </if>
+
+            <if test="crmContractQuotation.customerId != null and crmContractQuotation.customerId != ''">
+                AND customer_id LIKE CONCAT('%',#{crmContractQuotation.customerId},'%')
+            </if>
+
+            <if test="crmContractQuotation.customerCode != null and crmContractQuotation.customerCode != ''">
+                AND customer_code LIKE CONCAT('%',#{crmContractQuotation.customerCode},'%')
+            </if>
+
+            <if test="crmContractQuotation.customerName != null and crmContractQuotation.customerName != ''">
+                AND customer_name LIKE CONCAT('%',#{crmContractQuotation.customerName},'%')
+            </if>
+
+            <if test="crmContractQuotation.name != null and crmContractQuotation.name != ''">
+                AND name LIKE CONCAT('%',#{crmContractQuotation.name},'%')
+            </if>
+
+            <if test="crmContractQuotation.startTime != null ">
+                AND start_time = ${crmContractQuotation.startTime}
+            </if>
+
+            <if test="crmContractQuotation.endTime != null ">
+                AND end_time = ${crmContractQuotation.endTime}
+            </if>
+
+            <if test="crmContractQuotation.status != null ">
+                AND status = ${crmContractQuotation.status}
+            </if>
+
+            <if test="crmContractQuotation.type != null ">
+                AND type = ${crmContractQuotation.type}
+            </if>
+
+            <if test="crmContractQuotation.legalEntityId != null ">
+                AND legal_entity_id = ${crmContractQuotation.legalEntityId}
+            </if>
+
+            <if test="crmContractQuotation.legalEntity != null ">
+                AND legal_entity = ${crmContractQuotation.legalEntity}
+            </if>
+
+            <if test="crmContractQuotation.userId != null ">
+                AND user_id = ${crmContractQuotation.userId}
+            </if>
+
+            <if test="crmContractQuotation.user != null and crmContractQuotation.user != ''">
+                AND user LIKE CONCAT('%',#{crmContractQuotation.user},'%')
+            </if>
+
+            <if test="crmContractQuotation.fLevel != null ">
+                AND f_level = ${crmContractQuotation.fLevel}
+            </if>
+
+            <if test="crmContractQuotation.fStep != null ">
+                AND f_step = ${crmContractQuotation.fStep}
+            </if>
+
+            <if test="crmContractQuotation.checkStateFlag != null and crmContractQuotation.checkStateFlag != ''">
+                AND check_state_flag LIKE CONCAT('%',#{crmContractQuotation.checkStateFlag},'%')
+            </if>
+
+            <if test="crmContractQuotation.tenantCode != null and crmContractQuotation.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{crmContractQuotation.tenantCode},'%')
+            </if>
+
+            <if test="crmContractQuotation.remark != null and crmContractQuotation.remark != ''">
+                AND remark LIKE CONCAT('%',#{crmContractQuotation.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmContractQuotation">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmContractQuotation">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  crm_contract_quotation WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE crm_contract_quotation SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCrmContractQuotationForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            number 'number',
+            customer_id 'customerId',
+            customer_code 'customerCode',
+            customer_name 'customerName',
+            name 'name',
+            start_time 'startTime',
+            end_time 'endTime',
+            status 'status',
+            type 'type',
+            legal_entity_id 'legalEntityId',
+            legal_entity 'legalEntity',
+            user_id 'userId',
+            user 'user',
+            f_level 'fLevel',
+            f_step 'fStep',
+            check_state_flag 'checkStateFlag',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM crm_contract_quotation
+        WHERE is_deleted = 0
+                    <if test="number != null and number != ''">
+                        AND number LIKE CONCAT('%',#{number}, '%')
+                    </if>
+                    <if test="customerId != null and customerId != ''">
+                        AND customer_id LIKE CONCAT('%',#{customerId}, '%')
+                    </if>
+                    <if test="customerCode != null and customerCode != ''">
+                        AND customer_code LIKE CONCAT('%',#{customerCode}, '%')
+                    </if>
+                    <if test="customerName != null and customerName != ''">
+                        AND customer_name LIKE CONCAT('%',#{customerName}, '%')
+                    </if>
+                    <if test="name != null and name != ''">
+                        AND name LIKE CONCAT('%',#{name}, '%')
+                    </if>
+                    <if test="startTime != null ">
+                        AND start_time = #{startTime}
+                    </if>
+                    <if test="endTime != null ">
+                        AND end_time = #{endTime}
+                    </if>
+                    <if test="status != null ">
+                        AND status = #{status}
+                    </if>
+                    <if test="type != null ">
+                        AND type = #{type}
+                    </if>
+                    <if test="legalEntityId != null ">
+                        AND legal_entity_id = #{legalEntityId}
+                    </if>
+                    <if test="legalEntity != null ">
+                        AND legal_entity = #{legalEntity}
+                    </if>
+                    <if test="userId != null ">
+                        AND user_id = #{userId}
+                    </if>
+                    <if test="user != null and user != ''">
+                        AND user LIKE CONCAT('%',#{user}, '%')
+                    </if>
+                    <if test="fLevel != null ">
+                        AND f_level = #{fLevel}
+                    </if>
+                    <if test="fStep != null ">
+                        AND f_step = #{fStep}
+                    </if>
+                    <if test="checkStateFlag != null and checkStateFlag != ''">
+                        AND check_state_flag LIKE CONCAT('%',#{checkStateFlag}, '%')
+                    </if>
+                    <if test="tenantCode != null and tenantCode != ''">
+                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

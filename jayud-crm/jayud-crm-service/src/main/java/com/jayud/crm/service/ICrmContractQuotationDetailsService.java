@@ -1,8 +1,8 @@
-package com.jayud.auth.service;
+package com.jayud.crm.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.auth.model.po.BNoRule;
+import com.jayud.crm.model.po.CrmContractQuotationDetails;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,29 +10,27 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.time.LocalDateTime;
-import java.util.*;
 
 /**
- * 编号规则表 服务类
+ * 合同报价详情 服务类
  *
  * @author jayud
  * @since 2022-03-01
  */
-public interface IBNoRuleService extends IService<BNoRule> {
+public interface ICrmContractQuotationDetailsService extends IService<CrmContractQuotationDetails> {
 
 
     /**
      * @description 分页查询
      * @author  jayud
      * @date   2022-03-01
-     * @param: bNoRule
+     * @param: crmContractQuotationDetails
      * @param: currentPage
      * @param: pageSize
      * @param: req
-     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.BNoRule>
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmContractQuotationDetails>
      **/
-    IPage<BNoRule> selectPage(BNoRule bNoRule,
+    IPage<CrmContractQuotationDetails> selectPage(CrmContractQuotationDetails crmContractQuotationDetails,
                                 Integer currentPage,
                                 Integer pageSize,
                                 HttpServletRequest req);
@@ -41,11 +39,11 @@ public interface IBNoRuleService extends IService<BNoRule> {
      * @description 列表查询数据
      * @author  jayud
      * @date   2022-03-01
-     * @param: bNoRule
+     * @param: crmContractQuotationDetails
      * @param: req
-     * @return: java.util.List<com.jayud.auth.model.po.BNoRule>
+     * @return: java.util.List<com.jayud.crm.model.po.CrmContractQuotationDetails>
      **/
-    List<BNoRule> selectList(BNoRule bNoRule);
+    List<CrmContractQuotationDetails> selectList(CrmContractQuotationDetails crmContractQuotationDetails);
 
 
 
@@ -68,16 +66,17 @@ public interface IBNoRuleService extends IService<BNoRule> {
     **/
     void logicDel(Long id);
 
+
+
     /**
-     * 根据code获取单据
-     * @param sheetCode
-     * @return
-     */
-    BNoRule getNoRulesBySheetCode(String sheetCode);
+     * @description 查询导出
+     * @author  jayud
+     * @date   2022-03-01
+     * @param: queryReceiptForm
+     * @param: req
+     * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
+     **/
+    List<LinkedHashMap<String, Object>> queryCrmContractQuotationDetailsForExcel(Map<String, Object> paramMap);
 
-
-
-    //获得单号
-    String getOrder(String code, Date date);
 
 }

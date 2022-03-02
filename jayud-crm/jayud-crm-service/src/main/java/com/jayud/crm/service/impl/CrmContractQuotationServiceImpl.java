@@ -109,6 +109,13 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
         }
         this.saveOrUpdate(contractQuotation);
         form.setId(contractQuotation.getId());
+        //文件处理
+        if (!CollectionUtil.isEmpty(form.getFiles())) {
+            form.getFiles().forEach(e -> {
+                e.setBusinessId(form.getId()).setCode(FileModuleEnum.ONE.getCode());
+            });
+            this.crmFileService.saveOrUpdateBatch(form.getFiles());
+        }
         this.doQuotationProcessing(form);
         return contractQuotation.getId();
     }
@@ -180,13 +187,6 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
 //            trackingInfos.add(t);
 //        });
         this.crmContractQuotationDetailsService.saveOrUpdateBatch(details);
-        //文件处理
-        if (!CollectionUtil.isEmpty(form.getFiles())) {
-            form.getFiles().forEach(e -> {
-                e.setBusinessId(form.getId()).setCode(FileModuleEnum.ONE.getCode());
-            });
-            this.crmFileService.saveOrUpdateBatch(form.getFiles());
-        }
 //        this.trackingInfoService.saveBatch(trackingInfos);
     }
 

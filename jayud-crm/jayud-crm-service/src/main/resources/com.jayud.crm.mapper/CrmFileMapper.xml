@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.crm.mapper.CrmFileMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmFile">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="business_id" property="businessId" />
+        <result column="file_type" property="fileType" />
+        <result column="file_name" property="fileName" />
+        <result column="upload_file_url" property="uploadFileUrl" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, code, business_id, file_type, file_name, upload_file_url, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">crm_file </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="crmFile.code != null and crmFile.code != ''">
+                AND code LIKE CONCAT('%',#{crmFile.code},'%')
+            </if>
+
+            <if test="crmFile.businessId != null and crmFile.businessId != ''">
+                AND business_id LIKE CONCAT('%',#{crmFile.businessId},'%')
+            </if>
+
+            <if test="crmFile.fileType != null ">
+                AND file_type = ${crmFile.fileType}
+            </if>
+
+            <if test="crmFile.fileName != null and crmFile.fileName != ''">
+                AND file_name LIKE CONCAT('%',#{crmFile.fileName},'%')
+            </if>
+
+            <if test="crmFile.uploadFileUrl != null and crmFile.uploadFileUrl != ''">
+                AND upload_file_url LIKE CONCAT('%',#{crmFile.uploadFileUrl},'%')
+            </if>
+
+            <if test="crmFile.tenantCode != null and crmFile.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{crmFile.tenantCode},'%')
+            </if>
+
+            <if test="crmFile.remark != null and crmFile.remark != ''">
+                AND remark LIKE CONCAT('%',#{crmFile.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmFile">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmFile">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  crm_file WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE crm_file SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCrmFileForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            code 'code',
+            business_id 'businessId',
+            file_type 'fileType',
+            file_name 'fileName',
+            upload_file_url 'uploadFileUrl',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM crm_file
+        WHERE is_deleted = 0
+                    <if test="code != null and code != ''">
+                        AND code LIKE CONCAT('%',#{code}, '%')
+                    </if>
+                    <if test="businessId != null and businessId != ''">
+                        AND business_id LIKE CONCAT('%',#{businessId}, '%')
+                    </if>
+                    <if test="fileType != null ">
+                        AND file_type = #{fileType}
+                    </if>
+                    <if test="fileName != null and fileName != ''">
+                        AND file_name LIKE CONCAT('%',#{fileName}, '%')
+                    </if>
+                    <if test="uploadFileUrl != null and uploadFileUrl != ''">
+                        AND upload_file_url LIKE CONCAT('%',#{uploadFileUrl}, '%')
+                    </if>
+                    <if test="tenantCode != null and tenantCode != ''">
+                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

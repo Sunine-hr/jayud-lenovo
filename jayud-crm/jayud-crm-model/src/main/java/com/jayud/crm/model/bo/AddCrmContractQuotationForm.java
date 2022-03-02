@@ -6,6 +6,7 @@ import com.jayud.common.enums.ContractQuotationModeEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.FileView;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.crm.model.po.CrmFile;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -99,7 +100,7 @@ public class AddCrmContractQuotationForm extends SysBaseEntity {
     private Boolean isDeleted;
 
     @ApiModelProperty(value = "合同报价文件")
-    private List<FileView> files;
+    private List<CrmFile> files;
 
     /**
      * 检查参数
@@ -160,6 +161,7 @@ public class AddCrmContractQuotationForm extends SysBaseEntity {
 
     /**
      * 执行检查重复费用
+     *
      * @param list
      */
     public void doCheckCostDuplicate(List<AddCrmContractQuotationDetailsForm> list) {

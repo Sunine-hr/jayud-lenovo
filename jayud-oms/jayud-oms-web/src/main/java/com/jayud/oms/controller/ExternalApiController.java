@@ -128,6 +128,8 @@ public class ExternalApiController {
     private FinanceClient financeClient;
     @Autowired
     private IClientSecretKeyService clientSecretKeyService;
+    @Autowired
+    private ICostTypeService costTypeService;
 
     @ApiOperation(value = "保存主订单")
     @RequestMapping(value = "/api/oprMainOrder")
@@ -1268,7 +1270,7 @@ public class ExternalApiController {
      * @return
      */
     @RequestMapping(value = "/api/getDriverInfoByIdOne")
-    public ApiResult  getDriverInfoByIdOne(@RequestParam("driverName") String driverName) {
+    public ApiResult getDriverInfoByIdOne(@RequestParam("driverName") String driverName) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("name", driverName);
         DriverInfo driverInfo = this.driverInfoService.getOne(queryWrapper);
@@ -1909,6 +1911,21 @@ public class ExternalApiController {
         return CommonResult.success(comboxStrVOS);
     }
 
+    @ApiOperation(value = "获取启用费用名称")
+    @PostMapping(value = "/getCostInfos")
+    public CommonResult<List<CostInfo>> getCostInfos() {
+        //费用名称
+        List<CostInfo> costInfos = costInfoService.list(new QueryWrapper<>(new CostInfo().setStatus(StatusEnum.ENABLE.getCode())));
+        return CommonResult.success(costInfos);
+    }
+
+    @ApiOperation(value = "获取启用费用类型")
+    @PostMapping(value = "/getCostTypes")
+    public CommonResult<List<CostType>> getCostTypes() {
+        List<CostType> costTypes = costTypeService.list(new QueryWrapper<>(new CostType().setStatus(StatusEnum.ENABLE.getCode())));
+        return CommonResult.success(costTypes);
+    }
+
     /**
      * 根据费用id查询所有费用并且统计
      *
@@ -2383,7 +2400,7 @@ public class ExternalApiController {
 
     @ApiOperation(value = "根据主订单编号去关闭主订单")
     @PostMapping("/api/deleteOrderInfoByIdOne")
-    public ApiResult deleteOrderInfoUpdateByIdOne(@RequestParam("orderNo") String  orderNo) {
+    public ApiResult deleteOrderInfoUpdateByIdOne(@RequestParam("orderNo") String orderNo) {
         Long mainOrderId = orderInfoService.getIdByOrderNo(orderNo);
 
         OrderInfo orderInfo = new OrderInfo();
@@ -2391,7 +2408,6 @@ public class ExternalApiController {
         orderInfo.setStatus(ProcessStatusEnum.CLOSE.getCode());
         return ApiResult.ok(this.orderInfoService.updateById(orderInfo));
     }
-
 
 
 }

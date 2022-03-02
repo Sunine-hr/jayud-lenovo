@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.crm.mapper.CrmContractQuotationDetailsMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmContractQuotationDetails">
+        <id column="id" property="id" />
+        <result column="sub_type" property="subType" />
+        <result column="contract_quotation_id" property="contractQuotationId" />
+        <result column="type" property="type" />
+        <result column="starting_place" property="startingPlace" />
+        <result column="destination" property="destination" />
+        <result column="vehicle_size" property="vehicleSize" />
+        <result column="cost_code" property="costCode" />
+        <result column="unit_price" property="unitPrice" />
+        <result column="unit" property="unit" />
+        <result column="currency_code" property="currencyCode" />
+        <result column="cost_type_id" property="costTypeId" />
+        <result column="status" property="status" />
+        <result column="starting_place_id" property="startingPlaceId" />
+        <result column="destination_id" property="destinationId" />
+        <result column="weight_billing" property="weightBilling" />
+        <result column="num_billing" property="numBilling" />
+        <result column="plate_num_billing" property="plateNumBilling" />
+        <result column="min_billing" property="minBilling" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, sub_type, contract_quotation_id, type, starting_place, destination, vehicle_size, cost_code, unit_price, unit, currency_code, cost_type_id, status, starting_place_id, destination_id, weight_billing, num_billing, plate_num_billing, min_billing, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">crm_contract_quotation_details </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="crmContractQuotationDetails.subType != null and crmContractQuotationDetails.subType != ''">
+                AND sub_type LIKE CONCAT('%',#{crmContractQuotationDetails.subType},'%')
+            </if>
+
+            <if test="crmContractQuotationDetails.contractQuotationId != null ">
+                AND contract_quotation_id = ${crmContractQuotationDetails.contractQuotationId}
+            </if>
+
+            <if test="crmContractQuotationDetails.type != null ">
+                AND type = ${crmContractQuotationDetails.type}
+            </if>
+
+            <if test="crmContractQuotationDetails.startingPlace != null and crmContractQuotationDetails.startingPlace != ''">
+                AND starting_place LIKE CONCAT('%',#{crmContractQuotationDetails.startingPlace},'%')
+            </if>
+
+            <if test="crmContractQuotationDetails.destination != null and crmContractQuotationDetails.destination != ''">
+                AND destination LIKE CONCAT('%',#{crmContractQuotationDetails.destination},'%')
+            </if>
+
+            <if test="crmContractQuotationDetails.vehicleSize != null and crmContractQuotationDetails.vehicleSize != ''">
+                AND vehicle_size LIKE CONCAT('%',#{crmContractQuotationDetails.vehicleSize},'%')
+            </if>
+
+            <if test="crmContractQuotationDetails.costCode != null and crmContractQuotationDetails.costCode != ''">
+                AND cost_code LIKE CONCAT('%',#{crmContractQuotationDetails.costCode},'%')
+            </if>
+
+            <if test="crmContractQuotationDetails.unitPrice != null ">
+                AND unit_price = ${crmContractQuotationDetails.unitPrice}
+            </if>
+
+            <if test="crmContractQuotationDetails.unit != null and crmContractQuotationDetails.unit != ''">
+                AND unit LIKE CONCAT('%',#{crmContractQuotationDetails.unit},'%')
+            </if>
+
+            <if test="crmContractQuotationDetails.currencyCode != null and crmContractQuotationDetails.currencyCode != ''">
+                AND currency_code LIKE CONCAT('%',#{crmContractQuotationDetails.currencyCode},'%')
+            </if>
+
+            <if test="crmContractQuotationDetails.costTypeId != null ">
+                AND cost_type_id = ${crmContractQuotationDetails.costTypeId}
+            </if>
+
+            <if test="crmContractQuotationDetails.status != null ">
+                AND status = ${crmContractQuotationDetails.status}
+            </if>
+
+            <if test="crmContractQuotationDetails.startingPlaceId != null and crmContractQuotationDetails.startingPlaceId != ''">
+                AND starting_place_id LIKE CONCAT('%',#{crmContractQuotationDetails.startingPlaceId},'%')
+            </if>
+
+            <if test="crmContractQuotationDetails.destinationId != null and crmContractQuotationDetails.destinationId != ''">
+                AND destination_id LIKE CONCAT('%',#{crmContractQuotationDetails.destinationId},'%')
+            </if>
+
+            <if test="crmContractQuotationDetails.weightBilling != null ">
+                AND weight_billing = ${crmContractQuotationDetails.weightBilling}
+            </if>
+
+            <if test="crmContractQuotationDetails.numBilling != null ">
+                AND num_billing = ${crmContractQuotationDetails.numBilling}
+            </if>
+
+            <if test="crmContractQuotationDetails.plateNumBilling != null ">
+                AND plate_num_billing = ${crmContractQuotationDetails.plateNumBilling}
+            </if>
+
+            <if test="crmContractQuotationDetails.minBilling != null ">
+                AND min_billing = ${crmContractQuotationDetails.minBilling}
+            </if>
+
+            <if test="crmContractQuotationDetails.tenantCode != null and crmContractQuotationDetails.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{crmContractQuotationDetails.tenantCode},'%')
+            </if>
+
+            <if test="crmContractQuotationDetails.remark != null and crmContractQuotationDetails.remark != ''">
+                AND remark LIKE CONCAT('%',#{crmContractQuotationDetails.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmContractQuotationDetails">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmContractQuotationDetails">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  crm_contract_quotation_details WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE crm_contract_quotation_details SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCrmContractQuotationDetailsForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            sub_type 'subType',
+            contract_quotation_id 'contractQuotationId',
+            type 'type',
+            starting_place 'startingPlace',
+            destination 'destination',
+            vehicle_size 'vehicleSize',
+            cost_code 'costCode',
+            unit_price 'unitPrice',
+            unit 'unit',
+            currency_code 'currencyCode',
+            cost_type_id 'costTypeId',
+            status 'status',
+            starting_place_id 'startingPlaceId',
+            destination_id 'destinationId',
+            weight_billing 'weightBilling',
+            num_billing 'numBilling',
+            plate_num_billing 'plateNumBilling',
+            min_billing 'minBilling',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM crm_contract_quotation_details
+        WHERE is_deleted = 0
+                    <if test="subType != null and subType != ''">
+                        AND sub_type LIKE CONCAT('%',#{subType}, '%')
+                    </if>
+                    <if test="contractQuotationId != null ">
+                        AND contract_quotation_id = #{contractQuotationId}
+                    </if>
+                    <if test="type != null ">
+                        AND type = #{type}
+                    </if>
+                    <if test="startingPlace != null and startingPlace != ''">
+                        AND starting_place LIKE CONCAT('%',#{startingPlace}, '%')
+                    </if>
+                    <if test="destination != null and destination != ''">
+                        AND destination LIKE CONCAT('%',#{destination}, '%')
+                    </if>
+                    <if test="vehicleSize != null and vehicleSize != ''">
+                        AND vehicle_size LIKE CONCAT('%',#{vehicleSize}, '%')
+                    </if>
+                    <if test="costCode != null and costCode != ''">
+                        AND cost_code LIKE CONCAT('%',#{costCode}, '%')
+                    </if>
+                    <if test="unitPrice != null ">
+                        AND unit_price = #{unitPrice}
+                    </if>
+                    <if test="unit != null and unit != ''">
+                        AND unit LIKE CONCAT('%',#{unit}, '%')
+                    </if>
+                    <if test="currencyCode != null and currencyCode != ''">
+                        AND currency_code LIKE CONCAT('%',#{currencyCode}, '%')
+                    </if>
+                    <if test="costTypeId != null ">
+                        AND cost_type_id = #{costTypeId}
+                    </if>
+                    <if test="status != null ">
+                        AND status = #{status}
+                    </if>
+                    <if test="startingPlaceId != null and startingPlaceId != ''">
+                        AND starting_place_id LIKE CONCAT('%',#{startingPlaceId}, '%')
+                    </if>
+                    <if test="destinationId != null and destinationId != ''">
+                        AND destination_id LIKE CONCAT('%',#{destinationId}, '%')
+                    </if>
+                    <if test="weightBilling != null ">
+                        AND weight_billing = #{weightBilling}
+                    </if>
+                    <if test="numBilling != null ">
+                        AND num_billing = #{numBilling}
+                    </if>
+                    <if test="plateNumBilling != null ">
+                        AND plate_num_billing = #{plateNumBilling}
+                    </if>
+                    <if test="minBilling != null ">
+                        AND min_billing = #{minBilling}
+                    </if>
+                    <if test="tenantCode != null and tenantCode != ''">
+                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

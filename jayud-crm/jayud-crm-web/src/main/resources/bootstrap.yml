@@ -13,6 +13,8 @@ spring:
       discovery:
         server-addr: ${jayud.nacos.server-addr}
         namespace: ${jayud.nacos.config.namespace}
+  main:
+    allow-bean-definition-overriding: true
 feign:
   httpclient:
     connection-timeout: 5000

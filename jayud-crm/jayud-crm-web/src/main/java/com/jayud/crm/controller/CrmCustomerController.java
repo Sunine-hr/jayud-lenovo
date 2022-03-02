@@ -258,10 +258,9 @@ public class CrmCustomerController {
      * @return: com.jayud.common.BaseResult<com.jayud.crm.model.form.CrmCodeFrom>
      **/
     @ApiOperation("获取用户字典下拉")
+    @GetMapping(path = "/getCrmCode")
     public BaseResult<CrmCodeFrom> getCrmCode(){
-        CrmCodeFrom crmCodeFrom = new CrmCodeFrom();
-
-        return BaseResult.ok(crmCodeFrom);
+        return BaseResult.ok(crmCustomerService.getCrmCode());
     }
 
 

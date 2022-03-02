@@ -7,10 +7,15 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
+import com.jayud.crm.feign.SysDictClient;
+import com.jayud.crm.model.constant.CrmDictCode;
+import com.jayud.crm.model.form.CrmCodeFrom;
 import com.jayud.crm.model.form.CrmCustomerForm;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -38,6 +43,8 @@ import java.util.Map;
 @Service
 public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCustomer> implements ICrmCustomerService {
 
+    @Autowired
+    private SysDictClient sysDictClient;
 
     @Autowired
     private CrmCustomerMapper crmCustomerMapper;
@@ -89,7 +96,9 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         if (!onlyResult.isSuccess()){
             return onlyResult;
         }
-        crmCustomerForm.setBusinessTypes(StrUtil.join((CharSequence) crmCustomerForm.getBusinessTypesList(),StrUtil.COMMA));
+        if (CollUtil.isNotEmpty(crmCustomerForm.getBusinessTypesList())) {
+            crmCustomerForm.setBusinessTypes(StringUtils.join(crmCustomerForm.getBusinessTypesList(),StrUtil.C_COMMA));
+        }
         if (isAdd){
             this.save(crmCustomerForm);
         }else {
@@ -111,6 +120,42 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         return crmCustomerForm;
     }
 
+    @Override
+    public CrmCodeFrom getCrmCode() {
+        CrmCodeFrom crmCodeFrom = new CrmCodeFrom();
+        //客户管理-客户状态
+        BaseResult<List<SysDictItem>> custStatus = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_STATUS);
+        crmCodeFrom.setCustStatus(custStatus.getResult());
+        //客户管理-客户星级
+        BaseResult<List<SysDictItem>> custStart = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_STAR);
+        crmCodeFrom.setCustStar(custStart.getResult());
+        //客户管理-客户审核状态
+        BaseResult<List<SysDictItem>> custAuditStatus = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_AUDIT_ATATUS);
+        crmCodeFrom.setCustAuditStatus(custAuditStatus.getResult());
+        //客户管理-客户来源
+        BaseResult<List<SysDictItem>> custSources = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_SOURCES);
+        crmCodeFrom.setCustSources(custSources.getResult());
+        //客户管理-所属行业
+        BaseResult<List<SysDictItem>> custIndustry = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_INDUSTRY);
+        crmCodeFrom.setCustIndustry(custIndustry.getResult());
+        //客户管理-服务类型
+        BaseResult<List<SysDictItem>> custServerType = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_SERVER_TYPE);
+        crmCodeFrom.setCustIndustry(custServerType.getResult());
+        //客户管理-对账方式
+        BaseResult<List<SysDictItem>> custReconciliationMethod = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_RECONCILIATION_METHOD);
+        crmCodeFrom.setCustIndustry(custReconciliationMethod.getResult());
+        //客户管理-结算方式
+        BaseResult<List<SysDictItem>> custSettlementMethod = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_SETTLEMENT_METHOD);
+        crmCodeFrom.setCustIndustry(custSettlementMethod.getResult());
+        //客户管理-客户状态
+        BaseResult<List<SysDictItem>> custNormalStatus= sysDictClient.selectItemByDictCode(CrmDictCode.CUST_NORMAL_STATUS);
+        crmCodeFrom.setCustIndustry(custNormalStatus.getResult());
+        //客户管理-银行币别
+        BaseResult<List<SysDictItem>> custBankCurrency= sysDictClient.selectItemByDictCode(CrmDictCode.CUST_BANK_CURRENCY);
+        crmCodeFrom.setCustBankCurrency(custBankCurrency.getResult());
+        return crmCodeFrom;
+    }
+
     /**
      * @description 判断是否唯一
      * @author  ciro
@@ -130,10 +175,10 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             }
         }else {
             if (CollUtil.isNotEmpty(creditCodeList)){
-                if (creditCodeList.size()>0){
+                if (creditCodeList.size()>1){
                     return BaseResult.error(SysTips.NOT_ONE_DATA_ERROR);
                 }
-                if (crmCustomerForm.getId().equals(creditCodeList.get(0).getId())){
+                if (!crmCustomerForm.getId().equals(creditCodeList.get(0).getId())){
                     return BaseResult.error(SysTips.CREDIT_CODE_EXIT_ERROR);
                 }
             }
@@ -148,10 +193,10 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             }
         }else {
             if (CollUtil.isNotEmpty(custNameList)){
-                if (custNameList.size()>0){
+                if (custNameList.size()>1){
                     return BaseResult.error(SysTips.NOT_ONE_DATA_ERROR);
                 }
-                if (crmCustomerForm.getId().equals(custNameList.get(0).getId())){
+                if (!crmCustomerForm.getId().equals(custNameList.get(0).getId())){
                     return BaseResult.error(SysTips.CUSTOMER_NAME_EXIT_ERROR);
                 }
             }

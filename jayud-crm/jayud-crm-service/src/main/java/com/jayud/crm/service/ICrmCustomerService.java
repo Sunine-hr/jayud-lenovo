@@ -3,6 +3,7 @@ package com.jayud.crm.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.BaseResult;
+import com.jayud.crm.model.form.CrmCodeFrom;
 import com.jayud.crm.model.form.CrmCustomerForm;
 import com.jayud.crm.model.po.CrmCustomer;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -99,5 +100,14 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      * @return: com.jayud.crm.model.form.CrmCustomerForm
      **/
     CrmCustomerForm selectById(Long id);
+
+    /**
+     * @description 获取客户字典数据
+     * @author  ciro
+     * @date   2022/3/2 11:43
+     * @param:
+     * @return: com.jayud.crm.model.form.CrmCodeFrom
+     **/
+    CrmCodeFrom getCrmCode();
 
 }

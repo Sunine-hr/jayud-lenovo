@@ -1,4 +1,4 @@
-package com.jayud.auth.service.impl;
+package com.jayud.crm.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -8,9 +8,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
-import com.jayud.auth.model.po.BNoRule;
-import com.jayud.auth.mapper.BNoRuleMapper;
-import com.jayud.auth.service.IBNoRuleService;
+import com.jayud.crm.model.po.CrmCreditVisitRole;
+import com.jayud.crm.mapper.CrmCreditVisitRoleMapper;
+import com.jayud.crm.service.ICrmCreditVisitRoleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,63 +21,49 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.time.LocalDateTime;
-import java.util.*;
 
 /**
- * 编号规则表 服务实现类
+ * 客户走访记录-拜访人员(员工表)关联表 服务实现类
  *
  * @author jayud
- * @since 2022-03-01
+ * @since 2022-03-02
  */
 @Slf4j
 @Service
-public class BNoRuleServiceImpl extends ServiceImpl<BNoRuleMapper, BNoRule> implements IBNoRuleService {
+public class CrmCreditVisitRoleServiceImpl extends ServiceImpl<CrmCreditVisitRoleMapper, CrmCreditVisitRole> implements ICrmCreditVisitRoleService {
 
 
     @Autowired
-    private BNoRuleMapper bNoRuleMapper;
+    private CrmCreditVisitRoleMapper crmCreditVisitRoleMapper;
 
     @Override
-    public IPage<BNoRule> selectPage(BNoRule bNoRule,
+    public IPage<CrmCreditVisitRole> selectPage(CrmCreditVisitRole crmCreditVisitRole,
                                         Integer currentPage,
                                         Integer pageSize,
                                         HttpServletRequest req){
 
-        Page<BNoRule> page=new Page<BNoRule>(currentPage,pageSize);
-        IPage<BNoRule> pageList= bNoRuleMapper.pageList(page, bNoRule);
+        Page<CrmCreditVisitRole> page=new Page<CrmCreditVisitRole>(currentPage,pageSize);
+        IPage<CrmCreditVisitRole> pageList= crmCreditVisitRoleMapper.pageList(page, crmCreditVisitRole);
         return pageList;
     }
 
     @Override
-    public List<BNoRule> selectList(BNoRule bNoRule){
-        return bNoRuleMapper.list(bNoRule);
+    public List<CrmCreditVisitRole> selectList(CrmCreditVisitRole crmCreditVisitRole){
+        return crmCreditVisitRoleMapper.list(crmCreditVisitRole);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void phyDelById(Long id){
-        bNoRuleMapper.phyDelById(id);
+        crmCreditVisitRoleMapper.phyDelById(id);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(Long id){
-        bNoRuleMapper.logicDel(id,CurrentUserUtil.getUsername());
-    }
-
-    @Override
-    public BNoRule getNoRulesBySheetCode(String sheetCode) {
-
-        return bNoRuleMapper.getNoRulesBySheetCode(sheetCode);
-    public String getOrder(String code,  Date  date) {
-        HashMap<String,Object> map = new HashMap<>();
-        map.put("i_code",code);
-        map.put("i_date",date);
-        this.baseMapper.getOrderNo(map);
-        return (String)map.get("o_no");
+        crmCreditVisitRoleMapper.logicDel(id,CurrentUserUtil.getUsername());
     }
 
 }

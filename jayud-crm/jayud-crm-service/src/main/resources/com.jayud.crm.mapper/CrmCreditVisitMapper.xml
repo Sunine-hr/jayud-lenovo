@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.crm.mapper.CrmCreditVisitMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCreditVisit">
+        <id column="id" property="id" />
+        <result column="cust_id" property="custId" />
+        <result column="cust_name" property="custName" />
+        <result column="visit_name" property="visitName" />
+        <result column="cust_relation" property="custRelation" />
+        <result column="visit_date" property="visitDate" />
+        <result column="end_date" property="endDate" />
+        <result column="vist_address" property="vistAddress" />
+        <result column="vist_item" property="vistItem" />
+        <result column="cust_req" property="custReq" />
+        <result column="cust_answer" property="custAnswer" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, cust_id, cust_name, visit_name, cust_relation, visit_date, end_date, vist_address, vist_item, cust_req, cust_answer, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">crm_credit_visit </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="crmCreditVisit.custId != null ">
+                AND cust_id = ${crmCreditVisit.custId}
+            </if>
+
+            <if test="crmCreditVisit.custName != null and crmCreditVisit.custName != ''">
+                AND cust_name = #{crmCreditVisit.custName}
+            </if>
+
+            <if test="crmCreditVisit.visitName != null and crmCreditVisit.visitName != ''">
+                AND visit_name = #{crmCreditVisit.visitName}
+            </if>
+
+            <if test="crmCreditVisit.custRelation != null and crmCreditVisit.custRelation != ''">
+                AND cust_relation = #{crmCreditVisit.custRelation}
+            </if>
+
+            <if test="crmCreditVisit.visitDate != null ">
+                AND visit_date = ${crmCreditVisit.visitDate}
+            </if>
+
+            <if test="crmCreditVisit.endDate != null ">
+                AND end_date = ${crmCreditVisit.endDate}
+            </if>
+
+            <if test="crmCreditVisit.vistAddress != null and crmCreditVisit.vistAddress != ''">
+                AND vist_address = #{crmCreditVisit.vistAddress}
+            </if>
+
+            <if test="crmCreditVisit.vistItem != null and crmCreditVisit.vistItem != ''">
+                AND vist_item = #{crmCreditVisit.vistItem}
+            </if>
+
+            <if test="crmCreditVisit.custReq != null and crmCreditVisit.custReq != ''">
+                AND cust_req = #{crmCreditVisit.custReq}
+            </if>
+
+            <if test="crmCreditVisit.custAnswer != null and crmCreditVisit.custAnswer != ''">
+                AND cust_answer = #{crmCreditVisit.custAnswer}
+            </if>
+
+            <if test="crmCreditVisit.tenantCode != null and crmCreditVisit.tenantCode != ''">
+                AND tenant_code = #{crmCreditVisit.tenantCode}
+            </if>
+
+            <if test="crmCreditVisit.remark != null and crmCreditVisit.remark != ''">
+                AND remark = #{crmCreditVisit.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCreditVisit">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCreditVisit">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  crm_credit_visit WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE crm_credit_visit SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+
+</mapper>

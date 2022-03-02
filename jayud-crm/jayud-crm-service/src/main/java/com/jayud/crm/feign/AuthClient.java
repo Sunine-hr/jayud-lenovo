@@ -2,6 +2,7 @@ package com.jayud.crm.feign;
 
 
 import com.jayud.common.BaseResult;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,4 +29,11 @@ public interface AuthClient {
     //字段表查询
     @PostMapping(value = "/sysDictItem/api/selectItemByDictCode")
     public BaseResult  selectItemByDictCodeFeign( @RequestParam String dictCode);
+
+
+
+
+    //自定义单号
+    @PostMapping(value = "/bNoRule/api/getOrderFeign")
+    public BaseResult getOrderFeign(@RequestParam(name = "code" ) String code, @RequestParam(name = "date" ) Date date);
 }

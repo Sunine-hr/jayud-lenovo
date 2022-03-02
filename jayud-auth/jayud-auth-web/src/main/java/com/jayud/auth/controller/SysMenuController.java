@@ -125,6 +125,18 @@ public class SysMenuController {
         }
     }
 
+    /**
+     * 获取当前用户的菜单及其按钮
+     * @return
+     */
+    @ApiOperation(value = "获取当前用户的菜单及其按钮")
+    @PostMapping(value = "/getUserMenuBtnByToken")
+    public BaseResult getUserMenuBtnByToken(){
+        //JSONObject jsonObject = JSONObject.parseObject(menu);
+        JSONObject jsonObject = sysMenuService.getUserMenuBtnByToken();
+        return BaseResult.ok(jsonObject);
+    }
+
 
 
 }

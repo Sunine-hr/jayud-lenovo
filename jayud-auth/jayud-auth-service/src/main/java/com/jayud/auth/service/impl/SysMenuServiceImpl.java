@@ -243,6 +243,41 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         return baseMapper.exportSysMenu(sysMenu);
     }
 
+    @Override
+    public JSONObject getUserMenuBtnByToken() {
+        CurrentUserUtil.getUserToken();
+        AuthUserDetail userDetail = CurrentUserUtil.getUserDetail();
+        Long userId = userDetail.getId();
+        SysUser sysUser = sysUserService.getById(userId);
+        //租户编码
+        String tenantCode = sysUser.getTenantCode();
+
+        List<SysRole> roles = sysRoleService.selectSysRoleByUserId(userId);
+        List<Long> roleIds = new ArrayList<>();
+        if(CollUtil.isNotEmpty(roles)){
+            roles.forEach(role -> {
+                roleIds.add(role.getId());
+            });
+        }else{
+            roleIds.add(0L);
+        }
+
+        // 原始的数据一条一条的
+        List<SysMenu> menus = this.selectSysMenuBtnByRoleIds(roleIds);
+        // 构建好的菜单树，第一层菜单的pid是0
+        List<SysMenu> menuTree = buildMenuTree(menus, "0");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("roleIds", roleIds);
+        jsonObject.put("roles", roles);
+        jsonObject.put("menuNodeList", menuTree);
+        return jsonObject;
+    }
+
+    @Override
+    public List<SysMenu> selectSysMenuBtnByRoleIds(List<Long> roleIds) {
+        return baseMapper.selectSysMenuBtnByRoleIds(roleIds);
+    }
+
     /**
      * 构建菜单树
      *

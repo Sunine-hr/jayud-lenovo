@@ -65,4 +65,11 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
      * @return
      */
     List<SysMenu> selectMenuChildren(@Param("menuId") Long menuId);
+
+    /**
+     * 根据角色ids，获取菜单及其按钮
+     * @param roleIds
+     * @return
+     */
+    List<SysMenu> selectSysMenuBtnByRoleIds(@Param("roleIds") List<Long> roleIds);
 }

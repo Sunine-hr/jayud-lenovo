@@ -75,6 +75,11 @@ public interface CrmDictCode {
     String CRM_CUSTOMER_FOLLOW_TYPE = "crm_customer_follow_type";
 
     /**
+     * 授信管理-额度类型
+     */
+    String CRM_CREDIT_TYPE = "crm_credit_type";
+
+    /**
      * 合同协议单据code
      */
     String CONTRACT_AGREEMENT_NUM_CODE="CA";
@@ -89,8 +94,15 @@ public interface CrmDictCode {
     String QUOTATION_NUM_CODE="Quotation";
 
 
+    /**
+     *  客户管理-地址类型
+     */
+    String CRM_CUSTOMER_ADDRESS_TYPE = "crm_customer_address_type";
 
 
-
+    /**
+     *  客户管理-附件类型
+     */
+    String CRM_FILE_TYPE = "crm_file_type";
 
 }

@@ -115,7 +115,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             //判断是否审核金额  暂时不控制
 
             //判断连续两次审核能否为同一人
-            if(bNoRule.getCheck() && sStep != 0){
+            if(bNoRule.getCheckUp() && sStep != 0){
                 BPublicCheck bPublicCheck = this.baseMapper.getPublicCheckByRecordId(checkForm.getSheetCode(),checkForm.getRecordId(),1);
                 if(bPublicCheck.getFCheckName().equals(CurrentUserUtil.getUsername())){
                     return BaseResult.error(444,"连续两次审核不能为同一人");
@@ -125,7 +125,13 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
 
         //执行审核
         int update;
-        String checkFlag = "N"+sStep;
+        String checkFlag;
+        if(newStep.equals(sLevel)){
+            checkFlag = "Y";
+        }else{
+            checkFlag = "N"+sStep;
+        }
+
         if(null == bNoRule.getCheckDatabase()){
             update = bPublicCheckMapper.updateData(checkForm.getRecordId(),checkTable,newStep,checkFlag,systemUserByName.getId(),LocalDateTime.now(),systemUserByName.getName());
         }else{
@@ -193,7 +199,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             //判断是否审核金额  暂时不控制
 
             //判断连续两次审核能否为同一人
-            if(bNoRule.getCheck() && sStep != 0){
+            if(bNoRule.getCheckUp() && sStep != 0){
                 BPublicCheck bPublicCheck = this.baseMapper.getPublicCheckByRecordId(checkForm.getSheetCode(),checkForm.getRecordId(),0);
                 if(bPublicCheck.getFCheckName().equals(CurrentUserUtil.getUsername())){
                     return BaseResult.error(444,"连续两次反审核不能为同一人");

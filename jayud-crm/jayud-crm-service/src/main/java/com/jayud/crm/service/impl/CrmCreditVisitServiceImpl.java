@@ -86,9 +86,8 @@ public class CrmCreditVisitServiceImpl extends ServiceImpl<CrmCreditVisitMapper,
                 crmCreditVisitRoleMapper.insert(crmCreditVisitRole1);
             }
         } else {
-            convert.setUpdateBy(CurrentUserUtil.getUsername());
-            convert.setUpdateTime(new Date());
-
+            convert.setCreateBy(CurrentUserUtil.getUsername());
+            convert.setCreateTime(new Date());
             result = this.saveOrUpdate(convert);
             Long id = convert.getId();
 
@@ -121,16 +120,15 @@ public class CrmCreditVisitServiceImpl extends ServiceImpl<CrmCreditVisitMapper,
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id) {
-//        List<CrmCreditVisit> crmCreditVisit = new ArrayList<>();
-//        for (int i = 0; i < ids.size(); i++) {
-        CrmCreditVisit crmCreditVisit1 = new CrmCreditVisit();
-        crmCreditVisit1.setId(id);
-        crmCreditVisit1.setIsDeleted(true);
-        crmCreditVisitMapper.insert(crmCreditVisit1);
-//            crmCreditVisit.add(crmCreditVisit1);
-//        }
-//        this.updateBatchById(crmCreditVisit);
+    public void logicDel(List<Long> ids) {
+        List<CrmCreditVisit> crmCreditVisitList = new ArrayList<>();
+        for (int i = 0; i < ids.size(); i++) {
+            CrmCreditVisit crmCreditVisit = new CrmCreditVisit();
+            crmCreditVisit.setId(ids.get(i));
+            crmCreditVisit.setIsDeleted(true);
+            crmCreditVisitList.add(crmCreditVisit);
+        }
+        this.updateBatchById(crmCreditVisitList);
     }
 
     @Override

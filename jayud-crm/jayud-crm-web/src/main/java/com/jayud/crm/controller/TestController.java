@@ -5,6 +5,7 @@ import com.jayud.auth.model.po.SysArea;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.crm.feign.AuthClient;
+import com.jayud.crm.service.ICrmCustomerFeaturesService;
 import io.lettuce.core.ScriptOutputType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -24,7 +25,8 @@ public class TestController {
     @Autowired
     private AuthClient authClient;
 
-
+    @Autowired
+    public ICrmCustomerFeaturesService crmCustomerFeaturesService;
     @PostMapping("/testFind")
     public BaseResult testFind(){
         BaseResult baseResult = authClient.selectListFeign();
@@ -53,5 +55,12 @@ public class TestController {
         BaseResult baseResult = authClient.selectListSysAreaFeign(level,parentCode);
         System.out.println("省市级联："+baseResult);
         return BaseResult.ok(baseResult);
+    }
+
+
+    @GetMapping(value="/testCrmCustomerFeatures")
+    public BaseResult testCrmCustomerFeatures(@RequestParam(name="custId") Long custId){
+        crmCustomerFeaturesService.saveCrmCustomerFeatures(custId);
+        return BaseResult.ok();
     }
 }

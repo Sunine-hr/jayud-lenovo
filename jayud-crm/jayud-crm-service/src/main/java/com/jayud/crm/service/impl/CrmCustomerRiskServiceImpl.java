@@ -21,11 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 基本档案_客户_风险客户（crm_customer_risk） 服务实现类
@@ -45,15 +41,15 @@ public class CrmCustomerRiskServiceImpl extends ServiceImpl<CrmCustomerRiskMappe
     public IPage<CrmCustomerRisk> selectPage(CrmCustomerRiskForm crmCustomerRiskForm,
                                              Integer currentPage,
                                              Integer pageSize,
-                                             HttpServletRequest req){
+                                             HttpServletRequest req) {
 
-        Page<CrmCustomerRiskForm> page=new Page<CrmCustomerRiskForm>(currentPage,pageSize);
-        IPage<CrmCustomerRisk> pageList= crmCustomerRiskMapper.pageList(page, crmCustomerRiskForm);
+        Page<CrmCustomerRiskForm> page = new Page<CrmCustomerRiskForm>(currentPage, pageSize);
+        IPage<CrmCustomerRisk> pageList = crmCustomerRiskMapper.pageList(page, crmCustomerRiskForm);
         return pageList;
     }
 
     @Override
-    public List<CrmCustomerRisk> selectList(CrmCustomerRisk crmCustomerRisk){
+    public List<CrmCustomerRisk> selectList(CrmCustomerRisk crmCustomerRisk) {
         return crmCustomerRiskMapper.list(crmCustomerRisk);
     }
 
@@ -62,14 +58,14 @@ public class CrmCustomerRiskServiceImpl extends ServiceImpl<CrmCustomerRiskMappe
 
         Boolean result = null;
         CrmCustomerRisk convert = ConvertUtil.convert(crmCustomerRiskForm, CrmCustomerRisk.class);
-        if(convert.getId()!=null){
+        if (convert.getId() != null) {
             convert.setUpdateBy(CurrentUserUtil.getUsername());
             convert.setUpdateTime(new Date());
             result = this.updateById(convert);
-        }else {
-            convert.setUpdateBy(CurrentUserUtil.getUsername());
-            convert.setUpdateTime(new Date());
-            result= this.saveOrUpdate(convert);
+        } else {
+            convert.setCreateBy(CurrentUserUtil.getUsername());
+            convert.setCreateTime(new Date());
+            result = this.saveOrUpdate(convert);
         }
         if (result) {
             log.warn("新增或修改成功");
@@ -81,19 +77,23 @@ public class CrmCustomerRiskServiceImpl extends ServiceImpl<CrmCustomerRiskMappe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void phyDelById(Long id){
+    public void phyDelById(Long id) {
         crmCustomerRiskMapper.phyDelById(id);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id){
+    public void logicDel(List<Long> ids) {
 
-        CrmCustomerRisk crmCustomerRisk = new CrmCustomerRisk();
-        crmCustomerRisk.setId(id);
-        crmCustomerRisk.setIsDeleted(true);
-        crmCustomerRiskMapper.insert(crmCustomerRisk);
+        List<CrmCustomerRisk> crmCustomerRiskList = new ArrayList<>();
+        for (int i = 0; i < ids.size(); i++) {
+            CrmCustomerRisk crmCustomerRisk = new CrmCustomerRisk();
+            crmCustomerRisk.setId(ids.get(i));
+            crmCustomerRisk.setIsDeleted(true);
+            crmCustomerRiskList.add(crmCustomerRisk);
+        }
+        this.updateBatchById(crmCustomerRiskList);
     }
 
 

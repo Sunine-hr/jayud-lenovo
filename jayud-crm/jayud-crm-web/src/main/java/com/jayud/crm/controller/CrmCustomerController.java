@@ -1,5 +1,6 @@
 package com.jayud.crm.controller;
 
+import com.jayud.auth.model.bo.CheckForm;
 import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.po.SysRole;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -307,6 +308,13 @@ public class CrmCustomerController {
     @GetMapping("getRoleByTenantCode")
     public BaseResult<List<SysRole>> getRoleByTenantCode(){
         return authClient.getRoleByTenantCode(CurrentUserUtil.getUserTenantCode());
+    }
+
+    @ApiOperation("客户审核")
+    @PostMapping (path = "/customerCheck")
+    public BaseResult  customerCheck(@RequestBody CheckForm checkForm){
+
+        return authClient.check(checkForm);
     }
 
 }

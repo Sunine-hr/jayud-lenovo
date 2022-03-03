@@ -1,8 +1,6 @@
 package com.jayud.crm.controller;
 
-import com.jayud.auth.model.po.SysDictItem;
-import com.jayud.crm.feign.SysDictClient;
-import com.jayud.crm.model.constant.CrmDictCode;
+import com.jayud.crm.model.bo.CrmCustomerTaxForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,8 +9,8 @@ import com.jayud.common.utils.ExcelUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.BaseResult;
-import com.jayud.crm.service.ICrmFileService;
-import com.jayud.crm.model.po.CrmFile;
+import com.jayud.crm.service.ICrmCustomerTaxService;
+import com.jayud.crm.model.po.CrmCustomerTax;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -30,72 +28,70 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 /**
- * 基本档案_文件(crm_file) 控制类
+ * 开票资料 控制类
  *
  * @author jayud
- * @since 2022-03-02
+ * @since 2022-03-03
  */
 @Slf4j
-@Api(tags = "基本档案_文件(crm_file)")
+@Api(tags = "开票资料")
 @RestController
-@RequestMapping("/crmFile")
-public class CrmFileController {
+@RequestMapping("/crmCustomerTax")
+public class CrmCustomerTaxController {
 
 
 
     @Autowired
-    public ICrmFileService crmFileService;
+    public ICrmCustomerTaxService crmCustomerTaxService;
 
 
-    @Autowired
-    private SysDictClient sysDictClient;
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-03-02
-     * @param: crmFile
+     * @date   2022-03-03
+     * @param: crmCustomerTax
      * @param: currentPage
      * @param: pageSize
      * @param: req
-     * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmFile>>
+     * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomerTax>>
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<CrmFile>> selectPage(CrmFile crmFile,
+    public BaseResult<IPage<CrmCustomerTax>> selectPage(CrmCustomerTax crmCustomerTax,
                                                    @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                    HttpServletRequest req) {
-        return BaseResult.ok(crmFileService.selectPage(crmFile,currentPage,pageSize,req));
+        return BaseResult.ok(crmCustomerTaxService.selectPage(crmCustomerTax,currentPage,pageSize,req));
     }
 
 
     /**
     * @description 列表查询数据
     * @author  jayud
-    * @date   2022-03-02
-    * @param: crmFile
+    * @date   2022-03-03
+    * @param: crmCustomerTax
     * @param: req
-    * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.crm.model.po.CrmFile>>
+    * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.crm.model.po.CrmCustomerTax>>
     **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
-    public BaseResult<List<CrmFile>> selectList(CrmFile crmFile,
+    public BaseResult<List<CrmCustomerTax>> selectList(CrmCustomerTax crmCustomerTax,
                                                 HttpServletRequest req) {
-        return BaseResult.ok(crmFileService.selectList(crmFile));
+        return BaseResult.ok(crmCustomerTaxService.selectList(crmCustomerTax));
     }
 
 
     /**
     * @description 新增
     * @author  jayud
-    * @date   2022-03-02
-    * @param: crmFile
+    * @date   2022-03-03
+    * @param: crmCustomerTax
     * @return: com.jayud.common.BaseResult
     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody CrmFile crmFile ){
-        crmFileService.save(crmFile);
+    public BaseResult add(@Valid @RequestBody CrmCustomerTaxForm crmCustomerTaxForm ){
+        crmCustomerTaxService.saveOrUpdateCrmCustomerTax(crmCustomerTaxForm);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
 
@@ -103,14 +99,14 @@ public class CrmFileController {
     /**
      * @description 编辑
      * @author  jayud
-     * @date   2022-03-02
-     * @param: crmFile
+     * @date   2022-03-03
+     * @param: crmCustomerTax
      * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("编辑")
     @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody CrmFile crmFile ){
-        crmFileService.updateById(crmFile);
+    public BaseResult edit(@Valid @RequestBody CrmCustomerTax crmCustomerTax ){
+        crmCustomerTaxService.updateById(crmCustomerTax);
         return BaseResult.ok(SysTips.EDIT_SUCCESS);
     }
 
@@ -119,7 +115,7 @@ public class CrmFileController {
     /**
      * @description 物理删除
      * @author  jayud
-     * @date   2022-03-02
+     * @date   2022-03-03
      * @param: id
      * @return: com.jayud.common.BaseResult
      **/
@@ -127,14 +123,14 @@ public class CrmFileController {
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
     @GetMapping("/phyDel")
     public BaseResult phyDel(@RequestParam Long id){
-        crmFileService.phyDelById(id);
+        crmCustomerTaxService.phyDelById(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 
     /**
      * @description 逻辑删除
      * @author  jayud
-     * @date   2022-03-02
+     * @date   2022-03-03
      * @param: id
      * @return: com.jayud.common.BaseResult
      **/
@@ -142,7 +138,7 @@ public class CrmFileController {
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam Long id){
-        crmFileService.logicDel(id);
+        crmCustomerTaxService.logicDel(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 
@@ -150,39 +146,40 @@ public class CrmFileController {
     /**
      * @description 根据id查询
      * @author  jayud
-     * @date   2022-03-02
+     * @date   2022-03-03
      * @param: id
-     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.po.CrmFile>
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.po.CrmCustomerTax>
      **/
     @ApiOperation("根据id查询")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<CrmFile> queryById(@RequestParam(name="id",required=true) int id) {
-        CrmFile crmFile = crmFileService.getById(id);
-        return BaseResult.ok(crmFile);
+    public BaseResult<CrmCustomerTax> queryById(@RequestParam(name="id",required=true) int id) {
+        CrmCustomerTax crmCustomerTax = crmCustomerTaxService.getById(id);
+        return BaseResult.ok(crmCustomerTax);
     }
 
 
     /**
     * @description 根据查询条件导出收货单
     * @author  jayud
-    * @date   2022-03-02
+    * @date   2022-03-03
     * @param: response  响应对象
     * @param: queryReceiptForm  参数queryReceiptForm
     * @param: req
     * @return: void
     **/
-    @ApiOperation("根据查询条件导出基本档案_文件(crm_file)")
-    @PostMapping(path = "/exportCrmFile")
-    public void exportCrmFile(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
+    @ApiOperation("根据查询条件导出开票资料")
+    @PostMapping(path = "/exportCrmCustomerTax")
+    public void exportCrmCustomerTax(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
         try {
             List<String> headList = Arrays.asList(
                 "自动ID",
-                "业务标识code",
-                "业务主键",
-                "附件类型",
-                "文件名称",
-                "文件上传url",
+                "客户ID",
+                "税号",
+                "名称",
+                "地址电话",
+                "银行及账号",
+                "是否生效账户 ：0 生效 1 不生效",
                 "租户编码",
                 "备注",
                 "是否删除，0未删除，1已删除",
@@ -191,26 +188,12 @@ public class CrmFileController {
                 "更新人",
                 "更新时间"
             );
-            List<LinkedHashMap<String, Object>> dataList = crmFileService.queryCrmFileForExcel(paramMap);
-            ExcelUtils.exportExcel(headList, dataList, "基本档案_文件(crm_file)", response);
+            List<LinkedHashMap<String, Object>> dataList = crmCustomerTaxService.queryCrmCustomerTaxForExcel(paramMap);
+            ExcelUtils.exportExcel(headList, dataList, "开票资料", response);
         } catch (Exception e) {
             e.printStackTrace();
             log.warn(e.toString());
         }
-    }
-
-    /**
-     * @description 获取客户信息字典项目
-     * @author  ciro
-     * @date   2022/3/2 11:07
-     * @param:
-     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.form.CrmCodeFrom>
-     **/
-    @ApiOperation("获取客户管理附件类型字典下拉")
-    @GetMapping(path = "/getCrmFileCode")
-    public BaseResult  getCrmCode(){
-        BaseResult<List<SysDictItem>> custNormalStatus= sysDictClient.selectItemByDictCode(CrmDictCode.CRM_FILE_TYPE);
-        return BaseResult.ok(custNormalStatus.getResult());
     }
 
 

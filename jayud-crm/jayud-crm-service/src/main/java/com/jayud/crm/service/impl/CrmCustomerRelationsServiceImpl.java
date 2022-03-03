@@ -68,10 +68,9 @@ public class CrmCustomerRelationsServiceImpl extends ServiceImpl<CrmCustomerRela
             result = this.updateById(convert);
             Long id = convert.getId();
         }else {
-            convert.setUpdateBy(CurrentUserUtil.getUsername());
-            convert.setUpdateTime(new Date());
-
-            result = this.saveOrUpdate(convert);
+            convert.setCreateBy(CurrentUserUtil.getUsername());
+            convert.setCreateTime(new Date());
+            result= this.saveOrUpdate(convert);
             Long id = convert.getId();
         }
         if (result) {

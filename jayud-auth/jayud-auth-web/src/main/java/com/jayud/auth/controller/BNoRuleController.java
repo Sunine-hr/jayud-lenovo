@@ -87,6 +87,15 @@ public class BNoRuleController {
     @ApiOperation("新增")
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody BNoRule bNoRule ){
+
+        BNoRule noRulesBySheetCode = bNoRuleService.getNoRulesBySheetCode(bNoRule.getNoCode());
+        if(null == bNoRule.getId() && null != noRulesBySheetCode ){
+            return BaseResult.error(444,"该编码已存在");
+        }
+        if(null != bNoRule.getId() && bNoRule.getId().equals(noRulesBySheetCode.getId())){
+            return BaseResult.error(444,"该编码已存在");
+        }
+
         bNoRuleService.save(bNoRule);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }

@@ -18,6 +18,7 @@ import com.jayud.crm.model.enums.CustRiskTypeEnum;
 import com.jayud.crm.model.form.CrmCodeFrom;
 import com.jayud.crm.model.form.CrmCustomerForm;
 import com.jayud.crm.model.po.CrmCustomerRisk;
+import com.jayud.crm.service.ICrmCustomerFeaturesService;
 import com.jayud.crm.service.ICrmCustomerManagerService;
 import com.jayud.crm.service.ICrmCustomerRiskService;
 import lombok.extern.slf4j.Slf4j;
@@ -60,34 +61,37 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     @Autowired
     private CrmCustomerMapper crmCustomerMapper;
 
+    @Autowired
+    public ICrmCustomerFeaturesService crmCustomerFeaturesService;
+
     @Override
     public IPage<CrmCustomer> selectPage(CrmCustomer crmCustomer,
-                                        Integer currentPage,
-                                        Integer pageSize,
-                                        HttpServletRequest req){
+                                         Integer currentPage,
+                                         Integer pageSize,
+                                         HttpServletRequest req) {
 
-        Page<CrmCustomer> page=new Page<CrmCustomer>(currentPage,pageSize);
-        IPage<CrmCustomer> pageList= crmCustomerMapper.pageList(page, crmCustomer);
+        Page<CrmCustomer> page = new Page<CrmCustomer>(currentPage, pageSize);
+        IPage<CrmCustomer> pageList = crmCustomerMapper.pageList(page, crmCustomer);
         return pageList;
     }
 
     @Override
-    public List<CrmCustomer> selectList(CrmCustomer crmCustomer){
+    public List<CrmCustomer> selectList(CrmCustomer crmCustomer) {
         return crmCustomerMapper.list(crmCustomer);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void phyDelById(Long id){
+    public void phyDelById(Long id) {
         crmCustomerMapper.phyDelById(id);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id){
-        crmCustomerMapper.logicDel(id,CurrentUserUtil.getUsername());
+    public void logicDel(Long id) {
+        crmCustomerMapper.logicDel(id, CurrentUserUtil.getUsername());
     }
 
 
@@ -101,22 +105,25 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     public BaseResult saveCrmCustomer(CrmCustomerForm crmCustomerForm) {
         crmCustomerForm.setManagerUserId(crmCustomerForm.getFsalesId());
         boolean isAdd = false;
-        if (crmCustomerForm.getId() == null){
+        if (crmCustomerForm.getId() == null) {
             isAdd = true;
         }
+        BaseResult onlyResult = checkOnly(isAdd, crmCustomerForm);
+        if (!onlyResult.isSuccess()) {
         crmCustomerForm.setIsCustAdd(isAdd);
         crmCustomerForm.setIsChangeBusniessType(false);
         crmCustomerForm.setBusinessTypesNames(changeBusinessType(crmCustomerForm.getBusinessTypesList()));
-        BaseResult onlyResult = checkOnly(isAdd,crmCustomerForm);
         if (!onlyResult.isSuccess()){
             return onlyResult;
         }
         if (CollUtil.isNotEmpty(crmCustomerForm.getBusinessTypesList())) {
-            crmCustomerForm.setBusinessTypes(StringUtils.join(crmCustomerForm.getBusinessTypesList(),StrUtil.C_COMMA));
+            crmCustomerForm.setBusinessTypes(StringUtils.join(crmCustomerForm.getBusinessTypesList(), StrUtil.C_COMMA));
         }
-        if (isAdd){
+        if (isAdd) {
             crmCustomerForm.setCustCode(getNextCode(CodeNumber.CRM_CUST_CODE));
             this.save(crmCustomerForm);
+            //创建客户创建业务要求默认数据
+            crmCustomerFeaturesService.saveCrmCustomerFeatures(crmCustomerForm.getId());
         }else {
             CrmCustomer checkCust = this.getById(crmCustomerForm.getId());
             if (!checkCust.getBusinessTypes().equals(checkCust.getBusinessTypes())){

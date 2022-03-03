@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.crm.mapper.CrmCustomerTaxMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCustomerTax">
+        <id column="id" property="id" />
+        <result column="cust_id" property="custId" />
+        <result column="tax_no" property="taxNo" />
+        <result column="cust_name" property="custName" />
+        <result column="tax_address_tel" property="taxAddressTel" />
+        <result column="bank_account" property="bankAccount" />
+        <result column="is_default" property="isDefault" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, cust_id, tax_no, cust_name, tax_address_tel, bank_account, is_default, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">crm_customer_tax </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="crmCustomerTax.custId != null ">
+                AND cust_id = ${crmCustomerTax.custId}
+            </if>
+
+            <if test="crmCustomerTax.taxNo != null and crmCustomerTax.taxNo != ''">
+                AND tax_no LIKE CONCAT('%',#{crmCustomerTax.taxNo},'%')
+            </if>
+
+            <if test="crmCustomerTax.custName != null and crmCustomerTax.custName != ''">
+                AND cust_name LIKE CONCAT('%',#{crmCustomerTax.custName},'%')
+            </if>
+
+            <if test="crmCustomerTax.taxAddressTel != null and crmCustomerTax.taxAddressTel != ''">
+                AND tax_address_tel LIKE CONCAT('%',#{crmCustomerTax.taxAddressTel},'%')
+            </if>
+
+            <if test="crmCustomerTax.bankAccount != null and crmCustomerTax.bankAccount != ''">
+                AND bank_account LIKE CONCAT('%',#{crmCustomerTax.bankAccount},'%')
+            </if>
+
+            <if test="crmCustomerTax.isDefault != null ">
+                AND is_default = ${crmCustomerTax.isDefault}
+            </if>
+
+            <if test="crmCustomerTax.tenantCode != null and crmCustomerTax.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{crmCustomerTax.tenantCode},'%')
+            </if>
+
+            <if test="crmCustomerTax.remark != null and crmCustomerTax.remark != ''">
+                AND remark LIKE CONCAT('%',#{crmCustomerTax.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerTax">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerTax">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  crm_customer_tax WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE crm_customer_tax SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCrmCustomerTaxForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            cust_id 'custId',
+            tax_no 'taxNo',
+            cust_name 'custName',
+            tax_address_tel 'taxAddressTel',
+            bank_account 'bankAccount',
+            is_default 'isDefault',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM crm_customer_tax
+        WHERE is_deleted = 0
+                    <if test="custId != null ">
+                        AND cust_id = #{custId}
+                    </if>
+                    <if test="taxNo != null and taxNo != ''">
+                        AND tax_no LIKE CONCAT('%',#{taxNo}, '%')
+                    </if>
+                    <if test="custName != null and custName != ''">
+                        AND cust_name LIKE CONCAT('%',#{custName}, '%')
+                    </if>
+                    <if test="taxAddressTel != null and taxAddressTel != ''">
+                        AND tax_address_tel LIKE CONCAT('%',#{taxAddressTel}, '%')
+                    </if>
+                    <if test="bankAccount != null and bankAccount != ''">
+                        AND bank_account LIKE CONCAT('%',#{bankAccount}, '%')
+                    </if>
+                    <if test="isDefault != null ">
+                        AND is_default = #{isDefault}
+                    </if>
+                    <if test="tenantCode != null and tenantCode != ''">
+                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+
+
+    <update id="updateCrmCustomerTaxList" parameterType="com.jayud.crm.model.po.CrmCustomerTax">
+        UPDATE crm_customer_tax
+        SET is_default = 1
+        WHERE is_deleted = 0 and cust_id = #{crmCustomerTax.custId}
+    </update>
+</mapper>

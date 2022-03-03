@@ -18,14 +18,15 @@
         <result column="create_time" property="createTime" />
         <result column="update_by" property="updateBy" />
         <result column="updateTime" property="updateTime" />
-        <result column="check" property="check" />
-        <result column="check_step" property="checkFlag" />
+        <result column="check_up" property="checkUp" />
+        <result column="check_step" property="checkStep" />
         <result column="check_flag" property="checkFlag" />
+        <result column="is_deleted" property="isDeleted" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, no_code, no_desc, no_prefix, no_format, check_length, check_table, check_database, t_num, remark, create_by, create_time, update_by, update_time, , is_deleted,check_step,check_flag
+            id, no_code, no_desc, no_prefix, no_format, check_length, check_table, check_database, t_num, remark, create_by, create_time, update_by, update_time, is_deleted,check_step,check_up,check_flag
     </sql>
 
     <!-- 表名 -->
@@ -97,7 +98,7 @@
             </if>
 
             <if test="bNoRule.isDeleted != null ">
-                AND is_eleted = ${bNoRule.isDeleted}
+                AND is_deleted = ${bNoRule.isDeleted}
             </if>
 
         </where>
@@ -122,7 +123,7 @@
     </update>
 
     <select id="getNoRulesBySheetCode" resultType="com.jayud.auth.model.po.BNoRule" >
-        select * from b_no_rule where no_code = #{sheetCode}
+        select * from b_no_rule where no_code = #{sheetCode} and is_deleted = 0
     </select>
 
 

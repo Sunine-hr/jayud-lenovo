@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.crm.mapper.CrmCustomerFeaturesMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCustomerFeatures">
+        <id column="id" property="id" />
+        <result column="cust_id" property="custId" />
+        <result column="features_type" property="featuresType" />
+        <result column="features_content" property="featuresContent" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, cust_id, features_type, features_content, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">crm_customer_features </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="crmCustomerFeatures.custId != null ">
+                AND cust_id = ${crmCustomerFeatures.custId}
+            </if>
+
+            <if test="crmCustomerFeatures.featuresType != null and crmCustomerFeatures.featuresType != ''">
+                AND features_type LIKE CONCAT('%',#{crmCustomerFeatures.featuresType},'%')
+            </if>
+
+            <if test="crmCustomerFeatures.featuresContent != null and crmCustomerFeatures.featuresContent != ''">
+                AND features_content LIKE CONCAT('%',#{crmCustomerFeatures.featuresContent},'%')
+            </if>
+
+            <if test="crmCustomerFeatures.tenantCode != null and crmCustomerFeatures.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{crmCustomerFeatures.tenantCode},'%')
+            </if>
+
+            <if test="crmCustomerFeatures.remark != null and crmCustomerFeatures.remark != ''">
+                AND remark LIKE CONCAT('%',#{crmCustomerFeatures.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerFeatures">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerFeatures">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  crm_customer_features WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE crm_customer_features SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCrmCustomerFeaturesForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            cust_id 'custId',
+            features_type 'featuresType',
+            features_content 'featuresContent',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM crm_customer_features
+        WHERE is_deleted = 0
+                    <if test="custId != null ">
+                        AND cust_id = #{custId}
+                    </if>
+                    <if test="featuresType != null and featuresType != ''">
+                        AND features_type LIKE CONCAT('%',#{featuresType}, '%')
+                    </if>
+                    <if test="featuresContent != null and featuresContent != ''">
+                        AND features_content LIKE CONCAT('%',#{featuresContent}, '%')
+                    </if>
+                    <if test="tenantCode != null and tenantCode != ''">
+                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

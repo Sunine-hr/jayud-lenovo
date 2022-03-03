@@ -89,7 +89,10 @@ public interface CrmDictCode {
     String QUOTATION_NUM_CODE="Quotation";
 
 
-
+    /**
+     *  客户管理-地址类型
+     */
+    String CRM_CUSTOMER_ADDRESS_TYPE = "crm_customer_address_type";
 
 
 

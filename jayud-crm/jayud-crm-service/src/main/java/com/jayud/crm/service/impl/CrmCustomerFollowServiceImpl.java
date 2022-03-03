@@ -91,9 +91,8 @@ public class CrmCustomerFollowServiceImpl extends ServiceImpl<CrmCustomerFollowM
             //修改待定
 
         }else {
-
-            convert.setUpdateBy(CurrentUserUtil.getUsername());
-            convert.setUpdateTime(new Date());
+            convert.setCreateBy(CurrentUserUtil.getUsername());
+            convert.setCreateTime(new Date());
             result= this.saveOrUpdate(convert);
             Long id = convert.getId();
 

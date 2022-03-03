@@ -67,8 +67,8 @@ public class CrmCustomerRiskServiceImpl extends ServiceImpl<CrmCustomerRiskMappe
             convert.setUpdateTime(new Date());
             result = this.updateById(convert);
         }else {
-            convert.setUpdateBy(CurrentUserUtil.getUsername());
-            convert.setUpdateTime(new Date());
+            convert.setCreateBy(CurrentUserUtil.getUsername());
+            convert.setCreateTime(new Date());
             result= this.saveOrUpdate(convert);
         }
         if (result) {

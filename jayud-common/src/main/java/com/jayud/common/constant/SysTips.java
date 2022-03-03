@@ -225,5 +225,7 @@ public interface SysTips {
     String NOT_EDIT_CHARGER_ERROR= "无法更新负责人!";
 
     String NUM_ALREADY_EXISTS= "该编号已存在";
+
+    String TYPE_ALREADY_EXISTS= "该额度类型已存在";
 }
 

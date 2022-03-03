@@ -15,6 +15,7 @@ import com.jayud.common.constant.SqlConstant;
 import com.jayud.common.entity.DataControl;
 import com.jayud.common.entity.MapEntity;
 import com.jayud.common.entity.OrderDeliveryAddress;
+import com.jayud.common.entity.TreeNode;
 import com.jayud.common.enums.*;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.*;
@@ -2411,7 +2412,7 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "初始化车型尺寸,区分车型")
-    @PostMapping(value = "/initVehicleSize")
+    @PostMapping(value = "/api/initVehicleSize")
     public CommonResult<InitVehicleSizeInfoVO> initVehicleSize() {
         InitVehicleSizeInfoVO initVehicleSizeInfoVO = new InitVehicleSizeInfoVO();
         //柜车尺寸集合
@@ -2432,7 +2433,7 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "录用费用页面-下拉选单位")
-    @PostMapping(value = "/initCostUnit")
+    @PostMapping(value = "/api/initCostUnit")
     public CommonResult<List<InitComboxStrVO>> initCostUnit() {
         List<InitComboxStrVO> comboxStrVOS = new ArrayList<>();
         for (UnitEnum unitEnum : UnitEnum.values()) {
@@ -2445,7 +2446,7 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "录入费用:应收/付项目/币种 ")
-    @PostMapping(value = "/initCost")
+    @PostMapping(value = "/api/initCost")
     public CommonResult initCost(@RequestBody Map<String, Object> param) {
         String createdTimeStr = MapUtil.getStr(param, "createdTimeStr");
         if (StringUtil.isNullOrEmpty(createdTimeStr)) {
@@ -2480,7 +2481,7 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "费用类别,idCode=费用名称的隐藏值")
-    @PostMapping(value = "/initCostType")
+    @PostMapping(value = "/api/initCostType")
     public CommonResult<List<InitComboxVO>> initCostType(@RequestBody Map<String, Object> param) {
         String idCode = MapUtil.getStr(param, CommonConstant.ID_CODE);
         QueryWrapper queryCostInfo = new QueryWrapper();
@@ -2505,8 +2506,22 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "根据费用名称查询费用类型")
-    @PostMapping(value = "/initCostTypeByCostInfoCode")
+    @PostMapping(value = "/api/initCostTypeByCostInfoCode")
     public CommonResult<Map<String, List<InitComboxVO>>> initCostTypeByCostInfoCode(){
         return CommonResult.success(this.costInfoService.initCostTypeByCostInfoCode());
+    }
+
+    @ApiOperation(value = "获取省市区树结构")
+    @PostMapping(value = "/api/adrrTree")
+    public CommonResult<List<TreeNode>> adrrTree() {
+        List<RegionCity> list = this.regionCityService.list();
+        List<TreeNode> treeNodes = new ArrayList<>();
+        list.forEach(e -> {
+            TreeNode treeNode = new TreeNode();
+            treeNode.setId(e.getId()).setLabel(e.getName()).setParentId(e.getParentId());
+            treeNodes.add(treeNode);
+        });
+        List<TreeNode> tree = TreeUtil.getTree(treeNodes, 0L);
+        return CommonResult.success(tree);
     }
 }

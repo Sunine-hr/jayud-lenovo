@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.crm.mapper.CrmCreditMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCredit">
+        <id column="id" property="id" />
+        <result column="credit_id" property="creditId" />
+        <result column="credit_type" property="creditType" />
+        <result column="credit_value" property="creditValue" />
+        <result column="credit_money" property="creditMoney" />
+        <result column="credit_granted_money" property="creditGrantedMoney" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <resultMap id="BaseResultMapOne" type="com.jayud.crm.model.vo.CrmCreditVO">
+        <id column="id" property="id" />
+        <result column="credit_id" property="creditId" />
+        <result column="credit_type" property="creditType" />
+        <result column="credit_value" property="creditValue" />
+        <result column="credit_money" property="creditMoney" />
+        <result column="credit_granted_money" property="creditGrantedMoney" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, credit_id, credit_type, credit_value, credit_money, credit_granted_money, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">crm_credit </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="crmCredit.creditId != null and crmCredit.creditId != ''">
+                AND credit_id LIKE CONCAT('%',#{crmCredit.creditId},'%')
+            </if>
+
+            <if test="crmCredit.creditType != null and crmCredit.creditType != ''">
+                AND credit_type LIKE CONCAT('%',#{crmCredit.creditType},'%')
+            </if>
+
+            <if test="crmCredit.creditValue != null and crmCredit.creditValue != ''">
+                AND credit_value LIKE CONCAT('%',#{crmCredit.creditValue},'%')
+            </if>
+
+            <if test="crmCredit.creditMoney != null ">
+                AND credit_money = ${crmCredit.creditMoney}
+            </if>
+
+            <if test="crmCredit.creditGrantedMoney != null ">
+                AND credit_granted_money = ${crmCredit.creditGrantedMoney}
+            </if>
+
+            <if test="crmCredit.tenantCode != null and crmCredit.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{crmCredit.tenantCode},'%')
+            </if>
+
+            <if test="crmCredit.remark != null and crmCredit.remark != ''">
+                AND remark LIKE CONCAT('%',#{crmCredit.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMapOne" parameterType="com.jayud.crm.model.po.CrmCredit">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCredit">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  crm_credit WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE crm_credit SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCrmCreditForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            credit_id 'creditId',
+            credit_type 'creditType',
+            credit_value 'creditValue',
+            credit_money 'creditMoney',
+            credit_granted_money 'creditGrantedMoney',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM crm_credit
+        WHERE is_deleted = 0
+                    <if test="creditId != null and creditId != ''">
+                        AND credit_id LIKE CONCAT('%',#{creditId}, '%')
+                    </if>
+                    <if test="creditType != null and creditType != ''">
+                        AND credit_type LIKE CONCAT('%',#{creditType}, '%')
+                    </if>
+                    <if test="creditValue != null and creditValue != ''">
+                        AND credit_value LIKE CONCAT('%',#{creditValue}, '%')
+                    </if>
+                    <if test="creditMoney != null ">
+                        AND credit_money = #{creditMoney}
+                    </if>
+                    <if test="creditGrantedMoney != null ">
+                        AND credit_granted_money = #{creditGrantedMoney}
+                    </if>
+                    <if test="tenantCode != null and tenantCode != ''">
+                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

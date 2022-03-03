@@ -6,6 +6,8 @@ import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.common.BaseResult;
 import com.jayud.common.CommonResult;
 import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.entity.TreeNode;
+import com.jayud.common.utils.TreeUtil;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.OmsClient;
 import com.jayud.crm.feign.SysDictClient;
@@ -18,13 +20,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 
 @RestController
 @RequestMapping("/common")
-@Api(tags = "订单通用接口")
+@Api(tags = "通用接口")
 public class CommonController {
 
     @Autowired
@@ -65,6 +68,12 @@ public class CommonController {
         //客户管理-业务类型
         BaseResult<List<SysDictItem>> custBusinessType = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_BUSINESS_TYPE);
         return custBusinessType;
+    }
+
+    @ApiOperation(value = "获取省市区树结构")
+    @PostMapping(value = "/adrrTree")
+    public CommonResult<List<TreeNode>> adrrTree() {
+        return CommonResult.success(this.omsClient.adrrTree().getData());
     }
 
 }

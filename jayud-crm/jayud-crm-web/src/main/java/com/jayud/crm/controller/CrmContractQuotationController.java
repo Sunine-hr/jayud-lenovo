@@ -236,7 +236,7 @@ public class CrmContractQuotationController {
 
     @ApiOperation(value = "初始化车型尺寸,区分车型")
     @PostMapping(value = "/initVehicleSize")
-    public CommonResult<List<Map<String, Object>>> initVehicleSize() {
+    public CommonResult<Map<String, Object>> initVehicleSize() {
         return omsClient.initVehicleSize();
     }
 

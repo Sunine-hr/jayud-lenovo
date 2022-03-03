@@ -12,7 +12,7 @@ public enum FileModuleEnum {
     CQ("ContractQuotation", "合同报价"),
     CCFC("CrmCustomerFollowCode", "客户管理_跟进记录_业务标识"),
     CA("ContractAgreement", "合同协议"),
-
+    SUB_CA("ContractAgreementSub", "合同子协议"),
     ;
 
 

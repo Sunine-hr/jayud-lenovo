@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jayud.crm.mapper.CrmCustomerAgreementMapper">
+<mapper namespace="com.jayud.crm.mapper.CrmCustomerAgreementSubMapper">
 
     <!-- 通用查询映射结果ss -->
-    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCustomerAgreement">
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCustomerAgreementSub">
         <id column="id" property="id" />
+        <result column="p_id" property="pId" />
         <result column="agreement_code" property="agreementCode" />
         <result column="cust_id" property="custId" />
         <result column="cust_name" property="custName" />
@@ -33,7 +34,6 @@
         <result column="f_step" property="fStep" />
         <result column="check_state_flag" property="checkStateFlag" />
         <result column="flow_instance_id" property="flowInstanceId" />
-        <result column="quotation_id" property="quotationId" />
         <result column="tenant_code" property="tenantCode" />
         <result column="remark" property="remark" />
         <result column="is_deleted" property="isDeleted" />
@@ -43,10 +43,10 @@
         <result column="update_time" property="updateTime" />
     </resultMap>
 
-
     <!-- 通用查询映射结果ss -->
-    <resultMap id="BaseResultMapOne" type="com.jayud.crm.model.po.CrmCustomerAgreement">
+    <resultMap id="BaseResultMapOne" type="com.jayud.crm.model.po.CrmCustomerAgreementSub">
         <id column="id" property="id" />
+        <result column="p_id" property="pId" />
         <result column="agreement_code" property="agreementCode" />
         <result column="cust_id" property="custId" />
         <result column="cust_name" property="custName" />
@@ -75,7 +75,6 @@
         <result column="f_step" property="fStep" />
         <result column="check_state_flag" property="checkStateFlag" />
         <result column="flow_instance_id" property="flowInstanceId" />
-        <result column="quotation_id" property="quotationId" />
         <result column="tenant_code" property="tenantCode" />
         <result column="remark" property="remark" />
         <result column="is_deleted" property="isDeleted" />
@@ -87,152 +86,153 @@
         <result column="quotation_num" property="quotationNum" />
     </resultMap>
 
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, agreement_code, cust_id, cust_name, business_type, business_value, treaty_type, treaty_name, begin_date, end_date, validity_period, is_extended, postponed_type, treaty_copy, treaty_remark, user_id, user, depart_id, depart_name, files_num, is_default, is_files, files_code, files_user, files_dtm, f_level, f_step, check_state_flag, flow_instance_id, quotation_id, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
-            , quotation_id,quotation_num
+            id, p_id, agreement_code, cust_id, cust_name, business_type, business_value, treaty_type, treaty_name, begin_date, end_date, validity_period, is_extended, postponed_type, treaty_copy, treaty_remark, user_id, user, depart_id, depart_name, files_num, is_default, is_files, files_code, files_user, files_dtm, f_level, f_step, check_state_flag, flow_instance_id, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time,
+            quotation_id,quotation_num
     </sql>
 
     <!-- 表名 -->
-    <sql id="tname">crm_customer_agreement </sql>
+    <sql id="tname">crm_customer_agreement_sub </sql>
 
     <sql id="selects">
         SELECT <include refid="Base_Column_List"/>
         FROM <include refid="tname"/>
         <where>
             is_deleted = 0
-            <if test="crmCustomerAgreement.agreementCode != null and crmCustomerAgreement.agreementCode != ''">
-                AND agreement_code LIKE CONCAT('%',#{crmCustomerAgreement.agreementCode},'%')
+            <if test="crmCustomerAgreementSub.pId != null ">
+                AND p_id = ${crmCustomerAgreementSub.pId}
             </if>
 
-            <if test="crmCustomerAgreement.custId != null ">
-                AND cust_id = ${crmCustomerAgreement.custId}
+            <if test="crmCustomerAgreementSub.agreementCode != null and crmCustomerAgreementSub.agreementCode != ''">
+                AND agreement_code LIKE CONCAT('%',#{crmCustomerAgreementSub.agreementCode},'%')
             </if>
 
-            <if test="crmCustomerAgreement.custName != null and crmCustomerAgreement.custName != ''">
-                AND cust_name LIKE CONCAT('%',#{crmCustomerAgreement.custName},'%')
+            <if test="crmCustomerAgreementSub.custId != null ">
+                AND cust_id = ${crmCustomerAgreementSub.custId}
             </if>
 
-            <if test="crmCustomerAgreement.businessType != null and crmCustomerAgreement.businessType != ''">
-                AND business_type LIKE CONCAT('%',#{crmCustomerAgreement.businessType},'%')
+            <if test="crmCustomerAgreementSub.custName != null and crmCustomerAgreementSub.custName != ''">
+                AND cust_name LIKE CONCAT('%',#{crmCustomerAgreementSub.custName},'%')
             </if>
 
-            <if test="crmCustomerAgreement.businessValue != null and crmCustomerAgreement.businessValue != ''">
-                AND business_value LIKE CONCAT('%',#{crmCustomerAgreement.businessValue},'%')
+            <if test="crmCustomerAgreementSub.businessType != null and crmCustomerAgreementSub.businessType != ''">
+                AND business_type LIKE CONCAT('%',#{crmCustomerAgreementSub.businessType},'%')
             </if>
 
-            <if test="crmCustomerAgreement.treatyType != null and crmCustomerAgreement.treatyType != ''">
-                AND treaty_type LIKE CONCAT('%',#{crmCustomerAgreement.treatyType},'%')
+            <if test="crmCustomerAgreementSub.businessValue != null and crmCustomerAgreementSub.businessValue != ''">
+                AND business_value LIKE CONCAT('%',#{crmCustomerAgreementSub.businessValue},'%')
             </if>
 
-            <if test="crmCustomerAgreement.treatyName != null and crmCustomerAgreement.treatyName != ''">
-                AND treaty_name LIKE CONCAT('%',#{crmCustomerAgreement.treatyName},'%')
+            <if test="crmCustomerAgreementSub.treatyType != null and crmCustomerAgreementSub.treatyType != ''">
+                AND treaty_type LIKE CONCAT('%',#{crmCustomerAgreementSub.treatyType},'%')
             </if>
 
-            <if test="crmCustomerAgreement.beginDate != null ">
-                AND begin_date = ${crmCustomerAgreement.beginDate}
+            <if test="crmCustomerAgreementSub.treatyName != null and crmCustomerAgreementSub.treatyName != ''">
+                AND treaty_name LIKE CONCAT('%',#{crmCustomerAgreementSub.treatyName},'%')
             </if>
 
-            <if test="crmCustomerAgreement.endDate != null ">
-                AND end_date = ${crmCustomerAgreement.endDate}
+            <if test="crmCustomerAgreementSub.beginDate != null ">
+                AND begin_date = ${crmCustomerAgreementSub.beginDate}
             </if>
 
-            <if test="crmCustomerAgreement.validityPeriod != null ">
-                AND validity_period = ${crmCustomerAgreement.validityPeriod}
+            <if test="crmCustomerAgreementSub.endDate != null ">
+                AND end_date = ${crmCustomerAgreementSub.endDate}
             </if>
 
-            <if test="crmCustomerAgreement.isExtended != null ">
-                AND is_extended = ${crmCustomerAgreement.isExtended}
+            <if test="crmCustomerAgreementSub.validityPeriod != null ">
+                AND validity_period = ${crmCustomerAgreementSub.validityPeriod}
             </if>
 
-            <if test="crmCustomerAgreement.postponedType != null ">
-                AND postponed_type = ${crmCustomerAgreement.postponedType}
+            <if test="crmCustomerAgreementSub.isExtended != null ">
+                AND is_extended = ${crmCustomerAgreementSub.isExtended}
             </if>
 
-            <if test="crmCustomerAgreement.treatyCopy != null and crmCustomerAgreement.treatyCopy != ''">
-                AND treaty_copy LIKE CONCAT('%',#{crmCustomerAgreement.treatyCopy},'%')
+            <if test="crmCustomerAgreementSub.postponedType != null ">
+                AND postponed_type = ${crmCustomerAgreementSub.postponedType}
             </if>
 
-            <if test="crmCustomerAgreement.treatyRemark != null and crmCustomerAgreement.treatyRemark != ''">
-                AND treaty_remark LIKE CONCAT('%',#{crmCustomerAgreement.treatyRemark},'%')
+            <if test="crmCustomerAgreementSub.treatyCopy != null and crmCustomerAgreementSub.treatyCopy != ''">
+                AND treaty_copy LIKE CONCAT('%',#{crmCustomerAgreementSub.treatyCopy},'%')
             </if>
 
-            <if test="crmCustomerAgreement.userId != null ">
-                AND user_id = ${crmCustomerAgreement.userId}
+            <if test="crmCustomerAgreementSub.treatyRemark != null and crmCustomerAgreementSub.treatyRemark != ''">
+                AND treaty_remark LIKE CONCAT('%',#{crmCustomerAgreementSub.treatyRemark},'%')
             </if>
 
-            <if test="crmCustomerAgreement.user != null and crmCustomerAgreement.user != ''">
-                AND user LIKE CONCAT('%',#{crmCustomerAgreement.user},'%')
+            <if test="crmCustomerAgreementSub.userId != null ">
+                AND user_id = ${crmCustomerAgreementSub.userId}
             </if>
 
-            <if test="crmCustomerAgreement.departId != null ">
-                AND depart_id = ${crmCustomerAgreement.departId}
+            <if test="crmCustomerAgreementSub.user != null and crmCustomerAgreementSub.user != ''">
+                AND user LIKE CONCAT('%',#{crmCustomerAgreementSub.user},'%')
             </if>
 
-            <if test="crmCustomerAgreement.departName != null and crmCustomerAgreement.departName != ''">
-                AND depart_name LIKE CONCAT('%',#{crmCustomerAgreement.departName},'%')
+            <if test="crmCustomerAgreementSub.departId != null ">
+                AND depart_id = ${crmCustomerAgreementSub.departId}
             </if>
 
-            <if test="crmCustomerAgreement.filesNum != null ">
-                AND files_num = ${crmCustomerAgreement.filesNum}
+            <if test="crmCustomerAgreementSub.departName != null and crmCustomerAgreementSub.departName != ''">
+                AND depart_name LIKE CONCAT('%',#{crmCustomerAgreementSub.departName},'%')
             </if>
 
-            <if test="crmCustomerAgreement.isDefault != null ">
-                AND is_default = ${crmCustomerAgreement.isDefault}
+            <if test="crmCustomerAgreementSub.filesNum != null ">
+                AND files_num = ${crmCustomerAgreementSub.filesNum}
             </if>
 
-            <if test="crmCustomerAgreement.isFiles != null ">
-                AND is_files = ${crmCustomerAgreement.isFiles}
+            <if test="crmCustomerAgreementSub.isDefault != null ">
+                AND is_default = ${crmCustomerAgreementSub.isDefault}
             </if>
 
-            <if test="crmCustomerAgreement.filesCode != null and crmCustomerAgreement.filesCode != ''">
-                AND files_code LIKE CONCAT('%',#{crmCustomerAgreement.filesCode},'%')
+            <if test="crmCustomerAgreementSub.isFiles != null ">
+                AND is_files = ${crmCustomerAgreementSub.isFiles}
             </if>
 
-            <if test="crmCustomerAgreement.filesUser != null and crmCustomerAgreement.filesUser != ''">
-                AND files_user LIKE CONCAT('%',#{crmCustomerAgreement.filesUser},'%')
+            <if test="crmCustomerAgreementSub.filesCode != null and crmCustomerAgreementSub.filesCode != ''">
+                AND files_code LIKE CONCAT('%',#{crmCustomerAgreementSub.filesCode},'%')
             </if>
 
-            <if test="crmCustomerAgreement.filesDtm != null ">
-                AND files_dtm = ${crmCustomerAgreement.filesDtm}
+            <if test="crmCustomerAgreementSub.filesUser != null and crmCustomerAgreementSub.filesUser != ''">
+                AND files_user LIKE CONCAT('%',#{crmCustomerAgreementSub.filesUser},'%')
             </if>
 
-            <if test="crmCustomerAgreement.fLevel != null ">
-                AND f_level = ${crmCustomerAgreement.fLevel}
+            <if test="crmCustomerAgreementSub.filesDtm != null ">
+                AND files_dtm = ${crmCustomerAgreementSub.filesDtm}
             </if>
 
-            <if test="crmCustomerAgreement.fStep != null ">
-                AND f_step = ${crmCustomerAgreement.fStep}
+            <if test="crmCustomerAgreementSub.fLevel != null ">
+                AND f_level = ${crmCustomerAgreementSub.fLevel}
             </if>
 
-            <if test="crmCustomerAgreement.checkStateFlag != null and crmCustomerAgreement.checkStateFlag != ''">
-                AND check_state_flag LIKE CONCAT('%',#{crmCustomerAgreement.checkStateFlag},'%')
+            <if test="crmCustomerAgreementSub.fStep != null ">
+                AND f_step = ${crmCustomerAgreementSub.fStep}
             </if>
 
-            <if test="crmCustomerAgreement.flowInstanceId != null ">
-                AND flow_instance_id = ${crmCustomerAgreement.flowInstanceId}
+            <if test="crmCustomerAgreementSub.checkStateFlag != null and crmCustomerAgreementSub.checkStateFlag != ''">
+                AND check_state_flag LIKE CONCAT('%',#{crmCustomerAgreementSub.checkStateFlag},'%')
             </if>
 
-            <if test="crmCustomerAgreement.quotationId != null ">
-                AND quotation_id = ${crmCustomerAgreement.quotationId}
+            <if test="crmCustomerAgreementSub.flowInstanceId != null ">
+                AND flow_instance_id = ${crmCustomerAgreementSub.flowInstanceId}
             </if>
 
-            <if test="crmCustomerAgreement.tenantCode != null and crmCustomerAgreement.tenantCode != ''">
-                AND tenant_code LIKE CONCAT('%',#{crmCustomerAgreement.tenantCode},'%')
+            <if test="crmCustomerAgreementSub.tenantCode != null and crmCustomerAgreementSub.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{crmCustomerAgreementSub.tenantCode},'%')
             </if>
 
-            <if test="crmCustomerAgreement.remark != null and crmCustomerAgreement.remark != ''">
-                AND remark LIKE CONCAT('%',#{crmCustomerAgreement.remark},'%')
+            <if test="crmCustomerAgreementSub.remark != null and crmCustomerAgreementSub.remark != ''">
+                AND remark LIKE CONCAT('%',#{crmCustomerAgreementSub.remark},'%')
             </if>
 
         </where>
     </sql>
 
-    <select id="pageList" resultMap="BaseResultMapOne" parameterType="com.jayud.crm.model.po.CrmCustomerAgreement">
+    <select id="pageList" resultMap="BaseResultMapOne" parameterType="com.jayud.crm.model.po.CrmCustomerAgreementSub">
         <include refid="selects"/>
     </select>
 
-    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerAgreement">
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerAgreementSub">
         <include refid="selects"/>
     </select>
 
@@ -240,17 +240,18 @@
 
 
     <delete id="phyDelById">
-        DELETE FROM  crm_customer_agreement WHERE id = ${id}
+        DELETE FROM  crm_customer_agreement_sub WHERE id = ${id}
     </delete>
 
     <update id="logicDel">
-        UPDATE crm_customer_agreement SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        UPDATE crm_customer_agreement_sub SET is_deleted = 1 ,update_by = #{username}, update_time = now()
         WHERE id = ${id} AND is_deleted = 0
     </update>
 
-    <select id="queryCrmCustomerAgreementForExcel" resultType="java.util.LinkedHashMap">
+    <select id="queryCrmCustomerAgreementSubForExcel" resultType="java.util.LinkedHashMap">
         SELECT
             id 'id',
+            p_id 'pId',
             agreement_code 'agreementCode',
             cust_id 'custId',
             cust_name 'custName',
@@ -279,7 +280,6 @@
             f_step 'fStep',
             check_state_flag 'checkStateFlag',
             flow_instance_id 'flowInstanceId',
-            quotation_id 'quotationId',
             tenant_code 'tenantCode',
             remark 'remark',
             is_deleted 'isDeleted',
@@ -287,8 +287,11 @@
             create_time 'createTime',
             update_by 'updateBy',
             update_time 'updateTime'
-        FROM crm_customer_agreement
+        FROM crm_customer_agreement_sub
         WHERE is_deleted = 0
+                    <if test="pId != null ">
+                        AND p_id = #{pId}
+                    </if>
                     <if test="agreementCode != null and agreementCode != ''">
                         AND agreement_code LIKE CONCAT('%',#{agreementCode}, '%')
                     </if>
@@ -372,9 +375,6 @@
                     </if>
                     <if test="flowInstanceId != null ">
                         AND flow_instance_id = #{flowInstanceId}
-                    </if>
-                    <if test="quotationId != null ">
-                        AND quotation_id = #{quotationId}
                     </if>
                     <if test="tenantCode != null and tenantCode != ''">
                         AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')

@@ -6,10 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.jayud.common.entity.SysBaseEntity;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,7 +27,7 @@ public class SysRoleActionCheckForm extends SysBaseEntity {
     private Long roleId;
 
     @ApiModelProperty(value = "权限ID")
-    private List<Integer> actionIds;
+    private List<Integer> actionId;
 
     @ApiModelProperty(value = "审核CODE")
     private String actionCode;

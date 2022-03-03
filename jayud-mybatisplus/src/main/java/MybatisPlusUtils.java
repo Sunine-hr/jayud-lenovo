@@ -27,6 +27,7 @@ public class MybatisPlusUtils {
         };
         for (String model : models) {
             shell(model,"crm_customer_bank");
+            shell(model,"sys_role_action_check");
 
         }
     }

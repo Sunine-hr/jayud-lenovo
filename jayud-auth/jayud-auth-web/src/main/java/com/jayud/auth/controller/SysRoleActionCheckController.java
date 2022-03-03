@@ -1,6 +1,7 @@
 package com.jayud.auth.controller;
 
 import com.jayud.auth.model.bo.SysRoleActionCheckForm;
+import com.jayud.auth.model.vo.SysRoleActionCheckVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -57,10 +58,10 @@ public class SysRoleActionCheckController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<SysRoleActionCheck>> selectPage(SysRoleActionCheck sysRoleActionCheck,
-                                                   @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
-                                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-                                                   HttpServletRequest req) {
+    public BaseResult<IPage<SysRoleActionCheckVO>> selectPage(SysRoleActionCheck sysRoleActionCheck,
+                                                              @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
+                                                              @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                                              HttpServletRequest req) {
         return BaseResult.ok(sysRoleActionCheckService.selectPage(sysRoleActionCheck,currentPage,pageSize,req));
     }
 

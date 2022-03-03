@@ -184,6 +184,8 @@ public class BNoRuleController {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("order",order);
         jsonObject.put("fLevel",checkLength);
+        jsonObject.put("fStep",noRulesBySheetCode.getCheckStep());
+        jsonObject.put("checkStateFlag",noRulesBySheetCode.getCheckFlag());
         return BaseResult.ok(jsonObject);
     }
 

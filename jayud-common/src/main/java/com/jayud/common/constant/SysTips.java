@@ -223,5 +223,7 @@ public interface SysTips {
     String UNDER_REVIEW_NOT_OPT= "审核中无法操作";
 
     String NOT_EDIT_CHARGER_ERROR= "无法更新负责人!";
+
+    String NUM_ALREADY_EXISTS= "该编号已存在";
 }
 

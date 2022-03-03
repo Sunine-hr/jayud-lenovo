@@ -9,9 +9,11 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum FileModuleEnum {
 
-    ONE("ContractQuotation", "合同报价"),
-    CCFC("CrmCustomerFollowCode", "客户管理_跟进记录_业务标识");
+    CQ("ContractQuotation", "合同报价"),
+    CCFC("CrmCustomerFollowCode", "客户管理_跟进记录_业务标识"),
+    CA("ContractAgreement", "合同协议"),
 
+    ;
 
 
     private String code;

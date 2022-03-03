@@ -11,9 +11,11 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.crm.mapper.CrmFileMapper;
 import com.jayud.crm.model.bo.CrmCustomerFollowForm;
 import com.jayud.crm.model.constant.CrmDictCode;
+import com.jayud.crm.model.enums.FileModuleEnum;
 import com.jayud.crm.model.po.CrmCreditVisit;
 import com.jayud.crm.model.po.CrmFile;
 import com.jayud.crm.model.vo.CrmCustomerFollowVO;
+import com.jayud.crm.service.ICrmFileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -46,6 +48,8 @@ public class CrmCustomerFollowServiceImpl extends ServiceImpl<CrmCustomerFollowM
     private CrmCustomerFollowMapper crmCustomerFollowMapper;
     @Autowired
     private CrmFileMapper crmFileMapper;
+    @Autowired
+    private ICrmFileService crmFileService;
 
     @Override
     public IPage<CrmCustomerFollowVO> selectPage(CrmCustomerFollow crmCustomerFollow,
@@ -60,7 +64,7 @@ public class CrmCustomerFollowServiceImpl extends ServiceImpl<CrmCustomerFollowM
 
             //根据跟进记录id查询关联文件表
             CrmFile crmFile = new CrmFile();
-            crmFile.setCode(CrmDictCode.crmCustomerFollowCode);
+            crmFile.setCode(FileModuleEnum.CCFC.getCode());
             crmFile.setBusinessId(v.getId());
             List<CrmFile> list = crmFileMapper.list(crmFile);
             v.setCrmFiles(list);
@@ -93,21 +97,22 @@ public class CrmCustomerFollowServiceImpl extends ServiceImpl<CrmCustomerFollowM
             result= this.saveOrUpdate(convert);
             Long id = convert.getId();
 
-            for (int i = 0; i < crmCustomerFollowForm.getQueryCrmFiles().size(); i++) {
-                CrmFile crmFile = new CrmFile();
-                //客户跟进记录表id
-                crmFile.setBusinessId(id);
-                //客户表示
-                crmFile.setCode(CrmDictCode.crmCustomerFollowCode);
-                //文件名称
-                crmFile.setFileName(crmCustomerFollowForm.getQueryCrmFiles().get(i).getFileName());
-                //文件路径
-                crmFile.setUploadFileUrl(crmCustomerFollowForm.getQueryCrmFiles().get(i).getUploadFileUrl());
-                crmFile.setCreateBy(CurrentUserUtil.getUsername());
-                crmFile.setCreateTime(new Date());
-                crmFileMapper.insert(crmFile);
-            }
-
+//            for (int i = 0; i < crmCustomerFollowForm.getQueryCrmFiles().size(); i++) {
+//                CrmFile crmFile = new CrmFile();
+//                //客户跟进记录表id
+//                crmFile.setBusinessId(id);
+//                //客户表示
+//                crmFile.setCode(CrmDictCode.crmCustomerFollowCode);
+//                //文件名称
+//                crmFile.setFileName(crmCustomerFollowForm.getQueryCrmFiles().get(i).getFileName());
+//                //文件路径
+//                crmFile.setUploadFileUrl(crmCustomerFollowForm.getQueryCrmFiles().get(i).getUploadFileUrl());
+//                crmFile.setCreateBy(CurrentUserUtil.getUsername());
+//                crmFile.setCreateTime(new Date());
+//                crmFileMapper.insert(crmFile);
+//            }
+            //文件处理
+            this.crmFileService.doFileProcessing(crmCustomerFollowForm.getCrmFiles(), id, FileModuleEnum.CCFC.getCode());
         }
         if (result) {
             log.warn("新增或修改成功");

@@ -1,5 +1,6 @@
 package com.jayud.auth.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,6 +10,7 @@ import com.jayud.auth.model.po.SysUserRole;
 import com.jayud.auth.model.vo.SysRoleVO;
 import com.jayud.auth.service.ISysRoleMenuService;
 import com.jayud.auth.service.ISysUserRoleService;
+import com.jayud.common.BaseResult;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -140,6 +142,15 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public List<SysRole> selectRoleByUsername(String username) {
         return sysRoleMapper.selectRoleByUsername(username);
+    }
+
+    @Override
+    public List<SysRole> getRoleByTenantCode(String tenantCode) {
+        LambdaQueryWrapper<SysRole> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SysRole::getIsDeleted,false);
+        lambdaQueryWrapper.eq(SysRole::getTenantCode,tenantCode);
+        List<SysRole> roleList = this.list(lambdaQueryWrapper);
+        return roleList;
     }
 
 }

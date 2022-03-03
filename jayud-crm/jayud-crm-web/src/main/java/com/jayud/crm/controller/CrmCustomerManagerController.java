@@ -1,5 +1,6 @@
 package com.jayud.crm.controller;
 
+import com.jayud.crm.model.bo.CrmCustomerManagerForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -84,13 +85,13 @@ public class CrmCustomerManagerController {
     * @description 新增
     * @author  jayud
     * @date   2022-03-03
-    * @param: crmCustomerManager
+    * @param: crmCustomerManagerForm
     * @return: com.jayud.common.BaseResult
     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody CrmCustomerManager crmCustomerManager ){
-        return crmCustomerManagerService.saveManager(crmCustomerManager);
+    public BaseResult add(@Valid @RequestBody CrmCustomerManagerForm crmCustomerManagerForm ){
+        return crmCustomerManagerService.saveManager(crmCustomerManagerForm);
     }
 
 
@@ -103,8 +104,8 @@ public class CrmCustomerManagerController {
      **/
     @ApiOperation("编辑")
     @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody CrmCustomerManager crmCustomerManager ){
-        return crmCustomerManagerService.saveManager(crmCustomerManager);
+    public BaseResult edit(@Valid @RequestBody CrmCustomerManagerForm crmCustomerManagerForm ){
+        return crmCustomerManagerService.saveManager(crmCustomerManagerForm);
     }
 
 
@@ -150,9 +151,9 @@ public class CrmCustomerManagerController {
     @ApiOperation("根据id查询")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<CrmCustomerManager> queryById(@RequestParam(name="id",required=true) int id) {
-        CrmCustomerManager crmCustomerManager = crmCustomerManagerService.getById(id);
-        return BaseResult.ok(crmCustomerManager);
+    public BaseResult<CrmCustomerManagerForm> queryById(@RequestParam(name="id",required=true) Long id) {
+        CrmCustomerManagerForm crmCustomerManagerForm = crmCustomerManagerService.selectById(id);
+        return BaseResult.ok(crmCustomerManagerForm);
     }
 
 

@@ -33,6 +33,9 @@ public class CrmCustomerForm  extends CrmCustomer{
     @ApiModelProperty(value = "业务类型集合")
     private List<String> businessTypesList;
 
+    @ApiModelProperty(value = "业务类型名称")
+    private String businessTypesNames;
+
     @ApiModelProperty(value = "对接人id")
     private Long managerUserId;
 
@@ -47,4 +50,11 @@ public class CrmCustomerForm  extends CrmCustomer{
 
     @ApiModelProperty(value = "业务类型名称")
     private String businessTypesName;
+
+    @ApiModelProperty(value = "是否用户新增")
+    private Boolean isCustAdd;
+
+    @ApiModelProperty(value = "是否修改业务类型")
+    private Boolean isChangeBusniessType;
+
 }

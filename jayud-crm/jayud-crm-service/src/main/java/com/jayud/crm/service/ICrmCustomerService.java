@@ -156,6 +156,13 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      **/
     BaseResult changeToPublic(List<CrmCustomer> custList);
 
-
+    /**
+     * @description 获取业务集合名称
+     * @author  ciro
+     * @date   2022/3/3 18:34
+     * @param: businessTypesList
+     * @return: java.lang.String
+     **/
+    String changeBusinessType(List<String> businessTypesList);
 
 }

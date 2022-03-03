@@ -70,4 +70,7 @@ public interface ISysRoleMenuService extends IService<SysRoleMenu> {
     void deleteByRoleId(Long roleId);
 
     List<Long> getMenuIdsByRoleId(Long roleId);
+
+
+
 }

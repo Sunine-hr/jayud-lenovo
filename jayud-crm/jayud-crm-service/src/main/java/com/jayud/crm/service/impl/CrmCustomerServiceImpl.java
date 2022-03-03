@@ -18,6 +18,7 @@ import com.jayud.crm.model.enums.CustRiskTypeEnum;
 import com.jayud.crm.model.form.CrmCodeFrom;
 import com.jayud.crm.model.form.CrmCustomerForm;
 import com.jayud.crm.model.po.CrmCustomerRisk;
+import com.jayud.crm.service.ICrmCustomerManagerService;
 import com.jayud.crm.service.ICrmCustomerRiskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -52,6 +53,9 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
 
     @Autowired
     private ICrmCustomerRiskService crmCustomerRiskService;
+
+    @Autowired
+    private ICrmCustomerManagerService crmCustomerManagerService;
 
     @Autowired
     private CrmCustomerMapper crmCustomerMapper;
@@ -95,10 +99,14 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BaseResult saveCrmCustomer(CrmCustomerForm crmCustomerForm) {
+        crmCustomerForm.setManagerUserId(crmCustomerForm.getFsalesId());
         boolean isAdd = false;
         if (crmCustomerForm.getId() == null){
             isAdd = true;
         }
+        crmCustomerForm.setIsCustAdd(isAdd);
+        crmCustomerForm.setIsChangeBusniessType(false);
+        crmCustomerForm.setBusinessTypesNames(changeBusinessType(crmCustomerForm.getBusinessTypesList()));
         BaseResult onlyResult = checkOnly(isAdd,crmCustomerForm);
         if (!onlyResult.isSuccess()){
             return onlyResult;
@@ -110,8 +118,13 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             crmCustomerForm.setCustCode(getNextCode(CodeNumber.CRM_CUST_CODE));
             this.save(crmCustomerForm);
         }else {
+            CrmCustomer checkCust = this.getById(crmCustomerForm.getId());
+            if (!checkCust.getBusinessTypes().equals(checkCust.getBusinessTypes())){
+                crmCustomerForm.setIsChangeBusniessType(true);
+            }
             this.updateById(crmCustomerForm);
         }
+        crmCustomerManagerService.saveByCustomer(crmCustomerForm);
         if (isAdd){
             return BaseResult.ok(crmCustomerForm.getId());
         }else {
@@ -295,6 +308,38 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             lambdaQueryWrapper.eq(CrmCustomer::getCustName,crmCustomer.getCustName());
         }
         return lambdaQueryWrapper;
+    }
+
+    /**
+     * @description 填充业务类型名称
+     * @author  ciro
+     * @date   2022/3/3 18:12
+     * @param: crmCustomerForm
+     * @return: void
+     **/
+    @Override
+    public String changeBusinessType(List<String> businessTypesList){
+        String finalType = "";
+        BaseResult<List<SysDictItem>> custBusinessType = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_BUSINESS_TYPE);
+        Map<String,String> typeMap = new HashMap<>();
+        List<String> typeNamesList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(custBusinessType.getResult())){
+            custBusinessType.getResult().forEach(x->{
+                typeMap.put(x.getItemValue(),x.getItemText());
+            });
+        }
+        if (!typeMap.isEmpty()){
+            businessTypesList.forEach(x->{
+                if (typeMap.containsKey(x)){
+                    typeNamesList.add(typeMap.get(x));
+                }
+            });
+            if (CollUtil.isNotEmpty(typeNamesList)){
+                finalType = StringUtils.join(typeNamesList,StrUtil.C_COMMA);
+            }
+        }
+        return finalType;
+
     }
 
 }

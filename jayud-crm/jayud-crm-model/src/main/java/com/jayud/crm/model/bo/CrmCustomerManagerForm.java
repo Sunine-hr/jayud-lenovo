@@ -2,8 +2,11 @@ package com.jayud.crm.model.bo;
 
 import com.jayud.crm.model.po.CrmCustomerManager;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
 
 /**
  * @author ciro
@@ -15,7 +18,8 @@ import lombok.EqualsAndHashCode;
 @ApiModel(value="基本档案_客户_客户维护人", description="基本档案_客户_客户维护人")
 public class CrmCustomerManagerForm extends CrmCustomerManager {
 
-
+    @ApiModelProperty(value = "业务类型集合")
+    private List<String> businessTypesList;
 
 
 }

@@ -120,4 +120,13 @@ public interface ISysRoleService extends IService<SysRole> {
      **/
     List<SysRole> selectRoleByUsername(String username);
 
+    /**
+     * @description 根据租户查询角色
+     * @author  ciro
+     * @date   2022/3/3 18:40
+     * @param: tenantCode
+     * @return: java.util.List<com.jayud.auth.model.po.SysRole>
+     **/
+    List<SysRole> getRoleByTenantCode(String tenantCode);
+
 }

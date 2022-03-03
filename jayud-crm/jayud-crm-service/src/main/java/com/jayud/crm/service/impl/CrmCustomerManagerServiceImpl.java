@@ -2,13 +2,18 @@ package com.jayud.crm.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
+import com.jayud.common.dto.AuthUserDetail;
+import com.jayud.crm.model.bo.CrmCustomerManagerForm;
 import com.jayud.crm.model.form.CrmCustomerForm;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.model.po.CrmCustomerManager;
@@ -35,6 +40,8 @@ import java.util.Map;
 @Service
 public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManagerMapper, CrmCustomerManager> implements ICrmCustomerManagerService {
 
+    @Autowired
+    private ICrmCustomerManagerService crmCustomerManagerService;
 
     @Autowired
     private CrmCustomerManagerMapper crmCustomerManagerMapper;
@@ -76,20 +83,38 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
     }
 
     @Override
-    public void saveByCustomer(CrmCustomerForm crmCustomerForm) {
+    public BaseResult saveByCustomer(CrmCustomerForm crmCustomerForm) {
+        boolean isAdd = false;
+        boolean isUpdate = false;
         CrmCustomerManager crmCustomerManager = new CrmCustomerManager();
         crmCustomerManager.setCustId(crmCustomerForm.getId());
         crmCustomerManager.setIsCharger(true);
+        AuthUserDetail authUserDetail = CurrentUserUtil.getUserDetail();
         List<CrmCustomerManager> managerList = selectList(crmCustomerManager);
-        boolean isAdd = false;
+        CrmCustomerManager onlyManager = new CrmCustomerManager();
         if (CollUtil.isNotEmpty(managerList)){
-            if (managerList.size() == 1){
+            onlyManager = managerList.get(0);
+        }
+
+        //编辑
+        if (!crmCustomerForm.getIsCustAdd()) {
+            if (CollUtil.isNotEmpty(managerList)) {
                 CrmCustomerManager crmCustomerManager1 = managerList.get(0);
+                //不是负责人修改数据
+                if (!crmCustomerManager1.getId().equals(authUserDetail.getId())) {
+                    return BaseResult.error();
+                }
                 //不同负责人
-                if (!crmCustomerManager1.getManageUserId().equals(crmCustomerForm.getManagerUserId())){
+                if (!crmCustomerManager1.getManageUserId().equals(crmCustomerForm.getManagerUserId())) {
                     this.logicDel(crmCustomerManager1.getId());
                     isAdd = true;
+                }else {
+                    if (crmCustomerForm.getIsChangeBusniessType()){
+                        isUpdate = true;
+                    }
                 }
+            } else {
+                isAdd = true;
             }
         }else {
             isAdd = true;
@@ -106,28 +131,44 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
             crmCustomerManager.setIsSale(true);
             this.save(crmCustomerManager);
         }
+        if (isUpdate){
+            onlyManager.setManagerBusinessCode(crmCustomerForm.getBusinessTypes());
+            onlyManager.setManagerBusinessName(crmCustomerForm.getBusinessTypesNames());
+            this.updateById(onlyManager);
+        }
+        return BaseResult.ok();
     }
 
     @Override
-    public BaseResult<CrmCustomerManager> saveManager(CrmCustomerManager crmCustomerManager) {
+    public BaseResult<CrmCustomerManagerForm> saveManager(CrmCustomerManagerForm crmCustomerManagerForm) {
         boolean isAdd = false;
-        if (crmCustomerManager.getId() == null){
+        crmCustomerManagerForm.setManagerBusinessCode(StringUtils.join(crmCustomerManagerForm.getBusinessTypesList(), StrUtil.C_COMMA));
+        if (crmCustomerManagerForm.getId() == null){
             isAdd = true;
-            CrmCustomerManager crmCustomerManager1 = this.getById(crmCustomerManager.getId());
+            CrmCustomerManager crmCustomerManager1 = this.getById(crmCustomerManagerForm.getId());
             if (crmCustomerManager1.getIsCharger()){
                 return BaseResult.error(SysTips.NOT_EDIT_CHARGER_ERROR);
             }
         }
         if (isAdd){
-            this.save(crmCustomerManager);
+            this.save(crmCustomerManagerForm);
         }else {
-            this.updateById(crmCustomerManager);
+            this.updateById(crmCustomerManagerForm);
         }
         if (isAdd){
-            return BaseResult.ok(SysTips.ADD_SUCCESS,crmCustomerManager);
+            return BaseResult.ok(SysTips.ADD_SUCCESS,crmCustomerManagerForm);
         }else {
-            return BaseResult.ok(SysTips.EDIT_SUCCESS,crmCustomerManager);
+            return BaseResult.ok(SysTips.EDIT_SUCCESS,crmCustomerManagerForm);
         }
+    }
+
+    @Override
+    public CrmCustomerManagerForm selectById(Long id) {
+        CrmCustomerManager crmCustomerManager = this.getById(id);
+        CrmCustomerManagerForm crmCustomerManagerForm = new CrmCustomerManagerForm();
+        BeanUtils.copyProperties(crmCustomerManager,crmCustomerManagerForm);
+        crmCustomerManagerForm.setBusinessTypesList(Arrays.asList(crmCustomerManager.getManagerBusinessCode().split(StrUtil.COMMA)));
+        return crmCustomerManagerForm;
     }
 
 }

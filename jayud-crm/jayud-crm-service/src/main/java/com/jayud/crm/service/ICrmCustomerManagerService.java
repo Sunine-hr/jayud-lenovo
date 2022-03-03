@@ -3,6 +3,7 @@ package com.jayud.crm.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.BaseResult;
+import com.jayud.crm.model.bo.CrmCustomerManagerForm;
 import com.jayud.crm.model.form.CrmCustomerForm;
 import com.jayud.crm.model.po.CrmCustomerManager;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -80,26 +81,33 @@ public interface ICrmCustomerManagerService extends IService<CrmCustomerManager>
      **/
     List<LinkedHashMap<String, Object>> queryCrmCustomerManagerForExcel(Map<String, Object> paramMap);
 
+
     /**
      * @description 保存客户时修改
      * @author  ciro
-     * @date   2022/3/3 10:37
-     * @param: userId
-     * @param: custId
-     * @return: void
+     * @date   2022/3/3 17:35
+     * @param: crmCustomerForm
+     * @return: com.jayud.common.BaseResult
      **/
-    void saveByCustomer(CrmCustomerForm crmCustomerForm);
+    BaseResult saveByCustomer(CrmCustomerForm crmCustomerForm);
 
 
     /**
      * @description 保存我司对接人
      * @author  ciro
      * @date   2022/3/3 15:48
-     * @param: crmCustomerManager
-     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.po.CrmCustomerManager>
+     * @param: crmCustomerManagerForm
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.bo.CrmCustomerManagerForm>
      **/
-    BaseResult<CrmCustomerManager> saveManager(CrmCustomerManager crmCustomerManager);
+    BaseResult<CrmCustomerManagerForm> saveManager(CrmCustomerManagerForm crmCustomerManagerForm);
 
-
+    /**
+     * @description 根据id查询
+     * @author  ciro
+     * @date   2022/3/3 18:55
+     * @param: id
+     * @return: com.jayud.crm.model.bo.CrmCustomerManagerForm
+     **/
+    CrmCustomerManagerForm selectById(Long id);
 
 }

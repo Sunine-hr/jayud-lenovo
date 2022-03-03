@@ -344,4 +344,10 @@ public class SysRoleController {
         }
         return BaseResult.error();
     }
+
+    @ApiOperation("根据租户查询角色")
+    @PostMapping(value = "/getRoleByTenantCode")
+    public BaseResult<List<SysRole>> getRoleByTenantCode(@RequestParam("tenantCode") String tenantCode){
+        return BaseResult.ok(sysRoleService.getRoleByTenantCode(tenantCode));
+    }
 }

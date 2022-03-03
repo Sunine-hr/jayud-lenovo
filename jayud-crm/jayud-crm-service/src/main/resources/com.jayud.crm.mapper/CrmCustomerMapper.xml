@@ -78,267 +78,270 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, parent_id, cust_name, un_credit_code, cust_state, is_cust, is_public, is_supplier, cust_name_abbr, cust_name_en, cust_style, cust_level, industry_type, country, province, city, county, area, reg_date, reg_addr, reg_addr_en, reg_tel, cust_reg_tpye, cust_reg_number, cust_org_code, buzlicense_expirdate, legalperson_name, actualcontrol_name, is_taxpayer, reg_capital, paid_capital, reg_currency, oper_scope, reg_org, customs_code, ciq_code, cust_form, supply_chain, first_order_date, fsales_id, fsales_name, follower_id, follower_name, onl_id, onl_no, is_sync, f_level, f_step, check_state_flag, old_cust_name, cust_code, supplier_code, business_types, service_type, accounting_period, reconciliation_method, settlement_method, industry, website_url, cust_enterprise_credit, cust_import_credit, cust_customs_credit, transfer_public_time, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+        cc.id, cc.parent_id, cc.cust_name, cc.un_credit_code, cc.cust_state, cc.is_cust, cc.is_public, cc.is_supplier, cc.cust_name_abbr, cc.cust_name_en, cc.cust_style, cc.cust_level, cc.industry_type, cc.country, cc.province, cc.city, cc.county, cc.area, cc.reg_date, cc.reg_addr, cc.reg_addr_en, cc.reg_tel, cc.cust_reg_tpye, cc.cust_reg_number, cc.cust_org_code, cc.buzlicense_expirdate, cc.legalperson_name, cc.actualcontrol_name, cc.is_taxpayer, cc.reg_capital, cc.paid_capital, cc.reg_currency, cc.oper_scope, cc.reg_org, cc.customs_code, cc.ciq_code, cc.cust_form, cc.supply_chain, cc.first_order_date, cc.fsales_id, cc.fsales_name, cc.follower_id, cc.follower_name, cc.onl_id, cc.onl_no, cc.is_sync, cc.f_level, cc.f_step, cc.check_state_flag, cc.old_cust_name, cc.cust_code, cc.supplier_code, cc.business_types, cc.service_type, cc.accounting_period, cc.reconciliation_method, cc.settlement_method, cc.industry, cc.website_url, cc.cust_enterprise_credit, cc.cust_import_credit, cc.cust_customs_credit, cc.transfer_public_time, cc.tenant_code, cc.remark, cc.is_deleted, cc.create_by, cc.create_time, cc.update_by, cc.update_time
     </sql>
 
     <!-- 表名 -->
-    <sql id="tname">crm_customer </sql>
+    <sql id="tname">crm_customer cc</sql>
 
     <sql id="selects">
         SELECT <include refid="Base_Column_List"/>
         FROM <include refid="tname"/>
         <where>
-            is_deleted = 0
+            cc.is_deleted = 0
             <if test="crmCustomer.parentId != null ">
-                AND parent_id = ${crmCustomer.parentId}
+                AND cc.parent_id = ${crmCustomer.parentId}
             </if>
 
             <if test="crmCustomer.custName != null and crmCustomer.custName != ''">
-                AND cust_name LIKE CONCAT('%',#{crmCustomer.custName},'%')
+                AND cc.cust_name LIKE CONCAT('%',#{crmCustomer.custName},'%')
             </if>
 
             <if test="crmCustomer.unCreditCode != null and crmCustomer.unCreditCode != ''">
-                AND un_credit_code LIKE CONCAT('%',#{crmCustomer.unCreditCode},'%')
+                AND cc.un_credit_code LIKE CONCAT('%',#{crmCustomer.unCreditCode},'%')
             </if>
 
             <if test="crmCustomer.custState != null ">
-                AND cust_state = ${crmCustomer.custState}
+                AND cc.cust_state = ${crmCustomer.custState}
             </if>
 
             <if test="crmCustomer.isCust != null ">
-                AND is_cust = ${crmCustomer.isCust}
+                AND cc.is_cust = ${crmCustomer.isCust}
             </if>
 
             <if test="crmCustomer.isPublic != null ">
-                AND is_public = ${crmCustomer.isPublic}
+                AND cc.is_public = ${crmCustomer.isPublic}
             </if>
 
             <if test="crmCustomer.isSupplier != null ">
-                AND is_supplier = ${crmCustomer.isSupplier}
+                AND cc.is_supplier = ${crmCustomer.isSupplier}
             </if>
 
             <if test="crmCustomer.custNameAbbr != null and crmCustomer.custNameAbbr != ''">
-                AND cust_name_abbr LIKE CONCAT('%',#{crmCustomer.custNameAbbr},'%')
+                AND cc.cust_name_abbr LIKE CONCAT('%',#{crmCustomer.custNameAbbr},'%')
             </if>
 
             <if test="crmCustomer.custNameEn != null and crmCustomer.custNameEn != ''">
-                AND cust_name_en LIKE CONCAT('%',#{crmCustomer.custNameEn},'%')
+                AND cc.cust_name_en LIKE CONCAT('%',#{crmCustomer.custNameEn},'%')
             </if>
 
             <if test="crmCustomer.custStyle != null and crmCustomer.custStyle != ''">
-                AND cust_style LIKE CONCAT('%',#{crmCustomer.custStyle},'%')
+                AND cc.cust_style LIKE CONCAT('%',#{crmCustomer.custStyle},'%')
             </if>
 
             <if test="crmCustomer.custLevel != null and crmCustomer.custLevel != ''">
-                AND cust_level LIKE CONCAT('%',#{crmCustomer.custLevel},'%')
+                AND cc.cust_level LIKE CONCAT('%',#{crmCustomer.custLevel},'%')
             </if>
 
             <if test="crmCustomer.industryType != null and crmCustomer.industryType != ''">
-                AND industry_type LIKE CONCAT('%',#{crmCustomer.industryType},'%')
+                AND cc.industry_type LIKE CONCAT('%',#{crmCustomer.industryType},'%')
             </if>
 
             <if test="crmCustomer.country != null and crmCustomer.country != ''">
-                AND country LIKE CONCAT('%',#{crmCustomer.country},'%')
+                AND cc.country LIKE CONCAT('%',#{crmCustomer.country},'%')
             </if>
 
             <if test="crmCustomer.province != null and crmCustomer.province != ''">
-                AND province LIKE CONCAT('%',#{crmCustomer.province},'%')
+                AND cc.province LIKE CONCAT('%',#{crmCustomer.province},'%')
             </if>
 
             <if test="crmCustomer.city != null and crmCustomer.city != ''">
-                AND city LIKE CONCAT('%',#{crmCustomer.city},'%')
+                AND cc.city LIKE CONCAT('%',#{crmCustomer.city},'%')
             </if>
 
             <if test="crmCustomer.county != null and crmCustomer.county != ''">
-                AND county LIKE CONCAT('%',#{crmCustomer.county},'%')
+                AND cc.county LIKE CONCAT('%',#{crmCustomer.county},'%')
             </if>
 
             <if test="crmCustomer.area != null and crmCustomer.area != ''">
-                AND area LIKE CONCAT('%',#{crmCustomer.area},'%')
+                AND cc.area LIKE CONCAT('%',#{crmCustomer.area},'%')
             </if>
 
             <if test="crmCustomer.regDate != null ">
-                AND reg_date = ${crmCustomer.regDate}
+                AND cc.reg_date = ${crmCustomer.regDate}
             </if>
 
             <if test="crmCustomer.regAddr != null and crmCustomer.regAddr != ''">
-                AND reg_addr LIKE CONCAT('%',#{crmCustomer.regAddr},'%')
+                AND cc.reg_addr LIKE CONCAT('%',#{crmCustomer.regAddr},'%')
             </if>
 
             <if test="crmCustomer.regAddrEn != null and crmCustomer.regAddrEn != ''">
-                AND reg_addr_en LIKE CONCAT('%',#{crmCustomer.regAddrEn},'%')
+                AND cc.reg_addr_en LIKE CONCAT('%',#{crmCustomer.regAddrEn},'%')
             </if>
 
             <if test="crmCustomer.regTel != null and crmCustomer.regTel != ''">
-                AND reg_tel LIKE CONCAT('%',#{crmCustomer.regTel},'%')
+                AND cc.reg_tel LIKE CONCAT('%',#{crmCustomer.regTel},'%')
             </if>
 
             <if test="crmCustomer.custRegTpye != null and crmCustomer.custRegTpye != ''">
-                AND cust_reg_tpye LIKE CONCAT('%',#{crmCustomer.custRegTpye},'%')
+                AND cc.cust_reg_tpye LIKE CONCAT('%',#{crmCustomer.custRegTpye},'%')
             </if>
 
             <if test="crmCustomer.custRegNumber != null and crmCustomer.custRegNumber != ''">
-                AND cust_reg_number LIKE CONCAT('%',#{crmCustomer.custRegNumber},'%')
+                AND cc.cust_reg_number LIKE CONCAT('%',#{crmCustomer.custRegNumber},'%')
             </if>
 
             <if test="crmCustomer.custOrgCode != null and crmCustomer.custOrgCode != ''">
-                AND cust_org_code LIKE CONCAT('%',#{crmCustomer.custOrgCode},'%')
+                AND cc.cust_org_code LIKE CONCAT('%',#{crmCustomer.custOrgCode},'%')
             </if>
 
             <if test="crmCustomer.buzlicenseExpirdate != null and crmCustomer.buzlicenseExpirdate != ''">
-                AND buzlicense_expirdate LIKE CONCAT('%',#{crmCustomer.buzlicenseExpirdate},'%')
+                AND cc.buzlicense_expirdate LIKE CONCAT('%',#{crmCustomer.buzlicenseExpirdate},'%')
             </if>
 
             <if test="crmCustomer.legalpersonName != null and crmCustomer.legalpersonName != ''">
-                AND legalperson_name LIKE CONCAT('%',#{crmCustomer.legalpersonName},'%')
+                AND cc.legalperson_name LIKE CONCAT('%',#{crmCustomer.legalpersonName},'%')
             </if>
 
             <if test="crmCustomer.actualcontrolName != null and crmCustomer.actualcontrolName != ''">
-                AND actualcontrol_name LIKE CONCAT('%',#{crmCustomer.actualcontrolName},'%')
+                AND cc.actualcontrol_name LIKE CONCAT('%',#{crmCustomer.actualcontrolName},'%')
             </if>
 
             <if test="crmCustomer.isTaxpayer != null ">
-                AND is_taxpayer = ${crmCustomer.isTaxpayer}
+                AND cc.is_taxpayer = ${crmCustomer.isTaxpayer}
             </if>
 
             <if test="crmCustomer.regCapital != null ">
-                AND reg_capital = ${crmCustomer.regCapital}
+                AND cc.reg_capital = ${crmCustomer.regCapital}
             </if>
 
             <if test="crmCustomer.paidCapital != null ">
-                AND paid_capital = ${crmCustomer.paidCapital}
+                AND cc.paid_capital = ${crmCustomer.paidCapital}
             </if>
 
             <if test="crmCustomer.regCurrency != null and crmCustomer.regCurrency != ''">
-                AND reg_currency LIKE CONCAT('%',#{crmCustomer.regCurrency},'%')
+                AND cc.reg_currency LIKE CONCAT('%',#{crmCustomer.regCurrency},'%')
             </if>
 
             <if test="crmCustomer.operScope != null and crmCustomer.operScope != ''">
-                AND oper_scope LIKE CONCAT('%',#{crmCustomer.operScope},'%')
+                AND cc.oper_scope LIKE CONCAT('%',#{crmCustomer.operScope},'%')
             </if>
 
             <if test="crmCustomer.regOrg != null and crmCustomer.regOrg != ''">
-                AND reg_org LIKE CONCAT('%',#{crmCustomer.regOrg},'%')
+                AND cc.reg_org LIKE CONCAT('%',#{crmCustomer.regOrg},'%')
             </if>
 
             <if test="crmCustomer.customsCode != null and crmCustomer.customsCode != ''">
-                AND customs_code LIKE CONCAT('%',#{crmCustomer.customsCode},'%')
+                AND cc.customs_code LIKE CONCAT('%',#{crmCustomer.customsCode},'%')
             </if>
 
             <if test="crmCustomer.ciqCode != null and crmCustomer.ciqCode != ''">
-                AND ciq_code LIKE CONCAT('%',#{crmCustomer.ciqCode},'%')
+                AND cc.ciq_code LIKE CONCAT('%',#{crmCustomer.ciqCode},'%')
             </if>
 
             <if test="crmCustomer.custForm != null and crmCustomer.custForm != ''">
-                AND cust_form LIKE CONCAT('%',#{crmCustomer.custForm},'%')
+                AND cc.cust_form LIKE CONCAT('%',#{crmCustomer.custForm},'%')
             </if>
 
             <if test="crmCustomer.supplyChain != null and crmCustomer.supplyChain != ''">
-                AND supply_chain LIKE CONCAT('%',#{crmCustomer.supplyChain},'%')
+                AND cc.supply_chain LIKE CONCAT('%',#{crmCustomer.supplyChain},'%')
             </if>
 
             <if test="crmCustomer.firstOrderDate != null ">
-                AND first_order_date = ${crmCustomer.firstOrderDate}
+                AND cc.first_order_date = ${crmCustomer.firstOrderDate}
             </if>
 
             <if test="crmCustomer.fsalesId != null ">
-                AND fsales_id = ${crmCustomer.fsalesId}
+                AND cc.fsales_id = ${crmCustomer.fsalesId}
             </if>
 
             <if test="crmCustomer.fsalesName != null and crmCustomer.fsalesName != ''">
-                AND fsales_name LIKE CONCAT('%',#{crmCustomer.fsalesName},'%')
+                AND cc.fsales_name LIKE CONCAT('%',#{crmCustomer.fsalesName},'%')
             </if>
 
             <if test="crmCustomer.followerId != null ">
-                AND follower_id = ${crmCustomer.followerId}
+                AND cc.follower_id = ${crmCustomer.followerId}
             </if>
 
             <if test="crmCustomer.followerName != null and crmCustomer.followerName != ''">
-                AND follower_name LIKE CONCAT('%',#{crmCustomer.followerName},'%')
+                AND cc.follower_name LIKE CONCAT('%',#{crmCustomer.followerName},'%')
             </if>
 
             <if test="crmCustomer.onlId != null ">
-                AND onl_id = ${crmCustomer.onlId}
+                AND cc.onl_id = ${crmCustomer.onlId}
             </if>
 
             <if test="crmCustomer.onlNo != null and crmCustomer.onlNo != ''">
-                AND onl_no LIKE CONCAT('%',#{crmCustomer.onlNo},'%')
+                AND cc.onl_no LIKE CONCAT('%',#{crmCustomer.onlNo},'%')
             </if>
 
             <if test="crmCustomer.isSync != null ">
-                AND is_sync = ${crmCustomer.isSync}
+                AND cc.is_sync = ${crmCustomer.isSync}
             </if>
 
             <if test="crmCustomer.fLevel != null ">
-                AND f_level = ${crmCustomer.fLevel}
+                AND cc.f_level = ${crmCustomer.fLevel}
             </if>
 
             <if test="crmCustomer.fStep != null ">
-                AND f_step = ${crmCustomer.fStep}
+                AND cc.f_step = ${crmCustomer.fStep}
             </if>
 
             <if test="crmCustomer.checkStateFlag != null and crmCustomer.checkStateFlag != ''">
-                AND check_state_flag LIKE CONCAT('%',#{crmCustomer.checkStateFlag},'%')
+                AND cc.check_state_flag LIKE CONCAT('%',#{crmCustomer.checkStateFlag},'%')
             </if>
 
             <if test="crmCustomer.oldCustName != null and crmCustomer.oldCustName != ''">
-                AND old_cust_name LIKE CONCAT('%',#{crmCustomer.oldCustName},'%')
+                AND cc.old_cust_name LIKE CONCAT('%',#{crmCustomer.oldCustName},'%')
             </if>
 
             <if test="crmCustomer.custCode != null and crmCustomer.custCode != ''">
-                AND cust_code LIKE CONCAT('%',#{crmCustomer.custCode},'%')
+                AND cc.cust_code LIKE CONCAT('%',#{crmCustomer.custCode},'%')
             </if>
 
             <if test="crmCustomer.supplierCode != null and crmCustomer.supplierCode != ''">
-                AND supplier_code LIKE CONCAT('%',#{crmCustomer.supplierCode},'%')
+                AND cc.supplier_code LIKE CONCAT('%',#{crmCustomer.supplierCode},'%')
             </if>
 
             <if test="crmCustomer.businessTypes != null and crmCustomer.businessTypes != ''">
-                AND business_types LIKE CONCAT('%',#{crmCustomer.businessTypes},'%')
+                AND cc.business_types LIKE CONCAT('%',#{crmCustomer.businessTypes},'%')
             </if>
 
             <if test="crmCustomer.serviceType != null ">
-                AND service_type = ${crmCustomer.serviceType}
+                AND cc.service_type = ${crmCustomer.serviceType}
             </if>
 
             <if test="crmCustomer.accountingPeriod != null ">
-                AND accounting_period = ${crmCustomer.accountingPeriod}
+                AND cc.accounting_period = ${crmCustomer.accountingPeriod}
             </if>
 
             <if test="crmCustomer.reconciliationMethod != null ">
-                AND reconciliation_method = ${crmCustomer.reconciliationMethod}
+                AND cc.reconciliation_method = ${crmCustomer.reconciliationMethod}
             </if>
 
             <if test="crmCustomer.settlementMethod != null ">
-                AND settlement_method = ${crmCustomer.settlementMethod}
+                AND cc.settlement_method = ${crmCustomer.settlementMethod}
             </if>
 
             <if test="crmCustomer.industry != null ">
-                AND industry = ${crmCustomer.industry}
+                AND cc.industry = ${crmCustomer.industry}
             </if>
 
             <if test="crmCustomer.websiteUrl != null and crmCustomer.websiteUrl != ''">
-                AND website_url LIKE CONCAT('%',#{crmCustomer.websiteUrl},'%')
+                AND cc.website_url LIKE CONCAT('%',#{crmCustomer.websiteUrl},'%')
             </if>
 
             <if test="crmCustomer.custEnterpriseCredit != null ">
-                AND cust_enterprise_credit = ${crmCustomer.custEnterpriseCredit}
+                AND cc.cust_enterprise_credit = ${crmCustomer.custEnterpriseCredit}
             </if>
 
             <if test="crmCustomer.custImportCredit != null ">
-                AND cust_import_credit = ${crmCustomer.custImportCredit}
+                AND cc.cust_import_credit = ${crmCustomer.custImportCredit}
             </if>
 
             <if test="crmCustomer.custCustomsCredit != null ">
-                AND cust_customs_credit = ${crmCustomer.custCustomsCredit}
+                AND cc.cust_customs_credit = ${crmCustomer.custCustomsCredit}
             </if>
 
             <if test="crmCustomer.tenantCode != null and crmCustomer.tenantCode != ''">
-                AND tenant_code LIKE CONCAT('%',#{crmCustomer.tenantCode},'%')
+                AND cc.tenant_code LIKE CONCAT('%',#{crmCustomer.tenantCode},'%')
             </if>
 
             <if test="crmCustomer.remark != null and crmCustomer.remark != ''">
-                AND remark LIKE CONCAT('%',#{crmCustomer.remark},'%')
+                AND cc.remark LIKE CONCAT('%',#{crmCustomer.remark},'%')
+            </if>
+            <if test="crmCustomer.isNotInBlackList != null and crmCustomer.isNotInBlackList ">
+                AND cc.id NOT IN (SELECT ccr.cust_id FROM crm_customer_risk ccr WHERE ccr.is_deleted = 0)
             </if>
 
         </where>

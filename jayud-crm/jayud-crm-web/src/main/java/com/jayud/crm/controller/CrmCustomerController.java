@@ -1,6 +1,7 @@
 package com.jayud.crm.controller;
 
 import com.jayud.auth.model.dto.SysUserDTO;
+import com.jayud.auth.model.po.SysRole;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
@@ -299,7 +300,13 @@ public class CrmCustomerController {
     @ApiOperation("放入公海")
     @PostMapping("changeToPublic")
     public BaseResult changeToPublic(@RequestParam("custList") List<CrmCustomer> custList){
-        return crmCustomerService.moveCustToRick(custList);
+        return crmCustomerService.changeToPublic(custList);
+    }
+
+    @ApiOperation("根据租户编码获取角色")
+    @GetMapping("getRoleByTenantCode")
+    public BaseResult<List<SysRole>> getRoleByTenantCode(){
+        return authClient.getRoleByTenantCode(CurrentUserUtil.getUserTenantCode());
     }
 
 }

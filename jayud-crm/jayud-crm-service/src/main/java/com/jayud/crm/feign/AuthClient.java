@@ -3,6 +3,7 @@ package com.jayud.crm.feign;
 
 import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.po.SysDepart;
+import com.jayud.auth.model.po.SysRole;
 import com.jayud.common.BaseResult;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -59,4 +60,9 @@ public interface AuthClient {
      */
     @PostMapping("/sysArea/api/selectListSysAreaFeign")
     public BaseResult selectListSysAreaFeign(@RequestParam(name = "level", required = false) Integer level, @RequestParam(name = "parentCode", required = false) Long parentCode);
+
+    @PostMapping(value = "/sysRole/getRoleByTenantCode")
+    public BaseResult<List<SysRole>>  getRoleByTenantCode(@RequestParam("tenantCode") String tenantCode);
+
+
 }

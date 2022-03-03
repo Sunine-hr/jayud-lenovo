@@ -1,5 +1,6 @@
 package com.jayud.crm.model.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -158,13 +159,13 @@ public class CrmCustomer extends SysBaseEntity {
     private LocalDateTime firstOrderDate;
 
     @ApiModelProperty(value = "业务ID")
-    private Integer fsalesId;
+    private Long fsalesId;
 
     @ApiModelProperty(value = "业务员名称")
     private String fsalesName;
 
     @ApiModelProperty(value = "商务ID")
-    private Integer followerId;
+    private Long followerId;
 
     @ApiModelProperty(value = "商务名称")
     private String followerName;
@@ -246,6 +247,9 @@ public class CrmCustomer extends SysBaseEntity {
     @TableLogic
     private Boolean isDeleted;
 
+    @TableField(exist = false)
+    @ApiModelProperty(value = "是否不存在黑名单")
+    private Boolean isNotInBlackList;
 
 
 

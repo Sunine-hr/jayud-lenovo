@@ -37,7 +37,7 @@ public class CrmFile extends SysBaseEntity {
     private Long businessId;
 
     @ApiModelProperty(value = "附件类型")
-    private Integer fileType;
+    private String fileType;
 
     @ApiModelProperty(value = "文件名称")
     private String fileName;

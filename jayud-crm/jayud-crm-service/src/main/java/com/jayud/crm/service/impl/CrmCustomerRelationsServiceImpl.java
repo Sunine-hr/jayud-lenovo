@@ -5,6 +5,11 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.BaseResult;
+import com.jayud.common.constant.SysTips;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.crm.model.bo.CrmCustomerRelationsForm;
+import com.jayud.crm.model.po.CrmCreditVisit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -50,6 +55,30 @@ public class CrmCustomerRelationsServiceImpl extends ServiceImpl<CrmCustomerRela
     @Override
     public List<CrmCustomerRelations> selectList(CrmCustomerRelations crmCustomerRelations){
         return crmCustomerRelationsMapper.list(crmCustomerRelations);
+    }
+
+    @Override
+    public BaseResult saveOrUpdateCrmCustomerRelations(CrmCustomerRelationsForm crmCustomerRelationsForm) {
+        Boolean result = null;
+        CrmCustomerRelations convert = ConvertUtil.convert(crmCustomerRelationsForm, CrmCustomerRelations.class);
+
+        if(convert.getId()!=null){
+            convert.setUpdateBy(CurrentUserUtil.getUsername());
+            convert.setUpdateTime(new Date());
+            result = this.updateById(convert);
+            Long id = convert.getId();
+        }else {
+            convert.setUpdateBy(CurrentUserUtil.getUsername());
+            convert.setUpdateTime(new Date());
+
+            result = this.saveOrUpdate(convert);
+            Long id = convert.getId();
+        }
+        if (result) {
+            log.warn("新增或修改成功");
+            return BaseResult.ok(SysTips.ADD_SUCCESS);
+        }
+        return BaseResult.error(SysTips.EDIT_FAIL);
     }
 
 

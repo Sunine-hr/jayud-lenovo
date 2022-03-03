@@ -2,6 +2,8 @@ package com.jayud.crm.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.BaseResult;
+import com.jayud.crm.model.bo.CrmCustomerRelationsForm;
 import com.jayud.crm.model.po.CrmCustomerRelations;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -45,7 +47,7 @@ public interface ICrmCustomerRelationsService extends IService<CrmCustomerRelati
      **/
     List<CrmCustomerRelations> selectList(CrmCustomerRelations crmCustomerRelations);
 
-
+    BaseResult saveOrUpdateCrmCustomerRelations(CrmCustomerRelationsForm crmCustomerRelationsForm);
 
     /**
      * @description 物理删除

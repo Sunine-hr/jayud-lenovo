@@ -4,7 +4,10 @@ import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.bo.CrmCustomerFollowForm;
 import com.jayud.crm.model.constant.CrmDictCode;
+import com.jayud.crm.model.form.CrmCodeFollowForm;
+import com.jayud.crm.model.po.CrmCustomerRelations;
 import com.jayud.crm.model.vo.CrmCustomerFollowVO;
+import com.jayud.crm.service.ICrmCustomerRelationsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,6 +53,11 @@ public class CrmCustomerFollowController {
 
     @Autowired
     private SysDictClient sysDictClient;
+
+
+    @Autowired
+    public ICrmCustomerRelationsService crmCustomerRelationsService;
+
     /**
      * @description 分页查询
      * @author  jayud
@@ -213,8 +221,17 @@ public class CrmCustomerFollowController {
     @ApiOperation("获取跟进记录方式字典下拉")
     @GetMapping(path = "/getCrmCustomerRiskCode")
     public BaseResult  getCrmCode(){
+        CrmCodeFollowForm crmCodeFollowForm = new CrmCodeFollowForm();
+
         BaseResult<List<SysDictItem>> custNormalStatus= sysDictClient.selectItemByDictCode(CrmDictCode.CRM_CUSTOMER_FOLLOW_TYPE);
-        return BaseResult.ok(custNormalStatus.getResult());
+        List<SysDictItem> result = custNormalStatus.getResult();
+        CrmCustomerRelations crmCustomerRelations = new CrmCustomerRelations();
+        crmCustomerRelations.setIsDeleted(false);
+        List<CrmCustomerRelations> crmCustomerRelations1 = crmCustomerRelationsService.selectList(crmCustomerRelations);
+
+        crmCodeFollowForm.setSysDictItems(result);
+        crmCodeFollowForm.setCrmCustomerRelations(crmCustomerRelations1);
+        return BaseResult.ok(crmCodeFollowForm);
     }
 
 }

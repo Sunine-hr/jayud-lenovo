@@ -1,5 +1,6 @@
 package com.jayud.crm.controller;
 
+import com.jayud.crm.model.bo.CrmCustomerRelationsForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -89,26 +90,25 @@ public class CrmCustomerRelationsController {
     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody CrmCustomerRelations crmCustomerRelations ){
-        crmCustomerRelationsService.save(crmCustomerRelations);
-        return BaseResult.ok(SysTips.ADD_SUCCESS);
+    public BaseResult add(@Valid @RequestBody CrmCustomerRelationsForm crmCustomerRelationsForm ){
+        return BaseResult.ok(crmCustomerRelationsService.saveOrUpdateCrmCustomerRelations(crmCustomerRelationsForm));
     }
 
 
-    /**
-     * @description 编辑
-     * @author  jayud
-     * @date   2022-03-02
-     * @param: crmCustomerRelations
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("编辑")
-    @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody CrmCustomerRelations crmCustomerRelations ){
-        crmCustomerRelationsService.updateById(crmCustomerRelations);
-        return BaseResult.ok(SysTips.EDIT_SUCCESS);
-    }
-
+//    /**
+//     * @description 编辑
+//     * @author  jayud
+//     * @date   2022-03-02
+//     * @param: crmCustomerRelations
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("编辑")
+//    @PostMapping("/edit")
+//    public BaseResult edit(@Valid @RequestBody CrmCustomerRelations crmCustomerRelations ){
+//        crmCustomerRelationsService.updateById(crmCustomerRelations);
+//        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+//    }
+//
 
 
     /**
@@ -150,9 +150,9 @@ public class CrmCustomerRelationsController {
      * @return: com.jayud.common.BaseResult<com.jayud.crm.model.po.CrmCustomerRelations>
      **/
     @ApiOperation("根据id查询")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
+    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<CrmCustomerRelations> queryById(@RequestParam(name="id",required=true) int id) {
+    public BaseResult<CrmCustomerRelations> queryById(@RequestParam(name="id",required=true) Long id) {
         CrmCustomerRelations crmCustomerRelations = crmCustomerRelationsService.getById(id);
         return BaseResult.ok(crmCustomerRelations);
     }

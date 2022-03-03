@@ -30,7 +30,7 @@ public class ExternalApiController {
      * @description 查询法人主体
      **/
     @ApiOperation("查询法人主体")
-    @PostMapping("/getLegalEntity")
+    @RequestMapping("/getLegalEntity")
     public BaseResult<List<SysDepart>> getLegalEntity() {
         List<SysDepart> sysDeparts = departService.getByOrgCategory(2);
         return BaseResult.ok(sysDeparts);

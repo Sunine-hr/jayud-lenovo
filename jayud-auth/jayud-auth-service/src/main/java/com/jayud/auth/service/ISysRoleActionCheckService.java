@@ -1,13 +1,12 @@
 package com.jayud.auth.service;
 
-
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.auth.model.bo.SysRoleActionCheckForm;
 import com.jayud.auth.model.po.SysRoleActionCheck;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.auth.model.vo.SysRoleActionCheckVO;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,10 +30,10 @@ public interface ISysRoleActionCheckService extends IService<SysRoleActionCheck>
      * @param: req
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysRoleActionCheck>
      **/
-    IPage<SysRoleActionCheck> selectPage(SysRoleActionCheck sysRoleActionCheck,
-                                Integer currentPage,
-                                Integer pageSize,
-                                HttpServletRequest req);
+    IPage<SysRoleActionCheckVO> selectPage(SysRoleActionCheck sysRoleActionCheck,
+                                           Integer currentPage,
+                                           Integer pageSize,
+                                           HttpServletRequest req);
 
     /**
      * @description 列表查询数据

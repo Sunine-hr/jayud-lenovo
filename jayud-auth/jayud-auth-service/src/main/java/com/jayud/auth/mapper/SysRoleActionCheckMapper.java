@@ -3,12 +3,12 @@ package com.jayud.auth.mapper;
 import com.jayud.auth.model.po.SysRoleActionCheck;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import com.jayud.auth.model.vo.SysRoleActionCheckVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +30,7 @@ public interface SysRoleActionCheckMapper extends BaseMapper<SysRoleActionCheck>
      * @param: sysRoleActionCheck
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysRoleActionCheck>
      **/
-    IPage<SysRoleActionCheck> pageList(@Param("page") Page<SysRoleActionCheck> page, @Param("sysRoleActionCheck") SysRoleActionCheck sysRoleActionCheck);
+    IPage<SysRoleActionCheckVO> pageList(@Param("page") Page<SysRoleActionCheckVO> page, @Param("sysRoleActionCheck") SysRoleActionCheck sysRoleActionCheck);
 
     /**
      * @description 列表查询数据

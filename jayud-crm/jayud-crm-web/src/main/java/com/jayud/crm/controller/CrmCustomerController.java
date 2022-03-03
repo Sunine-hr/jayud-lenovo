@@ -1,7 +1,7 @@
 package com.jayud.crm.controller;
 
+import com.jayud.auth.model.bo.CheckForm;
 import com.jayud.auth.model.dto.SysUserDTO;
-import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.form.CrmCodeFrom;
@@ -300,6 +300,13 @@ public class CrmCustomerController {
     @PostMapping("changeToPublic")
     public BaseResult changeToPublic(@RequestParam("custList") List<CrmCustomer> custList){
         return crmCustomerService.moveCustToRick(custList);
+    }
+
+    @ApiOperation("客户审核")
+    @PostMapping (path = "/customerCheck")
+    public BaseResult  customerCheck(@RequestBody CheckForm checkForm){
+
+        return authClient.check(checkForm);
     }
 
 }

@@ -68,6 +68,7 @@ public interface BNoRuleMapper extends BaseMapper<BNoRule> {
      * @return
      */
     BNoRule getNoRulesBySheetCode(@Param("sheetCode") String sheetCode);
+
     //获得单号
     void getOrderNo(Map<String,Object> map);
 }

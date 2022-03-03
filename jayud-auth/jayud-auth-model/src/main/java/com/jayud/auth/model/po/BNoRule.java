@@ -54,7 +54,7 @@ public class BNoRule extends SysBaseEntity {
     private String checkFlag;
 
     @ApiModelProperty(value = "两次审核能否为同一个人")
-    private Boolean check;
+    private Boolean checkUp;
 
     @ApiModelProperty(value = "审核库")
     private String checkDatabase;
@@ -65,10 +65,8 @@ public class BNoRule extends SysBaseEntity {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @ApiModelProperty(value = "删除时间")
-    private Integer isDelete;
+    @ApiModelProperty(value = "删除标记")
+    private Integer isDeleted;
 
 
 

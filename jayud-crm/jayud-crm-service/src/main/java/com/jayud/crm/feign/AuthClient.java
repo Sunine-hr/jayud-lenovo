@@ -1,6 +1,7 @@
 package com.jayud.crm.feign;
 
 
+import com.jayud.auth.model.bo.CheckForm;
 import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.po.SysDepart;
 import com.jayud.common.BaseResult;
@@ -26,16 +27,21 @@ public interface AuthClient {
     public BaseResult selectListFeign();
 
 
-    //字段表查询
+    /**
+     * 字段表查询
+     */
     @PostMapping(value = "/sysDictItem/api/selectItemByDictCode")
     public BaseResult selectItemByDictCodeFeign(@RequestParam("dictCode") String dictCode);
 
 
-    //自定义单号
+    /**
+     * 自定义单号
+     */
     @PostMapping(value = "/bNoRule/api/getOrderFeign")
     public BaseResult getOrderFeign(@RequestParam(name = "code") String code, @RequestParam(name = "date") Date date);
 
     /**
+     * 查询法人主体
      * @description 查询法人主体
      **/
     @ApiOperation("查询法人主体")
@@ -59,4 +65,12 @@ public interface AuthClient {
      */
     @PostMapping("/sysArea/api/selectListSysAreaFeign")
     public BaseResult selectListSysAreaFeign(@RequestParam(name = "level", required = false) Integer level, @RequestParam(name = "parentCode", required = false) Long parentCode);
+
+    /**
+     * 审核
+     * @param checkForm
+     * @return
+     */
+    @PostMapping("/bPublicCheck/check")
+    public BaseResult check(@RequestBody CheckForm checkForm);
 }

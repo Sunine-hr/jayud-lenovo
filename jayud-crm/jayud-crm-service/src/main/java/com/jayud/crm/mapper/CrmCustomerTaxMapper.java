@@ -70,4 +70,11 @@ public interface CrmCustomerTaxMapper extends BaseMapper<CrmCustomerTax> {
      * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
      **/
     List<LinkedHashMap<String, Object>> queryCrmCustomerTaxForExcel(Map<String, Object> paramMap);
+
+    /**
+     * 根据客户id 修改是否是默认开票信息
+     * @param crmCustomerTax
+     * @return
+     */
+    int updateCrmCustomerTaxList(@Param("crmCustomerTax") CrmCustomerTax crmCustomerTax);
 }

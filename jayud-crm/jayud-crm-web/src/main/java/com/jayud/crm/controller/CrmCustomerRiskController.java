@@ -3,6 +3,7 @@ package com.jayud.crm.controller;
 import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.bo.CrmCustomerRiskForm;
+import com.jayud.crm.model.bo.DeleteForm;
 import com.jayud.crm.model.constant.CrmDictCode;
 import com.jayud.crm.model.form.CrmCodeFrom;
 import lombok.extern.slf4j.Slf4j;
@@ -137,9 +138,9 @@ public class CrmCustomerRiskController {
      * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("逻辑删除")
-    @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id){
-        crmCustomerRiskService.logicDel(id);
+    @PostMapping("/logicDel")
+    public BaseResult logicDel(@RequestBody DeleteForm ids){
+        crmCustomerRiskService.logicDel(ids.getIds());
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 

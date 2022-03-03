@@ -133,4 +133,11 @@
 
     </select>
 
+
+
+    <update id="updateCrmCustomerTaxList" parameterType="com.jayud.crm.model.po.CrmCustomerTax">
+        UPDATE crm_customer_tax
+        SET is_default = 1
+        WHERE is_deleted = 0 and cust_id = #{crmCustomerTax.custId}
+    </update>
 </mapper>

@@ -45,7 +45,7 @@ public interface AuthClient {
      * @description 查询法人主体
      **/
     @ApiOperation("查询法人主体")
-    @RequestMapping("/getLegalEntity")
+    @RequestMapping("/api/getLegalEntity")
     public BaseResult<List<SysDepart>> getLegalEntity();
 
 

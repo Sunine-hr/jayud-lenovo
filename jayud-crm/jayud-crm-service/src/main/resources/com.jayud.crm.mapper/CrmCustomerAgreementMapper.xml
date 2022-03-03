@@ -45,7 +45,7 @@
 
 
     <!-- 通用查询映射结果ss -->
-    <resultMap id="BaseResultMapOne" type="com.jayud.crm.model.po.CrmCustomerAgreement">
+    <resultMap id="BaseResultMapOne" type="com.jayud.crm.model.vo.CrmCustomerAgreementVO">
         <id column="id" property="id" />
         <result column="agreement_code" property="agreementCode" />
         <result column="cust_id" property="custId" />

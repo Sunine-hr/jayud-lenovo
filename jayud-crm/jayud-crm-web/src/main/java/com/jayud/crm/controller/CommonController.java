@@ -15,10 +15,7 @@ import com.jayud.crm.model.constant.CrmDictCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +50,7 @@ public class CommonController {
      * @description 查询法人主体
      **/
     @ApiOperation("查询法人主体")
-    @RequestMapping("/getLegalEntity")
+    @GetMapping("/getLegalEntity")
     public BaseResult<List<SysDepart>> getLegalEntity() {
         return authClient.getLegalEntity();
     }

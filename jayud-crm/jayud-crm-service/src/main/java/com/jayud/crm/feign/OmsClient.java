@@ -34,7 +34,7 @@ public interface OmsClient {
 
     @ApiOperation(value = "初始化车型尺寸,区分车型")
     @PostMapping(value = "/api/initVehicleSize")
-    public CommonResult<Map<String, Object>> initVehicleSize();
+    public CommonResult<List<InitComboxStrVO>> initVehicleSize();
 
     /**
      * 币种

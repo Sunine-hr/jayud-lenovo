@@ -1,6 +1,7 @@
 package com.jayud.crm.model.bo;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jayud.common.entity.SysBaseEntity;
 import com.jayud.common.enums.ContractQuotationModeEnum;
 import com.jayud.common.exception.JayudBizException;
@@ -81,24 +82,19 @@ public class AddCrmContractQuotationForm extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "审核级别")
+    @JsonProperty(value = "fLevel")
     private Integer fLevel;
 
     @ApiModelProperty(value = "当前级别")
+    @JsonProperty(value = "fStep")
     private Integer fStep;
 
     @ApiModelProperty(value = "审核状态")
     private String checkStateFlag;
 
-    @ApiModelProperty(value = "租户编码")
-    private String tenantCode;
-
     @ApiModelProperty(value = "备注")
     private String remark;
 
-
-    @ApiModelProperty(value = "是否删除，0未删除，1已删除")
-    @TableLogic
-    private Boolean isDeleted;
 
     @ApiModelProperty(value = "合同报价文件")
     private List<CrmFile> files;

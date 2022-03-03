@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.BigDecimalUtil;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.crm.model.bo.AddCrmCreditForm;
 import com.jayud.crm.model.enums.FileModuleEnum;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -52,7 +54,7 @@ public class CrmCreditServiceImpl extends ServiceImpl<CrmCreditMapper, CrmCredit
         Page<CrmCredit> page = new Page<CrmCredit>(currentPage, pageSize);
         IPage<CrmCreditVO> pageList = crmCreditMapper.pageList(page, crmCredit);
         for (CrmCreditVO record : pageList.getRecords()) {
-//            record.setCreditRate(record)
+            record.setCreditRate(record.getCreditGrantedMoney().divide(record.getCreditMoney()).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)) + "%");
         }
         return pageList;
     }

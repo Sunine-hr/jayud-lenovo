@@ -45,8 +45,8 @@ public class AddCrmCreditForm extends SysBaseEntity {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-
-
+    @ApiModelProperty(value = "已授信额度")
+    private BigDecimal creditGrantedMoney;
 
 
 }

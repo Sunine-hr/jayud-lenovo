@@ -55,7 +55,7 @@ public interface AuthClient {
     public BaseResult<List<SysUserDTO>>  selectUserByRoleCode(@RequestParam(name = "roleCode") String roleCode);
 
     /**
-     * 列表查询数据
+     * 省市级联
      */
     @PostMapping("/sysArea/api/selectListSysAreaFeign")
     public BaseResult selectListSysAreaFeign(@RequestParam(name = "level", required = false) Integer level, @RequestParam(name = "parentCode", required = false) Long parentCode);

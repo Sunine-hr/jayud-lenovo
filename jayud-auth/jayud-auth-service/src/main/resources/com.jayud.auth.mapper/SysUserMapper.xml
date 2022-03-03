@@ -426,9 +426,9 @@
                 AND sur.is_deleted = 0
                 LEFT JOIN sys_role sr ON sr.id = sur.role_id
                 AND sr.is_deleted = 0
-                AND sr.role_code = #{roleCode}
         WHERE
             su.is_deleted = 0
+            AND sr.role_code = #{roleCode}
     </select>
 
 

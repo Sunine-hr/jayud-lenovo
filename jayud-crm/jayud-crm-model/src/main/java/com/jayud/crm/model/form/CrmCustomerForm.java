@@ -36,6 +36,9 @@ public class CrmCustomerForm  extends CrmCustomer{
     @ApiModelProperty(value = "对接人id")
     private Long managerUserId;
 
+    @ApiModelProperty(value = "对接人名称")
+    private String managerUsername;
+
     @ApiModelProperty(value = "对接人角色名称")
     private String managerUserRoleName;
 

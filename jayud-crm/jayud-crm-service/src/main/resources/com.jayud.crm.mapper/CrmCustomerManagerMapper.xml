@@ -7,6 +7,7 @@
         <id column="id" property="id" />
         <result column="cust_id" property="custId" />
         <result column="manage_user_id" property="manageUserId" />
+        <result column="manage_username" property="manageUsername" />
         <result column="manage_roles" property="manageRoles" />
         <result column="manager_roles_name" property="managerRolesName" />
         <result column="generate_date" property="generateDate" />
@@ -25,7 +26,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, cust_id, manage_user_id, manage_roles, manager_roles_name, generate_date, manager_business_code, manager_business_name, is_charger, is_sale, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, cust_id, manage_user_id, manage_username, manage_roles, manager_roles_name, generate_date, manager_business_code, manager_business_name, is_charger, is_sale, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
@@ -42,6 +43,10 @@
 
             <if test="crmCustomerManager.manageUserId != null ">
                 AND manage_user_id = ${crmCustomerManager.manageUserId}
+            </if>
+
+            <if test="crmCustomerManager.manageUsername != null and crmCustomerManager.manageUsername != ''">
+                AND manage_username LIKE CONCAT('%',#{crmCustomerManager.manageUsername},'%')
             </if>
 
             <if test="crmCustomerManager.manageRoles != null and crmCustomerManager.manageRoles != ''">
@@ -108,6 +113,7 @@
             id 'id',
             cust_id 'custId',
             manage_user_id 'manageUserId',
+            manage_username 'manageUsername',
             manage_roles 'manageRoles',
             manager_roles_name 'managerRolesName',
             generate_date 'generateDate',
@@ -129,6 +135,9 @@
                     </if>
                     <if test="manageUserId != null ">
                         AND manage_user_id = #{manageUserId}
+                    </if>
+                    <if test="manageUsername != null and manageUsername != ''">
+                        AND manage_username LIKE CONCAT('%',#{manageUsername}, '%')
                     </if>
                     <if test="manageRoles != null and manageRoles != ''">
                         AND manage_roles LIKE CONCAT('%',#{manageRoles}, '%')

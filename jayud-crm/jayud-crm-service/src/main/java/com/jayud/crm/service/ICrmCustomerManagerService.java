@@ -4,7 +4,6 @@ package com.jayud.crm.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.BaseResult;
 import com.jayud.crm.model.form.CrmCustomerForm;
-import com.jayud.crm.model.po.CrmCustomer;
 import com.jayud.crm.model.po.CrmCustomerManager;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -91,14 +90,15 @@ public interface ICrmCustomerManagerService extends IService<CrmCustomerManager>
      **/
     void saveByCustomer(CrmCustomerForm crmCustomerForm);
 
+
     /**
      * @description 保存我司对接人
      * @author  ciro
-     * @date   2022/3/3 11:08
+     * @date   2022/3/3 15:48
      * @param: crmCustomerManager
-     * @return: com.jayud.common.BaseResult
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.po.CrmCustomerManager>
      **/
-    BaseResult saveManager(CrmCustomerManager crmCustomerManager);
+    BaseResult<CrmCustomerManager> saveManager(CrmCustomerManager crmCustomerManager);
 
 
 

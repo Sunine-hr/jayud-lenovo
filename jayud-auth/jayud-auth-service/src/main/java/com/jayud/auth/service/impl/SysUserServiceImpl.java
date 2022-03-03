@@ -253,6 +253,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<SysUserDTO> selectUserByRoleCode(String roleCode) {
+        if (roleCode.contains(StrUtil.COMMA)){
+            String[] codes = roleCode.split(StrUtil.COMMA);
+            roleCode = codes[0];
+        }
         List<SysUserDTO> userDtoList = new ArrayList<>();
         String tenantCode = CurrentUserUtil.getUserTenantCode();
         List<SysUser> sysUserList = sysUserMapper.selectUserByRoleCode(roleCode,tenantCode);

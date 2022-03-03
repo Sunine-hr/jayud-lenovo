@@ -26,8 +26,7 @@ public class MybatisPlusUtils {
                 "jayud-crm/jayud-crm-web"
         };
         for (String model : models) {
-            shell(model,"crm_customer_bank");
-            shell(model,"sys_role_action_check");
+            shell(model,"crm_customer_manager");
 
         }
     }

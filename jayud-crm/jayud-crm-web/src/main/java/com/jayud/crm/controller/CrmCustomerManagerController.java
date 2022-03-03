@@ -90,8 +90,7 @@ public class CrmCustomerManagerController {
     @ApiOperation("新增")
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody CrmCustomerManager crmCustomerManager ){
-        crmCustomerManagerService.save(crmCustomerManager);
-        return BaseResult.ok(SysTips.ADD_SUCCESS);
+        return crmCustomerManagerService.saveManager(crmCustomerManager);
     }
 
 
@@ -105,8 +104,7 @@ public class CrmCustomerManagerController {
     @ApiOperation("编辑")
     @PostMapping("/edit")
     public BaseResult edit(@Valid @RequestBody CrmCustomerManager crmCustomerManager ){
-        crmCustomerManagerService.updateById(crmCustomerManager);
-        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+        return crmCustomerManagerService.saveManager(crmCustomerManager);
     }
 
 
@@ -175,6 +173,7 @@ public class CrmCustomerManagerController {
                 "自动ID",
                 "客户ID",
                 "对接用户id",
+                "对接用户名称",
                 "对接用户角色编码",
                 "对接用户角色名称",
                 "归属时间",

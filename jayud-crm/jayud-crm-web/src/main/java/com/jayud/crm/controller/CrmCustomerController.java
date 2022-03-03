@@ -3,6 +3,7 @@ package com.jayud.crm.controller;
 import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.feign.AuthClient;
+import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.form.CrmCodeFrom;
 import com.jayud.crm.model.form.CrmCustomerForm;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,9 @@ public class CrmCustomerController {
 
     @Autowired
     private AuthClient authClient;
+
+    @Autowired
+    private SysDictClient sysDictClient;
 
 
     /**
@@ -278,6 +282,24 @@ public class CrmCustomerController {
     @GetMapping(path = "/selectUserByRoleCode")
     public BaseResult<List<SysUserDTO>>  selectUserByRoleCode(String roleCode){
         return authClient.selectUserByRoleCode(roleCode);
+    }
+
+    @ApiOperation("添加黑名单")
+    @PostMapping("moveCustToRick")
+    public BaseResult moveCustToRick(@RequestParam("custList") List<CrmCustomer> custList){
+        return crmCustomerService.moveCustToRick(custList);
+    }
+
+    @ApiOperation("转为供应商")
+    @PostMapping("changeToSupplier")
+    public BaseResult changeToSupplier(@RequestParam("custList") List<CrmCustomer> custList){
+        return crmCustomerService.changeToSupplier(custList);
+    }
+
+    @ApiOperation("放入公海")
+    @PostMapping("changeToPublic")
+    public BaseResult changeToPublic(@RequestParam("custList") List<CrmCustomer> custList){
+        return crmCustomerService.moveCustToRick(custList);
     }
 
 }

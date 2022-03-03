@@ -97,6 +97,7 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
         if (isAdd){
             //对接人信息
             crmCustomerManager.setManageUserId(crmCustomerForm.getManagerUserId());
+            crmCustomerManager.setManageUsername(crmCustomerForm.getManagerUsername());
             crmCustomerManager.setManageRoles(crmCustomerForm.getManagerUserRoleCode());
             crmCustomerManager.setManagerRolesName(crmCustomerForm.getManagerUserRoleName());
             //客户业务类型
@@ -108,7 +109,7 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
     }
 
     @Override
-    public BaseResult saveManager(CrmCustomerManager crmCustomerManager) {
+    public BaseResult<CrmCustomerManager> saveManager(CrmCustomerManager crmCustomerManager) {
         boolean isAdd = false;
         if (crmCustomerManager.getId() == null){
             isAdd = true;
@@ -123,9 +124,9 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
             this.updateById(crmCustomerManager);
         }
         if (isAdd){
-            return BaseResult.ok(SysTips.ADD_SUCCESS);
+            return BaseResult.ok(SysTips.ADD_SUCCESS,crmCustomerManager);
         }else {
-            return BaseResult.ok(SysTips.EDIT_SUCCESS);
+            return BaseResult.ok(SysTips.EDIT_SUCCESS,crmCustomerManager);
         }
     }
 

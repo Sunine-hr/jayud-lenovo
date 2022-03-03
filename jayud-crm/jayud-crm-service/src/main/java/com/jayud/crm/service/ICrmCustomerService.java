@@ -129,4 +129,33 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      **/
     String getNextCode(String code);
 
+    /**
+     * @description 移入黑名单
+     * @author  ciro
+     * @date   2022/3/3 16:15
+     * @param: ids
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult moveCustToRick(List<CrmCustomer> custList);
+
+    /**
+     * @description 转为供应商
+     * @author  ciro
+     * @date   2022/3/3 16:27
+     * @param: custList
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult changeToSupplier(List<CrmCustomer> custList);
+
+    /**
+     * @description 放入公海
+     * @author  ciro
+     * @date   2022/3/3 16:34
+     * @param: custList
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult changeToPublic(List<CrmCustomer> custList);
+
+
+
 }

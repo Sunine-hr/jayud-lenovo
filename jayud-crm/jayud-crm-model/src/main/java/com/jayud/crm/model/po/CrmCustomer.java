@@ -231,6 +231,13 @@ public class CrmCustomer extends SysBaseEntity {
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;
 
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @ApiModelProperty(value = "转入公海时间")
+    private LocalDateTime transferPublicTime;
+
     @ApiModelProperty(value = "备注")
     private String remark;
 

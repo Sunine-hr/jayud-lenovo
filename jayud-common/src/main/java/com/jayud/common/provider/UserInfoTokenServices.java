@@ -27,7 +27,7 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 
 	private static final String[] PRINCIPAL_KEYS = new String[] { "user", "username", "userid", "user_id", "login", "id", "name" };
 
-	private static final String ERROR = "error";
+	private static final String ERROR = "success";
 
 	private final String userInfoEndpointUrl;
 

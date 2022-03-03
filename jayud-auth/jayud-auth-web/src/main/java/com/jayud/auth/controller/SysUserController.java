@@ -6,6 +6,7 @@ import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.utils.CurrentUserUtil;
+import io.swagger.annotations.ApiImplicitParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -227,8 +228,10 @@ public class SysUserController {
     }
 
     @ApiOperation("根据角色编码查询用户")
-    @GetMapping("/selectUserByRoleCode")
-    public BaseResult<List<SysUserDTO>> selectUserByRoleCode(String roleCode) {
+    @ApiImplicitParam(name = "roleCode", value = "角色编码", dataType = "String", required = true)
+    @PostMapping("/selectUserByRoleCode")
+    public BaseResult<List<SysUserDTO>> selectUserByRoleCode(@RequestParam String roleCode,
+                                                              HttpServletRequest req) {
         return BaseResult.ok(sysUserService.selectUserByRoleCode(roleCode));
     }
 

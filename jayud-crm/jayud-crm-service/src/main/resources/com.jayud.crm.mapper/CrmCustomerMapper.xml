@@ -66,6 +66,7 @@
         <result column="cust_enterprise_credit" property="custEnterpriseCredit" />
         <result column="cust_import_credit" property="custImportCredit" />
         <result column="cust_customs_credit" property="custCustomsCredit" />
+        <result column="transfer_public_time" property="transferPublicTime" />
         <result column="tenant_code" property="tenantCode" />
         <result column="remark" property="remark" />
         <result column="is_deleted" property="isDeleted" />
@@ -77,7 +78,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, parent_id, cust_name, un_credit_code, cust_state, is_cust, is_public, is_supplier, cust_name_abbr, cust_name_en, cust_style, cust_level, industry_type, country, province, city, county, area, reg_date, reg_addr, reg_addr_en, reg_tel, cust_reg_tpye, cust_reg_number, cust_org_code, buzlicense_expirdate, legalperson_name, actualcontrol_name, is_taxpayer, reg_capital, paid_capital, reg_currency, oper_scope, reg_org, customs_code, ciq_code, cust_form, supply_chain, first_order_date, fsales_id, fsales_name, follower_id, follower_name, onl_id, onl_no, is_sync, f_level, f_step, check_state_flag, old_cust_name, cust_code, supplier_code, business_types, service_type, accounting_period, reconciliation_method, settlement_method, industry, website_url, cust_enterprise_credit, cust_import_credit, cust_customs_credit, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, parent_id, cust_name, un_credit_code, cust_state, is_cust, is_public, is_supplier, cust_name_abbr, cust_name_en, cust_style, cust_level, industry_type, country, province, city, county, area, reg_date, reg_addr, reg_addr_en, reg_tel, cust_reg_tpye, cust_reg_number, cust_org_code, buzlicense_expirdate, legalperson_name, actualcontrol_name, is_taxpayer, reg_capital, paid_capital, reg_currency, oper_scope, reg_org, customs_code, ciq_code, cust_form, supply_chain, first_order_date, fsales_id, fsales_name, follower_id, follower_name, onl_id, onl_no, is_sync, f_level, f_step, check_state_flag, old_cust_name, cust_code, supplier_code, business_types, service_type, accounting_period, reconciliation_method, settlement_method, industry, website_url, cust_enterprise_credit, cust_import_credit, cust_customs_credit, transfer_public_time, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->

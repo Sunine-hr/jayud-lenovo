@@ -14,8 +14,11 @@ import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.constant.CodeNumber;
 import com.jayud.crm.model.constant.CrmDictCode;
+import com.jayud.crm.model.enums.CustRiskTypeEnum;
 import com.jayud.crm.model.form.CrmCodeFrom;
 import com.jayud.crm.model.form.CrmCustomerForm;
+import com.jayud.crm.model.po.CrmCustomerRisk;
+import com.jayud.crm.service.ICrmCustomerRiskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -45,6 +49,9 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     private SysDictClient sysDictClient;
     @Autowired
     private AuthClient authClient;
+
+    @Autowired
+    private ICrmCustomerRiskService crmCustomerRiskService;
 
     @Autowired
     private CrmCustomerMapper crmCustomerMapper;
@@ -181,6 +188,46 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     public String getNextCode(String code) {
         BaseResult baseResult = authClient.getOrderFeign(code,new Date());
         return baseResult.getMsg();
+    }
+
+    @Override
+    public BaseResult moveCustToRick(List<CrmCustomer> custList) {
+        List<CrmCustomerRisk> riskList = new ArrayList<>();
+        for (CrmCustomer crmCustomer : custList){
+            CrmCustomerRisk crmCustomerRisk = new CrmCustomerRisk();
+            crmCustomerRisk.setCustId(crmCustomer.getId());
+            crmCustomerRisk.setCustName(crmCustomer.getCustName());
+            crmCustomerRisk.setRiskType(CustRiskTypeEnum.BLACKLIST_CUST.getDesc());
+            riskList.add(crmCustomerRisk);
+        }
+        if (CollUtil.isNotEmpty(riskList)){
+            crmCustomerRiskService.saveBatch(riskList);
+        }
+        return BaseResult.ok();
+    }
+
+    @Override
+    public BaseResult changeToSupplier(List<CrmCustomer> custList) {
+        if (CollUtil.isNotEmpty(custList)){
+            custList.forEach(crmCustomer -> {
+                crmCustomer.setIsSupplier(true);
+                crmCustomer.setSupplierCode(getNextCode(CodeNumber.CRM_SUPPLIER_CODE));
+            });
+            this.updateBatchById(custList);
+        }
+        return BaseResult.ok();
+    }
+
+    @Override
+    public BaseResult changeToPublic(List<CrmCustomer> custList) {
+        if (CollUtil.isNotEmpty(custList)){
+            custList.forEach(crmCustomer -> {
+                crmCustomer.setIsPublic(true);
+                crmCustomer.setTransferPublicTime(LocalDateTime.now());
+            });
+            this.updateBatchById(custList);
+        }
+        return BaseResult.ok();
     }
 
     /**

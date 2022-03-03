@@ -1,5 +1,6 @@
 package com.jayud.crm.feign;
 
+import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.common.BaseResult;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -23,5 +24,8 @@ public interface SysDictClient {
 
     @GetMapping(value = "/sysDictItem/selectItemByDictCode")
     public BaseResult<List<SysDictItem>> selectItemByDictCode(@RequestParam("dictCode") String dictCode);
+
+    @GetMapping(value = "/sysUser/selectUserByRoleCode")
+    public BaseResult<List<SysUserDTO>>  selectUserByRoleCode(@RequestParam("roleCode") String roleCode);
 
 }

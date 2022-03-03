@@ -34,6 +34,9 @@ public class CrmCustomerManager extends SysBaseEntity {
     @ApiModelProperty(value = "对接用户id")
     private Long manageUserId;
 
+    @ApiModelProperty(value = "对接用户名称")
+    private String manageUsername;
+
     @ApiModelProperty(value = "对接用户角色编码")
     private String manageRoles;
 

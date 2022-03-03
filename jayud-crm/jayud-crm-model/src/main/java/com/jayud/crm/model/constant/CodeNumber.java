@@ -7,6 +7,14 @@ package com.jayud.crm.model.constant;
  */
 public interface CodeNumber {
 
+    /**
+     * 客户编码
+     */
     String CRM_CUST_CODE = "CRM_CUST_CODE";
+
+    /**
+     * 供应商编码
+     */
+    String CRM_SUPPLIER_CODE = "CRM_SUPPLIER_CODE";
 
 }

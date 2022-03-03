@@ -43,9 +43,9 @@ public class CrmCustomerTaxServiceImpl extends ServiceImpl<CrmCustomerTaxMapper,
 
     @Override
     public IPage<CrmCustomerTax> selectPage(CrmCustomerTax crmCustomerTax,
-                                        Integer currentPage,
-                                        Integer pageSize,
-                                        HttpServletRequest req){
+                                            Integer currentPage,
+                                            Integer pageSize,
+                                            HttpServletRequest req){
 
         Page<CrmCustomerTax> page=new Page<CrmCustomerTax>(currentPage,pageSize);
         IPage<CrmCustomerTax> pageList= crmCustomerTaxMapper.pageList(page, crmCustomerTax);
@@ -67,13 +67,20 @@ public class CrmCustomerTaxServiceImpl extends ServiceImpl<CrmCustomerTaxMapper,
             convert.setUpdateBy(CurrentUserUtil.getUsername());
             convert.setUpdateTime(new Date());
             result = this.updateById(convert);
-            Long id = convert.getId();
+            Long custId = convert.getCustId();//客户id
+            if(convert.getIsDefault()==true){
+                updateCrmCustomerTax(custId);
+            }
             return BaseResult.ok(SysTips.EDIT_SUCCESS);
         }else {
             convert.setCreateBy(CurrentUserUtil.getUsername());
             convert.setCreateTime(new Date());
             result= this.saveOrUpdate(convert);
-            Long id = convert.getId();
+            Long custId = convert.getCustId();//客户id
+
+            if(convert.getIsDefault()==true){
+                updateCrmCustomerTax(custId);
+            }
             return BaseResult.ok(SysTips.ADD_SUCCESS);
         }
     }
@@ -96,6 +103,14 @@ public class CrmCustomerTaxServiceImpl extends ServiceImpl<CrmCustomerTaxMapper,
     @Override
     public List<LinkedHashMap<String, Object>> queryCrmCustomerTaxForExcel(Map<String, Object> paramMap) {
         return this.baseMapper.queryCrmCustomerTaxForExcel(paramMap);
+    }
+
+
+    public void updateCrmCustomerTax(Long custId){
+        CrmCustomerTax crmCustomerTax = new CrmCustomerTax();
+        crmCustomerTax.setCustId(custId);
+        //创建开票资料修改这个用户下的所有的开票资料为已失效
+        crmCustomerTaxMapper.updateCrmCustomerTaxList(crmCustomerTax);
     }
 
 }

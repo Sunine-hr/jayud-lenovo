@@ -1,6 +1,7 @@
 package com.jayud.crm.controller;
 
 import com.jayud.crm.model.bo.CrmCreditVisitForm;
+import com.jayud.crm.model.bo.DeleteForm;
 import com.jayud.crm.model.vo.CrmCreditVisitVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -128,9 +129,9 @@ public class CrmCreditVisitController {
      **/
     @ApiOperation("逻辑删除")
     @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
-    @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id) {
-        crmCreditVisitService.logicDel(id);
+    @PostMapping("/logicDel")
+    public BaseResult logicDel(@RequestBody DeleteForm ids) {
+        crmCreditVisitService.logicDel(ids.getIds());
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 

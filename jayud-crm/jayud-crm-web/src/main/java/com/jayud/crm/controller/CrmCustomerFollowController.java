@@ -1,5 +1,6 @@
 package com.jayud.crm.controller;
 
+import cn.hutool.json.JSONObject;
 import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.bo.CrmCustomerFollowForm;
@@ -228,7 +229,6 @@ public class CrmCustomerFollowController {
         CrmCustomerRelations crmCustomerRelations = new CrmCustomerRelations();
         crmCustomerRelations.setIsDeleted(false);
         List<CrmCustomerRelations> crmCustomerRelations1 = crmCustomerRelationsService.selectList(crmCustomerRelations);
-
         crmCodeFollowForm.setSysDictItems(result);
         crmCodeFollowForm.setCrmCustomerRelations(crmCustomerRelations1);
         return BaseResult.ok(crmCodeFollowForm);

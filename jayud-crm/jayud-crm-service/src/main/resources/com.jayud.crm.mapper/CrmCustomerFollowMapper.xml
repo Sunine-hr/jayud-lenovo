@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.crm.mapper.CrmCustomerFollowMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCustomerFollow">
+        <id column="id" property="id" />
+        <result column="cust_id" property="custId" />
+        <result column="linkman_name" property="linkmanName" />
+        <result column="linkman_name_id" property="linkmanNameId" />
+        <result column="record_type" property="recordType" />
+        <result column="record_content" property="recordContent" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="upload_file_url" property="uploadFileUrl" />
+        <result column="contact_time" property="contactTime" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, cust_id, linkman_name, linkman_name_id, record_type, record_content, tenant_code, upload_file_url, contact_time, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">crm_customer_follow </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="crmCustomerFollow.custId != null ">
+                AND cust_id = ${crmCustomerFollow.custId}
+            </if>
+
+            <if test="crmCustomerFollow.linkmanName != null and crmCustomerFollow.linkmanName != ''">
+                AND linkman_name LIKE CONCAT('%',#{crmCustomerFollow.linkmanName},'%')
+            </if>
+
+            <if test="crmCustomerFollow.linkmanNameId != null ">
+                AND linkman_name_id = ${crmCustomerFollow.linkmanNameId}
+            </if>
+
+            <if test="crmCustomerFollow.recordType != null and crmCustomerFollow.recordType != ''">
+                AND record_type LIKE CONCAT('%',#{crmCustomerFollow.recordType},'%')
+            </if>
+
+            <if test="crmCustomerFollow.recordContent != null and crmCustomerFollow.recordContent != ''">
+                AND record_content LIKE CONCAT('%',#{crmCustomerFollow.recordContent},'%')
+            </if>
+
+            <if test="crmCustomerFollow.tenantCode != null and crmCustomerFollow.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{crmCustomerFollow.tenantCode},'%')
+            </if>
+
+            <if test="crmCustomerFollow.uploadFileUrl != null and crmCustomerFollow.uploadFileUrl != ''">
+                AND upload_file_url LIKE CONCAT('%',#{crmCustomerFollow.uploadFileUrl},'%')
+            </if>
+
+            <if test="crmCustomerFollow.contactTime != null ">
+                AND contact_time = ${crmCustomerFollow.contactTime}
+            </if>
+
+            <if test="crmCustomerFollow.remark != null and crmCustomerFollow.remark != ''">
+                AND remark LIKE CONCAT('%',#{crmCustomerFollow.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList"  parameterType="com.jayud.crm.model.bo.CrmCustomerFollowForm"  resultType="com.jayud.crm.model.vo.CrmCustomerFollowVO">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerFollow">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  crm_customer_follow WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE crm_customer_follow SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCrmCustomerFollowForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            cust_id 'custId',
+            linkman_name 'linkmanName',
+            linkman_name_id 'linkmanNameId',
+            record_type 'recordType',
+            record_content 'recordContent',
+            tenant_code 'tenantCode',
+            upload_file_url 'uploadFileUrl',
+            contact_time 'contactTime',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM crm_customer_follow
+        WHERE is_deleted = 0
+                    <if test="custId != null ">
+                        AND cust_id = #{custId}
+                    </if>
+                    <if test="linkmanName != null and linkmanName != ''">
+                        AND linkman_name LIKE CONCAT('%',#{linkmanName}, '%')
+                    </if>
+                    <if test="linkmanNameId != null ">
+                        AND linkman_name_id = #{linkmanNameId}
+                    </if>
+                    <if test="recordType != null and recordType != ''">
+                        AND record_type LIKE CONCAT('%',#{recordType}, '%')
+                    </if>
+                    <if test="recordContent != null and recordContent != ''">
+                        AND record_content LIKE CONCAT('%',#{recordContent}, '%')
+                    </if>
+                    <if test="tenantCode != null and tenantCode != ''">
+                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+                    </if>
+                    <if test="uploadFileUrl != null and uploadFileUrl != ''">
+                        AND upload_file_url LIKE CONCAT('%',#{uploadFileUrl}, '%')
+                    </if>
+                    <if test="contactTime != null ">
+                        AND contact_time = #{contactTime}
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

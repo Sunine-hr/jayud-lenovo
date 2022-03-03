@@ -232,6 +232,11 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         return tree;
     }
 
+    @Override
+    public List<SysDepart> getByOrgCategory(Integer orgCategory) {
+        return this.list(new QueryWrapper<>(new SysDepart().setIsDeleted(false).setOrgCategory(orgCategory.toString())));
+    }
+
 
     //构建树并且查询员工信息
     private List<SysDepart> buildTreeStaff(List<SysDepart> list, String pid) {
@@ -247,9 +252,9 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
                     List<SysDepart> treeListUser = new ArrayList<>();
                     SysDepart sysDeparts = null;
                     for (int i = 0; i < lists.size(); i++) {
-                        long iil=111111;
+                        long iil = 111111;
                         sysDeparts = new SysDepart();
-                        Long aLong = StringUtils.longTransitionLong(iil,lists.get(i).getId());
+                        Long aLong = StringUtils.longTransitionLong(iil, lists.get(i).getId());
                         sysDeparts.setId(aLong);
                         sysDeparts.setUserId(lists.get(i).getId());
                         sysDeparts.setLabel(lists.get(i).getName());

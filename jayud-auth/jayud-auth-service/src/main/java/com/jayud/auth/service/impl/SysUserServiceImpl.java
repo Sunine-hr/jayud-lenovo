@@ -125,7 +125,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             sysUser.setDepartmentList(fileNameString);
             if (sysUser.getPassword().equals("")) {
                 //设置默认密码
-                sysUser.setPassword(encoder.encode("123456"));
+                sysUser.setPassword(encoder.encode("666888"));
             } else {
                 //反之保存自己填写的密码
                 sysUser.setPassword(encoder.encode(sysUser.getPassword()));

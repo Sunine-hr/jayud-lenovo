@@ -69,4 +69,16 @@ public interface CrmDictCode {
     String CRM_CUSTOMER_RISK_TYPE = "crm_customer_risk_type";
 
 
+    /**
+     *  客户管理-跟进记录
+     */
+    String CRM_CUSTOMER_FOLLOW_TYPE = "crm_customer_follow_type";
+
+
+
+
+
+
+
+
 }

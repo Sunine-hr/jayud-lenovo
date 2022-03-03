@@ -7,27 +7,32 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 import java.util.List;
 
 /**
- * CrmCustomerAgreement 实体类
+ * CrmCustomerAgreementSub 实体类
  *
  * @author jayud
- * @since 2022-03-02
+ * @since 2022-03-03
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="基本档案_协议管理(crm_customer_agreement)对象", description="基本档案_协议管理(crm_customer_agreement)")
-public class CrmCustomerAgreementVO extends SysBaseEntity {
+@Accessors(chain = true)
+@ApiModel(value="基本档案_协议管理_子协议(crm_customer_agreement_sub)对象", description="基本档案_协议管理_子协议(crm_customer_agreement_sub)")
+public class CrmCustomerAgreementSubVO extends SysBaseEntity {
 
+
+    @ApiModelProperty(value = "主协议ID")
+    private Long pId;
 
     @ApiModelProperty(value = "协议编号")
     private String agreementCode;
 
     @ApiModelProperty(value = "客户ID")
-    private Long custId;
+    private Integer custId;
 
     @ApiModelProperty(value = "客户名称")
     private String custName;
@@ -53,9 +58,6 @@ public class CrmCustomerAgreementVO extends SysBaseEntity {
     @ApiModelProperty(value = "协议有效期")
     private Integer validityPeriod;
 
-    @ApiModelProperty(value = "协议时间")
-    private List<LocalDate> agreementTime;
-
     @ApiModelProperty(value = "是否顺延")
     private Boolean isExtended;
 
@@ -73,6 +75,12 @@ public class CrmCustomerAgreementVO extends SysBaseEntity {
 
     @ApiModelProperty(value = "销售员")
     private String user;
+
+    @ApiModelProperty(value = "报价单id")
+    private Long quotationId;
+
+    @ApiModelProperty(value = "关联报价单号")
+    private String quotationNum;
 
     @ApiModelProperty(value = "法人主体id")
     private Long departId;
@@ -110,9 +118,6 @@ public class CrmCustomerAgreementVO extends SysBaseEntity {
     @ApiModelProperty(value = "流程实例")
     private Integer flowInstanceId;
 
-    @ApiModelProperty(value = "报价单id")
-    private Long quotationId;
-
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;
 
@@ -124,10 +129,13 @@ public class CrmCustomerAgreementVO extends SysBaseEntity {
     @TableLogic
     private Boolean isDeleted;
 
+    @ApiModelProperty(value = "协议时间")
+    private List<LocalDate> agreementTime;
 
     @ApiModelProperty(value = "上传文件")
     private List<CrmFile> files;
 
     @ApiModelProperty(value = "协议时间")
     private String effectiveTime;
+
 }

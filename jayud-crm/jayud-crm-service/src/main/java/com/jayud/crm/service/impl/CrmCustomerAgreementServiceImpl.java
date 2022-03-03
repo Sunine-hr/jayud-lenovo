@@ -64,6 +64,7 @@ public class CrmCustomerAgreementServiceImpl extends ServiceImpl<CrmCustomerAgre
             files.forEach(e -> {
                 e.setUploadFileUrl(url + e.getUploadFileUrl());
             });
+            record.setEffectiveTime(record.getBeginDate() + "-" + record.getEndDate());
             record.setFiles(files);
         }
         return pageList;
@@ -101,7 +102,7 @@ public class CrmCustomerAgreementServiceImpl extends ServiceImpl<CrmCustomerAgre
             if (this.exitNumber(form.getAgreementCode())) {
                 throw new JayudBizException(400, SysTips.NUM_ALREADY_EXISTS);
             }
-            tmp.setTenantCode(CurrentUserUtil.getUserTenantCode());
+            tmp.setCheckStateFlag("N0").setTenantCode(CurrentUserUtil.getUserTenantCode());
         } else {
             tmp.setUpdateBy(CurrentUserUtil.getUsername());
         }

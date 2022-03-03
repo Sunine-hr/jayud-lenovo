@@ -1,7 +1,12 @@
 package com.jayud.crm.controller;
 
+import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.crm.feign.AuthClient;
+import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.bo.CrmCustomerAddressForm;
+import com.jayud.crm.model.constant.CrmDictCode;
+import com.jayud.crm.model.form.CrmCodeFollowForm;
+import com.jayud.crm.model.po.CrmCustomerRelations;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,6 +52,9 @@ public class CrmCustomerAddressController {
 
     @Autowired
     private AuthClient authClient;
+
+    @Autowired
+    private SysDictClient sysDictClient;
 
     /**
      * @description 分页查询
@@ -211,4 +219,21 @@ public class CrmCustomerAddressController {
         BaseResult baseResult = authClient.selectListSysAreaFeign(level,parentCode);
         return BaseResult.ok(baseResult);
     }
+
+
+
+    /**
+     * @description 获取客户信息字典项目
+     * @author  ciro
+     * @date   2022/3/2 11:07
+     * @param:
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.form.CrmCodeFrom>
+     **/
+    @ApiOperation("获取客户地址类型字典下拉")
+    @GetMapping(path = "/getCrmCustomerAddressCode")
+    public BaseResult  getCrmCode(){
+        BaseResult<List<SysDictItem>> custNormalStatus= sysDictClient.selectItemByDictCode(CrmDictCode.CRM_CUSTOMER_ADDRESS_TYPE);
+        return BaseResult.ok(custNormalStatus);
+    }
+
 }

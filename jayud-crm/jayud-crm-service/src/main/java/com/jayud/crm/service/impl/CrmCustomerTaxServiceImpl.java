@@ -8,14 +8,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.crm.model.bo.CrmCustomerRelationsForm;
-import com.jayud.crm.model.po.CrmCreditVisit;
+import com.jayud.crm.model.bo.CrmCustomerTaxForm;
+import com.jayud.crm.model.po.CrmCustomerRelations;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
-import com.jayud.crm.model.po.CrmCustomerRelations;
-import com.jayud.crm.mapper.CrmCustomerRelationsMapper;
-import com.jayud.crm.service.ICrmCustomerRelationsService;
+import com.jayud.crm.model.po.CrmCustomerTax;
+import com.jayud.crm.mapper.CrmCustomerTaxMapper;
+import com.jayud.crm.service.ICrmCustomerTaxService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,76 +28,74 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 基本档案_客户_联系人(crm_customer_relations) 服务实现类
+ * 开票资料 服务实现类
  *
  * @author jayud
- * @since 2022-03-02
+ * @since 2022-03-03
  */
 @Slf4j
 @Service
-public class CrmCustomerRelationsServiceImpl extends ServiceImpl<CrmCustomerRelationsMapper, CrmCustomerRelations> implements ICrmCustomerRelationsService {
+public class CrmCustomerTaxServiceImpl extends ServiceImpl<CrmCustomerTaxMapper, CrmCustomerTax> implements ICrmCustomerTaxService {
 
 
     @Autowired
-    private CrmCustomerRelationsMapper crmCustomerRelationsMapper;
+    private CrmCustomerTaxMapper crmCustomerTaxMapper;
 
     @Override
-    public IPage<CrmCustomerRelations> selectPage(CrmCustomerRelations crmCustomerRelations,
+    public IPage<CrmCustomerTax> selectPage(CrmCustomerTax crmCustomerTax,
                                         Integer currentPage,
                                         Integer pageSize,
                                         HttpServletRequest req){
 
-        Page<CrmCustomerRelations> page=new Page<CrmCustomerRelations>(currentPage,pageSize);
-        IPage<CrmCustomerRelations> pageList= crmCustomerRelationsMapper.pageList(page, crmCustomerRelations);
+        Page<CrmCustomerTax> page=new Page<CrmCustomerTax>(currentPage,pageSize);
+        IPage<CrmCustomerTax> pageList= crmCustomerTaxMapper.pageList(page, crmCustomerTax);
         return pageList;
     }
 
     @Override
-    public List<CrmCustomerRelations> selectList(CrmCustomerRelations crmCustomerRelations){
-        return crmCustomerRelationsMapper.list(crmCustomerRelations);
+    public List<CrmCustomerTax> selectList(CrmCustomerTax crmCustomerTax){
+        return crmCustomerTaxMapper.list(crmCustomerTax);
     }
 
     @Override
-    public BaseResult saveOrUpdateCrmCustomerRelations(CrmCustomerRelationsForm crmCustomerRelationsForm) {
+    public BaseResult saveOrUpdateCrmCustomerTax(CrmCustomerTaxForm crmCustomerTaxForm) {
+
         Boolean result = null;
-        CrmCustomerRelations convert = ConvertUtil.convert(crmCustomerRelationsForm, CrmCustomerRelations.class);
+        CrmCustomerTax convert = ConvertUtil.convert(crmCustomerTaxForm, CrmCustomerTax.class);
 
         if(convert.getId()!=null){
             convert.setUpdateBy(CurrentUserUtil.getUsername());
             convert.setUpdateTime(new Date());
             result = this.updateById(convert);
             Long id = convert.getId();
+            return BaseResult.ok(SysTips.EDIT_SUCCESS);
         }else {
             convert.setCreateBy(CurrentUserUtil.getUsername());
             convert.setCreateTime(new Date());
             result= this.saveOrUpdate(convert);
             Long id = convert.getId();
-        }
-        if (result) {
-            log.warn("新增或修改成功");
             return BaseResult.ok(SysTips.ADD_SUCCESS);
         }
-        return BaseResult.error(SysTips.EDIT_FAIL);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void phyDelById(Long id){
-        crmCustomerRelationsMapper.phyDelById(id);
+        crmCustomerTaxMapper.phyDelById(id);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(Long id){
-        crmCustomerRelationsMapper.logicDel(id,CurrentUserUtil.getUsername());
+        crmCustomerTaxMapper.logicDel(id,CurrentUserUtil.getUsername());
     }
 
 
     @Override
-    public List<LinkedHashMap<String, Object>> queryCrmCustomerRelationsForExcel(Map<String, Object> paramMap) {
-        return this.baseMapper.queryCrmCustomerRelationsForExcel(paramMap);
+    public List<LinkedHashMap<String, Object>> queryCrmCustomerTaxForExcel(Map<String, Object> paramMap) {
+        return this.baseMapper.queryCrmCustomerTaxForExcel(paramMap);
     }
 
 }

@@ -86,9 +86,8 @@ public class CrmCreditVisitServiceImpl extends ServiceImpl<CrmCreditVisitMapper,
                 crmCreditVisitRoleMapper.insert(crmCreditVisitRole1);
             }
         } else {
-            convert.setUpdateBy(CurrentUserUtil.getUsername());
-            convert.setUpdateTime(new Date());
-
+            convert.setCreateBy(CurrentUserUtil.getUsername());
+            convert.setCreateTime(new Date());
             result = this.saveOrUpdate(convert);
             Long id = convert.getId();
 

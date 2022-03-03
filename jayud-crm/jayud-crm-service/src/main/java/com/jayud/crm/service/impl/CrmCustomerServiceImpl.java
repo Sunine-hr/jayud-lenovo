@@ -18,6 +18,7 @@ import com.jayud.crm.model.enums.CustRiskTypeEnum;
 import com.jayud.crm.model.form.CrmCodeFrom;
 import com.jayud.crm.model.form.CrmCustomerForm;
 import com.jayud.crm.model.po.CrmCustomerRisk;
+import com.jayud.crm.service.ICrmCustomerFeaturesService;
 import com.jayud.crm.service.ICrmCustomerRiskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -56,34 +57,37 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     @Autowired
     private CrmCustomerMapper crmCustomerMapper;
 
+    @Autowired
+    public ICrmCustomerFeaturesService crmCustomerFeaturesService;
+
     @Override
     public IPage<CrmCustomer> selectPage(CrmCustomer crmCustomer,
-                                        Integer currentPage,
-                                        Integer pageSize,
-                                        HttpServletRequest req){
+                                         Integer currentPage,
+                                         Integer pageSize,
+                                         HttpServletRequest req) {
 
-        Page<CrmCustomer> page=new Page<CrmCustomer>(currentPage,pageSize);
-        IPage<CrmCustomer> pageList= crmCustomerMapper.pageList(page, crmCustomer);
+        Page<CrmCustomer> page = new Page<CrmCustomer>(currentPage, pageSize);
+        IPage<CrmCustomer> pageList = crmCustomerMapper.pageList(page, crmCustomer);
         return pageList;
     }
 
     @Override
-    public List<CrmCustomer> selectList(CrmCustomer crmCustomer){
+    public List<CrmCustomer> selectList(CrmCustomer crmCustomer) {
         return crmCustomerMapper.list(crmCustomer);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void phyDelById(Long id){
+    public void phyDelById(Long id) {
         crmCustomerMapper.phyDelById(id);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id){
-        crmCustomerMapper.logicDel(id,CurrentUserUtil.getUsername());
+    public void logicDel(Long id) {
+        crmCustomerMapper.logicDel(id, CurrentUserUtil.getUsername());
     }
 
 
@@ -96,25 +100,27 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     @Transactional(rollbackFor = Exception.class)
     public BaseResult saveCrmCustomer(CrmCustomerForm crmCustomerForm) {
         boolean isAdd = false;
-        if (crmCustomerForm.getId() == null){
+        if (crmCustomerForm.getId() == null) {
             isAdd = true;
         }
-        BaseResult onlyResult = checkOnly(isAdd,crmCustomerForm);
-        if (!onlyResult.isSuccess()){
+        BaseResult onlyResult = checkOnly(isAdd, crmCustomerForm);
+        if (!onlyResult.isSuccess()) {
             return onlyResult;
         }
         if (CollUtil.isNotEmpty(crmCustomerForm.getBusinessTypesList())) {
-            crmCustomerForm.setBusinessTypes(StringUtils.join(crmCustomerForm.getBusinessTypesList(),StrUtil.C_COMMA));
+            crmCustomerForm.setBusinessTypes(StringUtils.join(crmCustomerForm.getBusinessTypesList(), StrUtil.C_COMMA));
         }
-        if (isAdd){
+        if (isAdd) {
             crmCustomerForm.setCustCode(getNextCode(CodeNumber.CRM_CUST_CODE));
             this.save(crmCustomerForm);
-        }else {
+            //创建客户创建业务要求默认数据
+            crmCustomerFeaturesService.saveCrmCustomerFeatures(crmCustomerForm.getId());
+        } else {
             this.updateById(crmCustomerForm);
         }
-        if (isAdd){
+        if (isAdd) {
             return BaseResult.ok(crmCustomerForm.getId());
-        }else {
+        } else {
             return BaseResult.ok(crmCustomerForm.getId());
         }
     }
@@ -123,7 +129,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     public CrmCustomerForm selectById(Long id) {
         CrmCustomerForm crmCustomerForm = new CrmCustomerForm();
         CrmCustomer crmCustomer = this.getById(id);
-        BeanUtils.copyProperties(crmCustomer,crmCustomerForm);
+        BeanUtils.copyProperties(crmCustomer, crmCustomerForm);
         crmCustomerForm.setBusinessTypesList(Arrays.asList(crmCustomer.getBusinessTypes().split(StrUtil.COMMA)));
         return crmCustomerForm;
     }
@@ -156,10 +162,10 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         BaseResult<List<SysDictItem>> custSettlementMethod = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_SETTLEMENT_METHOD);
         crmCodeFrom.setCustIndustry(custSettlementMethod.getResult());
         //客户管理-客户状态
-        BaseResult<List<SysDictItem>> custNormalStatus= sysDictClient.selectItemByDictCode(CrmDictCode.CUST_NORMAL_STATUS);
+        BaseResult<List<SysDictItem>> custNormalStatus = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_NORMAL_STATUS);
         crmCodeFrom.setCustIndustry(custNormalStatus.getResult());
         //客户管理-银行币别
-        BaseResult<List<SysDictItem>> custBankCurrency= sysDictClient.selectItemByDictCode(CrmDictCode.CUST_BANK_CURRENCY);
+        BaseResult<List<SysDictItem>> custBankCurrency = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_BANK_CURRENCY);
         crmCodeFrom.setCustBankCurrency(custBankCurrency.getResult());
         //客户管理-业务类型
         BaseResult<List<SysDictItem>> custBusinessType = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_BUSINESS_TYPE);
@@ -175,8 +181,8 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         List<SysDictItem> returnList = new ArrayList<>();
         CrmCustomer crmCustomer = this.getById(custId);
         List<String> businessList = Arrays.asList(crmCustomer.getBusinessTypes().split(StrUtil.COMMA));
-        sysDictItemList.forEach(x->{
-            if (businessList.contains(x.getItemValue())){
+        sysDictItemList.forEach(x -> {
+            if (businessList.contains(x.getItemValue())) {
                 returnList.add(x);
             }
         });
@@ -186,21 +192,21 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
 
     @Override
     public String getNextCode(String code) {
-        BaseResult baseResult = authClient.getOrderFeign(code,new Date());
+        BaseResult baseResult = authClient.getOrderFeign(code, new Date());
         return baseResult.getMsg();
     }
 
     @Override
     public BaseResult moveCustToRick(List<CrmCustomer> custList) {
         List<CrmCustomerRisk> riskList = new ArrayList<>();
-        for (CrmCustomer crmCustomer : custList){
+        for (CrmCustomer crmCustomer : custList) {
             CrmCustomerRisk crmCustomerRisk = new CrmCustomerRisk();
             crmCustomerRisk.setCustId(crmCustomer.getId());
             crmCustomerRisk.setCustName(crmCustomer.getCustName());
             crmCustomerRisk.setRiskType(CustRiskTypeEnum.BLACKLIST_CUST.getDesc());
             riskList.add(crmCustomerRisk);
         }
-        if (CollUtil.isNotEmpty(riskList)){
+        if (CollUtil.isNotEmpty(riskList)) {
             crmCustomerRiskService.saveBatch(riskList);
         }
         return BaseResult.ok();
@@ -208,7 +214,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
 
     @Override
     public BaseResult changeToSupplier(List<CrmCustomer> custList) {
-        if (CollUtil.isNotEmpty(custList)){
+        if (CollUtil.isNotEmpty(custList)) {
             custList.forEach(crmCustomer -> {
                 crmCustomer.setIsSupplier(true);
                 crmCustomer.setSupplierCode(getNextCode(CodeNumber.CRM_SUPPLIER_CODE));
@@ -220,7 +226,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
 
     @Override
     public BaseResult changeToPublic(List<CrmCustomer> custList) {
-        if (CollUtil.isNotEmpty(custList)){
+        if (CollUtil.isNotEmpty(custList)) {
             custList.forEach(crmCustomer -> {
                 crmCustomer.setIsPublic(true);
                 crmCustomer.setTransferPublicTime(LocalDateTime.now());
@@ -232,27 +238,27 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
 
     /**
      * @description 判断是否唯一
-     * @author  ciro
-     * @date   2022/3/2 9:19
+     * @author ciro
+     * @date 2022/3/2 9:19
      * @param: isAdd
      * @param: crmCustomerForm
      * @return: com.jayud.common.BaseResult
      **/
-    private BaseResult checkOnly(boolean isAdd ,CrmCustomerForm crmCustomerForm){
+    private BaseResult checkOnly(boolean isAdd, CrmCustomerForm crmCustomerForm) {
         CrmCustomer crmCustomer = new CrmCustomer();
         crmCustomer.setUnCreditCode(crmCustomerForm.getUnCreditCode());
         LambdaQueryWrapper<CrmCustomer> creditCodeWrapper = initWrapper(crmCustomer);
         List<CrmCustomer> creditCodeList = this.list(creditCodeWrapper);
-        if (isAdd){
-            if (CollUtil.isNotEmpty(creditCodeList)){
+        if (isAdd) {
+            if (CollUtil.isNotEmpty(creditCodeList)) {
                 return BaseResult.error(SysTips.CREDIT_CODE_EXIT_ERROR);
             }
-        }else {
-            if (CollUtil.isNotEmpty(creditCodeList)){
-                if (creditCodeList.size()>1){
+        } else {
+            if (CollUtil.isNotEmpty(creditCodeList)) {
+                if (creditCodeList.size() > 1) {
                     return BaseResult.error(SysTips.NOT_ONE_DATA_ERROR);
                 }
-                if (!crmCustomerForm.getId().equals(creditCodeList.get(0).getId())){
+                if (!crmCustomerForm.getId().equals(creditCodeList.get(0).getId())) {
                     return BaseResult.error(SysTips.CREDIT_CODE_EXIT_ERROR);
                 }
             }
@@ -261,16 +267,16 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         crmCustomer.setCustName(crmCustomerForm.getCustName());
         LambdaQueryWrapper<CrmCustomer> custNameWrapper = initWrapper(crmCustomer);
         List<CrmCustomer> custNameList = this.list(custNameWrapper);
-        if (isAdd){
-            if (CollUtil.isNotEmpty(custNameList)){
+        if (isAdd) {
+            if (CollUtil.isNotEmpty(custNameList)) {
                 return BaseResult.error(SysTips.CUSTOMER_NAME_EXIT_ERROR);
             }
-        }else {
-            if (CollUtil.isNotEmpty(custNameList)){
-                if (custNameList.size()>1){
+        } else {
+            if (CollUtil.isNotEmpty(custNameList)) {
+                if (custNameList.size() > 1) {
                     return BaseResult.error(SysTips.NOT_ONE_DATA_ERROR);
                 }
-                if (!crmCustomerForm.getId().equals(custNameList.get(0).getId())){
+                if (!crmCustomerForm.getId().equals(custNameList.get(0).getId())) {
                     return BaseResult.error(SysTips.CUSTOMER_NAME_EXIT_ERROR);
                 }
             }
@@ -281,18 +287,18 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
 
     /**
      * @description 初始化查询条件
-     * @author  ciro
-     * @date   2022/3/2 9:23
+     * @author ciro
+     * @date 2022/3/2 9:23
      * @param: crmCustomer
      * @return: com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<com.jayud.crm.model.po.CrmCustomer>
      **/
-    private LambdaQueryWrapper<CrmCustomer> initWrapper(CrmCustomer crmCustomer){
+    private LambdaQueryWrapper<CrmCustomer> initWrapper(CrmCustomer crmCustomer) {
         LambdaQueryWrapper<CrmCustomer> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        if (StrUtil.isNotBlank(crmCustomer.getUnCreditCode())){
-            lambdaQueryWrapper.eq(CrmCustomer::getUnCreditCode,crmCustomer.getUnCreditCode());
+        if (StrUtil.isNotBlank(crmCustomer.getUnCreditCode())) {
+            lambdaQueryWrapper.eq(CrmCustomer::getUnCreditCode, crmCustomer.getUnCreditCode());
         }
-        if (StrUtil.isNotBlank(crmCustomer.getCustName())){
-            lambdaQueryWrapper.eq(CrmCustomer::getCustName,crmCustomer.getCustName());
+        if (StrUtil.isNotBlank(crmCustomer.getCustName())) {
+            lambdaQueryWrapper.eq(CrmCustomer::getCustName, crmCustomer.getCustName());
         }
         return lambdaQueryWrapper;
     }

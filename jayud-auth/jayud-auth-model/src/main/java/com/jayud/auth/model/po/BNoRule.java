@@ -47,6 +47,12 @@ public class BNoRule extends SysBaseEntity {
     @ApiModelProperty(value = "审核表")
     private String checkTable;
 
+    @ApiModelProperty(value = "初始审核步长")
+    private Integer checkStep;
+
+    @ApiModelProperty(value = "初始审核状态")
+    private String checkFlag;
+
     @ApiModelProperty(value = "两次审核能否为同一个人")
     private Boolean check;
 
@@ -59,41 +65,9 @@ public class BNoRule extends SysBaseEntity {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    @ApiModelProperty(value = "创建人ID")
-    private Integer crtBy;
-
-    @ApiModelProperty(value = "创建人名称")
-    private String crtByName;
-
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @ApiModelProperty(value = "创建时间")
-    private LocalDateTime crtByDtm;
-
-    @ApiModelProperty(value = "最后修改人ID")
-    private Integer mdyBy;
-
-    @ApiModelProperty(value = "最后修改人名称")
-    private String mdyByName;
-
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @ApiModelProperty(value = "最后修改时间")
-    private LocalDateTime mdyByDtm;
-
-    @ApiModelProperty(value = "删除标记")
-    private Integer voided;
-
-    @ApiModelProperty(value = "删除人ID")
-    private Integer voidedBy;
-
-    @ApiModelProperty(value = "删除人名称")
-    private String voidedByName;
-
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @ApiModelProperty(value = "删除时间")
-    private LocalDateTime voidedByDtm;
     private Integer isDelete;
 
 

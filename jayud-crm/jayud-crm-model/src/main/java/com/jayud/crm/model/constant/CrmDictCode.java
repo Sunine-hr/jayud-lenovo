@@ -74,7 +74,19 @@ public interface CrmDictCode {
      */
     String CRM_CUSTOMER_FOLLOW_TYPE = "crm_customer_follow_type";
 
+    /**
+     * 合同协议单据code
+     */
+    String CONTRACT_AGREEMENT_NUM_CODE="CA";
 
+    /**
+     * 合同子协议code
+     */
+    String SUB_CONTRACT_AGREEMENT_NUM_CODE="SubCA";
+    /**
+     * 报价单号code
+     */
+    String QUOTATION_NUM_CODE="Quotation";
 
 
 

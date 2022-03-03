@@ -1,23 +1,15 @@
-package com.jayud.crm.model.po;
+package com.jayud.crm.model.vo;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.jayud.common.entity.SysBaseEntity;
+import com.jayud.crm.model.po.CrmFile;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.math.BigDecimal;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import lombok.experimental.Accessors;
+import java.util.List;
 
 /**
  * CrmCustomerAgreement 实体类
@@ -27,9 +19,8 @@ import lombok.experimental.Accessors;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
 @ApiModel(value="基本档案_协议管理(crm_customer_agreement)对象", description="基本档案_协议管理(crm_customer_agreement)")
-public class CrmCustomerAgreement extends SysBaseEntity {
+public class CrmCustomerAgreementVO extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "协议编号")
@@ -61,6 +52,9 @@ public class CrmCustomerAgreement extends SysBaseEntity {
 
     @ApiModelProperty(value = "协议有效期")
     private Integer validityPeriod;
+
+    @ApiModelProperty(value = "协议时间")
+    private List<LocalDate> agreementTime;
 
     @ApiModelProperty(value = "是否顺延")
     private Boolean isExtended;
@@ -119,9 +113,6 @@ public class CrmCustomerAgreement extends SysBaseEntity {
     @ApiModelProperty(value = "报价单id")
     private Long quotationId;
 
-    @ApiModelProperty(value = "关联报价单号")
-    private String quotationNum;
-
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;
 
@@ -134,7 +125,9 @@ public class CrmCustomerAgreement extends SysBaseEntity {
     private Boolean isDeleted;
 
 
+    @ApiModelProperty(value = "上传文件")
+    private List<CrmFile> files;
 
-
-
+    @ApiModelProperty(value = "协议时间")
+    private String effectiveTime;
 }

@@ -20,23 +20,26 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.experimental.Accessors;
 
 /**
- * CrmCustomerAgreement 实体类
+ * CrmCustomerAgreementSub 实体类
  *
  * @author jayud
- * @since 2022-03-02
+ * @since 2022-03-03
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="基本档案_协议管理(crm_customer_agreement)对象", description="基本档案_协议管理(crm_customer_agreement)")
-public class CrmCustomerAgreement extends SysBaseEntity {
+@ApiModel(value="基本档案_协议管理_子协议(crm_customer_agreement_sub)对象", description="基本档案_协议管理_子协议(crm_customer_agreement_sub)")
+public class CrmCustomerAgreementSub extends SysBaseEntity {
 
+
+    @ApiModelProperty(value = "主协议ID")
+    private Long pId;
 
     @ApiModelProperty(value = "协议编号")
     private String agreementCode;
 
     @ApiModelProperty(value = "客户ID")
-    private Long custId;
+    private Integer custId;
 
     @ApiModelProperty(value = "客户名称")
     private String custName;
@@ -80,6 +83,12 @@ public class CrmCustomerAgreement extends SysBaseEntity {
     @ApiModelProperty(value = "销售员")
     private String user;
 
+    @ApiModelProperty(value = "报价单id")
+    private Long quotationId;
+
+    @ApiModelProperty(value = "关联报价单号")
+    private String quotationNum;
+
     @ApiModelProperty(value = "法人主体id")
     private Long departId;
 
@@ -115,12 +124,6 @@ public class CrmCustomerAgreement extends SysBaseEntity {
 
     @ApiModelProperty(value = "流程实例")
     private Integer flowInstanceId;
-
-    @ApiModelProperty(value = "报价单id")
-    private Long quotationId;
-
-    @ApiModelProperty(value = "关联报价单号")
-    private String quotationNum;
 
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;

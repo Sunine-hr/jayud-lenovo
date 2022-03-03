@@ -1,6 +1,7 @@
 package com.jayud.crm.controller;
 
 
+import com.jayud.auth.model.po.SysArea;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.crm.feign.AuthClient;
@@ -44,5 +45,13 @@ public class TestController {
         BaseResult orderFeign = authClient.getOrderFeign(dictCode, new Date());
         System.out.println("时间："+orderFeign);
         return BaseResult.ok(orderFeign);
+    }
+
+
+    @GetMapping(value="/testSave")
+    public BaseResult testSave(@RequestParam(name="level",required=false) Integer level,@RequestParam(name="parentCode",required=false) Long parentCode){
+        BaseResult baseResult = authClient.selectListSysAreaFeign(level,parentCode);
+        System.out.println("省市级联："+baseResult);
+        return BaseResult.ok(baseResult);
     }
 }

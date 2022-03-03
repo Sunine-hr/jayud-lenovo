@@ -1,18 +1,11 @@
 package com.jayud.crm.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jayud.common.CommonResult;
-import com.jayud.common.UserOperator;
+import com.jayud.common.constant.SysTips;
 import com.jayud.common.entity.InitComboxVO;
-import com.jayud.common.enums.ContractQuotationModeEnum;
 import com.jayud.common.enums.StatusEnum;
-import com.jayud.common.enums.TrackingInfoBisTypeEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.*;
 import com.jayud.crm.feign.FileClient;
@@ -74,7 +67,7 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
 
         Object url = this.fileClient.getBaseUrl().getData();
         for (CrmContractQuotationVO record : pageList.getRecords()) {
-            List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(true).setBusinessId(record.getId()).setCode(FileModuleEnum.ONE.getCode())));
+            List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(true).setBusinessId(record.getId()).setCode(FileModuleEnum.CQ.getCode())));
             files.forEach(e -> {
                 e.setUploadFileUrl(url + e.getUploadFileUrl());
             });
@@ -117,7 +110,7 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
 //        contractQuotation.setFile(StringUtils.getFileStr(form.getFiles())).setFileName(StringUtils.getFileNameStr(form.getFiles()));
         if (form.getId() == null) {
             if (this.exitNumber(form.getNumber())) {
-                throw new JayudBizException(400, "该报价编号已存在");
+                throw new JayudBizException(400, SysTips.NUM_ALREADY_EXISTS);
             }
             contractQuotation.setTenantCode(CurrentUserUtil.getUserTenantCode());
         } else {
@@ -127,7 +120,7 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
         this.saveOrUpdate(contractQuotation);
         form.setId(contractQuotation.getId());
         //文件处理
-        this.crmFileService.doFileProcessing(form.getFiles(), form.getId(), FileModuleEnum.ONE.getCode());
+        this.crmFileService.doFileProcessing(form.getFiles(), form.getId(), FileModuleEnum.CQ.getCode());
 
         this.doQuotationProcessing(form);
         return contractQuotation.getId();
@@ -223,7 +216,7 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
         CrmContractQuotation contractQuotation = this.getById(id);
         CrmContractQuotationVO tmp = ConvertUtil.convert(contractQuotation, CrmContractQuotationVO.class);
         Object url = this.fileClient.getBaseUrl().getData();
-        List<CrmFile> files = this.crmFileService.getFiles(contractQuotation.getId(), FileModuleEnum.ONE.getCode());
+        List<CrmFile> files = this.crmFileService.getFiles(contractQuotation.getId(), FileModuleEnum.CQ.getCode());
         files.forEach(e -> {
             e.setUploadFileUrl(url + e.getUploadFileUrl());
         });

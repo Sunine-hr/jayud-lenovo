@@ -6,8 +6,10 @@ import com.jayud.common.entity.InitComboxStrVO;
 import com.jayud.common.entity.InitComboxVO;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.enums.UnitEnum;
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.OmsClient;
 import com.jayud.crm.model.bo.AddCrmContractQuotationForm;
+import com.jayud.crm.model.constant.CrmDictCode;
 import com.jayud.crm.model.vo.CrmContractQuotationVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,10 +48,11 @@ public class CrmContractQuotationController {
 
 
     @Autowired
-    public ICrmContractQuotationService crmContractQuotationService;
+    private ICrmContractQuotationService crmContractQuotationService;
     @Autowired
-    public OmsClient omsClient;
-
+    private OmsClient omsClient;
+    @Autowired
+    private AuthClient authClient;
 
     /**
      * @description 分页查询
@@ -86,39 +89,47 @@ public class CrmContractQuotationController {
         return BaseResult.ok(crmContractQuotationService.selectList(crmContractQuotation));
     }
 
+    /**
+     * @description 获取审核通过合同报价
+     **/
+    @ApiOperation("获取审核通过合同报价")
+    @GetMapping("/getApprovedInfos")
+    public BaseResult<List<CrmContractQuotation>> getApprovedInfos() {
+        return BaseResult.ok(crmContractQuotationService.selectList(new CrmContractQuotation().setIsDeleted(false).setCheckStateFlag("Y")));
+    }
+
 
     @ApiOperation("新增/编辑合同报价")
-    @PostMapping("/saveOrUpdate")
-    public CommonResult saveOrUpdate(@RequestBody AddCrmContractQuotationForm form) {
+    @GetMapping("/saveOrUpdate")
+    public BaseResult saveOrUpdate(@RequestBody AddCrmContractQuotationForm form) {
         form.checkParam();
         if (form.getId() != null) {
             CrmContractQuotation contractQuotation = this.crmContractQuotationService.getById(form.getId());
             if (contractQuotation.getFLevel() != null && contractQuotation.getFStep() != 0
                     && !contractQuotation.getFStep().equals(contractQuotation.getFLevel())) {
-                return CommonResult.error(400, SysTips.UNDER_REVIEW_NOT_OPT);
+                return BaseResult.error(SysTips.UNDER_REVIEW_NOT_OPT);
             }
         }
         form.checkCostDuplicate();
-        return CommonResult.success(this.crmContractQuotationService.saveOrUpdate(form));
+        return BaseResult.ok(this.crmContractQuotationService.saveOrUpdate(form));
     }
 
 
     @ApiOperation("自动生成编号")
     @PostMapping("/autoGenerateNum")
-    public CommonResult<String> autoGenerateNum() {
-        String num = this.crmContractQuotationService.autoGenerateNum();
-        return CommonResult.success(num);
+    public BaseResult autoGenerateNum() {
+        return this.authClient.getOrderFeign(CrmDictCode.CONTRACT_AGREEMENT_NUM_CODE, new Date());
     }
 
     @ApiOperation("获取编辑详情")
     @PostMapping("/getEditInfoById")
-    public CommonResult<CrmContractQuotationVO> getEditInfoById(@RequestBody Map<String, Object> map) {
+    public BaseResult<CrmContractQuotationVO> getEditInfoById(@RequestBody Map<String, Object> map) {
         Long id = MapUtil.getLong(map, "id");
         if (id == null) {
-            return CommonResult.error(ResultEnum.PARAM_ERROR);
+            return BaseResult.error(SysTips.ERROR_MSG);
         }
         CrmContractQuotationVO tmp = this.crmContractQuotationService.getEditInfoById(id);
-        return CommonResult.success(tmp);
+        return BaseResult.ok(tmp);
     }
 
 

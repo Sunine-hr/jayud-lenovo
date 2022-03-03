@@ -2,8 +2,10 @@ package com.jayud.crm.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.crm.model.bo.AddCrmCustomerAgreementForm;
 import com.jayud.crm.model.po.CrmCustomerAgreement;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.crm.model.vo.CrmCustomerAgreementVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -30,10 +32,10 @@ public interface ICrmCustomerAgreementService extends IService<CrmCustomerAgreem
      * @param: req
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomerAgreement>
      **/
-    IPage<CrmCustomerAgreement> selectPage(CrmCustomerAgreement crmCustomerAgreement,
-                                Integer currentPage,
-                                Integer pageSize,
-                                HttpServletRequest req);
+    IPage<CrmCustomerAgreementVO> selectPage(CrmCustomerAgreement crmCustomerAgreement,
+                                             Integer currentPage,
+                                             Integer pageSize,
+                                             HttpServletRequest req);
 
     /**
      * @description 列表查询数据
@@ -78,5 +80,17 @@ public interface ICrmCustomerAgreementService extends IService<CrmCustomerAgreem
      **/
     List<LinkedHashMap<String, Object>> queryCrmCustomerAgreementForExcel(Map<String, Object> paramMap);
 
+    /**
+     * 新增/编辑
+     * @param form
+     */
+    void saveOrUpdate(AddCrmCustomerAgreementForm form);
+
+    /**
+     * 是否协议编号存在
+     * @param agreementCode
+     * @return
+     */
+    boolean exitNumber(String agreementCode);
 
 }

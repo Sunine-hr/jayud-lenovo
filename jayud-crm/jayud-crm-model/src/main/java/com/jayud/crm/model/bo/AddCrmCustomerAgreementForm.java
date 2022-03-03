@@ -1,23 +1,19 @@
-package com.jayud.crm.model.po;
+package com.jayud.crm.model.bo;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.jayud.common.entity.SysBaseEntity;
+import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.Utilities;
+import com.jayud.crm.model.po.CrmFile;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.math.BigDecimal;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import lombok.experimental.Accessors;
+import java.util.List;
 
 /**
  * CrmCustomerAgreement 实体类
@@ -27,9 +23,8 @@ import lombok.experimental.Accessors;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="基本档案_协议管理(crm_customer_agreement)对象", description="基本档案_协议管理(crm_customer_agreement)")
-public class CrmCustomerAgreement extends SysBaseEntity {
+@ApiModel(value = "基本档案_协议管理(crm_customer_agreement)对象", description = "基本档案_协议管理(crm_customer_agreement)")
+public class AddCrmCustomerAgreementForm extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "协议编号")
@@ -58,6 +53,9 @@ public class CrmCustomerAgreement extends SysBaseEntity {
 
     @ApiModelProperty(value = "协议结束日期")
     private LocalDate endDate;
+
+    @ApiModelProperty(value = "协议时间")
+    private List<LocalDate> agreementTime;
 
     @ApiModelProperty(value = "协议有效期")
     private Integer validityPeriod;
@@ -133,8 +131,39 @@ public class CrmCustomerAgreement extends SysBaseEntity {
     @TableLogic
     private Boolean isDeleted;
 
+    @ApiModelProperty(value = "上传文件")
+    private List<CrmFile> files;
 
+    public void setAgreementTime(List<LocalDate> agreementTime) {
+        this.agreementTime = agreementTime;
+        this.beginDate = agreementTime.get(0);
+        this.endDate = agreementTime.get(1);
+    }
 
-
+    /**
+     * 校验参数
+     */
+    public void checkParam() {
+        if (StringUtils.isEmpty(agreementCode)){throw new JayudBizException(400,"协议编号不能为空"); }
+        if (custId==null){throw new JayudBizException(400,"客户ID不能为空"); }
+        if (StringUtils.isEmpty(custName)){throw new JayudBizException(400,"客户名称不能为空"); }
+        if (StringUtils.isEmpty(businessType)){throw new JayudBizException(400,"业务类型不能为空"); }
+        if (StringUtils.isEmpty(businessValue)){throw new JayudBizException(400,"业务类型值不能为空"); }
+        if (StringUtils.isEmpty(treatyName)){throw new JayudBizException(400,"协议名称不能为空"); }
+        if (CollectionUtil.isEmpty(agreementTime)){throw new JayudBizException(400,"协议时间不能为空"); }
+        if (validityPeriod==null){throw new JayudBizException(400,"协议有效期不能为空"); }
+        if (isExtended==null){
+            throw new JayudBizException(400,"是否顺延不能为空");
+        }else {
+            if (isExtended) {
+                if (postponedType==null){throw new JayudBizException(400,"顺延天数不能为空"); }
+            }
+        }
+        if (userId==null){throw new JayudBizException(400,"销售员id不能为空"); }
+        if (StringUtils.isEmpty(user)){throw new JayudBizException(400,"销售员不能为空"); }
+        if (departId==null){throw new JayudBizException(400,"法人主体id不能为空"); }
+        if (StringUtils.isEmpty(departName)){throw new JayudBizException(400,"法人主体名称不能为空"); }
+        if (StringUtils.isEmpty(quotationNum)){throw new JayudBizException(400,"关联报价单号不能为空"); }
+    }
 
 }

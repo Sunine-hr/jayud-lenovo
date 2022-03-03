@@ -1,5 +1,6 @@
 package com.jayud.auth.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -9,11 +10,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.auth.service.IBNoRuleService;
 import com.jayud.auth.model.po.BNoRule;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import io.swagger.annotations.Api;
@@ -23,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 /**
@@ -183,7 +179,12 @@ public class BNoRuleController {
     @PostMapping(value = "/api/getOrderFeign")
     public BaseResult getOrderFeign(@RequestParam(name = "code", required = true) String code, @RequestParam(name = "date", required = true) Date date) {
         String order = bNoRuleService.getOrder(code, date);
-        return BaseResult.ok(order);
+        BNoRule noRulesBySheetCode = bNoRuleService.getNoRulesBySheetCode(code);
+        Integer checkLength = noRulesBySheetCode.getCheckLength();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("order",order);
+        jsonObject.put("fLevel",checkLength);
+        return BaseResult.ok(jsonObject);
     }
 
 

@@ -127,9 +127,9 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         int update;
         String checkFlag = "N"+sStep;
         if(null == bNoRule.getCheckDatabase()){
-            update  = bPublicCheckMapper.updateData(checkForm.getRecordId(),checkTable,newStep,checkFlag,systemUserByName.getId(),LocalDateTime.now(),systemUserByName.getName());
+            update = bPublicCheckMapper.updateData(checkForm.getRecordId(),checkTable,newStep,checkFlag,systemUserByName.getId(),LocalDateTime.now(),systemUserByName.getName());
         }else{
-            update   = bPublicCheckMapper.updateCheckData(checkForm.getRecordId(),checkTable,bNoRule.getCheckDatabase(),newStep,checkFlag,systemUserByName.getId(),LocalDateTime.now(),systemUserByName.getName());
+            update = bPublicCheckMapper.updateCheckData(checkForm.getRecordId(),checkTable,bNoRule.getCheckDatabase(),newStep,checkFlag,systemUserByName.getId(),LocalDateTime.now(),systemUserByName.getName());
         }
         if(update != 0){
             return BaseResult.error(444,"审核失败，修改订单审核状态失败");

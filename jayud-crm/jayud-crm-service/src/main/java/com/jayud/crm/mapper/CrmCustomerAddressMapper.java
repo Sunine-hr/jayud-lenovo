@@ -1,51 +1,51 @@
-package com.jayud.auth.mapper;
+package com.jayud.crm.mapper;
 
-import com.jayud.auth.model.po.SysRoleActionCheck;
+import com.jayud.crm.model.po.CrmCustomerAddress;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
-import com.jayud.auth.model.vo.SysRoleActionCheckVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * 角色审核级别权限 Mapper 接口
+ * 基本档案_客户_地址 Mapper 接口
  *
  * @author jayud
- * @since 2022-03-01
+ * @since 2022-03-03
  */
 @Mapper
-public interface SysRoleActionCheckMapper extends BaseMapper<SysRoleActionCheck> {
+public interface CrmCustomerAddressMapper extends BaseMapper<CrmCustomerAddress> {
 
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-03-01
+     * @date   2022-03-03
      * @param: page
-     * @param: sysRoleActionCheck
-     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysRoleActionCheck>
+     * @param: crmCustomerAddress
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomerAddress>
      **/
-    IPage<SysRoleActionCheckVO> pageList(@Param("page") Page<SysRoleActionCheckVO> page, @Param("sysRoleActionCheck") SysRoleActionCheck sysRoleActionCheck);
+    IPage<CrmCustomerAddress> pageList(@Param("page") Page<CrmCustomerAddress> page, @Param("crmCustomerAddress") CrmCustomerAddress crmCustomerAddress);
 
     /**
      * @description 列表查询数据
      * @author  jayud
-     * @date   2022-03-01
-     * @param: sysRoleActionCheck
-     * @return: java.util.List<com.jayud.auth.model.po.SysRoleActionCheck>
+     * @date   2022-03-03
+     * @param: crmCustomerAddress
+     * @return: java.util.List<com.jayud.crm.model.po.CrmCustomerAddress>
      **/
-    List<SysRoleActionCheck> list(@Param("sysRoleActionCheck") SysRoleActionCheck sysRoleActionCheck);
+    List<CrmCustomerAddress> list(@Param("crmCustomerAddress") CrmCustomerAddress crmCustomerAddress);
 
 
     /**
      * @description 根据id物理删除
      * @author  jayud
-     * @date   2022-03-01
+     * @date   2022-03-03
      * @param: id
      * @return: int
      **/
@@ -54,7 +54,7 @@ public interface SysRoleActionCheckMapper extends BaseMapper<SysRoleActionCheck>
     /**
      * @description 根据id逻辑删除
      * @author  jayud
-     * @date   2022-03-01
+     * @date   2022-03-03
      * @param: id
      * @param: username
      * @return: int
@@ -65,9 +65,9 @@ public interface SysRoleActionCheckMapper extends BaseMapper<SysRoleActionCheck>
     /**
      * @description 查询导出
      * @author  jayud
-     * @date   2022-03-01
+     * @date   2022-03-03
      * @param: paramMap
      * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
      **/
-    List<LinkedHashMap<String, Object>> querySysRoleActionCheckForExcel(Map<String, Object> paramMap);
+    List<LinkedHashMap<String, Object>> queryCrmCustomerAddressForExcel(Map<String, Object> paramMap);
 }

@@ -8,14 +8,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
-import com.jayud.crm.model.bo.CrmCustomerRelationsForm;
+import com.jayud.crm.model.bo.CrmCustomerAddressForm;
 import com.jayud.crm.model.po.CrmCreditVisit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
-import com.jayud.crm.model.po.CrmCustomerRelations;
-import com.jayud.crm.mapper.CrmCustomerRelationsMapper;
-import com.jayud.crm.service.ICrmCustomerRelationsService;
+import com.jayud.crm.model.po.CrmCustomerAddress;
+import com.jayud.crm.mapper.CrmCustomerAddressMapper;
+import com.jayud.crm.service.ICrmCustomerAddressService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,51 +28,47 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 基本档案_客户_联系人(crm_customer_relations) 服务实现类
+ * 基本档案_客户_地址 服务实现类
  *
  * @author jayud
- * @since 2022-03-02
+ * @since 2022-03-03
  */
 @Slf4j
 @Service
-public class CrmCustomerRelationsServiceImpl extends ServiceImpl<CrmCustomerRelationsMapper, CrmCustomerRelations> implements ICrmCustomerRelationsService {
+public class CrmCustomerAddressServiceImpl extends ServiceImpl<CrmCustomerAddressMapper, CrmCustomerAddress> implements ICrmCustomerAddressService {
 
 
     @Autowired
-    private CrmCustomerRelationsMapper crmCustomerRelationsMapper;
+    private CrmCustomerAddressMapper crmCustomerAddressMapper;
 
     @Override
-    public IPage<CrmCustomerRelations> selectPage(CrmCustomerRelations crmCustomerRelations,
+    public IPage<CrmCustomerAddress> selectPage(CrmCustomerAddress crmCustomerAddress,
                                         Integer currentPage,
                                         Integer pageSize,
                                         HttpServletRequest req){
 
-        Page<CrmCustomerRelations> page=new Page<CrmCustomerRelations>(currentPage,pageSize);
-        IPage<CrmCustomerRelations> pageList= crmCustomerRelationsMapper.pageList(page, crmCustomerRelations);
+        Page<CrmCustomerAddress> page=new Page<CrmCustomerAddress>(currentPage,pageSize);
+        IPage<CrmCustomerAddress> pageList= crmCustomerAddressMapper.pageList(page, crmCustomerAddress);
         return pageList;
     }
 
     @Override
-    public List<CrmCustomerRelations> selectList(CrmCustomerRelations crmCustomerRelations){
-        return crmCustomerRelationsMapper.list(crmCustomerRelations);
+    public List<CrmCustomerAddress> selectList(CrmCustomerAddress crmCustomerAddress){
+        return crmCustomerAddressMapper.list(crmCustomerAddress);
     }
 
     @Override
-    public BaseResult saveOrUpdateCrmCustomerRelations(CrmCustomerRelationsForm crmCustomerRelationsForm) {
+    public BaseResult saveOrUpdateCrmCustomerAddress(CrmCustomerAddressForm crmCustomerAddressForm) {
         Boolean result = null;
-        CrmCustomerRelations convert = ConvertUtil.convert(crmCustomerRelationsForm, CrmCustomerRelations.class);
-
+        CrmCustomerAddress convert = ConvertUtil.convert(crmCustomerAddressForm, CrmCustomerAddress.class);
         if(convert.getId()!=null){
             convert.setUpdateBy(CurrentUserUtil.getUsername());
             convert.setUpdateTime(new Date());
             result = this.updateById(convert);
-            Long id = convert.getId();
         }else {
             convert.setUpdateBy(CurrentUserUtil.getUsername());
             convert.setUpdateTime(new Date());
-
             result = this.saveOrUpdate(convert);
-            Long id = convert.getId();
         }
         if (result) {
             log.warn("新增或修改成功");
@@ -85,20 +81,20 @@ public class CrmCustomerRelationsServiceImpl extends ServiceImpl<CrmCustomerRela
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void phyDelById(Long id){
-        crmCustomerRelationsMapper.phyDelById(id);
+        crmCustomerAddressMapper.phyDelById(id);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(Long id){
-        crmCustomerRelationsMapper.logicDel(id,CurrentUserUtil.getUsername());
+        crmCustomerAddressMapper.logicDel(id,CurrentUserUtil.getUsername());
     }
 
 
     @Override
-    public List<LinkedHashMap<String, Object>> queryCrmCustomerRelationsForExcel(Map<String, Object> paramMap) {
-        return this.baseMapper.queryCrmCustomerRelationsForExcel(paramMap);
+    public List<LinkedHashMap<String, Object>> queryCrmCustomerAddressForExcel(Map<String, Object> paramMap) {
+        return this.baseMapper.queryCrmCustomerAddressForExcel(paramMap);
     }
 
 }

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.crm.mapper.CrmCustomerAddressMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCustomerAddress">
+        <id column="id" property="id" />
+        <result column="cust_id" property="custId" />
+        <result column="address_type" property="addressType" />
+        <result column="country" property="country" />
+        <result column="province" property="province" />
+        <result column="city" property="city" />
+        <result column="county" property="county" />
+        <result column="address" property="address" />
+        <result column="region" property="region" />
+        <result column="c_name" property="cName" />
+        <result column="tel" property="tel" />
+        <result column="mobile" property="mobile" />
+        <result column="email" property="email" />
+        <result column="rece_name" property="receName" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, cust_id, address_type, country, province, city, county, address, region, c_name, tel, mobile, email, rece_name, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">crm_customer_address </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="crmCustomerAddress.custId != null ">
+                AND cust_id = ${crmCustomerAddress.custId}
+            </if>
+
+            <if test="crmCustomerAddress.addressType != null and crmCustomerAddress.addressType != ''">
+                AND address_type LIKE CONCAT('%',#{crmCustomerAddress.addressType},'%')
+            </if>
+
+            <if test="crmCustomerAddress.country != null and crmCustomerAddress.country != ''">
+                AND country LIKE CONCAT('%',#{crmCustomerAddress.country},'%')
+            </if>
+
+            <if test="crmCustomerAddress.province != null and crmCustomerAddress.province != ''">
+                AND province LIKE CONCAT('%',#{crmCustomerAddress.province},'%')
+            </if>
+
+            <if test="crmCustomerAddress.city != null and crmCustomerAddress.city != ''">
+                AND city LIKE CONCAT('%',#{crmCustomerAddress.city},'%')
+            </if>
+
+            <if test="crmCustomerAddress.county != null and crmCustomerAddress.county != ''">
+                AND county LIKE CONCAT('%',#{crmCustomerAddress.county},'%')
+            </if>
+
+            <if test="crmCustomerAddress.address != null and crmCustomerAddress.address != ''">
+                AND address LIKE CONCAT('%',#{crmCustomerAddress.address},'%')
+            </if>
+
+            <if test="crmCustomerAddress.region != null and crmCustomerAddress.region != ''">
+                AND region LIKE CONCAT('%',#{crmCustomerAddress.region},'%')
+            </if>
+
+            <if test="crmCustomerAddress.cName != null and crmCustomerAddress.cName != ''">
+                AND c_name LIKE CONCAT('%',#{crmCustomerAddress.cName},'%')
+            </if>
+
+            <if test="crmCustomerAddress.tel != null and crmCustomerAddress.tel != ''">
+                AND tel LIKE CONCAT('%',#{crmCustomerAddress.tel},'%')
+            </if>
+
+            <if test="crmCustomerAddress.mobile != null and crmCustomerAddress.mobile != ''">
+                AND mobile LIKE CONCAT('%',#{crmCustomerAddress.mobile},'%')
+            </if>
+
+            <if test="crmCustomerAddress.email != null and crmCustomerAddress.email != ''">
+                AND email LIKE CONCAT('%',#{crmCustomerAddress.email},'%')
+            </if>
+
+            <if test="crmCustomerAddress.receName != null and crmCustomerAddress.receName != ''">
+                AND rece_name LIKE CONCAT('%',#{crmCustomerAddress.receName},'%')
+            </if>
+
+            <if test="crmCustomerAddress.tenantCode != null and crmCustomerAddress.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{crmCustomerAddress.tenantCode},'%')
+            </if>
+
+            <if test="crmCustomerAddress.remark != null and crmCustomerAddress.remark != ''">
+                AND remark LIKE CONCAT('%',#{crmCustomerAddress.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerAddress">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerAddress">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  crm_customer_address WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE crm_customer_address SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCrmCustomerAddressForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            cust_id 'custId',
+            address_type 'addressType',
+            country 'country',
+            province 'province',
+            city 'city',
+            county 'county',
+            address 'address',
+            region 'region',
+            c_name 'cName',
+            tel 'tel',
+            mobile 'mobile',
+            email 'email',
+            rece_name 'receName',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM crm_customer_address
+        WHERE is_deleted = 0
+                    <if test="custId != null ">
+                        AND cust_id = #{custId}
+                    </if>
+                    <if test="addressType != null and addressType != ''">
+                        AND address_type LIKE CONCAT('%',#{addressType}, '%')
+                    </if>
+                    <if test="country != null and country != ''">
+                        AND country LIKE CONCAT('%',#{country}, '%')
+                    </if>
+                    <if test="province != null and province != ''">
+                        AND province LIKE CONCAT('%',#{province}, '%')
+                    </if>
+                    <if test="city != null and city != ''">
+                        AND city LIKE CONCAT('%',#{city}, '%')
+                    </if>
+                    <if test="county != null and county != ''">
+                        AND county LIKE CONCAT('%',#{county}, '%')
+                    </if>
+                    <if test="address != null and address != ''">
+                        AND address LIKE CONCAT('%',#{address}, '%')
+                    </if>
+                    <if test="region != null and region != ''">
+                        AND region LIKE CONCAT('%',#{region}, '%')
+                    </if>
+                    <if test="cName != null and cName != ''">
+                        AND c_name LIKE CONCAT('%',#{cName}, '%')
+                    </if>
+                    <if test="tel != null and tel != ''">
+                        AND tel LIKE CONCAT('%',#{tel}, '%')
+                    </if>
+                    <if test="mobile != null and mobile != ''">
+                        AND mobile LIKE CONCAT('%',#{mobile}, '%')
+                    </if>
+                    <if test="email != null and email != ''">
+                        AND email LIKE CONCAT('%',#{email}, '%')
+                    </if>
+                    <if test="receName != null and receName != ''">
+                        AND rece_name LIKE CONCAT('%',#{receName}, '%')
+                    </if>
+                    <if test="tenantCode != null and tenantCode != ''">
+                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

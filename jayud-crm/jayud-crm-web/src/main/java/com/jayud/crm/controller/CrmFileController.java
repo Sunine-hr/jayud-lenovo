@@ -1,5 +1,8 @@
 package com.jayud.crm.controller;
 
+import com.jayud.auth.model.po.SysDictItem;
+import com.jayud.crm.feign.SysDictClient;
+import com.jayud.crm.model.constant.CrmDictCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,6 +47,8 @@ public class CrmFileController {
     public ICrmFileService crmFileService;
 
 
+    @Autowired
+    private SysDictClient sysDictClient;
     /**
      * @description 分页查询
      * @author  jayud
@@ -192,6 +197,20 @@ public class CrmFileController {
             e.printStackTrace();
             log.warn(e.toString());
         }
+    }
+
+    /**
+     * @description 获取客户信息字典项目
+     * @author  ciro
+     * @date   2022/3/2 11:07
+     * @param:
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.form.CrmCodeFrom>
+     **/
+    @ApiOperation("获取客户管理附件类型字典下拉")
+    @GetMapping(path = "/getCrmFileCode")
+    public BaseResult  getCrmCode(){
+        BaseResult<List<SysDictItem>> custNormalStatus= sysDictClient.selectItemByDictCode(CrmDictCode.CRM_FILE_TYPE);
+        return BaseResult.ok(custNormalStatus.getResult());
     }
 
 

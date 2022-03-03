@@ -2,6 +2,8 @@ package com.jayud.crm.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.BaseResult;
+import com.jayud.crm.model.bo.CrmCustomerTaxForm;
 import com.jayud.crm.model.po.CrmCustomerTax;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -45,7 +47,12 @@ public interface ICrmCustomerTaxService extends IService<CrmCustomerTax> {
      **/
     List<CrmCustomerTax> selectList(CrmCustomerTax crmCustomerTax);
 
-
+    /**
+     * 创建编辑
+     * @param crmCustomerTaxForm
+     * @return
+     */
+    BaseResult saveOrUpdateCrmCustomerTax(CrmCustomerTaxForm crmCustomerTaxForm);
 
     /**
      * @description 物理删除

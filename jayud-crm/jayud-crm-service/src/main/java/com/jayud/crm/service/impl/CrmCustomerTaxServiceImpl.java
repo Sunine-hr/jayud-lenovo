@@ -5,6 +5,11 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.BaseResult;
+import com.jayud.common.constant.SysTips;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.crm.model.bo.CrmCustomerTaxForm;
+import com.jayud.crm.model.po.CrmCustomerRelations;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -50,6 +55,27 @@ public class CrmCustomerTaxServiceImpl extends ServiceImpl<CrmCustomerTaxMapper,
     @Override
     public List<CrmCustomerTax> selectList(CrmCustomerTax crmCustomerTax){
         return crmCustomerTaxMapper.list(crmCustomerTax);
+    }
+
+    @Override
+    public BaseResult saveOrUpdateCrmCustomerTax(CrmCustomerTaxForm crmCustomerTaxForm) {
+
+        Boolean result = null;
+        CrmCustomerTax convert = ConvertUtil.convert(crmCustomerTaxForm, CrmCustomerTax.class);
+
+        if(convert.getId()!=null){
+            convert.setUpdateBy(CurrentUserUtil.getUsername());
+            convert.setUpdateTime(new Date());
+            result = this.updateById(convert);
+            Long id = convert.getId();
+            return BaseResult.ok(SysTips.EDIT_SUCCESS);
+        }else {
+            convert.setCreateBy(CurrentUserUtil.getUsername());
+            convert.setCreateTime(new Date());
+            result= this.saveOrUpdate(convert);
+            Long id = convert.getId();
+            return BaseResult.ok(SysTips.ADD_SUCCESS);
+        }
     }
 
 

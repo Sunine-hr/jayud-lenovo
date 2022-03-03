@@ -1,5 +1,6 @@
 package com.jayud.crm.controller;
 
+import com.jayud.crm.model.bo.CrmCustomerTaxForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -89,8 +90,8 @@ public class CrmCustomerTaxController {
     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody CrmCustomerTax crmCustomerTax ){
-        crmCustomerTaxService.save(crmCustomerTax);
+    public BaseResult add(@Valid @RequestBody CrmCustomerTaxForm crmCustomerTaxForm ){
+        crmCustomerTaxService.saveOrUpdateCrmCustomerTax(crmCustomerTaxForm);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
 

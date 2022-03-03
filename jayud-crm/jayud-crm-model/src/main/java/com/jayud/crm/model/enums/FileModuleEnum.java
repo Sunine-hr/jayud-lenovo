@@ -10,7 +10,10 @@ import java.util.Objects;
 public enum FileModuleEnum {
 
     ONE("ContractQuotation", "合同报价"),
-    ;
+    CCFC("CrmCustomerFollowCode", "客户管理_跟进记录_业务标识");
+
+
+
     private String code;
     private String desc;
 

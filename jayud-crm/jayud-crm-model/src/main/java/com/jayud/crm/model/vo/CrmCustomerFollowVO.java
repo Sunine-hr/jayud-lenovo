@@ -2,7 +2,6 @@ package com.jayud.crm.model.vo;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.jayud.common.entity.SysBaseEntity;
-import com.jayud.crm.model.bo.QueryCrmFile;
 import com.jayud.crm.model.po.CrmFile;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

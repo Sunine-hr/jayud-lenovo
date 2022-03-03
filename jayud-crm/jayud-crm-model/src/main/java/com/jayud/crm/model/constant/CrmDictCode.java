@@ -76,10 +76,6 @@ public interface CrmDictCode {
 
 
 
-    /**
-     *  客户管理-跟进记录_业务标识 code
-     */
-    String crmCustomerFollowCode = "crmCustomerFollowCode";
 
 
 

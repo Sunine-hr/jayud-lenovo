@@ -2,6 +2,7 @@ package com.jayud.crm.model.bo;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.jayud.common.entity.SysBaseEntity;
+import com.jayud.crm.model.po.CrmFile;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -59,7 +60,7 @@ public class CrmCustomerFollowForm extends SysBaseEntity {
     private Boolean isDeleted;
 
     @ApiModelProperty(value = "文件上传表")
-    private List<QueryCrmFile> queryCrmFiles;
+    private List<CrmFile> crmFiles;
 
 
 

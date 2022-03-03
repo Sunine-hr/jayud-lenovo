@@ -23,8 +23,8 @@ public interface ISysDepartService extends IService<SysDepart> {
 
     /**
      * @description 分页查询
-     * @author  jayud
-     * @date   2022-02-22
+     * @author jayud
+     * @date 2022-02-22
      * @param: sysDepart
      * @param: currentPage
      * @param: pageSize
@@ -38,8 +38,8 @@ public interface ISysDepartService extends IService<SysDepart> {
 
     /**
      * @description 列表查询数据
-     * @author  jayud
-     * @date   2022-02-22
+     * @author jayud
+     * @date 2022-02-22
      * @param: sysDepart
      * @param: req
      * @return: java.util.List<com.jayud.auth.model.po.SysDepart>
@@ -47,11 +47,10 @@ public interface ISysDepartService extends IService<SysDepart> {
     List<SysDepart> selectList(SysDepart sysDepart);
 
 
-
     /**
      * @description 物理删除
-     * @author  jayud
-     * @date   2022-02-22
+     * @author jayud
+     * @date 2022-02-22
      * @param: id
      * @return: void
      **/
@@ -59,17 +58,18 @@ public interface ISysDepartService extends IService<SysDepart> {
 
 
     /**
-    * @description 逻辑删除
-    * @author  jayud
-    * @date   2022-02-22
-    * @param: id
-    * @return: com.jyd.component.commons.result.Result
-    **/
+     * @description 逻辑删除
+     * @author jayud
+     * @date 2022-02-22
+     * @param: id
+     * @return: com.jyd.component.commons.result.Result
+     **/
     void logicDel(Long id);
 
 
     /**
      * 根据查询条件，查询部门树
+     *
      * @param form
      * @return
      */
@@ -77,12 +77,14 @@ public interface ISysDepartService extends IService<SysDepart> {
 
     /**
      * 保存组织or部门
+     *
      * @param depart
      */
     void saveSysDepart(SysDepart depart);
 
     /**
      * 获取上级组织
+     *
      * @param form
      * @return
      */
@@ -90,6 +92,7 @@ public interface ISysDepartService extends IService<SysDepart> {
 
     /**
      * 查询组织
+     *
      * @param id
      * @return
      */
@@ -97,9 +100,11 @@ public interface ISysDepartService extends IService<SysDepart> {
 
     /**
      * 根据查询条件，查询部门树 并且查询员工信息
+     *
      * @param form
      * @return
      */
     List<SysDepart> selectDeptTreeStaff(QuerySysDeptForm form);
 
+    List<SysDepart> getByOrgCategory(Integer orgCategory);
 }

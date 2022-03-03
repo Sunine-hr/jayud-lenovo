@@ -2,13 +2,12 @@ package com.jayud.auth.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.mapper.SysUserRoleMapper;
 import com.jayud.auth.model.bo.SysUserForm;
-import com.jayud.auth.model.dto.SysUserDto;
+import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysUserRole;
 import com.jayud.auth.model.vo.SysUserVO;
@@ -253,8 +252,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public List<SysUserDto> selectUserByRoleCode(String roleCode) {
-        List<SysUserDto> userDtoList = new ArrayList<>();
+    public List<SysUserDTO> selectUserByRoleCode(String roleCode) {
+        List<SysUserDTO> userDtoList = new ArrayList<>();
         String tenantCode = CurrentUserUtil.getUserTenantCode();
         List<SysUser> sysUserList = sysUserMapper.selectUserByRoleCode(roleCode,tenantCode);
         SysDepart sysDepart = new SysDepart();
@@ -267,22 +266,24 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (CollUtil.isNotEmpty(sysUserList)){
             Map<String, String> finalDepartMap = departMap;
             sysUserList.forEach(sysUser -> {
-                SysUserDto userDto = new SysUserDto();
+                SysUserDTO userDto = new SysUserDTO();
                 BeanUtils.copyProperties(sysUser,userDto);
-                String[] departIds = sysUser.getDepartmentList().split(StrUtil.COMMA);
-                List<String> departNameList = new ArrayList<>();
-                String[] departNames = new String[]{};
-                for (String id: departIds){
-                    if (finalDepartMap.containsKey(id)){
-                        departNameList.add(finalDepartMap.get(id));
-                    }else {
-                        departNameList.add(id);
+                if (StringUtils.isNotBlank(sysUser.getDepartmentList())) {
+                    String[] departIds = sysUser.getDepartmentList().split(StrUtil.COMMA);
+                    List<String> departNameList = new ArrayList<>();
+                    for (String id : departIds) {
+                        if (finalDepartMap.containsKey(id)) {
+                            departNameList.add(finalDepartMap.get(id));
+                        } else {
+                            departNameList.add(id);
+                        }
                     }
+                    userDto.setDepartNames(StringUtils.join(departNameList.toArray(), "-"));
                 }
-//                userDto.setDepartNames(Strin);
+                userDtoList.add(userDto);
             });
         }
-        return null;
+        return userDtoList;
     }
 
     public static void main(String[] args) {

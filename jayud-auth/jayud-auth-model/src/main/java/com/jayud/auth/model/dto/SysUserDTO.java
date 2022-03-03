@@ -9,7 +9,7 @@ import lombok.Data;
  * @description:
  */
 @Data
-public class SysUserDto extends SysUser {
+public class SysUserDTO extends SysUser {
 
     /**
      * 部门中文集合

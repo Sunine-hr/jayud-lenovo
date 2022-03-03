@@ -157,7 +157,6 @@ public class CrmCustomer extends SysBaseEntity {
     @ApiModelProperty(value = "第一单日期")
     private LocalDateTime firstOrderDate;
 
-    //--
     @ApiModelProperty(value = "业务ID")
     private Integer fsalesId;
 

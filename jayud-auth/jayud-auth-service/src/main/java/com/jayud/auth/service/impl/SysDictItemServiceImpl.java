@@ -14,6 +14,7 @@ import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.auth.mapper.SysDictItemMapper;
 import com.jayud.auth.service.ISysDictItemService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,6 +70,7 @@ public class SysDictItemServiceImpl extends ServiceImpl<SysDictItemMapper, SysDi
     }
 
     @Override
+    @Cacheable(value = "sys:cache:dict", key = "#dictCode")
     public List<SysDictItem> selectItemByDictCode(String dictCode) {
         return sysDictItemMapper.selectItemByDictCode(dictCode);
     }

@@ -221,5 +221,7 @@ public interface SysTips {
    String CURRENT_STATE_NOT_OPT= "当前状态无法进行操作";
 
     String UNDER_REVIEW_NOT_OPT= "审核中无法操作";
+
+    String NOT_EDIT_CHARGER_ERROR= "无法更新负责人!";
 }
 

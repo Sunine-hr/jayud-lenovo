@@ -2,12 +2,11 @@ package com.jayud.auth.controller;
 
 import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.bo.SysUserForm;
+import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.utils.CurrentUserUtil;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -20,13 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 /**
  * 后台用户表 控制类
@@ -227,6 +224,12 @@ public class SysUserController {
     public BaseResult updateUserPassword(@RequestBody SysUserForm sysUserForm){
          sysUserService.findUpdateUserPassword(sysUserForm);
         return BaseResult.ok();
+    }
+
+    @ApiOperation("根据角色编码查询用户")
+    @GetMapping("/selectUserByRoleCode")
+    public BaseResult<List<SysUserDTO>> selectUserByRoleCode(String roleCode) {
+        return BaseResult.ok(sysUserService.selectUserByRoleCode(roleCode));
     }
 
 

@@ -1,15 +1,13 @@
 package com.jayud.crm.feign;
 
 
+import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.common.BaseResult;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 
@@ -34,4 +32,16 @@ public interface AuthClient {
     //自定义单号
     @PostMapping(value = "/bNoRule/api/getOrderFeign")
     public BaseResult getOrderFeign(@RequestParam(name = "code") String code, @RequestParam(name = "date") Date date);
+
+
+
+    /**
+     * @description 根据角色编码查询用户
+     * @author  ciro
+     * @date   2022/3/3 10:16
+     * @param: roleCode 角色编码
+     * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.auth.model.dto.SysUserDTO>>
+     **/
+    @PostMapping(value = "/sysUser/selectUserByRoleCode")
+    public BaseResult<List<SysUserDTO>>  selectUserByRoleCode(@RequestParam(name = "roleCode") String roleCode);
 }

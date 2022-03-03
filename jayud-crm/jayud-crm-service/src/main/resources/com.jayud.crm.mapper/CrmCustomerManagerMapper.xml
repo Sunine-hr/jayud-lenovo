@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.crm.mapper.CrmCustomerManagerMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCustomerManager">
+        <id column="id" property="id" />
+        <result column="cust_id" property="custId" />
+        <result column="manage_user_id" property="manageUserId" />
+        <result column="manage_roles" property="manageRoles" />
+        <result column="manager_roles_name" property="managerRolesName" />
+        <result column="generate_date" property="generateDate" />
+        <result column="manager_business_code" property="managerBusinessCode" />
+        <result column="manager_business_name" property="managerBusinessName" />
+        <result column="is_charger" property="isCharger" />
+        <result column="is_sale" property="isSale" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, cust_id, manage_user_id, manage_roles, manager_roles_name, generate_date, manager_business_code, manager_business_name, is_charger, is_sale, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">crm_customer_manager </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="crmCustomerManager.custId != null ">
+                AND cust_id = ${crmCustomerManager.custId}
+            </if>
+
+            <if test="crmCustomerManager.manageUserId != null ">
+                AND manage_user_id = ${crmCustomerManager.manageUserId}
+            </if>
+
+            <if test="crmCustomerManager.manageRoles != null and crmCustomerManager.manageRoles != ''">
+                AND manage_roles LIKE CONCAT('%',#{crmCustomerManager.manageRoles},'%')
+            </if>
+
+            <if test="crmCustomerManager.managerRolesName != null and crmCustomerManager.managerRolesName != ''">
+                AND manager_roles_name LIKE CONCAT('%',#{crmCustomerManager.managerRolesName},'%')
+            </if>
+
+            <if test="crmCustomerManager.generateDate != null ">
+                AND generate_date = ${crmCustomerManager.generateDate}
+            </if>
+
+            <if test="crmCustomerManager.managerBusinessCode != null and crmCustomerManager.managerBusinessCode != ''">
+                AND manager_business_code LIKE CONCAT('%',#{crmCustomerManager.managerBusinessCode},'%')
+            </if>
+
+            <if test="crmCustomerManager.managerBusinessName != null and crmCustomerManager.managerBusinessName != ''">
+                AND manager_business_name LIKE CONCAT('%',#{crmCustomerManager.managerBusinessName},'%')
+            </if>
+
+            <if test="crmCustomerManager.isCharger != null ">
+                AND is_charger = ${crmCustomerManager.isCharger}
+            </if>
+
+            <if test="crmCustomerManager.isSale != null ">
+                AND is_sale = ${crmCustomerManager.isSale}
+            </if>
+
+            <if test="crmCustomerManager.tenantCode != null and crmCustomerManager.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{crmCustomerManager.tenantCode},'%')
+            </if>
+
+            <if test="crmCustomerManager.remark != null and crmCustomerManager.remark != ''">
+                AND remark LIKE CONCAT('%',#{crmCustomerManager.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerManager">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerManager">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  crm_customer_manager WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE crm_customer_manager SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCrmCustomerManagerForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            cust_id 'custId',
+            manage_user_id 'manageUserId',
+            manage_roles 'manageRoles',
+            manager_roles_name 'managerRolesName',
+            generate_date 'generateDate',
+            manager_business_code 'managerBusinessCode',
+            manager_business_name 'managerBusinessName',
+            is_charger 'isCharger',
+            is_sale 'isSale',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM crm_customer_manager
+        WHERE is_deleted = 0
+                    <if test="custId != null ">
+                        AND cust_id = #{custId}
+                    </if>
+                    <if test="manageUserId != null ">
+                        AND manage_user_id = #{manageUserId}
+                    </if>
+                    <if test="manageRoles != null and manageRoles != ''">
+                        AND manage_roles LIKE CONCAT('%',#{manageRoles}, '%')
+                    </if>
+                    <if test="managerRolesName != null and managerRolesName != ''">
+                        AND manager_roles_name LIKE CONCAT('%',#{managerRolesName}, '%')
+                    </if>
+                    <if test="generateDate != null ">
+                        AND generate_date = #{generateDate}
+                    </if>
+                    <if test="managerBusinessCode != null and managerBusinessCode != ''">
+                        AND manager_business_code LIKE CONCAT('%',#{managerBusinessCode}, '%')
+                    </if>
+                    <if test="managerBusinessName != null and managerBusinessName != ''">
+                        AND manager_business_name LIKE CONCAT('%',#{managerBusinessName}, '%')
+                    </if>
+                    <if test="isCharger != null ">
+                        AND is_charger = #{isCharger}
+                    </if>
+                    <if test="isSale != null ">
+                        AND is_sale = #{isSale}
+                    </if>
+                    <if test="tenantCode != null and tenantCode != ''">
+                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

@@ -19,7 +19,7 @@ import java.util.List;
 public class CrmCustomerForm  extends CrmCustomer{
 
     @ApiModelProperty(value = "联系人id")
-    private String custRelationId;
+    private Long custRelationId;
 
     @ApiModelProperty(value = "联系人名称")
     private String custRelationUsername;
@@ -32,4 +32,16 @@ public class CrmCustomerForm  extends CrmCustomer{
 
     @ApiModelProperty(value = "业务类型集合")
     private List<String> businessTypesList;
+
+    @ApiModelProperty(value = "对接人id")
+    private Long managerUserId;
+
+    @ApiModelProperty(value = "对接人角色名称")
+    private String managerUserRoleName;
+
+    @ApiModelProperty(value = "对接人角色编码")
+    private String managerUserRoleCode;
+
+    @ApiModelProperty(value = "业务类型名称")
+    private String businessTypesName;
 }

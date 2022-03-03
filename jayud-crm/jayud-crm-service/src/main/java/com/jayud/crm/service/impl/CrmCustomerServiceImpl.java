@@ -10,7 +10,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
+import com.jayud.crm.model.constant.CodeNumber;
 import com.jayud.crm.model.constant.CrmDictCode;
 import com.jayud.crm.model.form.CrmCodeFrom;
 import com.jayud.crm.model.form.CrmCustomerForm;
@@ -27,11 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 基本档案_客户_基本信息(crm_customer) 服务实现类
@@ -45,6 +43,8 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
 
     @Autowired
     private SysDictClient sysDictClient;
+    @Autowired
+    private AuthClient authClient;
 
     @Autowired
     private CrmCustomerMapper crmCustomerMapper;
@@ -100,6 +100,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             crmCustomerForm.setBusinessTypes(StringUtils.join(crmCustomerForm.getBusinessTypesList(),StrUtil.C_COMMA));
         }
         if (isAdd){
+            crmCustomerForm.setCustCode(getNextCode(CodeNumber.CRM_CUST_CODE));
             this.save(crmCustomerForm);
         }else {
             this.updateById(crmCustomerForm);
@@ -157,6 +158,29 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         BaseResult<List<SysDictItem>> custBusinessType = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_BUSINESS_TYPE);
         crmCodeFrom.setCustBusinessType(custBusinessType.getResult());
         return crmCodeFrom;
+    }
+
+    @Override
+    public BaseResult<CrmCodeFrom> getBbusinessTypesByCustId(Long custId) {
+        CrmCodeFrom crmCodeFrom = new CrmCodeFrom();
+        BaseResult<List<SysDictItem>> custBusinessType = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_BUSINESS_TYPE);
+        List<SysDictItem> sysDictItemList = custBusinessType.getResult();
+        List<SysDictItem> returnList = new ArrayList<>();
+        CrmCustomer crmCustomer = this.getById(custId);
+        List<String> businessList = Arrays.asList(crmCustomer.getBusinessTypes().split(StrUtil.COMMA));
+        sysDictItemList.forEach(x->{
+            if (businessList.contains(x.getItemValue())){
+                returnList.add(x);
+            }
+        });
+        crmCodeFrom.setCustBusinessType(returnList);
+        return BaseResult.ok(crmCodeFrom);
+    }
+
+    @Override
+    public String getNextCode(String code) {
+        BaseResult baseResult = authClient.getOrderFeign(code,new Date());
+        return baseResult.getMsg();
     }
 
     /**

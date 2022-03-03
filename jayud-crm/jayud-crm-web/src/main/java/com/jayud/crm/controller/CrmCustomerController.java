@@ -1,6 +1,8 @@
 package com.jayud.crm.controller;
 
+import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.common.utils.CurrentUserUtil;
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.form.CrmCodeFrom;
 import com.jayud.crm.model.form.CrmCustomerForm;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +47,9 @@ public class CrmCustomerController {
 
     @Autowired
     public ICrmCustomerService crmCustomerService;
+
+    @Autowired
+    private AuthClient authClient;
 
 
     /**
@@ -263,5 +268,16 @@ public class CrmCustomerController {
         return BaseResult.ok(crmCustomerService.getCrmCode());
     }
 
+    @ApiOperation("根据客户id获取业务类型")
+    @GetMapping(path = "/getBbusinessTypesByCustId")
+    public BaseResult<CrmCodeFrom> getBbusinessTypesByCustId(Long custId){
+        return crmCustomerService.getBbusinessTypesByCustId(custId);
+    }
+
+    @ApiOperation("根据角色编码查询用户")
+    @GetMapping(path = "/selectUserByRoleCode")
+    public BaseResult<List<SysUserDTO>>  selectUserByRoleCode(String roleCode){
+        return authClient.selectUserByRoleCode(roleCode);
+    }
 
 }

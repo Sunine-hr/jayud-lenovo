@@ -3,7 +3,7 @@ package com.jayud.auth.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.auth.model.bo.SysUserForm;
-import com.jayud.auth.model.dto.SysUserDto;
+import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.po.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.auth.model.vo.SysUserVO;
@@ -122,5 +122,5 @@ public interface ISysUserService extends IService<SysUser> {
      * @param: roleCode
      * @return: java.util.List<com.jayud.auth.model.dto.SysUserDto>
      **/
-    List<SysUserDto> selectUserByRoleCode(String roleCode);
+    List<SysUserDTO> selectUserByRoleCode(String roleCode);
 }

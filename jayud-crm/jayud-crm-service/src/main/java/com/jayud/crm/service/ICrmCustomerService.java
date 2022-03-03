@@ -110,4 +110,23 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      **/
     CrmCodeFrom getCrmCode();
 
+
+    /**
+     * @description 根据客户id查询用户类型
+     * @author  ciro
+     * @date   2022/3/3 11:10
+     * @param: custId
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.form.CrmCodeFrom>
+     **/
+    BaseResult<CrmCodeFrom> getBbusinessTypesByCustId(Long custId);
+
+    /**
+     * @description 获取下一个编码
+     * @author  ciro
+     * @date   2022/3/3 11:30
+     * @param: code
+     * @return: java.lang.String
+     **/
+    String getNextCode(String code);
+
 }

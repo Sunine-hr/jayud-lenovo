@@ -1,5 +1,6 @@
 package com.jayud.crm.controller;
 
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.bo.CrmCustomerAddressForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,6 +45,8 @@ public class CrmCustomerAddressController {
     @Autowired
     public ICrmCustomerAddressService crmCustomerAddressService;
 
+    @Autowired
+    private AuthClient authClient;
 
     /**
      * @description 分页查询
@@ -202,6 +205,10 @@ public class CrmCustomerAddressController {
             log.warn(e.toString());
         }
     }
-
-
+    @ApiOperation("根据条件省市级联")
+    @GetMapping(value="/saveTroubleCascade")
+    public BaseResult saveTroubleCascade(@RequestParam(name="level",required=false) Integer level,@RequestParam(name="parentCode",required=false) Long parentCode){
+        BaseResult baseResult = authClient.selectListSysAreaFeign(level,parentCode);
+        return BaseResult.ok(baseResult);
+    }
 }

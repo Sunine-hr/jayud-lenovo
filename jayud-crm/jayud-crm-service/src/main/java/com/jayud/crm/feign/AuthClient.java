@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Component
 //@FeignClient(name = "jayud-auth-web" ,path = "/jayudAuth/sysUser")
-@FeignClient(name = "jayud-auth-web" )
+@FeignClient(name = "jayud-auth-web")
 public interface AuthClient {
 
 
@@ -28,12 +28,10 @@ public interface AuthClient {
 
     //字段表查询
     @PostMapping(value = "/sysDictItem/api/selectItemByDictCode")
-    public BaseResult  selectItemByDictCodeFeign( @RequestParam String dictCode);
-
-
+    public BaseResult selectItemByDictCodeFeign(@RequestParam("dictCode") String dictCode);
 
 
     //自定义单号
     @PostMapping(value = "/bNoRule/api/getOrderFeign")
-    public BaseResult getOrderFeign(@RequestParam(name = "code" ) String code, @RequestParam(name = "date" ) Date date);
+    public BaseResult getOrderFeign(@RequestParam(name = "code") String code, @RequestParam(name = "date") Date date);
 }

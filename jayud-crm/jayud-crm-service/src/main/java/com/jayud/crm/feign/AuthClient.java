@@ -7,10 +7,7 @@ import com.jayud.common.BaseResult;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -56,4 +53,10 @@ public interface AuthClient {
      **/
     @PostMapping(value = "/sysUser/selectUserByRoleCode")
     public BaseResult<List<SysUserDTO>>  selectUserByRoleCode(@RequestParam(name = "roleCode") String roleCode);
+
+    /**
+     * 列表查询数据
+     */
+    @PostMapping("/sysArea/api/selectListSysAreaFeign")
+    public BaseResult selectListSysAreaFeign(@RequestParam(name = "level", required = false) Integer level, @RequestParam(name = "parentCode", required = false) Long parentCode);
 }

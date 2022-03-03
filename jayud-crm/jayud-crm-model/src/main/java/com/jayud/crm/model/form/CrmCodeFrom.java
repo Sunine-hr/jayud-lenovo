@@ -32,20 +32,20 @@ public class CrmCodeFrom {
     @ApiModelProperty(value = "客户所属行业")
     private List<SysDictItem> custIndustry;
 
-//    @ApiModelProperty(value = "客户管理-服务类型")
-//    private List<SysDictItem> custServerType;
-//
-//    @ApiModelProperty(value = "客户管理-对账方式")
-//    private List<SysDictItem> custReconciliationMethod;
-//
-//    @ApiModelProperty(value = "客户管理-结算方式")
-//    private List<SysDictItem> custSettlementMethod;
-//
-//    @ApiModelProperty(value = "客户管理-客户状态")
-//    private List<SysDictItem> custNormalStatus;
-//
-//    @ApiModelProperty(value = "客户管理-银行币别")
-//    private List<SysDictItem> custBankCurrency;
+    @ApiModelProperty(value = "客户管理-服务类型")
+    private List<SysDictItem> custServerType;
+
+    @ApiModelProperty(value = "客户管理-对账方式")
+    private List<SysDictItem> custReconciliationMethod;
+
+    @ApiModelProperty(value = "客户管理-结算方式")
+    private List<SysDictItem> custSettlementMethod;
+
+    @ApiModelProperty(value = "客户管理-客户状态")
+    private List<SysDictItem> custNormalStatus;
+
+    @ApiModelProperty(value = "客户管理-银行币别")
+    private List<SysDictItem> custBankCurrency;
 
     @ApiModelProperty(value = "客户管理-业务类型")
     private List<SysDictItem> custBusinessType;
@@ -57,6 +57,11 @@ public class CrmCodeFrom {
         this.custAuditStatus = new ArrayList<>();
         this.custSources = new ArrayList<>();
         this.custIndustry = new ArrayList<>();
+        this.custServerType = new ArrayList<>();
+        this.custReconciliationMethod = new ArrayList<>();
+        this.custSettlementMethod = new ArrayList<>();
+        this.custNormalStatus = new ArrayList<>();
+        this.custBankCurrency = new ArrayList<>();
         this.custBusinessType = new ArrayList<>();
     }
 

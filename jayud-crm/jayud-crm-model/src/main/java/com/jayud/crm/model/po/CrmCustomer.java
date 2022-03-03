@@ -3,6 +3,7 @@ package com.jayud.crm.model.po;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
@@ -178,11 +179,13 @@ public class CrmCustomer extends SysBaseEntity {
     @ApiModelProperty(value = "是否同步")
     private Boolean isSync;
 
-//    @ApiModelProperty(value = "审核级别")
-//    private Integer fLevel;
-//
-//    @ApiModelProperty(value = "当前级别")
-//    private Integer fStep;
+    @JsonProperty(value = "fLevel")
+    @ApiModelProperty(value = "审核级别")
+    private Integer fLevel;
+
+    @JsonProperty(value = "fStep")
+    @ApiModelProperty(value = "当前级别")
+    private Integer fStep;
 
     @ApiModelProperty(value = "审核状态")
     private String checkStateFlag;

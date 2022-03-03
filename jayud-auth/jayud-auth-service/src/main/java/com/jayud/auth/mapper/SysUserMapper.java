@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.poi.openxml4j.util.ZipFileZipEntrySource;
 
 import java.util.List;
 
@@ -76,4 +77,14 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return
      */
     SysUserVO getSystemUserByName(@Param("token") String token);
+
+    /**
+     * @description 根据角色编码查询用户
+     * @author  ciro
+     * @date   2022/3/3 9:45
+     * @param: roleCode
+     * @param: tenantCode
+     * @return: java.util.List<com.jayud.auth.model.po.SysUser>
+     **/
+    List<SysUser> selectUserByRoleCode(@Param("roleCode") String roleCode,@Param("tenantCode") String tenantCode);
 }

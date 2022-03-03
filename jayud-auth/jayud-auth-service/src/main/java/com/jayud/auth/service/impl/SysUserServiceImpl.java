@@ -1,18 +1,24 @@
 package com.jayud.auth.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.mapper.SysUserRoleMapper;
 import com.jayud.auth.model.bo.SysUserForm;
+import com.jayud.auth.model.dto.SysUserDto;
+import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysUserRole;
 import com.jayud.auth.model.vo.SysUserVO;
+import com.jayud.auth.service.ISysDepartService;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.auth.model.po.SysUser;
@@ -24,9 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 后台用户表 服务实现类
@@ -38,6 +43,8 @@ import java.util.List;
 @Service
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements ISysUserService {
 
+    @Autowired
+    private ISysDepartService sysDepartService;
 
     @Autowired
     private SysUserMapper sysUserMapper;
@@ -243,6 +250,39 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysUserVO getSystemUserByName(String token) {
         return sysUserMapper.getSystemUserByName(token);
+    }
+
+    @Override
+    public List<SysUserDto> selectUserByRoleCode(String roleCode) {
+        List<SysUserDto> userDtoList = new ArrayList<>();
+        String tenantCode = CurrentUserUtil.getUserTenantCode();
+        List<SysUser> sysUserList = sysUserMapper.selectUserByRoleCode(roleCode,tenantCode);
+        SysDepart sysDepart = new SysDepart();
+        sysDepart.setTenantCode(tenantCode);
+        List<SysDepart> sysDepartList = sysDepartService.selectList(sysDepart);
+        Map<String,String> departMap = new HashMap<>();
+        if (CollUtil.isNotEmpty(sysDepartList)){
+            departMap = sysDepartList.stream().collect(Collectors.toMap(x->String.valueOf(x.getId()),x->x.getDepartName()));
+        }
+        if (CollUtil.isNotEmpty(sysUserList)){
+            Map<String, String> finalDepartMap = departMap;
+            sysUserList.forEach(sysUser -> {
+                SysUserDto userDto = new SysUserDto();
+                BeanUtils.copyProperties(sysUser,userDto);
+                String[] departIds = sysUser.getDepartmentList().split(StrUtil.COMMA);
+                List<String> departNameList = new ArrayList<>();
+                String[] departNames = new String[]{};
+                for (String id: departIds){
+                    if (finalDepartMap.containsKey(id)){
+                        departNameList.add(finalDepartMap.get(id));
+                    }else {
+                        departNameList.add(id);
+                    }
+                }
+//                userDto.setDepartNames(Strin);
+            });
+        }
+        return null;
     }
 
     public static void main(String[] args) {

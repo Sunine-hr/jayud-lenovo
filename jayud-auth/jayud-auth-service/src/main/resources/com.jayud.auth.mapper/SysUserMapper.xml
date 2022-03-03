@@ -416,7 +416,20 @@
             where su.is_deleted=0
              and su.name=#{token}
     </select>
-
+    <select id="selectUserByRoleCode" resultMap="BaseResultMap">
+        SELECT DISTINCT
+            su.id ids,
+            su.*
+        FROM
+            sys_user su
+                LEFT JOIN sys_user_role sur ON su.id = sur.user_id
+                AND sur.is_deleted = 0
+                LEFT JOIN sys_role sr ON sr.id = sur.role_id
+                AND sr.is_deleted = 0
+                AND sr.role_code = #{roleCode}
+        WHERE
+            su.is_deleted = 0
+    </select>
 
 
 </mapper>

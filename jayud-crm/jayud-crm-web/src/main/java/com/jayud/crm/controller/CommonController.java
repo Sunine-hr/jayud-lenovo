@@ -83,5 +83,16 @@ public class CommonController {
         return custBusinessType;
     }
 
+    /**
+     * @description 获取额度模式
+     **/
+    @ApiOperation("获取额度模式")
+    @RequestMapping("/getQuotaMode")
+    public BaseResult<List<SysDictItem>> getQuotaMode() {
+        BaseResult<List<SysDictItem>> custBusinessType = sysDictClient.selectItemByDictCode(CrmDictCode.CRM_CREDIT_MODE);
+        return custBusinessType;
+    }
+
+
 }
 

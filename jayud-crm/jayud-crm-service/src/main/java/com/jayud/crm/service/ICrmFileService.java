@@ -2,6 +2,8 @@ package com.jayud.crm.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.BaseResult;
+import com.jayud.crm.model.bo.QueryCrmFile;
 import com.jayud.crm.model.po.CrmFile;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -46,7 +48,7 @@ public interface ICrmFileService extends IService<CrmFile> {
     List<CrmFile> selectList(CrmFile crmFile);
 
 
-
+    BaseResult saveOrUpdateCrmFile(QueryCrmFile queryCrmFile);
     /**
      * @description 物理删除
      * @author  jayud

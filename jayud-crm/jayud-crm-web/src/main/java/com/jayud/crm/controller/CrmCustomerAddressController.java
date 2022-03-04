@@ -4,6 +4,7 @@ import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.bo.CrmCustomerAddressForm;
+import com.jayud.crm.model.bo.DeleteForm;
 import com.jayud.crm.model.constant.CrmDictCode;
 import com.jayud.crm.model.bo.CrmCodeFollowForm;
 import com.jayud.crm.model.po.CrmCustomerRelations;
@@ -123,20 +124,20 @@ public class CrmCustomerAddressController {
 
 
 
-    /**
-     * @description 物理删除
-     * @author  jayud
-     * @date   2022-03-03
-     * @param: id
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id){
-        crmCustomerAddressService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
+//    /**
+//     * @description 物理删除
+//     * @author  jayud
+//     * @date   2022-03-03
+//     * @param: id
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("物理删除")
+//    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
+//    @GetMapping("/phyDel")
+//    public BaseResult phyDel(@RequestParam Long id){
+//        crmCustomerAddressService.phyDelById(id);
+//        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//    }
 
     /**
      * @description 逻辑删除
@@ -147,9 +148,9 @@ public class CrmCustomerAddressController {
      **/
     @ApiOperation("逻辑删除")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id){
-        crmCustomerAddressService.logicDel(id);
+    @PostMapping("/logicDel")
+    public BaseResult logicDel(@RequestBody DeleteForm ids){
+        crmCustomerAddressService.logicDel(ids.getIds());
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 

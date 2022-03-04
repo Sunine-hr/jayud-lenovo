@@ -11,6 +11,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.crm.model.bo.CrmCustomerForm;
 import com.jayud.crm.model.bo.CrmCustomerRelationsForm;
 import com.jayud.crm.model.po.CrmCreditVisit;
+import com.jayud.crm.model.po.CrmCustomerRisk;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -22,11 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 基本档案_客户_联系人(crm_customer_relations) 服务实现类
@@ -91,8 +88,15 @@ public class CrmCustomerRelationsServiceImpl extends ServiceImpl<CrmCustomerRela
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id){
-        crmCustomerRelationsMapper.logicDel(id,CurrentUserUtil.getUsername());
+    public void logicDel(List<Long> ids){
+        List<CrmCustomerRelations> CrmCustomerRelationsList = new ArrayList<>();
+        for (int i = 0; i < ids.size(); i++) {
+            CrmCustomerRelations crmCustomerRelations = new CrmCustomerRelations();
+            crmCustomerRelations.setId(ids.get(i));
+            crmCustomerRelations.setIsDeleted(true);
+            CrmCustomerRelationsList.add(crmCustomerRelations);
+        }
+        this.updateBatchById(CrmCustomerRelationsList);
     }
 
 

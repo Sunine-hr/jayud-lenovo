@@ -67,7 +67,7 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
 
         Object url = this.fileClient.getBaseUrl().getData();
         for (CrmContractQuotationVO record : pageList.getRecords()) {
-            List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(true).setBusinessId(record.getId()).setCode(FileModuleEnum.CQ.getCode())));
+            List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(false).setBusinessId(record.getId()).setCode(FileModuleEnum.CQ.getCode())));
             files.forEach(e -> {
                 e.setUploadFileUrl(url + e.getUploadFileUrl());
             });
@@ -225,6 +225,7 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
         List<CrmContractQuotationDetails> details = this.crmContractQuotationDetailsService.getBaseMapper().selectList(new QueryWrapper<>(new CrmContractQuotationDetails().setIsDeleted(false).setContractQuotationId(id)));
         Map<String, List<InitComboxVO>> costType = this.omsClient.initCostTypeByCostInfoCode().getData();
         tmp.assembleDetails(details, costType);
+        tmp.setFiles(files);
         return tmp;
     }
 

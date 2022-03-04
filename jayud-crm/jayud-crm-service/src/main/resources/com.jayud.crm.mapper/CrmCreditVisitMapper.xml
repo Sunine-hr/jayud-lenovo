@@ -126,17 +126,19 @@
         LEFT JOIN sys_user su on ccvr.user_id= su.id
         where ccvr.is_deleted=0
         ) ccvru on ccv.id=ccvru.visitId
-        where
-        ccv.is_deleted=0
-        and ccvru.is_deleted=0
+        <where>
+            ccv.is_deleted=0
+            and ccvru.is_deleted=0
 
-        <if test="crmCreditVisit.custName != null and crmCreditVisit.custName != ''">
-            and ccv.cust_name LIKE CONCAT('%',#{crmCreditVisit.custName},'%')
-        </if>
-        <if test="crmCreditVisit.creationTime != null and crmCreditVisit.creationTime.length>0">
-            and ccv.create_time <![CDATA[ >= ]]> #{form.creationTime[0]}
-            and ccv.create_time <![CDATA[ <= ]]> #{form.creationTime[1]}
-        </if>
+            <if test="crmCreditVisit.custName != null and crmCreditVisit.custName != ''">
+                and ccv.cust_name LIKE CONCAT('%',#{crmCreditVisit.custName},'%')
+            </if>
+
+            <if test="crmCreditVisit.creationTimeOne != null and crmCreditVisit.creationTimeTwo != null   ">
+                and ccv.create_time  between #{crmCreditVisit.creationTimeOne} and #{crmCreditVisit.creationTimeTwo}
+            </if>
+
+        </where>
         group by ccv.id
         ORDER BY ccv.create_time DESC
     </select>
@@ -182,7 +184,7 @@
             crm_credit_visit  ccv
         LEFT JOIN crm_credit_visit_role ccvr
         on ccv.id=ccvr.visit_id
-        where ccv.is_deleted=0
+        where ccv.is_deleted=0 and ccvr.is_deleted=0
         and ccv.id=#{id}
         group by ccv.id
 

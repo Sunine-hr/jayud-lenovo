@@ -80,6 +80,11 @@ public interface CrmDictCode {
     String CRM_CREDIT_TYPE = "crm_credit_type";
 
     /**
+     * 授信管理-额度类型
+     */
+    String CRM_CREDIT_MODE = "crm_credit_mode";
+
+    /**
      * 合同协议单据code
      */
     String CONTRACT_AGREEMENT_NUM_CODE="CA";
@@ -105,4 +110,10 @@ public interface CrmDictCode {
      */
     String CRM_FILE_TYPE = "crm_file_type";
 
+
+
+    /**
+     *  客户管理-时间配置
+     */
+    String STARTING_TIME_TYPE = "2000-01-01 00:00:00";
 }

@@ -228,6 +228,10 @@ public interface SysTips {
 
     String TYPE_ALREADY_EXISTS= "该额度类型已存在";
 
+    String LEGAL_ENTITY_GRANTED_CREDIT= "该法人主体已经授信";
+
+    String INSUFFICIENT_REMAINING_AMOUNT= "授信额度不够";
+
     String CUTS_IN_RISK_ERROR = "客户存在风险，请联系相关人员！";
 }
 

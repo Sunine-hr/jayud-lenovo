@@ -11,8 +11,10 @@ import com.jayud.common.utils.BigDecimalUtil;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.crm.model.bo.AddCrmCreditForm;
 import com.jayud.crm.model.enums.FileModuleEnum;
+import com.jayud.crm.model.po.CrmCreditDepart;
 import com.jayud.crm.model.po.CrmCustomerAgreement;
 import com.jayud.crm.model.vo.CrmCreditVO;
+import com.jayud.crm.service.ICrmCreditDepartService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -44,6 +46,8 @@ public class CrmCreditServiceImpl extends ServiceImpl<CrmCreditMapper, CrmCredit
 
     @Autowired
     private CrmCreditMapper crmCreditMapper;
+    @Autowired
+    private ICrmCreditDepartService crmCreditDepartService;
 
     @Override
     public IPage<CrmCreditVO> selectPage(CrmCredit crmCredit,
@@ -54,6 +58,11 @@ public class CrmCreditServiceImpl extends ServiceImpl<CrmCreditMapper, CrmCredit
         Page<CrmCredit> page = new Page<CrmCredit>(currentPage, pageSize);
         IPage<CrmCreditVO> pageList = crmCreditMapper.pageList(page, crmCredit);
         for (CrmCreditVO record : pageList.getRecords()) {
+//            List<CrmCreditDepart> creditDeparts = crmCreditDepartService.selectList(new CrmCreditDepart().setCreditId(record.getCreditId()).setIsDeleted(false).setTenantCode(CurrentUserUtil.getUserTenantCode()));
+//            BigDecimal amount = new BigDecimal(0);
+//            creditDeparts.forEach(e -> {
+//                amount=BigDecimalUtil.add(e.getCreditAmt())
+//            });
             record.setCreditRate(record.getCreditGrantedMoney().divide(record.getCreditMoney()).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)) + "%");
         }
         return pageList;

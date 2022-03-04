@@ -342,7 +342,7 @@
             </if>
 
             <if test="crmCustomer.isNotInBlackList != null and crmCustomer.isNotInBlackList ">
-                AND cc.id NOT IN (SELECT ccr.cust_id FROM crm_customer_risk ccr WHERE ccr.is_deleted = 0)
+                AND cc.id NOT IN (SELECT ccr.cust_id FROM crm_customer_risk ccr WHERE ccr.is_deleted = 0 AND  cust_id IS NOT NULL)
             </if>
 
             <if test="crmCustomer.custIdList != null and crmCustomer.custIdList.size > 0">

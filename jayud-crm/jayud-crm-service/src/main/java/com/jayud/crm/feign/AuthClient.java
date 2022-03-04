@@ -24,10 +24,8 @@ import java.util.List;
 public interface AuthClient {
 
 
-    @PostMapping("/sysUser/api/selectList")
+    @PostMapping("/sysUser/api/selectListFeign")
     public BaseResult selectListFeign();
-
-
     /**
      * 字段表查询
      */

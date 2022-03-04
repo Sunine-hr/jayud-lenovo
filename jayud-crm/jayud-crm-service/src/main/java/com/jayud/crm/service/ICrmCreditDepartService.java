@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.crm.model.bo.AddCrmCreditDepartForm;
 import com.jayud.crm.model.po.CrmCreditDepart;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.crm.model.vo.CrmCreditDepartVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,10 +33,10 @@ public interface ICrmCreditDepartService extends IService<CrmCreditDepart> {
      * @param: req
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCreditDepart>
      **/
-    IPage<CrmCreditDepart> selectPage(CrmCreditDepart crmCreditDepart,
-                                Integer currentPage,
-                                Integer pageSize,
-                                HttpServletRequest req);
+    IPage<CrmCreditDepartVO> selectPage(CrmCreditDepart crmCreditDepart,
+                                        Integer currentPage,
+                                        Integer pageSize,
+                                        HttpServletRequest req);
 
     /**
      * @description 列表查询数据
@@ -81,4 +83,6 @@ public interface ICrmCreditDepartService extends IService<CrmCreditDepart> {
 
 
     void saveOrUpdate(AddCrmCreditDepartForm form);
+
+    BigDecimal calculationRemainingCreditLine(String creditId, String tenantCode);
 }

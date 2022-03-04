@@ -38,13 +38,9 @@ public class CrmCreditVisitVO extends SysBaseEntity {
     @ApiModelProperty(value = "客户对接人")
     private String custRelation;
 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @ApiModelProperty(value = "走访日期")
     private LocalDateTime visitDate;
 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @ApiModelProperty(value = "走访结束日期")
     private LocalDateTime endDate;
 

@@ -82,10 +82,14 @@ public class SysUserController {
     }
 
     @ApiOperation("列表查询数据")
-    @PostMapping("/api/selectList")
+    @PostMapping("/api/selectListFeign")
     public BaseResult selectListFeign() {
         SysUser sysUser = new SysUser();
-
+        if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
+            sysUser.setTenantCode(null);
+        } else {
+            sysUser.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        }
         List<SysUserVO> sysUserVOS = sysUserService.selectList(sysUser);
         System.out.println("远程调用查询到的数据："+sysUserVOS);
         return BaseResult.ok(sysUserVOS);

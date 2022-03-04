@@ -1,6 +1,7 @@
 package com.jayud.crm.model.bo;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -13,9 +14,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotBlank;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -44,17 +47,15 @@ public class CrmCreditVisitForm extends SysBaseEntity {
     @ApiModelProperty(value = "客户对接人")
     private String custRelation;
 
-    @NotBlank(message = "走访日期不能为空")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+//    @NotBlank(message = "走访日期不能为空")
+//    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "走访日期")
-    private LocalDateTime visitDate;
+    private  LocalDateTime  visitDate;
 
-    @NotBlank(message = "走访结束日期不能为空")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+//    @NotBlank(message = "走访结束日期不能为空")
+//    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "走访结束日期")
-    private LocalDateTime endDate;
+    private  LocalDateTime  endDate;
 
     @NotBlank(message = "走访地址不能为空")
     @ApiModelProperty(value = "走访地址")
@@ -85,6 +86,9 @@ public class CrmCreditVisitForm extends SysBaseEntity {
     @ApiModelProperty(value = "拜访人员集合s")
     private List<Long> visitNameList;
 
+    @ApiModelProperty(value = "创建时间保存")
+    private List<String> creationVisitTime;
+
     @ApiModelProperty(value = "创建时间")
     private List<String> creationTime;
 
@@ -95,7 +99,14 @@ public class CrmCreditVisitForm extends SysBaseEntity {
     @ApiModelProperty(value = "创建时间后")
     private String creationTimeTwo;
 
-
+    public void setCreationVisitTime(List<String> creationVisitTime) {
+        this.creationVisitTime = creationVisitTime;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime parsedDate = LocalDateTime.parse(creationVisitTime.get(0), formatter);
+        LocalDateTime parsedDate2 = LocalDateTime.parse(creationVisitTime.get(1), formatter);
+        this.visitDate = parsedDate ;
+        this.endDate = parsedDate2 ;
+    }
     public void setCreationTime(List<String> creationTime) {
         this.creationTime = creationTime;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -115,5 +126,12 @@ public class CrmCreditVisitForm extends SysBaseEntity {
             this.creationTimeOne = CrmDictCode.CRM_FILE_TYPE ;
             this.creationTimeTwo = creationTime.get(1);
         }
+    }
+
+    public static void main(String[] args) {
+        String dateStr = "2021-09-03 21:00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime parsedDate = LocalDateTime.parse(dateStr, formatter);
+        System.out.println(parsedDate);
     }
 }

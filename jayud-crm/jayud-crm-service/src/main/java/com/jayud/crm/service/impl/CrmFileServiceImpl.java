@@ -6,7 +6,12 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.BaseResult;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.crm.model.bo.CrmFileForm;
+import com.jayud.crm.model.bo.QueryCrmFile;
 import com.jayud.crm.model.enums.FileModuleEnum;
+import com.jayud.crm.model.po.CrmCustomerRelations;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -52,6 +57,32 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
     @Override
     public List<CrmFile> selectList(CrmFile crmFile) {
         return crmFileMapper.list(crmFile);
+    }
+
+    @Override
+    public BaseResult saveOrUpdateCrmFile(QueryCrmFile queryCrmFile) {
+
+//        CrmFile convert = ConvertUtil.convert(CrmFile, CrmFile.class);
+
+        if(queryCrmFile!=null){
+            List<CrmFileForm> crmFileForm = queryCrmFile.getCrmFileForm();
+
+            for (int i = 0; i <crmFileForm.size() ; i++) {
+                CrmFile crmFile = new CrmFile();
+                crmFile.setCode(FileModuleEnum.CRM_FILE.getCode());
+                crmFile.setBusinessId(queryCrmFile.getBusinessId());
+                crmFile.setFileName(crmFileForm.get(i).getFileName());
+                crmFile.setFileType(queryCrmFile.getFileType());
+                crmFile.setUploadFileUrl(crmFileForm.get(i).getUploadFileUrl());
+                crmFile.setCreateBy(CurrentUserUtil.getUsername());
+                crmFile.setCreateTime(new Date());
+                crmFile.setRemark(queryCrmFile.getRemark());
+
+                this.saveOrUpdate(crmFile);
+            }
+
+        }
+        return null;
     }
 
 

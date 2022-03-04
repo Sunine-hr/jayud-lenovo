@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
+import java.util.Date;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -40,13 +41,13 @@ public class CrmCreditVisit extends SysBaseEntity {
     @ApiModelProperty(value = "客户对接人")
     private String custRelation;
 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+//    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @ApiModelProperty(value = "走访日期")
     private LocalDateTime visitDate;
 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+//    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @ApiModelProperty(value = "走访结束日期")
     private LocalDateTime endDate;
 
@@ -70,7 +71,7 @@ public class CrmCreditVisit extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")
-    @TableLogic
+//    @TableLogic
     private Boolean isDeleted;
 
 

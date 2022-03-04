@@ -2,6 +2,7 @@ package com.jayud.crm.controller;
 
 import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.crm.feign.SysDictClient;
+import com.jayud.crm.model.bo.QueryCrmFile;
 import com.jayud.crm.model.constant.CrmDictCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -94,8 +95,8 @@ public class CrmFileController {
     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody CrmFile crmFile ){
-        crmFileService.save(crmFile);
+    public BaseResult add(@RequestBody QueryCrmFile queryCrmFile ){
+        crmFileService.saveOrUpdateCrmFile(queryCrmFile);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
 

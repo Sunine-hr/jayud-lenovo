@@ -65,7 +65,8 @@
         </where>
     </sql>
 
-    <select id="pageList"  parameterType="com.jayud.crm.model.bo.CrmCustomerRiskForm"  resultType="com.jayud.crm.model.po.CrmCustomerRisk">
+    <select id="pageList" parameterType="com.jayud.crm.model.bo.CrmCustomerRiskForm"
+            resultType="com.jayud.crm.model.po.CrmCustomerRisk">
 
         SELECT
         id,
@@ -83,15 +84,17 @@
         un_credit_code
         FROM
         crm_customer_risk
-        where
-        <if test="crmCustomerRisk.custName != null and crmCustomerRisk.custName != ''">
-            AND cust_name LIKE CONCAT('%',#{crmCustomerRisk.custName},'%')
-        </if>
-        <if test="crmCustomerRisk.creationTime != null and crmCustomerRisk.creationTime.length>0">
-            and create_time <![CDATA[ >= ]]> #{crmCustomerRisk.creationTime[0]}
-            and create_time <![CDATA[ <= ]]> #{crmCustomerRisk.creationTime[1]}
-        </if>
-        ORDER BY  create_time DESC
+        <where>
+            is_deleted=0
+            <if test="crmCustomerRisk.custName != null and crmCustomerRisk.custName != ''">
+                AND cust_name LIKE CONCAT('%',#{crmCustomerRisk.custName},'%')
+            </if>
+            <if test="crmCustomerRisk.creationTimeOne != null and crmCustomerRisk.creationTimeTwo != null   ">
+                and create_time  between #{crmCustomerRisk.creationTimeOne} and #{crmCustomerRisk.creationTimeTwo}
+            </if>
+
+        </where>
+        ORDER BY create_time DESC
 
     </select>
 

@@ -105,4 +105,10 @@ public interface CrmDictCode {
      */
     String CRM_FILE_TYPE = "crm_file_type";
 
+
+
+    /**
+     *  客户管理-时间配置
+     */
+    String STARTING_TIME_TYPE = "2000-01-01 00:00:00";
 }

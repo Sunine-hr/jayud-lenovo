@@ -1,5 +1,6 @@
 package com.jayud.crm.controller;
 
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.bo.CrmCreditVisitForm;
 import com.jayud.crm.model.bo.DeleteForm;
 import com.jayud.crm.model.vo.CrmCreditVisitVO;
@@ -40,6 +41,8 @@ public class CrmCreditVisitController {
     @Autowired
     public ICrmCreditVisitService crmCreditVisitService;
 
+    @Autowired
+    private AuthClient authClient;
 
     /**
      * @description 分页查询
@@ -128,7 +131,6 @@ public class CrmCreditVisitController {
      * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("逻辑删除")
-    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
     @PostMapping("/logicDel")
     public BaseResult logicDel(@RequestBody DeleteForm ids) {
         crmCreditVisitService.logicDel(ids.getIds());
@@ -163,5 +165,11 @@ public class CrmCreditVisitController {
         return BaseResult.ok(crmCreditVisitIdOne);
     }
 
+    @ApiOperation("获得员工列表下拉")
+    @GetMapping("/selectListSysUserFeign")
+    public BaseResult selectListSysUserFeign() {
+        BaseResult baseResult = authClient.selectListFeign();
+        return BaseResult.ok(baseResult);
+    }
 
 }

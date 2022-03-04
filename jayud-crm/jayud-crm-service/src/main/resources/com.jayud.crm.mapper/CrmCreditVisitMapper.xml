@@ -134,8 +134,8 @@
                 and ccv.cust_name LIKE CONCAT('%',#{crmCreditVisit.custName},'%')
             </if>
 
-            <if test="crmCustomerRisk.creationTimeOne != null and crmCustomerRisk.creationTimeTwo != null   ">
-                and ccv.create_time  between #{crmCustomerRisk.creationTimeOne} and #{crmCustomerRisk.creationTimeTwo}
+            <if test="crmCreditVisit.creationTimeOne != null and crmCreditVisit.creationTimeTwo != null   ">
+                and ccv.create_time  between #{crmCreditVisit.creationTimeOne} and #{crmCreditVisit.creationTimeTwo}
             </if>
 
         </where>

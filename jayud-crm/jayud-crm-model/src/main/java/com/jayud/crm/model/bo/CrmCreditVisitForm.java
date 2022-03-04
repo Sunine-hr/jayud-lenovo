@@ -6,12 +6,15 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.jayud.common.entity.SysBaseEntity;
+import com.jayud.crm.model.constant.CrmDictCode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotBlank;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -85,4 +88,32 @@ public class CrmCreditVisitForm extends SysBaseEntity {
     @ApiModelProperty(value = "创建时间")
     private List<String> creationTime;
 
+
+    @ApiModelProperty(value = "创建时间前")
+    private String creationTimeOne;
+
+    @ApiModelProperty(value = "创建时间后")
+    private String creationTimeTwo;
+
+
+    public void setCreationTime(List<String> creationTime) {
+        this.creationTime = creationTime;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        String format = sdf.format(date);
+        // 只传第一个 计算设置时间到 当前时间
+        if(creationTime.get(0)!=null&&creationTime.get(1)==null){
+            this.creationTimeOne = creationTime.get(0);
+//            if(creationTime.get(1)!=null){
+//                this.creationTimeTwo = creationTime.get(1);
+//            }else {
+                this.creationTimeTwo = format ;
+//            }
+        }
+        // 只传第二个 计算 到第二个时间之前的所有的
+        if(creationTime.get(1)!=null&&creationTime.get(0)==null){
+            this.creationTimeOne = CrmDictCode.CRM_FILE_TYPE ;
+            this.creationTimeTwo = creationTime.get(1);
+        }
+    }
 }

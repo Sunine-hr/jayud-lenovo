@@ -2411,25 +2411,19 @@ public class ExternalApiController {
         return ApiResult.ok(this.orderInfoService.updateById(orderInfo));
     }
 
-    @ApiOperation(value = "初始化车型尺寸,区分车型")
+    @ApiOperation(value = "下拉所有车型")
     @PostMapping(value = "/api/initVehicleSize")
-    public CommonResult<InitVehicleSizeInfoVO> initVehicleSize() {
-        InitVehicleSizeInfoVO initVehicleSizeInfoVO = new InitVehicleSizeInfoVO();
-        //柜车尺寸集合
-        List<VehicleSizeInfoVO> cabinetCars = new ArrayList<>();
-        //吨车尺寸集合
-        List<VehicleSizeInfoVO> tonCars = new ArrayList<>();
+    public CommonResult<List<com.jayud.common.entity.InitComboxStrVO>> initVehicleSize() {
+        //获取下拉车型
         List<VehicleSizeInfoVO> vehicleSizeInfoVOS = vehicleInfoService.findVehicleSize();
+        List<com.jayud.common.entity.InitComboxStrVO> cabinetSizes = new ArrayList<>();
         for (VehicleSizeInfoVO obj : vehicleSizeInfoVOS) {
-            if (VehicleTypeEnum.CABINET_CAR.getCode() == obj.getVehicleType()) {
-                cabinetCars.add(obj);
-            } else if (VehicleTypeEnum.TON_CAR.getCode() == obj.getVehicleType()) {
-                tonCars.add(obj);
-            }
+            com.jayud.common.entity.InitComboxStrVO initComboxVO = new com.jayud.common.entity.InitComboxStrVO();
+            initComboxVO.setId(obj.getId());
+            initComboxVO.setName(obj.getVehicleSize());
+            cabinetSizes.add(initComboxVO);
         }
-        initVehicleSizeInfoVO.setCabinetCars(cabinetCars);
-        initVehicleSizeInfoVO.setTonCars(tonCars);
-        return CommonResult.success(initVehicleSizeInfoVO);
+        return CommonResult.success(cabinetSizes);
     }
 
     @ApiOperation(value = "录用费用页面-下拉选单位")

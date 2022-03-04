@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -250,6 +251,11 @@ public class CrmCustomer extends SysBaseEntity {
     @TableField(exist = false)
     @ApiModelProperty(value = "是否不存在黑名单")
     private Boolean isNotInBlackList;
+
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "客户id集合")
+    private List<Long> custIdList;
 
 
 

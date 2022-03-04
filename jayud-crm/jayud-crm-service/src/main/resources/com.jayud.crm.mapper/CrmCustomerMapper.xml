@@ -340,8 +340,16 @@
             <if test="crmCustomer.remark != null and crmCustomer.remark != ''">
                 AND cc.remark LIKE CONCAT('%',#{crmCustomer.remark},'%')
             </if>
+
             <if test="crmCustomer.isNotInBlackList != null and crmCustomer.isNotInBlackList ">
                 AND cc.id NOT IN (SELECT ccr.cust_id FROM crm_customer_risk ccr WHERE ccr.is_deleted = 0)
+            </if>
+
+            <if test="crmCustomer.custIdList != null and crmCustomer.custIdList.size > 0">
+                AND id IN
+                <foreach collection="crmCustomer.custIdList" index="index" item="custId" open="(" separator="," close=")">
+                    #{custId}
+                </foreach>
             </if>
 
         </where>

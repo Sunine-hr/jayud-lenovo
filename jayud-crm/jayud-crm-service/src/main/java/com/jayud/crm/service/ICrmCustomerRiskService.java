@@ -3,7 +3,9 @@ package com.jayud.crm.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.BaseResult;
+import com.jayud.crm.model.bo.ComCustomerForm;
 import com.jayud.crm.model.bo.CrmCustomerRiskForm;
+import com.jayud.crm.model.po.CrmCustomer;
 import com.jayud.crm.model.po.CrmCustomerRisk;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -80,5 +82,24 @@ public interface ICrmCustomerRiskService extends IService<CrmCustomerRisk> {
      **/
     List<LinkedHashMap<String, Object>> queryCrmCustomerRiskForExcel(Map<String, Object> paramMap);
 
+    /**
+     * @description 判断客户是否存在风险
+     * @author  ciro
+     * @date   2022/3/4 18:14
+     * @param: crmCustomer
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult checkIsRisk(CrmCustomer crmCustomer);
+
+
+
+    /**
+     * @description 根据客户集合判断黑名单
+     * @author  ciro
+     * @date   2022/3/4 18:28
+     * @param: comCustomerForm
+     * @return: com.jayud.crm.model.bo.ComCustomerForm
+     **/
+    ComCustomerForm checkIsRiskByCutsIds(ComCustomerForm comCustomerForm);
 
 }

@@ -3,8 +3,10 @@ package com.jayud.crm.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.BaseResult;
+import com.jayud.crm.model.bo.ComCustomerForm;
 import com.jayud.crm.model.bo.CrmCustomerManagerForm;
 import com.jayud.crm.model.bo.CrmCustomerForm;
+import com.jayud.crm.model.po.CrmCustomer;
 import com.jayud.crm.model.po.CrmCustomerManager;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -118,5 +120,46 @@ public interface ICrmCustomerManagerService extends IService<CrmCustomerManager>
      * @return: com.jayud.crm.model.bo.CrmCustomerManagerForm
      **/
     CrmCustomerManagerForm selectById(Long id);
+
+    /**
+     * @description 修改维护负责人
+     * @author  ciro
+     * @date   2022/3/4 15:47
+     * @param: comCustomerForm
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult changeCustChangerManager(ComCustomerForm comCustomerForm);
+
+    /**
+     * @description 根据用户id集合删除负责人
+     * @author  ciro
+     * @date   2022/3/4 16:57
+     * @param: custIds
+     * @return: void
+     **/
+    void delChargerManager(List<Long> custIds);
+
+    /**
+     * @description 根据客户id集合新增负责人
+     * @author  ciro
+     * @date   2022/3/4 16:37
+     * @param: custIdList   客户id集合
+     * @param: custMap      客户信息对象
+     * @param: managerUserId      负责人id
+     * @param: managerUsername      负责人名称
+     * @param: roleCodes            角色编码
+     * @param: roleNames            角色名称
+     * @return: void
+     **/
+    void addChargerManager(List<Long> custIdList, Map<Long, CrmCustomer> custMap, Long managerUserId, String managerUsername, String roleCodes, String roleNames);
+
+    /**
+     * @description 根据id获取负责人对象
+     * @author  ciro
+     * @date   2022/3/4 17:10
+     * @param: custIdList
+     * @return: void
+     **/
+    void getChangeCustManager(ComCustomerForm comCustomerForm);
 
 }

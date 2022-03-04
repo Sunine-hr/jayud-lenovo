@@ -62,6 +62,13 @@
                 AND un_credit_code LIKE CONCAT('%',#{crmCustomerRisk.unCreditCode},'%')
             </if>
 
+            <if test="crmCustomerRisk.custIdList != null and crmCustomerRisk.custIdList.size > 0">
+                AND cust_id IN
+                <foreach collection="crmCustomerRisk.custIdList" index="index" item="custId" open="(" separator="," close=")">
+                    #{custId}
+                </foreach>
+            </if>
+
         </where>
     </sql>
 

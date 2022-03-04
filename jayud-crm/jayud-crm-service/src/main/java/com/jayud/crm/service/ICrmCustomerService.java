@@ -3,6 +3,7 @@ package com.jayud.crm.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.BaseResult;
+import com.jayud.crm.model.bo.ComCustomerForm;
 import com.jayud.crm.model.bo.CrmCodeFrom;
 import com.jayud.crm.model.bo.CrmCustomerForm;
 import com.jayud.crm.model.po.CrmCustomer;
@@ -164,5 +165,24 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      * @return: java.lang.String
      **/
     String changeBusinessType(List<String> businessTypesList);
+
+    /**
+     * @description 领取客户
+     * @author  ciro
+     * @date   2022/3/4 16:47
+     * @param: comCustomerForm
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult receiveCustomer(ComCustomerForm comCustomerForm);
+
+    /**
+     * @description 获取错误信息
+     * @author  ciro
+     * @date   2022/3/4 18:45
+     * @param: comCustomerForm
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult getErrMsg(ComCustomerForm comCustomerForm);
+
 
 }

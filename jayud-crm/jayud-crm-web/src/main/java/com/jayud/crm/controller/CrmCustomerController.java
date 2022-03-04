@@ -6,8 +6,11 @@ import com.jayud.auth.model.po.SysRole;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
+import com.jayud.crm.model.bo.ComCustomerForm;
 import com.jayud.crm.model.bo.CrmCodeFrom;
 import com.jayud.crm.model.bo.CrmCustomerForm;
+import com.jayud.crm.model.bo.DeleteForm;
+import com.jayud.crm.service.ICrmCustomerManagerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,6 +53,9 @@ public class CrmCustomerController {
 
     @Autowired
     public ICrmCustomerService crmCustomerService;
+
+    @Autowired
+    private ICrmCustomerManagerService crmCustomerManagerService;
 
     @Autowired
     private AuthClient authClient;
@@ -288,20 +294,20 @@ public class CrmCustomerController {
 
     @ApiOperation("添加黑名单")
     @PostMapping("moveCustToRick")
-    public BaseResult moveCustToRick(@RequestParam("custList") List<CrmCustomer> custList){
-        return crmCustomerService.moveCustToRick(custList);
+    public BaseResult moveCustToRick(@RequestBody ComCustomerForm comCustomerForm){
+        return crmCustomerService.moveCustToRick(comCustomerForm.getCrmCustomerList());
     }
 
     @ApiOperation("转为供应商")
     @PostMapping("changeToSupplier")
-    public BaseResult changeToSupplier(@RequestParam("custList") List<CrmCustomer> custList){
-        return crmCustomerService.changeToSupplier(custList);
+    public BaseResult changeToSupplier(@RequestBody ComCustomerForm comCustomerForm){
+        return crmCustomerService.changeToSupplier(comCustomerForm.getCrmCustomerList());
     }
 
     @ApiOperation("放入公海")
     @PostMapping("changeToPublic")
-    public BaseResult changeToPublic(@RequestParam("custList") List<CrmCustomer> custList){
-        return crmCustomerService.changeToPublic(custList);
+    public BaseResult changeToPublic(@RequestBody ComCustomerForm comCustomerForm){
+        return crmCustomerService.changeToPublic(comCustomerForm.getCrmCustomerList());
     }
 
     @ApiOperation("根据租户编码获取角色")
@@ -313,8 +319,21 @@ public class CrmCustomerController {
     @ApiOperation("客户审核")
     @PostMapping (path = "/customerCheck")
     public BaseResult  customerCheck(@RequestBody CheckForm checkForm){
-
         return authClient.check(checkForm);
     }
+
+
+    @ApiOperation("修改客户负责人（分配、转移）")
+    @PostMapping (path = "/changeCustChangerManager")
+    public BaseResult changeCustChangerManager(@RequestBody ComCustomerForm comCustomerForm){
+        return crmCustomerManagerService.changeCustChangerManager(comCustomerForm);
+    }
+
+    @ApiOperation("领取客户")
+    @PostMapping (path = "/receiveCustomer")
+    public BaseResult receiveCustomer(@RequestBody ComCustomerForm comCustomerForm){
+        return crmCustomerService.receiveCustomer(comCustomerForm);
+    }
+
 
 }

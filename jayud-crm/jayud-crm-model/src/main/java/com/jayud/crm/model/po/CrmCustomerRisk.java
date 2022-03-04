@@ -1,5 +1,6 @@
 package com.jayud.crm.model.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -54,5 +56,7 @@ public class CrmCustomerRisk extends SysBaseEntity {
     @ApiModelProperty(value = "统一信用代码")
     private String unCreditCode;
 
-
+    @ApiModelProperty(value = "客户id集合")
+    @TableField(exist = false)
+    private List<Long> custIdList;
 }

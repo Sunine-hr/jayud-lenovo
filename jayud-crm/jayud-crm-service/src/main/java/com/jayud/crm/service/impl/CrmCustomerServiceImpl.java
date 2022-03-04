@@ -5,22 +5,25 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
+import com.jayud.common.enums.RoleCodeEnum;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
+import com.jayud.crm.model.bo.ComCustomerForm;
 import com.jayud.crm.model.constant.CodeNumber;
 import com.jayud.crm.model.constant.CrmDictCode;
 import com.jayud.crm.model.enums.CustRiskTypeEnum;
 import com.jayud.crm.model.bo.CrmCodeFrom;
 import com.jayud.crm.model.bo.CrmCustomerForm;
+import com.jayud.crm.model.po.CrmCustomerManager;
+import com.jayud.crm.model.po.CrmCustomerRelations;
 import com.jayud.crm.model.po.CrmCustomerRisk;
-import com.jayud.crm.service.ICrmCustomerFeaturesService;
-import com.jayud.crm.service.ICrmCustomerManagerService;
-import com.jayud.crm.service.ICrmCustomerRiskService;
+import com.jayud.crm.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -28,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.model.po.CrmCustomer;
 import com.jayud.crm.mapper.CrmCustomerMapper;
-import com.jayud.crm.service.ICrmCustomerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 基本档案_客户_基本信息(crm_customer) 服务实现类
@@ -57,6 +60,9 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
 
     @Autowired
     private ICrmCustomerManagerService crmCustomerManagerService;
+    @Autowired
+    private ICrmCustomerRelationsService crmCustomerRelationsService;
+
 
     @Autowired
     private CrmCustomerMapper crmCustomerMapper;
@@ -108,14 +114,15 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         if (crmCustomerForm.getId() == null) {
             isAdd = true;
         }
+        BaseResult riskResult = crmCustomerRiskService.checkIsRisk(crmCustomerForm);
+        if (!riskResult.isSuccess()){
+            return riskResult;
+        }
         BaseResult onlyResult = checkOnly(isAdd, crmCustomerForm);
-        if (!onlyResult.isSuccess()) {
+        if (onlyResult.isSuccess()) {
             crmCustomerForm.setIsCustAdd(isAdd);
             crmCustomerForm.setIsChangeBusniessType(false);
             crmCustomerForm.setBusinessTypesNames(changeBusinessType(crmCustomerForm.getBusinessTypesList()));
-            if (!onlyResult.isSuccess()) {
-                return onlyResult;
-            }
             if (CollUtil.isNotEmpty(crmCustomerForm.getBusinessTypesList())) {
                 crmCustomerForm.setBusinessTypes(StringUtils.join(crmCustomerForm.getBusinessTypesList(), StrUtil.C_COMMA));
             }
@@ -135,6 +142,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             this.updateById(crmCustomerForm);
         }
         crmCustomerManagerService.saveByCustomer(crmCustomerForm);
+        crmCustomerRelationsService.saveRelationByCustomer(crmCustomerForm);
         if (isAdd){
             return BaseResult.ok(crmCustomerForm.getId());
         }else {
@@ -148,6 +156,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         CrmCustomer crmCustomer = this.getById(id);
         BeanUtils.copyProperties(crmCustomer,crmCustomerForm);
         crmCustomerForm.setBusinessTypesList(Arrays.asList(crmCustomer.getBusinessTypes().split(StrUtil.COMMA)));
+        setCustomerRelationsMsg(crmCustomerForm);
         return crmCustomerForm;
     }
 
@@ -171,16 +180,16 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         crmCodeFrom.setCustIndustry(custIndustry.getResult());
         //客户管理-服务类型
         BaseResult<List<SysDictItem>> custServerType = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_SERVER_TYPE);
-        crmCodeFrom.setCustIndustry(custServerType.getResult());
+        crmCodeFrom.setCustServerType(custServerType.getResult());
         //客户管理-对账方式
         BaseResult<List<SysDictItem>> custReconciliationMethod = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_RECONCILIATION_METHOD);
-        crmCodeFrom.setCustIndustry(custReconciliationMethod.getResult());
+        crmCodeFrom.setCustReconciliationMethod(custReconciliationMethod.getResult());
         //客户管理-结算方式
         BaseResult<List<SysDictItem>> custSettlementMethod = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_SETTLEMENT_METHOD);
-        crmCodeFrom.setCustIndustry(custSettlementMethod.getResult());
+        crmCodeFrom.setCustSettlementMethod(custSettlementMethod.getResult());
         //客户管理-客户状态
         BaseResult<List<SysDictItem>> custNormalStatus= sysDictClient.selectItemByDictCode(CrmDictCode.CUST_NORMAL_STATUS);
-        crmCodeFrom.setCustIndustry(custNormalStatus.getResult());
+        crmCodeFrom.setCustNormalStatus(custNormalStatus.getResult());
         //客户管理-银行币别
         BaseResult<List<SysDictItem>> custBankCurrency= sysDictClient.selectItemByDictCode(CrmDictCode.CUST_BANK_CURRENCY);
         crmCodeFrom.setCustBankCurrency(custBankCurrency.getResult());
@@ -210,45 +219,70 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     @Override
     public String getNextCode(String code) {
         BaseResult baseResult = authClient.getOrderFeign(code,new Date());
-        return baseResult.getMsg();
+        return ((HashMap)baseResult.getResult()).get("order").toString();
     }
 
     @Override
     public BaseResult moveCustToRick(List<CrmCustomer> custList) {
+        ComCustomerForm comCustomerForm = new ComCustomerForm();
+        comCustomerForm.setCrmCustomerList(custList);
+        crmCustomerManagerService.getChangeCustManager(comCustomerForm);
         List<CrmCustomerRisk> riskList = new ArrayList<>();
-        for (CrmCustomer crmCustomer : custList){
-            CrmCustomerRisk crmCustomerRisk = new CrmCustomerRisk();
-            crmCustomerRisk.setCustId(crmCustomer.getId());
-            crmCustomerRisk.setCustName(crmCustomer.getCustName());
-            crmCustomerRisk.setRiskType(CustRiskTypeEnum.BLACKLIST_CUST.getDesc());
-            riskList.add(crmCustomerRisk);
+        if (CollUtil.isNotEmpty(comCustomerForm.getChangeList())) {
+            for (CrmCustomer crmCustomer : comCustomerForm.getChangeList()) {
+                CrmCustomerRisk crmCustomerRisk = new CrmCustomerRisk();
+                crmCustomerRisk.setCustId(crmCustomer.getId());
+                crmCustomerRisk.setCustName(crmCustomer.getCustName());
+                crmCustomerRisk.setRiskType(CustRiskTypeEnum.BLACKLIST_CUST.getDesc());
+                riskList.add(crmCustomerRisk);
+            }
         }
         if (CollUtil.isNotEmpty(riskList)){
             crmCustomerRiskService.saveBatch(riskList);
+        }
+        BaseResult errResult = getErrMsg(comCustomerForm);
+        if (!errResult.isSuccess()){
+            return errResult;
         }
         return BaseResult.ok();
     }
 
     @Override
     public BaseResult changeToSupplier(List<CrmCustomer> custList) {
-        if (CollUtil.isNotEmpty(custList)){
-            custList.forEach(crmCustomer -> {
+        ComCustomerForm comCustomerForm = new ComCustomerForm();
+        comCustomerForm.setCrmCustomerList(custList);
+        crmCustomerManagerService.getChangeCustManager(comCustomerForm);
+        crmCustomerRiskService.checkIsRiskByCutsIds(comCustomerForm);
+        if (CollUtil.isNotEmpty(comCustomerForm.getChangeList())){
+            comCustomerForm.getChangeList().forEach(crmCustomer -> {
                 crmCustomer.setIsSupplier(true);
                 crmCustomer.setSupplierCode(getNextCode(CodeNumber.CRM_SUPPLIER_CODE));
             });
-            this.updateBatchById(custList);
+            this.updateBatchById(comCustomerForm.getChangeList());
+        }
+
+        BaseResult errResult = getErrMsg(comCustomerForm);
+        if (!errResult.isSuccess()){
+            return errResult;
         }
         return BaseResult.ok();
     }
 
     @Override
     public BaseResult changeToPublic(List<CrmCustomer> custList) {
-        if (CollUtil.isNotEmpty(custList)){
-            custList.forEach(crmCustomer -> {
+        ComCustomerForm comCustomerForm = new ComCustomerForm();
+        comCustomerForm.setCrmCustomerList(custList);
+        crmCustomerManagerService.getChangeCustManager(comCustomerForm);
+        if (CollUtil.isNotEmpty(comCustomerForm.getChangeList())){
+            comCustomerForm.getChangeList().forEach(crmCustomer -> {
                 crmCustomer.setIsPublic(true);
                 crmCustomer.setTransferPublicTime(LocalDateTime.now());
             });
-            this.updateBatchById(custList);
+            this.updateBatchById(comCustomerForm.getChangeList());
+        }
+        BaseResult errResult = getErrMsg(comCustomerForm);
+        if (!errResult.isSuccess()){
+            return errResult;
         }
         return BaseResult.ok();
     }
@@ -349,7 +383,75 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             }
         }
         return finalType;
+    }
 
+    @Override
+    public BaseResult receiveCustomer(ComCustomerForm comCustomerForm) {
+        if (CollUtil.isNotEmpty(comCustomerForm.getCrmCustomerList())){
+            List<Long> custIdList = comCustomerForm.getCrmCustomerList().stream().map(x->x.getId()).collect(Collectors.toList());
+            CrmCustomer crmCustomer = new CrmCustomer();
+            crmCustomer.setCustIdList(custIdList);
+            List<CrmCustomer> customerList = selectList(crmCustomer);
+            custIdList = customerList.stream().map(x->x.getId()).collect(Collectors.toList());
+            Map<Long,CrmCustomer> custMap = customerList.stream().collect(Collectors.toMap(x->x.getId(),x->x));
+            //取消放入公海
+            LambdaUpdateWrapper<CrmCustomer> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            lambdaUpdateWrapper.le(CrmCustomer::getIsPublic,false);
+            lambdaUpdateWrapper.le(CrmCustomer::getUpdateBy,CurrentUserUtil.getUsername());
+            lambdaUpdateWrapper.le(CrmCustomer::getUpdateTime,LocalDateTime.now());
+            lambdaUpdateWrapper.in(CrmCustomer::getId,custIdList);
+            this.update(lambdaUpdateWrapper);
+            //删除负责人
+            crmCustomerManagerService.delChargerManager(custIdList);
+            //添加负责人
+            crmCustomerManagerService.addChargerManager(custIdList,custMap,CurrentUserUtil.getUserDetail().getId() ,CurrentUserUtil.getUserDetail().getUsername(), RoleCodeEnum.SALE_ROLE.getRoleCode(),RoleCodeEnum.SALE_ROLE.getRoleName());
+        }
+        return BaseResult.ok();
+    }
+
+    /**
+     * @description 设置联系人
+     * @author  ciro
+     * @date   2022/3/4 14:31
+     * @param: crmCustomerForm
+     * @return: void
+     **/
+    private void setCustomerRelationsMsg(CrmCustomerForm crmCustomerForm){
+        CrmCustomerRelations crmCustomerRelations = new CrmCustomerRelations();
+        crmCustomerRelations.setCustId(crmCustomerForm.getId());
+        crmCustomerRelations.setIsDefault(true);
+        List<CrmCustomerRelations> relationsList = crmCustomerRelationsService.selectList(crmCustomerRelations);
+        if (CollUtil.isNotEmpty(relationsList)){
+            crmCustomerRelations = relationsList.get(0);
+            crmCustomerForm.setCustRelationId(crmCustomerRelations.getId());
+            crmCustomerForm.setCustRelationUsername(crmCustomerRelations.getCName());
+            crmCustomerForm.setCustRelationPhone(crmCustomerRelations.getMobile());
+            crmCustomerForm.setCustRelationPostName(crmCustomerRelations.getPostName());
+        }
+    }
+
+    /**
+     * @description 获取错误信息
+     * @author  ciro
+     * @date   2022/3/4 18:34
+     * @param: comCustomerForm
+     * @return: com.jayud.common.BaseResult
+     **/
+    @Override
+    public BaseResult getErrMsg(ComCustomerForm comCustomerForm){
+        String errString = "";
+        if (CollUtil.isNotEmpty(comCustomerForm.getErrList())){
+            List<String> errList = comCustomerForm.getErrList().stream().map(x->x.getCustName()).collect(Collectors.toList());
+            errString = StringUtils.join(errList,StrUtil.C_COMMA)+" 修改失败，请联系负责人修改！";
+        }
+        if (CollUtil.isNotEmpty(comCustomerForm.getRiskList())){
+            List<String> riskList = comCustomerForm.getRiskList().stream().map(x->x.getCustName()).collect(Collectors.toList());
+            errString = StringUtils.join(riskList,StrUtil.C_COMMA)+" 已存在黑名单，请联系负责人修改！";
+        }
+        if (StringUtils.isNotBlank(errString)){
+            return BaseResult.error(errString);
+        }
+        return BaseResult.ok();
     }
 
 }

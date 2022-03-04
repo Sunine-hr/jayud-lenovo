@@ -85,6 +85,13 @@
                 AND remark LIKE CONCAT('%',#{crmCustomerManager.remark},'%')
             </if>
 
+            <if test="crmCustomerManager.custIdList != null and crmCustomerManager.custIdList.size > 0">
+                AND cust_id IN
+                <foreach collection="crmCustomerManager.custIdList" index="index" item="custId" open="(" separator="," close=")">
+                    #{custId}
+                </foreach>
+            </if>
+
         </where>
     </sql>
 

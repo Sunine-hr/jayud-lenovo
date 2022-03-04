@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.crm.model.bo.CrmCustomerForm;
 import com.jayud.crm.model.bo.CrmCustomerRelationsForm;
 import com.jayud.crm.model.po.CrmCreditVisit;
 import lombok.extern.slf4j.Slf4j;
@@ -98,6 +99,27 @@ public class CrmCustomerRelationsServiceImpl extends ServiceImpl<CrmCustomerRela
     @Override
     public List<LinkedHashMap<String, Object>> queryCrmCustomerRelationsForExcel(Map<String, Object> paramMap) {
         return this.baseMapper.queryCrmCustomerRelationsForExcel(paramMap);
+    }
+
+    @Override
+    public void saveRelationByCustomer(CrmCustomerForm crmCustomerForm) {
+        boolean isAdd = false;
+        CrmCustomerRelations crmCustomerRelations = new CrmCustomerRelations();
+        if (crmCustomerForm.getCustRelationId() == null){
+            isAdd = true;
+        }else {
+            crmCustomerRelations = this.getById(crmCustomerForm.getCustRelationId());
+        }
+        crmCustomerRelations.setCustId(crmCustomerForm.getId());
+        crmCustomerRelations.setCName(crmCustomerForm.getCustRelationUsername());
+        crmCustomerRelations.setMobile(crmCustomerForm.getCustRelationPhone());
+        crmCustomerRelations.setPostName(crmCustomerForm.getCustRelationPostName());
+        crmCustomerRelations.setIsDefault(true);
+        if (isAdd){
+            this.save(crmCustomerRelations);
+        }else {
+            this.updateById(crmCustomerRelations);
+        }
     }
 
 }

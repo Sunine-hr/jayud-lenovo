@@ -4,14 +4,20 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.dto.AuthUserDetail;
 import com.jayud.common.enums.RoleCodeEnum;
+import com.jayud.crm.model.bo.ComCustomerForm;
 import com.jayud.crm.model.bo.CrmCustomerManagerForm;
 import com.jayud.crm.model.bo.CrmCustomerForm;
+import com.jayud.crm.model.po.CrmCustomer;
+import com.jayud.crm.service.ICrmCustomerRiskService;
+import com.jayud.crm.service.ICrmCustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -25,11 +31,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 基本档案_客户_客户维护人(crm_customer_manager) 服务实现类
@@ -41,8 +45,11 @@ import java.util.Map;
 @Service
 public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManagerMapper, CrmCustomerManager> implements ICrmCustomerManagerService {
 
+
     @Autowired
-    private ICrmCustomerManagerService crmCustomerManagerService;
+    private ICrmCustomerService crmCustomerService;
+    @Autowired
+    private ICrmCustomerRiskService crmCustomerRiskService;
 
     @Autowired
     private CrmCustomerManagerMapper crmCustomerManagerMapper;
@@ -133,8 +140,9 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
             crmCustomerManager.setManagerRolesName(RoleCodeEnum.SALE_ROLE.getRoleName());
             //客户业务类型
             crmCustomerManager.setManagerBusinessCode(crmCustomerForm.getBusinessTypes());
-            crmCustomerManager.setManagerBusinessName(crmCustomerForm.getBusinessTypesName());
+            crmCustomerManager.setManagerBusinessName(crmCustomerForm.getBusinessTypesNames());
             crmCustomerManager.setIsSale(true);
+            crmCustomerManager.setGenerateDate(LocalDateTime.now());
             this.save(crmCustomerManager);
         }
         if (isUpdate){
@@ -176,5 +184,149 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
         crmCustomerManagerForm.setBusinessTypesList(Arrays.asList(crmCustomerManager.getManagerBusinessCode().split(StrUtil.COMMA)));
         return crmCustomerManagerForm;
     }
+
+    @Override
+    public BaseResult changeCustChangerManager(ComCustomerForm comCustomerForm) {
+        Map<Long, CrmCustomer> custMap = new HashMap<>();
+        List<Long> custList = new ArrayList<>();
+        //新增
+        List<Long> addList = new ArrayList<>();
+        //删除
+        List<Long> delList = new ArrayList<>();
+        //错误
+        List<Long> errList = new ArrayList<>();
+        String successString = "";
+        String errorString = "";
+        crmCustomerRiskService.checkIsRiskByCutsIds(comCustomerForm);
+        if (CollUtil.isNotEmpty(comCustomerForm.getCrmCustomerList())){
+            comCustomerForm.getCrmCustomerList().forEach(crmCustomer -> {
+                custMap.put(crmCustomer.getId(),crmCustomer);
+                custList.add(crmCustomer.getId());
+            });
+            Long currentUserId = CurrentUserUtil.getUserDetail().getId();
+            CrmCustomerManager crmCustomerManager = new CrmCustomerManager();
+            crmCustomerManager.setCustIdList(custList);
+            List<CrmCustomerManager> managerList = selectList(crmCustomerManager);
+            if (CollUtil.isNotEmpty(managerList)){
+                managerList.forEach(x->{
+                    if (comCustomerForm.getIsTranfer()){
+                        if (currentUserId.equals(x.getManageUserId())){
+                            addList.add(x.getCustId());
+                            delList.add(x.getCustId());
+                        }else {
+                            errList.add(x.getCustId());
+                        }
+                    }else {
+                        addList.add(x.getCustId());
+                        delList.add(x.getCustId());
+                    }
+
+                });
+            }
+            if (CollUtil.isNotEmpty(delList)){
+                delChargerManager(delList);
+            }
+            if (CollUtil.isNotEmpty(addList)){
+                addChargerManager(addList,custMap,comCustomerForm.getChangerUserId(),crmCustomerManager.getManageUsername(),RoleCodeEnum.SALE_ROLE.getRoleCode(), RoleCodeEnum.SALE_ROLE.getRoleName());
+            }
+        }
+        if (CollUtil.isNotEmpty(errList)){
+            List<CrmCustomer> errList = new ArrayList<>();
+            errList.forEach(x->{
+                errList.add(custMap.get(x));
+            });
+            comCustomerForm.setErrList(errList);
+        }
+        BaseResult errResult = crmCustomerService.getErrMsg(comCustomerForm);
+        if (!errResult.isSuccess()){
+            return errResult;
+        }
+        return BaseResult.ok();
+    }
+
+    /**
+     * @description 根据客户id集合删除负责人
+     * @author  ciro
+     * @date   2022/3/4 16:24
+     * @param: custIds
+     * @return: void
+     **/
+    @Override
+    public void delChargerManager(List<Long> custIds){
+        LambdaUpdateWrapper<CrmCustomerManager> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.le(CrmCustomerManager::getIsDeleted,false);
+        lambdaUpdateWrapper.le(CrmCustomerManager::getUpdateBy,CurrentUserUtil.getUsername());
+        lambdaUpdateWrapper.le(CrmCustomerManager::getUpdateTime,LocalDateTime.now());
+        lambdaUpdateWrapper.eq(CrmCustomerManager::getIsCharger,true);
+        lambdaUpdateWrapper.in(CrmCustomerManager::getCustId,custIds);
+        this.update(lambdaUpdateWrapper);
+    }
+
+    /**
+     * @description 根据客户id集合新增负责人
+     * @author  ciro
+     * @date   2022/3/4 16:37
+     * @param: custIdList   客户id集合
+     * @param: custMap      客户信息对象
+     * @param: managerUserId      负责人id
+     * @param: managerUsername      负责人名称
+     * @param: roleCodes            角色编码
+     * @param: roleNames            角色名称
+     * @return: void
+     **/
+    @Override
+    public void addChargerManager(List<Long> custIdList, Map<Long, CrmCustomer> custMap, Long managerUserId, String managerUsername, String roleCodes, String roleNames){
+        List<CrmCustomerManager> customerManagerList = new ArrayList<>();
+        custIdList.forEach(custId->{
+            CrmCustomerManager crmCustomerManager1 = new CrmCustomerManager();
+            crmCustomerManager1.setCustId(custId);
+            crmCustomerManager1.setManageUserId(managerUserId);
+            crmCustomerManager1.setManageUsername(managerUsername);
+            crmCustomerManager1.setManageRoles(roleCodes);
+            crmCustomerManager1.setManagerRolesName(roleNames);
+            crmCustomerManager1.setManagerBusinessCode(custMap.get(custId).getBusinessTypes());
+            crmCustomerManager1.setManagerBusinessName(crmCustomerService.changeBusinessType(Arrays.asList(custMap.get(custId).getBusinessTypes().split(StrUtil.COMMA))));
+            crmCustomerManager1.setGenerateDate(LocalDateTime.now());
+            customerManagerList.add(crmCustomerManager1);
+        });
+        this.saveBatch(customerManagerList);
+    }
+
+
+    @Override
+    public void getChangeCustManager(ComCustomerForm comCustomerForm) {
+        List<Long> custIdList = comCustomerForm.getCrmCustomerList().stream().map(x->x.getId()).collect(Collectors.toList());
+        Map<Long, CrmCustomer> custMap = comCustomerForm.getCrmCustomerList().stream().collect(Collectors.toMap(x->x.getId(),x->x));
+        //负责人对象
+        Map<Long, CrmCustomerManager> custManagerMap = new HashMap<>(16);
+        //查询所有负责人
+        CrmCustomerManager crmCustomerManager = new CrmCustomerManager();
+        crmCustomerManager.setCustIdList(custIdList);
+        crmCustomerManager.setIsCharger(true);
+        List<CrmCustomerManager> managerList = selectList(crmCustomerManager);
+        Long currentUserId = CurrentUserUtil.getUserDetail().getId();
+
+        if (CollUtil.isNotEmpty(managerList)){
+            custIdList = managerList.stream().map(x->x.getId()).collect(Collectors.toList());
+            custManagerMap = managerList.stream().collect(Collectors.toMap(x->x.getCustId(),x->x));
+        }
+        List<CrmCustomer> changelList = new ArrayList<>();
+        List<CrmCustomer> errList = new ArrayList<>();
+        for (Long custId:custMap.keySet()){
+            CrmCustomer crmCustomer = custMap.get(custId);
+            if (custManagerMap.containsKey(custId)){
+                if (custManagerMap.get(custId).getManageUserId().equals(currentUserId)){
+                    changelList.add(crmCustomer);
+                }else {
+                    errList.add(crmCustomer);
+                }
+            }else {
+                errList.add(crmCustomer);
+            }
+        }
+        comCustomerForm.setChangeList(changelList);
+        comCustomerForm.setErrList(errList);
+    }
+
 
 }

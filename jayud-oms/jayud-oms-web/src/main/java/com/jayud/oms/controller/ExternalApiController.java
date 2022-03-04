@@ -502,7 +502,7 @@ public class ExternalApiController {
     }
 
     @ApiOperation(value = "币种")
-    @RequestMapping(value = "api/initCurrencyInfo")
+    @RequestMapping(value = "/api/initCurrencyInfo")
     public ApiResult initCurrencyInfo() {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(SqlConstant.STATUS, 1);

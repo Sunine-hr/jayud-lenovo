@@ -8,8 +8,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.crm.model.bo.ComCustomerForm;
 import com.jayud.crm.model.bo.CrmCustomerRiskForm;
 import com.jayud.crm.model.po.CrmCreditVisit;
+import com.jayud.crm.model.po.CrmCustomer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 基本档案_客户_风险客户（crm_customer_risk） 服务实现类
@@ -100,6 +103,44 @@ public class CrmCustomerRiskServiceImpl extends ServiceImpl<CrmCustomerRiskMappe
     @Override
     public List<LinkedHashMap<String, Object>> queryCrmCustomerRiskForExcel(Map<String, Object> paramMap) {
         return this.baseMapper.queryCrmCustomerRiskForExcel(paramMap);
+    }
+
+    @Override
+    public BaseResult checkIsRisk(CrmCustomer crmCustomer) {
+        CrmCustomerRisk crmCustomerRisk = new CrmCustomerRisk();
+        if (crmCustomer.getId() == null){
+            crmCustomerRisk.setCustName(crmCustomer.getCustName());
+        }else {
+            crmCustomerRisk.setCustId(crmCustomer.getId());
+        }
+        List<CrmCustomerRisk> list = selectList(crmCustomerRisk);
+        if (CollUtil.isNotEmpty(list)){
+            return BaseResult.error(crmCustomer.getCustName()+SysTips.CUTS_IN_RISK_ERROR);
+        }
+        return BaseResult.ok();
+    }
+
+    @Override
+    public ComCustomerForm checkIsRiskByCutsIds(ComCustomerForm comCustomerForm) {
+        List<Long> idsList = comCustomerForm.getCrmCustomerList().stream().map(x->x.getId()).collect(Collectors.toList());
+        CrmCustomerRisk crmCustomerRisk = new CrmCustomerRisk();
+        crmCustomerRisk.setCustIdList(idsList);
+        List<CrmCustomerRisk> crmCustomerRiskList = selectList(crmCustomerRisk);
+        if (CollUtil.isNotEmpty(crmCustomerRiskList)){
+            List<CrmCustomer> changeList = new ArrayList<>();
+            List<CrmCustomer> riskList = new ArrayList<>();
+            List<Long> riskIdList = crmCustomerRiskList.stream().map(x->x.getCustId()).collect(Collectors.toList());
+            comCustomerForm.getCrmCustomerList().forEach(crmCustomer -> {
+                if (riskIdList.contains(crmCustomer.getId())){
+                    riskList.add(crmCustomer);
+                }else {
+                    changeList.add(crmCustomer);
+                }
+            });
+            comCustomerForm.setChangeList(changeList);
+            comCustomerForm.setRiskList(riskList);
+        }
+        return comCustomerForm;
     }
 
 }

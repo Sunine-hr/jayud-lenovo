@@ -94,5 +94,17 @@ public class CurrentUserUtil {
         return isHas;
     }
 
+    /**
+     * @description 获取当前用户id
+     * @author  ciro
+     * @date   2022/3/4 15:49
+     * @param:
+     * @return: java.lang.Long
+     **/
+    private static Long getUserId(){
+        AuthUserDetail authUserDetail = getUserDetail();
+        return authUserDetail.getId();
+    }
+
 
 }

@@ -227,5 +227,7 @@ public interface SysTips {
     String NUM_ALREADY_EXISTS= "该编号已存在";
 
     String TYPE_ALREADY_EXISTS= "该额度类型已存在";
+
+    String CUTS_IN_RISK_ERROR = "客户存在风险，请联系相关人员！";
 }
 

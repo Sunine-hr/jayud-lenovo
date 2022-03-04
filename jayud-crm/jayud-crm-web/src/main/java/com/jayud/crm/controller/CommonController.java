@@ -73,5 +73,15 @@ public class CommonController {
         return CommonResult.success(this.omsClient.adrrTree().getData());
     }
 
+    /**
+     * @description 获取额度类型
+     **/
+    @ApiOperation("获取额度类型")
+    @RequestMapping("/getQuotaType")
+    public BaseResult<List<SysDictItem>> getQuotaType() {
+        BaseResult<List<SysDictItem>> custBusinessType = sysDictClient.selectItemByDictCode(CrmDictCode.CRM_CREDIT_TYPE);
+        return custBusinessType;
+    }
+
 }
 

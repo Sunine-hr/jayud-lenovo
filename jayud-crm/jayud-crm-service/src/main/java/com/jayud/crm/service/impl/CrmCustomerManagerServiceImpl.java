@@ -231,11 +231,11 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
             }
         }
         if (CollUtil.isNotEmpty(errList)){
-            List<CrmCustomer> errList = new ArrayList<>();
+            List<CrmCustomer> errCustList = new ArrayList<>();
             errList.forEach(x->{
-                errList.add(custMap.get(x));
+                errCustList.add(custMap.get(x));
             });
-            comCustomerForm.setErrList(errList);
+            comCustomerForm.setErrList(errCustList);
         }
         BaseResult errResult = crmCustomerService.getErrMsg(comCustomerForm);
         if (!errResult.isSuccess()){

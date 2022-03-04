@@ -204,7 +204,7 @@ public class CrmFileController {
      * @author  ciro
      * @date   2022/3/2 11:07
      * @param:
-     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.form.CrmCodeFrom>
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.bo.CrmCodeFrom>
      **/
     @ApiOperation("获取客户管理附件类型字典下拉")
     @GetMapping(path = "/getCrmFileCode")

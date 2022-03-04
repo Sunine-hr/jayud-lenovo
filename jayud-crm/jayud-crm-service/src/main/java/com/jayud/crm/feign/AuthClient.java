@@ -51,10 +51,11 @@ public interface AuthClient {
 
 
 
+
     /**
      * @description 根据角色编码查询用户
      * @author  ciro
-     * @date   2022/3/3 10:16
+     * @date   2022/3/4 9:37
      * @param: roleCode 角色编码
      * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.auth.model.dto.SysUserDTO>>
      **/

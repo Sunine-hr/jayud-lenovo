@@ -5,7 +5,7 @@ import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.bo.CrmCustomerAddressForm;
 import com.jayud.crm.model.constant.CrmDictCode;
-import com.jayud.crm.model.form.CrmCodeFollowForm;
+import com.jayud.crm.model.bo.CrmCodeFollowForm;
 import com.jayud.crm.model.po.CrmCustomerRelations;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -227,7 +227,7 @@ public class CrmCustomerAddressController {
      * @author  ciro
      * @date   2022/3/2 11:07
      * @param:
-     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.form.CrmCodeFrom>
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.bo.CrmCodeFrom>
      **/
     @ApiOperation("获取客户地址类型字典下拉")
     @GetMapping(path = "/getCrmCustomerAddressCode")

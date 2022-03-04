@@ -1,4 +1,4 @@
-package com.jayud.crm.model.form;
+package com.jayud.crm.model.bo;
 
 import com.jayud.crm.model.po.CrmCustomer;
 import io.swagger.annotations.ApiModel;

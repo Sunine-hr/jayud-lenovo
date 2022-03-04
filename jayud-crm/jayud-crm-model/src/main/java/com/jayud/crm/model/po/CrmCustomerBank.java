@@ -49,8 +49,11 @@ public class CrmCustomerBank extends SysBaseEntity {
     @ApiModelProperty(value = "开户行")
     private String bankDeposit;
 
-    @ApiModelProperty(value = "账户币别")
+    @ApiModelProperty(value = "账户币别名称")
     private String currencyName;
+
+    @ApiModelProperty(value = "账户币别编码")
+    private String currencyCode;
 
     @ApiModelProperty(value = "国际联行号")
     private String swiftcode;

@@ -9,8 +9,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.dto.AuthUserDetail;
+import com.jayud.common.enums.RoleCodeEnum;
 import com.jayud.crm.model.bo.CrmCustomerManagerForm;
-import com.jayud.crm.model.form.CrmCustomerForm;
+import com.jayud.crm.model.bo.CrmCustomerForm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -76,6 +77,11 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
         crmCustomerManagerMapper.logicDel(id,CurrentUserUtil.getUsername());
     }
 
+    @Override
+    public void logicDelByIds(List<Long> ids) {
+        crmCustomerManagerMapper.logicDelByIds(ids,CurrentUserUtil.getUsername());
+    }
+
 
     @Override
     public List<LinkedHashMap<String, Object>> queryCrmCustomerManagerForExcel(Map<String, Object> paramMap) {
@@ -123,8 +129,8 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
             //对接人信息
             crmCustomerManager.setManageUserId(crmCustomerForm.getManagerUserId());
             crmCustomerManager.setManageUsername(crmCustomerForm.getManagerUsername());
-            crmCustomerManager.setManageRoles(crmCustomerForm.getManagerUserRoleCode());
-            crmCustomerManager.setManagerRolesName(crmCustomerForm.getManagerUserRoleName());
+            crmCustomerManager.setManageRoles(RoleCodeEnum.TENANT_ROLE_ADMIN.getRoleCode());
+            crmCustomerManager.setManagerRolesName(RoleCodeEnum.SALE_ROLE.getRoleName());
             //客户业务类型
             crmCustomerManager.setManagerBusinessCode(crmCustomerForm.getBusinessTypes());
             crmCustomerManager.setManagerBusinessName(crmCustomerForm.getBusinessTypesName());

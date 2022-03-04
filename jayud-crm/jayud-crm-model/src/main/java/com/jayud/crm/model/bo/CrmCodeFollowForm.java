@@ -1,4 +1,4 @@
-package com.jayud.crm.model.form;
+package com.jayud.crm.model.bo;
 
 import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.crm.model.po.CrmCustomerRelations;
@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

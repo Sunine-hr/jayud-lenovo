@@ -1,4 +1,4 @@
-package com.jayud.crm.model.form;
+package com.jayud.crm.model.bo;
 
 import com.jayud.auth.model.po.SysDictItem;
 import io.swagger.annotations.ApiModel;

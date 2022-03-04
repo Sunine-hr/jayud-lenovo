@@ -69,7 +69,7 @@ public interface CrmCustomerBankMapper extends BaseMapper<CrmCustomerBank> {
      * @param: username
      * @return: int
      **/
-    int logicDelByIds(@Param("ids") Long[] ids,@Param("username") String username);
+    int logicDelByIds(@Param("ids") List<Long> ids,@Param("username") String username);
 
 
     /**

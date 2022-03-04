@@ -5,7 +5,7 @@ import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.bo.CrmCustomerRiskForm;
 import com.jayud.crm.model.bo.DeleteForm;
 import com.jayud.crm.model.constant.CrmDictCode;
-import com.jayud.crm.model.form.CrmCodeFrom;
+import com.jayud.crm.model.bo.CrmCodeFrom;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -201,7 +201,7 @@ public class CrmCustomerRiskController {
      * @author  ciro
      * @date   2022/3/2 11:07
      * @param:
-     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.form.CrmCodeFrom>
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.bo.CrmCodeFrom>
      **/
     @ApiOperation("获取风控管理类型字典下拉")
     @GetMapping(path = "/getCrmCustomerRiskCode")

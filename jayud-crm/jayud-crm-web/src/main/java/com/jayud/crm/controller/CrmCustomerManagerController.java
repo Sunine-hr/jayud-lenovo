@@ -1,6 +1,7 @@
 package com.jayud.crm.controller;
 
 import com.jayud.crm.model.bo.CrmCustomerManagerForm;
+import com.jayud.crm.model.bo.DeleteForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -133,10 +134,9 @@ public class CrmCustomerManagerController {
      * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("逻辑删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id){
-        crmCustomerManagerService.logicDel(id);
+    @PostMapping("/logicDel")
+    public BaseResult logicDel(@RequestBody DeleteForm form){
+        crmCustomerManagerService.logicDelByIds(form.getIds());
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 

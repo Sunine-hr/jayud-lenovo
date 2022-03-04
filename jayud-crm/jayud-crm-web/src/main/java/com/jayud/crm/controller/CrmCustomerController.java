@@ -6,8 +6,8 @@ import com.jayud.auth.model.po.SysRole;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
-import com.jayud.crm.model.form.CrmCodeFrom;
-import com.jayud.crm.model.form.CrmCustomerForm;
+import com.jayud.crm.model.bo.CrmCodeFrom;
+import com.jayud.crm.model.bo.CrmCustomerForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -159,7 +159,7 @@ public class CrmCustomerController {
      * @author  jayud
      * @date   2022-03-01
      * @param: id
-     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.form.CrmCodeFrom>
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.bo.CrmCodeFrom>
      **/
     @ApiOperation("根据id查询")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
@@ -266,7 +266,7 @@ public class CrmCustomerController {
      * @author  ciro
      * @date   2022/3/2 11:07
      * @param:
-     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.form.CrmCodeFrom>
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.bo.CrmCodeFrom>
      **/
     @ApiOperation("获取用户字典下拉")
     @GetMapping(path = "/getCrmCode")

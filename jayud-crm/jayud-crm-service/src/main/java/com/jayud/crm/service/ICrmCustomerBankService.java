@@ -75,7 +75,7 @@ public interface ICrmCustomerBankService extends IService<CrmCustomerBank> {
      * @param: ids
      * @return: com.jyd.component.commons.result.Result
      **/
-    void logicDelByIds(Long[] ids);
+    void logicDelByIds(List<Long> ids);
 
 
 

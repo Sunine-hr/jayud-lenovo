@@ -15,8 +15,8 @@ import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.constant.CodeNumber;
 import com.jayud.crm.model.constant.CrmDictCode;
 import com.jayud.crm.model.enums.CustRiskTypeEnum;
-import com.jayud.crm.model.form.CrmCodeFrom;
-import com.jayud.crm.model.form.CrmCustomerForm;
+import com.jayud.crm.model.bo.CrmCodeFrom;
+import com.jayud.crm.model.bo.CrmCustomerForm;
 import com.jayud.crm.model.po.CrmCustomerRisk;
 import com.jayud.crm.service.ICrmCustomerFeaturesService;
 import com.jayud.crm.service.ICrmCustomerManagerService;
@@ -110,14 +110,17 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         }
         BaseResult onlyResult = checkOnly(isAdd, crmCustomerForm);
         if (!onlyResult.isSuccess()) {
-        crmCustomerForm.setIsCustAdd(isAdd);
-        crmCustomerForm.setIsChangeBusniessType(false);
-        crmCustomerForm.setBusinessTypesNames(changeBusinessType(crmCustomerForm.getBusinessTypesList()));
-        if (!onlyResult.isSuccess()){
+            crmCustomerForm.setIsCustAdd(isAdd);
+            crmCustomerForm.setIsChangeBusniessType(false);
+            crmCustomerForm.setBusinessTypesNames(changeBusinessType(crmCustomerForm.getBusinessTypesList()));
+            if (!onlyResult.isSuccess()) {
+                return onlyResult;
+            }
+            if (CollUtil.isNotEmpty(crmCustomerForm.getBusinessTypesList())) {
+                crmCustomerForm.setBusinessTypes(StringUtils.join(crmCustomerForm.getBusinessTypesList(), StrUtil.C_COMMA));
+            }
+        }else {
             return onlyResult;
-        }
-        if (CollUtil.isNotEmpty(crmCustomerForm.getBusinessTypesList())) {
-            crmCustomerForm.setBusinessTypes(StringUtils.join(crmCustomerForm.getBusinessTypesList(), StrUtil.C_COMMA));
         }
         if (isAdd) {
             crmCustomerForm.setCustCode(getNextCode(CodeNumber.CRM_CUST_CODE));
@@ -328,7 +331,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     public String changeBusinessType(List<String> businessTypesList){
         String finalType = "";
         BaseResult<List<SysDictItem>> custBusinessType = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_BUSINESS_TYPE);
-        Map<String,String> typeMap = new HashMap<>();
+        Map<String,String> typeMap = new HashMap<>(16);
         List<String> typeNamesList = new ArrayList<>();
         if (CollUtil.isNotEmpty(custBusinessType.getResult())){
             custBusinessType.getResult().forEach(x->{

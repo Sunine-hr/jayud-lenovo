@@ -24,7 +24,6 @@
 <!--        <module>jayud-oauth</module>-->
 <!--        <module>jayud-customs</module>-->
 <!--        <module>jayud-finance</module>-->
-<!--        <module>jayud-oms</module>-->
 <!--        <module>jayud-tms</module>-->
 <!--        <module>jayud-freight-air</module>-->
 <!--        <module>jayud-mall</module>-->
@@ -45,6 +44,7 @@
 <!--        <module>jayud-system</module>-->
         <module>jayud-mybatisplus</module>
         <module>jayud-crm</module>
+        <module>jayud-oms</module>
 
 
     </modules>

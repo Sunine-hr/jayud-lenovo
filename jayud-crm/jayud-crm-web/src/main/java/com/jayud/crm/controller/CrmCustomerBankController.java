@@ -1,5 +1,6 @@
 package com.jayud.crm.controller;
 
+import com.jayud.crm.model.bo.DeleteForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -124,26 +125,11 @@ public class CrmCustomerBankController {
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 
-    /**
-     * @description 逻辑删除
-     * @author  jayud
-     * @date   2022-03-02
-     * @param: id
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("逻辑删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id){
-        crmCustomerBankService.logicDel(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
 
     @ApiOperation("逻辑删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/logicDelByIds")
-    public BaseResult logicDelByIds(@RequestParam Long[] ids){
-        crmCustomerBankService.logicDelByIds(ids);
+    @PostMapping("/logicDel")
+    public BaseResult logicDelByIds(@RequestBody DeleteForm form){
+        crmCustomerBankService.logicDelByIds(form.getIds());
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 

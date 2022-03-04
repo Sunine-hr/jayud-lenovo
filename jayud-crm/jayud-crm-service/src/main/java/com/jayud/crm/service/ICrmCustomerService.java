@@ -3,8 +3,8 @@ package com.jayud.crm.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.BaseResult;
-import com.jayud.crm.model.form.CrmCodeFrom;
-import com.jayud.crm.model.form.CrmCustomerForm;
+import com.jayud.crm.model.bo.CrmCodeFrom;
+import com.jayud.crm.model.bo.CrmCustomerForm;
 import com.jayud.crm.model.po.CrmCustomer;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -97,7 +97,7 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      * @author  ciro
      * @date   2022/3/2 11:18
      * @param: id
-     * @return: com.jayud.crm.model.form.CrmCustomerForm
+     * @return: com.jayud.crm.model.bo.CrmCustomerForm
      **/
     CrmCustomerForm selectById(Long id);
 
@@ -106,7 +106,7 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      * @author  ciro
      * @date   2022/3/2 11:43
      * @param:
-     * @return: com.jayud.crm.model.form.CrmCodeFrom
+     * @return: com.jayud.crm.model.bo.CrmCodeFrom
      **/
     CrmCodeFrom getCrmCode();
 
@@ -116,7 +116,7 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      * @author  ciro
      * @date   2022/3/3 11:10
      * @param: custId
-     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.form.CrmCodeFrom>
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.bo.CrmCodeFrom>
      **/
     BaseResult<CrmCodeFrom> getBbusinessTypesByCustId(Long custId);
 

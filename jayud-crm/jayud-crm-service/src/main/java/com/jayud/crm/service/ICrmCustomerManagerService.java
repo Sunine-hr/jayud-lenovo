@@ -4,7 +4,7 @@ package com.jayud.crm.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.BaseResult;
 import com.jayud.crm.model.bo.CrmCustomerManagerForm;
-import com.jayud.crm.model.form.CrmCustomerForm;
+import com.jayud.crm.model.bo.CrmCustomerForm;
 import com.jayud.crm.model.po.CrmCustomerManager;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -68,6 +68,15 @@ public interface ICrmCustomerManagerService extends IService<CrmCustomerManager>
     * @return: com.jyd.component.commons.result.Result
     **/
     void logicDel(Long id);
+
+    /**
+     * @description 根据ids逻辑删除
+     * @author  ciro
+     * @date   2022/3/4 9:42
+     * @param: ids
+     * @return: void
+     **/
+    void logicDelByIds(List<Long> ids);
 
 
 

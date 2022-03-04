@@ -13,6 +13,7 @@
         <result column="acc_name" property="accName" />
         <result column="acc_number" property="accNumber" />
         <result column="currency_name" property="currencyName" />
+        <result column="currency_code" property="currencyCode" />
         <result column="swiftcode" property="swiftcode" />
         <result column="is_default" property="isDefault" />
         <result column="tenant_code" property="tenantCode" />
@@ -26,7 +27,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, cust_id, bank_name, bank_address, bank_num, acc_name, acc_number, currency_name, swiftcode, is_default, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, cust_id, bank_name, bank_address, bank_num, acc_name, acc_number, currency_name, currency_code, swiftcode, is_default, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
@@ -65,6 +66,10 @@
 
             <if test="crmCustomerBank.currencyName != null and crmCustomerBank.currencyName != ''">
                 AND currency_name LIKE CONCAT('%',#{crmCustomerBank.currencyName},'%')
+            </if>
+
+            <if test="crmCustomerBank.currencyCode != null and crmCustomerBank.currencyCode != ''">
+                AND currency_code LIKE CONCAT('%',#{crmCustomerBank.currencyCode},'%')
             </if>
 
             <if test="crmCustomerBank.swiftcode != null and crmCustomerBank.swiftcode != ''">

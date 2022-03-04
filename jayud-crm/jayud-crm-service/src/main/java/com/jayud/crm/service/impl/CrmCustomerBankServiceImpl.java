@@ -71,7 +71,7 @@ public class CrmCustomerBankServiceImpl extends ServiceImpl<CrmCustomerBankMappe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDelByIds(Long[] ids) {
+    public void logicDelByIds(List<Long> ids) {
         crmCustomerBankMapper.logicDelByIds(ids,CurrentUserUtil.getUsername());
     }
 

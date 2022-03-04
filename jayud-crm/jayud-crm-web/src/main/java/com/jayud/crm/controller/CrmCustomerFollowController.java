@@ -5,7 +5,7 @@ import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.bo.CrmCustomerFollowForm;
 import com.jayud.crm.model.constant.CrmDictCode;
-import com.jayud.crm.model.form.CrmCodeFollowForm;
+import com.jayud.crm.model.bo.CrmCodeFollowForm;
 import com.jayud.crm.model.po.CrmCustomerRelations;
 import com.jayud.crm.model.vo.CrmCustomerFollowVO;
 import com.jayud.crm.service.ICrmCustomerRelationsService;
@@ -217,7 +217,7 @@ public class CrmCustomerFollowController {
      * @author  ciro
      * @date   2022/3/2 11:07
      * @param:
-     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.form.CrmCodeFrom>
+     * @return: com.jayud.common.BaseResult<com.jayud.crm.model.bo.CrmCodeFrom>
      **/
     @ApiOperation("获取跟进记录方式字典下拉")
     @GetMapping(path = "/getCrmCustomerRiskCode")

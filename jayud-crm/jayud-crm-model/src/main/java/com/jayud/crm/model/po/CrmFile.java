@@ -36,6 +36,9 @@ public class CrmFile extends SysBaseEntity {
     @ApiModelProperty(value = "业务主键")
     private Long businessId;
 
+    @ApiModelProperty(value = "附件标识编号")
+    private String crmFileNumber;
+
     @ApiModelProperty(value = "附件类型")
     private String fileType;
 
@@ -50,7 +53,6 @@ public class CrmFile extends SysBaseEntity {
 
     @ApiModelProperty(value = "备注")
     private String remark;
-
 
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")
 //    @TableLogic

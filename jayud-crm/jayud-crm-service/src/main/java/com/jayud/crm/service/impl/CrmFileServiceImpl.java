@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.BaseResult;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.crm.feign.FileClient;
 import com.jayud.crm.model.bo.CrmFileForm;
 import com.jayud.crm.model.bo.QueryCrmFile;
 import com.jayud.crm.model.enums.FileModuleEnum;
@@ -42,6 +43,8 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
 
     @Autowired
     private CrmFileMapper crmFileMapper;
+    @Autowired
+    private FileClient fileClient;
 
     @Override
     public IPage<CrmFile> selectPage(CrmFile crmFile,
@@ -61,7 +64,7 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
 
     @Override
     public BaseResult saveOrUpdateCrmFile(QueryCrmFile queryCrmFile) {
-
+        Object url = this.fileClient.getBaseUrl().getData();
 //        CrmFile convert = ConvertUtil.convert(CrmFile, CrmFile.class);
 
         if(queryCrmFile!=null){
@@ -71,9 +74,10 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
                 CrmFile crmFile = new CrmFile();
                 crmFile.setCode(FileModuleEnum.CRM_FILE.getCode());
                 crmFile.setBusinessId(queryCrmFile.getBusinessId());
+                crmFile.setCrmFileNumber("文件编号");
                 crmFile.setFileName(crmFileForm.get(i).getFileName());
                 crmFile.setFileType(queryCrmFile.getFileType());
-                crmFile.setUploadFileUrl(crmFileForm.get(i).getUploadFileUrl());
+                crmFile.setUploadFileUrl(url+crmFileForm.get(i).getUploadFileUrl());
                 crmFile.setCreateBy(CurrentUserUtil.getUsername());
                 crmFile.setCreateTime(new Date());
                 crmFile.setRemark(queryCrmFile.getRemark());

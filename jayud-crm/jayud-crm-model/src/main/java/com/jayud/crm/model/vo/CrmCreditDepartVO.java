@@ -1,22 +1,14 @@
-package com.jayud.crm.model.po;
+package com.jayud.crm.model.vo;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDateTime;
-import java.math.BigDecimal;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.experimental.Accessors;
+
+import java.math.BigDecimal;
 
 /**
  * CrmCreditDepart 实体类
@@ -28,7 +20,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value = "基本档案_额度_部门额度授信管理(crm_credit_depart)对象", description = "基本档案_额度_部门额度授信管理(crm_credit_depart)")
-public class CrmCreditDepart extends SysBaseEntity {
+public class CrmCreditDepartVO extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "额度类型ID")
@@ -52,6 +44,9 @@ public class CrmCreditDepart extends SysBaseEntity {
 
     @ApiModelProperty(value = "已授信额度")
     private BigDecimal creditGrantedMoney;
+
+    @ApiModelProperty(value = "剩余授信额度")
+    private BigDecimal remainingQuota;
 
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;

@@ -3,6 +3,7 @@ package com.jayud.crm.mapper;
 import com.jayud.crm.model.po.CrmCreditDepart;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import com.jayud.crm.model.vo.CrmCreditDepartVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -30,7 +31,7 @@ public interface CrmCreditDepartMapper extends BaseMapper<CrmCreditDepart> {
      * @param: crmCreditDepart
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCreditDepart>
      **/
-    IPage<CrmCreditDepart> pageList(@Param("page") Page<CrmCreditDepart> page, @Param("crmCreditDepart") CrmCreditDepart crmCreditDepart);
+    IPage<CrmCreditDepartVO> pageList(@Param("page") Page<CrmCreditDepart> page, @Param("crmCreditDepart") CrmCreditDepart crmCreditDepart);
 
     /**
      * @description 列表查询数据

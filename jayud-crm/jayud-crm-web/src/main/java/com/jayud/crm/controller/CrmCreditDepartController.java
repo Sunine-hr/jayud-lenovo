@@ -1,6 +1,9 @@
 package com.jayud.crm.controller;
 
+import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.model.bo.AddCrmCreditDepartForm;
+import com.jayud.crm.model.bo.AddCrmCreditForm;
+import com.jayud.crm.model.vo.CrmCreditDepartVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,6 +15,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.crm.service.ICrmCreditDepartService;
 import com.jayud.crm.model.po.CrmCreditDepart;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -56,10 +60,10 @@ public class CrmCreditDepartController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<CrmCreditDepart>> selectPage(CrmCreditDepart crmCreditDepart,
-                                                         @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
-                                                         @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                                         HttpServletRequest req) {
+    public BaseResult<IPage<CrmCreditDepartVO>> selectPage(CrmCreditDepart crmCreditDepart,
+                                                           @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+                                                           @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                           HttpServletRequest req) {
         return BaseResult.ok(crmCreditDepartService.selectPage(crmCreditDepart, currentPage, pageSize, req));
     }
 
@@ -82,43 +86,39 @@ public class CrmCreditDepartController {
 
     /**
      * @description 新增/编辑
+     * @author jayud
+     * @date 2022-03-03
+     * @param: crmCredit
+     * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("新增/编辑")
     @PostMapping("/saveOrUpdate")
     public BaseResult saveOrUpdate(@Valid @RequestBody AddCrmCreditDepartForm form) {
+        List<CrmCreditDepart> list = this.crmCreditDepartService.selectList(new CrmCreditDepart().setCreditId(form.getCreditId()).setDepartId(form.getDepartId()).setIsDeleted(false).setTenantCode(CurrentUserUtil.getUserTenantCode()));
+        if (list.size() > 0) {
+            CrmCreditDepart tmp = list.get(0);
+            if (!tmp.getId().equals(form.getId())) {
+                return BaseResult.error(SysTips.LEGAL_ENTITY_GRANTED_CREDIT);
+            }
+        }
+        //计算剩余额度
+        BigDecimal remainingQuota = this.crmCreditDepartService.calculationRemainingCreditLine(form.getCreditId(), CurrentUserUtil.getUserTenantCode());
+        if (remainingQuota.compareTo(form.getCreditAmt()) < 0) {
+            return BaseResult.error(SysTips.INSUFFICIENT_REMAINING_AMOUNT);
+        }
         crmCreditDepartService.saveOrUpdate(form);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
 
-
     /**
-     * @description 编辑
-     * @author jayud
-     * @date 2022-03-03
-     * @param: crmCreditDepart
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("编辑")
-    @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody CrmCreditDepart crmCreditDepart) {
-        crmCreditDepartService.updateById(crmCreditDepart);
-        return BaseResult.ok(SysTips.EDIT_SUCCESS);
-    }
-
-
-    /**
-     * @description 物理删除
-     * @author jayud
-     * @date 2022-03-03
-     * @param: id
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
-    @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id) {
-        crmCreditDepartService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
+     * 法人主体剩余授信额度计算
+     */
+    @ApiOperation("法人主体剩余授信额度计算")
+    @GetMapping("/calculationRemainingCreditLine")
+    public BaseResult calculationRemainingCreditLine(@RequestParam("creditId")String creditId) {
+        //计算剩余额度
+        BigDecimal remainingQuota = this.crmCreditDepartService.calculationRemainingCreditLine(creditId, CurrentUserUtil.getUserTenantCode());
+        return BaseResult.ok(remainingQuota);
     }
 
     /**

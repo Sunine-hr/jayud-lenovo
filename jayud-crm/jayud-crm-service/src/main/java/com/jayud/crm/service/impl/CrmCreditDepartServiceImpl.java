@@ -1,11 +1,19 @@
 package com.jayud.crm.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.constant.SysTips;
+import com.jayud.common.exception.JayudBizException;
+import com.jayud.common.utils.BigDecimalUtil;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.crm.model.bo.AddCrmCreditDepartForm;
+import com.jayud.crm.model.po.CrmCredit;
+import com.jayud.crm.model.vo.CrmCreditDepartVO;
+import com.jayud.crm.service.ICrmCreditService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -17,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -36,35 +45,40 @@ public class CrmCreditDepartServiceImpl extends ServiceImpl<CrmCreditDepartMappe
 
     @Autowired
     private CrmCreditDepartMapper crmCreditDepartMapper;
+    @Autowired
+    private ICrmCreditService crmCreditService;
 
     @Override
-    public IPage<CrmCreditDepart> selectPage(CrmCreditDepart crmCreditDepart,
-                                        Integer currentPage,
-                                        Integer pageSize,
-                                        HttpServletRequest req){
+    public IPage<CrmCreditDepartVO> selectPage(CrmCreditDepart crmCreditDepart,
+                                             Integer currentPage,
+                                             Integer pageSize,
+                                             HttpServletRequest req) {
 
-        Page<CrmCreditDepart> page=new Page<CrmCreditDepart>(currentPage,pageSize);
-        IPage<CrmCreditDepart> pageList= crmCreditDepartMapper.pageList(page, crmCreditDepart);
+        Page<CrmCreditDepart> page = new Page<CrmCreditDepart>(currentPage, pageSize);
+        IPage<CrmCreditDepartVO> pageList = crmCreditDepartMapper.pageList(page, crmCreditDepart);
+        for (CrmCreditDepartVO record : pageList.getRecords()) {
+            record.setRemainingQuota(BigDecimalUtil.subtract(record.getCreditAmt(),record.getCreditGrantedMoney()));
+        }
         return pageList;
     }
 
     @Override
-    public List<CrmCreditDepart> selectList(CrmCreditDepart crmCreditDepart){
+    public List<CrmCreditDepart> selectList(CrmCreditDepart crmCreditDepart) {
         return crmCreditDepartMapper.list(crmCreditDepart);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void phyDelById(Long id){
+    public void phyDelById(Long id) {
         crmCreditDepartMapper.phyDelById(id);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id){
-        crmCreditDepartMapper.logicDel(id,CurrentUserUtil.getUsername());
+    public void logicDel(Long id) {
+        crmCreditDepartMapper.logicDel(id, CurrentUserUtil.getUsername());
     }
 
 
@@ -74,8 +88,43 @@ public class CrmCreditDepartServiceImpl extends ServiceImpl<CrmCreditDepartMappe
     }
 
     @Override
+    @Transactional
     public void saveOrUpdate(AddCrmCreditDepartForm form) {
+        CrmCreditDepart convert = ConvertUtil.convert(form, CrmCreditDepart.class);
+        //获取总量
+        List<CrmCredit> crmCredits = this.crmCreditService.selectList(new CrmCredit().setCreditId(form.getCreditId()).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
+        CrmCredit crmCredit = crmCredits.get(0);
+        if (form.getId() == null) {
+            convert.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        } else {
+            convert.setUpdateBy(CurrentUserUtil.getUsername());
+        }
+        this.saveOrUpdate(convert);
+        //扣除剩余量
+        List<CrmCreditDepart> creditDeparts = this.selectList(new CrmCreditDepart().setCreditId(form.getCreditId()).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
+        BigDecimal departAmout = new BigDecimal(0);
+        for (CrmCreditDepart creditDepart : creditDeparts) {
+            departAmout = BigDecimalUtil.add(creditDepart.getCreditAmt(), departAmout);
+        }
+        departAmout = departAmout.add(form.getCreditAmt());
+        CrmCredit update = new CrmCredit();
+        update.setId(crmCredit.getId());
+        this.crmCreditService.updateById(update.setCreditGrantedMoney(departAmout));
+    }
 
+    @Override
+    public BigDecimal calculationRemainingCreditLine(String creditId, String tenantCode) {
+        //获取总量
+        List<CrmCredit> crmCredits = this.crmCreditService.selectList(new CrmCredit().setCreditId(creditId).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
+        CrmCredit crmCredit = new CrmCredit();
+        if (CollectionUtil.isEmpty(crmCredits)) {
+            crmCredit.setCreditGrantedMoney(new BigDecimal(0)).setCreditMoney(new BigDecimal(0));
+        } else {
+            crmCredit = crmCredits.get(0);
+        }
+        //计算剩余额度
+        BigDecimal amount = BigDecimalUtil.subtract(crmCredit.getCreditMoney(), crmCredit.getCreditGrantedMoney());
+        return amount;
     }
 
 }

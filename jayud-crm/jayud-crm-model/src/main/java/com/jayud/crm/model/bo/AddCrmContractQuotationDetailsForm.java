@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="合同报价详情对象", description="合同报价详情")
+@ApiModel(value = "合同报价详情对象", description = "合同报价详情")
 public class AddCrmContractQuotationDetailsForm extends SysBaseEntity {
 
 
@@ -100,7 +100,7 @@ public class AddCrmContractQuotationDetailsForm extends SysBaseEntity {
 
 
     public void setUnitPrice(BigDecimal unitPrice) {
-        if (unitPrice==null) return;
+        if (unitPrice == null) return;
         this.unitPrice = unitPrice.setScale(4);
     }
 
@@ -145,17 +145,18 @@ public class AddCrmContractQuotationDetailsForm extends SysBaseEntity {
                 if (unitPrice == null) {
                     throw new JayudBizException(400, "单价不能为空");
                 }
+                break;
             case HKPS:
-                if (this.weightBilling==null){
+                if (this.weightBilling == null) {
                     throw new JayudBizException(400, "香港配送重量计费不能为空");
                 }
-                if (this.numBilling==null){
+                if (this.numBilling == null) {
                     throw new JayudBizException(400, "香港配送件数计费不能为空");
                 }
-                if (this.plateNumBilling==null){
+                if (this.plateNumBilling == null) {
                     throw new JayudBizException(400, "香港配送板数计费不能为空");
                 }
-                if (this.minBilling==null){
+                if (this.minBilling == null) {
                     throw new JayudBizException(400, "香港配送最低计费不能为空");
                 }
                 break;

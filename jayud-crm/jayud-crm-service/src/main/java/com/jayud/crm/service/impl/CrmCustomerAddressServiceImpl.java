@@ -10,6 +10,7 @@ import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.crm.model.bo.CrmCustomerAddressForm;
 import com.jayud.crm.model.po.CrmCreditVisit;
+import com.jayud.crm.model.po.CrmCustomerRisk;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -21,11 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 基本档案_客户_地址 服务实现类
@@ -87,8 +84,15 @@ public class CrmCustomerAddressServiceImpl extends ServiceImpl<CrmCustomerAddres
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id){
-        crmCustomerAddressMapper.logicDel(id,CurrentUserUtil.getUsername());
+    public void logicDel(List<Long> ids){
+        List<CrmCustomerAddress> crmCustomerAddressList = new ArrayList<>();
+        for (int i = 0; i < ids.size(); i++) {
+            CrmCustomerAddress crmCustomerAddress = new CrmCustomerAddress();
+            crmCustomerAddress.setId(ids.get(i));
+            crmCustomerAddress.setIsDeleted(true);
+            crmCustomerAddressList.add(crmCustomerAddress);
+        }
+        this.updateBatchById(crmCustomerAddressList);
     }
 
 

@@ -100,7 +100,7 @@ public class CrmContractQuotationController {
 
 
     @ApiOperation("新增/编辑合同报价")
-    @GetMapping("/saveOrUpdate")
+    @PostMapping("/saveOrUpdate")
     public BaseResult saveOrUpdate(@RequestBody AddCrmContractQuotationForm form) {
         form.checkParam();
         if (form.getId() != null) {

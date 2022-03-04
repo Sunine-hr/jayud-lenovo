@@ -15,35 +15,36 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import lombok.experimental.Accessors;
 
 /**
- * CrmFile 实体类
+ * CrmCreditDepart 实体类
  *
  * @author jayud
- * @since 2022-03-02
+ * @since 2022-03-03
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="基本档案_文件(crm_file)对象", description="基本档案_文件(crm_file)")
-public class CrmFile extends SysBaseEntity {
+@ApiModel(value="基本档案_额度_部门额度授信管理(crm_credit_depart)对象", description="基本档案_额度_部门额度授信管理(crm_credit_depart)")
+public class CrmCreditDepart extends SysBaseEntity {
 
 
-    @ApiModelProperty(value = "业务标识code")
-    private String code;
+    @ApiModelProperty(value = "额度类型ID")
+    private String creditId;
 
-    @ApiModelProperty(value = "业务主键")
-    private Long businessId;
+    @ApiModelProperty(value = "额度类型名称")
+    private String creditName;
 
-    @ApiModelProperty(value = "附件类型")
-    private String fileType;
+    @ApiModelProperty(value = "法人主体id")
+    private Long departId;
 
-    @ApiModelProperty(value = "文件名称")
-    private String fileName;
+    @ApiModelProperty(value = "法人主体名称")
+    private Long departName;
 
-    @ApiModelProperty(value = "文件上传url")
-    private String uploadFileUrl;
+    @ApiModelProperty(value = "额度类型值(1:税费额度,2:期票额度,3:贷款额度)")
+    private String creditValue;
+
+    @ApiModelProperty(value = "授信金额")
+    private BigDecimal creditAmt;
 
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;

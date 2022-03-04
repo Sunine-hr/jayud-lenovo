@@ -82,13 +82,13 @@ public class CrmCreditController {
 
 
     /**
-     * @description 新增
+     * @description 新增/编辑
      * @author jayud
      * @date 2022-03-03
      * @param: crmCredit
      * @return: com.jayud.common.BaseResult
      **/
-    @ApiOperation("新增")
+    @ApiOperation("新增/编辑")
     @PostMapping("/saveOrUpdate")
     public BaseResult saveOrUpdate(@Valid @RequestBody AddCrmCreditForm form) {
         crmCreditService.saveOrUpdate(form);

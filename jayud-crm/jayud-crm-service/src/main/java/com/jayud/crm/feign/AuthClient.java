@@ -74,8 +74,25 @@ public interface AuthClient {
     @PostMapping("/bPublicCheck/check")
     public BaseResult check(@RequestBody CheckForm checkForm);
 
+    /**
+     * @description 根据租户获取角色
+     * @author  ciro
+     * @date   2022/3/5 10:20
+     * @param: tenantCode
+     * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.auth.model.po.SysRole>>
+     **/
     @PostMapping(value = "/sysRole/getRoleByTenantCode")
     public BaseResult<List<SysRole>>  getRoleByTenantCode(@RequestParam("tenantCode") String tenantCode);
+
+    /**
+     * @description 根据登录名称获取用户
+     * @author  ciro
+     * @date   2022/3/5 10:21
+     * @param: tenantCode
+     * @return: com.jayud.common.BaseResult<com.jayud.auth.model.dto.SysUserDTO>
+     **/
+    @PostMapping(value = "/sysUser/selectByUsername")
+    public BaseResult<SysUserDTO>  selectByUsername(@RequestParam("username") String username);
 
 
 }

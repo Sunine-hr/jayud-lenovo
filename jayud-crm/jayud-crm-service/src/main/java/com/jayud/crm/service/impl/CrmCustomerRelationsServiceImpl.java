@@ -2,6 +2,7 @@ package com.jayud.crm.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -106,11 +107,14 @@ public class CrmCustomerRelationsServiceImpl extends ServiceImpl<CrmCustomerRela
     }
 
     @Override
-    public void saveRelationByCustomer(CrmCustomerForm crmCustomerForm) {
+    public BaseResult saveRelationByCustomer(CrmCustomerForm crmCustomerForm) {
         boolean isAdd = false;
         CrmCustomerRelations crmCustomerRelations = new CrmCustomerRelations();
         if (crmCustomerForm.getCustRelationId() == null){
             isAdd = true;
+            if (StrUtil.isBlank(crmCustomerForm.getCustRelationUsername())){
+                return BaseResult.error();
+            }
         }else {
             crmCustomerRelations = this.getById(crmCustomerForm.getCustRelationId());
         }
@@ -124,6 +128,7 @@ public class CrmCustomerRelationsServiceImpl extends ServiceImpl<CrmCustomerRela
         }else {
             this.updateById(crmCustomerRelations);
         }
+        return BaseResult.ok();
     }
 
 }

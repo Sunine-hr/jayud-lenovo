@@ -3,9 +3,7 @@ package com.jayud.crm.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.BaseResult;
-import com.jayud.crm.model.bo.ComCustomerForm;
-import com.jayud.crm.model.bo.CrmCodeFrom;
-import com.jayud.crm.model.bo.CrmCustomerForm;
+import com.jayud.crm.model.bo.*;
 import com.jayud.crm.model.po.CrmCustomer;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -28,13 +26,13 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      * @description 分页查询
      * @author  jayud
      * @date   2022-03-01
-     * @param: crmCustomer
+     * @param: crmCustomerForm
      * @param: currentPage
      * @param: pageSize
      * @param: req
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomer>
      **/
-    IPage<CrmCustomer> selectPage(CrmCustomer crmCustomer,
+    IPage<CrmCustomerForm> selectPage(CrmCustomerForm crmCustomerForm,
                                 Integer currentPage,
                                 Integer pageSize,
                                 HttpServletRequest req);
@@ -43,11 +41,11 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      * @description 列表查询数据
      * @author  jayud
      * @date   2022-03-01
-     * @param: crmCustomer
+     * @param: crmCustomerForm
      * @param: req
      * @return: java.util.List<com.jayud.crm.model.po.CrmCustomer>
      **/
-    List<CrmCustomer> selectList(CrmCustomer crmCustomer);
+    List<CrmCustomerForm> selectList(CrmCustomerForm crmCustomerForm);
 
 
 
@@ -183,6 +181,25 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      * @return: com.jayud.common.BaseResult
      **/
     BaseResult getErrMsg(ComCustomerForm comCustomerForm);
+
+
+    /**
+     * @description 判断用户信息
+     * @author  ciro
+     * @date   2022/3/5 10:31
+     * @param: crmCustomerCheckForm
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult checkCustomerMsg(CrmCustomerCheckForm crmCustomerCheckForm);
+
+    /**
+     * @description 根据id集合逻辑删除
+     * @author  ciro
+     * @date   2022/3/5 13:58
+     * @param: deleteForm
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult logicDelByIds(DeleteForm deleteForm);
 
 
 }

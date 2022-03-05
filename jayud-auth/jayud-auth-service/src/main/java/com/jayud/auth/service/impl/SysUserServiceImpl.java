@@ -24,6 +24,7 @@ import com.jayud.auth.model.po.SysUser;
 import com.jayud.auth.mapper.SysUserMapper;
 import com.jayud.auth.service.ISysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -288,6 +289,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             });
         }
         return userDtoList;
+    }
+
+    @Override
+    @Cacheable(value = "sys:cache:user", key = "#username")
+    public SysUserDTO selectByUsername(String username) {
+        LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SysUser::getName,username);
+        SysUser sysUser = this.getOne(lambdaQueryWrapper);
+        SysUserDTO sysUserDTO = new SysUserDTO();
+        BeanUtils.copyProperties(sysUser,sysUserDTO);
+        return sysUserDTO;
     }
 
     public static void main(String[] args) {

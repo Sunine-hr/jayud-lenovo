@@ -218,6 +218,8 @@ public interface SysTips {
 
     String CUSTOMER_NAME_EXIT_ERROR = "客户名称已存在！";
 
+    String CUSTOMER_NAME_LONG_ERROR = "客户名称太长(超过50)！";
+
    String CURRENT_STATE_NOT_OPT= "当前状态无法进行操作";
 
     String UNDER_REVIEW_NOT_OPT= "审核中无法操作";

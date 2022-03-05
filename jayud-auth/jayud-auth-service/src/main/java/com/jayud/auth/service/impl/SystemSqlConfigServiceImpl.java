@@ -15,15 +15,19 @@ import com.jayud.auth.mapper.SystemSqlConfigMapper;
 import com.jayud.auth.model.bo.QueryCommonConfigForm;
 import com.jayud.auth.model.bo.QuerySystemSqlConfigForm;
 import com.jayud.auth.model.bo.SystemSqlConfigForm;
+import com.jayud.auth.model.po.SysTenantRole;
 import com.jayud.auth.model.po.SysUser;
 import com.jayud.auth.model.po.SystemSqlConfig;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.model.vo.SystemSqlConfigVO;
 import com.jayud.auth.model.vo.TableColumnVO;
+import com.jayud.auth.service.ISysTenantRoleService;
 import com.jayud.auth.service.ISysUserService;
 import com.jayud.auth.service.ISystemSqlConfigService;
+import com.jayud.common.BaseResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.UserOperator;
+import com.jayud.common.constant.SqlCodeConstant;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
@@ -54,6 +58,8 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
 
     @Autowired
     private ISysUserService sysUserService;
+    @Autowired
+    private ISysTenantRoleService sysTenantRoleService;
 
     @Override
     public IPage<SystemSqlConfigVO> findByPage(QuerySystemSqlConfigForm form) {
@@ -221,6 +227,21 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
                 }
             }
             where = stringBuffer.toString();
+        }
+        if (systemSqlConfigVO.getSqlCode().equals(SqlCodeConstant.CRM_CUST_SQL_CODE)){
+            BaseResult<SysTenantRole> tenantRoleBaseResult = sysTenantRoleService.selectByTenatCode(CurrentUserUtil.getUserTenantCode());
+            boolean isShow = true;
+            if (tenantRoleBaseResult.isSuccess()){
+                SysTenantRole sysTenantRole = tenantRoleBaseResult.getResult();
+                if (!sysTenantRole.getIsShowCrmPublic()){
+                    isShow = false;
+                }
+            }else {
+                isShow = false;
+            }
+            if (!isShow){
+                where += " AND cc.is_public = 0 ";
+            }
         }
 
 //        String sqlDataStr = systemSqlConfigVO.getSqlDataStr();//数据权限查询

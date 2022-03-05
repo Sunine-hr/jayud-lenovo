@@ -113,7 +113,17 @@
     <update id="logicDelByIds">
         UPDATE crm_customer_bank SET is_deleted = 1 ,update_by = #{username}, update_time = now()
         WHERE is_deleted = 0
+        AND id IN
         <foreach collection="ids" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="logicDelByCustIds">
+        UPDATE crm_customer_bank SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE is_deleted = 0
+        AND cust_id IN
+        <foreach collection="custIds" open="(" separator="," close=")" item="id">
             #{id}
         </foreach>
     </update>

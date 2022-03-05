@@ -102,6 +102,11 @@ public class CrmCustomerBankServiceImpl extends ServiceImpl<CrmCustomerBankMappe
         }
     }
 
+    @Override
+    public void logicDelByCustIds(List<Long> custIds) {
+        crmCustomerBankMapper.logicDelByCustIds(custIds,CurrentUserUtil.getUsername());
+    }
+
 
     /**
      * @description 修改只能唯一默认账号

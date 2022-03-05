@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.SysTenantRoleMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SysTenantRole">
+        <id column="id" property="id" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="is_show_crm_public" property="isShowCrmPublic" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, tenant_code, is_show_crm_public, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">sys_tenant_role </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="sysTenantRole.tenantCode != null and sysTenantRole.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{sysTenantRole.tenantCode},'%')
+            </if>
+
+            <if test="sysTenantRole.isShowCrmPublic != null ">
+                AND is_show_crm_public = ${sysTenantRole.isShowCrmPublic}
+            </if>
+
+            <if test="sysTenantRole.remark != null and sysTenantRole.remark != ''">
+                AND remark LIKE CONCAT('%',#{sysTenantRole.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysTenantRole">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysTenantRole">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  sys_tenant_role WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE sys_tenant_role SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="querySysTenantRoleForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            tenant_code 'tenantCode',
+            is_show_crm_public 'isShowCrmPublic',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM sys_tenant_role
+        WHERE is_deleted = 0
+                    <if test="tenantCode != null and tenantCode != ''">
+                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+                    </if>
+                    <if test="isShowCrmPublic != null ">
+                        AND is_show_crm_public = #{isShowCrmPublic}
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

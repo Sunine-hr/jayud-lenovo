@@ -1,5 +1,6 @@
 package com.jayud.crm.mapper;
 
+import com.jayud.crm.model.bo.CrmCustomerForm;
 import com.jayud.crm.model.po.CrmCustomer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -28,18 +29,18 @@ public interface CrmCustomerMapper extends BaseMapper<CrmCustomer> {
      * @date   2022-03-01
      * @param: page
      * @param: crmCustomer
-     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomer>
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.bo.CrmCustomerForm>
      **/
-    IPage<CrmCustomer> pageList(@Param("page") Page<CrmCustomer> page, @Param("crmCustomer") CrmCustomer crmCustomer);
+    IPage<CrmCustomerForm> pageList(@Param("page") Page<CrmCustomerForm> page, @Param("crmCustomer") CrmCustomerForm crmCustomer);
 
     /**
      * @description 列表查询数据
      * @author  jayud
      * @date   2022-03-01
      * @param: crmCustomer
-     * @return: java.util.List<com.jayud.crm.model.po.CrmCustomer>
+     * @return: java.util.List<com.jayud.crm.model.bo.CrmCustomerForm>
      **/
-    List<CrmCustomer> list(@Param("crmCustomer") CrmCustomer crmCustomer);
+    List<CrmCustomerForm> list(@Param("crmCustomer") CrmCustomerForm crmCustomer);
 
 
     /**
@@ -70,4 +71,15 @@ public interface CrmCustomerMapper extends BaseMapper<CrmCustomer> {
      * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
      **/
     List<LinkedHashMap<String, Object>> queryCrmCustomerForExcel(Map<String, Object> paramMap);
+
+
+    /**
+     * @description 批量逻辑删除
+     * @author  ciro
+     * @date   2022/3/4 9:44
+     * @param: ids
+     * @param: username
+     * @return: int
+     **/
+    int logicDelByIds(@Param("ids") List<Long> ids,@Param("username") String username);
 }

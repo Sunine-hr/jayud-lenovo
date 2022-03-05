@@ -86,8 +86,8 @@ public interface ICrmCustomerRelationsService extends IService<CrmCustomerRelati
      * @author  ciro
      * @date   2022/3/4 14:17
      * @param: crmCustomerForm
-     * @return: void
+     * @return: com.jayud.common.BaseResult
      **/
-    void saveRelationByCustomer(CrmCustomerForm crmCustomerForm);
+    BaseResult saveRelationByCustomer(CrmCustomerForm crmCustomerForm);
 
 }

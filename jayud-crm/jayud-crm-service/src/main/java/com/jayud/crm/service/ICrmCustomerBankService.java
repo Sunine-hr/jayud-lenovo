@@ -98,4 +98,13 @@ public interface ICrmCustomerBankService extends IService<CrmCustomerBank> {
      **/
     BaseResult<CrmCustomerBank> saveBank(CrmCustomerBank crmCustomerBank);
 
+    /**
+     * @description 根据用户id集合删除
+     * @author  ciro
+     * @date   2022/3/5 13:51
+     * @param: custIds
+     * @return: void
+     **/
+    void logicDelByCustIds(List<Long> custIds);
+
 }

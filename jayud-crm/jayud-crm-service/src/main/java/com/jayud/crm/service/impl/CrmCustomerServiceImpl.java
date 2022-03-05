@@ -14,12 +14,10 @@ import com.jayud.common.constant.SysTips;
 import com.jayud.common.enums.RoleCodeEnum;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
-import com.jayud.crm.model.bo.ComCustomerForm;
+import com.jayud.crm.model.bo.*;
 import com.jayud.crm.model.constant.CodeNumber;
 import com.jayud.crm.model.constant.CrmDictCode;
 import com.jayud.crm.model.enums.CustRiskTypeEnum;
-import com.jayud.crm.model.bo.CrmCodeFrom;
-import com.jayud.crm.model.bo.CrmCustomerForm;
 import com.jayud.crm.model.po.CrmCustomerManager;
 import com.jayud.crm.model.po.CrmCustomerRelations;
 import com.jayud.crm.model.po.CrmCustomerRisk;
@@ -62,6 +60,8 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     private ICrmCustomerManagerService crmCustomerManagerService;
     @Autowired
     private ICrmCustomerRelationsService crmCustomerRelationsService;
+    @Autowired
+    private ICrmCustomerBankService crmCustomerBankService;
 
 
     @Autowired
@@ -71,19 +71,25 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     public ICrmCustomerFeaturesService crmCustomerFeaturesService;
 
     @Override
-    public IPage<CrmCustomer> selectPage(CrmCustomer crmCustomer,
+    public IPage<CrmCustomerForm> selectPage(CrmCustomerForm crmCustomerForm,
                                          Integer currentPage,
                                          Integer pageSize,
                                          HttpServletRequest req) {
 
-        Page<CrmCustomer> page = new Page<CrmCustomer>(currentPage, pageSize);
-        IPage<CrmCustomer> pageList = crmCustomerMapper.pageList(page, crmCustomer);
+        Page<CrmCustomerForm> page = new Page<CrmCustomerForm>(currentPage, pageSize);
+        IPage<CrmCustomerForm> pageList = crmCustomerMapper.pageList(page, crmCustomerForm);
+        if (CollUtil.isNotEmpty(pageList.getRecords())){
+            pageList.getRecords().forEach(crmCustomerForms -> {
+                crmCustomerForms.setCreateName(authClient.selectByUsername(crmCustomerForms.getCreateBy()).getResult().getUserName());
+            });
+        }
+
         return pageList;
     }
 
     @Override
-    public List<CrmCustomer> selectList(CrmCustomer crmCustomer) {
-        return crmCustomerMapper.list(crmCustomer);
+    public List<CrmCustomerForm> selectList(CrmCustomerForm crmCustomerForm) {
+        return crmCustomerMapper.list(crmCustomerForm);
     }
 
 
@@ -130,6 +136,11 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             return onlyResult;
         }
         if (isAdd) {
+            if (crmCustomerForm.getIsPublic() != null){
+                if (crmCustomerForm.getIsPublic()){
+                    crmCustomerForm.setTransferPublicTime(LocalDateTime.now());
+                }
+            }
             crmCustomerForm.setCustCode(getNextCode(CodeNumber.CRM_CUST_CODE));
             this.save(crmCustomerForm);
             //创建客户创建业务要求默认数据
@@ -256,6 +267,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         if (CollUtil.isNotEmpty(comCustomerForm.getChangeList())){
             comCustomerForm.getChangeList().forEach(crmCustomer -> {
                 crmCustomer.setIsSupplier(true);
+                crmCustomer.setIsCust(true);
                 crmCustomer.setSupplierCode(getNextCode(CodeNumber.CRM_SUPPLIER_CODE));
             });
             this.updateBatchById(comCustomerForm.getChangeList());
@@ -297,42 +309,48 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
      **/
     private BaseResult checkOnly(boolean isAdd ,CrmCustomerForm crmCustomerForm){
         CrmCustomer crmCustomer = new CrmCustomer();
-        crmCustomer.setUnCreditCode(crmCustomerForm.getUnCreditCode());
-        LambdaQueryWrapper<CrmCustomer> creditCodeWrapper = initWrapper(crmCustomer);
-        List<CrmCustomer> creditCodeList = this.list(creditCodeWrapper);
-        if (isAdd){
-            if (CollUtil.isNotEmpty(creditCodeList)){
-                return BaseResult.error(SysTips.CREDIT_CODE_EXIT_ERROR);
-            }
-        }else {
-            if (CollUtil.isNotEmpty(creditCodeList)){
-                if (creditCodeList.size()>1){
-                    return BaseResult.error(SysTips.NOT_ONE_DATA_ERROR);
-                }
-                if (!crmCustomerForm.getId().equals(creditCodeList.get(0).getId())){
+        if (StrUtil.isNotBlank(crmCustomerForm.getUnCreditCode())) {
+            crmCustomer.setUnCreditCode(crmCustomerForm.getUnCreditCode());
+            LambdaQueryWrapper<CrmCustomer> creditCodeWrapper = initWrapper(crmCustomer);
+            List<CrmCustomer> creditCodeList = this.list(creditCodeWrapper);
+            if (isAdd) {
+                if (CollUtil.isNotEmpty(creditCodeList)) {
                     return BaseResult.error(SysTips.CREDIT_CODE_EXIT_ERROR);
                 }
+            } else {
+                if (CollUtil.isNotEmpty(creditCodeList)) {
+                    if (creditCodeList.size() > 1) {
+                        return BaseResult.error(SysTips.NOT_ONE_DATA_ERROR);
+                    }
+                    if (!crmCustomerForm.getId().equals(creditCodeList.get(0).getId())) {
+                        return BaseResult.error(SysTips.CREDIT_CODE_EXIT_ERROR);
+                    }
+                }
             }
         }
-        crmCustomer = new CrmCustomer();
-        crmCustomer.setCustName(crmCustomerForm.getCustName());
-        LambdaQueryWrapper<CrmCustomer> custNameWrapper = initWrapper(crmCustomer);
-        List<CrmCustomer> custNameList = this.list(custNameWrapper);
-        if (isAdd){
-            if (CollUtil.isNotEmpty(custNameList)){
-                return BaseResult.error(SysTips.CUSTOMER_NAME_EXIT_ERROR);
+        if (StrUtil.isNotBlank(crmCustomerForm.getCustName())) {
+            if (crmCustomerForm.getCustName().length() > 50) {
+                return BaseResult.error(SysTips.CUSTOMER_NAME_LONG_ERROR);
             }
-        }else {
-            if (CollUtil.isNotEmpty(custNameList)){
-                if (custNameList.size()>1){
-                    return BaseResult.error(SysTips.NOT_ONE_DATA_ERROR);
-                }
-                if (!crmCustomerForm.getId().equals(custNameList.get(0).getId())){
+            crmCustomer = new CrmCustomer();
+            crmCustomer.setCustName(crmCustomerForm.getCustName());
+            LambdaQueryWrapper<CrmCustomer> custNameWrapper = initWrapper(crmCustomer);
+            List<CrmCustomer> custNameList = this.list(custNameWrapper);
+            if (isAdd) {
+                if (CollUtil.isNotEmpty(custNameList)) {
                     return BaseResult.error(SysTips.CUSTOMER_NAME_EXIT_ERROR);
                 }
+            } else {
+                if (CollUtil.isNotEmpty(custNameList)) {
+                    if (custNameList.size() > 1) {
+                        return BaseResult.error(SysTips.NOT_ONE_DATA_ERROR);
+                    }
+                    if (!crmCustomerForm.getId().equals(custNameList.get(0).getId())) {
+                        return BaseResult.error(SysTips.CUSTOMER_NAME_EXIT_ERROR);
+                    }
+                }
             }
         }
-
         return BaseResult.ok();
     }
 
@@ -389,9 +407,9 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     public BaseResult receiveCustomer(ComCustomerForm comCustomerForm) {
         if (CollUtil.isNotEmpty(comCustomerForm.getCrmCustomerList())){
             List<Long> custIdList = comCustomerForm.getCrmCustomerList().stream().map(x->x.getId()).collect(Collectors.toList());
-            CrmCustomer crmCustomer = new CrmCustomer();
-            crmCustomer.setCustIdList(custIdList);
-            List<CrmCustomer> customerList = selectList(crmCustomer);
+            CrmCustomerForm crmCustomerForm = new CrmCustomerForm();
+            crmCustomerForm.setCustIdList(custIdList);
+            List<CrmCustomerForm> customerList = selectList(crmCustomerForm);
             custIdList = customerList.stream().map(x->x.getId()).collect(Collectors.toList());
             Map<Long,CrmCustomer> custMap = customerList.stream().collect(Collectors.toMap(x->x.getId(),x->x));
             //取消放入公海
@@ -451,6 +469,25 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         if (StringUtils.isNotBlank(errString)){
             return BaseResult.error(errString);
         }
+        return BaseResult.ok();
+    }
+
+    @Override
+    public BaseResult checkCustomerMsg(CrmCustomerCheckForm crmCustomerCheckForm) {
+        boolean isAdd = false;
+        if (crmCustomerCheckForm.getId() == null){
+            isAdd = true;
+        }
+        CrmCustomerForm crmCustomerForm = new CrmCustomerForm();
+        BeanUtils.copyProperties(crmCustomerCheckForm,crmCustomerForm);
+        return checkOnly(isAdd, crmCustomerForm);
+    }
+
+    @Override
+    public BaseResult logicDelByIds(DeleteForm deleteForm) {
+        crmCustomerMapper.logicDelByIds(deleteForm.getIds(), CurrentUserUtil.getUsername());
+        crmCustomerManagerService.logicDelByCustIds(deleteForm.getIds());
+        crmCustomerBankService.logicDelByCustIds(deleteForm.getIds());
         return BaseResult.ok();
     }
 

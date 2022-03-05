@@ -3,7 +3,7 @@
 <mapper namespace="com.jayud.crm.mapper.CrmCustomerMapper">
 
     <!-- 通用查询映射结果ss -->
-    <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCustomer">
+    <resultMap id="BaseResultMap" type="com.jayud.crm.model.bo.CrmCustomerForm">
         <id column="id" property="id" />
         <result column="parent_id" property="parentId" />
         <result column="cust_name" property="custName" />
@@ -74,6 +74,7 @@
         <result column="create_time" property="createTime" />
         <result column="update_by" property="updateBy" />
         <result column="update_time" property="updateTime" />
+        <result column="custRelationUsername" property="custRelationUsername" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -85,7 +86,8 @@
     <sql id="tname">crm_customer cc</sql>
 
     <sql id="selects">
-        SELECT <include refid="Base_Column_List"/>
+        SELECT <include refid="Base_Column_List"/>,
+        IFNULL((SELECT ccr.c_name FROM crm_customer_relations ccr WHERE ccr.is_deleted = 0 AND ccr.cust_id = cc.id AND ccr.is_default = 1 LIMIT 1),'') custRelationUsername
         FROM <include refid="tname"/>
         <where>
             cc.is_deleted = 0
@@ -352,15 +354,25 @@
                 </foreach>
             </if>
 
+            <if test="crmCustomer.createStartTime != null ">
+                AND cc.create_time &gt;= ${crmCustomer.createStartTime}
+            </if>
+
+            <if test="crmCustomer.createEndTime != null ">
+                AND cc.create_time &lt;= ${crmCustomer.createEndTime}
+            </if>
+
         </where>
     </sql>
 
     <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomer">
         <include refid="selects"/>
+        ORDER BY cc.create_time DESC
     </select>
 
     <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomer">
         <include refid="selects"/>
+        ORDER BY cc.create_time DESC
     </select>
 
 
@@ -373,6 +385,15 @@
     <update id="logicDel">
         UPDATE crm_customer SET is_deleted = 1 ,update_by = #{username}, update_time = now()
         WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <update id="logicDelByIds">
+        UPDATE crm_customer SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE is_deleted = 0
+        AND id IN
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
     </update>
 
     <select id="queryCrmCustomerForExcel" resultType="java.util.LinkedHashMap">

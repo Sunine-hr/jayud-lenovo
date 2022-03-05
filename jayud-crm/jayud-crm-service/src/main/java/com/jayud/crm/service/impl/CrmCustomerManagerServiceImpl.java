@@ -133,22 +133,26 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
             isAdd = true;
         }
         if (isAdd){
-            //对接人信息
-            crmCustomerManager.setManageUserId(crmCustomerForm.getManagerUserId());
-            crmCustomerManager.setManageUsername(crmCustomerForm.getManagerUsername());
-            crmCustomerManager.setManageRoles(RoleCodeEnum.TENANT_ROLE_ADMIN.getRoleCode());
-            crmCustomerManager.setManagerRolesName(RoleCodeEnum.SALE_ROLE.getRoleName());
-            //客户业务类型
-            crmCustomerManager.setManagerBusinessCode(crmCustomerForm.getBusinessTypes());
-            crmCustomerManager.setManagerBusinessName(crmCustomerForm.getBusinessTypesNames());
-            crmCustomerManager.setIsSale(true);
-            crmCustomerManager.setGenerateDate(LocalDateTime.now());
-            this.save(crmCustomerManager);
+            if (crmCustomerForm.getManagerUserId() != null) {
+                //对接人信息
+                crmCustomerManager.setManageUserId(crmCustomerForm.getManagerUserId());
+                crmCustomerManager.setManageUsername(crmCustomerForm.getManagerUsername());
+                crmCustomerManager.setManageRoles(RoleCodeEnum.TENANT_ROLE_ADMIN.getRoleCode());
+                crmCustomerManager.setManagerRolesName(RoleCodeEnum.SALE_ROLE.getRoleName());
+                //客户业务类型
+                crmCustomerManager.setManagerBusinessCode(crmCustomerForm.getBusinessTypes());
+                crmCustomerManager.setManagerBusinessName(crmCustomerForm.getBusinessTypesNames());
+                crmCustomerManager.setIsSale(true);
+                crmCustomerManager.setGenerateDate(LocalDateTime.now());
+                this.save(crmCustomerManager);
+            }
         }
         if (isUpdate){
-            onlyManager.setManagerBusinessCode(crmCustomerForm.getBusinessTypes());
-            onlyManager.setManagerBusinessName(crmCustomerForm.getBusinessTypesNames());
-            this.updateById(onlyManager);
+            if (onlyManager.getId()!=null) {
+                onlyManager.setManagerBusinessCode(crmCustomerForm.getBusinessTypes());
+                onlyManager.setManagerBusinessName(crmCustomerForm.getBusinessTypesNames());
+                this.updateById(onlyManager);
+            }
         }
         return BaseResult.ok();
     }
@@ -326,6 +330,11 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
         }
         comCustomerForm.setChangeList(changelList);
         comCustomerForm.setErrList(errList);
+    }
+
+    @Override
+    public void logicDelByCustIds(List<Long> custIds) {
+        crmCustomerManagerMapper.logicDelByCustIds(custIds,CurrentUserUtil.getUsername());
     }
 
 

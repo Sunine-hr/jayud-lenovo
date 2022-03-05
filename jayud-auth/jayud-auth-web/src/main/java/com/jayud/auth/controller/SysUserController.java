@@ -239,5 +239,13 @@ public class SysUserController {
         return BaseResult.ok(sysUserService.selectUserByRoleCode(roleCode));
     }
 
+    @ApiOperation("根据登录名称查询用户")
+    @ApiImplicitParam(name = "username", value = "登录名称", dataType = "String", required = true)
+    @PostMapping("/selectByUsername")
+    public BaseResult<SysUserDTO> selectByUsername(@RequestParam String username,
+                                                             HttpServletRequest req) {
+        return BaseResult.ok(sysUserService.selectByUsername(username));
+    }
+
 
 }

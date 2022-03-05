@@ -6,10 +6,7 @@ import com.jayud.auth.model.po.SysRole;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
-import com.jayud.crm.model.bo.ComCustomerForm;
-import com.jayud.crm.model.bo.CrmCodeFrom;
-import com.jayud.crm.model.bo.CrmCustomerForm;
-import com.jayud.crm.model.bo.DeleteForm;
+import com.jayud.crm.model.bo.*;
 import com.jayud.crm.service.ICrmCustomerManagerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -76,11 +73,11 @@ public class CrmCustomerController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<CrmCustomer>> selectPage(CrmCustomer crmCustomer,
+    public BaseResult<IPage<CrmCustomerForm>> selectPage(CrmCustomerForm crmCustomerForm,
                                                    @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                    HttpServletRequest req) {
-        return BaseResult.ok(crmCustomerService.selectPage(crmCustomer,currentPage,pageSize,req));
+        return BaseResult.ok(crmCustomerService.selectPage(crmCustomerForm,currentPage,pageSize,req));
     }
 
 
@@ -94,9 +91,9 @@ public class CrmCustomerController {
     **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
-    public BaseResult<List<CrmCustomer>> selectList(CrmCustomer crmCustomer,
+    public BaseResult<List<CrmCustomerForm>> selectList(CrmCustomerForm crmCustomerForm,
                                                 HttpServletRequest req) {
-        return BaseResult.ok(crmCustomerService.selectList(crmCustomer));
+        return BaseResult.ok(crmCustomerService.selectList(crmCustomerForm));
     }
 
 
@@ -333,6 +330,24 @@ public class CrmCustomerController {
     @PostMapping (path = "/receiveCustomer")
     public BaseResult receiveCustomer(@RequestBody ComCustomerForm comCustomerForm){
         return crmCustomerService.receiveCustomer(comCustomerForm);
+    }
+
+    @ApiOperation("转为客户")
+    @PostMapping("changeToCust")
+    public BaseResult changeToCust(@RequestBody ComCustomerForm comCustomerForm){
+        return crmCustomerService.changeToSupplier(comCustomerForm.getCrmCustomerList());
+    }
+
+
+    @ApiOperation("判断用户信息")
+    @PostMapping("/checkCustomerMsg")
+    public BaseResult checkCustomerMsg(@Valid @RequestBody CrmCustomerCheckForm crmCustomerCheckForm ){
+        return crmCustomerService.checkCustomerMsg(crmCustomerCheckForm);
+    }
+
+    @PostMapping("/checkCustomerMsg")
+    public BaseResult logicDelByIds(@Valid @RequestBody DeleteForm deleteForm ){
+        return crmCustomerService.logicDelByIds(deleteForm);
     }
 
 

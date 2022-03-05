@@ -123,4 +123,13 @@ public interface ISysUserService extends IService<SysUser> {
      * @return: java.util.List<com.jayud.auth.model.dto.SysUserDto>
      **/
     List<SysUserDTO> selectUserByRoleCode(String roleCode);
+
+    /**
+     * @description 根据登录名称查询用户
+     * @author  ciro
+     * @date   2022/3/5 10:17
+     * @param: username
+     * @return: com.jayud.auth.model.dto.SysUserDTO
+     **/
+    SysUserDTO selectByUsername(String username);
 }

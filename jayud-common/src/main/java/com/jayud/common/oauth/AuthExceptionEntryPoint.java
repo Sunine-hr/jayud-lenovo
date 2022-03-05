@@ -29,8 +29,7 @@ public class AuthExceptionEntryPoint implements AuthenticationEntryPoint {
         if(cause instanceof InvalidTokenException) {
             baseResult = BaseResult.unAuthorized(authException.getMessage());
         }else{
-            map.put("code", 4444);//401
-            map.put("msg", "访问此资源需要完全的身份验证");
+            baseResult = BaseResult.unAuthorized(authException.getMessage());
         }
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);

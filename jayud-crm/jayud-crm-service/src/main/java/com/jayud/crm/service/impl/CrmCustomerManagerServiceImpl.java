@@ -257,13 +257,12 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
      **/
     @Override
     public void delChargerManager(List<Long> custIds){
+        CrmCustomerManager manager = new CrmCustomerManager();
+        manager.setIsDeleted(false);
         LambdaUpdateWrapper<CrmCustomerManager> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.le(CrmCustomerManager::getIsDeleted,false);
-        lambdaUpdateWrapper.le(CrmCustomerManager::getUpdateBy,CurrentUserUtil.getUsername());
-        lambdaUpdateWrapper.le(CrmCustomerManager::getUpdateTime,LocalDateTime.now());
         lambdaUpdateWrapper.eq(CrmCustomerManager::getIsCharger,true);
         lambdaUpdateWrapper.in(CrmCustomerManager::getCustId,custIds);
-        this.update(lambdaUpdateWrapper);
+        this.update(manager,lambdaUpdateWrapper);
     }
 
     /**

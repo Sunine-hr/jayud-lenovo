@@ -345,7 +345,8 @@ public class CrmCustomerController {
         return crmCustomerService.checkCustomerMsg(crmCustomerCheckForm);
     }
 
-    @PostMapping("/checkCustomerMsg")
+    @ApiOperation("根据id集合删除")
+    @PostMapping("/logicDelByIds")
     public BaseResult logicDelByIds(@Valid @RequestBody DeleteForm deleteForm ){
         return crmCustomerService.logicDelByIds(deleteForm);
     }

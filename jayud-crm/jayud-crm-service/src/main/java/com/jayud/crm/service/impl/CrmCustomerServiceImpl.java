@@ -404,6 +404,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResult receiveCustomer(ComCustomerForm comCustomerForm) {
         if (CollUtil.isNotEmpty(comCustomerForm.getCrmCustomerList())){
             List<Long> custIdList = comCustomerForm.getCrmCustomerList().stream().map(x->x.getId()).collect(Collectors.toList());
@@ -413,12 +414,11 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             custIdList = customerList.stream().map(x->x.getId()).collect(Collectors.toList());
             Map<Long,CrmCustomer> custMap = customerList.stream().collect(Collectors.toMap(x->x.getId(),x->x));
             //取消放入公海
+            CrmCustomer updateCust = new CrmCustomer();
+            updateCust.setIsPublic(false);
             LambdaUpdateWrapper<CrmCustomer> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            lambdaUpdateWrapper.le(CrmCustomer::getIsPublic,false);
-            lambdaUpdateWrapper.le(CrmCustomer::getUpdateBy,CurrentUserUtil.getUsername());
-            lambdaUpdateWrapper.le(CrmCustomer::getUpdateTime,LocalDateTime.now());
             lambdaUpdateWrapper.in(CrmCustomer::getId,custIdList);
-            this.update(lambdaUpdateWrapper);
+            this.update(updateCust,lambdaUpdateWrapper);
             //删除负责人
             crmCustomerManagerService.delChargerManager(custIdList);
             //添加负责人

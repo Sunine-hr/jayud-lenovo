@@ -69,7 +69,7 @@ public class CrmCreditServiceImpl extends ServiceImpl<CrmCreditMapper, CrmCredit
     }
 
     @Override
-    public List<CrmCredit> selectList(CrmCredit crmCredit) {
+    public List<CrmCreditVO> selectList(CrmCredit crmCredit) {
         return crmCreditMapper.list(crmCredit);
     }
 

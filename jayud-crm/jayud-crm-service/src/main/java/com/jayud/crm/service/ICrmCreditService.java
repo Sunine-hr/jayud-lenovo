@@ -45,7 +45,7 @@ public interface ICrmCreditService extends IService<CrmCredit> {
      * @param: req
      * @return: java.util.List<com.jayud.crm.model.po.CrmCredit>
      **/
-    List<CrmCredit> selectList(CrmCredit crmCredit);
+    List<CrmCreditVO> selectList(CrmCredit crmCredit);
 
 
 

@@ -71,7 +71,7 @@ public class CrmCustomerAgreementServiceImpl extends ServiceImpl<CrmCustomerAgre
     }
 
     @Override
-    public List<CrmCustomerAgreement> selectList(CrmCustomerAgreement crmCustomerAgreement) {
+    public List<CrmCustomerAgreementVO> selectList(CrmCustomerAgreement crmCustomerAgreement) {
         return crmCustomerAgreementMapper.list(crmCustomerAgreement);
     }
 

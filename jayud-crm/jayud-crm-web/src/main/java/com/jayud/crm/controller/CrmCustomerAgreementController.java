@@ -1,5 +1,7 @@
 package com.jayud.crm.controller;
 
+import com.jayud.common.result.ListPageRuslt;
+import com.jayud.common.result.PaginationBuilder;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.bo.AddCrmCustomerAgreementForm;
@@ -60,11 +62,11 @@ public class CrmCustomerAgreementController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<CrmCustomerAgreementVO>> selectPage(CrmCustomerAgreement crmCustomerAgreement,
-                                                                @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
-                                                                @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                                                HttpServletRequest req) {
-        return BaseResult.ok(crmCustomerAgreementService.selectPage(crmCustomerAgreement, currentPage, pageSize, req));
+    public BaseResult<ListPageRuslt<CrmCustomerAgreementVO>> selectPage(CrmCustomerAgreement crmCustomerAgreement,
+                                                                        @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+                                                                        @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                                        HttpServletRequest req) {
+        return BaseResult.ok(PaginationBuilder.buildPageResult(crmCustomerAgreementService.selectPage(crmCustomerAgreement, currentPage, pageSize, req)));
     }
 
 
@@ -78,7 +80,7 @@ public class CrmCustomerAgreementController {
      **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
-    public BaseResult<List<CrmCustomerAgreement>> selectList(CrmCustomerAgreement crmCustomerAgreement,
+    public BaseResult<List<CrmCustomerAgreementVO>> selectList(CrmCustomerAgreement crmCustomerAgreement,
                                                              HttpServletRequest req) {
         return BaseResult.ok(crmCustomerAgreementService.selectList(crmCustomerAgreement));
     }

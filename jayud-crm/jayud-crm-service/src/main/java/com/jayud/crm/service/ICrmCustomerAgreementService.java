@@ -45,7 +45,7 @@ public interface ICrmCustomerAgreementService extends IService<CrmCustomerAgreem
      * @param: req
      * @return: java.util.List<com.jayud.crm.model.po.CrmCustomerAgreement>
      **/
-    List<CrmCustomerAgreement> selectList(CrmCustomerAgreement crmCustomerAgreement);
+    List<CrmCustomerAgreementVO> selectList(CrmCustomerAgreement crmCustomerAgreement);
 
 
 

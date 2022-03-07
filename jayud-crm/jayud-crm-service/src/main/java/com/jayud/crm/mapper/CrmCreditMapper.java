@@ -40,7 +40,7 @@ public interface CrmCreditMapper extends BaseMapper<CrmCredit> {
      * @param: crmCredit
      * @return: java.util.List<com.jayud.crm.model.po.CrmCredit>
      **/
-    List<CrmCredit> list(@Param("crmCredit") CrmCredit crmCredit);
+    List<CrmCreditVO> list(@Param("crmCredit") CrmCredit crmCredit);
 
 
     /**

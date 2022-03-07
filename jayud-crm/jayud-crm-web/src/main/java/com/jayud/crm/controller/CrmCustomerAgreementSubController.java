@@ -1,5 +1,7 @@
 package com.jayud.crm.controller;
 
+import com.jayud.common.result.ListPageRuslt;
+import com.jayud.common.result.PaginationBuilder;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.bo.AddCrmCustomerAgreementForm;
@@ -67,11 +69,11 @@ public class CrmCustomerAgreementSubController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<CrmCustomerAgreementSubVO>> selectPage(CrmCustomerAgreementSub crmCustomerAgreementSub,
-                                                                   @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
-                                                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                                                   HttpServletRequest req) {
-        return BaseResult.ok(crmCustomerAgreementSubService.selectPage(crmCustomerAgreementSub, currentPage, pageSize, req));
+    public BaseResult<ListPageRuslt<CrmCustomerAgreementSubVO>> selectPage(CrmCustomerAgreementSub crmCustomerAgreementSub,
+                                                                           @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+                                                                           @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                                           HttpServletRequest req) {
+        return BaseResult.ok(PaginationBuilder.buildPageResult(crmCustomerAgreementSubService.selectPage(crmCustomerAgreementSub, currentPage, pageSize, req)));
     }
 
 

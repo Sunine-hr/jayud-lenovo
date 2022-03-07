@@ -113,6 +113,9 @@ public class CrmCustomerAgreementVO extends SysBaseEntity {
     @ApiModelProperty(value = "报价单id")
     private Long quotationId;
 
+    @ApiModelProperty(value = "关联报价单号")
+    private String quotationNum;
+
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;
 

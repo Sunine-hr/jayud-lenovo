@@ -18,6 +18,9 @@
         <result column="create_time" property="createTime" />
         <result column="update_by" property="updateBy" />
         <result column="update_time" property="updateTime" />
+        <result column="f_level" property="fLevel" />
+        <result column="f_step" property="fStep" />
+        <result column="check_state_flag" property="checkStateFlag" />
     </resultMap>
 
     <resultMap id="BaseResultMapOne" type="com.jayud.crm.model.vo.CrmCreditDepartVO">
@@ -35,6 +38,9 @@
         <result column="create_time" property="createTime" />
         <result column="update_by" property="updateBy" />
         <result column="update_time" property="updateTime" />
+        <result column="f_level" property="fLevel" />
+        <result column="f_step" property="fStep" />
+        <result column="check_state_flag" property="checkStateFlag" />
     </resultMap>
 
     <!-- 通用查询结果列 -->

@@ -59,5 +59,12 @@ public class CrmCreditDepartVO extends SysBaseEntity {
     @TableLogic
     private Boolean isDeleted;
 
+    @ApiModelProperty(value = "审核级别")
+    private Integer fLevel;
 
+    @ApiModelProperty(value = "当前级别")
+    private Integer fStep;
+
+    @ApiModelProperty(value = "审核状态")
+    private String checkStateFlag;
 }

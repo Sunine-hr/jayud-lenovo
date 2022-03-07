@@ -34,6 +34,7 @@
         <result column="check_state_flag" property="checkStateFlag" />
         <result column="flow_instance_id" property="flowInstanceId" />
         <result column="quotation_id" property="quotationId" />
+        <result column="quotation_num" property="quotationNum" />
         <result column="tenant_code" property="tenantCode" />
         <result column="remark" property="remark" />
         <result column="is_deleted" property="isDeleted" />

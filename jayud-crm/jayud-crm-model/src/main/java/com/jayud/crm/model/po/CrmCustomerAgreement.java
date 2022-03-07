@@ -2,6 +2,7 @@ package com.jayud.crm.model.po;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
@@ -105,9 +106,11 @@ public class CrmCustomerAgreement extends SysBaseEntity {
     private LocalDate filesDtm;
 
     @ApiModelProperty(value = "审核级别")
+    @JsonProperty(value = "fLevel")
     private Integer fLevel;
 
     @ApiModelProperty(value = "当前级别")
+    @JsonProperty(value = "fStep")
     private Integer fStep;
 
     @ApiModelProperty(value = "审核状态")

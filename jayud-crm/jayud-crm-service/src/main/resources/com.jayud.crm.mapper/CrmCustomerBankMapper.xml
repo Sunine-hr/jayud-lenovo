@@ -23,18 +23,24 @@
         <result column="create_time" property="createTime" />
         <result column="update_by" property="updateBy" />
         <result column="update_time" property="updateTime" />
+        <result column="isDefaultText" property="isDefaultText" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, cust_id, bank_name, bank_address, bank_num, acc_name, acc_number, currency_name, currency_code, swiftcode, is_default, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, cust_id, bank_name, bank_address,bank_deposit, bank_num, acc_name, acc_number, currency_name, currency_code, swiftcode, is_default, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
     <sql id="tname">crm_customer_bank </sql>
 
     <sql id="selects">
-        SELECT <include refid="Base_Column_List"/>
+        SELECT <include refid="Base_Column_List"/>,
+        CASE WHEN is_default = 0 THEN
+        '否'
+        WHEN is_default = 1 THEN
+        '是'
+        END AS isDefaultText
         FROM <include refid="tname"/>
         <where>
             is_deleted = 0

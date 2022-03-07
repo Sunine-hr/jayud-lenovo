@@ -3,6 +3,7 @@ package com.jayud.crm.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -92,7 +93,16 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
 
     @Override
     public void logicDelByIds(List<Long> ids) {
-        crmCustomerManagerMapper.logicDelByIds(ids,CurrentUserUtil.getUsername());
+        LambdaQueryWrapper<CrmCustomerManager> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.in(CrmCustomerManager::getId,ids);
+        List<CrmCustomerManager> managerList = this.list(lambdaQueryWrapper);
+        List<Long> delIds = new ArrayList<>();
+        for (CrmCustomerManager manager:managerList){
+            if (!manager.getIsCharger()){
+                delIds.add(manager.getId());
+            }
+        }
+        crmCustomerManagerMapper.logicDelByIds(delIds,CurrentUserUtil.getUsername());
     }
 
 

@@ -21,10 +21,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.crm.service.ICrmCustomerService;
 import com.jayud.crm.model.po.CrmCustomer;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -154,8 +151,11 @@ public class CrmCustomerController {
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam Long id){
-        crmCustomerService.logicDel(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
+        List<Long> ids = new ArrayList<>();
+        ids.add(id);
+        DeleteForm deleteForm = new DeleteForm();
+        deleteForm.setIds(ids);
+        return crmCustomerService.logicDelByIds(deleteForm);
     }
 
 

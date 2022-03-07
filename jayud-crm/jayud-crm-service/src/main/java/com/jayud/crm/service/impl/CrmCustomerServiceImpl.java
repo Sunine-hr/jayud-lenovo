@@ -485,9 +485,11 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
 
     @Override
     public BaseResult logicDelByIds(DeleteForm deleteForm) {
-        crmCustomerMapper.logicDelByIds(deleteForm.getIds(), CurrentUserUtil.getUsername());
-        crmCustomerManagerService.logicDelByCustIds(deleteForm.getIds());
-        crmCustomerBankService.logicDelByCustIds(deleteForm.getIds());
+        if (CollUtil.isNotEmpty(deleteForm.getIds())) {
+            crmCustomerMapper.logicDelByIds(deleteForm.getIds(), CurrentUserUtil.getUsername());
+            crmCustomerManagerService.logicDelByCustIds(deleteForm.getIds());
+            crmCustomerBankService.logicDelByCustIds(deleteForm.getIds());
+        }
         return BaseResult.ok();
     }
 

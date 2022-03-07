@@ -19,11 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 基本档案_客户_银行账户(crm_customer_bank) 服务实现类
@@ -72,7 +68,18 @@ public class CrmCustomerBankServiceImpl extends ServiceImpl<CrmCustomerBankMappe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void logicDelByIds(List<Long> ids) {
-        crmCustomerBankMapper.logicDelByIds(ids,CurrentUserUtil.getUsername());
+        LambdaQueryWrapper<CrmCustomerBank> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.in(CrmCustomerBank::getId,ids);
+        List<CrmCustomerBank> bankList = this.list(lambdaQueryWrapper);
+        List<Long> idList = new ArrayList<>();
+        for (CrmCustomerBank bank : bankList){
+            if (!bank.getIsDefault()){
+                idList.add(bank.getId());
+            }
+        }
+        if (CollUtil.isNotEmpty(idList)) {
+            crmCustomerBankMapper.logicDelByIds(ids, CurrentUserUtil.getUsername());
+        }
     }
 
 
@@ -87,8 +94,10 @@ public class CrmCustomerBankServiceImpl extends ServiceImpl<CrmCustomerBankMappe
         if (crmCustomerBank.getId() == null){
             isAdd = true;
         }
-        if (crmCustomerBank.getIsDefault()){
-            changeOnlyDefault(isAdd,crmCustomerBank);
+        if (crmCustomerBank.getIsDefault() != null) {
+            if (crmCustomerBank.getIsDefault()) {
+                changeOnlyDefault(isAdd, crmCustomerBank);
+            }
         }
         if (isAdd){
             this.save(crmCustomerBank);

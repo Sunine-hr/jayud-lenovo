@@ -1,5 +1,6 @@
 package com.jayud.crm.model.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -71,6 +72,10 @@ public class CrmCustomerBank extends SysBaseEntity {
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")
     @TableLogic
     private Boolean isDeleted;
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "是否默认")
+    private String isDefaultText;
 
 
 

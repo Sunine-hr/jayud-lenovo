@@ -128,6 +128,13 @@ public class CrmCustomerBankController {
 
     @ApiOperation("逻辑删除")
     @PostMapping("/logicDel")
+    public BaseResult logicDel(@RequestParam Long id){
+        crmCustomerBankService.logicDel(id);
+        return BaseResult.ok(SysTips.DEL_SUCCESS);
+    }
+
+    @ApiOperation("根据id批量逻辑删除")
+    @PostMapping("/logicDelByIds")
     public BaseResult logicDelByIds(@RequestBody DeleteForm form){
         crmCustomerBankService.logicDelByIds(form.getIds());
         return BaseResult.ok(SysTips.DEL_SUCCESS);

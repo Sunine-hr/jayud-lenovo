@@ -144,7 +144,8 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
                     crmCustomerForm.setTransferPublicTime(LocalDateTime.now());
                 }
             }
-            crmCustomerForm.setCustCode(getNextCode(CodeNumber.CRM_CUST_CODE));
+            //设置编码
+            setCustCode(crmCustomerForm);
             this.save(crmCustomerForm);
             //创建客户创建业务要求默认数据
             crmCustomerFeaturesService.saveCrmCustomerFeatures(crmCustomerForm.getId());
@@ -271,12 +272,8 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         crmCustomerManagerService.getChangeCustManager(comCustomerForm);
         crmCustomerRiskService.checkIsRiskByCutsIds(comCustomerForm);
         if (CollUtil.isNotEmpty(comCustomerForm.getChangeList())){
-            comCustomerForm.getChangeList().forEach(crmCustomer -> {
-                crmCustomer.setIsSupplier(true);
-                crmCustomer.setIsCust(true);
-                crmCustomer.setSupplierCode(getNextCode(CodeNumber.CRM_SUPPLIER_CODE));
-            });
-            this.updateBatchById(comCustomerForm.getChangeList());
+            List<CrmCustomer> crmCustomerList = tranferCust(comCustomerForm.getChangeList(),false,true);
+            this.updateBatchById(crmCustomerList);
         }
 
         BaseResult errResult = getErrMsg(comCustomerForm);
@@ -292,11 +289,8 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         comCustomerForm.setCrmCustomerList(custList);
         crmCustomerManagerService.getChangeCustManager(comCustomerForm);
         if (CollUtil.isNotEmpty(comCustomerForm.getChangeList())){
-            comCustomerForm.getChangeList().forEach(crmCustomer -> {
-                crmCustomer.setIsPublic(true);
-                crmCustomer.setTransferPublicTime(LocalDateTime.now());
-            });
-            this.updateBatchById(comCustomerForm.getChangeList());
+            List<CrmCustomer> crmCustomerList = tranferCust(comCustomerForm.getChangeList(),true,false);
+            this.updateBatchById(crmCustomerList);
         }
         BaseResult errResult = getErrMsg(comCustomerForm);
         if (!errResult.isSuccess()){
@@ -514,6 +508,51 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         if (userBaseResult.isSuccess()){
             crmCustomerForm.setManagerUsername(userBaseResult.getResult().getUserName());
             crmCustomerForm.setFsalesName(userBaseResult.getResult().getUserName());
+        }
+    }
+
+    /**
+     * @description 转换用户数据(转公海、供应商)
+     * @author  ciro
+     * @date   2022/3/7 17:42
+     * @param: crmCustomerList
+     * @param: isPublic
+     * @param: isSupplier
+     * @return: java.util.List<com.jayud.crm.model.po.CrmCustomer>
+     **/
+    private List<CrmCustomer> tranferCust(List<CrmCustomer> crmCustomerList,boolean isPublic,boolean isSupplier){
+        List<Long> ids = crmCustomerList.stream().map(x->x.getId()).collect(Collectors.toList());
+        LambdaQueryWrapper<CrmCustomer> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.in(CrmCustomer::getId,ids);
+        List<CrmCustomer> customerList = this.list(lambdaQueryWrapper);
+        List<CrmCustomer> crmCustomerArrayList = new ArrayList<>();
+        for (CrmCustomer crmCustomer:customerList){
+            if (isPublic){
+                if (!crmCustomer.getIsPublic()){
+                    crmCustomer.setIsPublic(true);
+                    crmCustomer.setRegDate(LocalDateTime.now());
+                    crmCustomerArrayList.add(crmCustomer);
+                }
+            }
+            if (isSupplier){
+                if (!crmCustomer.getIsSupplier()){
+                    crmCustomer.setIsSupplier(true);
+                    crmCustomerArrayList.add(crmCustomer);
+                }
+            }
+        }
+        return crmCustomerArrayList;
+    }
+
+
+    private void setCustCode(CrmCustomerForm crmCustomerForm){
+        BaseResult baseResult = authClient.getOrderFeign(CodeNumber.CRM_CUST_CODE,new Date());
+        if (baseResult.isSuccess()){
+            HashMap data = (HashMap)baseResult.getResult();
+            crmCustomerForm.setCustCode(data.get("order").toString());
+            crmCustomerForm.setFLevel(Integer.parseInt(data.get("fLevel").toString()));
+            crmCustomerForm.setFStep(Integer.parseInt(data.get("fStep").toString()));
+            crmCustomerForm.setCheckStateFlag(data.get("checkStateFlag").toString());
         }
     }
 

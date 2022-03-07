@@ -31,7 +31,7 @@ public class AddCrmCreditDepartForm extends SysBaseEntity {
     private Long departId;
 
     @ApiModelProperty(value = "法人主体名称")
-    private Long departName;
+    private String departName;
 
     @ApiModelProperty(value = "额度类型值(1:税费额度,2:期票额度,3:贷款额度)")
     private String creditValue;

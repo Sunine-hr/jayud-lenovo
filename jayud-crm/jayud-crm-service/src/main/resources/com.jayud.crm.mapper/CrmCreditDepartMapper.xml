@@ -57,7 +57,7 @@
         <where>
             is_deleted = 0
             <if test="crmCreditDepart.creditId != null and crmCreditDepart.creditId != ''">
-                AND credit_id LIKE CONCAT('%',#{crmCreditDepart.creditId},'%')
+                AND credit_id = #{crmCreditDepart.creditId}
             </if>
 
             <if test="crmCreditDepart.creditName != null and crmCreditDepart.creditName != ''">
@@ -81,7 +81,7 @@
             </if>
 
             <if test="crmCreditDepart.tenantCode != null and crmCreditDepart.tenantCode != ''">
-                AND tenant_code LIKE CONCAT('%',#{crmCreditDepart.tenantCode},'%')
+                AND tenant_code = #{crmCreditDepart.tenantCode}
             </if>
 
             <if test="crmCreditDepart.remark != null and crmCreditDepart.remark != ''">

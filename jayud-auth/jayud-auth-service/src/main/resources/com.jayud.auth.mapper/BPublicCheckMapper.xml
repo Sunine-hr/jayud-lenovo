@@ -19,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, sheet_code, check_flag, record_id, f_level, f_step, remark, f_check_id, f_check_name, create_by, create_time
+            id, sheet_code, case when check_flag = 1 then '审核' when check_flag = 0 then '反审' end check_flag , record_id, f_level, f_step, remark, f_check_id, f_check_name, create_by, create_time
     </sql>
 
     <!-- 表名 -->

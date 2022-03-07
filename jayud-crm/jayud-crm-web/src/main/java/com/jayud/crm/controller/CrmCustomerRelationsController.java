@@ -91,7 +91,8 @@ public class CrmCustomerRelationsController {
     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody CrmCustomerRelationsForm crmCustomerRelationsForm ){
+    public BaseResult add(@RequestBody CrmCustomerRelationsForm crmCustomerRelationsForm ){
+        crmCustomerRelationsForm.checkParam();
         return crmCustomerRelationsService.saveOrUpdateCrmCustomerRelations(crmCustomerRelationsForm);
     }
 

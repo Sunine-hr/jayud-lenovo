@@ -47,11 +47,10 @@ public class PaginationBuilder {
 	public static ListPageRuslt buildPageResult(IPage page){
 		ListPageRuslt listPageRuslt = new ListPageRuslt();
 		listPageRuslt.setRecords(page.getRecords());
-		PageResult pageResult = new PageResult();
-		pageResult.setSize(page.getSize());
-		pageResult.setTotal(page.getTotal());
-		pageResult.setCurrent(page.getCurrent());
-		listPageRuslt.setPagination(pageResult);
+		listPageRuslt.setSize(page.getSize());
+		listPageRuslt.setTotal(page.getTotal());
+		listPageRuslt.setCurrent(page.getCurrent());
+		listPageRuslt.setPages(page.getPages());
 		return listPageRuslt;
 	}
 

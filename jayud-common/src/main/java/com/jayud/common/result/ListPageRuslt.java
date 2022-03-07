@@ -18,4 +18,16 @@ public class ListPageRuslt<T> {
 
     @ApiModelProperty(value = "分页详情")
     private PageResult pagination;
+
+    @ApiModelProperty(value = "总数")
+    private long total;
+
+    @ApiModelProperty(value = "每页大小")
+    private long size;
+
+    @ApiModelProperty(value = "当前页数")
+    private long current;
+
+    @ApiModelProperty(value = "总页数")
+    private long pages;
 }

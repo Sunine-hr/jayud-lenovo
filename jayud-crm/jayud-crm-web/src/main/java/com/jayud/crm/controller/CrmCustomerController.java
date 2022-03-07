@@ -3,6 +3,8 @@ package com.jayud.crm.controller;
 import com.jayud.auth.model.bo.CheckForm;
 import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.po.SysRole;
+import com.jayud.common.result.ListPageRuslt;
+import com.jayud.common.result.PaginationBuilder;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
@@ -73,11 +75,11 @@ public class CrmCustomerController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<CrmCustomerForm>> selectPage(CrmCustomerForm crmCustomerForm,
-                                                   @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
-                                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-                                                   HttpServletRequest req) {
-        return BaseResult.ok(crmCustomerService.selectPage(crmCustomerForm,currentPage,pageSize,req));
+    public BaseResult<ListPageRuslt<CrmCustomerForm>> selectPage(CrmCustomerForm crmCustomerForm,
+                                                                 @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
+                                                                 @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                                                 HttpServletRequest req) {
+        return BaseResult.ok(PaginationBuilder.buildPageResult(crmCustomerService.selectPage(crmCustomerForm,currentPage,pageSize,req)));
     }
 
 

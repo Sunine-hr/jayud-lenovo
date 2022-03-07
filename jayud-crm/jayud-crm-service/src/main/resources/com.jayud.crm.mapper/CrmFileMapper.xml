@@ -21,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, code, business_id, file_type, file_name, upload_file_url, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, code, business_id,crm_file_number, file_type, file_name, upload_file_url, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->

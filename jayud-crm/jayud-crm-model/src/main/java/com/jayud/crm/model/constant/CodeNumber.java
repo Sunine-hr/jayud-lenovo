@@ -17,4 +17,9 @@ public interface CodeNumber {
      */
     String CRM_SUPPLIER_CODE = "CRM_SUPPLIER_CODE";
 
+    /**
+     * 基本档案_文件编码
+     */
+    String CRM_FILE_CODE = "CRM_FILE_CODE";
+
 }

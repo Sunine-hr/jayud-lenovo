@@ -292,7 +292,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    @Cacheable(value = "sys:cache:user", key = "#username")
+    @Cacheable(value = "sys:cache:username", key = "#username")
     public SysUserDTO selectByUsername(String username) {
         LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(SysUser::getName,username);
@@ -300,6 +300,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUserDTO sysUserDTO = new SysUserDTO();
         BeanUtils.copyProperties(sysUser,sysUserDTO);
         return sysUserDTO;
+    }
+
+    @Override
+    @Cacheable(value = "sys:cache:userId", key = "#userId")
+    public SysUser selectByUserId(Long userId) {
+        return this.getById(userId);
     }
 
     public static void main(String[] args) {

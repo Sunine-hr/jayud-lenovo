@@ -75,6 +75,8 @@
         <result column="update_by" property="updateBy" />
         <result column="update_time" property="updateTime" />
         <result column="custRelationUsername" property="custRelationUsername" />
+        <result column="cust_state_text" property="custStateText" />
+        <result column="cust_level_text" property="custLevelText" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -87,7 +89,9 @@
 
     <sql id="selects">
         SELECT <include refid="Base_Column_List"/>,
-        IFNULL((SELECT ccr.c_name FROM crm_customer_relations ccr WHERE ccr.is_deleted = 0 AND ccr.cust_id = cc.id AND ccr.is_default = 1 LIMIT 1),'') custRelationUsername
+        IFNULL((SELECT ccr.contact_name FROM crm_customer_relations ccr WHERE ccr.is_deleted = 0 AND ccr.cust_id = cc.id AND ccr.is_default = 1 LIMIT 1),'') custRelationUsername,
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'crm_cust_status' AND cc.cust_state = sdi.item_value) cust_state_text,
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'crm_cust_star' AND cc.cust_level = sdi.item_value) cust_level_text
         FROM <include refid="tname"/>
         <where>
             cc.is_deleted = 0
@@ -347,6 +351,10 @@
                 AND cc.id NOT IN (SELECT ccr.cust_id FROM crm_customer_risk ccr WHERE ccr.is_deleted = 0 AND  cust_id IS NOT NULL)
             </if>
 
+            <if test="crmCustomer.isApproved != null and crmCustomer.isApproved ">
+                AND cc.check_state_flag = 'Y'
+            </if>
+
             <if test="crmCustomer.custIdList != null and crmCustomer.custIdList.size > 0">
                 AND id IN
                 <foreach collection="crmCustomer.custIdList" index="index" item="custId" open="(" separator="," close=")">
@@ -389,6 +397,14 @@
 
     <update id="logicDelByIds">
         UPDATE crm_customer SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE is_deleted = 0
+        AND id IN
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </update>
+    <update id="updateManagerMsg">
+        UPDATE crm_customer SET fsales_id = ${managerUserId}, fsales_name = #{managerUsername} ,update_by = #{username}, update_time = now()
         WHERE is_deleted = 0
         AND id IN
         <foreach collection="ids" open="(" separator="," close=")" item="id">

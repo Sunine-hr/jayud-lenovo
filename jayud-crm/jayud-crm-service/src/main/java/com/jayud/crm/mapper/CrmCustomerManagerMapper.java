@@ -90,4 +90,6 @@ public interface CrmCustomerManagerMapper extends BaseMapper<CrmCustomerManager>
       * @return: void
       **/
     void logicDelByCustIds(@Param("custIds") List<Long> custIds,@Param("username") String username);
+
+    void delChargerManager(@Param("custIds") List<Long> custIds,@Param("username") String username);
 }

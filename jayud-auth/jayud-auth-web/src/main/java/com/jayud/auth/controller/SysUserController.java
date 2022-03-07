@@ -247,5 +247,13 @@ public class SysUserController {
         return BaseResult.ok(sysUserService.selectByUsername(username));
     }
 
+    @ApiOperation("根据用户id称查询用户")
+    @ApiImplicitParam(name = "userId", value = "用户id", dataType = "String", required = true)
+    @PostMapping("/selectByUserId")
+    public BaseResult<SysUser> selectByUserId(@RequestParam Long userId,
+                                                   HttpServletRequest req) {
+        return BaseResult.ok(sysUserService.selectByUserId(userId));
+    }
+
 
 }

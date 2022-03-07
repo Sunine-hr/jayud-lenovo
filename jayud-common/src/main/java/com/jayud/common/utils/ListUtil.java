@@ -1,5 +1,6 @@
 package com.jayud.common.utils;
 
+import cn.hutool.core.collection.CollUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -90,4 +91,29 @@ public class ListUtil {
         });
         return reList;
     }
+
+    /**
+     * @description 判断两个list内容是否相同
+     * @author  ciro
+     * @date   2022/3/7 16:52
+     * @param: mainList
+     * @param: lastList
+     * @return: boolean
+     **/
+    public static boolean checkIsSame(List<String> mainList,List<String> lastList){
+        boolean isSame = true;
+        if (CollUtil.isEmpty(mainList) || CollUtil.isEmpty(lastList)){
+            isSame = false;
+        }else {
+            for (String id : mainList){
+                if (!lastList.contains(id)){
+                    isSame = false;
+                    break;
+                }
+            }
+        }
+        return isSame;
+    }
+
+
 }

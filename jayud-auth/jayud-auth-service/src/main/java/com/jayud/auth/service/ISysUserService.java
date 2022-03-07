@@ -132,4 +132,13 @@ public interface ISysUserService extends IService<SysUser> {
      * @return: com.jayud.auth.model.dto.SysUserDTO
      **/
     SysUserDTO selectByUsername(String username);
+
+    /**
+     * @description 根据用户id查询信息
+     * @author  ciro
+     * @date   2022/3/7 13:59
+     * @param: userId
+     * @return: com.jayud.auth.model.po.SysUser
+     **/
+    SysUser selectByUserId(Long userId);
 }

@@ -201,5 +201,14 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      **/
     BaseResult logicDelByIds(DeleteForm deleteForm);
 
-
+    /**
+     * @description 更新企业负责人信息
+     * @author  ciro
+     * @date   2022/3/7 16:10
+     * @param: idList
+     * @param: managerUserId
+     * @param: managerUserName
+     * @return: void
+     **/
+    void updateManagerMsg(List<Long> idList,Long managerUserId,String managerUserName);
 }

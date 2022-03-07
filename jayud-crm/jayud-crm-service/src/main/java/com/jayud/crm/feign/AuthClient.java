@@ -5,6 +5,7 @@ import com.jayud.auth.model.bo.CheckForm;
 import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysRole;
+import com.jayud.auth.model.po.SysUser;
 import com.jayud.common.BaseResult;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -93,6 +94,17 @@ public interface AuthClient {
      **/
     @PostMapping(value = "/sysUser/selectByUsername")
     public BaseResult<SysUserDTO>  selectByUsername(@RequestParam("username") String username);
+
+    /**
+     * @description 根据用户id查询用户信息
+     * @author  ciro
+     * @date   2022/3/7 14:01
+     * @param: userId
+     * @return: com.jayud.common.BaseResult<com.jayud.auth.model.po.SysUser>
+     **/
+    @PostMapping(value = "/sysUser/selectByUserId")
+    public BaseResult<SysUser>  selectByUserId(@RequestParam("userId") Long userId);
+
 
 
 }

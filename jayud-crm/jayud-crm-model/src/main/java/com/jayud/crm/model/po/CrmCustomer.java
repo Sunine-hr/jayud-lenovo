@@ -252,6 +252,10 @@ public class CrmCustomer extends SysBaseEntity {
     @ApiModelProperty(value = "是否不存在黑名单")
     private Boolean isNotInBlackList;
 
+    @TableField(exist = false)
+    @ApiModelProperty(value = "是否审核通过")
+    private Boolean isApproved;
+
 
     @TableField(exist = false)
     @ApiModelProperty(value = "客户id集合")

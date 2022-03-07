@@ -80,4 +80,10 @@ public class CrmCustomerForm  extends CrmCustomer{
 
     @ApiModelProperty(value = "创建人名称")
     private String createName;
+
+    @ApiModelProperty(value = "客户状态文本")
+    private String custStateText;
+
+    @ApiModelProperty(value = "客户星级文本")
+    private String custLevelText;
 }

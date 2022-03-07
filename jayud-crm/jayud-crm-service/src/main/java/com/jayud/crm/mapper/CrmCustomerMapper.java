@@ -82,4 +82,16 @@ public interface CrmCustomerMapper extends BaseMapper<CrmCustomer> {
      * @return: int
      **/
     int logicDelByIds(@Param("ids") List<Long> ids,@Param("username") String username);
+
+    /**
+     * @description 更新企业负责人信息
+     * @author  ciro
+     * @date   2022/3/7 16:12
+     * @param: ids
+     * @param: managerUserId
+     * @param: managerUsername
+     * @param: username
+     * @return: int
+     **/
+    int updateManagerMsg(@Param("ids") List<Long> ids,@Param("managerUserId") Long managerUserId,@Param("managerUsername")String managerUsername,@Param("username") String username);
 }

@@ -9,9 +9,11 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.po.SysDictItem;
+import com.jayud.auth.model.po.SysUser;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.enums.RoleCodeEnum;
+import com.jayud.common.utils.ListUtil;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.bo.*;
@@ -135,6 +137,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         }else {
             return onlyResult;
         }
+        inteCustForm(crmCustomerForm);
         if (isAdd) {
             if (crmCustomerForm.getIsPublic() != null){
                 if (crmCustomerForm.getIsPublic()){
@@ -147,7 +150,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             crmCustomerFeaturesService.saveCrmCustomerFeatures(crmCustomerForm.getId());
         }else {
             CrmCustomer checkCust = this.getById(crmCustomerForm.getId());
-            if (!checkCust.getBusinessTypes().equals(checkCust.getBusinessTypes())){
+            if (!ListUtil.checkIsSame(Arrays.asList(checkCust.getBusinessTypes().split(StrUtil.COMMA)),crmCustomerForm.getBusinessTypesList())){
                 crmCustomerForm.setIsChangeBusniessType(true);
             }
             this.updateById(crmCustomerForm);
@@ -164,10 +167,13 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     @Override
     public CrmCustomerForm selectById(Long id) {
         CrmCustomerForm crmCustomerForm = new CrmCustomerForm();
-        CrmCustomer crmCustomer = this.getById(id);
-        BeanUtils.copyProperties(crmCustomer,crmCustomerForm);
-        crmCustomerForm.setBusinessTypesList(Arrays.asList(crmCustomer.getBusinessTypes().split(StrUtil.COMMA)));
-        setCustomerRelationsMsg(crmCustomerForm);
+        crmCustomerForm.setId(id);
+        List<CrmCustomerForm> crmCustomerFormList = selectList(crmCustomerForm);
+        if (CollUtil.isNotEmpty(crmCustomerFormList)){
+            crmCustomerForm = crmCustomerFormList.get(0);
+            crmCustomerForm.setBusinessTypesList(Arrays.asList(crmCustomerForm.getBusinessTypes().split(StrUtil.COMMA)));
+            setCustomerRelationsMsg(crmCustomerForm);
+        }
         return crmCustomerForm;
     }
 
@@ -489,6 +495,26 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         crmCustomerManagerService.logicDelByCustIds(deleteForm.getIds());
         crmCustomerBankService.logicDelByCustIds(deleteForm.getIds());
         return BaseResult.ok();
+    }
+
+    @Override
+    public void updateManagerMsg(List<Long> idList, Long managerUserId, String managerUserName) {
+        this.baseMapper.updateManagerMsg(idList,managerUserId,managerUserName,CurrentUserUtil.getUsername());
+    }
+
+    /**
+     * @description 初始用户数据
+     * @author  ciro
+     * @date   2022/3/7 14:02
+     * @param: crmCustomerForm
+     * @return: void
+     **/
+    private void inteCustForm(CrmCustomerForm crmCustomerForm){
+        BaseResult<SysUser> userBaseResult = authClient.selectByUserId(crmCustomerForm.getFsalesId());
+        if (userBaseResult.isSuccess()){
+            crmCustomerForm.setManagerUsername(userBaseResult.getResult().getUserName());
+            crmCustomerForm.setFsalesName(userBaseResult.getResult().getUserName());
+        }
     }
 
 }

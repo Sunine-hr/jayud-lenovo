@@ -111,7 +111,7 @@ public class CrmCustomerAgreementSubServiceImpl extends ServiceImpl<CrmCustomerA
 
         Object result = this.authClient.getOrderFeign(CrmDictCode.SUB_CONTRACT_AGREEMENT_NUM_CODE, new Date()).getResult();
         JSONObject jsonObject = new JSONObject(result);
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(16);
         map.put("fLevel", jsonObject.getInt("fLevel"));
         map.put("fStep", jsonObject.getInt("fStep"));
         map.put("checkStateFlag", jsonObject.getInt("checkStateFlag"));

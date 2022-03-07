@@ -12,7 +12,13 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum CustRiskTypeEnum {
+    /**
+     * 风险客户
+     */
     RISK_CUST("1","风险客户"),
+    /**
+     * 黑名单客户
+     */
     BLACKLIST_CUST("2","黑名单客户");
 
     /**

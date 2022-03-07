@@ -2,6 +2,7 @@ package com.jayud.crm.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -107,16 +108,28 @@ public class CrmCustomerRiskServiceImpl extends ServiceImpl<CrmCustomerRiskMappe
 
     @Override
     public BaseResult checkIsRisk(CrmCustomer crmCustomer) {
+        boolean isRisk = false;
         CrmCustomerRisk crmCustomerRisk = new CrmCustomerRisk();
-        if (crmCustomer.getId() == null){
-            crmCustomerRisk.setCustName(crmCustomer.getCustName());
-        }else {
+        List<CrmCustomerRisk> list = new ArrayList<>();
+        //根据id判断
+        if (crmCustomer.getId() != null){
             crmCustomerRisk.setCustId(crmCustomer.getId());
+            list = selectList(crmCustomerRisk);
+            if (CollUtil.isNotEmpty(list)){
+                isRisk = true;
+            }
         }
-        List<CrmCustomerRisk> list = selectList(crmCustomerRisk);
-        if (CollUtil.isNotEmpty(list)){
-            return BaseResult.error(crmCustomer.getCustName()+SysTips.CUTS_IN_RISK_ERROR);
+        if (StrUtil.isNotBlank(crmCustomer.getCustName())&&!isRisk){
+            crmCustomerRisk = new CrmCustomerRisk();
+            crmCustomerRisk.setCustName(crmCustomer.getCustName());
+            list = selectList(crmCustomerRisk);
+            if (CollUtil.isNotEmpty(list)){
+                isRisk = true;
+            }
         }
+       if (isRisk){
+           return BaseResult.error(crmCustomer.getCustName()+SysTips.CUTS_IN_RISK_ERROR);
+       }
         return BaseResult.ok();
     }
 

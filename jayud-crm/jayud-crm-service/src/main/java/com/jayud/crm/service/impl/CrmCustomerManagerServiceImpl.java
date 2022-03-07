@@ -8,10 +8,13 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.po.SysUser;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.dto.AuthUserDetail;
 import com.jayud.common.enums.RoleCodeEnum;
+import com.jayud.common.utils.ListUtil;
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.bo.ComCustomerForm;
 import com.jayud.crm.model.bo.CrmCustomerManagerForm;
 import com.jayud.crm.model.bo.CrmCustomerForm;
@@ -53,6 +56,9 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
 
     @Autowired
     private CrmCustomerManagerMapper crmCustomerManagerMapper;
+
+    @Autowired
+    private AuthClient authClient;
 
     @Override
     public IPage<CrmCustomerManager> selectPage(CrmCustomerManager crmCustomerManager,
@@ -191,7 +197,7 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
 
     @Override
     public BaseResult changeCustChangerManager(ComCustomerForm comCustomerForm) {
-        Map<Long, CrmCustomer> custMap = new HashMap<>();
+        Map<Long, CrmCustomer> custMap = new HashMap<>(16);
         List<Long> custList = new ArrayList<>();
         //新增
         List<Long> addList = new ArrayList<>();
@@ -231,7 +237,8 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
                 delChargerManager(delList);
             }
             if (CollUtil.isNotEmpty(addList)){
-                addChargerManager(addList,custMap,comCustomerForm.getChangerUserId(),crmCustomerManager.getManageUsername(),RoleCodeEnum.SALE_ROLE.getRoleCode(), RoleCodeEnum.SALE_ROLE.getRoleName());
+                addChargerManager(addList,custMap,comCustomerForm.getChangerUserId(),comCustomerForm.getChangeUserName(),RoleCodeEnum.SALE_ROLE.getRoleCode(), RoleCodeEnum.SALE_ROLE.getRoleName());
+                crmCustomerService.updateManagerMsg(addList,comCustomerForm.getChangerUserId(),comCustomerForm.getChangeUserName());
             }
         }
         if (CollUtil.isNotEmpty(errList)){
@@ -257,12 +264,7 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
      **/
     @Override
     public void delChargerManager(List<Long> custIds){
-        CrmCustomerManager manager = new CrmCustomerManager();
-        manager.setIsDeleted(false);
-        LambdaUpdateWrapper<CrmCustomerManager> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.eq(CrmCustomerManager::getIsCharger,true);
-        lambdaUpdateWrapper.in(CrmCustomerManager::getCustId,custIds);
-        this.update(manager,lambdaUpdateWrapper);
+        this.baseMapper.delChargerManager(custIds,CurrentUserUtil.getUsername());
     }
 
     /**
@@ -290,6 +292,8 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
             crmCustomerManager1.setManagerBusinessCode(custMap.get(custId).getBusinessTypes());
             crmCustomerManager1.setManagerBusinessName(crmCustomerService.changeBusinessType(Arrays.asList(custMap.get(custId).getBusinessTypes().split(StrUtil.COMMA))));
             crmCustomerManager1.setGenerateDate(LocalDateTime.now());
+            crmCustomerManager1.setIsCharger(true);
+            crmCustomerManager1.setIsSale(true);
             customerManagerList.add(crmCustomerManager1);
         });
         this.saveBatch(customerManagerList);

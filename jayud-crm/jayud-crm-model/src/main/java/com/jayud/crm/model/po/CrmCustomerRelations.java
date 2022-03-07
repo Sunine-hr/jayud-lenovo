@@ -40,7 +40,7 @@ public class CrmCustomerRelations extends SysBaseEntity {
     private Boolean isDefault;
 
     @ApiModelProperty(value = "姓名")
-    private String cName;
+    private String contactName;
 
     @ApiModelProperty(value = "证件类型")
     private String idType;

@@ -2,14 +2,16 @@ package com.jayud.crm.model.bo;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.jayud.common.entity.SysBaseEntity;
+import com.jayud.common.exception.JayudBizException;
 import com.jayud.crm.model.po.CrmFile;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.StringUtils;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -27,15 +29,12 @@ public class CrmCustomerFollowForm extends SysBaseEntity {
     @ApiModelProperty(value = "客户ID")
     private Long custId;
 
-    @NotBlank(message = "联系人不能为空")
     @ApiModelProperty(value = "联系人")
     private String linkmanName;
 
-    @NotBlank(message = "联系人id不能为空")
     @ApiModelProperty(value = "联系人id")
     private Long linkmanNameId;
 
-    @NotBlank(message = "记录类型不能为空")
     @ApiModelProperty(value = "记录类型")
     private String recordType;
 
@@ -62,6 +61,29 @@ public class CrmCustomerFollowForm extends SysBaseEntity {
     @ApiModelProperty(value = "文件上传表")
     private List<CrmFile> crmFiles;
 
+    @ApiModelProperty(value = "设置联系时间")
+    private String contactTimeString;
 
+    public void setContactTimeString(String contactTimeString) {
+        this.contactTimeString = contactTimeString;
+        String dateStr = "2021-09-03 21:00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime parsedDate = LocalDateTime.parse(contactTimeString, formatter);
+        this.contactTime =parsedDate ;
+    }
+
+
+
+    /**
+     * 校验参数
+     */
+    public void checkParam() {
+        if (StringUtils.isEmpty(linkmanName)){throw new JayudBizException(400,"联系人不能为空"); }
+        if (linkmanNameId==null){throw new JayudBizException(400,"联系人id不能为空"); }
+        if (custId==null){throw new JayudBizException(400,"客户ID不能为空"); }
+        if (StringUtils.isEmpty(recordType)){throw new JayudBizException(400,"记录类型不能为空"); }
+        if (StringUtils.isEmpty(linkmanName)){throw new JayudBizException(400,"联系人不能为空"); }
+        if (StringUtils.isEmpty(contactTimeString)){throw new JayudBizException(400,"联系时间不能为空"); }
+    }
 
 }

@@ -442,7 +442,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         if (CollUtil.isNotEmpty(relationsList)){
             crmCustomerRelations = relationsList.get(0);
             crmCustomerForm.setCustRelationId(crmCustomerRelations.getId());
-            crmCustomerForm.setCustRelationUsername(crmCustomerRelations.getCName());
+            crmCustomerForm.setCustRelationUsername(crmCustomerRelations.getContactName());
             crmCustomerForm.setCustRelationPhone(crmCustomerRelations.getMobile());
             crmCustomerForm.setCustRelationPostName(crmCustomerRelations.getPostName());
         }

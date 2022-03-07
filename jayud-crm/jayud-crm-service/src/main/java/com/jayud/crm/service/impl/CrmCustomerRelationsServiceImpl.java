@@ -119,7 +119,7 @@ public class CrmCustomerRelationsServiceImpl extends ServiceImpl<CrmCustomerRela
             crmCustomerRelations = this.getById(crmCustomerForm.getCustRelationId());
         }
         crmCustomerRelations.setCustId(crmCustomerForm.getId());
-        crmCustomerRelations.setCName(crmCustomerForm.getCustRelationUsername());
+        crmCustomerRelations.setContactName(crmCustomerForm.getCustRelationUsername());
         crmCustomerRelations.setMobile(crmCustomerForm.getCustRelationPhone());
         crmCustomerRelations.setPostName(crmCustomerForm.getCustRelationPostName());
         crmCustomerRelations.setIsDefault(true);

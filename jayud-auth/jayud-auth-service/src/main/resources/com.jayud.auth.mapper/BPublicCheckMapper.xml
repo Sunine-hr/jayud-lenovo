@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果ss -->
     <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.BPublicCheck">
         <id column="id" property="id" />
-        <result column="table_name" property="tableName" />
+        <result column="table_name" property="sheetCode" />
         <result column="check_flag" property="checkFlag" />
         <result column="record_id" property="recordId" />
         <result column="f_level" property="fLevel" />
@@ -13,14 +13,13 @@
         <result column="remark" property="remark" />
         <result column="f_check_id" property="fCheckId" />
         <result column="f_check_name" property="fCheckName" />
-        <result column="crt_by" property="crtBy" />
-        <result column="crt_by_name" property="crtByName" />
-        <result column="crt_by_dtm" property="crtByDtm" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, table_name, check_flag, record_id, f_level, f_step, remark, f_check_id, f_check_name, crt_by, crt_by_name, crt_by_dtm
+            id, sheet_code, check_flag, record_id, f_level, f_step, remark, f_check_id, f_check_name, create_by, create_time
     </sql>
 
     <!-- 表名 -->
@@ -67,12 +66,12 @@
                 AND crt_by = ${bPublicCheck.crtBy}
             </if>
 
-            <if test="bPublicCheck.crtByName != null and bPublicCheck.crtByName != ''">
-                AND crt_by_name = #{bPublicCheck.crtByName}
+            <if test="bPublicCheck.createBy != null and bPublicCheck.createBy != ''">
+                AND create_by = #{bPublicCheck.createBy}
             </if>
 
-            <if test="bPublicCheck.crtByDtm != null ">
-                AND crt_by_dtm = ${bPublicCheck.crtByDtm}
+            <if test="bPublicCheck.createTime != null ">
+                AND create_time = ${bPublicCheck.createTime}
             </if>
 
         </where>

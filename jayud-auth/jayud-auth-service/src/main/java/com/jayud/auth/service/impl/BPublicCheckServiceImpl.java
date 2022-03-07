@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,15 +144,14 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
 
         //添加审核记录
         BPublicCheck bPublicCheck = new BPublicCheck();
-        bPublicCheck.setTableName(checkForm.getSheetCode());
+        bPublicCheck.setSheetCode(checkForm.getSheetCode());
         bPublicCheck.setCheckFlag(1);
         bPublicCheck.setRecordId(checkForm.getRecordId());
         bPublicCheck.setFLevel(sLevel);
         bPublicCheck.setFStep(newStep);
         bPublicCheck.setFCheckId(systemUserByName.getId());
-        bPublicCheck.setCrtBy(systemUserByName.getId());
-        bPublicCheck.setCrtByDtm(LocalDateTime.now());
-        bPublicCheck.setCrtByName(systemUserByName.getName());
+        bPublicCheck.setCreateBy(systemUserByName.getName());
+        bPublicCheck.setCreateTime(new Date());
         boolean save = this.save(bPublicCheck);
         if(!save){
             return BaseResult.error(444,"审核失败，添加审核数据失败");
@@ -220,15 +220,14 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
 
         //添加反审核记录
         BPublicCheck bPublicCheck = new BPublicCheck();
-        bPublicCheck.setTableName(checkForm.getSheetCode());
+        bPublicCheck.setSheetCode(checkForm.getSheetCode());
         bPublicCheck.setCheckFlag(0);
         bPublicCheck.setRecordId(checkForm.getRecordId());
         bPublicCheck.setFLevel(sLevel);
         bPublicCheck.setFStep(newStep);
         bPublicCheck.setFCheckId(systemUserByName.getId());
-        bPublicCheck.setCrtBy(systemUserByName.getId());
-        bPublicCheck.setCrtByDtm(LocalDateTime.now());
-        bPublicCheck.setCrtByName(systemUserByName.getName());
+        bPublicCheck.setFCheckId(systemUserByName.getId());
+        bPublicCheck.setCreateBy(systemUserByName.getName());
         boolean save = this.save(bPublicCheck);
         if(!save){
             return BaseResult.error(444,"反审核失败，添加反审核数据失败");

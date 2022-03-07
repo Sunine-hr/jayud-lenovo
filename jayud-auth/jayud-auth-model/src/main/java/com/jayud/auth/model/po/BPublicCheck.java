@@ -29,7 +29,7 @@ public class BPublicCheck extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "表名")
-    private String tableName;
+    private String sheetCode;
 
     @ApiModelProperty(value = "操作,1审核，0反审")
     private Integer checkFlag;
@@ -51,17 +51,6 @@ public class BPublicCheck extends SysBaseEntity {
 
     @ApiModelProperty(value = "审核人名称")
     private String fCheckName;
-
-    @ApiModelProperty(value = "创建人ID")
-    private Long crtBy;
-
-    @ApiModelProperty(value = "创建人名称")
-    private String crtByName;
-
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @ApiModelProperty(value = "创建时间")
-    private LocalDateTime crtByDtm;
 
 
 }

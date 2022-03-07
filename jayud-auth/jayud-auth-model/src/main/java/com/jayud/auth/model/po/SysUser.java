@@ -1,19 +1,13 @@
 package com.jayud.auth.model.po;
 
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 /**
  * SysUser 实体类

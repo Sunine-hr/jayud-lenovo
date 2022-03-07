@@ -16,9 +16,6 @@ public class ListPageRuslt<T> {
     @ApiModelProperty(value = "分页数据")
     private T records;
 
-    @ApiModelProperty(value = "分页详情")
-    private PageResult pagination;
-
     @ApiModelProperty(value = "总数")
     private long total;
 

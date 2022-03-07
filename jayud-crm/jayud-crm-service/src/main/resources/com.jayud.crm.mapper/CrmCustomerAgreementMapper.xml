@@ -233,7 +233,7 @@
         <include refid="selects"/>
     </select>
 
-    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerAgreement">
+    <select id="list" resultMap="BaseResultMapOne" parameterType="com.jayud.crm.model.po.CrmCustomerAgreement">
         <include refid="selects"/>
     </select>
 

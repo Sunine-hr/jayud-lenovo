@@ -41,7 +41,7 @@ public interface CrmCustomerAgreementMapper extends BaseMapper<CrmCustomerAgreem
      * @param: crmCustomerAgreement
      * @return: java.util.List<com.jayud.crm.model.po.CrmCustomerAgreement>
      **/
-    List<CrmCustomerAgreement> list(@Param("crmCustomerAgreement") CrmCustomerAgreement crmCustomerAgreement);
+    List<CrmCustomerAgreementVO> list(@Param("crmCustomerAgreement") CrmCustomerAgreement crmCustomerAgreement);
 
 
     /**

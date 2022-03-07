@@ -63,13 +63,14 @@ public class CrmCreditServiceImpl extends ServiceImpl<CrmCreditMapper, CrmCredit
 //            creditDeparts.forEach(e -> {
 //                amount=BigDecimalUtil.add(e.getCreditAmt())
 //            });
-            record.setCreditRate(record.getCreditGrantedMoney().divide(record.getCreditMoney()).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)) + "%");
+            BigDecimal creditGrantedMoney = record.getCreditGrantedMoney() == null ? new BigDecimal(0) : record.getCreditGrantedMoney();
+            record.setCreditRate(creditGrantedMoney.divide(record.getCreditMoney()).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)) + "%");
         }
         return pageList;
     }
 
     @Override
-    public List<CrmCredit> selectList(CrmCredit crmCredit) {
+    public List<CrmCreditVO> selectList(CrmCredit crmCredit) {
         return crmCreditMapper.list(crmCredit);
     }
 

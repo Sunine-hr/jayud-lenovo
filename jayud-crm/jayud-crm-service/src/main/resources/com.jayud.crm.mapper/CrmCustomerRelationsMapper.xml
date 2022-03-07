@@ -8,7 +8,7 @@
         <result column="cust_id" property="custId" />
         <result column="relation_type" property="relationType" />
         <result column="is_default" property="isDefault" />
-        <result column="c_name" property="cName" />
+        <result column="contact_name" property="contactName" />
         <result column="id_type" property="idType" />
         <result column="id_card" property="idCard" />
         <result column="tel" property="tel" />
@@ -29,7 +29,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, cust_id, relation_type, is_default, c_name, id_type, id_card, tel, mobile, email, address, birthday, post_name, shareholding_ratio, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, cust_id, relation_type, is_default, contact_name, id_type, id_card, tel, mobile, email, address, birthday, post_name, shareholding_ratio, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
@@ -52,8 +52,8 @@
                 AND is_default = ${crmCustomerRelations.isDefault}
             </if>
 
-            <if test="crmCustomerRelations.cName != null and crmCustomerRelations.cName != ''">
-                AND c_name LIKE CONCAT('%',#{crmCustomerRelations.cName},'%')
+            <if test="crmCustomerRelations.contactName != null and crmCustomerRelations.contactName != ''">
+                AND contact_name LIKE CONCAT('%',#{crmCustomerRelations.contactName},'%')
             </if>
 
             <if test="crmCustomerRelations.idType != null and crmCustomerRelations.idType != ''">
@@ -129,7 +129,7 @@
             cust_id 'custId',
             relation_type 'relationType',
             is_default 'isDefault',
-            c_name 'cName',
+            contact_name 'contactName',
             id_type 'idType',
             id_card 'idCard',
             tel 'tel',
@@ -157,8 +157,8 @@
                     <if test="isDefault != null ">
                         AND is_default = #{isDefault}
                     </if>
-                    <if test="cName != null and cName != ''">
-                        AND c_name LIKE CONCAT('%',#{cName}, '%')
+                    <if test="contactName != null and contactName != ''">
+                        AND contact_name LIKE CONCAT('%',#{contactName}, '%')
                     </if>
                     <if test="idType != null and idType != ''">
                         AND id_type LIKE CONCAT('%',#{idType}, '%')

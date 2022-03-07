@@ -7,14 +7,17 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.jayud.common.entity.SysBaseEntity;
+import com.jayud.common.exception.JayudBizException;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * CrmCustomerRelations 实体类
@@ -31,16 +34,17 @@ public class CrmCustomerRelationsForm extends SysBaseEntity {
     @ApiModelProperty(value = "客户ID")
     private Long custId;
 
-
     @ApiModelProperty(value = "联系人类型")
     private Integer relationType;
 
     @ApiModelProperty(value = "是否默认联系人")
     private Boolean isDefault;
 
-    @NotBlank(message = "姓名不能为空")
-    @ApiModelProperty(value = "姓名")
+    @ApiModelProperty(value = "姓名联系人")
     private String cName;
+
+    @ApiModelProperty(value = "姓名联系人")
+    private String contactName;
 
     @ApiModelProperty(value = "证件类型")
     private String idType;
@@ -48,7 +52,6 @@ public class CrmCustomerRelationsForm extends SysBaseEntity {
     @ApiModelProperty(value = "证件号码")
     private String idCard;
 
-    @NotBlank(message = "电话不能为空")
     @ApiModelProperty(value = "电话")
     private String tel;
 
@@ -85,8 +88,26 @@ public class CrmCustomerRelationsForm extends SysBaseEntity {
     @TableLogic
     private Boolean isDeleted;
 
+    @ApiModelProperty(value = "生日时间")
+    private String birthdayString;
 
 
+    public void setBirthdayString(String birthdayString) {
+        this.birthdayString = birthdayString;
+        String dateStr = "2021-09-03 21:00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime parsedDate = LocalDateTime.parse(birthdayString, formatter);
+        this.birthday =parsedDate ;
+    }
 
+
+    /**
+     * 校验参数
+     */
+    public void checkParam() {
+        if (StringUtils.isEmpty(contactName)){throw new JayudBizException(400,"联系人不能为空"); }
+        if (custId==null){throw new JayudBizException(400,"客户ID不能为空"); }
+        if (StringUtils.isEmpty(tel)){throw new JayudBizException(400,"电话不能为空"); }
+    }
 
 }

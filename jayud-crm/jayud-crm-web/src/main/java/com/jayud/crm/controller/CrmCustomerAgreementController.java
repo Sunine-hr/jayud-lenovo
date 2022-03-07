@@ -1,11 +1,18 @@
 package com.jayud.crm.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.common.result.ListPageRuslt;
+import com.jayud.common.result.PaginationBuilder;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.crm.feign.AuthClient;
+import com.jayud.crm.feign.FileClient;
 import com.jayud.crm.model.bo.AddCrmCustomerAgreementForm;
 import com.jayud.crm.model.constant.CrmDictCode;
+import com.jayud.crm.model.enums.FileModuleEnum;
+import com.jayud.crm.model.po.CrmFile;
 import com.jayud.crm.model.vo.CrmContractQuotationVO;
 import com.jayud.crm.model.vo.CrmCustomerAgreementVO;
+import com.jayud.crm.service.ICrmFileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,6 +53,10 @@ public class CrmCustomerAgreementController {
     public ICrmCustomerAgreementService crmCustomerAgreementService;
     @Autowired
     public AuthClient authClient;
+    @Autowired
+    private FileClient fileClient;
+    @Autowired
+    private ICrmFileService crmFileService;
 
 
     /**
@@ -60,11 +71,11 @@ public class CrmCustomerAgreementController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<CrmCustomerAgreementVO>> selectPage(CrmCustomerAgreement crmCustomerAgreement,
-                                                                @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
-                                                                @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                                                HttpServletRequest req) {
-        return BaseResult.ok(crmCustomerAgreementService.selectPage(crmCustomerAgreement, currentPage, pageSize, req));
+    public BaseResult<ListPageRuslt<CrmCustomerAgreementVO>> selectPage(CrmCustomerAgreement crmCustomerAgreement,
+                                                                        @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+                                                                        @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                                        HttpServletRequest req) {
+        return BaseResult.ok(PaginationBuilder.buildPageResult(crmCustomerAgreementService.selectPage(crmCustomerAgreement, currentPage, pageSize, req)));
     }
 
 
@@ -78,7 +89,7 @@ public class CrmCustomerAgreementController {
      **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
-    public BaseResult<List<CrmCustomerAgreement>> selectList(CrmCustomerAgreement crmCustomerAgreement,
+    public BaseResult<List<CrmCustomerAgreementVO>> selectList(CrmCustomerAgreement crmCustomerAgreement,
                                                              HttpServletRequest req) {
         return BaseResult.ok(crmCustomerAgreementService.selectList(crmCustomerAgreement));
     }
@@ -142,6 +153,12 @@ public class CrmCustomerAgreementController {
         dates.add(convert.getBeginDate());
         dates.add(convert.getEndDate());
         convert.setAgreementTime(dates);
+        Object url = this.fileClient.getBaseUrl().getData();
+        List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(false).setBusinessId(convert.getId()).setCode(FileModuleEnum.CA.getCode())));
+        files.forEach(e -> {
+            e.setUploadFileUrl(url + e.getUploadFileUrl());
+        });
+        convert.setFiles(files);
         return BaseResult.ok(convert);
     }
 

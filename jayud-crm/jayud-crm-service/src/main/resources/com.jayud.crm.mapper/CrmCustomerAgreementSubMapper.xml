@@ -44,7 +44,7 @@
     </resultMap>
 
     <!-- 通用查询映射结果ss -->
-    <resultMap id="BaseResultMapOne" type="com.jayud.crm.model.po.CrmCustomerAgreementSub">
+    <resultMap id="BaseResultMapOne" type="com.jayud.crm.model.vo.CrmCustomerAgreementSubVO">
         <id column="id" property="id" />
         <result column="p_id" property="pId" />
         <result column="agreement_code" property="agreementCode" />

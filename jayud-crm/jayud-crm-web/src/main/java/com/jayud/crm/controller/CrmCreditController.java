@@ -1,6 +1,9 @@
 package com.jayud.crm.controller;
 
+import com.jayud.common.result.ListPageRuslt;
+import com.jayud.common.result.PaginationBuilder;
 import com.jayud.crm.model.bo.AddCrmCreditForm;
+import com.jayud.crm.model.po.CrmCustomer;
 import com.jayud.crm.model.vo.CrmCreditVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,11 +60,11 @@ public class CrmCreditController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<CrmCreditVO>> selectPage(CrmCredit crmCredit,
-                                                     @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
-                                                     @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                                     HttpServletRequest req) {
-        return BaseResult.ok(crmCreditService.selectPage(crmCredit, currentPage, pageSize, req));
+    public BaseResult<ListPageRuslt<CrmCreditVO>> selectPage(CrmCredit crmCredit,
+                                                             @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+                                                             @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                             HttpServletRequest req) {
+        return BaseResult.ok(PaginationBuilder.buildPageResult(crmCreditService.selectPage(crmCredit, currentPage, pageSize, req)));
     }
 
 
@@ -75,8 +78,8 @@ public class CrmCreditController {
      **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
-    public BaseResult<List<CrmCredit>> selectList(CrmCredit crmCredit,
-                                                  HttpServletRequest req) {
+    public BaseResult<List<CrmCreditVO>> selectList(CrmCredit crmCredit,
+                                                    HttpServletRequest req) {
         return BaseResult.ok(crmCreditService.selectList(crmCredit));
     }
 
@@ -91,6 +94,13 @@ public class CrmCreditController {
     @ApiOperation("新增/编辑")
     @PostMapping("/saveOrUpdate")
     public BaseResult saveOrUpdate(@Valid @RequestBody AddCrmCreditForm form) {
+
+        if (form.getId()!=null){
+            CrmCredit crmCredit = this.crmCreditService.getById(form.getId());
+            if (crmCredit.getCreditMoney().compareTo(crmCredit.getCreditGrantedMoney())<0) {
+                return BaseResult.ok(SysTips.INSUFFICIENT_REMAINING_AMOUNT);
+            }
+        }
         crmCreditService.saveOrUpdate(form);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }

@@ -68,7 +68,7 @@ public class CrmCustomerAgreementSubServiceImpl extends ServiceImpl<CrmCustomerA
         IPage<CrmCustomerAgreementSubVO> pageList = crmCustomerAgreementSubMapper.pageList(page, crmCustomerAgreementSub);
         Object url = this.fileClient.getBaseUrl().getData();
         for (CrmCustomerAgreementSubVO record : pageList.getRecords()) {
-            List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(true).setBusinessId(record.getId()).setCode(FileModuleEnum.CQ.getCode())));
+            List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(false).setBusinessId(record.getId()).setCode(FileModuleEnum.CQ.getCode())));
             files.forEach(e -> {
                 e.setUploadFileUrl(url + e.getUploadFileUrl());
             });

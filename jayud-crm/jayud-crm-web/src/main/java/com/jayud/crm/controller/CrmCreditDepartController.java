@@ -1,5 +1,7 @@
 package com.jayud.crm.controller;
 
+import com.jayud.common.result.ListPageRuslt;
+import com.jayud.common.result.PaginationBuilder;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.model.bo.AddCrmCreditDepartForm;
 import com.jayud.crm.model.bo.AddCrmCreditForm;
@@ -60,11 +62,11 @@ public class CrmCreditDepartController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<CrmCreditDepartVO>> selectPage(CrmCreditDepart crmCreditDepart,
-                                                           @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
-                                                           @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                                           HttpServletRequest req) {
-        return BaseResult.ok(crmCreditDepartService.selectPage(crmCreditDepart, currentPage, pageSize, req));
+    public BaseResult<ListPageRuslt<CrmCreditDepartVO>> selectPage(CrmCreditDepart crmCreditDepart,
+                                                                   @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+                                                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                                   HttpServletRequest req) {
+        return BaseResult.ok(PaginationBuilder.buildPageResult(crmCreditDepartService.selectPage(crmCreditDepart, currentPage, pageSize, req)));
     }
 
 

@@ -13,6 +13,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.crm.model.bo.AddCrmCreditDepartForm;
 import com.jayud.crm.model.po.CrmCredit;
 import com.jayud.crm.model.vo.CrmCreditDepartVO;
+import com.jayud.crm.model.vo.CrmCreditVO;
 import com.jayud.crm.service.ICrmCreditService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,8 +93,8 @@ public class CrmCreditDepartServiceImpl extends ServiceImpl<CrmCreditDepartMappe
     public void saveOrUpdate(AddCrmCreditDepartForm form) {
         CrmCreditDepart convert = ConvertUtil.convert(form, CrmCreditDepart.class);
         //获取总量
-        List<CrmCredit> crmCredits = this.crmCreditService.selectList(new CrmCredit().setCreditId(form.getCreditId()).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
-        CrmCredit crmCredit = crmCredits.get(0);
+        List<CrmCreditVO> crmCredits = this.crmCreditService.selectList(new CrmCredit().setCreditId(form.getCreditId()).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
+        CrmCreditVO crmCredit = crmCredits.get(0);
         if (form.getId() == null) {
             convert.setTenantCode(CurrentUserUtil.getUserTenantCode());
         } else {
@@ -115,8 +116,8 @@ public class CrmCreditDepartServiceImpl extends ServiceImpl<CrmCreditDepartMappe
     @Override
     public BigDecimal calculationRemainingCreditLine(String creditId, String tenantCode) {
         //获取总量
-        List<CrmCredit> crmCredits = this.crmCreditService.selectList(new CrmCredit().setCreditId(creditId).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
-        CrmCredit crmCredit = new CrmCredit();
+        List<CrmCreditVO> crmCredits = this.crmCreditService.selectList(new CrmCredit().setCreditId(creditId).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
+        CrmCreditVO crmCredit = new CrmCreditVO();
         if (CollectionUtil.isEmpty(crmCredits)) {
             crmCredit.setCreditGrantedMoney(new BigDecimal(0)).setCreditMoney(new BigDecimal(0));
         } else {

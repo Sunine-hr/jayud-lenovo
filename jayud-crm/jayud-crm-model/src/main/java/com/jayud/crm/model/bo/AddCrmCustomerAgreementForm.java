@@ -157,6 +157,8 @@ public class AddCrmCustomerAgreementForm extends SysBaseEntity {
         }else {
             if (isExtended) {
                 if (postponedType==null){throw new JayudBizException(400,"顺延天数不能为空"); }
+            }else {
+                postponedType=-1;
             }
         }
         if (userId==null){throw new JayudBizException(400,"销售员id不能为空"); }

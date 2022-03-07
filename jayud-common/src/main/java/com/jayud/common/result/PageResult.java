@@ -17,10 +17,13 @@ public class PageResult {
     private long total;
 
     @ApiModelProperty(value = "每页大小")
-    private long pageSize;
+    private long size;
 
     @ApiModelProperty(value = "当前页数")
     private long current;
+
+    @ApiModelProperty(value = "总页数")
+    private long pages;
 
 
 }

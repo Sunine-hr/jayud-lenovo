@@ -14,7 +14,7 @@ import lombok.Data;
 public class ListPageRuslt<T> {
 
     @ApiModelProperty(value = "分页数据")
-    private T list;
+    private T records;
 
     @ApiModelProperty(value = "分页详情")
     private PageResult pagination;

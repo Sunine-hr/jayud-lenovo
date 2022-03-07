@@ -81,6 +81,7 @@
           AND sdi.is_deleted = 0
           AND sdi.`status` = 1
           AND sd.dict_code = #{dictCode}
+        ORDER BY sdi.sort_order ASC
     </select>
 
 

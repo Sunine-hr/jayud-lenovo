@@ -46,7 +46,7 @@ public class CrmCustomer extends SysBaseEntity {
     private String unCreditCode;
 
     @ApiModelProperty(value = "企业跟进状态(潜在，意向，合作，暂不合作）")
-    private Boolean custState;
+    private String custState;
 
     @ApiModelProperty(value = "是否普通用户")
     private Boolean isCust;
@@ -204,31 +204,31 @@ public class CrmCustomer extends SysBaseEntity {
     private String businessTypes;
 
     @ApiModelProperty(value = "服务类型")
-    private Integer serviceType;
+    private String serviceType;
 
     @ApiModelProperty(value = "帐期")
-    private Integer accountingPeriod;
+    private String accountingPeriod;
 
     @ApiModelProperty(value = "对账方式")
-    private Integer reconciliationMethod;
+    private String reconciliationMethod;
 
     @ApiModelProperty(value = "结算方式")
-    private Integer settlementMethod;
+    private String settlementMethod;
 
     @ApiModelProperty(value = "所属行业")
-    private Integer industry;
+    private String industry;
 
     @ApiModelProperty(value = "网址地址")
     private String websiteUrl;
 
     @ApiModelProperty(value = "企业信用")
-    private Integer custEnterpriseCredit;
+    private String custEnterpriseCredit;
 
     @ApiModelProperty(value = "进口信用")
-    private Integer custImportCredit;
+    private String custImportCredit;
 
     @ApiModelProperty(value = "海关信用")
-    private Integer custCustomsCredit;
+    private String custCustomsCredit;
 
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;

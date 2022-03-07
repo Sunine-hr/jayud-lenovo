@@ -240,7 +240,7 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
                 isShow = false;
             }
             if (!isShow){
-                where += " AND cc.is_public = 0 ";
+                where += " AND c.is_public = 0 ";
             }
         }
 

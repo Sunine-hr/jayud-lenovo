@@ -7,6 +7,6 @@ package com.jayud.common.constant;
  */
 public interface SqlCodeConstant {
 
-    String CRM_CUST_SQL_CODE = "";
+    String CRM_CUST_SQL_CODE = "CRM_CUST_SELECT";
 
 }

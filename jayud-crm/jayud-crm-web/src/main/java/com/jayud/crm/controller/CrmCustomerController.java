@@ -165,10 +165,10 @@ public class CrmCustomerController {
      * @return: com.jayud.common.BaseResult<com.jayud.crm.model.bo.CrmCodeFrom>
      **/
     @ApiOperation("根据id查询")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
+    @ApiImplicitParam(name = "custId",value = "主键id",dataType = "int",required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<CrmCustomerForm> queryById(@RequestParam(name="id",required=true) Long id) {
-        return BaseResult.ok(crmCustomerService.selectById(id));
+    public BaseResult<CrmCustomerForm> queryById(@RequestParam(name="custId",required=true) Long custId) {
+        return BaseResult.ok(crmCustomerService.selectById(custId));
     }
 
 

@@ -27,6 +27,7 @@ public class CrmCustomerAgreementSubVO extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "主协议ID")
+    @JsonProperty(value = "pId")
     private Long pId;
 
     @ApiModelProperty(value = "协议编号")

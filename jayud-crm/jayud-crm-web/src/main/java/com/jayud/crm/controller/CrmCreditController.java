@@ -94,6 +94,13 @@ public class CrmCreditController {
     @ApiOperation("新增/编辑")
     @PostMapping("/saveOrUpdate")
     public BaseResult saveOrUpdate(@Valid @RequestBody AddCrmCreditForm form) {
+
+        if (form.getId()!=null){
+            CrmCredit crmCredit = this.crmCreditService.getById(form.getId());
+            if (crmCredit.getCreditMoney().compareTo(crmCredit.getCreditGrantedMoney())<0) {
+                return BaseResult.ok(SysTips.INSUFFICIENT_REMAINING_AMOUNT);
+            }
+        }
         crmCreditService.saveOrUpdate(form);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }

@@ -2,6 +2,7 @@ package com.jayud.crm.model.bo;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jayud.common.entity.SysBaseEntity;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.crm.model.po.CrmFile;
@@ -29,6 +30,7 @@ public class AddCrmCustomerAgreementSubForm extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "主协议ID")
+    @JsonProperty(value = "pId")
     private Long pId;
 
     @ApiModelProperty(value = "协议编号")
@@ -114,12 +116,15 @@ public class AddCrmCustomerAgreementSubForm extends SysBaseEntity {
     private LocalDate filesDtm;
 
     @ApiModelProperty(value = "审核级别")
+    @JsonProperty(value = "fLevel")
     private Integer fLevel;
 
     @ApiModelProperty(value = "当前级别")
+    @JsonProperty(value = "fStep")
     private Integer fStep;
 
     @ApiModelProperty(value = "审核状态")
+    @JsonProperty(value = "checkStateFlag")
     private String checkStateFlag;
 
     @ApiModelProperty(value = "流程实例")
@@ -130,7 +135,6 @@ public class AddCrmCustomerAgreementSubForm extends SysBaseEntity {
 
     @ApiModelProperty(value = "备注")
     private String remark;
-
 
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")
     @TableLogic

@@ -30,8 +30,8 @@
         FROM <include refid="tname"/>
         <where>
             is_deleted = 0
-            <if test="bPublicCheck.tableName != null and bPublicCheck.tableName != ''">
-                AND table_name = #{bPublicCheck.tableName}
+            <if test="bPublicCheck.sheetCode != null and bPublicCheck.sheetCode != ''">
+                AND sheet_code = #{bPublicCheck.sheetCode}
             </if>
 
             <if test="bPublicCheck.checkFlag != null ">

@@ -177,8 +177,10 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
     public BaseResult<CrmCustomerManagerForm> saveManager(CrmCustomerManagerForm crmCustomerManagerForm) {
         boolean isAdd = false;
         crmCustomerManagerForm.setManagerBusinessCode(StringUtils.join(crmCustomerManagerForm.getBusinessTypesList(), StrUtil.C_COMMA));
+        crmCustomerManagerForm.setManagerBusinessName(crmCustomerService.changeBusinessType(crmCustomerManagerForm.getBusinessTypesList()));
         if (crmCustomerManagerForm.getId() == null){
             isAdd = true;
+        }else {
             CrmCustomerManager crmCustomerManager1 = this.getById(crmCustomerManagerForm.getId());
             if (crmCustomerManager1.getIsCharger()){
                 return BaseResult.error(SysTips.NOT_EDIT_CHARGER_ERROR);

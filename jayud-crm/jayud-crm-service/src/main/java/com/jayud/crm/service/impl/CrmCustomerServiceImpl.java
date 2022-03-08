@@ -24,6 +24,7 @@ import com.jayud.crm.model.po.CrmCustomerManager;
 import com.jayud.crm.model.po.CrmCustomerRelations;
 import com.jayud.crm.model.po.CrmCustomerRisk;
 import com.jayud.crm.service.*;
+import com.jayud.crm.utils.CodeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -64,6 +65,9 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     private ICrmCustomerRelationsService crmCustomerRelationsService;
     @Autowired
     private ICrmCustomerBankService crmCustomerBankService;
+
+    @Autowired
+    private CodeUtils codeUtils;
 
 
     @Autowired
@@ -273,6 +277,9 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         crmCustomerRiskService.checkIsRiskByCutsIds(comCustomerForm);
         if (CollUtil.isNotEmpty(comCustomerForm.getChangeList())){
             List<CrmCustomer> crmCustomerList = tranferCust(comCustomerForm.getChangeList(),false,true);
+            crmCustomerList.forEach(crmCustomer -> {
+                crmCustomer.setSupplierCode(codeUtils.getCodeByRule(CodeNumber.CRM_SUPPLIER_CODE));
+            });
             this.updateBatchById(crmCustomerList);
         }
 
@@ -555,6 +562,12 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             crmCustomerForm.setFLevel(Integer.parseInt(data.get("fLevel").toString()));
             crmCustomerForm.setFStep(Integer.parseInt(data.get("fStep").toString()));
             crmCustomerForm.setCheckStateFlag(data.get("checkStateFlag").toString());
+        }
+        //设置供应商编码
+        if (crmCustomerForm.getIsSupplier() != null){
+            if (crmCustomerForm.getIsSupplier()){
+                crmCustomerForm.setSupplierCode(codeUtils.getCodeByRule(CodeNumber.CRM_SUPPLIER_CODE));
+            }
         }
     }
 

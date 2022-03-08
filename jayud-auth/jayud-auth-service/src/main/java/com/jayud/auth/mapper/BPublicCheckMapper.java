@@ -3,6 +3,7 @@ package com.jayud.auth.mapper;
 import com.jayud.auth.model.po.BPublicCheck;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import com.jayud.auth.model.vo.BPublicCheckVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -31,7 +32,7 @@ public interface BPublicCheckMapper extends BaseMapper<BPublicCheck> {
      * @param: bPublicCheck
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.BPublicCheck>
      **/
-    IPage<BPublicCheck> pageList(@Param("page") Page<BPublicCheck> page, @Param("bPublicCheck") BPublicCheck bPublicCheck);
+    IPage<BPublicCheckVO> pageList(@Param("page") Page<BPublicCheckVO> page, @Param("bPublicCheck") BPublicCheck bPublicCheck);
 
     /**
      * @description 列表查询数据
@@ -40,7 +41,7 @@ public interface BPublicCheckMapper extends BaseMapper<BPublicCheck> {
      * @param: bPublicCheck
      * @return: java.util.List<com.jayud.auth.model.po.BPublicCheck>
      **/
-    List<BPublicCheck> list(@Param("bPublicCheck") BPublicCheck bPublicCheck);
+    List<BPublicCheckVO> list(@Param("bPublicCheck") BPublicCheck bPublicCheck);
 
 
     /**

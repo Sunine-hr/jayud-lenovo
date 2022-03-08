@@ -22,8 +22,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, sheet_code, case when check_flag = 1 then '审核' when check_flag = 0 then '反审' end check_flag , record_id, f_level, f_step, remark, f_check_id, f_check_name, create_by, create_time,check_state_flag
-            case when is_check = 0 then '通过' when is_check = 1 then '不通过' end is_check,time_consuming
+            id, sheet_code, check_flag , record_id, f_level, f_step, remark, f_check_id, f_check_name, create_by, create_time,check_state_flag,
+            is_check,time_consuming
     </sql>
 
     <!-- 表名 -->
@@ -33,7 +33,8 @@
         SELECT <include refid="Base_Column_List"/>
         FROM <include refid="tname"/>
         <where>
-            is_deleted = 0
+        1=1
+--             is_deleted = 0
             <if test="bPublicCheck.sheetCode != null and bPublicCheck.sheetCode != ''">
                 AND sheet_code = #{bPublicCheck.sheetCode}
             </if>
@@ -70,10 +71,6 @@
                 AND check_state_flag = #{bPublicCheck.checkStateFlag}
             </if>
 
-            <if test="bPublicCheck.crtBy != null ">
-                AND crt_by = ${bPublicCheck.crtBy}
-            </if>
-
             <if test="bPublicCheck.createBy != null and bPublicCheck.createBy != ''">
                 AND create_by = #{bPublicCheck.createBy}
             </if>
@@ -85,12 +82,110 @@
         </where>
     </sql>
 
-    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.BPublicCheck">
-        <include refid="selects"/>
+    <select id="pageList" resultType="com.jayud.auth.model.vo.BPublicCheckVO" parameterType="com.jayud.auth.model.po.BPublicCheck">
+        select id, sheet_code, case when check_flag = 1 then '审核' when check_flag = 0 then '反审' end checkFlagRemark , record_id, f_level, f_step, remark, f_check_id, f_check_name, create_by, create_time,check_state_flag,
+        case when is_check = 1 then '通过' when is_check = 0 then '不通过' end isCheckRemark,time_consuming
+            from b_public_check
+        <where>
+            1=1
+            <if test="bPublicCheck.sheetCode != null and bPublicCheck.sheetCode != ''">
+                AND sheet_code = #{bPublicCheck.sheetCode}
+            </if>
+
+            <if test="bPublicCheck.checkFlag != null ">
+                AND check_flag = ${bPublicCheck.checkFlag}
+            </if>
+
+            <if test="bPublicCheck.recordId != null ">
+                AND record_id = ${bPublicCheck.recordId}
+            </if>
+
+            <if test="bPublicCheck.fLevel != null ">
+                AND f_level = ${bPublicCheck.fLevel}
+            </if>
+
+            <if test="bPublicCheck.fStep != null ">
+                AND f_step = ${bPublicCheck.fStep}
+            </if>
+
+            <if test="bPublicCheck.remark != null and bPublicCheck.remark != ''">
+                AND remark = #{bPublicCheck.remark}
+            </if>
+
+            <if test="bPublicCheck.fCheckId != null ">
+                AND f_check_id = ${bPublicCheck.fCheckId}
+            </if>
+
+            <if test="bPublicCheck.fCheckName != null and bPublicCheck.fCheckName != ''">
+                AND f_check_name = #{bPublicCheck.fCheckName}
+            </if>
+
+            <if test="bPublicCheck.checkStateFlag != null and bPublicCheck.checkStateFlag != ''">
+                AND check_state_flag = #{bPublicCheck.checkStateFlag}
+            </if>
+
+            <if test="bPublicCheck.createBy != null and bPublicCheck.createBy != ''">
+                AND create_by = #{bPublicCheck.createBy}
+            </if>
+
+            <if test="bPublicCheck.createTime != null ">
+                AND create_time = ${bPublicCheck.createTime}
+            </if>
+
+        </where>
     </select>
 
-    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.BPublicCheck">
-        <include refid="selects"/>
+    <select id="list" resultType="com.jayud.auth.model.vo.BPublicCheckVO" parameterType="com.jayud.auth.model.po.BPublicCheck">
+        select id, sheet_code, case when check_flag = 1 then '审核' when check_flag = 0 then '反审' end checkFlagRemark , record_id, f_level, f_step, remark, f_check_id, f_check_name, create_by, create_time,check_state_flag,
+        case when is_check = 1 then '通过' when is_check = 0 then '不通过' end isCheckRemark,time_consuming
+        from b_public_check
+        <where>
+            1=1
+            <if test="bPublicCheck.sheetCode != null and bPublicCheck.sheetCode != ''">
+                AND sheet_code = #{bPublicCheck.sheetCode}
+            </if>
+
+            <if test="bPublicCheck.checkFlag != null ">
+                AND check_flag = ${bPublicCheck.checkFlag}
+            </if>
+
+            <if test="bPublicCheck.recordId != null ">
+                AND record_id = ${bPublicCheck.recordId}
+            </if>
+
+            <if test="bPublicCheck.fLevel != null ">
+                AND f_level = ${bPublicCheck.fLevel}
+            </if>
+
+            <if test="bPublicCheck.fStep != null ">
+                AND f_step = ${bPublicCheck.fStep}
+            </if>
+
+            <if test="bPublicCheck.remark != null and bPublicCheck.remark != ''">
+                AND remark = #{bPublicCheck.remark}
+            </if>
+
+            <if test="bPublicCheck.fCheckId != null ">
+                AND f_check_id = ${bPublicCheck.fCheckId}
+            </if>
+
+            <if test="bPublicCheck.fCheckName != null and bPublicCheck.fCheckName != ''">
+                AND f_check_name = #{bPublicCheck.fCheckName}
+            </if>
+
+            <if test="bPublicCheck.checkStateFlag != null and bPublicCheck.checkStateFlag != ''">
+                AND check_state_flag = #{bPublicCheck.checkStateFlag}
+            </if>
+
+            <if test="bPublicCheck.createBy != null and bPublicCheck.createBy != ''">
+                AND create_by = #{bPublicCheck.createBy}
+            </if>
+
+            <if test="bPublicCheck.createTime != null ">
+                AND create_time = ${bPublicCheck.createTime}
+            </if>
+
+        </where>
     </select>
 
 

@@ -1,6 +1,7 @@
 package com.jayud.auth.controller;
 
 import com.jayud.auth.model.bo.CheckForm;
+import com.jayud.auth.model.vo.BPublicCheckVO;
 import com.jayud.auth.service.IPublicCheckService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,7 +47,7 @@ public class BPublicCheckController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<BPublicCheck>> selectPage(BPublicCheck bPublicCheck,
+    public BaseResult<IPage<BPublicCheckVO>> selectPage(BPublicCheck bPublicCheck,
                                                    @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                    HttpServletRequest req) {
@@ -64,8 +65,8 @@ public class BPublicCheckController {
     **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
-    public BaseResult<List<BPublicCheck>> selectList(BPublicCheck bPublicCheck,
-                                                HttpServletRequest req) {
+    public BaseResult<List<BPublicCheckVO>> selectList(BPublicCheck bPublicCheck,
+                                                       HttpServletRequest req) {
         return BaseResult.ok(bPublicCheckService.selectList(bPublicCheck));
     }
 

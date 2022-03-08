@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.auth.model.bo.CheckForm;
 import com.jayud.auth.model.po.BPublicCheck;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.auth.model.vo.BPublicCheckVO;
 import com.jayud.common.BaseResult;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,10 +30,10 @@ public interface IPublicCheckService extends IService<BPublicCheck> {
      * @param: req
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.BPublicCheck>
      **/
-    IPage<BPublicCheck> selectPage(BPublicCheck bPublicCheck,
-                                Integer currentPage,
-                                Integer pageSize,
-                                HttpServletRequest req);
+    IPage<BPublicCheckVO> selectPage(BPublicCheck bPublicCheck,
+                                     Integer currentPage,
+                                     Integer pageSize,
+                                     HttpServletRequest req);
 
     /**
      * @description 列表查询数据
@@ -42,7 +43,7 @@ public interface IPublicCheckService extends IService<BPublicCheck> {
      * @param: req
      * @return: java.util.List<com.jayud.auth.model.po.BPublicCheck>
      **/
-    List<BPublicCheck> selectList(BPublicCheck bPublicCheck);
+    List<BPublicCheckVO> selectList(BPublicCheck bPublicCheck);
 
 
 

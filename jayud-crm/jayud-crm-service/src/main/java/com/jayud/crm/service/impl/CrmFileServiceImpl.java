@@ -55,8 +55,8 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
 
         Page<CrmFile> page = new Page<CrmFile>(currentPage, pageSize);
         IPage<CrmFile> pageList = crmFileMapper.pageList(page, crmFile);
-//        Object url = this.fileClient.getBaseUrl().getData();
-        Object url ="http://test.oms.jayud.com:9448";
+        Object url = this.fileClient.getBaseUrl().getData();
+//        Object url ="http://test.oms.jayud.com:9448";
         pageList.getRecords().stream().forEach(v -> {
             v.setUploadFileUrl(url + v.getUploadFileUrl());
         });
@@ -66,8 +66,8 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
     @Override
     public List<CrmFile> selectList(CrmFile crmFile) {
         List<CrmFile> list = crmFileMapper.list(crmFile);
-
-        Object url ="http://test.oms.jayud.com:9448";
+        Object url = this.fileClient.getBaseUrl().getData();
+//        Object url ="http://test.oms.jayud.com:9448";
         list.stream().forEach(v->{
             v.setUploadFileUrl(url + v.getUploadFileUrl());
 
@@ -118,7 +118,7 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
                 crmFile.setCrmFileNumber(nextCode);
                 crmFile.setFileName(crmFileForm.get(i).getFileName());
                 crmFile.setFileType(queryCrmFile.getFileType());
-                crmFile.setUploadFileUrl(url + crmFileForm.get(i).getUploadFileUrl());
+                crmFile.setUploadFileUrl(crmFileForm.get(i).getUploadFileUrl());
                 crmFile.setCreateBy(CurrentUserUtil.getUsername());
                 crmFile.setCreateTime(new Date());
                 crmFile.setRemark(queryCrmFile.getRemark());

@@ -130,7 +130,7 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
             if (CollUtil.isNotEmpty(managerList)) {
                 CrmCustomerManager crmCustomerManager1 = managerList.get(0);
                 //不是负责人修改数据
-                if (!crmCustomerManager1.getId().equals(authUserDetail.getId())) {
+                if (!crmCustomerManager1.getManageUserId().equals(authUserDetail.getId())) {
                     return BaseResult.error();
                 }
                 //不同负责人
@@ -153,7 +153,7 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
                 //对接人信息
                 crmCustomerManager.setManageUserId(crmCustomerForm.getManagerUserId());
                 crmCustomerManager.setManageUsername(crmCustomerForm.getManagerUsername());
-                crmCustomerManager.setManageRoles(RoleCodeEnum.TENANT_ROLE_ADMIN.getRoleCode());
+                crmCustomerManager.setManageRoles(RoleCodeEnum.SALE_ROLE.getRoleCode());
                 crmCustomerManager.setManagerRolesName(RoleCodeEnum.SALE_ROLE.getRoleName());
                 //客户业务类型
                 crmCustomerManager.setManagerBusinessCode(crmCustomerForm.getBusinessTypes());
@@ -215,8 +215,6 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
         List<Long> delList = new ArrayList<>();
         //错误
         List<Long> errList = new ArrayList<>();
-        String successString = "";
-        String errorString = "";
         crmCustomerRiskService.checkIsRiskByCutsIds(comCustomerForm);
         if (CollUtil.isNotEmpty(comCustomerForm.getCrmCustomerList())){
             comCustomerForm.getCrmCustomerList().forEach(crmCustomer -> {

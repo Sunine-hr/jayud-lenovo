@@ -70,10 +70,6 @@
                 AND check_state_flag = #{bPublicCheck.checkStateFlag}
             </if>
 
-            <if test="bPublicCheck.crtBy != null ">
-                AND crt_by = ${bPublicCheck.crtBy}
-            </if>
-
             <if test="bPublicCheck.createBy != null and bPublicCheck.createBy != ''">
                 AND create_by = #{bPublicCheck.createBy}
             </if>

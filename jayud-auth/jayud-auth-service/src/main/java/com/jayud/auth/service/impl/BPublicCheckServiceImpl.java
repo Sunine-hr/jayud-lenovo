@@ -249,7 +249,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             //判断是否审核金额  暂时不控制
 
             //判断连续两次审核能否为同一人
-            if(bNoRule.getCheckUp() && !sStep.equals(sLevel)){
+            if(bNoRule.getCheckUp() && sStep != 0){
                 BPublicCheck bPublicCheck = this.baseMapper.getPublicCheckByRecordId(checkForm.getSheetCode(),checkForm.getRecordId(),0);
                 if(bPublicCheck.getFCheckName().equals(CurrentUserUtil.getUsername())){
                     return BaseResult.error(444,"连续两次反审核不能为同一人");

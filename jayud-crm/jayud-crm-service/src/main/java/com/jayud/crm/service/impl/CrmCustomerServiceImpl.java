@@ -419,7 +419,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             crmCustomerForm.setCustIdList(custIdList);
             List<CrmCustomerForm> customerList = selectList(crmCustomerForm);
             custIdList = customerList.stream().map(x->x.getId()).collect(Collectors.toList());
-            Map<Long,CrmCustomer> custMap = customerList.stream().collect(Collectors.toMap(x->x.getId(),x->x));
+            Map<Long,CrmCustomer> custMap = customerList.stream().filter(x->!x.getIsPublic()).collect(Collectors.toMap(x->x.getId(),x->x));
             //取消放入公海
             CrmCustomer updateCust = new CrmCustomer();
             updateCust.setIsPublic(false);

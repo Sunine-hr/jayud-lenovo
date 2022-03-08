@@ -89,9 +89,9 @@ public class CrmCustomerFollowController {
     **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
-    public BaseResult<List<CrmCustomerFollow>> selectList(CrmCustomerFollow crmCustomerFollow,
+    public BaseResult<List<CrmCustomerFollowVO>> selectList(CrmCustomerFollowForm crmCustomerFollowForm,
                                                 HttpServletRequest req) {
-        return BaseResult.ok(crmCustomerFollowService.selectList(crmCustomerFollow));
+        return BaseResult.ok(crmCustomerFollowService.selectList(crmCustomerFollowForm));
     }
 
 

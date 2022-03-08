@@ -13,7 +13,7 @@
         <result column="county" property="county" />
         <result column="address" property="address" />
         <result column="region" property="region" />
-        <result column="c_name" property="cName" />
+        <result column="contact_name" property="contactName" />
         <result column="tel" property="tel" />
         <result column="mobile" property="mobile" />
         <result column="email" property="email" />
@@ -29,7 +29,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, cust_id, address_type, country, province, city, county, address, region, c_name, tel, mobile, email, rece_name, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, cust_id, address_type, country, province, city, county, address, region, contact_name, tel, mobile, email, rece_name, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
@@ -72,8 +72,8 @@
                 AND region LIKE CONCAT('%',#{crmCustomerAddress.region},'%')
             </if>
 
-            <if test="crmCustomerAddress.cName != null and crmCustomerAddress.cName != ''">
-                AND c_name LIKE CONCAT('%',#{crmCustomerAddress.cName},'%')
+            <if test="crmCustomerAddress.contactName != null and crmCustomerAddress.contactName != ''">
+                AND contact_name LIKE CONCAT('%',#{crmCustomerAddress.contactName},'%')
             </if>
 
             <if test="crmCustomerAddress.tel != null and crmCustomerAddress.tel != ''">
@@ -134,7 +134,7 @@
             county 'county',
             address 'address',
             region 'region',
-            c_name 'cName',
+            contact_name 'contactName',
             tel 'tel',
             mobile 'mobile',
             email 'email',
@@ -172,8 +172,8 @@
                     <if test="region != null and region != ''">
                         AND region LIKE CONCAT('%',#{region}, '%')
                     </if>
-                    <if test="cName != null and cName != ''">
-                        AND c_name LIKE CONCAT('%',#{cName}, '%')
+                    <if test="contactName != null and contactName != ''">
+                        AND contact_name LIKE CONCAT('%',#{contactName}, '%')
                     </if>
                     <if test="tel != null and tel != ''">
                         AND tel LIKE CONCAT('%',#{tel}, '%')

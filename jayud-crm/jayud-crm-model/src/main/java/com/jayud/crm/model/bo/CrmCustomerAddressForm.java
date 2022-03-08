@@ -2,10 +2,12 @@ package com.jayud.crm.model.bo;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.jayud.common.entity.SysBaseEntity;
+import com.jayud.common.exception.JayudBizException;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotBlank;
 
@@ -24,37 +26,30 @@ public class CrmCustomerAddressForm extends SysBaseEntity {
     @ApiModelProperty(value = "客户ID")
     private Long custId;
 
-    @NotBlank(message = "地址类型不能为空")
     @ApiModelProperty(value = "地址类型")
     private String addressType;
 
     @ApiModelProperty(value = "国家")
     private String country;
 
-    @NotBlank(message = "省不能为空")
     @ApiModelProperty(value = "省")
     private String province;
 
-    @NotBlank(message = "市不能为空")
     @ApiModelProperty(value = "市")
     private String city;
 
-    @NotBlank(message = "区不能为空")
     @ApiModelProperty(value = "区")
     private String county;
 
-    @NotBlank(message = "详细地址不能为空")
     @ApiModelProperty(value = "详细地址")
     private String address;
 
     @ApiModelProperty(value = "区域(市区，关外等)")
     private String region;
 
-    @NotBlank(message = "联系人不能为空")
     @ApiModelProperty(value = "联系人")
-    private String cName;
+    private String contactName;
 
-    @NotBlank(message = "联系电话不能为空")
     @ApiModelProperty(value = "联系电话")
     private String tel;
 
@@ -75,8 +70,16 @@ public class CrmCustomerAddressForm extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")
-    @TableLogic
     private Boolean isDeleted;
 
+
+    /**
+     * 校验参数
+     */
+    public void checkParam() {
+        if (StringUtils.isEmpty(address)){throw new JayudBizException(400,"联系地址不能为空"); }
+        if (StringUtils.isEmpty(contactName)){throw new JayudBizException(400,"联系人不能为空"); }
+        if (StringUtils.isEmpty(tel)){throw new JayudBizException(400,"联系电话不能为空"); }
+    }
 
 }

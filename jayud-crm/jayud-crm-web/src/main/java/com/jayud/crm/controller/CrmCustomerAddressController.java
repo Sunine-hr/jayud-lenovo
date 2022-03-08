@@ -103,7 +103,7 @@ public class CrmCustomerAddressController {
     @ApiOperation("新增")
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody CrmCustomerAddressForm crmCustomerAddressForm ){
-        ;
+        crmCustomerAddressForm.checkParam();
         return crmCustomerAddressService.saveOrUpdateCrmCustomerAddress(crmCustomerAddressForm);
     }
 

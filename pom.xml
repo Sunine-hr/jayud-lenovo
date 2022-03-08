@@ -16,7 +16,7 @@
         <!-- oauth2权限 -->
         <module>jayud-auth</module>
         <!-- 文件上传 -->
-<!--        <module>jayud-file</module>-->
+        <module>jayud-file</module>
 <!--        &lt;!&ndash; 消息中间件 &ndash;&gt;-->
 <!--        <module>jayud-msg</module>-->
 <!--        &lt;!&ndash; 任务调度 &ndash;&gt;-->

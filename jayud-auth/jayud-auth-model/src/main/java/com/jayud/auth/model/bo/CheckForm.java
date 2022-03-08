@@ -21,4 +21,11 @@ public class CheckForm extends BasePageForm {
     @NotBlank(message = "按钮code，不能为空")
     private String menuCode;
 
+    @ApiModelProperty(value = "审核状态  通过，不通过")
+    @NotBlank(message = "审核状态，不能为空")
+    private Boolean check;
+
+    @ApiModelProperty(value = "拒绝原因")
+    private String checkRemark;
+
 }

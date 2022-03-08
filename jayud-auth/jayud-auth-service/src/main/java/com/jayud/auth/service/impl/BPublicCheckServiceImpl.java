@@ -230,7 +230,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             checkFlag = "N"+newStep;
         }
 
-        if(sStep != 0){
+        if(sStep == 0){
             return BaseResult.error(444,"该订单还未审核，无法反审");
         }
         //当前用户不为管理员，判断该用户的审核权限
@@ -249,7 +249,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             //判断是否审核金额  暂时不控制
 
             //判断连续两次审核能否为同一人
-            if(bNoRule.getCheckUp() && sStep != 0){
+            if(bNoRule.getCheckUp() && !sStep.equals(sLevel)){
                 BPublicCheck bPublicCheck = this.baseMapper.getPublicCheckByRecordId(checkForm.getSheetCode(),checkForm.getRecordId(),0);
                 if(bPublicCheck.getFCheckName().equals(CurrentUserUtil.getUsername())){
                     return BaseResult.error(444,"连续两次反审核不能为同一人");
@@ -264,7 +264,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         }else{
             update   = bPublicCheckMapper.updateCheckData(checkForm.getRecordId(),checkTable,bNoRule.getCheckDatabase(),newStep,checkFlag,new Date(),systemUserByName.getName());
         }
-        if(update != 0){
+        if(update <= 0){
             return BaseResult.error(444,"反审核失败，修改订单审核状态失败");
         }
         //结束时间

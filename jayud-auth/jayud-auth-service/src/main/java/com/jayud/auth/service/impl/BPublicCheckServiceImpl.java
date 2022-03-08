@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.bo.CheckForm;
 import com.jayud.auth.model.po.BNoRule;
+import com.jayud.auth.model.vo.BPublicCheckVO;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.service.*;
 import com.jayud.common.BaseResult;
@@ -47,18 +48,18 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
     private ISysUserService sysUserService;
 
     @Override
-    public IPage<BPublicCheck> selectPage(BPublicCheck bPublicCheck,
+    public IPage<BPublicCheckVO> selectPage(BPublicCheck bPublicCheck,
                                         Integer currentPage,
                                         Integer pageSize,
                                         HttpServletRequest req){
 
-        Page<BPublicCheck> page=new Page<BPublicCheck>(currentPage,pageSize);
-        IPage<BPublicCheck> pageList= bPublicCheckMapper.pageList(page, bPublicCheck);
+        Page<BPublicCheckVO> page=new Page<BPublicCheckVO>(currentPage,pageSize);
+        IPage<BPublicCheckVO> pageList= bPublicCheckMapper.pageList(page, bPublicCheck);
         return pageList;
     }
 
     @Override
-    public List<BPublicCheck> selectList(BPublicCheck bPublicCheck){
+    public List<BPublicCheckVO> selectList(BPublicCheck bPublicCheck){
         return bPublicCheckMapper.list(bPublicCheck);
     }
 
@@ -161,6 +162,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             bPublicCheck.setTimeConsuming(end-begin);
             bPublicCheck.setCheckStateFlag(checkFlag);
             bPublicCheck.setFCheckId(systemUserByName.getId());
+            bPublicCheck.setFCheckName(systemUserByName.getName());
             bPublicCheck.setCreateBy(systemUserByName.getName());
             bPublicCheck.setCreateTime(new Date());
             boolean save = this.save(bPublicCheck);
@@ -184,6 +186,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             bPublicCheck.setIsCheck(checkForm.getCheck());
             bPublicCheck.setTimeConsuming(end-begin);
             bPublicCheck.setFCheckId(systemUserByName.getId());
+            bPublicCheck.setFCheckName(systemUserByName.getName());
             bPublicCheck.setCreateBy(systemUserByName.getName());
             bPublicCheck.setCreateTime(new Date());
             boolean save = this.save(bPublicCheck);
@@ -281,7 +284,8 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         bPublicCheck.setCheckStateFlag(checkFlag);
         bPublicCheck.setRemark("第 "+newStep+"级反审核,审核成功");
         bPublicCheck.setFCheckId(systemUserByName.getId());
-        bPublicCheck.setFCheckId(systemUserByName.getId());
+        bPublicCheck.setFCheckName(systemUserByName.getName());
+        bPublicCheck.setCreateTime(new Date());
         bPublicCheck.setCreateBy(systemUserByName.getName());
         boolean save = this.save(bPublicCheck);
         if(!save){
@@ -290,5 +294,4 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         log.warn("反审核成功");
         return BaseResult.ok("反审核成功");
     }
-
 }

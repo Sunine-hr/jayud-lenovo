@@ -113,20 +113,20 @@ public class CrmCustomerRelationsController {
 //
 
 
-    /**
-     * @description 物理删除
-     * @author  jayud
-     * @date   2022-03-02
-     * @param: id
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id){
-        crmCustomerRelationsService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
+//    /**
+//     * @description 物理删除
+//     * @author  jayud
+//     * @date   2022-03-02
+//     * @param: id
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("物理删除")
+//    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
+//    @GetMapping("/phyDel")
+//    public BaseResult phyDel(@RequestParam Long id){
+//        crmCustomerRelationsService.phyDelById(id);
+//        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//    }
 
     /**
      * @description 逻辑删除
@@ -136,7 +136,6 @@ public class CrmCustomerRelationsController {
      * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("逻辑删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
     @PostMapping("/logicDel")
     public BaseResult logicDel(@RequestBody DeleteForm ids){
         crmCustomerRelationsService.logicDel(ids.getIds());

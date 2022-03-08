@@ -46,7 +46,7 @@ public interface ICrmCustomerFollowService extends IService<CrmCustomerFollow> {
      * @param: req
      * @return: java.util.List<com.jayud.crm.model.po.CrmCustomerFollow>
      **/
-    List<CrmCustomerFollow> selectList(CrmCustomerFollow crmCustomerFollow);
+    List<CrmCustomerFollowVO> selectList(CrmCustomerFollowForm crmCustomerFollowForm);
 
     BaseResult saveOrUpdateCrmCustomerFollow(CrmCustomerFollowForm crmCustomerFollowForm);
 

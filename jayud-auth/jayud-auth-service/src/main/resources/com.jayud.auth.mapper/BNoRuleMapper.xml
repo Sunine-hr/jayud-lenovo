@@ -22,11 +22,12 @@
         <result column="check_step" property="checkStep" />
         <result column="check_flag" property="checkFlag" />
         <result column="is_deleted" property="isDeleted" />
+        <result column="de_approval_setting" property="deApprovalSetting" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, no_code, no_desc, no_prefix, no_format, check_length, check_table, check_database, t_num, remark, create_by, create_time, update_by, update_time, is_deleted,check_step,check_up,check_flag
+            id, no_code, no_desc, no_prefix, no_format, check_length, check_table, check_database, t_num, remark, create_by, create_time, update_by, update_time, is_deleted,check_step,check_up,check_flag,de_approval_setting
     </sql>
 
     <!-- 表名 -->

@@ -77,7 +77,7 @@
         <include refid="selects"/>
     </select>
 
-    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerFollow">
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.bo.CrmCustomerFollowForm">
         <include refid="selects"/>
     </select>
 

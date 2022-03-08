@@ -59,6 +59,9 @@ public class BNoRule extends SysBaseEntity {
     @ApiModelProperty(value = "审核库")
     private String checkDatabase;
 
+    @ApiModelProperty(value = "反审核设置")
+    private Integer deApprovalSetting;
+
     @ApiModelProperty(value = "流水号长度")
     private Integer tNum;
 

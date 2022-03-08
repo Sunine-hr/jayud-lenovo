@@ -53,7 +53,7 @@ public class CrmCustomerAddress extends SysBaseEntity {
     private String region;
 
     @ApiModelProperty(value = "联系人")
-    private String cName;
+    private String contactName;
 
     @ApiModelProperty(value = "联系电话")
     private String tel;

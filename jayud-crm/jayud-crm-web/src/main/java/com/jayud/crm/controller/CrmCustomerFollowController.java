@@ -2,6 +2,7 @@ package com.jayud.crm.controller;
 
 import cn.hutool.json.JSONObject;
 import com.jayud.auth.model.po.SysDictItem;
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.bo.CrmCustomerFollowForm;
 import com.jayud.crm.model.constant.CrmDictCode;
@@ -52,8 +53,10 @@ public class CrmCustomerFollowController {
     @Autowired
     public ICrmCustomerFollowService crmCustomerFollowService;
 
+//    @Autowired
+//    private SysDictClient sysDictClient;
     @Autowired
-    private SysDictClient sysDictClient;
+    private AuthClient authClient;
 
 
     @Autowired
@@ -89,9 +92,9 @@ public class CrmCustomerFollowController {
     **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
-    public BaseResult<List<CrmCustomerFollow>> selectList(CrmCustomerFollow crmCustomerFollow,
+    public BaseResult<List<CrmCustomerFollowVO>> selectList(CrmCustomerFollowForm crmCustomerFollowForm,
                                                 HttpServletRequest req) {
-        return BaseResult.ok(crmCustomerFollowService.selectList(crmCustomerFollow));
+        return BaseResult.ok(crmCustomerFollowService.selectList(crmCustomerFollowForm));
     }
 
 
@@ -221,13 +224,14 @@ public class CrmCustomerFollowController {
      **/
     @ApiOperation("获取跟进记录方式字典下拉")
     @GetMapping(path = "/getCrmCustomerRiskCode")
-    public BaseResult  getCrmCode(){
+    public BaseResult  getCrmCode(@RequestParam(name="custId",required=true) Long custId){
         CrmCodeFollowForm crmCodeFollowForm = new CrmCodeFollowForm();
 
-        BaseResult<List<SysDictItem>> custNormalStatus= sysDictClient.selectItemByDictCode(CrmDictCode.CRM_CUSTOMER_FOLLOW_TYPE);
+        BaseResult<List<SysDictItem>> custNormalStatus= authClient.selectItemByDictCodeFeign(CrmDictCode.CRM_CUSTOMER_FOLLOW_TYPE);
         List<SysDictItem> result = custNormalStatus.getResult();
         CrmCustomerRelations crmCustomerRelations = new CrmCustomerRelations();
         crmCustomerRelations.setIsDeleted(false);
+        crmCustomerRelations.setCustId(custId);//联系人id
         List<CrmCustomerRelations> crmCustomerRelations1 = crmCustomerRelationsService.selectList(crmCustomerRelations);
         crmCodeFollowForm.setSysDictItems(result);
         crmCodeFollowForm.setCrmCustomerRelations(crmCustomerRelations1);

@@ -79,7 +79,7 @@ public class CrmCustomerFollowForm extends SysBaseEntity {
      */
     public void checkParam() {
         if (StringUtils.isEmpty(linkmanName)){throw new JayudBizException(400,"联系人不能为空"); }
-        if (linkmanNameId==null){throw new JayudBizException(400,"联系人id不能为空"); }
+//        if (linkmanNameId==null){throw new JayudBizException(400,"联系人id不能为空"); }
         if (custId==null){throw new JayudBizException(400,"客户ID不能为空"); }
         if (StringUtils.isEmpty(recordType)){throw new JayudBizException(400,"记录类型不能为空"); }
         if (StringUtils.isEmpty(linkmanName)){throw new JayudBizException(400,"联系人不能为空"); }

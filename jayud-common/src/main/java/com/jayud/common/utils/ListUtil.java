@@ -104,6 +104,8 @@ public class ListUtil {
         boolean isSame = true;
         if (CollUtil.isEmpty(mainList) || CollUtil.isEmpty(lastList)){
             isSame = false;
+        }else if (mainList.size() != lastList.size()){
+            isSame = false;
         }else {
             for (String id : mainList){
                 if (!lastList.contains(id)){

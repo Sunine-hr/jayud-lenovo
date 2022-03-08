@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.crm.feign.FileClient;
 import com.jayud.crm.mapper.CrmFileMapper;
 import com.jayud.crm.model.bo.CrmCustomerFollowForm;
 import com.jayud.crm.model.constant.CrmDictCode;
@@ -50,6 +51,8 @@ public class CrmCustomerFollowServiceImpl extends ServiceImpl<CrmCustomerFollowM
     private CrmFileMapper crmFileMapper;
     @Autowired
     private ICrmFileService crmFileService;
+    @Autowired
+    private FileClient fileClient;
 
     @Override
     public IPage<CrmCustomerFollowVO> selectPage(CrmCustomerFollow crmCustomerFollow,
@@ -59,7 +62,7 @@ public class CrmCustomerFollowServiceImpl extends ServiceImpl<CrmCustomerFollowM
 
         Page<CrmCustomerFollow> page=new Page<CrmCustomerFollow>(currentPage,pageSize);
         IPage<CrmCustomerFollowVO> pageList= crmCustomerFollowMapper.pageList(page, crmCustomerFollow);
-
+        Object url = this.fileClient.getBaseUrl().getData();
         pageList.getRecords().stream().forEach(v->{
 
             //根据跟进记录id查询关联文件表
@@ -67,6 +70,9 @@ public class CrmCustomerFollowServiceImpl extends ServiceImpl<CrmCustomerFollowM
             crmFile.setCode(FileModuleEnum.CCFC.getCode());
             crmFile.setBusinessId(v.getId());
             List<CrmFile> list = crmFileMapper.list(crmFile);
+            list.stream().forEach(vv->{
+                vv.setUploadFileUrl(url+vv.getUploadFileUrl());
+            });
             v.setCrmFiles(list);
 
         });
@@ -76,7 +82,7 @@ public class CrmCustomerFollowServiceImpl extends ServiceImpl<CrmCustomerFollowM
 
     @Override
     public List<CrmCustomerFollowVO> selectList(CrmCustomerFollowForm crmCustomerFollowForm){
-
+        Object url = this.fileClient.getBaseUrl().getData();
         List<CrmCustomerFollowVO> lists = crmCustomerFollowMapper.list(crmCustomerFollowForm);
         lists.stream().forEach(v->{
 
@@ -85,6 +91,9 @@ public class CrmCustomerFollowServiceImpl extends ServiceImpl<CrmCustomerFollowM
             crmFile.setCode(FileModuleEnum.CCFC.getCode());
             crmFile.setBusinessId(v.getId());
             List<CrmFile> list = crmFileMapper.list(crmFile);
+            list.stream().forEach(vv->{
+                vv.setUploadFileUrl(url+vv.getUploadFileUrl());
+            });
             v.setCrmFiles(list);
         });
         return lists;

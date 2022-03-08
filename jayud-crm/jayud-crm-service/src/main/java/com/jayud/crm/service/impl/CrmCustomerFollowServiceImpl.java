@@ -75,8 +75,19 @@ public class CrmCustomerFollowServiceImpl extends ServiceImpl<CrmCustomerFollowM
     }
 
     @Override
-    public List<CrmCustomerFollow> selectList(CrmCustomerFollow crmCustomerFollow){
-        return crmCustomerFollowMapper.list(crmCustomerFollow);
+    public List<CrmCustomerFollowVO> selectList(CrmCustomerFollowForm crmCustomerFollowForm){
+
+        List<CrmCustomerFollowVO> lists = crmCustomerFollowMapper.list(crmCustomerFollowForm);
+        lists.stream().forEach(v->{
+
+            //根据跟进记录id查询关联文件表
+            CrmFile crmFile = new CrmFile();
+            crmFile.setCode(FileModuleEnum.CCFC.getCode());
+            crmFile.setBusinessId(v.getId());
+            List<CrmFile> list = crmFileMapper.list(crmFile);
+            v.setCrmFiles(list);
+        });
+        return lists;
     }
 
     @Override

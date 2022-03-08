@@ -1,5 +1,6 @@
 package com.jayud.crm.mapper;
 
+import com.jayud.crm.model.bo.CrmCustomerFollowForm;
 import com.jayud.crm.model.po.CrmCustomerFollow;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -40,7 +41,7 @@ public interface CrmCustomerFollowMapper extends BaseMapper<CrmCustomerFollow> {
      * @param: crmCustomerFollow
      * @return: java.util.List<com.jayud.crm.model.po.CrmCustomerFollow>
      **/
-    List<CrmCustomerFollow> list(@Param("crmCustomerFollow") CrmCustomerFollow crmCustomerFollow);
+    List<CrmCustomerFollowVO> list(@Param("crmCustomerFollow") CrmCustomerFollowForm crmCustomerFollow);
 
 
     /**

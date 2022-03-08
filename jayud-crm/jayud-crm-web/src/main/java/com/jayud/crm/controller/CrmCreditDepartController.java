@@ -97,15 +97,18 @@ public class CrmCreditDepartController {
     @PostMapping("/saveOrUpdate")
     public BaseResult saveOrUpdate(@Valid @RequestBody AddCrmCreditDepartForm form) {
         List<CrmCreditDepart> list = this.crmCreditDepartService.selectList(new CrmCreditDepart().setCreditId(form.getCreditId()).setDepartId(form.getDepartId()).setIsDeleted(false).setTenantCode(CurrentUserUtil.getUserTenantCode()));
+        BigDecimal existingAmount = new BigDecimal(0);
         if (list.size() > 0) {
             CrmCreditDepart tmp = list.get(0);
+            existingAmount = tmp.getCreditAmt();
             if (!tmp.getId().equals(form.getId())) {
                 return BaseResult.error(SysTips.LEGAL_ENTITY_GRANTED_CREDIT);
             }
         }
         //计算剩余额度
         BigDecimal remainingQuota = this.crmCreditDepartService.calculationRemainingCreditLine(form.getCreditId(), CurrentUserUtil.getUserTenantCode());
-        if (remainingQuota.compareTo(form.getCreditAmt()) < 0) {
+        remainingQuota.add(existingAmount);
+        if (remainingQuota.compareTo(form.getCreditAmt()) <= 0) {
             return BaseResult.error(SysTips.INSUFFICIENT_REMAINING_AMOUNT);
         }
         crmCreditDepartService.saveOrUpdate(form);
@@ -117,7 +120,7 @@ public class CrmCreditDepartController {
      */
     @ApiOperation("法人主体剩余授信额度计算")
     @GetMapping("/calculationRemainingCreditLine")
-    public BaseResult calculationRemainingCreditLine(@RequestParam("creditId")String creditId) {
+    public BaseResult calculationRemainingCreditLine(@RequestParam("creditId") String creditId) {
         //计算剩余额度
         BigDecimal remainingQuota = this.crmCreditDepartService.calculationRemainingCreditLine(creditId, CurrentUserUtil.getUserTenantCode());
         return BaseResult.ok(remainingQuota);

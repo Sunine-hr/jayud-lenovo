@@ -46,7 +46,7 @@ public class CrmCreditCust extends SysBaseEntity {
     private Long departId;
 
     @ApiModelProperty(value = "法人主体名称")
-    private Long departName;
+    private String departName;
 
     @ApiModelProperty(value = "客户ID")
     private Long custId;

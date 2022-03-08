@@ -128,5 +128,5 @@ public class CrmCreditDepartServiceImpl extends ServiceImpl<CrmCreditDepartMappe
         BigDecimal amount = BigDecimalUtil.subtract(crmCredit.getCreditMoney(), crmCredit.getCreditGrantedMoney());
         return amount;
     }
-//8+8+8+1 2^7 192.168.3.128/25
+
 }

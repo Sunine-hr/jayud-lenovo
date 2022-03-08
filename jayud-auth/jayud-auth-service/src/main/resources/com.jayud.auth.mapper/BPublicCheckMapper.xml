@@ -15,11 +15,15 @@
         <result column="f_check_name" property="fCheckName" />
         <result column="create_by" property="createBy" />
         <result column="create_time" property="createTime" />
+        <result column="check_state_flag" property="checkStateFlag" />
+        <result column="is_check" property="isCheck" />
+        <result column="time_consuming" property="timeConsuming" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, sheet_code, case when check_flag = 1 then '审核' when check_flag = 0 then '反审' end check_flag , record_id, f_level, f_step, remark, f_check_id, f_check_name, create_by, create_time
+            id, sheet_code, case when check_flag = 1 then '审核' when check_flag = 0 then '反审' end check_flag , record_id, f_level, f_step, remark, f_check_id, f_check_name, create_by, create_time,check_state_flag
+            case when is_check = 0 then '通过' when is_check = 1 then '不通过' end is_check,time_consuming
     </sql>
 
     <!-- 表名 -->
@@ -62,6 +66,10 @@
                 AND f_check_name = #{bPublicCheck.fCheckName}
             </if>
 
+            <if test="bPublicCheck.checkStateFlag != null and bPublicCheck.checkStateFlag != ''">
+                AND check_state_flag = #{bPublicCheck.checkStateFlag}
+            </if>
+
             <if test="bPublicCheck.crtBy != null ">
                 AND crt_by = ${bPublicCheck.crtBy}
             </if>
@@ -98,23 +106,23 @@
     </update>
 
     <select id="getData" resultType="map" >
-        select * from #{checkTable} where id = #{recordId}
+        select * from ${checkTable} where id = #{recordId}
     </select>
 
     <select id="getCheckData" resultType="map" >
-        select * from #{checkDatabase}.#{checkTable} where id = #{recordId}
+        select * from ${checkDatabase}.${checkTable} where id = #{recordId}
     </select>
 
     <select id="getPublicCheckByRecordId" resultType="map" >
         select *,max (crt_by_dtm) from b_public_check where id = #{recordId} and check_flag = #{checkFlag} and table_name = #{sheetCode}
     </select>
 
-    <select id="updateData" resultType="int" >
-        update set  from #{checkTable} where id = #{recordId}
-    </select>
+    <update id="updateData" >
+        update ${checkTable} set f_step = #{newStep}, check_state_flag = #{checkFlag}, update_by = #{name}, update_time = #{now} where id = #{recordId}
+    </update>
 
-    <select id="updateCheckData" resultType="int" >
-        update * from #{checkDatabase}.#{checkTable} where id = #{recordId}
-    </select>
+    <update id="updateCheckData" >
+        update ${checkDatabase}.${checkTable} set f_step = #{newStep}, check_state_flag = #{checkFlag}, update_by = #{name}, update_time = #{now} where id = #{recordId}
+    </update>
 
 </mapper>

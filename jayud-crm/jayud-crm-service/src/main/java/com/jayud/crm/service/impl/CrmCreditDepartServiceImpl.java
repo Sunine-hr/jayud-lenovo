@@ -92,22 +92,23 @@ public class CrmCreditDepartServiceImpl extends ServiceImpl<CrmCreditDepartMappe
     @Transactional
     public void saveOrUpdate(AddCrmCreditDepartForm form) {
         CrmCreditDepart convert = ConvertUtil.convert(form, CrmCreditDepart.class);
-        //获取总量
-        List<CrmCreditVO> crmCredits = this.crmCreditService.selectList(new CrmCredit().setCreditId(form.getCreditId()).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
-        CrmCreditVO crmCredit = crmCredits.get(0);
+
         if (form.getId() == null) {
             convert.setTenantCode(CurrentUserUtil.getUserTenantCode());
         } else {
             convert.setUpdateBy(CurrentUserUtil.getUsername());
         }
         this.saveOrUpdate(convert);
+
+        //获取总量
+        List<CrmCreditVO> crmCredits = this.crmCreditService.selectList(new CrmCredit().setCreditId(form.getCreditId()).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
+        CrmCreditVO crmCredit = crmCredits.get(0);
         //扣除剩余量
         List<CrmCreditDepart> creditDeparts = this.selectList(new CrmCreditDepart().setCreditId(form.getCreditId()).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
         BigDecimal departAmout = new BigDecimal(0);
         for (CrmCreditDepart creditDepart : creditDeparts) {
             departAmout = BigDecimalUtil.add(creditDepart.getCreditAmt(), departAmout);
         }
-        departAmout = departAmout.add(form.getCreditAmt());
         CrmCredit update = new CrmCredit();
         update.setId(crmCredit.getId());
         this.crmCreditService.updateById(update.setCreditGrantedMoney(departAmout));
@@ -127,5 +128,5 @@ public class CrmCreditDepartServiceImpl extends ServiceImpl<CrmCreditDepartMappe
         BigDecimal amount = BigDecimalUtil.subtract(crmCredit.getCreditMoney(), crmCredit.getCreditGrantedMoney());
         return amount;
     }
-
+//8+8+8+1 2^7 192.168.3.128/25
 }

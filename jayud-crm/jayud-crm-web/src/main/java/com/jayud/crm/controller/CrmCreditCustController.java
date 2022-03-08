@@ -101,7 +101,7 @@ public class CrmCreditCustController {
         }
         //计算剩余额度
         BigDecimal remainingQuota = this.crmCreditCustService.calculationRemainingCreditLine(form.getDepartId(), form.getCreditId(), CurrentUserUtil.getUserTenantCode());
-        if (remainingQuota.compareTo(form.getCreditAmt()) < 0) {
+        if (remainingQuota.compareTo(form.getCreditAmt()) <= 0) {
             return BaseResult.error(SysTips.INSUFFICIENT_REMAINING_AMOUNT);
         }
         crmCreditCustService.saveOrUpdate(form);

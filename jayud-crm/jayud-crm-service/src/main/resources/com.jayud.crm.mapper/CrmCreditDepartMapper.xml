@@ -21,6 +21,7 @@
         <result column="f_level" property="fLevel" />
         <result column="f_step" property="fStep" />
         <result column="check_state_flag" property="checkStateFlag" />
+        <result column="credit_granted_money" property="creditGrantedMoney"/>
     </resultMap>
 
     <resultMap id="BaseResultMapOne" type="com.jayud.crm.model.vo.CrmCreditDepartVO">
@@ -41,11 +42,12 @@
         <result column="f_level" property="fLevel" />
         <result column="f_step" property="fStep" />
         <result column="check_state_flag" property="checkStateFlag" />
+        <result column="credit_granted_money" property="creditGrantedMoney"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, credit_id, credit_name, depart_id, depart_name, credit_value, credit_amt, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, credit_id, credit_name, depart_id, depart_name, credit_value, credit_amt, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time,credit_granted_money
     </sql>
 
     <!-- 表名 -->

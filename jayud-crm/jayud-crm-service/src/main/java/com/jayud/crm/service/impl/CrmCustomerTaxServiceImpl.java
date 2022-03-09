@@ -21,11 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 开票资料 服务实现类
@@ -64,23 +60,24 @@ public class CrmCustomerTaxServiceImpl extends ServiceImpl<CrmCustomerTaxMapper,
         CrmCustomerTax convert = ConvertUtil.convert(crmCustomerTaxForm, CrmCustomerTax.class);
 
         if(convert.getId()!=null){
+            Long custId = convert.getCustId();//客户id
+            if(convert.getIsDefault()==true){
+                updateCrmCustomerTax(custId);
+            }
             convert.setUpdateBy(CurrentUserUtil.getUsername());
             convert.setUpdateTime(new Date());
             result = this.updateById(convert);
+
+            return BaseResult.ok(SysTips.EDIT_SUCCESS);
+        }else {
             Long custId = convert.getCustId();//客户id
             if(convert.getIsDefault()==true){
                 updateCrmCustomerTax(custId);
             }
-            return BaseResult.ok(SysTips.EDIT_SUCCESS);
-        }else {
             convert.setCreateBy(CurrentUserUtil.getUsername());
             convert.setCreateTime(new Date());
             result= this.saveOrUpdate(convert);
-            Long custId = convert.getCustId();//客户id
 
-            if(convert.getIsDefault()==true){
-                updateCrmCustomerTax(custId);
-            }
             return BaseResult.ok(SysTips.ADD_SUCCESS);
         }
     }
@@ -95,8 +92,15 @@ public class CrmCustomerTaxServiceImpl extends ServiceImpl<CrmCustomerTaxMapper,
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id){
-        crmCustomerTaxMapper.logicDel(id,CurrentUserUtil.getUsername());
+    public void logicDel(List<Long> ids){
+        List<CrmCustomerTax> crmCustomerTaxList = new ArrayList<>();
+        for (int i = 0; i < ids.size(); i++) {
+            CrmCustomerTax crmCustomerTax = new CrmCustomerTax();
+            crmCustomerTax.setId(ids.get(i));
+            crmCustomerTax.setIsDeleted(true);
+            crmCustomerTaxList.add(crmCustomerTax);
+        }
+        this.updateBatchById(crmCustomerTaxList);
     }
 
 

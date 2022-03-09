@@ -1,6 +1,7 @@
 package com.jayud.crm.controller;
 
 import com.jayud.crm.model.bo.CrmCustomerTaxForm;
+import com.jayud.crm.model.bo.DeleteForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -96,36 +97,36 @@ public class CrmCustomerTaxController {
     }
 
 
-    /**
-     * @description 编辑
-     * @author  jayud
-     * @date   2022-03-03
-     * @param: crmCustomerTax
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("编辑")
-    @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody CrmCustomerTax crmCustomerTax ){
-        crmCustomerTaxService.updateById(crmCustomerTax);
-        return BaseResult.ok(SysTips.EDIT_SUCCESS);
-    }
+//    /**
+//     * @description 编辑
+//     * @author  jayud
+//     * @date   2022-03-03
+//     * @param: crmCustomerTax
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("编辑")
+//    @PostMapping("/edit")
+//    public BaseResult edit(@Valid @RequestBody CrmCustomerTax crmCustomerTax ){
+//        crmCustomerTaxService.updateById(crmCustomerTax);
+//        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+//    }
 
 
 
-    /**
-     * @description 物理删除
-     * @author  jayud
-     * @date   2022-03-03
-     * @param: id
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id){
-        crmCustomerTaxService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
+//    /**
+//     * @description 物理删除
+//     * @author  jayud
+//     * @date   2022-03-03
+//     * @param: id
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("物理删除")
+//    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
+//    @GetMapping("/phyDel")
+//    public BaseResult phyDel(@RequestParam Long id){
+//        crmCustomerTaxService.phyDelById(id);
+//        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//    }
 
     /**
      * @description 逻辑删除
@@ -137,8 +138,8 @@ public class CrmCustomerTaxController {
     @ApiOperation("逻辑删除")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
     @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id){
-        crmCustomerTaxService.logicDel(id);
+    public BaseResult logicDel(@RequestBody DeleteForm ids){
+        crmCustomerTaxService.logicDel(ids.getIds());
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 

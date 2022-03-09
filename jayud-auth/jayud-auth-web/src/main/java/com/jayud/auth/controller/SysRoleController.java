@@ -94,6 +94,13 @@ public class SysRoleController {
     @GetMapping("/selectList")
     public BaseResult<List<SysRole>> selectList(SysRole sysRole,
                                                 HttpServletRequest req) {
+
+        sysRole.setIsDeleted(false);
+        if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
+            sysRole.setTenantCode(null);
+        } else {
+            sysRole.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        }
         return BaseResult.ok(sysRoleService.selectList(sysRole));
     }
 

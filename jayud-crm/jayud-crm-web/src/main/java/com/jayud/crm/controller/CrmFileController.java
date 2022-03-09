@@ -100,20 +100,20 @@ public class CrmFileController {
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
 
-
-    /**
-     * @description 编辑
-     * @author  jayud
-     * @date   2022-03-02
-     * @param: crmFile
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("编辑")
-    @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody CrmFile crmFile ){
-        crmFileService.updateById(crmFile);
-        return BaseResult.ok(SysTips.EDIT_SUCCESS);
-    }
+//
+//    /**
+//     * @description 编辑
+//     * @author  jayud
+//     * @date   2022-03-02
+//     * @param: crmFile
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("编辑")
+//    @PostMapping("/edit")
+//    public BaseResult edit(@Valid @RequestBody CrmFile crmFile ){
+//        crmFileService.updateById(crmFile);
+//        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+//    }
 
 
 

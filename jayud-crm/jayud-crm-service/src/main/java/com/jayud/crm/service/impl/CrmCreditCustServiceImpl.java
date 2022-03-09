@@ -116,7 +116,6 @@ public class CrmCreditCustServiceImpl extends ServiceImpl<CrmCreditCustMapper, C
         for (CrmCreditCust creditCust : crmCreditCusts) {
             departAmout = BigDecimalUtil.add(creditCust.getCreditAmt(), departAmout);
         }
-        departAmout = departAmout.add(form.getCreditAmt());
         CrmCreditDepart update = new CrmCreditDepart();
         update.setId(creditDepart.getId());
         this.crmCreditDepartService.updateById(update.setCreditGrantedMoney(departAmout));

@@ -93,15 +93,21 @@ public class CrmCreditCustController {
     public BaseResult saveOrUpdate(@Valid @RequestBody AddCrmCreditCustForm form) {
 
         List<CrmCreditCust> list = this.crmCreditCustService.selectList(new CrmCreditCust().setCustId(form.getCustId()).setCreditId(form.getCreditId()).setDepartId(form.getDepartId()).setIsDeleted(false).setTenantCode(CurrentUserUtil.getUserTenantCode()));
+        BigDecimal existingAmount = new BigDecimal(0);
         if (list.size() > 0) {
             CrmCreditCust tmp = list.get(0);
+            existingAmount = tmp.getCreditAmt();
             if (!tmp.getId().equals(form.getId())) {
                 return BaseResult.error(SysTips.LEGAL_ENTITY_GRANTED_CREDIT);
             }
         }
+        if (form.getCreditAmt().compareTo(new BigDecimal(0)) < 0) {
+            return BaseResult.error(SysTips.CREDIT_AMOUNT_ERROR);
+        }
         //计算剩余额度
         BigDecimal remainingQuota = this.crmCreditCustService.calculationRemainingCreditLine(form.getDepartId(), form.getCreditId(), CurrentUserUtil.getUserTenantCode());
-        if (remainingQuota.compareTo(form.getCreditAmt()) <= 0) {
+        remainingQuota = remainingQuota.add(existingAmount);
+        if (remainingQuota.compareTo(form.getCreditAmt()) < 0) {
             return BaseResult.error(SysTips.INSUFFICIENT_REMAINING_AMOUNT);
         }
         crmCreditCustService.saveOrUpdate(form);

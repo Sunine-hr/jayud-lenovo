@@ -234,6 +234,8 @@ public interface SysTips {
 
     String INSUFFICIENT_REMAINING_AMOUNT= "授信额度不够";
 
+    String CREDIT_AMOUNT_ERROR= "授信金额不能小于等与0";
+
     String CUTS_IN_RISK_ERROR = "客户存在风险，请联系相关人员！";
 }
 

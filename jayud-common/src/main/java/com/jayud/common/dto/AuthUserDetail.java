@@ -24,6 +24,10 @@ public class AuthUserDetail implements UserDetails {
      */
     private String username;
     /**
+     * 真实名称
+     */
+    private String realName;
+    /**
      * 密码
      */
     private String password;

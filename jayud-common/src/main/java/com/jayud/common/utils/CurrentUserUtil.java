@@ -106,5 +106,17 @@ public class CurrentUserUtil {
         return authUserDetail.getId();
     }
 
+    /**
+     * @description 获取真实名称
+     * @author  ciro
+     * @date   2022/3/9 10:50
+     * @param:
+     * @return: java.lang.String
+     **/
+    private static String getUserRealName(){
+        AuthUserDetail authUserDetail = getUserDetail();
+        return authUserDetail.getRealName();
+    }
+
 
 }

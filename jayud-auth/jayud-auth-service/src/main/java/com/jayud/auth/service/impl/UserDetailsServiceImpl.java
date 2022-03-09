@@ -34,8 +34,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         AuthUserDetail authUserDetail = new AuthUserDetail();
         BeanUtils.copyProperties(sysUser,authUserDetail);
         authUserDetail.setUsername(sysUser.getName());
+        authUserDetail.setRealName(sysUser.getUserName());
         List<SysRole> roleList = sysRoleService.selectRoleByUsername(username);
-        System.out.println("");
         List<String> roleCodes = roleList.stream().map(x->x.getRoleCode()).collect(Collectors.toList());
         authUserDetail.setAuthorities(AuthorityUtils.createAuthorityList(roleCodes.toArray(new String[]{})));
         return authUserDetail;

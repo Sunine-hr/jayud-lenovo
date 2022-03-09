@@ -12,6 +12,7 @@ import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.auth.model.po.SysUser;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
+import com.jayud.common.dto.AuthUserDetail;
 import com.jayud.common.enums.RoleCodeEnum;
 import com.jayud.common.utils.ListUtil;
 import com.jayud.crm.feign.AuthClient;
@@ -81,7 +82,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
                                          Integer currentPage,
                                          Integer pageSize,
                                          HttpServletRequest req) {
-
+        crmCustomerForm.setTenantCode(CurrentUserUtil.getUserTenantCode());
         Page<CrmCustomerForm> page = new Page<CrmCustomerForm>(currentPage, pageSize);
         IPage<CrmCustomerForm> pageList = crmCustomerMapper.pageList(page, crmCustomerForm);
         if (CollUtil.isNotEmpty(pageList.getRecords())){
@@ -95,6 +96,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
 
     @Override
     public List<CrmCustomerForm> selectList(CrmCustomerForm crmCustomerForm) {
+        crmCustomerForm.setTenantCode(CurrentUserUtil.getUserTenantCode());
         return crmCustomerMapper.list(crmCustomerForm);
     }
 
@@ -419,17 +421,20 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             crmCustomerForm.setCustIdList(custIdList);
             List<CrmCustomerForm> customerList = selectList(crmCustomerForm);
             custIdList = customerList.stream().map(x->x.getId()).collect(Collectors.toList());
-            Map<Long,CrmCustomer> custMap = customerList.stream().filter(x->!x.getIsPublic()).collect(Collectors.toMap(x->x.getId(),x->x));
+            Map<Long,CrmCustomer> custMap = customerList.stream().filter(x->x.getIsPublic()).collect(Collectors.toMap(x->x.getId(),x->x));
             //取消放入公海
+            AuthUserDetail authUserDetail = CurrentUserUtil.getUserDetail();
             CrmCustomer updateCust = new CrmCustomer();
             updateCust.setIsPublic(false);
+            updateCust.setFsalesId(authUserDetail.getId());
+            updateCust.setFsalesName(authUserDetail.getUsername());
             LambdaUpdateWrapper<CrmCustomer> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
             lambdaUpdateWrapper.in(CrmCustomer::getId,custIdList);
             this.update(updateCust,lambdaUpdateWrapper);
             //删除负责人
             crmCustomerManagerService.delChargerManager(custIdList);
             //添加负责人
-            crmCustomerManagerService.addChargerManager(custIdList,custMap,CurrentUserUtil.getUserDetail().getId() ,CurrentUserUtil.getUserDetail().getUsername(), RoleCodeEnum.SALE_ROLE.getRoleCode(),RoleCodeEnum.SALE_ROLE.getRoleName());
+            crmCustomerManagerService.addChargerManager(custIdList,custMap,authUserDetail.getId() ,authUserDetail.getUsername(), RoleCodeEnum.SALE_ROLE.getRoleCode(),RoleCodeEnum.SALE_ROLE.getRoleName());
         }
         return BaseResult.ok();
     }

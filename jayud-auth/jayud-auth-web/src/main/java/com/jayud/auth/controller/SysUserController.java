@@ -91,7 +91,7 @@ public class SysUserController {
             sysUser.setTenantCode(CurrentUserUtil.getUserTenantCode());
         }
         List<SysUserVO> sysUserVOS = sysUserService.selectList(sysUser);
-        System.out.println("远程调用查询到的数据："+sysUserVOS);
+        System.out.println("远程调用查询到的数据：" + sysUserVOS);
         return BaseResult.ok(sysUserVOS);
     }
     /**
@@ -128,7 +128,7 @@ public class SysUserController {
             }
         }
         boolean b = sysUserService.saveOrUpdateSysUser(sysUserForm);
-        if(b){
+        if (b) {
             return BaseResult.ok();
         }
         return BaseResult.error(SysTips.ADD_SUCCESS);
@@ -199,17 +199,19 @@ public class SysUserController {
         sysUserForm.setId(id);
         //关联查询用户信息 关联表 行合并  成列
         sysUserIdOne = sysUserService.findSysUserIdOne(sysUserForm);
-        if(sysUserIdOne==null){
+        if (sysUserIdOne == null) {
             return BaseResult.error("用户不存在！");
         }
 
         //拿到的部门的集合
         List<Long> listId = new ArrayList<>();
-        String departmentList = sysUserIdOne.getDepartmentList();
-        String[] aa = departmentList.split(",");
-        for (int i = 0; i < aa.length; i++) {
-            long l = Long.parseLong(aa[i]);
-            listId.add(l);
+        if (sysUserIdOne.getDepartmentList() != null) {
+            String departmentList = sysUserIdOne.getDepartmentList();
+            String[] aa = departmentList.split(",");
+            for (int i = 0; i < aa.length; i++) {
+                long l = Long.parseLong(aa[i]);
+                listId.add(l);
+            }
         }
         sysUserIdOne.setDepartIdLists(listId);
         //拿到角色的集合
@@ -226,8 +228,8 @@ public class SysUserController {
 
     @ApiOperation("修改密码")
     @PostMapping("/updateUserPassword")
-    public BaseResult updateUserPassword(@RequestBody SysUserForm sysUserForm){
-         sysUserService.findUpdateUserPassword(sysUserForm);
+    public BaseResult updateUserPassword(@RequestBody SysUserForm sysUserForm) {
+        sysUserService.findUpdateUserPassword(sysUserForm);
         return BaseResult.ok();
     }
 
@@ -235,7 +237,7 @@ public class SysUserController {
     @ApiImplicitParam(name = "roleCode", value = "角色编码", dataType = "String", required = true)
     @PostMapping("/selectUserByRoleCode")
     public BaseResult<List<SysUserDTO>> selectUserByRoleCode(@RequestParam String roleCode,
-                                                              HttpServletRequest req) {
+                                                             HttpServletRequest req) {
         return BaseResult.ok(sysUserService.selectUserByRoleCode(roleCode));
     }
 
@@ -243,7 +245,7 @@ public class SysUserController {
     @ApiImplicitParam(name = "username", value = "登录名称", dataType = "String", required = true)
     @PostMapping("/selectByUsername")
     public BaseResult<SysUserDTO> selectByUsername(@RequestParam String username,
-                                                             HttpServletRequest req) {
+                                                   HttpServletRequest req) {
         return BaseResult.ok(sysUserService.selectByUsername(username));
     }
 
@@ -251,7 +253,7 @@ public class SysUserController {
     @ApiImplicitParam(name = "userId", value = "用户id", dataType = "String", required = true)
     @PostMapping("/selectByUserId")
     public BaseResult<SysUser> selectByUserId(@RequestParam Long userId,
-                                                   HttpServletRequest req) {
+                                              HttpServletRequest req) {
         return BaseResult.ok(sysUserService.selectByUserId(userId));
     }
 

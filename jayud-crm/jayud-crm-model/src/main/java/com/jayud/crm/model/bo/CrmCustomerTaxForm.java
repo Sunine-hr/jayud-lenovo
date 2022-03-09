@@ -45,7 +45,7 @@ public class CrmCustomerTaxForm extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")
-    @TableLogic
+//    @TableLogic
     private Boolean isDeleted;
 
 

@@ -176,8 +176,10 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
     @Override
     public BaseResult<CrmCustomerManagerForm> saveManager(CrmCustomerManagerForm crmCustomerManagerForm) {
         boolean isAdd = false;
-        crmCustomerManagerForm.setManagerBusinessCode(StringUtils.join(crmCustomerManagerForm.getBusinessTypesList(), StrUtil.C_COMMA));
-        crmCustomerManagerForm.setManagerBusinessName(crmCustomerService.changeBusinessType(crmCustomerManagerForm.getBusinessTypesList()));
+        if (CollUtil.isNotEmpty(crmCustomerManagerForm.getBusinessTypesList())) {
+            crmCustomerManagerForm.setManagerBusinessCode(StringUtils.join(crmCustomerManagerForm.getBusinessTypesList(), StrUtil.C_COMMA));
+            crmCustomerManagerForm.setManagerBusinessName(crmCustomerService.changeBusinessType(crmCustomerManagerForm.getBusinessTypesList()));
+        }
         if (crmCustomerManagerForm.getId() == null){
             isAdd = true;
         }else {
@@ -299,8 +301,11 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
             crmCustomerManager1.setManageUsername(managerUsername);
             crmCustomerManager1.setManageRoles(roleCodes);
             crmCustomerManager1.setManagerRolesName(roleNames);
-            crmCustomerManager1.setManagerBusinessCode(custMap.get(custId).getBusinessTypes());
-            crmCustomerManager1.setManagerBusinessName(crmCustomerService.changeBusinessType(Arrays.asList(custMap.get(custId).getBusinessTypes().split(StrUtil.COMMA))));
+            String businessTypes = custMap.get(custId).getBusinessTypes();
+            crmCustomerManager1.setManagerBusinessCode(businessTypes);
+            if (StrUtil.isNotBlank(businessTypes)) {
+                crmCustomerManager1.setManagerBusinessName(crmCustomerService.changeBusinessType(Arrays.asList(businessTypes.split(StrUtil.COMMA))));
+            }
             crmCustomerManager1.setGenerateDate(LocalDateTime.now());
             crmCustomerManager1.setIsCharger(true);
             crmCustomerManager1.setIsSale(true);

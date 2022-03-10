@@ -85,5 +85,10 @@ public class CrmCustomerRiskForm extends SysBaseEntity {
             this.creationTimeOne = CrmDictCode.CRM_FILE_TYPE;
             this.creationTimeTwo = creationTime.get(1);
         }
+
+        if(creationTime.get(0)!=null&&creationTime.get(1)!=null){
+            this.creationTimeOne = creationTime.get(0);
+            this.creationTimeTwo = creationTime.get(1);
+        }
     }
 }

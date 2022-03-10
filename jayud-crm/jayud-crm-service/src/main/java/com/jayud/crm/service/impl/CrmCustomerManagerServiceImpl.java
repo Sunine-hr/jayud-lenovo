@@ -205,7 +205,11 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
         CrmCustomerManager crmCustomerManager = this.getById(id);
         CrmCustomerManagerForm crmCustomerManagerForm = new CrmCustomerManagerForm();
         BeanUtils.copyProperties(crmCustomerManager,crmCustomerManagerForm);
-        crmCustomerManagerForm.setBusinessTypesList(Arrays.asList(crmCustomerManager.getManagerBusinessCode().split(StrUtil.COMMA)));
+        if (StrUtil.isNotBlank(crmCustomerManager.getManagerBusinessCode())){
+            crmCustomerManagerForm.setBusinessTypesList(Arrays.asList(crmCustomerManager.getManagerBusinessCode().split(StrUtil.COMMA)));
+        }else {
+            crmCustomerManagerForm.setBusinessTypesList(new ArrayList<>());
+        }
         return crmCustomerManagerForm;
     }
 

@@ -119,7 +119,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
             //截取集合拼接成字符串  未完 。。。。
             //所属部门id 的节点   departIdLists
-            String fileNameString = com.jayud.common.utils.StringUtils.getFileNameString(sysUserForm.getDepartIdLists());
+            String fileNameString =null;
+            if(sysUserForm.getDepartIdLists().size()!=0){
+                  fileNameString = com.jayud.common.utils.StringUtils.getFileNameString(sysUserForm.getDepartIdLists());
+            }
 
             //负责部门节点id集合
             sysUser.setDepartmentList(fileNameString);

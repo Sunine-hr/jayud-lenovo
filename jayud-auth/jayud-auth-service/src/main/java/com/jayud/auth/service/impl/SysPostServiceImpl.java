@@ -88,22 +88,35 @@ public class SysPostServiceImpl extends ServiceImpl<SysPostMapper, SysPost> impl
     @Override
     public boolean saveOrUpdateSysPost(SysPostForm sysPostForm) {
 
-        SysPost sysUserOne = findSysUserOne(sysPostForm.getPostCode(), null);
-        if (sysUserOne != null) {
-            throw new JayudBizException("岗位编码已存在");
-        }
-        SysPost two = findSysUserOne(null, sysPostForm.getPostName());
-        if (two != null) {
-            throw new JayudBizException("岗位名称已存在！");
-        }
+
         Boolean result = null;
         SysPost sysPost = ConvertUtil.convert(sysPostForm, SysPost.class);
         if (sysPost.getId() != null) {
+
+
+            SysPost sysUserOne = findSysUserOne(sysPostForm.getPostCode(), null,sysPost.getId());
+            if (sysUserOne != null) {
+                throw new JayudBizException("岗位编码已存在");
+            }
+            SysPost two = findSysUserOne(null, sysPostForm.getPostName(),sysPost.getId());
+            if (two != null) {
+                throw new JayudBizException("岗位名称已存在！");
+            }
             //修改
             sysPost.setUpdateBy(CurrentUserUtil.getUsername());
             sysPost.setUpdateTime(new Date());
             result = this.updateById(sysPost);
         } else {
+
+            SysPost sysUserOne = findSysUserOne(sysPostForm.getPostCode(), null, null);
+            if (sysUserOne != null) {
+                throw new JayudBizException("岗位编码已存在");
+            }
+            SysPost two = findSysUserOne(null, sysPostForm.getPostName(), null);
+            if (two != null) {
+                throw new JayudBizException("岗位名称已存在！");
+            }
+
             sysPost.setCreateBy(CurrentUserUtil.getUsername());
             sysPost.setCreateTime(new Date());
             result = this.save(sysPost);
@@ -151,7 +164,7 @@ public class SysPostServiceImpl extends ServiceImpl<SysPostMapper, SysPost> impl
 
 
     //判断岗位和编码
-    public SysPost findSysUserOne(String postCode, String postName) {
+    public SysPost findSysUserOne(String postCode, String postName, Long id) {
         LambdaQueryWrapper<SysPost> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         //编码
         if (StringUtils.isNotBlank(postCode)) {
@@ -163,6 +176,11 @@ public class SysPostServiceImpl extends ServiceImpl<SysPostMapper, SysPost> impl
             lambdaQueryWrapper.eq(SysPost::getIsDeleted, false);
             lambdaQueryWrapper.eq(SysPost::getPostName, postName);
         }
+        if (id != null) {
+            //不等于
+            lambdaQueryWrapper.ne(SysPost::getId, id);
+        }
+
         return this.getOne(lambdaQueryWrapper);
     }
 }

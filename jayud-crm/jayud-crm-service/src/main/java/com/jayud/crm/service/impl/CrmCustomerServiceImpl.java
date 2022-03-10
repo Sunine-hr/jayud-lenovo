@@ -157,7 +157,14 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             crmCustomerFeaturesService.saveCrmCustomerFeatures(crmCustomerForm.getId());
         }else {
             CrmCustomer checkCust = this.getById(crmCustomerForm.getId());
-            if (!ListUtil.checkIsSame(Arrays.asList(checkCust.getBusinessTypes().split(StrUtil.COMMA)),crmCustomerForm.getBusinessTypesList())){
+            //业务类型不为空
+            if (StrUtil.isNotBlank(checkCust.getBusinessTypes()) && StrUtil.isNotBlank(crmCustomerForm.getBusinessTypes())){
+                if (!ListUtil.checkIsSame(Arrays.asList(checkCust.getBusinessTypes().split(StrUtil.COMMA)),crmCustomerForm.getBusinessTypesList())){
+                    crmCustomerForm.setIsChangeBusniessType(true);
+                }
+            }else if (StrUtil.isBlank(checkCust.getBusinessTypes()) && StrUtil.isBlank(crmCustomerForm.getBusinessTypes())){
+                crmCustomerForm.setIsChangeBusniessType(false);
+            }else {
                 crmCustomerForm.setIsChangeBusniessType(true);
             }
             this.updateById(crmCustomerForm);

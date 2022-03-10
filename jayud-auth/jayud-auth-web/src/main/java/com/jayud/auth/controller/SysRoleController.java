@@ -96,6 +96,7 @@ public class SysRoleController {
                                                 HttpServletRequest req) {
 
         sysRole.setIsDeleted(false);
+        sysRole.setTenantCode(CurrentUserUtil.getUserTenantCode());
         if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
             sysRole.setTenantCode(null);
         } else {
@@ -103,7 +104,6 @@ public class SysRoleController {
         }
         return BaseResult.ok(sysRoleService.selectList(sysRole));
     }
-
 
     /**
      * @description 新增
@@ -345,7 +345,7 @@ public class SysRoleController {
     @ApiOperation("判断用户是否有角色")
     @ApiImplicitParam(name = "roleCode", value = "角色编码", dataType = "String", required = true)
     @GetMapping(value = "/isHasRole")
-    public BaseResult isHasRole(@RequestParam(name = "roleCode", required = true) String roleCode){
+    public BaseResult isHasRole(@RequestParam(name = "roleCode", required = true) String roleCode) {
         if (CurrentUserUtil.hasRole(roleCode)) {
             return BaseResult.ok();
         }
@@ -354,7 +354,7 @@ public class SysRoleController {
 
     @ApiOperation("根据租户查询角色")
     @PostMapping(value = "/getRoleByTenantCode")
-    public BaseResult<List<SysRole>> getRoleByTenantCode(@RequestParam("tenantCode") String tenantCode){
+    public BaseResult<List<SysRole>> getRoleByTenantCode(@RequestParam("tenantCode") String tenantCode) {
         return BaseResult.ok(sysRoleService.getRoleByTenantCode(tenantCode));
     }
 }

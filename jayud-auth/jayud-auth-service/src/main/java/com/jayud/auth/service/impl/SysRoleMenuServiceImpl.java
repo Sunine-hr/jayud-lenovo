@@ -1,10 +1,13 @@
 package com.jayud.auth.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.po.SysMenu;
+import com.jayud.auth.service.ISysMenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -16,11 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -36,6 +35,8 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
 
     @Autowired
     private SysRoleMenuMapper sysRoleMenuMapper;
+    @Autowired
+    private ISysMenuService sysMenuService;
 
     @Override
     public IPage<SysRoleMenu> selectPage(SysRoleMenu sysRoleMenu,
@@ -77,7 +78,16 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
     @Override
     public List<Long> getMenuIdsByRoleId(Long roleId) {
         List<SysRoleMenu> roleMenus = this.baseMapper.selectList(new QueryWrapper<>(new SysRoleMenu().setIsDeleted(false).setRoleId(roleId)));
+        if (CollectionUtil.isEmpty(roleMenus)){
+            return new ArrayList<>();
+        }
         List<Long> menuIds = roleMenus.stream().map(e -> e.getMenuId()).collect(Collectors.toList());
+        List<SysMenu> sysMenus = sysMenuService.listByIds(menuIds);
+        Map<Long, Long> map = new HashMap<>();
+        sysMenus.forEach(e -> {
+            map.put(e.getParentId(), e.getParentId());
+        });
+        menuIds = menuIds.stream().filter(e -> !map.containsValue(e)).collect(Collectors.toList());
         return menuIds;
     }
 

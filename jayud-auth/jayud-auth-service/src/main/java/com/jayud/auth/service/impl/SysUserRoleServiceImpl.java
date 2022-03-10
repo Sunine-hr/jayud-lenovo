@@ -98,7 +98,7 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         if (userIds.size() == 0) {
             userIds.add(-1L);
         }
-        IPage<SysUserVO> userPages = this.sysUserService.selectPage(new SysUserForm().setUserIds(userIds), currentPage, pageSize, req);
+        IPage<SysUserVO> userPages = this.sysUserService.selectPage(new SysUserForm().setUserIds(userIds).setTenantCode(CurrentUserUtil.getUserTenantCode()), currentPage, pageSize, req);
         return userPages;
     }
 
@@ -133,18 +133,18 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
     }
 
     @Override
-    public int getCountByUserNameAndRoleName(String username, String admin,String tenantCode) {
-        return this.baseMapper.getCountByUserNameAndRoleName(username,admin,tenantCode);
+    public int getCountByUserNameAndRoleName(String username, String admin, String tenantCode) {
+        return this.baseMapper.getCountByUserNameAndRoleName(username, admin, tenantCode);
     }
 
     @Override
-    public int getCountByUserName(String username, String userTenantCode,String menuCode) {
-        return this.baseMapper.getCountByUserName(username,userTenantCode,menuCode);
+    public int getCountByUserName(String username, String userTenantCode, String menuCode) {
+        return this.baseMapper.getCountByUserName(username, userTenantCode, menuCode);
     }
 
     @Override
     public int getCountByUserNameAndStep(String username, String userTenantCode, String menuCode, Integer newStep) {
-        return this.baseMapper.getCountByUserNameAndStep(username,userTenantCode,menuCode,newStep);
+        return this.baseMapper.getCountByUserNameAndStep(username, userTenantCode, menuCode, newStep);
     }
 
 }

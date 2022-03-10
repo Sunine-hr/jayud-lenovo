@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
@@ -26,7 +27,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="角色-菜单关联表对象", description="角色-菜单关联表")
+@ApiModel(value = "角色-菜单关联表对象", description = "角色-菜单关联表")
 public class SysRoleMenu extends SysBaseEntity {
 
 
@@ -38,12 +39,8 @@ public class SysRoleMenu extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "是否删除，0未删除，1已删除")
-    @TableLogic
+//    @TableLogic
     private Boolean isDeleted;
 
 
-
-
-
-
-    }
+}

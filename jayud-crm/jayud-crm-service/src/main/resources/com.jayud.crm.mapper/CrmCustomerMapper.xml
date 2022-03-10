@@ -95,6 +95,9 @@
         FROM <include refid="tname"/>
         <where>
             cc.is_deleted = 0
+            <if test="crmCustomer.id != null ">
+                AND cc.id = ${crmCustomer.id}
+            </if>
             <if test="crmCustomer.parentId != null ">
                 AND cc.parent_id = ${crmCustomer.parentId}
             </if>

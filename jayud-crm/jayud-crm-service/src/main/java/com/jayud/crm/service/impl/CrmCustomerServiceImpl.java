@@ -178,7 +178,11 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         List<CrmCustomerForm> crmCustomerFormList = selectList(crmCustomerForm);
         if (CollUtil.isNotEmpty(crmCustomerFormList)){
             crmCustomerForm = crmCustomerFormList.get(0);
-            crmCustomerForm.setBusinessTypesList(Arrays.asList(crmCustomerForm.getBusinessTypes().split(StrUtil.COMMA)));
+            if (StrUtil.isNotBlank(crmCustomerForm.getBusinessTypes())){
+                crmCustomerForm.setBusinessTypesList(Arrays.asList(crmCustomerForm.getBusinessTypes().split(StrUtil.COMMA)));
+            }else {
+                crmCustomerForm.setBusinessTypesList(new ArrayList<>());
+            }
             setCustomerRelationsMsg(crmCustomerForm);
         }
         return crmCustomerForm;

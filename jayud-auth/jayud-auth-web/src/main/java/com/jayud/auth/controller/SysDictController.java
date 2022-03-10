@@ -1,6 +1,9 @@
 package com.jayud.auth.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.auth.model.po.SysRole;
+import com.jayud.auth.service.ISysDictItemService;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.common.utils.StringUtils;
@@ -41,6 +44,8 @@ public class SysDictController {
 
     @Autowired
     public ISysDictService sysDictService;
+    @Autowired
+    public ISysDictItemService sysDictItemService;
 
 
     /**
@@ -145,6 +150,9 @@ public class SysDictController {
     @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam Long id) {
+        if (this.sysDictItemService.count(new QueryWrapper<>(new SysDictItem().setIsDeleted(false).setDictId(id))) > 0) {
+            return BaseResult.error("请先删除数据字典");
+        }
         sysDictService.logicDel(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }

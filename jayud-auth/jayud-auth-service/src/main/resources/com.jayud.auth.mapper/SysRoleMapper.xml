@@ -46,7 +46,7 @@
         <where>
             is_deleted = 0
             <if test="sysRole.roleName != null and sysRole.roleName != ''">
-                AND role_name = #{sysRole.roleName}
+                AND role_name like concat('%',#{sysRole.roleName},'%')
             </if>
 
             <if test="sysRole.roleCode != null and sysRole.roleCode != ''">

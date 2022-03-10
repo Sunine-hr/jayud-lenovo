@@ -29,7 +29,7 @@
         <where>
             is_deleted = 0
             <if test="sysDict.dictName != null and sysDict.dictName != ''">
-                AND dict_name = #{sysDict.dictName}
+                AND dict_name like concat('%',#{sysDict.dictName},'%')
             </if>
 
             <if test="sysDict.dictCode != null and sysDict.dictCode != ''">

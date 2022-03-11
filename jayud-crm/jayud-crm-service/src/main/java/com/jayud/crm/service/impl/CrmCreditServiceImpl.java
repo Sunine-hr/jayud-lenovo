@@ -58,13 +58,14 @@ public class CrmCreditServiceImpl extends ServiceImpl<CrmCreditMapper, CrmCredit
         Page<CrmCredit> page = new Page<CrmCredit>(currentPage, pageSize);
         IPage<CrmCreditVO> pageList = crmCreditMapper.pageList(page, crmCredit);
         for (CrmCreditVO record : pageList.getRecords()) {
-//            List<CrmCreditDepart> creditDeparts = crmCreditDepartService.selectList(new CrmCreditDepart().setCreditId(record.getCreditId()).setIsDeleted(false).setTenantCode(CurrentUserUtil.getUserTenantCode()));
+//            List<CrmCre
+//            ditDepart> creditDeparts = crmCreditDepartService.selectList(new CrmCreditDepart().setCreditId(record.getCreditId()).setIsDeleted(false).setTenantCode(CurrentUserUtil.getUserTenantCode()));
 //            BigDecimal amount = new BigDecimal(0);
 //            creditDeparts.forEach(e -> {
 //                amount=BigDecimalUtil.add(e.getCreditAmt())
 //            });
             BigDecimal creditGrantedMoney = record.getCreditGrantedMoney() == null ? new BigDecimal(0) : record.getCreditGrantedMoney();
-            record.setCreditRate(creditGrantedMoney.divide(record.getCreditMoney()).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)) + "%");
+            record.setCreditRate(creditGrantedMoney.divide(record.getCreditMoney(),2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)) + "%");
         }
         return pageList;
     }

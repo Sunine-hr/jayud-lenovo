@@ -334,7 +334,9 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
 
         if (CollUtil.isNotEmpty(managerList)){
             custIdList = managerList.stream().map(x->x.getId()).collect(Collectors.toList());
-            custManagerMap = managerList.stream().collect(Collectors.toMap(x->x.getCustId(),x->x));
+            for (CrmCustomerManager manager : managerList){
+                custManagerMap.put(manager.getCustId(),manager) ;
+            }
         }
         List<CrmCustomer> changelList = new ArrayList<>();
         List<CrmCustomer> errList = new ArrayList<>();

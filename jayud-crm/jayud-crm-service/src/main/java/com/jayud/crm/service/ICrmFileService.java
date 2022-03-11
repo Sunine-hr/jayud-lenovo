@@ -66,7 +66,7 @@ public interface ICrmFileService extends IService<CrmFile> {
     * @param: id
     * @return: com.jyd.component.commons.result.Result
     **/
-    void logicDel(Long id);
+    void logicDel(List<Long> ids);
 
 
 

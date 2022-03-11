@@ -2,6 +2,7 @@ package com.jayud.crm.controller;
 
 import com.jayud.crm.model.bo.CrmCustomerTaxForm;
 import com.jayud.crm.model.bo.DeleteForm;
+import com.jayud.crm.model.vo.CrmCustomerTaxVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -58,10 +59,10 @@ public class CrmCustomerTaxController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<CrmCustomerTax>> selectPage(CrmCustomerTax crmCustomerTax,
-                                                   @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
-                                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-                                                   HttpServletRequest req) {
+    public BaseResult<IPage<CrmCustomerTaxVO>> selectPage(CrmCustomerTax crmCustomerTax,
+                                                          @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
+                                                          @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                                          HttpServletRequest req) {
         return BaseResult.ok(crmCustomerTaxService.selectPage(crmCustomerTax,currentPage,pageSize,req));
     }
 
@@ -76,7 +77,7 @@ public class CrmCustomerTaxController {
     **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
-    public BaseResult<List<CrmCustomerTax>> selectList(CrmCustomerTax crmCustomerTax,
+    public BaseResult<List<CrmCustomerTaxVO>> selectList(CrmCustomerTax crmCustomerTax,
                                                 HttpServletRequest req) {
         return BaseResult.ok(crmCustomerTaxService.selectList(crmCustomerTax));
     }
@@ -137,7 +138,7 @@ public class CrmCustomerTaxController {
      **/
     @ApiOperation("逻辑删除")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/logicDel")
+    @PostMapping("/logicDel")
     public BaseResult logicDel(@RequestBody DeleteForm ids){
         crmCustomerTaxService.logicDel(ids.getIds());
         return BaseResult.ok(SysTips.DEL_SUCCESS);

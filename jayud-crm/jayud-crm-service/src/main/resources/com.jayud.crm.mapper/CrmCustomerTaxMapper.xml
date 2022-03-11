@@ -68,11 +68,11 @@
         </where>
     </sql>
 
-    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerTax">
+    <select id="pageList"  parameterType="com.jayud.crm.model.po.CrmCustomerTax" resultType="com.jayud.crm.model.vo.CrmCustomerTaxVO">
         <include refid="selects"/>
     </select>
 
-    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerTax">
+    <select id="list"  parameterType="com.jayud.crm.model.po.CrmCustomerTax" resultType="com.jayud.crm.model.vo.CrmCustomerTaxVO">
         <include refid="selects"/>
     </select>
 

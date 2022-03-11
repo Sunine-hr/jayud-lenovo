@@ -16,6 +16,7 @@ import com.jayud.crm.model.bo.QueryCrmFile;
 import com.jayud.crm.model.constant.CodeNumber;
 import com.jayud.crm.model.enums.FileModuleEnum;
 import com.jayud.crm.model.po.CrmCustomerRelations;
+import com.jayud.crm.model.po.CrmCustomerTax;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -144,8 +145,15 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id) {
-        crmFileMapper.logicDel(id, CurrentUserUtil.getUsername());
+    public void logicDel(List<Long> ids) {
+        List<CrmFile> crmFileList = new ArrayList<>();
+        for (int i = 0; i < ids.size(); i++) {
+            CrmFile crmFile = new CrmFile();
+            crmFile.setId(ids.get(i));
+            crmFile.setIsDeleted(true);
+            crmFileList.add(crmFile);
+        }
+        this.updateBatchById(crmFileList);
     }
 
 

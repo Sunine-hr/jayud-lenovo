@@ -65,7 +65,11 @@ public class CrmCreditServiceImpl extends ServiceImpl<CrmCreditMapper, CrmCredit
 //                amount=BigDecimalUtil.add(e.getCreditAmt())
 //            });
             BigDecimal creditGrantedMoney = record.getCreditGrantedMoney() == null ? new BigDecimal(0) : record.getCreditGrantedMoney();
-            record.setCreditRate(creditGrantedMoney.divide(record.getCreditMoney(),2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)) + "%");
+            if (creditGrantedMoney.compareTo(new BigDecimal(0)) == 0) {
+                record.setCreditRate(0 + "%");
+            } else {
+                record.setCreditRate(creditGrantedMoney.divide(record.getCreditMoney(), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)) + "%");
+            }
         }
         return pageList;
     }

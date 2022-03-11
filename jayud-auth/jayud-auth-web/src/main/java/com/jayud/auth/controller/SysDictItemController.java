@@ -1,5 +1,7 @@
 package com.jayud.auth.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jayud.auth.model.po.SysDict;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.StringUtils;
@@ -91,7 +93,15 @@ public class SysDictItemController {
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody SysDictItem sysDictItem) {
         if (StringUtils.isEmpty(sysDictItem.getItemText()) || StringUtils.isEmpty(sysDictItem.getItemValue())) {
-            throw new JayudBizException("请填写字典类别/编码");
+            return BaseResult.error("请填写字典类别/编码");
+        }
+        if (sysDictItem.getSortOrder() != null) {
+            if (sysDictItem.getSortOrder() < 0) {
+                return BaseResult.error("排序请输入大于0整数");
+            }
+            if (sysDictItemService.count(new QueryWrapper<>(new SysDictItem().setDictId(sysDictItem.getDictId()).setSortOrder(sysDictItem.getSortOrder()).setIsDeleted(false))) > 0) {
+                return BaseResult.error("该排列数值已存在");
+            }
         }
         this.sysDictItemService.checkUnique(sysDictItem);
         sysDictItemService.save(sysDictItem);
@@ -110,9 +120,25 @@ public class SysDictItemController {
     @PostMapping("/edit")
     public BaseResult edit(@Valid @RequestBody SysDictItem sysDictItem) {
         if (StringUtils.isEmpty(sysDictItem.getItemText()) || StringUtils.isEmpty(sysDictItem.getItemValue())) {
-            throw new JayudBizException("请填写字典类别/编码");
+            return BaseResult.error("请填写字典类别/编码");
         }
-        sysDictItemService.updateById(sysDictItem);
+        if (sysDictItem.getSortOrder() != null) {
+            if (sysDictItem.getSortOrder() < 0) {
+                return BaseResult.error("排序请输入大于0整数");
+            }
+            SysDictItem tmp = sysDictItemService.getOne(new QueryWrapper<>(new SysDictItem().setDictId(sysDictItem.getDictId()).setSortOrder(sysDictItem.getSortOrder()).setIsDeleted(false)));
+            if (!tmp.getId().equals(sysDictItem.getId())) {
+                return BaseResult.error("该排列数值已存在");
+            }
+        }
+
+        this.sysDictItemService.update(null,
+                Wrappers.<SysDictItem>lambdaUpdate()
+                        .set(SysDictItem::getItemText, sysDictItem.getItemText())
+                        .set(SysDictItem::getItemValue, sysDictItem.getItemValue())
+                        .set(SysDictItem::getSortOrder, sysDictItem.getSortOrder())
+                        .eq(SysDictItem::getId, sysDictItem.getId()));
+//        sysDictItemService.updateById(sysDictItem);
         return BaseResult.ok(SysTips.EDIT_SUCCESS);
     }
 
@@ -195,9 +221,9 @@ public class SysDictItemController {
     @ApiOperation("根据字典编码查询子项")
     @PostMapping(value = "/api/selectItemByDictCode")
     public BaseResult selectItemByDictCodeFeign(@RequestParam String dictCode,
-                                                              HttpServletRequest req) {
+                                                HttpServletRequest req) {
         List<SysDictItem> sysDictItems = sysDictItemService.selectItemByDictCode(dictCode);
-        System.out.println("字典表："+sysDictItems);
+        System.out.println("字典表：" + sysDictItems);
         return BaseResult.ok(sysDictItems);
     }
 

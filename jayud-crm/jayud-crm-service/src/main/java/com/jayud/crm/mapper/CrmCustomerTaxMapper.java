@@ -3,6 +3,7 @@ package com.jayud.crm.mapper;
 import com.jayud.crm.model.po.CrmCustomerTax;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import com.jayud.crm.model.vo.CrmCustomerTaxVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -30,7 +31,7 @@ public interface CrmCustomerTaxMapper extends BaseMapper<CrmCustomerTax> {
      * @param: crmCustomerTax
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomerTax>
      **/
-    IPage<CrmCustomerTax> pageList(@Param("page") Page<CrmCustomerTax> page, @Param("crmCustomerTax") CrmCustomerTax crmCustomerTax);
+    IPage<CrmCustomerTaxVO> pageList(@Param("page") Page<CrmCustomerTax> page, @Param("crmCustomerTax") CrmCustomerTax crmCustomerTax);
 
     /**
      * @description 列表查询数据
@@ -39,7 +40,7 @@ public interface CrmCustomerTaxMapper extends BaseMapper<CrmCustomerTax> {
      * @param: crmCustomerTax
      * @return: java.util.List<com.jayud.crm.model.po.CrmCustomerTax>
      **/
-    List<CrmCustomerTax> list(@Param("crmCustomerTax") CrmCustomerTax crmCustomerTax);
+    List<CrmCustomerTaxVO> list(@Param("crmCustomerTax") CrmCustomerTax crmCustomerTax);
 
 
     /**

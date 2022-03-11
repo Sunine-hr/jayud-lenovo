@@ -51,7 +51,7 @@ public class CrmCustomerTaxVO extends SysBaseEntity {
     @ApiModelProperty(value = "状态(1 true:已失效,0 false:已生效)")
     private String statusDesc;
 
-    public void setStatusDesc(Boolean isDefault) {
+    public void setIsDefault(Boolean isDefault) {
         this.isDefault = isDefault;
         this.statusDesc = this.isDefault == false ? "已生效" : "已失效";
     }

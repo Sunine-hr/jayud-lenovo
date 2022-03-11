@@ -6,6 +6,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.crm.model.bo.CrmCustomerTaxForm;
 import com.jayud.crm.model.po.CrmCustomerTax;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.crm.model.vo.CrmCustomerTaxVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -32,10 +33,10 @@ public interface ICrmCustomerTaxService extends IService<CrmCustomerTax> {
      * @param: req
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomerTax>
      **/
-    IPage<CrmCustomerTax> selectPage(CrmCustomerTax crmCustomerTax,
-                                Integer currentPage,
-                                Integer pageSize,
-                                HttpServletRequest req);
+    IPage<CrmCustomerTaxVO> selectPage(CrmCustomerTax crmCustomerTax,
+                                       Integer currentPage,
+                                       Integer pageSize,
+                                       HttpServletRequest req);
 
     /**
      * @description 列表查询数据
@@ -45,7 +46,7 @@ public interface ICrmCustomerTaxService extends IService<CrmCustomerTax> {
      * @param: req
      * @return: java.util.List<com.jayud.crm.model.po.CrmCustomerTax>
      **/
-    List<CrmCustomerTax> selectList(CrmCustomerTax crmCustomerTax);
+    List<CrmCustomerTaxVO> selectList(CrmCustomerTax crmCustomerTax);
 
     /**
      * 创建编辑

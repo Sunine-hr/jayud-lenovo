@@ -38,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/api/initCostTypeByCostInfoCode","/swagger-ui/**", "/swagger-ui.html/**", "/webjars/springfox-swagger-ui/**",
                 "/swagger-resources/**", "/v2/api-docs/**",
                 "/api/initVehicleSize","/api/initCostUnit","/api/initCost",
-                "/api/initCostType","/api/adrrTree");
+                "/api/initCostType","/api/adrrTree","/api/initCurrencyInfo");
     }
 
 }

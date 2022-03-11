@@ -2,6 +2,7 @@ package com.jayud.crm.controller;
 
 import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.crm.feign.SysDictClient;
+import com.jayud.crm.model.bo.DeleteForm;
 import com.jayud.crm.model.bo.QueryCrmFile;
 import com.jayud.crm.model.constant.CrmDictCode;
 import lombok.extern.slf4j.Slf4j;
@@ -141,9 +142,9 @@ public class CrmFileController {
      **/
     @ApiOperation("逻辑删除")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id){
-        crmFileService.logicDel(id);
+    @PostMapping("/logicDel")
+    public BaseResult logicDel(@RequestBody DeleteForm ids){
+        crmFileService.logicDel(ids.getIds());
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 

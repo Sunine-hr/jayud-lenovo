@@ -10,6 +10,7 @@ import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.crm.model.bo.CrmCustomerTaxForm;
 import com.jayud.crm.model.po.CrmCustomerRelations;
+import com.jayud.crm.model.vo.CrmCustomerTaxVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -38,18 +39,18 @@ public class CrmCustomerTaxServiceImpl extends ServiceImpl<CrmCustomerTaxMapper,
     private CrmCustomerTaxMapper crmCustomerTaxMapper;
 
     @Override
-    public IPage<CrmCustomerTax> selectPage(CrmCustomerTax crmCustomerTax,
-                                            Integer currentPage,
-                                            Integer pageSize,
-                                            HttpServletRequest req){
+    public IPage<CrmCustomerTaxVO> selectPage(CrmCustomerTax crmCustomerTax,
+                                              Integer currentPage,
+                                              Integer pageSize,
+                                              HttpServletRequest req){
 
         Page<CrmCustomerTax> page=new Page<CrmCustomerTax>(currentPage,pageSize);
-        IPage<CrmCustomerTax> pageList= crmCustomerTaxMapper.pageList(page, crmCustomerTax);
+        IPage<CrmCustomerTaxVO> pageList= crmCustomerTaxMapper.pageList(page, crmCustomerTax);
         return pageList;
     }
 
     @Override
-    public List<CrmCustomerTax> selectList(CrmCustomerTax crmCustomerTax){
+    public List<CrmCustomerTaxVO> selectList(CrmCustomerTax crmCustomerTax){
         return crmCustomerTaxMapper.list(crmCustomerTax);
     }
 

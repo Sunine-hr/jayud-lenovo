@@ -41,7 +41,7 @@ public interface OmsClient {
      *
      * @return
      */
-    @RequestMapping(value = "api/initCurrencyInfo")
+    @RequestMapping(value = "/api/initCurrencyInfo")
     ApiResult<List<InitComboxStrVO>> initCurrencyInfo();
 
     @ApiOperation(value = "录入费用:应收/付项目/币种 ")

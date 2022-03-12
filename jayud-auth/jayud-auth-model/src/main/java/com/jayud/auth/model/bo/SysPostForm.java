@@ -34,6 +34,9 @@ public class SysPostForm extends SysBaseEntity {
     @ApiModelProperty(value = "所属部门id")
     private Long departId;
 
+    @ApiModelProperty(value = "租户编码")
+    private String tenantCode;
+
     @ApiModelProperty(value = "备注")
     private String remark;
 

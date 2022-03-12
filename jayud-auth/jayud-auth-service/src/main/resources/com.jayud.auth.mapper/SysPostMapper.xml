@@ -10,6 +10,7 @@
         <result column="post_sequence" property="postSequence" />
         <result column="parent_id" property="parentId" />
         <result column="depart_id" property="departId" />
+        <result column="tenant_code" property="tenantCode"/>
         <result column="remark" property="remark" />
         <result column="is_deleted" property="isDeleted" />
         <result column="create_by" property="createBy" />
@@ -20,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, post_code, post_name, post_sequence, parent_id, depart_id, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, post_code, post_name, post_sequence, parent_id, depart_id, tenant_code,remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
@@ -67,6 +68,7 @@
             post_sequence,
             parent_id,
             depart_id,
+            tenant_code,
             remark,
             is_deleted,
             create_by,
@@ -118,6 +120,7 @@
             post_sequence,
             parent_id,
             depart_id,
+            tenant_code,
             remark,
             is_deleted,
             create_by,

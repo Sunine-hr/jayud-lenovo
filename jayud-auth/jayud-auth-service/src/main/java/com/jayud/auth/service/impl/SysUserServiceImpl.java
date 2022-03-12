@@ -192,6 +192,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             lambdaQueryWrapper.eq(SysUser::getTenantCode, tenantCode);
         }
         lambdaQueryWrapper.eq(SysUser::getName, name);
+        lambdaQueryWrapper.eq(SysUser::getIsDeleted, false);
         return this.getOne(lambdaQueryWrapper);
     }
 

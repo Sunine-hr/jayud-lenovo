@@ -133,6 +133,7 @@
             </if>
 
         </where>
+        order by id desc
     </select>
 
     <select id="list" resultType="com.jayud.auth.model.vo.BPublicCheckVO" parameterType="com.jayud.auth.model.po.BPublicCheck">
@@ -186,6 +187,7 @@
             </if>
 
         </where>
+        order by id desc
     </select>
 
 

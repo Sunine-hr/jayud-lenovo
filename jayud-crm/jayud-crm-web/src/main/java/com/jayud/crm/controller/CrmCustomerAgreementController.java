@@ -116,7 +116,7 @@ public class CrmCustomerAgreementController {
     @ApiOperation("自动生成编号")
     @GetMapping("/autoGenerateNum")
     public BaseResult autoGenerateNum() {
-        return this.authClient.getOrderFeign(CrmDictCode.QUOTATION_NUM_CODE, new Date());
+        return this.authClient.getOrderFeign(CrmDictCode.CONTRACT_AGREEMENT_NUM_CODE, new Date());
     }
 
 

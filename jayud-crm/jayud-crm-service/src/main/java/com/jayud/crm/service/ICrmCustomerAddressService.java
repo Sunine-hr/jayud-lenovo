@@ -6,6 +6,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.crm.model.bo.CrmCustomerAddressForm;
 import com.jayud.crm.model.po.CrmCustomerAddress;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.crm.model.vo.CrmCustomerAddressVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -32,10 +33,10 @@ public interface ICrmCustomerAddressService extends IService<CrmCustomerAddress>
      * @param: req
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomerAddress>
      **/
-    IPage<CrmCustomerAddress> selectPage(CrmCustomerAddress crmCustomerAddress,
-                                Integer currentPage,
-                                Integer pageSize,
-                                HttpServletRequest req);
+    IPage<CrmCustomerAddressVO> selectPage(CrmCustomerAddress crmCustomerAddress,
+                                           Integer currentPage,
+                                           Integer pageSize,
+                                           HttpServletRequest req);
 
     /**
      * @description 列表查询数据
@@ -45,7 +46,7 @@ public interface ICrmCustomerAddressService extends IService<CrmCustomerAddress>
      * @param: req
      * @return: java.util.List<com.jayud.crm.model.po.CrmCustomerAddress>
      **/
-    List<CrmCustomerAddress> selectList(CrmCustomerAddress crmCustomerAddress);
+    List<CrmCustomerAddressVO> selectList(CrmCustomerAddress crmCustomerAddress);
 
 
     BaseResult saveOrUpdateCrmCustomerAddress(CrmCustomerAddressForm crmCustomerAddressForm);

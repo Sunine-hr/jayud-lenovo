@@ -8,6 +8,7 @@ import com.jayud.crm.model.bo.DeleteForm;
 import com.jayud.crm.model.constant.CrmDictCode;
 import com.jayud.crm.model.bo.CrmCodeFollowForm;
 import com.jayud.crm.model.po.CrmCustomerRelations;
+import com.jayud.crm.model.vo.CrmCustomerAddressVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -69,10 +70,10 @@ public class CrmCustomerAddressController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<CrmCustomerAddress>> selectPage(CrmCustomerAddress crmCustomerAddress,
-                                                   @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
-                                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-                                                   HttpServletRequest req) {
+    public BaseResult<IPage<CrmCustomerAddressVO>> selectPage(CrmCustomerAddress crmCustomerAddress,
+                                                              @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
+                                                              @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                                              HttpServletRequest req) {
         return BaseResult.ok(crmCustomerAddressService.selectPage(crmCustomerAddress,currentPage,pageSize,req));
     }
 
@@ -87,7 +88,7 @@ public class CrmCustomerAddressController {
     **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
-    public BaseResult<List<CrmCustomerAddress>> selectList(CrmCustomerAddress crmCustomerAddress,
+    public BaseResult<List<CrmCustomerAddressVO>> selectList(CrmCustomerAddress crmCustomerAddress,
                                                 HttpServletRequest req) {
         return BaseResult.ok(crmCustomerAddressService.selectList(crmCustomerAddress));
     }

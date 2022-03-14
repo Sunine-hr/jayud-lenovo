@@ -103,11 +103,11 @@
         </where>
     </sql>
 
-    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerAddress">
+    <select id="pageList"   parameterType="com.jayud.crm.model.po.CrmCustomerAddress"  resultType="com.jayud.crm.model.vo.CrmCustomerAddressVO">
         <include refid="selects"/>
     </select>
 
-    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerAddress">
+    <select id="list"   parameterType="com.jayud.crm.model.po.CrmCustomerAddress"  resultType="com.jayud.crm.model.vo.CrmCustomerAddressVO">
         <include refid="selects"/>
     </select>
 

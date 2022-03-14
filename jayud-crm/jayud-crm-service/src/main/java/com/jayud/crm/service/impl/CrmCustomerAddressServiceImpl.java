@@ -8,9 +8,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.StringUtils;
 import com.jayud.crm.model.bo.CrmCustomerAddressForm;
 import com.jayud.crm.model.po.CrmCreditVisit;
 import com.jayud.crm.model.po.CrmCustomerRisk;
+import com.jayud.crm.model.vo.CrmCustomerAddressVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -39,19 +41,26 @@ public class CrmCustomerAddressServiceImpl extends ServiceImpl<CrmCustomerAddres
     private CrmCustomerAddressMapper crmCustomerAddressMapper;
 
     @Override
-    public IPage<CrmCustomerAddress> selectPage(CrmCustomerAddress crmCustomerAddress,
-                                        Integer currentPage,
-                                        Integer pageSize,
-                                        HttpServletRequest req){
+    public IPage<CrmCustomerAddressVO> selectPage(CrmCustomerAddress crmCustomerAddress,
+                                                  Integer currentPage,
+                                                  Integer pageSize,
+                                                  HttpServletRequest req){
 
         Page<CrmCustomerAddress> page=new Page<CrmCustomerAddress>(currentPage,pageSize);
-        IPage<CrmCustomerAddress> pageList= crmCustomerAddressMapper.pageList(page, crmCustomerAddress);
+        IPage<CrmCustomerAddressVO> pageList= crmCustomerAddressMapper.pageList(page, crmCustomerAddress);
+        pageList.getRecords().stream().forEach(v->{
+            v.setAddress(StringUtils.getConvenientAreaString(v.getProvince(),v.getCity(),v.getCounty(),v.getAddress()));
+        });
         return pageList;
     }
 
     @Override
-    public List<CrmCustomerAddress> selectList(CrmCustomerAddress crmCustomerAddress){
-        return crmCustomerAddressMapper.list(crmCustomerAddress);
+    public List<CrmCustomerAddressVO> selectList(CrmCustomerAddress crmCustomerAddress){
+        List<CrmCustomerAddressVO> list = crmCustomerAddressMapper.list(crmCustomerAddress);
+        list.stream().forEach(v->{
+            v.setAddress(StringUtils.getConvenientAreaString(v.getProvince(),v.getCity(),v.getCounty(),v.getAddress()));
+        });
+        return list;
     }
 
     @Override

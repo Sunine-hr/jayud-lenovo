@@ -34,7 +34,7 @@ public class BPublicCheckVO extends SysBaseEntity {
     private String isCheckRemark;
 
     @ApiModelProperty(value = "耗时")
-    private Long timeConsuming;
+    private String timeConsuming;
 
     @ApiModelProperty(value = "记录ID")
     private Long recordId;

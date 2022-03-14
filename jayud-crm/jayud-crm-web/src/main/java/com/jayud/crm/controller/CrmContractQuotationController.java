@@ -118,7 +118,7 @@ public class CrmContractQuotationController {
     @ApiOperation("自动生成编号")
     @PostMapping("/autoGenerateNum")
     public BaseResult autoGenerateNum() {
-        return this.authClient.getOrderFeign(CrmDictCode.CONTRACT_AGREEMENT_NUM_CODE, new Date());
+        return this.authClient.getOrderFeign(CrmDictCode.QUOTATION_NUM_CODE, new Date());
     }
 
     @ApiOperation("获取编辑详情")
@@ -191,7 +191,7 @@ public class CrmContractQuotationController {
      **/
     @ApiOperation("根据查询条件导出合同报价")
     @PostMapping(path = "/exportCrmContractQuotation")
-    public void exportCrmContractQuotation(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
+    public void exportCrmContractQuotation(HttpServletResponse response, @RequestBody Map<String, Object> paramMap) {
         try {
             List<String> headList = Arrays.asList(
                     "主键",

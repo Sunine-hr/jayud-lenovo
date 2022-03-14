@@ -194,30 +194,17 @@ public class CrmContractQuotationController {
     public void exportCrmContractQuotation(HttpServletResponse response, @RequestBody Map<String, Object> paramMap) {
         try {
             List<String> headList = Arrays.asList(
-                    "主键",
-                    "报价编号(合同报价编号)",
-                    "客户/供应商id",
-                    "客户/供应商code",
+                    "报价单编号",
                     "客户/供应商名称",
-                    "报价名称",
                     "有效起始时间",
                     "有效结束时间",
-                    "状态（0禁用 1启用）",
-                    "合同对象(1:客户,2:供应商)",
-                    "法人主体名称id",
+                    "状态",
                     "法人主体",
-                    "销售员id",
-                    "销售员名称",
-                    "审核级别",
-                    "当前级别",
+                    "销售员",
                     "审核状态",
-                    "租户编码",
                     "备注",
-                    "是否删除，0未删除，1已删除",
                     "创建人",
-                    "创建时间",
-                    "更新人",
-                    "更新时间"
+                    "创建时间"
             );
             List<LinkedHashMap<String, Object>> dataList = crmContractQuotationService.queryCrmContractQuotationForExcel(paramMap);
             ExcelUtils.exportExcel(headList, dataList, "合同报价", response);

@@ -168,30 +168,17 @@
 
     <select id="queryCrmContractQuotationForExcel" resultType="java.util.LinkedHashMap">
         SELECT
-            id 'id',
             number 'number',
-            customer_id 'customerId',
-            customer_code 'customerCode',
             customer_name 'customerName',
-            name 'name',
             start_time 'startTime',
             end_time 'endTime',
-            status 'status',
-            type 'type',
-            legal_entity_id 'legalEntityId',
+            case `status` when 1 then '启动' else '禁用' end as 'status',
             legal_entity 'legalEntity',
-            user_id 'userId',
-            user 'user',
-            f_level 'fLevel',
-            f_step 'fStep',
+            `user` 'user',
             check_state_flag 'checkStateFlag',
-            tenant_code 'tenantCode',
             remark 'remark',
-            is_deleted 'isDeleted',
             create_by 'createBy',
-            create_time 'createTime',
-            update_by 'updateBy',
-            update_time 'updateTime'
+            create_time 'createTime'
         FROM crm_contract_quotation
         WHERE is_deleted = 0
                     <if test="number != null and number != ''">

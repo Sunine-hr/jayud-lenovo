@@ -155,8 +155,8 @@ public class SysPostController {
     @PostMapping("/logicDel")
     public BaseResult logicDel(@RequestBody DeleteForm ids){
 
-        sysPostService.deleteSysPost(ids.getIds());
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//        sysPostService.deleteSysPost(ids.getIds());
+        return sysPostService.deleteSysPost(ids.getIds());
     }
 
 

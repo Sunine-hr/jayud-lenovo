@@ -8,11 +8,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.base.Strings;
+import com.jayud.auth.mapper.SysUserMapper;
 import com.jayud.auth.model.bo.SysPostForm;
 import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysUser;
 import com.jayud.auth.model.vo.SysPostVO;
+import com.jayud.auth.model.vo.SysUserVO;
+import com.jayud.auth.service.ISysUserService;
 import com.jayud.common.BaseResult;
+import com.jayud.common.constant.SysTips;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +46,9 @@ public class SysPostServiceImpl extends ServiceImpl<SysPostMapper, SysPost> impl
 
     @Autowired
     private SysPostMapper sysPostMapper;
+
+    @Autowired
+    public ISysUserService sysUserService;
 
     @Override
     public IPage<SysPost> selectPage(SysPost sysPost,
@@ -94,11 +101,11 @@ public class SysPostServiceImpl extends ServiceImpl<SysPostMapper, SysPost> impl
         if (sysPost.getId() != null) {
 
 
-            SysPost sysUserOne = findSysUserOne(sysPostForm.getPostCode(), null,sysPost.getId());
+            SysPost sysUserOne = findSysUserOne(sysPostForm.getPostCode(), null, sysPost.getId());
             if (sysUserOne != null) {
                 throw new JayudBizException("岗位编码已存在");
             }
-            SysPost two = findSysUserOne(null, sysPostForm.getPostName(),sysPost.getId());
+            SysPost two = findSysUserOne(null, sysPostForm.getPostName(), sysPost.getId());
             if (two != null) {
                 throw new JayudBizException("岗位名称已存在！");
             }
@@ -134,13 +141,21 @@ public class SysPostServiceImpl extends ServiceImpl<SysPostMapper, SysPost> impl
 
         List<SysPost> sysPosts = new ArrayList<>();
         for (int i = 0; i < ids.size(); i++) {
+            //判断 判断有关联的岗位不可删除
+            SysUser sysUser = new SysUser();
+            sysUser.setPostId(ids.get(i));
+            List<SysUserVO> sysUserVOS = sysUserService.selectList(sysUser);
+            if (sysUserVOS.size() != 0) {
+//                throw new JayudBizException("有存在岗位绑定关系,无法删除！");
+                return BaseResult.error(SysTips.POST_INCIDENCE_RELATION_ONE);
+            }
             SysPost sysPost = new SysPost();
             sysPost.setId(ids.get(i));
             sysPost.setIsDeleted(true);
             sysPosts.add(sysPost);
         }
         this.updateBatchById(sysPosts);
-        return BaseResult.ok();
+        return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 
 

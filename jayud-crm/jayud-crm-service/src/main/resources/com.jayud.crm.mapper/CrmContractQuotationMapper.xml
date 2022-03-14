@@ -148,6 +148,7 @@
 
     <select id="pageList" resultMap="BaseResultMapOne" parameterType="com.jayud.crm.model.po.CrmContractQuotation">
         <include refid="selects"/>
+        order by create_time desc
     </select>
 
     <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmContractQuotation">

@@ -3,6 +3,7 @@ package com.jayud.crm.mapper;
 import com.jayud.crm.model.po.CrmCustomerAddress;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import com.jayud.crm.model.vo.CrmCustomerAddressVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -30,7 +31,7 @@ public interface CrmCustomerAddressMapper extends BaseMapper<CrmCustomerAddress>
      * @param: crmCustomerAddress
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomerAddress>
      **/
-    IPage<CrmCustomerAddress> pageList(@Param("page") Page<CrmCustomerAddress> page, @Param("crmCustomerAddress") CrmCustomerAddress crmCustomerAddress);
+    IPage<CrmCustomerAddressVO> pageList(@Param("page") Page<CrmCustomerAddress> page, @Param("crmCustomerAddress") CrmCustomerAddress crmCustomerAddress);
 
     /**
      * @description 列表查询数据
@@ -39,7 +40,7 @@ public interface CrmCustomerAddressMapper extends BaseMapper<CrmCustomerAddress>
      * @param: crmCustomerAddress
      * @return: java.util.List<com.jayud.crm.model.po.CrmCustomerAddress>
      **/
-    List<CrmCustomerAddress> list(@Param("crmCustomerAddress") CrmCustomerAddress crmCustomerAddress);
+    List<CrmCustomerAddressVO> list(@Param("crmCustomerAddress") CrmCustomerAddress crmCustomerAddress);
 
 
     /**

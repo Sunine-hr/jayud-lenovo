@@ -237,5 +237,10 @@ public interface SysTips {
     String CREDIT_AMOUNT_ERROR= "授信金额不能小于等与0";
 
     String CUTS_IN_RISK_ERROR = "客户存在风险，请联系相关人员！";
+
+    String EXIT_SAME_ERROR= "存在相同数据!";
+
+
+    String NOT_CHARGER_ERROR= "请联系负责人修改!";
 }
 

@@ -365,12 +365,12 @@
                 </foreach>
             </if>
 
-            <if test="crmCustomer.createStartTime != null ">
-                AND cc.create_time &gt;= ${crmCustomer.createStartTime}
+            <if test="crmCustomer.createStartTime != null  and crmCustomer.createStartTime != ''">
+                AND cc.create_time &gt;= #{crmCustomer.createStartTime}
             </if>
 
-            <if test="crmCustomer.createEndTime != null ">
-                AND cc.create_time &lt;= ${crmCustomer.createEndTime}
+            <if test="crmCustomer.createEndTime != null  and crmCustomer.createEndTime != ''">
+                AND cc.create_time &lt;= #{crmCustomer.createEndTime}
             </if>
 
         </where>

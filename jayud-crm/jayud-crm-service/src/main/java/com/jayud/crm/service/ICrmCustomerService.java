@@ -165,6 +165,14 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
     String changeBusinessType(List<String> businessTypesList);
 
     /**
+    * @description 根据业务类型获取数据对象
+    * @author  ciro
+    * @date   2022/3/14 14:35:05
+    * @return: java.util.Map<java.lang.String,java.lang.String>
+    **/
+    Map<String,String> getBusinessTypeData();
+
+    /**
      * @description 领取客户
      * @author  ciro
      * @date   2022/3/4 16:47

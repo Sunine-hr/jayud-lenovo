@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ciro
@@ -45,4 +46,9 @@ public class ComCustomerForm {
     @ApiModelProperty(value = "黑名单对象")
     List<CrmCustomer> riskList;
 
+    @ApiModelProperty(value = "重复转供应商对象")
+    List<CrmCustomer> exitSupplierList;
+
+    @ApiModelProperty(value = "业务类型")
+    private Map<String,String> businessTypesData;
 }

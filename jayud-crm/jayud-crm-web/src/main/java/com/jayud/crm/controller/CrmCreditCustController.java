@@ -65,6 +65,9 @@ public class CrmCreditCustController {
                                                                @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
                                                                @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                                HttpServletRequest req) {
+        if (crmCreditCust.getCustName() != null) {
+            crmCreditCust.setCustName(crmCreditCust.getCustName().trim());
+        }
         return BaseResult.ok(PaginationBuilder.buildPageResult(crmCreditCustService.selectPage(crmCreditCust, currentPage, pageSize, req)));
     }
 

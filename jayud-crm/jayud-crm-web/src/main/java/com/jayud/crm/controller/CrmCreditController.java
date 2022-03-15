@@ -1,10 +1,14 @@
 package com.jayud.crm.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.jayud.common.result.ListPageRuslt;
 import com.jayud.common.result.PaginationBuilder;
+import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.model.bo.AddCrmCreditForm;
+import com.jayud.crm.model.po.CrmCreditDepart;
 import com.jayud.crm.model.po.CrmCustomer;
 import com.jayud.crm.model.vo.CrmCreditVO;
+import com.jayud.crm.service.ICrmCreditDepartService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,6 +50,8 @@ public class CrmCreditController {
 
     @Autowired
     public ICrmCreditService crmCreditService;
+    @Autowired
+    public ICrmCreditDepartService crmCreditDepartService;
 
 
     /**
@@ -95,10 +101,10 @@ public class CrmCreditController {
     @PostMapping("/saveOrUpdate")
     public BaseResult saveOrUpdate(@Valid @RequestBody AddCrmCreditForm form) {
 
-        if (form.getId()!=null){
+        if (form.getId() != null) {
             CrmCredit crmCredit = this.crmCreditService.getById(form.getId());
-            if (crmCredit.getCreditMoney().compareTo(crmCredit.getCreditGrantedMoney())<0) {
-                return BaseResult.ok(SysTips.INSUFFICIENT_REMAINING_AMOUNT);
+            if (form.getCreditMoney().compareTo(crmCredit.getCreditGrantedMoney()) < 0) {
+                return BaseResult.error(SysTips.INSUFFICIENT_REMAINING_AMOUNT);
             }
         }
         crmCreditService.saveOrUpdate(form);
@@ -117,6 +123,12 @@ public class CrmCreditController {
     @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam Long id) {
+        CrmCredit crmCredit = this.crmCreditService.getById(id);
+        //是否存在已分配额度
+        List<CrmCreditDepart> creditDeparts = this.crmCreditDepartService.selectList(new CrmCreditDepart().setCreditId(crmCredit.getCreditId()).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
+        if (!CollectionUtil.isEmpty(creditDeparts)) {
+            return BaseResult.error(SysTips.CREDIT_DELETE_ERROR);
+        }
         crmCreditService.logicDel(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }

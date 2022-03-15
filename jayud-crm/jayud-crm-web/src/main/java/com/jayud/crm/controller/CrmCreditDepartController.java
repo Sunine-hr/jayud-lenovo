@@ -1,37 +1,33 @@
 package com.jayud.crm.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.jayud.common.BaseResult;
+import com.jayud.common.constant.SysTips;
 import com.jayud.common.result.ListPageRuslt;
 import com.jayud.common.result.PaginationBuilder;
 import com.jayud.common.utils.CurrentUserUtil;
-import com.jayud.crm.model.bo.AddCrmCreditDepartForm;
-import com.jayud.crm.model.bo.AddCrmCreditForm;
-import com.jayud.crm.model.vo.CrmCreditDepartVO;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RestController;
-
-
 import com.jayud.common.utils.ExcelUtils;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.common.constant.SysTips;
-import com.jayud.common.BaseResult;
-import com.jayud.crm.service.ICrmCreditDepartService;
+import com.jayud.crm.model.bo.AddCrmCreditDepartForm;
+import com.jayud.crm.model.po.CrmCreditCust;
 import com.jayud.crm.model.po.CrmCreditDepart;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.jayud.crm.model.vo.CrmCreditDepartVO;
+import com.jayud.crm.service.ICrmCreditCustService;
+import com.jayud.crm.service.ICrmCreditDepartService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 基本档案_额度_部门额度授信管理(crm_credit_depart) 控制类
@@ -48,6 +44,8 @@ public class CrmCreditDepartController {
 
     @Autowired
     public ICrmCreditDepartService crmCreditDepartService;
+    @Autowired
+    public ICrmCreditCustService crmCreditCustService;
 
 
     /**
@@ -140,6 +138,12 @@ public class CrmCreditDepartController {
     @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam Long id) {
+        CrmCreditDepart crmCreditDepart = this.crmCreditDepartService.getById(id);
+        //是否存在已分配额度
+        List<CrmCreditCust> crmCreditCusts = this.crmCreditCustService.selectList(new CrmCreditCust().setDepartId(crmCreditDepart.getDepartId()).setCreditId(crmCreditDepart.getCreditId()).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
+        if (!CollectionUtil.isEmpty(crmCreditCusts)) {
+            return BaseResult.error(SysTips.CREDIT_DELETE_ERROR);
+        }
         crmCreditDepartService.logicDel(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }

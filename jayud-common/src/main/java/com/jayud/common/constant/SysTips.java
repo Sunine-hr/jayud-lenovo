@@ -239,5 +239,7 @@ public interface SysTips {
     String CUTS_IN_RISK_ERROR = "客户存在风险，请联系相关人员！";
 
     String POST_INCIDENCE_RELATION_ONE = "有存在岗位绑定关系,无法删除！";
+
+    String SYS_USER_ON_JOB_REMIND= "有在职员工,无法删除！";
 }
 

@@ -203,6 +203,7 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResult changeCustChangerManager(ComCustomerForm comCustomerForm) {
         Map<Long, CrmCustomer> custMap = new HashMap<>(16);
         List<Long> custList = new ArrayList<>();
@@ -370,9 +371,9 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
         crmCustomer.setIsPublic(false);
         crmCustomer.setUpdateBy(CurrentUserUtil.getUsername());
         crmCustomer.setUpdateTime(new Date());
-        LambdaQueryWrapper<CrmCustomer> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.in(CrmCustomer::getId,addList);
-        crmCustomerService.update(crmCustomer,lambdaQueryWrapper);
+        LambdaUpdateWrapper<CrmCustomer> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.in(CrmCustomer::getId,addList);
+        crmCustomerService.update(crmCustomer,lambdaUpdateWrapper);
 
     }
 

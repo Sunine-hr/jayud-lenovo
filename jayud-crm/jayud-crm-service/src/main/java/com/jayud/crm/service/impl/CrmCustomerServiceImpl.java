@@ -275,6 +275,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResult moveCustToRick(List<CrmCustomer> custList) {
         ComCustomerForm comCustomerForm = new ComCustomerForm();
         comCustomerForm.setCrmCustomerList(custList);
@@ -300,6 +301,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResult changeToSupplier(List<CrmCustomer> custList) {
         ComCustomerForm comCustomerForm = new ComCustomerForm();
         comCustomerForm.setCrmCustomerList(custList);
@@ -331,6 +333,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResult changeToPublic(List<CrmCustomer> custList) {
         ComCustomerForm comCustomerForm = new ComCustomerForm();
         comCustomerForm.setCrmCustomerList(custList);

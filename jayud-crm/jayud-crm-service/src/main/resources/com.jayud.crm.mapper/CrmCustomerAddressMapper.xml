@@ -9,8 +9,10 @@
         <result column="address_type" property="addressType" />
         <result column="country" property="country" />
         <result column="province" property="province" />
+        <result column="province_code" property="provinceCode" />
         <result column="city" property="city" />
         <result column="county" property="county" />
+        <result column="city_county_code" property="cityCountyCode" />
         <result column="address" property="address" />
         <result column="region" property="region" />
         <result column="contact_name" property="contactName" />
@@ -29,7 +31,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, cust_id, address_type, country, province, city, county, address, region, contact_name, tel, mobile, email, rece_name, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, cust_id, address_type, country, province,province_code, city, county,city_county_code, address, region, contact_name, tel, mobile, email, rece_name, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
@@ -103,11 +105,11 @@
         </where>
     </sql>
 
-    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerAddress">
+    <select id="pageList"   parameterType="com.jayud.crm.model.po.CrmCustomerAddress"  resultType="com.jayud.crm.model.vo.CrmCustomerAddressVO">
         <include refid="selects"/>
     </select>
 
-    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCustomerAddress">
+    <select id="list"   parameterType="com.jayud.crm.model.po.CrmCustomerAddress"  resultType="com.jayud.crm.model.vo.CrmCustomerAddressVO">
         <include refid="selects"/>
     </select>
 

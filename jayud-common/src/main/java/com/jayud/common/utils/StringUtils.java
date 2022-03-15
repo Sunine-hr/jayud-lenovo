@@ -216,7 +216,7 @@ public class StringUtils {
             return fileNameStr;
         }
         StringBuilder sb = new StringBuilder();
-        for(int i=0;i<fileViewList.size();i++){
+        for (int i = 0; i < fileViewList.size(); i++) {
             sb.append(fileViewList.get(i)).append(",");
         }
 
@@ -226,6 +226,38 @@ public class StringUtils {
         return fileNameStr;
     }
 
+    /**
+     * 将字符串拼接
+     * 拼接省市区
+     *
+     * @param province 省
+     * @param city     市
+     * @param county   区
+     * @param address  详情
+     * @return
+     */
+    public static String getConvenientAreaString(String province, String city, String county, String address) {
+        String convenientArea = "";
+        StringBuilder sb = new StringBuilder();
+        if (province != null) {
+            sb.append(province).append(" ");
+        }
+        if (city != null) {
+            sb.append(city).append(" ");
+        }
+
+        if (county != null) {
+            sb.append(county).append(" ");
+        }
+        if (address != null) {
+            sb.append(address).append(" ");
+        }
+        if (!"".equals(String.valueOf(sb))) {
+//            convenientArea = sb.substring(0, sb.length() - 1);
+            convenientArea = sb.toString();
+        }
+        return convenientArea;
+    }
 
     /**
      * 把字符串解析成文件数组
@@ -439,19 +471,20 @@ public class StringUtils {
     public static void main(String[] args) {
         String str = "湖北省恩施土家族苗族自治州恩施市";
 //        Map<String, String> table = addressResolution(str);
-        List<Map<String, String>> table = addressResolutionThree(str);
-        System.out.println(table);
-        System.out.println(table.get(0).get("province"));
-        System.out.println(table.get(0).get("city"));
-        System.out.println(table.get(0).get("county"));
-        System.out.println(table.get(0).get("town"));
-        System.out.println(table.get(0).get("village"));
-
-        long ab=111111;
-        long abb=1;
-        Long aLong = longTransitionLong(ab,abb);
-        System.out.println("拼接："+aLong);
-
+//        List<Map<String, String>> table = addressResolutionThree(str);
+//        System.out.println(table);
+//        System.out.println(table.get(0).get("province"));
+//        System.out.println(table.get(0).get("city"));
+//        System.out.println(table.get(0).get("county"));
+//        System.out.println(table.get(0).get("town"));
+//        System.out.println(table.get(0).get("village"));
+//
+//        long ab=111111;
+//        long abb=1;
+//        Long aLong = longTransitionLong(ab,abb);
+//        System.out.println("拼接："+aLong);
+        String convenientAreaString = getConvenientAreaString("广东省省份", "深圳市", "罗湖区", "详情地址11");
+        System.out.println(convenientAreaString);
 
     }
 
@@ -542,7 +575,6 @@ public class StringUtils {
     }
 
 
-
     /**
      * 将下划线风格替换为驼峰风格
      *
@@ -573,7 +605,7 @@ public class StringUtils {
 
     //数字转字符串
     // 然后再转数字
-    public static Long  longTransitionLong(Long a, Long b){
+    public static Long longTransitionLong(Long a, Long b) {
 
         String sl1 = Long.toString(a);
         String sl2 = Long.toString(b);
@@ -584,9 +616,6 @@ public class StringUtils {
 
         return aLong;
     }
-
-
-
 
 
 }

@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -83,9 +85,6 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         BNoRule bNoRule = bNoRuleService.getNoRulesBySheetCode(checkForm.getSheetCode());
         String checkTable = bNoRule.getCheckTable();
 
-        //开始时间
-        long begin = System.currentTimeMillis();
-
         //获取当前登录用户
         SysUserVO systemUserByName = sysUserService.getSystemUserByName(CurrentUserUtil.getUsername());
         //根据id获取当前记录
@@ -148,8 +147,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
                 return BaseResult.error(444,"审核失败，修改订单审核状态失败");
             }
 
-            //结束时间
-            long end = System.currentTimeMillis();
+
 
             //添加审核记录
             BPublicCheck bPublicCheck = new BPublicCheck();
@@ -159,7 +157,12 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             bPublicCheck.setFLevel(sLevel);
             bPublicCheck.setFStep(newStep);
             bPublicCheck.setIsCheck(checkForm.getCheck());
-            bPublicCheck.setTimeConsuming(end-begin);
+            if(0 == sStep){
+                bPublicCheck.setTimeConsuming(null);
+            }else {
+                BPublicCheck byRecordId = this.baseMapper.getPublicCheckByRecordId(checkForm.getSheetCode(),checkForm.getRecordId(),1);
+                bPublicCheck.setTimeConsuming(this.getTimeDifference(byRecordId.getCreateTime(),new Date()));
+            }
             bPublicCheck.setCheckStateFlag(checkFlag);
             bPublicCheck.setFCheckId(systemUserByName.getId());
             bPublicCheck.setFCheckName(systemUserByName.getName());
@@ -172,8 +175,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             log.warn("审核成功");
             return BaseResult.ok("审核成功");
         }else{
-            //结束时间
-            long end = System.currentTimeMillis();
+
             //添加审核记录
             BPublicCheck bPublicCheck = new BPublicCheck();
             bPublicCheck.setSheetCode(checkForm.getSheetCode());
@@ -184,7 +186,12 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             bPublicCheck.setRemark(checkForm.getCheckRemark());
             bPublicCheck.setCheckStateFlag(checkFlag);
             bPublicCheck.setIsCheck(checkForm.getCheck());
-            bPublicCheck.setTimeConsuming(end-begin);
+            if(0 == sStep){
+                bPublicCheck.setTimeConsuming(null);
+            }else {
+                BPublicCheck byRecordId = this.baseMapper.getPublicCheckByRecordId(checkForm.getSheetCode(),checkForm.getRecordId(),1);
+                bPublicCheck.setTimeConsuming(this.getTimeDifference(byRecordId.getCreateTime(),new Date()));
+            }
             bPublicCheck.setFCheckId(systemUserByName.getId());
             bPublicCheck.setFCheckName(systemUserByName.getName());
             bPublicCheck.setCreateBy(systemUserByName.getName());
@@ -202,8 +209,6 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
 
     @Override
     public BaseResult unCheck(CheckForm checkForm) {
-        //开始时间
-        long begin = System.currentTimeMillis();
 
         //根据当前单据编号获取表名、库名
         BNoRule bNoRule = bNoRuleService.getNoRulesBySheetCode(checkForm.getSheetCode());
@@ -270,8 +275,6 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         if(update <= 0){
             return BaseResult.error(444,"反审核失败，修改订单审核状态失败");
         }
-        //结束时间
-        long end = System.currentTimeMillis();
 
         //添加反审核记录
         BPublicCheck bPublicCheck = new BPublicCheck();
@@ -280,7 +283,12 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         bPublicCheck.setRecordId(checkForm.getRecordId());
         bPublicCheck.setFLevel(sLevel);
         bPublicCheck.setFStep(newStep);
-        bPublicCheck.setTimeConsuming(end-begin);
+        if(0 != sStep){
+            bPublicCheck.setTimeConsuming(null);
+        }else {
+            BPublicCheck byRecordId = this.baseMapper.getPublicCheckByRecordId(checkForm.getSheetCode(),checkForm.getRecordId(),1);
+            bPublicCheck.setTimeConsuming(this.getTimeDifference(byRecordId.getCreateTime(),new Date()));
+        }
         bPublicCheck.setCheckStateFlag(checkFlag);
         bPublicCheck.setRemark("第 "+newStep+"级反审核,审核成功");
         bPublicCheck.setFCheckId(systemUserByName.getId());
@@ -293,5 +301,21 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         }
         log.warn("反审核成功");
         return BaseResult.ok("反审核成功");
+    }
+
+    private String getTimeDifference(Date begin,Date end){
+
+        //除以1000是为了转换成秒
+        long between=(end.getTime()-begin.getTime())/1000;
+
+        long day1=between/(24*3600);
+
+        long hour1=between%(24*3600)/3600;
+
+        long minute1=between%3600/60;
+
+        long second1=between%60/60;
+
+        return ""+day1+"天"+hour1+"小时"+minute1+"分"+second1+"秒";
     }
 }

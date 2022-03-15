@@ -5,6 +5,7 @@ import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.bo.DeleteForm;
 import com.jayud.crm.model.bo.QueryCrmFile;
 import com.jayud.crm.model.constant.CrmDictCode;
+import com.jayud.crm.model.vo.CrmFileVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -118,20 +119,20 @@ public class CrmFileController {
 
 
 
-    /**
-     * @description 物理删除
-     * @author  jayud
-     * @date   2022-03-02
-     * @param: id
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id){
-        crmFileService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
+//    /**
+//     * @description 物理删除
+//     * @author  jayud
+//     * @date   2022-03-02
+//     * @param: id
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("物理删除")
+//    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
+//    @GetMapping("/phyDel")
+//    public BaseResult phyDel(@RequestParam Long id){
+//        crmFileService.phyDelById(id);
+//        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//    }
 
     /**
      * @description 逻辑删除
@@ -157,11 +158,10 @@ public class CrmFileController {
      * @return: com.jayud.common.BaseResult<com.jayud.crm.model.po.CrmFile>
      **/
     @ApiOperation("根据id查询")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<CrmFile> queryById(@RequestParam(name="id",required=true) int id) {
-        CrmFile crmFile = crmFileService.getById(id);
-        return BaseResult.ok(crmFile);
+    public BaseResult<CrmFileVO> queryById(@RequestParam(name="id",required=true) Long id) {
+        CrmFileVO crmFileVO = crmFileService.findCrmFileById(id);
+        return BaseResult.ok(crmFileVO);
     }
 
 

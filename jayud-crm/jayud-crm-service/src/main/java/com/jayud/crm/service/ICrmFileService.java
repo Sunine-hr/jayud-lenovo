@@ -6,6 +6,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.crm.model.bo.QueryCrmFile;
 import com.jayud.crm.model.po.CrmFile;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.crm.model.vo.CrmFileVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -68,7 +69,7 @@ public interface ICrmFileService extends IService<CrmFile> {
     **/
     void logicDel(List<Long> ids);
 
-
+    CrmFileVO findCrmFileById(Long id);
 
     /**
      * @description 查询导出

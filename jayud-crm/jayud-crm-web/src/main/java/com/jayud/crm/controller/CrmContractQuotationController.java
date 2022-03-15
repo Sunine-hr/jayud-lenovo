@@ -118,7 +118,7 @@ public class CrmContractQuotationController {
     @ApiOperation("自动生成编号")
     @PostMapping("/autoGenerateNum")
     public BaseResult autoGenerateNum() {
-        return this.authClient.getOrderFeign(CrmDictCode.CONTRACT_AGREEMENT_NUM_CODE, new Date());
+        return this.authClient.getOrderFeign(CrmDictCode.QUOTATION_NUM_CODE, new Date());
     }
 
     @ApiOperation("获取编辑详情")
@@ -191,33 +191,20 @@ public class CrmContractQuotationController {
      **/
     @ApiOperation("根据查询条件导出合同报价")
     @PostMapping(path = "/exportCrmContractQuotation")
-    public void exportCrmContractQuotation(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
+    public void exportCrmContractQuotation(HttpServletResponse response, @RequestBody Map<String, Object> paramMap) {
         try {
             List<String> headList = Arrays.asList(
-                    "主键",
-                    "报价编号(合同报价编号)",
-                    "客户/供应商id",
-                    "客户/供应商code",
+                    "报价单编号",
                     "客户/供应商名称",
-                    "报价名称",
                     "有效起始时间",
                     "有效结束时间",
-                    "状态（0禁用 1启用）",
-                    "合同对象(1:客户,2:供应商)",
-                    "法人主体名称id",
+                    "状态",
                     "法人主体",
-                    "销售员id",
-                    "销售员名称",
-                    "审核级别",
-                    "当前级别",
+                    "销售员",
                     "审核状态",
-                    "租户编码",
                     "备注",
-                    "是否删除，0未删除，1已删除",
                     "创建人",
-                    "创建时间",
-                    "更新人",
-                    "更新时间"
+                    "创建时间"
             );
             List<LinkedHashMap<String, Object>> dataList = crmContractQuotationService.queryCrmContractQuotationForExcel(paramMap);
             ExcelUtils.exportExcel(headList, dataList, "合同报价", response);

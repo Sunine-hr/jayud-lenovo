@@ -98,7 +98,7 @@
             </if>
 
             <if test="sysUser.postId != null ">
-                AND post_id = ${sysUser.postId}
+                AND post_id = #{sysUser.postId}
             </if>
 
             <if test="sysUser.entryTime != null ">

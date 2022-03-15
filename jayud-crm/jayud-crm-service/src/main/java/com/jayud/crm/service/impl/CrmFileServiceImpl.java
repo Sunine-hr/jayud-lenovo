@@ -17,6 +17,7 @@ import com.jayud.crm.model.constant.CodeNumber;
 import com.jayud.crm.model.enums.FileModuleEnum;
 import com.jayud.crm.model.po.CrmCustomerRelations;
 import com.jayud.crm.model.po.CrmCustomerTax;
+import com.jayud.crm.model.vo.CrmFileVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -68,10 +69,8 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
     public List<CrmFile> selectList(CrmFile crmFile) {
         List<CrmFile> list = crmFileMapper.list(crmFile);
         Object url = this.fileClient.getBaseUrl().getData();
-//        Object url ="http://test.oms.jayud.com:9448";
-        list.stream().forEach(v->{
+        list.stream().forEach(v -> {
             v.setUploadFileUrl(url + v.getUploadFileUrl());
-
         });
         return list;
     }
@@ -156,6 +155,21 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
         this.updateBatchById(crmFileList);
     }
 
+    @Override
+    public CrmFileVO findCrmFileById(Long id) {
+        CrmFile byId = this.getById(id);
+        CrmFileVO convert = ConvertUtil.convert(byId, CrmFileVO.class);
+        byId.setUploadFileUrl(urlString()+byId.getUploadFileUrl());
+        List<CrmFileForm> crmFileList = new ArrayList<>();
+        CrmFileForm crmFileForm = new CrmFileForm();
+        crmFileForm.setFileName(convert.getFileName());
+        crmFileForm.setFileType(convert.getFileType());
+        crmFileForm.setUploadFileUrl(urlString()+convert.getUploadFileUrl());
+        crmFileList.add(crmFileForm);
+        convert.setCrmFileForm(crmFileList);
+        return convert;
+    }
+
 
     @Override
     public List<LinkedHashMap<String, Object>> queryCrmFileForExcel(Map<String, Object> paramMap) {
@@ -186,4 +200,8 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
         return ((HashMap) baseResult.getResult()).get("order").toString();
     }
 
+    public Object urlString() {
+        Object url = this.fileClient.getBaseUrl().getData();
+        return url;
+    }
 }

@@ -121,7 +121,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             //所属部门id 的节点   departIdLists
             String fileNameString =null;
             if(sysUserForm.getDepartIdLists().size()!=0){
-                  fileNameString = com.jayud.common.utils.StringUtils.getFileNameString(sysUserForm.getDepartIdLists());
+                fileNameString = com.jayud.common.utils.StringUtils.getFileNameString(sysUserForm.getDepartIdLists());
             }
 
             //负责部门节点id集合
@@ -176,6 +176,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         List<SysUser> sysUsers = new ArrayList<>();
         for (int i = 0; i < ids.size(); i++) {
+            //判断是不是 在职 在职不可删除
+            SysUser sysUser1 = new SysUser();
+            sysUser1.setId(ids.get(i));
+            sysUser1.setJobStatus(1);
+            List<SysUserVO> list = sysUserMapper.list(sysUser1);
+            if(list.size()!=0){
+                return BaseResult.error(SysTips.SYS_USER_ON_JOB_REMIND);
+            }
             SysUser sysUser = new SysUser();
             sysUser.setId(ids.get(i));
             sysUser.setIsDeleted(true);

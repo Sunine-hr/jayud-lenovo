@@ -35,11 +35,17 @@ public class CrmCustomerAddressForm extends SysBaseEntity {
     @ApiModelProperty(value = "省")
     private String province;
 
+    @ApiModelProperty(value = "省code")
+    private String provinceCode;
+
     @ApiModelProperty(value = "市")
     private String city;
 
     @ApiModelProperty(value = "区")
     private String county;
+
+    @ApiModelProperty(value = "市区code")
+    private String cityCountyCode;
 
     @ApiModelProperty(value = "详细地址")
     private String address;

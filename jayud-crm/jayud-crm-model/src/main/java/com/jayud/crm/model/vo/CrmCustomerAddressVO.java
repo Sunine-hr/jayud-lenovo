@@ -15,7 +15,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @ApiModel(value="基本档案_客户_地址对象", description="基本档案_客户_地址")
-public class CrmCustomerAddressVO extends SysBaseEntity {
+public class   CrmCustomerAddressVO extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "客户ID")
@@ -30,11 +30,17 @@ public class CrmCustomerAddressVO extends SysBaseEntity {
     @ApiModelProperty(value = "省")
     private String province;
 
+    @ApiModelProperty(value = "省code")
+    private String provinceCode;
+
     @ApiModelProperty(value = "市")
     private String city;
 
     @ApiModelProperty(value = "区")
     private String county;
+
+    @ApiModelProperty(value = "市区code")
+    private String cityCountyCode;
 
     @ApiModelProperty(value = "详细地址")
     private String address;

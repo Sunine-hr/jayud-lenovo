@@ -88,6 +88,11 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         if (CollUtil.isNotEmpty(pageList.getRecords())){
             pageList.getRecords().forEach(crmCustomerForms -> {
                 crmCustomerForms.setCreateName(authClient.selectByUsername(crmCustomerForms.getCreateBy()).getResult().getUserName());
+                if (StrUtil.isNotBlank(crmCustomerForms.getServiceType())){
+                    crmCustomerForms.setServiceTypeList(Arrays.asList(crmCustomerForms.getServiceType().split(StrUtil.COMMA)));
+                }else {
+                    crmCustomerForms.setServiceTypeList(new ArrayList<>());
+                }
             });
         }
 
@@ -136,14 +141,21 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         if (onlyResult.isSuccess()) {
             crmCustomerForm.setIsCustAdd(isAdd);
             crmCustomerForm.setIsChangeBusniessType(false);
-            crmCustomerForm.setBusinessTypesNames(changeBusinessType(crmCustomerForm.getBusinessTypesList()));
-            if (CollUtil.isNotEmpty(crmCustomerForm.getBusinessTypesList())) {
-                crmCustomerForm.setBusinessTypes(StringUtils.join(crmCustomerForm.getBusinessTypesList(), StrUtil.C_COMMA));
-            }
+            crmCustomerForm.setBusinessTypesData(getBusinessTypeData());
         }else {
             return onlyResult;
         }
         inteCustForm(crmCustomerForm);
+        if (CollUtil.isNotEmpty(crmCustomerForm.getServiceTypeList())){
+            crmCustomerForm.setServiceType(StringUtils.join(crmCustomerForm.getServiceTypeList(),StrUtil.COMMA));
+        }else {
+            crmCustomerForm.setServiceType(null);
+        }
+        if (CollUtil.isNotEmpty(crmCustomerForm.getBusinessTypesList())){
+            crmCustomerForm.setBusinessTypes(StringUtils.join(crmCustomerForm.getBusinessTypesList(),StrUtil.COMMA));
+        }else {
+            crmCustomerForm.setBusinessTypes(null);
+        }
         if (isAdd) {
             if (crmCustomerForm.getIsPublic() != null){
                 if (crmCustomerForm.getIsPublic()){
@@ -172,9 +184,9 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         crmCustomerManagerService.saveByCustomer(crmCustomerForm);
         crmCustomerRelationsService.saveRelationByCustomer(crmCustomerForm);
         if (isAdd){
-            return BaseResult.ok(crmCustomerForm.getId());
+            return BaseResult.ok(SysTips.ADD_SUCCESS,crmCustomerForm.getId());
         }else {
-            return BaseResult.ok(crmCustomerForm.getId());
+            return BaseResult.ok(SysTips.EDIT_SUCCESS,crmCustomerForm.getId());
         }
     }
 
@@ -189,6 +201,11 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
                 crmCustomerForm.setBusinessTypesList(Arrays.asList(crmCustomerForm.getBusinessTypes().split(StrUtil.COMMA)));
             }else {
                 crmCustomerForm.setBusinessTypesList(new ArrayList<>());
+            }
+            if (StrUtil.isNotBlank(crmCustomerForm.getServiceType())){
+                crmCustomerForm.setServiceTypeList(Arrays.asList(crmCustomerForm.getServiceType().split(StrUtil.COMMA)));
+            }else {
+                crmCustomerForm.setServiceTypeList(new ArrayList<>());
             }
             setCustomerRelationsMsg(crmCustomerForm);
         }
@@ -258,6 +275,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResult moveCustToRick(List<CrmCustomer> custList) {
         ComCustomerForm comCustomerForm = new ComCustomerForm();
         comCustomerForm.setCrmCustomerList(custList);
@@ -283,17 +301,28 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResult changeToSupplier(List<CrmCustomer> custList) {
         ComCustomerForm comCustomerForm = new ComCustomerForm();
         comCustomerForm.setCrmCustomerList(custList);
         crmCustomerManagerService.getChangeCustManager(comCustomerForm);
         crmCustomerRiskService.checkIsRiskByCutsIds(comCustomerForm);
+
         if (CollUtil.isNotEmpty(comCustomerForm.getChangeList())){
-            List<CrmCustomer> crmCustomerList = tranferCust(comCustomerForm.getChangeList(),false,true);
-            crmCustomerList.forEach(crmCustomer -> {
-                crmCustomer.setSupplierCode(codeUtils.getCodeByRule(CodeNumber.CRM_SUPPLIER_CODE));
-            });
-            this.updateBatchById(crmCustomerList);
+            List<Long> custIdList = comCustomerForm.getChangeList().stream().map(x->x.getId()).collect(Collectors.toList());
+            CrmCustomerForm crmCustomerForm = new CrmCustomerForm();
+            crmCustomerForm.setCustIdList(custIdList);
+            List<CrmCustomerForm> customerList = selectList(crmCustomerForm);
+            List<CrmCustomer>  changeList = customerList.stream().filter(x->!x.getIsSupplier()).collect(Collectors.toList());
+            List<CrmCustomer> supplierList = customerList.stream().filter(x->x.getIsSupplier()).collect(Collectors.toList());
+            comCustomerForm.setExitSupplierList(supplierList);
+            if (CollUtil.isNotEmpty(changeList)) {
+                List<CrmCustomer> crmCustomerList = tranferCust(changeList, false, true);
+                crmCustomerList.forEach(crmCustomer -> {
+                    crmCustomer.setSupplierCode(codeUtils.getCodeByRule(CodeNumber.CRM_SUPPLIER_CODE));
+                });
+                this.updateBatchById(crmCustomerList);
+            }
         }
 
         BaseResult errResult = getErrMsg(comCustomerForm);
@@ -304,6 +333,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResult changeToPublic(List<CrmCustomer> custList) {
         ComCustomerForm comCustomerForm = new ComCustomerForm();
         comCustomerForm.setCrmCustomerList(custList);
@@ -424,6 +454,18 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     }
 
     @Override
+    public Map<String, String> getBusinessTypeData() {
+        BaseResult<List<SysDictItem>> custBusinessType = sysDictClient.selectItemByDictCode(CrmDictCode.CUST_BUSINESS_TYPE);
+        Map<String,String> typeMap = new HashMap<>(16);
+        if (CollUtil.isNotEmpty(custBusinessType.getResult())){
+            custBusinessType.getResult().forEach(x->{
+                typeMap.put(x.getItemValue(),x.getItemText());
+            });
+        }
+        return typeMap;
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public BaseResult receiveCustomer(ComCustomerForm comCustomerForm) {
         if (CollUtil.isNotEmpty(comCustomerForm.getCrmCustomerList())){
@@ -488,6 +530,10 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         if (CollUtil.isNotEmpty(comCustomerForm.getRiskList())){
             List<String> riskList = comCustomerForm.getRiskList().stream().map(x->x.getCustName()).collect(Collectors.toList());
             errString = StringUtils.join(riskList,StrUtil.C_COMMA)+" 已存在黑名单，请联系负责人修改！";
+        }
+        if (CollUtil.isNotEmpty(comCustomerForm.getExitSupplierList())){
+            List<String> supplierList = comCustomerForm.getExitSupplierList().stream().map(x->x.getCustName()).collect(Collectors.toList());
+            errString = StringUtils.join(supplierList,StrUtil.C_COMMA)+" 已存转为供应商，请勿重复修改！";
         }
         if (StringUtils.isNotBlank(errString)){
             return BaseResult.error(errString);

@@ -49,6 +49,10 @@
         <include refid="tname"/>
         <where>
             is_deleted = 0
+            <if test="sysUser.id != null  ">
+                AND id = #{sysUser.id}
+            </if>
+
             <if test="sysUser.name != null and sysUser.name != ''">
                 AND name LIKE CONCAT('%',#{sysUser.name}, '%')
             </if>
@@ -106,7 +110,7 @@
             </if>
 
             <if test="sysUser.jobStatus != null ">
-                AND job_status = ${sysUser.jobStatus}
+                AND job_status = #{sysUser.jobStatus}
             </if>
 
             <if test="sysUser.status != null ">

@@ -240,6 +240,13 @@ public interface SysTips {
 
     String POST_INCIDENCE_RELATION_ONE = "有存在岗位绑定关系,无法删除！";
 
+    String EXIT_SAME_ERROR= "存在相同数据!";
+
+
+    String NOT_CHARGER_ERROR= "请联系负责人修改!";
+
+    String SYS_USER_ON_JOB_REMIND= "有在职员工,无法删除！";
+
     String CREDIT_DELETE_ERROR = "已分配,不能删除!";
 }
 

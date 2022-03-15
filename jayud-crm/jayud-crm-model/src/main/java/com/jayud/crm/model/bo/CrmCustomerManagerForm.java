@@ -21,5 +21,8 @@ public class CrmCustomerManagerForm extends CrmCustomerManager {
     @ApiModelProperty(value = "业务类型集合")
     private List<String> businessTypesList;
 
+    @ApiModelProperty(value = "是否新增")
+    private Boolean isAdd;
+
 
 }

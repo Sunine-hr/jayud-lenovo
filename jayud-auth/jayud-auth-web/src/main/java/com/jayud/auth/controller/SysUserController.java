@@ -175,12 +175,11 @@ public class SysUserController {
     @ApiOperation("逻辑删除")
     @PostMapping("/delSysUser")
     public BaseResult logicDel(@RequestBody DeleteForm ids) {
-
         if (ids.getIds().size() == 0) {
             return BaseResult.error("id不为空");
         }
-        sysUserService.deleteSysUser(ids.getIds());
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
+
+        return  sysUserService.deleteSysUser(ids.getIds());
     }
 
 

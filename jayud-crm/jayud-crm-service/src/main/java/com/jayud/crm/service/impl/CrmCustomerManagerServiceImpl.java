@@ -114,33 +114,24 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
     @Override
     public BaseResult saveByCustomer(CrmCustomerForm crmCustomerForm) {
         boolean isAdd = false;
-        boolean isUpdate = false;
         CrmCustomerManager crmCustomerManager = new CrmCustomerManager();
         crmCustomerManager.setCustId(crmCustomerForm.getId());
         crmCustomerManager.setIsCharger(true);
         AuthUserDetail authUserDetail = CurrentUserUtil.getUserDetail();
         List<CrmCustomerManager> managerList = selectList(crmCustomerManager);
-        CrmCustomerManager onlyManager = new CrmCustomerManager();
-        if (CollUtil.isNotEmpty(managerList)){
-            onlyManager = managerList.get(0);
-        }
 
         //编辑
         if (!crmCustomerForm.getIsCustAdd()) {
             if (CollUtil.isNotEmpty(managerList)) {
-                CrmCustomerManager crmCustomerManager1 = managerList.get(0);
+                CrmCustomerManager onlyManager = managerList.get(0);
                 //不是负责人修改数据
-                if (!crmCustomerManager1.getManageUserId().equals(authUserDetail.getId())) {
-                    return BaseResult.error();
+                if (!onlyManager.getManageUserId().equals(authUserDetail.getId())) {
+                    return BaseResult.error(SysTips.NOT_CHARGER_ERROR);
                 }
                 //不同负责人
-                if (!crmCustomerManager1.getManageUserId().equals(crmCustomerForm.getManagerUserId())) {
-                    this.logicDel(crmCustomerManager1.getId());
+                if (!onlyManager.getManageUserId().equals(crmCustomerForm.getManagerUserId())) {
+                    logicDelCahrgerByCustId(crmCustomerForm.getId());
                     isAdd = true;
-                }else {
-                    if (crmCustomerForm.getIsChangeBusniessType()){
-                        isUpdate = true;
-                    }
                 }
             } else {
                 isAdd = true;
@@ -150,24 +141,30 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
         }
         if (isAdd){
             if (crmCustomerForm.getManagerUserId() != null) {
-                //对接人信息
-                crmCustomerManager.setManageUserId(crmCustomerForm.getManagerUserId());
-                crmCustomerManager.setManageUsername(crmCustomerForm.getManagerUsername());
-                crmCustomerManager.setManageRoles(RoleCodeEnum.SALE_ROLE.getRoleCode());
-                crmCustomerManager.setManagerRolesName(RoleCodeEnum.SALE_ROLE.getRoleName());
-                //客户业务类型
-                crmCustomerManager.setManagerBusinessCode(crmCustomerForm.getBusinessTypes());
-                crmCustomerManager.setManagerBusinessName(crmCustomerForm.getBusinessTypesNames());
-                crmCustomerManager.setIsSale(true);
-                crmCustomerManager.setGenerateDate(LocalDateTime.now());
-                this.save(crmCustomerManager);
-            }
-        }
-        if (isUpdate){
-            if (onlyManager.getId()!=null) {
-                onlyManager.setManagerBusinessCode(crmCustomerForm.getBusinessTypes());
-                onlyManager.setManagerBusinessName(crmCustomerForm.getBusinessTypesNames());
-                this.updateById(onlyManager);
+                List<CrmCustomerManager> managerLists = new ArrayList<>();
+                if (CollUtil.isNotEmpty(crmCustomerForm.getBusinessTypesList())){
+                    crmCustomerForm.getBusinessTypesList().forEach(businessType->{
+                        if (StrUtil.isNotBlank(crmCustomerForm.getBusinessTypesData().get(businessType))){
+                            CrmCustomerManager manager = new CrmCustomerManager();
+                            manager.setCustId(crmCustomerForm.getId());
+                            manager.setIsCharger(true);
+                            //对接人信息
+                            manager.setManageUserId(crmCustomerForm.getManagerUserId());
+                            manager.setManageUsername(crmCustomerForm.getManagerUsername());
+                            manager.setManageRoles(RoleCodeEnum.SALE_ROLE.getRoleCode());
+                            manager.setManagerRolesName(RoleCodeEnum.SALE_ROLE.getRoleName());
+                            //客户业务类型
+                            manager.setManagerBusinessCode(businessType);
+                            manager.setManagerBusinessName(crmCustomerForm.getBusinessTypesData().get(businessType));
+                            manager.setIsSale(true);
+                            manager.setGenerateDate(LocalDateTime.now());
+                            managerLists.add(manager);
+                        }
+                    });
+                    if (CollUtil.isNotEmpty(managerLists)){
+                        this.saveBatch(managerLists);
+                    }
+                }
             }
         }
         return BaseResult.ok();
@@ -176,18 +173,15 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
     @Override
     public BaseResult<CrmCustomerManagerForm> saveManager(CrmCustomerManagerForm crmCustomerManagerForm) {
         boolean isAdd = false;
-        if (CollUtil.isNotEmpty(crmCustomerManagerForm.getBusinessTypesList())) {
-            crmCustomerManagerForm.setManagerBusinessCode(StringUtils.join(crmCustomerManagerForm.getBusinessTypesList(), StrUtil.C_COMMA));
-            crmCustomerManagerForm.setManagerBusinessName(crmCustomerService.changeBusinessType(crmCustomerManagerForm.getBusinessTypesList()));
-        }
         if (crmCustomerManagerForm.getId() == null){
             isAdd = true;
-        }else {
-            CrmCustomerManager crmCustomerManager1 = this.getById(crmCustomerManagerForm.getId());
-            if (crmCustomerManager1.getIsCharger()){
-                return BaseResult.error(SysTips.NOT_EDIT_CHARGER_ERROR);
-            }
         }
+        crmCustomerManagerForm.setIsAdd(isAdd);
+        BaseResult<CrmCustomerManagerForm> managerResult = isSaveManagerData(crmCustomerManagerForm);
+        if (!managerResult.isSuccess()){
+            return managerResult;
+        }
+        crmCustomerManagerForm = managerResult.getResult();
         if (isAdd){
             this.save(crmCustomerManagerForm);
         }else {
@@ -205,15 +199,11 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
         CrmCustomerManager crmCustomerManager = this.getById(id);
         CrmCustomerManagerForm crmCustomerManagerForm = new CrmCustomerManagerForm();
         BeanUtils.copyProperties(crmCustomerManager,crmCustomerManagerForm);
-        if (StrUtil.isNotBlank(crmCustomerManager.getManagerBusinessCode())){
-            crmCustomerManagerForm.setBusinessTypesList(Arrays.asList(crmCustomerManager.getManagerBusinessCode().split(StrUtil.COMMA)));
-        }else {
-            crmCustomerManagerForm.setBusinessTypesList(new ArrayList<>());
-        }
         return crmCustomerManagerForm;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResult changeCustChangerManager(ComCustomerForm comCustomerForm) {
         Map<Long, CrmCustomer> custMap = new HashMap<>(16);
         List<Long> custList = new ArrayList<>();
@@ -232,6 +222,7 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
             Long currentUserId = CurrentUserUtil.getUserDetail().getId();
             CrmCustomerManager crmCustomerManager = new CrmCustomerManager();
             crmCustomerManager.setCustIdList(custList);
+            crmCustomerManager.setIsCharger(true);
             List<CrmCustomerManager> managerList = selectList(crmCustomerManager);
             if (CollUtil.isNotEmpty(managerList)){
                 managerList.forEach(x->{
@@ -299,24 +290,30 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
     @Override
     public void addChargerManager(List<Long> custIdList, Map<Long, CrmCustomer> custMap, Long managerUserId, String managerUsername, String roleCodes, String roleNames){
         List<CrmCustomerManager> customerManagerList = new ArrayList<>();
+        Map<String, String> businessData = crmCustomerService.getBusinessTypeData();
         custIdList.forEach(custId->{
-            CrmCustomerManager crmCustomerManager1 = new CrmCustomerManager();
-            crmCustomerManager1.setCustId(custId);
-            crmCustomerManager1.setManageUserId(managerUserId);
-            crmCustomerManager1.setManageUsername(managerUsername);
-            crmCustomerManager1.setManageRoles(roleCodes);
-            crmCustomerManager1.setManagerRolesName(roleNames);
             String businessTypes = custMap.get(custId).getBusinessTypes();
-            crmCustomerManager1.setManagerBusinessCode(businessTypes);
-            if (StrUtil.isNotBlank(businessTypes)) {
-                crmCustomerManager1.setManagerBusinessName(crmCustomerService.changeBusinessType(Arrays.asList(businessTypes.split(StrUtil.COMMA))));
+            if (StrUtil.isNotBlank(businessTypes)){
+                Arrays.asList(businessTypes.split(StrUtil.COMMA)).forEach(type-> {
+                    CrmCustomerManager crmCustomerManager1 = new CrmCustomerManager();
+                    crmCustomerManager1.setCustId(custId);
+                    crmCustomerManager1.setManageUserId(managerUserId);
+                    crmCustomerManager1.setManageUsername(managerUsername);
+                    crmCustomerManager1.setManageRoles(roleCodes);
+                    crmCustomerManager1.setManagerRolesName(roleNames);
+                    crmCustomerManager1.setManagerBusinessCode(businessTypes);
+                    crmCustomerManager1.setManagerBusinessCode(type);
+                    crmCustomerManager1.setManagerBusinessName(businessData.get(type));
+                    crmCustomerManager1.setGenerateDate(LocalDateTime.now());
+                    crmCustomerManager1.setIsCharger(true);
+                    crmCustomerManager1.setIsSale(true);
+                    customerManagerList.add(crmCustomerManager1);
+                });
             }
-            crmCustomerManager1.setGenerateDate(LocalDateTime.now());
-            crmCustomerManager1.setIsCharger(true);
-            crmCustomerManager1.setIsSale(true);
-            customerManagerList.add(crmCustomerManager1);
         });
-        this.saveBatch(customerManagerList);
+        if (CollUtil.isNotEmpty(customerManagerList)) {
+            this.saveBatch(customerManagerList);
+        }
     }
 
 
@@ -359,7 +356,7 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
 
     @Override
     public void logicDelByCustIds(List<Long> custIds) {
-        crmCustomerManagerMapper.logicDelByCustIds(custIds,CurrentUserUtil.getUsername());
+        crmCustomerManagerMapper.logicDelByCustIds(custIds,CurrentUserUtil.getUsername(),null);
     }
 
     /**
@@ -374,10 +371,68 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
         crmCustomer.setIsPublic(false);
         crmCustomer.setUpdateBy(CurrentUserUtil.getUsername());
         crmCustomer.setUpdateTime(new Date());
-        LambdaQueryWrapper<CrmCustomer> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.in(CrmCustomer::getId,addList);
-        crmCustomerService.update(crmCustomer,lambdaQueryWrapper);
+        LambdaUpdateWrapper<CrmCustomer> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.in(CrmCustomer::getId,addList);
+        crmCustomerService.update(crmCustomer,lambdaUpdateWrapper);
 
+    }
+
+
+    /**
+    * @description 判断是否保存信息
+    * @author  ciro
+    * @date   2022/3/14 14:08:35
+    * @param crmCustomerManagerForm
+    * @return: com.jayud.common.BaseResult<com.jayud.crm.model.bo.CrmCustomerManagerForm>
+    **/
+    private BaseResult<CrmCustomerManagerForm> isSaveManagerData(CrmCustomerManagerForm crmCustomerManagerForm) {
+        LambdaQueryWrapper<CrmCustomerManager> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(CrmCustomerManager::getIsDeleted, false);
+        lambdaQueryWrapper.eq(CrmCustomerManager::getCustId, crmCustomerManagerForm.getCustId());
+        lambdaQueryWrapper.eq(CrmCustomerManager::getManageRoles, crmCustomerManagerForm.getManageRoles());
+        lambdaQueryWrapper.eq(CrmCustomerManager::getManageUserId, crmCustomerManagerForm.getManageUserId());
+        lambdaQueryWrapper.eq(CrmCustomerManager::getManagerBusinessCode, crmCustomerManagerForm.getManagerBusinessCode());
+        CrmCustomerManager crmCustomerManager = this.getOne(lambdaQueryWrapper);
+
+        if (crmCustomerManager != null) {
+            return BaseResult.error(SysTips.EXIT_SAME_ERROR);
+        }
+        //查询负责人
+        lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(CrmCustomerManager::getIsDeleted, false);
+        lambdaQueryWrapper.eq(CrmCustomerManager::getCustId, crmCustomerManagerForm.getCustId());
+        List<CrmCustomerManager> managerList = this.list(lambdaQueryWrapper);
+        if (CollUtil.isNotEmpty(managerList)) {
+            if (managerList.get(0).getManageUserId().equals(crmCustomerManagerForm.getManageUserId())) {
+                crmCustomerManagerForm.setIsCharger(true);
+            }
+        }
+        if (crmCustomerManagerForm.getIsAdd()) {
+            if (crmCustomerManager == null) {
+                return BaseResult.ok(crmCustomerManagerForm);
+            }
+        } else {
+            //不是负责人可以编辑
+            if (!crmCustomerManagerForm.getIsCharger()) {
+                return BaseResult.ok(crmCustomerManagerForm);
+            } else {
+                return BaseResult.error(SysTips.NOT_EDIT_CHARGER_ERROR);
+            }
+        }
+        return BaseResult.ok();
+    }
+
+    /**
+    * @description 根据客户id逻辑删除负责人
+    * @author  ciro
+    * @date   2022/3/14 14:53:23
+    * @param custId
+    * @return: void
+    **/
+    private void logicDelCahrgerByCustId(Long custId){
+        List<Long> custIds = new ArrayList<>();
+        custIds.add(custId);
+        crmCustomerManagerMapper.logicDelByCustIds(custIds,CurrentUserUtil.getUsername(),true);
     }
 
 

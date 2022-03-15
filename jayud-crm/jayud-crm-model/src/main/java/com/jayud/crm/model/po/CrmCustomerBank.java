@@ -1,5 +1,6 @@
 package com.jayud.crm.model.po;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -33,30 +34,39 @@ public class CrmCustomerBank extends SysBaseEntity {
     private Long custId;
 
     @ApiModelProperty(value = "银行名称")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String bankName;
 
     @ApiModelProperty(value = "银行地址")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String bankAddress;
 
     @ApiModelProperty(value = "银行代码")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String bankNum;
 
     @ApiModelProperty(value = "账户名称")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String accName;
 
     @ApiModelProperty(value = "银行账号")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String accNumber;
 
     @ApiModelProperty(value = "开户行")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String bankDeposit;
 
     @ApiModelProperty(value = "账户币别名称")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String currencyName;
 
     @ApiModelProperty(value = "账户币别编码")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String currencyCode;
 
     @ApiModelProperty(value = "国际联行号")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String swiftcode;
 
     @ApiModelProperty(value = "是否默认账户")

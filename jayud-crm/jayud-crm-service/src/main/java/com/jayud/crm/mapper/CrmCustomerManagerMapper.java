@@ -82,14 +82,15 @@ public interface CrmCustomerManagerMapper extends BaseMapper<CrmCustomerManager>
     List<LinkedHashMap<String, Object>> queryCrmCustomerManagerForExcel(Map<String, Object> paramMap);
 
     /**
-      * @description 根据id集合删除
-      * @author  ciro
-      * @date   2022/3/5 13:56
-      * @param: custIds
-      * @param: username
-      * @return: void
-      **/
-    void logicDelByCustIds(@Param("custIds") List<Long> custIds,@Param("username") String username);
+    * @description 根据id集合删除
+    * @author  ciro
+    * @date   2022/3/14 17:10:31
+    * @param custIds	客户id集合
+    * @param username	操作人信息
+    * @param isCharger	是否负责人
+    * @return: void
+    **/
+    void logicDelByCustIds(@Param("custIds") List<Long> custIds,@Param("username") String username,@Param("isCharger") Boolean isCharger);
 
     /**
      * @description 根据用户id集合删除用户负责人

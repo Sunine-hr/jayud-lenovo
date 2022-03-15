@@ -1,5 +1,6 @@
 package com.jayud.crm.model.po;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -43,6 +44,7 @@ public class CrmCustomer extends SysBaseEntity {
     private String custName;
 
     @ApiModelProperty(value = "统一信用代码")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String unCreditCode;
 
     @ApiModelProperty(value = "企业跟进状态(潜在，意向，合作，暂不合作）")
@@ -59,18 +61,23 @@ public class CrmCustomer extends SysBaseEntity {
 
     @NotBlank(message = "客户简称不能为空")
     @ApiModelProperty(value = "简称")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String custNameAbbr;
 
     @ApiModelProperty(value = "英文名称")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String custNameEn;
 
     @ApiModelProperty(value = "企业类型(融资客户，账期客户，现结客户）")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String custStyle;
 
     @ApiModelProperty(value = "客户等级(A,AA,AAA等）")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String custLevel;
 
     @ApiModelProperty(value = "行业类型")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String industryType;
 
     @ApiModelProperty(value = "国家")
@@ -138,18 +145,23 @@ public class CrmCustomer extends SysBaseEntity {
     private String operScope;
 
     @ApiModelProperty(value = "注册机构")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String regOrg;
 
     @ApiModelProperty(value = "海关代码")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String customsCode;
 
     @ApiModelProperty(value = "商检代码")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String ciqCode;
 
     @ApiModelProperty(value = "客户来源")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String custForm;
 
     @ApiModelProperty(value = "目前合作方")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String supplyChain;
 
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
@@ -192,42 +204,55 @@ public class CrmCustomer extends SysBaseEntity {
     private String checkStateFlag;
 
     @ApiModelProperty(value = "曾用名")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String oldCustName;
 
     @ApiModelProperty(value = "公司编码")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String custCode;
 
     @ApiModelProperty(value = "供应商编码")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String supplierCode;
 
     @ApiModelProperty(value = "业务类型")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String businessTypes;
 
     @ApiModelProperty(value = "服务类型")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String serviceType;
 
     @ApiModelProperty(value = "帐期")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String accountingPeriod;
 
     @ApiModelProperty(value = "对账方式")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String reconciliationMethod;
 
     @ApiModelProperty(value = "结算方式")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String settlementMethod;
 
     @ApiModelProperty(value = "所属行业")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String industry;
 
     @ApiModelProperty(value = "网址地址")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String websiteUrl;
 
     @ApiModelProperty(value = "企业信用")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String custEnterpriseCredit;
 
     @ApiModelProperty(value = "进口信用")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String custImportCredit;
 
     @ApiModelProperty(value = "海关信用")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String custCustomsCredit;
 
     @ApiModelProperty(value = "租户编码")

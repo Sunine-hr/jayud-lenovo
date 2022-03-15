@@ -14,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ciro
@@ -64,19 +65,12 @@ public class CrmCustomerForm  extends CrmCustomer{
     @ApiModelProperty(value = "是否修改业务类型")
     private Boolean isChangeBusniessType;
 
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @ApiModelProperty(value = "创建开始时间")
-    private LocalDateTime createStartTime;
 
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @ApiModelProperty(value = "创建开始时间")
+    private String createStartTime;
+
     @ApiModelProperty(value = "创建结束时间")
-    private LocalDateTime createEndTime;
+    private String createEndTime;
 
     @ApiModelProperty(value = "创建人名称")
     private String createName;
@@ -86,4 +80,11 @@ public class CrmCustomerForm  extends CrmCustomer{
 
     @ApiModelProperty(value = "客户星级文本")
     private String custLevelText;
+
+    @ApiModelProperty(value = "业务类型")
+    private Map<String,String> businessTypesData;
+
+    @ApiModelProperty(value = "服务类型集合")
+    private List<String> serviceTypeList;
+
 }

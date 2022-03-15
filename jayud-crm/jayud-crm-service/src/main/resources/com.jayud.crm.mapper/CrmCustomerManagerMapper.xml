@@ -125,6 +125,9 @@
     <update id="logicDelByCustIds">
         UPDATE crm_customer_manager SET is_deleted = 1 ,update_by = #{username}, update_time = now()
         WHERE is_deleted = 0
+        <if test="isCharger != null ">
+            AND is_charger = ${isCharger}
+        </if>
         AND cust_id IN
         <foreach collection="custIds" open="(" separator="," close=")" item="id">
             #{id}

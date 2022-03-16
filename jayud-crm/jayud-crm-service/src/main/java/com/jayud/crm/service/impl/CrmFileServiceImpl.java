@@ -82,7 +82,7 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
             CrmFile crmFileOne = new CrmFile();
             crmFileOne.setId(queryCrmFile.getId());
             crmFileOne.setIsDeleted(true);
-            this.crmFileMapper.insert(crmFileOne);
+            this.crmFileMapper.updateById(crmFileOne);
 
             List<CrmFileForm> crmFileForm = queryCrmFile.getCrmFileForm();
 

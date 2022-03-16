@@ -57,10 +57,8 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
 
         Page<CrmFile> page = new Page<CrmFile>(currentPage, pageSize);
         IPage<CrmFile> pageList = crmFileMapper.pageList(page, crmFile);
-        Object url = this.fileClient.getBaseUrl().getData();
-//        Object url ="http://test.oms.jayud.com:9448";
         pageList.getRecords().stream().forEach(v -> {
-            v.setUploadFileUrl(url + v.getUploadFileUrl());
+            v.setUploadFileUrl(v.getUploadFileUrl());
         });
         return pageList;
     }
@@ -68,9 +66,8 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
     @Override
     public List<CrmFile> selectList(CrmFile crmFile) {
         List<CrmFile> list = crmFileMapper.list(crmFile);
-        Object url = this.fileClient.getBaseUrl().getData();
         list.stream().forEach(v -> {
-            v.setUploadFileUrl(url + v.getUploadFileUrl());
+            v.setUploadFileUrl(v.getUploadFileUrl());
         });
         return list;
     }
@@ -78,10 +75,7 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
     @Override
     public BaseResult saveOrUpdateCrmFile(QueryCrmFile queryCrmFile) {
         Boolean result = null;
-        Object url = this.fileClient.getBaseUrl().getData();
-//        CrmFile convert = ConvertUtil.convert(CrmFile, CrmFile.class);
         String nextCode = getNextCode(CodeNumber.CRM_FILE_CODE);
-
         if (queryCrmFile.getId() != null) {
             //这里面是修改
             //修改根据id先删除了当前条数据
@@ -159,12 +153,12 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
     public CrmFileVO findCrmFileById(Long id) {
         CrmFile byId = this.getById(id);
         CrmFileVO convert = ConvertUtil.convert(byId, CrmFileVO.class);
-        byId.setUploadFileUrl(urlString()+byId.getUploadFileUrl());
+        byId.setUploadFileUrl(byId.getUploadFileUrl());
         List<CrmFileForm> crmFileList = new ArrayList<>();
         CrmFileForm crmFileForm = new CrmFileForm();
         crmFileForm.setFileName(convert.getFileName());
         crmFileForm.setFileType(convert.getFileType());
-        crmFileForm.setUploadFileUrl(urlString()+convert.getUploadFileUrl());
+        crmFileForm.setUploadFileUrl(convert.getUploadFileUrl());
         crmFileList.add(crmFileForm);
         convert.setCrmFileForm(crmFileList);
         return convert;

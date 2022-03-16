@@ -244,5 +244,7 @@ public interface SysTips {
 
 
     String NOT_CHARGER_ERROR= "请联系负责人修改!";
+
+    String SYS_USER_ON_JOB_REMIND= "有在职员工,无法删除！";
 }
 

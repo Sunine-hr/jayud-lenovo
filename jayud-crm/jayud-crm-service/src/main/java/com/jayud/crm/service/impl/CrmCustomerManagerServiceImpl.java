@@ -102,7 +102,9 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
                 delIds.add(manager.getId());
             }
         }
-        crmCustomerManagerMapper.logicDelByIds(delIds,CurrentUserUtil.getUsername());
+        if (CollUtil.isNotEmpty(delIds)) {
+            crmCustomerManagerMapper.logicDelByIds(delIds, CurrentUserUtil.getUsername());
+        }
     }
 
 
@@ -161,9 +163,21 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
                             managerLists.add(manager);
                         }
                     });
-                    if (CollUtil.isNotEmpty(managerLists)){
-                        this.saveBatch(managerLists);
-                    }
+                }else {
+                    CrmCustomerManager manager = new CrmCustomerManager();
+                    manager.setCustId(crmCustomerForm.getId());
+                    manager.setIsCharger(true);
+                    //对接人信息
+                    manager.setManageUserId(crmCustomerForm.getManagerUserId());
+                    manager.setManageUsername(crmCustomerForm.getManagerUsername());
+                    manager.setManageRoles(RoleCodeEnum.SALE_ROLE.getRoleCode());
+                    manager.setManagerRolesName(RoleCodeEnum.SALE_ROLE.getRoleName());
+                    manager.setIsSale(true);
+                    manager.setGenerateDate(LocalDateTime.now());
+                    managerLists.add(manager);
+                }
+                if (CollUtil.isNotEmpty(managerLists)){
+                    this.saveBatch(managerLists);
                 }
             }
         }

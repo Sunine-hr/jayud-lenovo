@@ -102,7 +102,9 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
                 delIds.add(manager.getId());
             }
         }
-        crmCustomerManagerMapper.logicDelByIds(delIds,CurrentUserUtil.getUsername());
+        if (CollUtil.isNotEmpty(delIds)) {
+            crmCustomerManagerMapper.logicDelByIds(delIds, CurrentUserUtil.getUsername());
+        }
     }
 
 

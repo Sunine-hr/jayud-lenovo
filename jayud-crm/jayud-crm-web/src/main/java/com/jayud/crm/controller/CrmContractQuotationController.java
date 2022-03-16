@@ -84,9 +84,10 @@ public class CrmContractQuotationController {
      **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
-    public BaseResult<List<CrmContractQuotation>> selectList(CrmContractQuotation crmContractQuotation,
-                                                             HttpServletRequest req) {
-        return BaseResult.ok(crmContractQuotationService.selectList(crmContractQuotation));
+    public BaseResult<List<CrmContractQuotationVO>> selectList(CrmContractQuotation crmContractQuotation,
+                                                               HttpServletRequest req) {
+//        return BaseResult.ok(crmContractQuotationService.selectList(crmContractQuotation));
+        return BaseResult.ok(crmContractQuotationService.selectPage(crmContractQuotation, 1, 999999999, req).getRecords());
     }
 
     /**

@@ -99,6 +99,11 @@ public class CrmCreditVisitForm extends SysBaseEntity {
     @ApiModelProperty(value = "创建时间后")
     private String creationTimeTwo;
 
+    //去掉前后空格
+    public void setCustName(String custName) {
+        this.custName = custName.trim();
+    }
+
     public void setCreationVisitTime(List<String> creationVisitTime) {
         this.creationVisitTime = creationVisitTime;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -132,10 +137,18 @@ public class CrmCreditVisitForm extends SysBaseEntity {
         }
     }
 
+
+
     public static void main(String[] args) {
         String dateStr = "2021-09-03 21:00:00";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime parsedDate = LocalDateTime.parse(dateStr, formatter);
-        System.out.println(parsedDate);
+//        System.out.println(parsedDate);
+
+        String s="名字 ";
+        System.out.println("之前："+s.length());
+        String trim = s.trim();
+        System.out.println(trim);
+        System.out.println("之后："+trim.length());
     }
 }

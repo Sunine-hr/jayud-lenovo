@@ -141,12 +141,9 @@
     <select id="queryCrmCreditCustForExcel" resultType="java.util.LinkedHashMap">
         SELECT
             id 'id',
-            credit_id 'creditId',
             credit_name 'creditName',
             credit_value 'creditValue',
-            depart_id 'departId',
             depart_name 'departName',
-            cust_id 'custId',
             cust_name 'custName',
             credit_amt 'creditAmt',
             begin_date 'beginDate',
@@ -154,16 +151,10 @@
             apply_date 'applyDate',
             credit_type 'creditType',
             credit_type_value 'creditTypeValue',
-            f_level 'fLevel',
-            f_step 'fStep',
             check_state_flag 'checkStateFlag',
-            tenant_code 'tenantCode',
             remark 'remark',
-            is_deleted 'isDeleted',
             create_by 'createBy',
-            create_time 'createTime',
-            update_by 'updateBy',
-            update_time 'updateTime'
+            create_time 'createTime'
         FROM crm_credit_cust
         WHERE is_deleted = 0
                     <if test="creditId != null and creditId != ''">

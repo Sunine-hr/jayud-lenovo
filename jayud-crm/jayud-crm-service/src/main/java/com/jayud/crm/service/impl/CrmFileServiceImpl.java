@@ -58,9 +58,8 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
         Page<CrmFile> page = new Page<CrmFile>(currentPage, pageSize);
         IPage<CrmFile> pageList = crmFileMapper.pageList(page, crmFile);
         Object url = this.fileClient.getBaseUrl().getData();
-//        Object url ="http://test.oms.jayud.com:9448";
         pageList.getRecords().stream().forEach(v -> {
-            v.setUploadFileUrl(url + v.getUploadFileUrl());
+            v.setUploadFileUrl(url + v.getUploadFileUrl() + "?name=" + v.getFileName());
         });
         return pageList;
     }
@@ -69,8 +68,9 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
     public List<CrmFile> selectList(CrmFile crmFile) {
         List<CrmFile> list = crmFileMapper.list(crmFile);
         Object url = this.fileClient.getBaseUrl().getData();
+//        Object url ="http://test.oms.jayud.com:9448";
         list.stream().forEach(v -> {
-            v.setUploadFileUrl(url + v.getUploadFileUrl());
+            v.setUploadFileUrl(url + v.getUploadFileUrl() + "?name=" + v.getFileName());
         });
         return list;
     }
@@ -79,16 +79,14 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
     public BaseResult saveOrUpdateCrmFile(QueryCrmFile queryCrmFile) {
         Boolean result = null;
         Object url = this.fileClient.getBaseUrl().getData();
-//        CrmFile convert = ConvertUtil.convert(CrmFile, CrmFile.class);
         String nextCode = getNextCode(CodeNumber.CRM_FILE_CODE);
-
         if (queryCrmFile.getId() != null) {
             //这里面是修改
             //修改根据id先删除了当前条数据
             CrmFile crmFileOne = new CrmFile();
             crmFileOne.setId(queryCrmFile.getId());
             crmFileOne.setIsDeleted(true);
-            this.crmFileMapper.insert(crmFileOne);
+            this.crmFileMapper.updateById(crmFileOne);
 
             List<CrmFileForm> crmFileForm = queryCrmFile.getCrmFileForm();
 
@@ -159,12 +157,12 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
     public CrmFileVO findCrmFileById(Long id) {
         CrmFile byId = this.getById(id);
         CrmFileVO convert = ConvertUtil.convert(byId, CrmFileVO.class);
-        byId.setUploadFileUrl(urlString()+byId.getUploadFileUrl());
+        byId.setUploadFileUrl(byId.getUploadFileUrl());
         List<CrmFileForm> crmFileList = new ArrayList<>();
         CrmFileForm crmFileForm = new CrmFileForm();
         crmFileForm.setFileName(convert.getFileName());
         crmFileForm.setFileType(convert.getFileType());
-        crmFileForm.setUploadFileUrl(urlString()+convert.getUploadFileUrl());
+        crmFileForm.setUploadFileUrl(convert.getUploadFileUrl());
         crmFileList.add(crmFileForm);
         convert.setCrmFileForm(crmFileList);
         return convert;
@@ -179,9 +177,11 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
     @Override
     public void doFileProcessing(List<CrmFile> files, Long businessId, String code) {
         if (!CollectionUtil.isEmpty(files)) {
+            Object url = this.fileClient.getBaseUrl().getData();
             //清除原来数据
             this.baseMapper.update(new CrmFile().setIsDeleted(true), new QueryWrapper<>(new CrmFile().setBusinessId(businessId).setCode(code).setIsDeleted(false)));
             files.forEach(e -> {
+                e.setUploadFileUrl(e.getUploadFileUrl().replaceAll(url.toString(), "").trim());
                 e.setBusinessId(businessId).setCode(code).setId(null);
             });
             this.saveOrUpdateBatch(files);

@@ -69,7 +69,7 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
         for (CrmContractQuotationVO record : pageList.getRecords()) {
             List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(false).setBusinessId(record.getId()).setCode(FileModuleEnum.CQ.getCode())));
             files.forEach(e -> {
-                e.setUploadFileUrl(url + e.getUploadFileUrl());
+                e.setUploadFileUrl(url + e.getUploadFileUrl() + "?name=" + e.getFileName());
             });
             record.setEffectiveTime(record.getStartTime() + "-" + record.getEndTime());
             record.setFiles(files);
@@ -218,7 +218,7 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
         Object url = this.fileClient.getBaseUrl().getData();
         List<CrmFile> files = this.crmFileService.getFiles(contractQuotation.getId(), FileModuleEnum.CQ.getCode());
         files.forEach(e -> {
-            e.setUploadFileUrl(url + e.getUploadFileUrl());
+            e.setUploadFileUrl(url + e.getUploadFileUrl() + "?name=" + e.getFileName());
         });
 //        ustomerInfo customerInfo = customerInfoService.getByCode(tmp.getCustomerCode());
 //        tmp.setCustomerId(customerInfo.getId());

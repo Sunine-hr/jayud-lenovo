@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.SowingResultsMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.SowingResults">
+        <id column="id" property="id" />
+        <result column="seeding_position_num" property="seedingPositionNum" />
+        <result column="order_id" property="orderId" />
+        <result column="order_num" property="orderNum" />
+        <result column="material_id" property="materialId" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="old_container_num" property="oldContainerNum" />
+        <result column="old_num" property="oldNum" />
+        <result column="sowing_quantity" property="sowingQuantity" />
+        <result column="quantity_after_sowing" property="quantityAfterSowing" />
+        <result column="unit" property="unit" />
+        <result column="new_container_num" property="newContainerNum" />
+        <result column="new_quantity_after_sowing" property="newQuantityAfterSowing" />
+        <result column="status" property="status" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, seeding_position_num, order_id, order_num, material_id, material_code, material_name, old_container_num, old_num, sowing_quantity, quantity_after_sowing, unit, new_container_num, new_quantity_after_sowing, status, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_sowing_results </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="sowingResults.seedingPositionNum != null and sowingResults.seedingPositionNum != ''">
+                AND seeding_position_num LIKE CONCAT('%',#{sowingResults.seedingPositionNum}, '%')
+            </if>
+
+            <if test="sowingResults.orderId != null ">
+                AND order_id = ${sowingResults.orderId}
+            </if>
+
+            <if test="sowingResults.orderNum != null and sowingResults.orderNum != ''">
+                AND order_num LIKE CONCAT('%',#{sowingResults.orderNum}, '%')
+            </if>
+
+            <if test="sowingResults.materialId != null ">
+                AND material_id = ${sowingResults.materialId}
+            </if>
+
+            <if test="sowingResults.materialCode != null and sowingResults.materialCode != ''">
+                AND material_code LIKE CONCAT('%',#{sowingResults.materialCode}, '%')
+            </if>
+
+            <if test="sowingResults.materialName != null and sowingResults.materialName != ''">
+                AND material_name LIKE CONCAT('%',#{sowingResults.materialName}, '%')
+            </if>
+
+            <if test="sowingResults.oldContainerNum != null and sowingResults.oldContainerNum != ''">
+                AND old_container_num LIKE CONCAT('%',#{sowingResults.oldContainerNum}, '%')
+            </if>
+
+            <if test="sowingResults.oldNum != null ">
+                AND old_num = ${sowingResults.oldNum}
+            </if>
+
+            <if test="sowingResults.sowingQuantity != null ">
+                AND sowing_quantity = ${sowingResults.sowingQuantity}
+            </if>
+
+            <if test="sowingResults.quantityAfterSowing != null ">
+                AND quantity_after_sowing = ${sowingResults.quantityAfterSowing}
+            </if>
+
+            <if test="sowingResults.unit != null and sowingResults.unit != ''">
+                AND unit LIKE CONCAT('%',#{sowingResults.unit}, '%')
+            </if>
+
+            <if test="sowingResults.newContainerNum != null and sowingResults.newContainerNum != ''">
+                AND new_container_num LIKE CONCAT('%',#{sowingResults.newContainerNum}, '%')
+            </if>
+
+            <if test="sowingResults.newQuantityAfterSowing != null ">
+                AND new_quantity_after_sowing = ${sowingResults.newQuantityAfterSowing}
+            </if>
+
+            <if test="sowingResults.status != null ">
+                AND status = ${sowingResults.status}
+            </if>
+
+            <if test="sowingResults.tenantCode != null and sowingResults.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{sowingResults.tenantCode}, '%')
+            </if>
+
+            <if test="sowingResults.remark != null and sowingResults.remark != ''">
+                AND remark LIKE CONCAT('%',#{sowingResults.remark}, '%')
+            </if>
+
+        </where>
+    </sql>
+
+<!-- 自定义权限查询   -->
+    <sql id="selectsList">
+
+            SELECT
+                sr.id,
+                sr.seeding_position_num,
+                sr.order_id,
+                sr.order_num,
+                sr.receipt_notice_num,
+                sr.material_id,
+                sr.material_code,
+                sr.material_name,
+                sr.old_container_num,
+                sr.old_num,
+                sr.sowing_quantity,
+                sr.quantity_after_sowing,
+                sr.unit,
+                sr.new_container_num,
+                sr.new_quantity_after_sowing,
+                sr.STATUS,
+                sr.tenant_code,
+                sr.remark,
+                sr.is_deleted,
+                sr.create_by,
+                sr.create_time,
+                sr.update_by,
+                sr.update_time,
+                sr.batch_num,
+                sr.production_date,
+                sr.column_one,
+                sr.column_two,
+                sr.column_three,
+                r.warehouse_id,
+                r.warehouse,
+                r.ower_id,
+                r.ower,
+                r.receipt_num
+
+            FROM
+                wms_sowing_results sr
+                LEFT JOIN wms_receipt r ON sr.order_id = r.id
+        <where>
+            sr.is_deleted = 0
+            AND r.is_deleted =0
+
+            <if test="sowingResults.seedingPositionNum != null ">
+                AND sr.seeding_position_num = #{sowingResults.seedingPositionNum}
+            </if>
+
+
+            <if test="sowingResults.owerIdList !=null and sowingResults.owerIdList.size >0 ">
+                and r.ower_id in
+                <foreach item="id" collection="sowingResults.owerIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+            <if test="sowingResults.warehouseIdList!=null  and sowingResults.warehouseIdList.size > 0">
+                and r.warehouse_id in
+                <foreach item="id" collection="sowingResults.warehouseIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+
+        </where>
+        ORDER BY sr.create_time DESC
+
+    </sql>
+
+
+
+    <select id="" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.SowingResults">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="pageList" parameterType="com.jayud.wms.model.bo.QuerySowingResultsForm" resultType="com.jayud.wms.model.vo.SowingResultsVO">
+        <include refid="selectsList"/>
+    </select>
+
+
+    <select id="list" parameterType="com.jayud.wms.model.bo.QuerySowingResultsForm" resultType="com.jayud.wms.model.vo.SowingResultsVO"  >
+        <include refid="selectsList"/>
+    </select>
+
+    <select id="querySowingResultsForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            seeding_position_num 'seedingPositionNum',
+            order_id 'orderId',
+            order_num 'orderNum',
+            material_id 'materialId',
+            material_code 'materialCode',
+            material_name 'materialName',
+            old_container_num 'oldContainerNum',
+            old_num 'oldNum',
+            sowing_quantity 'sowingQuantity',
+            quantity_after_sowing 'quantityAfterSowing',
+            unit 'unit',
+            new_container_num 'newContainerNum',
+            new_quantity_after_sowing 'newQuantityAfterSowing',
+            status 'status',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_sowing_results
+        WHERE is_deleted = 0
+        <if test="seedingPositionNum != null and seedingPositionNum != ''">
+            AND seeding_position_num = #{seedingPositionNum}
+        </if>
+        <if test="orderId != null ">
+            AND order_id = ${orderId}
+        </if>
+        <if test="orderNum != null and orderNum != ''">
+            AND order_num = #{orderNum}
+        </if>
+        <if test="materialId != null ">
+            AND material_id = ${materialId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="materialName != null and materialName != ''">
+            AND material_name = #{materialName}
+        </if>
+        <if test="oldContainerNum != null and oldContainerNum != ''">
+            AND old_container_num = #{oldContainerNum}
+        </if>
+        <if test="oldNum != null ">
+            AND old_num = ${oldNum}
+        </if>
+        <if test="sowingQuantity != null ">
+            AND sowing_quantity = ${sowingQuantity}
+        </if>
+        <if test="quantityAfterSowing != null ">
+            AND quantity_after_sowing = ${quantityAfterSowing}
+        </if>
+        <if test="unit != null and unit != ''">
+            AND unit = #{unit}
+        </if>
+        <if test="newContainerNum != null and newContainerNum != ''">
+            AND new_container_num = #{newContainerNum}
+        </if>
+        <if test="newQuantityAfterSowing != null ">
+            AND new_quantity_after_sowing = ${newQuantityAfterSowing}
+        </if>
+        <if test="status != null ">
+            AND status = ${status}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+
+
+</mapper>

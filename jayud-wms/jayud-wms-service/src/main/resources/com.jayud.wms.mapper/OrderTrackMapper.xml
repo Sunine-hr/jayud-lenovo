@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.OrderTrackMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.OrderTrack">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="order_id" property="orderId" />
+        <result column="sub_order_no" property="subOrderNo" />
+        <result column="status" property="status" />
+        <result column="status_name" property="statusName" />
+        <result column="type" property="type" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, order_no, order_id, sub_order_no, status, status_name, type, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_order_track </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="orderTrack.orderNo != null and orderTrack.orderNo != ''">
+                AND order_no = #{orderTrack.orderNo}
+            </if>
+
+            <if test="orderTrack.orderId != null ">
+                AND order_id = ${orderTrack.orderId}
+            </if>
+
+            <if test="orderTrack.subOrderNo != null and orderTrack.subOrderNo != ''">
+                AND sub_order_no = #{orderTrack.subOrderNo}
+            </if>
+
+            <if test="orderTrack.status != null and orderTrack.status != ''">
+                AND status = #{orderTrack.status}
+            </if>
+
+            <if test="orderTrack.statusName != null and orderTrack.statusName != ''">
+                AND status_name = #{orderTrack.statusName}
+            </if>
+
+            <if test="orderTrack.type != null ">
+                AND type = ${orderTrack.type}
+            </if>
+
+            <if test="orderTrack.remark != null and orderTrack.remark != ''">
+                AND remark = #{orderTrack.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.OrderTrack">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.OrderTrack">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryOrderTrackForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            order_no 'orderNo',
+            order_id 'orderId',
+            sub_order_no 'subOrderNo',
+            status 'status',
+            status_name 'statusName',
+            type 'type',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_order_track
+        WHERE is_deleted = 0
+        <if test="orderNo != null and orderNo != ''">
+            AND order_no = #{orderNo}
+        </if>
+        <if test="orderId != null ">
+            AND order_id = ${orderId}
+        </if>
+        <if test="subOrderNo != null and subOrderNo != ''">
+            AND sub_order_no = #{subOrderNo}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        <if test="statusName != null and statusName != ''">
+            AND status_name = #{statusName}
+        </if>
+        <if test="type != null ">
+            AND type = ${type}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+
+
+</mapper>

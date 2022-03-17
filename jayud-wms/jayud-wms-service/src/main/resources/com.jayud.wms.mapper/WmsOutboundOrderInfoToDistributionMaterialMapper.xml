@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsOutboundOrderInfoToDistributionMaterialMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsOutboundOrderInfoToDistributionMaterial">
+        <id column="id" property="id" />
+        <result column="order_material_id" property="orderMaterialId" />
+        <result column="order_number" property="orderNumber" />
+        <result column="wave_number" property="waveNumber" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="ower_id" property="owerId" />
+        <result column="ower_code" property="owerCode" />
+        <result column="ower_name" property="owerName" />
+        <result column="material_id" property="materialId" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="warehouse_area_id" property="warehouseAreaId" />
+        <result column="warehouse_area_code" property="warehouseAreaCode" />
+        <result column="warehouse_area_name" property="warehouseAreaName" />
+        <result column="warehouse_location_id" property="warehouseLocationId" />
+        <result column="warehouse_location_code" property="warehouseLocationCode" />
+        <result column="container_id" property="containerId" />
+        <result column="container_code" property="containerCode" />
+        <result column="distribution_account" property="distributionAccount" />
+        <result column="real_distribution_account" property="realDistributionAccount" />
+        <result column="unit" property="unit" />
+        <result column="external_number" property="externalNumber" />
+        <result column="external_line_number" property="externalLineNumber" />
+        <result column="batch_code" property="batchCode" />
+        <result column="material_production_date" property="materialProductionDate" />
+        <result column="custom_field1" property="customField1" />
+        <result column="custom_field2" property="customField2" />
+        <result column="custom_field3" property="customField3" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="distribution_batch_code" property="distributionBatchCode" />
+        <result column="distribution_material_production_date" property="distributionMaterialProductionDate" />
+        <result column="distribution_custom_field1" property="distributionCustomField1" />
+        <result column="distribution_custom_field2" property="distributionCustomField2" />
+        <result column="distribution_custom_field3" property="distributionCustomField3" />
+        <result column="shelf_id" property="shelfId" />
+        <result column="shelf_code" property="shelfCode" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, order_material_id, order_number, wave_number, warehouse_id, warehouse_code, warehouse_name, ower_id, ower_code, ower_name, material_id, material_code, material_name,  warehouse_area_id, warehouse_area_code, warehouse_area_name, warehouse_location_id, warehouse_location_code, container_id, container_code, distribution_account, real_distribution_account, unit, external_number, external_line_number, batch_code, material_production_date, custom_field1, custom_field2, custom_field3, remark, is_deleted, create_by, create_time, update_by, update_time, distribution_batch_code, distribution_material_production_date, distribution_custom_field1, distribution_custom_field2, distribution_custom_field3,shelf_id,shelf_code
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_outbound_order_info_to_distribution_material </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.orderMaterialId != null ">
+                AND order_material_id = ${wmsOutboundOrderInfoToDistributionMaterial.orderMaterialId}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.orderNumber != null and wmsOutboundOrderInfoToDistributionMaterial.orderNumber != ''">
+                AND order_number = #{wmsOutboundOrderInfoToDistributionMaterial.orderNumber}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.waveNumber != null and wmsOutboundOrderInfoToDistributionMaterial.waveNumber != ''">
+                AND wave_number = #{wmsOutboundOrderInfoToDistributionMaterial.waveNumber}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.warehouseId != null ">
+                AND warehouse_id = ${wmsOutboundOrderInfoToDistributionMaterial.warehouseId}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.warehouseCode != null and wmsOutboundOrderInfoToDistributionMaterial.warehouseCode != ''">
+                AND warehouse_code = #{wmsOutboundOrderInfoToDistributionMaterial.warehouseCode}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.warehouseName != null and wmsOutboundOrderInfoToDistributionMaterial.warehouseName != ''">
+                AND warehouse_name = #{wmsOutboundOrderInfoToDistributionMaterial.warehouseName}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.owerId != null ">
+                AND ower_id = ${wmsOutboundOrderInfoToDistributionMaterial.owerId}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.owerCode != null and wmsOutboundOrderInfoToDistributionMaterial.owerCode != ''">
+                AND ower_code = #{wmsOutboundOrderInfoToDistributionMaterial.owerCode}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.owerName != null and wmsOutboundOrderInfoToDistributionMaterial.owerName != ''">
+                AND ower_name = #{wmsOutboundOrderInfoToDistributionMaterial.owerName}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.materialId != null ">
+                AND material_id = ${wmsOutboundOrderInfoToDistributionMaterial.materialId}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.materialCode != null and wmsOutboundOrderInfoToDistributionMaterial.materialCode != ''">
+                AND material_code = #{wmsOutboundOrderInfoToDistributionMaterial.materialCode}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.materialName != null and wmsOutboundOrderInfoToDistributionMaterial.materialName != ''">
+                AND material_name = #{wmsOutboundOrderInfoToDistributionMaterial.materialName}
+            </if>
+
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.warehouseAreaId != null and wmsOutboundOrderInfoToDistributionMaterial.warehouseAreaId != ''">
+                AND warehouse_area_id = #{wmsOutboundOrderInfoToDistributionMaterial.warehouseAreaId}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.warehouseAreaCode != null and wmsOutboundOrderInfoToDistributionMaterial.warehouseAreaCode != ''">
+                AND warehouse_area_code = #{wmsOutboundOrderInfoToDistributionMaterial.warehouseAreaCode}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.warehouseAreaName != null and wmsOutboundOrderInfoToDistributionMaterial.warehouseAreaName != ''">
+                AND warehouse_area_name = #{wmsOutboundOrderInfoToDistributionMaterial.warehouseAreaName}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.warehouseLocationId != null ">
+                AND warehouse_location_id = ${wmsOutboundOrderInfoToDistributionMaterial.warehouseLocationId}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.warehouseLocationCode != null and wmsOutboundOrderInfoToDistributionMaterial.warehouseLocationCode != ''">
+                AND warehouse_location_code = #{wmsOutboundOrderInfoToDistributionMaterial.warehouseLocationCode}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.containerId != null ">
+                AND container_id = ${wmsOutboundOrderInfoToDistributionMaterial.containerId}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.containerCode != null and wmsOutboundOrderInfoToDistributionMaterial.containerCode != ''">
+                AND container_code = #{wmsOutboundOrderInfoToDistributionMaterial.containerCode}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.distributionAccount != null ">
+                AND distribution_account = ${wmsOutboundOrderInfoToDistributionMaterial.distributionAccount}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.realDistributionAccount != null ">
+                AND real_distribution_account = ${wmsOutboundOrderInfoToDistributionMaterial.realDistributionAccount}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.unit != null and wmsOutboundOrderInfoToDistributionMaterial.unit != ''">
+                AND unit = #{wmsOutboundOrderInfoToDistributionMaterial.unit}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.externalNumber != null and wmsOutboundOrderInfoToDistributionMaterial.externalNumber != ''">
+                AND external_number = #{wmsOutboundOrderInfoToDistributionMaterial.externalNumber}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.externalLineNumber != null and wmsOutboundOrderInfoToDistributionMaterial.externalLineNumber != ''">
+                AND external_line_number = #{wmsOutboundOrderInfoToDistributionMaterial.externalLineNumber}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.batchCode != null and wmsOutboundOrderInfoToDistributionMaterial.batchCode != ''">
+                AND batch_code = #{wmsOutboundOrderInfoToDistributionMaterial.batchCode}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.materialProductionDate != null ">
+                AND material_production_date = ${wmsOutboundOrderInfoToDistributionMaterial.materialProductionDate}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.customField1 != null ">
+                AND custom_field1 = #{wmsOutboundOrderInfoToDistributionMaterial.customField1}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.customField2 != null and wmsOutboundOrderInfoToDistributionMaterial.customField2 != ''">
+                AND custom_field2 = #{wmsOutboundOrderInfoToDistributionMaterial.customField2}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.customField3 != null and wmsOutboundOrderInfoToDistributionMaterial.customField3 != ''">
+                AND custom_field3 = #{wmsOutboundOrderInfoToDistributionMaterial.customField3}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.distributionBatchCode != null and wmsOutboundOrderInfoToDistributionMaterial.distributionBatchCode != ''">
+                AND distribution_batch_code = #{wmsOutboundOrderInfoToDistributionMaterial.distributionBatchCode}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.distributionMaterialProductionDate != null ">
+                AND distribution_material_production_date = ${wmsOutboundOrderInfoToDistributionMaterial.distributionMaterialProductionDate}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.distributionCustomField1 != null and wmsOutboundOrderInfoToDistributionMaterial.distributionCustomField1 != ''">
+                AND distribution_custom_field1 = #{wmsOutboundOrderInfoToDistributionMaterial.distributionCustomField1}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.distributionCustomField2 != null and wmsOutboundOrderInfoToDistributionMaterial.distributionCustomField2 != ''">
+                AND distribution_custom_field2 = #{wmsOutboundOrderInfoToDistributionMaterial.distributionCustomField2}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.distributionCustomField3 != null and wmsOutboundOrderInfoToDistributionMaterial.distributionCustomField3 != ''">
+                AND distribution_custom_field3 = #{wmsOutboundOrderInfoToDistributionMaterial.distributionCustomField3}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.remark != null and wmsOutboundOrderInfoToDistributionMaterial.remark != ''">
+                AND remark = #{wmsOutboundOrderInfoToDistributionMaterial.remark}
+            </if>
+            <if test="wmsOutboundOrderInfoToDistributionMaterial.idList !=null and  wmsOutboundOrderInfoToDistributionMaterial.idList.size > 0 ">
+                AND id IN
+                <foreach item="id" collection="wmsOutboundOrderInfoToDistributionMaterial.idList" open="(" separator=","  close=")" >
+                    ${id}
+                </foreach>
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsOutboundOrderInfoToDistributionMaterial">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsOutboundOrderInfoToDistributionMaterial">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="queryWmsOutboundOrderInfoToDistributionMaterialForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            order_material_id 'orderMaterialId',
+            order_number 'orderNumber',
+            wave_number 'waveNumber',
+            warehouse_id 'warehouseId',
+            warehouse_code 'warehouseCode',
+            warehouse_name 'warehouseName',
+            ower_id 'owerId',
+            ower_code 'owerCode',
+            ower_name 'owerName',
+            material_id 'materialId',
+            material_code 'materialCode',
+            material_name 'materialName',
+            warehouse_area_id 'warehouseAreaId',
+            warehouse_area_code 'warehouseAreaCode',
+            warehouse_area_name 'warehouseAreaName',
+            warehouse_location_id 'warehouseLocationId',
+            warehouse_location_code 'warehouseLocationCode',
+            container_id 'containerId',
+            container_code 'containerCode',
+            distribution_account 'distributionAccount',
+            real_distribution_account 'realDistributionAccount',
+            unit 'unit',
+            external_number 'externalNumber',
+            external_line_number 'externalLineNumber',
+            batch_code 'batchCode',
+            material_production_date 'materialProductionDate',
+            custom_field1 'customField1',
+            custom_field2 'customField2',
+            custom_field3 'customField3',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_outbound_order_info_to_distribution_material
+        WHERE is_deleted = 0
+        <if test="orderMaterialId != null ">
+            AND order_material_id = ${orderMaterialId}
+        </if>
+        <if test="orderNumber != null and orderNumber != ''">
+            AND order_number = #{orderNumber}
+        </if>
+        <if test="waveNumber != null and waveNumber != ''">
+            AND wave_number = #{waveNumber}
+        </if>
+        <if test="warehouseId != null ">
+            AND warehouse_id = ${warehouseId}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            AND warehouse_code = #{warehouseCode}
+        </if>
+        <if test="warehouseName != null and warehouseName != ''">
+            AND warehouse_name = #{warehouseName}
+        </if>
+        <if test="owerId != null ">
+            AND ower_id = ${owerId}
+        </if>
+        <if test="owerCode != null and owerCode != ''">
+            AND ower_code = #{owerCode}
+        </if>
+        <if test="owerName != null and owerName != ''">
+            AND ower_name = #{owerName}
+        </if>
+        <if test="materialId != null ">
+            AND material_id = ${materialId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="materialName != null and materialName != ''">
+            AND material_name = #{materialName}
+        </if>
+        <if test="warehouseAreaId != null and warehouseAreaId != ''">
+            AND warehouse_area_id = #{warehouseAreaId}
+        </if>
+        <if test="warehouseAreaCode != null and warehouseAreaCode != ''">
+            AND warehouse_area_code = #{warehouseAreaCode}
+        </if>
+        <if test="warehouseAreaName != null and warehouseAreaName != ''">
+            AND warehouse_area_name = #{warehouseAreaName}
+        </if>
+        <if test="warehouseLocationId != null ">
+            AND warehouse_location_id = ${warehouseLocationId}
+        </if>
+        <if test="warehouseLocationCode != null and warehouseLocationCode != ''">
+            AND warehouse_location_code = #{warehouseLocationCode}
+        </if>
+        <if test="containerId != null ">
+            AND container_id = ${containerId}
+        </if>
+        <if test="containerCode != null and containerCode != ''">
+            AND container_code = #{containerCode}
+        </if>
+        <if test="distributionAccount != null ">
+            AND distribution_account = ${distributionAccount}
+        </if>
+        <if test="realDistributionAccount != null ">
+            AND real_distribution_account = ${realDistributionAccount}
+        </if>
+        <if test="unit != null and unit != ''">
+            AND unit = #{unit}
+        </if>
+        <if test="externalNumber != null and externalNumber != ''">
+            AND external_number = #{externalNumber}
+        </if>
+        <if test="externalLineNumber != null and externalLineNumber != ''">
+            AND external_line_number = #{externalLineNumber}
+        </if>
+        <if test="batchCode != null and batchCode != ''">
+            AND batch_code = #{batchCode}
+        </if>
+        <if test="materialProductionDate != null ">
+            AND material_production_date = ${materialProductionDate}
+        </if>
+        <if test="customField1 != null ">
+            AND custom_field1 = ${customField1}
+        </if>
+        <if test="customField2 != null and customField2 != ''">
+            AND custom_field2 = #{customField2}
+        </if>
+        <if test="customField3 != null and customField3 != ''">
+            AND custom_field3 = #{customField3}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+    <select id="selectListByOrderMaterialIds"
+            resultType="com.jayud.wms.model.vo.WmsOutboundOrderInfoToDistributionMaterialVO">
+        select
+        `id`, `order_material_id`, `order_number`, `wave_number`, `warehouse_id`, `warehouse_code`, `warehouse_name`, `ower_id`, `ower_code`, `ower_name`, `material_id`, `material_code`, `material_name`, `warehouse_area_id`, `warehouse_area_code`, `warehouse_area_name`, `warehouse_location_id`, `warehouse_location_code`, `container_id`, `container_code`, `distribution_account`, `real_distribution_account`, `unit`, `external_number`, `external_line_number`, `batch_code`, `material_production_date`, `custom_field1`, `custom_field2`, `custom_field3`, `remark`, `is_deleted`, `create_by`, `create_time`, `update_by`, `update_time`, `distribution_batch_code`, `distribution_material_production_date`, `distribution_custom_field1`, `distribution_custom_field2`, `distribution_custom_field3`
+        from wms_outbound_order_info_to_distribution_material
+        where is_deleted = 0
+        <if test="orderMaterialIds!=null and orderMaterialIds.size()>0">
+            and order_material_id in
+            <foreach item="item" index="index" collection="orderMaterialIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_outbound_order_info_to_distribution_material WHERE id = ${id}
+    </delete>
+
+    <update id="delByOrderNumber">
+        UPDATE wms_outbound_order_info_to_distribution_material SET is_deleted = 1,update_by = #{username},update_time = now()
+        WHERE order_number = #{orderNumber}  AND is_deleted = 0
+    </update>
+
+    <delete id="delByWaveNumber">
+        UPDATE wms_outbound_order_info_to_distribution_material SET is_deleted = 1,update_by = #{username},update_time = now()
+        WHERE wave_number = #{waveNumber}  AND is_deleted = 0
+    </delete>
+
+
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsOwerToWarehouseRelationMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsOwerToWarehouseRelation">
+        <id column="id" property="id"/>
+        <result column="ower_id" property="owerId"/>
+        <result column="warehouse_id" property="warehouseId"/>
+        <result column="tenant_code" property="tenantCode"/>
+        <result column="remark" property="remark"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+    </sql>
+
+
+    <update id="updateWmsOwerToWarehouseRelationId" parameterType="com.jayud.wms.model.po.WmsOwerToWarehouseRelation">
+        update wms_ower_to_warehouse_relation
+        set is_deleted=1
+        where is_deleted = 0
+        and ower_id = #{owerId,jdbcType=BIGINT}
+
+    </update>
+
+
+</mapper>

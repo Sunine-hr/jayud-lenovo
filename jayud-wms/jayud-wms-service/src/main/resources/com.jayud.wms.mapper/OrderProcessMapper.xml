@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.OrderProcessMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.OrderProcess">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="status" property="status" />
+        <result column="status_name" property="statusName" />
+        <result column="create_time" property="createTime" />
+        <result column="create_by" property="createBy" />
+        <result column="f_status" property="fStatus" />
+        <result column="type" property="type" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, order_no, status, status_name, create_time, create_by, f_status, type
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_order_process </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="orderProcess.orderNo != null and orderProcess.orderNo != ''">
+                AND order_no = #{orderProcess.orderNo}
+            </if>
+
+            <if test="orderProcess.status != null and orderProcess.status != ''">
+                AND status = #{orderProcess.status}
+            </if>
+
+            <if test="orderProcess.statusName != null and orderProcess.statusName != ''">
+                AND status_name = #{orderProcess.statusName}
+            </if>
+
+            <if test="orderProcess.fStatus != null and orderProcess.fStatus != ''">
+                AND f_status = #{orderProcess.fStatus}
+            </if>
+
+            <if test="orderProcess.type != null ">
+                AND type = ${orderProcess.type}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.OrderProcess">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.OrderProcess">
+        <include refid="selects"/>
+    </select>
+
+
+</mapper>

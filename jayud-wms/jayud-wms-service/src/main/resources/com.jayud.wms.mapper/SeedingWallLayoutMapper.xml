@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.SeedingWallLayoutMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.SeedingWallLayout">
+        <id column="id" property="id" />
+        <result column="seeding_wall_id" property="seedingWallId" />
+        <result column="code" property="code" />
+        <result column="tag_num" property="tagNum" />
+        <result column="priority" property="priority" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, seeding_wall_id, code, tag_num, priority, status
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_seeding_wall_layout </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="seedingWallLayout.seedingWallId != null ">
+                AND seeding_wall_id = ${seedingWallLayout.seedingWallId}
+            </if>
+
+            <if test="seedingWallLayout.code != null and seedingWallLayout.code != ''">
+                AND code = #{seedingWallLayout.code}
+            </if>
+
+            <if test="seedingWallLayout.tagNum != null and seedingWallLayout.tagNum != ''">
+                AND tag_num = #{seedingWallLayout.tagNum}
+            </if>
+
+            <if test="seedingWallLayout.priority != null ">
+                AND priority = ${seedingWallLayout.priority}
+            </if>
+
+            <if test="seedingWallLayout.status != null ">
+                AND status = ${seedingWallLayout.status}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.SeedingWallLayout">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.SeedingWallLayout">
+        <include refid="selects"/>
+    </select>
+
+
+</mapper>

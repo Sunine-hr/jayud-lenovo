@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsOutboundSeedingRecordMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsOutboundSeedingRecord">
+        <id column="id" property="id" />
+        <result column="seeding_id" property="seedingId" />
+        <result column="sowing_id" property="sowingId" />
+        <result column="sowing_code" property="sowingCode" />
+        <result column="sowing_name" property="sowingName" />
+        <result column="material_id" property="materialId" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="old_container_id" property="oldContainerId" />
+        <result column="old_container_code" property="oldContainerCode" />
+        <result column="old_container_name" property="oldContainerName" />
+        <result column="old_account" property="oldAccount" />
+        <result column="old_seeding_account" property="oldSeedingAccount" />
+        <result column="old_real_seeding_account" property="oldRealSeedingAccount" />
+        <result column="old_unit" property="oldUnit" />
+        <result column="new_container_id" property="newContainerId" />
+        <result column="new_container_code" property="newContainerCode" />
+        <result column="new_container_name" property="newContainerName" />
+        <result column="new_account" property="newAccount" />
+        <result column="new_seeding_account" property="newSeedingAccount" />
+        <result column="new_real_seeding_account" property="newRealSeedingAccount" />
+        <result column="new_unit" property="newUnit" />
+        <result column="wave_id" property="waveId" />
+        <result column="wave_number" property="waveNumber" />
+        <result column="order_id" property="orderId" />
+        <result column="order_number" property="orderNumber" />
+        <result column="packing_offshelf_id" property="packingOffshelfId" />
+        <result column="packing_offshelf_number" property="packingOffshelfNumber" />
+        <result column="notice_id" property="noticeId" />
+        <result column="notice_number" property="noticeNumber" />
+        <result column="allocation_id" property="allocationId" />
+        <result column="status" property="status" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, seeding_id, sowing_id, sowing_code, sowing_name, material_id, material_code, material_name, old_container_id, old_container_code, old_container_name, old_account, old_seeding_account, old_real_seeding_account, old_unit, new_container_id, new_container_code, new_container_name, new_account, new_seeding_account, new_real_seeding_account, new_unit, wave_id, wave_number, order_id, order_number, packing_offshelf_id, packing_offshelf_number, notice_id, notice_number, allocation_id, status, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_outbound_seeding_record </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsOutboundSeedingRecord.seedingId != null ">
+                AND seeding_id = ${wmsOutboundSeedingRecord.seedingId}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.sowingId != null ">
+                AND sowing_id = ${wmsOutboundSeedingRecord.sowingId}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.sowingCode != null and wmsOutboundSeedingRecord.sowingCode != ''">
+                AND sowing_code = #{wmsOutboundSeedingRecord.sowingCode}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.sowingName != null and wmsOutboundSeedingRecord.sowingName != ''">
+                AND sowing_name = #{wmsOutboundSeedingRecord.sowingName}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.materialId != null ">
+                AND material_id = ${wmsOutboundSeedingRecord.materialId}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.materialCode != null and wmsOutboundSeedingRecord.materialCode != ''">
+                AND material_code = #{wmsOutboundSeedingRecord.materialCode}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.materialName != null and wmsOutboundSeedingRecord.materialName != ''">
+                AND material_name = #{wmsOutboundSeedingRecord.materialName}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.oldContainerId != null ">
+                AND old_container_id = ${wmsOutboundSeedingRecord.oldContainerId}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.oldContainerCode != null and wmsOutboundSeedingRecord.oldContainerCode != ''">
+                AND old_container_code = #{wmsOutboundSeedingRecord.oldContainerCode}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.oldContainerName != null and wmsOutboundSeedingRecord.oldContainerName != ''">
+                AND old_container_name = #{wmsOutboundSeedingRecord.oldContainerName}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.oldAccount != null ">
+                AND old_account = ${wmsOutboundSeedingRecord.oldAccount}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.oldSeedingAccount != null ">
+                AND old_seeding_account = ${wmsOutboundSeedingRecord.oldSeedingAccount}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.oldRealSeedingAccount != null ">
+                AND old_real_seeding_account = ${wmsOutboundSeedingRecord.oldRealSeedingAccount}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.oldUnit != null and wmsOutboundSeedingRecord.oldUnit != ''">
+                AND old_unit = #{wmsOutboundSeedingRecord.oldUnit}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.newContainerId != null ">
+                AND new_container_id = ${wmsOutboundSeedingRecord.newContainerId}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.newContainerCode != null and wmsOutboundSeedingRecord.newContainerCode != ''">
+                AND new_container_code = #{wmsOutboundSeedingRecord.newContainerCode}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.newContainerName != null and wmsOutboundSeedingRecord.newContainerName != ''">
+                AND new_container_name = #{wmsOutboundSeedingRecord.newContainerName}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.newAccount != null ">
+                AND new_account = ${wmsOutboundSeedingRecord.newAccount}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.newSeedingAccount != null ">
+                AND new_seeding_account = ${wmsOutboundSeedingRecord.newSeedingAccount}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.newRealSeedingAccount != null ">
+                AND new_real_seeding_account = ${wmsOutboundSeedingRecord.newRealSeedingAccount}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.newUnit != null and wmsOutboundSeedingRecord.newUnit != ''">
+                AND new_unit = #{wmsOutboundSeedingRecord.newUnit}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.waveId != null ">
+                AND wave_id = ${wmsOutboundSeedingRecord.waveId}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.waveNumber != null and wmsOutboundSeedingRecord.waveNumber != ''">
+                AND wave_number = #{wmsOutboundSeedingRecord.waveNumber}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.orderId != null ">
+                AND order_id = ${wmsOutboundSeedingRecord.orderId}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.orderNumber != null and wmsOutboundSeedingRecord.orderNumber != ''">
+                AND order_number = #{wmsOutboundSeedingRecord.orderNumber}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.packingOffshelfId != null ">
+                AND packing_offshelf_id = ${wmsOutboundSeedingRecord.packingOffshelfId}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.packingOffshelfNumber != null and wmsOutboundSeedingRecord.packingOffshelfNumber != ''">
+                AND packing_offshelf_number = #{wmsOutboundSeedingRecord.packingOffshelfNumber}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.noticeId != null ">
+                AND notice_id = ${wmsOutboundSeedingRecord.noticeId}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.noticeNumber != null ">
+                AND notice_number = ${wmsOutboundSeedingRecord.noticeNumber}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.allocationId != null ">
+                AND allocation_id = ${wmsOutboundSeedingRecord.allocationId}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.status != null ">
+                AND status = ${wmsOutboundSeedingRecord.status}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.tenantCode != null and wmsOutboundSeedingRecord.tenantCode != ''">
+                AND tenant_code = #{wmsOutboundSeedingRecord.tenantCode}
+            </if>
+
+            <if test="wmsOutboundSeedingRecord.remark != null and wmsOutboundSeedingRecord.remark != ''">
+                AND remark = #{wmsOutboundSeedingRecord.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsOutboundSeedingRecord">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsOutboundSeedingRecord">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="queryWmsOutboundSeedingRecordForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            seeding_id 'seedingId',
+            sowing_id 'sowingId',
+            sowing_code 'sowingCode',
+            sowing_name 'sowingName',
+            material_id 'materialId',
+            material_code 'materialCode',
+            material_name 'materialName',
+            old_container_id 'oldContainerId',
+            old_container_code 'oldContainerCode',
+            old_container_name 'oldContainerName',
+            old_account 'oldAccount',
+            old_seeding_account 'oldSeedingAccount',
+            old_real_seeding_account 'oldRealSeedingAccount',
+            old_unit 'oldUnit',
+            new_container_id 'newContainerId',
+            new_container_code 'newContainerCode',
+            new_container_name 'newContainerName',
+            new_account 'newAccount',
+            new_seeding_account 'newSeedingAccount',
+            new_real_seeding_account 'newRealSeedingAccount',
+            new_unit 'newUnit',
+            wave_id 'waveId',
+            wave_number 'waveNumber',
+            order_id 'orderId',
+            order_number 'orderNumber',
+            packing_offshelf_id 'packingOffshelfId',
+            packing_offshelf_number 'packingOffshelfNumber',
+            notice_id 'noticeId',
+            notice_number 'noticeNumber',
+            allocation_id 'allocationId',
+            status 'status',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_outbound_seeding_record
+        WHERE is_deleted = 0
+        <if test="seedingId != null ">
+            AND seeding_id = ${seedingId}
+        </if>
+        <if test="sowingId != null ">
+            AND sowing_id = ${sowingId}
+        </if>
+        <if test="sowingCode != null and sowingCode != ''">
+            AND sowing_code = #{sowingCode}
+        </if>
+        <if test="sowingName != null and sowingName != ''">
+            AND sowing_name = #{sowingName}
+        </if>
+        <if test="materialId != null ">
+            AND material_id = ${materialId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="materialName != null and materialName != ''">
+            AND material_name = #{materialName}
+        </if>
+        <if test="oldContainerId != null ">
+            AND old_container_id = ${oldContainerId}
+        </if>
+        <if test="oldContainerCode != null and oldContainerCode != ''">
+            AND old_container_code = #{oldContainerCode}
+        </if>
+        <if test="oldContainerName != null and oldContainerName != ''">
+            AND old_container_name = #{oldContainerName}
+        </if>
+        <if test="oldAccount != null ">
+            AND old_account = ${oldAccount}
+        </if>
+        <if test="oldSeedingAccount != null ">
+            AND old_seeding_account = ${oldSeedingAccount}
+        </if>
+        <if test="oldRealSeedingAccount != null ">
+            AND old_real_seeding_account = ${oldRealSeedingAccount}
+        </if>
+        <if test="oldUnit != null and oldUnit != ''">
+            AND old_unit = #{oldUnit}
+        </if>
+        <if test="newContainerId != null ">
+            AND new_container_id = ${newContainerId}
+        </if>
+        <if test="newContainerCode != null and newContainerCode != ''">
+            AND new_container_code = #{newContainerCode}
+        </if>
+        <if test="newContainerName != null and newContainerName != ''">
+            AND new_container_name = #{newContainerName}
+        </if>
+        <if test="newAccount != null ">
+            AND new_account = ${newAccount}
+        </if>
+        <if test="newSeedingAccount != null ">
+            AND new_seeding_account = ${newSeedingAccount}
+        </if>
+        <if test="newRealSeedingAccount != null ">
+            AND new_real_seeding_account = ${newRealSeedingAccount}
+        </if>
+        <if test="newUnit != null and newUnit != ''">
+            AND new_unit = #{newUnit}
+        </if>
+        <if test="waveId != null ">
+            AND wave_id = ${waveId}
+        </if>
+        <if test="waveNumber != null and waveNumber != ''">
+            AND wave_number = #{waveNumber}
+        </if>
+        <if test="orderId != null ">
+            AND order_id = ${orderId}
+        </if>
+        <if test="orderNumber != null and orderNumber != ''">
+            AND order_number = #{orderNumber}
+        </if>
+        <if test="packingOffshelfId != null ">
+            AND packing_offshelf_id = ${packingOffshelfId}
+        </if>
+        <if test="packingOffshelfNumber != null and packingOffshelfNumber != ''">
+            AND packing_offshelf_number = #{packingOffshelfNumber}
+        </if>
+        <if test="noticeId != null ">
+            AND notice_id = ${noticeId}
+        </if>
+        <if test="noticeNumber != null ">
+            AND notice_number = ${noticeNumber}
+        </if>
+        <if test="allocationId != null ">
+            AND allocation_id = ${allocationId}
+        </if>
+        <if test="status != null ">
+            AND status = ${status}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_outbound_seeding_record WHERE id = ${id}
+    </delete>
+
+
+</mapper>

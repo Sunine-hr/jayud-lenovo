@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsCustomerInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsCustomerInfo">
+        <id column="id" property="id"/>
+        <result column="customer_code" property="customerCode"/>
+        <result column="customer_name" property="customerName"/>
+        <result column="customer_type_id" property="customerTypeId"/>
+        <result column="user_name" property="userName"/>
+        <result column="phone_number" property="phoneNumber"/>
+        <result column="email" property="email"/>
+        <result column="address" property="address"/>
+        <result column="status" property="status"/>
+        <result column="order" property="order"/>
+        <result column="tenant_code" property="tenantCode"/>
+        <result column="remark" property="remark"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        ,customer_code,customer_name,customer_type_id,user_name,phone_number,email,address,status,order,
+          tenant_code,remark,is_deleted,create_by,create_time,update_by,update_time
+    </sql>
+
+    <!--    <insert id=" " parameterType="com.jayud.model.po.MaterialTypeInfo">-->
+    <!--        INSERT INTO material_type_info-->
+    <!--            (id, parent_id, material_type_code, material_type_name, create_by)-->
+    <!--        VALUES (#{id,jdbcType=BIGINT}, #{parentId,jdbcType=BIGINT}, #{materialTypeCode,jdbcType=VARCHAR},-->
+    <!--                #{materialTypeName,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR})-->
+    <!--    </insert>-->
+
+    <select id="pageList" resultType="com.jayud.wms.model.vo.WmsCustomerInfoVO" parameterType="com.jayud.wms.model.po.WmsCustomerInfo">
+        SELECT
+        wci.id,
+        wci.customer_code,
+        wci.customer_name,
+        wci.customer_type_id,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE   sd.is_deleted=0    and   sd.dict_type = "clientType" AND sd.id = wci.customer_type_id) AS customerTypeDetails,
+        wci.user_name,
+        wci.phone_number,
+        wci.email,
+        wci.address,
+        wci.status,
+        case when wci.status = 1  then '是'
+        when wci.status = 0  then '否' end as statusDetails,
+        wci.remark,
+        wci.is_deleted,
+        wci.create_by,
+        wci.create_time,
+        wci.update_by,
+        wci.update_time
+        FROM wms_customer_info wci
+        WHERE  is_deleted = 0
+
+        <if test="wmsCustomerInfo.customerCode != null ">
+            and wci.customer_code  like CONCAT('%',#{wmsCustomerInfo.customerCode,jdbcType=VARCHAR} , '%')
+        </if>
+
+        <if test="wmsCustomerInfo.createBy != null ">
+            and wci.customer_code =#{wmsCustomerInfo.createBy,jdbcType=VARCHAR}
+        </if>
+        ORDER BY wci.create_time desc
+    </select>
+
+    <select id="selectList" resultType="com.jayud.wms.model.vo.WmsCustomerInfoVO" parameterType="com.jayud.wms.model.po.WmsCustomerInfo">
+        SELECT
+        id,
+        customer_code,
+        customer_name,
+        customer_type_id,
+        user_name,
+        phone_number,
+        email,
+        address,
+        status,
+        remark,
+        is_deleted,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM wms_customer_info
+        WHERE  is_deleted = 0
+
+        <!--        <if test="wmsCustomerInfo.createBy != null ">-->
+        <!--            and customer_code =#{wmsCustomerInfo.createBy,jdbcType=VARCHAR}-->
+        <!--        </if>-->
+
+        <if test="wmsCustomerInfo.customerTypeId!= null ">
+            and customer_type_id =#{wmsCustomerInfo.customerTypeId,jdbcType=BIGINT}
+        </if>
+        ORDER BY id desc
+    </select>
+
+    <select id="getWmsCustomerInfoByCode" parameterType="com.jayud.wms.model.po.WmsCustomerInfo"
+            resultType="com.jayud.wms.model.po.WmsCustomerInfo">
+        SELECT
+        id,
+        customer_code,
+        customer_name,
+        customer_type_id,
+        user_name,
+        phone_number,
+        email,
+        address,
+        status,
+        remark,
+        is_deleted,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM wms_customer_info
+        WHERE  is_deleted = 0
+
+        <if test="customerCode != null ">
+            and customer_code  =#{customerCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="customerName != null ">
+            and customer_name  =#{customerName,jdbcType=VARCHAR}
+        </if>
+
+    </select>
+
+
+
+    <select id="queryWmsCustomerInfoForExcel" parameterType="com.jayud.wms.model.po.WmsCustomerInfo" resultType="java.util.LinkedHashMap">
+
+        SELECT
+        wci.customer_code,
+        wci.customer_name,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE   sd.is_deleted=0    and   sd.dict_type = "clientType" AND sd.id = wci.customer_type_id) AS customerTypeDetails,
+        wci.user_name,
+        wci.phone_number,
+        wci.email,
+        wci.address,
+        case when wci.status = 1  then '是'
+        when wci.status = 0  then '否' end as statusDetails,
+        wci.create_by,
+        wci.create_time
+        FROM wms_customer_info wci
+        WHERE  wci.is_deleted = 0
+
+        <if test="wmsCustomerInfo.customerCode != null ">
+            and wci.customer_code  like CONCAT('%',#{wmsCustomerInfo.customerCode,jdbcType=VARCHAR} , '%')
+        </if>
+        ORDER BY wci.create_time desc
+    </select>
+
+</mapper>

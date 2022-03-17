@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsMaterialBasicInfoMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsMaterialBasicInfo">
+        <id column="id" property="id" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="ower_id" property="owerId" />
+        <result column="material_type_id" property="materialTypeId" />
+        <result column="material_group_id" property="materialGroupId" />
+        <result column="identification_id" property="identificationId" />
+        <result column="heat_range" property="heatRange" />
+        <result column="storage_conditions_id" property="storageConditionsId" />
+        <result column="min_unit_id" property="minUnitId" />
+        <result column="weight" property="weight" />
+        <result column="volume" property="volume" />
+        <result column="max_inventory" property="maxInventory" />
+        <result column="mmin_inventory" property="mminInventory" />
+        <result column="warranty_period" property="warrantyPeriod" />
+        <result column="is_quality_inspection" property="isQualityInspection" />
+        <result column="is_replace_container" property="isReplaceContainer" />
+        <result column="is_on" property="isOn" />
+        <result column="column_one" property="columnOne" />
+        <result column="column_two" property="columnTwo" />
+        <result column="column_three" property="columnThree" />
+        <result column="column_four" property="columnFour" />
+        <result column="column_five" property="columnFive" />
+        <result column="column_six" property="columnSix" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="shelf_strategy_id" property="shelfStrategyId" />
+        <result column="allocation_strategy_id" property="allocationStrategyId" />
+        <result column="is_allow_overcharge" property="isAllowOvercharge" />
+        <result column="overcharge_ratio" property="overchargeRatio" />
+        <result column="turnover_mode" property="turnoverMode" />
+        <result column="turnover_attribute" property="turnoverAttribute" />
+        <result column="recommended_warehouse_id" property="recommendedWarehouseId" />
+        <result column="recommended_warehouse_code" property="recommendedWarehouseCode" />
+        <result column="recommended_warehouse_name" property="recommendedWarehouseName" />
+        <result column="recommended_warehouse_area_id" property="recommendedWarehouseAreaId" />
+        <result column="recommended_warehouse_area_code" property="recommendedWarehouseAreaCode" />
+        <result column="recommended_warehouse_area_name" property="recommendedWarehouseAreaName" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <resultMap id="VoResultMap" type="com.jayud.wms.model.vo.WmsMaterialBasicInfoVO">
+        <id column="id" property="id" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="ower_id" property="owerId" />
+        <result column="material_type_id" property="materialTypeId" />
+        <result column="material_group_id" property="materialGroupId" />
+        <result column="identification_id" property="identificationId" />
+        <result column="heat_range" property="heatRange" />
+        <result column="storage_conditions_id" property="storageConditionsId" />
+        <result column="min_unit_id" property="minUnitId" />
+        <result column="weight" property="weight" />
+        <result column="volume" property="volume" />
+        <result column="max_inventory" property="maxInventory" />
+        <result column="mmin_inventory" property="mminInventory" />
+        <result column="warranty_period" property="warrantyPeriod" />
+        <result column="is_quality_inspection" property="isQualityInspection" />
+        <result column="is_replace_container" property="isReplaceContainer" />
+        <result column="is_on" property="isOn" />
+        <result column="column_one" property="columnOne" />
+        <result column="column_two" property="columnTwo" />
+        <result column="column_three" property="columnThree" />
+        <result column="column_four" property="columnFour" />
+        <result column="column_five" property="columnFive" />
+        <result column="column_six" property="columnSix" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="shelf_strategy_id" property="shelfStrategyId" />
+        <result column="allocation_strategy_id" property="allocationStrategyId" />
+        <result column="is_allow_overcharge" property="isAllowOvercharge" />
+        <result column="overcharge_ratio" property="overchargeRatio" />
+        <result column="turnover_mode" property="turnoverMode" />
+        <result column="turnover_attribute" property="turnoverAttribute" />
+        <result column="recommended_warehouse_id" property="recommendedWarehouseId" />
+        <result column="recommended_warehouse_code" property="recommendedWarehouseCode" />
+        <result column="recommended_warehouse_name" property="recommendedWarehouseName" />
+        <result column="recommended_warehouse_area_id" property="recommendedWarehouseAreaId" />
+        <result column="recommended_warehouse_area_code" property="recommendedWarehouseAreaCode" />
+        <result column="recommended_warehouse_area_name" property="recommendedWarehouseAreaName" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="ower_id_text" property="owerId_text" />
+        <result column="material_type_id_text" property="materialTypeId_text" />
+        <result column="material_group_id_text" property="materialGroupId_text" />
+        <result column="identification_id_text" property="identificationId_text" />
+        <result column="storage_conditions_id_text" property="storageConditionsId_text" />
+        <result column="min_unit_id_text" property="minUnitId_text" />
+        <result column="is_quality_inspection_text" property="isQualityInspection_text" />
+        <result column="is_replace_container_text" property="isReplaceContainer_text" />
+        <result column="is_on_text" property="isOn_text" />
+        <result column="is_allow_overcharge_text" property="isAllowOvercharge_text" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        wmbi.id, wmbi.material_code, wmbi.material_name, wmbi.ower_id, wmbi.material_type_id, wmbi.material_group_id, wmbi.identification_id, wmbi.heat_range, wmbi.storage_conditions_id, wmbi.min_unit_id, wmbi.weight, wmbi.volume, wmbi.max_inventory, wmbi.mmin_inventory, wmbi.warranty_period, wmbi.is_quality_inspection, wmbi.is_replace_container, wmbi.is_on, wmbi.column_one, wmbi.column_two, wmbi.column_three, wmbi.column_four, wmbi.column_five, wmbi.column_six, wmbi.tenant_code, wmbi.shelf_strategy_id, wmbi.allocation_strategy_id, wmbi.is_allow_overcharge, wmbi.overcharge_ratio, turnover_mode, turnover_attribute, recommended_warehouse_id, recommended_warehouse_code, recommended_warehouse_name, recommended_warehouse_area_id, recommended_warehouse_area_code, recommended_warehouse_area_name,wmbi.remark, wmbi.is_deleted, wmbi.create_by, wmbi.create_time, wmbi.update_by, wmbi.update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_material_basic_info wmbi </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>,
+        (SELECT woi.ower_name FROM wms_ower_info woi WHERE  wmbi.ower_id = woi.id) ower_id_text,
+        (SELECT wmti.material_type_name FROM wms_material_type_info wmti WHERE  wmbi.material_type_id = wmti.id) material_type_id_text,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE  wmbi.material_group_id = sd.id and sd.is_deleted = 0) material_group_id_text,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE  wmbi.identification_id = sd.id and sd.is_deleted = 0) identification_id_text,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE  wmbi.storage_conditions_id = sd.id and sd.is_deleted = 0) storage_conditions_id_text,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE  wmbi.min_unit_id = sd.id and sd.is_deleted = 0) min_unit_id_text,
+        IF(wmbi.is_quality_inspection = 1,'是','否') is_quality_inspection_text,
+        IF(wmbi.is_replace_container = 1,'是','否') is_replace_container_text,
+        IF(wmbi.is_on = 1,'是','否') is_on_text,
+        IF(wmbi.is_allow_overcharge = 1,'是','否') is_allow_overcharge_text
+        FROM <include refid="tname"/>
+        <where>
+            wmbi.is_deleted = 0
+            <if test="wmsMaterialBasicInfoVO.id != null ">
+                AND wmbi.id = #{wmsMaterialBasicInfoVO.id}
+            </if>
+            <if test="wmsMaterialBasicInfoVO.materialCode != null and wmsMaterialBasicInfoVO.materialCode != ''">
+                AND wmbi.material_code LIKE CONCAT('%', #{wmsMaterialBasicInfoVO.materialCode}, '%')
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.materialName != null and wmsMaterialBasicInfoVO.materialName != ''">
+                AND wmbi.material_name LIKE CONCAT('%', #{wmsMaterialBasicInfoVO.materialName}, '%')
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.owerId != null ">
+                AND wmbi.ower_id = ${wmsMaterialBasicInfoVO.owerId}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.materialTypeId != null ">
+                AND wmbi.material_type_id = ${wmsMaterialBasicInfoVO.materialTypeId}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.materialGroupId != null ">
+                AND wmbi.material_group_id = ${wmsMaterialBasicInfoVO.materialGroupId}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.identificationId != null ">
+                AND wmbi.identification_id = ${wmsMaterialBasicInfoVO.identificationId}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.heatRange != null and wmsMaterialBasicInfoVO.heatRange != ''">
+                AND wmbi.heat_range LIKE CONCAT('%', #{wmsMaterialBasicInfoVO.heatRange}, '%')
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.storageConditionsId != null ">
+                AND wmbi.storage_conditions_id = ${wmsMaterialBasicInfoVO.storageConditionsId}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.minUnitId != null ">
+                AND wmbi.min_unit_id = ${wmsMaterialBasicInfoVO.minUnitId}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.weight != null ">
+                AND wmbi.weight = ${wmsMaterialBasicInfoVO.weight}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.volume != null ">
+                AND wmbi.volume = ${wmsMaterialBasicInfoVO.volume}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.maxInventory != null ">
+                AND wmbi.max_inventory = ${wmsMaterialBasicInfoVO.maxInventory}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.mminInventory != null ">
+                AND wmbi.mmin_inventory = ${wmsMaterialBasicInfoVO.mminInventory}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.warrantyPeriod != null ">
+                AND wmbi.warranty_period = ${wmsMaterialBasicInfoVO.warrantyPeriod}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.isQualityInspection != null ">
+                AND wmbi.is_quality_inspection = ${wmsMaterialBasicInfoVO.isQualityInspection}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.isReplaceContainer != null ">
+                AND wmbi.is_replace_container = ${wmsMaterialBasicInfoVO.isReplaceContainer}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.isOn != null ">
+                AND wmbi.is_on = ${wmsMaterialBasicInfoVO.isOn}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.columnOne != null and wmsMaterialBasicInfoVO.columnOne != ''">
+                AND wmbi.column_one LIKE CONCAT('%',#{wmsMaterialBasicInfoVO.columnOne}, '%')
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.columnTwo != null and wmsMaterialBasicInfoVO.columnTwo != ''">
+                AND wmbi.column_two LIKE CONCAT('%', #{wmsMaterialBasicInfoVO.columnTwo}, '%')
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.columnThree != null and wmsMaterialBasicInfoVO.columnThree != ''">
+                AND wmbi.column_three LIKE CONCAT('%',#{wmsMaterialBasicInfoVO.columnThree}, '%')
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.columnFour != null and wmsMaterialBasicInfoVO.columnFour != ''">
+                AND wmbi.column_four LIKE CONCAT('%',#{wmsMaterialBasicInfoVO.columnFour}, '%')
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.columnFive != null and wmsMaterialBasicInfoVO.columnFive != ''">
+                AND wmbi.column_five LIKE CONCAT('%',#{wmsMaterialBasicInfoVO.columnFive}, '%')
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.columnSix != null and wmsMaterialBasicInfoVO.columnSix != ''">
+                AND wmbi.column_six LIKE CONCAT('%',#{wmsMaterialBasicInfoVO.columnSix}, '%')
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.tenantCode != null and wmsMaterialBasicInfoVO.tenantCode != ''">
+                AND wmbi.tenant_code = #{wmsMaterialBasicInfoVO.tenantCode}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.shelfStrategyId != null ">
+                AND wmbi.shelf_strategy_id = ${wmsMaterialBasicInfoVO.shelfStrategyId}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.allocationStrategyId != null ">
+                AND wmbi.allocation_strategy_id = ${wmsMaterialBasicInfoVO.allocationStrategyId}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.isAllowOvercharge != null ">
+                AND wmbi.is_allow_overcharge = ${wmsMaterialBasicInfoVO.isAllowOvercharge}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.overchargeRatio != null ">
+                AND wmbi.overcharge_ratio = ${wmsMaterialBasicInfoVO.overchargeRatio}
+            </if>
+            <if test="wmsMaterialBasicInfoVO.turnoverMode != null ">
+                AND wmbi.turnover_mode = ${wmsMaterialBasicInfoVO.turnoverMode}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.turnoverAttribute != null ">
+                AND wmbi.turnover_attribute = ${wmsMaterialBasicInfoVO.turnoverAttribute}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.recommendedWarehouseId != null ">
+                AND wmbi.recommended_warehouse_id = ${wmsMaterialBasicInfoVO.recommendedWarehouseId}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.recommendedWarehouseCode != null and wmsMaterialBasicInfoVO.recommendedWarehouseCode != ''">
+                AND wmbi.recommended_warehouse_code LIKE CONCAT('%',#{wmsMaterialBasicInfoVO.recommendedWarehouseCode}, '%')
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.recommendedWarehouseName != null and wmsMaterialBasicInfoVO.recommendedWarehouseName != ''">
+                AND wmbi.recommended_warehouse_name LIKE CONCAT('%',#{wmsMaterialBasicInfoVO.recommendedWarehouseName}, '%')
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.recommendedWarehouseAreaId != null ">
+                AND wmbi.recommended_warehouse_area_id = ${wmsMaterialBasicInfoVO.recommendedWarehouseAreaId}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.recommendedWarehouseAreaCode != null and wmsMaterialBasicInfoVO.recommendedWarehouseAreaCode != ''">
+                AND wmbi.recommended_warehouse_area_code LIKE CONCAT('%',#{wmsMaterialBasicInfoVO.recommendedWarehouseAreaCode}, '%')
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.recommendedWarehouseAreaName != null and wmsMaterialBasicInfoVO.recommendedWarehouseAreaName != ''">
+                AND wmbi.recommended_warehouse_area_name LIKE CONCAT('%',#{wmsMaterialBasicInfoVO.recommendedWarehouseAreaName}, '%')
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.remark != null and wmsMaterialBasicInfoVO.remark != ''">
+                AND wmbi.remark = #{wmsMaterialBasicInfoVO.remark}
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.exitMaterialCodeList != null and wmsMaterialBasicInfoVO.exitMaterialCodeList.size > 0">
+                AND wmbi.material_code NOT IN
+                <foreach item="item" index="index" collection="wmsMaterialBasicInfoVO.exitMaterialCodeList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.owerIdList != null and wmsMaterialBasicInfoVO.owerIdList.size > 0">
+                AND wmbi.ower_id  IN
+                <foreach item="item" index="index" collection="wmsMaterialBasicInfoVO.owerIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="wmsMaterialBasicInfoVO.idList != null and wmsMaterialBasicInfoVO.idList.size > 0">
+                AND wmbi.id  IN
+                <foreach item="item" index="index" collection="wmsMaterialBasicInfoVO.idList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+        </where>
+        ORDER BY
+            create_time DESC
+    </sql>
+
+    <select id="pageList" resultMap="VoResultMap" parameterType="com.jayud.wms.model.vo.WmsMaterialBasicInfoVO">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="VoResultMap" parameterType="com.jayud.wms.model.vo.WmsMaterialBasicInfoVO">
+        <include refid="selects"/>
+    </select>
+
+
+</mapper>

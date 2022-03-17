@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsMaterialToLoactionRelationMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsMaterialToLoactionRelation">
+        <id column="id" property="id" />
+        <result column="material_basic_info_id" property="materialBasicInfoId" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="warehouse_area_id" property="warehouseAreaId" />
+        <result column="warehouse_area_code" property="warehouseAreaCode" />
+        <result column="warehouse_area_name" property="warehouseAreaName" />
+        <result column="localtion_id" property="localtionId" />
+        <result column="localtion_code" property="localtionCode" />
+        <result column="localtion_name" property="localtionName" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, material_basic_info_id, warehouse_id, warehouse_code, warehouse_name, warehouse_area_id, warehouse_area_code, warehouse_area_name, localtion_id, localtion_code, localtion_name, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_material_to_loaction_relation wmtlr </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsMaterialToLoactionRelation.materialBasicInfoId != null ">
+                AND material_basic_info_id = ${wmsMaterialToLoactionRelation.materialBasicInfoId}
+            </if>
+
+            <if test="wmsMaterialToLoactionRelation.warehouseId != null ">
+                AND warehouse_id = ${wmsMaterialToLoactionRelationMa.warehouseId}
+            </if>
+
+            <if test="wmsMaterialToLoactionRelation.warehouseCode != null and wmsMaterialToLoactionRelation.warehouseCode != ''">
+                AND warehouse_code LIKE CONCAT('%',#{wmsMaterialToLoactionRelation.warehouseCode}, '%')
+            </if>
+
+            <if test="wmsMaterialToLoactionRelation.warehouseName != null and wmsMaterialToLoactionRelation.warehouseName != ''">
+                AND warehouse_name LIKE CONCAT('%',#{wmsMaterialToLoactionRelation.warehouseName}, '%')
+            </if>
+
+            <if test="wmsMaterialToLoactionRelation.warehouseAreaId != null ">
+                AND warehouse_area_id = ${wmsMaterialToLoactionRelation.warehouseAreaId}
+            </if>
+
+            <if test="wmsMaterialToLoactionRelation.warehouseAreaCode != null and wmsMaterialToLoactionRelation.warehouseAreaCode != ''">
+                AND warehouse_area_code LIKE CONCAT('%',#{wmsMaterialToLoactionRelation.warehouseAreaCode}, '%')
+            </if>
+
+            <if test="wmsMaterialToLoactionRelation.warehouseAreaName != null and wmsMaterialToLoactionRelation.warehouseAreaName != ''">
+                AND warehouse_area_name LIKE CONCAT('%',#{wmsMaterialToLoactionRelation.warehouseAreaName}, '%')
+            </if>
+
+            <if test="wmsMaterialToLoactionRelation.localtionId != null ">
+                AND localtion_id = ${wmsMaterialToLoactionRelation.localtionId}
+            </if>
+
+            <if test="wmsMaterialToLoactionRelation.localtionCode != null and wmsMaterialToLoactionRelation.localtionCode != ''">
+                AND localtion_code LIKE CONCAT('%',#{wmsMaterialToLoactionRelation.localtionCode}, '%')
+            </if>
+
+            <if test="wmsMaterialToLoactionRelation.localtionName != null and wmsMaterialToLoactionRelation.localtionName != ''">
+                AND localtion_name LIKE CONCAT('%',#{wmsMaterialToLoactionRelation.localtionName}, '%')
+            </if>
+
+            <if test="wmsMaterialToLoactionRelation.remark != null and wmsMaterialToLoactionRelation.remark != ''">
+                AND remark = #{wmsMaterialToLoactionRelation.remark}
+            </if>
+
+            <if test="wmsMaterialToLoactionRelation.isDeleted != null ">
+                AND is_deleted = ${wmsMaterialToLoactionRelation.isDeleted}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsMaterialToLoactionRelation">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsMaterialToLoactionRelation">
+        <include refid="selects"/>
+    </select>
+    <select id="queryByMaterialId" resultType="com.jayud.wms.model.vo.WmsMaterialToLoactionRelationVO">
+        SELECT
+            wl.id localtionId,
+            wl.`code` code,
+            IF
+                ( wmtlr.id IS NULL, FALSE, TRUE ) isSelect
+        FROM
+            wms_warehouse_location wl
+                LEFT JOIN wms_material_to_loaction_relation wmtlr ON wl.id = wmtlr.localtion_id
+                AND wmtlr.is_deleted = 0
+                AND wmtlr.material_basic_info_id = #{materialId}
+        WHERE
+            wl.is_deleted = 0
+    </select>
+
+
+    <update id="delByLocationIdAndMaterialId">
+        UPDATE wms_material_to_loaction_relation
+        SET is_deleted = 1,update_by = #{username},update_time = now()
+        WHERE
+            is_deleted = 0
+            AND material_basic_info_id = #{materialId}
+            <if test="locactionIdList != null ">
+                AND localtion_id IN
+                <foreach collection="locactionIdList" index="index" item="item" open="("
+                         separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+    </update>
+
+
+</mapper>

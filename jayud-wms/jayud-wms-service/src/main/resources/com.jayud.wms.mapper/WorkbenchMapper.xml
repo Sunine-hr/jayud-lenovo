@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WorkbenchMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.Workbench">
+        <id column="id" property="id" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_area_id" property="warehouseAreaId" />
+        <result column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="type" property="type" />
+        <result column="agv_num" property="agvNum" />
+        <result column="queue_shelf_type" property="queueShelfType" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, warehouse_id, warehouse_area_id, code, name, type, agv_num, queue_shelf_type, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time, status
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_workbench </sql>
+
+    <sql id="selects">
+        SELECT
+               w.id, w.warehouse_id, w.warehouse_area_id, w.code, w.name, w.type, w.agv_num, w.queue_shelf_type, w.tenant_code, w.remark, w.is_deleted, w.create_by, w.create_time, w.update_by, w.update_time, w.status, w1.name warehouseName, wa.name warehouseAreaName,
+                case when w.type = 1 then '普通工作台'
+                when w.type = 2 then '分播工作单'
+                when w.type = 3 then '交换工作台'
+                end typeName
+        FROM wms_workbench w
+        left join wms_warehouse w1 on w.warehouse_id = w1.id
+        left join wms_warehouse_area wa on w.warehouse_area_id = wa.id
+        WHERE w.is_deleted = 0
+        <if test="workbench.warehouseId != null ">
+            AND w.warehouse_id = ${workbench.warehouseId}
+        </if>
+
+        <if test="workbench.warehouseAreaId != null ">
+            AND w.warehouse_area_id = ${workbench.warehouseAreaId}
+        </if>
+
+        <if test="workbench.code != null and workbench.code != ''">
+            AND w.code LIKE CONCAT('%',#{workbench.code}, '%')
+        </if>
+
+        <if test="workbench.name != null and workbench.name != ''">
+            AND w.name LIKE CONCAT('%',#{workbench.name}, '%')
+        </if>
+
+        <if test="workbench.type != null ">
+            AND w.type = ${workbench.type}
+        </if>
+
+        <if test="workbench.agvNum != null ">
+            AND w.agv_num = ${workbench.agvNum}
+        </if>
+
+        <if test="workbench.queueShelfType != null and workbench.queueShelfType != ''">
+            AND w.queue_shelf_type = #{workbench.queueShelfType}
+        </if>
+
+        <if test="workbench.tenantCode != null and workbench.tenantCode != ''">
+            AND w.tenant_code = #{workbench.tenantCode}
+        </if>
+
+        <if test="workbench.remark != null and workbench.remark != ''">
+            AND w.remark = #{workbench.remark}
+        </if>
+
+        <if test="workbench.status != null ">
+            AND w.status = ${workbench.status}
+        </if>
+
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.Workbench">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.Workbench">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryWorkbenchForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            w.id 'id',
+            w1.name 'warehouseName',
+            wa.name 'warehouseAreaName',
+            w.code 'code',
+            w.name 'name',
+            case when w.type = 1 then '普通工作台'
+            when w.type = 2 then '分播工作单'
+            when w.type = 3 then '交换工作台'
+            end 'type',
+            w.agv_num 'agvNum',
+            w.queue_shelf_type 'queueShelfType',
+            w.remark 'remark',
+            case when w.status = 0 then '禁用'
+            when w.status = 1 then '启用'
+            end  'status'
+        FROM wms_workbench w
+        left join wms_warehouse w1 on w.warehouse_id = w1.id
+        left join wms_warehouse_area wa on w.warehouse_area_id = wa.id
+        WHERE w.is_deleted = 0
+        <if test="warehouseId != null ">
+            AND w.warehouse_id = ${warehouseId}
+        </if>
+        <if test="warehouseAreaId != null ">
+            AND w.warehouse_area_id = ${warehouseAreaId}
+        </if>
+        <if test="code != null and code != ''">
+            AND w.code LIKE CONCAT('%',#{code}, '%')
+        </if>
+        <if test="name != null and name != ''">
+            AND w.name LIKE CONCAT('%',#{name}, '%')
+        </if>
+        <if test="type != null ">
+            AND w.type = ${type}
+        </if>
+        <if test="agvNum != null ">
+            AND w.agv_num = ${agvNum}
+        </if>
+        <if test="queueShelfType != null and queueShelfType != ''">
+            AND w.queue_shelf_type = #{queueShelfType}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND w.tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND w.remark = #{remark}
+        </if>
+        <if test="status != null ">
+            AND w.status = ${status}
+        </if>
+
+    </select>
+
+
+
+</mapper>

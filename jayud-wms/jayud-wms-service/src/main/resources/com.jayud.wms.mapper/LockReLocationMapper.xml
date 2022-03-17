@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.LockReLocationMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.LockReLocation">
+        <id column="id" property="id" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_area_id" property="warehouseAreaId" />
+        <result column="code" property="code" />
+        <result column="is_deleted" property="isDeleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, warehouse_id, warehouse_area_id, code, is_deleted
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_lock_re_location </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="lockReLocation.warehouseId != null ">
+                AND warehouse_id = ${lockReLocation.warehouseId}
+            </if>
+
+            <if test="lockReLocation.warehouseAreaId != null ">
+                AND warehouse_area_id = ${lockReLocation.warehouseAreaId}
+            </if>
+
+            <if test="lockReLocation.code != null and lockReLocation.code != ''">
+                AND code LIKE CONCAT('%',#{lockReLocation.code}, '%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.LockReLocation">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.LockReLocation">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryLockReLocationForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            warehouse_id 'warehouseId',
+            warehouse_area_id 'warehouseAreaId',
+            code 'code',
+            is_deleted 'isDeleted'
+        FROM wms_lock_re_location
+        WHERE is_deleted = 0
+        <if test="warehouseId != null ">
+            AND warehouse_id = ${warehouseId}
+        </if>
+        <if test="warehouseAreaId != null ">
+            AND warehouse_area_id = ${warehouseAreaId}
+        </if>
+        <if test="code != null and code != ''">
+            AND code = #{code}
+        </if>
+
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.BreakoutWorkbenchMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.BreakoutWorkbench">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="type" property="type" />
+        <result column="workbench_id" property="workbenchId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, code, remark, is_deleted, type, workbench_id
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_breakout_workbench </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="breakoutWorkbench.code != null and breakoutWorkbench.code != ''">
+                AND code = #{breakoutWorkbench.code}
+            </if>
+
+            <if test="breakoutWorkbench.remark != null and breakoutWorkbench.remark != ''">
+                AND remark = #{breakoutWorkbench.remark}
+            </if>
+
+            <if test="breakoutWorkbench.type != null ">
+                AND type = ${breakoutWorkbench.type}
+            </if>
+
+            <if test="breakoutWorkbench.workbenchId != null ">
+                AND workbench_id = ${breakoutWorkbench.workbenchId}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.BreakoutWorkbench">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.BreakoutWorkbench">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryBreakoutWorkbenchForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            code 'code',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            type 'type',
+            workbench_id 'workbenchId'
+        FROM wms_breakout_workbench
+        WHERE is_deleted = 0
+        <if test="code != null and code != ''">
+            AND code = #{code}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+        <if test="type != null ">
+            AND type = ${type}
+        </if>
+        <if test="workbenchId != null ">
+            AND workbench_id = ${workbenchId}
+        </if>
+
+    </select>
+
+
+
+</mapper>

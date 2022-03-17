@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WarehouseAreaMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WarehouseArea">
+        <id column="id" property="id" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="type_desc" property="typeDesc" />
+        <result column="is_mixing" property="isMixing" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="status" property="status" />
+        <result column="mixing_strategy_id" property="mixingStrategyId" />
+        <result column="mixing_strategy" property="mixingStrategy" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            wa.id, wa.warehouse_id, wa.code, wa.name, wa.type_desc, wa.is_mixing, wa.tenant_code, wa.remark, wa.is_deleted, wa.create_by, wa.create_time, wa.update_by, wa.update_time, wa.status, wa.mixing_strategy_id, wa.mixing_strategy,h.name warehouseName
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_warehouse_area </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/> wa
+        left join wms_warehouse h on h.id = wa.warehouse_id and h.is_deleted = 0
+        <where>
+            wa.is_deleted = 0
+            <if test="warehouseArea.warehouseId != null ">
+                AND warehouse_id = ${warehouseArea.warehouseId}
+            </if>
+
+            <if test="warehouseArea.code != null and warehouseArea.code != ''">
+                AND wa.code like concat('%',#{warehouseArea.code},'%')
+            </if>
+
+            <if test="warehouseArea.name != null and warehouseArea.name != ''">
+                AND wa.name like concat('%',#{warehouseArea.name},'%')
+            </if>
+
+            <if test="warehouseArea.typeDesc != null and warehouseArea.typeDesc != ''">
+                AND wa.type_desc = #{warehouseArea.typeDesc}
+            </if>
+
+            <if test="warehouseArea.isMixing != null ">
+                AND wa.is_mixing = ${warehouseArea.isMixing}
+            </if>
+
+            <if test="warehouseArea.tenantCode != null and warehouseArea.tenantCode != ''">
+                AND wa.tenant_code = #{warehouseArea.tenantCode}
+            </if>
+
+            <if test="warehouseArea.remark != null and warehouseArea.remark != ''">
+                AND wa.remark = #{warehouseArea.remark}
+            </if>
+
+            <if test="warehouseArea.isDeleted != null ">
+                AND wa.is_deleted = ${warehouseArea.isDeleted}
+            </if>
+
+            <if test="warehouseArea.status != null ">
+                AND wa.status = ${warehouseArea.status}
+            </if>
+
+            <if test="warehouseArea.mixingStrategyId != null ">
+                AND wa.mixing_strategy_id = ${warehouseArea.mixingStrategyId}
+            </if>
+
+            <if test="warehouseArea.mixingStrategy != null and warehouseArea.mixingStrategy != ''">
+                AND wa.mixing_strategy = #{warehouseArea.mixingStrategy}
+            </if>
+
+<!--            <if test="warehouseArea.warehouseIdList!=null  and warehouseArea.warehouseIdList.size > 0">-->
+<!--                and wa.warehouse_id in-->
+<!--                <foreach item="id" collection="warehouseArea.warehouseIdList" open="(" separator=","  close=")" >-->
+<!--                    #{id}-->
+<!--                </foreach>-->
+<!--            </if>-->
+
+        </where>
+        order by wa.id desc
+    </sql>
+
+    <select id="pageList" resultType="com.jayud.wms.model.vo.WarehouseAreaVO" parameterType="com.jayud.wms.model.bo.QueryWarehouseAreaForm">
+        <include refid="selectOne"/>
+    </select>
+
+    <select id="list" resultType="com.jayud.wms.model.vo.WarehouseAreaVO" parameterType="com.jayud.wms.model.po.WarehouseArea">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryWarehouseAreaForExcel" parameterType="map" resultType="java.util.LinkedHashMap">
+        SELECT w.name AS "warehouseName",wa.code AS "code",wa.name AS "name",wa.type_desc AS "typeDesc",
+        case when wa.is_mixing = 1  then '是'
+        when wa.is_mixing = 0  then '否' end as "isMixing",wa.create_by as "createBy",
+        wa.create_time AS "createTime"
+        FROM wms_warehouse_area wa
+        left join wms_warehouse w on w.id = wa.warehouse_id and w.is_deleted = 0
+        WHERE wa.is_deleted = 0
+        <if test="code != null">
+            AND wa.code like concat('%',#{code},'%')
+        </if>
+        <if test="name != null">
+            AND wa.name like concat('%',#{name},'%')
+        </if>
+        <if test="typeDesc != null">
+            AND wa.type_desc = #{typeDesc}
+        </if>
+        <if test="warehouseId != null">
+            AND wa.warehouse_id = #{warehouseId}
+        </if>
+        ORDER BY wa.warehouse_id,wa.id desc
+    </select>
+
+
+    <sql id="selectOne">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/> wa
+        left join wms_warehouse h on h.id = wa.warehouse_id and h.is_deleted = 0
+        <where>
+            wa.is_deleted = 0
+            <if test="warehouseArea.warehouseId != null ">
+                AND warehouse_id = ${warehouseArea.warehouseId}
+            </if>
+
+            <if test="warehouseArea.code != null and warehouseArea.code != ''">
+                AND wa.code like concat('%',#{warehouseArea.code},'%')
+            </if>
+
+            <if test="warehouseArea.name != null and warehouseArea.name != ''">
+                AND wa.name like concat('%',#{warehouseArea.name},'%')
+            </if>
+
+            <if test="warehouseArea.typeDesc != null and warehouseArea.typeDesc != ''">
+                AND wa.type_desc = #{warehouseArea.typeDesc}
+            </if>
+
+            <if test="warehouseArea.isMixing != null ">
+                AND wa.is_mixing = ${warehouseArea.isMixing}
+            </if>
+
+            <if test="warehouseArea.tenantCode != null and warehouseArea.tenantCode != ''">
+                AND wa.tenant_code = #{warehouseArea.tenantCode}
+            </if>
+
+            <if test="warehouseArea.remark != null and warehouseArea.remark != ''">
+                AND wa.remark = #{warehouseArea.remark}
+            </if>
+
+            <if test="warehouseArea.isDeleted != null ">
+                AND wa.is_deleted = ${warehouseArea.isDeleted}
+            </if>
+
+            <if test="warehouseArea.status != null ">
+                AND wa.status = ${warehouseArea.status}
+            </if>
+
+            <if test="warehouseArea.mixingStrategyId != null ">
+                AND wa.mixing_strategy_id = ${warehouseArea.mixingStrategyId}
+            </if>
+
+            <if test="warehouseArea.mixingStrategy != null and warehouseArea.mixingStrategy != ''">
+                AND wa.mixing_strategy = #{warehouseArea.mixingStrategy}
+            </if>
+
+            <if test="warehouseArea.warehouseIdList!=null  and warehouseArea.warehouseIdList.size > 0">
+                and wa.warehouse_id in
+                <foreach item="id" collection="warehouseArea.warehouseIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+
+        </where>
+        order by wa.id desc
+    </sql>
+</mapper>

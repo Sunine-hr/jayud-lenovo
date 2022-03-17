@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsOutboundOrderInfoMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.vo.WmsOutboundOrderInfoVO">
+        <id column="id" property="id" />
+        <result column="notice_order_number" property="noticeOrderNumber" />
+        <result column="order_number" property="orderNumber" />
+        <result column="wave_number" property="waveNumber" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="ower_id" property="owerId" />
+        <result column="ower_code" property="owerCode" />
+        <result column="ower_name" property="owerName" />
+        <result column="document_type" property="documentType" />
+        <result column="order_source_type" property="orderSourceType" />
+        <result column="external_order_number_first" property="externalOrderNumberFirst" />
+        <result column="external_order_number_second" property="externalOrderNumberSecond" />
+        <result column="customer_id" property="customerId" />
+        <result column="customer_code" property="customerCode" />
+        <result column="customer_name" property="customerName" />
+        <result column="plan_delivery_time" property="planDeliveryTime" />
+        <result column="column_one" property="columnOne" />
+        <result column="column_two" property="columnTwo" />
+        <result column="all_count" property="allCount" />
+        <result column="all_height" property="allHeight" />
+        <result column="all_volume" property="allVolume" />
+        <result column="assignor_by" property="assignorBy" />
+        <result column="assignor_time" property="assignorTime" />
+        <result column="order_status_type" property="orderStatusType" />
+        <result column="real_delivery_time" property="realDeliveryTime" />
+        <result column="material_account" property="materialAccount" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="documentType_text" property="documentType_text" />
+        <result column="orderSourceType_text" property="orderSourceType_text" />
+        <result column="orderStatusType_text" property="orderStatusType_text" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        wooi.id, wooi.notice_order_number, wooi.order_number, wooi.wave_number, wooi.warehouse_id, wooi.warehouse_code, wooi.warehouse_name, wooi.ower_id, wooi.ower_code, wooi.ower_name, wooi.document_type, wooi.order_source_type, wooi.external_order_number_first,wooi.external_order_number_second, wooi.customer_id, wooi.customer_code, wooi.customer_name, wooi.plan_delivery_time, wooi.column_one, wooi.column_two, wooi.all_count, wooi.all_height, wooi.all_volume, wooi.assignor_by, wooi.assignor_time, wooi.order_status_type, wooi.real_delivery_time, wooi.material_account, wooi.tenant_code, wooi.remark, wooi.is_deleted, wooi.create_by, wooi.create_time, wooi.update_by,wooi.update_time,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE sd.dict_type = 'outboundNoticeDocumentType' AND sd.is_deleted = 0 AND sd.parent_id != 0 AND wooi.document_type = sd.dict_value) documentType_text,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE sd.dict_type = 'outboundNoticeOrderSourceType' AND sd.is_deleted = 0 AND sd.parent_id != 0 AND wooi.order_source_type = sd.dict_value) orderSourceType_text,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE sd.dict_type = 'outboundOrderStatusType' AND sd.is_deleted = 0 AND sd.parent_id != 0 AND wooi.order_status_type = sd.dict_value) orderStatusType_text
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_outbound_order_info wooi </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            wooi.is_deleted = 0
+            <if test="wmsOutboundOrderInfoVO.noticeOrderNumber != null and wmsOutboundOrderInfoVO.noticeOrderNumber != ''">
+                AND wooi.notice_order_number LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.noticeOrderNumber},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.orderNumber != null and wmsOutboundOrderInfoVO.orderNumber != ''">
+                AND wooi.order_number LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.orderNumber},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.waveNumber != null and wmsOutboundOrderInfoVO.waveNumber != ''">
+                AND wooi.wave_number LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.waveNumber},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.warehouseId != null ">
+                AND wooi.warehouse_id = ${wmsOutboundOrderInfoVO.warehouseId}
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.warehouseCode != null and wmsOutboundOrderInfoVO.warehouseCode != ''">
+                AND wooi.warehouse_code LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.warehouseCode},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.warehouseName != null and wmsOutboundOrderInfoVO.warehouseName != ''">
+                AND wooi.warehouse_name LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.warehouseName},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.owerId != null ">
+                AND wooi.ower_id = ${wmsOutboundOrderInfoVO.owerId}
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.owerCode != null and wmsOutboundOrderInfoVO.owerCode != ''">
+                AND wooi.ower_code LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.owerCode},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.owerName != null and wmsOutboundOrderInfoVO.owerName != ''">
+                AND wooi.ower_name LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.owerName},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.documentType != null ">
+                AND wooi.document_type = ${wmsOutboundOrderInfoVO.documentType}
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.orderSourceType != null ">
+                AND wooi.order_source_type = ${wmsOutboundOrderInfoVO.orderSourceType}
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.externalOrderNumberFirst != null and wmsOutboundOrderInfoVO.externalOrderNumberFirst != ''">
+                AND wooi.external_order_number_first LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.externalOrderNumberFirst},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.externalOrderNumberSecond != null and wmsOutboundOrderInfoVO.externalOrderNumberSecond != ''">
+                AND wooi.external_order_number_second LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.externalOrderNumberSecond},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.customerId != null ">
+                AND wooi.customer_id = ${wmsOutboundOrderInfoVO.customerId}
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.customerCode != null and wmsOutboundOrderInfoVO.customerCode != ''">
+                AND wooi.customer_code LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.customerCode},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.customerName != null and wmsOutboundOrderInfoVO.customerName != ''">
+                AND wooi.customer_name LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.customerName},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.planDeliveryTime != null ">
+                AND wooi.plan_delivery_time = ${wmsOutboundOrderInfo.planDeliveryTime}
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.columnOne != null and wmsOutboundOrderInfoVO.columnOne != ''">
+                AND wooi.column_one LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.columnOne},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.columnTwo != null and wmsOutboundOrderInfoVO.columnTwo != ''">
+                AND wooi.column_two LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.columnTwo},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.allCount != null ">
+                AND wooi.all_count = ${wmsOutboundOrderInfoVO.allCount}
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.allHeight != null ">
+                AND wooi.all_height = ${wmsOutboundOrderInfoVO.allHeight}
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.allVolume != null ">
+                AND wooi.all_volume = ${wmsOutboundOrderInfoVO.allVolume}
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.assignorBy != null and wmsOutboundOrderInfoVO.assignorBy != ''">
+                AND wooi.assignor_by LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.assignorBy},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.assignorTime != null ">
+                AND wooi.assignor_time = ${wmsOutboundOrderInfoVO.assignorTime}
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.orderStatusType != null and wmsOutboundOrderInfoVO.orderStatusType == '0'.toString() ">
+                AND wooi.order_status_type = ${wmsOutboundOrderInfoVO.orderStatusType}
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.realDeliveryTime != null ">
+                AND wooi.real_delivery_time = ${wmsOutboundOrderInfoVO.realDeliveryTime}
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.materialAccount != null ">
+                AND wooi.material_account = ${wmsOutboundOrderInfoVO.materialAccount}
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.tenantCode != null and wmsOutboundOrderInfoVO.tenantCode != ''">
+                AND wooi.tenant_code LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.tenantCode},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.remark != null and wmsOutboundOrderInfoVO.remark != ''">
+                AND wooi.remark LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.remark},'%')
+            </if>
+            <if test="wmsOutboundOrderInfoVO.owerIdList != null and wmsOutboundOrderInfoVO.owerIdList.size > 0 ">
+                AND wooi.ower_id IN
+                <foreach item="id" collection="wmsOutboundOrderInfoVO.owerIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="wmsOutboundOrderInfoVO.warehouseIdList != null and wmsOutboundOrderInfoVO.warehouseIdList.size > 0 ">
+                AND wooi.warehouse_id IN
+                <foreach item="id" collection="wmsOutboundOrderInfoVO.warehouseIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="wmsOutboundOrderInfoVO.orderNumberList != null and wmsOutboundOrderInfoVO.orderNumberList.size > 0 ">
+                AND wooi.order_number IN
+                <foreach item="id" collection="wmsOutboundOrderInfoVO.orderNumberList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.vo.WmsOutboundOrderInfoVO">
+        <include refid="selects"/>
+        ORDER BY
+            wooi.create_time DESC
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.vo.WmsOutboundOrderInfoVO">
+        <include refid="selects"/>
+        ORDER BY
+            wooi.create_time DESC
+    </select>
+
+
+    <select id="queryWmsOutboundOrderInfoForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            notice_order_number 'noticeOrderNumber',
+            order_number 'orderNumber',
+            wave_number 'waveNumber',
+            warehouse_id 'warehouseId',
+            warehouse_code 'warehouseCode',
+            warehouse_name 'warehouseName',
+            ower_id 'owerId',
+            ower_code 'owerCode',
+            ower_name 'owerName',
+            document_type 'documentType',
+            order_source_type 'orderSourceType',
+            external_order_number_first 'externalOrderNumberFirst',
+            external_order_number_second 'externalOrderNumberSecond',
+            customer_id 'customerId',
+            customer_code 'customerCode',
+            customer_name 'customerName',
+            plan_delivery_time 'planDeliveryTime',
+            column_one 'columnOne',
+            column_two 'columnTwo',
+            all_count 'allCount',
+            all_height 'allHeight',
+            all_volume 'allVolume',
+            assignor_by 'assignorBy',
+            assignor_time 'assignorTime',
+            order_status_type 'orderStatusType',
+            real_delivery_time 'realDeliveryTime',
+            material_account 'materialAccount',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_outbound_order_info
+        WHERE is_deleted = 0
+        <if test="noticeOrderNumber != null and noticeOrderNumber != ''">
+            AND notice_order_number = #{noticeOrderNumber}
+        </if>
+        <if test="orderNumber != null and orderNumber != ''">
+            AND order_number = #{orderNumber}
+        </if>
+        <if test="waveNumber != null and waveNumber != ''">
+            AND wave_number = #{waveNumber}
+        </if>
+        <if test="warehouseId != null ">
+            AND warehouse_id = ${warehouseId}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            AND warehouse_code = #{warehouseCode}
+        </if>
+        <if test="warehouseName != null and warehouseName != ''">
+            AND warehouse_name = #{warehouseName}
+        </if>
+        <if test="owerId != null ">
+            AND ower_id = ${owerId}
+        </if>
+        <if test="owerCode != null and owerCode != ''">
+            AND ower_code = #{owerCode}
+        </if>
+        <if test="owerName != null and owerName != ''">
+            AND ower_name = #{owerName}
+        </if>
+        <if test="documentType != null ">
+            AND document_type = ${documentType}
+        </if>
+        <if test="orderSourceType != null ">
+            AND order_source_type = ${orderSourceType}
+        </if>
+        <if test="externalOrderNumberFirst != null and externalOrderNumberFirst != ''">
+            AND external_order_number_first = #{externalOrderNumberFirst}
+        </if>
+        <if test="externalOrderNumberSecond != null and externalOrderNumberSecond != ''">
+            AND external_order_number_second = #{externalOrderNumberSecond}
+        </if>
+        <if test="customerId != null ">
+            AND customer_id = ${customerId}
+        </if>
+        <if test="customerCode != null and customerCode != ''">
+            AND customer_code = #{customerCode}
+        </if>
+        <if test="customerName != null and customerName != ''">
+            AND customer_name = #{customerName}
+        </if>
+        <if test="planDeliveryTime != null ">
+            AND plan_delivery_time = ${planDeliveryTime}
+        </if>
+        <if test="columnOne != null and columnOne != ''">
+            AND column_one = #{columnOne}
+        </if>
+        <if test="columnTwo != null and columnTwo != ''">
+            AND column_two = #{columnTwo}
+        </if>
+        <if test="allCount != null ">
+            AND all_count = ${allCount}
+        </if>
+        <if test="allHeight != null ">
+            AND all_height = ${allHeight}
+        </if>
+        <if test="allVolume != null ">
+            AND all_volume = ${allVolume}
+        </if>
+        <if test="assignorBy != null and assignorBy != ''">
+            AND assignor_by = #{assignorBy}
+        </if>
+        <if test="assignorTime != null ">
+            AND assignor_time = ${assignorTime}
+        </if>
+        <if test="orderStatusType != null ">
+            AND order_status_type = ${orderStatusType}
+        </if>
+        <if test="realDeliveryTime != null ">
+            AND real_delivery_time = ${realDeliveryTime}
+        </if>
+        <if test="materialAccount != null ">
+            AND material_account = ${materialAccount}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+    <select id="selectUnStockToWavePage"  resultMap="BaseResultMap" resultType="com.jayud.wms.model.vo.WmsOutboundOrderInfoVO">
+        <include refid="selects"/>
+        AND wooi.order_number NOT IN (SELECT wwtoi.order_number FROM wms_wave_to_outbound_info wwtoi WHERE wwtoi.is_deleted = 0  )
+        AND wooi.order_number NOT IN (SELECT DISTINCT distribution.order_number FROM wms_outbound_order_info_to_distribution_material distribution WHERE distribution.is_deleted = 0  AND order_number IS NOT NULL)
+        AND wooi.order_status_type = 1
+        AND wooi.wave_number IS NULL
+        ORDER BY
+            wooi.create_time DESC
+    </select>
+    <select id="getNoticOrderNumberByOrderNumber" resultType="java.lang.String">
+        SELECT notice_order_number FROM  wms_outbound_order_info WHERE is_deleted = 0 AND order_number =#{orderNumber}
+    </select>
+    <select id="selectUnStockToWaveList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.vo.WmsOutboundOrderInfoVO">
+        <include refid="selects"/>
+        AND wooi.order_number NOT IN (SELECT wwtoi.order_number FROM wms_wave_to_outbound_info wwtoi WHERE wwtoi.is_deleted = 0  )
+        AND wooi.order_number NOT IN (SELECT DISTINCT distribution.order_number FROM wms_outbound_order_info_to_distribution_material distribution WHERE distribution.is_deleted = 0  AND order_number IS NOT NULL)
+        AND wooi.order_status_type = 1
+        AND wooi.wave_number IS NULL
+        ORDER BY
+        wooi.create_time DESC
+    </select>
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_outbound_order_info WHERE id = ${id}
+    </delete>
+
+    <update id="updateByOrderNumber">
+        UPDATE wms_outbound_order_info SET order_status_type = ${status},update_by=#{username},update_time=now()
+        WHERE is_deleted = 0
+        <if test="orderNumber != null and orderNumber != ''">
+            AND order_number = #{orderNumber}
+        </if>
+        <if test="waveNumber != null and waveNumber != ''">
+            AND wave_number = #{orderNumber}
+        </if>
+
+    </update>
+    <update id="createWaveRelation">
+        UPDATE wms_outbound_order_info SET wave_number = #{waveOrderNumber},update_by=#{username},update_time=now()
+        WHERE is_deleted = 0
+
+        <if test="orderNumberList != null and orderNumberList.size > 0 ">
+            AND order_number IN
+            <foreach item="id" collection="orderNumberList" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+    </update>
+
+    <update id="delWaveRelation">
+        UPDATE wms_outbound_order_info SET wave_number = null ,update_by=#{username},update_time=now()
+        WHERE is_deleted = 0 AND wave_number = #{waveOrderNumber}
+    </update>
+
+
+</mapper>

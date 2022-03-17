@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsPackingOffshelfOrderMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsPackingOffshelfOrder">
+        <id column="id" property="id" />
+        <result column="packing_offshelf_number" property="packingOffshelfNumber" />
+        <result column="order_number" property="orderNumber" />
+        <result column="wave_number" property="waveNumber" />
+        <result column="all_detail_count" property="allDetailCount" />
+        <result column="finish_detail_count" property="finishDetailCount" />
+        <result column="unfinish_detail_count" property="unfinishDetailCount" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, packing_offshelf_number, order_number, wave_number, all_detail_count, finish_detail_count, unfinish_detail_count, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_packing_offshelf_order </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsPackingOffshelfOrder.packingOffshelfNumber != null and wmsPackingOffshelfOrder.packingOffshelfNumber != ''">
+                AND packing_offshelf_number = #{wmsPackingOffshelfOrder.packingOffshelfNumber}
+            </if>
+
+            <if test="wmsPackingOffshelfOrder.orderNumber != null and wmsPackingOffshelfOrder.orderNumber != ''">
+                AND order_number = #{wmsPackingOffshelfOrder.orderNumber}
+            </if>
+
+            <if test="wmsPackingOffshelfOrder.waveNumber != null and wmsPackingOffshelfOrder.waveNumber != ''">
+                AND wave_number = #{wmsPackingOffshelfOrder.waveNumber}
+            </if>
+
+            <if test="wmsPackingOffshelfOrder.allDetailCount != null ">
+                AND all_detail_count = ${wmsPackingOffshelfOrder.allDetailCount}
+            </if>
+
+            <if test="wmsPackingOffshelfOrder.finishDetailCount != null ">
+                AND finish_detail_count = ${wmsPackingOffshelfOrder.finishDetailCount}
+            </if>
+
+            <if test="wmsPackingOffshelfOrder.unfinishDetailCount != null ">
+                AND unfinish_detail_count = ${wmsPackingOffshelfOrder.unfinishDetailCount}
+            </if>
+
+            <if test="wmsPackingOffshelfOrder.tenantCode != null and wmsPackingOffshelfOrder.tenantCode != ''">
+                AND tenant_code = #{wmsPackingOffshelfOrder.tenantCode}
+            </if>
+
+            <if test="wmsPackingOffshelfOrder.remark != null and wmsPackingOffshelfOrder.remark != ''">
+                AND remark = #{wmsPackingOffshelfOrder.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsPackingOffshelfOrder">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsPackingOffshelfOrder">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="queryWmsPackingOffshelfOrderForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            packing_offshelf_number 'packingOffshelfNumber',
+            order_number 'orderNumber',
+            wave_number 'waveNumber',
+            all_detail_count 'allDetailCount',
+            finish_detail_count 'finishDetailCount',
+            unfinish_detail_count 'unfinishDetailCount',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_packing_offshelf_order
+        WHERE is_deleted = 0
+        <if test="packingOffshelfNumber != null and packingOffshelfNumber != ''">
+            AND packing_offshelf_number = #{packingOffshelfNumber}
+        </if>
+        <if test="orderNumber != null and orderNumber != ''">
+            AND order_number = #{orderNumber}
+        </if>
+        <if test="waveNumber != null and waveNumber != ''">
+            AND wave_number = #{waveNumber}
+        </if>
+        <if test="allDetailCount != null ">
+            AND all_detail_count = ${allDetailCount}
+        </if>
+        <if test="finishDetailCount != null ">
+            AND finish_detail_count = ${finishDetailCount}
+        </if>
+        <if test="unfinishDetailCount != null ">
+            AND unfinish_detail_count = ${unfinishDetailCount}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_packing_offshelf_order WHERE id = ${id}
+    </delete>
+
+
+</mapper>

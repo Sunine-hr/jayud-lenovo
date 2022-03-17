@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jayud.wms.mapper.SysUseOwerPermissionMapper">
+
+
+    <select id="query" resultType="com.jayud.wms.model.vo.SysUserOwerPermissionVo">
+        SELECT
+            soi.id owerId,
+            soi.ower_name owerName,
+            IF
+                ( suop.id IS NOT NULL, 1, 0 ) isSelected
+        FROM
+            wms_ower_info soi
+                LEFT JOIN sys_user_ower_permission suop ON soi.id = suop.ower_id
+                AND suop.user_id = #{sysUserOwerPermissionVo.userId}
+                AND suop.is_deleted = 0
+        WHERE
+            soi.is_deleted = 0
+            <if test="sysUserOwerPermissionVo.tenantCode != null and sysUserOwerPermissionVo.tenantCode != '' ">
+                soi.tenant_code = #{sysUserOwerPermissionVo.tenantCode}
+            </if>
+    </select>
+
+    <select id="queryOwerByUser" resultType="java.util.LinkedHashMap">
+        select
+            woi.id owerId,
+            woi.ower_code owerCode,
+            woi.ower_name owerName
+        from wms_ower_info woi
+                 LEFT JOIN sys_user_ower_permission suop ON woi.id = suop.ower_id
+        WHERE
+            woi.is_deleted = 0
+          AND suop.user_id = #{userId} AND suop.is_deleted = 0
+    </select>
+
+    <insert id="addBatch">
+        INSERT INTO `sys_user_ower_permission` ( `id`, `user_id`, `ower_id`, `tenant_code`, `create_by` )
+        VALUES
+        <foreach collection="permissionList" item="permission" index="index" separator=",">
+            (#{permission.id},#{permission.userId},#{permission.owerId},#{permission.tenantCode},#{permission.createBy})
+        </foreach>
+    </insert>
+
+    <update id="delByUserIdAndOwerId">
+        UPDATE sys_user_ower_permission SET is_deleted = 1,update_by = #{updateBy}
+        WHERE is_deleted = 0
+            <if test="userId != null and userId != ''">
+                AND user_id = #{userId}
+            </if>
+            <if test="owerIds != null and owerIds != '' ">
+                <foreach collection="owerIds.split(',')" item="id" open="AND ower_id IN(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+<!--            <if test="owerIdList != null ">-->
+<!--                AND ower_id IN-->
+<!--                <foreach collection="owerIdList" index="id" item="item" open="(" separator="," close=")">-->
+<!--                    #{id}-->
+<!--                </foreach>-->
+<!--            </if>-->
+    </update>
+
+
+
+</mapper>

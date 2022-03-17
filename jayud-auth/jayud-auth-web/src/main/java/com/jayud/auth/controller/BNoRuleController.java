@@ -1,26 +1,22 @@
 package com.jayud.auth.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.common.constant.SysTips;
-import com.jayud.common.BaseResult;
-import com.jayud.auth.service.IBNoRuleService;
 import com.jayud.auth.model.po.BNoRule;
-
-import java.util.List;
-import java.util.*;
-
+import com.jayud.auth.service.IBNoRuleService;
+import com.jayud.common.BaseResult;
+import com.jayud.common.constant.SysTips;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 编号规则表 控制类

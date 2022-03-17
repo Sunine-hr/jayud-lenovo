@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.ShelfOrderMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.ShelfOrder">
+        <id column="id" property="id"/>
+        <result column="order_id" property="orderId"/>
+        <result column="order_num" property="orderNum"/>
+        <result column="material_id" property="materialId"/>
+        <result column="material_code" property="materialCode"/>
+        <result column="num" property="num"/>
+        <result column="unit" property="unit"/>
+        <result column="container_num" property="containerNum"/>
+        <result column="recommended_location" property="recommendedLocation"/>
+        <result column="task_detail_num" property="taskDetailNum"/>
+        <result column="tenant_code" property="tenantCode"/>
+        <result column="remark" property="remark"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="batch_num" property="batchNum"/>
+        <result column="production_date" property="productionDate"/>
+        <result column="column_one" property="columnOne"/>
+        <result column="column_two" property="columnTwo"/>
+        <result column="column_three" property="columnThree"/>
+        <result column="is_put_shelf" property="isPutShelf"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, order_id, order_num, material_id, material_code, num, unit, container_num, recommended_location, task_detail_num, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time, status, batch_num, production_date, column_one, column_two, column_three, is_put_shelf
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_shelf_order </sql>
+
+    <sql id="selects">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="shelfOrder.orderId != null ">
+                AND order_id = ${shelfOrder.orderId}
+            </if>
+
+            <if test="shelfOrder.orderNum != null and shelfOrder.orderNum != ''">
+                AND order_num LIKE CONCAT('%',#{shelfOrder.orderNum}, '%')
+            </if>
+
+            <if test="shelfOrder.materialId != null ">
+                AND material_id = ${shelfOrder.materialId}
+            </if>
+
+            <if test="shelfOrder.materialCode != null and shelfOrder.materialCode != ''">
+                AND material_code LIKE CONCAT('%',#{shelfOrder.materialCode}, '%')
+            </if>
+
+            <if test="shelfOrder.num != null ">
+                AND num = ${shelfOrder.num}
+            </if>
+
+            <if test="shelfOrder.unit != null and shelfOrder.unit != ''">
+                AND unit LIKE CONCAT('%',#{shelfOrder.unit}, '%')
+            </if>
+
+            <if test="shelfOrder.containerNum != null and shelfOrder.containerNum != ''">
+                AND container_num LIKE CONCAT('%',#{shelfOrder.containerNum}, '%')
+            </if>
+
+            <if test="shelfOrder.recommendedLocation != null and shelfOrder.recommendedLocation != ''">
+                AND recommended_location LIKE CONCAT('%',#{shelfOrder.recommendedLocation}, '%')
+            </if>
+
+            <if test="shelfOrder.taskDetailNum != null and shelfOrder.taskDetailNum != ''">
+                AND task_detail_num LIKE CONCAT('%',#{shelfOrder.taskDetailNum}, '%')
+            </if>
+
+            <if test="shelfOrder.tenantCode != null and shelfOrder.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{shelfOrder.tenantCode}, '%')
+            </if>
+
+            <if test="shelfOrder.remark != null and shelfOrder.remark != ''">
+                AND remark LIKE CONCAT('%',#{shelfOrder.remark}, '%')
+            </if>
+
+            <if test="shelfOrder.status != null ">
+                AND status = ${shelfOrder.status}
+            </if>
+
+            <if test="shelfOrder.batchNum != null and shelfOrder.batchNum != ''">
+                AND batch_num LIKE CONCAT('%',#{shelfOrder.batchNum}, '%')
+            </if>
+
+            <if test="shelfOrder.productionDate != null ">
+                AND production_date = ${shelfOrder.productionDate}
+            </if>
+
+            <if test="shelfOrder.columnOne != null and shelfOrder.columnOne != ''">
+                AND column_one LIKE CONCAT('%',#{shelfOrder.columnOne}, '%')
+            </if>
+
+            <if test="shelfOrder.columnTwo != null and shelfOrder.columnTwo != ''">
+                AND column_two LIKE CONCAT('%',#{shelfOrder.columnTwo}, '%')
+            </if>
+
+            <if test="shelfOrder.columnThree != null and shelfOrder.columnThree != ''">
+                AND column_three LIKE CONCAT('%',#{shelfOrder.columnThree}, '%')
+            </if>
+
+            <if test="shelfOrder.isPutShelf != null ">
+                AND is_put_shelf = ${shelfOrder.isPutShelf}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.ShelfOrder">
+        <include refid="selects"/>
+    </select>
+
+    <select id="pageList" parameterType="com.jayud.wms.model.bo.QueryShelfOrderForm"
+            resultType="com.jayud.wms.model.vo.ShelfOrderVO">
+        SELECT
+        so.id,
+        so.order_id,
+        so.order_num,
+        so.material_id,
+        so.material_code,
+        so.num,
+        so.unit,
+        so.container_num,
+        so.recommended_location,
+        so.task_detail_num,
+        so.shelf_num,
+        so.tenant_code,
+        so.remark,
+        so.is_deleted,
+        so.create_by,
+        so.create_time,
+        so.update_by,
+        so.update_time,
+        so.STATUS,
+        so.batch_num,
+        so.production_date,
+        so.column_one,
+        so.column_two,
+        so.column_three,
+        so.is_put_shelf,
+        r.warehouse_id,
+        r.warehouse ,
+        r.ower_id,
+        r.ower
+        FROM
+        wms_shelf_order so
+        LEFT JOIN wms_receipt r ON so.order_id = r.id
+        <where>
+            so.is_deleted = 0
+            AND r.is_deleted =0
+
+            <if test="shelfOrder.id != null ">
+                AND so.id = #{shelfOrder.id}
+            </if>
+            <if test="shelfOrder.warehouseId != null ">
+                AND so.warehouse_id = #{shelfOrder.warehouseId}
+            </if>
+
+            <if test="shelfOrder.materialCode != null and shelfOrder.materialCode != ''">
+                AND so.material_code LIKE CONCAT('%',#{shelfOrder.materialCode}, '%')
+            </if>
+
+            <if test="shelfOrder.orderNum != null and shelfOrder.orderNum != ''">
+                AND so.order_num LIKE CONCAT('%',#{shelfOrder.orderNum}, '%')
+            </if>
+
+            <if test="shelfOrder.containerNum != null and shelfOrder.containerNum != ''">
+                AND so.container_num LIKE CONCAT('%',#{shelfOrder.containerNum}, '%')
+            </if>
+
+            <if test="shelfOrder.owerIdList !=null  and  shelfOrder.owerIdList.size > 0 ">
+                and r.ower_id in
+                <foreach item="id" collection="shelfOrder.owerIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="shelfOrder.warehouseIdList!=null  and shelfOrder.warehouseIdList.size > 0 ">
+                and r.warehouse_id in
+                <foreach item="id" collection="shelfOrder.warehouseIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+        </where>
+
+        ORDER BY so.create_time DESC
+    </select>
+
+
+    <select id="list" parameterType="com.jayud.wms.model.bo.QueryShelfOrderForm" resultType="com.jayud.wms.model.vo.ShelfOrderVO">
+        SELECT
+        so.id,
+        so.order_id,
+        so.order_num,
+        so.material_id,
+        so.material_code,
+        so.num,
+        so.unit,
+        so.container_num,
+        so.recommended_location,
+        so.task_detail_num,
+        so.shelf_num,
+        so.tenant_code,
+        so.remark,
+        so.is_deleted,
+        so.create_by,
+        so.create_time,
+        so.update_by,
+        so.update_time,
+        so.STATUS,
+        so.batch_num,
+        so.production_date,
+        so.column_one,
+        so.column_two,
+        so.column_three,
+        so.is_put_shelf,
+        r.warehouse_id,
+        r.warehouse ,
+        r.ower_id,
+        r.ower
+        FROM
+        wms_shelf_order so
+        LEFT JOIN wms_receipt r ON so.order_id = r.id
+        <where>
+            so.is_deleted = 0
+            AND r.is_deleted =0
+
+            <if test="shelfOrder.id != null ">
+                AND so.id = #{shelfOrder.id}
+            </if>
+            <if test="shelfOrder.warehouseId != null ">
+                AND so.warehouse_id = #{shelfOrder.warehouseId}
+            </if>
+
+            <if test="shelfOrder.materialCode != null and shelfOrder.materialCode != ''">
+                AND so.material_code LIKE CONCAT('%',#{shelfOrder.materialCode}, '%')
+            </if>
+
+            <if test="shelfOrder.orderNum != null and shelfOrder.orderNum != ''">
+                AND so.order_num LIKE CONCAT('%',#{shelfOrder.orderNum}, '%')
+            </if>
+
+            <if test="shelfOrder.containerNum != null and shelfOrder.containerNum != ''">
+                AND so.container_num LIKE CONCAT('%',#{shelfOrder.containerNum}, '%')
+            </if>
+
+            <if test="shelfOrder.owerIdList !=null and  shelfOrder.owerIdList.size > 0 ">
+                and r.ower_id in
+                <foreach item="id" collection="shelfOrder.owerIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="shelfOrder.warehouseIdList!=null  and shelfOrder.warehouseIdList.size > 0">
+                and r.warehouse_id in
+                <foreach item="id" collection="shelfOrder.warehouseIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+        </where>
+
+        ORDER BY so.create_time DESC
+    </select>
+
+    <select id="queryShelfOrderForExcel" parameterType="com.jayud.wms.model.bo.QueryShelfOrderForm"
+            resultType="java.util.LinkedHashMap">
+        SELECT
+
+        so.order_num,
+        r.warehouse ,
+        r.ower,
+        so.material_code,
+        so.num,
+        so.unit,
+        so.container_num,
+        so.recommended_location,
+        so.create_by,
+        so.create_time,
+        so.shelf_num,
+        so.batch_num,
+        so.production_date,
+        so.column_one,
+        so.column_two,
+        so.column_three
+
+        FROM
+        wms_shelf_order so
+        LEFT JOIN receipt r ON so.order_id = r.id
+        <where>
+            so.is_deleted = 0
+            AND r.is_deleted =0
+
+            <if test="shelfOrder.id != null ">
+                AND so.id = #{shelfOrder.id}
+            </if>
+            <if test="shelfOrder.warehouseId != null ">
+                AND so.warehouse_id = #{shelfOrder.warehouseId}
+            </if>
+
+            <if test="shelfOrder.materialCode != null and shelfOrder.materialCode != ''">
+                AND so.material_code LIKE CONCAT('%',#{shelfOrder.materialCode}, '%')
+            </if>
+
+            <if test="shelfOrder.orderNum != null and shelfOrder.orderNum != ''">
+                AND so.order_num LIKE CONCAT('%',#{shelfOrder.orderNum}, '%')
+            </if>
+
+            <if test="shelfOrder.containerNum != null and shelfOrder.containerNum != ''">
+                AND so.container_num LIKE CONCAT('%',#{shelfOrder.containerNum}, '%')
+            </if>
+
+            <if test="shelfOrder.owerIdList !=null  and  shelfOrder.owerIdList.size > 0">
+                and r.ower_id in
+                <foreach item="id" collection="shelfOrder.owerIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="shelfOrder.warehouseIdList!=null  and shelfOrder.warehouseIdList.size > 0">
+                and r.warehouse_id in
+                <foreach item="id" collection="shelfOrder.warehouseIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+        </where>
+
+        ORDER BY so.create_time DESC
+    </select>
+
+    <select id="selectWarehousingReport" parameterType="com.jayud.wms.model.bo.QueryShelfOrderForm" resultType="com.jayud.wms.model.vo.WarehouseingReportVO">
+        select r.warehouse_id warehouseId,r.warehouse,r.ower,so.shelf_num shelfNum,m.material_code materialCode,m.material_type materialType,m.material_name materialName,sot.batch_num batchNum,sot.production_date productionDate,sot.actual_num actualNum,sot.unit,so.container_num containerNum,sot.actual_shelf_space actualShelfSpace,wl.shelf_code shelfCode,sot.starting_station startingStation,sot.create_by createBy,sot.create_time createTime,sot.update_by updateBy,sot.update_time updateTime
+        from wms_shelf_order_task sot
+        left join wms_shelf_order so on sot.shelf_order_id = so.id and so.is_deleted = 0
+        left join wms_receipt r on r.id = so.order_id and r.is_deleted = 0
+        left join wms_material_basic_info m on m.id  = so.material_id and m.is_deleted = 0
+        left join wms_warehouse_location wl on sot.actual_shelf_space = wl.code and wl.is_deleted = 0
+        where sot.is_deleted = 0
+        <if test="shelfOrder.materialCode != null and shelfOrder.materialCode != ''">
+            AND so.material_code LIKE CONCAT('%',#{shelfOrder.materialCode}, '%')
+        </if>
+        <if test="shelfOrder.warehouse != null and shelfOrder.warehouse != ''">
+            AND r.warehouse LIKE CONCAT('%',#{shelfOrder.warehouse}, '%')
+        </if>
+
+        <if test="shelfOrder.orderNum != null and shelfOrder.orderNum != ''">
+            AND so.order_num LIKE CONCAT('%',#{shelfOrder.orderNum}, '%')
+        </if>
+
+        <if test="shelfOrder.createTime != null ">
+            AND sot.create_time = ${shelfOrder.createTime}
+        </if>
+
+        <if test="shelfOrder.owerIdList !=null  and  shelfOrder.owerIdList.size > 0 ">
+            and r.ower_id in
+            <foreach item="id" collection="shelfOrder.owerIdList" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+    </select>
+
+
+</mapper>

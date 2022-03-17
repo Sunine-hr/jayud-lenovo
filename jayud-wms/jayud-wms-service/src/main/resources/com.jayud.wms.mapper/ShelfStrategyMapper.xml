@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.ShelfStrategyMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.ShelfStrategy">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, name, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_shelf_strategy </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="shelfStrategy.name != null and shelfStrategy.name != ''">
+                AND name LIKE CONCAT('%',#{shelfStrategy.name}, '%')
+            </if>
+
+            <if test="shelfStrategy.tenantCode != null and shelfStrategy.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{shelfStrategy.tenantCode}, '%')
+            </if>
+
+            <if test="shelfStrategy.remark != null and shelfStrategy.remark != ''">
+                AND remark LIKE CONCAT('%',#{shelfStrategy.remark}, '%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.ShelfStrategy">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.ShelfStrategy">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryShelfStrategyForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            name 'name',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_shelf_strategy
+        WHERE is_deleted = 0
+        <if test="name != null and name != ''">
+            AND name = #{name}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+
+
+</mapper>

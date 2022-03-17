@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsWaveToOutboundInfoMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsWaveToOutboundInfo">
+        <id column="id" property="id" />
+        <result column="order_number" property="orderNumber" />
+        <result column="wave_number" property="waveNumber" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, order_number, wave_number, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_wave_to_outbound_info </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsWaveToOutboundInfo.orderNumber != null and wmsWaveToOutboundInfo.orderNumber != ''">
+                AND order_number = #{wmsWaveToOutboundInfo.orderNumber}
+            </if>
+
+            <if test="wmsWaveToOutboundInfo.waveNumber != null and wmsWaveToOutboundInfo.waveNumber != ''">
+                AND wave_number = #{wmsWaveToOutboundInfo.waveNumber}
+            </if>
+
+            <if test="wmsWaveToOutboundInfo.tenantCode != null and wmsWaveToOutboundInfo.tenantCode != ''">
+                AND tenant_code = #{wmsWaveToOutboundInfo.tenantCode}
+            </if>
+
+            <if test="wmsWaveToOutboundInfo.remark != null and wmsWaveToOutboundInfo.remark != ''">
+                AND remark = #{wmsWaveToOutboundInfo.remark}
+            </if>
+            <if test="wmsWaveToOutboundInfo.orderNumberList != null and wmsWaveToOutboundInfo.orderNumberList.size >0">
+                AND order_number IN
+                <foreach item="id" collection="wmsWaveToOutboundInfo.orderNumberList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsWaveToOutboundInfo">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsWaveToOutboundInfo">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="queryWmsWaveToOutboundInfoForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            order_number 'orderNumber',
+            wave_number 'waveNumber',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_wave_to_outbound_info
+        WHERE is_deleted = 0
+        <if test="orderNumber != null and orderNumber != ''">
+            AND order_number = #{orderNumber}
+        </if>
+        <if test="waveNumber != null and waveNumber != ''">
+            AND wave_number = #{waveNumber}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_wave_to_outbound_info WHERE id = ${id}
+    </delete>
+
+    <update id="delByWaveNumber">
+        UPDATE wms_wave_to_outbound_info SET is_deleted = 1 ,update_by = #{username},update_time = now()
+        WHERE is_deleted = 0 AND wave_number = #{waveOrderNumber}
+    </update>
+
+    <update id="delByParam">
+        UPDATE wms_wave_to_outbound_info SET is_deleted = 1 ,update_by = #{username},update_time = now()
+        WHERE is_deleted = 0
+        <if test="wmsWaveInfoVO.waveOrderNumberList != null and wmsWaveInfoVO.waveOrderNumberList.size >0">
+            AND wave_number IN
+            <foreach item="id" collection="wmsWaveInfoVO.waveOrderNumberList" open="(" separator=","  close=")" >
+                #{id}
+            </foreach>
+        </if>
+    </update>
+
+</mapper>

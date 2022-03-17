@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.QualityInspectionMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.QualityInspection">
+        <id column="id" property="id" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse" property="warehouse" />
+        <result column="ower_id" property="owerId" />
+        <result column="ower" property="ower" />
+        <result column="qc_no" property="qcNo" />
+        <result column="receipt_num" property="receiptNum" />
+        <result column="receipt_notice_num" property="receiptNoticeNum" />
+        <result column="supplier_id" property="supplierId" />
+        <result column="supplier" property="supplier" />
+        <result column="quality_inspection_dept_id" property="qualityInspectionDeptId" />
+        <result column="quality_inspection_dept" property="qualityInspectionDept" />
+        <result column="quality_inspector" property="qualityInspector" />
+        <result column="quality_inspection_time" property="qualityInspectionTime" />
+        <result column="status" property="status" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, warehouse_id, warehouse, ower_id, ower, qc_no, receipt_num, receipt_notice_num, supplier_id, supplier, quality_inspection_dept_id, quality_inspection_dept, quality_inspector, quality_inspection_time, status, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_quality_inspection </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="qualityInspection.warehouseId != null ">
+                AND warehouse_id = ${qualityInspection.warehouseId}
+            </if>
+
+            <if test="qualityInspection.warehouse != null and qualityInspection.warehouse != ''">
+                AND warehouse LIKE CONCAT('%',#{qualityInspection.warehouse}, '%')
+            </if>
+
+            <if test="qualityInspection.owerId != null ">
+                AND ower_id = ${qualityInspection.owerId}
+            </if>
+
+            <if test="qualityInspection.ower != null and qualityInspection.ower != ''">
+                AND ower LIKE CONCAT('%',#{qualityInspection.ower}, '%')
+            </if>
+
+            <if test="qualityInspection.qcNo != null and qualityInspection.qcNo != ''">
+                AND qc_no LIKE CONCAT('%',#{qualityInspection.qcNo}, '%')
+            </if>
+
+            <if test="qualityInspection.receiptNum != null and qualityInspection.receiptNum != ''">
+                AND receipt_num LIKE CONCAT('%',#{qualityInspection.receiptNum}, '%')
+            </if>
+
+            <if test="qualityInspection.receiptNoticeNum != null and qualityInspection.receiptNoticeNum != ''">
+                AND receipt_notice_num LIKE CONCAT('%',#{qualityInspection.receiptNoticeNum}, '%')
+            </if>
+
+            <if test="qualityInspection.supplierId != null ">
+                AND supplier_id = ${qualityInspection.supplierId}
+            </if>
+
+            <if test="qualityInspection.supplier != null and qualityInspection.supplier != ''">
+                AND supplier LIKE CONCAT('%',#{qualityInspection.supplier}, '%')
+            </if>
+
+            <if test="qualityInspection.qualityInspectionDeptId != null ">
+                AND quality_inspection_dept_id = ${qualityInspection.qualityInspectionDeptId}
+            </if>
+
+            <if test="qualityInspection.qualityInspectionDept != null and qualityInspection.qualityInspectionDept != ''">
+                AND quality_inspection_dept LIKE CONCAT('%',#{qualityInspection.qualityInspectionDept}, '%')
+            </if>
+
+            <if test="qualityInspection.qualityInspector != null and qualityInspection.qualityInspector != ''">
+                AND quality_inspector LIKE CONCAT('%',#{qualityInspection.qualityInspector}, '%')
+            </if>
+
+            <if test="qualityInspection.qualityInspectionTime != null ">
+                AND quality_inspection_time = ${qualityInspection.qualityInspectionTime}
+            </if>
+
+            <if test="qualityInspection.status != null ">
+                AND status = ${qualityInspection.status}
+            </if>
+
+            <if test="qualityInspection.tenantCode != null and qualityInspection.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{qualityInspection.tenantCode}, '%')
+            </if>
+
+            <if test="qualityInspection.remark != null and qualityInspection.remark != ''">
+                AND remark LIKE CONCAT('%',#{qualityInspection.remark}, '%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.QualityInspection">
+        <include refid="selects"/>
+    </select>
+
+    <select id="pageList" parameterType="com.jayud.wms.model.bo.QueryQualityInspectionForm" resultType="com.jayud.wms.model.vo.QualityInspectionVO" >
+
+            SELECT
+            qi.id,
+            qi.warehouse_id,
+            qi.warehouse,
+            qi.ower_id,
+            qi.ower,
+            qi.qc_no,
+            qi.receipt_num,
+            qi.receipt_notice_num,
+            qi.supplier_id,
+            qi.supplier,
+            qi.quality_inspection_dept_id,
+            qi.quality_inspection_dept,
+            qi.quality_inspector,
+            qi.quality_inspection_time,
+            qi.STATUS,
+         ( SELECT sd.dict_name FROM sys_dict sd WHERE  sd.is_deleted=0 and sd.dict_type = "theQualityStatus" AND sd.dict_value = qi.STATUS ) AS statusDetails,
+          qi.tenant_code,
+            qi.remark,
+            qi.is_deleted,
+            qi.create_by,
+            qi.create_time,
+            qi.update_by,
+            qi.update_time
+        FROM
+        wms_quality_inspection  qi
+        <where>
+            qi.is_deleted=0
+
+            <if test="qualityInspection.id != null ">
+                AND qi.id = ${qualityInspection.id}
+            </if>
+
+            <if test="qualityInspection.warehouseId != null ">
+                AND qi.warehouse_id = #{qualityInspection.warehouseId}
+            </if>
+            <if test="qualityInspection.status != null ">
+                AND qi.status = #{qualityInspection.status}
+            </if>
+
+            <if test="qualityInspection.qcNo != null and qualityInspection.qcNo != '' ">
+                AND qi.qc_no LIKE CONCAT('%',#{qualityInspection.qcNo}, '%')
+            </if>
+            <if test="qualityInspection.receiptNum != null  and qualityInspection.receiptNum != ''">
+                AND qi.receipt_num LIKE CONCAT('%',#{qualityInspection.receiptNum}, '%')
+            </if>
+
+            <if test="qualityInspection.theQualityOfTime !=null and qualityInspection.theQualityOfTime.size > 0">
+                and qi.quality_inspection_time between #{qualityInspection.theQualityOfTime[0]} and #{qualityInspection.theQualityOfTime[1]}
+            </if>
+
+            <if test="qualityInspection.warehouseIdList!=null ">
+                and qi.warehouse_id in
+                <foreach item="id" collection="qualityInspection.warehouseIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY qi.create_time DESC
+
+    </select>
+
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.QualityInspection">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryQualityInspectionForExcel" parameterType="com.jayud.wms.model.bo.QueryQualityInspectionForm" resultType="java.util.LinkedHashMap">
+
+        SELECT
+        qi.qc_no,
+        qi.receipt_num,
+        qi.warehouse,
+        qi.quality_inspector,
+        qi.quality_inspection_time,
+        ( SELECT sd.dict_name FROM sys_dict sd WHERE  sd.is_deleted=0 and sd.dict_type = "theQualityStatus" AND sd.dict_value = qi.STATUS ) AS statusDetails,
+        qi.create_by,
+        qi.create_time
+        FROM
+        wms_quality_inspection  qi
+        <where>
+            qi.is_deleted=0
+
+            <if test="qualityInspection.id != null ">
+                AND qi.id = ${qualityInspection.id}
+            </if>
+
+            <if test="qualityInspection.warehouseId != null ">
+                AND qi.warehouse_id = #{qualityInspection.warehouseId}
+            </if>
+            <if test="qualityInspection.status != null ">
+                AND qi.status = #{qualityInspection.status}
+            </if>
+
+            <if test="qualityInspection.qcNo != null and qualityInspection.qcNo != '' ">
+                AND qi.qc_no  LIKE CONCAT('%',#{qualityInspection.qcNo}, '%')
+            </if>
+            <if test="qualityInspection.receiptNum != null  and qualityInspection.receiptNum != ''">
+                AND qi.receipt_num  LIKE CONCAT('%',#{qualityInspection.receiptNum}, '%')
+            </if>
+
+            <if test="qualityInspection.theQualityOfTime !=null and qualityInspection.theQualityOfTime.size > 0">
+                and qi.quality_inspection_time between #{qualityInspection.theQualityOfTime[0]} and #{qualityInspection.theQualityOfTime[1]}
+            </if>
+
+            <if test="qualityInspection.warehouseIdList!=null ">
+                and qi.warehouse_id in
+                <foreach item="id" collection="qualityInspection.warehouseIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY qi.create_time DESC
+
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsOwerInfoMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsOwerInfo">
+        <id column="id" property="id"/>
+        <result column="ower_code" property="owerCode"/>
+        <result column="ower_name" property="owerName"/>
+        <result column="address" property="address"/>
+        <result column="user_name" property="userName"/>
+        <result column="phone_number" property="phoneNumber"/>
+        <result column="email" property="email"/>
+        <result column="column_one" property="columnOne"/>
+        <result column="column_two" property="columnTwo"/>
+        <result column="column_three" property="columnThree"/>
+        <result column="is_on" property="isOn"/>
+        <result column="shelf_strategy_id" property="shelfStrategyId"/>
+        <result column="allocation_strategy_id" property="allocationStrategyId"/>
+        <result column="tenant_code" property="tenantCode"/>
+        <result column="remark" property="remark"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, ower_code, ower_name, address, user_name, phone_number, email, column_one,column_two,column_three,is_on, shelf_strategy_id, allocation_strategy_id, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_ower_info </sql>
+
+    <sql id="selects">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsOwerInfo.owerCode != null and wmsOwerInfo.owerCode != ''">
+                AND ower_code like CONCAT('%',#{wmsOwerInfo.owerCode}, '%')
+            </if>
+
+            <if test="wmsOwerInfo.owerName != null and wmsOwerInfo.owerName != ''">
+                AND ower_name like CONCAT('%',#{wmsOwerInfo.owerName} , '%')
+            </if>
+
+            <if test="wmsOwerInfo.address != null and wmsOwerInfo.address != ''">
+                AND address = #{wmsOwerInfo.address}
+            </if>
+
+            <if test="wmsOwerInfo.userName != null and wmsOwerInfo.userName != ''">
+                AND user_name = #{wmsOwerInfo.userName}
+            </if>
+
+            <if test="wmsOwerInfo.phoneNumber != null and wmsOwerInfo.phoneNumber != ''">
+                AND phone_number = #{wmsOwerInfo.phoneNumber}
+            </if>
+
+            <if test="wmsOwerInfo.email != null and wmsOwerInfo.email != ''">
+                AND email = #{wmsOwerInfo.email}
+            </if>
+
+            <if test="wmsOwerInfo.isOn != null ">
+                AND is_on = ${wmsOwerInfo.isOn}
+            </if>
+
+            <if test="wmsOwerInfo.shelfStrategyId != null ">
+                AND shelf_strategy_id = ${wmsOwerInfo.shelfStrategyId}
+            </if>
+
+            <if test="wmsOwerInfo.allocationStrategyId != null ">
+                AND allocation_strategy_id = ${wmsOwerInfo.allocationStrategyId}
+            </if>
+
+            <if test="wmsOwerInfo.tenantCode != null and wmsOwerInfo.tenantCode != ''">
+                AND tenant_code = #{wmsOwerInfo.tenantCode}
+            </if>
+
+            <if test="wmsOwerInfo.remark != null and wmsOwerInfo.remark != ''">
+                AND remark = #{wmsOwerInfo.remark}
+            </if>
+
+            <if test="wmsOwerInfo.isDeleted != null ">
+                AND is_deleted = ${wmsOwerInfo.isDeleted}
+            </if>
+
+            <if test="wmsOwerInfo.owerIdList != null ">
+                AND id IN
+                <foreach item="id" collection="wmsOwerInfo.owerIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+        </where>
+        ORDER BY create_time desc
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsOwerInfo">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsOwerInfo">
+        <include refid="selects"/>
+    </select>
+
+    <select id="getWmsWmsOwerInfoCodeName" parameterType="com.jayud.wms.model.po.WmsOwerInfo"
+            resultType="com.jayud.wms.model.po.WmsOwerInfo">
+        SELECT
+        id,
+        ower_code,
+        ower_name,
+        address,
+        user_name,
+        phone_number,
+        email,
+        column_one,
+        column_two,
+        column_three,
+        is_on,
+        remark,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM wms_ower_info
+        WHERE is_deleted = 0
+
+        <if test="owerCode != null ">
+            and ower_code =#{owerCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="owerName != null ">
+            and ower_name =#{owerName,jdbcType=VARCHAR}
+        </if>
+
+    </select>
+
+
+    <select id="findWmsWmsOwerInfoCodeNameOne" parameterType="com.jayud.wms.model.po.WmsOwerInfo"
+            resultType="com.jayud.wms.model.vo.WmsOwerInfoVO">
+        SELECT
+            woi.id,
+            woi.ower_code,
+            woi.ower_name,
+            woi.address,
+            woi.user_name,
+            woi.phone_number,
+            woi.email,
+             woi.column_one,
+             woi.column_two,
+             woi.column_three,
+            woi.is_on,
+            woi.shelf_strategy_id,
+            woi.allocation_strategy_id,
+            woi.tenant_code,
+            woi.remark,
+            woi.is_deleted,
+            woi.create_by,
+            woi.create_time,
+            woi.update_by,
+            woi.update_time,
+            GROUP_CONCAT( wotwr.warehouse_id ) warehouseListString
+        FROM
+            wms_ower_info woi
+                LEFT JOIN wms_ower_to_warehouse_relation wotwr ON woi.id = wotwr.ower_id
+        WHERE woi.is_deleted = 0
+          AND wotwr.is_deleted = 0
+          AND woi.id =#{id,jdbcType=BIGINT}
+
+    </select>
+
+    <select id="selectWmsOwerInfoWarehouseIdList" parameterType="com.jayud.wms.model.bo.WmsOwerInfoForm"
+            resultType="com.jayud.wms.model.po.WmsOwerInfo">
+        SELECT
+        woi.id,
+        woi.ower_code,
+        woi.ower_name
+        FROM
+        wms_ower_to_warehouse_relation wotwr
+        LEFT JOIN wms_ower_info woi ON wotwr.ower_id = woi.id
+        WHERE
+        woi.is_deleted = 0
+        AND wotwr.is_deleted = 0
+        <if test="wmsOwerInfoForm.warehouseId != null">
+            AND wotwr.warehouse_id =#{wmsOwerInfoForm.warehouseId,jdbcType=BIGINT}
+        </if>
+
+        <if test="wmsOwerInfoForm.owerCode != null">
+            AND woi.ower_code =#{wmsOwerInfoForm.owerCode,jdbcType=BIGINT}
+        </if>
+        <if test="wmsOwerInfoForm.owerName != null">
+            AND woi.ower_name =#{wmsOwerInfoForm.owerName,jdbcType=BIGINT}
+        </if>
+
+        <if test="wmsOwerInfoForm.isOn != null">
+            AND woi.is_on =#{wmsOwerInfoForm.isOn,jdbcType=BIGINT}
+        </if>
+        GROUP BY woi.ower_name
+
+    </select>
+
+
+    <select id="queryWmsOwerInfoForExcel" parameterType="com.jayud.wms.model.po.WmsOwerInfo"
+            resultType="java.util.LinkedHashMap">
+
+        SELECT
+        ower_code,
+        ower_name,
+        address,
+        user_name,
+        phone_number,
+        email,
+        case when is_on = 1 then '是'
+        when is_on = 0 then '否' end as isOn,
+        create_by,
+        create_time
+        FROM wms_ower_info
+
+        <where>
+            is_deleted = 0
+            <if test="wmsOwerInfo.owerCode != null ">
+                and ower_code =#{wmsOwerInfo.owerCode,jdbcType=VARCHAR}
+            </if>
+
+            <if test="wmsOwerInfo.owerName != null  and wmsOwerInfo.owerName != ''">
+                and ower_name like CONCAT('%',#{wmsOwerInfo.owerName} , '%')
+            </if>
+            <if test="wmsOwerInfo.id != null ">
+                and id =#{wmsOwerInfo.id,jdbcType=BIGINT}
+            </if>
+
+            <if test="wmsOwerInfo.owerIdList != null ">
+                AND id IN
+                <foreach item="id" collection="wmsOwerInfo.owerIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY create_time desc
+
+    </select>
+
+    <!--  查询货主 并且查询货主对应的多个仓库 预留 -->
+    <select id=" " parameterType="map" resultType="java.util.LinkedHashMap">
+
+        SELECT
+        woi.id,
+        woi.ower_code owerCode,
+        woi.ower_name owerName,
+        woi.address address,
+        woi.user_name userName,
+        woi.email email,
+        case when woi.is_on = 1 then '是'
+        when woi.is_on = 0 then '否' end as isOn,
+        woi.shelf_strategy_id,
+        woi.allocation_strategy_id,
+        woi.tenant_code,
+        woi.remark,
+        woi.create_by,
+        woi.create_time,
+        woi.update_by,
+        woi.update_time,
+        GROUP_CONCAT(whnf.warehouseName) warehouseName
+        FROM
+        wms_ower_info woi
+        LEFT JOIN (
+        SELECT
+        wotwr.ower_id AS owerId,
+        wa. NAME AS warehouseName,
+        wotwr.is_deleted
+        FROM
+        wms_ower_to_warehouse_relation wotwr
+        LEFT JOIN wms_warehouse wa ON wotwr.warehouse_id = wa.id
+        WHERE
+        wotwr.is_deleted = 0
+        ) whnf ON whnf.owerId = woi.id
+        WHERE
+        woi.is_deleted = 0
+        AND whnf.is_deleted = 0
+        <if test="code != null">
+            AND w.code = #{code}
+        </if>
+        <if test="name != null">
+            AND w.name = #{name}
+        </if>
+        GROUP BY ower_code
+        ORDER BY woi.create_time DESC
+
+    </select>
+
+
+</mapper>

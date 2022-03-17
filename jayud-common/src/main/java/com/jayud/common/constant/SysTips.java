@@ -204,6 +204,9 @@ public interface SysTips {
      */
     String DO_NOT_RESUBMIT = "请勿重复提交！";
 
+
+    //CRM - START
+
     String TENANT_CODE_SAME = "存在相同租户编码！";
 
     String SYS_URL_TYPE_SAME = "存在系统类型！";
@@ -244,5 +247,94 @@ public interface SysTips {
 
 
     String NOT_CHARGER_ERROR= "请联系负责人修改!";
+
+
+
+    // CRM - END
+
+
+
+    //WMS - START
+
+    String MATERIAL_NOT_EXIT = "物料信息不存在";
+
+    String PARAM_ERROR = "参数错误";
+
+    String MATERIAL_CODE_REPEAT = "物料编码重复！";
+
+    String MATERIAL_NAME_REPEAT = "物料名称重复！";
+
+    String IS_CHANGE_ORDER_ERROR = "已转为出库单不能修改！";
+
+    String WAVE_IS_ALLOCATEll = "波次已分配！";
+
+    String OUTBOUND_IS_DISTRIBUTION = "出库单已分配！";
+
+    String OUTBOUND_IS_FINISH = "出库单已出库！";
+
+    String OUTBOUND_IS_STOCK = "出库单缺货中！";
+
+    String CREATE_PACKING_SUCCESS = "生成拣货下架单成功！";
+
+    String CREATE_PACKING_ERROR = "生成拣货下架单失败！";
+
+    String CANCEL_PACKING_SUCCESS = "撤销拣货下架单成功！";
+
+    String CANCEL_PACKING_ERROR = "撤销拣货下架单失败！";
+
+    String CHANGE_OUTBOUND_ORDER_SUCCESS = "转出库单成功！";
+
+    String OUTBOUND_DISTRIBUTION_SUCCESS = "出库单已分配成功！";
+
+    String CANCEL_OUTBOUND_DISTRIBUTION_SUCCESS = "撤销出库单已分配成功！";
+
+    String CREATE_WAVE_SUCCESS = "成功生成波次！";
+
+    String TO_WAVE_NOT_SAME_ERROR = "请选择同仓库、同货主出库单生成！";
+
+    String EMPTY_OUTBOUND_ORDER_ERROR = "请选择出库单！";
+
+    String PACKING_FINISH_ERROR = "已完成下架，请勿重新下架！";
+
+    String PACKING_ERROR = "正在拣货下架中，请勿重新下架！";
+
+    String PACKING_ACCOUNT_ERROR = "待拣货下架与实际拣货下架不符！";
+
+    String PACKING_MATERIALCODE_ERROR = "拣货下架物料编号不同！";
+
+    String PACKING_LOCATION_ERROR = "拣货下架库位不同！";
+
+    String PACKING_FINISH_SUCCESS = "拣货下架完成！";
+
+    String SHIPPER_REVIEW_SCANNED_ACCOUNT_ERROR = "扫描数量和待扫描数量不相等！";
+
+    String OUTBOUND_ISWAVE_ERROR = "出库单已生成波次！";
+
+    String THE_SAME_ALLOCATION_STRATEGY_ERROR = "已存在相同分配策略！";
+
+    String THE_SAME_ALLOCATION_STRATEGY_DETAIL_ERROR = "已存在相同分配策略配置！";
+
+    String EMPTY_ALLOCATION_STRATEGY_CODE = "分配策略编码为空！";
+
+    String EMPTY_ALLOCATION_STRATEGY_ID = "分配策略ID为空！";
+
+
+    String THE_SAME_MATERIAL_CANNOT_SAME_CONTAINER = "相同物料不能放在同一个容器！";
+
+    String NOT_THIS_ORDER_MATERIALS_INFORMATION = "不是该订单的物料信息！";
+
+    String CONTAINER_DOES_NOT_EXIST = "容器不存在或已关闭！";
+
+    String  INEXISTENCE_MATERIALS_INFORMATION ="物料信息不存在！";
+
+    String  SN_NUMBER_INEXISTENCE_MATERIALS_INFORMATION ="物料序列号不存在该物料信息！";
+
+    String STORAGE_LOCATION_INEXISTENCE_EXIST = "库位信息不存在或已关闭！";
+
+    String EXIT_ALLCATION_STRATEGY_DETAIL = "请先删除策略配置详情!";
+
+    String EXIT_SAMENAME = "存在相同名称!";
+
+    // WMS -END
 }
 

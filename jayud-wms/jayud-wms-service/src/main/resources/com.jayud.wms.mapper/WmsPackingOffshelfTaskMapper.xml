@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsPackingOffshelfTaskMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsPackingOffshelfTask">
+        <id column="id" property="id" />
+        <result column="packing_offshelf_number" property="packingOffshelfNumber" />
+        <result column="order_number" property="orderNumber" />
+        <result column="wave_number" property="waveNumber" />
+        <result column="allocation_id" property="allocationId" />
+        <result column="task_detail_number" property="taskDetailNumber" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="ower_id" property="owerId" />
+        <result column="ower_code" property="owerCode" />
+        <result column="ower_name" property="owerName" />
+        <result column="material_id" property="materialId" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="warehouse_area_id" property="warehouseAreaId" />
+        <result column="warehouse_area_code" property="warehouseAreaCode" />
+        <result column="warehouse_area_name" property="warehouseAreaName" />
+        <result column="warehouse_location_id" property="warehouseLocationId" />
+        <result column="warehouse_location_code" property="warehouseLocationCode" />
+        <result column="container_id" property="containerId" />
+        <result column="container_code" property="containerCode" />
+        <result column="container_name" property="containerName" />
+        <result column="offshelf_location_id" property="offshelfLocationId" />
+        <result column="offshelf_location_code" property="offshelfLocationCode" />
+        <result column="offshelf_location_name" property="offshelfLocationName" />
+        <result column="wait_offshelf_account" property="waitOffshelfAccount" />
+        <result column="real_offshelf_account" property="realOffshelfAccount" />
+        <result column="unit" property="unit" />
+        <result column="status" property="status" />
+        <result column="delivery_workstation_id" property="deliveryWorkstationId" />
+        <result column="delivery_workstation_code" property="deliveryWorkstationCode" />
+        <result column="delivery_workstation_name" property="deliveryWorkstationName" />
+        <result column="delivery_sowing_id" property="deliverySowingId" />
+        <result column="delivery_sowing_code" property="deliverySowingCode" />
+        <result column="delivery_sowing_name" property="deliverySowingName" />
+        <result column="is_issue" property="isIssue"/>
+        <result column="batch_code" property="batchCode" />
+        <result column="material_production_date" property="materialProductionDate" />
+        <result column="custom_field1" property="customField1" />
+        <result column="custom_field2" property="customField2" />
+        <result column="custom_field3" property="customField3" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="receive_time" property="receiveTime"/>
+        <result column="finish_time" property="finishTime"/>
+        <result column="status_text" property="status_text"/>
+        <result column="distribution_batch_code" property="distributionBatchCode" />
+        <result column="distribution_material_production_date" property="distributionMaterialProductionDate" />
+        <result column="distribution_custom_field1" property="distributionCustomField1" />
+        <result column="distribution_custom_field2" property="distributionCustomField2" />
+        <result column="distribution_custom_field3" property="distributionCustomField3" />
+        <result column="shelf_id" property="shelfId" />
+        <result column="shelf_code" property="shelfCode" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, packing_offshelf_number, order_number, wave_number, allocation_id, task_detail_number, warehouse_id, warehouse_code, warehouse_name, ower_id, ower_code, ower_name, material_id, material_code, material_name, warehouse_area_id, warehouse_area_code, warehouse_area_name, warehouse_location_id, warehouse_location_code, container_id, container_code, container_name, offshelf_location_id, offshelf_location_code, offshelf_location_name, wait_offshelf_account, real_offshelf_account, unit, status,receive_time,finish_time, delivery_workstation_id,delivery_workstation_code,  delivery_workstation_name, delivery_sowing_id, delivery_sowing_code,delivery_sowing_name,is_issue, batch_code, material_production_date, custom_field1, custom_field2, custom_field3,tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time, distribution_batch_code, distribution_material_production_date, distribution_custom_field1, distribution_custom_field2, distribution_custom_field3,shelf_id,shelf_code
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_packing_offshelf_task </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE sd.is_deleted = 0 AND sd.dict_type = 'offshelf_packing_status' AND sd.parent_id != 0 AND sd.dict_value = status) status_text
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsPackingOffshelfTask.packingOffshelfNumber != null and wmsPackingOffshelfTask.packingOffshelfNumber != ''">
+                AND packing_offshelf_number = #{wmsPackingOffshelfTask.packingOffshelfNumber}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.orderNumber != null and wmsPackingOffshelfTask.orderNumber != ''">
+                AND order_number = #{wmsPackingOffshelfTask.orderNumber}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.waveNumber != null and wmsPackingOffshelfTask.waveNumber != ''">
+                AND wave_number = #{wmsPackingOffshelfTask.waveNumber}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.allocationId != null ">
+                AND allocation_id = ${wmsPackingOffshelfTask.allocationId}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.taskDetailNumber != null and wmsPackingOffshelfTask.taskDetailNumber != ''">
+                AND task_detail_number = #{wmsPackingOffshelfTask.taskDetailNumber}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.warehouseId != null ">
+                AND warehouse_id = ${wmsPackingOffshelfTask.warehouseId}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.warehouseCode != null and wmsPackingOffshelfTask.warehouseCode != ''">
+                AND warehouse_code = #{wmsPackingOffshelfTask.warehouseCode}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.warehouseName != null and wmsPackingOffshelfTask.warehouseName != ''">
+                AND warehouse_name = #{wmsPackingOffshelfTask.warehouseName}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.owerId != null ">
+                AND ower_id = ${wmsPackingOffshelfTask.owerId}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.owerCode != null and wmsPackingOffshelfTask.owerCode != ''">
+                AND ower_code = #{wmsPackingOffshelfTask.owerCode}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.owerName != null and wmsPackingOffshelfTask.owerName != ''">
+                AND ower_name = #{wmsPackingOffshelfTask.owerName}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.materialId != null ">
+                AND material_id = ${wmsPackingOffshelfTask.materialId}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.materialCode != null and wmsPackingOffshelfTask.materialCode != ''">
+                AND material_code = #{wmsPackingOffshelfTask.materialCode}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.materialName != null and wmsPackingOffshelfTask.materialName != ''">
+                AND material_name = #{wmsPackingOffshelfTask.materialName}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.warehouseAreaId != null and wmsPackingOffshelfTask.warehouseAreaId != ''">
+                AND warehouse_area_id = ${wmsPackingOffshelfTask.warehouseAreaId}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.warehouseAreaCode != null and wmsPackingOffshelfTask.warehouseAreaCode != ''">
+                AND warehouse_area_code = #{wmsPackingOffshelfTask.warehouseAreaCode}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.warehouseAreaName != null and wmsPackingOffshelfTask.warehouseAreaName != ''">
+                AND warehouse_area_name = #{wmsPackingOffshelfTask.warehouseAreaName}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.warehouseLocationId != null ">
+                AND warehouse_location_id = ${wmsPackingOffshelfTask.warehouseLocationId}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.warehouseLocationCode != null and wmsPackingOffshelfTask.warehouseLocationCode != ''">
+                AND warehouse_location_code = #{wmsPackingOffshelfTask.warehouseLocationCode}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.containerId != null ">
+                AND container_id = ${wmsPackingOffshelfTask.containerId}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.containerCode != null and wmsPackingOffshelfTask.containerCode != ''">
+                AND container_code = #{wmsPackingOffshelfTask.containerCode}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.containerName != null and wmsPackingOffshelfTask.containerName != ''">
+                AND container_name = #{wmsPackingOffshelfTask.containerName}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.offshelfLocationId != null ">
+                AND offshelf_location_id = ${wmsPackingOffshelfTask.offshelfLocationId}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.offshelfLocationCode != null and wmsPackingOffshelfTask.offshelfLocationCode != ''">
+                AND offshelf_location_code = #{wmsPackingOffshelfTask.offshelfLocationCode}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.offshelfLocationName != null and wmsPackingOffshelfTask.offshelfLocationName != ''">
+                AND offshelf_location_name = #{wmsPackingOffshelfTask.offshelfLocationName}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.waitOffshelfAccount != null ">
+                AND wait_offshelf_account = ${wmsPackingOffshelfTask.waitOffshelfAccount}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.realOffshelfAccount != null ">
+                AND real_offshelf_account = ${wmsPackingOffshelfTask.realOffshelfAccount}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.unit != null and wmsPackingOffshelfTask.unit != ''">
+                AND unit = #{wmsPackingOffshelfTask.unit}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.status != null ">
+                AND status = ${wmsPackingOffshelfTask.status}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.deliveryWorkstationId != null ">
+                AND delivery_workstation_id = ${wmsPackingOffshelfTask.deliveryWorkstationId}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.deliveryWorkstationCode != null and wmsPackingOffshelfTask.deliveryWorkstationCode != ''">
+                AND delivery_workstation_code = #{wmsPackingOffshelfTask.deliveryWorkstationCode}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.deliveryWorkstationName != null and wmsPackingOffshelfTask.deliveryWorkstationName != ''">
+                AND delivery_workstation_name = #{wmsPackingOffshelfTask.deliveryWorkstationName}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.deliverySowingId != null ">
+                AND delivery_sowing_id = ${wmsPackingOffshelfTask.deliverySowingId}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.deliverySowingCode != null and wmsPackingOffshelfTask.deliverySowingCode != ''">
+                AND delivery_sowing_code = #{wmsPackingOffshelfTask.deliverySowingCode}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.deliverySowingName != null and wmsPackingOffshelfTask.deliverySowingName != ''">
+                AND delivery_sowing_name = #{wmsPackingOffshelfTask.deliverySowingName}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.isIssue != null ">
+                AND is_issue = #{wmsPackingOffshelfTask.isIssue}
+            </if>
+            <if test="wmsPackingOffshelfTask.batchCode != null and wmsPackingOffshelfTask.batchCode != ''">
+                AND batch_code = #{wmsPackingOffshelfTask.batchCode}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.materialProductionDate != null ">
+                AND material_production_date = ${wmsPackingOffshelfTask.materialProductionDate}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.customField1 != null and wmsPackingOffshelfTask.customField1 != '' ">
+                AND custom_field1 = #{wmsPackingOffshelfTask.customField1}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.customField2 != null and wmsPackingOffshelfTask.customField2 != ''">
+                AND custom_field2 = #{wmsPackingOffshelfTask.customField2}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.customField3 != null and wmsPackingOffshelfTask.customField3 != ''">
+                AND custom_field3 = #{wmsPackingOffshelfTask.customField3}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.distributionBatchCode != null and wmsPackingOffshelfTask.distributionBatchCode != ''">
+                AND distribution_batch_code = #{wmsPackingOffshelfTask.distributionBatchCode}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.distributionMaterialProductionDate != null ">
+                AND distribution_material_production_date = ${wmsPackingOffshelfTask.distributionMaterialProductionDate}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.distributionCustomField1 != null and wmsPackingOffshelfTask.distributionCustomField1 != ''">
+                AND distribution_custom_field1 = #{wmsPackingOffshelfTask.distributionCustomField1}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.distributionCustomField2 != null and wmsPackingOffshelfTask.distributionCustomField2 != ''">
+                AND distribution_custom_field2 = #{wmsPackingOffshelfTask.distributionCustomField2}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.distributionCustomField3 != null and wmsPackingOffshelfTask.distributionCustomField3 != ''">
+                AND distribution_custom_field3 = #{wmsPackingOffshelfTask.distributionCustomField3}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.tenantCode != null and wmsPackingOffshelfTask.tenantCode != ''">
+                AND tenant_code = #{wmsPackingOffshelfTask.tenantCode}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.remark != null and wmsPackingOffshelfTask.remark != ''">
+                AND remark = #{wmsPackingOffshelfTask.remark}
+            </if>
+
+            <if test="wmsPackingOffshelfTask.detailNumberList != null and wmsPackingOffshelfTask.detailNumberList.size >0">
+                AND task_detail_number IN
+                <foreach item="id" collection="wmsPackingOffshelfTask.detailNumberList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="wmsPackingOffshelfTask.owerIdList != null and wmsPackingOffshelfTask.owerIdList.size >0">
+                AND ower_id IN
+                <foreach item="id" collection="wmsPackingOffshelfTask.owerIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="wmsPackingOffshelfTask.warehouseIdList != null and wmsPackingOffshelfTask.warehouseIdList.size >0">
+                AND warehouse_id IN
+                <foreach item="id" collection="wmsPackingOffshelfTask.warehouseIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsPackingOffshelfTask">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsPackingOffshelfTask">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="queryWmsPackingOffshelfTaskForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+        id 'id',
+        packing_offshelf_number 'packingOffshelfNumber',
+        order_number 'orderNumber',
+        wave_number 'waveNumber',
+        allocation_id 'allocationId',
+        task_detail_number 'taskDetailNumber',
+        warehouse_id 'warehouseId',
+        warehouse_code 'warehouseCode',
+        warehouse_name 'warehouseName',
+        ower_id 'owerId',
+        ower_code 'owerCode',
+        ower_name 'owerName',
+        material_id 'materialId',
+        material_code 'materialCode',
+        material_name 'materialName',
+        warehouse_area_id 'warehouseAreaId',
+        warehouse_area_code 'warehouseAreaCode',
+        warehouse_area_name 'warehouseAreaName',
+        warehouse_location_id 'warehouseLocationId',
+        warehouse_location_code 'warehouseLocationCode',
+        container_id 'containerId',
+        container_code 'containerCode',
+        container_name 'containerName',
+        offshelf_location_id 'offshelfLocationId',
+        offshelf_location_code 'offshelfLocationCode',
+        offshelf_location_name 'offshelfLocationName',
+        wait_offshelf_account 'waitOffshelfAccount',
+        real_offshelf_account 'realOffshelfAccount',
+        unit 'unit',
+        status 'status',
+        delivery_workstation_id 'deliveryWorkstationId',
+        delivery_workstation_name 'deliveryWorkstationName',
+        delivery_sowing_id 'deliverySowingId',
+        delivery_sowing_name 'deliverySowingName',
+        tenant_code 'tenantCode',
+        remark 'remark',
+        is_deleted 'isDeleted',
+        create_by 'createBy',
+        create_time 'createTime',
+        update_by 'updateBy',
+        update_time 'updateTime'
+        FROM wms_packing_offshelf_task
+        WHERE is_deleted = 0
+        <if test="packingOffshelfNumber != null and packingOffshelfNumber != ''">
+            AND packing_offshelf_number = #{packingOffshelfNumber}
+        </if>
+        <if test="orderNumber != null and orderNumber != ''">
+            AND order_number = #{orderNumber}
+        </if>
+        <if test="waveNumber != null and waveNumber != ''">
+            AND wave_number = #{waveNumber}
+        </if>
+        <if test="allocationId != null ">
+            AND allocation_id = ${allocationId}
+        </if>
+        <if test="taskDetailNumber != null and taskDetailNumber != ''">
+            AND task_detail_number = #{taskDetailNumber}
+        </if>
+        <if test="warehouseId != null ">
+            AND warehouse_id = ${warehouseId}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            AND warehouse_code = #{warehouseCode}
+        </if>
+        <if test="warehouseName != null and warehouseName != ''">
+            AND warehouse_name = #{warehouseName}
+        </if>
+        <if test="owerId != null ">
+            AND ower_id = ${owerId}
+        </if>
+        <if test="owerCode != null and owerCode != ''">
+            AND ower_code = #{owerCode}
+        </if>
+        <if test="owerName != null and owerName != ''">
+            AND ower_name = #{owerName}
+        </if>
+        <if test="materialId != null ">
+            AND material_id = ${materialId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="materialName != null and materialName != ''">
+            AND material_name = #{materialName}
+        </if>
+        <if test="warehouseAreaId != null and warehouseAreaId != ''">
+            AND warehouse_area_id = #{warehouseAreaId}
+        </if>
+        <if test="warehouseAreaCode != null and warehouseAreaCode != ''">
+            AND warehouse_area_code = #{warehouseAreaCode}
+        </if>
+        <if test="warehouseAreaName != null and warehouseAreaName != ''">
+            AND warehouse_area_name = #{warehouseAreaName}
+        </if>
+        <if test="warehouseLocationId != null ">
+            AND warehouse_location_id = ${warehouseLocationId}
+        </if>
+        <if test="warehouseLocationCode != null and warehouseLocationCode != ''">
+            AND warehouse_location_code = #{warehouseLocationCode}
+        </if>
+        <if test="containerId != null ">
+            AND container_id = ${containerId}
+        </if>
+        <if test="containerCode != null and containerCode != ''">
+            AND container_code = #{containerCode}
+        </if>
+        <if test="containerName != null and containerName != ''">
+            AND container_name = #{containerName}
+        </if>
+        <if test="offshelfLocationId != null ">
+            AND offshelf_location_id = ${offshelfLocationId}
+        </if>
+        <if test="offshelfLocationCode != null and offshelfLocationCode != ''">
+            AND offshelf_location_code = #{offshelfLocationCode}
+        </if>
+        <if test="offshelfLocationName != null and offshelfLocationName != ''">
+            AND offshelf_location_name = #{offshelfLocationName}
+        </if>
+        <if test="waitOffshelfAccount != null ">
+            AND wait_offshelf_account = ${waitOffshelfAccount}
+        </if>
+        <if test="realOffshelfAccount != null ">
+            AND real_offshelf_account = ${realOffshelfAccount}
+        </if>
+        <if test="unit != null and unit != ''">
+            AND unit = #{unit}
+        </if>
+        <if test="status != null ">
+            AND status = ${status}
+        </if>
+        <if test="deliveryWorkstationId != null ">
+            AND delivery_workstation_id = ${deliveryWorkstationId}
+        </if>
+        <if test="deliveryWorkstationName != null and deliveryWorkstationName != ''">
+            AND delivery_workstation_name = #{deliveryWorkstationName}
+        </if>
+        <if test="deliverySowingId != null ">
+            AND delivery_sowing_id = ${deliverySowingId}
+        </if>
+        <if test="deliverySowingName != null and deliverySowingName != ''">
+            AND delivery_sowing_name = #{deliverySowingName}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+    <select id="getPackingTask" resultType="com.jayud.wms.model.vo.WmsPackingOffshelfVO">
+        SELECT
+            alls.packingOffshelfNumber,
+            alls.orderNumber,
+            alls.waveNumber,
+            alls.allCount,
+            alls.finishCount,
+            alls.create_time
+        FROM
+        (SELECT DISTINCT
+            task.packing_offshelf_number packingOffshelfNumber,
+            task.order_number orderNumber,
+            task.wave_number waveNumber,
+            (SELECT COUNT(task1.id) FROM wms_packing_offshelf_task task1 WHERE task1.is_deleted = 0 AND task1.packing_offshelf_number = task.packing_offshelf_number) allCount,
+            IFNULL((SELECT COUNT(task1.id) FROM wms_packing_offshelf_task task1 WHERE task1.`status` = 3    AND task1.is_deleted = 0 AND task1.packing_offshelf_number = task.packing_offshelf_number),0) finishCount,
+            (SELECT task1.create_time FROM wms_packing_offshelf_task task1 WHERE task1.is_deleted = 0 AND task1.packing_offshelf_number = task.packing_offshelf_number ORDER BY task1.create_time DESC LIMIT 1) create_time
+        FROM
+            ( SELECT id, packing_offshelf_number, order_number, wave_number, `status`, create_time FROM wms_packing_offshelf_task WHERE is_deleted = 0
+            <if test="wmsPackingOffshelfVO.packingOffshelfNumber != null and wmsPackingOffshelfVO.packingOffshelfNumber != ''">
+                AND packing_offshelf_number LIKE CONCAT('%',#{wmsPackingOffshelfVO.packingOffshelfNumber},'%')
+            </if>
+            <if test="wmsPackingOffshelfVO.orderNumber != null and wmsPackingOffshelfVO.orderNumber != ''">
+                AND order_number = #{wmsPackingOffshelfVO.orderNumber}
+            </if>
+            <if test="wmsPackingOffshelfVO.waveNumber != null and wmsPackingOffshelfVO.waveNumber != ''">
+                AND wave_number = #{wmsPackingOffshelfVO.waveNumber}
+            </if>
+            <if test="wmsPackingOffshelfVO.warehouseCode != null and wmsPackingOffshelfVO.warehouseCode != ''">
+                AND warehouse_code = #{wmsPackingOffshelfVO.warehouseCode}
+            </if>
+            ) task) alls WHERE alls.allCount != alls.finishCount
+    </select>
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_packing_offshelf_task WHERE id = ${id}
+    </delete>
+    <update id="delByNumber">
+        UPDATE wms_packing_offshelf_task SET is_deleted = 1,update_by = #{username},update_time=now()
+        WHERE is_deleted = 0
+        <if test="orderNumber != null and orderNumber != ''">
+            AND order_number = #{orderNumber}
+        </if>
+        <if test="waveNumber != null and waveNumber != ''">
+            AND wave_number = #{waveNumber}
+        </if>
+        <if test="detailNumber != null and detailNumber != ''">
+            AND task_detail_number = #{detailNumber}
+        </if>
+    </update>
+
+    <select id="selectDeliveryReport" parameterType="com.jayud.wms.model.bo.QueryShelfOrderForm" resultType="com.jayud.wms.model.vo.DeliveryReportVO">
+        select wpt.warehouse_id warehouseId,wpt.warehouse_name warehouseName,wpt.packing_offshelf_number packingOffshelfNumber,m.material_code materialCode,m.material_type materialType,m.material_name materialName,wpt.ower_name owerName,wpt.batch_code batchCode,wpt.material_production_date materialProductionDate,wpt.real_offshelf_account realOffshelfAccount,wpt.unit,wpt.container_name containerName,wl.shelf_code shelfCode,wpt.delivery_workstation_name deliveryWorkstationName,wpt.create_by createBy,wpt.create_time createTime,wpt.update_by updateBy,wpt.update_time updateTime
+        from wms_packing_offshelf_task wpt
+        left join wms_material_basic_info m on m.id  = wpt.material_id and m.is_deleted = 0
+        left join wms_warehouse_location wl on wpt.offshelf_location_code = wl.code and wl.is_deleted = 0
+        where wpt.is_deleted = 0
+        <if test="shelfOrder.materialCode != null and shelfOrder.materialCode != ''">
+            AND wpt.material_code LIKE CONCAT('%',#{shelfOrder.materialCode}, '%')
+        </if>
+        <if test="shelfOrder.warehouse != null and shelfOrder.warehouse != ''">
+            AND wpt.warehouse_name LIKE CONCAT('%',#{shelfOrder.warehouse}, '%')
+        </if>
+
+        <if test="shelfOrder.orderNum != null and shelfOrder.orderNum != ''">
+            AND so.packing_offshelf_number LIKE CONCAT('%',#{shelfOrder.orderNum}, '%')
+        </if>
+
+        <if test="shelfOrder.createTime != null ">
+            AND wpt.create_time = ${shelfOrder.createTime}
+        </if>
+
+        <if test="shelfOrder.owerIdList !=null  and  shelfOrder.owerIdList.size > 0 ">
+            and wpt.ower_id in
+            <foreach item="id" collection="shelfOrder.owerIdList" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+    </select>
+    <select id="selectOutboundToPackingMsg" resultType="com.jayud.wms.model.dto.OutboundToPacking.WmsOutboundToPackingDTO">
+        SELECT
+            wooi.id orderId,
+            wooi.order_number orderNumber,
+            wooi.notice_order_number noticeOrderNumber,
+            wooi.order_status_type orderStatus,
+            wooitm.id materialId,
+            wooitm.material_id materialTypeId,
+            wooitm.material_code materialTypeCode,
+            wooitm.material_name materialTypeName,
+            wooitm.status_type materialStatus,
+            wooitdm.id distributionMaterialId,
+            wpot.`status` packingMaterialStatus
+        FROM
+            wms_outbound_order_info wooi,
+            wms_outbound_order_info_to_material wooitm,
+            wms_outbound_order_info_to_distribution_material wooitdm,
+            wms_packing_offshelf_task wpot
+        WHERE
+            wooi.is_deleted = 0
+          AND wooitm.is_deleted = 0
+          AND wooitdm.is_deleted = 0
+          AND wpot.is_deleted = 0
+          AND wooi.order_number = wooitm.order_number
+          AND wooitm.id = wooitdm.order_material_id
+          AND wooitdm.id = wpot.allocation_id
+          AND wpot.order_number = #{orderNumber}
+        ORDER BY
+            wooi.order_number,
+            wooitm.id
+    </select>
+
+
+</mapper>

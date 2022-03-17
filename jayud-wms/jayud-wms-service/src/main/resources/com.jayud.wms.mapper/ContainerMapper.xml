@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.ContainerMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.Container">
+        <id column="id" property="id"/>
+        <result column="warehouse_id" property="warehouseId"/>
+        <result column="code" property="code"/>
+        <result column="type" property="type"/>
+        <result column="longs" property="longs"/>
+        <result column="wide" property="wide"/>
+        <result column="high" property="high"/>
+        <result column="status" property="status"/>
+        <result column="tenant_code" property="tenantCode"/>
+        <result column="number" property="number"/>
+        <result column="remark" property="remark"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+    </sql>
+
+
+    <select id="pageList"  parameterType="com.jayud.wms.model.bo.ContainerForm"
+            resultType="com.jayud.wms.model.vo.ContainerVO">
+
+        SELECT
+        c.id,
+        c.warehouse_id warehouseId,
+        c.code,
+        c.type,
+        c.longs,
+        c.wide,
+        c.high,
+        c.number,
+        c.tenant_code tenantCode,
+        c.remark,
+        c.status,
+        c.is_deleted isDeleted,
+        c.create_by createBy,
+        c.create_time createTime,
+        c.update_by updateBy,
+        c.update_time updateTime,
+        w.name warehouseName
+        FROM
+        wms_container c
+        left join wms_warehouse w
+        on c.warehouse_id=w.id
+
+        <where>
+            c.is_deleted = 0
+            <if test="container.code != null and container.code != ''">
+                AND c.code = #{container.code}
+            </if>
+
+            <if test="container.type  != null and container.type  != ''">
+                AND c.type = #{container.type }
+            </if>
+
+            <if test="container.warehouseId != null ">
+                AND c.warehouse_id = #{container.warehouseId}
+            </if>
+
+            <if test="container.id  != null ">
+                AND c.id = #{container.id}
+            </if>
+
+            <if test="container.createBy  != null and container.createBy  != ''">
+                AND c.create_by = #{container.createBy}
+            </if>
+
+            <if test="container.warehouseIdList!=null ">
+                and c.warehouse_id in
+                <foreach item="id" collection="container.warehouseIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+
+        ORDER BY c.create_time desc
+    </select>
+
+
+    <select id="list"  parameterType="com.jayud.wms.model.bo.ContainerForm"
+            resultType="com.jayud.wms.model.vo.ContainerVO">
+
+        SELECT
+        c.id,
+        c.warehouse_id warehouseId,
+        c.code,
+        c.type,
+        c.longs,
+        c.wide,
+        c.high,
+        c.number,
+        c.tenant_code tenantCode,
+        c.remark,
+        c.status,
+        c.is_deleted isDeleted,
+        c.create_by createBy,
+        c.create_time createTime,
+        c.update_by updateBy,
+        c.update_time updateTime,
+        w.name warehouseName
+        FROM
+        wms_container c
+        left join wms_warehouse w
+        on c.warehouse_id=w.id
+
+        <where>
+
+            c.is_deleted = 0
+            <if test="container.code != null and container.code != ''">
+                AND c.code = #{container.code}
+            </if>
+
+            <if test="container.type  != null and container.type  != ''">
+                AND c.type = #{container.type }
+            </if>
+
+            <if test="container.warehouseId != null ">
+                AND c.warehouse_id = #{container.warehouseId}
+            </if>
+
+            <if test="container.id  != null ">
+                AND c.id = #{container.id}
+            </if>
+
+            <if test="container.createBy  != null and container.createBy  != ''">
+                AND c.create_by = #{container.createBy}
+            </if>
+
+            <if test="container.warehouseIdList!=null ">
+                and c.warehouse_id in
+                <foreach item="id" collection="container.warehouseIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+       </where>
+        ORDER BY c.create_time desc
+
+    </select>
+
+    <select id="getContainerOne" parameterType="com.jayud.wms.model.po.Container"
+            resultType="com.jayud.wms.model.bo.ContainerForm">
+
+        SELECT
+        id,
+        warehouse_id,
+        code,
+        type,
+        longs,
+        wide,
+        high,
+        number,
+        tenant_code,
+        remark,
+        status,
+        is_deleted,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        wms_container
+        WHERE
+        is_deleted = 0
+        <if test="container.code != null ">
+            AND code = #{container.code}
+        </if>
+        <if test="container.id != null ">
+            AND id = #{container.id}
+        </if>
+        <if test="container.createBy != null ">
+            AND create_by = #{container.createBy}
+        </if>
+        <if test="container.warehouseId != null ">
+            AND warehouse_id = #{container.warehouseId}
+        </if>
+    </select>
+
+
+    <!--    <update id="updateWmsOwerToWarehouseRelationId" parameterType="WmsOwerToWarehouseRelation">-->
+    <!--        update wms_ower_to_warehouse_relation-->
+    <!--        set is_deleted=1-->
+    <!--        where ower_id=#{owerId,jdbcType=BIGINT}-->
+
+    <!--    </update>-->
+
+    <select id="queryContainerForExcel" parameterType="com.jayud.wms.model.bo.ContainerForm" resultType="java.util.LinkedHashMap">
+        SELECT
+        c.code code,
+        c.type,
+        w.name warehouseName,
+        concat_ws( '*', c.longs, c.wide, c.high ) AS "length",
+        c.remark,
+        CASE
+        WHEN c.STATUS = 1 THEN '是'
+        WHEN c.STATUS = 0 THEN'否' 	END AS "status",
+        c.create_by createBy,
+        c.create_time createTime
+        FROM
+        wms_container c
+        LEFT JOIN wms_warehouse w ON c.warehouse_id = w.id
+
+        <where>
+
+            c.is_deleted = 0
+            <if test="container.code != null and container.code != ''">
+                AND c.code = #{container.code}
+            </if>
+
+            <if test="container.type  != null and container.type  != ''">
+                AND c.type = #{container.type }
+            </if>
+
+            <if test="container.warehouseId != null ">
+                AND c.warehouse_id = #{container.warehouseId}
+            </if>
+
+            <if test="container.id  != null ">
+                AND c.id = #{container.id}
+            </if>
+
+            <if test="container.createBy  != null and container.createBy  != ''">
+                AND c.create_by = #{container.createBy}
+            </if>
+
+            <if test="container.warehouseIdList!=null ">
+                and c.warehouse_id in
+                <foreach item="id" collection="container.warehouseIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY c.type
+        ORDER BY c.create_time desc
+
+    </select>
+</mapper>

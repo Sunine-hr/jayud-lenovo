@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.IncomingSeedingMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.IncomingSeeding">
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="order_num" property="orderNum" />
+        <result column="material_id" property="materialId" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="container_num" property="containerNum" />
+        <result column="num" property="num" />
+        <result column="allocated_quantity" property="allocatedQuantity" />
+        <result column="unit" property="unit" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="batch_num" property="batchNum" />
+        <result column="production_date" property="productionDate" />
+        <result column="column_one" property="columnOne" />
+        <result column="column_two" property="columnTwo" />
+        <result column="column_three" property="columnThree" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, order_id, order_num, material_id, material_code, material_name, container_num, num, allocated_quantity, unit, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time, batch_num, production_date, column_one, column_two, column_three
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_incoming_seeding </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="incomingSeeding.orderId != null ">
+                AND order_id = ${incomingSeeding.orderId}
+            </if>
+
+            <if test="incomingSeeding.orderNum != null and incomingSeeding.orderNum != ''">
+                AND order_num LIKE CONCAT('%',#{incomingSeeding.orderNum}, '%')
+            </if>
+
+            <if test="incomingSeeding.materialId != null ">
+                AND material_id = ${incomingSeeding.materialId}
+            </if>
+
+            <if test="incomingSeeding.materialCode != null and incomingSeeding.materialCode != ''">
+                AND material_code LIKE CONCAT('%',#{incomingSeeding.materialCode}, '%')
+            </if>
+
+            <if test="incomingSeeding.materialName != null and incomingSeeding.materialName != ''">
+                AND material_name LIKE CONCAT('%',#{incomingSeeding.materialName}, '%')
+            </if>
+
+            <if test="incomingSeeding.containerNum != null and incomingSeeding.containerNum != ''">
+                AND container_num LIKE CONCAT('%',#{incomingSeeding.containerNum}, '%')
+            </if>
+
+            <if test="incomingSeeding.num != null ">
+                AND num = ${incomingSeeding.num}
+            </if>
+
+            <if test="incomingSeeding.allocatedQuantity != null ">
+                AND allocated_quantity = ${incomingSeeding.allocatedQuantity}
+            </if>
+
+            <if test="incomingSeeding.unit != null and incomingSeeding.unit != ''">
+                AND unit LIKE CONCAT('%',#{incomingSeeding.unit}, '%')
+            </if>
+
+            <if test="incomingSeeding.tenantCode != null and incomingSeeding.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{incomingSeeding.tenantCode}, '%')
+            </if>
+
+            <if test="incomingSeeding.remark != null and incomingSeeding.remark != ''">
+                AND remark LIKE CONCAT('%',#{incomingSeeding.remark}, '%')
+            </if>
+
+            <if test="incomingSeeding.batchNum != null and incomingSeeding.batchNum != ''">
+                AND batch_num LIKE CONCAT('%',#{incomingSeeding.batchNum}, '%')
+            </if>
+
+            <if test="incomingSeeding.productionDate != null ">
+                AND production_date = ${incomingSeeding.productionDate}
+            </if>
+
+            <if test="incomingSeeding.columnOne != null and incomingSeeding.columnOne != ''">
+                AND column_one LIKE CONCAT('%',#{incomingSeeding.columnOne}, '%')
+            </if>
+
+            <if test="incomingSeeding.columnTwo != null and incomingSeeding.columnTwo != ''">
+                AND column_two LIKE CONCAT('%',#{incomingSeeding.columnTwo}, '%')
+            </if>
+
+            <if test="incomingSeeding.columnThree != null ">
+                AND column_three = ${incomingSeeding.columnThree}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.IncomingSeeding">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.IncomingSeeding">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryIncomingSeedingForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            order_id 'orderId',
+            order_num 'orderNum',
+            material_id 'materialId',
+            material_code 'materialCode',
+            material_name 'materialName',
+            container_num 'containerNum',
+            num 'num',
+            allocated_quantity 'allocatedQuantity',
+            unit 'unit',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime',
+            batch_num 'batchNum',
+            production_date 'productionDate',
+            column_one 'columnOne',
+            column_two 'columnTwo',
+            column_three 'columnThree'
+        FROM wms_incoming_seeding
+        WHERE is_deleted = 0
+        <if test="orderId != null ">
+            AND order_id = ${orderId}
+        </if>
+        <if test="orderNum != null and orderNum != ''">
+            AND order_num = #{orderNum}
+        </if>
+        <if test="materialId != null ">
+            AND material_id = ${materialId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="materialName != null and materialName != ''">
+            AND material_name = #{materialName}
+        </if>
+        <if test="containerNum != null and containerNum != ''">
+            AND container_num = #{containerNum}
+        </if>
+        <if test="num != null ">
+            AND num = ${num}
+        </if>
+        <if test="allocatedQuantity != null ">
+            AND allocated_quantity = ${allocatedQuantity}
+        </if>
+        <if test="unit != null and unit != ''">
+            AND unit = #{unit}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+        <if test="batchNum != null and batchNum != ''">
+            AND batch_num = #{batchNum}
+        </if>
+        <if test="productionDate != null ">
+            AND production_date = ${productionDate}
+        </if>
+        <if test="columnOne != null and columnOne != ''">
+            AND column_one = #{columnOne}
+        </if>
+        <if test="columnTwo != null and columnTwo != ''">
+            AND column_two = #{columnTwo}
+        </if>
+        <if test="columnThree != null ">
+            AND column_three = ${columnThree}
+        </if>
+
+    </select>
+
+
+
+</mapper>

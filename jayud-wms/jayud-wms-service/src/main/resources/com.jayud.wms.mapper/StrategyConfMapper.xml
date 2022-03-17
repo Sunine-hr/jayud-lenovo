@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.StrategyConfMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.StrategyConf">
+        <id column="id" property="id" />
+        <result column="shelf_strategy_id" property="shelfStrategyId" />
+        <result column="type" property="type" />
+        <result column="type_desc" property="typeDesc" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_area_id" property="warehouseAreaId" />
+        <result column="frozen" property="frozen" />
+        <result column="location_type" property="locationType" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="sort" property="sort" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, shelf_strategy_id, type, type_desc, warehouse_id, warehouse_area_id, frozen, location_type, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time, sort
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_strategy_conf </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="strategyConf.shelfStrategyId != null ">
+                AND shelf_strategy_id = ${strategyConf.shelfStrategyId}
+            </if>
+
+            <if test="strategyConf.type != null ">
+                AND type = ${strategyConf.type}
+            </if>
+
+            <if test="strategyConf.typeDesc != null and strategyConf.typeDesc != ''">
+                AND type_desc LIKE CONCAT('%',#{strategyConf.typeDesc}, '%')
+            </if>
+
+            <if test="strategyConf.warehouseId != null ">
+                AND warehouse_id = ${strategyConf.warehouseId}
+            </if>
+
+            <if test="strategyConf.warehouseAreaId != null ">
+                AND warehouse_area_id = ${strategyConf.warehouseAreaId}
+            </if>
+
+            <if test="strategyConf.frozen != null ">
+                AND frozen = ${strategyConf.frozen}
+            </if>
+
+            <if test="strategyConf.locationType != null and strategyConf.locationType != ''">
+                AND location_type LIKE CONCAT('%',#{strategyConf.locationType}, '%')
+            </if>
+
+            <if test="strategyConf.tenantCode != null and strategyConf.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{strategyConf.tenantCode}, '%')
+            </if>
+
+            <if test="strategyConf.remark != null and strategyConf.remark != ''">
+                AND remark LIKE CONCAT('%',#{strategyConf.remark}, '%')
+            </if>
+
+            <if test="strategyConf.sort != null ">
+                AND sort = ${strategyConf.sort}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.StrategyConf">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.StrategyConf">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryStrategyConfForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            shelf_strategy_id 'shelfStrategyId',
+            type 'type',
+            type_desc 'typeDesc',
+            warehouse_id 'warehouseId',
+            warehouse_area_id 'warehouseAreaId',
+            frozen 'frozen',
+            location_type 'locationType',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime',
+            sort 'sort'
+        FROM wms_strategy_conf
+        WHERE is_deleted = 0
+        <if test="shelfStrategyId != null ">
+            AND shelf_strategy_id = ${shelfStrategyId}
+        </if>
+        <if test="type != null ">
+            AND type = ${type}
+        </if>
+        <if test="typeDesc != null and typeDesc != ''">
+            AND type_desc = #{typeDesc}
+        </if>
+        <if test="warehouseId != null ">
+            AND warehouse_id = ${warehouseId}
+        </if>
+        <if test="warehouseAreaId != null ">
+            AND warehouse_area_id = ${warehouseAreaId}
+        </if>
+        <if test="frozen != null ">
+            AND frozen = ${frozen}
+        </if>
+        <if test="locationType != null and locationType != ''">
+            AND location_type = #{locationType}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+        <if test="sort != null ">
+            AND sort = ${sort}
+        </if>
+
+    </select>
+
+
+
+</mapper>

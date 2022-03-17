@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsMaterialPackingSpecsMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsMaterialPackingSpecs">
+        <id column="id" property="id" />
+        <result column="material_basic_info_id" property="materialBasicInfoId" />
+        <result column="specs_type" property="specsType" />
+        <result column="unit" property="unit" />
+        <result column="account" property="account" />
+        <result column="weight" property="weight" />
+        <result column="length" property="length" />
+        <result column="width" property="width" />
+        <result column="height" property="height" />
+        <result column="volume" property="volume" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="specsType_text" property="specsType_text" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, material_basic_info_id, specs_type, unit, account, weight, length, width, height, volume, remark, is_deleted, create_by, create_time, update_by, update_time,
+            IF(specs_type=1,'主单位',IF(specs_type=2,'小包装',IF(specs_type=3,'中包装',IF(specs_type=4,'大包装','暂无类型')))) specsType_text
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_material_packing_specs </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsMaterialPackingSpecs.materialBasicInfoId != null ">
+                AND material_basic_info_id = ${wmsMaterialPackingSpecs.materialBasicInfoId}
+            </if>
+
+            <if test="wmsMaterialPackingSpecs.specsType != null and wmsMaterialPackingSpecs.specsType != '0'.toString()">
+                AND specs_type = ${wmsMaterialPackingSpecs.specsType}
+            </if>
+
+            <if test="wmsMaterialPackingSpecs.unit != null and wmsMaterialPackingSpecs.unit != ''">
+                AND unit = #{wmsMaterialPackingSpecs.unit}
+            </if>
+
+            <if test="wmsMaterialPackingSpecs.account != null ">
+                AND account = ${wmsMaterialPackingSpecs.account}
+            </if>
+
+            <if test="wmsMaterialPackingSpecs.weight != null ">
+                AND weight = ${wmsMaterialPackingSpecs.weight}
+            </if>
+
+            <if test="wmsMaterialPackingSpecs.length != null ">
+                AND length = ${wmsMaterialPackingSpecs.length}
+            </if>
+
+            <if test="wmsMaterialPackingSpecs.width != null ">
+                AND width = ${wmsMaterialPackingSpecs.width}
+            </if>
+
+            <if test="wmsMaterialPackingSpecs.height != null ">
+                AND height = ${wmsMaterialPackingSpecs.height}
+            </if>
+
+            <if test="wmsMaterialPackingSpecs.volume != null ">
+                AND volume = ${wmsMaterialPackingSpecs.volume}
+            </if>
+
+            <if test="wmsMaterialPackingSpecs.remark != null and wmsMaterialPackingSpecs.remark != ''">
+                AND remark = #{wmsMaterialPackingSpecs.remark}
+            </if>
+            <if test="wmsMaterialPackingSpecs.materialIdList != null and  wmsMaterialPackingSpecs.materialIdList.size > 0">
+                AND material_basic_info_id IN
+                <foreach item="id" collection="wmsMaterialPackingSpecs.materialIdList" open="(" separator="," close=")">
+                    ${id}
+                </foreach>
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsMaterialPackingSpecs">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsMaterialPackingSpecs">
+        <include refid="selects"/>
+    </select>
+
+    <update id="delByMaterialId">
+        UPDATE wms_material_packing_specs
+        SET is_deleted = 1,update_by = #{username},update_time = now()
+        WHERE
+            is_deleted = 0
+            AND material_basic_info_id = #{materialId}
+    </update>
+
+
+
+</mapper>

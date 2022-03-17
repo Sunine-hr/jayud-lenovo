@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WarehouseLocationMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WarehouseLocation">
+        <id column="id" property="id" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_area_id" property="warehouseAreaId" />
+        <result column="code" property="code" />
+        <result column="type" property="type" />
+        <result column="type_desc" property="typeDesc" />
+        <result column="row" property="row" />
+        <result column="column_num" property="columnNum" />
+        <result column="layers" property="layers" />
+        <result column="length" property="length" />
+        <result column="wide" property="wide" />
+        <result column="high" property="high" />
+        <result column="is_mixing" property="isMixing" />
+        <result column="is_in_frozen" property="isInFrozen" />
+        <result column="is_out_frozen" property="isOutFrozen" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="status" property="status" />
+        <result column="mixing_strategy_id" property="mixingStrategyId" />
+        <result column="mixing_strategy" property="mixingStrategy" />
+        <result column="route_sorting" property="routeSorting" />
+        <result column="shelf_id" property="shelfId" />
+        <result column="shelf_code" property="shelfCode" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            wl.id, wl.warehouse_id, wl.warehouse_area_id, wl.code, wl.type, wl.type_desc, wl.row, wl.column_num, wl.layers, wl.length, wl.wide, wl.high, wl.is_mixing, wl.is_in_frozen, wl.is_out_frozen, wl.tenant_code, wl.remark, wl.is_deleted, wl.create_by, wl.create_time, wl.update_by, wl.update_time, wl.status, wl.mixing_strategy_id, wl.mixing_strategy, wl.route_sorting,h.name warehouseName,wa.name warehouseAreaName,wl.shelf_id,wl.shelf_code
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_warehouse_location </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/> wl
+        left join warehouse h on h.id = wl.warehouse_id and h.is_deleted = 0
+        left join warehouse_area wa on wa.id = wl.warehouse_area_id and wa.is_deleted = 0
+        <where>
+            wl.is_deleted = 0
+            <if test="warehouseLocation.warehouseId != null ">
+                AND wl.warehouse_id = ${warehouseLocation.warehouseId}
+            </if>
+
+            <if test="warehouseLocation.warehouseAreaId != null ">
+                AND warehouse_area_id = ${warehouseLocation.warehouseAreaId}
+            </if>
+
+            <if test="warehouseLocation.code != null and warehouseLocation.code != ''">
+                AND wl.code like concat('%',#{warehouseLocation.code},'%')
+            </if>
+
+            <if test="warehouseLocation.type != null ">
+                AND wl.type = ${warehouseLocation.type}
+            </if>
+
+            <if test="warehouseLocation.typeDesc != null and warehouseLocation.typeDesc != ''">
+                AND wl.type_desc = #{warehouseLocation.typeDesc}
+            </if>
+
+            <if test="warehouseLocation.row != null ">
+                AND wl.row = ${warehouseLocation.row}
+            </if>
+
+            <if test="warehouseLocation.columnNum != null ">
+                AND wl.column_num = ${warehouseLocation.columnNum}
+            </if>
+
+            <if test="warehouseLocation.layers != null ">
+                AND wl.layers = ${warehouseLocation.layers}
+            </if>
+
+            <if test="warehouseLocation.length != null ">
+                AND wl.length = ${warehouseLocation.length}
+            </if>
+
+            <if test="warehouseLocation.wide != null ">
+                AND wl.wide = ${warehouseLocation.wide}
+            </if>
+
+            <if test="warehouseLocation.high != null ">
+                AND wl.high = ${warehouseLocation.high}
+            </if>
+
+            <if test="warehouseLocation.isMixing != null ">
+                AND wl.is_mixing = ${warehouseLocation.isMixing}
+            </if>
+
+            <if test="warehouseLocation.isInFrozen != null ">
+                AND wl.is_in_frozen = ${warehouseLocation.isInFrozen}
+            </if>
+
+            <if test="warehouseLocation.isOutFrozen != null ">
+                AND wl.is_out_frozen = ${warehouseLocation.isOutFrozen}
+            </if>
+
+            <if test="warehouseLocation.tenantCode != null and warehouseLocation.tenantCode != ''">
+                AND wl.tenant_code = #{warehouseLocation.tenantCode}
+            </if>
+
+            <if test="warehouseLocation.remark != null and warehouseLocation.remark != ''">
+                AND wl.remark = #{warehouseLocation.remark}
+            </if>
+
+            <if test="warehouseLocation.isDeleted != null ">
+                AND wl.is_deleted = ${warehouseLocation.isDeleted}
+            </if>
+
+            <if test="warehouseLocation.status != null ">
+                AND wl.status = ${warehouseLocation.status}
+            </if>
+
+            <if test="warehouseLocation.mixingStrategyId != null ">
+                AND wl.mixing_strategy_id = ${warehouseLocation.mixingStrategyId}
+            </if>
+
+            <if test="warehouseLocation.mixingStrategy != null and warehouseLocation.mixingStrategy != ''">
+                AND wl.mixing_strategy = #{warehouseLocation.mixingStrategy}
+            </if>
+
+            <if test="warehouseLocation.routeSorting != null ">
+                AND wl.route_sorting = ${warehouseLocation.routeSorting}
+            </if>
+
+            <if test="warehouseLocation.locationIdList != null and warehouseLocation.locationIdList.size>0">
+                AND wl.id IN
+                <foreach item="id" collection="warehouseLocation.locationIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="warehouseLocation.shelfCode != null and warehouseLocation.shelfCode != ''">
+                AND wl.shelf_code= #{warehouseLocation.shelfCode}
+            </if>
+
+            order by wl.id desc
+        </where>
+    </sql>
+
+    <select id="pageList" resultType="com.jayud.wms.model.vo.WarehouseLocationVO" parameterType="com.jayud.wms.model.bo.QueryWarehouseLocationForm">
+        <include refid="selectOne"/>
+    </select>
+
+    <select id="list" resultType="com.jayud.wms.model.vo.WarehouseLocationVO" parameterType="com.jayud.wms.model.po.WarehouseLocation">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryWarehouseLocationForExcel" parameterType="map" resultType="java.util.LinkedHashMap">
+        SELECT w.name AS "warehouseName",wa.name AS "warehouseAreaName",wl.code AS "code",wl.type_desc AS "typeDesc",wl.row AS "row",
+        wl.column_num AS "columnNum",wl.layers AS "layers",
+        concat_ws('*',wl.length,wl.wide,wl.high) AS "length",
+        case when wl.is_mixing = 1  then '是'
+        when wl.is_mixing = 0  then '否' end as "isMixing",
+        case when wl.is_in_frozen = 1  then '是'
+        when wl.is_in_frozen = 0  then '否' end as "isInFrozen",
+        case when wl.is_out_frozen = 1  then '是'
+        when wl.is_out_frozen = 0  then '否' end as "isOutFrozen",
+        wl.create_by as "createBy",wl.create_time AS "createTime",wl.remark as remark
+        FROM wms_warehouse_location wl
+        left join wms_warehouse_area wa on wa.id = wl.warehouse_area_id and wa.is_deleted = 0
+        left join wms_warehouse w on w.id = wl.warehouse_id and w.is_deleted = 0
+        WHERE wl.is_deleted = 0
+        <if test="code != null">
+            AND wl.code = #{code}
+        </if>
+        <if test="warehouseAreaId != null">
+            AND wl.warehouse_area_id = #{warehouseAreaId}
+        </if>
+        <if test="typeDesc != null">
+            AND wl.type_desc = #{typeDesc}
+        </if>
+        <if test="warehouseId != null">
+            AND wl.warehouse_id = #{warehouseId}
+        </if>
+        ORDER BY wl.id ASC
+    </select>
+
+    <select id="queryWarehouseLocation" resultType="com.jayud.wms.model.vo.WarehouseLocationVO">
+        SELECT
+               wl.id, wl.warehouse_id, wl.warehouse_area_id, wl.code, wl.type, wl.type_desc, wl.row, wl.column_num, wl.layers, wl.length, wl.wide, wl.high, wl.is_mixing, wl.is_in_frozen, wl.is_out_frozen, wl.tenant_code, wl.remark, wl.is_deleted, wl.create_by, wl.create_time, wl.update_by, wl.update_time, wl.status, wl.mixing_strategy_id, wl.mixing_strategy, wl.route_sorting,h.name warehouseName,wa.name warehouseAreaName
+        FROM wms_warehouse_location wl
+        left join wms_warehouse h on h.id = wl.warehouse_id and h.is_deleted = 0
+        left join wms_warehouse_area wa on wa.id = wl.warehouse_area_id and wa.is_deleted = 0
+        where
+        wl.is_deleted = 0
+        <if test="form.notIds!=null and form.notIds.size()>0">
+            AND wl.id not in
+            <foreach item="item" index="index" collection="form.notIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="form.warehouseId != null ">
+            AND wl.warehouse_id = ${form.warehouseId}
+        </if>
+        <if test="form.warehouseIds !=null and form.warehouseIds.size()>0">
+            AND wl.warehouse_id in
+            <foreach item="item" index="index" collection="form.warehouseIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="form.warehouseAreaId != null ">
+            AND warehouse_area_id = ${form.warehouseAreaId}
+        </if>
+
+        <if test="form.code != null and form.code != ''">
+            AND wl.code like concat('%',#{form.code},'%')
+        </if>
+        order by wl.id desc
+    </select>
+    <select id="selectLocationCapacityByShelfId" resultType="com.jayud.wms.model.po.WarehouseLocation">
+        select
+               id, code, shelf_id, warehouse_area_id, warehouse_id, IFNULL(SUM(location_capacity),0)  location_capacity
+        from wms_warehouse_location
+        where
+            is_deleted = 0
+          and warehouse_id = #{shelfMap.warehouseId}
+          and warehouse_area_id = #{shelfMap.warehouseAreaId}
+          and shelf_id = #{shelfMap.shelfId}
+        GROUP BY id
+    </select>
+
+    <sql id="selectOne">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/> wl
+        left join wms_warehouse h on h.id = wl.warehouse_id and h.is_deleted = 0
+        left join wms_warehouse_area wa on wa.id = wl.warehouse_area_id and wa.is_deleted = 0
+        <where>
+            wl.is_deleted = 0
+            <if test="warehouseLocation.warehouseId != null ">
+                AND wl.warehouse_id = ${warehouseLocation.warehouseId}
+            </if>
+
+            <if test="warehouseLocation.warehouseAreaId != null ">
+                AND warehouse_area_id = ${warehouseLocation.warehouseAreaId}
+            </if>
+
+            <if test="warehouseLocation.code != null and warehouseLocation.code != ''">
+                AND wl.code like concat('%',#{warehouseLocation.code},'%')
+            </if>
+
+            <if test="warehouseLocation.type != null ">
+                AND wl.type = ${warehouseLocation.type}
+            </if>
+
+            <if test="warehouseLocation.typeDesc != null and warehouseLocation.typeDesc != ''">
+                AND wl.type_desc = #{warehouseLocation.typeDesc}
+            </if>
+
+            <if test="warehouseLocation.row != null ">
+                AND wl.row = ${warehouseLocation.row}
+            </if>
+
+            <if test="warehouseLocation.columnNum != null ">
+                AND wl.column_num = ${warehouseLocation.columnNum}
+            </if>
+
+            <if test="warehouseLocation.layers != null ">
+                AND wl.layers = ${warehouseLocation.layers}
+            </if>
+
+            <if test="warehouseLocation.length != null ">
+                AND wl.length = ${warehouseLocation.length}
+            </if>
+
+            <if test="warehouseLocation.wide != null ">
+                AND wl.wide = ${warehouseLocation.wide}
+            </if>
+
+            <if test="warehouseLocation.high != null ">
+                AND wl.high = ${warehouseLocation.high}
+            </if>
+
+            <if test="warehouseLocation.isMixing != null ">
+                AND wl.is_mixing = ${warehouseLocation.isMixing}
+            </if>
+
+            <if test="warehouseLocation.isInFrozen != null ">
+                AND wl.is_in_frozen = ${warehouseLocation.isInFrozen}
+            </if>
+
+            <if test="warehouseLocation.isOutFrozen != null ">
+                AND wl.is_out_frozen = ${warehouseLocation.isOutFrozen}
+            </if>
+
+            <if test="warehouseLocation.tenantCode != null and warehouseLocation.tenantCode != ''">
+                AND wl.tenant_code = #{warehouseLocation.tenantCode}
+            </if>
+
+            <if test="warehouseLocation.remark != null and warehouseLocation.remark != ''">
+                AND wl.remark = #{warehouseLocation.remark}
+            </if>
+
+            <if test="warehouseLocation.isDeleted != null ">
+                AND wl.is_deleted = ${warehouseLocation.isDeleted}
+            </if>
+
+            <if test="warehouseLocation.status != null ">
+                AND wl.status = ${warehouseLocation.status}
+            </if>
+
+            <if test="warehouseLocation.mixingStrategyId != null ">
+                AND wl.mixing_strategy_id = ${warehouseLocation.mixingStrategyId}
+            </if>
+
+            <if test="warehouseLocation.mixingStrategy != null and warehouseLocation.mixingStrategy != ''">
+                AND wl.mixing_strategy = #{warehouseLocation.mixingStrategy}
+            </if>
+
+            <if test="warehouseLocation.routeSorting != null ">
+                AND wl.route_sorting = ${warehouseLocation.routeSorting}
+            </if>
+            <if test="warehouseLocation.warehouseIdList!=null  and warehouseLocation.warehouseIdList.size > 0">
+                and wl.warehouse_id in
+                <foreach item="id" collection="warehouseLocation.warehouseIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+
+            order by wl.id desc
+        </where>
+    </sql>
+</mapper>

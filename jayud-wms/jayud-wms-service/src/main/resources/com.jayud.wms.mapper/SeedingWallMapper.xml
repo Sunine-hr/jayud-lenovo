@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.SeedingWallMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.SeedingWall">
+        <id column="id" property="id" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="type" property="type" />
+        <result column="type_desc" property="typeDesc" />
+        <result column="column_one" property="columnOne" />
+        <result column="column_two" property="columnTwo" />
+        <result column="column_three" property="columnThree" />
+        <result column="row" property="row" />
+        <result column="column" property="column" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, warehouse_id, code, `name`, `type`, type_desc, column_one, column_two, column_three, `row`, `column`, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time, status
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_seeding_wall </sql>
+
+    <sql id="selects">
+        SELECT
+            sw.id, sw.warehouse_id, sw.code, sw.`name`, sw.`type`, sw.type_desc, sw.column_one, sw.column_two, sw.column_three, sw.`row`, sw.`column`, sw.tenant_code, sw.remark, sw.is_deleted, sw.create_by, sw.create_time, sw.update_by, sw.update_time, sw.status,
+            w.name warehouseName,
+            wo.code workbenchCode,wo.name workbenchName
+        FROM wms_seeding_wall sw
+        left join wms_warehouse w on sw.warehouse_id = w.id
+        left join wms_breakout_workbench bw on sw.code = bw.code
+        left join wms_workbench wo on bw.workbench_id = wo.id
+        where
+        sw.is_deleted = 0
+        <if test="seedingWall.warehouseId != null ">
+            AND sw.warehouse_id = #{seedingWall.warehouseId}
+        </if>
+
+        <if test="seedingWall.code != null and seedingWall.code != ''">
+            AND sw.code LIKE CONCAT('%',#{seedingWall.code}, '%')
+        </if>
+
+        <if test="seedingWall.name != null and seedingWall.name != ''">
+            AND sw.name LIKE CONCAT('%',#{seedingWall.name}, '%')
+        </if>
+
+        <if test="seedingWall.type != null ">
+            AND sw.type = #{seedingWall.type}
+        </if>
+
+        <if test="seedingWall.typeDesc != null and seedingWall.typeDesc != ''">
+            AND sw.type_desc LIKE CONCAT('%',#{seedingWall.typeDesc}, '%')
+        </if>
+
+        <if test="seedingWall.columnOne != null and seedingWall.columnOne != ''">
+            AND sw.column_one LIKE CONCAT('%',#{seedingWall.columnOne}, '%')
+        </if>
+
+        <if test="seedingWall.columnTwo != null and seedingWall.columnTwo != ''">
+            AND sw.column_two LIKE CONCAT('%',#{seedingWall.columnTwo}, '%')
+        </if>
+
+        <if test="seedingWall.columnThree != null and seedingWall.columnThree != ''">
+            AND sw.column_three LIKE CONCAT('%',#{seedingWall.columnThree}, '%')
+        </if>
+
+        <if test="seedingWall.row != null ">
+            AND sw.row = #{seedingWall.row}
+        </if>
+
+        <if test="seedingWall.column != null ">
+            AND sw.column = #{seedingWall.column}
+        </if>
+
+        <if test="seedingWall.tenantCode != null and seedingWall.tenantCode != ''">
+            AND sw.tenant_code LIKE CONCAT('%',#{seedingWall.tenantCode}, '%')
+        </if>
+
+        <if test="seedingWall.remark != null and seedingWall.remark != ''">
+            AND sw.remark LIKE CONCAT('%',#{seedingWall.remark}, '%')
+        </if>
+
+        <if test="seedingWall.isDeleted != null ">
+            AND sw.is_deleted = #{seedingWall.isDeleted}
+        </if>
+        <if test="seedingWall.status != null ">
+            AND sw.status = #{seedingWall.status}
+        </if>
+        <if test="seedingWall.workbenchCode != null and seedingWall.workbenchCode != ''">
+            AND wo.code LIKE CONCAT('%',#{seedingWall.workbenchCode}, '%')
+        </if>
+        order by sw.id DESC
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.SeedingWall">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.SeedingWall">
+        <include refid="selects"/>
+    </select>
+
+    <select id="querySeedingWallForExcel" resultType="java.util.LinkedHashMap">
+        select
+            id,`code`,`name`,`type_desc` 'typeDesc',
+            case when status = 0  then '禁用'
+            when status = 1  then '启用' end as status,
+            `remark`
+        from wms_seeding_wall
+        WHERE is_deleted = 0
+        <if test="warehouseId != null ">
+            AND `warehouse_id` = #{warehouseId}
+        </if>
+        <if test="code != null and code != ''">
+            AND `code` LIKE CONCAT('%',#{code},'%')
+        </if>
+        <if test="name != null and name != ''">
+            AND `name` LIKE CONCAT('%',#{name},'%')
+        </if>
+    </select>
+
+
+</mapper>

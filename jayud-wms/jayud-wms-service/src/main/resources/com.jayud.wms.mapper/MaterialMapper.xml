@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.MaterialMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.Material">
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="order_num" property="orderNum" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="material_type_id" property="materialTypeId" />
+        <result column="material_type" property="materialType" />
+        <result column="num" property="num" />
+        <result column="actual_num" property="actualNum" />
+        <result column="unit" property="unit" />
+        <result column="weight" property="weight" />
+        <result column="volume" property="volume" />
+        <result column="specification" property="specification" />
+        <result column="container_num" property="containerNum" />
+        <result column="status" property="status" />
+        <result column="external_order_num" property="externalOrderNum" />
+        <result column="external_line_num" property="externalLineNum" />
+        <result column="batch_num" property="batchNum" />
+        <result column="production_date" property="productionDate" />
+        <result column="column_one" property="columnOne" />
+        <result column="column_two" property="columnTwo" />
+        <result column="column_three" property="columnThree" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_put_shelf" property="isPutShelf" />
+        <result column="description" property="description" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, order_id, order_num, material_code, material_name, material_type_id, material_type, num, actual_num, unit, weight, volume, specification, container_num, status, external_order_num, external_line_num, batch_num, production_date, column_one, column_two, column_three, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time, is_put_shelf,description
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_material </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="material.orderId != null ">
+                AND order_id = ${material.orderId}
+            </if>
+
+            <if test="material.orderNum != null and material.orderNum != ''">
+                AND order_num LIKE CONCAT('%',#{material.orderNum}, '%')
+            </if>
+
+            <if test="material.materialCode != null and material.materialCode != ''">
+                AND material_code LIKE CONCAT('%',#{material.materialCode}, '%')
+            </if>
+
+            <if test="material.materialName != null and material.materialName != ''">
+                AND material_name LIKE CONCAT('%',#{material.materialName}, '%')
+            </if>
+
+            <if test="material.materialTypeId != null ">
+                AND material_type_id = ${material.materialTypeId}
+            </if>
+
+            <if test="material.materialType != null and material.materialType != ''">
+                AND material_type LIKE CONCAT('%',#{material.materialType}, '%')
+            </if>
+
+            <if test="material.num != null ">
+                AND num = ${material.num}
+            </if>
+
+            <if test="material.actualNum != null ">
+                AND actual_num = ${material.actualNum}
+            </if>
+
+            <if test="material.unit != null and material.unit != ''">
+                AND unit LIKE CONCAT('%',#{material.unit}, '%')
+            </if>
+
+            <if test="material.weight != null ">
+                AND weight = ${material.weight}
+            </if>
+
+            <if test="material.volume != null ">
+                AND volume = ${material.volume}
+            </if>
+
+            <if test="material.specification != null and material.specification != ''">
+                AND specification LIKE CONCAT('%',#{material.specification}, '%')
+            </if>
+
+            <if test="material.containerNum != null and material.containerNum != ''">
+                AND container_num LIKE CONCAT('%',#{material.containerNum}, '%')
+            </if>
+
+            <if test="material.status != null ">
+                AND status = ${material.status}
+            </if>
+
+            <if test="material.externalOrderNum != null and material.externalOrderNum != ''">
+                AND external_order_num LIKE CONCAT('%',#{material.externalOrderNum}, '%')
+            </if>
+
+            <if test="material.externalLineNum != null and material.externalLineNum != ''">
+                AND external_line_num LIKE CONCAT('%',#{material.externalLineNum}, '%')
+            </if>
+
+            <if test="material.batchNum != null and material.batchNum != ''">
+                AND batch_num LIKE CONCAT('%',#{material.batchNum}, '%')
+            </if>
+
+            <if test="material.productionDate != null ">
+                AND production_date = ${material.productionDate}
+            </if>
+
+            <if test="material.columnOne != null and material.columnOne != ''">
+                AND column_one LIKE CONCAT('%',#{material.columnOne}, '%')
+            </if>
+
+            <if test="material.columnTwo != null and material.columnTwo != ''">
+                AND column_two LIKE CONCAT('%',#{material.columnTwo}, '%')
+            </if>
+
+            <if test="material.columnThree != null and material.columnThree != ''">
+                AND column_three LIKE CONCAT('%',#{material.columnThree}, '%')
+            </if>
+
+            <if test="material.tenantCode != null and material.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{material.tenantCode}, '%')
+            </if>
+
+            <if test="material.remark != null and material.remark != ''">
+                AND remark LIKE CONCAT('%',#{material.remark}, '%')
+            </if>
+
+            <if test="material.isPutShelf != null ">
+                AND is_put_shelf = ${material.isPutShelf}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.Material">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.Material">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="findMaterialOne" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.Material">
+        SELECT <include refid="Base_Column_List"/>
+         FROM <include refid="tname"/>
+            <where>
+                is_deleted = 0
+                <if test="material.materialCode != null ">
+                    AND material_code = #{material.materialCode}
+                </if>
+
+                <if test="material.orderNum != null ">
+                    AND order_num = #{material.orderNum}
+                </if>
+
+            </where>
+        ORDER BY  id    asc
+    </select>
+
+
+    <select id="findMaterialSNOne" parameterType="com.jayud.wms.model.bo.QualityMaterialForm" resultType="com.jayud.wms.model.po.Material">
+
+            SELECT
+                m.id,
+                m.order_id,
+                m.order_num,
+                m.material_code,
+                m.material_name,
+                m.material_type_id,
+                m.material_type,
+                m.num,
+                m.actual_num,
+                m.unit,
+                m.weight,
+                m.volume,
+                m.specification,
+                m.container_num,
+                m.STATUS,
+                m.external_order_num,
+                m.external_line_num,
+                m.batch_num,
+                m.production_date,
+                m.column_one,
+                m.column_two,
+                m.column_three,
+                m.tenant_code,
+                m.remark,
+                m.is_deleted,
+                m.create_by,
+                m.create_time,
+                m.update_by,
+                m.update_time,
+                m.is_put_shelf,
+                m.description
+
+
+            FROM wms_material_sn  msn
+            right join wms_material m
+            on msn.material_code=m.material_code and msn.order_num=m.order_num
+            <where>
+                msn.is_deleted=0
+                and m.is_deleted=0
+                <if test="material.serialNum != null ">
+                    AND msn.serial_num = #{material.serialNum}
+                </if>
+
+                <if test="material.orderNum != null ">
+                    AND msn.order_num = #{material.orderNum}
+                </if>
+
+            </where>
+
+        ORDER BY  m.id    asc
+    </select>
+
+
+    <select id="queryMaterialForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            order_id 'orderId',
+            order_num 'orderNum',
+            material_code 'materialCode',
+            material_name 'materialName',
+            material_type_id 'materialTypeId',
+            material_type 'materialType',
+            num 'num',
+            actual_num 'actualNum',
+            unit 'unit',
+            weight 'weight',
+            volume 'volume',
+            specification 'specification',
+            container_num 'containerNum',
+            status 'status',
+            external_order_num 'externalOrderNum',
+            external_line_num 'externalLineNum',
+            batch_num 'batchNum',
+            production_date 'productionDate',
+            column_one 'columnOne',
+            column_two 'columnTwo',
+            column_three 'columnThree',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime',
+            is_put_shelf 'isPut Shelf'
+        FROM wms_material
+        WHERE is_deleted = 0
+        <if test="orderId != null ">
+            AND order_id = ${orderId}
+        </if>
+        <if test="orderNum != null and orderNum != ''">
+            AND order_num = #{orderNum}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="materialName != null and materialName != ''">
+            AND material_name = #{materialName}
+        </if>
+        <if test="materialTypeId != null ">
+            AND material_type_id = ${materialTypeId}
+        </if>
+        <if test="materialType != null and materialType != ''">
+            AND material_type = #{materialType}
+        </if>
+        <if test="num != null ">
+            AND num = ${num}
+        </if>
+        <if test="actualNum != null ">
+            AND actual_num = ${actualNum}
+        </if>
+        <if test="unit != null and unit != ''">
+            AND unit = #{unit}
+        </if>
+        <if test="weight != null ">
+            AND weight = ${weight}
+        </if>
+        <if test="volume != null ">
+            AND volume = ${volume}
+        </if>
+        <if test="specification != null and specification != ''">
+            AND specification = #{specification}
+        </if>
+        <if test="containerNum != null and containerNum != ''">
+            AND container_num = #{containerNum}
+        </if>
+        <if test="status != null ">
+            AND status = ${status}
+        </if>
+        <if test="externalOrderNum != null and externalOrderNum != ''">
+            AND external_order_num = #{externalOrderNum}
+        </if>
+        <if test="externalLineNum != null and externalLineNum != ''">
+            AND external_line_num = #{externalLineNum}
+        </if>
+        <if test="batchNum != null and batchNum != ''">
+            AND batch_num = #{batchNum}
+        </if>
+        <if test="productionDate != null ">
+            AND production_date = ${productionDate}
+        </if>
+        <if test="columnOne != null and columnOne != ''">
+            AND column_one = #{columnOne}
+        </if>
+        <if test="columnTwo != null and columnTwo != ''">
+            AND column_two = #{columnTwo}
+        </if>
+        <if test="columnThree != null and columnThree != ''">
+            AND column_three = #{columnThree}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+        <if test="isPutShelf != null ">
+            AND is_put_shelf = ${isPutShelf}
+        </if>
+
+    </select>
+
+    <update id="updateAllMaterialList"   parameterType="com.jayud.wms.model.po.Material">
+        update wms_material
+        set status=#{material.status}
+        where order_id=#{material.orderId}
+        AND order_num=#{material.orderNum}
+        AND material_code=#{material.materialCode}
+
+    </update>
+
+
+</mapper>

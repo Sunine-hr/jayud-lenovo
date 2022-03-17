@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.NoticeMaterialMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.NoticeMaterial">
+        <id column="id" property="id" />
+        <result column="receipt_notice_id" property="receiptNoticeId" />
+        <result column="receipt_notice_num" property="receiptNoticeNum" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="material_type_id" property="materialTypeId" />
+        <result column="material_type" property="materialType" />
+        <result column="weight" property="weight" />
+        <result column="volume" property="volume" />
+        <result column="specification" property="specification" />
+        <result column="num" property="num" />
+        <result column="unit" property="unit" />
+        <result column="external_order_num" property="externalOrderNum" />
+        <result column="external_line_num" property="externalLineNum" />
+        <result column="batch_num" property="batchNum" />
+        <result column="production_date" property="productionDate" />
+        <result column="column_one" property="columnOne" />
+        <result column="column_two" property="columnTwo" />
+        <result column="column_three" property="columnThree" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="type" property="type" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, receipt_notice_id, receipt_notice_num, material_code, material_name, material_type_id, material_type, weight, volume, specification, num, unit, external_order_num, external_line_num, batch_num, production_date, column_one, column_two, column_three, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time, type
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_notice_material </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="noticeMaterial.receiptNoticeId != null ">
+                AND receipt_notice_id = ${noticeMaterial.receiptNoticeId}
+            </if>
+
+            <if test="noticeMaterial.receiptNoticeNum != null and noticeMaterial.receiptNoticeNum != ''">
+                AND receipt_notice_num = #{noticeMaterial.receiptNoticeNum}
+            </if>
+
+            <if test="noticeMaterial.materialCode != null and noticeMaterial.materialCode != ''">
+                AND material_code = #{noticeMaterial.materialCode}
+            </if>
+
+            <if test="noticeMaterial.materialName != null and noticeMaterial.materialName != ''">
+                AND material_name = #{noticeMaterial.materialName}
+            </if>
+
+            <if test="noticeMaterial.materialTypeId != null ">
+                AND material_type_id = ${noticeMaterial.materialTypeId}
+            </if>
+
+            <if test="noticeMaterial.materialType != null and noticeMaterial.materialType != ''">
+                AND material_type = #{noticeMaterial.materialType}
+            </if>
+
+            <if test="noticeMaterial.weight != null ">
+                AND weight = ${noticeMaterial.weight}
+            </if>
+
+            <if test="noticeMaterial.volume != null ">
+                AND volume = ${noticeMaterial.volume}
+            </if>
+
+            <if test="noticeMaterial.specification != null and noticeMaterial.specification != ''">
+                AND specification = #{noticeMaterial.specification}
+            </if>
+
+            <if test="noticeMaterial.num != null ">
+                AND num = ${noticeMaterial.num}
+            </if>
+
+            <if test="noticeMaterial.unit != null and noticeMaterial.unit != ''">
+                AND unit = #{noticeMaterial.unit}
+            </if>
+
+            <if test="noticeMaterial.externalOrderNum != null and noticeMaterial.externalOrderNum != ''">
+                AND external_order_num = #{noticeMaterial.externalOrderNum}
+            </if>
+
+            <if test="noticeMaterial.externalLineNum != null and noticeMaterial.externalLineNum != ''">
+                AND external_line_num = #{noticeMaterial.externalLineNum}
+            </if>
+
+            <if test="noticeMaterial.batchNum != null and noticeMaterial.batchNum != ''">
+                AND batch_num = #{noticeMaterial.batchNum}
+            </if>
+
+            <if test="noticeMaterial.productionDate != null ">
+                AND production_date = ${noticeMaterial.productionDate}
+            </if>
+
+            <if test="noticeMaterial.columnOne != null and noticeMaterial.columnOne != ''">
+                AND column_one = #{noticeMaterial.columnOne}
+            </if>
+
+            <if test="noticeMaterial.columnTwo != null and noticeMaterial.columnTwo != ''">
+                AND column_two = #{noticeMaterial.columnTwo}
+            </if>
+
+            <if test="noticeMaterial.columnThree != null ">
+                AND column_three = ${noticeMaterial.columnThree}
+            </if>
+
+            <if test="noticeMaterial.tenantCode != null and noticeMaterial.tenantCode != ''">
+                AND tenant_code = #{noticeMaterial.tenantCode}
+            </if>
+
+            <if test="noticeMaterial.remark != null and noticeMaterial.remark != ''">
+                AND remark = #{noticeMaterial.remark}
+            </if>
+
+            <if test="noticeMaterial.isDeleted != null ">
+                AND is_deleted = ${noticeMaterial.isDeleted}
+            </if>
+
+            <if test="noticeMaterial.type != null ">
+                AND type = ${noticeMaterial.type}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.NoticeMaterial">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.NoticeMaterial">
+        <include refid="selects"/>
+    </select>
+
+
+</mapper>

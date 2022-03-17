@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsOutboundNoticeOrderInfoMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoVO">
+        <id column="id" property="id" />
+        <result column="order_number" property="orderNumber" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="ower_id" property="owerId" />
+        <result column="ower_code" property="owerCode" />
+        <result column="ower_name" property="owerName" />
+        <result column="document_type" property="documentType" />
+        <result column="order_source_type" property="orderSourceType" />
+        <result column="external_order_number_first" property="externalOrderNumberFirst" />
+        <result column="external_order_number_second" property="externalOrderNumberSecond" />
+        <result column="customer_id" property="customerId" />
+        <result column="customer_code" property="customerCode" />
+        <result column="customer_name" property="customerName" />
+        <result column="plan_delivery_time" property="planDeliveryTime" />
+        <result column="column_one" property="columnOne" />
+        <result column="column_two" property="columnTwo" />
+        <result column="all_count" property="allCount" />
+        <result column="all_height" property="allHeight" />
+        <result column="all_volume" property="allVolume" />
+        <result column="confirm_by" property="confirmBy" />
+        <result column="confirm_time" property="confirmTime" />
+        <result column="order_status_type" property="orderStatusType" />
+        <result column="real_delivery_time" property="realDeliveryTime" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="documentType_text" property="documentType_text" />
+        <result column="orderSourceType_text" property="orderSourceType_text" />
+        <result column="orderStatusType_text" property="orderStatusType_text" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        wonoi.id, wonoi.order_number, wonoi.warehouse_id, wonoi.warehouse_code, wonoi.warehouse_name, wonoi.ower_id, wonoi.ower_code, wonoi.ower_name, wonoi.document_type, wonoi.order_source_type, wonoi.external_order_number_first, wonoi.external_order_number_second, wonoi.customer_id,wonoi.customer_code, wonoi.customer_name, wonoi.plan_delivery_time, wonoi.column_one, wonoi.column_two, wonoi.all_count, wonoi.all_height, wonoi.all_volume, wonoi.confirm_by, wonoi.confirm_time, wonoi.order_status_type, wonoi.real_delivery_time, wonoi.tenant_code, wonoi.remark, wonoi.is_deleted, wonoi.create_by, wonoi.create_time, wonoi.update_by, wonoi.update_time,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE sd.dict_type = 'outboundNoticeDocumentType' AND sd.is_deleted = 0 AND sd.parent_id != 0 AND wonoi.document_type = sd.dict_value) documentType_text,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE sd.dict_type = 'outboundNoticeOrderSourceType' AND sd.is_deleted = 0 AND sd.parent_id != 0 AND wonoi.order_source_type = sd.dict_value) orderSourceType_text,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE sd.dict_type = 'outboundNoticeOrderStatusType' AND sd.is_deleted = 0 AND sd.parent_id != 0 AND wonoi.order_status_type = sd.dict_value) orderStatusType_text
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_outbound_notice_order_info wonoi</sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            wonoi.is_deleted = 0
+            <if test="wmsOutboundNoticeOrderInfoVO.id != null and wmsOutboundNoticeOrderInfoVO.id != '0'.toString()">
+                AND wonoi.id =  ${wmsOutboundNoticeOrderInfoVO.id}
+            </if>
+            <if test="wmsOutboundNoticeOrderInfoVO.orderNumber != null and wmsOutboundNoticeOrderInfoVO.orderNumber != ''">
+                AND wonoi.order_number LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoVO.orderNumber},'%')
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.warehouseId != null ">
+                AND wonoi.warehouse_id = ${wmsOutboundNoticeOrderInfoVO.warehouseId}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.warehouseCode != null and wmsOutboundNoticeOrderInfoVO.warehouseCode != ''">
+                AND wonoi.warehouse_code LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoVO.warehouseCode},'%')
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.warehouseName != null and wmsOutboundNoticeOrderInfoVO.warehouseName != ''">
+                AND wonoi.warehouse_name LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoVO.warehouseName},'%')
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.owerId != null ">
+                AND wonoi.ower_id = ${wmsOutboundNoticeOrderInfoVO.owerId}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.owerCode != null and wmsOutboundNoticeOrderInfoVO.owerCode != ''">
+                AND wonoi.ower_code LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoVO.owerCode},'%')
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.owerName != null and wmsOutboundNoticeOrderInfoVO.owerName != ''">
+                AND wonoi.ower_name LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoVO.owerName},'%')
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.documentType != null ">
+                AND wonoi.document_type = ${wmsOutboundNoticeOrderInfoVO.documentType}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.orderSourceType != null ">
+                AND wonoi.order_source_type = ${wmsOutboundNoticeOrderInfoVO.orderSourceType}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.externalOrderNumberFirst != null and wmsOutboundNoticeOrderInfoVO.externalOrderNumberFirst != ''">
+                AND wonoi.external_order_number_first LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoVO.externalOrderNumberFirst},'%')
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.externalOrderNumberSecond != null and wmsOutboundNoticeOrderInfoVO.externalOrderNumberSecond != ''">
+                AND wonoi.external_order_number_second LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoVO.externalOrderNumberSecond},'%')
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.customerId != null ">
+                AND wonoi.customer_id = ${wmsOutboundNoticeOrderInfoVO.customerId}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.customerName != null and wmsOutboundNoticeOrderInfoVO.customerName != ''">
+                AND wonoi.customer_name LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoVO.customerName},'%')
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.planDeliveryTime != null ">
+                AND wonoi.plan_delivery_time = ${wmsOutboundNoticeOrderInfoVO.planDeliveryTime}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.columnOne != null and wmsOutboundNoticeOrderInfoVO.columnOne != ''">
+                AND wonoi.column_one LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoVO.columnOne},'%')
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.columnTwo != null and wmsOutboundNoticeOrderInfoVO.columnTwo != ''">
+                AND wonoi.column_two LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoVO.columnTwo},'%')
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.allCount != null ">
+                AND wonoi.all_count = ${wmsOutboundNoticeOrderInfoVO.allCount}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.allHeight != null ">
+                AND wonoi.all_height = ${wmsOutboundNoticeOrderInfoVO.allHeight}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.allVolume != null ">
+                AND wonoi.all_volume = ${wmsOutboundNoticeOrderInfoVO.allVolume}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.confirmBy != null and wmsOutboundNoticeOrderInfoVO.confirmBy != ''">
+                AND wonoi.confirm_by = #{wmsOutboundNoticeOrderInfoVO.confirmBy}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.confirmTime != null ">
+                AND wonoi.confirm_time = ${wmsOutboundNoticeOrderInfoVO.confirmTime}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.orderStatusType != null ">
+                AND wonoi.order_status_type = ${wmsOutboundNoticeOrderInfoVO.orderStatusType}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.realDeliveryTime != null ">
+                AND wonoi.real_delivery_time = ${wmsOutboundNoticeOrderInfoVO.realDeliveryTime}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.tenantCode != null and wmsOutboundNoticeOrderInfoVO.tenantCode != ''">
+                AND wonoi.tenant_code = #{wmsOutboundNoticeOrderInfoVO.tenantCode}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.remark != null and wmsOutboundNoticeOrderInfoVO.remark != ''">
+                AND wonoi.remark = #{wmsOutboundNoticeOrderInfoVO.remark}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.planDeliveryTime_start != null and wmsOutboundNoticeOrderInfoVO.planDeliveryTime_start != ''">
+                AND  DATE_FORMAT( wonoi.plan_delivery_time, '%Y-%m-%d' ) &gt;= #{wmsOutboundNoticeOrderInfoVO.planDeliveryTime_start}
+            </if>
+            <if test="wmsOutboundNoticeOrderInfoVO.planDeliveryTime_end != null and wmsOutboundNoticeOrderInfoVO.planDeliveryTime_end != ''">
+                AND DATE_FORMAT( wonoi.plan_delivery_time, '%Y-%m-%d' ) &lt;= #{wmsOutboundNoticeOrderInfoVO.planDeliveryTime_end}
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.owerIdList != null and wmsOutboundNoticeOrderInfoVO.owerIdList.size > 0">
+                AND wonoi.ower_id IN
+                <foreach item="id" collection="wmsOutboundNoticeOrderInfoVO.owerIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoVO.warehouseIdList != null and  wmsOutboundNoticeOrderInfoVO.warehouseIdList.size > 0">
+                AND wonoi.warehouse_id IN
+                <foreach item="id" collection="wmsOutboundNoticeOrderInfoVO.warehouseIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            ORDER BY
+                wonoi.create_time DESC
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoVO">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoVO">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="queryWmsOutboundNoticeOrderInfoForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            order_number 'orderNumber',
+            warehouse_id 'warehouseId',
+            warehouse_code 'warehouseCode',
+            warehouse_name 'warehouseName',
+            ower_id 'owerId',
+            ower_code 'owerCode',
+            ower_name 'owerName',
+            document_type 'documentType',
+            order_source_type 'orderSourceType',
+            external_order_number_first 'externalOrderNumberFirst',
+            external_order_number_second 'externalOrderNumberSecond',
+            customer_id 'customerId',
+            customer_code 'customerCode',
+            customer_name 'customerName',
+            plan_delivery_time 'planDeliveryTime',
+            column_one 'columnOne',
+            column_two 'columnTwo',
+            all_count 'allCount',
+            all_height 'allHeight',
+            all_volume 'allVolume',
+            confirm_by 'confirmBy',
+            confirm_time 'confirmTime',
+            order_status_type 'orderStatusType',
+            real_delivery_time 'realDeliveryTime',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_outbound_notice_order_info
+        WHERE is_deleted = 0
+        <if test="orderNumber != null and orderNumber != ''">
+            AND order_number = #{orderNumber}
+        </if>
+        <if test="warehouseId != null ">
+            AND warehouse_id = ${warehouseId}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            AND warehouse_code = #{warehouseCode}
+        </if>
+        <if test="warehouseName != null and warehouseName != ''">
+            AND warehouse_name = #{warehouseName}
+        </if>
+        <if test="owerId != null ">
+            AND ower_id = ${owerId}
+        </if>
+        <if test="owerCode != null and owerCode != ''">
+            AND ower_code = #{owerCode}
+        </if>
+        <if test="owerName != null and owerName != ''">
+            AND ower_name = #{owerName}
+        </if>
+        <if test="documentType != null ">
+            AND document_type = ${documentType}
+        </if>
+        <if test="orderSourceType != null ">
+            AND order_source_type = ${orderSourceType}
+        </if>
+        <if test="externalOrderNumberFirst != null and externalOrderNumberFirst != ''">
+            AND external_order_number_first = #{externalOrderNumberFirst}
+        </if>
+        <if test="externalOrderNumberSecond != null and externalOrderNumberSecond != ''">
+            AND external_order_number_second = #{externalOrderNumberSecond}
+        </if>
+        <if test="customerId != null ">
+            AND customer_id = ${customerId}
+        </if>
+        <if test="customerName != null and customerName != ''">
+            AND customer_name = #{customerName}
+        </if>
+        <if test="planDeliveryTime != null ">
+            AND plan_delivery_time = ${planDeliveryTime}
+        </if>
+        <if test="columnOne != null and columnOne != ''">
+            AND column_one = #{columnOne}
+        </if>
+        <if test="columnTwo != null and columnTwo != ''">
+            AND column_two = #{columnTwo}
+        </if>
+        <if test="allCount != null ">
+            AND all_count = ${allCount}
+        </if>
+        <if test="allHeight != null ">
+            AND all_height = ${allHeight}
+        </if>
+        <if test="allVolume != null ">
+            AND all_volume = ${allVolume}
+        </if>
+        <if test="confirmBy != null and confirmBy != ''">
+            AND confirm_by = #{confirmBy}
+        </if>
+        <if test="confirmTime != null ">
+            AND confirm_time = ${confirmTime}
+        </if>
+        <if test="orderStatusType != null ">
+            AND order_status_type = ${orderStatusType}
+        </if>
+        <if test="realDeliveryTime != null ">
+            AND real_delivery_time = ${realDeliveryTime}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_outbound_notice_order_info WHERE id = ${id}
+    </delete>
+
+
+</mapper>

@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.InventoryCheckMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.InventoryCheck">
+        <id column="id" property="id" />
+        <result column="check_code" property="checkCode" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="check_status" property="checkStatus" />
+        <result column="check_type" property="checkType" />
+        <result column="inventory_count" property="inventoryCount" />
+        <result column="check_count" property="checkCount" />
+        <result column="check_by" property="checkBy" />
+        <result column="check_start_time" property="checkStartTime" />
+        <result column="check_finish_time" property="checkFinishTime" />
+        <result column="update_start_time" property="updateStartTime" />
+        <result column="update_finish_time" property="updateFinishTime" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, check_code, warehouse_id, warehouse_code, warehouse_name, check_status, check_type, inventory_count, check_count, check_by, check_start_time, check_finish_time, update_start_time, update_finish_time, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_inventory_check </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="inventoryCheck.checkCode != null and inventoryCheck.checkCode != ''">
+                AND check_code LIKE CONCAT('%',#{inventoryCheck.checkCode}, '%')
+            </if>
+
+            <if test="inventoryCheck.warehouseId != null ">
+                AND warehouse_id = ${inventoryCheck.warehouseId}
+            </if>
+
+            <if test="inventoryCheck.warehouseCode != null and inventoryCheck.warehouseCode != ''">
+                AND warehouse_code LIKE CONCAT('%',#{inventoryCheck.warehouseCode}, '%')
+            </if>
+
+            <if test="inventoryCheck.warehouseName != null and inventoryCheck.warehouseName != ''">
+                AND warehouse_name LIKE CONCAT('%',#{inventoryCheck.warehouseName}, '%')
+            </if>
+
+            <if test="inventoryCheck.checkStatus != null ">
+                AND check_status = ${inventoryCheck.checkStatus}
+            </if>
+
+            <if test="inventoryCheck.checkType != null ">
+                AND check_type = ${inventoryCheck.checkType}
+            </if>
+
+            <if test="inventoryCheck.inventoryCount != null ">
+                AND inventory_count = ${inventoryCheck.inventoryCount}
+            </if>
+
+            <if test="inventoryCheck.checkCount != null ">
+                AND check_count = ${inventoryCheck.checkCount}
+            </if>
+
+            <if test="inventoryCheck.checkBy != null and inventoryCheck.checkBy != ''">
+                AND check_by LIKE CONCAT('%',#{inventoryCheck.checkBy}, '%')
+            </if>
+
+            <if test="inventoryCheck.checkStartTime != null ">
+                AND check_start_time = #{inventoryCheck.checkStartTime}
+            </if>
+
+            <if test="inventoryCheck.checkFinishTime != null ">
+                AND check_finish_time = #{inventoryCheck.checkFinishTime}
+            </if>
+
+            <if test="inventoryCheck.updateStartTime != null ">
+                AND update_start_time <![CDATA[ >= ]]> #{inventoryCheck.updateStartTime}
+            </if>
+
+            <if test="inventoryCheck.updateFinishTime != null ">
+                AND update_finish_time <![CDATA[ <= ]]> #{inventoryCheck.updateFinishTime}
+            </if>
+
+            <if test="inventoryCheck.remark != null and inventoryCheck.remark != ''">
+                AND remark LIKE CONCAT('%',#{inventoryCheck.remark}, '%')
+            </if>
+
+            <if test="inventoryCheck.warehouseIdList!=null  and inventoryCheck.warehouseIdList.size > 0">
+                and warehouse_id in
+                <foreach item="id" collection="inventoryCheck.warehouseIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+
+
+        </where>
+        order by create_time desc
+
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.InventoryCheck">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.InventoryCheck">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryInventoryCheckForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+        id 'id',
+        check_code 'checkCode',
+        warehouse_name 'warehouseName',
+        case when check_status = 1 then '未盘点'
+        when check_status = 2 then '部分盘点'
+        when check_status = 3 then '已盘点'
+        end 'checkStatus',
+        case when check_type = 1 then '明盘'
+        when check_type = 2 then '盲盘'
+        end 'checkType',
+        round(inventory_count,0) 'inventoryCount',
+        round(check_count,0) 'checkCount',
+        check_by 'checkBy',
+        check_start_time 'checkStartTime',
+        check_finish_time 'checkFinishTime',
+        create_by 'createBy',
+        create_time 'createTime'
+        FROM wms_inventory_check
+        WHERE is_deleted = 0
+        <if test="checkCode != null and checkCode != ''">
+            AND check_code = #{checkCode}
+        </if>
+        <if test="warehouseId != null ">
+            AND warehouse_id = ${warehouseId}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            AND warehouse_code = #{warehouseCode}
+        </if>
+        <if test="warehouseName != null and warehouseName != ''">
+            AND warehouse_name = #{warehouseName}
+        </if>
+        <if test="checkStatus != null ">
+            AND check_status = ${checkStatus}
+        </if>
+        <if test="checkType != null ">
+            AND check_type = ${checkType}
+        </if>
+        <if test="inventoryCount != null ">
+            AND inventory_count = ${inventoryCount}
+        </if>
+        <if test="checkCount != null ">
+            AND check_count = ${checkCount}
+        </if>
+        <if test="checkBy != null and checkBy != ''">
+            AND check_by = #{checkBy}
+        </if>
+        <if test="checkStartTime != null ">
+            AND check_start_time = ${checkStartTime}
+        </if>
+        <if test="checkFinishTime != null ">
+            AND check_finish_time = ${checkFinishTime}
+        </if>
+        <if test="updateStartTime != null ">
+            AND update_start_time = ${updateStartTime}
+        </if>
+        <if test="updateFinishTime != null ">
+            AND update_finish_time = ${updateFinishTime}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+        <if test="warehouseIdList!=null  and warehouseIdList.size > 0">
+            and warehouse_id in
+            <foreach item="id" collection="warehouseIdList" open="(" separator=","  close=")" >
+                #{id}
+            </foreach>
+        </if>
+
+    </select>
+
+    <select id="selectPageByFeign" resultType="com.jayud.wms.model.vo.InventoryCheckAppVO" parameterType="com.jayud.wms.model.po.InventoryCheck">
+
+        select
+            a.id,
+            a.check_code as "checkCode",
+            a.check_status as "checkStatus",
+            a.check_type as "checkType",
+            a.create_time as "createTime",
+            IFNULL(b.totalNum, 0) as "totalNum",
+            IFNULL(c.completedNum, 0) as "completedNum"
+        from
+        wms_inventory_check a
+            left join(select inventory_check_id,count(*) totalNum from wms_inventory_check_detail where is_deleted = 0 GROUP BY inventory_check_id) b on a.id = b.inventory_check_id
+            left join(select inventory_check_id,count(*) completedNum  from wms_inventory_check_detail where is_deleted = 0 and check_status=3 GROUP BY inventory_check_id) c on a.id = c.inventory_check_id
+        where 1=1
+        and a.is_deleted = 0
+        and a.check_status != 3
+        and b.totalNum != 0
+        <if test="inventoryCheck.checkCode != null and inventoryCheck.checkCode != ''">
+            AND a.check_code LIKE CONCAT('%',#{inventoryCheck.checkCode}, '%')
+        </if>
+
+        <if test="inventoryCheck.warehouseId != null ">
+            AND a.warehouse_id = ${inventoryCheck.warehouseId}
+        </if>
+
+        <if test="inventoryCheck.warehouseCode != null and inventoryCheck.warehouseCode != ''">
+            AND a.warehouse_code LIKE CONCAT('%',#{inventoryCheck.warehouseCode}, '%')
+        </if>
+
+        <if test="inventoryCheck.warehouseName != null and inventoryCheck.warehouseName != ''">
+            AND a.warehouse_name LIKE CONCAT('%',#{inventoryCheck.warehouseName}, '%')
+        </if>
+
+        <if test="inventoryCheck.checkStatus != null ">
+            AND a.check_status = ${inventoryCheck.checkStatus}
+        </if>
+
+        <if test="inventoryCheck.checkType != null ">
+            AND a.check_type = ${inventoryCheck.checkType}
+        </if>
+
+        <if test="inventoryCheck.inventoryCount != null ">
+            AND a.inventory_count = ${inventoryCheck.inventoryCount}
+        </if>
+
+        <if test="inventoryCheck.checkCount != null ">
+            AND a.check_count = ${inventoryCheck.checkCount}
+        </if>
+
+        <if test="inventoryCheck.checkBy != null and inventoryCheck.checkBy != ''">
+            AND a.check_by LIKE CONCAT('%',#{inventoryCheck.checkBy}, '%')
+        </if>
+
+        <if test="inventoryCheck.checkStartTime != null ">
+            AND a.check_start_time = #{inventoryCheck.checkStartTime}
+        </if>
+
+        <if test="inventoryCheck.checkFinishTime != null ">
+            AND a.check_finish_time = #{inventoryCheck.checkFinishTime}
+        </if>
+
+        <if test="inventoryCheck.updateStartTime != null ">
+            AND a.update_start_time <![CDATA[ >= ]]> #{inventoryCheck.updateStartTime}
+        </if>
+
+        <if test="inventoryCheck.updateFinishTime != null ">
+            AND a.update_finish_time <![CDATA[ <= ]]> #{inventoryCheck.updateFinishTime}
+        </if>
+
+        <if test="inventoryCheck.remark != null and inventoryCheck.remark != ''">
+            AND a.remark LIKE CONCAT('%',#{inventoryCheck.remark}, '%')
+        </if>
+        <if test="inventoryCheck.warehouseIdList!=null  and inventoryCheck.warehouseIdList.size > 0">
+            and a.warehouse_id in
+            <foreach item="id" collection="inventoryCheck.warehouseIdList" open="(" separator=","  close=")" >
+                #{id}
+            </foreach>
+        </if>
+        <if test="inventoryCheck.notCheckIdList!=null and inventoryCheck.notCheckIdList.size > 0">
+            and a.id not in
+            <foreach item="id" collection="inventoryCheck.notCheckIdList" open="(" separator=","  close=")" >
+                #{id}
+            </foreach>
+        </if>
+        GROUP BY a.id
+        ORDER BY a.id
+
+    </select>
+
+    <select id="queryInventoryCheckByCheckCode" resultType="com.jayud.wms.model.vo.InventoryCheckAppVO" useCache="false" flushCache="true">
+        select
+        a.id,
+        a.check_code as "checkCode",
+        a.check_status as "checkStatus",
+        a.check_type as "checkType",
+        a.create_time as "createTime",
+        IFNULL(b.totalNum, 0) as "totalNum",
+        IFNULL(c.completedNum, 0) as "completedNum"
+        from
+            wms_inventory_check a
+        left join(select inventory_check_id,count(*) totalNum from wms_inventory_check_detail where is_deleted = 0 GROUP BY inventory_check_id) b on a.id = b.inventory_check_id
+        left join(select inventory_check_id,count(*) completedNum  from wms_inventory_check_detail where is_deleted = 0 and check_status=3 GROUP BY inventory_check_id) c on a.id = c.inventory_check_id
+        where 1=1
+        and a.is_deleted = 0
+        AND a.check_code = #{checkCode}
+        GROUP BY a.id
+        ORDER BY a.id
+    </select>
+
+
+</mapper>

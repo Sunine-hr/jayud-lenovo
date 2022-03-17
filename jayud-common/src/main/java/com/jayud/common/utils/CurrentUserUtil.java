@@ -101,7 +101,7 @@ public class CurrentUserUtil {
      * @param:
      * @return: java.lang.Long
      **/
-    private static Long getUserId(){
+    public static Long getUserId(){
         AuthUserDetail authUserDetail = getUserDetail();
         return authUserDetail.getId();
     }
@@ -113,9 +113,20 @@ public class CurrentUserUtil {
      * @param:
      * @return: java.lang.String
      **/
-    private static String getUserRealName(){
+    public static String getUserRealName(){
         AuthUserDetail authUserDetail = getUserDetail();
         return authUserDetail.getRealName();
+    }
+
+    /**
+    * @description 获取工作台编码
+    * @author  ciro
+    * @date   2022/3/16 15:02:40
+    * @return: java.lang.String
+    **/
+    public static String getCurrrentUserWorkbenchCode(){
+        AuthUserDetail authUserDetail = getUserDetail();
+        return authUserDetail.getWorkbenchCode();
     }
 
 

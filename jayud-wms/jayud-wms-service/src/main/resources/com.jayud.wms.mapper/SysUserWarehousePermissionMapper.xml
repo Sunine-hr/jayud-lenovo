@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.SysUserWarehousePermissionMapper">
+
+
+
+    <select id="query" resultType="com.jayud.wms.model.vo.SysUserWarehousePermissionVo">
+        SELECT
+            w.id warehouseId,
+            w.`name` warehouseName,
+            IF
+                ( suwp.id IS NOT NULL, 1, 0 ) isSelected
+        FROM
+        wms_warehouse w
+                LEFT JOIN sys_user_warehouse_permission suwp ON w.id = suwp.warehouse_id
+                AND suwp.user_id = #{sysUserWarehousePermissionVo.userId}
+                AND suwp.is_deleted = 0
+        WHERE
+            w.is_deleted = 0
+            <if test = "sysUserWarehousePermissionVo.tenantCode != null and sysUserWarehousePermissionVo.tenantCode != '' " >
+             AND w.tenant_code = #{sysUserWarehousePermissionVo.tenantCode}
+            </if>
+    </select>
+
+    <select id="queryWarehouseByUser" resultType="java.util.LinkedHashMap">
+        SELECT
+            w.id warehouseId,
+            w.CODE warehouseCode,
+            w.NAME warehouseName
+        FROM
+            wms_warehouse w
+                LEFT JOIN sys_user_warehouse_permission suwp ON w.id = suwp.warehouse_id
+        WHERE
+            w.is_deleted = 0
+          AND suwp.user_id = #{userId}
+          AND suwp.is_deleted = 0
+    </select>
+
+
+    <insert id="addBatch">
+        INSERT INTO `sys_user_warehouse_permission` ( `id`, `user_id`, `warehouse_id`, `tenant_code`, `create_by` )
+        VALUES
+        <foreach collection="permissionList" item="permission" index="index" separator=",">
+            (#{permission.id},#{permission.userId},#{permission.warehouseId},#{permission.tenantCode},#{permission.createBy})
+        </foreach>
+    </insert>
+
+    <update id="delByUserIdAndWarehouseId">
+        UPDATE sys_user_warehouse_permission SET is_deleted = 1,update_by = #{updateBy}
+        WHERE is_deleted = 0
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId}
+        </if>
+        <if test="warehouseIds != null and warehouseIds != '' ">
+            <foreach collection="warehouseIds.split(',')" item="id" open="AND warehouse_id IN(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+    </update>
+
+
+</mapper>

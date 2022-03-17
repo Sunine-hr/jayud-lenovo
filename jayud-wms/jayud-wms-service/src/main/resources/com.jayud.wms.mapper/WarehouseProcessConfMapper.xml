@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WarehouseProcessConfMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WarehouseProcessConf">
+        <id column="id" property="id" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="type" property="type" />
+        <result column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="is_execute" property="isExecute" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, warehouse_id, type, code, name, is_execute, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_warehouse_process_conf </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="warehouseProcessConf.warehouseId != null ">
+                AND warehouse_id = ${warehouseProcessConf.warehouseId}
+            </if>
+
+            <if test="warehouseProcessConf.type != null and warehouseProcessConf.type != ''">
+                AND type = #{warehouseProcessConf.type}
+            </if>
+
+            <if test="warehouseProcessConf.code != null and warehouseProcessConf.code != ''">
+                AND code = #{warehouseProcessConf.code}
+            </if>
+
+            <if test="warehouseProcessConf.name != null and warehouseProcessConf.name != ''">
+                AND name = #{warehouseProcessConf.name}
+            </if>
+
+            <if test="warehouseProcessConf.isExecute != null ">
+                AND is_execute = ${warehouseProcessConf.isExecute}
+            </if>
+
+            <if test="warehouseProcessConf.tenantCode != null and warehouseProcessConf.tenantCode != ''">
+                AND tenant_code = #{warehouseProcessConf.tenantCode}
+            </if>
+
+            <if test="warehouseProcessConf.remark != null and warehouseProcessConf.remark != ''">
+                AND remark = #{warehouseProcessConf.remark}
+            </if>
+
+            <if test="warehouseProcessConf.isDeleted != null ">
+                AND is_deleted = ${warehouseProcessConf.isDeleted}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WarehouseProcessConf">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WarehouseProcessConf">
+        <include refid="selects"/>
+    </select>
+
+
+</mapper>

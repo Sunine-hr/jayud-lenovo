@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsMaterialBarCodeMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsMaterialBarCode">
+        <id column="id" property="id" />
+        <result column="material_basic_info_id" property="materialBasicInfoId" />
+        <result column="bar_code" property="barCode" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, material_basic_info_id, bar_code, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_material_bar_code </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsMaterialBarCode.materialBasicInfoId != null ">
+                AND material_basic_info_id = ${wmsMaterialBarCode.materialBasicInfoId}
+            </if>
+
+            <if test="wmsMaterialBarCode.barCode != null and wmsMaterialBarCode.barCode != ''">
+                AND bar_code LIKE CONCAT('%',#{wmsMaterialBarCode.barCode}, '%')
+            </if>
+
+            <if test="wmsMaterialBarCode.tenantCode != null and wmsMaterialBarCode.tenantCode != ''">
+                AND tenant_code = #{wmsMaterialBarCode.tenantCode}
+            </if>
+
+            <if test="wmsMaterialBarCode.remark != null and wmsMaterialBarCode.remark != ''">
+                AND remark = #{wmsMaterialBarCode.remark}
+            </if>
+
+        </where>
+        ORDER BY
+            create_time DESC
+    </sql>
+
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsMaterialBarCode">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsMaterialBarCode">
+        <include refid="selects"/>
+    </select>
+
+    <update id="delByMaterialIdAndCode">
+        UPDATE wms_material_bar_code
+        SET is_deleted = 1,update_by = #{username},update_time = now()
+        WHERE
+            is_deleted = 0
+            <if test="materialId != null ">
+                AND material_basic_info_id = #{materialId}
+            </if>
+            <if test="codeList != null ">
+                AND bar_code IN
+                <foreach collection="codeList" index="index" item="item" open="("
+                         separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+    </update>
+
+</mapper>

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsWaveOrderInfoMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsWaveOrderInfo">
+        <id column="id" property="id" />
+        <result column="wave_number" property="waveNumber" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="ower_id" property="owerId" />
+        <result column="ower_code" property="owerCode" />
+        <result column="ower_name" property="owerName" />
+        <result column="status" property="status" />
+        <result column="all_order_account" property="allOrderAccount" />
+        <result column="finish_order_account" property="finishOrderAccount" />
+        <result column="allocation_account" property="allocationAccount" />
+        <result column="packing_account" property="packingAccount" />
+        <result column="all_material_account" property="allMaterialAccount" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="status_text" property="status_text" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, wave_number, warehouse_id, warehouse_code, warehouse_name, ower_id, ower_code, ower_name, status, all_order_account, finish_order_account, allocation_account, packing_account, all_material_account, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time,
+            (SELECT sd.dict_name FROM sys_dict sd WHERE sd.is_deleted = 0 AND sd.dict_type = 'waveOrderStatus' AND sd.parent_id != 0 AND sd.dict_value = status) status_text
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_wave_order_info </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsWaveOrderInfo.waveNumber != null and wmsWaveOrderInfo.waveNumber != ''">
+                AND wave_number = #{wmsWaveOrderInfo.waveNumber}
+            </if>
+
+            <if test="wmsWaveOrderInfo.warehouseId != null ">
+                AND warehouse_id = ${wmsWaveOrderInfo.warehouseId}
+            </if>
+
+            <if test="wmsWaveOrderInfo.warehouseCode != null and wmsWaveOrderInfo.warehouseCode != ''">
+                AND warehouse_code = #{wmsWaveOrderInfo.warehouseCode}
+            </if>
+
+            <if test="wmsWaveOrderInfo.warehouseName != null and wmsWaveOrderInfo.warehouseName != ''">
+                AND warehouse_name = #{wmsWaveOrderInfo.warehouseName}
+            </if>
+
+            <if test="wmsWaveOrderInfo.owerId != null ">
+                AND ower_id = ${wmsWaveOrderInfo.owerId}
+            </if>
+
+            <if test="wmsWaveOrderInfo.owerCode != null and wmsWaveOrderInfo.owerCode != ''">
+                AND ower_code = #{wmsWaveOrderInfo.owerCode}
+            </if>
+
+            <if test="wmsWaveOrderInfo.owerName != null and wmsWaveOrderInfo.owerName != ''">
+                AND ower_name = #{wmsWaveOrderInfo.owerName}
+            </if>
+
+            <if test="wmsWaveOrderInfo.status != null ">
+                AND status = ${wmsWaveOrderInfo.status}
+            </if>
+
+            <if test="wmsWaveOrderInfo.allOrderAccount != null ">
+                AND all_order_account = ${wmsWaveOrderInfo.allOrderAccount}
+            </if>
+
+            <if test="wmsWaveOrderInfo.finishOrderAccount != null ">
+                AND finish_order_account = ${wmsWaveOrderInfo.finishOrderAccount}
+            </if>
+
+            <if test="wmsWaveOrderInfo.allocationAccount != null ">
+                AND allocation_account = ${wmsWaveOrderInfo.allocationAccount}
+            </if>
+
+            <if test="wmsWaveOrderInfo.packingAccount != null ">
+                AND packing_account = ${wmsWaveOrderInfo.packingAccount}
+            </if>
+
+            <if test="wmsWaveOrderInfo.allMaterialAccount != null ">
+                AND all_material_account = ${wmsWaveOrderInfo.allMaterialAccount}
+            </if>
+
+            <if test="wmsWaveOrderInfo.tenantCode != null and wmsWaveOrderInfo.tenantCode != ''">
+                AND tenant_code = #{wmsWaveOrderInfo.tenantCode}
+            </if>
+
+            <if test="wmsWaveOrderInfo.remark != null and wmsWaveOrderInfo.remark != ''">
+                AND remark = #{wmsWaveOrderInfo.remark}
+            </if>
+            <if test="wmsWaveOrderInfo.waveOrderNumberList != null and wmsWaveOrderInfo.waveOrderNumberList.size >0">
+                AND wave_number IN
+                <foreach item="id" collection="wmsWaveOrderInfo.waveOrderNumberList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+
+        </where>
+    </sql>
+    <insert id="insertMiddel">
+        INSERT INTO wms_wave_to_outbound_info_middle (order_number,wave_number,create_by,create_time)
+        VALUES
+        <foreach collection="orderNumberList" index="index" item="order" open="(" separator="," close=")">
+            #{waveNumber},#{order},'middel',now()
+        </foreach>
+    </insert>
+
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsWaveOrderInfo">
+        <include refid="selects"/>
+        ORDER BY
+            create_time DESC
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsWaveOrderInfo">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="queryWmsWaveOrderInfoForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            wave_number 'waveNumber',
+            warehouse_id 'warehouseId',
+            warehouse_code 'warehouseCode',
+            warehouse_name 'warehouseName',
+            ower_id 'owerId',
+            ower_code 'owerCode',
+            ower_name 'owerName',
+            status 'status',
+            all_order_account 'allOrderAccount',
+            finish_order_account 'finishOrderAccount',
+            allocation_account 'allocationAccount',
+            packing_account 'packingAccount',
+            all_material_account 'allMaterialAccount',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_wave_order_info
+        WHERE is_deleted = 0
+        <if test="waveNumber != null and waveNumber != ''">
+            AND wave_number = #{waveNumber}
+        </if>
+        <if test="warehouseId != null ">
+            AND warehouse_id = ${warehouseId}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            AND warehouse_code = #{warehouseCode}
+        </if>
+        <if test="warehouseName != null and warehouseName != ''">
+            AND warehouse_name = #{warehouseName}
+        </if>
+        <if test="owerId != null ">
+            AND ower_id = ${owerId}
+        </if>
+        <if test="owerCode != null and owerCode != ''">
+            AND ower_code = #{owerCode}
+        </if>
+        <if test="owerName != null and owerName != ''">
+            AND ower_name = #{owerName}
+        </if>
+        <if test="status != null ">
+            AND status = ${status}
+        </if>
+        <if test="allOrderAccount != null ">
+            AND all_order_account = ${allOrderAccount}
+        </if>
+        <if test="finishOrderAccount != null ">
+            AND finish_order_account = ${finishOrderAccount}
+        </if>
+        <if test="allocationAccount != null ">
+            AND allocation_account = ${allocationAccount}
+        </if>
+        <if test="packingAccount != null ">
+            AND packing_account = ${packingAccount}
+        </if>
+        <if test="allMaterialAccount != null ">
+            AND all_material_account = ${allMaterialAccount}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_wave_order_info WHERE id = ${id}
+    </delete>
+
+    <delete id="delMiddel">
+        DELETE FROM wms_wave_to_outbound_info_middle WHERE 1=1
+        <if test="waveNumber != null and waveNumber != ''">
+            AND wave_number = #{waveNumber}
+        </if>
+        <if test="orderNumberList != null and orderNumberList.size >0">
+            AND order_number IN
+            <foreach item="id" collection="orderNumberList" open="(" separator=","  close=")" >
+                #{id}
+            </foreach>
+        </if>
+    </delete>
+
+
+    <update id="updateByWaveNumber">
+        UPDATE wms_wave_order_info SET status = ${statusType},update_by = #{username},update_time=now()
+        WHERE is_deleted = 0 AND wave_number = #{waveOrderNumber}
+    </update>
+
+    <update id="delByParam">
+        UPDATE wms_wave_order_info SET is_deleted = 1,update_by = #{username},update_time=now()
+        WHERE is_deleted = 0
+        <if test="wmsWaveInfoVO.waveOrderNumberList != null and wmsWaveInfoVO.waveOrderNumberList.size >0">
+            AND wave_number IN
+            <foreach item="id" collection="wmsWaveInfoVO.waveOrderNumberList" open="(" separator=","  close=")" >
+                #{id}
+            </foreach>
+        </if>
+    </update>
+
+
+</mapper>

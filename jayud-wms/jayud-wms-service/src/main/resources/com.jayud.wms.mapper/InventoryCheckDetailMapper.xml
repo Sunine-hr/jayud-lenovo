@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.InventoryCheckDetailMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.InventoryCheckDetail">
+        <id column="id" property="id" />
+        <result column="inventory_check_id" property="inventoryCheckId" />
+        <result column="inventory_detail_id" property="inventoryDetailId" />
+        <result column="check_status" property="checkStatus" />
+        <result column="ower_id" property="owerId" />
+        <result column="ower_code" property="owerCode" />
+        <result column="ower_name" property="owerName" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="warehouse_area_id" property="warehouseAreaId" />
+        <result column="warehouse_area_code" property="warehouseAreaCode" />
+        <result column="warehouse_area_name" property="warehouseAreaName" />
+        <result column="warehouse_location_id" property="warehouseLocationId" />
+        <result column="warehouse_location_code" property="warehouseLocationCode" />
+        <result column="container_id" property="containerId" />
+        <result column="container_code" property="containerCode" />
+        <result column="material_id" property="materialId" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="material_type_id" property="materialTypeId" />
+        <result column="material_type" property="materialType" />
+        <result column="material_specification" property="materialSpecification" />
+        <result column="batch_code" property="batchCode" />
+        <result column="material_production_date" property="materialProductionDate" />
+        <result column="custom_field1" property="customField1" />
+        <result column="custom_field2" property="customField2" />
+        <result column="custom_field3" property="customField3" />
+        <result column="inventory_count" property="inventoryCount" />
+        <result column="check_count" property="checkCount" />
+        <result column="check_surplus_count" property="checkSurplusCount" />
+        <result column="check_losses_count" property="checkLossesCount" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, inventory_check_id, inventory_detail_id, check_status, ower_id, ower_code, ower_name, warehouse_id, warehouse_code, warehouse_name, warehouse_area_id, warehouse_area_code, warehouse_area_name, warehouse_location_id, warehouse_location_code, container_id, container_code, material_id, material_code, material_name, material_type_id, material_type, material_specification, batch_code, material_production_date, custom_field1, custom_field2, custom_field3, inventory_count, check_count, check_surplus_count, check_losses_count, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_inventory_check_detail </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="inventoryCheckDetail.inventoryCheckId != null ">
+                AND inventory_check_id = ${inventoryCheckDetail.inventoryCheckId}
+            </if>
+
+            <if test="inventoryCheckDetail.inventoryDetailId != null ">
+                AND inventory_detail_id = ${inventoryCheckDetail.inventoryDetailId}
+            </if>
+
+            <if test="inventoryCheckDetail.checkStatus != null ">
+                AND check_status = ${inventoryCheckDetail.checkStatus}
+            </if>
+
+            <if test="inventoryCheckDetail.owerId != null ">
+                AND ower_id = ${inventoryCheckDetail.owerId}
+            </if>
+
+            <if test="inventoryCheckDetail.owerCode != null and inventoryCheckDetail.owerCode != ''">
+                AND ower_code LIKE CONCAT('%',#{inventoryCheckDetail.owerCode}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.owerName != null and inventoryCheckDetail.owerName != ''">
+                AND ower_name LIKE CONCAT('%',#{inventoryCheckDetail.owerName}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.warehouseId != null ">
+                AND warehouse_id = ${inventoryCheckDetail.warehouseId}
+            </if>
+
+            <if test="inventoryCheckDetail.warehouseCode != null and inventoryCheckDetail.warehouseCode != ''">
+                AND warehouse_code LIKE CONCAT('%',#{inventoryCheckDetail.warehouseCode}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.warehouseName != null and inventoryCheckDetail.warehouseName != ''">
+                AND warehouse_name LIKE CONCAT('%',#{inventoryCheckDetail.warehouseName}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.warehouseAreaId != null ">
+                AND warehouse_area_id  = #{inventoryCheckDetail.warehouseAreaId}
+            </if>
+
+            <if test="inventoryCheckDetail.warehouseAreaCode != null and inventoryCheckDetail.warehouseAreaCode != ''">
+                AND warehouse_area_code LIKE CONCAT('%',#{inventoryCheckDetail.warehouseAreaCode}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.warehouseAreaName != null and inventoryCheckDetail.warehouseAreaName != ''">
+                AND warehouse_area_name LIKE CONCAT('%',#{inventoryCheckDetail.warehouseAreaName}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.warehouseLocationId != null ">
+                AND warehouse_location_id = ${inventoryCheckDetail.warehouseLocationId}
+            </if>
+
+            <if test="inventoryCheckDetail.warehouseLocationCode != null and inventoryCheckDetail.warehouseLocationCode != ''">
+                AND warehouse_location_code LIKE CONCAT('%',#{inventoryCheckDetail.warehouseLocationCode}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.containerId != null ">
+                AND container_id = ${inventoryCheckDetail.containerId}
+            </if>
+
+            <if test="inventoryCheckDetail.containerCode != null and inventoryCheckDetail.containerCode != ''">
+                AND container_code LIKE CONCAT('%',#{inventoryCheckDetail.containerCode}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.materialId != null ">
+                AND material_id = ${inventoryCheckDetail.materialId}
+            </if>
+
+            <if test="inventoryCheckDetail.materialCode != null and inventoryCheckDetail.materialCode != ''">
+                AND material_code LIKE CONCAT('%',#{inventoryCheckDetail.materialCode}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.materialName != null and inventoryCheckDetail.materialName != ''">
+                AND material_name LIKE CONCAT('%',#{inventoryCheckDetail.materialName}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.materialTypeId != null ">
+                AND material_type_id = ${inventoryCheckDetail.materialTypeId}
+            </if>
+
+            <if test="inventoryCheckDetail.materialType != null and inventoryCheckDetail.materialType != ''">
+                AND material_type LIKE CONCAT('%',#{inventoryCheckDetail.materialType}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.materialSpecification != null and inventoryCheckDetail.materialSpecification != ''">
+                AND material_specification LIKE CONCAT('%',#{inventoryCheckDetail.materialSpecification}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.batchCode != null and inventoryCheckDetail.batchCode != ''">
+                AND batch_code LIKE CONCAT('%',#{inventoryCheckDetail.batchCode}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.materialProductionDate != null ">
+                AND material_production_date = ${inventoryCheckDetail.materialProductionDate}
+            </if>
+
+            <if test="inventoryCheckDetail.customField1 != null and inventoryCheckDetail.customField1 != ''">
+                AND custom_field1 LIKE CONCAT('%',#{inventoryCheckDetail.customField1}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.customField2 != null and inventoryCheckDetail.customField2 != ''">
+                AND custom_field2 LIKE CONCAT('%',#{inventoryCheckDetail.customField2}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.customField3 != null and inventoryCheckDetail.customField3 != ''">
+                AND custom_field3 LIKE CONCAT('%',#{inventoryCheckDetail.customField3}, '%')
+            </if>
+
+            <if test="inventoryCheckDetail.inventoryCount != null ">
+                AND inventory_count = ${inventoryCheckDetail.inventoryCount}
+            </if>
+
+            <if test="inventoryCheckDetail.checkCount != null ">
+                AND check_count = ${inventoryCheckDetail.checkCount}
+            </if>
+
+            <if test="inventoryCheckDetail.checkSurplusCount != null ">
+                AND check_surplus_count = ${inventoryCheckDetail.checkSurplusCount}
+            </if>
+
+            <if test="inventoryCheckDetail.checkLossesCount != null ">
+                AND check_losses_count = ${inventoryCheckDetail.checkLossesCount}
+            </if>
+
+            <if test="inventoryCheckDetail.remark != null and inventoryCheckDetail.remark != ''">
+                AND remark LIKE CONCAT('%',#{inventoryCheckDetail.remark}, '%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.InventoryCheckDetail">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.InventoryCheckDetail">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryInventoryCheckDetailForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+        id 'id',
+        warehouse_location_code 'warehouseLocationCode',
+        case when check_status = 1 then '未盘点'
+        when check_status = 2 then '已盘点'
+        when check_status = 3 then '已过账'
+        end as 'checkStatus',
+        warehouse_area_name 'warehouseAreaName',
+        material_code 'materialCode',
+        material_name 'materialName',
+        material_type 'materialType',
+        container_code 'containerCode',
+        ROUND(inventory_count,0) 'inventoryCount',
+        ROUND(check_count,0) 'checkCount',
+        ROUND(check_surplus_count,0) 'checkSurplusCount',
+        ROUND(check_losses_count,0) 'checkLossesCount',
+        material_specification 'materialSpecification',
+        batch_code 'batchCode',
+        material_production_date 'materialProductionDate',
+        custom_field1 'customField1',
+        custom_field2 'customField2',
+        custom_field3 'customField3'
+        FROM wms_inventory_check_detail
+        WHERE is_deleted = 0
+        <if test="inventoryCheckId != null ">
+            AND inventory_check_id = ${inventoryCheckId}
+        </if>
+        <if test="inventoryDetailId != null ">
+            AND inventory_detail_id = ${inventoryDetailId}
+        </if>
+        <if test="owerId != null ">
+            AND ower_id = ${owerId}
+        </if>
+        <if test="owerCode != null and owerCode != ''">
+            AND ower_code = #{owerCode}
+        </if>
+        <if test="owerName != null and owerName != ''">
+            AND ower_name = #{owerName}
+        </if>
+        <if test="warehouseId != null ">
+            AND warehouse_id = ${warehouseId}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            AND warehouse_code = #{warehouseCode}
+        </if>
+        <if test="warehouseName != null and warehouseName != ''">
+            AND warehouse_name = #{warehouseName}
+        </if>
+        <if test="warehouseAreaId != null ">
+            AND warehouse_area_id = #{warehouseAreaId}
+        </if>
+        <if test="warehouseAreaCode != null and warehouseAreaCode != ''">
+            AND warehouse_area_code = #{warehouseAreaCode}
+        </if>
+        <if test="warehouseAreaName != null and warehouseAreaName != ''">
+            AND warehouse_area_name = #{warehouseAreaName}
+        </if>
+        <if test="warehouseLocationId != null ">
+            AND warehouse_location_id = ${warehouseLocationId}
+        </if>
+        <if test="warehouseLocationCode != null and warehouseLocationCode != ''">
+            AND warehouse_location_code = #{warehouseLocationCode}
+        </if>
+        <if test="containerId != null ">
+            AND container_id = ${containerId}
+        </if>
+        <if test="containerCode != null and containerCode != ''">
+            AND container_code = #{containerCode}
+        </if>
+        <if test="materialId != null ">
+            AND material_id = ${materialId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="materialName != null and materialName != ''">
+            AND material_name = #{materialName}
+        </if>
+        <if test="materialTypeId != null ">
+            AND material_type_id = ${materialTypeId}
+        </if>
+        <if test="materialType != null and materialType != ''">
+            AND material_type = #{materialType}
+        </if>
+        <if test="materialSpecification != null and materialSpecification != ''">
+            AND material_specification = #{materialSpecification}
+        </if>
+        <if test="batchCode != null and batchCode != ''">
+            AND batch_code = #{batchCode}
+        </if>
+        <if test="materialProductionDate != null ">
+            AND material_production_date = ${materialProductionDate}
+        </if>
+        <if test="customField1 != null and customField1 != ''">
+            AND custom_field1 = #{customField1}
+        </if>
+        <if test="customField2 != null and customField2 != ''">
+            AND custom_field2 = #{customField2}
+        </if>
+        <if test="customField3 != null and customField3 != ''">
+            AND custom_field3 = #{customField3}
+        </if>
+        <if test="inventoryCount != null ">
+            AND inventory_count = ${inventoryCount}
+        </if>
+        <if test="checkCount != null ">
+            AND check_count = ${checkCount}
+        </if>
+        <if test="checkSurplusCount != null ">
+            AND check_surplus_count = ${checkSurplusCount}
+        </if>
+        <if test="checkLossesCount != null ">
+            AND check_losses_count = ${checkLossesCount}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+    <select id="queryDetailCountByInventoryCheckIds" resultType="java.util.Map">
+
+        select inventory_check_id 'inventoryCheckId',sum(inventory_count) 'inventoryCount', sum(check_count) 'checkCount'
+        from wms_inventory_check_detail
+        where is_deleted = 0
+        <if test="inventoryCheckIds!=null and inventoryCheckIds.size()>0">
+            AND inventory_check_id  in
+            <foreach item="item" index="index" collection="inventoryCheckIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY inventory_check_id
+    </select>
+
+    <!--盘点明细 已全部过账的盘点单-->
+    <select id="queryNotCheckIdList" resultType="java.lang.Long">
+        select a.inventory_check_id from
+        (
+        select inventory_check_id,count(id) detailCount from wms_inventory_check_detail
+        where 1=1
+        and is_deleted = 0
+        GROUP BY inventory_check_id
+        ) a,
+        (
+        select inventory_check_id,count(id) detailCount from wms_inventory_check_detail
+        where 1=1
+        and is_deleted = 0
+        and check_status =3
+        GROUP BY inventory_check_id
+        ) b where a.inventory_check_id = b.inventory_check_id and a.detailCount = b.detailCount
+
+    </select>
+
+
+</mapper>

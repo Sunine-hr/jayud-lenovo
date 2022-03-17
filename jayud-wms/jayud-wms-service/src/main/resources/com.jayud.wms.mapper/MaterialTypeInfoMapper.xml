@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.MaterialTypeInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.MaterialTypeInfo">
+        <id column="id" property="id"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="material_type_code" property="materialTypeCode"/>
+        <result column="material_type_name" property="materialTypeName"/>
+        <result column="order" property="order"/>
+        <result column="tenant_code" property="tenantCode"/>
+        <result column="remark" property="remark"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        ,parent_id,material_type_code,material_type_name,order,tenant_code,remark,is_deleted,create_by,create_time,update_by,update_time
+    </sql>
+
+    <insert id="insertMaterialTypeInfo" parameterType="com.jayud.wms.model.po.MaterialTypeInfo">
+        INSERT INTO wms_material_type_info
+            (id, parent_id, material_type_code, material_type_name, create_by)
+        VALUES (#{id,jdbcType=BIGINT}, #{parentId,jdbcType=BIGINT}, #{materialTypeCode,jdbcType=VARCHAR},
+                #{materialTypeName,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR})
+
+    </insert>
+
+
+    <select id="findMaterialTypeInfo" resultType="java.util.LinkedHashMap">
+        SELECT
+        material_type_code AS "materialTypeCode",
+        CAST( id AS CHAR ) AS "id",
+        CAST( id AS CHAR ) AS "key",
+        material_type_name AS "materialTypeName",
+        CAST( id AS CHAR ) AS "value",
+        CAST( parent_id AS CHAR ) AS "parentId"
+        FROM
+        wms_material_type_info
+        WHERE
+        is_deleted = 0
+        <if test="createBy != null">
+            AND create_by = #{createBy,jdbcType=VARCHAR}
+        </if>
+
+        <if test="parentId != null">
+            AND parent_id = #{parentId,jdbcType=BIGINT}
+        </if>
+        ORDER BY
+        create_time ASC
+    </select>
+
+    <update id="updateMaterialTypeInfo" parameterType="com.jayud.wms.model.po.MaterialTypeInfo">
+        update wms_material_type_info
+        set is_deleted=1 ,update_by=#{updateBy,jdbcType=VARCHAR},update_time=#{updateTime,jdbcType=DATE}
+        where parent_id=#{parentId,jdbcType=BIGINT}
+
+
+        <!--        <foreach item="id" collection="array" open="(" separator="," close=")">-->
+        <!--            #{id,jdbcType=BIGINT}-->
+        <!--        </foreach>-->
+    </update>
+
+    <select id="findMaterialTypeInfoListStair" resultType="java.util.LinkedHashMap">
+        SELECT id,
+               parent_id     parentId,
+               (SELECT material_type_name
+                FROM material_type_info
+                WHERE parent_id = 0
+                  and id = #{id,jdbcType=BIGINT} LIMIT 1) materialTypeClassification,
+            material_type_name materialTypeName,
+            create_by createBy,
+            create_time createTime,
+            update_by updateBy,
+            update_time updateTime
+        FROM
+            wms_material_type_info
+        WHERE
+            is_deleted = 0
+          AND parent_id=#{parentId,jdbcType=BIGINT}
+    </select>
+
+    <select id="findMaterialTypeInfoListTwo" resultType="java.util.LinkedHashMap">
+        SELECT id,
+        parent_id parentId,
+        (SELECT material_type_name
+        FROM wms_material_type_info
+        WHERE parent_id = 0
+        and id = #{parentId,jdbcType=BIGINT} LIMIT 1) materialTypeClassification,
+        material_type_name materialTypeName,
+        create_by createBy,
+        create_time createTime,
+        update_by updateBy,
+        update_time updateTime
+        FROM
+        wms_material_type_info
+        WHERE
+        is_deleted = 0
+        <if test="id != null">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+
+
+
+    </select>
+
+
+
+    <select id="findMaterialTypeInfoListIdParentId" resultType="java.util.LinkedHashMap">
+        SELECT
+        id,
+        parent_id parentId ,
+        (SELECT material_type_name FROM wms_material_type_info  WHERE   parent_id=0  and id = parentId LIMIT 1) materialTypeClassification,
+        material_type_name materialTypeName,
+        create_by createBy,
+        create_time createTime,
+        update_by updateBy,
+        update_time  updateTime
+        FROM wms_material_type_info
+        WHERE  is_deleted = 0
+        and parent_id!=0
+        AND material_type_name   like CONCAT('%',#{materialTypeName,jdbcType=VARCHAR} , '%')
+
+    </select>
+
+
+    <select id="findMaterialTypeInfoName"  parameterType="com.jayud.wms.model.po.MaterialTypeInfo" resultType="com.jayud.wms.model.po.MaterialTypeInfo">
+        SELECT
+            id,
+            parent_id parentId,
+            material_type_name materialTypeName,
+            create_by createBy,
+            create_time createTime,
+            update_by updateBy,
+            update_time  updateTime
+        FROM wms_material_type_info
+        WHERE  is_deleted = 0
+        <if test="materialTypeInfo.materialTypeName != null">
+            and material_type_name=#{materialTypeInfo.materialTypeName,jdbcType=VARCHAR}
+        </if>
+        <if test="materialTypeInfo.parentId != null">
+            AND parent_id = #{materialTypeInfo.parentId,jdbcType=BIGINT}
+        </if>
+
+    </select>
+
+
+    <select id="findMaterialTypeInfoListFrom" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        SELECT id,
+        parent_id parentId,
+        material_type_name materialTypeName,
+        material_type_code materialTypeCode,
+        create_by createBy,
+        create_time createTime,
+        update_by updateBy,
+        update_time updateTime,
+        (SELECT material_type_name
+        FROM wms_material_type_info
+        WHERE parent_id = 0
+        and id = parentId LIMIT 1) materialTypeClassification
+        FROM
+        wms_material_type_info
+        WHERE
+        is_deleted = 0
+        <if test="id != null">
+            AND id = #{id}
+        </if>
+        <if test="materialTypeName != null">
+            AND material_type_name   like CONCAT('%',#{materialTypeName,jdbcType=VARCHAR} , '%')
+        </if>
+
+
+    </select>
+
+
+    <select id="queryMaterialTypeInfoFormForExcel" parameterType="map" resultType="java.util.LinkedHashMap">
+
+        SELECT
+        id,
+        parent_id parentId,
+        material_type_name materialTypeName,
+        create_by createBy,
+        create_time createTime,
+--         update_by updateBy,
+--         update_time updateTime,
+        (SELECT material_type_name
+        FROM wms_material_type_info
+        WHERE parent_id = 0
+        and id = parentId LIMIT 1) materialTypeClassification
+        FROM
+        wms_material_type_info
+        WHERE
+        is_deleted = 0
+        <if test="id != null">
+            AND id = #{id}
+        </if>
+        <if test="materialTypeName != null">
+           AND material_type_name   like CONCAT('%',#{materialTypeName,jdbcType=VARCHAR} , '%')
+        </if>
+
+
+    </select>
+
+
+
+</mapper>

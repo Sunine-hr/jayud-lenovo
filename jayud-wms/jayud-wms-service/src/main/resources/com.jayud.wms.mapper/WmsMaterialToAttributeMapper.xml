@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsMaterialToAttributeMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsMaterialToAttribute">
+        <id column="id" property="id" />
+        <result column="material_basic_info_id" property="materialBasicInfoId" />
+        <result column="material_code" property="materialCode" />
+        <result column="attribute_type" property="attributeType" />
+        <result column="is_visible" property="isVisible" />
+        <result column="is_required" property="isRequired" />
+        <result column="attribute_nanme" property="attributeNanme" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="attribute_type_text" property="attributeType_text" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        wmta.id, wmta.material_basic_info_id, wmta.material_code, wmta.attribute_type, wmta.is_visible, wmta.is_required, wmta.attribute_nanme, wmta.tenant_code, wmta.remark, wmta.is_deleted, wmta.create_by, wmta.create_time, wmta.update_by, wmta.update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_material_to_attribute wmta</sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        ,sd.dict_name attribute_type_text
+        FROM <include refid="tname"/> LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.dict_type = 'material_attribute_type' AND sd.dict_value = wmta.attribute_type
+        <where>
+            wmta.is_deleted = 0
+            <if test="wmsMaterialToAttribute.materialBasicInfoId != null ">
+                AND wmta.material_basic_info_id = ${wmsMaterialToAttribute.materialBasicInfoId}
+            </if>
+
+            <if test="wmsMaterialToAttribute.materialCode != null and wmsMaterialToAttribute.materialCode != ''">
+                AND wmta.material_code = #{wmsMaterialToAttribute.materialCode}
+            </if>
+
+            <if test="wmsMaterialToAttribute.attributeType != null ">
+                AND wmta.attribute_type = ${wmsMaterialToAttribute.attributeType}
+            </if>
+
+            <if test="wmsMaterialToAttribute.isVisible != null ">
+                AND wmta.is_visible = ${wmsMaterialToAttribute.isVisible}
+            </if>
+
+            <if test="wmsMaterialToAttribute.isRequired != null ">
+                AND wmta.is_required = ${wmsMaterialToAttribute.isRequired}
+            </if>
+
+            <if test="wmsMaterialToAttribute.attributeNanme != null and wmsMaterialToAttribute.attributeNanme != ''">
+                AND wmta.attribute_nanme = #{wmsMaterialToAttribute.attributeNanme}
+            </if>
+
+            <if test="wmsMaterialToAttribute.tenantCode != null and wmsMaterialToAttribute.tenantCode != ''">
+                AND wmta.tenant_code = #{wmsMaterialToAttribute.tenantCode}
+            </if>
+
+            <if test="wmsMaterialToAttribute.remark != null and wmsMaterialToAttribute.remark != ''">
+                AND wmta.remark = #{wmsMaterialToAttribute.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsMaterialToAttribute">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsMaterialToAttribute">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="queryWmsMaterialToAttributeForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            material_basic_info_id 'materialBasicInfoId',
+            material_code 'materialCode',
+            attribute_type 'attributeType',
+            is_visible 'isVisible',
+            is_required 'isRequired',
+            attribute_nanme 'attributeNanme',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_material_to_attribute
+        WHERE is_deleted = 0
+        <if test="materialBasicInfoId != null ">
+            AND material_basic_info_id = ${materialBasicInfoId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="attributeType != null ">
+            AND attribute_type = ${attributeType}
+        </if>
+        <if test="isVisible != null ">
+            AND is_visible = ${isVisible}
+        </if>
+        <if test="isRequired != null ">
+            AND is_required = ${isRequired}
+        </if>
+        <if test="attributeNanme != null and attributeNanme != ''">
+            AND attribute_nanme = #{attributeNanme}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_material_to_attribute WHERE id = ${id}
+    </delete>
+
+    <update id="delByMaterialId">
+        UPDATE wms_material_to_attribute
+        SET is_deleted = 1,update_by = #{username},update_time = now()
+        WHERE
+            is_deleted = 0
+          AND material_basic_info_id = #{materialId}
+    </update>
+
+
+</mapper>

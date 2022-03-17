@@ -1,0 +1,117 @@
+package com.jayud.wms.service.impl;
+
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.wms.model.bo.QueryQualityInspectionMaterialForm;
+import com.jayud.wms.model.po.QualityInspectionMaterial;
+import com.jayud.wms.mapper.QualityInspectionMaterialMapper;
+import com.jayud.wms.service.IQualityInspectionMaterialService;
+import com.jayud.common.utils.CurrentUserUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 质检物料信息 服务实现类
+ *
+ * @author jyd
+ * @since 2021-12-22
+ */
+@Service
+public class QualityInspectionMaterialServiceImpl extends ServiceImpl<QualityInspectionMaterialMapper, QualityInspectionMaterial> implements IQualityInspectionMaterialService {
+
+
+    @Autowired
+    private QualityInspectionMaterialMapper qualityInspectionMaterialMapper;
+
+    @Override
+    public IPage<QualityInspectionMaterial> selectPage(QualityInspectionMaterial qualityInspectionMaterial,
+                                                       Integer pageNo,
+                                                       Integer pageSize,
+                                                       HttpServletRequest req) {
+
+        Page<QualityInspectionMaterial> page = new Page<QualityInspectionMaterial>(pageNo, pageSize);
+        IPage<QualityInspectionMaterial> pageList = qualityInspectionMaterialMapper.pageList(page, qualityInspectionMaterial);
+        return pageList;
+    }
+
+    @Override
+    public List<QualityInspectionMaterial> selectList(QualityInspectionMaterial qualityInspectionMaterial) {
+        return qualityInspectionMaterialMapper.list(qualityInspectionMaterial);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public QualityInspectionMaterial saveOrUpdateQualityInspectionMaterial(QualityInspectionMaterial qualityInspectionMaterial) {
+        Long id = qualityInspectionMaterial.getId();
+        if (ObjectUtil.isEmpty(id)) {
+            //新增 --> add 创建人、创建时间
+            qualityInspectionMaterial.setCreateBy(CurrentUserUtil.getUsername());
+            qualityInspectionMaterial.setCreateTime(new Date());
+
+            QueryWrapper<QualityInspectionMaterial> qualityInspectionMaterialQueryWrapper = new QueryWrapper<>();
+//            qualityInspectionMaterialQueryWrapper.lambda().eq(QualityInspectionMaterial::getCode, qualityInspectionMaterialg.getCode());
+            qualityInspectionMaterialQueryWrapper.lambda().eq(QualityInspectionMaterial::getIsDeleted, 0);
+            List<QualityInspectionMaterial> list = this.list(qualityInspectionMaterialQueryWrapper);
+            if (CollUtil.isNotEmpty(list)) {
+                throw new IllegalArgumentException("编号已存在，操作失败");
+            }
+
+        } else {
+            //修改 --> update 更新人、更新时间
+            qualityInspectionMaterial.setUpdateBy(CurrentUserUtil.getUsername());
+            qualityInspectionMaterial.setUpdateTime(new Date());
+
+            QueryWrapper<QualityInspectionMaterial> qualityInspectionMaterialQueryWrapper = new QueryWrapper<>();
+            qualityInspectionMaterialQueryWrapper.lambda().ne(QualityInspectionMaterial::getId, id);
+//            qualityInspectionMaterialQueryWrapper.lambda().eq(QualityInspectionMaterial::getCode, qualityInspectionMaterial.getCode());
+            qualityInspectionMaterialQueryWrapper.lambda().eq(QualityInspectionMaterial::getIsDeleted, 0);
+            List<QualityInspectionMaterial> list = this.list(qualityInspectionMaterialQueryWrapper);
+            if (CollUtil.isNotEmpty(list)) {
+                throw new IllegalArgumentException("编号已存在，操作失败");
+            }
+        }
+        this.saveOrUpdate(qualityInspectionMaterial);
+        return qualityInspectionMaterial;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void delQualityInspectionMaterial(int id) {
+        QualityInspectionMaterial qualityInspectionMaterial = this.baseMapper.selectById(id);
+        if (ObjectUtil.isEmpty(qualityInspectionMaterial)) {
+            throw new IllegalArgumentException("质检物料信息不存在，无法删除");
+        }
+        //逻辑删除 -->update 修改人、修改时间、是否删除
+        qualityInspectionMaterial.setUpdateBy(CurrentUserUtil.getUsername());
+        qualityInspectionMaterial.setUpdateTime(new Date());
+        qualityInspectionMaterial.setIsDeleted(true);
+        this.saveOrUpdate(qualityInspectionMaterial);
+    }
+
+    @Override
+    public List<LinkedHashMap<String, Object>> queryQualityInspectionMaterialForExcel(Map<String, Object> paramMap) {
+        return this.baseMapper.queryQualityInspectionMaterialForExcel(paramMap);
+    }
+
+    @Override
+    public List<QualityInspectionMaterial> getByCondition(QualityInspectionMaterial condition) {
+        return this.baseMapper.selectList(new QueryWrapper<>(condition));
+    }
+
+    @Override
+    public QualityInspectionMaterial findQualityInspectionMaterialOne(QueryQualityInspectionMaterialForm qualityInspectionMaterial) {
+        return qualityInspectionMaterialMapper.findQualityInspectionMaterialOne(qualityInspectionMaterial);
+    }
+
+}

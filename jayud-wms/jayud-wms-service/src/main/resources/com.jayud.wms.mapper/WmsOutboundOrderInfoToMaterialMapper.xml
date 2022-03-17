@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsOutboundOrderInfoToMaterialMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.vo.WmsOutboundOrderInfoToMaterialVO">
+        <id column="id" property="id" />
+        <result column="order_number" property="orderNumber" />
+        <result column="material_id" property="materialId" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="material_specification" property="materialSpecification" />
+        <result column="requirement_account" property="requirementAccount" />
+        <result column="distribution_account" property="distributionAccount" />
+        <result column="unit" property="unit" />
+        <result column="external_number" property="externalNumber" />
+        <result column="external_line_number" property="externalLineNumber" />
+        <result column="batch_code" property="batchCode" />
+        <result column="material_production_date" property="materialProductionDate" />
+        <result column="custom_field1" property="customField1" />
+        <result column="custom_field2" property="customField2" />
+        <result column="custom_field3" property="customField3" />
+        <result column="status_type" property="statusType" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="material_type_id" property="materialTypeId" />
+        <result column="material_type_name" property="materialTypeId_text" />
+        <result column="material_type_code" property="materialTypeCode" />
+        <result column="weight" property="weight" />
+        <result column="volume" property="volume" />
+        <result column="status_type_text" property="statusType_text" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        wooitm.id, wooitm.order_number, wooitm.material_id, wooitm.material_code, wooitm.material_name,wooitm.material_specification, wooitm.requirement_account,wooitm.distribution_account, wooitm.unit, wooitm.external_number, wooitm.external_line_number, wooitm.batch_code, wooitm.material_production_date, wooitm.custom_field1, wooitm.custom_field2, wooitm.custom_field3,wooitm.status_type, wooitm.remark, wooitm.is_deleted, wooitm.create_by, wooitm.create_time, wooitm.update_by, wooitm.update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_outbound_order_info_to_material wooitm</sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>,
+        mti.id  material_type_id,
+        mti.material_type_name material_type_name,
+        mti.material_type_code material_type_code,
+        wmbi.weight weight,
+        wmbi.volume volume,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE sd.is_deleted = 0 AND sd.parent_id != 0 AND sd.dict_type = 'outboundOrderStatusType' AND sd.dict_value = wooitm.status_type) status_type_text
+        FROM <include refid="tname"/>
+        LEFT JOIN wms_material_basic_info wmbi ON wooitm.material_code = wmbi.material_code
+        LEFT JOIN wms_material_type_info mti ON wmbi.material_type_id = mti.id
+        <where>
+            wooitm.is_deleted = 0
+            <if test="wmsOutboundOrderInfoToMaterialVO.orderNumber != null and wmsOutboundOrderInfoToMaterialVO.orderNumber != ''">
+                AND wooitm.order_number LIKE CONCAT('%',#{wmsOutboundOrderInfoToMaterialVO.orderNumber},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoToMaterialVO.materialId != null ">
+                AND wooitm.material_id = ${wmsOutboundOrderInfoToMaterialVO.materialId}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToMaterialVO.materialCode != null and wmsOutboundOrderInfoToMaterialVO.materialCode != ''">
+                AND wooitm.material_code LIKE CONCAT('%',#{wmsOutboundOrderInfoToMaterialVO.materialCode},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoToMaterialVO.materialName != null and wmsOutboundOrderInfoToMaterialVO.materialName != ''">
+                AND wooitm.material_name LIKE CONCAT('%',#{wmsOutboundOrderInfoToMaterialVO.materialName},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoToMaterialVO.materialSpecification != null and wmsOutboundOrderInfoToMaterialVO.materialSpecification != ''">
+                AND wooitm.material_specification LIKE CONCAT('%',#{wmsOutboundOrderInfoToMaterialVO.materialSpecification},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoToMaterialVO.distributionAccount != null ">
+                AND wooitm.distribution_account = ${wmsOutboundOrderInfoToMaterialVO.distributionAccount}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToMaterialVO.unit != null and wmsOutboundOrderInfoToMaterialVO.unit != ''">
+                AND wooitm.unit LIKE CONCAT('%',#{wmsOutboundOrderInfoToMaterialVO.unit},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoToMaterialVO.externalNumber != null and wmsOutboundOrderInfoToMaterialVO.externalNumber != ''">
+                AND wooitm.external_number LIKE CONCAT('%',#{wmsOutboundOrderInfoToMaterialVO.externalNumber},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoToMaterialVO.externalLineNumber != null and wmsOutboundOrderInfoToMaterialVO.externalLineNumber != ''">
+                AND wooitm.external_line_number LIKE CONCAT('%',#{wmsOutboundOrderInfoToMaterialVO.externalLineNumber},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoToMaterialVO.batchCode != null and wmsOutboundOrderInfoToMaterialVO.batchCode != ''">
+                AND wooitm.batch_code LIKE CONCAT('%',#{wmsOutboundOrderInfoToMaterialVO.batchCode},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoToMaterialVO.materialProductionDate != null ">
+                AND wooitm.material_production_date = ${wmsOutboundOrderInfoToMaterialVO.materialProductionDate}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToMaterialVO.customField1 != null ">
+                AND wooitm.custom_field1 = ${wmsOutboundOrderInfoToMaterialVO.customField1}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToMaterialVO.customField2 != null and wmsOutboundOrderInfoToMaterialVO.customField2 != ''">
+                AND wooitm.custom_field2 LIKE CONCAT('%',#{wmsOutboundOrderInfoToMaterialVO.customField2},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoToMaterialVO.customField3 != null and wmsOutboundOrderInfoToMaterialVO.customField3 != ''">
+                AND custom_field3 LIKE CONCAT('%',#{wmsOutboundOrderInfoToMaterialVO.customField3},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoToMaterialVO.remark != null and wmsOutboundOrderInfoToMaterialVO.remark != ''">
+                AND wooitm.remark LIKE CONCAT('%',#{wmsOutboundOrderInfoToMaterialVO.remark},'%')
+            </if>
+            <if test="wmsOutboundOrderInfoToMaterialVO.orderNumberList != null and wmsOutboundOrderInfoToMaterialVO.orderNumberList.size > 0 ">
+                AND wooitm.order_number IN
+                <foreach item="id" collection="wmsOutboundOrderInfoToMaterialVO.orderNumberList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsOutboundOrderInfoToMaterial">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsOutboundOrderInfoToMaterial">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="queryWmsOutboundOrderInfoToMaterialForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            order_number 'orderNumber',
+            material_id 'materialId',
+            material_code 'materialCode',
+            material_name 'materialName',
+            distribution_account 'distributionAccount',
+            unit 'unit',
+            external_number 'externalNumber',
+            external_line_number 'externalLineNumber',
+            batch_code 'batchCode',
+            material_production_date 'materialProductionDate',
+            custom_field1 'customField1',
+            custom_field2 'customField2',
+            custom_field3 'customField3',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_outbound_order_info_to_material
+        WHERE is_deleted = 0
+        <if test="orderNumber != null and orderNumber != ''">
+            AND order_number = #{orderNumber}
+        </if>
+        <if test="materialId != null ">
+            AND material_id = ${materialId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="materialName != null and materialName != ''">
+            AND material_name = #{materialName}
+        </if>
+        <if test="distributionAccount != null ">
+            AND distribution_account = ${distributionAccount}
+        </if>
+        <if test="unit != null and unit != ''">
+            AND unit = #{unit}
+        </if>
+        <if test="externalNumber != null and externalNumber != ''">
+            AND external_number = #{externalNumber}
+        </if>
+        <if test="externalLineNumber != null and externalLineNumber != ''">
+            AND external_line_number = #{externalLineNumber}
+        </if>
+        <if test="batchCode != null and batchCode != ''">
+            AND batch_code = #{batchCode}
+        </if>
+        <if test="materialProductionDate != null ">
+            AND material_production_date = ${materialProductionDate}
+        </if>
+        <if test="customField1 != null ">
+            AND custom_field1 = ${customField1}
+        </if>
+        <if test="customField2 != null and customField2 != ''">
+            AND custom_field2 = #{customField2}
+        </if>
+        <if test="customField3 != null and customField3 != ''">
+            AND custom_field3 = #{customField3}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_outbound_order_info_to_material WHERE id = ${id}
+    </delete>
+
+    <update id="updateByOrderNumber">
+        UPDATE wms_outbound_order_info_to_material SET status_type = ${status},update_by=#{username},update_time=now()
+        WHERE order_number = #{orderNumber} AND is_deleted = 0
+    </update>
+    <update id="updateByWaveNumber">
+        UPDATE wms_outbound_order_info_to_material wooitm SET wooitm.status_type = ${status},update_by=#{username},update_time=now()
+        WHERE wooitm.order_number IN
+              (SELECT wooi.order_number FROM wms_outbound_order_info wooi WHERE wooi.wave_number = #{waveNumber})
+          AND is_deleted = 0
+
+    </update>
+
+    <update id="delByOrderNumber">
+        UPDATE wms_outbound_order_info_to_material SET is_deleted = 1,update_by=#{username},update_time=now()
+        WHERE order_number = #{orderNumber} AND is_deleted = 0
+    </update>
+
+    <select id="queryScanInformation" resultType="com.jayud.wms.model.vo.QueryScanInformationVO">
+        SELECT
+        w.id 'id',
+        w.order_number 'orderNumber',
+        w.material_id 'materialId',
+        w.material_code 'materialCode',
+        w.material_name 'materialName',
+        w.distribution_account 'distributionAccount',
+        w.unit 'unit',
+        w.external_number 'externalNumber',
+        w.external_line_number 'externalLineNumber',
+        w.batch_code 'batchCode',
+        w.material_production_date 'materialProductionDate',
+        w.custom_field1 'customField1',
+        w.custom_field2 'customField2',
+        w.custom_field3 'customField3',
+        w.remark 'remark',
+        wp.id 'packingOffshelfId',
+        wp.warehouse_id 'warehouseId',
+        wp.warehouse_code 'warehouseCode',
+        wp.warehouse_name 'warehouseName',
+        wp.ower_id 'owerId',
+        wp.ower_code 'owerCode',
+        wp.ower_name 'owerName',
+        wp.material_id 'materialId',
+        wp.material_code 'materialCode',
+        wp.material_name 'materialName',
+        wp.packing_offshelf_number 'packingOffshelfNumber',
+        FROM wms_outbound_order_info_to_material w
+        left join wms_packing_offshelf_task wp on w.order_number = wp.order_number and wp.is_deleted = 0
+        WHERE w.is_deleted = 0
+        AND w.wave_number = #{waveNumber}
+
+        <if test="materialCode != null and materialCode != ''">
+            AND w.material_code = #{materialCode}
+        </if>
+
+    </select>
+
+
+</mapper>

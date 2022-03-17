@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsAllocationStrategyMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsAllocationStrategy">
+        <id column="id" property="id" />
+        <result column="allocation_strategy_code" property="allocationStrategyCode" />
+        <result column="allocation_strategy_name" property="allocationStrategyName" />
+        <result column="sorts" property="sorts" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, allocation_strategy_code, allocation_strategy_name, sorts, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_allocation_strategy </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsAllocationStrategy.allocationStrategyCode != null and wmsAllocationStrategy.allocationStrategyCode != ''">
+                AND allocation_strategy_code = #{wmsAllocationStrategy.allocationStrategyCode}
+            </if>
+
+            <if test="wmsAllocationStrategy.allocationStrategyName != null and wmsAllocationStrategy.allocationStrategyName != ''">
+                AND allocation_strategy_name = #{wmsAllocationStrategy.allocationStrategyName}
+            </if>
+
+            <if test="wmsAllocationStrategy.sorts != null ">
+                AND sorts = ${wmsAllocationStrategy.sorts}
+            </if>
+
+            <if test="wmsAllocationStrategy.tenantCode != null and wmsAllocationStrategy.tenantCode != ''">
+                AND tenant_code = #{wmsAllocationStrategy.tenantCode}
+            </if>
+
+            <if test="wmsAllocationStrategy.remark != null and wmsAllocationStrategy.remark != ''">
+                AND remark = #{wmsAllocationStrategy.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsAllocationStrategy">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsAllocationStrategy">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="queryWmsAllocationStrategyForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            allocation_strategy_code 'allocationStrategyCode',
+            allocation_strategy_name 'allocationStrategyName',
+            allocation_strategy_type 'allocatioStrategyType',
+            sorts 'sorts',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_allocation_strategy
+        WHERE is_deleted = 0
+        <if test="allocationStrategyCode != null and allocationStrategyCode != ''">
+            AND allocation_strategy_code = #{allocationStrategyCode}
+        </if>
+        <if test="allocationStrategyName != null and allocationStrategyName != ''">
+            AND allocation_strategy_name = #{allocationStrategyName}
+        </if>
+        <if test="allocationTrategyYpe != null ">
+            AND allocation_trategy_ype = ${allocationTrategyYpe}
+        </if>
+        <if test="sorts != null ">
+            AND sorts = ${sorts}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_allocation_strategy WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE wms_allocation_strategy SET is_deleted = 1,update_by = #{username},update_time = now() WHERE id = ${id}
+    </update>
+
+</mapper>

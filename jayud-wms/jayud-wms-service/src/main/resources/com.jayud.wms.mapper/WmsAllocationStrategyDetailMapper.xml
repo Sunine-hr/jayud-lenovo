@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsAllocationStrategyDetailMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.vo.WmsAllocationStrategyDetailVO">
+        <id column="id" property="id" />
+        <result column="allocation_strategy_id" property="allocationStrategyId" />
+        <result column="allocation_strategy_code" property="allocationStrategyCode" />
+        <result column="allocation_strategy_detail_code" property="allocationStrategyDetailCode" />
+        <result column="sorts" property="sorts" />
+        <result column="allocation_strategy_type" property="allocationStrategyType" />
+        <result column="unit" property="unit" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="allocation_strategy_type_text" property="allocationStrategyType_text" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        wasd.id, wasd.allocation_strategy_id, wasd.allocation_strategy_code, wasd.allocation_strategy_detail_code, wasd.sorts, wasd.allocation_strategy_type, wasd.unit, wasd.tenant_code, wasd.remark, wasd.is_deleted, wasd.create_by, wasd.create_time, wasd.update_by, wasd.update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_allocation_strategy_detail wasd </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>,
+        sd.dict_name allocation_strategy_type_text
+        FROM <include refid="tname"/>
+        LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.parent_id != 0 AND sd.dict_value = wasd.allocation_strategy_type AND sd.dict_type = 'allocation_strategy_detail'
+        <where>
+            wasd.is_deleted = 0
+            <if test="wmsAllocationStrategyDetailVO.allocationStrategyId != null and wmsAllocationStrategyDetailVO.allocationStrategyId != ''">
+                AND wasd.allocation_strategy_id = #{wmsAllocationStrategyDetailVO.allocationStrategyId}
+            </if>
+            <if test="wmsAllocationStrategyDetailVO.allocationStrategyCode != null and wmsAllocationStrategyDetailVO.allocationStrategyCode != ''">
+                AND wasd.allocation_strategy_code = #{wmsAllocationStrategyDetailVO.allocationStrategyCode}
+            </if>
+
+            <if test="wmsAllocationStrategyDetailVO.allocationStrategyDetailCode != null and wmsAllocationStrategyDetailVO.allocationStrategyDetailCode != ''">
+                AND wasd.allocation_strategy_detail_code = #{wmsAllocationStrategyDetailVO.allocationStrategyDetailCode}
+            </if>
+
+            <if test="wmsAllocationStrategyDetailVO.sorts != null ">
+                AND wasd.sorts = ${wmsAllocationStrategyDetailVO.sorts}
+            </if>
+
+            <if test="wmsAllocationStrategyDetailVO.allocationStrategyType != null ">
+                AND wasd.allocation_strategy_type = ${wmsAllocationStrategyDetailVO.allocationStrategyType}
+            </if>
+
+            <if test="wmsAllocationStrategyDetailVO.unit != null and wmsAllocationStrategyDetailVO.unit != ''">
+                AND wasd.unit = #{wmsAllocationStrategyDetailVO.unit}
+            </if>
+
+            <if test="wmsAllocationStrategyDetailVO.tenantCode != null and wmsAllocationStrategyDetailVO.tenantCode != ''">
+                AND wasd.tenant_code = #{wmsAllocationStrategyDetailVO.tenantCode}
+            </if>
+
+            <if test="wmsAllocationStrategyDetailVO.remark != null and wmsAllocationStrategyDetailVO.remark != ''">
+                AND wasd.remark = #{wmsAllocationStrategyDetailVO.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.vo.WmsAllocationStrategyDetailVO">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.vo.WmsAllocationStrategyDetailVO">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="queryWmsAllocationStrategyDetailForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            allocation_strategy_code 'allocationStrategyCode',
+            allocation_strategy_detail_code 'allocationStrategyDetailCode',
+            sorts 'sorts',
+            allocation_strategy_type 'allocationStrategyType',
+            unit 'unit',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_allocation_strategy_detail
+        WHERE is_deleted = 0
+        <if test="allocationStrategyCode != null and allocationStrategyCode != ''">
+            AND allocation_strategy_code = #{allocationStrategyCode}
+        </if>
+        <if test="allocationStrategyDetailCode != null and allocationStrategyDetailCode != ''">
+            AND allocation_strategy_detail_code = #{allocationStrategyDetailCode}
+        </if>
+        <if test="sorts != null ">
+            AND sorts = ${sorts}
+        </if>
+        <if test="allocationStrategyType != null ">
+            AND allocation_strategy_type = ${allocationStrategyType}
+        </if>
+        <if test="unit != null and unit != ''">
+            AND unit = #{unit}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_allocation_strategy_detail WHERE id = ${id}
+    </delete>
+    <update id="delByStrategyId">
+        UPDATE wms_allocation_strategy_detail SET is_deleted = 1,update_time=now(),update_by=#{username}
+        WHERE allocation_strategy_id = ${strategyId} AND is_deleted = 0
+    </update>
+
+
+</mapper>

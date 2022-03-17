@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.ShelfMoveTaskMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.ShelfMoveTask">
+        <id column="id" property="id" />
+        <result column="movement_type_code" property="movementTypeCode" />
+        <result column="movement_type_name" property="movementTypeName" />
+        <result column="main_code" property="mainCode" />
+        <result column="mx_code" property="mxCode" />
+        <result column="workbench_id" property="workbenchId" />
+        <result column="workbench_code" property="workbenchCode" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="warehouse_area_id" property="warehouseAreaId" />
+        <result column="warehouse_area_code" property="warehouseAreaCode" />
+        <result column="warehouse_area_name" property="warehouseAreaName" />
+        <result column="shelf_id" property="shelfId" />
+        <result column="shelf_code" property="shelfCode" />
+        <result column="order_source" property="orderSource" />
+        <result column="order_status" property="orderStatus" />
+        <result column="finish_time" property="finishTime" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, movement_type_code, movement_type_name, main_code, mx_code, workbench_id, workbench_code, warehouse_id, warehouse_code, warehouse_name, warehouse_area_id, warehouse_area_code, warehouse_area_name, shelf_id, shelf_code, order_source, order_status, finish_time, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_shelf_move_task </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="shelfMoveTask.movementTypeCode != null and shelfMoveTask.movementTypeCode != ''">
+                AND movement_type_code LIKE CONCAT('%',#{shelfMoveTask.movementTypeCode}, '%')
+            </if>
+
+            <if test="shelfMoveTask.movementTypeName != null and shelfMoveTask.movementTypeName != ''">
+                AND movement_type_name LIKE CONCAT('%',#{shelfMoveTask.movementTypeName}, '%')
+            </if>
+
+            <if test="shelfMoveTask.mainCode != null and shelfMoveTask.mainCode != ''">
+                AND main_code LIKE CONCAT('%',#{shelfMoveTask.mainCode}, '%')
+            </if>
+
+            <if test="shelfMoveTask.mxCode != null and shelfMoveTask.mxCode != ''">
+                AND mx_code LIKE CONCAT('%',#{shelfMoveTask.mxCode}, '%')
+            </if>
+
+            <if test="shelfMoveTask.workbenchId != null ">
+                AND workbench_id = #{shelfMoveTask.workbenchId}
+            </if>
+
+            <if test="shelfMoveTask.workbenchCode != null and shelfMoveTask.workbenchCode != ''">
+                AND workbench_code LIKE CONCAT('%',#{shelfMoveTask.workbenchCode}, '%')
+            </if>
+
+            <if test="shelfMoveTask.warehouseId != null ">
+                AND warehouse_id = #{shelfMoveTask.warehouseId}
+            </if>
+
+            <if test="shelfMoveTask.warehouseCode != null and shelfMoveTask.warehouseCode != ''">
+                AND warehouse_code LIKE CONCAT('%',#{shelfMoveTask.warehouseCode}, '%')
+            </if>
+
+            <if test="shelfMoveTask.warehouseName != null and shelfMoveTask.warehouseName != ''">
+                AND warehouse_name LIKE CONCAT('%',#{shelfMoveTask.warehouseName}, '%')
+            </if>
+
+            <if test="shelfMoveTask.warehouseAreaId != null ">
+                AND warehouse_area_id = #{shelfMoveTask.warehouseAreaId}
+            </if>
+
+            <if test="shelfMoveTask.warehouseAreaCode != null and shelfMoveTask.warehouseAreaCode != ''">
+                AND warehouse_area_code LIKE CONCAT('%',#{shelfMoveTask.warehouseAreaCode}, '%')
+            </if>
+
+            <if test="shelfMoveTask.warehouseAreaName != null and shelfMoveTask.warehouseAreaName != ''">
+                AND warehouse_area_name LIKE CONCAT('%',#{shelfMoveTask.warehouseAreaName}, '%')
+            </if>
+
+            <if test="shelfMoveTask.shelfId != null ">
+                AND shelf_id = #{shelfMoveTask.shelfId}
+            </if>
+
+            <if test="shelfMoveTask.shelfCode != null and shelfMoveTask.shelfCode != ''">
+                AND shelf_code LIKE CONCAT('%',#{shelfMoveTask.shelfCode}, '%')
+            </if>
+
+            <if test="shelfMoveTask.orderSource != null ">
+                AND order_source = #{shelfMoveTask.orderSource}
+            </if>
+
+            <if test="shelfMoveTask.orderStatus != null ">
+                AND order_status = #{shelfMoveTask.orderStatus}
+            </if>
+
+            <if test="shelfMoveTask.finishTime != null ">
+                AND finish_time = #{shelfMoveTask.finishTime}
+            </if>
+
+            <if test="shelfMoveTask.tenantCode != null and shelfMoveTask.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{shelfMoveTask.tenantCode}, '%')
+            </if>
+
+            <if test="shelfMoveTask.remark != null and shelfMoveTask.remark != ''">
+                AND remark LIKE CONCAT('%',#{shelfMoveTask.remark}, '%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.ShelfMoveTask">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.ShelfMoveTask">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryShelfMoveTaskForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+        main_code 'mainCode',
+        mx_code 'mxCode',
+        movement_type_name 'movementTypeName',
+        CASE
+        WHEN order_status = 1 THEN '待移动'
+        WHEN order_status = 2 THEN '移动中'
+        WHEN order_status = 3 THEN '已完成'
+        END AS 'orderStatus',
+        CASE
+        WHEN order_source = 1 THEN '系统创建'
+        WHEN order_source = 2 THEN '人工创建'
+        END AS 'orderSource',
+        shelf_code 'shelfCode',
+        warehouse_name 'warehouseName',
+        warehouse_area_name 'warehouseAreaName',
+        workbench_code 'workbenchCode',
+        finish_time 'finishTime',
+        create_by 'createBy',
+        create_time 'createTime'
+        FROM
+        wms_shelf_move_task
+        WHERE
+        is_deleted = 0
+        <if test="movementTypeCode != null and movementTypeCode != ''">
+            AND movement_type_code LIKE CONCAT('%',#{movementTypeCode}, '%')
+        </if>
+        <if test="movementTypeName != null and movementTypeName != ''">
+            AND movement_type_name LIKE CONCAT('%',#{movementTypeName}, '%')
+        </if>
+        <if test="mainCode != null and mainCode != ''">
+            AND main_code LIKE CONCAT('%',#{mainCode}, '%')
+        </if>
+        <if test="mxCode != null and mxCode != ''">
+            AND mx_code LIKE CONCAT('%',#{mxCode}, '%')
+        </if>
+        <if test="workbenchId != null ">
+            AND workbench_id = #{workbenchId}
+        </if>
+        <if test="workbenchCode != null and workbenchCode != ''">
+            AND workbench_code LIKE CONCAT('%',#{workbenchCode}, '%')
+        </if>
+        <if test="warehouseId != null ">
+            AND warehouse_id = #{warehouseId}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            AND warehouse_code LIKE CONCAT('%',#{warehouseCode}, '%')
+        </if>
+        <if test="warehouseName != null and warehouseName != ''">
+            AND warehouse_name LIKE CONCAT('%',#{warehouseName}, '%')
+        </if>
+        <if test="warehouseAreaId != null ">
+            AND warehouse_area_id = #{warehouseAreaId}
+        </if>
+        <if test="warehouseAreaCode != null and warehouseAreaCode != ''">
+            AND warehouse_area_code LIKE CONCAT('%',#{warehouseAreaCode}, '%')
+        </if>
+        <if test="warehouseAreaName != null and warehouseAreaName != ''">
+            AND warehouse_area_name LIKE CONCAT('%',#{warehouseAreaName}, '%')
+        </if>
+        <if test="shelfId != null ">
+            AND shelf_id = #{shelfId}
+        </if>
+        <if test="shelfCode != null and shelfCode != ''">
+            AND shelf_code LIKE CONCAT('%',#{shelfCode}, '%')
+        </if>
+        <if test="orderSource != null ">
+            AND order_source = #{orderSource}
+        </if>
+        <if test="orderStatus != null ">
+            AND order_status = #{orderStatus}
+        </if>
+        <if test="finishTime != null ">
+            AND finish_time = #{finishTime}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark LIKE CONCAT('%',#{remark}, '%')
+        </if>
+
+    </select>
+
+
+
+</mapper>

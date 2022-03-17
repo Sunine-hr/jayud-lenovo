@@ -5,6 +5,7 @@ import org.apache.http.util.TextUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -615,6 +616,45 @@ public class StringUtils {
         Long aLong = Long.valueOf(append.toString());
 
         return aLong;
+    }
+
+    /**
+     * 两个double 类型的数字相加
+     * @param a
+     * @param b
+     * @return
+     */
+    public static Double doubleAddTogether(Double a,Double b){
+
+        BigDecimal b1 = new BigDecimal(Double.toString(a));
+        BigDecimal b2 = new BigDecimal(Double.toString(b));
+
+        return b1.add(b2).doubleValue();
+    }
+
+    /**
+     * 将附件集合处理成字符串逗号拼接
+     *   集合为一个  List 字符串 拼接数据
+     * @param fileViewList
+     * @return
+     */
+    public static String getFileStringList(List<String> fileViewList) {
+        String fileStr = "";
+        if (fileViewList == null || fileViewList.size() == 0) {
+            return fileStr;
+        }
+        StringBuilder sb = new StringBuilder();
+
+        for (int i=0;i<fileViewList.size();i++){
+            sb.append(fileViewList.get(i)).append(",");
+        }
+//        for (String fileView : fileViewList) {
+//
+//        }
+        if (!"".equals(String.valueOf(sb))) {
+            fileStr = sb.substring(0, sb.length() - 1);
+        }
+        return fileStr;
     }
 
 

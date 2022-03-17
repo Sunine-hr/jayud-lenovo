@@ -48,6 +48,10 @@ public class AuthUserDetail implements UserDetails {
      */
     private Long departId;
     /**
+     * 所属部门名称
+     */
+    private String departName;
+    /**
      * 负责部门ids
      */
     private String departIds;
@@ -77,6 +81,11 @@ public class AuthUserDetail implements UserDetails {
     private List<String> systemTypeList;
 
     private List<GrantedAuthority> authorities;
+
+    /**
+     * 工作台编号
+     */
+    private String workbenchCode;
 
 
 

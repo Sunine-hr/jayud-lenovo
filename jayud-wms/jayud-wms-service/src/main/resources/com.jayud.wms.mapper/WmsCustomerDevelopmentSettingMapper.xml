@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsCustomerDevelopmentSettingMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsCustomerDevelopmentSetting">
+        <id column="id" property="id" />
+        <result column="app_id" property="appId" />
+        <result column="app_secret" property="appSecret" />
+        <result column="status" property="status" />
+        <result column="type" property="type" />
+        <result column="main_id" property="mainId" />
+        <result column="supplier_server_ip" property="supplierServerIp" />
+        <result column="supplier_server_port" property="supplierServerPort" />
+        <result column="supplier_file_path" property="supplierFilePath" />
+        <result column="supplier_callback_address" property="supplierCallbackAddress" />
+        <result column="supplier_user" property="supplierUser" />
+        <result column="supplier_password" property="supplierPassword" />
+        <result column="time_zone" property="timeZone" />
+        <result column="start_time" property="startTime" />
+        <result column="interval_time" property="intervalTime" />
+        <result column="interval_unit" property="intervalUnit" />
+        <result column="end_time" property="endTime" />
+        <result column="code_type" property="codeType" />
+        <result column="request_content" property="requestContent" jdbcType="BLOB" typeHandler="org.apache.ibatis.type.BlobTypeHandler"/>
+        <result column="flag" property="flag" />
+        <result column="inbound_path" property="inboundPath" />
+        <result column="inventory_path" property="inventoryPath" />
+        <result column="public_key" property="publicKey" />
+        <result column="private_key" property="privateKey" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, app_id, app_secret, status, type, main_id, supplier_server_ip, supplier_server_port, supplier_file_path, supplier_callback_address, supplier_user, supplier_password, time_zone, start_time, interval_time, interval_unit, end_time, code_type, request_content, flag, inbound_path, inventory_path, public_key, private_key, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_customer_development_setting </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsCustomerDevelopmentSetting.appId != null and wmsCustomerDevelopmentSetting.appId != ''">
+                AND app_id LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.appId}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.appSecret != null and wmsCustomerDevelopmentSetting.appSecret != ''">
+                AND app_secret LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.appSecret}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.status != null ">
+                AND status = #{wmsCustomerDevelopmentSetting.status}
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.type != null and wmsCustomerDevelopmentSetting.type != ''">
+                AND type LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.type}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.mainId != null ">
+                AND main_id = #{wmsCustomerDevelopmentSetting.mainId}
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.supplierServerIp != null and wmsCustomerDevelopmentSetting.supplierServerIp != ''">
+                AND supplier_server_ip LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.supplierServerIp}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.supplierServerPort != null and wmsCustomerDevelopmentSetting.supplierServerPort != ''">
+                AND supplier_server_port LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.supplierServerPort}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.supplierFilePath != null and wmsCustomerDevelopmentSetting.supplierFilePath != ''">
+                AND supplier_file_path LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.supplierFilePath}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.supplierCallbackAddress != null and wmsCustomerDevelopmentSetting.supplierCallbackAddress != ''">
+                AND supplier_callback_address LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.supplierCallbackAddress}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.supplierUser != null and wmsCustomerDevelopmentSetting.supplierUser != ''">
+                AND supplier_user LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.supplierUser}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.supplierPassword != null and wmsCustomerDevelopmentSetting.supplierPassword != ''">
+                AND supplier_password LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.supplierPassword}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.timeZone != null ">
+                AND time_zone = #{wmsCustomerDevelopmentSetting.timeZone}
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.startTime != null ">
+                AND start_time = #{wmsCustomerDevelopmentSetting.startTime}
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.intervalTime != null ">
+                AND interval_time = #{wmsCustomerDevelopmentSetting.intervalTime}
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.intervalUnit != null and wmsCustomerDevelopmentSetting.intervalUnit != ''">
+                AND interval_unit LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.intervalUnit}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.endTime != null ">
+                AND end_time = #{wmsCustomerDevelopmentSetting.endTime}
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.codeType != null and wmsCustomerDevelopmentSetting.codeType != ''">
+                AND code_type LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.codeType}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.requestContent != null ">
+                AND request_content = #{wmsCustomerDevelopmentSetting.requestContent}
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.flag != null ">
+                AND flag = #{wmsCustomerDevelopmentSetting.flag}
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.inboundPath != null and wmsCustomerDevelopmentSetting.inboundPath != ''">
+                AND inbound_path LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.inboundPath}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.inventoryPath != null and wmsCustomerDevelopmentSetting.inventoryPath != ''">
+                AND inventory_path LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.inventoryPath}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.publicKey != null and wmsCustomerDevelopmentSetting.publicKey != ''">
+                AND public_key LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.publicKey}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.privateKey != null and wmsCustomerDevelopmentSetting.privateKey != ''">
+                AND private_key LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.privateKey}, '%')
+            </if>
+
+            <if test="wmsCustomerDevelopmentSetting.remark != null and wmsCustomerDevelopmentSetting.remark != ''">
+                AND remark LIKE CONCAT('%',#{wmsCustomerDevelopmentSetting.remark}, '%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsCustomerDevelopmentSetting">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsCustomerDevelopmentSetting">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryWmsCustomerDevelopmentSettingForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            app_id 'appId',
+            app_secret 'appSecret',
+            status 'status',
+            type 'type',
+            main_id 'mainId',
+            supplier_server_ip 'supplierServerIp',
+            supplier_server_port 'supplierServerPort',
+            supplier_file_path 'supplierFilePath',
+            supplier_callback_address 'supplierCallbackAddress',
+            supplier_user 'supplierUser',
+            supplier_password 'supplierPassword',
+            time_zone 'timeZone',
+            start_time 'startTime',
+            interval_time 'intervalTime',
+            interval_unit 'intervalUnit',
+            end_time 'endTime',
+            code_type 'codeType',
+            request_content 'requestContent',
+            flag 'flag',
+            inbound_path 'inboundPath',
+            inventory_path 'inventoryPath',
+            public_key 'publicKey',
+            private_key 'privateKey',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_customer_development_setting
+        WHERE is_deleted = 0
+        <if test="appId != null and appId != ''">
+            AND app_id LIKE CONCAT('%',#{appId}, '%')
+        </if>
+        <if test="appSecret != null and appSecret != ''">
+            AND app_secret LIKE CONCAT('%',#{appSecret}, '%')
+        </if>
+        <if test="status != null ">
+            AND status = #{status}
+        </if>
+        <if test="type != null and type != ''">
+            AND type LIKE CONCAT('%',#{type}, '%')
+        </if>
+        <if test="mainId != null ">
+            AND main_id = #{mainId}
+        </if>
+        <if test="supplierServerIp != null and supplierServerIp != ''">
+            AND supplier_server_ip LIKE CONCAT('%',#{supplierServerIp}, '%')
+        </if>
+        <if test="supplierServerPort != null and supplierServerPort != ''">
+            AND supplier_server_port LIKE CONCAT('%',#{supplierServerPort}, '%')
+        </if>
+        <if test="supplierFilePath != null and supplierFilePath != ''">
+            AND supplier_file_path LIKE CONCAT('%',#{supplierFilePath}, '%')
+        </if>
+        <if test="supplierCallbackAddress != null and supplierCallbackAddress != ''">
+            AND supplier_callback_address LIKE CONCAT('%',#{supplierCallbackAddress}, '%')
+        </if>
+        <if test="supplierUser != null and supplierUser != ''">
+            AND supplier_user LIKE CONCAT('%',#{supplierUser}, '%')
+        </if>
+        <if test="supplierPassword != null and supplierPassword != ''">
+            AND supplier_password LIKE CONCAT('%',#{supplierPassword}, '%')
+        </if>
+        <if test="timeZone != null ">
+            AND time_zone = #{timeZone}
+        </if>
+        <if test="startTime != null ">
+            AND start_time = #{startTime}
+        </if>
+        <if test="intervalTime != null ">
+            AND interval_time = #{intervalTime}
+        </if>
+        <if test="intervalUnit != null and intervalUnit != ''">
+            AND interval_unit LIKE CONCAT('%',#{intervalUnit}, '%')
+        </if>
+        <if test="endTime != null ">
+            AND end_time = #{endTime}
+        </if>
+        <if test="codeType != null and codeType != ''">
+            AND code_type LIKE CONCAT('%',#{codeType}, '%')
+        </if>
+        <if test="requestContent != null ">
+            AND request_content = #{requestContent}
+        </if>
+        <if test="flag != null ">
+            AND flag = #{flag}
+        </if>
+        <if test="inboundPath != null and inboundPath != ''">
+            AND inbound_path LIKE CONCAT('%',#{inboundPath}, '%')
+        </if>
+        <if test="inventoryPath != null and inventoryPath != ''">
+            AND inventory_path LIKE CONCAT('%',#{inventoryPath}, '%')
+        </if>
+        <if test="publicKey != null and publicKey != ''">
+            AND public_key LIKE CONCAT('%',#{publicKey}, '%')
+        </if>
+        <if test="privateKey != null and privateKey != ''">
+            AND private_key LIKE CONCAT('%',#{privateKey}, '%')
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark LIKE CONCAT('%',#{remark}, '%')
+        </if>
+
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.QualityInspectionMaterialMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.QualityInspectionMaterial">
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="order_num" property="orderNum" />
+        <result column="quality_inspection_id" property="qualityInspectionId" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="material_type_id" property="materialTypeId" />
+        <result column="material_type" property="materialType" />
+        <result column="num" property="num" />
+        <result column="actual_num" property="actualNum" />
+        <result column="unit" property="unit" />
+        <result column="weight" property="weight" />
+        <result column="volume" property="volume" />
+        <result column="specification" property="specification" />
+        <result column="batch_num" property="batchNum" />
+        <result column="production_date" property="productionDate" />
+        <result column="container_num" property="containerNum" />
+        <result column="external_order_num" property="externalOrderNum" />
+        <result column="external_line_num" property="externalLineNum" />
+        <result column="column_one" property="columnOne" />
+        <result column="column_two" property="columnTwo" />
+        <result column="column_three" property="columnThree" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="inspection_quantity" property="inspectionQuantity" />
+        <result column="qualified_quantity" property="qualifiedQuantity" />
+        <result column="unqualified_quantity" property="unqualifiedQuantity" />
+        <result column="cause_nonconformity" property="causeNonconformity" />
+        <result column="description" property="description" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, order_id, order_num, quality_inspection_id, material_code, material_name, material_type_id, material_type, num, actual_num, unit, weight, volume, specification, batch_num, production_date, container_num, external_order_num, external_line_num, column_one, column_two, column_three, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time, inspection_quantity, qualified_quantity, unqualified_quantity, cause_nonconformity,description
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_quality_inspection_material </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="qualityInspectionMaterial.orderId != null ">
+                AND order_id = ${qualityInspectionMaterial.orderId}
+            </if>
+
+            <if test="qualityInspectionMaterial.orderNum != null and qualityInspectionMaterial.orderNum != ''">
+                AND order_num LIKE CONCAT('%',#{qualityInspectionMaterial.orderNum}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.qualityInspectionId != null ">
+                AND quality_inspection_id = ${qualityInspectionMaterial.qualityInspectionId}
+            </if>
+
+            <if test="qualityInspectionMaterial.materialCode != null and qualityInspectionMaterial.materialCode != ''">
+                AND material_code LIKE CONCAT('%',#{qualityInspectionMaterial.materialCode}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.materialName != null and qualityInspectionMaterial.materialName != ''">
+                AND material_name LIKE CONCAT('%',#{qualityInspectionMaterial.materialName}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.materialTypeId != null ">
+                AND material_type_id = ${qualityInspectionMaterial.materialTypeId}
+            </if>
+
+            <if test="qualityInspectionMaterial.materialType != null and qualityInspectionMaterial.materialType != ''">
+                AND material_type LIKE CONCAT('%',#{qualityInspectionMaterial.materialType}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.num != null ">
+                AND num = ${qualityInspectionMaterial.num}
+            </if>
+
+            <if test="qualityInspectionMaterial.actualNum != null ">
+                AND actual_num = ${qualityInspectionMaterial.actualNum}
+            </if>
+
+            <if test="qualityInspectionMaterial.unit != null and qualityInspectionMaterial.unit != ''">
+                AND unit LIKE CONCAT('%',#{qualityInspectionMaterial.unit}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.weight != null ">
+                AND weight = ${qualityInspectionMaterial.weight}
+            </if>
+
+            <if test="qualityInspectionMaterial.volume != null ">
+                AND volume = ${qualityInspectionMaterial.volume}
+            </if>
+
+            <if test="qualityInspectionMaterial.specification != null and qualityInspectionMaterial.specification != ''">
+                AND specification LIKE CONCAT('%',#{qualityInspectionMaterial.specification}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.batchNum != null and qualityInspectionMaterial.batchNum != ''">
+                AND batch_num LIKE CONCAT('%',#{qualityInspectionMaterial.batchNum}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.productionDate != null ">
+                AND production_date = ${qualityInspectionMaterial.productionDate}
+            </if>
+
+            <if test="qualityInspectionMaterial.containerNum != null and qualityInspectionMaterial.containerNum != ''">
+                AND container_num LIKE CONCAT('%',#{qualityInspectionMaterial.containerNum}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.externalOrderNum != null and qualityInspectionMaterial.externalOrderNum != ''">
+                AND external_order_num LIKE CONCAT('%',#{qualityInspectionMaterial.externalOrderNum}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.externalLineNum != null and qualityInspectionMaterial.externalLineNum != ''">
+                AND external_line_num LIKE CONCAT('%',#{qualityInspectionMaterial.externalLineNum}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.columnOne != null and qualityInspectionMaterial.columnOne != ''">
+                AND column_one LIKE CONCAT('%',#{qualityInspectionMaterial.columnOne}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.columnTwo != null and qualityInspectionMaterial.columnTwo != ''">
+                AND column_two LIKE CONCAT('%',#{qualityInspectionMaterial.columnTwo}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.columnThree != null and qualityInspectionMaterial.columnThree != ''">
+                AND column_three LIKE CONCAT('%',#{qualityInspectionMaterial.columnThree}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.tenantCode != null and qualityInspectionMaterial.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{qualityInspectionMaterial.tenantCode}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.remark != null and qualityInspectionMaterial.remark != ''">
+                AND remark LIKE CONCAT('%',#{qualityInspectionMaterial.remark}, '%')
+            </if>
+
+            <if test="qualityInspectionMaterial.inspectionQuantity != null ">
+                AND inspection_quantity = ${qualityInspectionMaterial.inspectionQuantity}
+            </if>
+
+            <if test="qualityInspectionMaterial.qualifiedQuantity != null ">
+                AND qualified_quantity = ${qualityInspectionMaterial.qualifiedQuantity}
+            </if>
+
+            <if test="qualityInspectionMaterial.unqualifiedQuantity != null ">
+                AND unqualified_quantity = ${qualityInspectionMaterial.unqualifiedQuantity}
+            </if>
+
+            <if test="qualityInspectionMaterial.causeNonconformity != null and qualityInspectionMaterial.causeNonconformity != ''">
+                AND cause_nonconformity LIKE CONCAT('%',#{qualityInspectionMaterial.causeNonconformity}, '%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.QualityInspectionMaterial">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.QualityInspectionMaterial">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="findQualityInspectionMaterialOne" parameterType="com.jayud.wms.model.bo.QueryQualityInspectionMaterialForm" resultType="com.jayud.wms.model.po.QualityInspectionMaterial">
+        SELECT
+            qim.id,
+            qim.order_id,
+            qim.order_num,
+            qim.quality_inspection_id,
+            qim.material_code,
+            qim.material_name,
+            qim.material_type_id,
+            qim.material_type,
+            qim.num,
+            qim.actual_num,
+            qim.unit,
+            qim.weight,
+            qim.volume,
+            qim.specification,
+            qim.batch_num,
+            qim.production_date,
+            qim.container_num,
+            qim.external_order_num,
+            qim.external_line_num,
+            qim.column_one,
+            qim.column_two,
+            qim.column_three,
+            qim.tenant_code,
+            qim.remark,
+            qim.is_deleted,
+            qim.create_by,
+            qim.create_time,
+            qim.update_by,
+            qim.update_time,
+            qim.inspection_quantity,
+            qim.qualified_quantity,
+            qim.unqualified_quantity,
+            qim.cause_nonconformity,
+            qim.description
+
+        FROM
+        wms_quality_inspection qi
+            LEFT JOIN wms_quality_inspection_material qim ON qi.id = qim.quality_inspection_id
+        <where>
+             qi.is_deleted = 0
+            AND qim.is_deleted = 0
+            <if test="qualityInspectionMaterial.qcNo != null ">
+                AND qi.qc_no  = #{qualityInspectionMaterial.qcNo}
+            </if>
+            <if test="qualityInspectionMaterial.materialCode != null ">
+                AND qim.material_code = #{qualityInspectionMaterial.materialCode}
+            </if>
+        </where>
+    </select>
+
+
+
+    <select id="queryQualityInspectionMaterialForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            order_id 'orderId',
+            order_num 'orderNum',
+            quality_inspection_id 'qualityInspectionId',
+            material_code 'materialCode',
+            material_name 'materialName',
+            material_type_id 'materialTypeId',
+            material_type 'materialType',
+            num 'num',
+            actual_num 'actualNum',
+            unit 'unit',
+            weight 'weight',
+            volume 'volume',
+            specification 'specification',
+            batch_num 'batchNum',
+            production_date 'productionDate',
+            container_num 'containerNum',
+            external_order_num 'externalOrderNum',
+            external_line_num 'externalLineNum',
+            column_one 'columnOne',
+            column_two 'columnTwo',
+            column_three 'columnThree',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime',
+            inspection_quantity 'inspectionQuantity',
+            qualified_quantity 'qualifiedQuantity',
+            unqualified_quantity 'unqualifiedQuantity',
+            cause_nonconformity 'causeNonconformity'
+        FROM wms_quality_inspection_material
+        WHERE is_deleted = 0
+        <if test="orderId != null ">
+            AND order_id = ${orderId}
+        </if>
+        <if test="orderNum != null and orderNum != ''">
+            AND order_num = #{orderNum}
+        </if>
+        <if test="qualityInspectionId != null ">
+            AND quality_inspection_id = ${qualityInspectionId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="materialName != null and materialName != ''">
+            AND material_name = #{materialName}
+        </if>
+        <if test="materialTypeId != null ">
+            AND material_type_id = ${materialTypeId}
+        </if>
+        <if test="materialType != null and materialType != ''">
+            AND material_type = #{materialType}
+        </if>
+        <if test="num != null ">
+            AND num = ${num}
+        </if>
+        <if test="actualNum != null ">
+            AND actual_num = ${actualNum}
+        </if>
+        <if test="unit != null and unit != ''">
+            AND unit = #{unit}
+        </if>
+        <if test="weight != null ">
+            AND weight = ${weight}
+        </if>
+        <if test="volume != null ">
+            AND volume = ${volume}
+        </if>
+        <if test="specification != null and specification != ''">
+            AND specification = #{specification}
+        </if>
+        <if test="batchNum != null and batchNum != ''">
+            AND batch_num = #{batchNum}
+        </if>
+        <if test="productionDate != null ">
+            AND production_date = ${productionDate}
+        </if>
+        <if test="containerNum != null and containerNum != ''">
+            AND container_num = #{containerNum}
+        </if>
+        <if test="externalOrderNum != null and externalOrderNum != ''">
+            AND external_order_num = #{externalOrderNum}
+        </if>
+        <if test="externalLineNum != null and externalLineNum != ''">
+            AND external_line_num = #{externalLineNum}
+        </if>
+        <if test="columnOne != null and columnOne != ''">
+            AND column_one = #{columnOne}
+        </if>
+        <if test="columnTwo != null and columnTwo != ''">
+            AND column_two = #{columnTwo}
+        </if>
+        <if test="columnThree != null and columnThree != ''">
+            AND column_three = #{columnThree}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+        <if test="inspectionQuantity != null ">
+            AND inspection_quantity = ${inspectionQuantity}
+        </if>
+        <if test="qualifiedQuantity != null ">
+            AND qualified_quantity = ${qualifiedQuantity}
+        </if>
+        <if test="unqualifiedQuantity != null ">
+            AND unqualified_quantity = ${unqualifiedQuantity}
+        </if>
+        <if test="causeNonconformity != null and causeNonconformity != ''">
+            AND cause_nonconformity = #{causeNonconformity}
+        </if>
+
+    </select>
+
+
+
+</mapper>

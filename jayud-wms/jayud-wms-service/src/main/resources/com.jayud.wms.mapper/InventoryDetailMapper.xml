@@ -1,0 +1,679 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.InventoryDetailMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.InventoryDetail">
+        <id column="id" property="id" />
+        <result column="ower_id" property="owerId" />
+        <result column="ower_code" property="owerCode" />
+        <result column="ower_name" property="owerName" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="warehouse_area_id" property="warehouseAreaId" />
+        <result column="warehouse_area_code" property="warehouseAreaCode" />
+        <result column="warehouse_area_name" property="warehouseAreaName" />
+        <result column="warehouse_location_id" property="warehouseLocationId" />
+        <result column="warehouse_location_code" property="warehouseLocationCode" />
+        <result column="warehouse_location_status" property="warehouseLocationStatus" />
+        <result column="warehouse_location_status2" property="warehouseLocationStatus2" />
+        <result column="container_id" property="containerId" />
+        <result column="container_code" property="containerCode" />
+        <result column="material_id" property="materialId" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="material_type_id" property="materialTypeId" />
+        <result column="material_type" property="materialType" />
+        <result column="material_specification" property="materialSpecification" />
+        <result column="batch_code" property="batchCode" />
+        <result column="material_production_date" property="materialProductionDate" />
+        <result column="custom_field1" property="customField1" />
+        <result column="custom_field2" property="customField2" />
+        <result column="custom_field3" property="customField3" />
+        <result column="existing_count" property="existingCount" />
+        <result column="allocation_count" property="allocationCount" />
+        <result column="picking_count" property="pickingCount" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="route_sorting" property="routeSorting" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id.id, id.ower_id, id.ower_code, id.ower_name, id.warehouse_id, id.warehouse_code, id.warehouse_name, id.warehouse_area_id, id.warehouse_area_code, id.warehouse_area_name, id.warehouse_location_id, id.warehouse_location_code, id.warehouse_location_status, id.warehouse_location_status2, id.container_id, id.container_code, id.material_id, id.material_code, id.material_name, id.material_type_id, id.material_type, id.material_specification, id.batch_code, id.material_production_date, id.custom_field1, id.custom_field2, id.custom_field3, id.existing_count, id.allocation_count, id.picking_count, id.remark, id.is_deleted, id.create_by, id.create_time, id.update_by, id.update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_inventory_detail id</sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>,wl.route_sorting
+        FROM <include refid="tname"/> LEFT JOIN wms_warehouse_location wl ON wl.`code` = id.warehouse_location_code AND wl.is_deleted = 0 AND wl.warehouse_area_id = id.warehouse_area_id
+        <where>
+            id.is_deleted = 0
+            <if test="inventoryDetail.owerId != null ">
+                AND id.ower_id = ${inventoryDetail.owerId}
+            </if>
+
+            <if test="inventoryDetail.owerCode != null and inventoryDetail.owerCode != ''">
+                AND id.ower_code LIKE CONCAT('%',#{inventoryDetail.owerCode}, '%')
+            </if>
+
+            <if test="inventoryDetail.owerName != null and inventoryDetail.owerName != ''">
+                AND id.ower_name LIKE CONCAT('%',#{inventoryDetail.owerName}, '%')
+            </if>
+
+            <if test="inventoryDetail.warehouseId != null ">
+                AND id.warehouse_id = ${inventoryDetail.warehouseId}
+            </if>
+
+            <if test="inventoryDetail.warehouseCode != null and inventoryDetail.warehouseCode != ''">
+                AND id.warehouse_code LIKE CONCAT('%',#{inventoryDetail.warehouseCode}, '%')
+            </if>
+
+            <if test="inventoryDetail.warehouseName != null and inventoryDetail.warehouseName != ''">
+                AND id.warehouse_name LIKE CONCAT('%',#{inventoryDetail.warehouseName}, '%')
+            </if>
+
+            <if test="inventoryDetail.warehouseAreaId != null ">
+                AND id.warehouse_area_id = #{inventoryDetail.warehouseAreaId}
+            </if>
+
+            <if test="inventoryDetail.warehouseAreaCode != null and inventoryDetail.warehouseAreaCode != ''">
+                AND id.warehouse_area_code LIKE CONCAT('%',#{inventoryDetail.warehouseAreaCode}, '%')
+            </if>
+
+            <if test="inventoryDetail.warehouseAreaName != null and inventoryDetail.warehouseAreaName != ''">
+                AND id.warehouse_area_name LIKE CONCAT('%',#{inventoryDetail.warehouseAreaName}, '%')
+            </if>
+
+            <if test="inventoryDetail.warehouseLocationId != null ">
+                AND id.warehouse_location_id = ${inventoryDetail.warehouseLocationId}
+            </if>
+
+            <if test="inventoryDetail.warehouseLocationCode != null and inventoryDetail.warehouseLocationCode != ''">
+                AND id.warehouse_location_code LIKE CONCAT('%',#{inventoryDetail.warehouseLocationCode}, '%')
+            </if>
+
+            <if test="inventoryDetail.warehouseLocationStatus != null ">
+                AND id.warehouse_location_status = ${inventoryDetail.warehouseLocationStatus}
+            </if>
+
+            <if test="inventoryDetail.containerId != null ">
+                AND id.container_id = ${inventoryDetail.containerId}
+            </if>
+
+            <if test="inventoryDetail.containerCode != null and inventoryDetail.containerCode != ''">
+                AND id.container_code LIKE CONCAT('%',#{inventoryDetail.containerCode}, '%')
+            </if>
+
+            <if test="inventoryDetail.materialId != null ">
+                AND id.material_id = ${inventoryDetail.materialId}
+            </if>
+
+            <if test="inventoryDetail.materialCode != null and inventoryDetail.materialCode != ''">
+                AND id.material_code LIKE CONCAT('%',#{inventoryDetail.materialCode}, '%')
+            </if>
+
+            <if test="inventoryDetail.materialName != null and inventoryDetail.materialName != ''">
+                AND id.material_name LIKE CONCAT('%',#{inventoryDetail.materialName}, '%')
+            </if>
+
+            <if test="inventoryDetail.materialTypeId != null ">
+                AND id.material_type_id = ${inventoryDetail.materialTypeId}
+            </if>
+
+            <if test="inventoryDetail.materialType != null and inventoryDetail.materialType != ''">
+                AND id.material_type LIKE CONCAT('%',#{inventoryDetail.materialType}, '%')
+            </if>
+
+            <if test="inventoryDetail.materialSpecification != null and inventoryDetail.materialSpecification != ''">
+                AND id.material_specification LIKE CONCAT('%',#{inventoryDetail.materialSpecification}, '%')
+            </if>
+
+            <if test="inventoryDetail.batchCode != null and inventoryDetail.batchCode != ''">
+                AND id.batch_code LIKE CONCAT('%',#{inventoryDetail.batchCode}, '%')
+            </if>
+
+            <if test="inventoryDetail.materialProductionDate != null ">
+                AND id.material_production_date =  #{inventoryDetail.materialProductionDate}
+            </if>
+
+            <if test="inventoryDetail.customField1 != null and inventoryDetail.customField1 != ''">
+                AND id.custom_field1 LIKE CONCAT('%',#{inventoryDetail.customField1}, '%')
+            </if>
+
+            <if test="inventoryDetail.customField2 != null and inventoryDetail.customField2 != ''">
+                AND id.custom_field2 LIKE CONCAT('%',#{inventoryDetail.customField2}, '%')
+            </if>
+
+            <if test="inventoryDetail.customField3 != null and inventoryDetail.customField3 != ''">
+                AND id.custom_field3 LIKE CONCAT('%',#{inventoryDetail.customField3}, '%')
+            </if>
+
+            <if test="inventoryDetail.existingCount != null ">
+                AND id.existing_count = ${inventoryDetail.existingCount}
+            </if>
+
+            <if test="inventoryDetail.allocationCount != null ">
+                AND id.allocation_count = ${inventoryDetail.allocationCount}
+            </if>
+
+            <if test="inventoryDetail.pickingCount != null ">
+                AND id.picking_count = ${inventoryDetail.pickingCount}
+            </if>
+
+            <if test="inventoryDetail.remark != null and inventoryDetail.remark != ''">
+                AND id.remark LIKE CONCAT('%',#{inventoryDetail.remark}, '%')
+            </if>
+
+            <if test="inventoryDetail.keyword != null and inventoryDetail.keyword != ''">
+                AND
+                (
+                id.warehouse_location_code  LIKE CONCAT('%',#{inventoryDetail.keyword}, '%')
+                OR
+                id.material_code LIKE CONCAT('%',#{inventoryDetail.keyword}, '%')
+                )
+            </if>
+
+            <if test="inventoryDetail.queryLocationState != null">
+                <if test="inventoryDetail.queryLocationState == 0">
+                    AND (warehouse_location_status = 0 and warehouse_location_status2 = 0)
+                </if>
+                <if test="inventoryDetail.queryLocationState == 1">
+                    AND (warehouse_location_status = 1 or warehouse_location_status2 = 1)
+                </if>
+            </if>
+
+            <if test="inventoryDetail.owerIdList !=null and  inventoryDetail.owerIdList.size > 0 ">
+                and id.ower_id in
+                <foreach item="id" collection="inventoryDetail.owerIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+            <if test="inventoryDetail.warehouseIdList!=null  and inventoryDetail.warehouseIdList.size > 0">
+                and id.warehouse_id in
+                <foreach item="id" collection="inventoryDetail.warehouseIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+            <if test="inventoryDetail.conditionParam!=null  and inventoryDetail.conditionParam != ''">
+                ${inventoryDetail.conditionParam}
+            </if>
+
+        </where>
+
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.InventoryDetail">
+        <include refid="selects"/>
+        <if test="inventoryDetail.descMsg != null and inventoryDetail.descMsg != ''">
+            ORDER BY ${descMsg} DESC
+        </if>
+        <if test="inventoryDetail.ascMsg != null and inventoryDetail.ascMsg != ''">
+            ORDER BY ${ascMsg} ASC
+        </if>
+        <if test="(inventoryDetail.descMsg == null or inventoryDetail.descMsg == '' )and (inventoryDetail.ascMsg == null or inventoryDetail.ascMsg == '')">
+            ORDER BY  id.create_time DESC
+        </if>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.InventoryDetail">
+        <include refid="selects"/>
+        <if test="(inventoryDetail.descMsg != null and inventoryDetail.descMsg != '')
+        or (inventoryDetail.ascMsg != null and inventoryDetail.ascMsg != '')">
+            ORDER BY
+        </if>
+        <if test="inventoryDetail.descMsg != null and inventoryDetail.descMsg != ''">
+             ${inventoryDetail.descMsg} DESC
+        </if>
+        <if test="inventoryDetail.descMsg != null and inventoryDetail.descMsg != '' and inventoryDetail.ascMsg != null and inventoryDetail.ascMsg != ''">
+            ,
+        </if>
+        <if test="inventoryDetail.ascMsg != null and inventoryDetail.ascMsg != ''">
+             ${inventoryDetail.ascMsg} ASC
+        </if>
+        <if test="(inventoryDetail.descMsg == null or inventoryDetail.descMsg == '' )and (inventoryDetail.ascMsg == null or inventoryDetail.ascMsg == '')">
+            ORDER BY  id.create_time DESC
+        </if>
+    </select>
+
+    <select id="queryInventoryDetailForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+        id 'id',
+        warehouse_name 'warehouseName',
+        ower_name 'owerName',
+        warehouse_location_code 'warehouseLocationCode',
+        case when (warehouse_location_status = 0 and warehouse_location_status2 = 0) then '未冻结'
+        when (warehouse_location_status = 1 or warehouse_location_status2 = 1) then '已冻结'
+        end  'locationStatus',
+        material_code 'materialCode',
+        material_name 'materialName',
+        material_type 'materialType',
+        ROUND(existing_count,0) 'existingCount',
+        ROUND((existing_count - allocation_count - picking_count),0) 'usableCount',
+        ROUND(allocation_count,0) 'allocationCount',
+        ROUND(picking_count,0) 'pickingCount',
+        material_specification 'materialSpecification',
+        container_code 'containerCode',
+        batch_code 'batchCode',
+        material_production_date 'materialProductionDate',
+        custom_field1 'customField1',
+        custom_field2 'customField2',
+        custom_field3 'customField3',
+        create_time 'createTime'
+        FROM wms_inventory_detail
+        WHERE is_deleted = 0
+        <if test="owerId != null ">
+            AND ower_id = #{owerId}
+        </if>
+        <if test="owerCode != null and owerCode != ''">
+            AND ower_code LIKE CONCAT('%',#{owerCode},'%')
+        </if>
+        <if test="owerName != null and owerName != ''">
+            AND ower_name LIKE CONCAT('%',#{owerName},'%')
+        </if>
+        <if test="warehouseId != null ">
+            AND warehouse_id = #{warehouseId}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            AND warehouse_code LIKE CONCAT('%',#{warehouseCode},'%')
+        </if>
+        <if test="warehouseName != null and warehouseName != ''">
+            AND warehouse_name LIKE CONCAT('%',#{warehouseName},'%')
+        </if>
+        <if test="warehouseAreaId != null ">
+            AND warehouse_area_id = #{warehouseAreaId}
+        </if>
+        <if test="warehouseAreaCode != null and warehouseAreaCode != ''">
+            AND warehouse_area_code LIKE CONCAT('%',#{warehouseAreaCode},'%')
+        </if>
+        <if test="warehouseAreaName != null and warehouseAreaName != ''">
+            AND warehouse_area_name LIKE CONCAT('%',#{warehouseAreaName},'%')
+        </if>
+        <if test="warehouseLocationId != null ">
+            AND warehouse_location_id = #{warehouseLocationId}
+        </if>
+        <if test="warehouseLocationCode != null and warehouseLocationCode != ''">
+            AND warehouse_location_code LIKE CONCAT('%',#{warehouseLocationCode},'%')
+        </if>
+        <if test="warehouseLocationStatus != null ">
+            AND warehouse_location_status = #{warehouseLocationStatus}
+        </if>
+        <if test="containerId != null ">
+            AND container_id = #{containerId}
+        </if>
+        <if test="containerCode != null and containerCode != ''">
+            AND container_code LIKE CONCAT('%',#{containerCode},'%')
+        </if>
+        <if test="materialId != null ">
+            AND material_id = #{materialId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code LIKE CONCAT('%',#{materialCode},'%')
+        </if>
+        <if test="materialName != null and materialName != ''">
+            AND material_name LIKE CONCAT('%',#{materialName},'%')
+        </if>
+        <if test="materialTypeId != null ">
+            AND material_type_id = #{materialTypeId}
+        </if>
+        <if test="materialType != null and materialType != ''">
+            AND material_type LIKE CONCAT('%',#{materialType},'%')
+        </if>
+        <if test="materialSpecification != null and materialSpecification != ''">
+            AND material_specification LIKE CONCAT('%',#{materialSpecification},'%')
+        </if>
+        <if test="batchCode != null and batchCode != ''">
+            AND batch_code LIKE CONCAT('%',#{batchCode},'%')
+        </if>
+        <if test="materialProductionDate != null ">
+            AND material_production_date = #{materialProductionDate}
+        </if>
+        <if test="customField1 != null and customField1 != ''">
+            AND custom_field1 LIKE CONCAT('%',#{customField1},'%')
+        </if>
+        <if test="customField2 != null and customField2 != ''">
+            AND custom_field2 LIKE CONCAT('%',#{customField2},'%')
+        </if>
+        <if test="customField3 != null and customField3 != ''">
+            AND custom_field3 LIKE CONCAT('%',#{customField3},'%')
+        </if>
+        <if test="existingCount != null ">
+            AND existing_count = #{existingCount}
+        </if>
+        <if test="allocationCount != null ">
+            AND allocation_count = #{allocationCount}
+        </if>
+        <if test="pickingCount != null ">
+            AND picking_count = #{pickingCount}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark LIKE CONCAT('%',#{remark},'%')
+        </if>
+        <if test="queryLocationState != null">
+            <if test="queryLocationState == 0">
+                AND (warehouse_location_status = 0 and warehouse_location_status2 = 0)
+            </if>
+            <if test="queryLocationState == 1">
+                AND (warehouse_location_status = 1 or warehouse_location_status2 = 1)
+            </if>
+        </if>
+        <if test="owerIdList !=null and  owerIdList.size > 0 ">
+            and ower_id in
+            <foreach item="id" collection="owerIdList" open="(" separator=","  close=")" >
+                #{id}
+            </foreach>
+        </if>
+        <if test="warehouseIdList!=null  and warehouseIdList.size > 0">
+            and warehouse_id in
+            <foreach item="id" collection="warehouseIdList" open="(" separator=","  close=")" >
+                #{id}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="selectMaterialPage" resultType="com.jayud.wms.model.po.InventoryDetail">
+        select
+            id,ower_id,ower_code,ower_name,warehouse_id,warehouse_code,warehouse_name,material_id,material_code,material_name,material_type_id,material_type,material_specification,ROUND(sum(existing_count), 0) existing_count,ROUND(sum(allocation_count), 0) allocation_count,ROUND(sum(picking_count), 0) picking_count
+        from wms_inventory_detail
+        where is_deleted = 0
+        <if test="inventoryDetail.owerId != null ">
+            AND ower_id = #{inventoryDetail.owerId}
+        </if>
+        <if test="inventoryDetail.owerCode != null and inventoryDetail.owerCode != ''">
+            AND ower_code LIKE CONCAT('%',#{inventoryDetail.owerCode},'%')
+        </if>
+        <if test="inventoryDetail.owerName != null and inventoryDetail.owerName != ''">
+            AND ower_name LIKE CONCAT('%',#{inventoryDetail.owerName},'%')
+        </if>
+        <if test="inventoryDetail.warehouseId != null ">
+            AND warehouse_id = #{inventoryDetail.warehouseId}
+        </if>
+        <if test="inventoryDetail.warehouseCode != null and inventoryDetail.warehouseCode != ''">
+            AND warehouse_code LIKE CONCAT('%',#{inventoryDetail.warehouseCode},'%')
+        </if>
+        <if test="inventoryDetail.warehouseName != null and inventoryDetail.warehouseName != ''">
+            AND warehouse_name LIKE CONCAT('%',#{inventoryDetail.warehouseName},'%')
+        </if>
+        <if test="inventoryDetail.materialId != null ">
+            AND material_id = #{inventoryDetail.materialId}
+        </if>
+        <if test="inventoryDetail.materialCode != null and inventoryDetail.materialCode != ''">
+            AND material_code LIKE CONCAT('%',#{inventoryDetail.materialCode},'%')
+        </if>
+        <if test="inventoryDetail.materialName != null and inventoryDetail.materialName != ''">
+            AND material_name LIKE CONCAT('%',#{inventoryDetail.materialName},'%')
+        </if>
+        <if test="inventoryDetail.materialTypeId != null ">
+            AND material_type_id = ${inventoryDetail.materialTypeId}
+        </if>
+        <if test="inventoryDetail.materialType != null and inventoryDetail.materialType != ''">
+            AND material_type LIKE CONCAT('%',#{inventoryDetail.materialType},'%')
+        </if>
+        <if test="inventoryDetail.materialSpecification != null and materialSpecification != ''">
+            AND material_specification LIKE CONCAT('%',#{inventoryDetail.materialSpecification},'%')
+        </if>
+        <if test="inventoryDetail.owerIdList !=null and  inventoryDetail.owerIdList.size > 0 ">
+            and ower_id in
+            <foreach item="id" collection="inventoryDetail.owerIdList" open="(" separator=","  close=")" >
+                #{id}
+            </foreach>
+        </if>
+        <if test="inventoryDetail.warehouseIdList!=null  and inventoryDetail.warehouseIdList.size > 0">
+            and warehouse_id in
+            <foreach item="id" collection="inventoryDetail.warehouseIdList" open="(" separator=","  close=")" >
+                #{id}
+            </foreach>
+        </if>
+        GROUP BY ower_code,warehouse_code,material_code
+        order by id
+    </select>
+
+    <select id="exportInventoryMaterialForExcel" resultType="java.util.LinkedHashMap">
+        select
+        warehouse_name,
+        ower_name,
+        material_code,
+        material_name,
+        material_type,
+        material_specification,
+        ROUND(sum(existing_count), 0) existing_count,
+        ROUND(sum(allocation_count), 0) allocation_count,
+        ROUND(sum(picking_count), 0) picking_count,
+        ROUND(sum(existing_count - allocation_count - picking_count), 0) usableCount
+        from wms_inventory_detail
+        where is_deleted = 0
+        <if test="owerId != null ">
+            AND ower_id = #{owerId}
+        </if>
+        <if test="owerCode != null and owerCode != ''">
+            AND ower_code = #{owerCode}
+        </if>
+        <if test="owerName != null and owerName != ''">
+            AND ower_name = #{owerName}
+        </if>
+        <if test="warehouseId != null ">
+            AND warehouse_id = #{warehouseId}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            AND warehouse_code = #{warehouseCode}
+        </if>
+        <if test="warehouseName != null and warehouseName != ''">
+            AND warehouse_name = #{warehouseName}
+        </if>
+        <if test="materialId != null ">
+            AND material_id = ${materialId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="materialName != null and materialName != ''">
+            AND material_name = #{materialName}
+        </if>
+        <if test="materialTypeId != null ">
+            AND material_type_id = ${materialTypeId}
+        </if>
+        <if test="materialType != null and materialType != ''">
+            AND material_type = #{materialType}
+        </if>
+        <if test="materialSpecification != null and materialSpecification != ''">
+            AND material_specification = #{materialSpecification}
+        </if>
+        <if test="owerIdList !=null and  owerIdList.size > 0 ">
+            and ower_id in
+            <foreach item="id" collection="owerIdList" open="(" separator=","  close=")" >
+                #{id}
+            </foreach>
+        </if>
+        <if test="warehouseIdList!=null  and warehouseIdList.size > 0">
+            and warehouse_id in
+            <foreach item="id" collection="warehouseIdList" open="(" separator=","  close=")" >
+                #{id}
+            </foreach>
+        </if>
+
+
+        GROUP BY ower_code,warehouse_code,material_code
+        order by id
+    </select>
+
+    <select id="queryInventoryDetailForCheck" resultType="com.jayud.wms.model.po.InventoryDetail">
+        SELECT
+            `id`,
+            `ower_id`,
+            `ower_code`,
+            `ower_name`,
+            `warehouse_id`,
+            `warehouse_code`,
+            `warehouse_name`,
+            `warehouse_area_id`,
+            `warehouse_area_code`,
+            `warehouse_area_name`,
+            `warehouse_location_id`,
+            `warehouse_location_code`,
+            `warehouse_location_status`,
+            `warehouse_location_status2`,
+            `container_id`,
+            `container_code`,
+            `material_id`,
+            `material_code`,
+            `material_name`,
+            `material_type_id`,
+            `material_type`,
+            `material_specification`,
+            `batch_code`,
+            `material_production_date`,
+            `custom_field1`,
+            `custom_field2`,
+            `custom_field3`,
+            `existing_count`,
+            `allocation_count`,
+            `picking_count`,
+            `remark`,
+            `is_deleted`,
+            `create_by`,
+            `create_time`,
+            `update_by`,
+            `update_time`
+        FROM
+        wms_inventory_detail
+        WHERE
+            is_deleted = 0
+        <if test="warehouseId != null ">
+            AND warehouse_id = ${warehouseId}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            AND warehouse_code = #{warehouseCode}
+        </if>
+        <if test="warehouseName != null and warehouseName != ''">
+            AND warehouse_name = #{warehouseName}
+        </if>
+        <if test="warehouseAreaId != null ">
+            AND warehouse_area_id = #{warehouseAreaId}
+        </if>
+        <if test="warehouseAreaCode != null and warehouseAreaCode != ''">
+            AND warehouse_area_code = #{warehouseAreaCode}
+        </if>
+        <if test="warehouseAreaName != null and warehouseAreaName != ''">
+            AND warehouse_area_name = #{warehouseAreaName}
+        </if>
+        <if test="warehouseLocationIds!=null and warehouseLocationIds.size()>0">
+            AND warehouse_location_id in
+            <foreach item="item" index="index" collection="warehouseLocationIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="warehouseLocationId != null ">
+            AND warehouse_location_id = ${warehouseLocationId}
+        </if>
+        <if test="warehouseLocationCode != null and warehouseLocationCode != ''">
+            AND warehouse_location_code = #{warehouseLocationCode}
+        </if>
+        <if test="warehouseLocationStatus != null ">
+            AND warehouse_location_status = ${warehouseLocationStatus}
+        </if>
+        <if test="containerId != null ">
+            AND container_id = ${containerId}
+        </if>
+        <if test="containerCode != null and containerCode != ''">
+            AND container_code = #{containerCode}
+        </if>
+        <if test="materialId != null ">
+            AND material_id = ${materialId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="materialName != null and materialName != ''">
+            AND material_name = #{materialName}
+        </if>
+        <if test="materialTypeId != null ">
+            AND material_type_id = ${materialTypeId}
+        </if>
+        <if test="materialType != null and materialType != ''">
+            AND material_type = #{materialType}
+        </if>
+        <if test="materialSpecification != null and materialSpecification != ''">
+            AND material_specification = #{materialSpecification}
+        </if>
+        <if test="batchCode != null and batchCode != ''">
+            AND batch_code = #{batchCode}
+        </if>
+        <if test="materialProductionDate != null ">
+            AND material_production_date = ${materialProductionDate}
+        </if>
+        <if test="customField1 != null and customField1 != ''">
+            AND custom_field1 = #{customField1}
+        </if>
+        <if test="customField2 != null and customField2 != ''">
+            AND custom_field2 = #{customField2}
+        </if>
+        <if test="customField3 != null and customField3 != ''">
+            AND custom_field3 = #{customField3}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+        <if test="updateStartTime != null and updateFinishTime != null">
+            AND update_time <![CDATA[ >= ]]> #{updateStartTime}
+            AND update_time <![CDATA[ <= ]]> #{updateFinishTime}
+        </if>
+    </select>
+
+    <select id="selectLocationCapacityByshelf" resultType="com.jayud.wms.model.po.InventoryDetail">
+        select warehouse_location_id, SUM(existing_count) existingCount, SUM(allocation_count) allocationCount, SUM(picking_count) pickingCount, SUM((existing_count - allocation_count - picking_count)) as usableCount
+        from wms_inventory_detail
+        where is_deleted = 0
+        and warehouse_id = #{shelfMap.warehouseId}
+        and warehouse_area_id = #{shelfMap.warehouseAreaId}
+        <if test="shelfMap.warehouseLocationIds!=null and shelfMap.warehouseLocationIds.size()>0">
+            and warehouse_location_id in
+            <foreach item="item" index="index" collection="shelfMap.warehouseLocationIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY warehouse_location_id
+    </select>
+
+    <select id="selectWarehouseLocationByshelf" resultType="com.jayud.wms.model.po.InventoryDetail">
+        select warehouse_location_id, material_id, material_code, material_name, SUM(existing_count) existingCount, SUM(allocation_count) allocationCount, SUM(picking_count) pickingCount, SUM((existing_count - allocation_count - picking_count)) as usableCount
+        from wms_inventory_detail
+        where is_deleted = 0
+        and warehouse_id = #{shelfMap.warehouseId}
+        and warehouse_area_id = #{shelfMap.warehouseAreaId}
+        and warehouse_location_id = #{shelfMap.warehouseLocationId}
+        GROUP BY warehouse_location_id,material_id
+    </select>
+
+    <select id="selectInventoryReport" parameterType="com.jayud.wms.model.bo.QueryShelfOrderForm" resultType="com.jayud.wms.model.vo.InventoryReportVO">
+        select i.material_code materialCode,i.material_name materialName,i.ower_name owerName,i.material_type materialType,i.batch_code batchCode,i.material_production_date materialProductionDate,i.existing_count existingCount,i.allocation_count allocationCount,m.unit,i.container_code containerCode,wl.shelf_code shelfCode,i.warehouse_location_code warehouseLocationCode,i.create_by createBy,i.create_time createTime,i.update_by updateBy,i.update_time updateTime
+        from wms_inventory_detail i
+        left join wms_material_basic_info m on m.id  = i.material_id and m.is_deleted = 0
+        left join wms_warehouse_location wl on i.warehouse_location_code = wl.code and wl.is_deleted = 0
+        where i.is_deleted = 0
+        <if test="shelfOrder.materialCode != null and shelfOrder.materialCode != ''">
+            AND i.material_code LIKE CONCAT('%',#{shelfOrder.materialCode}, '%')
+        </if>
+        <if test="shelfOrder.warehouse != null and shelfOrder.warehouse != ''">
+            AND i.warehouse_name LIKE CONCAT('%',#{shelfOrder.warehouse}, '%')
+        </if>
+
+        <if test="shelfOrder.createTime != null ">
+            AND i.create_time = ${shelfOrder.createTime}
+        </if>
+
+        <if test="shelfOrder.owerIdList !=null  and  shelfOrder.owerIdList.size > 0 ">
+            and i.ower_id in
+            <foreach item="id" collection="shelfOrder.owerIdList" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+    </select>
+
+</mapper>

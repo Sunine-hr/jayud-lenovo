@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsShippingReviewToBoxMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsShippingReviewToBox">
+        <id column="id" property="id" />
+        <result column="order_number" property="orderNumber" />
+        <result column="packing_offshelf_id" property="packingOffshelfId" />
+        <result column="packing_offshelf_number" property="packingOffshelfNumber" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="ower_id" property="owerId" />
+        <result column="ower_code" property="owerCode" />
+        <result column="ower_name" property="owerName" />
+        <result column="material_id" property="materialId" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="packing_account" property="packingAccount" />
+        <result column="box_number" property="boxNumber" />
+        <result column="account" property="account" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, order_number, packing_offshelf_id, packing_offshelf_number, warehouse_id, warehouse_code, warehouse_name, ower_id, ower_code, ower_name, material_id, material_code, material_name, packing_account, box_number, account, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_shipping_review_to_box </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsShippingReviewToBox.orderNumber != null and wmsShippingReviewToBox.orderNumber != ''">
+                AND order_number = #{wmsShippingReviewToBox.orderNumber}
+            </if>
+
+            <if test="wmsShippingReviewToBox.packingOffshelfId != null ">
+                AND packing_offshelf_id = ${wmsShippingReviewToBox.packingOffshelfId}
+            </if>
+
+            <if test="wmsShippingReviewToBox.packingOffshelfNumber != null and wmsShippingReviewToBox.packingOffshelfNumber != ''">
+                AND packing_offshelf_number = #{wmsShippingReviewToBox.packingOffshelfNumber}
+            </if>
+
+            <if test="wmsShippingReviewToBox.warehouseId != null ">
+                AND warehouse_id = ${wmsShippingReviewToBox.warehouseId}
+            </if>
+
+            <if test="wmsShippingReviewToBox.warehouseCode != null and wmsShippingReviewToBox.warehouseCode != ''">
+                AND warehouse_code = #{wmsShippingReviewToBox.warehouseCode}
+            </if>
+
+            <if test="wmsShippingReviewToBox.warehouseName != null and wmsShippingReviewToBox.warehouseName != ''">
+                AND warehouse_name = #{wmsShippingReviewToBox.warehouseName}
+            </if>
+
+            <if test="wmsShippingReviewToBox.owerId != null ">
+                AND ower_id = ${wmsShippingReviewToBox.owerId}
+            </if>
+
+            <if test="wmsShippingReviewToBox.owerCode != null and wmsShippingReviewToBox.owerCode != ''">
+                AND ower_code = #{wmsShippingReviewToBox.owerCode}
+            </if>
+
+            <if test="wmsShippingReviewToBox.owerName != null and wmsShippingReviewToBox.owerName != ''">
+                AND ower_name = #{wmsShippingReviewToBox.owerName}
+            </if>
+
+            <if test="wmsShippingReviewToBox.materialId != null ">
+                AND material_id = ${wmsShippingReviewToBox.materialId}
+            </if>
+
+            <if test="wmsShippingReviewToBox.materialCode != null and wmsShippingReviewToBox.materialCode != ''">
+                AND material_code = #{wmsShippingReviewToBox.materialCode}
+            </if>
+
+            <if test="wmsShippingReviewToBox.materialName != null and wmsShippingReviewToBox.materialName != ''">
+                AND material_name = #{wmsShippingReviewToBox.materialName}
+            </if>
+
+            <if test="wmsShippingReviewToBox.packingAccount != null ">
+                AND packing_account = ${wmsShippingReviewToBox.packingAccount}
+            </if>
+
+            <if test="wmsShippingReviewToBox.boxNumber != null ">
+                AND box_number = ${wmsShippingReviewToBox.boxNumber}
+            </if>
+
+            <if test="wmsShippingReviewToBox.account != null ">
+                AND account = ${wmsShippingReviewToBox.account}
+            </if>
+
+            <if test="wmsShippingReviewToBox.tenantCode != null and wmsShippingReviewToBox.tenantCode != ''">
+                AND tenant_code = #{wmsShippingReviewToBox.tenantCode}
+            </if>
+
+            <if test="wmsShippingReviewToBox.remark != null and wmsShippingReviewToBox.remark != ''">
+                AND remark = #{wmsShippingReviewToBox.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsShippingReviewToBox">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsShippingReviewToBox">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="queryWmsShippingReviewToBoxForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            order_number 'orderNumber',
+            packing_offshelf_id 'packingOffshelfId',
+            packing_offshelf_number 'packingOffshelfNumber',
+            warehouse_id 'warehouseId',
+            warehouse_code 'warehouseCode',
+            warehouse_name 'warehouseName',
+            ower_id 'owerId',
+            ower_code 'owerCode',
+            ower_name 'owerName',
+            material_id 'materialId',
+            material_code 'materialCode',
+            material_name 'materialName',
+            packing_account 'packingAccount',
+            box_number 'boxNumber',
+            account 'account',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_shipping_review_to_box
+        WHERE is_deleted = 0
+        <if test="orderNumber != null and orderNumber != ''">
+            AND order_number = #{orderNumber}
+        </if>
+        <if test="packingOffshelfId != null ">
+            AND packing_offshelf_id = ${packingOffshelfId}
+        </if>
+        <if test="packingOffshelfNumber != null and packingOffshelfNumber != ''">
+            AND packing_offshelf_number = #{packingOffshelfNumber}
+        </if>
+        <if test="warehouseId != null ">
+            AND warehouse_id = ${warehouseId}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            AND warehouse_code = #{warehouseCode}
+        </if>
+        <if test="warehouseName != null and warehouseName != ''">
+            AND warehouse_name = #{warehouseName}
+        </if>
+        <if test="owerId != null ">
+            AND ower_id = ${owerId}
+        </if>
+        <if test="owerCode != null and owerCode != ''">
+            AND ower_code = #{owerCode}
+        </if>
+        <if test="owerName != null and owerName != ''">
+            AND ower_name = #{owerName}
+        </if>
+        <if test="materialId != null ">
+            AND material_id = ${materialId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="materialName != null and materialName != ''">
+            AND material_name = #{materialName}
+        </if>
+        <if test="packingAccount != null ">
+            AND packing_account = ${packingAccount}
+        </if>
+        <if test="boxNumber != null ">
+            AND box_number = ${boxNumber}
+        </if>
+        <if test="account != null ">
+            AND account = ${account}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_shipping_review_to_box WHERE id = ${id}
+    </delete>
+
+
+</mapper>

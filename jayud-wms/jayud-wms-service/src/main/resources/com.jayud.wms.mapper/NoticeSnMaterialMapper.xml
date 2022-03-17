@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.NoticeSnMaterialMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.NoticeSnMaterial">
+        <id column="id" property="id" />
+        <result column="receipt_notice_id" property="receiptNoticeId" />
+        <result column="receipt_notice_num" property="receiptNoticeNum" />
+        <result column="material_code" property="materialCode" />
+        <result column="serial_num" property="serialNum" />
+        <result column="material_name" property="materialName" />
+        <result column="material_type_id" property="materialTypeId" />
+        <result column="material_type" property="materialType" />
+        <result column="weight" property="weight" />
+        <result column="volume" property="volume" />
+        <result column="specification" property="specification" />
+        <result column="num" property="num" />
+        <result column="unit" property="unit" />
+        <result column="external_order_num" property="externalOrderNum" />
+        <result column="batch_num" property="batchNum" />
+        <result column="production_date" property="productionDate" />
+        <result column="column_one" property="columnOne" />
+        <result column="column_two" property="columnTwo" />
+        <result column="column_three" property="columnThree" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, receipt_notice_id, receipt_notice_num, material_code, serial_num, material_name, material_type_id, material_type, weight, volume, specification, num, unit, external_order_num, batch_num, production_date, column_one, column_two, column_three, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_notice_sn_material </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="noticeSnMaterial.receiptNoticeId != null ">
+                AND receipt_notice_id = ${noticeSnMaterial.receiptNoticeId}
+            </if>
+
+            <if test="noticeSnMaterial.receiptNoticeNum != null and noticeSnMaterial.receiptNoticeNum != ''">
+                AND receipt_notice_num = #{noticeSnMaterial.receiptNoticeNum}
+            </if>
+
+            <if test="noticeSnMaterial.materialCode != null and noticeSnMaterial.materialCode != ''">
+                AND material_code = #{noticeSnMaterial.materialCode}
+            </if>
+
+            <if test="noticeSnMaterial.serialNum != null and noticeSnMaterial.serialNum != ''">
+                AND serial_num = #{noticeSnMaterial.serialNum}
+            </if>
+
+            <if test="noticeSnMaterial.materialName != null and noticeSnMaterial.materialName != ''">
+                AND material_name = #{noticeSnMaterial.materialName}
+            </if>
+
+            <if test="noticeSnMaterial.materialTypeId != null ">
+                AND material_type_id = ${noticeSnMaterial.materialTypeId}
+            </if>
+
+            <if test="noticeSnMaterial.materialType != null and noticeSnMaterial.materialType != ''">
+                AND material_type = #{noticeSnMaterial.materialType}
+            </if>
+
+            <if test="noticeSnMaterial.weight != null ">
+                AND weight = ${noticeSnMaterial.weight}
+            </if>
+
+            <if test="noticeSnMaterial.volume != null ">
+                AND volume = ${noticeSnMaterial.volume}
+            </if>
+
+            <if test="noticeSnMaterial.specification != null and noticeSnMaterial.specification != ''">
+                AND specification = #{noticeSnMaterial.specification}
+            </if>
+
+            <if test="noticeSnMaterial.num != null ">
+                AND num = ${noticeSnMaterial.num}
+            </if>
+
+            <if test="noticeSnMaterial.unit != null and noticeSnMaterial.unit != ''">
+                AND unit = #{noticeSnMaterial.unit}
+            </if>
+
+            <if test="noticeSnMaterial.externalOrderNum != null and noticeSnMaterial.externalOrderNum != ''">
+                AND external_order_num = #{noticeSnMaterial.externalOrderNum}
+            </if>
+
+            <if test="noticeSnMaterial.batchNum != null and noticeSnMaterial.batchNum != ''">
+                AND batch_num = #{noticeSnMaterial.batchNum}
+            </if>
+
+            <if test="noticeSnMaterial.productionDate != null ">
+                AND production_date = ${noticeSnMaterial.productionDate}
+            </if>
+
+            <if test="noticeSnMaterial.columnOne != null and noticeSnMaterial.columnOne != ''">
+                AND column_one = #{noticeSnMaterial.columnOne}
+            </if>
+
+            <if test="noticeSnMaterial.columnTwo != null and noticeSnMaterial.columnTwo != ''">
+                AND column_two = #{noticeSnMaterial.columnTwo}
+            </if>
+
+            <if test="noticeSnMaterial.columnThree != null and noticeSnMaterial.columnThree != ''">
+                AND column_three = #{noticeSnMaterial.columnThree}
+            </if>
+
+            <if test="noticeSnMaterial.tenantCode != null and noticeSnMaterial.tenantCode != ''">
+                AND tenant_code = #{noticeSnMaterial.tenantCode}
+            </if>
+
+            <if test="noticeSnMaterial.remark != null and noticeSnMaterial.remark != ''">
+                AND remark = #{noticeSnMaterial.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.NoticeSnMaterial">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.NoticeSnMaterial">
+        <include refid="selects"/>
+    </select>
+
+    <select id="queryNoticeSnMaterialForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            receipt_notice_id 'receiptNoticeId',
+            receipt_notice_num 'receiptNoticeNum',
+            material_code 'materialCode',
+            serial_num 'serialNum',
+            material_name 'materialName',
+            material_type_id 'materialTypeId',
+            material_type 'materialType',
+            weight 'weight',
+            volume 'volume',
+            specification 'specification',
+            num 'num',
+            unit 'unit',
+            external_order_num 'externalOrderNum',
+            batch_num 'batchNum',
+            production_date 'productionDate',
+            column_one 'columnOne',
+            column_two 'columnTwo',
+            column_three 'columnThree',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_notice_sn_material
+        WHERE is_deleted = 0
+        <if test="receiptNoticeId != null ">
+            AND receipt_notice_id = ${receiptNoticeId}
+        </if>
+        <if test="receiptNoticeNum != null and receiptNoticeNum != ''">
+            AND receipt_notice_num = #{receiptNoticeNum}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="serialNum != null and serialNum != ''">
+            AND serial_num = #{serialNum}
+        </if>
+        <if test="materialName != null and materialName != ''">
+            AND material_name = #{materialName}
+        </if>
+        <if test="materialTypeId != null ">
+            AND material_type_id = ${materialTypeId}
+        </if>
+        <if test="materialType != null and materialType != ''">
+            AND material_type = #{materialType}
+        </if>
+        <if test="weight != null ">
+            AND weight = ${weight}
+        </if>
+        <if test="volume != null ">
+            AND volume = ${volume}
+        </if>
+        <if test="specification != null and specification != ''">
+            AND specification = #{specification}
+        </if>
+        <if test="num != null ">
+            AND num = ${num}
+        </if>
+        <if test="unit != null and unit != ''">
+            AND unit = #{unit}
+        </if>
+        <if test="externalOrderNum != null and externalOrderNum != ''">
+            AND external_order_num = #{externalOrderNum}
+        </if>
+        <if test="batchNum != null and batchNum != ''">
+            AND batch_num = #{batchNum}
+        </if>
+        <if test="productionDate != null ">
+            AND production_date = ${productionDate}
+        </if>
+        <if test="columnOne != null and columnOne != ''">
+            AND column_one = #{columnOne}
+        </if>
+        <if test="columnTwo != null and columnTwo != ''">
+            AND column_two = #{columnTwo}
+        </if>
+        <if test="columnThree != null and columnThree != ''">
+            AND column_three = #{columnThree}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+
+    </select>
+
+
+
+</mapper>

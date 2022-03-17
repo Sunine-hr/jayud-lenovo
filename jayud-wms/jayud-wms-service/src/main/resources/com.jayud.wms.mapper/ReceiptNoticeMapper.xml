@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.ReceiptNoticeMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.ReceiptNotice">
+        <id column="id" property="id" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse" property="warehouse" />
+        <result column="ower_id" property="owerId" />
+        <result column="ower" property="ower" />
+        <result column="receipt_notice_num" property="receiptNoticeNum" />
+        <result column="document_type" property="documentType" />
+        <result column="receipt_num" property="receiptNum" />
+        <result column="order_source" property="orderSource" />
+        <result column="external_order_num_one" property="externalOrderNumOne" />
+        <result column="external_order_num_two" property="externalOrderNumTwo" />
+        <result column="supplier_id" property="supplierId" />
+        <result column="supplier" property="supplier" />
+        <result column="estimated_arrival_time" property="estimatedArrivalTime" />
+        <result column="column_one" property="columnOne" />
+        <result column="column_two" property="columnTwo" />
+        <result column="total_num" property="totalNum" />
+        <result column="total_weight" property="totalWeight" />
+        <result column="total_volume" property="totalVolume" />
+        <result column="confirmed_by" property="confirmedBy" />
+        <result column="status" property="status" />
+        <result column="confirmation_time" property="confirmationTime" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="process_flag" property="processFlag" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, warehouse_id, warehouse, ower_id,receipt_num, ower, receipt_notice_num, document_type, order_source_id, order_source, external_order_num_one, external_order_num_two, supplier_id, supplier, estimated_arrival_time, column_one, column_two, total_num, total_weight, total_volume, confirmed_by, status, confirmation_time, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time,process_flag
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_receipt_notice </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="receiptNotice.warehouseId != null ">
+                AND warehouse_id = ${receiptNotice.warehouseId}
+            </if>
+
+            <if test="receiptNotice.warehouse != null and receiptNotice.warehouse != ''">
+                AND warehouse = #{receiptNotice.warehouse}
+            </if>
+
+            <if test="receiptNotice.owerId != null ">
+                AND ower_id = ${receiptNotice.owerId}
+            </if>
+
+            <if test="receiptNotice.ower != null and receiptNotice.ower != ''">
+                AND ower = #{receiptNotice.ower}
+            </if>
+
+            <if test="receiptNotice.receiptNoticeNum != null and receiptNotice.receiptNoticeNum != ''">
+                AND receipt_notice_num = #{receiptNotice.receiptNoticeNum}
+            </if>
+
+            <if test="receiptNotice.documentType != null and receiptNotice.documentType != ''">
+                AND document_type = #{receiptNotice.documentType}
+            </if>
+
+            <if test="receiptNotice.orderSourceId != null ">
+                AND order_source_id = ${receiptNotice.orderSourceId}
+            </if>
+
+            <if test="receiptNotice.orderSource != null and receiptNotice.orderSource != ''">
+                AND order_source = #{receiptNotice.orderSource}
+            </if>
+
+            <if test="receiptNotice.externalOrderNumOne != null and receiptNotice.externalOrderNumOne != ''">
+                AND external_order_num_one = #{receiptNotice.externalOrderNumOne}
+            </if>
+
+            <if test="receiptNotice.externalOrderNumTwo != null and receiptNotice.externalOrderNumTwo != ''">
+                AND external_order_num_two = #{receiptNotice.externalOrderNumTwo}
+            </if>
+
+            <if test="receiptNotice.supplierId != null ">
+                AND supplier_id = ${receiptNotice.supplierId}
+            </if>
+
+            <if test="receiptNotice.supplier != null and receiptNotice.supplier != ''">
+                AND supplier = #{receiptNotice.supplier}
+            </if>
+
+            <if test="receiptNotice.estimatedArrivalTime != null ">
+                AND estimated_arrival_time = ${receiptNotice.estimatedArrivalTime}
+            </if>
+
+            <if test="receiptNotice.columnOne != null and receiptNotice.columnOne != ''">
+                AND column_one = #{receiptNotice.columnOne}
+            </if>
+
+            <if test="receiptNotice.columnTwo != null and receiptNotice.columnTwo != ''">
+                AND column_two = #{receiptNotice.columnTwo}
+            </if>
+
+            <if test="receiptNotice.totalNum != null ">
+                AND total_num = ${receiptNotice.totalNum}
+            </if>
+
+            <if test="receiptNotice.totalWeight != null ">
+                AND total_weight = ${receiptNotice.totalWeight}
+            </if>
+
+            <if test="receiptNotice.totalVolume != null ">
+                AND total_volume = ${receiptNotice.totalVolume}
+            </if>
+
+            <if test="receiptNotice.confirmedBy != null and receiptNotice.confirmedBy != ''">
+                AND confirmed_by = #{receiptNotice.confirmedBy}
+            </if>
+
+            <if test="receiptNotice.status != null ">
+                AND status = ${receiptNotice.status}
+            </if>
+
+            <if test="receiptNotice.confirmationTime != null ">
+                AND confirmation_time = ${receiptNotice.confirmationTime}
+            </if>
+
+            <if test="receiptNotice.tenantCode != null and receiptNotice.tenantCode != ''">
+                AND tenant_code = #{receiptNotice.tenantCode}
+            </if>
+
+            <if test="receiptNotice.remark != null and receiptNotice.remark != ''">
+                AND remark = #{receiptNotice.remark}
+            </if>
+
+            <if test="receiptNotice.isDeleted != null ">
+                AND is_deleted = ${receiptNotice.isDeleted}
+            </if>
+
+            <if test="receiptNotice.arrivalTime !=null and receiptNotice.arrivalTime.size > 0">
+                and estimated_arrival_time between #{arrivalTime.operationTime[0]} and #{arrivalTime.operationTime[1]}
+            </if>
+
+
+        </where>
+    </sql>
+
+    <select id="" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.bo.ReceiptNoticeForm">
+        <include refid="selects"/>
+    </select>
+
+    <select id="pageList" parameterType="com.jayud.wms.model.bo.QueryReceiptNoticeForm" resultType="com.jayud.wms.model.vo.ReceiptNoticeVO">
+       select
+            rn.id,
+            rn.warehouse_id,
+            rn.warehouse,
+            rn.ower_id,
+            rn.ower,
+            rn.receipt_notice_num,
+            rn.document_type,
+            rn.order_source,
+            rn.external_order_num_one,
+            rn.external_order_num_two,
+            rn.supplier_id,
+            rn.supplier,
+            rn.estimated_arrival_time,
+            rn.column_one,
+            rn.column_two,
+            rn.total_num,
+            rn.total_weight,
+            rn.total_volume,
+            rn.confirmed_by,
+            rn.STATUS,
+             (SELECT sd.dict_name FROM sys_dict sd WHERE    sd.is_deleted=0    and  sd.dict_type="notifyReceiptOfOrderStatus"   and sd.dict_value =rn.STATUS)  as  statusDetails,
+            rn.confirmation_time,
+            rn.tenant_code,
+            rn.remark,
+            rn.receipt_num,
+            rn.create_by,
+            rn.create_time,
+            rn.update_by,
+            rn.update_time
+            from
+        wms_receipt_notice rn
+        <where>
+               rn.is_deleted=0
+                <if test="receiptNotice.id!= null ">
+                    AND rn.id = #{receiptNotice.id}
+                </if>
+
+                <if test="receiptNotice.warehouseId != null ">
+                    AND rn.warehouse_id = #{receiptNotice.warehouseId}
+                </if>
+
+                <if test="receiptNotice.documentType != null and receiptNotice.documentType != ''">
+                    AND rn.document_type = #{receiptNotice.documentType}
+                </if>
+
+                <if test="receiptNotice.status != null ">
+                    AND rn.status =#{receiptNotice.status}
+                </if>
+
+                <if test="receiptNotice.receiptNoticeNum != null and receiptNotice.receiptNoticeNum != ''  ">
+                    AND rn.receipt_notice_num = #{receiptNotice.receiptNoticeNum}
+                </if>
+                <if test="receiptNotice.ower != null and receiptNotice.ower != '' ">
+                    AND rn.ower  like CONCAT('%',#{receiptNotice.ower} , '%')
+                </if>
+
+                <if test="receiptNotice.arrivalTime !=null and receiptNotice.arrivalTime.size > 0">
+                    and rn.estimated_arrival_time between #{receiptNotice.arrivalTime[0]} and #{receiptNotice.arrivalTime[1]}
+                </if>
+
+            <if test="receiptNotice.owerIdList !=null and  receiptNotice.owerIdList.size > 0">
+                and rn.ower_id in
+                <foreach item="id" collection="receiptNotice.owerIdList" open="(" separator=","  close=")" >
+                 #{id}
+                </foreach>
+            </if>
+
+            <if test="receiptNotice.warehouseIdList!=null and receiptNotice.warehouseIdList.size > 0">
+                and rn.warehouse_id in
+                <foreach item="id" collection="receiptNotice.warehouseIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+
+        ORDER BY rn.create_time DESC
+
+    </select>
+
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.ReceiptNotice" resultType="com.jayud.wms.model.vo.ReceiptNoticeVO">
+        <include refid="selects"/>
+    </select>
+
+
+    <select id="queryReceiptNoticeForExcel" parameterType="com.jayud.wms.model.bo.QueryReceiptNoticeForm" resultType="java.util.LinkedHashMap">
+
+        select
+        rn.receipt_notice_num,
+        rn.warehouse,
+        rn.ower,
+        (SELECT sd.dict_name FROM sys_dict sd WHERE   sd.dict_type="notifyReceiptOfOrderStatus"   and sd.dict_value =rn.STATUS)  as  statusDetails,
+        rn.total_num,
+        rn.total_weight,
+        rn.total_volume,
+        rn.create_by,
+        rn.estimated_arrival_time,
+        rn.external_order_num_one,
+        rn.external_order_num_two,
+        rn.receipt_num,
+        rn.create_time
+        from
+        wms_receipt_notice rn
+
+
+        <where>
+            rn.is_deleted=0
+            <if test="receiptNotice.id!= null ">
+                AND rn.id = #{receiptNotice.id}
+            </if>
+
+            <if test="receiptNotice.warehouseId != null ">
+                AND rn.warehouse_id = #{receiptNotice.warehouseId}
+            </if>
+
+            <if test="receiptNotice.documentType != null and receiptNotice.documentType != ''">
+                AND rn.document_type = #{receiptNotice.documentType}
+            </if>
+
+            <if test="receiptNotice.status != null ">
+                AND rn.status =#{receiptNotice.status}
+            </if>
+
+            <if test="receiptNotice.receiptNoticeNum != null and receiptNotice.receiptNoticeNum != ''  ">
+                AND rn.receipt_notice_num = #{receiptNotice.receiptNoticeNum}
+            </if>
+            <if test="receiptNotice.ower != null and receiptNotice.ower != '' ">
+                AND rn.ower  like CONCAT('%',#{receiptNotice.ower} , '%')
+            </if>
+
+            <if test="receiptNotice.arrivalTime !=null and receiptNotice.arrivalTime.size > 0">
+                and rn.estimated_arrival_time between #{receiptNotice.arrivalTime[0]} and #{receiptNotice.arrivalTime[1]}
+            </if>
+
+            <if test="receiptNotice.owerIdList !=null and receiptNotice.owerIdList.size > 0 ">
+                and rn.ower_id in
+                <foreach item="id" collection="receiptNotice.owerIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="receiptNotice.warehouseIdList!=null and receiptNotice.warehouseIdList.size > 0">
+                and rn.warehouse_id in
+                <foreach item="id" collection="receiptNotice.warehouseIdList" open="(" separator=","  close=")" >
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY rn.create_time DESC
+
+    </select>
+
+
+
+</mapper>

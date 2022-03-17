@@ -71,7 +71,6 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
 //        Object url ="http://test.oms.jayud.com:9448";
         list.stream().forEach(v -> {
             v.setUploadFileUrl(url + v.getUploadFileUrl() + "?name=" + v.getFileName());
-
         });
         return list;
     }

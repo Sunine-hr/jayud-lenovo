@@ -62,6 +62,8 @@ public class CrmCreditVO extends SysBaseEntity {
     @JsonProperty(value = "creditRate")
     private String creditRate;
 
+    @ApiModelProperty(value = "是否已授信")
+    public Boolean isCredit;
 
 
 

@@ -3,6 +3,7 @@ package com.jayud.crm.controller;
 import cn.hutool.core.collection.CollectionUtil;
 import com.jayud.common.result.ListPageRuslt;
 import com.jayud.common.result.PaginationBuilder;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.model.bo.AddCrmCreditForm;
 import com.jayud.crm.model.po.CrmCreditDepart;
@@ -144,9 +145,12 @@ public class CrmCreditController {
     @ApiOperation("根据id查询")
     @ApiImplicitParam(name = "id", value = "主键id", dataType = "int", required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<CrmCredit> queryById(@RequestParam(name = "id", required = true) int id) {
+    public BaseResult<CrmCreditVO> queryById(@RequestParam(name = "id", required = true) int id) {
         CrmCredit crmCredit = crmCreditService.getById(id);
-        return BaseResult.ok(crmCredit);
+        CrmCreditVO convert = ConvertUtil.convert(crmCredit, CrmCreditVO.class);
+        List<CrmCreditDepart> creditDeparts = this.crmCreditDepartService.selectList(new CrmCreditDepart().setCreditId(crmCredit.getCreditId()).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
+        convert.setIsCredit(!CollectionUtil.isEmpty(creditDeparts));
+        return BaseResult.ok(convert);
     }
 
 

@@ -289,10 +289,16 @@ public class SysRoleController {
         Long rolesId = MapUtil.getLong(map, "rolesId");
         List<Long> menuIds = MapUtil.get(map, "menuIds", new TypeReference<List<Long>>() {
         });
+        Set<Long> parentMenuIds = MapUtil.get(map, "parentMenuIds", new TypeReference<Set<Long>>() {
+        });
         if (rolesId == null || CollectionUtil.isEmpty(menuIds)) {
             return BaseResult.error(SysTips.ERROR_MSG);
         }
-        sysRoleService.setRolePermissions(rolesId, menuIds);
+        parentMenuIds.addAll(menuIds);
+        List<Long> tmps = new ArrayList<>();
+        tmps.addAll(parentMenuIds);
+        tmps.addAll(menuIds);
+        sysRoleService.setRolePermissions(rolesId, tmps);
         return BaseResult.ok();
     }
 

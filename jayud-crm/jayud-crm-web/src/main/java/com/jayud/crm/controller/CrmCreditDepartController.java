@@ -106,6 +106,12 @@ public class CrmCreditDepartController {
         if (form.getCreditAmt().compareTo(new BigDecimal(0)) < 0) {
             return BaseResult.error(SysTips.CREDIT_AMOUNT_ERROR);
         }
+        if (form.getId() != null) {
+            CrmCreditDepart tmp = this.crmCreditDepartService.getById(form.getId());
+            if (form.getCreditAmt().compareTo(tmp.getCreditGrantedMoney()) < 0) {
+                return BaseResult.error(SysTips.INSUFFICIENT_REMAINING_AMOUNT);
+            }
+        }
         //计算剩余额度
         BigDecimal remainingQuota = this.crmCreditDepartService.calculationRemainingCreditLine(form.getCreditId(), CurrentUserUtil.getUserTenantCode());
         remainingQuota = remainingQuota.add(existingAmount);

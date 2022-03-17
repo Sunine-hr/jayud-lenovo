@@ -1,5 +1,6 @@
 package com.jayud.crm.controller;
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.common.result.ListPageRuslt;
 import com.jayud.common.result.PaginationBuilder;
@@ -9,6 +10,7 @@ import com.jayud.crm.feign.FileClient;
 import com.jayud.crm.model.bo.AddCrmCustomerAgreementForm;
 import com.jayud.crm.model.constant.CrmDictCode;
 import com.jayud.crm.model.enums.FileModuleEnum;
+import com.jayud.crm.model.enums.PostponedTypeEnum;
 import com.jayud.crm.model.po.CrmFile;
 import com.jayud.crm.model.vo.CrmContractQuotationVO;
 import com.jayud.crm.model.vo.CrmCustomerAgreementVO;
@@ -90,7 +92,7 @@ public class CrmCustomerAgreementController {
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
     public BaseResult<List<CrmCustomerAgreementVO>> selectList(CrmCustomerAgreement crmCustomerAgreement,
-                                                             HttpServletRequest req) {
+                                                               HttpServletRequest req) {
         return BaseResult.ok(crmCustomerAgreementService.selectList(crmCustomerAgreement));
     }
 
@@ -177,45 +179,33 @@ public class CrmCustomerAgreementController {
     public void exportCrmCustomerAgreement(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
         try {
             List<String> headList = Arrays.asList(
-                    "自动ID",
                     "协议编号",
-                    "客户ID",
                     "客户名称",
-                    "业务类型(报关，货代，物流等)",
-                    "业务类型值",
-                    "协议类型",
+                    "业务类型",
                     "协议名称",
                     "协议开始日期",
                     "协议结束日期",
                     "协议有效期",
                     "是否顺延",
-                    "顺延天数(1:顺延6个月,2:顺延12个月,3:顺延24个月)",
-                    "协议版本",
+                    "顺延天数",
                     "协议说明",
-                    "销售员id",
                     "销售员",
-                    "法人主体id",
-                    "法人主体名称",
-                    "我司原件份数",
-                    "是否默认协议",
-                    "是否归档",
-                    "归档编号",
-                    "归档人",
-                    "归档时间",
-                    "审核级别",
-                    "当前级别",
+                    "法人主体",
                     "审核状态",
-                    "流程实例",
-                    "报价单id",
-                    "租户编码",
+                    "关联单号",
                     "备注",
-                    "是否删除，0未删除，1已删除",
                     "创建人",
-                    "创建时间",
-                    "更新人",
-                    "更新时间"
+                    "创建时间"
             );
             List<LinkedHashMap<String, Object>> dataList = crmCustomerAgreementService.queryCrmCustomerAgreementForExcel(paramMap);
+            for (LinkedHashMap<String, Object> tmp : dataList) {
+                Boolean isExtended = MapUtil.getBool(tmp, "isExtended");
+                tmp.put("isExtended",isExtended?"是":"否");
+                if (isExtended){
+                    tmp.put("postponedType", PostponedTypeEnum.getDesc(MapUtil.getInt(tmp,"postponedType")));
+                }
+            }
+
             ExcelUtils.exportExcel(headList, dataList, "基本档案_协议管理(crm_customer_agreement)", response);
         } catch (Exception e) {
             e.printStackTrace();

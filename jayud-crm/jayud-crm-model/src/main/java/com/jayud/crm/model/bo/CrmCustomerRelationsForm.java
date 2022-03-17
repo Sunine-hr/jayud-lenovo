@@ -107,7 +107,7 @@ public class CrmCustomerRelationsForm extends SysBaseEntity {
     public void checkParam() {
         if (StringUtils.isEmpty(contactName)){throw new JayudBizException(400,"联系人不能为空"); }
         if (custId==null){throw new JayudBizException(400,"客户ID不能为空"); }
-        if (StringUtils.isEmpty(tel)){throw new JayudBizException(400,"电话不能为空"); }
+        if (StringUtils.isEmpty(mobile)){throw new JayudBizException(400,"电话不能为空"); }
     }
 
 }

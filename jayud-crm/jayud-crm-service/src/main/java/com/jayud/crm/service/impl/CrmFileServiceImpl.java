@@ -57,9 +57,8 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
 
         Page<CrmFile> page = new Page<CrmFile>(currentPage, pageSize);
         IPage<CrmFile> pageList = crmFileMapper.pageList(page, crmFile);
-        Object url = this.fileClient.getBaseUrl().getData();
         pageList.getRecords().stream().forEach(v -> {
-            v.setUploadFileUrl(url + v.getUploadFileUrl() + "?name=" + v.getFileName());
+            v.setUploadFileUrl(v.getUploadFileUrl() + "?name=" + v.getFileName());
         });
         return pageList;
     }
@@ -67,10 +66,9 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
     @Override
     public List<CrmFile> selectList(CrmFile crmFile) {
         List<CrmFile> list = crmFileMapper.list(crmFile);
-        Object url = this.fileClient.getBaseUrl().getData();
-//        Object url ="http://test.oms.jayud.com:9448";
         list.stream().forEach(v -> {
-            v.setUploadFileUrl(url + v.getUploadFileUrl() + "?name=" + v.getFileName());
+            v.setUploadFileUrl(v.getUploadFileUrl() + "?name=" + v.getFileName());
+
         });
         return list;
     }
@@ -78,7 +76,6 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
     @Override
     public BaseResult saveOrUpdateCrmFile(QueryCrmFile queryCrmFile) {
         Boolean result = null;
-        Object url = this.fileClient.getBaseUrl().getData();
         String nextCode = getNextCode(CodeNumber.CRM_FILE_CODE);
         if (queryCrmFile.getId() != null) {
             //这里面是修改

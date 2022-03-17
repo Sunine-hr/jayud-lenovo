@@ -99,11 +99,6 @@ public class CrmCreditVisitForm extends SysBaseEntity {
     @ApiModelProperty(value = "创建时间后")
     private String creationTimeTwo;
 
-    //去掉前后空格
-    public void setCustName(String custName) {
-        this.custName = custName.trim();
-    }
-
     public void setCreationVisitTime(List<String> creationVisitTime) {
         this.creationVisitTime = creationVisitTime;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

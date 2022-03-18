@@ -219,4 +219,15 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      * @return: void
      **/
     void updateManagerMsg(List<Long> idList,Long managerUserId,String managerUserName);
+
+    /**
+    * @description 根据id集合取消公海
+    * @author  ciro
+    * @date   2022/3/18 11:31:18
+    * @param ids
+    * @param managerUserId
+    * @param managerUsername
+    * @return: void
+    **/
+    void cnaleInpublicByIds(List<Long> ids,Long managerUserId,String managerUsername);
 }

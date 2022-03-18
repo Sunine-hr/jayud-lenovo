@@ -414,6 +414,14 @@
             #{id}
         </foreach>
     </update>
+    <update id="cnaleInpublicByIds">
+        UPDATE crm_customer SET is_public = 0 ,fsales_id = ${managerUserId}, fsales_name = #{managerUsername} ,update_by = #{username}, update_time = now()
+        WHERE is_deleted = 0
+        AND id IN
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </update>
 
     <select id="queryCrmCustomerForExcel" resultType="java.util.LinkedHashMap">
         SELECT

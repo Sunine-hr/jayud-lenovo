@@ -477,13 +477,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             Map<Long,CrmCustomer> custMap = customerList.stream().filter(x->x.getIsPublic()).collect(Collectors.toMap(x->x.getId(),x->x));
             //取消放入公海
             AuthUserDetail authUserDetail = CurrentUserUtil.getUserDetail();
-            CrmCustomer updateCust = new CrmCustomer();
-            updateCust.setIsPublic(false);
-            updateCust.setFsalesId(authUserDetail.getId());
-            updateCust.setFsalesName(authUserDetail.getUsername());
-            LambdaUpdateWrapper<CrmCustomer> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            lambdaUpdateWrapper.in(CrmCustomer::getId,custIdList);
-            this.update(updateCust,lambdaUpdateWrapper);
+            cnaleInpublicByIds(custIdList,authUserDetail.getId(),authUserDetail.getUsername());
             //删除负责人
             crmCustomerManagerService.delChargerManager(custIdList);
             //添加负责人
@@ -565,6 +559,11 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     @Override
     public void updateManagerMsg(List<Long> idList, Long managerUserId, String managerUserName) {
         this.baseMapper.updateManagerMsg(idList,managerUserId,managerUserName,CurrentUserUtil.getUsername());
+    }
+
+    @Override
+    public void cnaleInpublicByIds(List<Long> ids,Long managerUserId,String managerUsername) {
+        this.baseMapper.cnaleInpublicByIds(ids,managerUserId,managerUsername,CurrentUserUtil.getUsername());
     }
 
     /**

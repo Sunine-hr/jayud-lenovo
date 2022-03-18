@@ -258,7 +258,8 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
                 delChargerManager(delList);
             }
             if (CollUtil.isNotEmpty(addList)){
-                cnaleInpublicByIds(addList);
+                SysUser user = authClient.selectByUserId(comCustomerForm.getChangerUserId()).getResult();
+                crmCustomerService.cnaleInpublicByIds(addList,comCustomerForm.getChangerUserId(),user.getUserName());
                 addChargerManager(addList,custMap,comCustomerForm.getChangerUserId(),comCustomerForm.getChangeUserName(),RoleCodeEnum.SALE_ROLE.getRoleCode(), RoleCodeEnum.SALE_ROLE.getRoleName());
                 crmCustomerService.updateManagerMsg(addList,comCustomerForm.getChangerUserId(),comCustomerForm.getChangeUserName());
             }
@@ -373,23 +374,6 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
         crmCustomerManagerMapper.logicDelByCustIds(custIds,CurrentUserUtil.getUsername(),null);
     }
 
-    /**
-     * @description 根据id领取用户
-     * @author  ciro
-     * @date   2022/3/11 16:50
-     * @param: addList
-     * @return: void
-     **/
-    private void cnaleInpublicByIds(List<Long> addList){
-        CrmCustomer crmCustomer = new CrmCustomer();
-        crmCustomer.setIsPublic(false);
-        crmCustomer.setUpdateBy(CurrentUserUtil.getUsername());
-        crmCustomer.setUpdateTime(new Date());
-        LambdaUpdateWrapper<CrmCustomer> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.in(CrmCustomer::getId,addList);
-        crmCustomerService.update(crmCustomer,lambdaUpdateWrapper);
-
-    }
 
 
     /**

@@ -94,4 +94,13 @@ public interface CrmCustomerMapper extends BaseMapper<CrmCustomer> {
      * @return: int
      **/
     int updateManagerMsg(@Param("ids") List<Long> ids,@Param("managerUserId") Long managerUserId,@Param("managerUsername")String managerUsername,@Param("username") String username);
+
+    /**
+    * @description 根据id集合取消公海
+    * @author  ciro
+    * @date   2022/3/18 11:23:53
+    * @param ids
+    * @return: int
+    **/
+    int cnaleInpublicByIds(@Param("ids") List<Long> ids,@Param("managerUserId") Long managerUserId,@Param("managerUsername")String managerUsername,@Param("username") String username);
 }

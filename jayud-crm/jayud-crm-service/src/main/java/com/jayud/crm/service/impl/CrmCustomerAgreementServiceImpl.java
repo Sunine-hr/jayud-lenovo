@@ -7,7 +7,6 @@ import com.jayud.common.constant.SysTips;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
-import com.jayud.common.utils.StringUtils;
 import com.jayud.crm.feign.FileClient;
 import com.jayud.crm.model.bo.AddCrmCustomerAgreementForm;
 import com.jayud.crm.model.enums.FileModuleEnum;
@@ -62,7 +61,7 @@ public class CrmCustomerAgreementServiceImpl extends ServiceImpl<CrmCustomerAgre
         for (CrmCustomerAgreementVO record : pageList.getRecords()) {
             List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(false).setBusinessId(record.getId()).setCode(FileModuleEnum.CA.getCode())));
             files.forEach(e -> {
-                e.setUploadFileUrl(url + e.getUploadFileUrl());
+                e.setUploadFileUrl(url + e.getUploadFileUrl()+ "?name=" + e.getFileName());
             });
             record.setEffectiveTime(record.getBeginDate() + "-" + record.getEndDate());
             record.setFiles(files);

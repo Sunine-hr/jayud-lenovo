@@ -230,7 +230,10 @@ public interface SysTips {
 
     String TYPE_ALREADY_EXISTS= "该额度类型已存在";
 
+
     String LEGAL_ENTITY_GRANTED_CREDIT= "该法人主体已经授信";
+
+    String LEGAL_CUST_CREDIT= "该客户已经授信";
 
     String INSUFFICIENT_REMAINING_AMOUNT= "授信额度不够";
 
@@ -248,5 +251,7 @@ public interface SysTips {
     String SYS_USER_ON_JOB_REMIND= "有在职员工,无法删除！";
 
     String CREDIT_DELETE_ERROR = "已分配,不能删除!";
+
+
 }
 

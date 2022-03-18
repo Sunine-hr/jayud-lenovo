@@ -101,7 +101,7 @@ public class CrmCreditCustController {
             CrmCreditCust tmp = list.get(0);
             existingAmount = tmp.getCreditAmt();
             if (!tmp.getId().equals(form.getId())) {
-                return BaseResult.error(SysTips.LEGAL_ENTITY_GRANTED_CREDIT);
+                return BaseResult.error(SysTips.LEGAL_CUST_CREDIT);
             }
         }
         if (form.getCreditAmt().compareTo(new BigDecimal(0)) < 0) {

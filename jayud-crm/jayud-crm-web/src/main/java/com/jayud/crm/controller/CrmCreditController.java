@@ -103,10 +103,18 @@ public class CrmCreditController {
     public BaseResult saveOrUpdate(@Valid @RequestBody AddCrmCreditForm form) {
 
         if (form.getId() != null) {
+            List<CrmCreditVO> tmps = this.crmCreditService.selectList(new CrmCredit().setCreditId(form.getCreditId()).setIsDeleted(false).setTenantCode(CurrentUserUtil.getUserTenantCode()));
             CrmCredit crmCredit = this.crmCreditService.getById(form.getId());
             if (form.getCreditMoney().compareTo(crmCredit.getCreditGrantedMoney()) < 0) {
                 return BaseResult.error(SysTips.INSUFFICIENT_REMAINING_AMOUNT);
             }
+            if (!CollectionUtil.isEmpty(tmps)) {
+                CrmCreditVO crmCreditVO = tmps.get(0);
+                if (!crmCreditVO.getId().equals(form.getId())) {
+                    return BaseResult.error(SysTips.TYPE_ALREADY_EXISTS);
+                }
+            }
+
         }
         crmCreditService.saveOrUpdate(form);
         return BaseResult.ok(SysTips.ADD_SUCCESS);

@@ -67,11 +67,11 @@
             </if>
 
             <if test="crmCreditDepart.departId != null ">
-                AND depart_id = ${crmCreditDepart.departId}
+                AND depart_id = #{crmCreditDepart.departId}
             </if>
 
             <if test="crmCreditDepart.departName != null ">
-                AND depart_name = ${crmCreditDepart.departName}
+                AND depart_name = #{crmCreditDepart.departName}
             </if>
 
             <if test="crmCreditDepart.creditValue != null and crmCreditDepart.creditValue != ''">

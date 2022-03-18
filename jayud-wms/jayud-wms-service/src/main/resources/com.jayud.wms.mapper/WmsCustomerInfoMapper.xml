@@ -43,7 +43,7 @@
         wci.customer_code,
         wci.customer_name,
         wci.customer_type_id,
-        (SELECT sd.dict_name FROM sys_dict sd WHERE   sd.is_deleted=0    and   sd.dict_type = "clientType" AND sd.id = wci.customer_type_id) AS customerTypeDetails,
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'clientType' AND wci.customer_type_id = sdi.item_value) AS customerTypeDetails,
         wci.user_name,
         wci.phone_number,
         wci.email,
@@ -138,7 +138,7 @@
         SELECT
         wci.customer_code,
         wci.customer_name,
-        (SELECT sd.dict_name FROM sys_dict sd WHERE   sd.is_deleted=0    and   sd.dict_type = "clientType" AND sd.id = wci.customer_type_id) AS customerTypeDetails,
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'clientType' AND wci.customer_type_id = sdi.item_value) AS customerTypeDetails,
         wci.user_name,
         wci.phone_number,
         wci.email,

@@ -31,7 +31,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
             id, wave_number, warehouse_id, warehouse_code, warehouse_name, ower_id, ower_code, ower_name, status, all_order_account, finish_order_account, allocation_account, packing_account, all_material_account, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time,
-            (SELECT sd.dict_name FROM sys_dict sd WHERE sd.is_deleted = 0 AND sd.dict_type = 'waveOrderStatus' AND sd.parent_id != 0 AND sd.dict_value = status) status_text
+            (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'waveOrderStatus' AND status = sdi.item_value) status_text
     </sql>
 
     <!-- 表名 -->

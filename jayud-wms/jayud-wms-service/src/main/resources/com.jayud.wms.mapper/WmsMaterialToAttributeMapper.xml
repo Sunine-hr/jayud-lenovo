@@ -30,9 +30,9 @@
     <sql id="tname">wms_material_to_attribute wmta</sql>
 
     <sql id="selects">
-        SELECT <include refid="Base_Column_List"/>
-        ,sd.dict_name attribute_type_text
-        FROM <include refid="tname"/> LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.dict_type = 'material_attribute_type' AND sd.dict_value = wmta.attribute_type
+        SELECT <include refid="Base_Column_List"/>,
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'material_attribute_type' AND wmta.attribute_type = sdi.item_value) attribute_type_text
+        FROM <include refid="tname"/>
         <where>
             wmta.is_deleted = 0
             <if test="wmsMaterialToAttribute.materialBasicInfoId != null ">

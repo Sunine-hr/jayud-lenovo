@@ -75,7 +75,7 @@
 
     <sql id="selects">
         SELECT <include refid="Base_Column_List"/>,
-        (SELECT sd.dict_name FROM sys_dict sd WHERE sd.is_deleted = 0 AND sd.dict_type = 'offshelf_packing_status' AND sd.parent_id != 0 AND sd.dict_value = status) status_text
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'offshelf_packing_status' AND status = sdi.item_value) status_text
         FROM <include refid="tname"/>
         <where>
             is_deleted = 0

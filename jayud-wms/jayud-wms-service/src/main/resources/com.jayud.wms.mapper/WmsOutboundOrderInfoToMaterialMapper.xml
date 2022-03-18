@@ -50,7 +50,7 @@
         mti.material_type_code material_type_code,
         wmbi.weight weight,
         wmbi.volume volume,
-        (SELECT sd.dict_name FROM sys_dict sd WHERE sd.is_deleted = 0 AND sd.parent_id != 0 AND sd.dict_type = 'outboundOrderStatusType' AND sd.dict_value = wooitm.status_type) status_type_text
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'outboundOrderStatusType' AND wooitm.status_type = sdi.item_value) status_type_text
         FROM <include refid="tname"/>
         LEFT JOIN wms_material_basic_info wmbi ON wooitm.material_code = wmbi.material_code
         LEFT JOIN wms_material_type_info mti ON wmbi.material_type_id = mti.id

@@ -194,8 +194,7 @@
         sot.update_by,
         sot.update_time,
         sot.STATUS,
-        (SELECT sd.dict_name FROM sys_dict sd WHERE sd.is_deleted=0 and sd.dict_type = "onTheTaskOnState" AND
-        sd.dict_value = sot.STATUS) AS statusDetails,
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'onTheTaskOnState' AND sot.STATUS = sdi.item_value) AS statusDetails,
         sot.batch_num,
         sot.production_date,
         sot.column_one,
@@ -293,8 +292,7 @@
         sot.update_by,
         sot.update_time,
         sot.STATUS,
-        (SELECT sd.dict_name FROM sys_dict sd WHERE sd.is_deleted=0 and sd.dict_type = "onTheTaskOnState" AND
-        sd.dict_value = sot.STATUS) AS statusDetails,
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'onTheTaskOnState' AND sot.STATUS = sdi.item_value) AS statusDetails,
         sot.batch_num,
         sot.production_date,
         sot.column_one,
@@ -389,8 +387,7 @@
         sot.update_by,
         sot.update_time,
         sot.STATUS,
-        (SELECT sd.dict_name FROM sys_dict sd WHERE sd.is_deleted=0 and sd.dict_type = "onTheTaskOnState" AND
-        sd.dict_value = sot.STATUS) AS statusDetails,
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'onTheTaskOnState' AND sot.STATUS = sdi.item_value) AS statusDetails,
         sot.batch_num,
         sot.production_date,
         sot.column_one,
@@ -472,8 +469,7 @@
         sot.container_num,
         sot.recommended_location,
         sot.actual_shelf_space,
-        (SELECT sd.dict_name FROM sys_dict sd WHERE sd.is_deleted=0 and sd.dict_type = "onTheTaskOnState" AND
-        sd.dict_value = sot.STATUS) AS statusDetails,
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'onTheTaskOnState' AND sot.STATUS = sdi.item_value) AS statusDetails,
         sot.starting_station,
         sot.start_seeding_position,
         sot.shelf_executor,

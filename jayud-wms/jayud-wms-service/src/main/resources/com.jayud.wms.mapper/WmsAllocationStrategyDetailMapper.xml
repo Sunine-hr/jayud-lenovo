@@ -31,9 +31,8 @@
 
     <sql id="selects">
         SELECT <include refid="Base_Column_List"/>,
-        sd.dict_name allocation_strategy_type_text
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'allocation_strategy_detail' AND wasd.allocation_strategy_type = sdi.item_value) allocation_strategy_type_text
         FROM <include refid="tname"/>
-        LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.parent_id != 0 AND sd.dict_value = wasd.allocation_strategy_type AND sd.dict_type = 'allocation_strategy_detail'
         <where>
             wasd.is_deleted = 0
             <if test="wmsAllocationStrategyDetailVO.allocationStrategyId != null and wmsAllocationStrategyDetailVO.allocationStrategyId != ''">

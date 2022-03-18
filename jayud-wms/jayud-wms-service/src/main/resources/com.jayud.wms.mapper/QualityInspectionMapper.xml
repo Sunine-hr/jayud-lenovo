@@ -130,8 +130,8 @@
             qi.quality_inspector,
             qi.quality_inspection_time,
             qi.STATUS,
-         ( SELECT sd.dict_name FROM sys_dict sd WHERE  sd.is_deleted=0 and sd.dict_type = "theQualityStatus" AND sd.dict_value = qi.STATUS ) AS statusDetails,
-          qi.tenant_code,
+            (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'theQualityStatus' AND qi.STATUS = sdi.item_value) AS statusDetails,
+            qi.tenant_code,
             qi.remark,
             qi.is_deleted,
             qi.create_by,
@@ -189,7 +189,7 @@
         qi.warehouse,
         qi.quality_inspector,
         qi.quality_inspection_time,
-        ( SELECT sd.dict_name FROM sys_dict sd WHERE  sd.is_deleted=0 and sd.dict_type = "theQualityStatus" AND sd.dict_value = qi.STATUS ) AS statusDetails,
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'theQualityStatus' AND qi.STATUS = sdi.item_value) AS statusDetails,
         qi.create_by,
         qi.create_time
         FROM

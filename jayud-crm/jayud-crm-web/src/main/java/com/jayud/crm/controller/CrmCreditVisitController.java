@@ -13,6 +13,8 @@ import com.jayud.common.BaseResult;
 import com.jayud.crm.service.ICrmCreditVisitService;
 import com.jayud.crm.model.po.CrmCreditVisit;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import io.swagger.annotations.Api;
@@ -162,6 +164,17 @@ public class CrmCreditVisitController {
             listId.add(l);
         }
         crmCreditVisitIdOne.setVisitNameList(listId);
+
+        //拿到创建时间
+        List<String> visitDateTime = new ArrayList<>();
+
+        visitDateTime.add(dateString(crmCreditVisitIdOne.getVisitDate()));
+        visitDateTime.add(dateString(crmCreditVisitIdOne.getEndDate()));
+
+        crmCreditVisitIdOne.setCreationVisitTime(visitDateTime);
+
+        crmCreditVisitIdOne.setVisitDate(null);
+        crmCreditVisitIdOne.setEndDate(null);
         return BaseResult.ok(crmCreditVisitIdOne);
     }
 
@@ -172,4 +185,11 @@ public class CrmCreditVisitController {
         return BaseResult.ok(baseResult);
     }
 
+
+    public String  dateString(LocalDateTime dateOne){
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//        LocalDateTime time = LocalDateTime.now();
+        String localTime = df.format(dateOne);
+        return localTime;
+    }
 }

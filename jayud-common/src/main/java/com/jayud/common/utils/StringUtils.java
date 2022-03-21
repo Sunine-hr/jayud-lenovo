@@ -6,6 +6,8 @@ import org.apache.http.util.TextUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -483,9 +485,19 @@ public class StringUtils {
 //        long abb=1;
 //        Long aLong = longTransitionLong(ab,abb);
 //        System.out.println("拼接："+aLong);
-        String convenientAreaString = getConvenientAreaString("广东省省份", "深圳市", "罗湖区", "详情地址11");
-        System.out.println(convenientAreaString);
+//        String convenientAreaString = getConvenientAreaString("广东省省份", "深圳市", "罗湖区", "详情地址11");
+//        System.out.println(convenientAreaString);
+        String dateOne="2022-03-02 17:46:45";
+        String dateTwo="2022-03-02 17:22:45";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime parsedDate = LocalDateTime.parse(dateOne, formatter);
+        LocalDateTime parsedDate2 = LocalDateTime.parse(dateTwo, formatter);
 
+        boolean b = localDateIsBefore(parsedDate,parsedDate2);
+        if(false){
+            System.out.println("第一个大于第二个给提示 ");
+        }
+        System.out.println(b);
     }
 
     public static String supplyZero(int count, int zeroNum) {
@@ -617,5 +629,38 @@ public class StringUtils {
         return aLong;
     }
 
+
+
+    /**
+     * 比较第一个日期是否小于第二个日期
+     * @param firstDate 第一个日期
+     * @param secondDate 第二个日期
+     * @return true-小于;false-大于
+     */
+    public static boolean localDateIsBefore(LocalDateTime firstDate, LocalDateTime secondDate) {
+        return firstDate.isBefore(secondDate);
+    }
+
+
+    /**
+     * 比较第一个日期是否大于第二个日期
+     * @param firstDate 第一个日期
+     * @param secondDate 第二个日期
+     * @return true-大于;false-不大于
+     */
+    public boolean localDateIsAfter(LocalDateTime firstDate, LocalDateTime secondDate) {
+        return firstDate.isAfter(secondDate);
+    }
+
+
+    /**
+     * 比较两个日期是否相等
+     * @param firstDate 第一个日期
+     * @param secondDate 第二个日期
+     * @return true-相等;false-不相等
+     */
+    public boolean localDateIsEqual(LocalDateTime firstDate, LocalDateTime secondDate) {
+        return firstDate.isEqual(secondDate);
+    }
 
 }

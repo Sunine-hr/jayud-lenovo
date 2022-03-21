@@ -163,7 +163,7 @@ public class CrmCustomerAgreementSubController {
         dates.add(convert.getEndDate());
         convert.setAgreementTime(dates);
         Object url = this.fileClient.getBaseUrl().getData();
-        List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(false).setBusinessId(convert.getId()).setCode(FileModuleEnum.CA.getCode())));
+        List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(false).setBusinessId(convert.getId()).setCode(FileModuleEnum.SUB_CA.getCode())));
         files.forEach(e -> {
             e.setUploadFileUrl(url + e.getUploadFileUrl());
         });

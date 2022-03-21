@@ -179,6 +179,9 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
             this.baseMapper.update(new CrmFile().setIsDeleted(true), new QueryWrapper<>(new CrmFile().setBusinessId(businessId).setCode(code).setIsDeleted(false)));
             files.forEach(e -> {
                 e.setUploadFileUrl(e.getUploadFileUrl().replaceAll(url.toString(), "").trim());
+                if (e.getUploadFileUrl().contains("?")) {
+                    e.setUploadFileUrl(e.getUploadFileUrl().substring(0, e.getUploadFileUrl().indexOf("?")));
+                }
                 e.setBusinessId(businessId).setCode(code).setId(null);
             });
             this.saveOrUpdateBatch(files);

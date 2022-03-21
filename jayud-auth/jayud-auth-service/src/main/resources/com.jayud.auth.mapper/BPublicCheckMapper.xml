@@ -211,7 +211,7 @@
     </select>
 
     <select id="getPublicCheckByRecordId" resultType="map" >
-        select *,max(create_time) from b_public_check where id = #{recordId} and check_flag = #{checkFlag} and sheet_code = #{sheetCode}
+        select *,max(create_time) from b_public_check where record_id = #{recordId} and check_flag = #{checkFlag} and sheet_code = #{sheetCode}
     </select>
 
     <update id="updateData" >

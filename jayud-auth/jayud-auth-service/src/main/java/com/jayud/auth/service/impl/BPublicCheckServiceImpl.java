@@ -286,7 +286,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         if(0 != sStep){
             bPublicCheck.setTimeConsuming(null);
         }else {
-            BPublicCheck byRecordId = this.baseMapper.getPublicCheckByRecordId(checkForm.getSheetCode(),checkForm.getRecordId(),1);
+            BPublicCheck byRecordId = this.baseMapper.getPublicCheckByRecordId(checkForm.getSheetCode(),checkForm.getRecordId(),0);
             bPublicCheck.setTimeConsuming(this.getTimeDifference(byRecordId.getCreateTime(),new Date()));
         }
         bPublicCheck.setCheckStateFlag(checkFlag);

@@ -137,6 +137,13 @@
                 AND remark = #{sysUser.remark}
             </if>
 
+            <if test="sysUser.departIdList != null and sysUser.departIdList.size > 0">
+                depart_id IN
+                <foreach collection="sysUser.departIdList" index="index" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
         </where>
     </sql>
 

@@ -144,6 +144,23 @@
         select getDepartParentList(#{id}) pids
     </select>
 
+    <select id="slectChildrenById" resultType="com.jayud.auth.model.po.SysDepart">
+        SELECT
+            *
+        FROM
+            (
+                SELECT
+                    *,
+                    IF
+                        ( find_in_set( t1.parentId, @p ) > 0, @p := concat( @p, ',', id ), 0 ) AS childId
+                FROM
+                    ( SELECT id, parent_id parentId,depart_name departName,org_category orgCategory,org_code orgCode,tenant_code tenantCode FROM sys_depart t WHERE t.is_deleted = 0 ORDER BY id ) t1,
+                    ( SELECT @p := ${parentId} ) t2
+            ) t3
+        WHERE
+            childId != 0
+    </select>
+
 
     <delete id="phyDelById">
         DELETE FROM  sys_depart WHERE id = ${id}

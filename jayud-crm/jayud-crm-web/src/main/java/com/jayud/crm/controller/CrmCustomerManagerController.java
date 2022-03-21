@@ -198,5 +198,11 @@ public class CrmCustomerManagerController {
         }
     }
 
+    @ApiOperation("根据用户id查询客户id")
+    @PostMapping(path = "/selectCustIdListByUserIds")
+    public BaseResult<List<Long>> selectCustIdListByUserIds(@RequestParam(name="userIds",required=true) List<Long> userIds){
+        return BaseResult.ok(crmCustomerManagerService.selectCustIdListByUserIds(userIds));
+    }
+
 
 }

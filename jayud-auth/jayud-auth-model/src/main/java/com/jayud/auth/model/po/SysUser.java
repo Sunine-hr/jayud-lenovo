@@ -1,5 +1,6 @@
 package com.jayud.auth.model.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
@@ -7,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -104,5 +106,7 @@ public class SysUser extends SysBaseEntity {
      */
     private   static final String   TACITLY_APPROVE_PASSWORD="123456";
 
-
+    @ApiModelProperty(value = "所属部门id集合")
+    @TableField(exist = false)
+    private List<Long> departIdList;
 }

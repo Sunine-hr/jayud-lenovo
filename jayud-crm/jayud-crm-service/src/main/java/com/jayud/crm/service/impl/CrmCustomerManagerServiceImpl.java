@@ -374,6 +374,18 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
         crmCustomerManagerMapper.logicDelByCustIds(custIds,CurrentUserUtil.getUsername(),null);
     }
 
+    @Override
+    public List<Long> selectCustIdListByUserIds(List<Long> userIds) {
+        LambdaQueryWrapper<CrmCustomerManager> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.in(CrmCustomerManager::getManageUserId,userIds);
+        lambdaQueryWrapper.eq(CrmCustomerManager::getIsDeleted,false);
+        List<CrmCustomerManager> managerList = this.list(lambdaQueryWrapper);
+        List<Long> custIdList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(managerList)){
+            custIdList = managerList.stream().map(x->x.getId()).distinct().collect(Collectors.toList());
+        }
+        return custIdList;
+    }
 
 
     /**

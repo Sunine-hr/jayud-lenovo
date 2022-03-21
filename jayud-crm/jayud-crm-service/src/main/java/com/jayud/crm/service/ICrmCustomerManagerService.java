@@ -171,4 +171,13 @@ public interface ICrmCustomerManagerService extends IService<CrmCustomerManager>
      **/
     void logicDelByCustIds(List<Long> custIds);
 
+    /**
+     * @description 根据用户id查询客户id集合
+     * @author  ciro
+     * @date   2022/3/21 11:11
+     * @param: userIds
+     * @return: java.util.List<java.lang.Long>
+     **/
+    List<Long> selectCustIdListByUserIds(List<Long> userIds);
+
 }

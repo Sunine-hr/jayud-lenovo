@@ -237,6 +237,11 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         return this.list(new QueryWrapper<>(new SysDepart().setIsDeleted(false).setOrgCategory(orgCategory.toString())));
     }
 
+    @Override
+    public List<SysDepart> slectChildrenById(Long id) {
+        return sysDepartMapper.slectChildrenById(id);
+    }
+
 
     //构建树并且查询员工信息
     private List<SysDepart> buildTreeStaff(List<SysDepart> list, String pid) {

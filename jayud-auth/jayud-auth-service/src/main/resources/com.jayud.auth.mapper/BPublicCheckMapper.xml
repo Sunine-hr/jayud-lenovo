@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果ss -->
     <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.BPublicCheck">
         <id column="id" property="id" />
-        <result column="table_name" property="sheetCode" />
+        <result column="sheet_code" property="sheetCode" />
         <result column="check_flag" property="checkFlag" />
         <result column="record_id" property="recordId" />
         <result column="f_level" property="fLevel" />
@@ -211,7 +211,7 @@
     </select>
 
     <select id="getPublicCheckByRecordId" resultType="map" >
-        select *,max(create_time) from b_public_check where id = #{recordId} and check_flag = #{checkFlag} and table_name = #{sheetCode}
+        select *,max(create_time) from b_public_check where id = #{recordId} and check_flag = #{checkFlag} and sheet_code = #{sheetCode}
     </select>
 
     <update id="updateData" >

@@ -109,6 +109,9 @@ public class SysPostServiceImpl extends ServiceImpl<SysPostMapper, SysPost> impl
             if (two != null) {
                 throw new JayudBizException("岗位名称已存在！");
             }
+            if(sysPost.getPostSequence()==null){
+                sysPost.setPostSequence(0L);
+            }
             //修改
             sysPost.setUpdateBy(CurrentUserUtil.getUsername());
             sysPost.setUpdateTime(new Date());

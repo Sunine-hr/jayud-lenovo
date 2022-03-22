@@ -171,23 +171,13 @@ public class SysLogController {
     public void exportSysLog(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
         try {
             List<String> headList = Arrays.asList(
-                    "",
-                    "日志类型（1登录日志，2操作日志）",
-                    "业务id",
+                    "登录时间",
+                    "登录账号",
+                    "真是姓名",
                     "日志内容",
-                    "操作类型(0:系统,1:客户)",
-                    "操作用户账号",
-                    "操作用户名称",
-                    "IP",
-                    "请求java方法",
-                    "请求路径",
-                    "请求参数",
-                    "请求类型",
-                    "耗时",
-                    "创建人",
-                    "创建时间",
-                    "更新人",
-                    "更新时间"
+                    "登录路径",
+                    "登录IP"
+
             );
             List<LinkedHashMap<String, Object>> dataList = sysLogService.querySysLogForExcel(paramMap);
             ExcelUtils.exportExcel(headList, dataList, "系统日志表", response);

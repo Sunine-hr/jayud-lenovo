@@ -1,5 +1,6 @@
 package com.jayud.auth.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.bo.SysUserForm;
 import com.jayud.auth.model.dto.SysUserDTO;
@@ -94,6 +95,7 @@ public class SysUserController {
         System.out.println("远程调用查询到的数据：" + sysUserVOS);
         return BaseResult.ok(sysUserVOS);
     }
+
     /**
      * @description 根据ids查询数据  没用到
      **/
@@ -121,12 +123,23 @@ public class SysUserController {
         if (sysUserForm == null) {
             return BaseResult.error("数据不能为空！");
         }
-//        if (sysUserForm.getId() == null) {
+        if (sysUserForm.getId() == null) {
             SysUserVO sysUserName = sysUserService.findSysUserName(sysUserForm);
             if (sysUserName != null) {
                 return BaseResult.error("用户名已存在！");
             }
-//        }
+        }
+        if (sysUserForm.getId() != null) {
+            //校验非当前的用户名称
+            LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(SysUser::getName, sysUserForm.getName());
+            lambdaQueryWrapper.eq(SysUser::getIsDeleted, false);
+            lambdaQueryWrapper.ne(SysUser::getId, sysUserForm.getId());
+            SysUser one = sysUserService.getOne(lambdaQueryWrapper);
+            if (one != null) {
+                return BaseResult.error("用户名已存在！");
+            }
+        }
         boolean b = sysUserService.saveOrUpdateSysUser(sysUserForm);
         if (b) {
             return BaseResult.ok();
@@ -179,7 +192,7 @@ public class SysUserController {
             return BaseResult.error("id不为空");
         }
 
-        return  sysUserService.deleteSysUser(ids.getIds());
+        return sysUserService.deleteSysUser(ids.getIds());
     }
 
 

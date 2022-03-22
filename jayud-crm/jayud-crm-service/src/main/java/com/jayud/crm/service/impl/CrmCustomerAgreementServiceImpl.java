@@ -61,7 +61,7 @@ public class CrmCustomerAgreementServiceImpl extends ServiceImpl<CrmCustomerAgre
         for (CrmCustomerAgreementVO record : pageList.getRecords()) {
             List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(false).setBusinessId(record.getId()).setCode(FileModuleEnum.CA.getCode())));
             files.forEach(e -> {
-                e.setUploadFileUrl(url + e.getUploadFileUrl()+ "?name=" + e.getFileName());
+                e.setUploadFileUrl(url + e.getUploadFileUrl() + "?name=" + e.getFileName());
             });
             record.setEffectiveTime(record.getBeginDate() + "-" + record.getEndDate());
             record.setFiles(files);
@@ -71,7 +71,17 @@ public class CrmCustomerAgreementServiceImpl extends ServiceImpl<CrmCustomerAgre
 
     @Override
     public List<CrmCustomerAgreementVO> selectList(CrmCustomerAgreement crmCustomerAgreement) {
-        return crmCustomerAgreementMapper.list(crmCustomerAgreement);
+        List<CrmCustomerAgreementVO> list = crmCustomerAgreementMapper.list(crmCustomerAgreement);
+        Object url = this.fileClient.getBaseUrl().getData();
+        for (CrmCustomerAgreementVO record : list) {
+            List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(false).setBusinessId(record.getId()).setCode(FileModuleEnum.CA.getCode())));
+            files.forEach(e -> {
+                e.setUploadFileUrl(url + e.getUploadFileUrl() + "?name=" + e.getFileName());
+            });
+            record.setEffectiveTime(record.getBeginDate() + "-" + record.getEndDate());
+            record.setFiles(files);
+        }
+        return list;
     }
 
 

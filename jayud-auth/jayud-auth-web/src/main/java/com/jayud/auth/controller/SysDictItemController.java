@@ -92,6 +92,7 @@ public class SysDictItemController {
     @ApiOperation("新增")
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody SysDictItem sysDictItem) {
+        sysDictItem.setIsEdit(null);
         if (StringUtils.isEmpty(sysDictItem.getItemText()) || StringUtils.isEmpty(sysDictItem.getItemValue())) {
             return BaseResult.error("请填写字典类别/编码");
         }
@@ -119,6 +120,7 @@ public class SysDictItemController {
     @ApiOperation("编辑")
     @PostMapping("/edit")
     public BaseResult edit(@Valid @RequestBody SysDictItem sysDictItem) {
+        sysDictItem.setIsEdit(null);
         if (StringUtils.isEmpty(sysDictItem.getItemText()) || StringUtils.isEmpty(sysDictItem.getItemValue())) {
             return BaseResult.error("请填写字典类别/编码");
         }
@@ -127,8 +129,12 @@ public class SysDictItemController {
                 return BaseResult.error("排序请输入大于0整数");
             }
             SysDictItem tmp = sysDictItemService.getOne(new QueryWrapper<>(new SysDictItem().setDictId(sysDictItem.getDictId()).setSortOrder(sysDictItem.getSortOrder()).setIsDeleted(false)));
-            if (!tmp.getId().equals(sysDictItem.getId())) {
+            if (tmp != null && tmp.getId().equals(sysDictItem.getId())) {
                 return BaseResult.error("该排列数值已存在");
+            }
+            SysDictItem item = sysDictItemService.getById(sysDictItem.getId());
+            if (!item.getIsEdit()){
+                return BaseResult.error("数据字典不能修改");
             }
         }
 

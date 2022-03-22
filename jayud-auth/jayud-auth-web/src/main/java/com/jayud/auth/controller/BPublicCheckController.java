@@ -169,5 +169,20 @@ public class BPublicCheckController {
         return bPublicCheckService.unCheck(checkForm);
     }
 
+    /**
+     * @description 列表查询数据
+     * @author  jayud
+     * @date   2022-02-28
+     * @param: bPublicCheck
+     * @param: req
+     * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.auth.model.po.BPublicCheck>>
+     **/
+    @ApiOperation("列表查询数据")
+    @GetMapping("/selectList")
+    public BaseResult<List<BPublicCheckVO>> getList(CheckForm checkForm,
+                                                       HttpServletRequest req) {
+        return BaseResult.ok(bPublicCheckService.getList(checkForm));
+    }
+
 
 }

@@ -223,4 +223,8 @@
         update ${checkDatabase}.${checkTable} set f_step = #{newStep}, check_state_flag = #{checkFlag}, update_by = #{name}, update_time = #{now} where id = #{recordId}
     </update>
 
+    <select id="getPublicCheckByRecordIdAndfStep" resultType="com.jayud.auth.model.po.BPublicCheck">
+        select *,max(create_time) from b_public_check where record_id = #{checkForm.recordId} and check_flag = 1 and sheet_code = #{checkForm.sheetCode} and f_step = #{fStep} and menu_code = #{checkForm.menuCode}
+    </select>
+
 </mapper>

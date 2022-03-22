@@ -195,4 +195,18 @@
 
     </select>
 
+    <select id="getList" resultType="com.jayud.auth.model.vo.SysRoleActionCheckVO">
+        select *
+        from sys_role_action_check srac
+        where srac.is_deleted = 0 and srac.action_code = #{menuCode}
+        GROUP BY check_level
+    </select>
+
+    <select id="getListByCheckLevelAndMenuCode" resultType="com.jayud.auth.model.vo.SysRoleActionCheckVO">
+        select srac.*,sr.role_name roleName
+        from sys_role_action_check srac
+        left join sys_role sr on s.role_id = sr.id and sr.is_deleted = 0
+        where srac.is_deleted = 0 and srac.action_code = #{menuCode} and srac.check_level = #{checkLevel}
+    </select>
+
 </mapper>

@@ -3,6 +3,7 @@ package com.jayud.auth.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.mapper.SysUserRoleMapper;
@@ -318,6 +319,22 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Cacheable(value = "sys:cache:userId", key = "#userId")
     public SysUser selectByUserId(Long userId) {
         return this.getById(userId);
+    }
+
+    @Override
+    public List<SysUser> getSysUserByDepartmentId(Long departId) {
+        QueryWrapper<SysUser> condition = new QueryWrapper<>();
+        condition.lambda().eq(SysUser::getDepartId,departId);
+        condition.lambda().eq(SysUser::getIsDeleted,0);
+        return this.list(condition);
+    }
+
+    @Override
+    public List<SysUser> getUserByUserIds(Set<Long> userIds) {
+        QueryWrapper<SysUser> condition = new QueryWrapper<>();
+        condition.lambda().in(SysUser::getId,userIds);
+        condition.lambda().eq(SysUser::getIsDeleted,0);
+        return this.list(condition);
     }
 
     public static void main(String[] args) {

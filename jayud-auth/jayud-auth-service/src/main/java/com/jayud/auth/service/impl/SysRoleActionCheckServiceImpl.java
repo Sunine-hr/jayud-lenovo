@@ -2,6 +2,7 @@ package com.jayud.auth.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.bo.CheckForm;
 import com.jayud.auth.model.bo.SysRoleActionCheckForm;
 import com.jayud.auth.model.po.SysMenu;
 import com.jayud.auth.model.vo.SysRoleActionCheckVO;
@@ -98,6 +99,16 @@ public class SysRoleActionCheckServiceImpl extends ServiceImpl<SysRoleActionChec
         if(result){
             log.warn("添加成功");
         }
+    }
+
+    @Override
+    public List<SysRoleActionCheckVO> getList(CheckForm checkForm) {
+        return this.baseMapper.getList(checkForm.getMenuCode());
+    }
+
+    @Override
+    public List<SysRoleActionCheckVO> getListByCheckLevelAndMenuCode(Integer checkLevel, String menuCode) {
+        return this.baseMapper.getListByCheckLevelAndMenuCode(checkLevel,menuCode);
     }
 
 }

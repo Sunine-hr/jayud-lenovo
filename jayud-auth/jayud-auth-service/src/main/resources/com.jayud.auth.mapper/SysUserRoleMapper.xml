@@ -94,5 +94,11 @@
         and su.name = #{username} and sm.code = #{menuCode} and su.tenant_code = #{userTenantCode} and srac.check_level = #{newStep}
     </select>
 
+    <select id="getEnabledRolesByUserId" resultType="com.jayud.auth.model.po.SysRole">
+        select sr.* from sys_user_role as relations
+         left join sys_role sr on sr.id=relations.role_id and sr.is_deleted=0
+         where relations.user_id = #{id}
+    </select>
+
 
 </mapper>

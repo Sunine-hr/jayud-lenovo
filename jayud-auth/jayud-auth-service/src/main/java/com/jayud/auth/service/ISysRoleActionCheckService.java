@@ -2,6 +2,7 @@ package com.jayud.auth.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.auth.model.bo.CheckForm;
 import com.jayud.auth.model.bo.SysRoleActionCheckForm;
 import com.jayud.auth.model.po.SysRoleActionCheck;
 import com.jayud.auth.model.vo.SysRoleActionCheckVO;
@@ -83,4 +84,19 @@ public interface ISysRoleActionCheckService extends IService<SysRoleActionCheck>
      * @param sysRoleActionCheck
      */
     void saveSysRoleActionCheck(SysRoleActionCheckForm sysRoleActionCheck);
+
+    /**
+     * 获取按钮有几个审核级别
+     * @param checkForm
+     * @return
+     */
+    List<SysRoleActionCheckVO> getList(CheckForm checkForm);
+
+    /**
+     * 获取该级审核有哪些角色
+     * @param checkLevel
+     * @param menuCode
+     * @return
+     */
+    List<SysRoleActionCheckVO> getListByCheckLevelAndMenuCode(Integer checkLevel, String menuCode);
 }

@@ -1,9 +1,11 @@
 package com.jayud.auth.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.bo.SysUserForm;
+import com.jayud.auth.model.po.SysRole;
 import com.jayud.auth.model.po.SysUser;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.service.ISysUserService;
@@ -145,6 +147,35 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
     @Override
     public int getCountByUserNameAndStep(String username, String userTenantCode, String menuCode, Integer newStep) {
         return this.baseMapper.getCountByUserNameAndStep(username, userTenantCode, menuCode, newStep);
+    }
+
+    @Override
+    public List<SysRole> getEnabledRolesByUserId(Long id) {
+        return this.baseMapper.getEnabledRolesByUserId(id);
+    }
+
+    @Override
+    public String getUserNameByRoles(Set<Long> roles) {
+        if(CollectionUtil.isEmpty(roles)){
+            return "";
+        }
+        QueryWrapper<SysUserRole> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().in(SysUserRole::getRoleId,roles);
+        queryWrapper.lambda().eq(SysUserRole::getIsDeleted,0);
+        List<SysUserRole> sysUserRoles = this.list(queryWrapper);
+        Set<Long> userIds = new HashSet<>();
+        for (SysUserRole sysUserRole : sysUserRoles) {
+            userIds.add(sysUserRole.getUserId());
+        }
+        List<SysUser> sysUsers = sysUserService.getUserByUserIds(userIds);
+        if(CollectionUtil.isEmpty(sysUsers)){
+            return "";
+        }
+        StringBuffer stringBuffer = new StringBuffer();
+        for (SysUser sysUser : sysUsers) {
+            stringBuffer.append(sysUser.getUserName()).append(",");
+        }
+        return stringBuffer.substring(0,stringBuffer.length()-1).toString();
     }
 
 }

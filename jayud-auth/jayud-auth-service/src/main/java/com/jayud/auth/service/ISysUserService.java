@@ -11,6 +11,7 @@ import com.jayud.common.BaseResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 后台用户表 服务类
@@ -141,4 +142,18 @@ public interface ISysUserService extends IService<SysUser> {
      * @return: com.jayud.auth.model.po.SysUser
      **/
     SysUser selectByUserId(Long userId);
+
+    /**
+     * 根据部门id获取用户信息
+     * @param departId
+     * @return
+     */
+    List<SysUser> getSysUserByDepartmentId(Long departId);
+
+    /**
+     * 根据用户id集合获取用户信息
+     * @param userIds
+     * @return
+     */
+    List<SysUser> getUserByUserIds(Set<Long> userIds);
 }

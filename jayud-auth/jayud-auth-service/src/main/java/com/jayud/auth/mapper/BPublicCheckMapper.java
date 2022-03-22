@@ -1,5 +1,6 @@
 package com.jayud.auth.mapper;
 
+import com.jayud.auth.model.bo.CheckForm;
 import com.jayud.auth.model.po.BPublicCheck;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -72,4 +73,12 @@ public interface BPublicCheckMapper extends BaseMapper<BPublicCheck> {
     int updateCheckData(@Param("recordId")Long recordId, @Param("checkTable")String checkTable, @Param("checkDatabase") String checkDatabase, @Param("newStep")Integer newStep, @Param("checkFlag")String checkFlag, @Param("now") Date now, @Param("name")String name);
 
     int updateData(@Param("recordId")Long recordId, @Param("checkTable")String checkTable, @Param("newStep")Integer newStep, @Param("checkFlag")String checkFlag,  @Param("now")Date now, @Param("name")String name);
+
+    /**
+     * 根据记录id和审核级别获取最新的审核记录
+     * @param checkForm
+     * @param fStep
+     * @return
+     */
+    BPublicCheck getPublicCheckByRecordIdAndfStep(@Param("checkForm")CheckForm checkForm,@Param("fStep") Integer fStep);
 }

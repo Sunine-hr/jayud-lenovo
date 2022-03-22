@@ -70,4 +70,19 @@ public interface SysRoleActionCheckMapper extends BaseMapper<SysRoleActionCheck>
      * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
      **/
     List<LinkedHashMap<String, Object>> querySysRoleActionCheckForExcel(Map<String, Object> paramMap);
+
+    /**
+     * 获取按钮有几个审核级别
+     * @param menuCode
+     * @return
+     */
+    List<SysRoleActionCheckVO> getList(@Param("menuCode")String menuCode);
+
+    /**
+     * 获取该级审核有哪些角色
+     * @param checkLevel
+     * @param menuCode
+     * @return
+     */
+    List<SysRoleActionCheckVO> getListByCheckLevelAndMenuCode(@Param("checkLevel")Integer checkLevel, @Param("menuCode")String menuCode);
 }

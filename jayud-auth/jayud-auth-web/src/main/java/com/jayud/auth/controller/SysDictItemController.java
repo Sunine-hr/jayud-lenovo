@@ -100,9 +100,23 @@ public class SysDictItemController {
             if (sysDictItem.getSortOrder() < 0) {
                 return BaseResult.error("排序请输入大于0整数");
             }
-            if (sysDictItemService.count(new QueryWrapper<>(new SysDictItem().setDictId(sysDictItem.getDictId()).setSortOrder(sysDictItem.getSortOrder()).setIsDeleted(false))) > 0) {
+            SysDictItem tmp = sysDictItemService.getOne(new QueryWrapper<>(new SysDictItem().setDictId(sysDictItem.getDictId()).setSortOrder(sysDictItem.getSortOrder()).setIsDeleted(false)));
+            if (tmp != null && !tmp.getId().equals(sysDictItem.getId())) {
                 return BaseResult.error("该排列数值已存在");
             }
+            tmp = sysDictItemService.getOne(new QueryWrapper<>(new SysDictItem().setDictId(sysDictItem.getDictId()).setItemText(sysDictItem.getItemText()).setIsDeleted(false)));
+            if (tmp != null && !tmp.getId().equals(sysDictItem.getId())) {
+                return BaseResult.error("该字典名称已存在");
+            }
+            tmp = sysDictItemService.getOne(new QueryWrapper<>(new SysDictItem().setDictId(sysDictItem.getDictId()).setItemValue(sysDictItem.getItemValue()).setIsDeleted(false)));
+            if (tmp != null && !tmp.getId().equals(sysDictItem.getId())) {
+                return BaseResult.error("该字典值已存在");
+            }
+            SysDictItem item = sysDictItemService.getById(sysDictItem.getId());
+            if (!item.getIsEdit()) {
+                return BaseResult.error("数据字典不能修改");
+            }
+
         }
         this.sysDictItemService.checkUnique(sysDictItem);
         sysDictItemService.save(sysDictItem);
@@ -129,11 +143,19 @@ public class SysDictItemController {
                 return BaseResult.error("排序请输入大于0整数");
             }
             SysDictItem tmp = sysDictItemService.getOne(new QueryWrapper<>(new SysDictItem().setDictId(sysDictItem.getDictId()).setSortOrder(sysDictItem.getSortOrder()).setIsDeleted(false)));
-            if (tmp != null && tmp.getId().equals(sysDictItem.getId())) {
+            if (tmp != null && !tmp.getId().equals(sysDictItem.getId())) {
                 return BaseResult.error("该排列数值已存在");
             }
+            tmp = sysDictItemService.getOne(new QueryWrapper<>(new SysDictItem().setDictId(sysDictItem.getDictId()).setItemText(sysDictItem.getItemText()).setIsDeleted(false)));
+            if (tmp != null && !tmp.getId().equals(sysDictItem.getId())) {
+                return BaseResult.error("该字典名称已存在");
+            }
+            tmp = sysDictItemService.getOne(new QueryWrapper<>(new SysDictItem().setDictId(sysDictItem.getDictId()).setItemValue(sysDictItem.getItemValue()).setIsDeleted(false)));
+            if (tmp != null && !tmp.getId().equals(sysDictItem.getId())) {
+                return BaseResult.error("该字典值已存在");
+            }
             SysDictItem item = sysDictItemService.getById(sysDictItem.getId());
-            if (!item.getIsEdit()){
+            if (!item.getIsEdit()) {
                 return BaseResult.error("数据字典不能修改");
             }
         }

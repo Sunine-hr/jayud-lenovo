@@ -18,12 +18,13 @@
         <result column="check_state_flag" property="checkStateFlag" />
         <result column="is_check" property="isCheck" />
         <result column="time_consuming" property="timeConsuming" />
+        <result column="menu_code" property="menuCode" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
             id, sheet_code, check_flag , record_id, f_level, f_step, remark, f_check_id, f_check_name, create_by, create_time,check_state_flag,
-            is_check,time_consuming
+            is_check,time_consuming,menu_code
     </sql>
 
     <!-- 表名 -->
@@ -210,7 +211,7 @@
         select * from ${checkDatabase}.${checkTable} where id = #{recordId}
     </select>
 
-    <select id="getPublicCheckByRecordId" resultType="map" >
+    <select id="getPublicCheckByRecordId" resultType="com.jayud.auth.model.po.BPublicCheck" >
         select *,max(create_time) from b_public_check where record_id = #{recordId} and check_flag = #{checkFlag} and sheet_code = #{sheetCode}
     </select>
 

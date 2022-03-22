@@ -34,7 +34,7 @@ public class BaseCommonServiceImpl implements BaseCommonService {
     }
 
     @Override
-    public void addLog(String logContent, SysLogTypeEnum sysLogTypeEnum, String method, String requestParam, Long costTime, String username) {
+    public void addLog(String logContent, SysLogTypeEnum sysLogTypeEnum, String method, String requestParam, Long costTime, String username,String trueName) {
         LogDTO sysLog = new LogDTO();
         sysLog.setLogType(sysLogTypeEnum.getType());
         sysLog.setLogContent(logContent);
@@ -54,6 +54,7 @@ public class BaseCommonServiceImpl implements BaseCommonService {
         }
         sysLog.setUserId(username);
         sysLog.setUsername(username);
+        sysLog.setTrueName(trueName);
         sysLog.setCreateBy(username);
         sysLog.setCreateTime(new Date());
         try {

@@ -1,8 +1,10 @@
 package com.jayud.auth.controller;
 
+import cn.hutool.json.JSONUtil;
 import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jayud.auth.model.bo.LoginUserForm;
 import com.jayud.auth.model.po.SysRole;
 import com.jayud.auth.model.po.SysUser;
@@ -86,7 +88,12 @@ public class UserDetailsController {
             // 日志内容
             String username = CurrentUserUtil.getUsername();
             String logContent = "用户名: " + username + "，退出登录成功！";
-            baseCommonService.addLog(logContent, SysLogTypeEnum.LOGIN, methodName, "", costTime, username);
+
+            //拿到用户真实名称
+            LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(SysUser::getName, username);
+            SysUser one = sysUserService.getOne(lambdaQueryWrapper);
+            baseCommonService.addLog(logContent, SysLogTypeEnum.LOGIN, methodName, "", costTime, username,one.getUserName());
             return BaseResult.ok(SysTips.OUT_LOGIN_SUCCESS);
         }
         return BaseResult.ok(SysTips.OUT_LOGIN_ERROR);
@@ -102,6 +109,12 @@ public class UserDetailsController {
         }
         BaseResult baseResult = returnMsg(tokenEndpoint.postAccessToken(principal, parameters).getBody(),parameters.get("username"));
 
+        Object userData = JSONUtil.parseObj(baseResult.getResult()).get("userData");
+
+        cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(userData);
+
+        //拿用户真是姓名
+        String trueName = jsonObject.getStr("userName");
         // 方法全名称
         String methodName = this.getClass().getName() + ".postAccessToken()";
         // 执行时长(毫秒)
@@ -109,7 +122,7 @@ public class UserDetailsController {
         // 日志内容
         String logContent = "用户名: " + parameters.get("username") + "，登录成功！";
         String result = JSONUtils.toJSONString(parameters);
-        baseCommonService.addLog(logContent, SysLogTypeEnum.LOGIN, methodName, result, costTime, parameters.get("username"));
+        baseCommonService.addLog(logContent, SysLogTypeEnum.LOGIN, methodName, result, costTime, parameters.get("username"),trueName);
         return baseResult;
     }
 

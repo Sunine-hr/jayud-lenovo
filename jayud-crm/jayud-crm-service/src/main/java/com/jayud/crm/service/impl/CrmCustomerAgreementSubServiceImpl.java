@@ -131,6 +131,7 @@ public class CrmCustomerAgreementSubServiceImpl extends ServiceImpl<CrmCustomerA
             tmp.setUpdateBy(CurrentUserUtil.getUsername());
         }
         this.saveOrUpdate(tmp);
+        form.setId(tmp.getId());
         //文件处理
         this.crmFileService.doFileProcessing(form.getFiles(), form.getId(), FileModuleEnum.SUB_CA.getCode());
     }

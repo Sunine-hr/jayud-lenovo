@@ -111,11 +111,13 @@ public class CrmCustomerAgreementServiceImpl extends ServiceImpl<CrmCustomerAgre
             if (this.exitNumber(form.getAgreementCode())) {
                 throw new JayudBizException(400, SysTips.NUM_ALREADY_EXISTS);
             }
+
             tmp.setCheckStateFlag("N0").setTenantCode(CurrentUserUtil.getUserTenantCode());
         } else {
             tmp.setUpdateBy(CurrentUserUtil.getUsername());
         }
         this.saveOrUpdate(tmp);
+        form.setId(tmp.getId());
         //文件处理
         this.crmFileService.doFileProcessing(form.getFiles(), form.getId(), FileModuleEnum.CA.getCode());
     }

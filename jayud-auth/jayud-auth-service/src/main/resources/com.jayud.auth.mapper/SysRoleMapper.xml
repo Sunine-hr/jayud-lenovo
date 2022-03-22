@@ -50,7 +50,7 @@
             </if>
 
             <if test="sysRole.roleCode != null and sysRole.roleCode != ''">
-                AND role_code = #{sysRole.roleCode}
+                AND role_code like concat('%',#{sysRole.roleCode},'%')
             </if>
 
             <if test="sysRole.status != null ">

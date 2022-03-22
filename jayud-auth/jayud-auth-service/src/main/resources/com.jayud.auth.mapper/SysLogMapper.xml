@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SysLog">
         <id column="id" property="id" />
         <result column="log_type" property="logType" />
+        <result column="business_id" property="businessId" />
         <result column="log_content" property="logContent" />
         <result column="operate_type" property="operateType" />
         <result column="userid" property="userid" />
@@ -24,7 +25,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, log_type, log_content, operate_type, userid, username, ip, method, request_url, request_param, request_type, cost_time, create_by, create_time, update_by, update_time
+            id, log_type, business_id, log_content, operate_type, userid, username, ip, method, request_url, request_param, request_type, cost_time, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
@@ -39,8 +40,12 @@
                 AND log_type = ${sysLog.logType}
             </if>
 
+            <if test="sysLog.businessId != null ">
+                AND business_id = ${sysLog.businessId}
+            </if>
+
             <if test="sysLog.logContent != null and sysLog.logContent != ''">
-                AND log_content = #{sysLog.logContent}
+                AND log_content LIKE CONCAT('%',#{sysLog.logContent},'%')
             </if>
 
             <if test="sysLog.operateType != null ">
@@ -48,31 +53,31 @@
             </if>
 
             <if test="sysLog.userid != null and sysLog.userid != ''">
-                AND userid = #{sysLog.userid}
+                AND userid LIKE CONCAT('%',#{sysLog.userid},'%')
             </if>
 
             <if test="sysLog.username != null and sysLog.username != ''">
-                AND username = #{sysLog.username}
+                AND username LIKE CONCAT('%',#{sysLog.username},'%')
             </if>
 
             <if test="sysLog.ip != null and sysLog.ip != ''">
-                AND ip = #{sysLog.ip}
+                AND ip LIKE CONCAT('%',#{sysLog.ip},'%')
             </if>
 
             <if test="sysLog.method != null and sysLog.method != ''">
-                AND method = #{sysLog.method}
+                AND method LIKE CONCAT('%',#{sysLog.method},'%')
             </if>
 
             <if test="sysLog.requestUrl != null and sysLog.requestUrl != ''">
-                AND request_url = #{sysLog.requestUrl}
+                AND request_url LIKE CONCAT('%',#{sysLog.requestUrl},'%')
             </if>
 
             <if test="sysLog.requestParam != null and sysLog.requestParam != ''">
-                AND request_param = #{sysLog.requestParam}
+                AND request_param LIKE CONCAT('%',#{sysLog.requestParam},'%')
             </if>
 
             <if test="sysLog.requestType != null and sysLog.requestType != ''">
-                AND request_type = #{sysLog.requestType}
+                AND request_type LIKE CONCAT('%',#{sysLog.requestType},'%')
             </if>
 
             <if test="sysLog.costTime != null ">
@@ -102,5 +107,64 @@
         WHERE id = ${id} AND is_deleted = 0
     </update>
 
+    <select id="querySysLogForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            log_type 'logType',
+            business_id 'businessId',
+            log_content 'logContent',
+            operate_type 'operateType',
+            userid 'userid',
+            username 'username',
+            ip 'ip',
+            method 'method',
+            request_url 'requestUrl',
+            request_param 'requestParam',
+            request_type 'requestType',
+            cost_time 'costTime',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM sys_log
+        WHERE is_deleted = 0
+                    <if test="logType != null ">
+                        AND log_type = #{logType}
+                    </if>
+                    <if test="businessId != null ">
+                        AND business_id = #{businessId}
+                    </if>
+                    <if test="logContent != null and logContent != ''">
+                        AND log_content LIKE CONCAT('%',#{logContent}, '%')
+                    </if>
+                    <if test="operateType != null ">
+                        AND operate_type = #{operateType}
+                    </if>
+                    <if test="userid != null and userid != ''">
+                        AND userid LIKE CONCAT('%',#{userid}, '%')
+                    </if>
+                    <if test="username != null and username != ''">
+                        AND username LIKE CONCAT('%',#{username}, '%')
+                    </if>
+                    <if test="ip != null and ip != ''">
+                        AND ip LIKE CONCAT('%',#{ip}, '%')
+                    </if>
+                    <if test="method != null and method != ''">
+                        AND method LIKE CONCAT('%',#{method}, '%')
+                    </if>
+                    <if test="requestUrl != null and requestUrl != ''">
+                        AND request_url LIKE CONCAT('%',#{requestUrl}, '%')
+                    </if>
+                    <if test="requestParam != null and requestParam != ''">
+                        AND request_param LIKE CONCAT('%',#{requestParam}, '%')
+                    </if>
+                    <if test="requestType != null and requestType != ''">
+                        AND request_type LIKE CONCAT('%',#{requestType}, '%')
+                    </if>
+                    <if test="costTime != null ">
+                        AND cost_time = #{costTime}
+                    </if>
+
+    </select>
 
 </mapper>

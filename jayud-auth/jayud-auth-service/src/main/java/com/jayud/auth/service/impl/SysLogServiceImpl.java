@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.bo.SysLogForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -26,7 +27,7 @@ import java.util.Map;
  * 系统日志表 服务实现类
  *
  * @author jayud
- * @since 2022-02-24
+ * @since 2022-03-22
  */
 @Slf4j
 @Service
@@ -37,13 +38,13 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
     private SysLogMapper sysLogMapper;
 
     @Override
-    public IPage<SysLog> selectPage(SysLog sysLog,
-                                        Integer currentPage,
-                                        Integer pageSize,
-                                        HttpServletRequest req){
+    public IPage<SysLog> selectPage(SysLogForm sysLogForm,
+                                    Integer currentPage,
+                                    Integer pageSize,
+                                    HttpServletRequest req){
 
         Page<SysLog> page=new Page<SysLog>(currentPage,pageSize);
-        IPage<SysLog> pageList= sysLogMapper.pageList(page, sysLog);
+        IPage<SysLog> pageList= sysLogMapper.pageList(page, sysLogForm);
         return pageList;
     }
 
@@ -64,6 +65,12 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(Long id){
         sysLogMapper.logicDel(id,CurrentUserUtil.getUsername());
+    }
+
+
+    @Override
+    public List<LinkedHashMap<String, Object>> querySysLogForExcel(Map<String, Object> paramMap) {
+        return this.baseMapper.querySysLogForExcel(paramMap);
     }
 
 }

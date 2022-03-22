@@ -112,10 +112,6 @@ public class SysDictItemController {
             if (tmp != null && !tmp.getId().equals(sysDictItem.getId())) {
                 return BaseResult.error("该字典值已存在");
             }
-            SysDictItem item = sysDictItemService.getById(sysDictItem.getId());
-            if (!item.getIsEdit()) {
-                return BaseResult.error("数据字典不能修改");
-            }
 
         }
         this.sysDictItemService.checkUnique(sysDictItem);
@@ -165,6 +161,11 @@ public class SysDictItemController {
                         .set(SysDictItem::getItemText, sysDictItem.getItemText())
                         .set(SysDictItem::getItemValue, sysDictItem.getItemValue())
                         .set(SysDictItem::getSortOrder, sysDictItem.getSortOrder())
+                        .set(SysDictItem::getCustomOne,sysDictItem.getCustomOne())
+                        .set(SysDictItem::getCustomTwo,sysDictItem.getCustomTwo())
+                        .set(SysDictItem::getCustomThree,sysDictItem.getCustomThree())
+                        .set(SysDictItem::getCustomFour,sysDictItem.getCustomFour())
+                        .set(SysDictItem::getCustomFive,sysDictItem.getCustomFive())
                         .eq(SysDictItem::getId, sysDictItem.getId()));
 //        sysDictItemService.updateById(sysDictItem);
         return BaseResult.ok(SysTips.EDIT_SUCCESS);

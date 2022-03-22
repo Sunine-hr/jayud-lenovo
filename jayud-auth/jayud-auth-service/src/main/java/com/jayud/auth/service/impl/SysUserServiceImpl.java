@@ -210,7 +210,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (sysUser == null) {
             return BaseResult.error(SysTips.ACCOUNT_NON_EXISTENT);
         }
-        if (sysUser.getPassword().equals(encoder.encode(password))) {
+        if (!encoder.matches(password,sysUser.getPassword())) {
             return BaseResult.error(SysTips.LOGIN_ERROR);
         }
         if (sysUser.getJobStatus().equals(0)) {

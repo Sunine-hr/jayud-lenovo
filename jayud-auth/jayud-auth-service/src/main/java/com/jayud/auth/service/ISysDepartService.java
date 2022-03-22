@@ -116,4 +116,11 @@ public interface ISysDepartService extends IService<SysDepart> {
      * @return: java.util.List<com.jayud.auth.model.po.SysDepart>
      **/
     List<SysDepart> slectChildrenById(Long id);
+
+    /**
+     * 根据机构编码获取获取组织架构信息
+     * @param depart
+     * @return
+     */
+    SysDepart getByOrgCode(String depart);
 }

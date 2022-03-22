@@ -13,6 +13,9 @@
         <result column="head_portrait" property="headPortrait"/>
         <result column="sex" property="sex"/>
         <result column="phone" property="phone"/>
+        <result column="cell_phone_number" property="cellPhoneNumber"/>
+        <result column="nailing_number" property="nailingNumber"/>
+        <result column="wechat_number" property="wechatNumber"/>
         <result column="email" property="email"/>
         <result column="is_depart_charge" property="isDepartCharge"/>
         <result column="depart_id" property="departId"/>
@@ -36,7 +39,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, name, password, user_name, en_user_name,number_name ,head_portrait, sex, phone, email, is_depart_charge, depart_id,department_list, depart_ids, rel_tenant_ids, post_id, entry_time, job_status, status, user_type, supervisor_id, part_time_dep_id, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, name, password, user_name, en_user_name,number_name ,head_portrait, sex, phone, cell_phone_number,nailing_number,wechat_number,email, is_depart_charge, depart_id,department_list, depart_ids, rel_tenant_ids, post_id, entry_time, job_status, status, user_type, supervisor_id, part_time_dep_id, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
@@ -160,6 +163,9 @@
         qq_number,
         sex,
         phone,
+        cell_phone_number,
+        nailing_number,
+        wechat_number,
         email,
         is_depart_charge,
         depart_id,
@@ -180,7 +186,7 @@
         create_time,
         update_by,
         update_time,
-        (SELECT sd.depart_name FROM sys_depart  sd where  sd.id=depart_id) departIdName,
+        (SELECT sd.depart_name FROM sys_depart sd where sd.id=depart_id) departIdName,
         (SELECT sp.post_name FROM sys_post sp where sp.id=post_id) postIdName
 
         FROM
@@ -236,6 +242,9 @@
         qq_number,
         sex,
         phone,
+        cell_phone_number,
+        nailing_number,
+        wechat_number,
         email,
         is_depart_charge,
         depart_id,
@@ -295,7 +304,6 @@
     </update>
 
 
-
     <select id="findSysUserNameOne" parameterType="com.jayud.auth.model.bo.SysUserForm"
             resultType="com.jayud.auth.model.vo.SysUserVO">
         SELECT
@@ -308,6 +316,9 @@
         qq_number,
         sex,
         phone,
+        cell_phone_number,
+        nailing_number,
+        wechat_number,
         email,
         is_depart_charge,
         depart_id,
@@ -344,8 +355,6 @@
     </select>
 
 
-
-
     <select id="findSysUserIdOne" parameterType="com.jayud.auth.model.bo.SysUserForm"
             resultType="com.jayud.auth.model.vo.SysUserVO">
         SELECT
@@ -358,6 +367,9 @@
             su.qq_number,
             su.sex,
             su.phone,
+            su.cell_phone_number,
+            su.nailing_number,
+            su.wechat_number,
             su.email,
             su.is_depart_charge,
             su.depart_id,
@@ -402,6 +414,9 @@
             su.qq_number,
             su.sex,
             su.phone,
+            su.cell_phone_number,
+            su.nailing_number,
+            su.wechat_number,
             su.email,
             su.is_depart_charge,
             su.depart_id,

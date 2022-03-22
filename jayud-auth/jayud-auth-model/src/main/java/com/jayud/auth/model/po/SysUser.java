@@ -47,8 +47,17 @@ public class SysUser extends SysBaseEntity {
     @ApiModelProperty(value = "性别(0-默认未知,1-男,2-女)")
     private Integer sex;
 
-    @ApiModelProperty(value = "联系方式")
+    @ApiModelProperty(value = "电话号码")
     private String phone;
+
+    @ApiModelProperty(value = "手机号码")
+    private String cellPhoneNumber;
+
+    @ApiModelProperty(value = "钉钉")
+    private String nailingNumber;
+
+    @ApiModelProperty(value = "微信号码")
+    private String wechatNumber;
 
     @ApiModelProperty(value = "邮箱")
     private String email;

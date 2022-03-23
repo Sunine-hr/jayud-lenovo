@@ -196,6 +196,9 @@
             <if test="sysUser.name != null and sysUser.name != ''">
                 AND name LIKE CONCAT('%',#{sysUser.name}, '%')
             </if>
+            <if test="sysUser.userName != null and sysUser.userName != ''">
+                AND user_name LIKE CONCAT('%',#{sysUser.userName}, '%')
+            </if>
             <if test="sysUser.tenantCode != null and sysUser.tenantCode != ''">
                 AND tenant_code = #{sysUser.tenantCode}
             </if>

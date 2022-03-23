@@ -304,12 +304,12 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
             finalSqlStr = "  SELECT DISTINCT alls.cids allId,alls.* FROM ("+sqlStr+" " +where +"";
 //                    " AND ccm.manage_user_id = "+authUserDetail.getId();
             if (CollUtil.isNotEmpty(custIdList)){
-                sqlStr = finalSqlStr+"  UNION ALL "+sqlStr +" " + where + " AND c.id IN ("+ StringUtils.join(custIdList,StrUtil.C_COMMA)+")";
+                finalSqlStr = finalSqlStr+"  UNION ALL "+sqlStr +" " + where + " AND c.id IN ("+ StringUtils.join(custIdList,StrUtil.C_COMMA)+")";
             }
-            sqlStr+=" ) alls ";
+            finalSqlStr+=" ) alls ";
             System.out.println(sqlStr);
             //SQL语句
-            paraMap.put("sqlStr", sqlStr);
+            paraMap.put("sqlStr", finalSqlStr);
             //WHERE语句
             paraMap.put("where", "");
         }

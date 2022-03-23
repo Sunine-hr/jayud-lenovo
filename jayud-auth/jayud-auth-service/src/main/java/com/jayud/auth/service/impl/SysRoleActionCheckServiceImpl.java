@@ -3,6 +3,7 @@ package com.jayud.auth.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.bo.CheckForm;
+import com.jayud.auth.model.bo.QueryForm;
 import com.jayud.auth.model.bo.SysRoleActionCheckForm;
 import com.jayud.auth.model.po.SysMenu;
 import com.jayud.auth.model.vo.SysRoleActionCheckVO;
@@ -43,19 +44,19 @@ public class SysRoleActionCheckServiceImpl extends ServiceImpl<SysRoleActionChec
     private ISysUserService sysUserService;
 
     @Override
-    public IPage<SysRoleActionCheckVO> selectPage(SysRoleActionCheck sysRoleActionCheck,
-                                        Integer currentPage,
-                                        Integer pageSize,
-                                        HttpServletRequest req){
+    public IPage<SysRoleActionCheckVO> selectPage(QueryForm form,
+                                                  Integer currentPage,
+                                                  Integer pageSize,
+                                                  HttpServletRequest req){
 
         Page<SysRoleActionCheckVO> page=new Page<SysRoleActionCheckVO>(currentPage,pageSize);
-        IPage<SysRoleActionCheckVO> pageList= sysRoleActionCheckMapper.pageList(page, sysRoleActionCheck);
+        IPage<SysRoleActionCheckVO> pageList= sysRoleActionCheckMapper.pageList(page, form);
         return pageList;
     }
 
     @Override
-    public List<SysRoleActionCheck> selectList(SysRoleActionCheck sysRoleActionCheck){
-        return sysRoleActionCheckMapper.list(sysRoleActionCheck);
+    public List<SysRoleActionCheck> selectList(QueryForm form){
+        return sysRoleActionCheckMapper.list(form);
     }
 
 

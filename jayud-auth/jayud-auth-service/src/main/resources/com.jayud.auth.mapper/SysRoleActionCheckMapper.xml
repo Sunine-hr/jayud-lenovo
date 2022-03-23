@@ -74,7 +74,7 @@
         </where>
     </sql>
 
-    <select id="pageList" resultType="com.jayud.auth.model.vo.SysRoleActionCheckVO" parameterType="com.jayud.auth.model.po.SysRoleActionCheck">
+    <select id="pageList" resultType="com.jayud.auth.model.vo.SysRoleActionCheckVO" parameterType="com.jayud.auth.model.bo.QueryForm">
         SELECT  s.id, s.role_id roleId, s.action_id actionId, s.action_code actionCode, s.check_level checkLevel,
         s.check_money checkMoney, s.remark, s.create_by createBy, s.create_time createTime, s.update_by updateBy, s.update_time updateTime, s.is_deleted isDeleted,
         sr.role_name roleName,sm.title actionName
@@ -83,50 +83,59 @@
         left join sys_role sr on s.role_id = sr.id and sr.is_deleted = 0
         <where>
             s.is_deleted = 0
-            <if test="sysRoleActionCheck.roleId != null ">
-                AND s.role_id = ${sysRoleActionCheck.roleId}
+            <if test="form.key != null and form.key != ''">
+                and
+                <if test="form.key == 'action_code' ">
+                    s.action_code like concat('%',#{form.condition},'%')
+                </if>
+                <if test="form.key == 'name' ">
+                    sr.role_name like concat('%',#{form.condition},'%')
+                </if>
             </if>
+<!--            <if test="sysRoleActionCheck.roleId != null ">-->
+<!--                AND s.role_id = ${sysRoleActionCheck.roleId}-->
+<!--            </if>-->
 
-            <if test="sysRoleActionCheck.actionId != null ">
-                AND s.action_id = ${sysRoleActionCheck.actionId}
-            </if>
+<!--            <if test="sysRoleActionCheck.actionId != null ">-->
+<!--                AND s.action_id = ${sysRoleActionCheck.actionId}-->
+<!--            </if>-->
 
-            <if test="sysRoleActionCheck.actionCode != null and sysRoleActionCheck.actionCode != ''">
-                AND s.action_code LIKE CONCAT('%',#{sysRoleActionCheck.actionCode},'%')
-            </if>
+<!--            <if test="sysRoleActionCheck.actionCode != null and sysRoleActionCheck.actionCode != ''">-->
+<!--                AND s.action_code LIKE CONCAT('%',#{sysRoleActionCheck.actionCode},'%')-->
+<!--            </if>-->
 
-            <if test="sysRoleActionCheck.checkLevel != null ">
-                AND s.check_level = ${sysRoleActionCheck.checkLevel}
-            </if>
+<!--            <if test="sysRoleActionCheck.checkLevel != null ">-->
+<!--                AND s.check_level = ${sysRoleActionCheck.checkLevel}-->
+<!--            </if>-->
 
-            <if test="sysRoleActionCheck.checkMoney != null ">
-                AND s.check_money = ${sysRoleActionCheck.checkMoney}
-            </if>
+<!--            <if test="sysRoleActionCheck.checkMoney != null ">-->
+<!--                AND s.check_money = ${sysRoleActionCheck.checkMoney}-->
+<!--            </if>-->
 
-            <if test="sysRoleActionCheck.remark != null and sysRoleActionCheck.remark != ''">
-                AND s.remark LIKE CONCAT('%',#{sysRoleActionCheck.remark},'%')
-            </if>
+<!--            <if test="sysRoleActionCheck.remark != null and sysRoleActionCheck.remark != ''">-->
+<!--                AND s.remark LIKE CONCAT('%',#{sysRoleActionCheck.remark},'%')-->
+<!--            </if>-->
 
-            <if test="sysRoleActionCheck.createBy != null ">
-                AND s.create_by = ${sysRoleActionCheck.createBy}
-            </if>
+<!--            <if test="sysRoleActionCheck.createBy != null ">-->
+<!--                AND s.create_by = ${sysRoleActionCheck.createBy}-->
+<!--            </if>-->
 
-            <if test="sysRoleActionCheck.createTime != null ">
-                AND s.create_time = ${sysRoleActionCheck.createTime}
-            </if>
+<!--            <if test="sysRoleActionCheck.createTime != null ">-->
+<!--                AND s.create_time = ${sysRoleActionCheck.createTime}-->
+<!--            </if>-->
 
-            <if test="sysRoleActionCheck.updateBy != null ">
-                AND s.update_by = ${sysRoleActionCheck.updateBy}
-            </if>
+<!--            <if test="sysRoleActionCheck.updateBy != null ">-->
+<!--                AND s.update_by = ${sysRoleActionCheck.updateBy}-->
+<!--            </if>-->
 
-            <if test="sysRoleActionCheck.updateTime != null ">
-                AND s.update_time = ${sysRoleActionCheck.updateTime}
-            </if>
+<!--            <if test="sysRoleActionCheck.updateTime != null ">-->
+<!--                AND s.update_time = ${sysRoleActionCheck.updateTime}-->
+<!--            </if>-->
 
         </where>
     </select>
 
-    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysRoleActionCheck">
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.bo.QueryForm">
         <include refid="selects"/>
     </select>
 

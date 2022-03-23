@@ -3,6 +3,7 @@ package com.jayud.auth.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.auth.model.bo.CheckForm;
+import com.jayud.auth.model.bo.QueryForm;
 import com.jayud.auth.model.bo.SysRoleActionCheckForm;
 import com.jayud.auth.model.po.SysRoleActionCheck;
 import com.jayud.auth.model.vo.SysRoleActionCheckVO;
@@ -31,7 +32,7 @@ public interface ISysRoleActionCheckService extends IService<SysRoleActionCheck>
      * @param: req
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysRoleActionCheck>
      **/
-    IPage<SysRoleActionCheckVO> selectPage(SysRoleActionCheck sysRoleActionCheck,
+    IPage<SysRoleActionCheckVO> selectPage(QueryForm form,
                                            Integer currentPage,
                                            Integer pageSize,
                                            HttpServletRequest req);
@@ -44,7 +45,7 @@ public interface ISysRoleActionCheckService extends IService<SysRoleActionCheck>
      * @param: req
      * @return: java.util.List<com.jayud.auth.model.po.SysRoleActionCheck>
      **/
-    List<SysRoleActionCheck> selectList(SysRoleActionCheck sysRoleActionCheck);
+    List<SysRoleActionCheck> selectList(QueryForm form);
 
 
 

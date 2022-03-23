@@ -45,6 +45,7 @@
         <module>jayud-mybatisplus</module>
         <module>jayud-crm</module>
         <module>jayud-oms</module>
+        <module>jayud-oms-order</module>
 
 
     </modules>

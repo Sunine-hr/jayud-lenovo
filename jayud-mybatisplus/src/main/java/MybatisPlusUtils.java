@@ -21,12 +21,12 @@ public class MybatisPlusUtils {
     public static void main(String[] args) {
         //TODO 1.jayud-业务模块名/jayud-业务模块名-model
         String[] models = {
-                "jayud-crm/jayud-crm-model",
-                "jayud-crm/jayud-crm-service",
-                "jayud-crm/jayud-crm-web"
+                "jayud-oms-order/jayud-oms-order-model",
+                "jayud-oms-order/jayud-oms-order-service",
+                "jayud-oms-order/jayud-oms-order-web"
         };
         for (String model : models) {
-            shell(model,"crm_customer_manager");
+            shell(model,"oms_order_follow");
 
         }
     }
@@ -45,7 +45,7 @@ public class MybatisPlusUtils {
         gc.setBaseResultMap(true);// XML ResultMap
         gc.setBaseColumnList(true);// XML columList
         gc.setSwagger2(true);
-        gc.setAuthor("jayud.dev");
+        gc.setAuthor("jayud");
 
         // 自定义文件命名，注意 %s 会自动填充表实体属性！
         gc.setMapperName("%sMapper");
@@ -74,7 +74,7 @@ public class MybatisPlusUtils {
         String pack = "";
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.jayud.crm");//TODO 3.com.jayud.业务模块名
+        pc.setParent("com.jayud.oms.order");//TODO 3.com.jayud.业务模块名
         pc.setEntity("model.po");
         pc.setController("controller");
         pc.setMapper("mapper");
@@ -99,7 +99,7 @@ public class MybatisPlusUtils {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
                     //TODO 4.com.jayud.业务模块名.mapper
-                    return path + "/src/main/resources/com.jayud.crm.mapper"
+                    return path + "/src/main/resources/com.jayud.oms.order.mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
 
                 }

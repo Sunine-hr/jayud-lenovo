@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.order.mapper.OmsOrderEntryMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.order.model.po.OmsOrderEntry">
+        <id column="id" property="id" />
+        <result column="s_type" property="sType" />
+        <result column="oms_order_id" property="omsOrderId" />
+        <result column="work_order_id" property="workOrderId" />
+        <result column="item_id" property="itemId" />
+        <result column="item_num" property="itemNum" />
+        <result column="item_no" property="itemNo" />
+        <result column="item_model" property="itemModel" />
+        <result column="item_name" property="itemName" />
+        <result column="item_brand" property="itemBrand" />
+        <result column="item_origin" property="itemOrigin" />
+        <result column="item_notes" property="itemNotes" />
+        <result column="accessories" property="accessories" />
+        <result column="qty" property="qty" />
+        <result column="unit" property="unit" />
+        <result column="currency_name" property="currencyName" />
+        <result column="buy_price" property="buyPrice" />
+        <result column="hg_price" property="hgPrice" />
+        <result column="customs_code" property="customsCode" />
+        <result column="item_elements" property="itemElements" />
+        <result column="control_ma" property="controlMa" />
+        <result column="hk_control" property="hkControl" />
+        <result column="is_ciq" property="isCiq" />
+        <result column="ciq_type" property="ciqType" />
+        <result column="ciq_code" property="ciqCode" />
+        <result column="packing_type" property="packingType" />
+        <result column="packages" property="packages" />
+        <result column="pallets" property="pallets" />
+        <result column="gw" property="gw" />
+        <result column="nw" property="nw" />
+        <result column="cbm" property="cbm" />
+        <result column="shipping_m" property="shippingM" />
+        <result column="pn" property="pn" />
+        <result column="bn" property="bn" />
+        <result column="ctns_no" property="ctnsNo" />
+        <result column="item_size" property="itemSize" />
+        <result column="is_function" property="isFunction" />
+        <result column="is_hg_tax" property="isHgTax" />
+        <result column="appoint_hg_tax" property="appointHgTax" />
+        <result column="hg_tax" property="hgTax" />
+        <result column="consume_tax" property="consumeTax" />
+        <result column="tlx_tax" property="tlxTax" />
+        <result column="item_brand_type" property="itemBrandType" />
+        <result column="export_discounts" property="exportDiscounts" />
+        <result column="use_to" property="useTo" />
+        <result column="district_code" property="districtCode" />
+        <result column="orig_place_code" property="origPlaceCode" />
+        <result column="org_id" property="orgId" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="remark" property="remark" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="deleted_user_id" property="deletedUserId" />
+        <result column="delete_user_name" property="deleteUserName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, s_type, oms_order_id, work_order_id, item_id, item_num, item_no, item_model, item_name, item_brand, item_origin, item_notes, accessories, qty, unit, currency_name, buy_price, hg_price, customs_code, item_elements, control_ma, hk_control, is_ciq, ciq_type, ciq_code, packing_type, packages, pallets, gw, nw, cbm, shipping_m, pn, bn, ctns_no, item_size, is_function, is_hg_tax, appoint_hg_tax, hg_tax, consume_tax, tlx_tax, item_brand_type, export_discounts, use_to, district_code, orig_place_code, org_id, tenant_id, remark, create_by, create_time, update_by, update_time, is_deleted, deleted_user_id, delete_user_name
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">oms_order_entry </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="omsOrderEntry.sType != null and omsOrderEntry.sType != ''">
+                AND s_type LIKE CONCAT('%',#{omsOrderEntry.sType},'%')
+            </if>
+
+            <if test="omsOrderEntry.omsOrderId != null ">
+                AND oms_order_id = ${omsOrderEntry.omsOrderId}
+            </if>
+
+            <if test="omsOrderEntry.workOrderId != null ">
+                AND work_order_id = ${omsOrderEntry.workOrderId}
+            </if>
+
+            <if test="omsOrderEntry.itemId != null ">
+                AND item_id = ${omsOrderEntry.itemId}
+            </if>
+
+            <if test="omsOrderEntry.itemNum != null ">
+                AND item_num = ${omsOrderEntry.itemNum}
+            </if>
+
+            <if test="omsOrderEntry.itemNo != null and omsOrderEntry.itemNo != ''">
+                AND item_no LIKE CONCAT('%',#{omsOrderEntry.itemNo},'%')
+            </if>
+
+            <if test="omsOrderEntry.itemModel != null and omsOrderEntry.itemModel != ''">
+                AND item_model LIKE CONCAT('%',#{omsOrderEntry.itemModel},'%')
+            </if>
+
+            <if test="omsOrderEntry.itemName != null and omsOrderEntry.itemName != ''">
+                AND item_name LIKE CONCAT('%',#{omsOrderEntry.itemName},'%')
+            </if>
+
+            <if test="omsOrderEntry.itemBrand != null and omsOrderEntry.itemBrand != ''">
+                AND item_brand LIKE CONCAT('%',#{omsOrderEntry.itemBrand},'%')
+            </if>
+
+            <if test="omsOrderEntry.itemOrigin != null and omsOrderEntry.itemOrigin != ''">
+                AND item_origin LIKE CONCAT('%',#{omsOrderEntry.itemOrigin},'%')
+            </if>
+
+            <if test="omsOrderEntry.itemNotes != null and omsOrderEntry.itemNotes != ''">
+                AND item_notes LIKE CONCAT('%',#{omsOrderEntry.itemNotes},'%')
+            </if>
+
+            <if test="omsOrderEntry.accessories != null and omsOrderEntry.accessories != ''">
+                AND accessories LIKE CONCAT('%',#{omsOrderEntry.accessories},'%')
+            </if>
+
+            <if test="omsOrderEntry.qty != null ">
+                AND qty = ${omsOrderEntry.qty}
+            </if>
+
+            <if test="omsOrderEntry.unit != null and omsOrderEntry.unit != ''">
+                AND unit LIKE CONCAT('%',#{omsOrderEntry.unit},'%')
+            </if>
+
+            <if test="omsOrderEntry.currencyName != null and omsOrderEntry.currencyName != ''">
+                AND currency_name LIKE CONCAT('%',#{omsOrderEntry.currencyName},'%')
+            </if>
+
+            <if test="omsOrderEntry.buyPrice != null ">
+                AND buy_price = ${omsOrderEntry.buyPrice}
+            </if>
+
+            <if test="omsOrderEntry.hgPrice != null ">
+                AND hg_price = ${omsOrderEntry.hgPrice}
+            </if>
+
+            <if test="omsOrderEntry.customsCode != null and omsOrderEntry.customsCode != ''">
+                AND customs_code LIKE CONCAT('%',#{omsOrderEntry.customsCode},'%')
+            </if>
+
+            <if test="omsOrderEntry.itemElements != null and omsOrderEntry.itemElements != ''">
+                AND item_elements LIKE CONCAT('%',#{omsOrderEntry.itemElements},'%')
+            </if>
+
+            <if test="omsOrderEntry.controlMa != null and omsOrderEntry.controlMa != ''">
+                AND control_ma LIKE CONCAT('%',#{omsOrderEntry.controlMa},'%')
+            </if>
+
+            <if test="omsOrderEntry.hkControl != null and omsOrderEntry.hkControl != ''">
+                AND hk_control LIKE CONCAT('%',#{omsOrderEntry.hkControl},'%')
+            </if>
+
+            <if test="omsOrderEntry.isCiq != null ">
+                AND is_ciq = ${omsOrderEntry.isCiq}
+            </if>
+
+            <if test="omsOrderEntry.ciqType != null and omsOrderEntry.ciqType != ''">
+                AND ciq_type LIKE CONCAT('%',#{omsOrderEntry.ciqType},'%')
+            </if>
+
+            <if test="omsOrderEntry.ciqCode != null and omsOrderEntry.ciqCode != ''">
+                AND ciq_code LIKE CONCAT('%',#{omsOrderEntry.ciqCode},'%')
+            </if>
+
+            <if test="omsOrderEntry.packingType != null and omsOrderEntry.packingType != ''">
+                AND packing_type LIKE CONCAT('%',#{omsOrderEntry.packingType},'%')
+            </if>
+
+            <if test="omsOrderEntry.packages != null ">
+                AND packages = ${omsOrderEntry.packages}
+            </if>
+
+            <if test="omsOrderEntry.pallets != null ">
+                AND pallets = ${omsOrderEntry.pallets}
+            </if>
+
+            <if test="omsOrderEntry.gw != null ">
+                AND gw = ${omsOrderEntry.gw}
+            </if>
+
+            <if test="omsOrderEntry.nw != null ">
+                AND nw = ${omsOrderEntry.nw}
+            </if>
+
+            <if test="omsOrderEntry.cbm != null ">
+                AND cbm = ${omsOrderEntry.cbm}
+            </if>
+
+            <if test="omsOrderEntry.shippingM != null and omsOrderEntry.shippingM != ''">
+                AND shipping_m LIKE CONCAT('%',#{omsOrderEntry.shippingM},'%')
+            </if>
+
+            <if test="omsOrderEntry.pn != null and omsOrderEntry.pn != ''">
+                AND pn LIKE CONCAT('%',#{omsOrderEntry.pn},'%')
+            </if>
+
+            <if test="omsOrderEntry.bn != null and omsOrderEntry.bn != ''">
+                AND bn LIKE CONCAT('%',#{omsOrderEntry.bn},'%')
+            </if>
+
+            <if test="omsOrderEntry.ctnsNo != null and omsOrderEntry.ctnsNo != ''">
+                AND ctns_no LIKE CONCAT('%',#{omsOrderEntry.ctnsNo},'%')
+            </if>
+
+            <if test="omsOrderEntry.itemSize != null and omsOrderEntry.itemSize != ''">
+                AND item_size LIKE CONCAT('%',#{omsOrderEntry.itemSize},'%')
+            </if>
+
+            <if test="omsOrderEntry.isFunction != null and omsOrderEntry.isFunction != ''">
+                AND is_function LIKE CONCAT('%',#{omsOrderEntry.isFunction},'%')
+            </if>
+
+            <if test="omsOrderEntry.isHgTax != null ">
+                AND is_hg_tax = ${omsOrderEntry.isHgTax}
+            </if>
+
+            <if test="omsOrderEntry.appointHgTax != null ">
+                AND appoint_hg_tax = ${omsOrderEntry.appointHgTax}
+            </if>
+
+            <if test="omsOrderEntry.hgTax != null ">
+                AND hg_tax = ${omsOrderEntry.hgTax}
+            </if>
+
+            <if test="omsOrderEntry.consumeTax != null ">
+                AND consume_tax = ${omsOrderEntry.consumeTax}
+            </if>
+
+            <if test="omsOrderEntry.tlxTax != null ">
+                AND tlx_tax = ${omsOrderEntry.tlxTax}
+            </if>
+
+            <if test="omsOrderEntry.itemBrandType != null ">
+                AND item_brand_type = ${omsOrderEntry.itemBrandType}
+            </if>
+
+            <if test="omsOrderEntry.exportDiscounts != null ">
+                AND export_discounts = ${omsOrderEntry.exportDiscounts}
+            </if>
+
+            <if test="omsOrderEntry.useTo != null ">
+                AND use_to = ${omsOrderEntry.useTo}
+            </if>
+
+            <if test="omsOrderEntry.districtCode != null and omsOrderEntry.districtCode != ''">
+                AND district_code LIKE CONCAT('%',#{omsOrderEntry.districtCode},'%')
+            </if>
+
+            <if test="omsOrderEntry.origPlaceCode != null and omsOrderEntry.origPlaceCode != ''">
+                AND orig_place_code LIKE CONCAT('%',#{omsOrderEntry.origPlaceCode},'%')
+            </if>
+
+            <if test="omsOrderEntry.orgId != null ">
+                AND org_id = ${omsOrderEntry.orgId}
+            </if>
+
+            <if test="omsOrderEntry.tenantId != null ">
+                AND tenant_id = ${omsOrderEntry.tenantId}
+            </if>
+
+            <if test="omsOrderEntry.remark != null and omsOrderEntry.remark != ''">
+                AND remark LIKE CONCAT('%',#{omsOrderEntry.remark},'%')
+            </if>
+
+            <if test="omsOrderEntry.deletedUserId != null ">
+                AND deleted_user_id = ${omsOrderEntry.deletedUserId}
+            </if>
+
+            <if test="omsOrderEntry.deleteUserName != null ">
+                AND delete_user_name = ${omsOrderEntry.deleteUserName}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.oms.order.model.po.OmsOrderEntry">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.oms.order.model.po.OmsOrderEntry">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  oms_order_entry WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE oms_order_entry SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryOmsOrderEntryForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            s_type 'sType',
+            oms_order_id 'omsOrderId',
+            work_order_id 'workOrderId',
+            item_id 'itemId',
+            item_num 'itemNum',
+            item_no 'itemNo',
+            item_model 'itemModel',
+            item_name 'itemName',
+            item_brand 'itemBrand',
+            item_origin 'itemOrigin',
+            item_notes 'itemNotes',
+            accessories 'accessories',
+            qty 'qty',
+            unit 'unit',
+            currency_name 'currencyName',
+            buy_price 'buyPrice',
+            hg_price 'hgPrice',
+            customs_code 'customsCode',
+            item_elements 'itemElements',
+            control_ma 'controlMa',
+            hk_control 'hkControl',
+            is_ciq 'isCiq',
+            ciq_type 'ciqType',
+            ciq_code 'ciqCode',
+            packing_type 'packingType',
+            packages 'packages',
+            pallets 'pallets',
+            gw 'gw',
+            nw 'nw',
+            cbm 'cbm',
+            shipping_m 'shippingM',
+            pn 'pn',
+            bn 'bn',
+            ctns_no 'ctnsNo',
+            item_size 'itemSize',
+            is_function 'isFunction',
+            is_hg_tax 'isHgTax',
+            appoint_hg_tax 'appointHgTax',
+            hg_tax 'hgTax',
+            consume_tax 'consumeTax',
+            tlx_tax 'tlxTax',
+            item_brand_type 'itemBrandType',
+            export_discounts 'exportDiscounts',
+            use_to 'useTo',
+            district_code 'districtCode',
+            orig_place_code 'origPlaceCode',
+            org_id 'orgId',
+            tenant_id 'tenantId',
+            remark 'remark',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime',
+            is_deleted 'isDeleted',
+            deleted_user_id 'deletedUserId',
+            delete_user_name 'deleteUserName'
+        FROM oms_order_entry
+        WHERE is_deleted = 0
+                    <if test="sType != null and sType != ''">
+                        AND s_type LIKE CONCAT('%',#{sType}, '%')
+                    </if>
+                    <if test="omsOrderId != null ">
+                        AND oms_order_id = #{omsOrderId}
+                    </if>
+                    <if test="workOrderId != null ">
+                        AND work_order_id = #{workOrderId}
+                    </if>
+                    <if test="itemId != null ">
+                        AND item_id = #{itemId}
+                    </if>
+                    <if test="itemNum != null ">
+                        AND item_num = #{itemNum}
+                    </if>
+                    <if test="itemNo != null and itemNo != ''">
+                        AND item_no LIKE CONCAT('%',#{itemNo}, '%')
+                    </if>
+                    <if test="itemModel != null and itemModel != ''">
+                        AND item_model LIKE CONCAT('%',#{itemModel}, '%')
+                    </if>
+                    <if test="itemName != null and itemName != ''">
+                        AND item_name LIKE CONCAT('%',#{itemName}, '%')
+                    </if>
+                    <if test="itemBrand != null and itemBrand != ''">
+                        AND item_brand LIKE CONCAT('%',#{itemBrand}, '%')
+                    </if>
+                    <if test="itemOrigin != null and itemOrigin != ''">
+                        AND item_origin LIKE CONCAT('%',#{itemOrigin}, '%')
+                    </if>
+                    <if test="itemNotes != null and itemNotes != ''">
+                        AND item_notes LIKE CONCAT('%',#{itemNotes}, '%')
+                    </if>
+                    <if test="accessories != null and accessories != ''">
+                        AND accessories LIKE CONCAT('%',#{accessories}, '%')
+                    </if>
+                    <if test="qty != null ">
+                        AND qty = #{qty}
+                    </if>
+                    <if test="unit != null and unit != ''">
+                        AND unit LIKE CONCAT('%',#{unit}, '%')
+                    </if>
+                    <if test="currencyName != null and currencyName != ''">
+                        AND currency_name LIKE CONCAT('%',#{currencyName}, '%')
+                    </if>
+                    <if test="buyPrice != null ">
+                        AND buy_price = #{buyPrice}
+                    </if>
+                    <if test="hgPrice != null ">
+                        AND hg_price = #{hgPrice}
+                    </if>
+                    <if test="customsCode != null and customsCode != ''">
+                        AND customs_code LIKE CONCAT('%',#{customsCode}, '%')
+                    </if>
+                    <if test="itemElements != null and itemElements != ''">
+                        AND item_elements LIKE CONCAT('%',#{itemElements}, '%')
+                    </if>
+                    <if test="controlMa != null and controlMa != ''">
+                        AND control_ma LIKE CONCAT('%',#{controlMa}, '%')
+                    </if>
+                    <if test="hkControl != null and hkControl != ''">
+                        AND hk_control LIKE CONCAT('%',#{hkControl}, '%')
+                    </if>
+                    <if test="isCiq != null ">
+                        AND is_ciq = #{isCiq}
+                    </if>
+                    <if test="ciqType != null and ciqType != ''">
+                        AND ciq_type LIKE CONCAT('%',#{ciqType}, '%')
+                    </if>
+                    <if test="ciqCode != null and ciqCode != ''">
+                        AND ciq_code LIKE CONCAT('%',#{ciqCode}, '%')
+                    </if>
+                    <if test="packingType != null and packingType != ''">
+                        AND packing_type LIKE CONCAT('%',#{packingType}, '%')
+                    </if>
+                    <if test="packages != null ">
+                        AND packages = #{packages}
+                    </if>
+                    <if test="pallets != null ">
+                        AND pallets = #{pallets}
+                    </if>
+                    <if test="gw != null ">
+                        AND gw = #{gw}
+                    </if>
+                    <if test="nw != null ">
+                        AND nw = #{nw}
+                    </if>
+                    <if test="cbm != null ">
+                        AND cbm = #{cbm}
+                    </if>
+                    <if test="shippingM != null and shippingM != ''">
+                        AND shipping_m LIKE CONCAT('%',#{shippingM}, '%')
+                    </if>
+                    <if test="pn != null and pn != ''">
+                        AND pn LIKE CONCAT('%',#{pn}, '%')
+                    </if>
+                    <if test="bn != null and bn != ''">
+                        AND bn LIKE CONCAT('%',#{bn}, '%')
+                    </if>
+                    <if test="ctnsNo != null and ctnsNo != ''">
+                        AND ctns_no LIKE CONCAT('%',#{ctnsNo}, '%')
+                    </if>
+                    <if test="itemSize != null and itemSize != ''">
+                        AND item_size LIKE CONCAT('%',#{itemSize}, '%')
+                    </if>
+                    <if test="isFunction != null and isFunction != ''">
+                        AND is_function LIKE CONCAT('%',#{isFunction}, '%')
+                    </if>
+                    <if test="isHgTax != null ">
+                        AND is_hg_tax = #{isHgTax}
+                    </if>
+                    <if test="appointHgTax != null ">
+                        AND appoint_hg_tax = #{appointHgTax}
+                    </if>
+                    <if test="hgTax != null ">
+                        AND hg_tax = #{hgTax}
+                    </if>
+                    <if test="consumeTax != null ">
+                        AND consume_tax = #{consumeTax}
+                    </if>
+                    <if test="tlxTax != null ">
+                        AND tlx_tax = #{tlxTax}
+                    </if>
+                    <if test="itemBrandType != null ">
+                        AND item_brand_type = #{itemBrandType}
+                    </if>
+                    <if test="exportDiscounts != null ">
+                        AND export_discounts = #{exportDiscounts}
+                    </if>
+                    <if test="useTo != null ">
+                        AND use_to = #{useTo}
+                    </if>
+                    <if test="districtCode != null and districtCode != ''">
+                        AND district_code LIKE CONCAT('%',#{districtCode}, '%')
+                    </if>
+                    <if test="origPlaceCode != null and origPlaceCode != ''">
+                        AND orig_place_code LIKE CONCAT('%',#{origPlaceCode}, '%')
+                    </if>
+                    <if test="orgId != null ">
+                        AND org_id = #{orgId}
+                    </if>
+                    <if test="tenantId != null ">
+                        AND tenant_id = #{tenantId}
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+                    <if test="deletedUserId != null ">
+                        AND deleted_user_id = #{deletedUserId}
+                    </if>
+                    <if test="deleteUserName != null ">
+                        AND delete_user_name = #{deleteUserName}
+                    </if>
+
+    </select>
+
+</mapper>

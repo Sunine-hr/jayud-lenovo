@@ -1,5 +1,6 @@
 package com.jayud.auth.mapper;
 
+import com.jayud.auth.model.bo.QueryForm;
 import com.jayud.auth.model.po.SysRoleActionCheck;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -30,7 +31,7 @@ public interface SysRoleActionCheckMapper extends BaseMapper<SysRoleActionCheck>
      * @param: sysRoleActionCheck
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysRoleActionCheck>
      **/
-    IPage<SysRoleActionCheckVO> pageList(@Param("page") Page<SysRoleActionCheckVO> page, @Param("sysRoleActionCheck") SysRoleActionCheck sysRoleActionCheck);
+    IPage<SysRoleActionCheckVO> pageList(@Param("page") Page<SysRoleActionCheckVO> page, @Param("form") QueryForm form);
 
     /**
      * @description 列表查询数据
@@ -39,7 +40,7 @@ public interface SysRoleActionCheckMapper extends BaseMapper<SysRoleActionCheck>
      * @param: sysRoleActionCheck
      * @return: java.util.List<com.jayud.auth.model.po.SysRoleActionCheck>
      **/
-    List<SysRoleActionCheck> list(@Param("sysRoleActionCheck") SysRoleActionCheck sysRoleActionCheck);
+    List<SysRoleActionCheck> list(@Param("form") QueryForm form);
 
 
     /**

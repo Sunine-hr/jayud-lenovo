@@ -59,7 +59,7 @@
             </if>
 
             <if test="bNoRule.checkTable != null and bNoRule.checkTable != ''">
-                AND check_table = #{bNoRule.checkTable}
+                AND check_table LIKE CONCAT('%',#{bNoRule.checkTable}, '%')
             </if>
 
             <if test="bNoRule.checkDatabase != null and bNoRule.checkDatabase != ''">

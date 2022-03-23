@@ -138,7 +138,7 @@ public class BPublicCheckController {
      * @author  jayud
      * @date   2022-02-28
      * @param: id
-     * @return: com.jayud.common.BaseResult<com.jayud.auth.model.po.BPublicCheck>
+     * @return: com.jayud.common.BaseResult<com.jayud.auth.model.po.BPublicCheckVO>
      **/
     @ApiOperation("根据id查询")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
@@ -170,15 +170,15 @@ public class BPublicCheckController {
     }
 
     /**
-     * @description 列表查询数据
+     * @description 获取审核信息
      * @author  jayud
      * @date   2022-02-28
-     * @param: bPublicCheck
+     * @param: checkForm
      * @param: req
-     * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.auth.model.po.BPublicCheck>>
+     * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.auth.model.po.BPublicCheckVO>>
      **/
-    @ApiOperation("列表查询数据")
-    @GetMapping("/selectList")
+    @ApiOperation("获取审核信息")
+    @PostMapping("/getList")
     public BaseResult<List<BPublicCheckVO>> getList(CheckForm checkForm,
                                                        HttpServletRequest req) {
         return BaseResult.ok(bPublicCheckService.getList(checkForm));

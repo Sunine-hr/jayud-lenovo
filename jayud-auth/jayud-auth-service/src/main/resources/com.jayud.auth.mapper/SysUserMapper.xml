@@ -60,12 +60,12 @@
                 AND name LIKE CONCAT('%',#{sysUser.name}, '%')
             </if>
 
-            <if test="sysUser.password != null and sysUser.password != ''">
-                AND password = #{sysUser.password}
+            <if test="sysUser.userName != null and sysUser.userName != ''">
+                AND user_name LIKE CONCAT('%',#{sysUser.userName}, '%')
             </if>
 
-            <if test="sysUser.userName != null and sysUser.userName != ''">
-                AND user_name = #{sysUser.userName}
+            <if test="sysUser.password != null and sysUser.password != ''">
+                AND password = #{sysUser.password}
             </if>
 
             <if test="sysUser.enUserName != null and sysUser.enUserName != ''">
@@ -275,6 +275,9 @@
             <if test="sysUser.name != null and sysUser.name != ''">
                 AND name LIKE CONCAT('%',#{sysUser.name}, '%')
             </if>
+            <if test="sysUser.userName != null and sysUser.userName != ''">
+                AND user_name LIKE CONCAT('%',#{sysUser.userName}, '%')
+            </if>
             <if test="sysUser.tenantCode != null and sysUser.tenantCode != ''">
                 AND tenant_code = #{sysUser.tenantCode}
             </if>
@@ -348,6 +351,9 @@
             is_deleted = 0
             <if test="sysUser.name != null and sysUser.name != ''">
                 AND name = #{sysUser.name}
+            </if>
+            <if test="sysUser.userName != null and sysUser.userName != ''">
+                AND user_name LIKE CONCAT('%',#{sysUser.userName}, '%')
             </if>
             <if test="sysUser.departId != null and sysUser.departId != ''">
                 AND depart_id = #{sysUser.departId}

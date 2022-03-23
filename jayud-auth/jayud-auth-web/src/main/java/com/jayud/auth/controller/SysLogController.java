@@ -1,6 +1,8 @@
 package com.jayud.auth.controller;
 
 import com.jayud.auth.model.bo.SysLogForm;
+import com.jayud.auth.model.vo.SysLogVO;
+import com.jayud.auth.model.vo.SysUserVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -59,7 +61,7 @@ public class SysLogController {
      **/
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
-    public BaseResult<IPage<SysLog>> selectPage(@RequestBody SysLogForm sysLogForm, HttpServletRequest req) {
+    public BaseResult<IPage<SysLogVO>> selectPage(@RequestBody SysLogForm sysLogForm, HttpServletRequest req) {
         return BaseResult.ok(sysLogService.selectPage(sysLogForm, sysLogForm.getCurrentPage(), sysLogForm.getPageSize(), req));
     }
 
@@ -168,7 +170,7 @@ public class SysLogController {
      **/
     @ApiOperation("根据查询条件导出系统日志表")
     @PostMapping(path = "/exportSysLog")
-    public void exportSysLog(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
+    public void exportSysLog(HttpServletResponse response, @RequestBody SysLogForm sysLogForm ) {
         try {
             List<String> headList = Arrays.asList(
                     "登录时间",
@@ -179,7 +181,7 @@ public class SysLogController {
                     "登录IP"
 
             );
-            List<LinkedHashMap<String, Object>> dataList = sysLogService.querySysLogForExcel(paramMap);
+            List<LinkedHashMap<String, Object>> dataList = sysLogService.querySysLogForExcel(sysLogForm);
             ExcelUtils.exportExcel(headList, dataList, "系统日志表", response);
         } catch (Exception e) {
             e.printStackTrace();

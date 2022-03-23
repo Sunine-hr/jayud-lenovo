@@ -179,7 +179,7 @@ public class BPublicCheckController {
      **/
     @ApiOperation("获取审核信息")
     @PostMapping("/getList")
-    public BaseResult<List<BPublicCheckVO>> getList(CheckForm checkForm,
+    public BaseResult<List<BPublicCheckVO>> getList(@RequestBody CheckForm checkForm,
                                                        HttpServletRequest req) {
         return BaseResult.ok(bPublicCheckService.getList(checkForm));
     }

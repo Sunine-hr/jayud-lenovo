@@ -6,6 +6,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 /**
  * SysLog 实体类
  *
@@ -36,6 +40,9 @@ public class SysLogForm extends SysBaseEntity {
     @ApiModelProperty(value = "操作用户名称")
     private String username;
 
+    @ApiModelProperty(value = "用户真实姓名")
+    private String trueName;
+
     @ApiModelProperty(value = "IP")
     private String ip;
 
@@ -54,9 +61,45 @@ public class SysLogForm extends SysBaseEntity {
     @ApiModelProperty(value = "耗时")
     private Long costTime;
 
+    @ApiModelProperty(value = "创建时间")
+    private List<String> creationTime;
+
+    @ApiModelProperty(value = "创建时间前")
+    private String creationTimeOne;
+
+    @ApiModelProperty(value = "创建时间后")
+    private String creationTimeTwo;
 
 
+    public void setCreationTime(List<String> creationTime) {
+        /**
+         *  客户管理-时间配置
+         */
+        String STARTING_TIME_TYPE = "2000-01-01 00:00:00";
 
+        this.creationTime = creationTime;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        String format = sdf.format(date);
+        // 只传第一个 计算设置时间到 当前时间
+        if(creationTime.get(0)!=null&&creationTime.get(1)==null){
+            this.creationTimeOne = creationTime.get(0);
+//            if(creationTime.get(1)!=null){
+//                this.creationTimeTwo = creationTime.get(1);
+//            }else {
+            this.creationTimeTwo = format ;
+//            }
+        }
+        // 只传第二个 计算 到第二个时间之前的所有的
+        if(creationTime.get(1)!=null&&creationTime.get(0)==null){
+            this.creationTimeOne = STARTING_TIME_TYPE ;
+            this.creationTimeTwo = creationTime.get(1);
+        }
+        if(creationTime.get(0)!=null&&creationTime.get(1)!=null){
+            this.creationTimeOne = creationTime.get(0);
+            this.creationTimeTwo = creationTime.get(1);
+        }
+    }
 
 
 }

@@ -2,10 +2,8 @@ package com.jayud.auth.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jayud.auth.model.bo.SysLogForm;
-import com.jayud.auth.model.po.SysLog;
+import com.jayud.auth.model.po.SystemConfig;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jayud.auth.model.vo.SysLogVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -14,45 +12,45 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 系统日志表 服务类
+ * 系统配置表 服务类
  *
  * @author jayud
- * @since 2022-03-22
+ * @since 2022-03-23
  */
-public interface ISysLogService extends IService<SysLog> {
+public interface ISystemConfigService extends IService<SystemConfig> {
 
 
     /**
      * @description 分页查询
      * @author  jayud
-     * @date   2022-03-22
-     * @param: sysLog
+     * @date   2022-03-23
+     * @param: systemConfig
      * @param: currentPage
      * @param: pageSize
      * @param: req
-     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysLog>
+     * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SystemConfig>
      **/
-    IPage<SysLogVO> selectPage(SysLogForm sysLogForm,
-                               Integer currentPage,
-                               Integer pageSize,
-                               HttpServletRequest req);
+    IPage<SystemConfig> selectPage(SystemConfig systemConfig,
+                                Integer currentPage,
+                                Integer pageSize,
+                                HttpServletRequest req);
 
     /**
      * @description 列表查询数据
      * @author  jayud
-     * @date   2022-03-22
-     * @param: sysLog
+     * @date   2022-03-23
+     * @param: systemConfig
      * @param: req
-     * @return: java.util.List<com.jayud.auth.model.po.SysLog>
+     * @return: java.util.List<com.jayud.auth.model.po.SystemConfig>
      **/
-    List<SysLog> selectList(SysLog sysLog);
+    List<SystemConfig> selectList(SystemConfig systemConfig);
 
 
 
     /**
      * @description 物理删除
      * @author  jayud
-     * @date   2022-03-22
+     * @date   2022-03-23
      * @param: id
      * @return: void
      **/
@@ -62,7 +60,7 @@ public interface ISysLogService extends IService<SysLog> {
     /**
     * @description 逻辑删除
     * @author  jayud
-    * @date   2022-03-22
+    * @date   2022-03-23
     * @param: id
     * @return: com.jyd.component.commons.result.Result
     **/
@@ -73,12 +71,13 @@ public interface ISysLogService extends IService<SysLog> {
     /**
      * @description 查询导出
      * @author  jayud
-     * @date   2022-03-22
+     * @date   2022-03-23
      * @param: queryReceiptForm
      * @param: req
      * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
      **/
-    List<LinkedHashMap<String, Object>> querySysLogForExcel(SysLogForm sysLogForm);
+    List<LinkedHashMap<String, Object>> querySystemConfigForExcel(Map<String, Object> paramMap);
 
 
+    Boolean saveOrUpdateSystemConfig(List<SystemConfig> systemConfig);
 }

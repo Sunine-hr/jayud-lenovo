@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.bo.SysLogForm;
+import com.jayud.auth.model.vo.SysLogVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -38,13 +39,13 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
     private SysLogMapper sysLogMapper;
 
     @Override
-    public IPage<SysLog> selectPage(SysLogForm sysLogForm,
+    public IPage<SysLogVO> selectPage(SysLogForm sysLogForm,
                                     Integer currentPage,
                                     Integer pageSize,
                                     HttpServletRequest req){
 
-        Page<SysLog> page=new Page<SysLog>(currentPage,pageSize);
-        IPage<SysLog> pageList= sysLogMapper.pageList(page, sysLogForm);
+        Page<SysLogForm> page=new Page<SysLogForm>(currentPage,pageSize);
+        IPage<SysLogVO> pageList= sysLogMapper.pageList(page, sysLogForm);
         return pageList;
     }
 
@@ -69,8 +70,8 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
 
 
     @Override
-    public List<LinkedHashMap<String, Object>> querySysLogForExcel(Map<String, Object> paramMap) {
-        return this.baseMapper.querySysLogForExcel(paramMap);
+    public List<LinkedHashMap<String, Object>> querySysLogForExcel(SysLogForm sysLogForm) {
+        return this.baseMapper.querySysLogForExcel(sysLogForm);
     }
 
 }

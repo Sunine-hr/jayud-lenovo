@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.auth.model.bo.SysLogForm;
 import com.jayud.auth.model.po.SysLog;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.auth.model.vo.SysLogVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -31,10 +32,10 @@ public interface ISysLogService extends IService<SysLog> {
      * @param: req
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysLog>
      **/
-    IPage<SysLog> selectPage(SysLogForm sysLogForm,
-                             Integer currentPage,
-                             Integer pageSize,
-                             HttpServletRequest req);
+    IPage<SysLogVO> selectPage(SysLogForm sysLogForm,
+                               Integer currentPage,
+                               Integer pageSize,
+                               HttpServletRequest req);
 
     /**
      * @description 列表查询数据
@@ -77,7 +78,7 @@ public interface ISysLogService extends IService<SysLog> {
      * @param: req
      * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
      **/
-    List<LinkedHashMap<String, Object>> querySysLogForExcel(Map<String, Object> paramMap);
+    List<LinkedHashMap<String, Object>> querySysLogForExcel(SysLogForm sysLogForm);
 
 
 }

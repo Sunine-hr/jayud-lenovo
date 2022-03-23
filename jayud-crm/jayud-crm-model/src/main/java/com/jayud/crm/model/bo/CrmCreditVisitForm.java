@@ -123,7 +123,7 @@ public class CrmCreditVisitForm extends SysBaseEntity {
         }
         // 只传第二个 计算 到第二个时间之前的所有的
         if(creationTime.get(1)!=null&&creationTime.get(0)==null){
-            this.creationTimeOne = CrmDictCode.CRM_FILE_TYPE ;
+            this.creationTimeOne = CrmDictCode.STARTING_TIME_TYPE ;
             this.creationTimeTwo = creationTime.get(1);
         }
         if(creationTime.get(0)!=null&&creationTime.get(1)!=null){

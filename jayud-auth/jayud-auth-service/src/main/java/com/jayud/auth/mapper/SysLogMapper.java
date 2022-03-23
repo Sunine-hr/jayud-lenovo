@@ -4,6 +4,7 @@ import com.jayud.auth.model.bo.SysLogForm;
 import com.jayud.auth.model.po.SysLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import com.jayud.auth.model.vo.SysLogVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -31,7 +32,7 @@ public interface SysLogMapper extends BaseMapper<SysLog> {
      * @param: sysLog
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysLog>
      **/
-    IPage<SysLog> pageList(@Param("page") Page<SysLog> page, @Param("sysLog") SysLogForm sysLog);
+    IPage<SysLogVO> pageList(@Param("page") Page<SysLogForm> page, @Param("sysLog") SysLogForm sysLog);
 
     /**
      * @description 列表查询数据
@@ -70,5 +71,5 @@ public interface SysLogMapper extends BaseMapper<SysLog> {
      * @param: paramMap
      * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
      **/
-    List<LinkedHashMap<String, Object>> querySysLogForExcel(Map<String, Object> paramMap);
+    List<LinkedHashMap<String, Object>> querySysLogForExcel(@Param("sysLog") SysLogForm sysLog);
 }

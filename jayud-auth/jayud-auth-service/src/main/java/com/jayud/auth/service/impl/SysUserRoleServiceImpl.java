@@ -173,7 +173,7 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         }
         StringBuffer stringBuffer = new StringBuffer();
         for (SysUser sysUser : sysUsers) {
-            stringBuffer.append(sysUser.getUserName()).append(",");
+            stringBuffer.append(sysUser.getName()).append(",");
         }
         return stringBuffer.substring(0,stringBuffer.length()-1).toString();
     }

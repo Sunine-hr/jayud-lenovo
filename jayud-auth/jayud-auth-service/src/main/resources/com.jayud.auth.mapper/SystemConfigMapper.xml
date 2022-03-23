@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.SystemConfigMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SystemConfig">
+        <id column="id" property="id" />
+        <result column="config_code" property="configCode" />
+        <result column="temp1" property="temp1" />
+        <result column="temp2" property="temp2" />
+        <result column="temp3" property="temp3" />
+        <result column="temp4" property="temp4" />
+        <result column="temp5" property="temp5" />
+        <result column="temp6" property="temp6" />
+        <result column="temp7" property="temp7" />
+        <result column="temp8" property="temp8" />
+        <result column="temp9" property="temp9" />
+        <result column="temp10" property="temp10" />
+        <result column="if_onl" property="ifOnl" />
+        <result column="remark" property="remark" />
+        <result column="org_id" property="orgId" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="deleted_user_id" property="deletedUserId" />
+        <result column="delete_user_name" property="deleteUserName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, config_code, temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, temp10, if_onl, remark, org_id, tenant_id, create_by, create_time, update_by, update_time, is_deleted, deleted_user_id, delete_user_name
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">system_config </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="systemConfig.configCode != null and systemConfig.configCode != ''">
+                AND config_code LIKE CONCAT('%',#{systemConfig.configCode},'%')
+            </if>
+
+            <if test="systemConfig.temp1 != null and systemConfig.temp1 != ''">
+                AND temp1 LIKE CONCAT('%',#{systemConfig.temp1},'%')
+            </if>
+
+            <if test="systemConfig.temp2 != null and systemConfig.temp2 != ''">
+                AND temp2 LIKE CONCAT('%',#{systemConfig.temp2},'%')
+            </if>
+
+            <if test="systemConfig.temp3 != null and systemConfig.temp3 != ''">
+                AND temp3 LIKE CONCAT('%',#{systemConfig.temp3},'%')
+            </if>
+
+            <if test="systemConfig.temp4 != null and systemConfig.temp4 != ''">
+                AND temp4 LIKE CONCAT('%',#{systemConfig.temp4},'%')
+            </if>
+
+            <if test="systemConfig.temp5 != null and systemConfig.temp5 != ''">
+                AND temp5 LIKE CONCAT('%',#{systemConfig.temp5},'%')
+            </if>
+
+            <if test="systemConfig.temp6 != null and systemConfig.temp6 != ''">
+                AND temp6 LIKE CONCAT('%',#{systemConfig.temp6},'%')
+            </if>
+
+            <if test="systemConfig.temp7 != null and systemConfig.temp7 != ''">
+                AND temp7 LIKE CONCAT('%',#{systemConfig.temp7},'%')
+            </if>
+
+            <if test="systemConfig.temp8 != null and systemConfig.temp8 != ''">
+                AND temp8 LIKE CONCAT('%',#{systemConfig.temp8},'%')
+            </if>
+
+            <if test="systemConfig.temp9 != null and systemConfig.temp9 != ''">
+                AND temp9 LIKE CONCAT('%',#{systemConfig.temp9},'%')
+            </if>
+
+            <if test="systemConfig.temp10 != null and systemConfig.temp10 != ''">
+                AND temp10 LIKE CONCAT('%',#{systemConfig.temp10},'%')
+            </if>
+
+            <if test="systemConfig.ifOnl != null ">
+                AND if_onl = ${systemConfig.ifOnl}
+            </if>
+
+            <if test="systemConfig.remark != null ">
+                AND remark = ${systemConfig.remark}
+            </if>
+
+            <if test="systemConfig.orgId != null ">
+                AND org_id = ${systemConfig.orgId}
+            </if>
+
+            <if test="systemConfig.tenantId != null ">
+                AND tenant_id = ${systemConfig.tenantId}
+            </if>
+
+            <if test="systemConfig.createTime != null ">
+                AND create_time = ${systemConfig.createTime}
+            </if>
+
+            <if test="systemConfig.createBy != null and systemConfig.createBy != ''">
+                AND create_by LIKE CONCAT('%',#{systemConfig.createBy},'%')
+            </if>
+
+            <if test="systemConfig.updateBy != null and systemConfig.updateBy != ''">
+                AND update_by LIKE CONCAT('%',#{systemConfig.updateBy},'%')
+            </if>
+
+            <if test="systemConfig.updateTime != null ">
+                AND update_time = ${systemConfig.updateTime}
+            </if>
+
+            <if test="systemConfig.deletedUserId != null ">
+                AND deleted_user_id = ${systemConfig.deletedUserId}
+            </if>
+
+            <if test="systemConfig.deleteUserName != null ">
+                AND delete_user_name = ${systemConfig.deleteUserName}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SystemConfig">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SystemConfig">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  system_config WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE system_config SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="querySystemConfigForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            config_code 'configCode',
+            temp1 'temp1',
+            temp2 'temp2',
+            temp3 'temp3',
+            temp4 'temp4',
+            temp5 'temp5',
+            temp6 'temp6',
+            temp7 'temp7',
+            temp8 'temp8',
+            temp9 'temp9',
+            temp10 'temp10',
+            if_onl 'ifOnl',
+            remark 'remark',
+            org_id 'orgId',
+            tenant_id 'tenantId',
+            create_user_id 'createUserId',
+            create_user_name 'createUserName',
+            create_time 'createTime',
+            last_modify_user_id 'lastModifyUserId',
+            last_modify_user_name 'lastModifyUserName',
+            last_modify_time 'lastModifyTime',
+            is_deleted 'isDeleted',
+            deleted_user_id 'deletedUserId',
+            delete_user_name 'deleteUserName'
+        FROM system_config
+        WHERE is_deleted = 0
+                    <if test="configCode != null and configCode != ''">
+                        AND config_code LIKE CONCAT('%',#{configCode}, '%')
+                    </if>
+                    <if test="temp1 != null and temp1 != ''">
+                        AND temp1 LIKE CONCAT('%',#{temp1}, '%')
+                    </if>
+                    <if test="temp2 != null and temp2 != ''">
+                        AND temp2 LIKE CONCAT('%',#{temp2}, '%')
+                    </if>
+                    <if test="temp3 != null and temp3 != ''">
+                        AND temp3 LIKE CONCAT('%',#{temp3}, '%')
+                    </if>
+                    <if test="temp4 != null and temp4 != ''">
+                        AND temp4 LIKE CONCAT('%',#{temp4}, '%')
+                    </if>
+                    <if test="temp5 != null and temp5 != ''">
+                        AND temp5 LIKE CONCAT('%',#{temp5}, '%')
+                    </if>
+                    <if test="temp6 != null and temp6 != ''">
+                        AND temp6 LIKE CONCAT('%',#{temp6}, '%')
+                    </if>
+                    <if test="temp7 != null and temp7 != ''">
+                        AND temp7 LIKE CONCAT('%',#{temp7}, '%')
+                    </if>
+                    <if test="temp8 != null and temp8 != ''">
+                        AND temp8 LIKE CONCAT('%',#{temp8}, '%')
+                    </if>
+                    <if test="temp9 != null and temp9 != ''">
+                        AND temp9 LIKE CONCAT('%',#{temp9}, '%')
+                    </if>
+                    <if test="temp10 != null and temp10 != ''">
+                        AND temp10 LIKE CONCAT('%',#{temp10}, '%')
+                    </if>
+                    <if test="ifOnl != null ">
+                        AND if_onl = #{ifOnl}
+                    </if>
+                    <if test="remark != null ">
+                        AND remark = #{remark}
+                    </if>
+                    <if test="orgId != null ">
+                        AND org_id = #{orgId}
+                    </if>
+                    <if test="tenantId != null ">
+                        AND tenant_id = #{tenantId}
+                    </if>
+                    <if test="createUserId != null ">
+                        AND create_user_id = #{createUserId}
+                    </if>
+                    <if test="createUserName != null and createUserName != ''">
+                        AND create_user_name LIKE CONCAT('%',#{createUserName}, '%')
+                    </if>
+                    <if test="lastModifyUserId != null ">
+                        AND last_modify_user_id = #{lastModifyUserId}
+                    </if>
+                    <if test="lastModifyUserName != null and lastModifyUserName != ''">
+                        AND last_modify_user_name LIKE CONCAT('%',#{lastModifyUserName}, '%')
+                    </if>
+                    <if test="lastModifyTime != null ">
+                        AND last_modify_time = #{lastModifyTime}
+                    </if>
+                    <if test="deletedUserId != null ">
+                        AND deleted_user_id = #{deletedUserId}
+                    </if>
+                    <if test="deleteUserName != null ">
+                        AND delete_user_name = #{deleteUserName}
+                    </if>
+
+    </select>
+
+</mapper>

@@ -79,5 +79,5 @@ public interface ISystemConfigService extends IService<SystemConfig> {
     List<LinkedHashMap<String, Object>> querySystemConfigForExcel(Map<String, Object> paramMap);
 
 
-    Boolean saveOrUpdateSystemConfig(SystemConfig systemConfig);
+    Boolean saveOrUpdateSystemConfig(List<SystemConfig> systemConfig);
 }

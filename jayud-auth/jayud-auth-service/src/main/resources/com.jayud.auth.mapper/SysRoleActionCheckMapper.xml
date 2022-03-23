@@ -139,7 +139,11 @@
 
     <update id="logicDel">
         UPDATE sys_role_action_check SET is_deleted = 1 ,update_by = #{username}, update_time = now()
-        WHERE id = ${id} AND is_deleted = 0
+        WHERE is_deleted = 0 AND id in
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+         #{item}
+        </foreach>
+
     </update>
 
     <select id="querySysRoleActionCheckForExcel" resultType="java.util.LinkedHashMap">

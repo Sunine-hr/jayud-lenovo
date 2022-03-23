@@ -2,6 +2,7 @@ package com.jayud.auth.controller;
 
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -59,8 +60,8 @@ public class SystemConfigController {
      * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SystemConfig>>
      **/
     @ApiOperation("分页查询数据")
-    @GetMapping("/selectPage")
-    public BaseResult<ListPageRuslt<SystemConfig>> selectPage(SystemConfig systemConfig,
+    @PostMapping("/selectPage")
+    public BaseResult<ListPageRuslt<SystemConfig>> selectPage(@RequestBody SystemConfig systemConfig,
                                                    @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                    HttpServletRequest req) {
@@ -93,9 +94,9 @@ public class SystemConfigController {
     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody SystemConfig systemConfig ){
-        if(StringUtils.isEmpty(systemConfig.getConfigCode())){
-            return BaseResult.error(444,"系统配置code不为空");
+    public BaseResult add(@Valid @RequestBody List<SystemConfig> systemConfig ){
+        if(CollectionUtils.isEmpty(systemConfig)){
+            return BaseResult.error(444,"保存配置不为空");
         }
         boolean result = systemConfigService.saveOrUpdateSystemConfig(systemConfig);
         if(result){

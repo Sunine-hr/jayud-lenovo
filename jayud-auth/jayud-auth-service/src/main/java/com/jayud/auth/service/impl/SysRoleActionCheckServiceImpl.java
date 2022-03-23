@@ -68,8 +68,8 @@ public class SysRoleActionCheckServiceImpl extends ServiceImpl<SysRoleActionChec
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void logicDel(Long id){
-        sysRoleActionCheckMapper.logicDel(id,CurrentUserUtil.getUsername());
+    public void logicDel(List<Long> ids){
+        sysRoleActionCheckMapper.logicDel(ids,CurrentUserUtil.getUsername());
     }
 
 

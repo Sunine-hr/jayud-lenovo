@@ -137,8 +137,8 @@ public class SysRoleActionCheckController {
      **/
     @ApiOperation("逻辑删除")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id){
+    @PostMapping("/logicDel")
+    public BaseResult logicDel(@RequestBody List<Long> id){
         sysRoleActionCheckService.logicDel(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }

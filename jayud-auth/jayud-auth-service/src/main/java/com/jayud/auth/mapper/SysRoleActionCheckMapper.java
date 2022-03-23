@@ -59,7 +59,7 @@ public interface SysRoleActionCheckMapper extends BaseMapper<SysRoleActionCheck>
      * @param: username
      * @return: int
      **/
-    int logicDel(@Param("id") Long id,@Param("username") String username);
+    int logicDel(@Param("ids") List<Long> ids,@Param("username") String username);
 
 
     /**

@@ -73,15 +73,18 @@ public class SystemConfigServiceImpl extends ServiceImpl<SystemConfigMapper, Sys
     }
 
     @Override
-    public Boolean saveOrUpdateSystemConfig(SystemConfig systemConfig) {
-        if(null != systemConfig.getId()){
-            systemConfig.setUpdateBy(CurrentUserUtil.getUsername());
-            systemConfig.setUpdateTime(new Date());
-        }else{
-            systemConfig.setCreateBy(CurrentUserUtil.getUsername());
-            systemConfig.setCreateTime(new Date());
+    public Boolean saveOrUpdateSystemConfig(List<SystemConfig> systemConfig) {
+        for (SystemConfig config : systemConfig) {
+            if(null != config.getId()){
+                config.setUpdateBy(CurrentUserUtil.getUsername());
+                config.setUpdateTime(new Date());
+            }else{
+                config.setCreateBy(CurrentUserUtil.getUsername());
+                config.setCreateTime(new Date());
+            }
         }
-        boolean result = this.saveOrUpdate(systemConfig);
+
+        boolean result = this.saveOrUpdateBatch(systemConfig);
         return result;
     }
 

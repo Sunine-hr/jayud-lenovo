@@ -146,10 +146,7 @@ public class SysDictItemController {
             if (tmp != null && !tmp.getId().equals(sysDictItem.getId())) {
                 return BaseResult.error("该字典名称已存在");
             }
-            tmp = sysDictItemService.getOne(new QueryWrapper<>(new SysDictItem().setDictId(sysDictItem.getDictId()).setItemValue(sysDictItem.getItemValue()).setIsDeleted(false)));
-            if (tmp != null && !tmp.getId().equals(sysDictItem.getId())) {
-                return BaseResult.error("该字典值已存在");
-            }
+
             SysDictItem item = sysDictItemService.getById(sysDictItem.getId());
             if (!item.getIsEdit()) {
                 return BaseResult.error("数据字典不能修改");

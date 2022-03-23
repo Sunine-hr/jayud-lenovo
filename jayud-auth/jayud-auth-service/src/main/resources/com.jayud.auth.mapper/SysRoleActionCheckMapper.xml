@@ -85,7 +85,7 @@
             s.is_deleted = 0
             <if test="form.key != null and form.key != ''">
                 and
-                <if test="form.key == 'action_code' ">
+                <if test="form.key == 'actionCode' ">
                     s.action_code like concat('%',#{form.condition},'%')
                 </if>
                 <if test="form.key == 'name' ">

@@ -1,34 +1,28 @@
 package com.jayud.crm.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ObjectUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.BigDecimalUtil;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.CurrentUserUtil;
+import com.jayud.crm.feign.AuthClient;
+import com.jayud.crm.mapper.CrmCreditCustMapper;
 import com.jayud.crm.model.bo.AddCrmCreditCustForm;
-import com.jayud.crm.model.po.CrmCredit;
+import com.jayud.crm.model.constant.CrmDictCode;
+import com.jayud.crm.model.po.CrmCreditCust;
 import com.jayud.crm.model.po.CrmCreditDepart;
+import com.jayud.crm.service.ICrmCreditCustService;
 import com.jayud.crm.service.ICrmCreditDepartService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.jayud.common.utils.CurrentUserUtil;
-import com.jayud.crm.model.po.CrmCreditCust;
-import com.jayud.crm.mapper.CrmCreditCustMapper;
-import com.jayud.crm.service.ICrmCreditCustService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 基本档案_额度_额度授信管理(crm_credit_cust) 服务实现类
@@ -45,6 +39,8 @@ public class CrmCreditCustServiceImpl extends ServiceImpl<CrmCreditCustMapper, C
     private CrmCreditCustMapper crmCreditCustMapper;
     @Autowired
     private ICrmCreditDepartService crmCreditDepartService;
+    @Autowired
+    private AuthClient authClient;
 
     @Override
     public IPage<CrmCreditCust> selectPage(CrmCreditCust crmCreditCust,
@@ -105,6 +101,11 @@ public class CrmCreditCustServiceImpl extends ServiceImpl<CrmCreditCustMapper, C
         List<CrmCreditDepart> tmps = this.crmCreditDepartService.selectList(new CrmCreditDepart().setDepartId(form.getDepartId()).setCreditId(form.getCreditId()).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
         CrmCreditDepart creditDepart = tmps.get(0);
         if (form.getId() == null) {
+            Object result = this.authClient.getOrderFeign(CrmDictCode.CRM_CREDIT_CUST_CODE, new Date()).getResult();
+            HashMap data = (HashMap) result;
+            convert.setFLevel(Integer.parseInt(data.get("fLevel").toString()));
+            convert.setFStep(Integer.parseInt(data.get("fStep").toString()));
+            convert.setCheckStateFlag(data.get("checkStateFlag").toString());
             convert.setTenantCode(CurrentUserUtil.getUserTenantCode());
         } else {
             convert.setUpdateBy(CurrentUserUtil.getUsername());

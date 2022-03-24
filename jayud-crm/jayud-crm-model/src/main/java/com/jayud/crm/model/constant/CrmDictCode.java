@@ -99,7 +99,7 @@ public interface CrmDictCode {
     String QUOTATION_NUM_CODE="Quotation";
 
     /**
-     * 报价单号code
+     * 授信客户额度code
      */
     String CRM_CREDIT_CUST_CODE="SX10001";
 

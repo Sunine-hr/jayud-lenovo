@@ -312,8 +312,10 @@ public class SysRoleController {
         String key = "10001-super_admin";
         if (pTenant != null) {
             if (!key.equals(CurrentUserUtil.getUserTenantCode() + "-" + role.getRoleCode())) {
-                msg = "该用户不是超级管理员,已把租户菜单过滤掉";
-                tmps.removeAll(Arrays.asList(pTenant.getId()));
+                if (tmps.contains(pTenant.getId())) {
+                    msg = "该用户不是超级管理员,已把租户菜单过滤掉";
+                    tmps.removeAll(Arrays.asList(pTenant.getId()));
+                }
                 if (menuIds.size() <= 1) {
                     return BaseResult.ok(msg);
                 }

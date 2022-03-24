@@ -122,6 +122,11 @@
             <if test="sysLog.trueName != null ">
                 AND true_name LIKE CONCAT('%',#{sysLog.trueName}, '%')
             </if>
+
+            <if test="sysLog.operateType != null ">
+                AND operate_type LIKE CONCAT('%',#{sysLog.operateType}, '%')
+            </if>
+
             <if test="sysLog.creationTimeOne != null and sysLog.creationTimeTwo != null   ">
                 and create_time between #{sysLog.creationTimeOne} and #{sysLog.creationTimeTwo}
             </if>
@@ -165,6 +170,11 @@
             <if test="sysLog.trueName != null ">
                 AND true_name LIKE CONCAT('%',#{sysLog.trueName}, '%')
             </if>
+
+            <if test="sysLog.operateType != null ">
+                AND operate_type LIKE CONCAT('%',#{sysLog.operateType}, '%')
+            </if>
+
             <if test="sysLog.creationTimeOne != null and sysLog.creationTimeTwo != null   ">
                 and create_time between #{sysLog.creationTimeOne} and #{sysLog.creationTimeTwo}
             </if>

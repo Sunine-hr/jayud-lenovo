@@ -308,7 +308,7 @@ public class SysRoleController {
         List<Long> tmps = new ArrayList<>();
         tmps.addAll(parentMenuIds);
         tmps.addAll(menuIds);
-        String msg = null;
+        String msg = SysTips.SUCCESS_MSG;
         String key = "10001-super_admin";
         if (pTenant != null) {
             if (!key.equals(CurrentUserUtil.getUserTenantCode() + "-" + role.getRoleCode())) {

@@ -63,4 +63,12 @@ public class TestController {
         crmCustomerFeaturesService.saveCrmCustomerFeatures(custId);
         return BaseResult.ok();
     }
+
+
+    @ApiOperation("公共方法新增日志")
+    @PostMapping("/api/addSysLogFeign")
+    public BaseResult addFeign(@RequestParam("logContent") String logContent,@RequestParam("businessId") Long businessId) {
+        authClient.addSysLogFeign(logContent, businessId);
+        return BaseResult.ok(SysTips.ADD_SUCCESS);
+    }
 }

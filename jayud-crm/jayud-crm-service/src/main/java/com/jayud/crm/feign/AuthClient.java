@@ -1,12 +1,16 @@
 package com.jayud.crm.feign;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.auth.model.bo.CheckForm;
+import com.jayud.auth.model.bo.SysLogForm;
 import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysRole;
 import com.jayud.auth.model.po.SysUser;
+import com.jayud.auth.model.vo.SysLogVO;
 import com.jayud.common.BaseResult;
+import com.jayud.common.dto.QuerySysLogForm;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
@@ -106,5 +110,13 @@ public interface AuthClient {
     public BaseResult<SysUser>  selectByUserId(@RequestParam("userId") Long userId);
 
 
+    @ApiOperation("公共方法新增日志")
+    @PostMapping("/sysLog/api/addSysLogFeign")
+    public BaseResult addSysLogFeign(@RequestParam("logContent") String logContent,@RequestParam("businessId") Long businessId);
+
+
+    @ApiOperation("外部调用分页查询数据")
+    @PostMapping("/sysLog/api/selectSysLogPageFeign")
+    public BaseResult selectSysLogPageFeign(@RequestBody QuerySysLogForm QuerySysLogForm);
 
 }

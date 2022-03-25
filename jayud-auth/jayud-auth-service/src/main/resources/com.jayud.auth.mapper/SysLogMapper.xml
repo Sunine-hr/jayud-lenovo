@@ -119,12 +119,18 @@
                 AND username LIKE CONCAT('%',#{sysLog.username}, '%')
             </if>
 
+            <if test="sysLog.businessId != null ">
+                AND business_id =#{sysLog.businessId}
+            </if>
+
             <if test="sysLog.trueName != null ">
                 AND true_name LIKE CONCAT('%',#{sysLog.trueName}, '%')
             </if>
-
             <if test="sysLog.operateType != null ">
-                AND operate_type LIKE CONCAT('%',#{sysLog.operateType}, '%')
+                AND operate_type =#{sysLog.operateType}
+            </if>
+            <if test="sysLog.logType != null ">
+                AND log_type=#{sysLog.logType}
             </if>
 
             <if test="sysLog.creationTimeOne != null and sysLog.creationTimeTwo != null   ">
@@ -171,8 +177,15 @@
                 AND true_name LIKE CONCAT('%',#{sysLog.trueName}, '%')
             </if>
 
+            <if test="sysLog.businessId != null ">
+                AND business_id =#{sysLog.businessId}
+            </if>
+
             <if test="sysLog.operateType != null ">
-                AND operate_type LIKE CONCAT('%',#{sysLog.operateType}, '%')
+                AND operate_type =#{sysLog.operateType}
+            </if>
+            <if test="sysLog.logType != null ">
+                AND log_type=#{sysLog.logType}
             </if>
 
             <if test="sysLog.creationTimeOne != null and sysLog.creationTimeTwo != null   ">

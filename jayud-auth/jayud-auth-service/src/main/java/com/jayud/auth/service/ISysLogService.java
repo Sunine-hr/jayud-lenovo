@@ -24,8 +24,8 @@ public interface ISysLogService extends IService<SysLog> {
 
     /**
      * @description 分页查询
-     * @author  jayud
-     * @date   2022-03-22
+     * @author jayud
+     * @date 2022-03-22
      * @param: sysLog
      * @param: currentPage
      * @param: pageSize
@@ -39,8 +39,8 @@ public interface ISysLogService extends IService<SysLog> {
 
     /**
      * @description 列表查询数据
-     * @author  jayud
-     * @date   2022-03-22
+     * @author jayud
+     * @date 2022-03-22
      * @param: sysLog
      * @param: req
      * @return: java.util.List<com.jayud.auth.model.po.SysLog>
@@ -48,11 +48,14 @@ public interface ISysLogService extends IService<SysLog> {
     List<SysLog> selectList(SysLog sysLog);
 
 
+    void saveOrUpdateSysLog(SysLog sysLog);
 
+
+   void saveOrUpdateSysLogClient(String logContent,Long businessId);
     /**
      * @description 物理删除
-     * @author  jayud
-     * @date   2022-03-22
+     * @author jayud
+     * @date 2022-03-22
      * @param: id
      * @return: void
      **/
@@ -60,23 +63,22 @@ public interface ISysLogService extends IService<SysLog> {
 
 
     /**
-    * @description 逻辑删除
-    * @author  jayud
-    * @date   2022-03-22
-    * @param: id
-    * @return: com.jyd.component.commons.result.Result
-    **/
+     * @description 逻辑删除
+     * @author jayud
+     * @date 2022-03-22
+     * @param: id
+     * @return: com.jyd.component.commons.result.Result
+     **/
     void logicDel(Long id);
-
 
 
     /**
      * @description 查询导出
-     * @author  jayud
-     * @date   2022-03-22
+     * @author jayud
+     * @date 2022-03-22
      * @param: queryReceiptForm
      * @param: req
-     * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
+     * @return: java.util.List<java.util.LinkedHashMap < java.lang.String, java.lang.Object>>
      **/
     List<LinkedHashMap<String, Object>> querySysLogForExcel(SysLogForm sysLogForm);
 

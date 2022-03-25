@@ -1,5 +1,8 @@
 package com.jayud.crm.controller;
 
+import com.jayud.common.aop.annotations.SysLog;
+import com.jayud.common.enums.SysLogTypeEnum;
+import com.jayud.common.service.BaseCommonService;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.bo.CrmCreditVisitForm;
 import com.jayud.crm.model.bo.DeleteForm;
@@ -23,6 +26,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -38,7 +42,6 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/crmCreditVisit")
 public class CrmCreditVisitController {
-
 
     @Autowired
     public ICrmCreditVisitService crmCreditVisitService;
@@ -56,6 +59,7 @@ public class CrmCreditVisitController {
      * @param: req
      * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage < com.jayud.crm.model.po.CrmCreditVisit>>
      **/
+    @SysLog("查询了走访记录")
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
     public BaseResult<IPage<CrmCreditVisitVO>> selectPage(@RequestBody CrmCreditVisitForm crmCreditVisitForm,
@@ -90,6 +94,7 @@ public class CrmCreditVisitController {
     @ApiOperation("新增")
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody CrmCreditVisitForm crmCreditVisitForm) {
+
         return crmCreditVisitService.saveOrUpdateCrmCreditVisit(crmCreditVisitForm);
     }
 
@@ -186,7 +191,7 @@ public class CrmCreditVisitController {
     }
 
 
-    public String  dateString(LocalDateTime dateOne){
+    public String dateString(LocalDateTime dateOne) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 //        LocalDateTime time = LocalDateTime.now();
         String localTime = df.format(dateOne);

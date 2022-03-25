@@ -12,9 +12,8 @@ import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.common.utils.HttpUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.stereotype.Component;
@@ -55,8 +54,36 @@ public class SysLogAspect {
         long time = System.currentTimeMillis() - beginTime;
         // 保存日志
         saveSysLog(point, time, result);
+        System.out.println("前置通知！");
         return result;
     }
+
+    // 后置通知   没用到
+    @After("@annotation(com.jayud.common.aop.annotations.Action)")
+    public void after(JoinPoint  point) throws Throwable {
+        long beginTime = System.currentTimeMillis();
+        // 执行方法
+//        Object result = point.proceed();
+        // 执行时长(毫秒)
+        long time = System.currentTimeMillis() - beginTime;
+        // 保存日志
+//        saveSysLog(point, time, result);
+
+        System.out.println("后置通知！" + point);
+
+
+        Signature signature = point.getSignature();
+        String name = signature.getName();
+        System.out.println("后置通知！" + name);
+
+        //得到 传参参数
+        Object[] args = point.getArgs();
+        System.out.println("拿到传参："+args);
+//        Long id = (Long)args[0];
+        System.out.println("aop获得订单id");
+
+    }
+
 
     private void saveSysLog(ProceedingJoinPoint joinPoint, long time, Object obj) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
@@ -100,7 +127,7 @@ public class SysLogAspect {
         // 保存系统日志
         try {
             baseCommonService.addLog(dto);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

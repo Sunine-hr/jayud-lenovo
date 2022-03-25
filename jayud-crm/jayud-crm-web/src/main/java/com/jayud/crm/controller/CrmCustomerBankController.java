@@ -1,5 +1,6 @@
 package com.jayud.crm.controller;
 
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.bo.DeleteForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,6 +45,8 @@ public class CrmCustomerBankController {
     @Autowired
     public ICrmCustomerBankService crmCustomerBankService;
 
+    @Autowired
+    private AuthClient authClient;
 
     /**
      * @description 分页查询
@@ -91,6 +94,7 @@ public class CrmCustomerBankController {
     @ApiOperation("新增")
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody CrmCustomerBank crmCustomerBank ){
+        authClient.addSysLogFeign("新增了银行账户", crmCustomerBank.getCustId());
         return crmCustomerBankService.saveBank(crmCustomerBank);
     }
 
@@ -105,6 +109,7 @@ public class CrmCustomerBankController {
     @ApiOperation("编辑")
     @PostMapping("/edit")
     public BaseResult edit(@Valid @RequestBody CrmCustomerBank crmCustomerBank ){
+        authClient.addSysLogFeign("编辑了银行账户", crmCustomerBank.getCustId());
         return crmCustomerBankService.saveBank(crmCustomerBank);
     }
 

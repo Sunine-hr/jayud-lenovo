@@ -3,7 +3,9 @@ package com.jayud.crm.controller;
 import com.jayud.common.result.ListPageRuslt;
 import com.jayud.common.result.PaginationBuilder;
 import com.jayud.common.utils.CurrentUserUtil;
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.bo.AddCrmCreditCustForm;
+import com.jayud.crm.model.po.CrmContractQuotation;
 import com.jayud.crm.model.po.CrmCreditDepart;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +50,8 @@ public class CrmCreditCustController {
     @Autowired
     public ICrmCreditCustService crmCreditCustService;
 
+    @Autowired
+    private AuthClient authClient;
 
     /**
      * @description 分页查询
@@ -141,6 +145,8 @@ public class CrmCreditCustController {
     @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam Long id) {
+        CrmCreditCust byId = crmCreditCustService.getById(id);
+        authClient.addSysLogFeign(" 删除了信用额度", byId.getCustId());
         crmCreditCustService.logicDel(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }

@@ -11,6 +11,7 @@ import com.jayud.crm.model.bo.AddCrmCustomerAgreementForm;
 import com.jayud.crm.model.constant.CrmDictCode;
 import com.jayud.crm.model.enums.FileModuleEnum;
 import com.jayud.crm.model.enums.PostponedTypeEnum;
+import com.jayud.crm.model.po.CrmContractQuotation;
 import com.jayud.crm.model.po.CrmFile;
 import com.jayud.crm.model.vo.CrmContractQuotationVO;
 import com.jayud.crm.model.vo.CrmCustomerAgreementVO;
@@ -133,6 +134,8 @@ public class CrmCustomerAgreementController {
     @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam Long id) {
+        CrmCustomerAgreement byId = crmCustomerAgreementService.getById(id);
+        authClient.addSysLogFeign(" 删除了合作协议", byId.getCustId());
         crmCustomerAgreementService.logicDel(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }

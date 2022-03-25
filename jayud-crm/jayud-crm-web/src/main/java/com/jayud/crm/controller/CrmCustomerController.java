@@ -120,6 +120,7 @@ public class CrmCustomerController {
     @ApiOperation("编辑")
     @PostMapping("/edit")
     public BaseResult edit(@Valid @RequestBody CrmCustomerForm crmCustomerForm ){
+        authClient.addSysLogFeign("编辑了基础信息", crmCustomerForm.getId());
         return crmCustomerService.saveCrmCustomer(crmCustomerForm);
     }
 

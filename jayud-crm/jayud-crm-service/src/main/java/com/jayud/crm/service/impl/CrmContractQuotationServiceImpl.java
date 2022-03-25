@@ -8,6 +8,7 @@ import com.jayud.common.entity.InitComboxVO;
 import com.jayud.common.enums.StatusEnum;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.*;
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.FileClient;
 import com.jayud.crm.feign.OmsClient;
 import com.jayud.crm.model.bo.AddCrmContractQuotationDetailsForm;
@@ -53,6 +54,8 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
     private ICrmFileService crmFileService;
     @Autowired
     private FileClient fileClient;
+    @Autowired
+    private AuthClient authClient;
 
 
     @Override
@@ -109,12 +112,13 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
         CrmContractQuotation contractQuotation = ConvertUtil.convert(form, CrmContractQuotation.class);
 //        contractQuotation.setFile(StringUtils.getFileStr(form.getFiles())).setFileName(StringUtils.getFileNameStr(form.getFiles()));
         if (form.getId() == null) {
+            authClient.addSysLogFeign("新建了合作协议",Long.parseLong(form.getCustomerId()));
             if (this.exitNumber(form.getNumber())) {
                 throw new JayudBizException(400, SysTips.NUM_ALREADY_EXISTS);
             }
             contractQuotation.setTenantCode(CurrentUserUtil.getUserTenantCode());
         } else {
-//
+            authClient.addSysLogFeign("编辑了合作协议",Long.parseLong(form.getCustomerId()));
             contractQuotation.setUpdateBy(CurrentUserUtil.getUsername());
         }
         this.saveOrUpdate(contractQuotation);

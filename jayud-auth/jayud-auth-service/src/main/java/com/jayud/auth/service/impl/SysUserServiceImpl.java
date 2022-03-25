@@ -173,6 +173,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return sysUserMapper.findSysUserNameOne(sysUserForm);
     }
 
+    @Override
+    public SysUser findSysUserNameOne(SysUserForm sysUserForm) {
+        LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SysUser::getName, sysUserForm.getName());
+        lambdaQueryWrapper.eq(SysUser::getIsDeleted, false);
+        SysUser one = this.getOne(lambdaQueryWrapper);
+        return one;
+    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)

@@ -124,8 +124,8 @@ public class SysUserController {
             return BaseResult.error("数据不能为空！");
         }
         if (sysUserForm.getId() == null) {
-            SysUserVO sysUserName = sysUserService.findSysUserName(sysUserForm);
-            if (sysUserName != null) {
+            SysUser sysUserNameOne = sysUserService.findSysUserNameOne(sysUserForm);
+            if (sysUserNameOne != null) {
                 return BaseResult.error("用户名已存在！");
             }
         }

@@ -62,6 +62,7 @@ public interface ISysUserService extends IService<SysUser> {
     //校验用户名
     SysUserVO findSysUserName(SysUserForm sysUserForm);
 
+    SysUser findSysUserNameOne(SysUserForm sysUserForm);
     /**
      * @description 物理删除
      * @author jayud

@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.auth.model.bo.PermissionForm;
 import com.jayud.auth.model.dto.AddSysRole;
 import com.jayud.auth.model.po.SysDict;
 import com.jayud.auth.model.po.SysMenu;
@@ -12,6 +13,8 @@ import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.service.ISysMenuService;
 import com.jayud.auth.service.ISysRoleMenuService;
 import com.jayud.auth.service.ISysUserRoleService;
+import com.jayud.common.CommonResult;
+import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -386,4 +389,5 @@ public class SysRoleController {
     public BaseResult<List<SysRole>> getRoleByTenantCode(@RequestParam("tenantCode") String tenantCode) {
         return BaseResult.ok(sysRoleService.getRoleByTenantCode(tenantCode));
     }
+
 }

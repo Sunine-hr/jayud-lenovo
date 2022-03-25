@@ -72,4 +72,16 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
      * @return
      */
     List<SysMenu> selectSysMenuBtnByRoleIds(@Param("roleIds") List<Long> roleIds);
+
+    /**
+     * 获取所有是审核的菜单树
+     * @return
+     */
+    List<SysMenu> allCheckMenuTree();
+
+    /**
+     * 获取所有菜单
+     */
+    List<SysMenu> allMenu();
+
 }

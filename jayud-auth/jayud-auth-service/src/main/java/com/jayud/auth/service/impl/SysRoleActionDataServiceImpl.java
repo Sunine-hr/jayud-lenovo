@@ -19,6 +19,7 @@ import com.jayud.auth.service.ISysRoleActionDataService;
 import com.jayud.auth.service.ISysUserRoleService;
 import com.jayud.auth.service.ISysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,45 +59,55 @@ public class SysRoleActionDataServiceImpl extends ServiceImpl<SysRoleActionDataM
         SysUserVO systemUser = systemUserService.getSystemUserByName(CurrentUserUtil.getUsername());
 
 //        增加前先删除原来的审核按钮
-        QueryWrapper<SysRoleActionData> queryWrapper = new QueryWrapper();
-        queryWrapper.lambda().eq(SysRoleActionData::getRoleId,form.getRoleId());
-        List<SysRoleActionData> list = this.list(queryWrapper);
-        if(CollectionUtil.isNotEmpty(list)){
-            for (SysRoleActionData systemRoleActionData : list) {
-                systemRoleActionData.setVoided(1);
-                systemRoleActionData.setVoidedBy(systemUser.getId().intValue());
-                systemRoleActionData.setVoidedByDtm(LocalDateTime.now());
-                systemRoleActionData.setVoidedByName(systemUser.getUserName());
-            }
-            boolean result = this.updateBatchById(list);
-            if(result){
-                log.warn("删除原来的审核权限成功");
-            }
+//        QueryWrapper<SysRoleActionData> queryWrapper = new QueryWrapper();
+//        queryWrapper.lambda().eq(SysRoleActionData::getRoleId,form.getRoleId());
+//        List<SysRoleActionData> list = this.list(queryWrapper);
+//        if(CollectionUtil.isNotEmpty(list)){
+//            for (SysRoleActionData systemRoleActionData : list) {
+//                systemRoleActionData.setVoided(1);
+//                systemRoleActionData.setVoidedBy(systemUser.getId().intValue());
+//                systemRoleActionData.setVoidedByDtm(LocalDateTime.now());
+//                systemRoleActionData.setVoidedByName(systemUser.getUserName());
+//            }
+//            boolean result = this.updateBatchById(list);
+//            if(result){
+//                log.warn("删除原来的审核权限成功");
+//            }
+//        }
+
+
+//        List<SysRoleActionData> systemRoleActionDatas = new ArrayList<>();
+//
+//        for (Integer integer : form.getActionId()) {
+//
+//            SysMenu systemMenu = systemMenuService.getById(integer);
+//            SysRoleActionData systemRoleActionData = new SysRoleActionData();
+//
+//            systemRoleActionData.setCrtBy(systemUser.getId().intValue());
+//            systemRoleActionData.setCrtByDtm(LocalDateTime.now());
+//            systemRoleActionData.setCrtByName(systemUser.getUserName());
+//            systemRoleActionData.setRoleId(form.getRoleId());
+//            systemRoleActionData.setActionCode(systemMenu.getCode());
+//            systemRoleActionData.setActionId(systemMenu.getId().intValue());
+//            systemRoleActionData.setDateType(form.getDateType());
+//            systemRoleActionData.setRemark(form.getRemark());
+//            systemRoleActionDatas.add(systemRoleActionData);
+//        }
+        SysRoleActionData sysRoleActionData = ConvertUtil.convert(form, SysRoleActionData.class);
+        if(null == sysRoleActionData.getId()){
+            sysRoleActionData.setCrtBy(systemUser.getId().intValue());
+            sysRoleActionData.setCrtByDtm(LocalDateTime.now());
+            sysRoleActionData.setCrtByName(systemUser.getUserName());
+        }else{
+            sysRoleActionData.setMdyBy(systemUser.getId().intValue());
+            sysRoleActionData.setMdyByDtm(LocalDateTime.now());
+            sysRoleActionData.setMdyByName(systemUser.getUserName());
         }
 
 
-        List<SysRoleActionData> systemRoleActionDatas = new ArrayList<>();
-
-        for (Integer integer : form.getActionId()) {
-
-            SysMenu systemMenu = systemMenuService.getById(integer);
-            SysRoleActionData systemRoleActionData = new SysRoleActionData();
-
-            systemRoleActionData.setCrtBy(systemUser.getId().intValue());
-            systemRoleActionData.setCrtByDtm(LocalDateTime.now());
-            systemRoleActionData.setCrtByName(systemUser.getUserName());
-            systemRoleActionData.setRoleId(form.getRoleId());
-            systemRoleActionData.setActionCode(systemMenu.getCode());
-            systemRoleActionData.setActionId(systemMenu.getId().intValue());
-            systemRoleActionData.setDateType(form.getDateType());
-            systemRoleActionData.setRemark(form.getRemark());
-            systemRoleActionDatas.add(systemRoleActionData);
-        }
-
-
-        boolean save = this.saveBatch(systemRoleActionDatas);
+        boolean save = this.saveOrUpdate(sysRoleActionData);
         if(!save){
-            log.warn("角色数据权限增加失败："+systemRoleActionDatas);
+            log.warn("角色数据权限增加失败：");
         }
         return save;
     }

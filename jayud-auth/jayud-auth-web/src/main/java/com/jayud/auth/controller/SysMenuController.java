@@ -64,6 +64,17 @@ public class SysMenuController {
     }
 
     /**
+     * 获取所有是审核的菜单树
+     * @return
+     */
+    @ApiOperation(value = "获取所有是审核的菜单树")
+    @PostMapping(value = "allCheckMenuTree")
+    public BaseResult<List<SysMenu>> allCheckMenuTree(){
+        List<SysMenu> tree = sysMenuService.allCheckMenuTree();
+        return BaseResult.ok(tree);
+    }
+
+    /**
      * 分页查询数据
      */
     @ApiOperation("分页查询数据")
